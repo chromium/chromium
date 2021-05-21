@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">ファイルをダウンロードするには、Chromium でストレージへのアクセスを許可する必要があります</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">お使いのすべてのデバイスで Chromium の設定やデータを使用するには、ログインしてください。ログインすると同期を有効にできます。</translation>
+<translation id="2580426763510374355">Chromium OS をインストール</translation>
 <translation id="2583187216237139145">このプロファイルの使用中に生成された Chromium データ（ブックマーク、履歴、パスワード、他の設定など）は、仕事用プロファイルの管理者によって削除される場合があります。<ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">アップデートを適用するには Chromium OS を再起動する必要があります。</translation>
 <translation id="2648074677641340862">インストール中にオペレーティング システム エラーが発生しました。Chromium をダウンロードし直してください。</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5479196819031988440">Chromium OS ではこのページを開けません。</translation>
 <translation id="5480860683791598150">このサイトで現在地を共有するには、Chromium で位置情報の使用を許可する必要があります</translation>
+<translation id="5481338274774984070">このファイルのダウンロードや表示は推奨されません。</translation>
 <translation id="549669000822060376">Chromium は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
 <translation id="5496810170689441661">Chromium でパスワードを編集しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="5527463683072221100">Chromium で PDF を開く</translation>

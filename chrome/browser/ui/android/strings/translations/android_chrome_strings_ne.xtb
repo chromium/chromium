@@ -292,6 +292,7 @@
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> सम्बन्धी सुझावहरू देखाइँदै</translation>
 <translation id="2904414404539560095">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची पूर्ण उचाइमा खोलिएको छ।</translation>
 <translation id="2905036901251765993">वरपर रहेका मान्छेहरूसँग आदान प्रदान गर्न उनीहरूलाई यो QR कोड स्क्यान गर्न लगाउनुहोस्</translation>
+<translation id="2908243544703713905">नपढिएका स्टोरिज तयार छन्</translation>
 <translation id="2909615210195135082">Google का सूचनाहरूको प्लेटफर्म</translation>
 <translation id="2912296070571964914">आफूलाई रुचि भएका विषयहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2923908459366352541">नाम मान्य छैन</translation>
@@ -531,7 +532,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनेटअघि}other{# मिनेटअघि}}</translation>
 <translation id="4587589328781138893">साइटहरू</translation>
 <translation id="4594952190837476234">यो पृष्ठ <ph name="CREATION_TIME" /> मा सिर्जना गरिएको हुँदा अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>
-<translation id="4615382002648696011">फलो गरिराखिएका, नपढिएका लेखहरू तयार छन्</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> खोल्नुहोस्</translation>
 <translation id="4619564267100705184">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="4634124774493850572">पासवर्ड प्रयोग गर्नुहोस्</translation>

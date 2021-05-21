@@ -24,7 +24,6 @@
 <translation id="1148499908455722006">Άνοιγμα παραθύρου διαλόγου πληροφοριών για <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Συσκευές σε σύζευξη</translation>
 <translation id="1165712434476988950">Απαιτείται επανεκκίνηση της συσκευής για την εφαρμογή της ενημέρωσης.</translation>
-<translation id="1170240434488307589">Έχει γίνει σίγαση του μικροφώνου της συσκευής.</translation>
 <translation id="1175572348579024023">Κύλιση</translation>
 <translation id="1178581264944972037">Παύση</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
@@ -41,6 +40,7 @@
 <translation id="1247372569136754018">Μικρόφωνο (εσωτερικό)</translation>
 <translation id="1252999807265626933">Φόρτιση από <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Τι καιρό κάνει;</translation>
+<translation id="1266097335951928626">Έναρξη κάμερας selfie</translation>
 <translation id="1267032506238418139">Αλλαγή συντόμευσης</translation>
 <translation id="1269405891096105529">Το περιφερειακό δεν υποστηρίζεται στη λειτουργία επισκέπτη</translation>
 <translation id="1270290102613614947">Το πληκτρολόγιο οθόνης είναι απενεργοποιημένο</translation>
@@ -85,6 +85,7 @@
 <translation id="1555130319947370107">Μπλε</translation>
 <translation id="1570871743947603115">Εναλλαγή Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Αποκτήσει πρόσβαση σε όλη τη δραστηριότητά σας από αυτήν την περίοδο λειτουργίας</translation>
+<translation id="159255010947577753">Δείκτης</translation>
 <translation id="1611993646327628135">Ενεργό</translation>
 <translation id="1615402009686901181">Η πολιτική διαχειριστή απενεργοποιεί τη λήψη οθόνης όταν είναι ορατό εμπιστευτικό περιεχόμενο.</translation>
 <translation id="1632985212731562677">Η πρόσβαση με διακόπτη μπορεί να απενεργοποιηθεί από τις Ρυθμίσεις &gt; Προσβασιμότητα.</translation>
@@ -136,8 +137,10 @@
 <translation id="2016340657076538683">Πληκτρολογήστε ένα μήνυμα</translation>
 <translation id="2018630726571919839">Πες μου ένα ανέκδοτο</translation>
 <translation id="2021864487439853900">Κάντε κλικ για ξεκλείδωμα</translation>
+<translation id="2047639699071423250">Προσθήκη σημαντικής ιδέας</translation>
 <translation id="2049240716062114887">Το όνομα γραφείου άλλαξε σε <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Κάθετα</translation>
+<translation id="2066708475850724665">Διακοπή μεγέθυνσης</translation>
 <translation id="2067602449040652523">Φωτεινότητα πληκτρολογίου</translation>
 <translation id="2078034614700056995">Σύρετε προς τα δεξιά με τέσσερα δάχτυλα για μετάβαση στο επόμενο γραφείο</translation>
 <translation id="2079504693865562705">Απόκρυψη εφαρμογών στο ράφι</translation>
@@ -145,10 +148,12 @@
 <translation id="2083190527011054446">Καληνύχτα <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Δεν υπάρχει σύνδεση στο δίκτυο</translation>
 <translation id="2108303511227308752">Η συντόμευση πληκτρολογίου Alt + Backspace άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Delete, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
+<translation id="211328683600082144">ΕΝΕΡΓΟΠΟΙΗΣΗ ΜΙΚΡΟΦΩΝΟΥ</translation>
 <translation id="2126242104232412123">Νέο γραφείο</translation>
 <translation id="2127372758936585790">Χαμηλή ισχύς φορτιστή</translation>
 <translation id="2132302418721800944">Εγγραφή ολόκληρης της οθόνης</translation>
 <translation id="2135456203358955318">Μεγεθυντικός φακός σε παράθυρο</translation>
+<translation id="2146800439053023141">Εναλλαγή θέσης γραμμής</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Επανάληψη</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Σύρετε προς τα κάτω με τρία δάχτυλα για έξοδο από την Επισκόπηση</translation>
@@ -328,6 +333,7 @@
 <translation id="3638400994746983214">Εναλλαγή οθόνης απορρήτου. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Διαχειριζόμενος χρήστης</translation>
 <translation id="3665889125180354336">Εγγραφή μικροφώνου</translation>
+<translation id="3680908746918359504">Διαγραφή όλων των δεικτών</translation>
 <translation id="36813544980941320">Θα γίνει κοινοποίηση των δικτύων Wi-Fi μεταξύ του τηλεφώνου σας και της συσκευής <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">Εμφανίζονται παράθυρα από το τρέχον γραφείο. Πατήστε το πάνω βέλος για την εμφάνιση παραθύρων από όλα τα γραφεία</translation>
 <translation id="3702846122927433391">Πληθυσμός της Νιγηρίας</translation>
@@ -373,12 +379,12 @@
 <translation id="4021716437419160885">Κύλιση προς τα κάτω</translation>
 <translation id="4028481283645788203">Απαιτείται κωδικός πρόσβασης για περισσότερη ασφάλεια.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Η συντόμευση πληκτρολογίου <ph name="LAUNCHER_KEY_NAME" /> + Αριθμός άλλαξε. Για να χρησιμοποιήσετε τα πλήκτρα F, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + ένα πλήκτρο στην επάνω σειρά.</translation>
 <translation id="4042660782729322247">Μοιράζεστε την οθόνη σας</translation>
 <translation id="4057003836560082631">Καρτέλα προγράμματος περιήγησης <ph name="INDEX" /> από <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Ανενεργές για κάποια εφαρμογή}other{Ανενεργές για # εφαρμογές}}</translation>
 <translation id="4066027111132117168">Ενεργό, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Μεσαίο σήμα</translation>
+<translation id="4095366824370681039">Στυλό</translation>
 <translation id="4112140312785995938">Αναζήτηση προς τα πίσω</translation>
 <translation id="4114315158543974537">Ενεργοποίηση του Phone Hub</translation>
 <translation id="412298498316631026">παράθυρο</translation>
@@ -447,12 +453,15 @@
 <translation id="4570957409596482333">Κουμπί "Επιλέξτε για αυτόματη ανάγνωση"</translation>
 <translation id="4577274620589681794">Ο χρόνος τελείωσε · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Εμφάνιση προεπισκοπήσεων</translation>
+<translation id="4578196883126898996">Το μικρόφωνό σας είναι απενεργοποιημένο. Ενεργοποιήστε το κουμπί μικροφώνου της συσκευής σας.</translation>
 <translation id="4578906031062871102">Το μενού Ρυθμίσεις άνοιξε.</translation>
 <translation id="4581047786858252841">Το μικρόφωνο είναι ενεργοποιημένο</translation>
 <translation id="4585337515783392668">Διακοπή μετάδοσης σε άγνωστο δέκτη</translation>
+<translation id="4586483766170476230">Διακοπή κάμερας selfie</translation>
 <translation id="4587299710837179226">Το μικρόφωνο είναι απενεργοποιημένο</translation>
 <translation id="4596144739579517758">Το Σκούρο θέμα είναι απενεργοποιημένο.</translation>
 <translation id="4611292653554630842">Σύνδεση</translation>
+<translation id="4614295562446151104">Ανάπτυξη εργαλείων δείκτη</translation>
 <translation id="4623167406982293031">Επαλήθευση λογαριασμού</translation>
 <translation id="4628757576491864469">Συσκευές</translation>
 <translation id="4642092649622328492">Λήψη μερικού στιγμιότυπου οθόνης</translation>
@@ -509,6 +518,8 @@
 <translation id="5035236842988137213">Η συσκευή <ph name="DEVICE_NAME" /> συνδέθηκε σε ένα νέο τηλέφωνο</translation>
 <translation id="5035389544768382859">Επιβεβαίωση διαμόρφωσης οθόνης</translation>
 <translation id="504465286040788597">Προηγούμενη παράγραφος</translation>
+<translation id="5071064518267176975">Μια εφαρμογή θέλει να χρησιμοποιήσει το μικρόφωνο</translation>
+<translation id="5075554201838155866">Έναρξη υποτίτλων</translation>
 <translation id="5078796286268621944">Εσφαλμένο PIN</translation>
 <translation id="5083553833479578423">Ξεκλειδώστε περισσότερες λειτουργίες του Βοηθού.</translation>
 <translation id="5136175204352732067">Συνδέθηκε διαφορετικό πληκτρολόγιο</translation>
@@ -679,6 +690,7 @@
 <translation id="6612802754306526077">Επιλέχτηκε η λειτουργία εγγραφής οθόνης.</translation>
 <translation id="6614169507485700968">Η οθόνη απορρήτου είναι ενεργοποιημένη.</translation>
 <translation id="6627638273713273709">Αναζήτηση+Shift+K</translation>
+<translation id="6629480180092995136">Η εφαρμογή <ph name="APP_NAME" /> θέλει να χρησιμοποιήσει το μικρόφωνο</translation>
 <translation id="6637729079642709226">Αλλαγή ώρας</translation>
 <translation id="6641720045729354415">Εναλλαγή Ζωντανών υπότιτλων. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">Το <ph name="ORIGIN_NAME" /> θέλει να επαληθεύσει την ταυτότητά σας.</translation>
@@ -732,6 +744,7 @@
 <translation id="7029814467594812963">Έξοδος από συνεδρία</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Βοηθός Google</translation>
 <translation id="7042322267639375032">Σύμπτυξη περιοχής κατάστασης</translation>
+<translation id="7045595904618419789">Έναρξη μεγέθυνσης</translation>
 <translation id="7055910611768509537">Η γραφίδα δεν χρησιμοποιήθηκε για περισσότερο από μία εβδομάδα.</translation>
 <translation id="7066646422045619941">Το δίκτυο αυτό έχει απενεργοποιηθεί από το διαχειριστή σας.</translation>
 <translation id="7067196344162293536">Αυτόματη περιστροφή</translation>
@@ -752,6 +765,7 @@
 <translation id="7256634071279256947">Πίσω μικρόφωνο</translation>
 <translation id="726276584504105859">Σύρετε εδώ για να χρησιμοποιήσετε τον διαχωρισμό οθόνης</translation>
 <translation id="7262906531272962081">Δημιουργία υπενθύμισης</translation>
+<translation id="7279434993080105272">Χρώμα δείκτη <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">Οι Ζωντανοί υπότιτλοι είναι απενεργοποιημένοι.</translation>
 <translation id="7303365578352795231">Απάντηση σε άλλη συσκευή.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@
 <translation id="7466449121337984263">Αγγίξτε τον αισθητήρα.</translation>
 <translation id="7477793887173910789">Ελέγξτε τη μουσική σας, τα βίντεο και περισσότερα</translation>
 <translation id="7483025031359818980">Η περιοχή επιλογής ορίστηκε σε ολόκληρη την οθόνη</translation>
+<translation id="7486227320194954040">Σύμπτυξη εργαλείων δείκτη</translation>
 <translation id="7497767806359279797">Επιλογή γλώσσας και πληκτρολογίου</translation>
 <translation id="7509246181739783082">Επαλήθευση της ταυτότητάς σας</translation>
 <translation id="7513622367902644023">Επιλέχτηκε λειτουργία στιγμιότυπου οθόνης.</translation>
@@ -799,6 +814,7 @@
 <translation id="7607002721634913082">Έγινε παύση</translation>
 <translation id="7618774594543487847">Ουδέτερο</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">Στυλό δείκτη</translation>
 <translation id="7633755430369750696">Εμφάνιση ρυθμίσεων της λειτουργίας Κοινοποίηση κοντά.</translation>
 <translation id="7641938616688887143">Εγγραφή</translation>
 <translation id="7642647758716480637">Άνοιγμα ρυθμίσεων για το δίκτυο <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@
 <translation id="7724603315864178912">Αποκοπή</translation>
 <translation id="7745560842763881396">Εμφάνιση εφαρμογών στο ράφι</translation>
 <translation id="7749443890790263709">Συμπληρώθηκε ο μέγιστος αριθμός γραφείων.</translation>
+<translation id="7749640678855296659">Το μικρόφωνό σας είναι αυτήν τη στιγμή απενεργοποιημένο</translation>
 <translation id="776344839111254542">Κάντε κλικ, για να δείτε τις λεπτομέρειες της ενημέρωσης</translation>
 <translation id="7780159184141939021">Περιστροφή οθόνης</translation>
 <translation id="7796353162336583443">Πατήστε το κουμπί με τη γραφίδα στο ράφι, για να δημιουργήσετε μια σημείωση, ένα στιγμιότυπο οθόνης, να χρησιμοποιήσετε τον Βοηθό Google, τον δείκτη λέιζερ ή τον μεγεθυντικό φακό.</translation>
@@ -861,6 +878,7 @@
 <translation id="8113423164597455979">Ενεργές, όλες οι εφαρμογές</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
+<translation id="8132487352815776550">Διακοπή υποτίτλων</translation>
 <translation id="8132793192354020517">Έγινε σύνδεση με το δίκτυο <ph name="NAME" /></translation>
 <translation id="813913629614996137">Εκκίνηση…</translation>
 <translation id="8142441511840089262">Διπλό κλικ</translation>

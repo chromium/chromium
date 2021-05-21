@@ -186,6 +186,7 @@
 <translation id="22320125457191592">За вас</translation>
 <translation id="2234876718134438132">Синхронизација и услуги на Google</translation>
 <translation id="2239812875700136898">Контролирајте ги сториите од копчето „Опции за Discover“</translation>
+<translation id="2251971221270904886">Кога е вклучена и статусот е активен, Chrome ја користи вашата историја на прелистување во изминатите 7 дена за да ја одреди групата или „кохортата“ во која припаѓате. Огласувачите можат да избираат реклами од групата. Историјата на прелистување останува приватна на вашиот уред. Оваа пробна верзија е активна само во <ph name="BEGIN_LINK" />некои региони<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Извезување лозинки…</translation>
 <translation id="2276696007612801991">Најавете се на сметката на Google за да ги проверите лозинките</translation>
 <translation id="2278052315791335171">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="SITE" /></translation>
@@ -275,6 +276,7 @@
 <translation id="2781151931089541271">Остана 1 секунда</translation>
 <translation id="2801022321632964776">Ажурирајте за да го добиете вашиот јазик во најновата верзија на Chrome</translation>
 <translation id="2805756323405976993">Апликации</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Прегледајте ги и управувајте со зачуваните лозинки во вашата <ph name="BEGIN_LINK" />сметка на Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">За да ги добиете обележувачите на сите ваши уреди, најавете се и вклучете ја синхронизацијата</translation>
 <translation id="2827278682606527653">Менито на картичката за активност е отворено на половина екран</translation>
@@ -293,6 +295,7 @@
 <translation id="2901411048554510387">Се прикажуваат предлози за <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Списокот со уреди за споделување картичка е отворен на цел екран.</translation>
 <translation id="2905036901251765993">За да споделувате со луѓе во близина, дозволете им да го скенираат QR-кодов</translation>
+<translation id="2908243544703713905">Непрочитаните стории се спремни</translation>
 <translation id="2909615210195135082">Платформа за известувања на Google</translation>
 <translation id="2912296070571964914">Управувајте со темите што ве интересираат</translation>
 <translation id="2923908459366352541">Името е неважечко</translation>
@@ -317,6 +320,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> обележувач}one{<ph name="BOOKMARKS_COUNT_MANY" /> обележувач}other{<ph name="BOOKMARKS_COUNT_MANY" /> обележувачи}}</translation>
 <translation id="3062802207422175757">Статии за она што ве интересира на Chrome</translation>
 <translation id="3070005020161560471">Автоматски преведувај</translation>
+<translation id="3083531420240576529">Може да ја рестирате групата во секое време. Потребни се 7 дена за да се одреди вашата група.</translation>
 <translation id="3091010850649238832">Прикажи содржини од привремената меморија</translation>
 <translation id="3098745985164956033">Некои слики се испраќаат во Google за да им се подобрат описите</translation>
 <translation id="3114507951000454849">Прочитајте ги денешните вести <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Достапни се опции речиси на врвот на екранот</translation>
 <translation id="4062305924942672200">Правни информации</translation>
+<translation id="4082818367361753283">ID на група</translation>
 <translation id="4084682180776658562">Обележувач</translation>
 <translation id="4084712963632273211">Од <ph name="PUBLISHER_ORIGIN" /> - <ph name="BEGIN_DEEMPHASIZED" />испорачано од Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Избриши ги податоците на апликацијата?</translation>
@@ -533,7 +538,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4583164079174244168">{MINUTES,plural, =1{Пред # минута}one{Пред # минута}other{Пред # минути}}</translation>
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4594952190837476234">Офлајн страницава е од <ph name="CREATION_TIME" /> и може да се разликува од онлајн верзијата.</translation>
-<translation id="4615382002648696011">Се следи, непрочитаните стории се спремни</translation>
 <translation id="4616150815774728855">Отвори <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Потврдете дека сте вие</translation>
 <translation id="4634124774493850572">Употреби ја лозинката</translation>
@@ -889,6 +893,11 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6699370405921460408">Серверите на Google ќе ги оптимизираат страниците што ги посетувате.</translation>
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Претходно</translation>
+<translation id="671333169801287922">Кога е вклучено, сајтовите може да ги користат техниките за зачувување на приватноста што се прикажани тука за обезбедување на нивните содржини и услуги. Тие вклучуваат алтернативи за следење на повеќе сајтови. Можеби ќе се додадат повеќе проби со тек на време.
+
+<ph name="BEGIN_LIST_ITEM1" />Огласувачите и издавачите можат да ја користат техниката FLoC.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Огласувачите и издавачите можат да ја проучуваат ефикасноста на рекламите на начин што не ве следи на сајтовите.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Тајмерот за <ph name="FQDN" /> истече. Ќе започне одново утре.</translation>
 <translation id="6738516213925468394">Податоците се шифрирани со вашата <ph name="BEGIN_LINK" />лозинка за синхронизација<ph name="END_LINK" /> на <ph name="TIME" />. Внесете ја за да започне синхронизацијата.</translation>
 <translation id="6738867403308150051">Се презема…</translation>
@@ -1079,6 +1088,9 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7971136598759319605">Активен пред 1 ден</translation>
 <translation id="7975379999046275268">Прегледајте ја страницата <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Претходно вчитувај страници за побрзо прелистување и пребарување</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> е тековна иницијатива за развој на нови технологии што ќе ве заштитуваат од механизмите на следење, а истовремено ќе ја заштитуваат и отворената мрежа.
+
+Пробната верзија на Privacy Sandbox сѐ уште активно се развива и таа е достапна само во одредени региони. Засега, сајтовите може да ја испробаат Privacy Sandbox, а притоа да продолжат да ги користат тековните веб-технологии, како што се колачињата од трети страни.</translation>
 <translation id="7986497153528221272">За да ги гледате лозинките, прво поставете заклучување екран на вашиот уред</translation>
 <translation id="7998918019931843664">Повторно отвори ја затворената картичка</translation>
 <translation id="8004582292198964060">Прелистувач</translation>
@@ -1188,7 +1200,9 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8662811608048051533">Ќе ве одјави од повеќето сајтови.</translation>
 <translation id="8664979001105139458">Името на датотеката веќе постои</translation>
 <translation id="8676789164135894283">Потврди за најавување</translation>
+<translation id="867767487203716855">Следно ажурирање</translation>
 <translation id="8683039184091909753">слика</translation>
+<translation id="8683081248374354009">Ресетирај група</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Ниво на јачина на сигналот: # бар}one{Ниво на јачина на сигналот: # бар}other{Ниво на јачина на сигналот: # бари}}</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699120352855309748">Не нуди превод за овие јазици</translation>

@@ -24,7 +24,6 @@
 <translation id="1148499908455722006">เปิดกล่องโต้ตอบข้อมูลของ <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">อุปกรณ์ที่จับคู่</translation>
 <translation id="1165712434476988950">ต้องรีสตาร์ทอุปกรณ์เพื่อใช้การอัปเดต</translation>
-<translation id="1170240434488307589">ไมโครโฟนของอุปกรณ์ปิดเสียงอยู่</translation>
 <translation id="1175572348579024023">เลื่อน</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1181037720776840403">นำออก</translation>
@@ -41,6 +40,7 @@
 <translation id="1247372569136754018">ไมโครโฟน (ภายใน)</translation>
 <translation id="1252999807265626933">กำลังชาร์จจาก<ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">วันนี้อากาศเป็นยังไงบ้าง</translation>
+<translation id="1266097335951928626">เริ่มกล้องเซลฟี</translation>
 <translation id="1267032506238418139">มีการเปลี่ยนแปลงทางลัด</translation>
 <translation id="1269405891096105529">ไม่รองรับอุปกรณ์ต่อพ่วงในโหมดผู้มาเยือน</translation>
 <translation id="1270290102613614947">ปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
@@ -85,6 +85,7 @@
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="1570871743947603115">เปิด/ปิดบลูทูธ <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">เข้าถึงกิจกรรมทั้งหมดของคุณในเซสชันนี้</translation>
+<translation id="159255010947577753">ตัวทำเครื่องหมาย</translation>
 <translation id="1611993646327628135">เปิด</translation>
 <translation id="1615402009686901181">นโยบายของผู้ดูแลระบบปิดใช้การจับภาพหน้าจอเมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
 <translation id="1632985212731562677">ปิดใช้ "การเข้าถึงด้วยสวิตช์" ได้ในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
@@ -136,8 +137,10 @@
 <translation id="2016340657076538683">พิมพ์ข้อความ</translation>
 <translation id="2018630726571919839">เล่าเรื่องตลกให้ฟังหน่อย</translation>
 <translation id="2021864487439853900">คลิกเพื่อปลดล็อก</translation>
+<translation id="2047639699071423250">เพิ่มแนวคิดหลัก</translation>
 <translation id="2049240716062114887">เปลี่ยนชื่อเดสก์ท็อปเป็น <ph name="DESK_NAME" /> แล้ว</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
+<translation id="2066708475850724665">หยุดใช้แว่นขยาย</translation>
 <translation id="2067602449040652523">ความสว่างของแป้นพิมพ์</translation>
 <translation id="2078034614700056995">ใช้ 4 นิ้วเลื่อนไปทางขวาเพื่อเปลี่ยนไปใช้เดสก์ถัดไป</translation>
 <translation id="2079504693865562705">ซ่อนแอปในแถบ</translation>
@@ -145,10 +148,12 @@
 <translation id="2083190527011054446">ราตรีสวัสดิ์ <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">ไม่ได้เชื่อมต่อกับเครือข่าย</translation>
 <translation id="2108303511227308752">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + Backspace หากต้องการใช้แป้น Delete ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
+<translation id="211328683600082144">เปิดไมโครโฟน</translation>
 <translation id="2126242104232412123">เดสก์ใหม่</translation>
 <translation id="2127372758936585790">ที่ชาร์จพลังงานต่ำ</translation>
 <translation id="2132302418721800944">บันทึกแบบเต็มหน้าจอ</translation>
 <translation id="2135456203358955318">แว่นขยายหน้าจอบางส่วน</translation>
+<translation id="2146800439053023141">สลับตำแหน่งของแถบ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ลองอีกครั้ง</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">ใช้ 3 นิ้วเลื่อนลงเพื่อออกจาก "ภาพรวม"</translation>
@@ -328,6 +333,7 @@
 <translation id="3638400994746983214">สลับหน้าจอส่วนตัว <ph name="STATE_TEXT" /></translation>
 <translation id="366222428570480733">ผู้ใช้ที่ได้รับการจัดการ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">การบันทึกเสียงจากไมโครโฟน</translation>
+<translation id="3680908746918359504">ล้างเครื่องหมายทั้งหมด</translation>
 <translation id="36813544980941320">จะมีการแชร์เครือข่าย Wi-Fi ระหว่างโทรศัพท์และ <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">กำลังแสดงหน้าต่างจากเดสก์ปัจจุบัน กดปุ่มลูกศรขึ้นเพื่อแสดงหน้าต่างจากเดสก์ทั้งหมด</translation>
 <translation id="3702846122927433391">ประชากรในประเทศไนจีเรีย</translation>
@@ -373,12 +379,12 @@
 <translation id="4021716437419160885">เลื่อนลง</translation>
 <translation id="4028481283645788203">ต้องป้อนรหัสผ่านเพื่อให้มีความปลอดภัยมากขึ้น</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด <ph name="LAUNCHER_KEY_NAME" /> + ตัวเลข หากต้องการใช้แป้น F ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + แป้นแถวบนสุด</translation>
 <translation id="4042660782729322247">คุณกำลังแชร์หน้าจอ</translation>
 <translation id="4057003836560082631">แท็บที่ <ph name="INDEX" /> จาก <ph name="TOTAL_COUNT" /> ของเบราว์เซอร์ <ph name="SITE_TITLE" /> <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ปิดไว้ 1 แอป}other{ปิดไว้ # แอป}}</translation>
 <translation id="4066027111132117168">เปิดอยู่ <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">สัญญาณแรงปานกลาง</translation>
+<translation id="4095366824370681039">ปากกาหมึก</translation>
 <translation id="4112140312785995938">ย้อนกลับ</translation>
 <translation id="4114315158543974537">เปิด Phone Hub</translation>
 <translation id="412298498316631026">หน้าต่าง</translation>
@@ -447,12 +453,15 @@
 <translation id="4570957409596482333">ปุ่มเลือกเพื่อให้อ่าน</translation>
 <translation id="4577274620589681794">หมดเวลา · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">แสดงตัวอย่าง</translation>
+<translation id="4578196883126898996">ไมโครโฟนปิดอยู่ โปรดเปิดปุ่มไมโครโฟนของอุปกรณ์</translation>
 <translation id="4578906031062871102">เมนูการตั้งค่าเปิดอยู่</translation>
 <translation id="4581047786858252841">ไมโครโฟนเปิดอยู่</translation>
 <translation id="4585337515783392668">หยุดแคสต์ไปยังเครื่องรับที่ไม่รู้จัก</translation>
+<translation id="4586483766170476230">หยุดกล้องเซลฟี</translation>
 <translation id="4587299710837179226">ไมโครโฟนปิดอยู่</translation>
 <translation id="4596144739579517758">ธีมมืดปิดอยู่</translation>
 <translation id="4611292653554630842">ลงชื่อเข้าสู่ระบบ</translation>
+<translation id="4614295562446151104">ขยายเครื่องมือทำเครื่องหมาย</translation>
 <translation id="4623167406982293031">ยืนยันบัญชี</translation>
 <translation id="4628757576491864469">อุปกรณ์</translation>
 <translation id="4642092649622328492">ถ่ายภาพหน้าจอบางส่วน</translation>
@@ -509,6 +518,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> เชื่อมต่อโทรศัพท์เครื่องใหม่แล้ว</translation>
 <translation id="5035389544768382859">ยืนยันการกำหนดค่าจอแสดงผล</translation>
 <translation id="504465286040788597">ย่อหน้าก่อนหน้า</translation>
+<translation id="5071064518267176975">แอปหนึ่งต้องการใช้ไมโครโฟน</translation>
+<translation id="5075554201838155866">เริ่มคำอธิบายภาพ</translation>
 <translation id="5078796286268621944">PIN ไม่ถูกต้อง</translation>
 <translation id="5083553833479578423">ใช้ฟีเจอร์จาก Assistant ได้มากขึ้น</translation>
 <translation id="5136175204352732067">เชื่อมต่อกับแป้นพิมพ์อื่นแล้ว</translation>
@@ -679,6 +690,7 @@
 <translation id="6612802754306526077">เลือกโหมดบันทึกหน้าจอแล้ว</translation>
 <translation id="6614169507485700968">หน้าจอส่วนตัวเปิดอยู่</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> ต้องการใช้ไมโครโฟน</translation>
 <translation id="6637729079642709226">เปลี่ยนเวลา</translation>
 <translation id="6641720045729354415">เปิด/ปิดคำบรรยายสด <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ต้องการยืนยันว่าเป็นคุณ</translation>
@@ -732,6 +744,7 @@
 <translation id="7029814467594812963">ออกจากเซสชัน</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">ยุบพื้นที่แสดงสถานะ</translation>
+<translation id="7045595904618419789">เริ่มใช้แว่นขยาย</translation>
 <translation id="7055910611768509537">คุณไม่ได้ใช้สไตลัสนานกว่า 1 สัปดาห์แล้ว</translation>
 <translation id="7066646422045619941">ผู้ดูแลระบบปิดใช้เครือข่ายนี้</translation>
 <translation id="7067196344162293536">หมุนอัตโนมัติ</translation>
@@ -752,6 +765,7 @@
 <translation id="7256634071279256947">ไมโครโฟนด้านหลัง</translation>
 <translation id="726276584504105859">ลากมาที่นี่เพื่อใช้การแยกหน้าจอ</translation>
 <translation id="7262906531272962081">สร้างการช่วยเตือน</translation>
+<translation id="7279434993080105272">ตัวทำเครื่องหมายสี<ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">คำบรรยายสดปิดอยู่</translation>
 <translation id="7303365578352795231">กำลังรับสายในอุปกรณ์อื่น</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@
 <translation id="7466449121337984263">โปรดแตะเซ็นเซอร์</translation>
 <translation id="7477793887173910789">ควบคุมเพลง วิดีโอ และอื่นๆ</translation>
 <translation id="7483025031359818980">กำหนดพื้นที่สำหรับการเลือกเป็นเต็มหน้าจอ</translation>
+<translation id="7486227320194954040">ยุบเครื่องมือทำเครื่องหมาย</translation>
 <translation id="7497767806359279797">เลือกภาษาและแป้นพิมพ์</translation>
 <translation id="7509246181739783082">ยืนยันตัวตนของคุณ</translation>
 <translation id="7513622367902644023">เลือกโหมดภาพหน้าจอแล้ว</translation>
@@ -799,6 +814,7 @@
 <translation id="7607002721634913082">หยุดชั่วคราว</translation>
 <translation id="7618774594543487847">ปานกลาง</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">ปากกามาร์กเกอร์</translation>
 <translation id="7633755430369750696">แสดงการตั้งค่าการแชร์ใกล้เคียง</translation>
 <translation id="7641938616688887143">บันทึก</translation>
 <translation id="7642647758716480637">เปิดการตั้งค่าของ <ph name="NETWORK_NAME" /> <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@
 <translation id="7724603315864178912">ตัด</translation>
 <translation id="7745560842763881396">แสดงแอปในแถบ</translation>
 <translation id="7749443890790263709">มีพื้นที่ทำงานครบตามจำนวนสูงสุดแล้ว</translation>
+<translation id="7749640678855296659">ไมโครโฟนปิดอยู่ในขณะนี้</translation>
 <translation id="776344839111254542">คลิกเพื่อดูรายละเอียดการอัปเดต</translation>
 <translation id="7780159184141939021">หมุนหน้าจอ</translation>
 <translation id="7796353162336583443">แตะปุ่มสไตลัสในชั้นวางเพื่อจดโน้ต บันทึกภาพหน้าจอ ตลอดจนใช้ Google Assistant ตัวชี้เลเซอร์ หรือแว่นขยาย</translation>
@@ -861,6 +878,7 @@
 <translation id="8113423164597455979">เปิดไว้ทุกแอป</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
+<translation id="8132487352815776550">หยุดคำอธิบายภาพ</translation>
 <translation id="8132793192354020517">เชื่อมต่อกับ <ph name="NAME" /></translation>
 <translation id="813913629614996137">กำลังเริ่มดำเนินการ...</translation>
 <translation id="8142441511840089262">ดับเบิลคลิก</translation>

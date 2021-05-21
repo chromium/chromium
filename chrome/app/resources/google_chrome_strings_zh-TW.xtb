@@ -168,6 +168,7 @@
 
 Google Chrome 無法復原你的設定。</translation>
 <translation id="5434383153637353914">你可以在這個頁面管理已登入的 Google 帳戶，往後就可以在 Chrome 瀏覽器和 Play 商店應用程式，以及 Gmail、雲端硬碟和 YouTube 等服務中使用這些帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">安裝 Chrome 作業系統</translation>
 <translation id="556024056938947818">Google Chrome 即將顯示密碼。</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">如果這個頁面上未顯示你的設定，請檢查 <ph name="LINK_BEGIN" />
@@ -251,6 +252,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7896673875602241923">先前已有其他使用者使用 <ph name="ACCOUNT_EMAIL_LAST" /> 在這部電腦上登入 Chrome。請建立新的 Chrome 使用者，以便另行保存你的資訊。</translation>
 <translation id="7905891027772979035">Chrome 無法檢查你的擴充功能，請稍後再試。</translation>
 <translation id="7930071585467473040">Google Chrome 正在嘗試複製密碼。</translation>
+<translation id="7951988079884443914">Chrome 建議你不要下載或開啟這個檔案。</translation>
 <translation id="7962410387636238736">Google Chrome 已停止支援 Windows XP 和 Windows Vista，因此這部電腦不會再收到 Google Chrome 更新</translation>
 <translation id="79947657522496226">Chrome 作業系統藉助了其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />的相關技術才得以問世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也是如此。</translation>
 <translation id="8008534537613507642">重新安裝 Chrome</translation>

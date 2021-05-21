@@ -186,6 +186,7 @@
 <translation id="22320125457191592">おすすめ</translation>
 <translation id="2234876718134438132">同期と Google サービス</translation>
 <translation id="2239812875700136898">Discover ボタンのオプションから記事を管理できます</translation>
+<translation id="2251971221270904886">FLoC をオンにして、ステータスが有効な場合、Chrome で 7 日間の閲覧履歴に基づいて、特定の「コホート」つまりグループに分類されます。広告主はこのグループに対して広告を表示するよう設定できます。閲覧履歴はデバイスに保存され、プライバシーが保たれます。この試用版は、<ph name="BEGIN_LINK" />一部の地域<ph name="END_LINK" />でのみ使用できます。</translation>
 <translation id="2259659629660284697">パスワードをエクスポート…</translation>
 <translation id="2276696007612801991">パスワードを確認するには、Google アカウントにログインしてください</translation>
 <translation id="2278052315791335171">このパスワードを削除しても、<ph name="SITE" /> のアカウントは削除されません</translation>
@@ -275,6 +276,7 @@
 <translation id="2781151931089541271">残り 1 秒</translation>
 <translation id="2801022321632964776">Chrome を更新し、最新バージョンでお使いの言語を入手してください</translation>
 <translation id="2805756323405976993">アプリ</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />での保存パスワードの表示と管理</translation>
 <translation id="2818669890320396765">お使いのどのデバイスでも同じブックマークを使用するには、ログインして同期を有効にします</translation>
 <translation id="2827278682606527653">フィードカード メニューが画面の下半分に開いています</translation>
@@ -293,6 +295,7 @@
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> の候補を表示しています</translation>
 <translation id="2904414404539560095">タブを共有するデバイスのリストが画面全体に表示されました。</translation>
 <translation id="2905036901251765993">近くのユーザーと共有するには、この QR コードをスキャンしてもらいます</translation>
+<translation id="2908243544703713905">未読の記事があります</translation>
 <translation id="2909615210195135082">Google 通知プラットフォーム</translation>
 <translation id="2912296070571964914">興味のあるトピックを管理します</translation>
 <translation id="2923908459366352541">名前が無効です</translation>
@@ -317,6 +320,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個のブックマーク}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個のブックマーク}}</translation>
 <translation id="3062802207422175757">Chrome の履歴に基づくおすすめの記事を表示します</translation>
 <translation id="3070005020161560471">自動的に翻訳する</translation>
+<translation id="3083531420240576529">グループはいつでもリセットできます。グループへの分類には、7 日間かかります。</translation>
 <translation id="3091010850649238832">クリップボードの内容を表示</translation>
 <translation id="3098745985164956033">正確な説明を生成するため、画像が Google に送信される場合があります</translation>
 <translation id="3114507951000454849">今日のニュースをチェック <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@
 <translation id="4056223980640387499">セピア</translation>
 <translation id="4060598801229743805">画面の上部にあるオプション</translation>
 <translation id="4062305924942672200">法的情報</translation>
+<translation id="4082818367361753283">グループ ID</translation>
 <translation id="4084682180776658562">ブックマーク</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> のコンテンツ - <ph name="BEGIN_DEEMPHASIZED" />Google により配信<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">アプリデータを削除しますか？</translation>
@@ -533,7 +538,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分前}other{# 分前}}</translation>
 <translation id="4587589328781138893">サイト</translation>
 <translation id="4594952190837476234">このオフライン ページは <ph name="CREATION_TIME" /> 時点のものであり、オンライン版とは異なる可能性があります。</translation>
-<translation id="4615382002648696011">フォロー中、未読の記事があります</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> を起動</translation>
 <translation id="4619564267100705184">本人確認</translation>
 <translation id="4634124774493850572">パスワードを使用</translation>
@@ -889,6 +893,11 @@
 <translation id="6699370405921460408">アクセスするページを Google のサーバーで最適化します。</translation>
 <translation id="670498945988402717">前回の確認: 昨日</translation>
 <translation id="6710213216561001401">前へ</translation>
+<translation id="671333169801287922">オンにすると、サイトでコンテンツやサービスを提供する際に、ここで示されているプライバシー保護技術が使用される場合があります。これには、クロスサイト トラッキングの代わりとなる技術も含まれます。今後、試用版の技術がさらに追加される可能性があります。
+
+<ph name="BEGIN_LIST_ITEM1" />広告主やパブリッシャーは、FLoC 技術を使用できます。<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />広告主やパブリッシャーは、サイトをまたいでユーザーをトラッキングすることなく、広告の成果を把握できます。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117"><ph name="FQDN" /> のタイマーが切れました。タイマーはまた明日開始されます。</translation>
 <translation id="6738516213925468394">データは <ph name="TIME" />に<ph name="BEGIN_LINK" />同期パスフレーズ<ph name="END_LINK" />で暗号化されました。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="6738867403308150051">ダウンロードしています…</translation>
@@ -1079,6 +1088,9 @@
 <translation id="7971136598759319605">最終同期: 1 日前</translation>
 <translation id="7975379999046275268">ページをプレビュー <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ページをプリロードして、閲覧と検索をすばやく行えるようにする</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />プライバシー サンドボックス<ph name="END_LINK" />は、トラッキング メカニズムからユーザーを保護しながら、オープンウェブの理念を支える新しい技術を開発する取り組みです。
+
+プライバシー サンドボックスの試用版はまだ開発段階にあり、一部の地域でのみご利用可能です。このため、現時点では多くのサイトでサードパーティ Cookie など現行のウェブ技術を引き続き使用しつつ、プライバシー サンドボックスが試験的に導入されると考えられます。</translation>
 <translation id="7986497153528221272">パスワードを表示するには、まずデバイスで画面ロックを設定してください</translation>
 <translation id="7998918019931843664">閉じたタブを開く</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
@@ -1188,7 +1200,9 @@
 <translation id="8662811608048051533">ほとんどのサイトからログアウトします。</translation>
 <translation id="8664979001105139458">同じ名前のファイルが存在します</translation>
 <translation id="8676789164135894283">ログイン認証</translation>
+<translation id="867767487203716855">次の更新</translation>
 <translation id="8683039184091909753">画像</translation>
+<translation id="8683081248374354009">グループをリセット</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{電波強度: レベル #}other{電波強度: レベル #}}</translation>
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8699120352855309748">これらの言語を翻訳するか尋ねない</translation>

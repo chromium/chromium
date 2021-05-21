@@ -24,7 +24,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1148499908455722006">Åbn dialogboks med oplysninger om <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Parrede enheder</translation>
 <translation id="1165712434476988950">Enheden skal genstartes, før opdateringen anvendes.</translation>
-<translation id="1170240434488307589">På enhedens mikrofonknap er lyden slået fra.</translation>
 <translation id="1175572348579024023">Rul</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Fjern</translation>
@@ -41,6 +40,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1247372569136754018">Mikrofon (indbygget)</translation>
 <translation id="1252999807265626933">Oplader fra <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvordan er vejret?</translation>
+<translation id="1266097335951928626">Start kamera til selfies</translation>
 <translation id="1267032506238418139">Ændring af genvej</translation>
 <translation id="1269405891096105529">Eksternt tilbehør understøttes ikke i gæstetilstand</translation>
 <translation id="1270290102613614947">Skærmtastaturet er deaktiveret</translation>
@@ -85,6 +85,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1570871743947603115">Slå Bluetooth til eller fra. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Få adgang til al din aktivitet i denne session</translation>
+<translation id="159255010947577753">Tusch</translation>
 <translation id="1611993646327628135">Til</translation>
 <translation id="1615402009686901181">Administratorpolitikken deaktiverer screenshots, når fortroligt indhold er synligt</translation>
 <translation id="1632985212731562677">Kontaktadgang kan deaktiveres under Indstillinger &gt; Hjælpefunktioner.</translation>
@@ -136,8 +137,10 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2016340657076538683">Skriv en besked</translation>
 <translation id="2018630726571919839">Fortæl en vittighed</translation>
 <translation id="2021864487439853900">Klik for at låse op</translation>
+<translation id="2047639699071423250">Tilføj hovedidé</translation>
 <translation id="2049240716062114887">Navnet på skrivebordet blev ændret til <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
+<translation id="2066708475850724665">Stop forstørrelse</translation>
 <translation id="2067602449040652523">Lysstyrke for tastatur</translation>
 <translation id="2078034614700056995">Stryg mod højre med fire fingre for at skifte til næste skrivebord</translation>
 <translation id="2079504693865562705">Skjul apps på hylden</translation>
@@ -145,10 +148,12 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Der er ingen netværksforbindelse</translation>
 <translation id="2108303511227308752">Tastaturgenvejen Alt+Backspace er blevet ændret. Hvis du vil bruge Delete-knappen, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+Backspace.</translation>
+<translation id="211328683600082144">SLÅ MIKROFON TIL</translation>
 <translation id="2126242104232412123">Nyt skrivebord</translation>
 <translation id="2127372758936585790">Oplader ved lav kraft</translation>
 <translation id="2132302418721800944">Optag hele skærmen</translation>
 <translation id="2135456203358955318">Fastgjort lupvindue</translation>
+<translation id="2146800439053023141">Placering af skydeknap</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv igen</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Stryg nedad med tre fingre for at lukke oversigten</translation>
@@ -328,6 +333,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3638400994746983214">Slå privatlivsskærmen til eller fra. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Administreret bruger</translation>
 <translation id="3665889125180354336">Optag mikrofon</translation>
+<translation id="3680908746918359504">Ryd alle tuscher</translation>
 <translation id="36813544980941320">Wi-Fi-netværk deles mellem din telefon og <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">Når du får vist vinduer fra det aktuelle skrivebord, kan du trykke på pil op for at få vist vinduer fra alle skriveborde</translation>
 <translation id="3702846122927433391">Befolkningstallet i Nigeria</translation>
@@ -373,12 +379,12 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4021716437419160885">Rul ned</translation>
 <translation id="4028481283645788203">Der kræves en adgangskode som ekstra sikkerhed</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Tastaturgenvejen <ph name="LAUNCHER_KEY_NAME" />+numerisk tast er blevet ændret. Hvis du vil bruge F-taster, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+en tast i øverste række.</translation>
 <translation id="4042660782729322247">Du deler din skærm</translation>
 <translation id="4057003836560082631">Browserfane <ph name="INDEX" /> af <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Fra for én app}one{Fra for # app}other{Fra for # apps}}</translation>
 <translation id="4066027111132117168">Til, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Middel signal</translation>
+<translation id="4095366824370681039">Tuschpen</translation>
 <translation id="4112140312785995938">Spol tilbage</translation>
 <translation id="4114315158543974537">Aktivér Phone Hub</translation>
 <translation id="412298498316631026">vindue</translation>
@@ -447,12 +453,15 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4570957409596482333">Knap for Tekstoplæsning</translation>
 <translation id="4577274620589681794">Tiden er gået · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Se forhåndsvisninger</translation>
+<translation id="4578196883126898996">Din mikrofon er slået fra. Slå mikrofonen til på din enhed.</translation>
 <translation id="4578906031062871102">Indstillingsmenuen er åben</translation>
 <translation id="4581047786858252841">Mikrofonen er slået til</translation>
 <translation id="4585337515783392668">Stop cast på en ukendt modtager</translation>
+<translation id="4586483766170476230">Stop kamera til selfies</translation>
 <translation id="4587299710837179226">Mikrofonen er slået fra</translation>
 <translation id="4596144739579517758">Mørkt tema er deaktiveret</translation>
 <translation id="4611292653554630842">Log ind</translation>
+<translation id="4614295562446151104">Udvid tuschværktøjer</translation>
 <translation id="4623167406982293031">Bekræft konto</translation>
 <translation id="4628757576491864469">Enheder</translation>
 <translation id="4642092649622328492">Tag et delvist screenshot</translation>
@@ -509,6 +518,8 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> har oprettet forbindelse til en ny telefon</translation>
 <translation id="5035389544768382859">Bekræft skærmkonfiguration</translation>
 <translation id="504465286040788597">Forrige afsnit</translation>
+<translation id="5071064518267176975">En app anmoder om at anvende mikrofonen</translation>
+<translation id="5075554201838155866">Start undertekster</translation>
 <translation id="5078796286268621944">Forkert pinkode</translation>
 <translation id="5083553833479578423">Få adgang til endnu flere Assistent-funktioner.</translation>
 <translation id="5136175204352732067">Du har tilsluttet et andet tastatur</translation>
@@ -679,6 +690,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6612802754306526077">Skærmoptagelsestilstand er valgt</translation>
 <translation id="6614169507485700968">Privatlivsskærmen er slået til</translation>
 <translation id="6627638273713273709">Søgetast+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> anmoder om at anvende mikrofonen</translation>
 <translation id="6637729079642709226">Skift tidspunkt</translation>
 <translation id="6641720045729354415">Slå Livetekstning til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ønsker, at du bekræfter din identitet</translation>
@@ -732,6 +744,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="7029814467594812963">Afslut session</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Skjul statusområde</translation>
+<translation id="7045595904618419789">Start forstørrelse</translation>
 <translation id="7055910611768509537">Styluspennen har ikke været i brug i over en uge</translation>
 <translation id="7066646422045619941">Din administrator har deaktiveret dette netværk.</translation>
 <translation id="7067196344162293536">Automatisk rotering</translation>
@@ -752,6 +765,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="7256634071279256947">Mikrofon på bagsiden</translation>
 <translation id="726276584504105859">Træk hertil for at bruge opdelt skærm</translation>
 <translation id="7262906531272962081">Opret påmindelse</translation>
+<translation id="7279434993080105272">Tuschfarven <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">Livetekstning er slået fra.</translation>
 <translation id="7303365578352795231">Besvares på en anden enhed</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="7466449121337984263">Placer fingeren på sensoren</translation>
 <translation id="7477793887173910789">Styr din musik, dine videoer og meget mere</translation>
 <translation id="7483025031359818980">Fuld skærm er valgt som kilde</translation>
+<translation id="7486227320194954040">Skjul tuschværktøjer</translation>
 <translation id="7497767806359279797">Vælg sprog og tastatur</translation>
 <translation id="7509246181739783082">Bekræft din identitet</translation>
 <translation id="7513622367902644023">Screenshottilstand er valgt</translation>
@@ -799,6 +814,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="7607002721634913082">Sat på pause</translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">Tusch</translation>
 <translation id="7633755430369750696">Vis indstillinger for Deling tæt på.</translation>
 <translation id="7641938616688887143">Optag</translation>
 <translation id="7642647758716480637">Åbn indstillingerne for <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="7724603315864178912">Klip</translation>
 <translation id="7745560842763881396">Vis apps på hylde</translation>
 <translation id="7749443890790263709">Det maksimale antal skriveborde er nået.</translation>
+<translation id="7749640678855296659">Din mikrofon er i øjeblikket slået fra</translation>
 <translation id="776344839111254542">Klik for at se opdateringsoplysninger</translation>
 <translation id="7780159184141939021">Roter skærm</translation>
 <translation id="7796353162336583443">Tryk på knappen for styluspen på hylden for at skrive en note, tage et screenshot eller bruge Google Assistent, laserpegepinden eller luppen.</translation>
@@ -861,6 +878,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="8113423164597455979">Til, alle apps</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekræft</translation>
+<translation id="8132487352815776550">Stop undertekster</translation>
 <translation id="8132793192354020517">Forbundet til <ph name="NAME" /></translation>
 <translation id="813913629614996137">Initialiserer...</translation>
 <translation id="8142441511840089262">Dobbeltklik</translation>

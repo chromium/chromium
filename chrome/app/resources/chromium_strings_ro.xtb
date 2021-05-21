@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">Pentru a descărca fișiere, Chromium necesită acces la stocare</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">Pentru a accesa informațiile din Chromium pe toate dispozitivele, conectează-te ca să poți activa sincronizarea.</translation>
+<translation id="2580426763510374355">Instalează sistemul de operare Chromium</translation>
 <translation id="2583187216237139145">Toate datele Chromium generate în timpul folosirii acestui profil (precum marcajele create, istoricul, parolele și alte setări) pot fi eliminate de administratorul profilului de serviciu. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Pentru a se aplica actualizarea, sistemul de operare Chromium trebuie să fie repornit.</translation>
 <translation id="2648074677641340862">S-a produs o eroare de sistem de operare în timpul instalării. Descărcați din nou Chromium.</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5479196819031988440">Sistemul de operare Chromium nu poate deschide pagina.</translation>
 <translation id="5480860683791598150">Chromium are nevoie de acces la locația ta ca să permită accesul la locație pentru acest site</translation>
+<translation id="5481338274774984070">Chromium recomandă să nu descarci sau deschizi acest fișier.</translation>
 <translation id="549669000822060376">Așteaptă până când Chromium instalează cele mai recente actualizări de sistem.</translation>
 <translation id="5496810170689441661">Chromium încearcă să modifice parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="5527463683072221100">Deschide fișierele PDF în Chromium</translation>

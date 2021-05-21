@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">Chromium vajab failide allalaadimiseks juurdepääsu salvestusruumile</translation>
 <translation id="2572494885440352020">Chromiumi abiline</translation>
 <translation id="2577788541081224677">Selleks et oma Chromiumi sisule kõigis oma seadmetes juurde pääseda, logige sisse, et saaksite sünkroonimise sisse lülitada.</translation>
+<translation id="2580426763510374355">Installi Chromium OS</translation>
 <translation id="2583187216237139145">Kõik Chromiumi andmed, mis luuakse selle profiili kasutamise ajal (nt järjehoidjad, ajalugu, paroolid ja muud seaded), saab tööprofiili administraator eemaldada. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS tuleb värskenduse rakendamiseks taaskäivitada.</translation>
 <translation id="2648074677641340862">Installimisel ilmnes operatsioonisüsteemi viga. Laadige Chromium uuesti alla.</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromiumi beetaversioon</translation>
 <translation id="5479196819031988440">Chromium OS ei saa seda lehte avada.</translation>
 <translation id="5480860683791598150">Chromium vajab juurdepääsu teie asukohale, et seda selle saidiga jagada</translation>
+<translation id="5481338274774984070">Chromium soovitab, et te ei laadiks seda faili alla ega avaks seda.</translation>
 <translation id="549669000822060376">Oodake, kuni Chromium installib uusimad süsteemivärskendused.</translation>
 <translation id="5496810170689441661">Chromium püüab paroole muuta. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="5527463683072221100">Ava PDF-id Chromiumis</translation>

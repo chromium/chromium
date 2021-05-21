@@ -166,6 +166,7 @@
 <translation id="5394833366792865639">Arată o filă Chrome</translation>
 <translation id="5430073640787465221">Fișierul dvs. de preferințe este fie deteriorat, fie nevalid. Google Chrome nu poate recupera setările dvs.</translation>
 <translation id="5434383153637353914">În această pagină poți să gestionezi conturile Google la care te-ai conectat. Conturile vor fi disponibile în browserul Chrome și în aplicații din Magazinul Play, precum și în servicii cum ar fi Gmail, Drive și YouTube. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Instalează sistemul de operare Chrome</translation>
 <translation id="556024056938947818">Google Chrome încearcă să afișeze parolele.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Dacă o setare nu apare în pagină, încearcă <ph name="LINK_BEGIN" />
@@ -249,6 +250,7 @@
 <translation id="7896673875602241923">Un alt utilizator s-a conectat anterior la Chrome pe acest computer ca <ph name="ACCOUNT_EMAIL_LAST" />. Creează un nou utilizator Chrome pentru a-ți păstra separat informațiile.</translation>
 <translation id="7905891027772979035">Chrome nu îți poate verifica extensiile. Încearcă din nou mai târziu.</translation>
 <translation id="7930071585467473040">Google Chrome încearcă să copieze parolele.</translation>
+<translation id="7951988079884443914">Chrome recomandă să nu descarci sau deschizi acest fișier.</translation>
 <translation id="7962410387636238736">Acest computer nu va mai primi actualizări pentru Google Chrome, deoarece Windows XP și Windows Vista nu mai sunt acceptate</translation>
 <translation id="79947657522496226">Sistemul de operare Chrome este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Reinstalați Chrome</translation>

@@ -24,7 +24,6 @@
 <translation id="1148499908455722006">Отваряне на диалогов прозорец с информация за <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Сдвоени устройства</translation>
 <translation id="1165712434476988950">Устройството трябва да се рестартира, за да се приложи актуализацията.</translation>
-<translation id="1170240434488307589">Микрофонът на устройството е заглушен.</translation>
 <translation id="1175572348579024023">Превъртане</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Премахване</translation>
@@ -41,6 +40,7 @@
 <translation id="1247372569136754018">Микрофон (вътрешен)</translation>
 <translation id="1252999807265626933">Зарежда се от <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">„What's the weather?“ („Какво е времето?“)</translation>
+<translation id="1266097335951928626">Стартиране на камерата за селфи</translation>
 <translation id="1267032506238418139">Промяна на клавишната комбинация</translation>
 <translation id="1269405891096105529">Периферното устройство не се поддържа в режим на гост</translation>
 <translation id="1270290102613614947">Екранната клавиатура е деактивирана</translation>
@@ -85,6 +85,7 @@
 <translation id="1555130319947370107">синьо</translation>
 <translation id="1570871743947603115">Превключване на Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">да осъществява достъп до цялата ви активност в тази сесия;</translation>
+<translation id="159255010947577753">Маркер</translation>
 <translation id="1611993646327628135">Вкл.</translation>
 <translation id="1615402009686901181">Заснемането на екрана, когато се вижда поверително съдържание, е деактивирано чрез администраторско правило</translation>
 <translation id="1632985212731562677">Функцията „Достъп с превключване“ може да бъде деактивирана в „Настройки &gt; Достъпност“.</translation>
@@ -136,8 +137,10 @@
 <translation id="2016340657076538683">Въведете съобщение</translation>
 <translation id="2018630726571919839">Tell me a joke</translation>
 <translation id="2021864487439853900">Кликнете за отключване</translation>
+<translation id="2047639699071423250">Добавяне на ключова идея</translation>
 <translation id="2049240716062114887">Името на работния кът бе променено на „<ph name="DESK_NAME" />“</translation>
 <translation id="2050339315714019657">Вертикално</translation>
+<translation id="2066708475850724665">Спиране на лупата</translation>
 <translation id="2067602449040652523">Яркост на клавиатурата</translation>
 <translation id="2078034614700056995">Прекарайте четири пръста надясно, за да превключите към следващия работен кът</translation>
 <translation id="2079504693865562705">Скриване на приложенията в лавицата</translation>
@@ -145,10 +148,12 @@
 <translation id="2083190527011054446">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Няма връзка с мрежа</translation>
 <translation id="2108303511227308752">Клавишната комбинация Alt + Backspace се промени. За да използвате клавиша за изтриване, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + Backspace.</translation>
+<translation id="211328683600082144">ВКЛЮЧВАНЕ НА МИКРОФОНА</translation>
 <translation id="2126242104232412123">Нов работен кът</translation>
 <translation id="2127372758936585790">Зарядно устройство с малка мощност</translation>
 <translation id="2132302418721800944">Записване на целия екран</translation>
 <translation id="2135456203358955318">Лупа в прикрепен режим</translation>
+<translation id="2146800439053023141">Превключване на местоположението на лентата</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Нов опит</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Прекарайте три пръста надолу, за да затворите общия преглед</translation>
@@ -328,6 +333,7 @@
 <translation id="3638400994746983214">Превключване на екрана за поверителност. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – управляван потребител</translation>
 <translation id="3665889125180354336">Записване от микрофона</translation>
+<translation id="3680908746918359504">Изчистване на всички маркери</translation>
 <translation id="36813544980941320">Wi-Fi мрежите ще бъдат споделяни между телефона и устройството ви <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">Показани са прозорци от текущия работен кът. Натиснете клавиша със стрелка за нагоре, за да се покажат прозорците от всички работни кътове</translation>
 <translation id="3702846122927433391">Population in Nigeria</translation>
@@ -373,12 +379,12 @@
 <translation id="4021716437419160885">Превъртане надолу</translation>
 <translation id="4028481283645788203">За по-висока сигурност се изисква парола</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Клавишната комбинация клавиш „<ph name="LAUNCHER_KEY_NAME" />“ + цифра се промени. За да използвате клавишите F, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + някой от най-горния ред.</translation>
 <translation id="4042660782729322247">Споделяте екрана си</translation>
 <translation id="4057003836560082631">Раздел на браузъра <ph name="INDEX" /> от <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Изкл. за 1 прил.}other{Изкл. за # прил.}}</translation>
 <translation id="4066027111132117168">Включено, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">умерен сигнал</translation>
+<translation id="4095366824370681039">Писалка</translation>
 <translation id="4112140312785995938">Придвижване назад</translation>
 <translation id="4114315158543974537">Включване на функцията „Център за телефоните“</translation>
 <translation id="412298498316631026">прозорец</translation>
@@ -447,12 +453,15 @@
 <translation id="4570957409596482333">Бутон за функцията Прочитане на глас</translation>
 <translation id="4577274620589681794">Времето изтече   <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Показване на визуализации</translation>
+<translation id="4578196883126898996">Микрофонът е изключен. Включете го от съответния бутон на устройството си.</translation>
 <translation id="4578906031062871102">Менюто за настройки е отворено</translation>
 <translation id="4581047786858252841">Микрофонът е включен</translation>
 <translation id="4585337515783392668">Спиране на предаването към неизвестен приемник</translation>
+<translation id="4586483766170476230">Спиране на камерата за селфи</translation>
 <translation id="4587299710837179226">Микрофонът е изключен</translation>
 <translation id="4596144739579517758">Тъмната тема е изключена</translation>
 <translation id="4611292653554630842">Вход</translation>
+<translation id="4614295562446151104">Разгъване на инструментите за маркиране</translation>
 <translation id="4623167406982293031">Потвърждаване на профила</translation>
 <translation id="4628757576491864469">Устройства</translation>
 <translation id="4642092649622328492">Създаване на частична екранна снимка</translation>
@@ -509,6 +518,8 @@
 <translation id="5035236842988137213">Устройството <ph name="DEVICE_NAME" /> е свързано с нов телефон</translation>
 <translation id="5035389544768382859">Потвърждаване на конфигурацията на дисплея</translation>
 <translation id="504465286040788597">Предишен абзац</translation>
+<translation id="5071064518267176975">Приложение иска да използва микрофона</translation>
+<translation id="5075554201838155866">Стартиране на надписите</translation>
 <translation id="5078796286268621944">Неправилен ПИН</translation>
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
@@ -679,6 +690,7 @@
 <translation id="6612802754306526077">Избран е режимът за записване на екрана</translation>
 <translation id="6614169507485700968">Екранът за поверителност е включен</translation>
 <translation id="6627638273713273709">клавиш „търсене“ + Shift + K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> иска да използва микрофона</translation>
 <translation id="6637729079642709226">Промяна на часа</translation>
 <translation id="6641720045729354415">Превключване на „Надписи на живо“. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> иска да потвърди, че това сте вие</translation>
@@ -732,6 +744,7 @@
 <translation id="7029814467594812963">Изход от сесията</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Асистент</translation>
 <translation id="7042322267639375032">Свиване на лентата на състоянието</translation>
+<translation id="7045595904618419789">Стартиране на лупата</translation>
 <translation id="7055910611768509537">Писалката не е използвана от повече от една седмица</translation>
 <translation id="7066646422045619941">Тази мрежа е деактивирана от администратора ви.</translation>
 <translation id="7067196344162293536">Автоматично завъртане</translation>
@@ -752,6 +765,7 @@
 <translation id="7256634071279256947">Заден микрофон</translation>
 <translation id="726276584504105859">Преместете тук с плъзгане, за да използвате режим за разделен екран</translation>
 <translation id="7262906531272962081">Създаване на напомняне</translation>
+<translation id="7279434993080105272">Цвят на маркера: <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">Функцията „Надписи на живо“ е изключена.</translation>
 <translation id="7303365578352795231">Отговаря се на друго устройство.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@
 <translation id="7466449121337984263">Моля, докоснете сензора</translation>
 <translation id="7477793887173910789">Управление на музиката, видеоклиповете и др.</translation>
 <translation id="7483025031359818980">Целият екран е зададен като избрана област</translation>
+<translation id="7486227320194954040">Свиване на инструментите за маркиране</translation>
 <translation id="7497767806359279797">Избор на език и клавиатура</translation>
 <translation id="7509246181739783082">Потвърждаване на самоличността ви</translation>
 <translation id="7513622367902644023">Избран е режимът за екранна снимка</translation>
@@ -799,6 +814,7 @@
 <translation id="7607002721634913082">На пауза</translation>
 <translation id="7618774594543487847">Неутрален</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">Маркер</translation>
 <translation id="7633755430369750696">Показване на настройките на „Споделяне наблизо“.</translation>
 <translation id="7641938616688887143">Записване</translation>
 <translation id="7642647758716480637">Отваряне на настройките за <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@
 <translation id="7724603315864178912">Изрязване</translation>
 <translation id="7745560842763881396">Показване на приложенията в лавицата</translation>
 <translation id="7749443890790263709">Достигнат е максималният брой работни кътове.</translation>
+<translation id="7749640678855296659">Понастоящем микрофонът ви е изключен</translation>
 <translation id="776344839111254542">Кликнете, за да видите подробности за актуализацията</translation>
 <translation id="7780159184141939021">Завъртане на екрана</translation>
 <translation id="7796353162336583443">Докоснете бутона с икона на писалка в лавицата, за да създадете бележка, да направите екранна снимка или да използвате Google Асистент, лазерната показалка или лупата.</translation>
@@ -861,6 +878,7 @@
 <translation id="8113423164597455979">Вкл. за всички</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
+<translation id="8132487352815776550">Спиране на надписите</translation>
 <translation id="8132793192354020517">Установена е връзка с/ъс <ph name="NAME" /></translation>
 <translation id="813913629614996137">Подготвя се за работа...</translation>
 <translation id="8142441511840089262">Двукратно кликване</translation>

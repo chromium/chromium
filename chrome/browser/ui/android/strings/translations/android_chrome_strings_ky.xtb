@@ -186,6 +186,7 @@
 <translation id="22320125457191592">Сизге</translation>
 <translation id="2234876718134438132">Google кызматтарын шайкештирүү</translation>
 <translation id="2239812875700136898">Сунуштардын параметрлери баскычынан окуяларыңызды башкарыңыз</translation>
+<translation id="2251971221270904886">Күйгүзүлгөн жана абалы жигердүү болгон учурда, Chrome акыркы 7 күндө көрүлгөн вебсайттарыңызды колдонуп, сиз таандык болгон топту же "когортаны" аныктайт. Жарнамачылар топ үчүн жарнамаларды тандай алат. Көрүлгөн вебсайттарыңыз түзмөгүңүздө купуя сакталат. Сыноо <ph name="BEGIN_LINK" />айрым аймактарда<ph name="END_LINK" /> гана жигердүү.</translation>
 <translation id="2259659629660284697">Сырсөздөрдү экспорттоо…</translation>
 <translation id="2276696007612801991">Сырсөздөрүңүздү текшерүү үчүн Google аккаунтуңузга кириңиз</translation>
 <translation id="2278052315791335171">Бул сырсөздү жок кылуу менен <ph name="SITE" /> аккаунтуңуз жок кылынбайт</translation>
@@ -275,6 +276,7 @@
 <translation id="2781151931089541271">1 сек. калды</translation>
 <translation id="2801022321632964776">Chrome'дун акыркы версиясын жүктөп алып, аны эне тилиңизде колдонуңуз</translation>
 <translation id="2805756323405976993">Колдонмолор</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google аккаунтуңузда<ph name="END_LINK" /> сакталган сырсөздөрдү көрүп, башкарыңыз</translation>
 <translation id="2818669890320396765">Кыстармаларыңызды бардык түзмөктөрүңүздө колдонуу үчүн аккаунтуңузга кирип, шайкештирүүнү күйгүзүңүз</translation>
 <translation id="2827278682606527653">Түрмөктөгү меню экрандын жарымына чейин ачылды</translation>
@@ -293,6 +295,7 @@
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> сунуштары көрсөтүлүүдө</translation>
 <translation id="2904414404539560095">Жалпы түзмөктөрдүн тизмеси көрсөтүлгөн өтмөк толук экран режиминде ачылды.</translation>
 <translation id="2905036901251765993">Жакын жердеги адамдар менен бөлүшүү үчүн алар бул QR кодун скандашы керек</translation>
+<translation id="2908243544703713905">Окула элек окуялар бар</translation>
 <translation id="2909615210195135082">Google билдирмелеринин платформасы</translation>
 <translation id="2912296070571964914">Кызыктуу темаларды башкарыңыз</translation>
 <translation id="2923908459366352541">Аты-жөнү жараксыз</translation>
@@ -317,6 +320,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> кыстарма}other{<ph name="BOOKMARKS_COUNT_MANY" /> кыстарма}}</translation>
 <translation id="3062802207422175757">Chrome'догу сизди кызыктырган макалалар</translation>
 <translation id="3070005020161560471">Автоматтык түрдө которуу</translation>
+<translation id="3083531420240576529">Тобуңузду каалаган убакта баштапкы абалга келтирсеңиз болот. Тобуңузду аныктоого 7 күн кетет.</translation>
 <translation id="3091010850649238832">Алмашуу буфериндеги мазмундарды көрсөтүү</translation>
 <translation id="3098745985164956033">Сүрөттөмөлөрдү жакшыртуу үчүн айрым сүрөттөр Google'га жөнөтүлөт</translation>
 <translation id="3114507951000454849">Бүгүнкү жаңылыктарды окуңуз <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privacy Sandbox дагы эле иштелип жатат, андыктан ай
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Параметрлер экрандын жогору жагында берилген</translation>
 <translation id="4062305924942672200">Юридикалык маалымат</translation>
+<translation id="4082818367361753283">Топтун идентификатору</translation>
 <translation id="4084682180776658562">Кыстарма</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> веб сайтынан – <ph name="BEGIN_DEEMPHASIZED" />Google аркылуу жеткирилген<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Колдонмонун дайындары жок кылынсынбы?</translation>
@@ -533,7 +538,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4583164079174244168">{MINUTES,plural, =1{# мүнөт мурун}other{# мүнөт мурун}}</translation>
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4594952190837476234">Бул оффлайн режиминдеги баракча <ph name="CREATION_TIME" /> сакталган жана онлайн версиясынан айырмаланышы мүмкүн.</translation>
-<translation id="4615382002648696011">Жазылгансыз, окулбаган окуялар даяр</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> колдонмосун ачуу</translation>
 <translation id="4619564267100705184">Өзүңүз экениңизди ырастаңыз</translation>
 <translation id="4634124774493850572">Сырсөздү колдонуу</translation>
@@ -889,6 +893,11 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6699370405921460408">Google серверлери сиз кирген барактарды оптималдаштырат.</translation>
 <translation id="670498945988402717">Кечээ текшерилди</translation>
 <translation id="6710213216561001401">Мурунку</translation>
+<translation id="671333169801287922">Иштетилсе, сайттар мазмунун жана кызматтарын көрсөтүү үчүн купуялык корголгон ыкмаларды колдонушат. Буга сайттарга кайчылаш көз салуу кирет. Жаңы сыноолорду да кийинчерээк кошуп турууга болот.
+
+<ph name="BEGIN_LIST_ITEM1" />Жарнамачылар жана жарыялоочулар FLoC техникасын колдонушу мүмкүн.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Жарнамачылар жана жарыялоочулар жарнамалардын натыйжалуулугун сайттардагы аракеттериңизге көз салбастан изилдей алышат.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117"><ph name="FQDN" /> таймериңиздин убакыты бүттү. Ал эртең кайра башталат.</translation>
 <translation id="6738516213925468394">Дайын-даректериңиз <ph name="BEGIN_LINK" />шайкештирүүчү өткөрүүчү сүйлөм<ph name="END_LINK" /> менен <ph name="TIME" /> шифрлеген. Шайкештирип баштоо үчүн, аны киргизиңиз.</translation>
 <translation id="6738867403308150051">Жүктөлүп алынууда…</translation>
@@ -1079,6 +1088,9 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7971136598759319605">Акыркы аракеттер: 1 күн мурун</translation>
 <translation id="7975379999046275268">Баракты алдын ала көрүү <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Тезирээк серептөө жана издөө үчүн барактарды алдын ала жүктөп алыңыз</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> сизди көз салуучу механизмдерден коргой турган жаңы технологияларды иштеп чыгарган веб үчүн улануучу демилге.
+
+Privacy Sandbox'тун сынамык версиялары дагы эле иштелип жатат, андыктан айрым аймактарда гана жеткиликтүү. Азырынча сайттар үчүнчү тараптын cookie файлдары сыяктуу учурда жеткиликтүү болгон веб технологияларын колдонуп жатып эле, Privacy Sandbox'ту байкап көрө алышат.</translation>
 <translation id="7986497153528221272">Сырсөздөрдү көрүү үчүн, түзмөгүңүзгө экран кулпусун коюп алыңыз</translation>
 <translation id="7998918019931843664">Жабылган кыстырманы кайра ачуу</translation>
 <translation id="8004582292198964060">Серепчи</translation>
@@ -1188,7 +1200,9 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8662811608048051533">Көпчүлүк сайттардагы каттоо эсептериңизден чыгарыласыз.</translation>
 <translation id="8664979001105139458">Мындай аталыштагы файл бар</translation>
 <translation id="8676789164135894283">Кирүүнү ырастоо</translation>
+<translation id="867767487203716855">Кийинки жаңыртуу</translation>
 <translation id="8683039184091909753">сүрөт</translation>
+<translation id="8683081248374354009">Топту баштапкы абалга келтирүү</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Сигналдын күчү: # тилке}other{Сигналдын күчү: # тилке}}</translation>
 <translation id="869891660844655955">Мөөнөтү аяктай турган күн</translation>
 <translation id="8699120352855309748">Төмөнкү тилдерди которуу сунушталбасын</translation>

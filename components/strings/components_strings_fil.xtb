@@ -285,6 +285,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1919345977826869612">Mga Ad</translation>
 <translation id="1919367280705858090">Humingi ng tulong sa partikular na mensahe ng error</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Wala}=1{1 site}one{# site}other{# na site}}</translation>
+<translation id="1924727005275031552">Bago</translation>
 <translation id="1945968466830820669">Maaari kang mawalan ng access sa account ng iyong organisasyon o manakawan ng pagkakakilanlan. Inirerekomenda ng Chromium na palitan ang iyong password ngayon.</translation>
 <translation id="1947454675006758438">Staple top right</translation>
 <translation id="1958218078413065209">Ang iyong pinakamataas na score ay <ph name="SCORE" />.</translation>
@@ -395,6 +396,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2357481397660644965">Pinapamahalaan ng <ph name="DEVICE_MANAGER" /> ang iyong device at pinapamahalaan ng <ph name="ACCOUNT_MANAGER" /> ang account mo.</translation>
 <translation id="2359629602545592467">Marami</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
+<translation id="2359961752320758691">Inilapat ang numero ng iyong virtual card.</translation>
 <translation id="2367567093518048410">Antas</translation>
 <translation id="2372464001869762664">Pagkatapos mong magkumpirma, ibabahagi sa site na ito ang mga detalye ng card mula sa iyong Google Account. Hanapin ang CVC sa mga detalye ng iyong Plex Account.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -405,6 +407,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="239429038616798445">Hindi available ang paraan ng pagpapadala na ito. Sumubok ng ibang paraan.</translation>
 <translation id="2396249848217231973">&amp;I-undo ang pagtanggal</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">Luma</translation>
 <translation id="2413528052993050574">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; maaaring binawi ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="2414886740292270097">Madilim</translation>
 <translation id="2438874542388153331">Quad punch right</translation>
@@ -909,12 +912,14 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4275830172053184480">I-restart ang iyong device</translation>
 <translation id="4277028893293644418">I-reset ang password</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Na-save na ang card na ito sa iyong Google Account}one{Na-save na ang mga card na ito sa iyong Google Account}other{Na-save na ang mga card na ito sa iyong Google Account}}</translation>
+<translation id="4287885627794386150">Kwalipikado para sa trial pero hindi aktibo</translation>
 <translation id="4297502707443874121">Thumbnail para sa page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Palawakin</translation>
 <translation id="4300675098767811073">Multiple punch right</translation>
 <translation id="4302514097724775343">I-tap ang dino para maglaro</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">Hindi ma-access ang iyong file</translation>
+<translation id="4306529830550717874">I-save ang address?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">I-block (default)</translation>
 <translation id="4314815835985389558">Pamahalaan ang pag-sync</translation>
@@ -1402,6 +1407,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="610911394827799129">Maaaring may iba pang anyo ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Tingnan ang text at mga larawang kinopya sa clipboard</translation>
 <translation id="6120179357481664955">Natatandaan mo ang iyong UPI ID?</translation>
+<translation id="6123290840358279103">Tingnan ang virtual card</translation>
 <translation id="6124432979022149706">Mga Chrome Enterprise Connector</translation>
 <translation id="6146055958333702838">Tingnan ang anumang mga kable at i-reboot ang anumang mga router, modem o iba
     pang mga network device na maaaring ginagamit mo.</translation>
@@ -1681,6 +1687,7 @@ Mga karagdagang detalye:
 <translation id="7300012071106347854">Cobalt Blue</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">Mataas</translation>
+<translation id="7305756307268530424">Simulan nang mas mabagal</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Tulong sa Koneksyon</translation>
 <translation id="7323804146520582233">Itago ang seksyong "<ph name="SECTION" />"</translation>
@@ -1706,6 +1713,7 @@ Mga karagdagang detalye:
 <translation id="7378594059915113390">Mga Kontrol ng Media</translation>
 <translation id="7378627244592794276">Hindi</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Hindi naaangkop</translation>
 <translation id="7390545607259442187">Kumpirmahin ang Card</translation>
 <translation id="7399802613464275309">Pagsusuri sa Kaligtasan</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1757,6 +1765,7 @@ Mga karagdagang detalye:
 <translation id="7548892272833184391">Ayusin ang mga error sa koneksyon</translation>
 <translation id="7549584377607005141">Kinakailangan ng webpage na ito ng data na inilagay mo dati upang maipakita nang maayos. Maipapadala mong muli ang data na ito, ngunit kapag ginawa mo iyon, mauulit ang anumang pagkilos na isinagawa dati ng pahinang ito.</translation>
 <translation id="7550637293666041147">Username ng iyong device at username sa Chrome</translation>
+<translation id="755279583747225797">Aktibo ang trial</translation>
 <translation id="7552846755917812628">Subukan ang mga sumusunod na tip:</translation>
 <translation id="7554475479213504905">I-reload at ipakita pa rin</translation>
 <translation id="7554791636758816595">Bagong Tab</translation>
@@ -1851,6 +1860,7 @@ Mga karagdagang detalye:
 <translation id="7894280532028510793">Kung tama ang pagbabaybay, <ph name="BEGIN_LINK" />subukang patakbuhin ang Mga Diagnostic ng Network<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7931318309563332511">Hindi Alam</translation>
+<translation id="793209273132572360">I-update ang address?</translation>
 <translation id="7932579305932748336">Coat</translation>
 <translation id="79338296614623784">Maglagay ng wastong numero ng telepono</translation>
 <translation id="7934052535022478634">Kumpleto na ang pagbabayad</translation>
@@ -1927,7 +1937,6 @@ Mga karagdagang detalye:
 <translation id="8202097416529803614">Buod ng order</translation>
 <translation id="8202370299023114387">Hindi pagkakasundo</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Kapag nag-reset ka ng ID, magiging invalid ang iyong kasalukuyang ID at may ibibigay na bago sa loob ng wala pang 1 araw}=1{Kapag nag-reset ka ng ID, magiging invalid ang iyong kasalukuyang ID at may ibibigay na bago sa loob ng 1 araw}one{Kapag nag-reset ka ng ID, magiging invalid ang iyong kasalukuyang ID at may ibibigay na bago sa loob ng {NUM_DAYS} araw}other{Kapag nag-reset ka ng ID, magiging invalid ang iyong kasalukuyang ID at may ibibigay na bago sa loob ng {NUM_DAYS} na araw}}</translation>
 <translation id="8211406090763984747">Secure ang koneksyon</translation>
 <translation id="8213464188712611711">Mga Memory</translation>
 <translation id="8218327578424803826">Itinakdang Lokasyon:</translation>

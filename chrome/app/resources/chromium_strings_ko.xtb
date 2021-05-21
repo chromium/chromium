@@ -40,6 +40,7 @@
 <translation id="2560420686485554789">파일을 다운로드하려면 Chromium에 저장소 액세스 권한이 있어야 합니다</translation>
 <translation id="2572494885440352020">Chromium 도우미</translation>
 <translation id="2577788541081224677">모든 기기에서 Chromium 계정 정보에 액세스하려면 로그인하여 동기화하세요.</translation>
+<translation id="2580426763510374355">Chromium OS 설치</translation>
 <translation id="2583187216237139145">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chromium 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">업데이트를 적용하려면 Chromium OS를 다시 시작해야 합니다.</translation>
 <translation id="2648074677641340862">설치 중 운영체제 오류가 발생했습니다. Chromium을 다시 다운로드하세요.</translation>
@@ -138,6 +139,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium 베타</translation>
 <translation id="5479196819031988440">Chromium OS에서 이 페이지를 열 수 없음</translation>
 <translation id="5480860683791598150">이 사이트와 위치를 공유하려면 Chromium에 내 위치 액세스 권한이 있어야 합니다</translation>
+<translation id="5481338274774984070">Chromium은 이 파일을 다운로드하거나 열지 않을 것을 권장합니다.</translation>
 <translation id="549669000822060376">Chromium에서 최신 시스템 업데이트를 설치하는 동안 잠시 기다려 주세요.</translation>
 <translation id="5496810170689441661">Chromium에서 비밀번호를 수정하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="5527463683072221100">Chromium에서 PDF 열기</translation>

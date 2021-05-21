@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">Chromium treba pristup pohrani radi preuzimanja datoteka</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">Da biste pristupili svojim sadržajima u Chromiumu na svim svojim uređajima, prijavite se kako biste mogli uključiti sinkronizaciju.</translation>
+<translation id="2580426763510374355">Instalirajte OS Chromium</translation>
 <translation id="2583187216237139145">Sve podatke iz Chromiuma koji se generiraju tijekom upotrebe ovog profila (primjerice izradom oznaka, povijesti, zaporki i drugih postavki) može ukloniti administrator poslovnog profila. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Potrebno je ponovo pokrenuti Chromium OS kako bi se ažuriranje primijenilo.</translation>
 <translation id="2648074677641340862">Došlo je do pogreške operativnog sustava tijekom instalacije. Ponovo preuzmite Chromium.</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5479196819031988440">OS Chromium ne može otvoriti ovu stranicu.</translation>
 <translation id="5480860683791598150">Chromium treba dopuštenje za pristup vašoj lokaciji da bi je podijelio s ovom web-lokacijom</translation>
+<translation id="5481338274774984070">Chromium preporučuje da ne preuzimate i ne otvarate tu datoteku.</translation>
 <translation id="549669000822060376">Pričekajte da Chromium instalira najnovija ažuriranja sustava.</translation>
 <translation id="5496810170689441661">Chromium pokušava urediti zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="5527463683072221100">Otvori PDF-ove u Chromiumu</translation>

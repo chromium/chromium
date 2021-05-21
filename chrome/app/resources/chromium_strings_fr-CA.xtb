@@ -40,6 +40,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2560420686485554789">Chromium a besoin d'accéder au stockage pour télécharger des fichiers</translation>
 <translation id="2572494885440352020">Aide de Chromium</translation>
 <translation id="2577788541081224677">Pour accéder à vos données Chromium sur tous vos appareils, connectez-vous afin de pouvoir activer la synchronisation.</translation>
+<translation id="2580426763510374355">Installer Chromium OS</translation>
 <translation id="2583187216237139145">L'administrateur du profil professionnel peut retirer toutes les données Chromium générées durant l'utilisation de ce profil (comme la création de favoris, l'historique, les mots de passe et d'autres paramètres). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Redémarrez Chromium OS pour appliquer la mise à jour.</translation>
 <translation id="2648074677641340862">Une erreur de système d'exploitation s'est produite pendant l'installation. Veuillez télécharger de nouveau Chromium.</translation>
@@ -138,6 +139,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium bêta</translation>
 <translation id="5479196819031988440">Chromium OS ne peut pas ouvrir cette page.</translation>
 <translation id="5480860683791598150">Chromium a besoin d'accéder à votre position afin de la partager avec ce site</translation>
+<translation id="5481338274774984070">Chromium vous recommande de ne pas télécharger ni ouvrir ce fichier.</translation>
 <translation id="549669000822060376">Veuillez patienter pendant que Chromium installe les dernières mises à jour système.</translation>
 <translation id="5496810170689441661">Chromium essaie de modifier des mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="5527463683072221100">Ouvrir les PDF dans Chromium</translation>

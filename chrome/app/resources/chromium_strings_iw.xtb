@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">‏Chromium זקוק לגישה לאחסון כדי להוריד קבצים</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">‏לקבלת גישה לפריטים שלך ב-Chromium בכל המכשירים שלך, יש להיכנס לחשבון כדי שניתן יהיה להפעיל את הסנכרון.</translation>
+<translation id="2580426763510374355">‏להתקנת Chromium OS</translation>
 <translation id="2583187216237139145">‏המנהל של פרופיל העבודה יכול להסיר נתוני Chromium שמופקים בזמן השימוש בפרופיל (כמו יצירת סימניות, היסטוריה, סיסמאות והגדרות נוספות). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">‏כדי להחיל עדכון זה, יש להפעיל מחדש את Chromium OS.</translation>
 <translation id="2648074677641340862">‏במהלך ההתקנה ארעה שגיאה של מערכת ההפעלה. יש להוריד שוב את Chromium.</translation>
@@ -134,6 +135,7 @@
 <translation id="5438241569118040789">‏<ph name="PAGE_TITLE" /> - Chromium בגרסת בטא</translation>
 <translation id="5479196819031988440">‏מערכת ההפעלה של Chromium אינה יכול לפתוח את הדף הזה.</translation>
 <translation id="5480860683791598150">‏Chromium זקוק לגישה למיקום שלך כדי לשתף אותו עם האתר הזה</translation>
+<translation id="5481338274774984070">‏ההמלצה של Chromium היא שלא להוריד או לפתוח את הקובץ הזה.</translation>
 <translation id="549669000822060376">‏יש להמתין בזמן ש-Chromium מתקין את עדכוני המערכת האחרונים.</translation>
 <translation id="5496810170689441661">‏Chromium מנסה לערוך את הסיסמאות. כדי לאפשר זאת, יש להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="5527463683072221100">‏פתיחה של קובצי PDF ב-Chromium</translation>

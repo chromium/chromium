@@ -3,6 +3,7 @@
 <translationbundle lang="be">
 <translation id="1006017844123154345">Адкрыць у інтэрнэце</translation>
 <translation id="1044891598689252897">Сайты будуць працаваць нармальна</translation>
+<translation id="1100504063505580045">Бягучы значок</translation>
 <translation id="1124090076051167250">Будуць выдалены файлы cookie і даныя (<ph name="DATASIZE" />), захаваныя сайтамі або размешчанымі на галоўным экране праграмамі.</translation>
 <translation id="1124772482545689468">Карыстальнік</translation>
 <translation id="1178581264944972037">Прыпыніць</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">Мікрафон</translation>
 <translation id="3277252321222022663">Дазволіць сайтам доступ да датчыкаў (рэкамендуецца)</translation>
 <translation id="3295602654194328831">Схаваць інфармацыю</translation>
+<translation id="3317660236277031814">Усталяваная вамі вэб-праграма змяніла значок.</translation>
 <translation id="3328801116991980348">Звесткі пра сайт</translation>
 <translation id="3333961966071413176">Усе кантакты</translation>
 <translation id="3386292677130313581">Пытацца, перш чым дазволіць сайтам атрымліваць інфармацыю пра ваша месцазнаходжанне (рэкамендуецца)</translation>
+<translation id="345699454248713913">Усталяваная вамі вэб-праграма змяніла назву.</translation>
 <translation id="3538390592868664640">Забараніць сайтам ствараць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
 <translation id="3551268116566418498">Выйсці з рэжыму інкогніта?</translation>
 <translation id="3586500876634962664">Выкарыстанне камеры і мікрафона</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">Адкрыць налады месцазнаходжання</translation>
 <translation id="4226663524361240545">Апавяшчэнні могуць уключаць вібрацыю прылады</translation>
 <translation id="4259722352634471385">Пераход па наступным адрасе заблакіраваны: <ph name="URL" /></translation>
+<translation id="4277239631747669329">Усталяваная вамі вэб-праграма змяніла назву і значок.</translation>
 <translation id="4278390842282768270">Дазволена</translation>
 <translation id="429312253194641664">Сайт прайграе мультымедыя</translation>
 <translation id="42981349822642051">Разгарнуць</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">Дазволіць сайтам запускаць JavaScript (рэкамендавана)</translation>
 <translation id="534295439873310000">Прылады NFC</translation>
 <translation id="5354152178998424783">Будуць выдалены файлы cookie і даныя (<ph name="DATASIZE" />), захаваныя сайтамі.</translation>
+<translation id="536508626067510330">Абнавіць значок на галоўным экране?</translation>
 <translation id="5391532827096253100">Ваша падключэнне да гэтага сайта небяспечнае. Звесткі пра сайт</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(і яшчэ 1)}one{(і яшчэ #)}few{(і яшчэ #)}many{(і яшчэ #)}other{(і яшчэ #)}}</translation>
 <translation id="5403592356182871684">Імёны</translation>
 <translation id="5489227211564503167">Прайшло часу: <ph name="ELAPSED_TIME" /> з <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блакіраваць рэкламу на сайтах, якія паказваюць назойлівую рэкламу або рэкламу, якая ўводзіць у зман</translation>
+<translation id="549957179819296104">Новы значок</translation>
 <translation id="5502860503640766021">Дазволена: <ph name="PERMISSION_1" />. Заблакіравана: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Сайтам забаронена запытваць дазвол на паказ апавяшчэнняў</translation>
 <translation id="5516455585884385570">Адкрыць налады апавяшчэнняў</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">Дазволы</translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="5876056640971328065">Прыпыніць відэа</translation>
+<translation id="5904826301761575486">Абнавіць імя і значок на галоўным экране?</translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5922853908706496913">Ваш экран абагульваецца</translation>
 <translation id="5939518447894949180">Скінуць</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">Блакіраваць староннія файлы cookie</translation>
 <translation id="6206551242102657620">Падключэнне бяспечнае. Звесткі пра сайт</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />: параметры</translation>
+<translation id="6260852843601447737">Закрыць і паскардзіцца на парушэнне</translation>
 <translation id="6262279340360821358">Заблакіравана: <ph name="PERMISSION_1" /> і <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Сайтам дазволена запытваць дазвол на паказ апавяшчэнняў</translation>
 <translation id="6295158916970320988">Усе сайты</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">Поўнаэкранны рэжым</translation>
 <translation id="857943718398505171">Дазволена (рэкамендуецца)</translation>
 <translation id="8609465669617005112">Перамясціць уверх</translation>
+<translation id="861748745608658996">Абнавіць імя на галоўным экране?</translation>
 <translation id="8676374126336081632">Ачысціць поле ўводу</translation>
 <translation id="868929229000858085">Пошук у кантактах</translation>
 <translation id="8702612070107455751">Усе пазасеткавыя даныя будуць выдалены.</translation>

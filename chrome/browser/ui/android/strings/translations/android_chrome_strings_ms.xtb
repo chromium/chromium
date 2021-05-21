@@ -186,6 +186,7 @@ Ketik mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, sentuh &
 <translation id="22320125457191592">Untuk anda</translation>
 <translation id="2234876718134438132">Segerak dan perkhidmatan Google</translation>
 <translation id="2239812875700136898">Kawal cerita anda daripada butang Pilihan untuk Discover</translation>
+<translation id="2251971221270904886">Apabila dihidupkan dan status teknologi ini aktif, Chrome akan menggunakan sejarah penyemakan imbas anda sepanjang 7 hari untuk menentukan kumpulan atau “kohort” anda. Pengiklan boleh memilih iklan untuk kumpulan itu. Sejarah penyemakan imbas anda dipastikan tertutup pada peranti anda. Percubaan ini hanya aktif di <ph name="BEGIN_LINK" />sesetengah rantau<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Eksport kata laluan…</translation>
 <translation id="2276696007612801991">Log masuk ke akaun Google anda untuk menyemak kata laluan anda</translation>
 <translation id="2278052315791335171">Pemadaman kata laluan ini tidak akan memadamkan akaun anda pada <ph name="SITE" /></translation>
@@ -275,6 +276,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="2781151931089541271">1 saat lagi</translation>
 <translation id="2801022321632964776">Kemas kini untuk mendapatkan bahasa anda dalam versi terkini Chrome</translation>
 <translation id="2805756323405976993">Apl</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Lihat dan urus kata laluan yang disimpan dalam <ph name="BEGIN_LINK" />Akaun Google<ph name="END_LINK" /> anda</translation>
 <translation id="2818669890320396765">Log masuk dan hidupkan penyegerakan untuk mendapatkan penanda halaman pada semua peranti anda</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -293,6 +295,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="2901411048554510387">Memaparkan cadangan untuk <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Senarai peranti untuk berkongsi tab dibuka pada ketinggian penuh.</translation>
 <translation id="2905036901251765993">Benarkan orang berdekatan mengimbas kod QR ini untuk berkongsi dengan mereka</translation>
+<translation id="2908243544703713905">Cerita belum dibaca sudah sedia</translation>
 <translation id="2909615210195135082">Platform Pemberitahuan Google</translation>
 <translation id="2912296070571964914">Urus topik yang anda minati</translation>
 <translation id="2923908459366352541">Nama tidak sah</translation>
@@ -317,6 +320,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> penanda halaman}other{<ph name="BOOKMARKS_COUNT_MANY" /> penanda halaman}}</translation>
 <translation id="3062802207422175757">Artikel tentang minat anda di Chrome</translation>
 <translation id="3070005020161560471">Terjemah secara automatik</translation>
+<translation id="3083531420240576529">Anda boleh menetapkan semula kumpulan anda pada bila-bila masa. Teknologi ini memerlukan 7 hari untuk menentukan kumpulan anda.</translation>
 <translation id="3091010850649238832">Paparkan kandungan papan keratan</translation>
 <translation id="3098745985164956033">Sesetengah imej dihantar kepada Google untuk meningkatkan perihalan untuk anda</translation>
 <translation id="3114507951000454849">Baca berita hari ini <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Bua
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Pilihan tersedia berhampiran bahagian atas skrin</translation>
 <translation id="4062305924942672200">Maklumat undang-undang</translation>
+<translation id="4082818367361753283">ID Kumpulan</translation>
 <translation id="4084682180776658562">Penanda halaman</translation>
 <translation id="4084712963632273211">Daripada <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />disampaikan oleh Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Padam data apl?</translation>
@@ -533,7 +538,6 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minit yang lalu}other{# minit yang lalu}}</translation>
 <translation id="4587589328781138893">Tapak</translation>
 <translation id="4594952190837476234">Halaman luar talian ini dari <ph name="CREATION_TIME" /> dan mungkin berbeza daripada versi dalam talian.</translation>
-<translation id="4615382002648696011">Mengikuti, cerita belum dibaca sudah sedia</translation>
 <translation id="4616150815774728855">Buka <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Sahkan orang itu ialah anda</translation>
 <translation id="4634124774493850572">Gunakan kata laluan</translation>
@@ -889,6 +893,11 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6699370405921460408">Pelayan Google akan mengoptimumkan halaman yang anda lawati.</translation>
 <translation id="670498945988402717">Disemak semalam</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
+<translation id="671333169801287922">Apabila dihidupkan, laman boleh menggunakan teknik yang menjaga privasi yang ditunjukkan di sini untuk menyediakan kandungan dan perkhidmatan laman tersebut. Teknik ini termasuklah teknik alternatif bagi penjejakan rentas laman. Lebih banyak percubaan mungkin ditambahkan dari semasa ke semasa.
+
+<ph name="BEGIN_LIST_ITEM1" />Pengiklan dan penerbit boleh menggunakan teknik FLoC.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Pengiklan dan penerbit boleh mengkaji keberkesanan iklan dengan cara yang tidak menjejak anda merentas berbilang laman.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Pemasa <ph name="FQDN" /> anda sudah tamat. Pemasa akan bermula lagi esok.</translation>
 <translation id="6738516213925468394">Data anda disulitkan dengan <ph name="BEGIN_LINK" />ungkapan laluan segerak<ph name="END_LINK" /> anda pada <ph name="TIME" />. Masukkannya untuk memulakan penyegerakan.</translation>
 <translation id="6738867403308150051">Memuat turun…</translation>
@@ -1079,6 +1088,9 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="7971136598759319605">Aktif 1 hari yang lalu</translation>
 <translation id="7975379999046275268">Pratonton halaman <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pramuat halaman untuk penyemakan imbas dan pencarian yang lebih cepat</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Kotak Pasir Privasi<ph name="END_LINK" /> ialah inisiatif berterusan untuk membangunkan teknologi baharu yang akan melindungi anda daripada mekanisme penjejakan sambil memelihara web terbuka.
+
+Percubaan Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Buat masa ini, laman boleh mencuba Kotak Pasir Privasi sambil terus menggunakan teknologi web semasa seperti kuki pihak ketiga.</translation>
 <translation id="7986497153528221272">Untuk melihat kata laluan, pertama sekali, tetapkan kunci skrin pada peranti anda</translation>
 <translation id="7998918019931843664">Buka semula tab yang ditutup</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
@@ -1188,7 +1200,9 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="8662811608048051533">Mengelog anda keluar daripada kebanyakan tapak.</translation>
 <translation id="8664979001105139458">Nama fail sudah wujud</translation>
 <translation id="8676789164135894283">Pengesahan log masuk</translation>
+<translation id="867767487203716855">Kemas kini seterusnya</translation>
 <translation id="8683039184091909753">imej</translation>
+<translation id="8683081248374354009">Tetapkan semula kumpulan</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Tahap Kekuatan Isyarat: # bar}other{Tahap Kekuatan Isyarat: # bar}}</translation>
 <translation id="869891660844655955">Tarikh tamat tempoh</translation>
 <translation id="8699120352855309748">Jangan tawarkan untuk menterjemahkan bahasa ini</translation>

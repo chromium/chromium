@@ -170,6 +170,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5394833366792865639">Chrome cilnes kopīgošana</translation>
 <translation id="5430073640787465221">Jūsu preferenču fails ir bojāts vai nederīgs. Google Chrome nespēj atkopt jūsu iestatījumus.</translation>
 <translation id="5434383153637353914">Šajā lapā varat pārvaldīt Google kontus, kuros esat pierakstījies. Šie konti būs pieejami pārlūkā Chrome un Play veikala lietotnēs, kā arī tādos pakalpojumos kā Gmail, Disks un YouTube. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
+<translation id="5486618155264784386">Instalēt Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome mēģina rādīt paroles.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS ienākošā datplūsma)</translation>
 <translation id="5657226924540934362">Ja šajā lapā iestatījums nav pieejams, skatiet to sadaļā <ph name="LINK_BEGIN" />
@@ -253,6 +254,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7896673875602241923">Kāds iepriekš pierakstījās pārlūkā Chrome šajā datorā, izmantojot e-pasta adresi <ph name="ACCOUNT_EMAIL_LAST" />. Lūdzu, izveidojiet jaunu Chrome lietotāju, lai nošķirtu savu informāciju.</translation>
 <translation id="7905891027772979035">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paplašinājumus. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="7930071585467473040">Google Chrome mēģina nokopēt paroles.</translation>
+<translation id="7951988079884443914">Chrome norāda, ka nav ieteicams lejupielādēt vai atvērt šo failu.</translation>
 <translation id="7962410387636238736">Šajā datorā vairs netiks saņemti Google Chrome atjauninājumi, jo operētājsistēmas Windows XP un Windows Vista vairs netiek atbalstītas.</translation>
 <translation id="79947657522496226">Chrome OS, kā arī <ph name="BEGIN_LINK_LINUX_OSS" />Linux izstrādes vides<ph name="END_LINK_LINUX_OSS" /> darbību nodrošina <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="8008534537613507642">Pārinstalēt Chrome</translation>

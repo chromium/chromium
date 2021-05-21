@@ -24,7 +24,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1148499908455722006">Buka dialog info untuk <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Perangkat dihubungkan</translation>
 <translation id="1165712434476988950">Perlu memulai ulang perangkat untuk menerapkan update.</translation>
-<translation id="1170240434488307589">Tombol mikrofon perangkat dibisukan.</translation>
 <translation id="1175572348579024023">Scroll</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Hapus</translation>
@@ -41,6 +40,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1247372569136754018">Mikrofon (internal)</translation>
 <translation id="1252999807265626933">Mengisi daya dari <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Gimana kondisi cuaca?</translation>
+<translation id="1266097335951928626">Mulai kamera selfie</translation>
 <translation id="1267032506238418139">Perubahan pintasan</translation>
 <translation id="1269405891096105529">Periferal tidak didukung dalam mode Tamu</translation>
 <translation id="1270290102613614947">Keyboard di layar dinonaktifkan</translation>
@@ -85,6 +85,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1570871743947603115">Alihkan Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Akses semua aktivitas Anda di sesi ini</translation>
+<translation id="159255010947577753">Penanda</translation>
 <translation id="1611993646327628135">Aktif</translation>
 <translation id="1615402009686901181">Kebijakan administrator akan menonaktifkan tangkapan layar saat konten rahasia terlihat</translation>
 <translation id="1632985212731562677">Tombol Akses dapat dinonaktifkan di Setelan &gt; Aksesibilitas.</translation>
@@ -136,8 +137,10 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2016340657076538683">Ketik pesan</translation>
 <translation id="2018630726571919839">Ceritakan lelucon</translation>
 <translation id="2021864487439853900">Klik untuk membuka kunci</translation>
+<translation id="2047639699071423250">Tambahkan ide kunci</translation>
 <translation id="2049240716062114887">Nama desktop diubah menjadi <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Potret</translation>
+<translation id="2066708475850724665">Hentikan kaca pembesar</translation>
 <translation id="2067602449040652523">Kecerahan keyboard</translation>
 <translation id="2078034614700056995">Geser ke kanan dengan empat jari untuk beralih ke desktop berikutnya</translation>
 <translation id="2079504693865562705">Sembunyikan aplikasi di rak</translation>
@@ -145,10 +148,12 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2083190527011054446">Selamat malam <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Tidak terhubung ke jaringan</translation>
 <translation id="2108303511227308752">Pintasan keyboard Alt + Backspace telah diubah. Untuk menggunakan tombol Delete, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
+<translation id="211328683600082144">AKTIFKAN MIKROFON</translation>
 <translation id="2126242104232412123">Desktop baru</translation>
 <translation id="2127372758936585790">Pengisi daya rendah</translation>
 <translation id="2132302418721800944">Rekam dalam layar penuh</translation>
 <translation id="2135456203358955318">Kaca pembesar tersemat</translation>
+<translation id="2146800439053023141">Tombol lokasi panel</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Coba lagi</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Geser ke bawah dengan tiga jari untuk keluar dari Ringkasan</translation>
@@ -328,6 +333,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3638400994746983214">Alihkan ke layar privasi. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733">Pengguna yang Dikelola <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Rekam mikrofon</translation>
+<translation id="3680908746918359504">Hapus semua penanda</translation>
 <translation id="36813544980941320">Ponsel dan <ph name="DEVICE_NAME" /> akan menggunakan jaringan Wi-Fi yang sama</translation>
 <translation id="3702809606464356667">Menampilkan jendela dari desktop saat ini, tekan tombol Panah atas untuk menampilkan jendela dari semua desktop</translation>
 <translation id="3702846122927433391">Populasi di Nigeria</translation>
@@ -373,12 +379,12 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4021716437419160885">Scroll ke bawah</translation>
 <translation id="4028481283645788203">Perlu sandi untuk keamanan tambahan</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />.<ph name="MINUTES" />.<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Pintasan keyboard <ph name="LAUNCHER_KEY_NAME" /> + Angka telah diubah. Untuk menggunakan tombol F, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + tombol di baris atas.</translation>
 <translation id="4042660782729322247">Anda membagikan layar Anda</translation>
 <translation id="4057003836560082631">Tab browser <ph name="INDEX" /> dari <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{1 apl nonaktif}other{# apl nonaktif}}</translation>
 <translation id="4066027111132117168">Aktif, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Sinyal sedang</translation>
+<translation id="4095366824370681039">Pena tinta</translation>
 <translation id="4112140312785995938">Cari Mundur</translation>
 <translation id="4114315158543974537">Aktifkan Phone Hub</translation>
 <translation id="412298498316631026">jendela</translation>
@@ -447,12 +453,15 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4570957409596482333">Tombol Klik untuk Diucapkan</translation>
 <translation id="4577274620589681794">Waktu habis · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Tampilkan pratinjau</translation>
+<translation id="4578196883126898996">Mikrofon Anda nonaktif. Aktifkan tombol mikrofon perangkat.</translation>
 <translation id="4578906031062871102">Menu setelan dibuka</translation>
 <translation id="4581047786858252841">Mikrofon aktif</translation>
 <translation id="4585337515783392668">Hentikan transmisi pada penerima yang tidak dikenal</translation>
+<translation id="4586483766170476230">Hentikan kamera selfie</translation>
 <translation id="4587299710837179226">Mikrofon nonaktif</translation>
 <translation id="4596144739579517758">Tema gelap nonaktif</translation>
 <translation id="4611292653554630842">Login</translation>
+<translation id="4614295562446151104">Luaskan alat penanda</translation>
 <translation id="4623167406982293031">Verifikasi akun</translation>
 <translation id="4628757576491864469">Perangkat</translation>
 <translation id="4642092649622328492">Mengambil screenshot sebagian</translation>
@@ -509,6 +518,8 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> terhubung ke ponsel baru</translation>
 <translation id="5035389544768382859">Konfirmasi Konfigurasi Layar</translation>
 <translation id="504465286040788597">Paragraf sebelumnya</translation>
+<translation id="5071064518267176975">Sebuah aplikasi ingin menggunakan mikrofon</translation>
+<translation id="5075554201838155866">Mulai teks tertutup</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5083553833479578423">Dapatkan lebih banyak fitur Asisten.</translation>
 <translation id="5136175204352732067">Keyboard yang berbeda terhubung</translation>
@@ -679,6 +690,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6612802754306526077">Mode perekaman layar dipilih</translation>
 <translation id="6614169507485700968">Layar privasi aktif</translation>
 <translation id="6627638273713273709">Tombol Penelusuran+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> ingin menggunakan mikrofon</translation>
 <translation id="6637729079642709226">Ubah waktu</translation>
 <translation id="6641720045729354415">Tombol Teks Otomatis. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ingin mengonfirmasi bahwa ini benar-benar Anda</translation>
@@ -732,6 +744,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7029814467594812963">Hentikan sesi</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asisten Google</translation>
 <translation id="7042322267639375032">Ciutkan area status</translation>
+<translation id="7045595904618419789">Mulai kaca pembesar</translation>
 <translation id="7055910611768509537">Stilus tidak digunakan lebih dari seminggu</translation>
 <translation id="7066646422045619941">Jaringan ini dinonaktifkan oleh administrator Anda.</translation>
 <translation id="7067196344162293536">Putar otomatis</translation>
@@ -752,6 +765,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7256634071279256947">Mikrofon belakang</translation>
 <translation id="726276584504105859">Tarik ke sini untuk menggunakan layar terpisah</translation>
 <translation id="7262906531272962081">Buat pengingat</translation>
+<translation id="7279434993080105272">Warna penanda <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">Teks Otomatis nonaktif.</translation>
 <translation id="7303365578352795231">Menjawab di perangkat lain.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7466449121337984263">Sentuh sensor</translation>
 <translation id="7477793887173910789">Kontrol musik, video, dan banyak lagi</translation>
 <translation id="7483025031359818980">Area pemilihan disetel ke layar penuh</translation>
+<translation id="7486227320194954040">Ciutkan alat penanda</translation>
 <translation id="7497767806359279797">Pilih bahasa dan keyboard</translation>
 <translation id="7509246181739783082">Verifikasi identitas Anda</translation>
 <translation id="7513622367902644023">Mode screenshot dipilih</translation>
@@ -799,6 +814,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7607002721634913082">Dijeda</translation>
 <translation id="7618774594543487847">Netral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7631906263969450674">Spidol</translation>
 <translation id="7633755430369750696">Tampilkan setelan Berbagi Langsung.</translation>
 <translation id="7641938616688887143">Rekam</translation>
 <translation id="7642647758716480637">Buka setelan untuk <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7724603315864178912">Potong</translation>
 <translation id="7745560842763881396">Tampilkan aplikasi di rak</translation>
 <translation id="7749443890790263709">Jumlah halaman kerja maksimum tercapai.</translation>
+<translation id="7749640678855296659">Mikrofon Anda saat ini dinonaktifkan</translation>
 <translation id="776344839111254542">Klik untuk melihat detail update</translation>
 <translation id="7780159184141939021">Memutar Layar</translation>
 <translation id="7796353162336583443">Ketuk tombol stilus di rak untuk mencatat, mengambil screenshot, menggunakan asisten, penunjuk laser, atau kaca pembesar.</translation>
@@ -861,6 +878,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8113423164597455979">Aktif, semua</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
+<translation id="8132487352815776550">Hentikan teks tertutup</translation>
 <translation id="8132793192354020517">Tersambung ke <ph name="NAME" /></translation>
 <translation id="813913629614996137">Memulai...</translation>
 <translation id="8142441511840089262">Klik dua kali</translation>

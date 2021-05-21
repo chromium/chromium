@@ -1914,7 +1914,6 @@ Weitere Details:
 <translation id="8202097416529803614">Zusammenfassung der Bestellung</translation>
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (Umschlag)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Wenn Sie die ID zurücksetzen, wird Ihre aktuelle ID ungültig. Eine neue ID wird in weniger als 1 Tag ausgestellt.}=1{Wenn Sie die ID zurücksetzen, wird Ihre aktuelle ID ungültig. Eine neue ID wird in 1 Tag ausgestellt.}other{Wenn Sie die ID zurücksetzen, wird Ihre aktuelle ID ungültig. Eine neue ID wird in {NUM_DAYS} Tagen ausgestellt.}}</translation>
 <translation id="8211406090763984747">Verbindung ist sicher</translation>
 <translation id="8213464188712611711">Erinnerungen</translation>
 <translation id="8218327578424803826">Zugewiesener Standort: </translation>

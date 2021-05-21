@@ -886,7 +886,6 @@
 <translation id="1926339101652878330">Бұл параметрлер кәсіпорын саясаты бойынша бақыланады. Қосымша ақпарат алу үшін әкімшіңізге хабарласыңыз.</translation>
 <translation id="1927632033341042996"><ph name="NEW_FINGER_NUMBER" />-саусақ</translation>
 <translation id="192817607445937251">Экранды құлыптайтын PIN коды</translation>
-<translation id="1928202201223835302">Ескі PIN кодын енгізіңіз</translation>
 <translation id="1928696683969751773">Жаңартулар</translation>
 <translation id="1929186283613845153">Бұл файл тексерілуде.</translation>
 <translation id="1929343511231420085">Кез келген тізбекті порт</translation>
@@ -910,7 +909,6 @@
 <translation id="1954813140452229842">Ортақ файлды орнату кезінде қате шықты. Тіркелу деректерін тексеріп, қайталап көріңіз.</translation>
 <translation id="1956050014111002555">Файлда ешбірі импортталмаған көптеген сертификаттар қамтылған:</translation>
 <translation id="1956390763342388273">Ол "<ph name="FOLDER_PATH" />" қалтасындағы барлық файлдарды жүктеп салады. Сайт сенімді болған жағдайда ғана жүктеп салыңыз.</translation>
-<translation id="1958750704984086982">FLoC жүйесі қызығушылыққа негізделген жарнаманы таңдау үшін құпиялылықты сақтау механизмін ұсынады.</translation>
 <translation id="1962233722219655970">Бұл бет компьютеріңізде жұмыс істемейтін Native Client қолданбасын пайдаланады.</translation>
 <translation id="1963227389609234879">Барлығын жою</translation>
 <translation id="1963976881984600709">Стандартты қорғау</translation>
@@ -1649,7 +1647,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> өніміне кіру</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Емлемен грамматиканы тексеру</translation>
-<translation id="2751131328353405138">Linux контейнерінің SSHFS жүйесі жалғануда</translation>
 <translation id="2753677631968972007">Сайт рұқсаттарын қолмен басқару.</translation>
 <translation id="2755349111255270002">Осы <ph name="DEVICE_TYPE" /> құрылғысын қалпына келтіру</translation>
 <translation id="2755367719610958252">Арнайы мүмкіндіктерді басқару</translation>
@@ -1783,7 +1780,6 @@
 <translation id="2891922230654533301"><ph name="APP_NAME" /> кіру үшін құрылғыңызды пайдаланасыз ба?</translation>
 <translation id="2893168226686371498">Әдепкі браузер</translation>
 <translation id="2894757982205307093">Топқа жаңа қойынды енгізу</translation>
-<translation id="289644616180464099">SIM картасы құлыпталған</translation>
 <translation id="289695669188700754">Кілт индентификаторы: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Сіз барлық инкогнито терезесін жапқан кезде, бұл арнаулы параметр өз күшін жояды.</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> қойындыны ашқыңыз келе ме?</translation>
@@ -2250,7 +2246,6 @@
 <translation id="3427092606871434483">Рұқсат ету (әдепкі)</translation>
 <translation id="3428419049384081277">Кірдіңіз!</translation>
 <translation id="3428747202529429621">Есептік жазбаға кірген болсаңыз, сізді Chrome браузерінде қорғайды және басқа Google қолданбаларында қауіпсіздігіңізді жақсартуға пайдаланылуы мүмкін.</translation>
-<translation id="3428800329481094896">Linux контейнерінің SSH кілттері алынуда</translation>
 <translation id="3429160811076349561">Сынақ нұсқасының функциялары өшірулі</translation>
 <translation id="3429271624041785769">Веб-мазмұн тілдері</translation>
 <translation id="3429275422858276529">Бетті кейінірек табу үшін оған бетбелгі қою</translation>
@@ -3070,7 +3065,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KБ (<ph name="NUM_KILOBYTES_LIVE" /> KБ белсенді)</translation>
 <translation id="4310139701823742692">Файлдың форматы дұрыс емес. PPD файлын тексеріп, әрекетті қайталап көріңіз.</translation>
 <translation id="431076611119798497">&amp;Мәліметтер</translation>
-<translation id="4312124410630786333">Идентификаторды бастапқы күйге қайтару</translation>
 <translation id="4312866146174492540">Бөгеу (әдепкі)</translation>
 <translation id="4314815835985389558">Синхрондауды басқару</translation>
 <translation id="4316850752623536204">Әзірлеуші веб-сайты</translation>
@@ -3230,7 +3224,6 @@
 <translation id="4492698018379445570">Сатып алу себетіңізде не бар екенін көріңіз және бәрі дайын болғанда төлем жасаңыз.</translation>
 <translation id="4493468155686877504">Ұсынылған (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Бұл бетте көрсетпеу</translation>
-<translation id="4496796119038756382">FLoC идентификаторы</translation>
 <translation id="4497145443434063861">Әртүрлі Wi-Fi желілеріндегі ДК және Chromecast (мысалы, 2,4 ГГц және 5 ГГц)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> бұзылды</translation>
 <translation id="4500587658229086076">қорғалмаған мазмұн</translation>
@@ -3747,7 +3740,6 @@
 <translation id="5072900412896857127">Google Play Қызмет көрсету шарттары жүктелмеді. Желі байланысын тексеріп, әрекетті қайталап көріңіз.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> және тағы #}}</translation>
 <translation id="5074318175948309511">Жаңа параметрлер күшіне енуден бұрын бұл бетті қайта жүктеу қажет болуы мүмкін.</translation>
-<translation id="5075131525758602494">SIM PIN кодын енгізіңіз</translation>
 <translation id="5075910247684008552">Қорғалмаған мазмұн қорғалған сайттарда әдепкісінше бөгеледі.</translation>
 <translation id="5078638979202084724">Барлық қойындыларды бетбелгілерге қосу</translation>
 <translation id="5078796286268621944">PIN коды дұрыс емес</translation>
@@ -7119,7 +7111,6 @@
 <translation id="8803953437405899238">Жаңа қойындыны бір рет басып ашыңыз</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Қойындыны басқа терезеден ашу}other{Қойындыларды басқа терезеден ашу}}</translation>
 <translation id="8805140816472474147">Синхрондауды бастау үшін синхрондау параметрлерін растаңыз.</translation>
-<translation id="8805985421503170600">Когорта туралы шоғырландырылған деректер</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> байқамай жабылған қойындыларды қайта ашады.</translation>
 <translation id="8807632654848257479">Тұрақты</translation>
 <translation id="8808478386290700967">Web Store</translation>

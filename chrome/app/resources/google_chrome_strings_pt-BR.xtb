@@ -167,6 +167,7 @@
 <translation id="5394833366792865639">Compartilhar uma guia do Chrome</translation>
 <translation id="5430073640787465221">Seu arquivo de preferências está corrompido ou é inválido. O Google Chrome não foi capaz de recuperar suas configurações.</translation>
 <translation id="5434383153637353914">Esta página permite gerenciar as Contas do Google conectadas. Elas ficarão disponíveis no navegador Chrome e nos apps da Play Store, além de em serviços como Gmail, Drive e YouTube. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Instalar o Chrome OS</translation>
 <translation id="556024056938947818">O Google Chrome está tentando mostrar senhas.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Se uma configuração não for exibida nesta página, verifique as <ph name="LINK_BEGIN" />configurações do Chrome OS<ph name="LINK_END" /></translation>
@@ -249,6 +250,7 @@
 <translation id="7896673875602241923">Anteriormente, alguém fez login no Chrome neste computador como <ph name="ACCOUNT_EMAIL_LAST" />. Crie um novo usuário do Chrome para manter suas informações separadas.</translation>
 <translation id="7905891027772979035">O Chrome não pode verificar suas extensões. Tente mais tarde.</translation>
 <translation id="7930071585467473040">O Google Chrome está tentando copiar senhas.</translation>
+<translation id="7951988079884443914">O Chrome recomenda que você não faça o download nem abra esse arquivo.</translation>
 <translation id="7962410387636238736">Este computador não receberá mais atualizações do Google Chrome porque o Windows XP e o Windows Vista não são mais compatíveis</translation>
 <translation id="79947657522496226">A existência do Chrome OS tornou-se possível graças a outros <ph name="BEGIN_LINK_CROS_OSS" />softwares de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente para desenvolvedores do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Reinstalar o Google Chrome</translation>

@@ -24,7 +24,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1148499908455722006">Åpne dialogboksen for informasjon om <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Tilkoblede enheter</translation>
 <translation id="1165712434476988950">Enheten må startes på nytt for at oppdateringen skal tas i bruk.</translation>
-<translation id="1170240434488307589">Enhetsmikrofonknappen er slått av.</translation>
 <translation id="1175572348579024023">Rull</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="1181037720776840403">Fjern</translation>
@@ -41,6 +40,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1247372569136754018">Mikrofon (intern)</translation>
 <translation id="1252999807265626933">Lader fra <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvordan er været?</translation>
+<translation id="1266097335951928626">Start selfie-kamera</translation>
 <translation id="1267032506238418139">Endring av hurtigtast</translation>
 <translation id="1269405891096105529">Den eksterne enheten støttes ikke i Gjestemodus</translation>
 <translation id="1270290102613614947">Skjermtastaturet er deaktivert</translation>
@@ -85,6 +85,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1570871743947603115">Slå av/på Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">se all aktiviteten din i denne økten</translation>
+<translation id="159255010947577753">Merkepenn</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1615402009686901181">På grunn av en administratorregel er skjermdumper deaktivert når konfidensielt innhold er synlig</translation>
 <translation id="1632985212731562677">Brytertilgang kan slås av i Innstillinger &gt; Tilgjengelighet.</translation>
@@ -136,8 +137,10 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2016340657076538683">Skriv inn en melding</translation>
 <translation id="2018630726571919839">Fortell meg en vits</translation>
 <translation id="2021864487439853900">Klikk for å låse opp</translation>
+<translation id="2047639699071423250">Legg til nøkkelidé</translation>
 <translation id="2049240716062114887">Skrivebordsnavnet ble endret til <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
+<translation id="2066708475850724665">Stopp forstørrelsesglass</translation>
 <translation id="2067602449040652523">Lysstyrke på tastaturet</translation>
 <translation id="2078034614700056995">Sveip til høyre med fire fingre for å bytte til neste skrivebord</translation>
 <translation id="2079504693865562705">Skjul apper på hyllen</translation>
@@ -145,10 +148,12 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2083190527011054446">God natt, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Ikke koblet til nettverket</translation>
 <translation id="2108303511227308752">Hurtigtasten Alt + tilbaketast er endret. For å bruke Delete-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + tilbaketasten.</translation>
+<translation id="211328683600082144">SLÅ PÅ MIKROFONEN</translation>
 <translation id="2126242104232412123">Nytt skrivebord</translation>
 <translation id="2127372758936585790">Lading med lav effekt</translation>
 <translation id="2132302418721800944">Ta opp hele skjermen</translation>
 <translation id="2135456203358955318">Dokket lupe</translation>
+<translation id="2146800439053023141">Plassering for av/på-felt</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv på nytt</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Sveip ned med tre fingre for å lukke Oversikt</translation>
@@ -328,6 +333,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3638400994746983214">Slå av/på personvernskjermen. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – administrert bruker</translation>
 <translation id="3665889125180354336">Ta opp med mikrofonen</translation>
+<translation id="3680908746918359504">Fjern alle merkepenner</translation>
 <translation id="36813544980941320">Wi-Fi-nettverk blir delt mellom telefonen din og <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">Viser vinduer fra det nåværende skrivebordet. Trykk på oppoverpiltasten for å vise vinduer fra alle skrivebord</translation>
 <translation id="3702846122927433391">Antall innbyggere i Nigeria</translation>
@@ -373,12 +379,12 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4021716437419160885">Rull ned</translation>
 <translation id="4028481283645788203">Passord kreves for mer sikkerhet</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Hurtigtasten <ph name="LAUNCHER_KEY_NAME" /> + tall er endret. For å bruke F-tastene, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + en tast på øverste rad.</translation>
 <translation id="4042660782729322247">Du deler skjermen din</translation>
 <translation id="4057003836560082631">Nettleserfane <ph name="INDEX" /> av <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Av for én app}other{Av for # apper}}</translation>
 <translation id="4066027111132117168">På, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Middels sterkt signal</translation>
+<translation id="4095366824370681039">Blekkpenn</translation>
 <translation id="4112140312785995938">Spol bakover</translation>
 <translation id="4114315158543974537">Slå på Phone Hub</translation>
 <translation id="412298498316631026">vindu</translation>
@@ -447,12 +453,15 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4570957409596482333">Tekstopplesingsknapp</translation>
 <translation id="4577274620589681794">Tiden er ute · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Se forhåndsvisninger</translation>
+<translation id="4578196883126898996">Mikrofonen din er av. Slå på mikrofonknappen på enheten.</translation>
 <translation id="4578906031062871102">Innstillinger-menyen er åpnet</translation>
 <translation id="4581047786858252841">Mikrofonen er på</translation>
 <translation id="4585337515783392668">Stopp casting på en ukjent mottaker</translation>
+<translation id="4586483766170476230">Stopp selfie-kamera</translation>
 <translation id="4587299710837179226">Mikrofonen er av</translation>
 <translation id="4596144739579517758">Mørkt tema er av</translation>
 <translation id="4611292653554630842">Logg på</translation>
+<translation id="4614295562446151104">Vis merkepennverktøy</translation>
 <translation id="4623167406982293031">Bekreft kontoen</translation>
 <translation id="4628757576491864469">Enheter</translation>
 <translation id="4642092649622328492">Ta en delvis skjermdump</translation>
@@ -509,6 +518,8 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> koblet til en ny telefon</translation>
 <translation id="5035389544768382859">Bekreft skjermkonfigurasjon</translation>
 <translation id="504465286040788597">Forrige avsnitt</translation>
+<translation id="5071064518267176975">En app vil bruke mikrofonen</translation>
+<translation id="5075554201838155866">Start teksting</translation>
 <translation id="5078796286268621944">Feil personlig kode</translation>
 <translation id="5083553833479578423">Lås opp flere Assistent-funksjoner.</translation>
 <translation id="5136175204352732067">Et annet tastatur er koblet til</translation>
@@ -679,6 +690,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6612802754306526077">Skjermopptaksmodus er valgt</translation>
 <translation id="6614169507485700968">Personvernskjermen er på</translation>
 <translation id="6627638273713273709">Søk + Shift + K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> vil bruke mikrofonen</translation>
 <translation id="6637729079642709226">Endre tiden</translation>
 <translation id="6641720045729354415">Slå av/på Direkteteksting. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vil bekrefte at det er deg</translation>
@@ -732,6 +744,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7029814467594812963">Avslutt økten</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" /> – Google Assistent</translation>
 <translation id="7042322267639375032">Skjul statusområdet</translation>
+<translation id="7045595904618419789">Start forstørrelsesglass</translation>
 <translation id="7055910611768509537">Pekepennen har ikke vært brukt på over en uke</translation>
 <translation id="7066646422045619941">Administratoren din har slått av dette nettverket.</translation>
 <translation id="7067196344162293536">Automatisk retning</translation>
@@ -752,6 +765,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7256634071279256947">Mikrofon bak</translation>
 <translation id="726276584504105859">Dra hit for å bruke delt skjerm</translation>
 <translation id="7262906531272962081">Opprett en påminnelse</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> merkepennfarge</translation>
 <translation id="7302889331339392448">Direkteteksting er av.</translation>
 <translation id="7303365578352795231">Svarer på en annen enhet</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7466449121337984263">Trykk på sensoren</translation>
 <translation id="7477793887173910789">Styr musikk, video og mer</translation>
 <translation id="7483025031359818980">Hele skjermen er valgt som kilde</translation>
+<translation id="7486227320194954040">Skjul merkepennverktøy</translation>
 <translation id="7497767806359279797">Velg språk og tastatur</translation>
 <translation id="7509246181739783082">Bekreft identiteten din</translation>
 <translation id="7513622367902644023">Skjermdumpmodus er valgt</translation>
@@ -799,6 +814,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7607002721634913082">Satt på pause</translation>
 <translation id="7618774594543487847">Nøytral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">Merkepenn</translation>
 <translation id="7633755430369750696">Vis innstillinger for nærdeling.</translation>
 <translation id="7641938616688887143">Ta opp</translation>
 <translation id="7642647758716480637">Åpne innstillinger for <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />)</translation>
@@ -814,6 +830,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7745560842763881396">Vis apper på hyllen</translation>
 <translation id="7749443890790263709">Maksimalt antall skrivebord er nådd.</translation>
+<translation id="7749640678855296659">Mikrofonen din er avslått for øyeblikket</translation>
 <translation id="776344839111254542">Klikk for å se oppdateringsdetaljene</translation>
 <translation id="7780159184141939021">Rotér skjermen</translation>
 <translation id="7796353162336583443">Trykk på pekepenn-knappen på hyllen for å gjøre et notat, ta en skjermdump eller bruke Google-assistenten, laserpekeren eller forstørrelsesglasset.</translation>
@@ -861,6 +878,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8113423164597455979">På, alle apper</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekreft</translation>
+<translation id="8132487352815776550">Stopp teksting</translation>
 <translation id="8132793192354020517">Koblet til <ph name="NAME" /></translation>
 <translation id="813913629614996137">Initialiserer …</translation>
 <translation id="8142441511840089262">Dobbeltklikk</translation>

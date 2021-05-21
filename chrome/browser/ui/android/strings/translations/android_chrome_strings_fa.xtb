@@ -186,6 +186,7 @@
 <translation id="22320125457191592">برای شما</translation>
 <translation id="2234876718134438132">‏همگام‌سازی و سرویس‌های Google</translation>
 <translation id="2239812875700136898">کنترل داستان‌ها از دکمه «گزینه‌های یافته‌ها»</translation>
+<translation id="2251971221270904886">‏وقتی روشن باشد و وضعیت آن فعال باشد، Chrome از سابقه مرور ۷ روز گذشته شما برای تشخیص گروه یا «هم‌گروهی» که عضو آن هستید استفاده می‌کند. تبلیغ‌کنندگان می‌توانند آگهی برای گروه انتخاب کنند. سابقه مرور شما به‌صورت خصوصی در دستگاهتان نگهداری می‌شود. این دوره آزمایشی فقط در <ph name="BEGIN_LINK" />برخی مناطق<ph name="END_LINK" /> فعال است.</translation>
 <translation id="2259659629660284697">درحال صادر کردن گذرواژه‌ها…</translation>
 <translation id="2276696007612801991">‏برای بررسی گذرواژه‌هایتان، به سیستم حساب Google وارد شوید</translation>
 <translation id="2278052315791335171">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="SITE" /> نخواهد شد</translation>
@@ -275,6 +276,7 @@
 <translation id="2781151931089541271">۱ ثانیه باقی‌مانده است</translation>
 <translation id="2801022321632964776">‏با به‌روزرسانی به جدیدترین نسخه Chrome، زبانتان را دریافت کنید</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">‏در <ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> خود گذرواژه‌های ذخیره‌شده را مشاهده و مدیریت کنید</translation>
 <translation id="2818669890320396765">برای اینکه نشانک‌هایتان را در همه دستگاه‌ها داشته باشید، به سیستم وارد شوید و همگام‌سازی را روشن کنید</translation>
 <translation id="2827278682606527653">منوی کارت فید تا نیمه باز شد</translation>
@@ -293,6 +295,7 @@
 <translation id="2901411048554510387">درحال نمایش پیشنهادهای مربوط به <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">فهرست دستگاه‌هایی که می‌توان با آن‌ها برگه هم‌رسانی کرد کاملاً باز است.</translation>
 <translation id="2905036901251765993">برای هم‌رسانی کردن با افراد اطراف، اجازه دهید این رمزینه پاسخ‌سریع را اسکن کنند</translation>
+<translation id="2908243544703713905">داستان‌های خوانده‌نشده آماده است</translation>
 <translation id="2909615210195135082">‏پلتفورم اعلان‌های Google</translation>
 <translation id="2912296070571964914">مدیریت موضوع‌هایی که به آن‌ها علاقه دارید</translation>
 <translation id="2923908459366352541">نام نامعتبر است</translation>
@@ -317,6 +320,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> نشانک}one{<ph name="BOOKMARKS_COUNT_MANY" /> نشانک}other{<ph name="BOOKMARKS_COUNT_MANY" /> نشانک}}</translation>
 <translation id="3062802207422175757">‏مقاله‌های مربوط با علایقتان در Chrome</translation>
 <translation id="3070005020161560471">ترجمه خودکار</translation>
+<translation id="3083531420240576529">هرزمان خواستید می‌توانید گروه را بازنشانی کنید. شناسایی گروه شما ۷ روز طول می‌کشد.</translation>
 <translation id="3091010850649238832">نمایش محتوای بریده‌دان</translation>
 <translation id="3098745985164956033">‏برخی از تصاویر به Google ارسال می‌شوند تا شرح آن‌ها برایتان بهبود یابد</translation>
 <translation id="3114507951000454849">اخبار <ph name="NEWS_ICON" /> امروز را بخوانید</translation>
@@ -458,6 +462,7 @@
 <translation id="4056223980640387499">سپیا</translation>
 <translation id="4060598801229743805">گزینه‌هایی در نزدیکی بالای صفحه دردسترس هستند</translation>
 <translation id="4062305924942672200">اطلاعات حقوقی</translation>
+<translation id="4082818367361753283">شناسه گروه</translation>
 <translation id="4084682180776658562">نشانک</translation>
 <translation id="4084712963632273211">‏از<ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />توسط Google ارائه می‌شود<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">داده‌های برنامه پاک شود؟</translation>
@@ -533,7 +538,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# دقیقه قبل}one{# دقیقه قبل}other{# دقیقه قبل}}</translation>
 <translation id="4587589328781138893">سایت‌ها</translation>
 <translation id="4594952190837476234">این صفحه آفلاین مربوط به تاریخ <ph name="CREATION_TIME" /> است و ممکن است با نسخه آنلاین متفاوت باشد.</translation>
-<translation id="4615382002648696011">دنبال می‌کنید، داستان‌های خوانده‌نشده آماده است</translation>
 <translation id="4616150815774728855">باز کردن <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">تأیید هویت</translation>
 <translation id="4634124774493850572">استفاده از گذرواژه</translation>
@@ -889,6 +893,11 @@
 <translation id="6699370405921460408">‏سرورهای Google صفحه‌هایی را که بازدید می‌کنید بهینه می‌کنند.</translation>
 <translation id="670498945988402717">آخرین بررسی: دیروز</translation>
 <translation id="6710213216561001401">قبلی</translation>
+<translation id="671333169801287922">‏وقتی روشن باشد، سایت‌ها می‌توانند برای ارائه محتوا و سرویس‌هایشان از تکنیک‌های حفظ حریم‌خصوصی نشان داده‌شده در اینجا استفاده کنند. این تکنیک‌ها شامل روش‌های جایگزین برای ردیابی بین‌سایتی می‌شود. ممکن است در گذر زمان، دوره‌های آزمایشی بیشتری اضافه شود.
+
+<ph name="BEGIN_LIST_ITEM1" />تبلیغ‌کنندگان و ناشران می‌توانند از تکنیک FLoC استفاده کنند.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />تبلیغ‌کنندگان و ناشران می‌توانند اثربخشی آگهی‌ها را از طریقی بررسی کنند که شما را در سایت‌ها ردیابی نکند.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">تایمر <ph name="FQDN" /> شما متوقف شد. دوباره فردا شروع به کار می‌کند.</translation>
 <translation id="6738516213925468394">داده‌ها با  <ph name="BEGIN_LINK" />گذرعبارت همگام‌سازی<ph name="END_LINK" /> شما در <ph name="TIME" /> رمز می‌شود. برای شروع همگام‌سازی، آن را وارد کنید.</translation>
 <translation id="6738867403308150051">در حال بارگیری…</translation>
@@ -1079,6 +1088,9 @@
 <translation id="7971136598759319605">آخرین فعالیت: ۱ روز قبل</translation>
 <translation id="7975379999046275268">پیش‌نمایش صفحه <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">پیش‌بارگیری صفحه‌ها برای مرور و جستجوی سریع‌تر</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />جعبه ایمنی حریم‌خصوصی<ph name="END_LINK" /> نوآوری درحال پیشرفتی برای توسعه تکنیک‌هایی جدید است که ضمن حفظ وبِ باز، از شما دربرابر سازوکارهای ردیابی محافظت می‌کند.
+
+دوره آزمایشی «جعبه ایمنی حریم‌خصوصی» هنوز در مرحله توسعه فعال است و در مناطق منتخب دردسترس است. درحال‌حاضر، سایت‌ها می‌توانند «محیط امن حریم‌خصوصی» را امتحان کنند و درعین‌حال همچنان از فناوری‌های وب کنونی مثل کوکی‌های شخص ثالث استفاده کنند.</translation>
 <translation id="7986497153528221272">برای مشاهده گذرواژه‌ها، ابتدا در دستگاهتان قفل صفحه تنظیم کنید</translation>
 <translation id="7998918019931843664">بازکردن مجدد برگه‌های بسته شده</translation>
 <translation id="8004582292198964060">مرورگر</translation>
@@ -1188,7 +1200,9 @@
 <translation id="8662811608048051533">شما را از سیستم اکثر سایت‌ها خارج می‌کند.</translation>
 <translation id="8664979001105139458">نام فایل از قبل وجود دارد</translation>
 <translation id="8676789164135894283">درستی‌سنجی‌های ورود به سیستم</translation>
+<translation id="867767487203716855">به‌روزرسانی بعدی</translation>
 <translation id="8683039184091909753">تصویر</translation>
+<translation id="8683081248374354009">بازنشانی گروه</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{سطح قدرت سیگنال: # نوار}one{سطح قدرت سیگنال: # نوار}other{سطح قدرت سیگنال: # نوار}}</translation>
 <translation id="869891660844655955">تاریخ انقضا</translation>
 <translation id="8699120352855309748">ترجمه این زبان‌ها پیشنهاد نشود</translation>

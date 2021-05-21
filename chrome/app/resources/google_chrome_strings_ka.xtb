@@ -174,6 +174,7 @@
 
 Google Chrome ვერ შეძლებს თქვენი პარამეტრების აღდგენას.</translation>
 <translation id="5434383153637353914">ეს გვერდი საშუალებას გაძლევთ, მართოთ თქვენი სისტემაში შესული Google ანგარიშები. ეს ანგარიშები ხელმისაწვდომი იქნება როგორც Chrome ბრაუზერსა და Play Store აპებში, ისე ისეთ სერვისებში, როგორიცაა Gmail, Drive და YouTube. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Chrome OS-ის დაინსტალირება</translation>
 <translation id="556024056938947818">Google Chrome ცდილობს პაროლების ჩვენებას.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">თუ პარამეტრი ამ გვერდზე არ გამოჩნდება, ცადეთ მისი პოვნა <ph name="LINK_BEGIN" />Chrome OS-ის პარამეტრებში<ph name="LINK_END" /></translation>
@@ -256,6 +257,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7896673875602241923">Chrome-ში უკვე განხორციელდა შესვლა ამ კომპიუტერიდან, როგორც <ph name="ACCOUNT_EMAIL_LAST" />. გთხოვთ, შექმნათ Chrome-ის ახალი მომხმარებელი თქვენი ინფორმაციის ცალკე შესანახად.</translation>
 <translation id="7905891027772979035">Chrome ვერ ახერხებს გაფართოებების შემოწმებას. ცადეთ მოგვიანებით.</translation>
 <translation id="7930071585467473040">Google Chrome ცდილობს პაროლების კოპირებას.</translation>
+<translation id="7951988079884443914">Chrome იძლევა რეკომენდაციას, რომ არ გადმოტვირთოთ ან გახსნათ ეს ფაილი.</translation>
 <translation id="7962410387636238736">ეს კომპიუტერი აღარ მიიღებს Google Chrome-ის განახლებებს, რადგან Windows XP და Windows Vista აღარ არის მხარდაჭერილი</translation>
 <translation id="79947657522496226">Chrome OS და <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ის შემუშავების გარემო <ph name="END_LINK_LINUX_OSS" /> მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის დამატებითი პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="8008534537613507642">ხელახლა დააინსტალირეთ Chrome</translation>

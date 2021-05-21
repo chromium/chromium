@@ -40,6 +40,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2560420686485554789">Du behöver ge Chromium åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="2572494885440352020">Hjälp för Chromium</translation>
 <translation id="2577788541081224677">Logga in och aktivera synkronisering om du vill få tillgång till dina saker i Chromium på olika enheter.</translation>
+<translation id="2580426763510374355">Installera Chromium OS</translation>
 <translation id="2583187216237139145">All data i Chromium som uppstår när den här profilen används (t.ex. bokmärken, historik, lösenord och andra inställningar) kan tas bort av jobbprofilens administratör. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS måste startas om för att uppdateringen ska börja gälla.</translation>
 <translation id="2648074677641340862">Ett operativsystemsfel inträffade under installationen. Ladda ned Chromium igen.</translation>
@@ -138,6 +139,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5479196819031988440">Det går inte att öppna den här sidan i Chromium OS.</translation>
 <translation id="5480860683791598150">Du behöver ge Chromium åtkomst till din plats om den ska kunna delas med webbplatsen</translation>
+<translation id="5481338274774984070">Chromium rekommenderar att du varken laddar ned eller öppnar den här filen.</translation>
 <translation id="549669000822060376">Vänta medan de senaste systemuppdateringarna installeras av Chromium.</translation>
 <translation id="5496810170689441661">Skriv ditt lösenord i Windows om du tillåter att lösenorden i Chromium redigeras.</translation>
 <translation id="5527463683072221100">Öppna PDF-filer i Chromium</translation>

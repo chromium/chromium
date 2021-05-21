@@ -170,6 +170,7 @@
 <translation id="1173894706177603556">Преименуване</translation>
 <translation id="1173916544412572294">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, подробности</translation>
 <translation id="1174073918202301297">Прекият път бе добавен</translation>
+<translation id="1174366174291287894">Връзката ви винаги е защитена, освен ако Chrome не ви съобщи друго</translation>
 <translation id="117445914942805388">За да изчистите данните за сърфирането от всичките си синхронизирани устройства и от профила си в Google, <ph name="BEGIN_LINK" />посетете настройките за синхронизиране<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Печат...</translation>
 <translation id="1176471985365269981">Сайтове без разрешение за редактиране на файловете и папките на устройството</translation>
@@ -756,6 +757,7 @@
 <translation id="1781398670452016618"><ph name="DOMAIN" /> изисква да се свържете с Wi-Fi сега и да изтеглите актуализация.</translation>
 <translation id="1781502536226964113">Да се отваря нов раздел в браузъра</translation>
 <translation id="1781771911845953849">Профили и синхронизиране</translation>
+<translation id="1782101999402987960">Актуализациите са блокирани от администратора ви</translation>
 <translation id="1782196717298160133">Намиране на телефона ви</translation>
 <translation id="1784707308176068866">Изпълняване на заден план при поискване от съдействащо приложение с директно изпълнение</translation>
 <translation id="1784849162047402014">Дисковото пространство на устройството е малко</translation>
@@ -897,7 +899,6 @@
 <translation id="1926339101652878330">Тези настройки се контролират от корпоративно правило. За още информация, моля, свържете се с администратора си.</translation>
 <translation id="1927632033341042996">Пръст <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">ПИН за заключване на екрана</translation>
-<translation id="1928202201223835302">Въведете стария ПИН</translation>
 <translation id="1928696683969751773">Актуализации</translation>
 <translation id="1929186283613845153">Файлът се сканира.</translation>
 <translation id="1929343511231420085">Всички серийни портове</translation>
@@ -921,7 +922,6 @@
 <translation id="1954813140452229842">Възникна грешка при свързването на дяла. Моля, проверете идентификационните си данни и опитайте отново.</translation>
 <translation id="1956050014111002555">Файлът съдържаше няколко сертификата, но нито един от тях не бе импортиран:</translation>
 <translation id="1956390763342388273">Ще бъдат качени всички файлове от „<ph name="FOLDER_PATH" />“. Продължете само ако смятате сайта за надежден.</translation>
-<translation id="1958750704984086982">FLoC осигурява запазващ поверителността механизъм за избиране на реклами въз основа на интереси.</translation>
 <translation id="1962233722219655970">Тази страница използва приложение за клиент с директно изпълнение, което не работи на компютъра ви.</translation>
 <translation id="1963227389609234879">Премахване на всички</translation>
 <translation id="1963976881984600709">Стандартна защита</translation>
@@ -1147,6 +1147,7 @@
 <translation id="2193365732679659387">Настройки за доверие</translation>
 <translation id="2195331105963583686">След това пак ще можете да използвате устройството <ph name="DEVICE_TYPE" />, но то няма да получава повече автоматични актуализации на софтуера и сигурността</translation>
 <translation id="2195729137168608510">Защита за имейли</translation>
+<translation id="2198625180564913276">Профилът за мобилна мрежа се добавя. Това може да отнеме няколко минути.</translation>
 <translation id="2199298570273670671">Грешка</translation>
 <translation id="2199719347983604670">Данни от синхронизирането в Chrome</translation>
 <translation id="2200094388063410062">Имейл</translation>
@@ -1664,7 +1665,6 @@
 <translation id="2749756011735116528">Вход в <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM карта</translation>
 <translation id="2749881179542288782">Проверка на граматиката заедно с правописа</translation>
-<translation id="2751131328353405138">SSHFS на контейнера за Linux се свързва</translation>
 <translation id="2753677631968972007">Ръчно контролиране на разрешенията за сайтовете.</translation>
 <translation id="2755349111255270002">Нулирайте настройките на <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Управление на функциите за достъпност</translation>
@@ -1721,6 +1721,7 @@
 <translation id="2805760958323556153">Стойността на правилото ExtensionInstallForcelist е невалидна. Моля, обърнете се към администратора си.</translation>
 <translation id="2805770823691782631">Допълнителни подробности</translation>
 <translation id="2806372837663997957">Устройството, с което се опитвате да споделите файла, не го прие</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Прекият път вече съществува</translation>
 <translation id="2807517655263062534">Тук се показват изтеглените от вас файлове</translation>
 <translation id="2809586584051668049">и още <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
@@ -1798,7 +1799,6 @@
 <translation id="2891922230654533301">Искате ли устройството ви да се използва за влизане в профила ви в(ъв) <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Браузър по подразбиране</translation>
 <translation id="2894757982205307093">Нов раздел в групата</translation>
-<translation id="289644616180464099">SIM картата е заключена</translation>
 <translation id="289695669188700754">Идентификатор (ИД) на ключ: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Тази персонализирана настройка ще бъде премахната, когато затворите всички прозорци в режим „инкогнито“</translation>
 <translation id="2897878306272793870">Наистина ли искате да отворите <ph name="TAB_COUNT" /> раздела?</translation>
@@ -2037,6 +2037,7 @@
 <translation id="315116470104423982">Мобилни данни</translation>
 <translation id="3151539355209957474">Начален час</translation>
 <translation id="3151562827395986343">Изчистване на историята, „бисквитките“, кеша и др.</translation>
+<translation id="3151616662954589507">Камера за селфи</translation>
 <translation id="3151786313568798007">Ориентация</translation>
 <translation id="3154351730702813399">Администраторът на устройството може да наблюдава активността ви при сърфиране.</translation>
 <translation id="3154429428035006212">Офлайн за повече от един месец</translation>
@@ -2151,6 +2152,7 @@
 <translation id="32939749466444286">Контейнерът за Linux не стартира. Моля, опитайте отново.</translation>
 <translation id="3294437725009624529">Гост</translation>
 <translation id="3294686910656423119">Статистически данни за употребата и сигнали за сривове</translation>
+<translation id="3295357220137379386">Устройството е заето</translation>
 <translation id="329838636886466101">Поправяне</translation>
 <translation id="3298789223962368867">Въведен е невалиден URL адрес.</translation>
 <translation id="32991397311664836">Устройства:</translation>
@@ -2265,7 +2267,6 @@
 <translation id="3427092606871434483">Разрешаване (по подразбиране)</translation>
 <translation id="3428419049384081277">Влязохте в профила си!</translation>
 <translation id="3428747202529429621">Осигурява безопасността ви в Chrome и може да се използва с цел подобряване на сигурността ви в други приложения на Google, докато сте в профила си.</translation>
-<translation id="3428800329481094896">SSH ключовете на контейнера за Linux се извличат</translation>
 <translation id="3429160811076349561">Функциите за изпробване са изключени</translation>
 <translation id="3429271624041785769">Езици за уеб съдържанието</translation>
 <translation id="3429275422858276529">Запазете отметка към тази страница, за да я намирате лесно по-късно</translation>
@@ -3065,6 +3066,7 @@
 <translation id="4285498937028063278">Освобождаване</translation>
 <translation id="428565720843367874">Неочаквано сканирането на този файл от антивирусния софтуер не бе успешно.</translation>
 <translation id="4287099557599763816">Екранен четец</translation>
+<translation id="428715201724021596">Установява се връзка с профил за мобилна мрежа. Това може да отнеме няколко минути.</translation>
 <translation id="4287157641315808225">Да, активиране на ChromeVox</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Показване}other{Показване на всички}}</translation>
 <translation id="4289372044984810120">Управлявайте профилите си оттук. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -3086,7 +3088,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> КБ (<ph name="NUM_KILOBYTES_LIVE" /> КБ активни)</translation>
 <translation id="4310139701823742692">Файловият формат е неправилен. Проверете PPD файла и опитайте отново.</translation>
 <translation id="431076611119798497">&amp;Подробности</translation>
-<translation id="4312124410630786333">Нулиране на идентификатора</translation>
 <translation id="4312866146174492540">Блокиране (по подразбиране)</translation>
 <translation id="4314815835985389558">Управление на синхронизирането</translation>
 <translation id="4316850752623536204">Уебсайт на програмиста</translation>
@@ -3246,7 +3247,6 @@
 <translation id="4492698018379445570">Вижте какво сте добавили в пазарските кошници и платете, когато приключите</translation>
 <translation id="4493468155686877504">Препоръчителен размер (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Да не се показва на тази страница</translation>
-<translation id="4496796119038756382">Идентификатор за FLoC</translation>
 <translation id="4497145443434063861">Компютърът и Chromecast са в различни Wi-Fi мрежи (напр. 2,4 GHz
 и 5 GHz)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> претърпя срив</translation>
@@ -3294,6 +3294,7 @@
 <translation id="4538792345715658285">Инсталирано от корпоративно правило.</translation>
 <translation id="4541123282641193691">Профилът ви не бе потвърден. Моля, опитайте отново или рестартирайте своя Chromebook.</translation>
 <translation id="4541662893742891060">Не може да се установи връзка с този потребителски профил. За техническа поддръжка се обърнете към оператора си.</translation>
+<translation id="4541706525461326392">Профилът за мобилна мрежа се премахва. Това може да отнеме няколко минути.</translation>
 <translation id="4541810033354695636">обогатена реалност</translation>
 <translation id="4542520061254486227">Четене на данните ви от <ph name="WEBSITE_1" /> и <ph name="WEBSITE_2" /></translation>
 <translation id="454331522350252598">Рекламодателите могат да научават за споделените интереси на хиляди потребители, като например интересите на публиката на даден концерт, и да избират реклами за цялата публика вместо за отделни лица.</translation>
@@ -3671,6 +3672,7 @@
 <translation id="4953808748584563296">Стандартен оранжев аватар</translation>
 <translation id="4955710816792587366">Изберете ПИН код</translation>
 <translation id="4959262764292427323">Паролите се запазват в профила ви в Google, за да можете да ги използвате на всяко устройство</translation>
+<translation id="496027654926814138"><ph name="FILE_NAME" /> може да даде възможност на хакери да откраднат личната ви информация.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961361269522589229">идеи за рецепти</translation>
 <translation id="496185450405387901">Това приложение е инсталирано от администратора ви.</translation>
@@ -3710,6 +3712,7 @@
 <translation id="5007392906805964215">Преглед</translation>
 <translation id="50080882645628821">Премахване на профила</translation>
 <translation id="5008936837313706385">Име на активността</translation>
+<translation id="5009463889040999939">Профилът за мобилна мрежа се преименува. Това може да отнеме няколко минути.</translation>
 <translation id="5010043101506446253">Сертифициращ орган</translation>
 <translation id="5015344424288992913">Получава се разрешение от прокси сървъра...</translation>
 <translation id="5017633213534173756">Запомняне</translation>
@@ -3764,7 +3767,6 @@
 <translation id="5072900412896857127">Общите условия на Google Play не могат да се заредят. Моля, проверете връзката си с мрежата и опитайте отново.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> и още #}}</translation>
 <translation id="5074318175948309511">Може да се наложи тази страница да бъде презаредена, преди да влязат в сила новите настройки.</translation>
-<translation id="5075131525758602494">Въвеждане на ПИН за SIM картата</translation>
 <translation id="5075910247684008552">Незащитеното съдържание се блокира по подразбиране в защитените сайтове</translation>
 <translation id="5078638979202084724">Запазване на отметки към всички раздели</translation>
 <translation id="5078796286268621944">Неправилен ПИН</translation>
@@ -4057,6 +4059,7 @@
 <translation id="5408750356094797285">Мащаб: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">От профила ви в Google</translation>
 <translation id="5411472733320185105">Настройките за прокси сървър да не се използват за тези хостове или домейни:</translation>
+<translation id="5414198321558177633">Списъкът с профили за мобилни мрежи се опреснява. Това може да отнеме няколко минути.</translation>
 <translation id="5414566801737831689">Четене на иконите на посещаваните от вас уебсайтове</translation>
 <translation id="5417312524372586921">Теми за браузъра</translation>
 <translation id="5419405654816502573">Voice Match</translation>
@@ -4336,6 +4339,7 @@
 <translation id="5709557627224531708">Задаване на Chrome като браузър по подразбиране</translation>
 <translation id="5711983031544731014">Не може да се отключи. Въведете паролата си.</translation>
 <translation id="5712153969432126546">Сайтовете понякога публикуват PDF файлове, като например документи, договори и формуляри</translation>
+<translation id="5712323955984474772">Следваща актуализация</translation>
 <translation id="5715711091495208045">Посредник за приставки: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Търсещи машини по подразбиране</translation>
 <translation id="5719637365829998022">QR кодът е сканиран.</translation>
@@ -4623,6 +4627,7 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> споделя раздел в Chrome и звук с/ъс „<ph name="TAB_NAME" />“.</translation>
 <translation id="6045114302329202345">Основен бутон за TrackPoint</translation>
 <translation id="6047632800149092791">Синхронизирането не работи. Опитайте да излезете и отново да влезете в профила си.</translation>
+<translation id="6049797270917061226">Този файл може да даде възможност на хакери да откраднат личната ви информация.</translation>
 <translation id="6051354611314852653">Ами сега!  Системата не успя да удостовери достъпа на това устройство до приложния програмен интерфейс (API).</translation>
 <translation id="6052976518993719690">SSL сертифициращ орган</translation>
 <translation id="6053401458108962351">Из&amp;чистване на данните за сърфирането...</translation>
@@ -4850,6 +4855,7 @@
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Нов принтер в мрежата ви}other{Нови принтери в мрежата ви}}</translation>
 <translation id="6285770818046456882">Устройството, което споделя с вас, анулира прехвърлянето</translation>
 <translation id="6290613030083731160">В близост няма налични споделящи устройства. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
+<translation id="6291086328725007688">Кодът за активиране се проверява. Това може да отнеме няколко минути.</translation>
 <translation id="6291741848715722067">Код за потвърждение</translation>
 <translation id="6291949900244949761">Извеждане на запитване, когато сайт иска достъп до USB устройства (препоръчително)</translation>
 <translation id="6291953229176937411">&amp;Показване във Finder</translation>
@@ -4980,6 +4986,7 @@
 <translation id="6438234780621650381">Нулиране на настройките</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – възпроизвежда се звук</translation>
 <translation id="6442187272350399447">Щастливец</translation>
+<translation id="6442445294758185945">Актуализацията не бе изтеглена. Опитайте отново по-късно.</translation>
 <translation id="6444070574980481588">Задаване на датата и часа</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – сканирането за устройства с Bluetooth е активно</translation>
 <translation id="6445450263907939268">Ако не сте искали тези промени, можете да възстановите предишните си настройки.</translation>
@@ -7025,6 +7032,7 @@
 <translation id="8680251145628383637">Влезте в профила си, за да получите своите отметки, история, пароли и други настройки на всичките си устройства. Също така ще влезете автоматично в използваните от вас услуги на Google.</translation>
 <translation id="8681614230122836773">Chrome откри опасен софтуер на компютъра ви</translation>
 <translation id="8682730193597992579">Принтерът <ph name="PRINTER_NAME" /> е свързан и готов</translation>
+<translation id="8683081248374354009">Повторно задаване на групата</translation>
 <translation id="8688591111840995413">Неправилна парола</translation>
 <translation id="8688672835843460752">Свободно място</translation>
 <translation id="8690129572193755009">Сайтовете могат да извеждат запитвания за обработване на протоколи</translation>
@@ -7138,7 +7146,6 @@
 <translation id="8803953437405899238">Отворете нов раздел с едно кликване</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Преместване на раздела в друг прозорец}other{Преместване на разделите в друг прозорец}}</translation>
 <translation id="8805140816472474147">За да стартирате синхронизирането, потвърдете съответните настройки.</translation>
-<translation id="8805985421503170600">Федерирано обучение за кохорти (FloC)</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> служи за повторно отваряне на случайно затворени раздели</translation>
 <translation id="8807632654848257479">Стабилно</translation>
 <translation id="8808478386290700967">Уеб магазин</translation>

@@ -167,6 +167,7 @@
 <translation id="5394833366792865639">‏שיתוף כרטיסיית Chrome</translation>
 <translation id="5430073640787465221">‏קובץ ההעדפות שלך פגום או לא חוקי. Google Chrome לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="5434383153637353914">‏הדף הזה מאפשר לך לנהל את חשבונות Google שאליהם נכנסת. החשבונות האלה יהיו זמינים בדפדפן Chrome ובאפליקציות מחנות Play, בנוסף לשירותים כמו Gmail, ‏Drive ו-YouTube‏. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">‏להתקנת Chrome OS</translation>
 <translation id="556024056938947818">‏Google Chrome מנסה להציג סיסמאות.</translation>
 <translation id="5566025111015594046">‏Google Chrome‏ (mDNS-In)</translation>
 <translation id="5657226924540934362">‏אם הגדרה מסוימת לא מופיעה בדף הזה, אפשר לחפש אותה <ph name="LINK_BEGIN" />
@@ -250,6 +251,7 @@
 <translation id="7896673875602241923">‏מישהו נכנס בעבר ל-Chrome מהמחשב הזה כ-<ph name="ACCOUNT_EMAIL_LAST" />. יש ליצור משתמש חדש ל-Chrome כדי לשמור על הפרדת המידע שלך.</translation>
 <translation id="7905891027772979035">‏Chrome לא יכול לבדוק את התוספים שלך. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="7930071585467473040">‏Google Chrome מנסה להעתיק את הסיסמאות.</translation>
+<translation id="7951988079884443914">‏ההמלצה של Chrome היא שלא להוריד או לפתוח את הקובץ הזה.</translation>
 <translation id="7962410387636238736">‏המחשב הזה כבר לא יקבל עדכונים ל-Google Chrome, מאחר שכבר אין תמיכה במערכות Windows XP ו-Windows Vista</translation>
 <translation id="79947657522496226">‏השימוש ב-Chrome OS מתאפשר בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנות קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספות כמו <ph name="BEGIN_LINK_LINUX_OSS" />סביבת הפיתוח של Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">‏התקנת Chrome מחדש</translation>

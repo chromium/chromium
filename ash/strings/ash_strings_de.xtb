@@ -24,7 +24,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1148499908455722006">Infodialog für <ph name="USER_NAME" /> öffnen</translation>
 <translation id="1153356358378277386">Gekoppelte Geräte</translation>
 <translation id="1165712434476988950">Das Gerät muss neu gestartet werden, um das Update zu installieren.</translation>
-<translation id="1170240434488307589">Das Mikrofon des Geräts ist ausgeschaltet.</translation>
 <translation id="1175572348579024023">Scrollen</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Entfernen</translation>
@@ -373,7 +372,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4021716437419160885">Nach unten scrollen</translation>
 <translation id="4028481283645788203">Für mehr Sicherheit ist ein Passwort erforderlich</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Die Tastenkombination <ph name="LAUNCHER_KEY_NAME" /> + Ziffer hat sich geändert. Wenn Sie jetzt eine F-Taste benötigen, drücken Sie die <ph name="LAUNCHER_KEY_NAME" />-Taste + eine Taste in der oberen Reihe.</translation>
 <translation id="4042660782729322247">Sie geben Ihren Bildschirm frei</translation>
 <translation id="4057003836560082631">Browser-Tab <ph name="INDEX" /> von <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Aus für 1 App}other{Aus für # Apps}}</translation>

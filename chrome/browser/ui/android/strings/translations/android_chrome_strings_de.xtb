@@ -293,6 +293,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2901411048554510387">Vorschläge für <ph name="WEBSITE_TITLE" /> werden angezeigt</translation>
 <translation id="2904414404539560095">Die Liste von Geräten, mit denen ein Tab geteilt werden kann, ist ganz geöffnet.</translation>
 <translation id="2905036901251765993">Bitten Sie Leute in der Nähe, diesen QR-Code zu scannen, um Inhalte mit Ihnen zu teilen</translation>
+<translation id="2908243544703713905">Ungelesene Inhalte verfügbar</translation>
 <translation id="2909615210195135082">Google-Benachrichtigungsplattform</translation>
 <translation id="2912296070571964914">Themen verwalten, an denen Sie interessiert sind</translation>
 <translation id="2923908459366352541">Der Name ist ungültig</translation>
@@ -533,7 +534,6 @@ Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4583164079174244168">{MINUTES,plural, =1{vor # Minute}other{vor # Minuten}}</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4594952190837476234">Diese Offlineseite ist vom <ph name="CREATION_TIME" /> und unterscheidet sich gegebenenfalls von der Onlineversion.</translation>
-<translation id="4615382002648696011">Folge ich, ungelesene Inhalte verfügbar</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> öffnen</translation>
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>

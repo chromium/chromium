@@ -186,6 +186,7 @@ Puudutage otsimiseks mis tahes sõna. Otsingu täpsustamiseks puudutage pikalt, 
 <translation id="22320125457191592">Teile</translation>
 <translation id="2234876718134438132">Sünkroonimine ja Google'i teen.</translation>
 <translation id="2239812875700136898">Hallake oma lugusid funktsiooni Discover nupuga Valikud</translation>
+<translation id="2251971221270904886">Kui see on sisse lülitatud ja olek on aktiivne, kasutab Chrome teie viimase seitsme päeva sirvimisajalugu, et tuvastada grupp või rühm, millesse kuulute. Reklaamijad saavad grupi jaoks reklaame valida. Teie sirvimisajalugu hoitakse teie seadmes privaatsena. See prooviperiood on aktiivne vaid <ph name="BEGIN_LINK" />teatud piirkondades<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Paroolide eksportimine …</translation>
 <translation id="2276696007612801991">Paroolide kontrollimiseks logige sisse oma Google'i kontole</translation>
 <translation id="2278052315791335171">Selle parooli kustutamisel ei kustutata teie kontot saidil <ph name="SITE" /></translation>
@@ -275,6 +276,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2781151931089541271">Jäänud on 1 sekund</translation>
 <translation id="2801022321632964776">Oma keele kasutamiseks värskendage Chrome uusimale versioonile</translation>
 <translation id="2805756323405976993">Rakendused</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Vaadake ja hallake salvestatud paroole oma <ph name="BEGIN_LINK" />Google'i kontol<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Järjehoidjate kõikidesse seadmetesse hankimiseks logige sisse ja lülitage sünkroonimine sisse</translation>
 <translation id="2827278682606527653">Voo kaardimenüü on poole kõrgusega</translation>
@@ -293,6 +295,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2901411048554510387">Kuvatakse veebisaidi <ph name="WEBSITE_TITLE" /> soovitusi</translation>
 <translation id="2904414404539560095">Vahelehe jagamise seadmete loend (täiskõrgusel avatud).</translation>
 <translation id="2905036901251765993">Lähedaste inimestega jagamiseks paluge neil skaneerida see QR-kood</translation>
+<translation id="2908243544703713905">Lugemata lood on valmis</translation>
 <translation id="2909615210195135082">Google'i märguannete platvorm</translation>
 <translation id="2912296070571964914">Hallake teemasid, mis teile huvi pakuvad</translation>
 <translation id="2923908459366352541">Nimi on sobimatu</translation>
@@ -317,6 +320,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> järjehoidja}other{<ph name="BOOKMARKS_COUNT_MANY" /> järjehoidjat}}</translation>
 <translation id="3062802207422175757">Teie huvidega seotud artiklid Chrome'is</translation>
 <translation id="3070005020161560471">Tõlgi automaatselt</translation>
+<translation id="3083531420240576529">Saate grupi mis tahes ajal lähtestada. Grupi määramiseks kulub seitse päeva.</translation>
 <translation id="3091010850649238832">Kuva lõikelaua sisu</translation>
 <translation id="3098745985164956033">Mõned pildid saadetakse kirjelduste täiendamiseks Google'ile</translation>
 <translation id="3114507951000454849">Lugege tänaseid uudiseid <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirko
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4060598801229743805">Ekraani ülaosas saadaolevad valikud</translation>
 <translation id="4062305924942672200">Juriidiline teave</translation>
+<translation id="4082818367361753283">Grupi ID</translation>
 <translation id="4084682180776658562">Järjehoidja</translation>
 <translation id="4084712963632273211">Avaldajalt <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />sisu pakub Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Kas kustutada rakenduse andmed?</translation>
@@ -533,7 +538,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minut tagasi}other{# minutit tagasi}}</translation>
 <translation id="4587589328781138893">Saidid</translation>
 <translation id="4594952190837476234">Võrguühenduseta leht loodi <ph name="CREATION_TIME" /> ja see võib veebiversioonist erineda.</translation>
-<translation id="4615382002648696011">Jälgitakse, lugemata lood on valmis</translation>
 <translation id="4616150815774728855">Ava <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Kinnitage, et see olete teie</translation>
 <translation id="4634124774493850572">Kasuta parooli</translation>
@@ -889,6 +893,11 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6699370405921460408">Google'i serverid optimeerivad teie külastatavaid lehti.</translation>
 <translation id="670498945988402717">Kontrolliti eile</translation>
 <translation id="6710213216561001401">Eelmine</translation>
+<translation id="671333169801287922">Kui see on sisse lülitatud, võivad saidid oma sisu ja teenuste pakkumiseks kasutada siin kuvatud privaatsust säilitavaid meetodeid. Need hõlmavad saitidevahelise jälgimise alternatiive. Aja jooksul võidakse lisada rohkem prooviversioone.
+
+<ph name="BEGIN_LIST_ITEM1" />Reklaamijad ja väljaandjad võivad kasutada FLoC-meetodit.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Reklaamijad ja väljaandjad saavad reklaamide tõhusust uurida viisil, mis teie tegevusi saitidel ei jälgi.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Teie rakenduse <ph name="FQDN" /> taimeri aeg sai otsa. See alustab uuesti homme.</translation>
 <translation id="6738516213925468394">Teie andmed krüpteeriti teie <ph name="BEGIN_LINK" />sünkroonimisparooliga<ph name="END_LINK" /> kuupäeval <ph name="TIME" />. Sisestage see sünkroonimise alustamiseks.</translation>
 <translation id="6738867403308150051">Allalaadimine ...</translation>
@@ -1079,6 +1088,9 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="7971136598759319605">Aktiivne 1 päev tagasi</translation>
 <translation id="7975379999046275268">Lehe eelvaade <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Eellaaditakse lehti kiiremaks sirvimiseks ja otsimiseks</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privaatsuse liivakast<ph name="END_LINK" /> on käimasolev initsiatiiv arendada uusi tehnoloogiaid, mis kaitsevad teid jälgimismehhanismide eest, säilitades samas avatud veebi.
+
+Privaatsuse liivakasti prooviperioodid on endiselt arendusjärgus ja saadaval vaid valitud piirkondades. Praegu võivad saidid privaatsuse liivakasti proovida, kasutades jätkuvalt ka muid veebitehnoloogiaid, nagu kolmandate osapoolte küpsisefailid.</translation>
 <translation id="7986497153528221272">Paroolide vaatamiseks määrake esmalt oma seadmes ekraanilukk</translation>
 <translation id="7998918019931843664">Suletud vahelehe uuesti avamine</translation>
 <translation id="8004582292198964060">Brauser</translation>
@@ -1188,7 +1200,9 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="8662811608048051533">Logib teid enamikult saitidelt välja.</translation>
 <translation id="8664979001105139458">Faili nimi on juba olemas</translation>
 <translation id="8676789164135894283">Sisselogimise kinnitused</translation>
+<translation id="867767487203716855">Järgmine värskendus</translation>
 <translation id="8683039184091909753">pilt</translation>
+<translation id="8683081248374354009">Lähtesta grupp</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signaalitugevuse tase: # riba}other{Signaalitugevuse tase: # riba}}</translation>
 <translation id="869891660844655955">Aegumiskuupäev</translation>
 <translation id="8699120352855309748">Ära paku nende keelte tõlkimist</translation>

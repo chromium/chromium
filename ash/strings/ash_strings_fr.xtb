@@ -24,7 +24,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1148499908455722006">Ouvrir la boîte de dialogue d'infos pour <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Appareils associés</translation>
 <translation id="1165712434476988950">Vous devez redémarrer l'appareil pour appliquer la mise à jour.</translation>
-<translation id="1170240434488307589">Le bouton coupure du son de l'appareil est activé.</translation>
 <translation id="1175572348579024023">Faire défiler</translation>
 <translation id="1178581264944972037">Suspendre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
@@ -373,7 +372,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4021716437419160885">Faire défiler vers le bas</translation>
 <translation id="4028481283645788203">Veuillez saisir le mot de passe pour renforcer la sécurité</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Le raccourci clavier <ph name="LAUNCHER_KEY_NAME" />+Chiffre a été modifié. Pour utiliser les touches F, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" /> et sur une touche de la rangée supérieure du clavier.</translation>
 <translation id="4042660782729322247">Vous partagez votre écran</translation>
 <translation id="4057003836560082631">Onglet <ph name="INDEX" /> sur <ph name="TOTAL_COUNT" /> du navigateur. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Notif. désactivées pour une appli}one{Notif. désactivées pour # appli}other{Notif. désactivées pour # applis}}</translation>

@@ -24,7 +24,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1148499908455722006">Otevřít dialogové okno s informacemi o účtu <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Spárovaná zařízení</translation>
 <translation id="1165712434476988950">K použití aktualizace je potřeba restartovat zařízení.</translation>
-<translation id="1170240434488307589">Tlačítko mikrofonu zařízení je deaktivováno.</translation>
 <translation id="1175572348579024023">Posunout</translation>
 <translation id="1178581264944972037">Pozastavit</translation>
 <translation id="1181037720776840403">Odebrat</translation>
@@ -41,6 +40,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1247372569136754018">Mikrofon (interní)</translation>
 <translation id="1252999807265626933">Zdroj nabíjení: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Jaké je počasí?</translation>
+<translation id="1266097335951928626">Spustit fotoaparát pro selfie</translation>
 <translation id="1267032506238418139">Změna klávesové zkratky</translation>
 <translation id="1269405891096105529">Periferní zařízení není v režimu hosta podporováno</translation>
 <translation id="1270290102613614947">Softwarová klávesnice je deaktivována</translation>
@@ -85,6 +85,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1570871743947603115">Přepnout Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Získat přístup k veškeré vaší aktivitě v této relaci</translation>
+<translation id="159255010947577753">Zvýrazňovač</translation>
 <translation id="1611993646327628135">Zap</translation>
 <translation id="1615402009686901181">Zásady administrátora zakazují záznam obrazovky, když je viditelný důvěrný obsah</translation>
 <translation id="1632985212731562677">Přístup pomocí přepínačů lze vypnout v Nastavení &gt; Přístupnost.</translation>
@@ -136,8 +137,10 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2016340657076538683">Zadejte zprávu</translation>
 <translation id="2018630726571919839">Řekni mi vtip</translation>
 <translation id="2021864487439853900">Odemknete kliknutím</translation>
+<translation id="2047639699071423250">Přidat hlavní myšlenku</translation>
 <translation id="2049240716062114887">Název plochy byl změněn na <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Na výšku</translation>
+<translation id="2066708475850724665">Vypnout lupu</translation>
 <translation id="2067602449040652523">Jas klávesnice</translation>
 <translation id="2078034614700056995">Na další plochu přejdete přejetím čtyřmi prsty doprava</translation>
 <translation id="2079504693865562705">Skrýt aplikace v poličce</translation>
@@ -145,10 +148,12 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2083190527011054446">Dobrou noc, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nejste připojeni k síti</translation>
 <translation id="2108303511227308752">Klávesová zkratka Alt + Backspace se změnila. Pokud chcete použít klávesu Delete, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
+<translation id="211328683600082144">ZAPNOUT MIKROFON</translation>
 <translation id="2126242104232412123">Nová plocha</translation>
 <translation id="2127372758936585790">Nabíječka má příliš nízký výkon</translation>
 <translation id="2132302418721800944">Zaznamenat celou obrazovku</translation>
 <translation id="2135456203358955318">Zabudovaná lupa</translation>
+<translation id="2146800439053023141">Přepnout umístění lišty</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Zkusit znovu</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Přehled ukončíte přejetím třemi prsty dolů</translation>
@@ -328,6 +333,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3638400994746983214">Přepnout obrazovku ochrany soukromí. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – spravovaný uživatel</translation>
 <translation id="3665889125180354336">Záznam mikrofonu</translation>
+<translation id="3680908746918359504">Vymazat všechny značky</translation>
 <translation id="36813544980941320">Sítě Wi-Fi se budou sdílet mezi vaším telefonem a zařízením <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">Zobrazují se okna z aktuální plochy, stisknutím šipky nahoru zobrazíte okna ze všech ploch</translation>
 <translation id="3702846122927433391">Počet obyvatel Nigérie</translation>
@@ -373,12 +379,12 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4021716437419160885">Posunout dolů</translation>
 <translation id="4028481283645788203">Pro lepší zabezpečení je vyžadováno heslo</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Klávesová zkratka <ph name="LAUNCHER_KEY_NAME" /> + číslo se změnila. Pokud chcete použít klávesy F, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + klávesu na horním řádku.</translation>
 <translation id="4042660782729322247">Sdílíte svou obrazovku</translation>
 <translation id="4057003836560082631">Karta prohlížeče <ph name="INDEX" /> z <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Vyp., 1 apl.}few{Vyp., # apl.}many{Vyp., # apl.}other{Vyp., # apl.}}</translation>
 <translation id="4066027111132117168">Zapnuto, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Střední signál</translation>
+<translation id="4095366824370681039">Pero</translation>
 <translation id="4112140312785995938">Přetočit dozadu</translation>
 <translation id="4114315158543974537">Zapnutí funkce Phone Hub</translation>
 <translation id="412298498316631026">okno</translation>
@@ -447,12 +453,15 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4570957409596482333">Tlačítko pro poslech vybraného textu</translation>
 <translation id="4577274620589681794">Čas vypršel · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Zobrazit náhledy</translation>
+<translation id="4578196883126898996">Mikrofon je vypnutý. Zapněte tlačítko mikrofonu zařízení.</translation>
 <translation id="4578906031062871102">Byla otevřena nabídka nastavení</translation>
 <translation id="4581047786858252841">Mikrofon je zapnutý</translation>
 <translation id="4585337515783392668">Ukončit odesílání do neznámého přijímače</translation>
+<translation id="4586483766170476230">Zastavit fotoaparát pro selfie</translation>
 <translation id="4587299710837179226">Mikrofon je vypnutý</translation>
 <translation id="4596144739579517758">Tmavý motiv je vypnutý</translation>
 <translation id="4611292653554630842">Přihlásit se</translation>
+<translation id="4614295562446151104">Rozbalit označovací nástroje</translation>
 <translation id="4623167406982293031">Ověřit účet</translation>
 <translation id="4628757576491864469">Zařízení</translation>
 <translation id="4642092649622328492">Pořídit částečný snímek obrazovky</translation>
@@ -509,6 +518,8 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5035236842988137213">Zařízení <ph name="DEVICE_NAME" /> je připojeno k novému telefonu</translation>
 <translation id="5035389544768382859">Potvrzení konfigurace monitoru</translation>
 <translation id="504465286040788597">Předchozí odstavec</translation>
+<translation id="5071064518267176975">Aplikace chce použít mikrofon</translation>
+<translation id="5075554201838155866">Zapnout skryté titulky</translation>
 <translation id="5078796286268621944">Nesprávný kód PIN</translation>
 <translation id="5083553833479578423">Odemkněte další funkce Asistenta.</translation>
 <translation id="5136175204352732067">Je připojena jiná klávesnice</translation>
@@ -679,6 +690,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6612802754306526077">Je vybrán režim nahrávání obrazovky</translation>
 <translation id="6614169507485700968">Obrazovka ochrany soukromí je zapnutá</translation>
 <translation id="6627638273713273709">Vyhledávací tlačítko + Shift + K</translation>
+<translation id="6629480180092995136">Aplikace <ph name="APP_NAME" /> chce používat mikrofon</translation>
 <translation id="6637729079642709226">Změnit čas</translation>
 <translation id="6641720045729354415">Přepínání živého přepisu. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">Web <ph name="ORIGIN_NAME" /> chce ověřit, zda jste to vy</translation>
@@ -732,6 +744,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7029814467594812963">Ukončit relaci</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asistent Google</translation>
 <translation id="7042322267639375032">Sbalit stavovou oblast</translation>
+<translation id="7045595904618419789">Zapnout lupu</translation>
 <translation id="7055910611768509537">Dotykové pero nebylo použito více než týden</translation>
 <translation id="7066646422045619941">Tato síť je zakázána vaším administrátorem.</translation>
 <translation id="7067196344162293536">Automatické otáčení</translation>
@@ -752,6 +765,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7256634071279256947">Zadní mikrofon</translation>
 <translation id="726276584504105859">Chcete-li použít rozdělenou obrazovku, přetáhněte okno sem</translation>
 <translation id="7262906531272962081">Vytvořit připomenutí</translation>
+<translation id="7279434993080105272">Barva zvýrazňovače: <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">Živý přepis je vypnutý.</translation>
 <translation id="7303365578352795231">Odpověď dostanete v jiném zařízení.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7466449121337984263">Dotkněte se senzoru</translation>
 <translation id="7477793887173910789">Ovládejte hudbu, videa a další obsah</translation>
 <translation id="7483025031359818980">Oblast výběru je nastavena na celou obrazovku</translation>
+<translation id="7486227320194954040">Sbalit zvýrazňovací nástroje</translation>
 <translation id="7497767806359279797">Vybrat jazyk a klávesnici</translation>
 <translation id="7509246181739783082">Ověření identity</translation>
 <translation id="7513622367902644023">Byl vybrán režim snímku obrazovky</translation>
@@ -799,6 +814,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7607002721634913082">Přerušeno</translation>
 <translation id="7618774594543487847">Neutrální</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7631906263969450674">Zvýrazňovač</translation>
 <translation id="7633755430369750696">Zobrazit nastavení sdílení nablízko</translation>
 <translation id="7641938616688887143">Zaznamenat</translation>
 <translation id="7642647758716480637">Otevřít nastavení sítě <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7724603315864178912">Vyjmout</translation>
 <translation id="7745560842763881396">Zobrazit aplikace v poličce</translation>
 <translation id="7749443890790263709">Byl dosažen maximální počet ploch.</translation>
+<translation id="7749640678855296659">Mikrofon je momentálně vypnutý</translation>
 <translation id="776344839111254542">Kliknutím zobrazíte podrobnosti o aktualizaci</translation>
 <translation id="7780159184141939021">Otočit obrazovku</translation>
 <translation id="7796353162336583443">Klepnutím na tlačítko dotykového pera na poličce můžete pořídit poznámku nebo snímek obrazovky, případně použít Asistenta Google, laserové ukazovátko nebo lupu.</translation>
@@ -861,6 +878,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8113423164597455979">Zap., všechny</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
+<translation id="8132487352815776550">Vypnout skryté titulky</translation>
 <translation id="8132793192354020517">Připojeno k síti <ph name="NAME" /></translation>
 <translation id="813913629614996137">Probíhá inicializace...</translation>
 <translation id="8142441511840089262">Dvojité kliknutí</translation>

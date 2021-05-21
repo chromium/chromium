@@ -24,7 +24,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1148499908455722006">Otwórz okno informacyjne dla konta <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Sparowane urządzenia</translation>
 <translation id="1165712434476988950">Aby zastosować aktualizację, musisz ponownie uruchomić urządzenie.</translation>
-<translation id="1170240434488307589">Mikrofon jest wyciszony za pomocą przycisku.</translation>
 <translation id="1175572348579024023">Przewijanie</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1181037720776840403">Usuń</translation>
@@ -41,6 +40,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1247372569136754018">Mikrofon (wewnętrzny)</translation>
 <translation id="1252999807265626933">Trwa ładowanie z: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Jaka jest pogoda?</translation>
+<translation id="1266097335951928626">Uruchom aparat do selfie</translation>
 <translation id="1267032506238418139">Zmiana skrótu klawiszowego</translation>
 <translation id="1269405891096105529">Urządzenia peryferyjnego nie można używać w trybie gościa</translation>
 <translation id="1270290102613614947">Klawiatura ekranowa wyłączona</translation>
@@ -85,6 +85,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1555130319947370107">Niebieski</translation>
 <translation id="1570871743947603115">Włącz lub wyłącz Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">uzyskiwać dostęp do całej Twojej aktywności w tej sesji;</translation>
+<translation id="159255010947577753">Pisak</translation>
 <translation id="1611993646327628135">Włączono</translation>
 <translation id="1615402009686901181">Zasada administratora wyłącza zrzut ekranu, gdy widoczne są treści poufne</translation>
 <translation id="1632985212731562677">Funkcję Switch Access możesz wyłączyć, otwierając Ustawienia &gt; Ułatwienia dostępu.</translation>
@@ -136,8 +137,10 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2016340657076538683">Wpisz wiadomość</translation>
 <translation id="2018630726571919839">Opowiedz mi kawał</translation>
 <translation id="2021864487439853900">Kliknij, aby odblokować</translation>
+<translation id="2047639699071423250">Dodaj kluczowy pomysł</translation>
 <translation id="2049240716062114887">Nazwa biurka została zmieniona na <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pionowo</translation>
+<translation id="2066708475850724665">Wyłącz lupę</translation>
 <translation id="2067602449040652523">Jasność klawiatury</translation>
 <translation id="2078034614700056995">Aby przełączyć się na następne biurko, przesuń 4 palcami w prawo</translation>
 <translation id="2079504693865562705">Ukryj aplikacje na półce</translation>
@@ -145,10 +148,12 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2083190527011054446">Dobranoc <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Brak połączenia z siecią</translation>
 <translation id="2108303511227308752">Skrót klawiszowy Alt + Backspace został zmieniony. Aby użyć klawisza Delete, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
+<translation id="211328683600082144">WŁĄCZ MIKROFON</translation>
 <translation id="2126242104232412123">Nowe biurko</translation>
 <translation id="2127372758936585790">Ładowarka o małej mocy</translation>
 <translation id="2132302418721800944">Nagraj cały ekran</translation>
 <translation id="2135456203358955318">Lupa zadokowana</translation>
+<translation id="2146800439053023141">Przełącznik lokalizacji paska</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: spróbuj ponownie</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Aby zamknąć Przegląd, przesuń 3 palcami w dół</translation>
@@ -328,6 +333,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3638400994746983214">Przełącz ekran chroniący prywatność. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733">Użytkownik zarządzany <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Nagrywanie z mikrofonu</translation>
+<translation id="3680908746918359504">Wyczyść wszystkie pisaki</translation>
 <translation id="36813544980941320">Twój telefon i <ph name="DEVICE_NAME" /> będą wspólnie korzystać z sieci Wi-Fi</translation>
 <translation id="3702809606464356667">Pokazuję okna z aktualnego biurka, naciśnij klawisz strzałki w górę, aby wyświetlić okna ze wszystkich biurek</translation>
 <translation id="3702846122927433391">Populacja Nigerii</translation>
@@ -373,12 +379,12 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4021716437419160885">Przewiń w dół</translation>
 <translation id="4028481283645788203">Dla większego bezpieczeństwa musisz podać hasło</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Skrót klawiszowy <ph name="LAUNCHER_KEY_NAME" /> + cyfra został zmieniony. Aby użyć klawiszy funkcyjnych, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + klawisz w górnym rzędzie.</translation>
 <translation id="4042660782729322247">Udostępniasz ekran</translation>
 <translation id="4057003836560082631">Karta <ph name="INDEX" /> z <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Wyłączono (1 aplikacja)}few{Wyłączono (# aplikacje)}many{Wyłączono (# aplikacji)}other{Wyłączono (# aplikacji)}}</translation>
 <translation id="4066027111132117168">Włączone. Pozostały czas: <ph name="REMAINING_TIME" />.</translation>
 <translation id="4072264167173457037">średni sygnał</translation>
+<translation id="4095366824370681039">Pióro</translation>
 <translation id="4112140312785995938">Przewiń do tyłu</translation>
 <translation id="4114315158543974537">Włącz Phone Hub</translation>
 <translation id="412298498316631026">okno</translation>
@@ -447,12 +453,15 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4570957409596482333">Przycisk Przeczytaj na głos</translation>
 <translation id="4577274620589681794">Czas minął · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Pokaż podglądy</translation>
+<translation id="4578196883126898996">Mikrofon jest wyłączony. Włącz przycisk mikrofonu na urządzeniu.</translation>
 <translation id="4578906031062871102">Otwarto menu ustawień</translation>
 <translation id="4581047786858252841">Mikrofon jest włączony</translation>
 <translation id="4585337515783392668">Zakończ przesyłanie do nieznanego odbiornika</translation>
+<translation id="4586483766170476230">Zatrzymaj aparat do selfie</translation>
 <translation id="4587299710837179226">Mikrofon jest wyłączony</translation>
 <translation id="4596144739579517758">Ciemny motyw jest wyłączony</translation>
 <translation id="4611292653554630842">Zaloguj się</translation>
+<translation id="4614295562446151104">Rozwiń narzędzia pisaka</translation>
 <translation id="4623167406982293031">Zweryfikuj konto</translation>
 <translation id="4628757576491864469">Urządzenia</translation>
 <translation id="4642092649622328492">Zrób zrzut części ekranu</translation>
@@ -509,6 +518,8 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5035236842988137213">Urządzenie <ph name="DEVICE_NAME" /> zostało połączone z nowym telefonem</translation>
 <translation id="5035389544768382859">Potwierdź konfigurację wyświetlacza</translation>
 <translation id="504465286040788597">Poprzedni akapit</translation>
+<translation id="5071064518267176975">Aplikacja chce używać mikrofonu</translation>
+<translation id="5075554201838155866">Włącz napisy</translation>
 <translation id="5078796286268621944">Błędny kod PIN</translation>
 <translation id="5083553833479578423">Poznaj więcej funkcji Asystenta.</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
@@ -679,6 +690,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6612802754306526077">Wybrano tryb nagrywania ekranu</translation>
 <translation id="6614169507485700968">Ekran chroniący prywatność jest włączony</translation>
 <translation id="6627638273713273709">Szukaj + Shift + K</translation>
+<translation id="6629480180092995136">Aplikacja <ph name="APP_NAME" /> chce używać mikrofonu</translation>
 <translation id="6637729079642709226">Zmień czas</translation>
 <translation id="6641720045729354415">Włącz lub wyłącz napisy na żywo. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">Strona <ph name="ORIGIN_NAME" /> wymaga potwierdzenia, że to Ty</translation>
@@ -732,6 +744,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7029814467594812963">Zakończ sesję</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asystent Google</translation>
 <translation id="7042322267639375032">Zwiń pasek stanu</translation>
+<translation id="7045595904618419789">Włącz lupę</translation>
 <translation id="7055910611768509537">Rysik nie był używany od ponad tygodnia</translation>
 <translation id="7066646422045619941">Ta sieć została wyłączona przez administratora.</translation>
 <translation id="7067196344162293536">Obracanie automatyczne</translation>
@@ -752,6 +765,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7256634071279256947">Tylny mikrofon</translation>
 <translation id="726276584504105859">Przeciągnij tutaj, by podzielić ekran</translation>
 <translation id="7262906531272962081">Utwórz przypomnienie</translation>
+<translation id="7279434993080105272">Kolor pisaka: <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">Napisy na żywo są wyłączone.</translation>
 <translation id="7303365578352795231">Odpowiem na innym urządzeniu.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7466449121337984263">Dotknij czytnika</translation>
 <translation id="7477793887173910789">Steruj filmami, muzyką i innymi multimediami</translation>
 <translation id="7483025031359818980">Jako obszar ustawiono cały ekran</translation>
+<translation id="7486227320194954040">Zwiń narzędzia pisaka</translation>
 <translation id="7497767806359279797">Wybierz język i klawiaturę</translation>
 <translation id="7509246181739783082">Weryfikacja tożsamości</translation>
 <translation id="7513622367902644023">Wybrano tryb zrzutu ekranu</translation>
@@ -799,6 +814,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7607002721634913082">Wstrzymano</translation>
 <translation id="7618774594543487847">Neutralny</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">Pisak</translation>
 <translation id="7633755430369750696">Pokaż ustawienia Udostępniania w pobliżu.</translation>
 <translation id="7641938616688887143">Nagraj</translation>
 <translation id="7642647758716480637">Otwórz ustawienia sieci <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7724603315864178912">Wytnij</translation>
 <translation id="7745560842763881396">Pokaż aplikacje na półce</translation>
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
+<translation id="7749640678855296659">Mikrofon jest obecnie wyłączony</translation>
 <translation id="776344839111254542">Kliknij, by wyświetlić szczegóły aktualizacji</translation>
 <translation id="7780159184141939021">Obróć ekran</translation>
 <translation id="7796353162336583443">Kliknij przycisk rysika na półce, by zrobić notatkę lub zrzut ekranu, skorzystać z Asystenta Google albo użyć wskaźnika laserowego lub lupy.</translation>
@@ -861,6 +878,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8113423164597455979">Włączono (wszystkie aplikacje)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
+<translation id="8132487352815776550">Wyłącz napisy</translation>
 <translation id="8132793192354020517">Połączono z <ph name="NAME" /></translation>
 <translation id="813913629614996137">Inicjuję…</translation>
 <translation id="8142441511840089262">Dwukrotne kliknięcie</translation>

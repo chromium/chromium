@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">O Chromium necessita de acesso ao armazenamento para transferir ficheiros.</translation>
 <translation id="2572494885440352020">Ajuda do Chromium</translation>
 <translation id="2577788541081224677">Para aceder aos seus itens do Chromium em todos os seus dispositivos, inicie sessão para ativar a sincronização.</translation>
+<translation id="2580426763510374355">Instalar o Chromium OS</translation>
 <translation id="2583187216237139145">Os dados do Chromium gerados durante a utilização deste perfil (como a criação de marcadores, histórico, palavras-passe e outras definições) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">O SO Chromium tem de ser reiniciado para aplicar a atualização.</translation>
 <translation id="2648074677641340862">Ocorreu um erro no sistema operativo durante a instalação. Descarregue novamente o Chromium.</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5479196819031988440">O SO Chromium não consegue abrir esta página.</translation>
 <translation id="5480860683791598150">O Chromium necessita de aceder à sua localização para a partilhar com este site.</translation>
+<translation id="5481338274774984070">O Chromium recomenda que não instale nem abra este ficheiro.</translation>
 <translation id="549669000822060376">Aguarde até que o Chromium instale as atualizações do sistema mais recentes.</translation>
 <translation id="5496810170689441661">O Chromium está a tentar editar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="5527463683072221100">Abrir PDFs no Chromium</translation>

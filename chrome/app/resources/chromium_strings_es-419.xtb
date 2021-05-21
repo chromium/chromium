@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">Chromium necesita acceder al almacenamiento para descargar archivos</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">A fin de ver tu contenido de Chromium en todos tus dispositivos, accede a tu cuenta para poder activar la sincronización.</translation>
+<translation id="2580426763510374355">Instalar Chromium OS</translation>
 <translation id="2583187216237139145">El administrador del perfil de trabajo puede quitar cualquier dato de Chromium que se genere durante el uso de este perfil (como la creación de favoritos, un historial, contraseñas y otras opciones de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">El Sistema operativo Chromium debe reiniciarse para que se aplique la actualización.</translation>
 <translation id="2648074677641340862">Se produjo un error del sistema operativo durante la instalación. Descarga Chromium nuevamente.</translation>
@@ -134,6 +135,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" />: Versión Beta de Chromium</translation>
 <translation id="5479196819031988440">El Sistema operativo Chromium no puede abrir esta página.</translation>
 <translation id="5480860683791598150">Chromium necesita acceder a tu ubicación para compartirla con este sitio</translation>
+<translation id="5481338274774984070">Chromium te recomienda no descargar ni abrir este archivo.</translation>
 <translation id="549669000822060376">Espera mientras Chromium instala las últimas actualizaciones del sistema.</translation>
 <translation id="5496810170689441661">Chromium está intentando editar contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
 <translation id="5527463683072221100">Abrir archivos PDF en Chromium</translation>

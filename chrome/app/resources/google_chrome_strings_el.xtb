@@ -171,6 +171,7 @@
 <translation id="5394833366792865639">Μοιραστείτε μια καρτέλα του Chrome</translation>
 <translation id="5430073640787465221">Το αρχείο προτιμήσεών σας είναι κατεστραμμένο ή μη έγκυρο.Το Google Chrome δεν μπορεί να ανακτήσει τις ρυθμίσεις σας.</translation>
 <translation id="5434383153637353914">Αυτή η σελίδα σάς επιτρέπει να διαχειρίζεστε τους συνδεδεμένους Λογαριασμούς σας Google. Αυτοί οι λογαριασμοί θα είναι διαθέσιμοι στο πρόγραμμα περιήγησης Chrome και σε εφαρμογές του Play Store, καθώς και σε υπηρεσίες όπως το Gmail, το Drive και το YouTube. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Εγκατάσταση Chrome OS</translation>
 <translation id="556024056938947818">Το Google Chrome επιχειρεί να εμφανίσει κωδικούς πρόσβασης.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Εάν μια ρύθμιση δεν εμφανίζεται σε αυτήν τη σελίδα, αναζητήστε την στις <ph name="LINK_BEGIN" />
@@ -254,6 +255,7 @@
 <translation id="7896673875602241923">Κάποιο άτομο συνδέθηκε προηγουμένως στο Chrome σε αυτόν τον υπολογιστή ως <ph name="ACCOUNT_EMAIL_LAST" />. Δημιουργήστε έναν νέο χρήστη Chrome, για να διατηρείτε τις πληροφορίες σας ξεχωριστά.</translation>
 <translation id="7905891027772979035">Το Chrome δεν μπορεί να ελέγξει τις επεκτάσεις σας. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="7930071585467473040">Το Google Chrome προσπαθεί να αντιγράψει κωδικούς πρόσβασης.</translation>
+<translation id="7951988079884443914">Το Chrome συνιστά να μην κατεβάσετε ή ανοίξετε αυτό το αρχείο.</translation>
 <translation id="7962410387636238736">Αυτός ο υπολογιστής δεν θα λαμβάνει πια ενημερώσεις Google Chrome, επειδή δεν υποστηρίζονται πλέον τα Windows XP και Windows Vista</translation>
 <translation id="79947657522496226">Το Chrome OS έγινε πραγματικότητα χάρη στην ύπαρξη πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_CROS_OSS" />, όπως είναι το <ph name="BEGIN_LINK_LINUX_OSS" />περιβάλλον ανάπτυξης Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Επανεγκατάσταση του Chrome</translation>

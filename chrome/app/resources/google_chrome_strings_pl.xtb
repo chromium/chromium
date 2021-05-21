@@ -166,6 +166,7 @@
 <translation id="5394833366792865639">Udostępnij kartę Chrome</translation>
 <translation id="5430073640787465221">Plik ustawień jest uszkodzony lub nieprawidłowy. Google Chrome nie może odzyskać ustawień.</translation>
 <translation id="5434383153637353914">Na tej stronie możesz zarządzać kontami Google, na które się logujesz. Będą one dostępne w przeglądarce Chrome, w aplikacji Sklep Play i w usługach Google takich jak Gmail, Dysk czy YouTube. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Zainstaluj Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome próbuje pokazać hasła.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Jeśli ustawienia nie widać na tej stronie, zajrzyj do <ph name="LINK_BEGIN" />ustawień systemu operacyjnego Chrome<ph name="LINK_END" /></translation>
@@ -248,6 +249,7 @@
 <translation id="7896673875602241923">Ktoś zalogował się wcześniej w Chrome na tym komputerze jako <ph name="ACCOUNT_EMAIL_LAST" />. Utwórz nowego użytkownika Chrome, by Twoje informacje były przechowywane oddzielnie.</translation>
 <translation id="7905891027772979035">Chrome nie może sprawdzić Twoich rozszerzeń. Spróbuj później.</translation>
 <translation id="7930071585467473040">Google Chrome próbuje skopiować hasła.</translation>
+<translation id="7951988079884443914">Chrome zaleca, aby nie pobierać ani nie otwierać tego pliku.</translation>
 <translation id="7962410387636238736">Google Chrome nie będzie już aktualizować się na tym komputerze, ponieważ systemy Windows XP i Windows Vista nie są już obsługiwane.</translation>
 <translation id="79947657522496226">Opracowanie Chrome OS było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />. To samo dotyczy <ph name="BEGIN_LINK_LINUX_OSS" />środowiska programistycznego Linuksa<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Ponownie zainstaluj Chrome</translation>

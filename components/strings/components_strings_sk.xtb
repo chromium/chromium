@@ -281,6 +281,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1919345977826869612">Reklamy</translation>
 <translation id="1919367280705858090">Pomoc s konkrétnym chybovým hlásením</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Žiadne}=1{1 web}few{# weby}many{# webu}other{# webov}}</translation>
+<translation id="1924727005275031552">Nové</translation>
 <translation id="1945968466830820669">Môžete stratiť prístup do účtu svojej organizácie alebo vám niekto môže ukradnúť totožnosť. Chromium odporúča, aby ste si ihneď zmenili heslo.</translation>
 <translation id="1947454675006758438">Zošiť spinkou vpravo hore</translation>
 <translation id="1958218078413065209">Vaše najvyššie skóre je <ph name="SCORE" />.</translation>
@@ -391,6 +392,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2357481397660644965">Vaše zariadenie spravuje <ph name="DEVICE_MANAGER" /> a váš účet spravuje <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Viaceré</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
+<translation id="2359961752320758691">Číslo vašej virtuálnej karty sa používa.</translation>
 <translation id="2367567093518048410">Úroveň</translation>
 <translation id="2372464001869762664">Po potvrdení sa budú podrobnosti karty z vášho účtu Google zdieľať s týmto webom. V údajoch účtu Plex nájdite overovací kód karty.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -401,6 +403,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="239429038616798445">Tento spôsob dodania nie je k dispozícii. Skúste inú možnosť.</translation>
 <translation id="2396249848217231973">&amp;Vrátiť späť odstránenie</translation>
 <translation id="2410754574180102685">Vládny právny dokument</translation>
+<translation id="2413155254802890957">Staré</translation>
 <translation id="2413528052993050574">Server nedokáže overiť, či ide o doménu <ph name="DOMAIN" />, jej bezpečnostný certifikát bol zrejme zrušený. Môže to byť spôsobené nesprávnou konfiguráciou alebo tým, že vaše pripojenie zachytil útočník.</translation>
 <translation id="2414886740292270097">Tmavý režim</translation>
 <translation id="2438874542388153331">Štyri dierky vpravo</translation>
@@ -894,12 +897,14 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4275830172053184480">Reštart zariadenia</translation>
 <translation id="4277028893293644418">Obnoviť heslo</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Táto karta sa uložila do vášho účtu Google}few{Tieto karty sa uložili do vášho účtu Google}many{Tieto karty sa uložili do vášho účtu Google}other{Tieto karty sa uložili do vášho účtu Google}}</translation>
+<translation id="4287885627794386150">Vhodné pre skúšobné obdobie, ale neaktívne</translation>
 <translation id="4297502707443874121">Miniatúra stránky <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Rozbaliť</translation>
 <translation id="4300675098767811073">Viacero dierok vpravo</translation>
 <translation id="4302514097724775343">Ak chcete hrať, klepnite na dinosaura</translation>
 <translation id="4302965934281694568">Chou3 (obálka)</translation>
 <translation id="4305666528087210886">Súbor sa nepodarilo otvoriť</translation>
+<translation id="4306529830550717874">Chcete adresu uložiť?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokovať (predvolené)</translation>
 <translation id="4314815835985389558">Správa synchronizácie</translation>
@@ -1387,6 +1392,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="610911394827799129">Váš účet Google môže mať ďalšie formy histórie prehliadania na adrese <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Prístup k textu a obrázkom skopírovaným do schránky</translation>
 <translation id="6120179357481664955">Chcete uložiť svoj identifikátor UPI?</translation>
+<translation id="6123290840358279103">Zobraziť virtuálnu kartu</translation>
 <translation id="6124432979022149706">Konektory Chrome Enterprise</translation>
 <translation id="6146055958333702838">Skontrolujte všetky káble a reštartujte všetky používané smerovače, modemy alebo iné sieťové zariadenia.</translation>
 <translation id="614940544461990577">Vyskúšajte:</translation>
@@ -1665,6 +1671,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7300012071106347854">Kobaltová modrá</translation>
 <translation id="7302712225291570345">„<ph name="TEXT" />“</translation>
 <translation id="7304030187361489308">Vysoký</translation>
+<translation id="7305756307268530424">Pomalšie</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Pomocník s pripojením</translation>
 <translation id="7323804146520582233">Skryť sekciu <ph name="SECTION" /></translation>
@@ -1690,6 +1697,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7378594059915113390">Ovládacie prvky médií</translation>
 <translation id="7378627244592794276">Nie</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Nedá sa použiť</translation>
 <translation id="7390545607259442187">Overenie karty</translation>
 <translation id="7399802613464275309">Kontrola bezpečnosti</translation>
 <translation id="7400418766976504921">Webová adresa</translation>
@@ -1741,6 +1749,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7548892272833184391">Oprava chýb pripojenia</translation>
 <translation id="7549584377607005141">Správne zobrazenie tejto webovej stránky si vyžaduje údaje, ktoré ste zadali v minulosti. Tieto údaje môžete poslať znova, ale v tom prípade zopakujete všetky akcie, ktoré sa na tejto stránke vykonali v minulosti.</translation>
 <translation id="7550637293666041147">Vaše používateľské meno v zariadení a Chrome</translation>
+<translation id="755279583747225797">Skúšobné obdobie je aktívne</translation>
 <translation id="7552846755917812628">Vyskúšajte nasledujúce tipy:</translation>
 <translation id="7554475479213504905">Znova načítať a aj tak zobraziť</translation>
 <translation id="7554791636758816595">Nová karta</translation>
@@ -1835,6 +1844,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7894280532028510793">Ak je pravopis správny, <ph name="BEGIN_LINK" />skúste spustiť nástroj Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (obálka)</translation>
 <translation id="7931318309563332511">Neznámy</translation>
+<translation id="793209273132572360">Chcete aktualizovať adresu?</translation>
 <translation id="7932579305932748336">Naniesť povrchovú vrstvu</translation>
 <translation id="79338296614623784">Zadajte platné telefónne číslo</translation>
 <translation id="7934052535022478634">Platba sa uskutočnila</translation>
@@ -1911,7 +1921,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8202097416529803614">Súhrn objednávky</translation>
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (obálka)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Keď resetujete identifikátor, váš aktuálny identifikátor bude neplatný a nový bude vydaný do 1 dňa}=1{Keď resetujete identifikátor, váš aktuálny identifikátor bude neplatný a nový bude vydaný o 1 deň}few{Keď resetujete identifikátor, váš aktuálny identifikátor bude neplatný a nový bude vydaný o {NUM_DAYS} dni}many{Keď resetujete identifikátor, váš aktuálny identifikátor bude neplatný a nový bude vydaný o {NUM_DAYS} dňa}other{Keď resetujete identifikátor, váš aktuálny identifikátor bude neplatný a nový bude vydaný o {NUM_DAYS} dní}}</translation>
 <translation id="8211406090763984747">Spojenie je zabezpečené</translation>
 <translation id="8213464188712611711">Spomienky</translation>
 <translation id="8218327578424803826">Pridelená poloha:</translation>

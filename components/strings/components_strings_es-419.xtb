@@ -281,6 +281,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1919345977826869612">Anuncios</translation>
 <translation id="1919367280705858090">Cómo obtener ayuda con un mensaje de error específico</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ninguno}=1{1 sitio}other{# sitios}}</translation>
+<translation id="1924727005275031552">Nuevas</translation>
 <translation id="1945968466830820669">Es posible que hayas perdido el acceso a la cuenta de tu organización o sufrido un robo de identidad. Chromium te recomienda que cambies la contraseña ahora.</translation>
 <translation id="1947454675006758438">Grapa en la esquina superior derecha</translation>
 <translation id="1958218078413065209">Tu puntuación más alta es <ph name="SCORE" />.</translation>
@@ -391,6 +392,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> y <ph name="ACCOUNT_MANAGER" /> administran tu dispositivo y tu cuenta, respectivamente.</translation>
 <translation id="2359629602545592467">Varias</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2359961752320758691">Se aplicó su número de tarjeta virtual.</translation>
 <translation id="2367567093518048410">Nivel</translation>
 <translation id="2372464001869762664">Después de que confirmes la información, se compartirán con este sitio los detalles de la tarjeta registrados en tu Cuenta de Google. Puedes consultar el código CVC en los detalles de tu cuenta de Plex.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -401,6 +403,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="239429038616798445">El método de envío no está disponible. Prueba otro método.</translation>
 <translation id="2396249848217231973">&amp;Deshacer Eliminar</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">Antiguas</translation>
 <translation id="2413528052993050574">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" /> y se podría revocar el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="2414886740292270097">Oscuro</translation>
 <translation id="2438874542388153331">Perforación cuádruple a la derecha</translation>
@@ -899,12 +902,14 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
 <translation id="4277028893293644418">Restablecer contraseña</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Se guardó esta tarjeta en tu Cuenta de Google}other{Se guardaron estas tarjetas en tu Cuenta de Google}}</translation>
+<translation id="4287885627794386150">Apta para pruebas, pero no está activada</translation>
 <translation id="4297502707443874121">Miniatura para la página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4300675098767811073">Perforaciones múltiples a la derecha</translation>
 <translation id="4302514097724775343">Presiona el dinosaurio para jugar</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">No se pudo acceder a tu archivo</translation>
+<translation id="4306529830550717874">¿Quieres guardar la dirección?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Administrar la sincronización</translation>
@@ -1392,6 +1397,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="610911394827799129">Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Ver el texto y las imágenes copiados en el portapapeles</translation>
 <translation id="6120179357481664955">¿Recuerdas tu ID de IUP?</translation>
+<translation id="6123290840358279103">Ver la tarjeta virtual</translation>
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
 <translation id="6146055958333702838">Revisa los cables y reinicia los routers, módems u otros dispositivos
         de red que estés usando.</translation>
@@ -1671,6 +1677,7 @@ Detalles adicionales:
 <translation id="7300012071106347854">Azul cobalto</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">Alto</translation>
+<translation id="7305756307268530424">Empezar más despacio</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ayuda con la conexión</translation>
 <translation id="7323804146520582233">Ocultar la sección "<ph name="SECTION" />"</translation>
@@ -1696,6 +1703,7 @@ Detalles adicionales:
 <translation id="7378594059915113390">Controles de contenido multimedia</translation>
 <translation id="7378627244592794276">No</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">No aplicable</translation>
 <translation id="7390545607259442187">Confirmar tarjeta</translation>
 <translation id="7399802613464275309">Verificación de seguridad</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1747,6 +1755,7 @@ Detalles adicionales:
 <translation id="7548892272833184391">Cómo corregir errores de conexión</translation>
 <translation id="7549584377607005141">Esta página web necesita los datos ingresados anteriormente para mostrarse correctamente. Puedes volver a enviar los datos, pero ten en cuenta que se repetirán las acciones que la página haya realizado anteriormente.</translation>
 <translation id="7550637293666041147">Tu nombre de usuario de Chrome y el de tu dispositivo</translation>
+<translation id="755279583747225797">La prueba está activada</translation>
 <translation id="7552846755917812628">Intenta las siguientes sugerencias:</translation>
 <translation id="7554475479213504905">Volver a cargar y mostrar de todas formas</translation>
 <translation id="7554791636758816595">Nueva pestaña</translation>
@@ -1841,6 +1850,7 @@ Detalles adicionales:
 <translation id="7894280532028510793">Si no hay errores, <ph name="BEGIN_LINK" />prueba ejecutar el diagnóstico de red<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7931318309563332511">Desconocido</translation>
+<translation id="793209273132572360">¿Quieres actualizar la dirección?</translation>
 <translation id="7932579305932748336">Recubrimiento</translation>
 <translation id="79338296614623784">Ingresa un número de teléfono válido</translation>
 <translation id="7934052535022478634">Se completó el pago</translation>
@@ -1917,7 +1927,6 @@ Detalles adicionales:
 <translation id="8202097416529803614">Resumen del pedido</translation>
 <translation id="8202370299023114387">Conflicto</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Si restableces el ID, tu ID actual dejará de ser válido y se emitirá uno nuevo en menos de 1 día}=1{Si restableces el ID, tu ID actual dejará de ser válido y se emitirá uno nuevo en 1 día}other{Si restableces el ID, tu ID actual dejará de ser válido y se emitirá uno nuevo en {NUM_DAYS} días}}</translation>
 <translation id="8211406090763984747">La conexión es segura</translation>
 <translation id="8213464188712611711">Recuerdos</translation>
 <translation id="8218327578424803826">Ubicación asignada:</translation>

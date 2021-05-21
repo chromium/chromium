@@ -175,6 +175,7 @@
 
 Google Chrome таны тохируулгыг дахин сэргээх боломжгүй байна.</translation>
 <translation id="5434383153637353914">Энэ хуудас танд нэвтэрсэн Google бүртгэлүүдээ удирдах боломжийг олгоно. Эдгээр бүртгэл Chrome хөтөч, Play Store-н аппууд болон Gmail, Драйв ба YouTube зэрэг үйлчилгээнүүдэд боломжтой болно. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Chrome OS-г суулгах</translation>
 <translation id="556024056938947818">Google Chrome нууц харуулахыг хичээж байна.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Хэрэв энэ хуудсан дээр тохиргоог харуулахгүй байгаа бол <ph name="LINK_BEGIN" />
@@ -258,6 +259,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7896673875602241923">Өмнө нь хэн нэгэн энэ компьютероос Chrome-д <ph name="ACCOUNT_EMAIL_LAST" /> бүртгэлээр нэвтэрсэн байна. Мэдээллээ тусaд нь байлгахын тулд Chrome-н шинэ хэрэглэгч үүсгэнэ үү.</translation>
 <translation id="7905891027772979035">Chrome таны өргөтгөлүүдийг шалгах боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="7930071585467473040">Google Chrome нь нууц үгс хуулахыг оролдож байна.</translation>
+<translation id="7951988079884443914">Chrome таныг энэ файлыг татахгүй эсвэл нээхгүй байхыг зөвлөж байна.</translation>
 <translation id="7962410387636238736">Энэ компьютер Windows XP болон Windows Vista-г дэмжихээ больсон тул цаашид Google Chrome-н шинэчлэлтийг авахгүй.</translation>
 <translation id="79947657522496226">Chrome үйлдлийн системийг <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамж<ph name="END_LINK_CROS_OSS" />-аар боломжтой болгосон.</translation>
 <translation id="8008534537613507642">Chrome-ийг дахин суулгах</translation>

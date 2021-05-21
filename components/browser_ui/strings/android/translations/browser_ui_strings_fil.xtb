@@ -3,6 +3,7 @@
 <translationbundle lang="fil">
 <translation id="1006017844123154345">Buksan Online</translation>
 <translation id="1044891598689252897">Gagana nang normal ang mga site</translation>
+<translation id="1100504063505580045">Kasalukuyang icon</translation>
 <translation id="1124090076051167250">Iki-clear nito ang <ph name="DATASIZE" /> ng data at cookies na na-store ng mga site o ng mga app sa iyong Home screen.</translation>
 <translation id="1124772482545689468">User</translation>
 <translation id="1178581264944972037">I-pause</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">Mikropono</translation>
 <translation id="3277252321222022663">Payagan ang mga site na i-access ang mga sensor (inirerekomenda)</translation>
 <translation id="3295602654194328831">Itago ang Impormasyon</translation>
+<translation id="3317660236277031814">Binago ng isang web app na na-install mo ang icon nito.</translation>
 <translation id="3328801116991980348">Impormasyon ng site</translation>
 <translation id="3333961966071413176">Lahat ng contact</translation>
 <translation id="3386292677130313581">Magtanong bago payagan ang mga site na malaman ang iyong lokasyon (inirerekomenda)</translation>
+<translation id="345699454248713913">Binago ng isang web app na na-install mo ang pangalan nito.</translation>
 <translation id="3538390592868664640">I-block ang mga site sa paggawa ng 3D na mapa ng iyong kapaligiran o pagsubaybay sa posisyon ng camera</translation>
 <translation id="3551268116566418498">Umalis sa Incognito mode?</translation>
 <translation id="3586500876634962664">Paggamit ng camera at mikropono</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">Buksan ang Mga Setting ng Lokasyon</translation>
 <translation id="4226663524361240545">Maaaring mag-vibrate ang device dahil sa mga notification</translation>
 <translation id="4259722352634471385">Naka-block ang navigation: <ph name="URL" /></translation>
+<translation id="4277239631747669329">Binago ng isang web app na na-install mo ang pangalan at icon nito.</translation>
 <translation id="4278390842282768270">Pinapayagan</translation>
 <translation id="429312253194641664">May site na nagpe-play ng media</translation>
 <translation id="42981349822642051">Palawakin</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">Payagan ang mga site na magpatakbo ng JavaScript (inirerekomenda)</translation>
 <translation id="534295439873310000">Mga NFC device</translation>
 <translation id="5354152178998424783">Iki-clear nito ang <ph name="DATASIZE" /> ng data at cookies na na-store ng mga site.</translation>
+<translation id="536508626067510330">I-update ang icon sa iyong homescreen?</translation>
 <translation id="5391532827096253100">Hindi secure ang iyong koneksyon sa site na ito. Impormasyon ng site</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 pa)}one{(+ # pa)}other{(+ # pa)}}</translation>
 <translation id="5403592356182871684">Mga Pangalan</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> ang lumipas mula sa <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">I-block ang mga ad sa mga site na nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad</translation>
+<translation id="549957179819296104">Bagong icon</translation>
 <translation id="5502860503640766021">Pinapayagan ang <ph name="PERMISSION_1" />, naka-block ang <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Hindi puwedeng humiling ang mga site na magpadala ng mga notification</translation>
 <translation id="5516455585884385570">Buksan ang mga setting ng notification</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5876056640971328065">I-pause ang video</translation>
+<translation id="5904826301761575486">I-update ang pangalan at icon sa iyong homescreen?</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5922853908706496913">Ibinabahagi ang iyong screen</translation>
 <translation id="5939518447894949180">I-reset</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">I-block ang mga third-party na cookie</translation>
 <translation id="6206551242102657620">Secure ang koneksyon. Impormasyon ng site</translation>
 <translation id="6216432067784365534">Mga Opsyon sa <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6260852843601447737">Isara at iulat ang pang-aabuso</translation>
 <translation id="6262279340360821358">Naka-block ang <ph name="PERMISSION_1" /> at <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Puwedeng humiling ang mga site na magpadala ng mga notification</translation>
 <translation id="6295158916970320988">Lahat ng site</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">Buong screen</translation>
 <translation id="857943718398505171">Pinapayagan (inirerekomenda)</translation>
 <translation id="8609465669617005112">Lumipat</translation>
+<translation id="861748745608658996">I-update ang pangalan sa iyong homescreen?</translation>
 <translation id="8676374126336081632">I-clear ang input</translation>
 <translation id="868929229000858085">Maghanap sa iyong mga contact</translation>
 <translation id="8702612070107455751">Maki-clear ang anumang offline na data.</translation>

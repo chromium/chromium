@@ -24,7 +24,6 @@
 <translation id="1148499908455722006">የ<ph name="USER_NAME" /> የመረጃ መገናኛን ክፈት</translation>
 <translation id="1153356358378277386">የተጣመሩ መሣሪያዎች</translation>
 <translation id="1165712434476988950">ዝማኔውን ለመተግበር የመሣሪያ ዳግም ማስጀመር ያስፈልጋል።</translation>
-<translation id="1170240434488307589">የመሣሪያ ማይክሮፎን አዝራር ድምጸ-ከል ተደርጓል።</translation>
 <translation id="1175572348579024023">ሸብልል</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
@@ -373,7 +372,6 @@
 <translation id="4021716437419160885">ወደ ታች ይሸብልሉ</translation>
 <translation id="4028481283645788203">ለበለጠ ደህንነት የይለፍ ቃል ያስፈልጋል</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023"><ph name="LAUNCHER_KEY_NAME" /> + የቁጥር የቁልፍ ሰሌዳ አቋራጭ ተለውጧል። F-ቁልፎችን ለመጠቀም በላይኛው ረድፍ ላይ የ<ph name="LAUNCHER_KEY_NAME" /> ቁል + አንድ ቁልፍ ይጫኑ።</translation>
 <translation id="4042660782729322247">ማያ ገጽዎን እያጋሩ ነው</translation>
 <translation id="4057003836560082631">የአሳሽ ትር <ph name="INDEX" /> ከ<ph name="TOTAL_COUNT" />። <ph name="SITE_TITLE" />፣ <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ቅናሽ ለአንድ መተግበሪያ}one{ቅናሽ ለ# መተግበሪያዎች}other{ቅናሽ ለ# መተግበሪያዎች}}</translation>

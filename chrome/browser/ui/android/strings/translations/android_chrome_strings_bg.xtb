@@ -186,6 +186,7 @@
 <translation id="22320125457191592">За вас</translation>
 <translation id="2234876718134438132">Синхронизиране и услуги на Google</translation>
 <translation id="2239812875700136898">Контролирайте материалите от бутона „Опции за Discover“</translation>
+<translation id="2251971221270904886">Когато настройката е включена и състоянието е активно, Chrome използва историята ви на сърфиране в продължение на 7 дни, за да определи групата, или кохортата, от която сте част. Рекламодателите могат да избират реклами за групата. Историята ви на сърфиране остава частна на устройството ви. Този експеримент е активен само в <ph name="BEGIN_LINK" />някои региони<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Експортиране на паролите…</translation>
 <translation id="2276696007612801991">Влезте в профила си в Google, за да бъдат проверени паролите ви</translation>
 <translation id="2278052315791335171">Изтриването на тази парола няма да премахне профила ви за <ph name="SITE" /></translation>
@@ -275,6 +276,7 @@
 <translation id="2781151931089541271">Остава 1 сек</translation>
 <translation id="2801022321632964776">Актуализирайте, за да получите своя език в най-новата версия на Chrome</translation>
 <translation id="2805756323405976993">Приложения</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Преглеждайте и управлявайте запазените пароли в <ph name="BEGIN_LINK" />профила си в Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Влезте в профила си и включете синхронизирането, за да получите отметките си на всичките си устройства</translation>
 <translation id="2827278682606527653">Менюто на картата за емисията се показва на половината височина</translation>
@@ -293,6 +295,7 @@
 <translation id="2901411048554510387">Показват се предложения за <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Списъкът с устройства, с които да се сподели даден раздел, е отворен на пълната височина.</translation>
 <translation id="2905036901251765993">За да споделите с хората в близост, те трябва да сканират този код за бърза реакция</translation>
+<translation id="2908243544703713905">Непрочетените материали са готови</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Управлявайте темите, от които се интересувате</translation>
 <translation id="2923908459366352541">Името е невалидно</translation>
@@ -317,6 +320,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> отметка}other{<ph name="BOOKMARKS_COUNT_MANY" /> отметки}}</translation>
 <translation id="3062802207422175757">Статии, свързани с интересите ви, в Chrome</translation>
 <translation id="3070005020161560471">Да се превежда автоматично от</translation>
+<translation id="3083531420240576529">Можете да зададете повторно групата си по всяко време. За определянето ѝ са необходими 7 дни.</translation>
 <translation id="3091010850649238832">Показване на съдържанието в буферната памет</translation>
 <translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
 <translation id="3114507951000454849">Прочетете днешните новини <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4060598801229743805">Опциите са в горната част на екрана</translation>
 <translation id="4062305924942672200">Правна информация</translation>
+<translation id="4082818367361753283">Идентификационен номер на групата</translation>
 <translation id="4084682180776658562">Отметка</translation>
 <translation id="4084712963632273211">От <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />показва се от Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Да се изтрият ли данните на приложенията?</translation>
@@ -533,7 +538,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4583164079174244168">{MINUTES,plural, =1{преди # минута}other{преди # минути}}</translation>
 <translation id="4587589328781138893">Сайтове</translation>
 <translation id="4594952190837476234">Тази офлайн страница е от <ph name="CREATION_TIME" /> и може да се различава от онлайн версията.</translation>
-<translation id="4615382002648696011">Следите емисията. Има непрочетени материали</translation>
 <translation id="4616150815774728855">Отваряне на <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Потвърдете, че сте вие</translation>
 <translation id="4634124774493850572">Използване на паролата</translation>
@@ -889,6 +893,11 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6699370405921460408">Сървърите на Google ще оптимизират посещаваните от вас страници.</translation>
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Предишно</translation>
+<translation id="671333169801287922">Когато настройката е включена, сайтовете може да използват описаните тук техники за защита на поверителността, за да предоставят съдържанието и услугите си. Техниките съдържат алтернативи на проследяването в различни сайтове. С течение на времето може да бъдат добавени други експерименти.
+
+<ph name="BEGIN_LIST_ITEM1" />Рекламодателите и издателите могат да използват техниката FLoC.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Те могат да проучват ефективността на рекламите по начин, който не проследява действията ви в различните сайтове.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Таймерът ви за <ph name="FQDN" /> изтече и ще се стартира отново утре.</translation>
 <translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="6738867403308150051">Изтегля се…</translation>
@@ -1079,6 +1088,9 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7971136598759319605">Активно преди 1 ден</translation>
 <translation id="7975379999046275268">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Предварително зареждане на страниците с цел по-бързо сърфиране и търсене</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> е активна инициатива за разработване на нови технологии, която ще ви предпази от механизмите за проследяване, съхранявайки отворената мрежа.
+
+Експериментите за Privacy Sandbox продължават да се разработват активно и са налице в избрани региони. Засега сайтовете може да изпробват Privacy Sandbox и да продължат да използват настоящите уеб технологии, като „бисквитките“ на трети страни.</translation>
 <translation id="7986497153528221272">За да видите паролите, първо настройте заключване на екрана на устройството си</translation>
 <translation id="7998918019931843664">Повторно отваряне на затворения раздел</translation>
 <translation id="8004582292198964060">Браузър</translation>
@@ -1188,7 +1200,9 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8662811608048051533">Ще излезете от повечето сайтове.</translation>
 <translation id="8664979001105139458">Името на файла вече съществува</translation>
 <translation id="8676789164135894283">Потвърждения при вход</translation>
+<translation id="867767487203716855">Следваща актуализация</translation>
 <translation id="8683039184091909753">изображение</translation>
+<translation id="8683081248374354009">Повторно задаване на групата</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Сила на сигнала: # чертичка}other{Сила на сигнала: # чертички}}</translation>
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8699120352855309748">Да не се предлага превод от тези езици</translation>

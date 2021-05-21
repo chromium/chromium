@@ -281,6 +281,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1919345977826869612">Iklan</translation>
 <translation id="1919367280705858090">Mendapatkan bantuan terkait pesan error tertentu</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Tidak ada}=1{1 situs}other{# situs}}</translation>
+<translation id="1924727005275031552">Baru</translation>
 <translation id="1945968466830820669">Anda dapat kehilangan akses ke akun organisasi atau mengalami pencurian identitas. Chromium menyarankan Anda untuk mengubah sandi sekarang.</translation>
 <translation id="1947454675006758438">Jepretan di kanan atas</translation>
 <translation id="1958218078413065209">Skor tertinggi Anda adalah <ph name="SCORE" />.</translation>
@@ -391,6 +392,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2357481397660644965">Perangkat Anda dikelola oleh <ph name="DEVICE_MANAGER" /> dan akun Anda dikelola oleh <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Beberapa</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
+<translation id="2359961752320758691">Nomor kartu virtual Anda diterapkan.</translation>
 <translation id="2367567093518048410">Tingkat</translation>
 <translation id="2372464001869762664">Setelah mengonfirmasi, detail kartu dari Akun Google Anda akan dibagikan ke situs ini. Temukan CVC di detail Akun Plex Anda.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -401,6 +403,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="239429038616798445">Metode pengiriman tidak tersedia. Coba metode lain.</translation>
 <translation id="2396249848217231973">&amp;Urungkan penghapusan</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">Lama</translation>
 <translation id="2413528052993050574">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya mungkin dicabut. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="2414886740292270097">Gelap</translation>
 <translation id="2438874542388153331">Empat lubang di kanan</translation>
@@ -899,12 +902,14 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4275830172053184480">Mulai ulang perangkat Anda</translation>
 <translation id="4277028893293644418">Reset sandi</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Kartu ini telah disimpan di Akun Google Anda}other{Kartu-kartu ini telah disimpan di Akun Google Anda}}</translation>
+<translation id="4287885627794386150">Memenuhi syarat untuk uji coba tetapi tidak aktif</translation>
 <translation id="4297502707443874121">Thumbnail untuk halaman <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Luaskan</translation>
 <translation id="4300675098767811073">Beberapa lubang di kanan</translation>
 <translation id="4302514097724775343">Ketuk dinosaurus untuk bermain</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">File Anda tidak dapat diakses</translation>
+<translation id="4306529830550717874">Simpan alamat?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokir (default)</translation>
 <translation id="4314815835985389558">Kelola sinkronisasi</translation>
@@ -1392,6 +1397,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="610911394827799129">Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Melihat teks dan gambar yang disalin ke papan klip</translation>
 <translation id="6120179357481664955">Ingat ID UPI Anda?</translation>
+<translation id="6123290840358279103">Lihat kartu virtual</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6146055958333702838">Periksa semua kabel dan boot ulang router, modem, atau perangkat
     jaringan lain yang mungkin Anda gunakan.</translation>
@@ -1669,6 +1675,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7300012071106347854">Biru Kobalt</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">Tinggi</translation>
+<translation id="7305756307268530424">Mulai lebih lambat</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Bantuan Koneksi</translation>
 <translation id="7323804146520582233">Sembunyikan bagian "<ph name="SECTION" />"</translation>
@@ -1694,6 +1701,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7378594059915113390">Kontrol Media</translation>
 <translation id="7378627244592794276">Tidak</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Tidak berlaku</translation>
 <translation id="7390545607259442187">Konfirmasi Kartu</translation>
 <translation id="7399802613464275309">Pemeriksaan Keselamatan</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1745,6 +1753,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7548892272833184391">Memperbaiki error koneksi</translation>
 <translation id="7549584377607005141">Halaman web ini membutuhkan data yang Anda masukkan sebelumnya agar dapat ditampilkan dengan benar. Anda dapat mengirimkan data ini lagi, namun dengan begitu Anda akan mengulangi tindakan apa pun yang sebelumnya dilakukan oleh halaman ini.</translation>
 <translation id="7550637293666041147">Nama pengguna perangkat dan nama pengguna Chrome Anda</translation>
+<translation id="755279583747225797">Uji coba aktif</translation>
 <translation id="7552846755917812628">Coba tips berikut:</translation>
 <translation id="7554475479213504905">Tetap muat ulang dan tampilkan</translation>
 <translation id="7554791636758816595">Tab Baru</translation>
@@ -1839,6 +1848,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7894280532028510793">Jika ejaan sudah benar, <ph name="BEGIN_LINK" />coba jalankan Diagnostik Jaringan<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7931318309563332511">Tidak dikenal</translation>
+<translation id="793209273132572360">Perbarui alamat?</translation>
 <translation id="7932579305932748336">Lapisan</translation>
 <translation id="79338296614623784">Masukkan nomor telepon yang valid</translation>
 <translation id="7934052535022478634">Pembayaran selesai</translation>
@@ -1915,7 +1925,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8202097416529803614">Ringkasan pesanan</translation>
 <translation id="8202370299023114387">Konflik</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Jika Anda mereset ID, ID saat ini akan menjadi tidak valid dan ID baru akan dikirimkan dalam waktu kurang dari 1 hari}=1{Jika Anda mereset ID, ID saat ini akan menjadi tidak valid dan ID baru akan dikirimkan dalam waktu 1 hari}other{Jika Anda mereset ID, ID saat ini akan menjadi tidak valid dan ID baru akan dikirimkan dalam waktu {NUM_DAYS} hari}}</translation>
 <translation id="8211406090763984747">Koneksi aman</translation>
 <translation id="8213464188712611711">Memori</translation>
 <translation id="8218327578424803826">Lokasi yang Ditetapkan:</translation>

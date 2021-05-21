@@ -40,6 +40,7 @@
 <translation id="2560420686485554789">Ֆայլեր ներբեռնելու համար Chromium-ին անհրաժեշտ է պահեստի օգտագործման թույլտվություն</translation>
 <translation id="2572494885440352020">Chromium օգնական</translation>
 <translation id="2577788541081224677">Chromium-ի ձեր տվյալները բոլոր սարքերում օգտագործելու համար մուտք գործեք և միացրեք համաժամացումը։</translation>
+<translation id="2580426763510374355">Տեղադրել Chromium OS-ը</translation>
 <translation id="2583187216237139145">Աշխատանքային պրոֆիլի ադմինիստրատորը կարող է ջնջել Chromium-ի բոլոր տվյալները, որոնք ստեղծվում են այս պրոֆիլի օգտագործման ընթացքում (օրինակ՝ էջանիշներ, պատմություն, գաղտնաբառեր և այլ կարգավորումներ)։ <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Թարմացումը կիրառելու համար հարկավոր է վերագործարկել Chromium OS-ը:</translation>
 <translation id="2648074677641340862">Տեղադրման ժամանակ օպերացիոն համակարգի սխալ տեղի ունեցավ: Նորից տեղադրեք Chromium-ը:</translation>
@@ -138,6 +139,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium բետա</translation>
 <translation id="5479196819031988440">Chromium OS-ը չի կարող բացել այս էջը:</translation>
 <translation id="5480860683791598150">Chromium-ին այս կայքի համար անհրաժեշտ է ձեզ տեղորոշելու թույլտվություն</translation>
+<translation id="5481338274774984070">Chromium-ը խորհուրդ է տալիս ձեզ չներբեռնել և չբացել այս ֆայլը։</translation>
 <translation id="549669000822060376">Սպասեք` մինչ Chromium-ը տեղադրում է համակարգի նորագույն թարմացումները:</translation>
 <translation id="5496810170689441661">Chromium-ը փորձում է փոխել գաղտնաբառերը: Թույլատրելու համար մուտքագրեք Windows-ի ձեր գաղտնաբառը:</translation>
 <translation id="5527463683072221100">Բացել PDF ֆայլեր Chromium-ում</translation>

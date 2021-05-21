@@ -186,6 +186,7 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="22320125457191592">Dành cho bạn</translation>
 <translation id="2234876718134438132">Đồng bộ hóa và các dịch vụ của Google</translation>
 <translation id="2239812875700136898">Kiểm soát các tin bài của bạn bằng các Tùy chọn của nút Khám phá</translation>
+<translation id="2251971221270904886">Khi tùy chọn này bật và trạng thái là đang hoạt động, Chrome sẽ dùng nhật ký duyệt web của bạn trong hơn 7 ngày để xác định một nhóm hoặc “nhóm thuần tập” mà bạn tham gia. Các nhà quảng cáo có thể chọn quảng cáo cho nhóm đó. Nhật ký duyệt web được lưu giữ riêng tư trên thiết bị của bạn. Chế độ dùng thử này chỉ hoạt động ở <ph name="BEGIN_LINK" />một số khu vực<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Xuất mật khẩu...</translation>
 <translation id="2276696007612801991">Đăng nhập vào Tài khoản Google của bạn để kiểm tra mật khẩu</translation>
 <translation id="2278052315791335171">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="SITE" /></translation>
@@ -275,6 +276,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2781151931089541271">Còn 1 giây</translation>
 <translation id="2801022321632964776">Hãy cập nhật để dùng ngôn ngữ của bạn trong phiên bản Chrome mới nhất</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
+<translation id="2806840421670364300">FLoC (Học liên kết theo nhóm cùng sở thích)</translation>
 <translation id="281504910091592009">Xem và quản lý các mật khẩu đã lưu trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> của bạn</translation>
 <translation id="2818669890320396765">Để sử dụng dấu trang trên tất cả các thiết bị, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
 <translation id="2827278682606527653">Trình đơn thẻ nguồn cấp dữ liệu mở ở nửa dưới của màn hình</translation>
@@ -293,6 +295,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2901411048554510387">Hiển thị nội dung đề xuất cho <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã mở trên toàn màn hình.</translation>
 <translation id="2905036901251765993">Để chia sẻ với những người ở gần, hãy cho phép họ quét mã QR này</translation>
+<translation id="2908243544703713905">Có tin bài chưa đọc</translation>
 <translation id="2909615210195135082">Nền tảng thông báo của Google</translation>
 <translation id="2912296070571964914">Quản lý các chủ đề mà bạn quan tâm</translation>
 <translation id="2923908459366352541">Tên không hợp lệ</translation>
@@ -317,6 +320,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> dấu trang}other{<ph name="BOOKMARKS_COUNT_MANY" /> dấu trang}}</translation>
 <translation id="3062802207422175757">Các bài viết về chủ đề mà bạn quan tâm trên Chrome</translation>
 <translation id="3070005020161560471">Tự động dịch</translation>
+<translation id="3083531420240576529">Bạn có thể đặt lại nhóm của mình bất cứ lúc nào. Quá trình xác định nhóm của bạn sẽ mất 7 ngày.</translation>
 <translation id="3091010850649238832">Hiện các nội dung của bảng nhớ tạm</translation>
 <translation id="3098745985164956033">Một số hình ảnh được gửi đến Google để cải thiện nội dung mô tả cho bạn</translation>
 <translation id="3114507951000454849">Đọc tin tức hôm nay <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="4056223980640387499">Màu nâu đỏ</translation>
 <translation id="4060598801229743805">Có các tùy chọn ở gần đầu màn hình</translation>
 <translation id="4062305924942672200">Thông tin pháp lý</translation>
+<translation id="4082818367361753283">Mã nhóm</translation>
 <translation id="4084682180776658562">Dấu trang</translation>
 <translation id="4084712963632273211">Từ <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Do Google phân phối<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Xóa dữ liệu ứng dụng?</translation>
@@ -533,7 +538,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4583164079174244168">{MINUTES,plural, =1{# phút trước}other{# phút trước}}</translation>
 <translation id="4587589328781138893">Trang web</translation>
 <translation id="4594952190837476234">Trang ngoại tuyến này được tạo từ lúc <ph name="CREATION_TIME" /> và có thể khác với phiên bản trực tuyến.</translation>
-<translation id="4615382002648696011">Đang theo dõi, có tin bài chưa đọc</translation>
 <translation id="4616150815774728855">Mở <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Xác minh danh tính của bạn</translation>
 <translation id="4634124774493850572">Sử dụng mật khẩu</translation>
@@ -889,6 +893,11 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6699370405921460408">Máy chủ của Google sẽ tối ưu hóa các trang bạn truy cập.</translation>
 <translation id="670498945988402717">Đã kiểm tra hôm qua</translation>
 <translation id="6710213216561001401">Trước</translation>
+<translation id="671333169801287922">Khi bạn bật Hộp cát về quyền riêng tư, các trang web có thể dùng kỹ thuật bảo vệ quyền riêng tư theo mô tả ở đây để cung cấp nội dung và dịch vụ của mình. Các kỹ thuật này gồm có những biện pháp thay thế cho hoạt động theo dõi trên nhiều trang web. Theo thời gian, chúng tôi có thể bổ sung thêm nhiều chế độ dùng thử khác.
+
+<ph name="BEGIN_LIST_ITEM1" />Các nhà quảng cáo và nhà xuất bản có thể dùng kỹ thuật FLoC (Học liên kết theo nhóm cùng sở thích).<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Các nhà quảng cáo và nhà xuất bản có thể nghiên cứu tính hiệu quả của quảng cáo mà không cần theo dõi bạn trên các trang web.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Thời gian hẹn giờ của <ph name="FQDN" /> đã hết. Thời gian hẹn giờ sẽ bắt đầu lại vào ngày mai.</translation>
 <translation id="6738516213925468394">Dữ liệu của bạn đã được mã hóa bằng <ph name="BEGIN_LINK" />cụm mật khẩu đồng bộ hóa<ph name="END_LINK" /> vào <ph name="TIME" />. Hãy nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
 <translation id="6738867403308150051">Đang tải xuống...</translation>
@@ -1079,6 +1088,9 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7971136598759319605">Hoạt động 1 ngày trước</translation>
 <translation id="7975379999046275268">Xem trước trang <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Tải trước các trang để tìm kiếm và duyệt web nhanh hơn</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Hộp cát về quyền riêng tư<ph name="END_LINK" /> là một sáng kiến đang được thực hiện nhằm phát triển các công nghệ mới sẽ bảo vệ bạn khỏi các cơ chế theo dõi trong khi vẫn duy trì môi trường web mở.
+
+Chế độ dùng thử Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển và được cung cấp ở một số khu vực. Các trang hiện web có thể dùng thử Hộp cát về quyền riêng tư trong khi tiếp tục sử dụng các công nghệ web hiện tại như cookie của bên thứ ba.</translation>
 <translation id="7986497153528221272">Để xem mật khẩu, trước tiên, hãy đặt phương thức khóa màn hình trên thiết bị của bạn</translation>
 <translation id="7998918019931843664">Mở lại thẻ đã đóng</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
@@ -1188,7 +1200,9 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="8662811608048051533">Đăng xuất bạn khỏi hầu hết các trang web.</translation>
 <translation id="8664979001105139458">Tên tệp đã tồn tại</translation>
 <translation id="8676789164135894283">Xác minh việc đăng nhập</translation>
+<translation id="867767487203716855">Thời gian cập nhật tiếp theo</translation>
 <translation id="8683039184091909753">hình ảnh</translation>
+<translation id="8683081248374354009">Đặt lại nhóm</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Mức cường độ tín hiệu: # vạch}other{Mức cường độ tín hiệu: # vạch}}</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699120352855309748">Không đề xuất dịch những ngôn ngữ này</translation>

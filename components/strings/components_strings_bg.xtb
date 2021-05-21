@@ -283,6 +283,7 @@
 <translation id="1919345977826869612">Реклами</translation>
 <translation id="1919367280705858090">Получаване на помощ за конкретно съобщение за грешка</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Няма}=1{1 сайт}other{# сайта}}</translation>
+<translation id="1924727005275031552">Нов</translation>
 <translation id="1945968466830820669">Възможно е да загубите достъп до профила си в организацията или самоличността ви да бъде открадната. Chromium препоръчва да промените паролата си сега.</translation>
 <translation id="1947454675006758438">Телбодиране горе вдясно</translation>
 <translation id="1958218078413065209">Най-високият ви резултат е <ph name="SCORE" />.</translation>
@@ -393,6 +394,7 @@
 <translation id="2357481397660644965">Устройството ви се управлява от <ph name="DEVICE_MANAGER" />, а профилът ви се управлява от <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Няколко</translation>
 <translation id="2359808026110333948">Напред</translation>
+<translation id="2359961752320758691">Номерът на виртуалната ви карта е приложен.</translation>
 <translation id="2367567093518048410">Ниво</translation>
 <translation id="2372464001869762664">След като потвърдите картата си, данните за нея от профила ви в Google ще бъдат споделени с този сайт. Ще намерите кода за проверка в подробностите за профила ви в Plex.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -403,6 +405,7 @@
 <translation id="239429038616798445">Този начин на доставка не се поддържа. Опитайте с друг.</translation>
 <translation id="2396249848217231973">&amp;Отмяна на изтриването</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">Стар</translation>
 <translation id="2413528052993050574">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; възможно е сертификатът му за сигурност да е оттеглен. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="2414886740292270097">Тъмно</translation>
 <translation id="2438874542388153331">Четворно перфориране отдясно</translation>
@@ -905,12 +908,14 @@
 <translation id="4275830172053184480">Рестартиране на устройството ви</translation>
 <translation id="4277028893293644418">Повторно задаване на паролата</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Тази карта е запазена в профила ви в Google}other{Тези карти са запазени в профила ви в Google}}</translation>
+<translation id="4287885627794386150">Отговаря на условията за изпробване, но не е активно</translation>
 <translation id="4297502707443874121">Миниизображение на страницата <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Разгъване</translation>
 <translation id="4300675098767811073">Няколко перфорации отдясно</translation>
 <translation id="4302514097724775343">Докоснете динозавъра, за да играете</translation>
 <translation id="4302965934281694568">Chou3 (плик)</translation>
 <translation id="4305666528087210886">Няма достъп до файла</translation>
+<translation id="4306529830550717874">Да се запази ли адресът?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокиране (по подразбиране)</translation>
 <translation id="4314815835985389558">Управление на синхронизирането</translation>
@@ -1398,6 +1403,7 @@
 <translation id="610911394827799129">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Да преглежда текста и изображенията, копирани в буферната памет</translation>
 <translation id="6120179357481664955">Помните ли идентификационния си номер за UPI?</translation>
+<translation id="6123290840358279103">Преглед на виртуалната карта</translation>
 <translation id="6124432979022149706">Конектори за Chrome Enterprise</translation>
 <translation id="6146055958333702838">Проверете всички кабели и рестартирайте маршрутизаторите, модемите или другите мрежови
 устройства, които може да използвате.</translation>
@@ -1677,6 +1683,7 @@
 <translation id="7300012071106347854">кобалтовосиньо</translation>
 <translation id="7302712225291570345">„<ph name="TEXT" />“</translation>
 <translation id="7304030187361489308">Висока</translation>
+<translation id="7305756307268530424">Стартиране с по-бавна скорост</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помощ при проблеми с връзката</translation>
 <translation id="7323804146520582233">Скриване на секцията „<ph name="SECTION" />“</translation>
@@ -1702,6 +1709,7 @@
 <translation id="7378594059915113390">Контроли за мултимедия</translation>
 <translation id="7378627244592794276">Не</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Не е приложимо</translation>
 <translation id="7390545607259442187">Потвърждаване на картата</translation>
 <translation id="7399802613464275309">Проверка на безопасността</translation>
 <translation id="7400418766976504921">URL адрес</translation>
@@ -1753,6 +1761,7 @@
 <translation id="7548892272833184391">Отстраняване на грешки във връзката</translation>
 <translation id="7549584377607005141">За да се покаже правилно тази уеб страница, са необходими по-рано въведените от вас данни. Можете да ги изпратите отново, но така ще повторите всяко изпълнено от нея действие.</translation>
 <translation id="7550637293666041147">Потребителското име на устройството ви и в Chrome</translation>
+<translation id="755279583747225797">Експериментът е активен</translation>
 <translation id="7552846755917812628">Изпробвайте следните съвети:</translation>
 <translation id="7554475479213504905">Презареждане и показване въпреки това</translation>
 <translation id="7554791636758816595">Нов раздел</translation>
@@ -1847,6 +1856,7 @@
 <translation id="7894280532028510793">Ако изписването е правилно, <ph name="BEGIN_LINK" />стартирайте мрежова диагностика<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (плик)</translation>
 <translation id="7931318309563332511">Неизвестно</translation>
+<translation id="793209273132572360">Да се актуализира ли адресът?</translation>
 <translation id="7932579305932748336">Покритие</translation>
 <translation id="79338296614623784">Въведете валиден телефонен номер</translation>
 <translation id="7934052535022478634">Плащането бе извършено</translation>
@@ -1923,7 +1933,6 @@
 <translation id="8202097416529803614">Обобщена информация за поръчката</translation>
 <translation id="8202370299023114387">Конфликт</translation>
 <translation id="8206978196348664717">Prc4 (плик)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Когато нулирате идентификатора, настоящият ви идентификатор ще стане невалиден и след по-малко от 1 ден ще бъде издаден нов}=1{Когато нулирате идентификатора, настоящият ви идентификатор ще стане невалиден и след 1 ден ще бъде издаден нов}other{Когато нулирате идентификатора, настоящият ви идентификатор ще стане невалиден и след {NUM_DAYS} дни ще бъде издаден нов}}</translation>
 <translation id="8211406090763984747">Връзката е защитена</translation>
 <translation id="8213464188712611711">Спомени</translation>
 <translation id="8218327578424803826">Зададено местоположение:</translation>

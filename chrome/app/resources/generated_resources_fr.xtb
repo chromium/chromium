@@ -890,7 +890,6 @@
 <translation id="1926339101652878330">Ces paramètres sont soumis à une règle d'entreprise. Contactez votre administrateur pour plus d'informations.</translation>
 <translation id="1927632033341042996">Doigt <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">Code de verrouillage de l'écran</translation>
-<translation id="1928202201223835302">Saisir l'ancien code</translation>
 <translation id="1928696683969751773">Mises à jour</translation>
 <translation id="1929186283613845153">Ce fichier est en cours d'analyse.</translation>
 <translation id="1929343511231420085">N'importe quel port série</translation>
@@ -914,7 +913,6 @@
 <translation id="1954813140452229842">Erreur lors de l'installation du partage. Veuillez vérifier vos identifiants, puis réessayer.</translation>
 <translation id="1956050014111002555">Le fichier contenait plusieurs certificats, aucun d'eux n'a été importé :</translation>
 <translation id="1956390763342388273">Tous les fichiers seront téléchargés depuis "<ph name="FOLDER_PATH" />". N'effectuez cette opération que s'il s'agit d'un site de confiance.</translation>
-<translation id="1958750704984086982">FLoC offre un mécanisme de protection de la vie privée pour la sélection d'annonces par centres d'intérêt.</translation>
 <translation id="1962233722219655970">Cette page utilise une application cliente native qui ne fonctionne pas sur votre ordinateur.</translation>
 <translation id="1963227389609234879">Tout supprimer</translation>
 <translation id="1963976881984600709">Protection standard</translation>
@@ -1654,7 +1652,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="2749756011735116528">Connexion à <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Vérifier la grammaire et l'orthographe</translation>
-<translation id="2751131328353405138">Installation du système de fichiers SSH pour le conteneur Linux…</translation>
 <translation id="2753677631968972007">Contrôler manuellement les autorisations liées aux sites.</translation>
 <translation id="2755349111255270002">Rétablir la configuration d'usine de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Gérer les fonctionnalités d'accessibilité</translation>
@@ -1788,7 +1785,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="2891922230654533301">Utiliser cet appareil pour vous connecter à <ph name="APP_NAME" /> ?</translation>
 <translation id="2893168226686371498">Navigateur par défaut</translation>
 <translation id="2894757982205307093">Nouvel onglet dans le groupe</translation>
-<translation id="289644616180464099">La carte SIM est verrouillée</translation>
 <translation id="289695669188700754">ID de clé : <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Ce paramètre personnalisé sera supprimé lorsque vous fermerez toutes les fenêtres de navigation privée</translation>
 <translation id="2897878306272793870">Voulez-vous vraiment ouvrir <ph name="TAB_COUNT" /> onglets ?</translation>
@@ -2255,7 +2251,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3427092606871434483">Autoriser (par défaut)</translation>
 <translation id="3428419049384081277">Vous êtes connecté</translation>
 <translation id="3428747202529429621">Ce mode assure votre sécurité dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté</translation>
-<translation id="3428800329481094896">Extraction des clés SSH du conteneur Linux…</translation>
 <translation id="3429160811076349561">Les fonctionnalités à l'essai sont désactivées</translation>
 <translation id="3429271624041785769">Langues du contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver facilement</translation>
@@ -3075,7 +3070,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> Ko (<ph name="NUM_KILOBYTES_LIVE" /> Ko effectifs)</translation>
 <translation id="4310139701823742692">Le format du fichier n'est pas valide. Vérifiez le fichier PPD, puis réessayez.</translation>
 <translation id="431076611119798497">&amp;Détails</translation>
-<translation id="4312124410630786333">Réinitialiser l'identifiant</translation>
 <translation id="4312866146174492540">Bloquer (par défaut)</translation>
 <translation id="4314815835985389558">Gérer la synchronisation</translation>
 <translation id="4316850752623536204">Site Web du développeur</translation>
@@ -3235,7 +3229,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4492698018379445570">Retrouvez les articles ajoutés à vos paniers et passez commande quand vous le souhaitez</translation>
 <translation id="4493468155686877504">Recommandée (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Ne pas afficher sur cette page</translation>
-<translation id="4496796119038756382">ID FLoC</translation>
 <translation id="4497145443434063861">PC et Chromecast utilisant des réseaux Wi-Fi différents (par exemple, 2,4 GHz et 5 GHz)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> a planté</translation>
 <translation id="4500587658229086076">contenu non sécurisé</translation>
@@ -3752,7 +3745,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5072900412896857127">Impossible de charger les conditions d'utilisation de Google Play. Veuillez vérifier votre connexion réseau et réessayer.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" /> et # autre}other{<ph name="FILE1" />, <ph name="FILE2" /> et # autres}}</translation>
 <translation id="5074318175948309511">Vous devrez peut-être actualiser cette page pour que les nouveaux paramètres soient appliqués.</translation>
-<translation id="5075131525758602494">Saisir le code de la SIM</translation>
 <translation id="5075910247684008552">Le contenu non sécurisé est bloqué par défaut sur les sites sécurisés</translation>
 <translation id="5078638979202084724">Ajouter tous les onglets aux favoris</translation>
 <translation id="5078796286268621944">Code PIN incorrect</translation>
@@ -7127,7 +7119,6 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8803953437405899238">Ouvrez un nouvel onglet d'un simple clic</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Déplacer l'onglet vers une autre fenêtre}one{Déplacer l'onglet vers une autre fenêtre}other{Déplacer les onglets vers une autre fenêtre}}</translation>
 <translation id="8805140816472474147">Confirmez les paramètres de synchronisation pour lancer la synchronisation.</translation>
-<translation id="8805985421503170600">FLoC</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> permet de rouvrir les onglets fermés involontairement</translation>
 <translation id="8807632654848257479">Stable</translation>
 <translation id="8808478386290700967">Web Store</translation>

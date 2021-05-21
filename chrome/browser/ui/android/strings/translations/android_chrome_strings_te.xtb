@@ -293,6 +293,7 @@
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> కోసం సూచనలను చూపుతోంది</translation>
 <translation id="2904414404539560095">ట్యాబ్‌ను షేర్ చేయాల్సిన పరికరాల జాబితా పూర్తి ఎత్తులో తెరవబడింది.</translation>
 <translation id="2905036901251765993">సమీపంలోని వ్యక్తులతో షేర్ చేయడానికి, ఈ QR కోడ్‌ను స్కాన్ చేయాల్సిందిగా వాళ్లను అడగండి</translation>
+<translation id="2908243544703713905">చదవని కథనాలు సిద్ధంగా ఉన్నాయి</translation>
 <translation id="2909615210195135082">Google నోటిఫికేషన్‌ల ప్లాట్‌ఫామ్</translation>
 <translation id="2912296070571964914">మీకు ఆసక్తికరమైన టాపిక్‌లను మేనేజ్ చేయండి</translation>
 <translation id="2923908459366352541">పేరు చెల్లదు</translation>
@@ -533,7 +534,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# నిమిషం క్రితం}other{# నిమిషాల క్రితం}}</translation>
 <translation id="4587589328781138893">సైట్‌లు</translation>
 <translation id="4594952190837476234">ఈ ఆఫ్‌లైన్ పేజీ <ph name="CREATION_TIME" />కి చెందినది మరియు ఆన్‌లైన్ వెర్షన్ వేరుగా ఉండవచ్చు.</translation>
-<translation id="4615382002648696011">ఫాలో చేస్తున్నారు, చదవని కథనాలు సిద్ధంగా ఉన్నాయి</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ని తెరువు</translation>
 <translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
 <translation id="4634124774493850572">పాస్‌వర్డ్‌ను ఉపయోగించు</translation>

@@ -24,7 +24,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1148499908455722006">Atidaryti <ph name="USER_NAME" /> informacijos dialogo langą</translation>
 <translation id="1153356358378277386">Susieti įrenginiai</translation>
 <translation id="1165712434476988950">Norint pritaikyti naujinį, reikia paleisti įrenginį iš naujo.</translation>
-<translation id="1170240434488307589">Įrenginio mikrofono mygtukas nutildytas.</translation>
 <translation id="1175572348579024023">Slinkti</translation>
 <translation id="1178581264944972037">Pristabdyti</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
@@ -41,6 +40,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1247372569136754018">Mikrofonas (vidinis)</translation>
 <translation id="1252999807265626933">Įkraunama naudojant <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">„What's the weather?“ (Koks oras?)</translation>
+<translation id="1266097335951928626">Įjungti asmenukės fotoaparatą</translation>
 <translation id="1267032506238418139">Spartusis klavišas pasikeitė</translation>
 <translation id="1269405891096105529">Išorinis įrenginys nepalaikomas naudojant svečio režimą</translation>
 <translation id="1270290102613614947">Ekrano klaviatūra išjungta</translation>
@@ -85,6 +85,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
 <translation id="1570871743947603115">Perjungti „Bluetooth“. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Pasiekti visą šios sesijos veiklą</translation>
+<translation id="159255010947577753">Žymeklis</translation>
 <translation id="1611993646327628135">Įjungta</translation>
 <translation id="1615402009686901181">Remiantis administratoriaus politika, negalima užfiksuoti ekrano, jei matomas konfidencialus turinys</translation>
 <translation id="1632985212731562677">Prieigos jungikliu funkciją galima išjungti skiltyje „Nustatymai“ &gt; „Pritaikomumas“.</translation>
@@ -136,8 +137,10 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2016340657076538683">Įveskite pranešimą</translation>
 <translation id="2018630726571919839">Papasakok pokštą</translation>
 <translation id="2021864487439853900">Atrakinti spustelėjus</translation>
+<translation id="2047639699071423250">Pridėti pagrindinę idėją</translation>
 <translation id="2049240716062114887">Darbalaukio pavadinimas pakeistas į „<ph name="DESK_NAME" />“</translation>
 <translation id="2050339315714019657">Stačias</translation>
+<translation id="2066708475850724665">Išjungti didintuvą</translation>
 <translation id="2067602449040652523">Klaviatūros šviesumas</translation>
 <translation id="2078034614700056995">Perbraukite į dešinę keturiais pirštais, kad perjungtumėte į kitą darbalaukį</translation>
 <translation id="2079504693865562705">Slėpti programas lentynoje</translation>
@@ -145,10 +148,12 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2083190527011054446">Labanakt, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Neprisijungta prie tinklo</translation>
 <translation id="2108303511227308752">Pakeistas spartusis klavišas „Alt“ + naikinimo klavišas. Jei norite naudoti klavišą „Delete“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + naikinimo klavišą.</translation>
+<translation id="211328683600082144">ĮJUNGTI MIKROFONĄ</translation>
 <translation id="2126242104232412123">Naujas darbalaukis</translation>
 <translation id="2127372758936585790">Mažos galios įkroviklis</translation>
 <translation id="2132302418721800944">Įrašyti viso ekrano režimu</translation>
 <translation id="2135456203358955318">Prie doko prijungtas didintuvas</translation>
+<translation id="2146800439053023141">Perjungti juostos vietą</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: bandyti dar kartą</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Perbraukite žemyn trimis pirštais, kad išeitumėte iš „Apžvalgos“ skilties</translation>
@@ -328,6 +333,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3638400994746983214">Perjunkite privatumo ekraną. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> tvarkomas naudotojas</translation>
 <translation id="3665889125180354336">Įrašyti mikrofoną</translation>
+<translation id="3680908746918359504">Išvalyti visus žymeklius</translation>
 <translation id="36813544980941320">„Wi-Fi“ tinklai bus bendrinami telefone ir „<ph name="DEVICE_NAME" />“ įrenginyje</translation>
 <translation id="3702809606464356667">Rodomi dabartinio darbastalio langai. Paspauskite rodyklės aukštyn klavišą, kad būtų rodomi visų darbastalių langai</translation>
 <translation id="3702846122927433391">Populiacija Nigerijoje</translation>
@@ -373,12 +379,12 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4021716437419160885">Slinkti į apačią</translation>
 <translation id="4028481283645788203">Norint užtikrinti patikimesnę apsaugą reikalingas slaptažodis</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Pakeistas spartusis klavišas <ph name="LAUNCHER_KEY_NAME" /> + skaičiaus klavišas. Jei norite naudoti funkcijų klavišus, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + klavišą viršutinėje eilutėje.</translation>
 <translation id="4042660782729322247">Bendrinate ekraną</translation>
 <translation id="4057003836560082631"><ph name="INDEX" /> naršyklės skirtukas iš <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Prog. pr. išj.}one{# prog. pr. išj.}few{# prog. pr. išj.}many{# prog. pr. išj.}other{# prog. pr. išj.}}</translation>
 <translation id="4066027111132117168">Įjungta, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Vidutinio stiprumo signalas</translation>
+<translation id="4095366824370681039">Rašiklis</translation>
 <translation id="4112140312785995938">Prasukti atgal</translation>
 <translation id="4114315158543974537">„Phone Hub“ įjungimas</translation>
 <translation id="412298498316631026">langas</translation>
@@ -447,12 +453,15 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4570957409596482333">Funkcijos „Teksto ištarimas“ mygtukas</translation>
 <translation id="4577274620589681794">Laikas baigėsi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Rodyti peržiūras</translation>
+<translation id="4578196883126898996">Mikrofonas išjungtas. Įjunkite įrenginio mikrofono mygtuką.</translation>
 <translation id="4578906031062871102">Nustatymų meniu atidarytas</translation>
 <translation id="4581047786858252841">Mikrofonas įjungtas</translation>
 <translation id="4585337515783392668">Sustabdyti perdavimą į nežinomą imtuvą</translation>
+<translation id="4586483766170476230">Išjungti asmenukės fotoaparatą</translation>
 <translation id="4587299710837179226">Mikrofonas išjungtas</translation>
 <translation id="4596144739579517758">Tamsioji tema išjungta</translation>
 <translation id="4611292653554630842">Prisijungti</translation>
+<translation id="4614295562446151104">Išskleisti žymeklio įrankius</translation>
 <translation id="4623167406982293031">Patvirtinti paskyrą</translation>
 <translation id="4628757576491864469">Įrenginiai</translation>
 <translation id="4642092649622328492">Padaryti dalinę ekrano kopiją</translation>
@@ -509,6 +518,8 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5035236842988137213">„<ph name="DEVICE_NAME" />“ įrenginys buvo susietas su telefonu</translation>
 <translation id="5035389544768382859">Ekrano konfigūracijos patvirtinimas</translation>
 <translation id="504465286040788597">Ankstesnė pastraipa</translation>
+<translation id="5071064518267176975">Programa nori naudoti mikrofoną</translation>
+<translation id="5075554201838155866">Įjungti subtitrus</translation>
 <translation id="5078796286268621944">Neteisingas PIN kodas</translation>
 <translation id="5083553833479578423">Atrakinkite daugiau Padėjėjo funkcijų.</translation>
 <translation id="5136175204352732067">Prijungta kita klaviatūra</translation>
@@ -679,6 +690,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6612802754306526077">Pasirinktas ekrano vaizdo įrašymo režimas</translation>
 <translation id="6614169507485700968">Privatumo ekranas įjungtas</translation>
 <translation id="6627638273713273709">Paieškos klavišas + „Shift“ + K</translation>
+<translation id="6629480180092995136">„<ph name="APP_NAME" />“ nori naudoti mikrofoną</translation>
 <translation id="6637729079642709226">Laiko keitimas</translation>
 <translation id="6641720045729354415">Perjungti subtitrus realiuoju laiku. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> norėtų patvirtinti, kad tai jūs</translation>
@@ -732,6 +744,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7029814467594812963">Išeiti iš sesijos</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, „Google“ padėjėjas</translation>
 <translation id="7042322267639375032">Sutraukti būsenos sritį</translation>
+<translation id="7045595904618419789">Įjungti didintuvą</translation>
 <translation id="7055910611768509537">Rašiklis nebuvo naudotas ilgiau kaip savaitę</translation>
 <translation id="7066646422045619941">Šį tinklą išjungė jūsų administratorius.</translation>
 <translation id="7067196344162293536">Automatinis kaitaliojimas</translation>
@@ -752,6 +765,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7256634071279256947">Užpakalinis mikrofonas</translation>
 <translation id="726276584504105859">Vilkite čia, kad naudotumėte skaidytą ekraną</translation>
 <translation id="7262906531272962081">Sukurti priminimą</translation>
+<translation id="7279434993080105272">Žymeklio spalva: <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">Subtitrai realiuoju laiku išjungti.</translation>
 <translation id="7303365578352795231">Atsakoma kitame įrenginyje.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7466449121337984263">Palieskite jutiklį</translation>
 <translation id="7477793887173910789">Valdykite savo muziką, vaizdo įrašus ir žaidimus</translation>
 <translation id="7483025031359818980">Pasirinkta viso ekrano sritis</translation>
+<translation id="7486227320194954040">Sutraukti žymeklio įrankius</translation>
 <translation id="7497767806359279797">Pasirinkti kalbą ir klaviatūros išdėstymą</translation>
 <translation id="7509246181739783082">Tapatybės patvirtinimas</translation>
 <translation id="7513622367902644023">Pasirinktas ekrano kopijos režimas</translation>
@@ -799,6 +814,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7607002721634913082">Pristabdyta</translation>
 <translation id="7618774594543487847">Neutrali</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7631906263969450674">Žymeklis</translation>
 <translation id="7633755430369750696">Rodyti bendrinimo netoliese nustatymus.</translation>
 <translation id="7641938616688887143">Įrašyti</translation>
 <translation id="7642647758716480637">Atidaryti „<ph name="NETWORK_NAME" />“ nustatymus (<ph name="CONNECTION_STATUS" />)</translation>
@@ -814,6 +830,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7724603315864178912">Iškirpti</translation>
 <translation id="7745560842763881396">Rodyti programas lentynoje</translation>
 <translation id="7749443890790263709">Pasiektas didžiausias pultų skaičius.</translation>
+<translation id="7749640678855296659">MIkrofonas šiuo metu išjungtas</translation>
 <translation id="776344839111254542">Spustelėkite ir peržiūrėkite išsamią atnaujinimo informaciją</translation>
 <translation id="7780159184141939021">Ekrano pasukimas</translation>
 <translation id="7796353162336583443">Palieskite rašiklio mygtuką lentynoje, kad galėtumėte sukurti užrašą, ekrano kopiją, naudoti „Google“ padėjėją, lazerinį žymeklį arba didinamąjį stiklą.</translation>
@@ -861,6 +878,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8113423164597455979">Visų programų pranešimai įjungti</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
+<translation id="8132487352815776550">Išjungti subtitrus</translation>
 <translation id="8132793192354020517">Prisijungta prie „<ph name="NAME" />“</translation>
 <translation id="813913629614996137">Inicijuojama...</translation>
 <translation id="8142441511840089262">Dukart spustelėti</translation>

@@ -174,6 +174,7 @@ Some features may be unavailable. Please specify a different profile directory o
 
 Google Chrome is unable to recover your settings.</translation>
 <translation id="5434383153637353914">This page allows you to manage your signed-in Google Accounts. These accounts will be available in Chrome browser and Play Store apps, as well as services like Gmail, Drive and YouTube. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Install Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome is trying to show passwords.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN" />
@@ -257,6 +258,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7896673875602241923">Someone previously signed in to Chrome on this computer as <ph name="ACCOUNT_EMAIL_LAST" />. Please create a new Chrome user to keep your information separate.</translation>
 <translation id="7905891027772979035">Chrome can't check your extensions. Try again later.</translation>
 <translation id="7930071585467473040">Google Chrome is trying to copy passwords.</translation>
+<translation id="7951988079884443914">Chrome recommends that you don't download or open this file.</translation>
 <translation id="7962410387636238736">This computer will no longer receive Google Chrome updates because Windows XP and Windows Vista are no longer supported</translation>
 <translation id="79947657522496226">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Reinstall Chrome</translation>

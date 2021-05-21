@@ -3,6 +3,7 @@
 <translationbundle lang="gl">
 <translation id="1006017844123154345">Abrir en liña</translation>
 <translation id="1044891598689252897">Os sitios funcionarán con normalidade</translation>
+<translation id="1100504063505580045">Icona actual</translation>
 <translation id="1124090076051167250">Ao realizar esta acción, borraranse os datos e as cookies (<ph name="DATASIZE" />) que almacenasen os sitios ou as aplicacións da túa pantalla de inicio.</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1178581264944972037">Pausar</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3277252321222022663">Permitir que os sitios accedan aos sensores (recomendado)</translation>
 <translation id="3295602654194328831">Ocultar información</translation>
+<translation id="3317660236277031814">Unha aplicación web que instalaches cambiou de icona.</translation>
 <translation id="3328801116991980348">Información do sitio</translation>
 <translation id="3333961966071413176">Todos os contactos</translation>
 <translation id="3386292677130313581">Pregunta antes de permitir que os sitios coñezan a túa localización (recomendado)</translation>
+<translation id="345699454248713913">Unha aplicación web que instalaches cambiou de nome.</translation>
 <translation id="3538390592868664640">Impide que os sitios creen un mapa 3D do que te rodea e fagan un seguimento da posición da cámara</translation>
 <translation id="3551268116566418498">Saír do modo de incógnito?</translation>
 <translation id="3586500876634962664">Uso da cámara e do micrófono</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">Abrir Configuración de localización</translation>
 <translation id="4226663524361240545">O dispositivo pode vibrar ao recibir notificacións</translation>
 <translation id="4259722352634471385">A navegación está bloqueada: <ph name="URL" /></translation>
+<translation id="4277239631747669329">Unha aplicación web que instalaches cambiou de nome e de icona.</translation>
 <translation id="4278390842282768270">Permitida</translation>
 <translation id="429312253194641664">Un sitio está reproducindo contido multimedia</translation>
 <translation id="42981349822642051">Ampliar</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">Permite que os sitios executen JavaScript (recomendado)</translation>
 <translation id="534295439873310000">Dispositivos con NFC</translation>
 <translation id="5354152178998424783">Ao realizar esta acción, borraranse os datos e as cookies (<ph name="DATASIZE" />) que almacenasen os sitios.</translation>
+<translation id="536508626067510330">Queres actualizar a icona que aparece na pantalla de inicio?</translation>
 <translation id="5391532827096253100">A túa conexión a este sitio non é segura. Información do sitio</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(e 1 máis)}other{(e # máis)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
 <translation id="5489227211564503167">Tempo transcorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloquear anuncios en sitios que mostran anuncios enganosos ou intrusivos</translation>
+<translation id="549957179819296104">Icona nova</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> (permitido), <ph name="PERMISSION_2" /> (bloqueado)</translation>
 <translation id="5505264765875738116">Os sitios non poden pedir permiso para enviar notificacións</translation>
 <translation id="5516455585884385570">Abrir a configuración de notificacións</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5860033963881614850">Non</translation>
 <translation id="5876056640971328065">Pór en pausa o vídeo</translation>
+<translation id="5904826301761575486">Queres actualizar o nome e a icona que aparecen na pantalla de inicio?</translation>
 <translation id="5916664084637901428">Si</translation>
 <translation id="5922853908706496913">Compartindo pantalla</translation>
 <translation id="5939518447894949180">Restablecer</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6206551242102657620">A conexión é segura. Información do sitio</translation>
 <translation id="6216432067784365534">Opcións de <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6260852843601447737">Pechar e denunciar uso inadecuado</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> (bloqueados)</translation>
 <translation id="6270391203985052864">Os sitios poden pedir permiso para enviar notificacións</translation>
 <translation id="6295158916970320988">Todos os sitios</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover cara arriba</translation>
+<translation id="861748745608658996">Queres actualizar o nome que aparece na pantalla de inicio?</translation>
 <translation id="8676374126336081632">Borrar texto</translation>
 <translation id="868929229000858085">Busca nos teus contactos</translation>
 <translation id="8702612070107455751">Borraranse todos os datos sen conexión.</translation>

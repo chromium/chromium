@@ -24,7 +24,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಡೈಲಾಗ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1153356358378277386">ಜೋಡಿ ಮಾಡಲಾದ ಸಾಧನಗಳು</translation>
 <translation id="1165712434476988950">ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಅನ್ವಯಿಸಲು ಸಾಧನವನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕಾಗುತ್ತದೆ.</translation>
-<translation id="1170240434488307589">ಸಾಧನದ ಮೈಕ್ರೋಫೋನ್ ಬಟನ್ ಮ್ಯೂಟ್ ಆಗಿದೆ.</translation>
 <translation id="1175572348579024023">ಸ್ಕ್ರಾಲ್</translation>
 <translation id="1178581264944972037">ವಿರಾಮ</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
@@ -41,6 +40,7 @@
 <translation id="1247372569136754018">ಮೈಕ್ರೊಫೋನ್ (ಆಂತರಿಕ)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> ನಿಂದ ಚಾರ್ಜ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1255033239764210633">ಹವಾಮಾನ ಹೇಗಿದೆ?</translation>
+<translation id="1266097335951928626">ಸೆಲ್ಫೀ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="1267032506238418139">ಶಾರ್ಟ್‌ಕಟ್‌ ಬದಲಾವಣೆ</translation>
 <translation id="1269405891096105529">ಅತಿಥಿ ಮೋಡ್‌ನಲ್ಲಿ ಪೆರಿಫೆರಲ್ ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="1270290102613614947">ಆನ್ ಸ್ಕ್ರೀನ್ ಕೀಬೋರ್ಡ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -85,6 +85,7 @@
 <translation id="1555130319947370107">ನೀಲಿ</translation>
 <translation id="1570871743947603115">ಬ್ಲೂಟೂತ್ ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ಈ ಸೆಶನ್‌ನಲ್ಲಿ ನೀವು ನಡೆಸುವ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಯನ್ನು ಪ್ರವೇಶಿಸುವುದು</translation>
+<translation id="159255010947577753">ಮಾರ್ಕರ್</translation>
 <translation id="1611993646327628135">ಆನ್ ಮಾಡಿ</translation>
 <translation id="1615402009686901181">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಗೌಪ್ಯ ವಿಷಯ ಗೋಚರಿಸುತ್ತಿರುವಾಗ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="1632985212731562677">ಪ್ರವೇಶ ಬದಲಾಯಿಸಿ ಅನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿಯಲ್ಲಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬಹುದು.</translation>
@@ -136,8 +137,10 @@
 <translation id="2016340657076538683">ಸಂದೇಶವನ್ನು ಟೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="2018630726571919839">ನನಗೊಂದು ಜೋಕ್ ಹೇಳಿ</translation>
 <translation id="2021864487439853900">ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
+<translation id="2047639699071423250">ಕೀ ಐಡಿಯಾ ಬಟನ್ ಸೇರಿಸಿ</translation>
 <translation id="2049240716062114887">ಡೆಸ್ಕ್ ಹೆಸರನ್ನು <ph name="DESK_NAME" /> ಗೆ ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2050339315714019657">ಪೋರ್ಟ್ರೇಟ್</translation>
+<translation id="2066708475850724665">ಮ್ಯಾಗ್ನಿಫೈರ್ ನಿಲ್ಲಿಸಿ</translation>
 <translation id="2067602449040652523">ಕೀಬೋರ್ಡ್ ಪ್ರಖರತೆ</translation>
 <translation id="2078034614700056995">ಮುಂದಿನ ಡೆಸ್ಕ್‌ಗೆ ಬದಲಿಸಲು, ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="2079504693865562705">ಶೆಲ್ಫ್‌ನಲ್ಲಿ ಆ್ಯಪ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
@@ -145,10 +148,12 @@
 <translation id="2083190527011054446">ಶುಭ ರಾತ್ರಿ <ph name="GIVEN_NAME" /> ಅವರೇ,</translation>
 <translation id="209965399369889474">ನೆಟ್‌ವರ್ಕ್‌‍ಗೆ ಸಂಪರ್ಕಗೊಂಡಿಲ್ಲ</translation>
 <translation id="2108303511227308752">Alt + Backspace ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆ. Delete ಕೀ ಬಳಸಲು, <ph name="LAUNCHER_KEY_NAME" /> ಕೀ + ಬ್ಯಾಕ್‍‍ಸ್ಪೇಸ್ ಅನ್ನು ಒತ್ತಿ.</translation>
+<translation id="211328683600082144">ಮೈಕ್ರೋಫೋನ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="2126242104232412123">ಹೊಸ ಡೆಸ್ಕ್</translation>
 <translation id="2127372758936585790">ಕಡಿಮೆ ವಿದ್ಯುತ್ ಚಾರ್ಜರ್</translation>
 <translation id="2132302418721800944">ಫುಲ್‌ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="2135456203358955318">ಡಾಕ್‌‌ ಮಾಡಿರುವ ವರ್ಧಕ</translation>
+<translation id="2146800439053023141">ಬಾರ್ ಸ್ಥಳವನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">ಸಮಗ್ರ ನೋಟದಿಂದ ನಿರ್ಗಮಿಸಲು ಮೂರು ಬೆರಳುಗಳಿಂದ ಕೆಳಗೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
@@ -328,6 +333,7 @@
 <translation id="3638400994746983214">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ನಿರ್ವಹಿಸಲಾದ ಬಳಕೆದಾರರು</translation>
 <translation id="3665889125180354336">ಮೈಕ್ರೋಫೋನ್ ಮೂಲಕ ರೆಕಾರ್ಡ್ ಮಾಡಿ ಆಯ್ಕೆ</translation>
+<translation id="3680908746918359504">ಎಲ್ಲಾ ಮಾರ್ಕರ್‌ಗಳನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="36813544980941320">ನಿಮ್ಮ ಫೋನ್ ಮತ್ತು <ph name="DEVICE_NAME" /> ನಡುವೆ ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ</translation>
 <translation id="3702809606464356667">ಪ್ರಸ್ತುತ ಡೆಸ್ಕ್‌ನಿಂದ ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ, ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳಿಂದ ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಲು ಅಪ್ ಆ್ಯರೋ ಕೀ ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="3702846122927433391">ನೈಜೀರಿಯಾದಲ್ಲಿನ ಜನಸಂಖ್ಯೆ</translation>
@@ -373,12 +379,12 @@
 <translation id="4021716437419160885">ಕೆಳಗೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="4028481283645788203">ಹೆಚ್ಚಿನ ಭದ್ರತೆಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023"><ph name="LAUNCHER_KEY_NAME" /> + ಸಂಖ್ಯೆ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಿಸಲಾಗಿದೆ. F-ಕೀಗಳನ್ನು ಬಳಸಲು, <ph name="LAUNCHER_KEY_NAME" /> ಕೀ + ಮೇಲಿನ ಸಾಲಿನಲ್ಲಿರುವ ಕೀವೊಂದನ್ನು ಒತ್ತಿ.</translation>
 <translation id="4042660782729322247">ನಿಮ್ಮ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ</translation>
 <translation id="4057003836560082631">ಬ್ರೌಸರ್ ಟ್ಯಾಬ್ <ph name="TOTAL_COUNT" /> ರಲ್ಲಿ <ph name="INDEX" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ ಆ್ಯಪ್‍‍ಗೆ ಆಫ್ ಇದೆ}one{# ಆ್ಯಪ್‍‍ಗೆ ಆಫ್ ಇದೆ}other{# ಆ್ಯಪ್‍‍ಗೆ ಆಫ್ ಇದೆ}}</translation>
 <translation id="4066027111132117168">ಪ್ರಕ್ರಿಯೆಯಲ್ಲಿದೆ, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">ಮಧ್ಯಮ ಸಿಗ್ನಲ್</translation>
+<translation id="4095366824370681039">ಇಂಕ್ ಪೆನ್</translation>
 <translation id="4112140312785995938">ಹಿಂದಕ್ಕೆ ಸೀಕ್ ಮಾಡಿ</translation>
 <translation id="4114315158543974537">ಫೋನ್ ಹಬ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="412298498316631026">ವಿಂಡೋ</translation>
@@ -447,12 +453,15 @@
 <translation id="4570957409596482333">'ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ' ಬಟನ್‌</translation>
 <translation id="4577274620589681794">ಸಮಯ ಮುಗಿದಿದೆ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ಪೂರ್ವವೀಕ್ಷಣೆಗಳನ್ನು ತೋರಿಸಿ</translation>
+<translation id="4578196883126898996">ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಆಫ್ ಆಗಿದೆ. ನಿಮ್ಮ ಸಾಧನದ ಮೈಕ್ರೋಫೋನ್ ಬಟನ್ ಅನ್ನು ಆನ್ ಮಾಡಿ.</translation>
 <translation id="4578906031062871102">ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೆನುವನ್ನು ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="4581047786858252841">ಮೈಕ್ರೋಫೋನ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="4585337515783392668">"ಅಪರಿಚಿತ ಸ್ವೀಕರಿಸುವವರು" ನಲ್ಲಿ ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
+<translation id="4586483766170476230">ಸೆಲ್ಫೀ ಕ್ಯಾಮರಾವನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="4587299710837179226">ಮೈಕ್ರೋಫೋನ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="4596144739579517758">ಡಾರ್ಕ್ ಥೀಮ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="4611292653554630842">ಲಾಗ್ ಇನ್</translation>
+<translation id="4614295562446151104">ಮಾರ್ಕರ್ ಪರಿಕರಗಳನ್ನು ವಿಸ್ತರಿಸಿ</translation>
 <translation id="4623167406982293031">ಖಾತೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="4628757576491864469">ಸಾಧನಗಳು</translation>
 <translation id="4642092649622328492">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
@@ -509,6 +518,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ಸಾಧನವು ಹೊಸ ಫೋನ್ ಒಂದಕ್ಕೆ ಸಂಪರ್ಕಗೊಂಡಿದೆ</translation>
 <translation id="5035389544768382859">ಡಿಸ್‌ಪ್ಲೇ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="504465286040788597">ಹಿಂದಿನ ಪ್ಯಾರಾಗ್ರಾಫ್</translation>
+<translation id="5071064518267176975">ಮೈಕ್ರೊಫೋನ್ ಬಳಸಲು ಆ್ಯಪ್ ಬಯಸುತ್ತದೆ</translation>
+<translation id="5075554201838155866">ಉಪಶೀರ್ಷಿಕೆಗಳನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5078796286268621944">ತಪ್ಪಾದ PIN</translation>
 <translation id="5083553833479578423">ಇನ್ನಷ್ಟು ಅಸಿಸ್ಟೆಂಟ್ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಅನ್‌ಲಾಕ್‌ ಮಾಡಿ.</translation>
 <translation id="5136175204352732067">ವಿವಿಧ ಕೀಬೋರ್ಡ್ ಸಂಪರ್ಕಗೊಂಡಿದೆ</translation>
@@ -680,6 +691,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6612802754306526077">ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಮೋಡ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6614169507485700968">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="6627638273713273709">ಹುಡುಕಾಟ+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" />, ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="6637729079642709226">ಸಮಯವನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="6641720045729354415">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">ಇದು ನೀವೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು <ph name="ORIGIN_NAME" /> ಬಯಸುತ್ತದೆ</translation>
@@ -733,6 +745,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7029814467594812963">ಸೆಶನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google ಅಸಿಸ್ಟೆಂಟ್</translation>
 <translation id="7042322267639375032">ಸ್ಥಿತಿ ಕ್ಷೇತ್ರವನ್ನು ಕುಗ್ಗಿಸಿ</translation>
+<translation id="7045595904618419789">ಮ್ಯಾಗ್ನಿಫೈರ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="7055910611768509537">ಒಂದು ವಾರದಿಂದ ಸ್ಟೈಲಸ್ ಅನ್ನು ಬಳಸಲಾಗಿಲ್ಲ</translation>
 <translation id="7066646422045619941">ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
 <translation id="7067196344162293536">ಸ್ವಯಂ ತಿರುಗಿಸು</translation>
@@ -753,6 +766,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7256634071279256947">ಹಿಂಭಾಗದ ಮೈಕ್ರೊಫೋನ್</translation>
 <translation id="726276584504105859">ವಿಭಜಿತ ಪರದೆಯನ್ನು ಬಳಸಲು ಇಲ್ಲಿ ಡ್ರ್ಯಾಗ್‌ ಮಾಡಿ</translation>
 <translation id="7262906531272962081">ಜ್ಞಾಪನೆ ರಚಿಸಿ</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> ಮಾರ್ಕರ್ ಬಣ್ಣ</translation>
 <translation id="7302889331339392448">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="7303365578352795231">ಮತ್ತೊಂದು ಸಾಧನದಲ್ಲಿ ಉತ್ತರಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -782,6 +796,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7466449121337984263">ಸೆನ್ಸರ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ</translation>
 <translation id="7477793887173910789">ನಿಮ್ಮ ಸಂಗೀತ, ವೀಡಿಯೊಗಳು ಹಾಗೂ ಇತ್ಯಾದಿಗಳನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="7483025031359818980">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ಗೆ ಹೊಂದಿಸಲು ಪ್ರದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="7486227320194954040">ಮಾರ್ಕರ್ ಪರಿಕರಗಳನ್ನು ಕುಗ್ಗಿಸಿ</translation>
 <translation id="7497767806359279797">ಭಾಷೆ ಮತ್ತು ಕೀಬೋರ್ಡ್ ಆರಿಸಿ</translation>
 <translation id="7509246181739783082">ನಿಮ್ಮ ಗುರುತನ್ನು ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="7513622367902644023">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಮೋಡ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
@@ -800,6 +815,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7607002721634913082">ವಿರಾಮದಲ್ಲಿದೆ</translation>
 <translation id="7618774594543487847">ತಟಸ್ಥ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">ಮಾರ್ಕರ್ ಪೆನ್</translation>
 <translation id="7633755430369750696">Nearby ಶೇರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ.</translation>
 <translation id="7641938616688887143">ರೆಕಾರ್ಡ್</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ, <ph name="CONNECTION_STATUS" /></translation>
@@ -815,6 +831,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7724603315864178912">ಕತ್ತರಿಸು</translation>
 <translation id="7745560842763881396">ಶೆಲ್ಫ್‌ನಲ್ಲಿ ಆ್ಯಪ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="7749443890790263709">ಗರಿಷ್ಠ ಸಂಖ್ಯೆಯ ಡೆಸ್ಕ್‌ಗಳನ್ನು ತಲುಪಲಾಗಿದೆ.</translation>
+<translation id="7749640678855296659">ಪ್ರಸ್ತುತವಾಗಿ ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="776344839111254542">ಅಪ್‌ಡೇಟ್‌ ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="7780159184141939021">ಪರದೆಯನ್ನು ತಿರುಗಿಸಿ</translation>
 <translation id="7796353162336583443">ಟಿಪ್ಪಣಿ, ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳುವಾಗ, Google ಅಸಿಸ್ಟೆಂಟ್, ಲೇಸರ್‌ ಪಾಯಿಂಟರ್ ಅಥವಾ ಭೂತಗನ್ನಡಿ ಬಳಸಲು ಶೆಲ್ಫ್‌ನಲ್ಲಿ ಸ್ಟೈಲಸ್ ಬಟನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
@@ -862,6 +879,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8113423164597455979">ಆನ್, ಎಲ್ಲಾ ಆ್ಯಪ್</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
+<translation id="8132487352815776550">ಉಪಶೀರ್ಷಿಕೆಗಳನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> ಗೆ ಸಂಪರ್ಕಗೊಂಡಿದೆ</translation>
 <translation id="813913629614996137">ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8142441511840089262">ಡಬಲ್‌ ಕ್ಲಿಕ್</translation>

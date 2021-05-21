@@ -900,7 +900,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1926339101652878330">Ezeket a beállításokat vállalati irányelv szabályozza. Kérjük, további információért lépjen kapcsolatba a rendszergazdájával.</translation>
 <translation id="1927632033341042996"><ph name="NEW_FINGER_NUMBER" />. ujjlenyomat</translation>
 <translation id="192817607445937251">Képernyőzár PIN-kódja</translation>
-<translation id="1928202201223835302">Adja meg a régi PIN-kódot</translation>
 <translation id="1928696683969751773">Frissítések</translation>
 <translation id="1929186283613845153">A fájl ellenőrzése folyamatban van.</translation>
 <translation id="1929343511231420085">Bármely soros port</translation>
@@ -924,7 +923,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1954813140452229842">Hiba történt a megosztott tároló csatlakoztatása során. Ellenőrizze hitelesítő adatait, majd próbálkozzon újra.</translation>
 <translation id="1956050014111002555">A fájl több tanúsítványt tartalmazott, amelyek közül egy sincs importálva:</translation>
 <translation id="1956390763342388273">Ezzel feltölti az összes fájlt a(z) „<ph name="FOLDER_PATH" />” mappából. Csak akkor tegye ezt, ha megbízik a webhelyben.</translation>
-<translation id="1958750704984086982">A FLoC adatvédelmet fenntartó mechanizmust biztosít az érdeklődésen alapuló hirdetések kiválasztásához.</translation>
 <translation id="1962233722219655970">Az oldal olyan Natív kliensalkalmazást használ, amely nem működik a számítógépén.</translation>
 <translation id="1963227389609234879">Összes eltávolítása</translation>
 <translation id="1963976881984600709">Normál védelem</translation>
@@ -1666,7 +1664,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2749756011735116528">Bejelentkezés a <ph name="PRODUCT_NAME" />-ba</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Nyelvhelyesség és helyesírás ellenőrzése</translation>
-<translation id="2751131328353405138">Linux-tároló SSH-fájlrendszerének csatlakoztatása</translation>
 <translation id="2753677631968972007">A webhelyengedélyek manuális kezelése.</translation>
 <translation id="2755349111255270002"><ph name="DEVICE_TYPE" /> alaphelyzetbe állítása</translation>
 <translation id="2755367719610958252">Kisegítő lehetőségek kezelése</translation>
@@ -1800,7 +1797,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2891922230654533301">Szeretne az eszközével bejelentkezni a(z) <ph name="APP_NAME" /> alkalmazásba?</translation>
 <translation id="2893168226686371498">Alapértelmezett böngésző</translation>
 <translation id="2894757982205307093">Új lap a csoportban</translation>
-<translation id="289644616180464099">A SIM-kártya zárolva van</translation>
 <translation id="289695669188700754">Kulcsazonosító: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Ez az egyéni beállítás el lesz távolítva, amikor bezárja az összes inkognitó ablakot.</translation>
 <translation id="2897878306272793870">Biztosan meg szeretne nyitni <ph name="TAB_COUNT" /> lapot?</translation>
@@ -2267,7 +2263,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3427092606871434483">Engedélyezés (alapértelmezett)</translation>
 <translation id="3428419049384081277">Sikeresen bejelentkezett.</translation>
 <translation id="3428747202529429621">Gondoskodik a biztonságáról a Chrome-ban, és használható a biztonság növelésére más Google-alkalmazásokban olyankor, amikor Ön be van jelentkezve.</translation>
-<translation id="3428800329481094896">A Linux-tároló SSH-kulcsainak lekérése</translation>
 <translation id="3429160811076349561">A próbafunkciók ki vannak kapcsolva</translation>
 <translation id="3429271624041785769">Webes tartalmak nyelvei</translation>
 <translation id="3429275422858276529">Adja hozzá az oldalt a könyvjelzőkhöz, hogy később könnyen megtalálja</translation>
@@ -3086,7 +3081,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K élő)</translation>
 <translation id="4310139701823742692">Hibás fájlformátum. Ellenőrizze a PPD-fájlt, és próbálja újra.</translation>
 <translation id="431076611119798497">&amp;Részletek</translation>
-<translation id="4312124410630786333">Azonosító visszaállítása</translation>
 <translation id="4312866146174492540">Letiltás (alapértelmezett)</translation>
 <translation id="4314815835985389558">Szinkronizálás kezelése</translation>
 <translation id="4316850752623536204">Fejlesztő webhelye</translation>
@@ -3246,7 +3240,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4492698018379445570">Ellenőrizze, hogy mit helyezett a bevásárlókosarába, és ha kész, fizethet</translation>
 <translation id="4493468155686877504">Ajánlott (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Ne jelenjen meg ezen az oldalon</translation>
-<translation id="4496796119038756382">FLoC-azonosító</translation>
 <translation id="4497145443434063861">A számítógép és a Chromecast különböző Wi-Fi-hálózatokon van (pl. 2,4 GHz
     és 5 GHz)</translation>
 <translation id="4500114933761911433">A(z) <ph name="PLUGIN_NAME" /> összeomlott</translation>
@@ -3764,7 +3757,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5072900412896857127">Nem sikerült betölteni a Google Play Általános Szerződési Feltételeit. Ellenőrizze a hálózati kapcsolatot, és próbálkozzon újra.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> és # további}}</translation>
 <translation id="5074318175948309511">Előfordulhat, hogy az új beállítások életbe lépéséhez az oldal újratöltése szükséges.</translation>
-<translation id="5075131525758602494">Adja meg a SIM-kártya PIN-kódját</translation>
 <translation id="5075910247684008552">A nem biztonságos tartalmak alapértelmezés szerint le vannak tiltva a biztonságos webhelyeken</translation>
 <translation id="5078638979202084724">Összes lap hozzáadása a könyvjelzőkhöz</translation>
 <translation id="5078796286268621944">Helytelen PIN-kód</translation>
@@ -7139,7 +7131,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8803953437405899238">Nyisson új lapot egy kattintással</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Lap áthelyezése másik ablakba}other{Lapok áthelyezése másik ablakba}}</translation>
 <translation id="8805140816472474147">A szinkronizálás megkezdéséhez meg kell erősítenie a szinkronizálási beállításokat.</translation>
-<translation id="8805985421503170600">Összevont csoportalapú tanulás</translation>
 <translation id="8806680466228877631">A <ph name="SHORTCUT" /> billentyűparanccsal újra megnyithatja a véletlenül bezárt lapokat</translation>
 <translation id="8807632654848257479">Stabil</translation>
 <translation id="8808478386290700967">Chrome internetes áruház</translation>

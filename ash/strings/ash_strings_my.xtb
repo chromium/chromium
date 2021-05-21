@@ -24,7 +24,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> အတွက် အချက်အလက်ဒိုင်ယာလော့ ဖွင့်ပါ</translation>
 <translation id="1153356358378277386">တွဲချိတ်ထားသည့် စက်ပစ္စည်းများ</translation>
 <translation id="1165712434476988950">အပ်ဒိတ်ထည့်သွင်းရန် ကိရိယာကို ပြန်စရပါမည်။</translation>
-<translation id="1170240434488307589">စက်မိုက်ခရိုဖုန်းကို အသံတိတ်ထားသည်။</translation>
 <translation id="1175572348579024023">လှိမ့်ရန်</translation>
 <translation id="1178581264944972037">ဆိုင်းငံ့ထားရန်</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
@@ -41,6 +40,7 @@
 <translation id="1247372569136754018">မိုက်ခရိုဖုန်း (စက်တွင်း)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />မှ အားသွင်းနေပါသည်</translation>
 <translation id="1255033239764210633">မိုးလေဝသအခြေအနေ ဘယ်လိုရှိလဲ။</translation>
+<translation id="1266097335951928626">ဆယ်လ်ဖီ ကင်မရာ စတင်ရန်</translation>
 <translation id="1267032506238418139">ဖြတ်လမ်းလင့်ခ် ပြောင်းလဲခြင်း</translation>
 <translation id="1269405891096105529">‘ဧည့်သည်မုဒ်’ တွင် ချိတ်ဆက်ပစ္စည်းကို မပံ့ပိုးပါ</translation>
 <translation id="1270290102613614947">မျက်နှာပြင် ပေါ်က ကီးဘုတ် ပိတ်ထား</translation>
@@ -85,6 +85,7 @@
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="1570871743947603115">'ဘလူးတုသ်' ကို အဖွင့်အပိတ် ပြုလုပ်ရန်။ <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ဤစက်ရှင်ရှိ သင့်လုပ်ဆောင်ချက်အားလုံးကို ဝင်ကြည့်နိုင်သည်</translation>
+<translation id="159255010947577753">အမှတ်အသားပြုမင်တံ</translation>
 <translation id="1611993646327628135">ဖွင့်ထားသည်</translation>
 <translation id="1615402009686901181">လျှို့ဝှက်အကြောင်းအရာများကို မြင်နိုင်ချိန်တွင် ဖန်သားပြင်ပုံဖမ်းခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="1632985212731562677">'ဆက်တင်များ' &gt; 'အများသုံးစွဲနိုင်မှု' တွင် 'ခလုတ်သုံးခြင်း' ကို ပိတ်နိုင်သည်။</translation>
@@ -136,8 +137,10 @@
 <translation id="2016340657076538683">မက်ဆေ့ဂျ် ရိုက်ပါ</translation>
 <translation id="2018630726571919839">ဟာသတစ်ခု ပြောပါ</translation>
 <translation id="2021864487439853900">ဖွင့်ရန် နှိပ်ပါ</translation>
+<translation id="2047639699071423250">အဓိကစိတ်ကူး ထည့်ရန်</translation>
 <translation id="2049240716062114887">မျက်နှာပြင်နေရာအမည်ကို <ph name="DESK_NAME" /> သို့ ပြောင်းထားသည်</translation>
 <translation id="2050339315714019657">ဒေါင်လိုက်</translation>
+<translation id="2066708475850724665">မှန်ဘီလူး ရပ်ရန်</translation>
 <translation id="2067602449040652523">ကီးဘုတ် တောက်ပမှု</translation>
 <translation id="2078034614700056995">နောက်မျက်နှာပြင်နေရာသို့ ပြောင်းရန် လက်လေးချောင်းဖြင့် ညာသို့ပွတ်ဆွဲပါ</translation>
 <translation id="2079504693865562705">အက်ပ်များကို စင်တွင်ဖျောက်ထားရန်</translation>
@@ -145,10 +148,12 @@
 <translation id="2083190527011054446">မင်္ဂလာ ညချမ်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">ကွန်ရက်ချိတ်ဆက်မထားပါ</translation>
 <translation id="2108303511227308752">‘Alt + နောက်ပြန်ခလုတ်’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘ဖျက်ရန်’ ကီး သုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + နောက်ပြန်ခလုတ် နှိပ်ပါ။</translation>
+<translation id="211328683600082144">မိုက်ခရိုဖုန်း ဖွင့်ရန်</translation>
 <translation id="2126242104232412123">မျက်နှာပြင်နေရာ အသစ်</translation>
 <translation id="2127372758936585790">ပါဝါနိမ့် အားသွင်းစက်</translation>
 <translation id="2132302418721800944">ဖန်သားပြင်အပြည့် ရိုက်ကူးရန်</translation>
 <translation id="2135456203358955318">နေရာချထားသည့် မှန်ဘီလူး</translation>
+<translation id="2146800439053023141">ဘားတည်နေရာ ပြောင်းရန်</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />- ထပ်စမ်းကြည့်ရန်</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">'အနှစ်ချုပ်' မှထွက်ရန် လက်သုံးချောင်းဖြင့် အောက်သို့ပွတ်ဆွဲပါ</translation>
@@ -328,6 +333,7 @@
 <translation id="3638400994746983214">ကိုယ်ရေးလုံခြုံမှု ဖန်သားပြင်ကို အဖွင့်အပိတ်လုပ်ရန်။ <ph name="STATE_TEXT" />။</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> စီမံခန့်ခွဲသော အသုံးပြုသူ</translation>
 <translation id="3665889125180354336">မိုက်ခရိုဖုန်းအသံဖမ်းရန်</translation>
+<translation id="3680908746918359504">အမှတ်အသားပြုမင်တံအားလုံး ရှင်းထုတ်ရန်</translation>
 <translation id="36813544980941320">သင့်ဖုန်းနှင့် <ph name="DEVICE_NAME" /> အကြားတွင် Wi-Fi ကွန်ရက်များကို မျှဝေပါမည်</translation>
 <translation id="3702809606464356667">လက်ရှိမျက်နှာပြင်နေရာမှ ဝင်းဒိုးများကို ပြနေသည်၊ မျက်နှာပြင်နေရာ အားလုံးမှ ဝင်းဒိုးများကို ပြရန် ‘အပေါ်ညွှန်မြား’ ကီးကို နှိပ်ပါ</translation>
 <translation id="3702846122927433391">နိုင်ဂျီးရီးယားရှိ လူဦးရေ</translation>
@@ -373,12 +379,12 @@
 <translation id="4021716437419160885">အောက်သို့ လှိမ့်ရန်</translation>
 <translation id="4028481283645788203">လုံခြုံရေးပိုမိုကောင်းမွန်စေရန် စကားဝှက်လိုအပ်သည်</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">‘<ph name="LAUNCHER_KEY_NAME" /> + နံပါတ်’ လက်ကွက်ဖြတ်လမ်းများကို ပြောင်းထားသည်။ F ကီးများ သုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ထိပ်ဆုံးအတန်းရှိ ကီးကို နှိပ်ပါ။</translation>
 <translation id="4042660782729322247">သင့်မျက်နှာပြင်ကို မျှဝေနေသည်</translation>
 <translation id="4057003836560082631">ဘရောင်ဇာတဘ် <ph name="TOTAL_COUNT" /> ခုအနက် <ph name="INDEX" />။ <ph name="SITE_TITLE" />၊ <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{အက်ပ်တစ်ခုပိတ်}other{အက်ပ် # ခုပိတ်}}</translation>
 <translation id="4066027111132117168">ဖွင့်ထားသည်၊ <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">လိုင်းအား အတင့်သင့်သာရှိသည်</translation>
+<translation id="4095366824370681039">မင်တံ</translation>
 <translation id="4112140312785995938">နောက်သို့ ပြန်ရစ်ရန်</translation>
 <translation id="4114315158543974537">'ဖုန်းပင်မ' ဖွင့်ခြင်း</translation>
 <translation id="412298498316631026">ဝင်းဒိုး</translation>
@@ -447,12 +453,15 @@
 <translation id="4570957409596482333">'စကားပြောရွေးရန်' ခလုတ်</translation>
 <translation id="4577274620589681794">အချိန်စေ့ပါပြီ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">အစမ်းကြည့်ရှုမှုများ ပြရန်</translation>
+<translation id="4578196883126898996">သင့်မိုက်ခရိုဖုန်း ပိတ်ထားသည်။ သင့်စက်၏ မိုက်ခရိုဖုန်းခလုတ်ကို ဖွင့်ပါ။</translation>
 <translation id="4578906031062871102">ဆက်တင်များမီနူး ဖွင့်ထားသည်</translation>
 <translation id="4581047786858252841">မိုက်ခရိုဖုန်း ဖွင့်ထားသည်</translation>
 <translation id="4585337515783392668">အမည်မသိ လက်ခံစက်သို့ ကာ့စ်လုပ်ခြင်း ရပ်တန့်ရန်</translation>
+<translation id="4586483766170476230">ဆယ်လ်ဖီ ကင်မရာ ရပ်ရန်</translation>
 <translation id="4587299710837179226">မိုက်ခရိုဖုန်း ပိတ်ထားသည်</translation>
 <translation id="4596144739579517758">မှောင်သည့်အပြင်အဆင် ပိတ်ထားသည်</translation>
 <translation id="4611292653554630842">အကောင့်ထဲဝင်ရန်</translation>
+<translation id="4614295562446151104">အမှတ်အသားပြုတူးလ်များ ချဲ့ရန်</translation>
 <translation id="4623167406982293031">အကောင့်ကို အတည်ပြုရန်</translation>
 <translation id="4628757576491864469">စက်ပစ္စည်းများ</translation>
 <translation id="4642092649622328492">ဖန်သားပြင်ဓာတ်ပုံကို တစ်စိတ်တစ်ပိုင်းသာ ရိုက်ရန်</translation>
@@ -509,6 +518,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> က ဖုန်းအသစ်သို့ ချိတ်ဆက်ထားသည်</translation>
 <translation id="5035389544768382859">ဖန်သားပြင် စီစဉ်သတ်မှတ်မှု အတည်ပြုခြင်း</translation>
 <translation id="504465286040788597">ယခင်စာပိုဒ်</translation>
+<translation id="5071064518267176975">အက်ပ်က သင့်မိုက်ခရိုဖုန်းကို သုံးလိုသည်</translation>
+<translation id="5075554201838155866">စာတန်းများ စတင်ရန်</translation>
 <translation id="5078796286268621944">မမှန်ကန်သည့် ပင်ကုဒ်</translation>
 <translation id="5083553833479578423">နောက်ထပ် Assistant ဝန်ဆောင်မှုများကို ဖွင့်ပါ</translation>
 <translation id="5136175204352732067">မတူညီသည့် ကီးဘုတ်ကို ချိတ်ဆက်ထားသည်</translation>
@@ -679,6 +690,7 @@
 <translation id="6612802754306526077">ဖန်သားပြင်ရိုက်ကူးခြင်းမုဒ် ရွေးထားသည်</translation>
 <translation id="6614169507485700968">ပုဂ္ဂိုလ်ရေးလုံခြုံမှု ဖန်သားပြင်ကို ဖွင့်ထားသည်</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> က မိုက်ခရိုဖုန်းကို သုံးလိုသည်</translation>
 <translation id="6637729079642709226">အချိန်ပြောင်းခြင်း</translation>
 <translation id="6641720045729354415">'တိုက်ရိုက်စာတန်း' ကို ပြောင်းပါ။ <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">သင်ဖြစ်ကြောင်း <ph name="ORIGIN_NAME" /> က အတည်ပြုလိုသည်</translation>
@@ -732,6 +744,7 @@
 <translation id="7029814467594812963">စက်ရှင်မှ ထွက်ရန်</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />၊ Google Assistant</translation>
 <translation id="7042322267639375032">အခြေအနေပြ နေရာကို ခေါက်ရန်</translation>
+<translation id="7045595904618419789">မှန်ဘီလူး စတင်ရန်</translation>
 <translation id="7055910611768509537">စတိုင်လပ်စ်ကို တစ်ပတ်ကျော် အသုံးပြုမထားပါ</translation>
 <translation id="7066646422045619941">ဤကွန်ယက်ကို သင့်စီမံခန့်ခွဲသူမှ ပိတ်ခဲ့သည်။</translation>
 <translation id="7067196344162293536">အလိုအလျောက် လှည့်ရန်</translation>
@@ -752,6 +765,7 @@
 <translation id="7256634071279256947">အနောက်မိုက်ခရိုဖုန်း</translation>
 <translation id="726276584504105859">မျက်နှာပြင် ခွဲခြမ်းပြသခြင်းကို အသုံးပြုရန် ဤနေရာသို့ ဖိဆွဲပါ</translation>
 <translation id="7262906531272962081">သတိပေးချက် ပြုလုပ်ပါ</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> အမှတ်အသားပြုမင်တံ</translation>
 <translation id="7302889331339392448">'တိုက်ရိုက်စာတန်း' ကို ပိတ်ထားသည်။</translation>
 <translation id="7303365578352795231">အခြား ကိရိယာတွင် ဖြေကြားနေသည်။</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@
 <translation id="7466449121337984263">အာရုံခံကိရိယာကို ထိပါ</translation>
 <translation id="7477793887173910789">သင့်သီချင်း၊ ဗီဒီယိုနှင့် အခြားအရာများ ထိန်းချုပ်ရန်</translation>
 <translation id="7483025031359818980">ရွေးချယ်ရန်နေရာအဖြစ် ဖန်သားပြင်အပြည့်ကို သတ်မှတ်လိုက်သည်</translation>
+<translation id="7486227320194954040">အမှတ်အသားပြုတူးလ်များ ချုံ့ရန်</translation>
 <translation id="7497767806359279797">ဘာသာစကားနှင့် ကီးဘုတ်ကို ရွေးရန်</translation>
 <translation id="7509246181739783082">သင်၏အထောက်အထားကို အတည်ပြုပါ</translation>
 <translation id="7513622367902644023">ဖန်သားပြင်ဓာတ်ပုံမုဒ် ရွေးထားသည်</translation>
@@ -799,6 +814,7 @@
 <translation id="7607002721634913082">ဆိုင်းငံ့ထား</translation>
 <translation id="7618774594543487847">ပုံမှန်</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">အမှတ်အသားပြုမင်တံ</translation>
 <translation id="7633755430369750696">'အနီးတစ်ဝိုက် မျှဝေခြင်း' ဆက်တင်များ ပြပေးသည်။</translation>
 <translation id="7641938616688887143">ရိုက်ကူးရန်</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" /> အတွက် ဆက်တင်များကို ဖွင့်ရန်</translation>
@@ -814,6 +830,7 @@
 <translation id="7724603315864178912">ဖြတ်တောက်</translation>
 <translation id="7745560842763881396">အက်ပ်များကို စင်တွင်ပြရန်</translation>
 <translation id="7749443890790263709">အများဆုံးသတ်မှတ်ထားသည့် စားပွဲအရေအတွက် ပြည့်သွားပါပြီ။</translation>
+<translation id="7749640678855296659">သင့်မိုက်ခရိုဖုန်းကို လက်ရှိတွင် ပိတ်ထားသည်</translation>
 <translation id="776344839111254542">အပ်ဒိတ်အသေးစိတ် အချက်အလက်များကို ကြည့်ရန် နှိပ်ပါ</translation>
 <translation id="7780159184141939021">မျက်နှာပြင် လှည့်ခြင်း</translation>
 <translation id="7796353162336583443">မှတ်စုရေးရန်၊ ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ရန်၊ Google Assistant ကို သုံးရန်၊ လေဆာညွှန်ပြကိရိယာ သို့မဟုတ် မှန်ဘီလူးတို့ကို သုံးရန် စင်ပေါ်ရှိ စတိုင်လပ်စ်ခလုတ်ကို တို့ပါ။</translation>
@@ -861,6 +878,7 @@
 <translation id="8113423164597455979">ဖွင့်- အားလုံး</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° စင်တီဂရိတ်</translation>
 <translation id="8131740175452115882">အတည်ပြုရန်</translation>
+<translation id="8132487352815776550">စာတန်းများ ရပ်ရန်</translation>
 <translation id="8132793192354020517"><ph name="NAME" />သို့ ချိတ်ဆက်ထား</translation>
 <translation id="813913629614996137">စတင်နေသည်…</translation>
 <translation id="8142441511840089262">နှစ်ချက်နှိပ်ရန်</translation>

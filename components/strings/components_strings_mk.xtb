@@ -285,6 +285,7 @@
 <translation id="1919345977826869612">Реклами</translation>
 <translation id="1919367280705858090">Добивање помош околу конкретна порака за грешка</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ниту еден}=1{1 сајт}one{# сајт}other{# сајтови}}</translation>
+<translation id="1924727005275031552">Ново</translation>
 <translation id="1945968466830820669">Може да го изгубите пристапот до сметката на вашата организација или да ви го украдат идентитетот. Chromium препорачува да ја смените лозинката веднаш.</translation>
 <translation id="1947454675006758438">Спојување горе десно</translation>
 <translation id="1958218078413065209">Вашиот најдобар резултат е <ph name="SCORE" />.</translation>
@@ -395,6 +396,7 @@
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> управува со уредот, а <ph name="ACCOUNT_MANAGER" /> управува со сметката.</translation>
 <translation id="2359629602545592467">Повеќе</translation>
 <translation id="2359808026110333948">Продолжи</translation>
+<translation id="2359961752320758691">Бројот на виртуелната картичка е применет.</translation>
 <translation id="2367567093518048410">Ниво</translation>
 <translation id="2372464001869762664">Откако ќе потврдите, деталите за картичката од вашата сметка на Google ќе се споделат со сајтов. Најдете го CVC во деталите за сметката на Plex.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -405,6 +407,7 @@
 <translation id="239429038616798445">Овој метод на испорака не е достапен. Изберете друг.</translation>
 <translation id="2396249848217231973">&amp;Врати бришење</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">Старата</translation>
 <translation id="2413528052993050574">Серверот не може да докаже дека е <ph name="DOMAIN" />; можеби неговиот безбедносен сертификат е повлечен. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2438874542388153331">Четири дупки десно</translation>
@@ -909,12 +912,14 @@
 <translation id="4275830172053184480">Рестартирај го уредот</translation>
 <translation id="4277028893293644418">Ресетирај ја лозинката</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Картичкава е зачувана во вашата сметка на Google}one{Картичкиве се зачувани во вашата сметка на Google}other{Картичкиве се зачувани во вашата сметка на Google}}</translation>
+<translation id="4287885627794386150">Подобно за пробен период, но не е активен</translation>
 <translation id="4297502707443874121">Сликичка за страницата <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Прошири</translation>
 <translation id="4300675098767811073">Повеќе дупки десно</translation>
 <translation id="4302514097724775343">Допрете го диносаурусот за да играте</translation>
 <translation id="4302965934281694568">Chou3 (плик)</translation>
 <translation id="4305666528087210886">Не може да се пристапи до вашата датотека</translation>
+<translation id="4306529830550717874">Да се зачува адресата?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокирај (стандардно)</translation>
 <translation id="4314815835985389558">Управувајте со синхронизацијата</translation>
@@ -1402,6 +1407,7 @@
 <translation id="610911394827799129">Вашата сметка на Google можеби има други видови историја на прелистување на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">гледа текст и слики копирани на привремената меморија</translation>
 <translation id="6120179357481664955">Да се запомни ID за UPI?</translation>
+<translation id="6123290840358279103">Прикажи ја виртуелната картичка</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6146055958333702838">Проверете ги каблите и рестартирајте ги рутерите, модемите или другите мрежни
         уреди што ги користите.</translation>
@@ -1681,6 +1687,7 @@
 <translation id="7300012071106347854">Сина како кобалт</translation>
 <translation id="7302712225291570345">„<ph name="TEXT" />“</translation>
 <translation id="7304030187361489308">Висок</translation>
+<translation id="7305756307268530424">Стартувај побавно</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помош за поврзување</translation>
 <translation id="7323804146520582233">Сокриј го делот „<ph name="SECTION" />“</translation>
@@ -1706,6 +1713,7 @@
 <translation id="7378594059915113390">Контроли за аудиовизуелни медиуми</translation>
 <translation id="7378627244592794276">Не</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Не е применливо</translation>
 <translation id="7390545607259442187">Потврдете ја картичката</translation>
 <translation id="7399802613464275309">Проверка на безбедноста</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1757,6 +1765,7 @@
 <translation id="7548892272833184391">Поправање грешки при поврзувањето</translation>
 <translation id="7549584377607005141">Веб-страницава бара податоци кои сте ги внеле претходно за правилно да се прикаже. Може повторно да ги испратите податоците, но со тоа ќе ги повторите сите дејства што претходно ги извршила страницата.</translation>
 <translation id="7550637293666041147">Корисничкото име на вашиот уред и корисничкото име на Chrome</translation>
+<translation id="755279583747225797">Пробната верзија е активна</translation>
 <translation id="7552846755917812628">Испробајте ги следните совети:</translation>
 <translation id="7554475479213504905">Вчитај повторно и сепак прикажи</translation>
 <translation id="7554791636758816595">Нова картичка</translation>
@@ -1851,6 +1860,7 @@
 <translation id="7894280532028510793">Ако правописот е точен, <ph name="BEGIN_LINK" />извршете дијагностика на мрежата<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (плик)</translation>
 <translation id="7931318309563332511">Непознат</translation>
+<translation id="793209273132572360">Да се ажурира адресата?</translation>
 <translation id="7932579305932748336">Омот</translation>
 <translation id="79338296614623784">Внесете важечки телефонски број</translation>
 <translation id="7934052535022478634">Плаќањето е завршено</translation>
@@ -1927,7 +1937,6 @@
 <translation id="8202097416529803614">Краток преглед на нарачка</translation>
 <translation id="8202370299023114387">Конфликт</translation>
 <translation id="8206978196348664717">Prc4 (плик)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Кога ќе го ресетирате ID, вашиот тековен ID ќе стане неважечки, а нов ќе се издаде за помалку од еден ден}=1{Кога ќе го ресетирате ID, вашиот тековен ID ќе стане неважечки, а нов ќе се издаде за еден ден}one{Кога ќе го ресетирате ID, вашиот тековен ID ќе стане неважечки, а нов ќе се издаде за {NUM_DAYS} ден}other{Кога ќе го ресетирате ID, вашиот тековен ID ќе стане неважечки, а нов ќе се издаде за {NUM_DAYS} дена}}</translation>
 <translation id="8211406090763984747">Врската е безбедна</translation>
 <translation id="8213464188712611711">Спомени</translation>
 <translation id="8218327578424803826">Доделена локација:</translation>

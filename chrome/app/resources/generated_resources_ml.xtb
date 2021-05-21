@@ -888,7 +888,6 @@
 <translation id="1926339101652878330">ഈ ക്രമീകരണത്തെ നിയന്ത്രിക്കുന്നത് എന്റർപ്രൈസ് നയമാണ്. കൂടുതൽ വിവരങ്ങൾക്ക് നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്ററെ ബന്ധപ്പെടുക.</translation>
 <translation id="1927632033341042996"><ph name="NEW_FINGER_NUMBER" />-മത്തെ വിരലടയാളം</translation>
 <translation id="192817607445937251">സ്‌ക്രീൻ ലോക്ക് പിൻ</translation>
-<translation id="1928202201223835302">പഴയ പിൻ നൽകുക</translation>
 <translation id="1928696683969751773">അപ്‌ഡേറ്റുചെയ്യുന്നു</translation>
 <translation id="1929186283613845153">ഈ ഫയൽ സ്‌കാൻ ചെയ്യുന്നു.</translation>
 <translation id="1929343511231420085">എല്ലാ സീരിയൽ പോർട്ടുകളും</translation>
@@ -912,7 +911,6 @@
 <translation id="1954813140452229842">പങ്കിടൽ മൗണ്ട് ചെയ്യുന്നതിൽ പിശക്. ക്രെഡൻഷ്യലുകൾ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1956050014111002555">ഫയലില്‍ ഒന്നിലധികം സാക്‍ഷ്യപ്ത്രങ്ങള്‍ അടങ്ങിയിരിക്കുന്നു, അതിലൊന്നും ഇറക്കുമതി ചെയ്തില്ല:</translation>
 <translation id="1956390763342388273">"<ph name="FOLDER_PATH" />" ഫോൾഡറിൽ നിന്നുള്ള എല്ലാ ഫയലുകളും ഇത് അപ്‌ലോഡ് ചെയ്യും. നിങ്ങൾ സൈറ്റിനെ വിശ്വസിക്കുന്നുവെങ്കിൽ മാത്രം ഇത് ചെയ്യുക.</translation>
-<translation id="1958750704984086982">സ്വകാര്യത സംരക്ഷിച്ച് കൊണ്ട് താൽപര്യാധിഷ്‌ഠിത പരസ്യങ്ങൾ തിരഞ്ഞെടുക്കുന്നതിനുള്ള സംവിധാനം FLoC ലഭ്യമാക്കുന്നു.</translation>
 <translation id="1962233722219655970">ഈ പേജ് നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ പ്രവർത്തിക്കാത്ത ഒരു നേറ്റീവ് ക്ലയന്റ് ആപ്പ് ഉപയോഗിക്കുന്നു.</translation>
 <translation id="1963227389609234879">എല്ലാം നീക്കംചെയ്യൂ</translation>
 <translation id="1963976881984600709">സ്‌റ്റാൻഡേർഡ് പരിരക്ഷ</translation>
@@ -1652,7 +1650,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> എന്നതിലേയ്‍ക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2749836841884031656">സിം</translation>
 <translation id="2749881179542288782">സ്‌പെല്ലിംഗിനൊപ്പം വ്യാകരണവും പരിശോധിക്കുക</translation>
-<translation id="2751131328353405138">Linux കണ്ടെയ്‌നർ sshfs മൗണ്ട് ചെയ്യുന്നു</translation>
 <translation id="2753677631968972007">സൈറ്റ് അനുമതികൾ നേരിട്ട് നിയന്ത്രിക്കുക.</translation>
 <translation id="2755349111255270002">ഈ <ph name="DEVICE_TYPE" /> റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="2755367719610958252">ഉപയോഗസഹായി ഫീച്ചറുകൾ മാനേജ് ചെയ്യുക</translation>
@@ -1786,7 +1783,6 @@
 <translation id="2891922230654533301"><ph name="APP_NAME" /> ആപ്പിൽ സൈൻ ചെയ്യാൻ നിങ്ങളുടെ ഉപകരണം ഉപയോഗിക്കണോ?</translation>
 <translation id="2893168226686371498">ഡിഫോൾട്ട് ബ്രൗസര്‍</translation>
 <translation id="2894757982205307093">ഗ്രൂപ്പിലെ പുതിയ ടാബ്</translation>
-<translation id="289644616180464099">സിം കാർഡ് ലോക്കുചെയ്‌തു</translation>
 <translation id="289695669188700754">കീ ഐഡി: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">നിങ്ങളുടെ എല്ലാ അദൃശ്യ വിൻഡോകളും അടയ്‌ക്കുമ്പോൾ, ഈ ഇഷ്‌ടാനുസൃത ക്രമീകരണം നീക്കം ചെയ്യും</translation>
 <translation id="2897878306272793870">നിങ്ങള്‍ <ph name="TAB_COUNT" /> ടാബുകള്‍ തുറക്കാന്‍ പോവുകയാണെന്ന് ഉറപ്പുണ്ടോ?</translation>
@@ -2253,7 +2249,6 @@
 <translation id="3427092606871434483">അനുവദിക്കുക (ഡിഫോൾട്ട്)</translation>
 <translation id="3428419049384081277">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തു!</translation>
 <translation id="3428747202529429621">നിങ്ങൾ സൈൻ ഇൻ ആയിരിക്കുമ്പോൾ Chrome-ൽ നിങ്ങളെ സുരക്ഷിതരാക്കുകയും മറ്റ് Google ആപ്പുകളിൽ നിങ്ങളുടെ സുരക്ഷ മെച്ചപ്പെടുത്താനും ഉപയോഗിച്ചേക്കാം</translation>
-<translation id="3428800329481094896">Linux കണ്ടെയ്‌നർ ssh കീകൾ ലഭ്യമാക്കുന്നു</translation>
 <translation id="3429160811076349561">ട്രയൽ ഫീച്ചറുകൾ ഓഫാണ്</translation>
 <translation id="3429271624041785769">വെബ് ഉള്ളടക്കം ലഭ്യമായ ഭാഷകൾ</translation>
 <translation id="3429275422858276529">പിന്നീട് ഈ പേജ് എളുപ്പത്തിൽ കണ്ടെത്താൻ ബുക്ക്‌മാർക്ക് ചെയ്യുക</translation>
@@ -3072,7 +3067,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K ലൈവ്)</translation>
 <translation id="4310139701823742692">ഫയൽ, തെറ്റായ ഫോർമാറ്റിലാണ്. PPD ഫയൽ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="431076611119798497">&amp;വിശദാംശങ്ങള്‍‌</translation>
-<translation id="4312124410630786333">റീസെറ്റ് ഐഡി</translation>
 <translation id="4312866146174492540">ബ്ലോക്ക് ചെയ്യുക (ഡിഫോൾട്ട്)</translation>
 <translation id="4314815835985389558">സമന്വയിപ്പിക്കൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="4316850752623536204">ഡെവലപ്പർ വെബ്‌സൈറ്റ്</translation>
@@ -3232,7 +3226,6 @@
 <translation id="4492698018379445570">നിങ്ങൾ ഷോപ്പിംഗ് കാർട്ടുകളിലേക്ക് ചേർത്തിരിക്കുന്നത് എന്താണെന്ന് കണ്ടെത്തി നിങ്ങൾ തയ്യാറാകുമ്പോൾ ചെക്ക് ഔട്ട് ചെയ്യുക</translation>
 <translation id="4493468155686877504">(<ph name="INSTALL_SIZE" />) ശുപാർശ ചെയ്യുന്നു</translation>
 <translation id="4495419450179050807">ഈ പേജില്‍ കാണിക്കരുത്</translation>
-<translation id="4496796119038756382">FLoC ഐഡി</translation>
 <translation id="4497145443434063861">വ്യത്യസ്‌ത Wi-Fi നെറ്റ്‌വർക്കുകളിലെ (ഉദാ. 2.4GHz, 5GHz എന്നിവ തമ്മിൽ) PC, Chromecast എന്നിവ</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ക്രാഷ് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="4500587658229086076">സുരക്ഷിതമല്ലാത്ത ഉള്ളടക്കം</translation>
@@ -3749,7 +3742,6 @@
 <translation id="5072900412896857127">Google Play സേവന നിബന്ധനകൾ ലോഡ് ചെയ്യാനാകുന്നില്ല. നിങ്ങളുടെ നെറ്റ്‌വർക്ക് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" /> എന്നിവ}other{<ph name="FILE1" />, <ph name="FILE2" /> എന്നിവയും മറ്റ് # എണ്ണവും}}</translation>
 <translation id="5074318175948309511">പുതിയ ക്രമീകരണങ്ങൾ പ്രയോഗത്തിൽ വരുന്നതിന് മുമ്പ് ഈ പേജ് റീലോഡ് ചെയ്യേണ്ടതായി വരാം.</translation>
-<translation id="5075131525758602494">സിം പിൻ നൽകുക</translation>
 <translation id="5075910247684008552">സുരക്ഷിതമല്ലാത്ത ഉള്ളടക്കം, സുരക്ഷിത സൈറ്റുകളിൽ ഡിഫോൾട്ടായി ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="5078638979202084724">എല്ലാ ടാബുകളും ബുക്ക്‌മാര്‍ക്ക് ചെയ്യുക</translation>
 <translation id="5078796286268621944">തെറ്റായ PIN</translation>
@@ -7123,7 +7115,6 @@
 <translation id="8803953437405899238">ഒറ്റ ക്ലിക്കിൽ പുതിയ ടാബ് തുറക്കുക</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{ടാബ് മറ്റൊരു വിൻഡോയിലേക്ക് നീക്കുക}other{ടാബുകൾ മറ്റൊരു വിൻഡോയിലേക്ക് നീക്കുക}}</translation>
 <translation id="8805140816472474147">സമന്വയിപ്പിക്കൽ ആരംഭിക്കുന്നതിന് സമന്വയിപ്പിക്കൽ ക്രമീകരണം സ്ഥിരീകരിക്കുക.</translation>
-<translation id="8805985421503170600">Federated Learning of Cohorts</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" />-ന് അബദ്ധത്തിൽ അടച്ച ടാബുകൾ വീണ്ടും തുറക്കാനാവും</translation>
 <translation id="8807632654848257479">സുസ്ഥിരമായ</translation>
 <translation id="8808478386290700967">വെബ് സ്റ്റോര്‍</translation>

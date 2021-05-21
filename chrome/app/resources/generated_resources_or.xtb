@@ -884,7 +884,6 @@
 <translation id="1926339101652878330">ଏହି ସେଟି॰ସ୍ ଏଣ୍ଟର୍‌ପ୍ରାଇଜ୍ ନୀତି ଦ୍ଵାରା ନିୟନ୍ତ୍ରିତ ହୋଇଥାଏ। ଦୟାକରି ଅଧିକ ସୂଚନା ପାଇଁ ଆପଣଙ୍କ ବ୍ୟବସ୍ଥାପଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="1927632033341042996">ଆଙ୍ଗୁଠି <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">ସ୍କ୍ରିନ୍ ଲକ୍ PIN</translation>
-<translation id="1928202201223835302">ପୁରୁଣା PIN ଲେଖନ୍ତୁ</translation>
 <translation id="1928696683969751773">ଅପ୍‌ଡେଟ୍</translation>
 <translation id="1929186283613845153">ଏହି ଫାଇଲକୁ ସ୍କାନ୍ କରାଯାଉଛି।</translation>
 <translation id="1929343511231420085">ଯେ କୌଣସି ସିରିଅଲ୍ ପୋର୍ଟ</translation>
@@ -1640,7 +1639,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />ରେ ସାଇନ୍‍ ଇନ୍‍ କରନ୍ତୁ</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">ବନାନ ସହିତ ବ୍ୟାକରଣର ଯାଞ୍ଚ କରନ୍ତୁ</translation>
-<translation id="2751131328353405138">Linux କଣ୍ଟେନର୍ ssh ଫାଇଲ୍ ସିଷ୍ଟମ୍ ମାଉଣ୍ଟ କରାଯାଉଛି</translation>
 <translation id="2753677631968972007">ସାଇଟ୍ ଅନୁମତିଗୁଡ଼ିକୁ ମାନୁଆଲୀ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ।</translation>
 <translation id="2755349111255270002">ଏହି <ph name="DEVICE_TYPE" />କୁ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="2755367719610958252">ଆକ୍ସେସିବିଲିଟୀ ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -1773,7 +1771,6 @@
 <translation id="2891922230654533301"><ph name="APP_NAME" />ରେ ସାଇନ୍ ଇନ୍ କରିବାକୁ ଆପଣଙ୍କ ଡିଭାଇସ୍ ବ୍ୟବହାର କରିବେ?</translation>
 <translation id="2893168226686371498">ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌</translation>
 <translation id="2894757982205307093">ଗୋଷ୍ଠୀରେ ନୂଆ ଟାବ୍</translation>
-<translation id="289644616180464099">SIM କାର୍ଡ ଲକ୍ ହୋଇଯାଇଛି</translation>
 <translation id="289695669188700754">କୀ ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ଆପଣ ଆପଣଙ୍କ ସମସ୍ତ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବନ୍ଦ କଲେ ଏହି କଷ୍ଟମ୍ ସେଟିଂକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="2897878306272793870">ଆପଣ <ph name="TAB_COUNT" /> ଟ୍ୟାବଗୁଡିକ ଖୋଲିବାକୁ ଚାହିଁବା ନିଶ୍ଚିତ କି?</translation>
@@ -2238,7 +2235,6 @@
 <translation id="3427092606871434483">ଅନୁମତି ଦିଅନ୍ତୁ (ଡିଫଲ୍ଟ)</translation>
 <translation id="3428419049384081277">ଆପଣ ସାଇନ୍‌ ଇନ୍ କରିଛନ୍ତି!</translation>
 <translation id="3428747202529429621">ଯେତେବେଳେ ଆପଣ ସାଇନ୍ ଇନ୍ କରନ୍ତି ଏହା ଆପଣଙ୍କୁ Chromeରେ ସୁରକ୍ଷିତ ରଖେ ଏବଂ ଅନ୍ୟ Google ଆପଗୁଡ଼ିକରେ ଆପଣଙ୍କ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଇପାରେ</translation>
-<translation id="3428800329481094896">Linux କଣ୍ଟେନରର ssh କୀଗୁଡ଼ିକ ଫେଚ୍ କରାଯାଉଛି</translation>
 <translation id="3429160811076349561">ଟ୍ରାଏଲ୍ ଫିଚରଗୁଡ଼ିକ ବନ୍ଦ ଅଛି</translation>
 <translation id="3429271624041785769">ୱେବ୍ ବିଷୟବସ୍ତୁ ଭାଷାଗୁଡ଼ିକ</translation>
 <translation id="3429275422858276529">ଏହାକୁ ପରେ ସହଜରେ ଖୋଜିବା ପାଇଁ ଏହି ପୃଷ୍ଠାକୁ ବୁକ୍‌ମାର୍କ କରନ୍ତୁ</translation>
@@ -3722,7 +3718,6 @@
 <translation id="5072900412896857127">Google Play ସେବାର ସର୍ତ୍ତାବଳୀ ଲୋଡ୍ କରାଯାଇପାରିବ ନାହିଁ। ଦୟାକରି ଆପଣଙ୍କ ନେଟୱାର୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" />, ଏବଂ ଅଧିକ #ଟି}}</translation>
 <translation id="5074318175948309511">ନୂତନ ସେଟିଂସ୍ ପ୍ରଭାବ ପକାଇବା ପୂର୍ବରୁ ଏହି ପୃଷ୍ଠାକୁ ହୁଏତ ପୁଣି ଲୋଡ୍ କରିବା ଆବଶ୍ୟକ।</translation>
-<translation id="5075131525758602494">SIM PIN ଲେଖନ୍ତୁ</translation>
 <translation id="5075910247684008552">ସୁରକ୍ଷିତ ସାଇଟ୍‍ଗୁଡ଼ିକରେ ଅସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁକୁ ଡିଫଲ୍ଟ ଭାବେ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5078638979202084724">ସମସ୍ତ ଟାବ୍‌କୁ ବୁକ୍‌ମାର୍କ କରନ୍ତୁ</translation>
 <translation id="5078796286268621944">ଭୁଲ ପିନ୍</translation>

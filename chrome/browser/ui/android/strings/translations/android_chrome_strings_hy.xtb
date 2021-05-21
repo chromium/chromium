@@ -186,6 +186,7 @@
 <translation id="22320125457191592">Ձեզ համար</translation>
 <translation id="2234876718134438132">Համաժամացում և Google-ի ծառայություններ</translation>
 <translation id="2239812875700136898">Կառավարեք ձեր պատմությունները «Discover-ի ընտրանքներ» կոճակի օգնությամբ</translation>
+<translation id="2251971221270904886">Երբ գործառույթը միացված և ակտիվացված է, Chrome-ն օգտագործում է այցելությունների 7-օրվա պատմությունը՝ որոշելու խումբը կամ կոհորտը, որում դուք ներառված եք։ Գովազդատուները կարող են գովազդներ ընտրել խմբի համար։ Ձեր այցելությունների պատմությունը գաղտի է պահվում սարքում։ Այս փորձնական գործառույթը հասանելի է միայն <ph name="BEGIN_LINK" />որոշ տարածաշրջաններում<ph name="END_LINK" />։</translation>
 <translation id="2259659629660284697">Գաղտնաբառերի արտահանում…</translation>
 <translation id="2276696007612801991">Մտեք Google հաշիվ՝ ձեր գաղտնաբառերը ստուգելու համար</translation>
 <translation id="2278052315791335171">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="SITE" /> կայքից։</translation>
@@ -202,6 +203,7 @@
 <ph name="BEGIN_LIST_ITEM1" />Գովազդատուները կարող են տեսնել, երբ հազարավոր օգտատերեր ունեն նույն հետաքրքրությունը, և ընտրել գովազդ մարդկանց խմբերի, այլ ոչ թե մեկ անձի համար։<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Գովազդատուները կարող են գնահատել գովազդի արդյունավետությունը՝ առանց հետագծելու ձեր գործողությունները համացանցում։<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Նախապես բեռնում է էջերը, որոնք, ըստ Chrome-ի վերլուծության, դուք կարող եք այցելել։ Դրա համար Chrome-ը կարող է օգտագործել քուքիներ, եթե դրանք թույլատրում եք, ինչպես նաև կարող է էջերը գաղտնագրել և ուղարկել Google-ի միջոցով, որպեսզի կայքերը չստանան տեղեկություններ ձեր անձի մասին։</translation>
 <translation id="234265804618409743">Չհաջողվեց բացել տեսախցիկը։ Սխալ առաջացավ։</translation>
 <translation id="2345671828921229300">Որոնելու համար հպեք բառին և պահեք</translation>
 <translation id="2349710944427398404">Chrome-ի օգտագործած ընդհանուր տարածքը, ներառյալ` հաշիվները, էջանիշները և պահված կարգավորումները</translation>
@@ -274,6 +276,7 @@
 <translation id="2781151931089541271">Մնացել է 1 վրկ</translation>
 <translation id="2801022321632964776">Տեղադրեք Chrome-ի վերջին տարբերակը՝ կայքերը ձեր լեզվով դիտելու համար</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Դիտեք և կառավարեք պահված գաղտնաբառերը ձեր <ph name="BEGIN_LINK" />Google հաշվում<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Ձեր էջանիշները բոլոր սարքերում օգտագործելու համար մտեք հաշիվ և միացրեք համաժամացումը</translation>
 <translation id="2827278682606527653">Լրահոսի քարտի ընտրացանկը բացված է կիսով չափ</translation>
@@ -292,6 +295,7 @@
 <translation id="2901411048554510387">Ցուցադրվում են առաջարկներ «<ph name="WEBSITE_TITLE" />» կայքի համար</translation>
 <translation id="2904414404539560095">Սարքերը, որոնց հետ կիսվելու եք ներդիրով, ցուցադրված են ամբողջ էկրանով:</translation>
 <translation id="2905036901251765993">Մոտակայքում գտնվող մարդկանց հետ կիսվելու համար սկանավորեք այս QR կոդը</translation>
+<translation id="2908243544703713905">Կան չկարդացված նորություններ</translation>
 <translation id="2909615210195135082">Google ծանուցումների հարթակ</translation>
 <translation id="2912296070571964914">Կառավարեք ձեզ հետաքրքրող թեմաները</translation>
 <translation id="2923908459366352541">Անունն անվավեր է:</translation>
@@ -316,6 +320,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> էջանիշ}one{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}other{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}}</translation>
 <translation id="3062802207422175757">Ձեր հետաքրքրությունների հիման վրա ընտրված հոդվածներ՝ Chrome-ում</translation>
 <translation id="3070005020161560471">Ավտոմատ թարգմանել</translation>
+<translation id="3083531420240576529">Դուք ցանկացած ժամանակ կարող եք զրոյացնել ձեր խմբի կարգավորումները։ Խմբի որոշման համար կարող է մինչև 7 օր պահանջվել։</translation>
 <translation id="3091010850649238832">Ցույց տալ սեղմատախտակի բովանդակությունը</translation>
 <translation id="3098745985164956033">Պատկերներն ուղարկվում են Google-ին՝ նկարագրությունները բարելավելու նպատակով</translation>
 <translation id="3114507951000454849">Կարդացեք այսօրվա նորությունները <ph name="NEWS_ICON" /></translation>
@@ -457,6 +462,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4056223980640387499">Սեպիա</translation>
 <translation id="4060598801229743805">Ընտրանքները հասանելի են էկրանի վերին հատվածում</translation>
 <translation id="4062305924942672200">Իրավական տեղեկություններ</translation>
+<translation id="4082818367361753283">Խմբի ID</translation>
 <translation id="4084682180776658562">Էջանիշ</translation>
 <translation id="4084712963632273211">Բովանդակությունը՝ <ph name="PUBLISHER_ORIGIN" /> կայքից։ <ph name="BEGIN_DEEMPHASIZED" />Մատուցվում է Google-ի կողմից<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Ջնջե՞լ հավելվածների տվյալները:</translation>
@@ -532,7 +538,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4583164079174244168">{MINUTES,plural, =1{# րոպե առաջ}one{# րոպե առաջ}other{# րոպե առաջ}}</translation>
 <translation id="4587589328781138893">Կայքեր</translation>
 <translation id="4594952190837476234">Այս էջը պահվել է <ph name="CREATION_TIME" />-ին, և կարող է տարբերվել առցանց տարբերակից։</translation>
-<translation id="4615382002648696011">Ֆիդում, որին հետևում եք, կան չկարդացված նյութեր</translation>
 <translation id="4616150815774728855">Բացել <ph name="WEBAPK_NAME" /> հավելվածը</translation>
 <translation id="4619564267100705184">Հաստատեք ձեր ինքնությունը</translation>
 <translation id="4634124774493850572">Օգտագործել գաղտնաբառը</translation>
@@ -888,6 +893,11 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="6699370405921460408">Google-ի սերվերները կօպտիմալացնեն ձեր այցելած էջերը։</translation>
 <translation id="670498945988402717">Ստուգվել է երեկ</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
+<translation id="671333169801287922">Երբ այս գործառույթը միացված է, կայքերը կարող են օգտագործել գաղտնիությունն ապահովող նշված տեխնոլոգիաները, այդ թվում՝ գործողությունների միջկայքային հետագծման այլընտրանքները, իրենց բովանդակությունն ու ծառայությունները առաջարկելու համար։ Դրանք ներառում են միջկայքային հետագծումը։ Ժամանակի ընթացքում կավելացվեն այլ փորձնական գործառույթներ։
+
+<ph name="BEGIN_LIST_ITEM1" />Գովազդատուներն ու հրատարակիչները կարող են օգտագործել FLoC տեխնոլոգիան։<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Գովազդատուներն ու հրատարակիչները կարող են գնահատել գովազդի արդյունավետությունը՝ առանց հետագծելու ձեր գործողությունները համացանցում։<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117"><ph name="FQDN" />-ի համար նախատեսված ժամանակը լրացել է։ Վաղը այն նորից կաշխատի:</translation>
 <translation id="6738516213925468394">Ձեր տվյալները գաղտնագրվել են <ph name="BEGIN_LINK" />համաժամացման ձեր անցաբառի<ph name="END_LINK" /> միջոցով (<ph name="TIME" />): Համաժամացումը սկսելու համար մուտքագրեք անցաբառը:</translation>
 <translation id="6738867403308150051">Ներբեռնում…</translation>
@@ -995,6 +1005,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="7493994139787901920"><ph name="VERSION" /> (Թարմացվել է <ph name="TIME_SINCE_UPDATE" />-ին)</translation>
 <translation id="7494974237137038751">խնայվել է</translation>
 <translation id="7498271377022651285">Սպասեք…</translation>
+<translation id="750228856503700085">Թարմացումներն անհասանելի են</translation>
 <translation id="7507207699631365376">Տեսնել այս մատակարարի <ph name="BEGIN_LINK" />գաղտնիության քաղաքականությունը<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
 <translation id="751961395872307827">Չի հաջողվում միանալ կայքին</translation>
@@ -1077,6 +1088,9 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="7971136598759319605">Ակտիվ է եղել 1 օր առաջ</translation>
 <translation id="7975379999046275268">Նախադիտել էջը <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Նախաբեռնել էջերը ավելի արագ դիտարկման և որոնման համար</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />-ը նախաձեռնություն է, որը նպատակ ունի մշակել նոր տեխնոլոգիաներ, որոնք կպաշտպանեն ձեզ գործողությունների հետագծման մեխանիզմներից՝ միաժամանակ աջակցելով բաց համացանցի պահպանմանը։
+
+Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում է և հասանելի է միայն որոշակի տարածաշրջաններում։ Ներկայումս կայքերը կարող են օգտագործել Privacy Sandbox-ի փորձնական տարբերակը՝ շարունակելով կիրառել առկա վեբ տեխնոլոգիաները (օրինակ՝ երրորդ կողմի քուքիները)։</translation>
 <translation id="7986497153528221272">Գաղտնաբառերը դիտելու համար նախ ձեր սարքում կարգավորեք էկրանի կողպումը</translation>
 <translation id="7998918019931843664">Նորից բացել փակված ներդիրը</translation>
 <translation id="8004582292198964060">Դիտարկիչ</translation>
@@ -1097,6 +1111,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="8076492880354921740">Ներդիրներ</translation>
 <translation id="8078096376109663956">Կիսվեք միայն տեքստով</translation>
 <translation id="8084114998886531721">Պահված գաղտնաբառ</translation>
+<translation id="8084285576995584326">Կառավարեք ձեր Google հաշվի տվյալները</translation>
 <translation id="808747664143081553">Միացված է սարքին</translation>
 <translation id="8103578431304235997">Ինկոգնիտո ներդիր</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1185,13 +1200,16 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="8662811608048051533">Դուք դուրս կգրվեք կայքերի մեծ մասից։</translation>
 <translation id="8664979001105139458">Այս անունով ֆայլ արդեն գոյություն ունի</translation>
 <translation id="8676789164135894283">Ծանուցումներ մուտքի մասին</translation>
+<translation id="867767487203716855">Հաջորդ թարմացումը</translation>
 <translation id="8683039184091909753">պատկեր</translation>
+<translation id="8683081248374354009">Զրոյացնել խմբի կարգավորումները</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Ազդանշանի ուժգնությունը՝ # գծիկ}one{Ազդանշանի ուժգնությունը՝ # գծիկ}other{Ազդանշանի ուժգնությունը՝ # գծիկ}}</translation>
 <translation id="869891660844655955">Սպառման ժամկետ</translation>
 <translation id="8699120352855309748">Չառաջարկել թարգմանել այս լեզուները</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
+<translation id="8746155870861185046">Կիսվել ընդգծված տեքստով</translation>
 <translation id="8748850008226585750">Բովանդակությունը թաքցված է</translation>
 <translation id="8773160212632396039">Հարցումը մշակվում է</translation>
 <translation id="8788265440806329501">Նավիգացիայի պատմության թերթը փակված է</translation>

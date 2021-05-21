@@ -40,6 +40,7 @@
 <translation id="2560420686485554789">ფაილების ჩამოსატვირთად Chromium საჭიროებს მეხსიერებაზე წვდომას</translation>
 <translation id="2572494885440352020">Chromium-ის დამხმარე</translation>
 <translation id="2577788541081224677">თქვენს Chromium კონტენტზე თქვენი ნებისმიერი მოწყობილობიდან წვდომისთვის შედით სისტემაში, რომ სინქრონიზაცია ჩართოთ.</translation>
+<translation id="2580426763510374355">Chromium OS-ის დაინსტალირება</translation>
 <translation id="2583187216237139145">ამ პროფილის გამოყენებისას შექმნილი Chromium მონაცემების (მაგ., შექმნილი სანიშნეების, ისტორიის, პაროლებისა და სხვა პარამეტრების) ამოშლა შეუძლია სამსახურის პროფილის ადმინისტრატორს. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">განახლების მისასადაგებლად, Chromium OS უნდა გადაიტვირთოს.</translation>
 <translation id="2648074677641340862">ინსტალაციის დროს ოპერაციული სისტემის შეცდომა მოხდა. ხელახლა ჩამოტვირთეთ Chromium.</translation>
@@ -138,6 +139,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> — Chromium Beta</translation>
 <translation id="5479196819031988440">Chromium OS ვერ ხსნის ამ გვერდს.</translation>
 <translation id="5480860683791598150">Chromium საჭიროებს თქვენს მდებარეობაზე წვდომის ნებართვას ამ საიტისთვის გასაზიარებლად</translation>
+<translation id="5481338274774984070">Chromium იძლევა რეკომენდაციას, რომ არ გადმოტვირთოთ ან გახსნათ ეს ფაილი.</translation>
 <translation id="549669000822060376">დაელოდეთ, სანამ Chromium დააინსტალირებს სისტემის უახლეს განახლებებს.</translation>
 <translation id="5496810170689441661">Chromium ცდილობს პაროლების რედაქტირებას. აღნიშნულის დასაშვებად აკრიფეთ თქვენი Windows-ის პაროლი ამის დასაშვებად.</translation>
 <translation id="5527463683072221100">PDF-ების გახსნა Chromium-ში</translation>

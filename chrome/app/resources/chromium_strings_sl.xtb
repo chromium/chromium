@@ -40,6 +40,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2560420686485554789">Chromium potrebuje za prenos datotek dostop do shrambe</translation>
 <translation id="2572494885440352020">Pomoč za Chromium</translation>
 <translation id="2577788541081224677">Če želite do stvari v Chromiumu dostopati v vseh svojih napravah, se prijavite, da boste lahko vklopili sinhronizacijo.</translation>
+<translation id="2580426763510374355">Namesti Chromium OS</translation>
 <translation id="2583187216237139145">Podatke v Chromiumu, ki se ustvarijo med uporabo tega profila (na primer zaznamke, zgodovino, gesla in druge nastavitve), lahko odstrani skrbnik delovnega profila. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Če želite namestiti posodobitev, morate znova zagnati OS Chromium.</translation>
 <translation id="2648074677641340862">Napaka v operacijskem sistemu med namestitvijo. Znova prenesite Chromium.</translation>
@@ -138,6 +139,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – različica beta Chromiuma</translation>
 <translation id="5479196819031988440">OS Chromium ne more odpreti te strani.</translation>
 <translation id="5480860683791598150">Chromium potrebuje dostop do vaše lokacije, da jo bo lahko delil s tem spletnim mestom</translation>
+<translation id="5481338274774984070">Chromium priporoča, da te datoteke ne prenesete ali odprete.</translation>
 <translation id="549669000822060376">Počakajte, da Chromium namesti najnovejše sistemske posodobitve.</translation>
 <translation id="5496810170689441661">Chromium poskuša urejati gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="5527463683072221100">Odpri datoteke PDF v Chromiumu</translation>

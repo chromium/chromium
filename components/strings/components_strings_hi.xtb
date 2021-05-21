@@ -286,6 +286,7 @@
 <translation id="1919345977826869612">विज्ञापन</translation>
 <translation id="1919367280705858090">गड़बड़ी के किसी खास मैसेज से मदद पाना</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{कुछ नहीं}=1{1 साइट}one{# साइट}other{# साइट}}</translation>
+<translation id="1924727005275031552">नया</translation>
 <translation id="1945968466830820669">आपके संगठन के खाते का एक्सेस खो सकता है या आपकी पहचान चोरी हो सकती है. Chromium आपको अभी अपना पासवर्ड बदलने का सुझाव देता है.</translation>
 <translation id="1947454675006758438">सबसे ऊपर दाईं ओर स्टेपल</translation>
 <translation id="1958218078413065209">आपका सबसे ज़्यादा स्कोर <ph name="SCORE" /> है.</translation>
@@ -396,6 +397,7 @@
 <translation id="2357481397660644965">आपके डिवाइस को <ph name="DEVICE_MANAGER" /> और खाते को <ph name="ACCOUNT_MANAGER" /> प्रबंधित करता है.</translation>
 <translation id="2359629602545592467">एक से ज़्यादा</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
+<translation id="2359961752320758691">आपका वर्चुअल कार्ड नंबर लागू किया गया है.</translation>
 <translation id="2367567093518048410">स्तर</translation>
 <translation id="2372464001869762664">आपके पुष्टि करने के बाद, Google खाते के कार्ड की जानकारी इस साइट से शेयर की जाएगी. सीवीसी को अपने Plex खाते की जानकारी में पाएं.</translation>
 <translation id="2380886658946992094">कानूनी</translation>
@@ -406,6 +408,7 @@
 <translation id="239429038616798445">शिपिंग का यह तरीका उपलब्ध नहीं है. कोई दूसरा तरीका आज़माएं.</translation>
 <translation id="2396249848217231973">मिटाना &amp;पहले जैसा करें</translation>
 <translation id="2410754574180102685">सरकारी-कानूनी</translation>
+<translation id="2413155254802890957">पुराना</translation>
 <translation id="2413528052993050574">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" />; इसका सुरक्षा प्रमाणपत्र निरस्त कर दिया गया है. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="2414886740292270097">गहरा</translation>
 <translation id="2438874542388153331">दाईं ओर क्वाड पंच</translation>
@@ -907,12 +910,14 @@
 <translation id="4275830172053184480">अपना डिवाइस फिर से प्रारंभ करें</translation>
 <translation id="4277028893293644418">पासवर्ड रीसेट करें</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{यह कार्ड आपके Google खाते में सेव कर लिया गया है}one{ये कार्ड आपके Google खाते में सेव कर लिए गए हैं}other{ये कार्ड आपके Google खाते में सेव कर लिए गए हैं}}</translation>
+<translation id="4287885627794386150">आज़माया जा सकता है, लेकिन चालू नहीं है</translation>
 <translation id="4297502707443874121">पेज <ph name="THUMBNAIL_PAGE" /> का थंबनेल</translation>
 <translation id="42981349822642051">विस्तृत करें</translation>
 <translation id="4300675098767811073">दाईं ओर एक से ज़्यादा पंच</translation>
 <translation id="4302514097724775343">डायनो को चलाने के लिए, उस पर टैप करें</translation>
 <translation id="4302965934281694568">शू3 (एन्वेलप)</translation>
 <translation id="4305666528087210886">आपकी फ़ाइल ऐक्सेस नहीं की जा सकी</translation>
+<translation id="4306529830550717874">क्या आप पता सेव करना चाहते हैं?</translation>
 <translation id="4312613361423056926">बी2</translation>
 <translation id="4312866146174492540">ब्लॉक करें (डिफ़ॉल्ट)</translation>
 <translation id="4314815835985389558">सिंक प्रबंधित करें</translation>
@@ -1400,6 +1405,7 @@
 <translation id="610911394827799129">आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर दूसरी तरह के ब्राउज़िंग इतिहास हो सकते हैं</translation>
 <translation id="6116338172782435947">क्लिपबोर्ड पर कॉपी किए गए लेख और इमेज देखें</translation>
 <translation id="6120179357481664955">क्या आप चाहते हैं कि हम आपका UPI आईडी रखें?</translation>
+<translation id="6123290840358279103">वर्चुअल कार्ड देखें</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6146055958333702838">सभी केबल जांचें और आपके उपयोग किए जा रहे सभी राउटर, मॉडेम या अन्य नेटवर्क
     डिवाइस को 'फिर चालू करें'.</translation>
@@ -1679,6 +1685,7 @@
 <translation id="7300012071106347854">कोबाल्ट नीला</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">ज़्यादा</translation>
+<translation id="7305756307268530424">धीरे-धीरे शुरू करें</translation>
 <translation id="7319430975418800333">ए3</translation>
 <translation id="7320336641823683070">कनेक्शन संबंधी सहायता</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" सेक्शन को छिपाएं</translation>
@@ -1704,6 +1711,7 @@
 <translation id="7378594059915113390">मीडिया नियंत्रण</translation>
 <translation id="7378627244592794276">नहीं</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">लागू नहीं</translation>
 <translation id="7390545607259442187">कार्ड की पुष्टि करें</translation>
 <translation id="7399802613464275309">सुरक्षा जांच</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1755,6 +1763,7 @@
 <translation id="7548892272833184391">कनेक्शन गड़बड़ियां ठीक करना</translation>
 <translation id="7549584377607005141">इस वेबपेज को उस डेटा की ज़रूरत है जिसे आपने पहले सही तरह से दिखाने के लिए डाला था. आप इस डेटा को फिर से भेज सकते हैं, लेकिन ऐसा करने से इस पेज पर पहले से हो चुकी कार्रवाई फिर से होगी.</translation>
 <translation id="7550637293666041147">आपके डिवाइस का उपयोगकर्ता नाम और Chrome उपयोगकर्ता नाम</translation>
+<translation id="755279583747225797">ट्रायल चालू है</translation>
 <translation id="7552846755917812628">ये टिप्स आज़माएं:</translation>
 <translation id="7554475479213504905">फिर भी दोबारा लोड करें और दिखाएं</translation>
 <translation id="7554791636758816595">नया टैब</translation>
@@ -1849,6 +1858,7 @@
 <translation id="7894280532028510793">अगर स्पेलिंग सही है, तो <ph name="BEGIN_LINK" />Network Diagnostics ऐप्लिकेशन चलाकर देखें<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">सी3 (एन्वेलप)</translation>
 <translation id="7931318309563332511">अज्ञात</translation>
+<translation id="793209273132572360">क्या आप पता अपडेट करना चाहते हैं?</translation>
 <translation id="7932579305932748336">कोट</translation>
 <translation id="79338296614623784">मान्य फ़ोन नंबर डालें</translation>
 <translation id="7934052535022478634">पैसे भेज दिए गए</translation>
@@ -1925,7 +1935,6 @@
 <translation id="8202097416529803614">ऑर्डर की जानकारी</translation>
 <translation id="8202370299023114387">विरोध</translation>
 <translation id="8206978196348664717">पीआरसी4 (एन्वेलप)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{जब आप आईडी रीसेट करेंगे, तब आपका मौजूदा आईडी अमान्य हो जाएगा और 1 दिन के भीतर नया आईडी जारी कर दिया जाएगा}=1{जब आप आईडी रीसेट करेंगे, तब आपका मौजूदा आईडी अमान्य हो जाएगा और 1 दिन में नया आईडी जारी कर दिया जाएगा}one{जब आप आईडी रीसेट करेंगे, तब आपका मौजूदा आईडी अमान्य हो जाएगा और {NUM_DAYS} दिन में नया आईडी जारी कर दिया जाएगा}other{जब आप आईडी रीसेट करेंगे, तब आपका मौजूदा आईडी अमान्य हो जाएगा और {NUM_DAYS} दिनों में नया आईडी जारी कर दिया जाएगा}}</translation>
 <translation id="8211406090763984747">कनेक्शन सुरक्षित है</translation>
 <translation id="8213464188712611711">मेमोरी</translation>
 <translation id="8218327578424803826">सौंपा गया स्‍थान:</translation>

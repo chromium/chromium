@@ -186,6 +186,7 @@ Mag-tap ng anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pind
 <translation id="22320125457191592">Para sa iyo</translation>
 <translation id="2234876718134438132">Sync at mga serbisyo ng Google</translation>
 <translation id="2239812875700136898">Kontrolin ang iyong mga kuwento mula sa Mga Opsyon para sa button na I-discover</translation>
+<translation id="2251971221270904886">Kapag naka-on ito at aktibo ang status, ginagamit ng Chrome ang iyong history ng pag-browse sa loob ng 7 araw para matukoy ang isang grupo, o “cohort”, kung nasaan ka. Puwedeng pumili ang mga advertiser ng mga ad para sa grupo. Pinapanatiling pribado ang iyong history ng pag-browse sa device mo. Aktibo lang ang trial na ito sa <ph name="BEGIN_LINK" />ilang rehiyon<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">I-export ang mga password…</translation>
 <translation id="2276696007612801991">Mag-sign in sa iyong Google account para masuri ang mga password mo</translation>
 <translation id="2278052315791335171">Kapag na-delete ang password na ito, hindi ide-delete ang iyong account sa <ph name="SITE" /></translation>
@@ -275,6 +276,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2781151931089541271">1 segundo na lang ang natitira</translation>
 <translation id="2801022321632964776">I-update para makuha ang iyong wika sa pinakabagong bersyon ng Chrome</translation>
 <translation id="2805756323405976993">Mga App</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Tingnan at pamahalaan ang mga naka-save na password sa iyong <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Para makuha ang iyong mga bookmark sa lahat ng device mo, mag-sign in at i-on ang pag-sync</translation>
 <translation id="2827278682606527653">Half height ng menu ng feed card</translation>
@@ -293,6 +295,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2901411048554510387">Ipinapakita ang mga suhestyon para sa <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Nakabukas ang listahan ng mga device kung saan magbabahagi ng tab nang buo ang taas.</translation>
 <translation id="2905036901251765993">Para magbahagi sa mga taong nasa malapit, ipa-scan sa kanila ang QR code na ito</translation>
+<translation id="2908243544703713905">Handa na ang mga hindi pa nababasang kuwento</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Pamahalaan ang mga paksa kung saan ka interesado</translation>
 <translation id="2923908459366352541">Di-wasto ang pangalan</translation>
@@ -317,6 +320,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}one{<ph name="BOOKMARKS_COUNT_MANY" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> na bookmark}}</translation>
 <translation id="3062802207422175757">Mga artikulo tungkol sa iyong mga interes sa Chrome</translation>
 <translation id="3070005020161560471">Awtomatikong isalin</translation>
+<translation id="3083531420240576529">Puwede mong i-reset ang iyong password sa anumang oras. Tumatagal nang 7 araw bago matukoy ang iyong grupo.</translation>
 <translation id="3091010850649238832">Ipakita ang mga content ng clipboard</translation>
 <translation id="3098745985164956033">Ipinapadala sa Google ang ilang larawan para mapahusay ang mga paglalarawan para sa iyo</translation>
 <translation id="3114507951000454849">Basahin ang balita ngayong araw <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga pil
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Available ang mga opsyon malapit sa bandang itaas ng screen</translation>
 <translation id="4062305924942672200">Impormasyong legal</translation>
+<translation id="4082818367361753283">Group ID</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084712963632273211">Mula sa <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />ihinatid ng Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">I-delete ang data ng app?</translation>
@@ -533,7 +538,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto ang nakalipas}one{# minuto ang nakalipas}other{# na minuto ang nakalipas}}</translation>
 <translation id="4587589328781138893">Mga Site</translation>
 <translation id="4594952190837476234">Naka-offline ang page na ito mula noong <ph name="CREATION_TIME" /> at maaaring iba ito sa online na bersyon.</translation>
-<translation id="4615382002648696011">Sinusubaybayan, handa na ang mga hindi pa nababasang kuwento</translation>
 <translation id="4616150815774728855">Buksan ang <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">I-verify na ikaw ito</translation>
 <translation id="4634124774493850572">Gamitin ang password</translation>
@@ -889,6 +893,11 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6699370405921460408">Io-optimize ng mga server ng Google ang mga page na binibisita mo.</translation>
 <translation id="670498945988402717">Nagsuri kahapon</translation>
 <translation id="6710213216561001401">Nauna</translation>
+<translation id="671333169801287922">Kapag naka-on ito, posibleng gamitin ng mga site ang mga technique sa pagpapanatili ng privacy na ipinapakita rito para maibigay ang content at mga serbisyo ng mga ito. Kasama sa mga ito ang mga alternatibo sa cross-site na pagsubaybay. Posibleng magdagdag ng higit pang trial sa paglipas ng panahon.
+
+<ph name="BEGIN_LIST_ITEM1" />Magagamit ng mga advertiser at publisher ang technique ng FLoC.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Mapag-aaralan ng mga advertiser at publisher ang bisa ng mga ad sa paraang hindi nangangailangan ng pagsubaybay sa iyo sa lahat ng site.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Natapos na ang iyong timer ng <ph name="FQDN" />. Magsisimula itong muli bukas.</translation>
 <translation id="6738516213925468394">Na-encrypt ang data mo gamit ang iyong <ph name="BEGIN_LINK" />passphrase sa pag-sync<ph name="END_LINK" /> noong <ph name="TIME" />. Ilagay ito para simulan ang pag-sync.</translation>
 <translation id="6738867403308150051">Nagda-download...</translation>
@@ -1079,6 +1088,9 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="7971136598759319605">Aktibo 1 araw ang nakalipas</translation>
 <translation id="7975379999046275268">I-preview ang page na <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">I-preload ang mga page para sa mas mabilis na pag-browse at paghahanap</translation>
+<translation id="7981546642162424360">Ang <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> ay isang kasalukuyang inisyatiba para mag-develop ng mga bagong teknolohiyang magpoprotekta sa iyo laban sa mga mekanismo sa pagsubaybay habang pinapanatili ang bukas na web.
+
+Kasalukuyan pa ring dine-develop ang mga trial ng Privacy Sandbox at available ang mga ito sa mga piling rehiyon. Sa ngayon, puwedeng subukan ng mga site ang Privacy Sandbox habang patuloy na gumagamit ng mga kasalukuyang teknolohiya sa web gaya ng third-party na cookies.</translation>
 <translation id="7986497153528221272">Para tingnan ang mga password, magtakda muna ng lock ng screen sa iyong device</translation>
 <translation id="7998918019931843664">Muling buksan ang isinarang tab</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1188,7 +1200,9 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="8662811608048051533">Nagsa-sign out sa iyo sa karamihan ng site.</translation>
 <translation id="8664979001105139458">May ganito nang pangalan ng file</translation>
 <translation id="8676789164135894283">Mga pag-verify sa pag-sign in</translation>
+<translation id="867767487203716855">Susunod na update</translation>
 <translation id="8683039184091909753">larawan</translation>
+<translation id="8683081248374354009">I-reset ang grupo</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Antas ng Lakas ng Signal: # bar}one{Antas ng Lakas ng Signal: # bar}other{Antas ng Lakas ng Signal: # na bar}}</translation>
 <translation id="869891660844655955">Expiration date</translation>
 <translation id="8699120352855309748">Huwag mag-alok na isalin ang mga wikang ito</translation>

@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">Chromium потрібен доступ до пам’яті, щоб завантажувати файли</translation>
 <translation id="2572494885440352020">Помічник Chromium</translation>
 <translation id="2577788541081224677">Щоб мати доступ до своїх даних Chromium на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію.</translation>
+<translation id="2580426763510374355">Установити Chromium OS</translation>
 <translation id="2583187216237139145">Будь-які дані Chromium, створені під час використання цього робочого профілю (наприклад, закладки, історію, паролі й інші налаштування), може видалити його адміністратор. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Щоб застосувати це оновлення, потрібно перезапустити ОС Chromium.</translation>
 <translation id="2648074677641340862">Під час встановлення сталася помилка операційної системи. Завантажте Chromium ще раз.</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Бета-версія Chromium</translation>
 <translation id="5479196819031988440">Неможливо відкрити цю сторінку в ОС Chromium.</translation>
 <translation id="5480860683791598150">Chromium потрібен доступ до геоданих, щоб повідомляти ваше місцезнаходження цьому сайту</translation>
+<translation id="5481338274774984070">Chromium радить не завантажувати й не відкривати цей файл.</translation>
 <translation id="549669000822060376">Зачекайте, доки Chromium установить найновіші оновлення системи.</translation>
 <translation id="5496810170689441661">Chromium намагається змінити паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="5527463683072221100">Відкривати файли PDF у Chromium</translation>

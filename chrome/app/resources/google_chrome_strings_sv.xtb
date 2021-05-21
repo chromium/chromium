@@ -175,6 +175,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om d
 
 Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5434383153637353914">På den här sidan kan du hantera alla Google-konton som du är inloggad på. Dessa konton blir tillgängliga i webbläsaren Chrome och Play Butik-appar samt tjänster som Gmail, Drive och YouTube. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Installera Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome försöker visa lösenord.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Om en inställning saknas på den här sidan tittar du i <ph name="LINK_BEGIN" />
@@ -259,6 +260,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7896673875602241923">Någon har tidigare loggat in i Chrome som <ph name="ACCOUNT_EMAIL_LAST" /> på den här datorn. Skapa en ny Chrome-användare så att dina uppgifter hålls separat.</translation>
 <translation id="7905891027772979035">Chrome kan inte kontrollera dina tillägg. Försök igen senare.</translation>
 <translation id="7930071585467473040">Lösenorden i Google Chrome kopieras.</translation>
+<translation id="7951988079884443914">Chrome rekommenderar att du varken laddar ned eller öppnar den här filen.</translation>
 <translation id="7962410387636238736">Den här datorn får inte längre uppdateringar för Google Chrome eftersom Windows XP och Windows Vista inte längre stöds.</translation>
 <translation id="79947657522496226">Chrome OS fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" /> program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Installera om Chrome</translation>

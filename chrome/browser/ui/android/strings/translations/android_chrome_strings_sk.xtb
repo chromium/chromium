@@ -186,6 +186,7 @@ Vyhľadávanie spustíte klepnutím na ľubovoľné slovo. Spresníte ho pridrž
 <translation id="22320125457191592">Pre vás</translation>
 <translation id="2234876718134438132">Synchronizácia a služby Googlu</translation>
 <translation id="2239812875700136898">Ovládajte svoje príbehy po stlačení tlačidla Možnosti kanála Objaviť</translation>
+<translation id="2251971221270904886">Keď je táto možnosť zapnutá a stav aktívny, Chrome pomocou vašej sedemdňovej histórie prehliadania určí, v ktorej skupine alebo kohorte sa nachádzate. Inzerenti môžu pre skupinu vybrať reklamy. Vaša história prehliadania je v zariadení uchovaná v súkromí. Skúšobné obdobie je aktívne iba v <ph name="BEGIN_LINK" />niektorých oblastiach<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Exportovať heslá…</translation>
 <translation id="2276696007612801991">Ak si chcete skontrolovať heslá, prihláste sa do svojho účtu Google</translation>
 <translation id="2278052315791335171">Odstránením tohto hesla nevymažete svoj účet na webe <ph name="SITE" /></translation>
@@ -275,6 +276,7 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="2781151931089541271">Zostáva: 1 s</translation>
 <translation id="2801022321632964776">Ak chcete získať svoj jazyk v najnovšej verzii Chromu, aktualizujte ho</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Zobrazenie a správa uložených hesiel v <ph name="BEGIN_LINK" />účte Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Ak chcete získať záložky vo všetkých zariadeniach, prihláste sa a zapnite synchronizáciu</translation>
 <translation id="2827278682606527653">Ponuka karty feedu je otvorená do polovice</translation>
@@ -293,6 +295,7 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="2901411048554510387">Zobrazujú sa návrhy pre web <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Zoznam zariadení, s ktorými sa má zdieľať karta, je otvorený na plnú výšku.</translation>
 <translation id="2905036901251765993">Ak chcete zdieľať s ľuďmi nablízku, umožnite im naskenovať tento QR kód</translation>
+<translation id="2908243544703713905">K dispozícii sú neprečítané správy</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Spravujte témy, ktoré vás zaujímajú</translation>
 <translation id="2923908459366352541">Názov je neplatný</translation>
@@ -317,6 +320,7 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> záložka}few{<ph name="BOOKMARKS_COUNT_MANY" /> záložky}many{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}other{<ph name="BOOKMARKS_COUNT_MANY" /> záložiek}}</translation>
 <translation id="3062802207422175757">Články o vašich záujmoch v Chrome</translation>
 <translation id="3070005020161560471">Automaticky prekladať</translation>
+<translation id="3083531420240576529">Skupinu môžete kedykoľvek resetovať. Určenie skupiny trvá sedem dní.</translation>
 <translation id="3091010850649238832">Zobraziť obsah schránky</translation>
 <translation id="3098745985164956033">Niektoré obrázky sa na zlepšovanie popisov pre vás odosielajú Googlu</translation>
 <translation id="3114507951000454849">Prečítajte si dnešné správy <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Na vývoji technológií Privacy Sandbox sa stále aktívne pracuje a je k dis
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4060598801229743805">Možnosti sú k dispozícii v hornej časti obrazovky</translation>
 <translation id="4062305924942672200">Právne informácie</translation>
+<translation id="4082818367361753283">Identifikátor skupiny</translation>
 <translation id="4084682180776658562">Záložka</translation>
 <translation id="4084712963632273211">Od: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />doručené Googlom<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Odstrániť dáta aplikácie?</translation>
@@ -533,7 +538,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4583164079174244168">{MINUTES,plural, =1{pred # minútou}few{pred # minútami}many{pred # minútou}other{pred # minútami}}</translation>
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4594952190837476234">Táto offline stránka je z <ph name="CREATION_TIME" /> a líši sa od online verzie.</translation>
-<translation id="4615382002648696011">Nasledujúci: neprečítané články sú k dispozícii</translation>
 <translation id="4616150815774728855">Otvoriť <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Overte, že ste to vy</translation>
 <translation id="4634124774493850572">Použiť heslo</translation>
@@ -889,6 +893,11 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6699370405921460408">Servery Googlu budú optimalizovať stránky, ktoré navštívite.</translation>
 <translation id="670498945988402717">Kontrola prebehla včera</translation>
 <translation id="6710213216561001401">Späť</translation>
+<translation id="671333169801287922">Keď je táto možnosť zapnutá, weby môžu pomocou techník na ochranu súkromia, ktoré sú tu zobrazené, poskytovať obsah a služby. Patria sem aj alternatívy sledovania medzi webmi. Postupne môžu byť pridané ďalšie skúšobné funkcie.
+
+<ph name="BEGIN_LIST_ITEM1" />Inzerenti a vlastníci môžu používať technológiu FLoC.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Inzerenti a vlastníci môžu preskúmať účinnosť reklám tak, že vás nebude možné na weboch sledovať.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Časovač aplikácie <ph name="FQDN" /> vypršal. Spustí sa zase zajtra.</translation>
 <translation id="6738516213925468394">Vaše údaje boli <ph name="TIME" /> zašifrované pomocou <ph name="BEGIN_LINK" />prístupovej frázy synchronizácie<ph name="END_LINK" />. Synchronizácia sa spustí po jej zadaní.</translation>
 <translation id="6738867403308150051">Sťahuje sa...</translation>
@@ -1079,6 +1088,9 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7971136598759319605">Aktívne včera</translation>
 <translation id="7975379999046275268">Zobraziť ukážku stránky <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Vopred načítavať stránky na zrýchlenie prehliadania a vyhľadávania</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> je prebiehajúca iniciatíva na vývoj nových technológií, ktoré vás ochránia pred mechanizmami sledovania a súčasne zachovajú internet otvorený.
+
+Skúšobné obdobia technológií Privacy Sandbox sú stále v aktívnom vývoji a v niektorých oblastiach sú dostupné. Weby si zatiaľ môžu technológie Privacy Sandbox vyskúšať a súčasne používať aj aktuálne internetové technológie, ako sú súbory cookie tretej strany.</translation>
 <translation id="7986497153528221272">Ak si chcete zobraziť heslá, najprv v zariadení nastavte zámku obrazovky</translation>
 <translation id="7998918019931843664">Znova otvoriť zavretú kartu</translation>
 <translation id="8004582292198964060">Prehliadač</translation>
@@ -1188,7 +1200,9 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8662811608048051533">Odhlási vás z väčšiny webov.</translation>
 <translation id="8664979001105139458">Súbor s takým názvom už existuje</translation>
 <translation id="8676789164135894283">Overenie prihlásenia</translation>
+<translation id="867767487203716855">Ďalšia aktualizácia</translation>
 <translation id="8683039184091909753">obrázok</translation>
+<translation id="8683081248374354009">Resetovať skupinu</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Úroveň sily signálu: # čiarka}few{Úroveň sily signálu: # čiarky}many{Úroveň sily signálu: # čiarky}other{Úroveň sily signálu: # čiarok}}</translation>
 <translation id="869891660844655955">Koniec platnosti</translation>
 <translation id="8699120352855309748">Neponúkať preklad týchto jazykov</translation>

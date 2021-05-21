@@ -886,7 +886,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1926339101652878330">Diese Einstellungen werden durch Unternehmensrichtlinien bestimmt. Bitte wenden Sie sich für weitere Informationen an Ihren Administrator.</translation>
 <translation id="1927632033341042996">Finger <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN für die Displaysperre</translation>
-<translation id="1928202201223835302">Alte PIN eingeben</translation>
 <translation id="1928696683969751773">Aktualisierungen</translation>
 <translation id="1929186283613845153">Diese Datei wird gerade gescannt.</translation>
 <translation id="1929343511231420085">Alle seriellen Ports</translation>
@@ -910,7 +909,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1954813140452229842">Fehler beim Bereitstellen der Freigabe. Überprüfen Sie Ihre Anmeldedaten und versuchen Sie es noch einmal.</translation>
 <translation id="1956050014111002555">Die Datei enthielt mehrere Zertifikate, von denen keines importiert wurde:</translation>
 <translation id="1956390763342388273">Hierdurch werden alle Dateien aus "<ph name="FOLDER_PATH" />" hochgeladen. Tun Sie dies nur, wenn Sie die Website als vertrauenswürdig einstufen.</translation>
-<translation id="1958750704984086982">FLoC bietet für die Auswahl interessenbezogener Werbung einen Mechanismus zur Einhaltung des Datenschutzes.</translation>
 <translation id="1962233722219655970">Diese Seite verwendet eine Native Client App, die auf Ihrem Computer nicht funktioniert.</translation>
 <translation id="1963227389609234879">Alle entfernen</translation>
 <translation id="1963976881984600709">Standardschutz</translation>
@@ -1650,7 +1648,6 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2749756011735116528">In <ph name="PRODUCT_NAME" /> anmelden</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Grammatik zusammen mit Rechtschreibung prüfen</translation>
-<translation id="2751131328353405138">Linux-Container-SSHFS wird bereitgestellt</translation>
 <translation id="2753677631968972007">Websiteberechtigungen manuell verwalten.</translation>
 <translation id="2755349111255270002">Dieses <ph name="DEVICE_TYPE" /> zurücksetzen</translation>
 <translation id="2755367719610958252">Bedienungshilfen verwalten</translation>
@@ -1784,7 +1781,6 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2891922230654533301">Möchten Sie sich mit Ihrem Gerät auf <ph name="APP_NAME" /> anmelden?</translation>
 <translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
-<translation id="289644616180464099">SIM-Karte ist gesperrt</translation>
 <translation id="289695669188700754">Schlüssel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Diese benutzerdefinierte Einstellung wird entfernt, wenn Sie alle Ihre Inkognitofenster schließen</translation>
 <translation id="2897878306272793870">Möchten Sie wirklich <ph name="TAB_COUNT" /> Tabs öffnen?</translation>
@@ -2251,7 +2247,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3427092606871434483">Zulassen (Standard)</translation>
 <translation id="3428419049384081277">Sie sind angemeldet.</translation>
 <translation id="3428747202529429621">Schützt Sie in Chrome und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn Sie angemeldet sind</translation>
-<translation id="3428800329481094896">SSH-Schlüssel des Linux-Containers werden abgerufen</translation>
 <translation id="3429160811076349561">Testfunktionen sind deaktiviert</translation>
 <translation id="3429271624041785769">Sprachen für Webinhalte</translation>
 <translation id="3429275422858276529">Seite als Lesezeichen speichern, um sie später schneller zu finden</translation>
@@ -3071,7 +3066,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB live)</translation>
 <translation id="4310139701823742692">Die Datei hat das falsche Format. Prüfen Sie die PPD-Datei und versuchen Sie es noch einmal.</translation>
 <translation id="431076611119798497">&amp;Details</translation>
-<translation id="4312124410630786333">ID zurücksetzen</translation>
 <translation id="4312866146174492540">Blockieren (Standard)</translation>
 <translation id="4314815835985389558">Synchronisierung verwalten</translation>
 <translation id="4316850752623536204">Website des Entwicklers</translation>
@@ -3231,7 +3225,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4492698018379445570">Hier finden Sie, was Sie in Ihre Einkaufswagen gelegt haben, und können bezahlen, wenn Sie bereit sind</translation>
 <translation id="4493468155686877504">Empfohlen (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Nicht auf dieser Seite anzeigen</translation>
-<translation id="4496796119038756382">FLoC-ID</translation>
 <translation id="4497145443434063861">Der PC und Chromecast befinden sich in verschiedenen WLANs, z. B. 2,4 GHz und 5 GHz</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ist abgestürzt</translation>
 <translation id="4500587658229086076">Unsichere Inhalte</translation>
@@ -3746,7 +3739,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5072900412896857127">Fehler beim Laden der Google Play-Nutzungsbedingungen. Bitte prüfen Sie die Netzwerkverbindung und versuchen Sie es noch einmal.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> und # weitere}}</translation>
 <translation id="5074318175948309511">Damit die neuen Einstellungen wirksam werden, muss die Seite eventuell neu geladen werden.</translation>
-<translation id="5075131525758602494">SIM-PIN eingeben</translation>
 <translation id="5075910247684008552">Unsichere Inhalte werden auf sicheren Websites standardmäßig blockiert</translation>
 <translation id="5078638979202084724">Alle Tabs als Lesezeichen speichern</translation>
 <translation id="5078796286268621944">Falsche PIN</translation>
@@ -7115,7 +7107,6 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="8803953437405899238">Neuen Tab mit nur einem Klick öffnen</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Tab in ein anderes Fenster verschieben}other{Tabs in ein anderes Fenster verschieben}}</translation>
 <translation id="8805140816472474147">Synchronisierungseinstellungen bestätigen, um die Synchronisierung zu starten.</translation>
-<translation id="8805985421503170600">Föderiertes Lernen von Kohorten</translation>
 <translation id="8806680466228877631">Mit "<ph name="SHORTCUT" />" lassen sich versehentlich geschlossene Tabs wieder öffnen</translation>
 <translation id="8807632654848257479">Stabil</translation>
 <translation id="8808478386290700967">Web Store</translation>

@@ -186,6 +186,7 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="22320125457191592">Para ti</translation>
 <translation id="2234876718134438132">Servizos de Google e sincronización</translation>
 <translation id="2239812875700136898">Fai clic no botón Opcións de Discover e controla as túas historias</translation>
+<translation id="2251971221270904886">Cando a opción está habilitada e co estado activo, Chrome usa o historial de navegación de máis de 7 días para determinar a que grupo ou "cohorte" pertences. Os anunciantes poden seleccionar anuncios para o grupo. O teu historial de navegación mantense privado no dispositivo. A proba está dispoñible só <ph name="BEGIN_LINK" />nalgunhas rexións<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Exportar contrasinais…</translation>
 <translation id="2276696007612801991">Inicia sesión na túa Conta de Google para comprobar os teus contrasinais</translation>
 <translation id="2278052315791335171">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="SITE" /></translation>
@@ -275,6 +276,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2781151931089541271">Queda 1 segundo</translation>
 <translation id="2801022321632964776">Descarga a última versión de Chrome para poder navegar no teu idioma</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Para consultar e xestionar os contrasinais gardados, accede á túa <ph name="BEGIN_LINK" />Conta de Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Inicia sesión e activa a sincronización para ter os marcadores en todos os teus dispositivos</translation>
 <translation id="2827278682606527653">O menú da tarxeta do feed ocupa a metade inferior da pantalla</translation>
@@ -293,6 +295,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2901411048554510387">Mostrando suxestións para <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">A lista de dispositivos cos que compartir unha pestana está aberta a pantalla completa.</translation>
 <translation id="2905036901251765993">Para compartir contido coas persoas que estean preto, deixa que escaneen este código QR</translation>
+<translation id="2908243544703713905">Hai dispoñibles historias que non liches</translation>
 <translation id="2909615210195135082">Plataforma de notificacións de Google</translation>
 <translation id="2912296070571964914">Xestiona os temas que che interesan</translation>
 <translation id="2923908459366352541">O nome non é válido</translation>
@@ -317,6 +320,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcador}other{<ph name="BOOKMARKS_COUNT_MANY" /> marcadores}}</translation>
 <translation id="3062802207422175757">Artigos sobre os teus intereses en Chrome</translation>
 <translation id="3070005020161560471">Traducir automaticamente</translation>
+<translation id="3083531420240576529">Podes restablecer o grupo en calquera momento. Ten en conta que para a súa determinación se requiren 7 días.</translation>
 <translation id="3091010850649238832">Mostrar contido do portapapeis</translation>
 <translation id="3098745985164956033">Algunhas imaxes envíanse a Google coa finalidade de mellorar as descricións para ti</translation>
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Opcións dispoñibles preto da parte superior da pantalla</translation>
 <translation id="4062305924942672200">Información legal</translation>
+<translation id="4082818367361753283">Código de identificación do grupo</translation>
 <translation id="4084682180776658562">Marcador</translation>
 <translation id="4084712963632273211">Contido publicado por <ph name="PUBLISHER_ORIGIN" /> e <ph name="BEGIN_DEEMPHASIZED" />ofrecido por Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Queres eliminar os datos da aplicación?</translation>
@@ -533,7 +538,6 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="4583164079174244168">{MINUTES,plural, =1{Hai # minuto}other{Hai # minutos}}</translation>
 <translation id="4587589328781138893">Sitios</translation>
 <translation id="4594952190837476234">Esta páxina sen conexión creouse o <ph name="CREATION_TIME" /> e pode ser diferente da versión en liña.</translation>
-<translation id="4615382002648696011">As seguintes historias non lidas están listas</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
 <translation id="4634124774493850572">Usar contrasinal</translation>
@@ -889,6 +893,11 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6699370405921460408">Os servidores de Google optimizarán as páxinas que visites.</translation>
 <translation id="670498945988402717">A comprobación realizouse onte</translation>
 <translation id="6710213216561001401">Anterior</translation>
+<translation id="671333169801287922">Ao activar esta opción, os sitios poden usar técnicas que permiten protexer a privacidade (entre as que se inclúen alternativas ao seguimento en varios sitios) para ofrecer contido e servizos. É posible que se engadan máis probas no futuro.
+
+<ph name="BEGIN_LIST_ITEM1" />Os anunciantes e os editores poden usar a técnica Federated Learning of Cohorts (FLoC).<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Os anunciantes e os editores poden estudar a eficacia dos anuncios sen facer un seguimento da túa actividade nos sitios.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">O temporizador de <ph name="FQDN" /> chegou ao final. Volverá comezar mañá.</translation>
 <translation id="6738516213925468394">Os teus datos encriptáronse coa túa <ph name="BEGIN_LINK" />frase de acceso de sincronización<ph name="END_LINK" /> o <ph name="TIME" />. Introdúcea para comezar a sincronización.</translation>
 <translation id="6738867403308150051">Descargando...</translation>
@@ -1079,6 +1088,9 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7971136598759319605">Dispositivo activo hai 1 día</translation>
 <translation id="7975379999046275268">Vista previa: páxina <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Cargar previamente as páxinas para que a navegación e as buscas sexan máis rápidas</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> é unha iniciativa continua deseñada para desenvolver novas tecnoloxías que te protexerán dos mecanismos de seguimento e que ao mesmo tempo manterán a Web aberta.
+
+As probas de Privacy Sandbox aínda están en desenvolvemento activo e están dispoñibles en rexións seleccionadas. Polo momento, os sitios poden probar Privacy Sandbox sen deixar de usar as tecnoloxías web actuais, como as cookies de terceiros.</translation>
 <translation id="7986497153528221272">Para poder ver os contrasinais, define un bloqueo de pantalla no teu dispositivo</translation>
 <translation id="7998918019931843664">Abre de novo a pestana pechada</translation>
 <translation id="8004582292198964060">Navegador</translation>
@@ -1188,7 +1200,9 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8662811608048051533">Pecha a túa sesión na maioría dos sitios.</translation>
 <translation id="8664979001105139458">Xa existe un ficheiro con este nome</translation>
 <translation id="8676789164135894283">Verificacións inicio de sesión</translation>
+<translation id="867767487203716855">Seguinte actualización</translation>
 <translation id="8683039184091909753">imaxe</translation>
+<translation id="8683081248374354009">Restablecer grupo</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Nivel de intensidade do sinal: # barra}other{Nivel de intensidade do sinal: # barras}}</translation>
 <translation id="869891660844655955">Data de vencemento</translation>
 <translation id="8699120352855309748">Non ofrecer a opción de traducir texto escrito nestes idiomas</translation>

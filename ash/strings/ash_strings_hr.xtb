@@ -24,7 +24,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1148499908455722006">Otvorite dijaloški okvir s podacima o računu <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Upareni uređaji</translation>
 <translation id="1165712434476988950">Da bi se primijenilo ažuriranje, potrebno je ponovo pokrenuti uređaj.</translation>
-<translation id="1170240434488307589">Isključen je gumb mikrofona na uređaju.</translation>
 <translation id="1175572348579024023">Pomicanje</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -41,6 +40,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1247372569136754018">Mikrofon (ugrađeni)</translation>
 <translation id="1252999807265626933">Izvor punjenja: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kakvo je vrijeme?</translation>
+<translation id="1266097335951928626">Pokreni fotoaparat za selfie</translation>
 <translation id="1267032506238418139">Promjena prečaca</translation>
 <translation id="1269405891096105529">Periferni uređaj nije podržan u načinu rada za goste</translation>
 <translation id="1270290102613614947">Tipkovnica na zaslonu onemogućena je</translation>
@@ -85,6 +85,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="1570871743947603115">Prebacivanje Bluetootha. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Pristup svim vašim aktivnostima u ovoj sesiji</translation>
+<translation id="159255010947577753">Marker</translation>
 <translation id="1611993646327628135">Uključeno</translation>
 <translation id="1615402009686901181">Administratorska pravila onemogućuju snimanje zaslona ako je vidljiv povjerljiv sadržaj</translation>
 <translation id="1632985212731562677">Prekidač za pristup možete onemogućiti tako da otvorite Postavke &gt; Pristupačnost.</translation>
@@ -136,8 +137,10 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2016340657076538683">Unesite poruku</translation>
 <translation id="2018630726571919839">Ispričaj mi vic</translation>
 <translation id="2021864487439853900">Kliknite da biste otključali</translation>
+<translation id="2047639699071423250">Dodaj ključnu ideju</translation>
 <translation id="2049240716062114887">Naziv radne površine promijenjen je u <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portret</translation>
+<translation id="2066708475850724665">Zaustavi povećalo</translation>
 <translation id="2067602449040652523">Svjetlina tipkovnice</translation>
 <translation id="2078034614700056995">Za prelazak na sljedeću radnu površinu prijeđite s četiri prsta udesno</translation>
 <translation id="2079504693865562705">Sakrij aplikacije na polici</translation>
@@ -145,10 +148,12 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2083190527011054446">Laku noć, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Niste povezani s mrežom</translation>
 <translation id="2108303511227308752">Promijenjen je tipkovni prečac Alt + Backspace. Da biste upotrijebili tipku za brisanje, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
+<translation id="211328683600082144">UKLJUČI MIKROFON</translation>
 <translation id="2126242104232412123">Nova radna površina</translation>
 <translation id="2127372758936585790">Punjač male snage</translation>
 <translation id="2132302418721800944">Snimanje cijelog zaslona</translation>
 <translation id="2135456203358955318">Usidreno povećalo</translation>
+<translation id="2146800439053023141">Uključi/isključi lokaciju trake</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Pokušaj ponovo</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Prijeđite s tri prsta prema dolje da biste zatvorili Pregled</translation>
@@ -328,6 +333,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3638400994746983214">Uključite/isključite zaslon privatnosti. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> upravljani korisnik</translation>
 <translation id="3665889125180354336">Snimanje mikrofona</translation>
+<translation id="3680908746918359504">Izbriši sve markere</translation>
 <translation id="36813544980941320">Wi-Fi mreže dijelit će se između vašeg telefona i uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">Prikazuju se prozori s trenutačne radne površine, pritisnite tipku strelice prema gore da bi se prikazali prozori sa svih radnih površina</translation>
 <translation id="3702846122927433391">Broj stanovnika u Nigeriji</translation>
@@ -373,12 +379,12 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4021716437419160885">Pomakni prema dolje</translation>
 <translation id="4028481283645788203">Radi dodatne sigurnosti potrebna je zaporka</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Promijenjen je tipkovni prečac<ph name="LAUNCHER_KEY_NAME" /> + broj. Da biste upotrijebili F tipke, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + tipku u gornjem redu.</translation>
 <translation id="4042660782729322247">Dijelite zaslon</translation>
 <translation id="4057003836560082631">Kartica preglednika <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Isk. za 1 apl.}one{Isk. za # apl.}few{Iskl. za # apl.}other{Isk. za # apl.}}</translation>
 <translation id="4066027111132117168">Uključeno, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Signal srednje jačine</translation>
+<translation id="4095366824370681039">Pero</translation>
 <translation id="4112140312785995938">Traži unatrag</translation>
 <translation id="4114315158543974537">Uključivanje Phone Huba</translation>
 <translation id="412298498316631026">prozor</translation>
@@ -447,12 +453,15 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4570957409596482333">Gumb Odabira za govor</translation>
 <translation id="4577274620589681794">Vrijeme je isteklo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Prikaži preglede</translation>
+<translation id="4578196883126898996">Mikrofon je isključen. Uključite gumb mikrofona na uređaju.</translation>
 <translation id="4578906031062871102">Otvoren je izbornik postavki</translation>
 <translation id="4581047786858252841">Mikrofon je uključen</translation>
 <translation id="4585337515783392668">Zaustavite emitiranje na nepoznatom prijamniku</translation>
+<translation id="4586483766170476230">Zaustavi fotoaparat za selfie</translation>
 <translation id="4587299710837179226">Mikrofon je isključen</translation>
 <translation id="4596144739579517758">Tamna je tema isključena</translation>
 <translation id="4611292653554630842">Prijava</translation>
+<translation id="4614295562446151104">Proširi alate markera</translation>
 <translation id="4623167406982293031">Potvrdite račun</translation>
 <translation id="4628757576491864469">Uređaji</translation>
 <translation id="4642092649622328492">Snimanje dijela zaslona</translation>
@@ -509,6 +518,8 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5035236842988137213">Uređaj <ph name="DEVICE_NAME" /> povezan je s novim telefonom</translation>
 <translation id="5035389544768382859">Potvrđivanje konfiguracije zaslona</translation>
 <translation id="504465286040788597">Prethodni odlomak</translation>
+<translation id="5071064518267176975">Aplikacija želi koristiti mikrofon</translation>
+<translation id="5075554201838155866">Pokreni titlove</translation>
 <translation id="5078796286268621944">Netočan PIN</translation>
 <translation id="5083553833479578423">Otključajte više značajki Asistenta.</translation>
 <translation id="5136175204352732067">Povezana je neka druga tipkovnica</translation>
@@ -679,6 +690,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6612802754306526077">Odabran je način snimanja zaslona</translation>
 <translation id="6614169507485700968">Uključen je zaslon privatnosti</translation>
 <translation id="6627638273713273709">Pretraži + Shift + K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> želi koristiti mikrofon</translation>
 <translation id="6637729079642709226">Promijenite vrijeme</translation>
 <translation id="6641720045729354415">Uključite ili isključite automatske titlove. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> želi potvrditi da ste to vi</translation>
@@ -732,6 +744,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7029814467594812963">Zatvori sesiju</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google asistent</translation>
 <translation id="7042322267639375032">Sažmite područje statusa</translation>
+<translation id="7045595904618419789">Pokreni povećalo</translation>
 <translation id="7055910611768509537">Pisaljka nije korištena više od tjedan dana</translation>
 <translation id="7066646422045619941">Tu mrežu onemogućio je vaš administrator.</translation>
 <translation id="7067196344162293536">Automatski izmjenjuj</translation>
@@ -752,6 +765,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7256634071279256947">Stražnji mikrofon</translation>
 <translation id="726276584504105859">Povucite ovdje da biste upotrebljavali podijeljeni zaslon</translation>
 <translation id="7262906531272962081">Izrada podsjetnika</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> boja markera</translation>
 <translation id="7302889331339392448">Isključeni su automatski titlovi.</translation>
 <translation id="7303365578352795231">Odgovaranje na drugom uređaju.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
 <translation id="7477793887173910789">Upravljate glazbom, videozapisima i drugim medijima</translation>
 <translation id="7483025031359818980">Za područje odabira postavljen je cijeli zaslon</translation>
+<translation id="7486227320194954040">Sažmi alate markera</translation>
 <translation id="7497767806359279797">Odaberite jezik i tipkovnicu</translation>
 <translation id="7509246181739783082">Potvrdite svoj identitet</translation>
 <translation id="7513622367902644023">Odabran je način snimanja zaslona</translation>
@@ -799,6 +814,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7618774594543487847">Neutralno</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">Marker</translation>
 <translation id="7633755430369750696">Prikaži postavke dijeljenja u blizini.</translation>
 <translation id="7641938616688887143">Snimaj</translation>
 <translation id="7642647758716480637">Otvorite postavke mreže za <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7724603315864178912">Izreži</translation>
 <translation id="7745560842763881396">Prikaži aplikacije na polici</translation>
 <translation id="7749443890790263709">Dosegnut je maksimalan broj radnih površina.</translation>
+<translation id="7749640678855296659">Mikrofon je trenutačno isključen</translation>
 <translation id="776344839111254542">Kliknite da biste vidjeli pojedinosti o ažuriranju</translation>
 <translation id="7780159184141939021">Zakretanje zaslona</translation>
 <translation id="7796353162336583443">Dodirnite gumb pisaljke na polici da biste napisali bilješku, izradili snimku zaslona ili upotrijebili Google asistent, laserski pokazivač ili povećalo.</translation>
@@ -861,6 +878,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8113423164597455979">Uklj., sve ap.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
+<translation id="8132487352815776550">Zaustavi titlove</translation>
 <translation id="8132793192354020517">Povezano s <ph name="NAME" /></translation>
 <translation id="813913629614996137">Pokretanje...</translation>
 <translation id="8142441511840089262">Dvostruki klik</translation>

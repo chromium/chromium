@@ -24,7 +24,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> есептік жазбасы туралы ақпарат диалогтік терезесін ашу</translation>
 <translation id="1153356358378277386">Жұпталған құрылғылар</translation>
 <translation id="1165712434476988950">Жаңарту күшіне енуі үшін, құрылғыны қайта іске қосу қажет.</translation>
-<translation id="1170240434488307589">Құрылғы микрофонының дыбысы өшірілді.</translation>
 <translation id="1175572348579024023">Айналдыру</translation>
 <translation id="1178581264944972037">Кідірту</translation>
 <translation id="1181037720776840403">Өшіру</translation>
@@ -373,7 +372,6 @@
 <translation id="4021716437419160885">Төменге айналдыру</translation>
 <translation id="4028481283645788203">Қауіпсіздікті күшейту үшін құпия сөзді енгізу қажет.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023"><ph name="LAUNCHER_KEY_NAME" /> + сан пернелер тіркесімінің функциясы өзгерді. Функциялық пернелердің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + жоғарғы қатар пернесі тіркесімін басыңыз.</translation>
 <translation id="4042660782729322247">Экранды бөлісудесіз</translation>
 <translation id="4057003836560082631">Браузер қойындысы: <ph name="INDEX" />/<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Өшірулі}other{# үшін өшірулі}}</translation>

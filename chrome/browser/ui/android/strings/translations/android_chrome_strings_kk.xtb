@@ -293,6 +293,7 @@
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> сайтына арналған ұсыныстар көрсетілуде.</translation>
 <translation id="2904414404539560095">Қойынды жіберілетін құрылғылар тізімі толық экранға ашылған.</translation>
 <translation id="2905036901251765993">Жаныңыздағы адамдармен бөлісу үшін олар осы QR кодын сканерлеуі қажет.</translation>
+<translation id="2908243544703713905">Оқылмаған сюжеттер бар.</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Өзіңізді қызықтыратын тақырыптарды басқарыңыз.</translation>
 <translation id="2923908459366352541">Атау жарамсыз.</translation>
@@ -533,7 +534,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минут бұрын}other{# минут бұрын}}</translation>
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4594952190837476234">Бұл офлайн бет <ph name="CREATION_TIME" /> күні жасалған, сондықтан онлайн нұсқасынан өзгеше болуы мүмкін.</translation>
-<translation id="4615382002648696011">Жазылғансыз, оқылмаған сюжеттер бар.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> қолданбасын ашу</translation>
 <translation id="4619564267100705184">Жеке басыңызды растаңыз</translation>
 <translation id="4634124774493850572">Құпия сөзді пайдалану</translation>

@@ -24,7 +24,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1148499908455722006">Open info dialogue for <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Paired devices</translation>
 <translation id="1165712434476988950">Device restart is required to apply the update.</translation>
-<translation id="1170240434488307589">Device microphone button is muted.</translation>
 <translation id="1175572348579024023">Scroll</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
@@ -41,6 +40,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1247372569136754018">Microphone (internal)</translation>
 <translation id="1252999807265626933">Charging from <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">What's the weather?</translation>
+<translation id="1266097335951928626">Start selfie camera</translation>
 <translation id="1267032506238418139">Shortcut change</translation>
 <translation id="1269405891096105529">Peripheral not supported in Guest Mode</translation>
 <translation id="1270290102613614947">On-screen keyboard disabled</translation>
@@ -85,6 +85,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1570871743947603115">Toggle Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Access all your activity in this session</translation>
+<translation id="159255010947577753">Marker</translation>
 <translation id="1611993646327628135">On</translation>
 <translation id="1615402009686901181">Administrator policy disables screen capture when confidential content is visible</translation>
 <translation id="1632985212731562677">Switch access can be disabled in Settings &gt; Accessibility.</translation>
@@ -136,8 +137,10 @@ Here are some things that you can try to get started.</translation>
 <translation id="2016340657076538683">Type a message</translation>
 <translation id="2018630726571919839">Tell me a joke</translation>
 <translation id="2021864487439853900">Click to unlock</translation>
+<translation id="2047639699071423250">Add key idea</translation>
 <translation id="2049240716062114887">Desk name was changed to <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
+<translation id="2066708475850724665">Stop magnifier</translation>
 <translation id="2067602449040652523">Keyboard brightness</translation>
 <translation id="2078034614700056995">Swipe right with four fingers to switch to the next desk</translation>
 <translation id="2079504693865562705">Hide apps in shelf</translation>
@@ -145,10 +148,12 @@ Here are some things that you can try to get started.</translation>
 <translation id="2083190527011054446">Good night <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Not connected to network</translation>
 <translation id="2108303511227308752">The Alt + backspace keyboard shortcut has changed. To use the delete key, press the <ph name="LAUNCHER_KEY_NAME" /> key + backspace.</translation>
+<translation id="211328683600082144">TURN ON MICROPHONE</translation>
 <translation id="2126242104232412123">New desk</translation>
 <translation id="2127372758936585790">Low-power charger</translation>
 <translation id="2132302418721800944">Record full screen</translation>
 <translation id="2135456203358955318">Docked magnifier</translation>
+<translation id="2146800439053023141">Toggle bar location</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Retry</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Swipe down with three fingers to exit Overview.</translation>
@@ -328,6 +333,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3638400994746983214">Toggle privacy screen. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> managed user</translation>
 <translation id="3665889125180354336">Record microphone</translation>
+<translation id="3680908746918359504">Clear all markers</translation>
 <translation id="36813544980941320">Wi-Fi networks will be shared between your phone and <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">Showing windows from the current desk; press the Up arrow key to show windows from all desks</translation>
 <translation id="3702846122927433391">Population in Nigeria</translation>
@@ -373,12 +379,12 @@ Here are some things that you can try to get started.</translation>
 <translation id="4021716437419160885">Scroll down</translation>
 <translation id="4028481283645788203">Password required for more security</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">The <ph name="LAUNCHER_KEY_NAME" /> + number keyboard shortcut has changed. To use the F-keys, press the <ph name="LAUNCHER_KEY_NAME" /> key + a key on the top row.</translation>
 <translation id="4042660782729322247">You're sharing your screen</translation>
 <translation id="4057003836560082631">Browser tab <ph name="INDEX" /> of <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Off for an app}other{Off for # apps}}</translation>
 <translation id="4066027111132117168">On, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Medium signal</translation>
+<translation id="4095366824370681039">Ink pen</translation>
 <translation id="4112140312785995938">Seek backwards</translation>
 <translation id="4114315158543974537">Turn on Phone Hub</translation>
 <translation id="412298498316631026">window</translation>
@@ -447,12 +453,15 @@ Here are some things that you can try to get started.</translation>
 <translation id="4570957409596482333">Select-to-Speak button</translation>
 <translation id="4577274620589681794">Time's up · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Show previews</translation>
+<translation id="4578196883126898996">Your microphone is off. Turn on your device’s microphone button.</translation>
 <translation id="4578906031062871102">Settings menu opened</translation>
 <translation id="4581047786858252841">Microphone is on</translation>
 <translation id="4585337515783392668">Stop casting on an unknown receiver</translation>
+<translation id="4586483766170476230">Stop selfie camera</translation>
 <translation id="4587299710837179226">Microphone is off</translation>
 <translation id="4596144739579517758">Dark theme is off</translation>
 <translation id="4611292653554630842">Log in</translation>
+<translation id="4614295562446151104">Expand marker tools</translation>
 <translation id="4623167406982293031">Verify account</translation>
 <translation id="4628757576491864469">Devices</translation>
 <translation id="4642092649622328492">Take partial screenshot</translation>
@@ -509,6 +518,8 @@ Here are some things that you can try to get started.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> connected to a new phone</translation>
 <translation id="5035389544768382859">Confirm display configuration</translation>
 <translation id="504465286040788597">Previous paragraph</translation>
+<translation id="5071064518267176975">An app wants to use the microphone</translation>
+<translation id="5075554201838155866">Start closed captions</translation>
 <translation id="5078796286268621944">Incorrect PIN</translation>
 <translation id="5083553833479578423">Unlock more Assistant features.</translation>
 <translation id="5136175204352732067">Different keyboard connected</translation>
@@ -679,6 +690,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6612802754306526077">Screen recording mode selected</translation>
 <translation id="6614169507485700968">Privacy screen is on</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> wants to use the microphone</translation>
 <translation id="6637729079642709226">Change time</translation>
 <translation id="6641720045729354415">Toggle Live Caption. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
@@ -732,6 +744,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7029814467594812963">Exit session</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Collapse status area</translation>
+<translation id="7045595904618419789">Start magnifier</translation>
 <translation id="7055910611768509537">Stylus has not been used in over a week</translation>
 <translation id="7066646422045619941">This network is disabled by your administrator.</translation>
 <translation id="7067196344162293536">Auto rotate</translation>
@@ -752,6 +765,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7256634071279256947">Rear microphone</translation>
 <translation id="726276584504105859">Drag here to use split screen</translation>
 <translation id="7262906531272962081">Create reminder</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> marker colour</translation>
 <translation id="7302889331339392448">Live Caption is off.</translation>
 <translation id="7303365578352795231">Answering on another device.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7466449121337984263">Please touch the sensor</translation>
 <translation id="7477793887173910789">Control your music, videos and more</translation>
 <translation id="7483025031359818980">Selection area set to full screen</translation>
+<translation id="7486227320194954040">Collapse marker tools</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
 <translation id="7509246181739783082">Verify your identity</translation>
 <translation id="7513622367902644023">Screenshot mode selected</translation>
@@ -799,6 +814,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7607002721634913082">Paused</translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">Marker pen</translation>
 <translation id="7633755430369750696">Show Nearby Share settings.</translation>
 <translation id="7641938616688887143">Record</translation>
 <translation id="7642647758716480637">Open settings for <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7745560842763881396">Show apps in shelf</translation>
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
+<translation id="7749640678855296659">Your microphone is currently turned off</translation>
 <translation id="776344839111254542">Click to view update details</translation>
 <translation id="7780159184141939021">Rotate screen</translation>
 <translation id="7796353162336583443">Tap the stylus button on the shelf to take a note, screenshot, use the Google Assistant, laser pointer or magnifying glass.</translation>
@@ -861,6 +878,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8113423164597455979">On, all apps</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Confirm</translation>
+<translation id="8132487352815776550">Stop closed captions</translation>
 <translation id="8132793192354020517">Connected to <ph name="NAME" /></translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8142441511840089262">Double click</translation>

@@ -186,6 +186,7 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="22320125457191592">För dig</translation>
 <translation id="2234876718134438132">Synk och Googles tjänster</translation>
 <translation id="2239812875700136898">Du kan styra artiklarna med knappen Alternativ för Förslag</translation>
+<translation id="2251971221270904886">När tekniken är på och statusen är Aktiv använder Chrome webbhistoriken från de senaste sju dagarna för att fastställa vilken grupp, eller kohort, som du ingår i. Annonsörerna kan välja annonser för gruppen. Webbhistoriken förblir privat på enheten. Provperioden är endast aktiv i <ph name="BEGIN_LINK" />några regioner<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Exportera lösenord …</translation>
 <translation id="2276696007612801991">Logga in på ditt Google-konto om du vill kontrollera lösenorden</translation>
 <translation id="2278052315791335171">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="SITE" /> raderas</translation>
@@ -275,6 +276,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2781151931089541271">1 sekund kvar</translation>
 <translation id="2801022321632964776">Uppdatera och få ditt språk i den senaste versionen av Chrome</translation>
 <translation id="2805756323405976993">Appar</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Visa och hantera sparade lösenord i <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Logga in och aktivera synkronisering om du vill ha dina bokmärken tillgängliga på alla enheter</translation>
 <translation id="2827278682606527653">Menyn med flödeskort är öppen och tar upp halva skärmen</translation>
@@ -293,6 +295,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2901411048554510387">Visar förslag för <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Listan över enheter som fliken kan delas med öppnades och tar upp hela skärmen.</translation>
 <translation id="2905036901251765993">Be andra att skanna QR-koden om du vill dela med personer i närheten</translation>
+<translation id="2908243544703713905">Det finns olästa artiklar</translation>
 <translation id="2909615210195135082">Googles aviseringsplattform</translation>
 <translation id="2912296070571964914">Hantera ämnen som du är intresserad av</translation>
 <translation id="2923908459366352541">Namnet är ogiltigt</translation>
@@ -317,6 +320,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmärke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmärken}}</translation>
 <translation id="3062802207422175757">Artiklar om dina intressen i Chrome</translation>
 <translation id="3070005020161560471">Översätt automatiskt</translation>
+<translation id="3083531420240576529">Du kan återställa gruppen när som helst. Det tar sju dagar att fastställa gruppen.</translation>
 <translation id="3091010850649238832">Visa innehållet i Urklipp</translation>
 <translation id="3098745985164956033">Vissa bilder skickas till Google så att du får bättre beskrivningar</translation>
 <translation id="3114507951000454849">Läs dagens nyheter <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Alternativ finns högt upp på skärmen</translation>
 <translation id="4062305924942672200">Juridisk information</translation>
+<translation id="4082818367361753283">Grupp-id</translation>
 <translation id="4084682180776658562">Infoga bokmärke</translation>
 <translation id="4084712963632273211">Från <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />via Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Vill du ta bort appdata?</translation>
@@ -533,7 +538,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4583164079174244168">{MINUTES,plural, =1{för # minut sedan}other{för # minuter sedan}}</translation>
 <translation id="4587589328781138893">Webbplatser</translation>
 <translation id="4594952190837476234">Den här offlinesidan sparades <ph name="CREATION_TIME" /> och kan skilja sig från onlineversionen.</translation>
-<translation id="4615382002648696011">Följer – olästa artiklar är klara</translation>
 <translation id="4616150815774728855">Öppna <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4634124774493850572">Använd lösenordet</translation>
@@ -889,6 +893,11 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6699370405921460408">Googles servrar optimerar sidor du besöker.</translation>
 <translation id="670498945988402717">Genomsöktes i går</translation>
 <translation id="6710213216561001401">Föregående</translation>
+<translation id="671333169801287922">När det här alternativet är aktiverat kan webbplatser tillhandahålla sina tjänster med hjälp av de integritetsbevarande metoder som visas här. Det gäller bland annat alternativ till att spåra användaren från webbplats till webbplats. Fler provfunktioner kan läggas till med tiden.
+
+<ph name="BEGIN_LIST_ITEM1" />Annonsörer och utgivare kan använda sig av FLoC-tekniken.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Annonsörerna och utgivarna kan utvärdera annonsernas effektivitet med hjälp av andra metoder än att spåra dig från webbplats till webbplats.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Timern för <ph name="FQDN" /> har löpt ut. Den börjar om igen i morgon.</translation>
 <translation id="6738516213925468394">Din data krypterades med din <ph name="BEGIN_LINK" />lösenfras för synkronisering<ph name="END_LINK" /> den <ph name="TIME" />. Ange den om du vill starta synkroniseringen.</translation>
 <translation id="6738867403308150051">Laddar ned …</translation>
@@ -1079,6 +1088,9 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7971136598759319605">Aktiv för 1 dag sedan</translation>
 <translation id="7975379999046275268">Förhandsgranska sida <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Läs in sidor i förväg så att det går snabbare att surfa och söka</translation>
+<translation id="7981546642162424360">Initiativet <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> syftar till att skapa ny teknik som skyddar dig från funktioner som spårar dig samtidigt som den öppna webben bevaras.
+
+Provfunktioner i Privacy Sandbox är för närvarande under utveckling och tillgängliga i vissa regioner. För närvarande går det att testa Privacy Sandbox på en webbplats samtidigt som gängse webbteknik som tredjepartscookies används på den.</translation>
 <translation id="7986497153528221272">Om du vill kunna se lösenorden måste du först ställa in ett skärmlås på enheten</translation>
 <translation id="7998918019931843664">Öppna en stängd flik på nytt</translation>
 <translation id="8004582292198964060">Webbläsare</translation>
@@ -1188,7 +1200,9 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="8662811608048051533">Du loggas ut från de flesta webbplatser.</translation>
 <translation id="8664979001105139458">Filnamnet finns redan</translation>
 <translation id="8676789164135894283">Verifieringar för inloggning</translation>
+<translation id="867767487203716855">Nästa uppdatering</translation>
 <translation id="8683039184091909753">bild</translation>
+<translation id="8683081248374354009">Återställ gruppen</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signalstyrka: # streck}other{Signalstyrka: # streck}}</translation>
 <translation id="869891660844655955">Utgångsdatum</translation>
 <translation id="8699120352855309748">Erbjud inte att översätta dessa språk</translation>

@@ -281,6 +281,7 @@
 <translation id="1919345977826869612">โฆษณา</translation>
 <translation id="1919367280705858090">ขอความช่วยเหลือเกี่ยวกับข้อความแสดงข้อผิดพลาดที่เจาะจง</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ไม่มี}=1{เว็บไซต์ 1 แห่ง}other{เว็บไซต์ # แห่ง}}</translation>
+<translation id="1924727005275031552">ใหม่</translation>
 <translation id="1945968466830820669">คุณอาจเข้าถึงบัญชีขององค์กรไม่ได้หรือถูกโจรกรรมข้อมูลประจำตัว Chromium ขอแนะนำให้เปลี่ยนรหัสผ่านตอนนี้เลย</translation>
 <translation id="1947454675006758438">เย็บด้วยลวดเย็บกระดาษด้านขวาบน</translation>
 <translation id="1958218078413065209">คะแนนสูงสุดของคุณคือ <ph name="SCORE" /></translation>
@@ -391,6 +392,7 @@
 <translation id="2357481397660644965">อุปกรณ์ของคุณจัดการโดย <ph name="DEVICE_MANAGER" /> และบัญชีของคุณจัดการโดย <ph name="ACCOUNT_MANAGER" /></translation>
 <translation id="2359629602545592467">หลายรายการ</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
+<translation id="2359961752320758691">ใช้หมายเลขบัตรเสมือนของคุณแล้ว</translation>
 <translation id="2367567093518048410">ระดับ</translation>
 <translation id="2372464001869762664">เมื่อยืนยันแล้ว ระบบจะแชร์รายละเอียดของบัตรจากบัญชี Google กับเว็บไซต์นี้ ดู CVC ได้ในรายละเอียดของบัญชี Plex</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -401,6 +403,7 @@
 <translation id="239429038616798445">วิธีการจัดส่งสินค้านี้ไม่พร้อมให้บริการ โปรดลองใช้วิธีการอื่น</translation>
 <translation id="2396249848217231973">&amp;เลิกทำการนำออก</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">เก่า</translation>
 <translation id="2413528052993050574">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะอาจมีการเพิกถอนใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="2414886740292270097">มืด</translation>
 <translation id="2438874542388153331">เจาะรูด้านขวา 4 รู</translation>
@@ -897,12 +900,14 @@
 <translation id="4275830172053184480">รีสตาร์ทอุปกรณ์ของคุณ</translation>
 <translation id="4277028893293644418">รีเซ็ตรหัสผ่าน</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{บันทึกบัตรนี้ลงในบัญชี Google ของคุณแล้ว}other{บันทึกบัตรเหล่านี้ลงในบัญชี Google ของคุณแล้ว}}</translation>
+<translation id="4287885627794386150">มีสิทธิ์สำหรับการทดลองใช้ แต่ใช้งานไม่ได้</translation>
 <translation id="4297502707443874121">ภาพขนาดย่อของหน้า <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">ขยาย</translation>
 <translation id="4300675098767811073">เจาะรูด้านขวาหลายรู</translation>
 <translation id="4302514097724775343">แตะไดโนเสาร์เพื่อเล่น</translation>
 <translation id="4302965934281694568">Chou3 (ซองจดหมาย)</translation>
 <translation id="4305666528087210886">เข้าถึงไฟล์ไม่ได้</translation>
+<translation id="4306529830550717874">บันทึกที่อยู่ไหม</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">บล็อก (ค่าเริ่มต้น)</translation>
 <translation id="4314815835985389558">จัดการการซิงค์</translation>
@@ -1390,6 +1395,7 @@
 <translation id="610911394827799129">บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">ดูข้อความและรูปภาพที่คัดลอกไปที่คลิปบอร์ด</translation>
 <translation id="6120179357481664955">จำรหัส UPI ไหม</translation>
+<translation id="6123290840358279103">ดูบัตรเสมือน</translation>
 <translation id="6124432979022149706">เครื่องมือเชื่อมต่อ Chrome Enterprise</translation>
 <translation id="6146055958333702838">ตรวจสายเคเบิลและรีบูตเราเตอร์ โมเด็ม หรืออุปกรณ์เครือข่ายอื่น
     ที่คุณอาจใช้งานอยู่</translation>
@@ -1669,6 +1675,7 @@
 <translation id="7300012071106347854">น้ำเงินเข้ม</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">สูง</translation>
+<translation id="7305756307268530424">เริ่มโดยให้ช้าลง</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ความช่วยเหลือเกี่ยวกับการเชื่อมต่อ</translation>
 <translation id="7323804146520582233">ซ่อนส่วน "<ph name="SECTION" />"</translation>
@@ -1694,6 +1701,7 @@
 <translation id="7378594059915113390">การควบคุมสื่อ</translation>
 <translation id="7378627244592794276">ไม่</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">ไม่เกี่ยวข้อง</translation>
 <translation id="7390545607259442187">ยืนยันบัตร</translation>
 <translation id="7399802613464275309">การตรวจสอบความปลอดภัย</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1745,6 +1753,7 @@
 <translation id="7548892272833184391">แก้ไขข้อผิดพลาดในการเชื่อมต่อ</translation>
 <translation id="7549584377607005141">หน้าเว็บนี้ต้องใช้ข้อมูลที่คุณป้อนก่อนหน้านี้เพื่อให้แสดงได้อย่างถูกต้อง คุณสามารถส่งข้อมูลนี้ได้อีกครั้ง แต่การทำเช่นนั้นจะเป็นการทำสิ่งที่หน้าเว็บนี้เคยดำเนินการซ้ำอีกครั้ง</translation>
 <translation id="7550637293666041147">ชื่อผู้ใช้ของคุณในอุปกรณ์และใน Chrome</translation>
+<translation id="755279583747225797">สามารถใช้การทดลองใช้ได้</translation>
 <translation id="7552846755917812628">ลองทำตามเคล็ดลับต่อไปนี้:</translation>
 <translation id="7554475479213504905">โหลดซ้ำและแสดงเนื้อหา</translation>
 <translation id="7554791636758816595">แท็บใหม่</translation>
@@ -1839,6 +1848,7 @@
 <translation id="7894280532028510793">หากการสะกดถูกต้อง ให้<ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยเครือข่าย<ph name="END_LINK" /></translation>
 <translation id="7904208859782148177">C3 (ซองจดหมาย)</translation>
 <translation id="7931318309563332511">ไม่รู้จัก</translation>
+<translation id="793209273132572360">อัปเดตที่อยู่ไหม</translation>
 <translation id="7932579305932748336">เคลือบ</translation>
 <translation id="79338296614623784">ป้อนหมายเลขโทรศัพท์ที่ถูกต้อง</translation>
 <translation id="7934052535022478634">การชำระเงินเสร็จสมบูรณ์</translation>
@@ -1915,7 +1925,6 @@
 <translation id="8202097416529803614">ข้อมูลสรุปคำสั่งซื้อ</translation>
 <translation id="8202370299023114387">ความขัดแย้ง</translation>
 <translation id="8206978196348664717">Prc4 (ซองจดหมาย)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{เมื่อรีเซ็ตรหัส รหัสปัจจุบันจะใช้ไม่ได้อีกและระบบจะออกรหัสใหม่ให้ภายในไม่เกิน 1 วัน}=1{เมื่อรีเซ็ตรหัส รหัสปัจจุบันจะใช้ไม่ได้อีกและระบบจะออกรหัสใหม่ให้ภายใน 1 วัน}other{เมื่อรีเซ็ตรหัส รหัสปัจจุบันจะใช้ไม่ได้อีกและระบบจะออกรหัสใหม่ให้ภายใน {NUM_DAYS} วัน}}</translation>
 <translation id="8211406090763984747">การเชื่อมต่อปลอดภัย</translation>
 <translation id="8213464188712611711">ความทรงจำ</translation>
 <translation id="8218327578424803826">ตำแหน่งที่มอบหมาย:</translation>

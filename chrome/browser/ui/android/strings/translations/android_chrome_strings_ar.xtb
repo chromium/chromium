@@ -292,6 +292,7 @@
 <translation id="2901411048554510387">عرض اقتراحات لموقع <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">قائمة بالأجهزة التي يمكن مشاركة علامة تبويب معها، مفتوحة على طول الشاشة.</translation>
 <translation id="2905036901251765993">للمشاركة مع المستخدمين القريبين، اسمح لهم بمسح رمز الاستجابة السريعة ضوئيًا</translation>
+<translation id="2908243544703713905">الأخبار غير المقروءة جاهزة.</translation>
 <translation id="2909615210195135082">‏النظام الأساسي لإشعارات Google</translation>
 <translation id="2912296070571964914">إدارة المواضيع التي تحظى باهتمامك</translation>
 <translation id="2923908459366352541">الاسم غير صحيح</translation>
@@ -532,7 +533,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{قبل دقيقة واحدة (#)}zero{قبل # دقيقة}two{قبل دقيقتين (#)}few{قبل # دقائق}many{قبل # دقيقة}other{قبل # دقيقة}}</translation>
 <translation id="4587589328781138893">المواقع</translation>
 <translation id="4594952190837476234">تم إنشاء هذه الصفحة المتوفّرة بلا اتصال بالإنترنت في <ph name="CREATION_TIME" />، وقد تختلف عن النسخة المتوفِّرة على الإنترنت.</translation>
-<translation id="4615382002648696011">خلاصة تتم متابعتها حاليًا، هناك أخبار غير مقروءة</translation>
 <translation id="4616150815774728855">فتح <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
 <translation id="4634124774493850572">استخدام كلمة المرور</translation>

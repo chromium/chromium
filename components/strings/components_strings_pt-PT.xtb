@@ -285,6 +285,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1919345977826869612">Anúncios</translation>
 <translation id="1919367280705858090">Obter ajuda relativamente a uma mensagem de erro específica</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}other{# sites}}</translation>
+<translation id="1924727005275031552">Novo</translation>
 <translation id="1945968466830820669">Pode perder o acesso à conta da sua entidade ou ser vítima de roubo de identidade. O Chromium recomenda a alteração da palavra-passe agora.</translation>
 <translation id="1947454675006758438">Agrafo na parte superior direita</translation>
 <translation id="1958218078413065209">A sua pontuação mais alta é <ph name="SCORE" />.</translation>
@@ -395,6 +396,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2357481397660644965">O seu dispositivo é gerido por <ph name="DEVICE_MANAGER" /> e a sua conta é gerida por <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2359961752320758691">O número do seu cartão virtual foi aplicado.</translation>
 <translation id="2367567093518048410">Nível</translation>
 <translation id="2372464001869762664">Depois de confirmar, os detalhes do cartão da sua Conta Google são partilhados com este site. Procure o CVC nos seus detalhes da conta Plex.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -405,6 +407,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="239429038616798445">Este método de envio não está disponível. Experimente um método diferente.</translation>
 <translation id="2396249848217231973">&amp;Anular eliminação</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o respetivo certificado de segurança poderá ser revogado. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="2414886740292270097">Escuro</translation>
 <translation id="2438874542388153331">Perfuração quádrupla à direita</translation>
@@ -909,12 +912,14 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4275830172053184480">Reiniciar o dispositivo</translation>
 <translation id="4277028893293644418">Repor palavra-passe</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Este cartão foi guardado na sua Conta Google.}other{Estes cartões foram guardados na sua Conta Google.}}</translation>
+<translation id="4287885627794386150">Elegível para avaliação, mas não ativa</translation>
 <translation id="4297502707443874121">Miniatura da página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4300675098767811073">Perfuração múltipla à direita</translation>
 <translation id="4302514097724775343">Toque no dinossauro para jogar.</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">Não foi possível aceder ao seu ficheiro</translation>
+<translation id="4306529830550717874">Pretende guardar o endereço?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (predefinição)</translation>
 <translation id="4314815835985389558">Gerir sincronização</translation>
@@ -1402,6 +1407,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="610911394827799129">A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">Ver o texto e as imagens copiados para a área de transferência</translation>
 <translation id="6120179357481664955">Lembra-se do seu ID do UPI?</translation>
+<translation id="6123290840358279103">Ver cartão virtual</translation>
 <translation id="6124432979022149706">Conetores do Chrome Enterprise</translation>
 <translation id="6146055958333702838">Verifique os cabos e reinicie todos os routers, modems ou outros
     dispositivos de rede que possa estar a utilizar.</translation>
@@ -1681,6 +1687,7 @@ Detalhes adicionais:
 <translation id="7300012071106347854">Azul cobalto</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">Alta</translation>
+<translation id="7305756307268530424">Iniciar mais lentamente</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ajuda para estabelecer ligação</translation>
 <translation id="7323804146520582233">Ocultar a secção "<ph name="SECTION" />"</translation>
@@ -1706,6 +1713,7 @@ Detalhes adicionais:
 <translation id="7378594059915113390">Controlos de multimédia</translation>
 <translation id="7378627244592794276">Não</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Não aplicável</translation>
 <translation id="7390545607259442187">Confirmar cartão</translation>
 <translation id="7399802613464275309">Verificação de segurança</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1756,6 +1764,7 @@ Detalhes adicionais:
 <translation id="7548892272833184391">Corrigir erros de ligação</translation>
 <translation id="7549584377607005141">Esta página Web requer os dados introduzidos anteriormente para ser corretamente apresentada. Pode enviar novamente esses dados, mas ao fazê-lo, irá repetir as ações que esta página executou anteriormente.</translation>
 <translation id="7550637293666041147">O nome de utilizador do dispositivo e o nome de utilizador do Chrome</translation>
+<translation id="755279583747225797">A avaliação está ativa</translation>
 <translation id="7552846755917812628">Experimente as sugestões seguintes:</translation>
 <translation id="7554475479213504905">Atualizar e mostrar mesmo assim</translation>
 <translation id="7554791636758816595">Novo separador</translation>
@@ -1850,6 +1859,7 @@ Detalhes adicionais:
 <translation id="7894280532028510793">Se a ortografia estiver correta, <ph name="BEGIN_LINK" />experimente executar o Diagnóstico de rede<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7931318309563332511">Desconhecido</translation>
+<translation id="793209273132572360">Pretende atualizar o endereço?</translation>
 <translation id="7932579305932748336">Revestir</translation>
 <translation id="79338296614623784">Introduza um número de telefone válido</translation>
 <translation id="7934052535022478634">Pagamento concluído</translation>
@@ -1926,7 +1936,6 @@ Detalhes adicionais:
 <translation id="8202097416529803614">Resumo da encomenda</translation>
 <translation id="8202370299023114387">Conflito</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Quando repõe o ID, o seu ID atual ficará inválido e um novo será emitido em menos de 1 dia}=1{Quando repõe o ID, o seu ID atual ficará inválido e um novo será emitido em 1 dia}other{Quando repõe o ID, o seu ID atual ficará inválido e um novo será emitido em {NUM_DAYS} dias}}</translation>
 <translation id="8211406090763984747">A ligação é segura</translation>
 <translation id="8213464188712611711">Memórias</translation>
 <translation id="8218327578424803826">Localização atribuída:</translation>

@@ -24,7 +24,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" />ৰ বাবে তথ্যৰ ডায়ল’গ খোলক</translation>
 <translation id="1153356358378277386">যোৰা লগোৱা ডিভাইচ</translation>
 <translation id="1165712434476988950">আপডে’টটো প্ৰয়োগ কৰিবলৈ ডিভাইচটো ৰিষ্টাৰ্ট কৰাৰ আৱশ্যক।</translation>
-<translation id="1170240434488307589">ডিভাইচৰ মাইক্ৰ'ফনৰ বুটামটো মিউট হৈ আছে।</translation>
 <translation id="1175572348579024023">স্ক্ৰ’ল কৰক</translation>
 <translation id="1178581264944972037">পজ কৰক</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
@@ -372,7 +371,6 @@
 <translation id="4021716437419160885">তললৈ স্ক্ৰল কৰক</translation>
 <translation id="4028481283645788203">অধিক সুৰক্ষাৰ বাবে পাছৱর্ডৰ আৱশ্যক</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">কীব’ৰ্ডৰ শ্বৰ্টকাট <ph name="LAUNCHER_KEY_NAME" /> + নাম্বাৰটো সলনি হৈছে। এফ-কীসমূহ ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + ওপৰৰ শাৰীৰ এটা কী টিপক।</translation>
 <translation id="4042660782729322247">আপুনি নিজৰ স্ক্রীণখন শ্বেয়াৰ কৰি আছে</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" /> টাৰ ভিতৰত <ph name="INDEX" /> নম্বৰ ব্ৰাউজাৰ টেব। <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{এটা এপৰ বাবে অফ}one{#টা এপৰ বাবে অফ}other{#টা এপৰ বাবে অফ}}</translation>

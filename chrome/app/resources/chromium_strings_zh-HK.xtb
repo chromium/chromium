@@ -40,6 +40,7 @@
 <translation id="2560420686485554789">Chromium 需要儲存空間的存取權才能下載檔案</translation>
 <translation id="2572494885440352020">Chromium 輔助工具</translation>
 <translation id="2577788541081224677">如要透過所有裝置存取 Chromium 資料，請登入以便開啟同步處理功能。</translation>
+<translation id="2580426763510374355">安裝 Chromium 作業系統</translation>
 <translation id="2583187216237139145">工作設定檔管理員可移除任何在使用此設定檔時產生的 Chromium 資料 (例如建立的書籤、記錄、密碼和其他設定)。<ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">必須重新啟動 Chromium OS，才能套用更新。</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請再次下載 Chromium。</translation>
@@ -138,6 +139,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta 版本</translation>
 <translation id="5479196819031988440">Chromium 作業系統無法開啟此網頁。</translation>
 <translation id="5480860683791598150">Chromium 需要位置資訊存取權，才能與這個網站分享您的位置資訊</translation>
+<translation id="5481338274774984070">Chromium 建議你不要下載或開啟這個檔案。</translation>
 <translation id="549669000822060376">請稍候，Chromium 正在安裝最新的系統更新。</translation>
 <translation id="5496810170689441661">Chromium 正在嘗試編輯密碼。如果您同意的話，請輸入 Windows 密碼。</translation>
 <translation id="5527463683072221100">在 Chromium 中開啟 PDF</translation>

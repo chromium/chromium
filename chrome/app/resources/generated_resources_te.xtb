@@ -900,7 +900,6 @@
 <translation id="1926339101652878330">ఈ సెట్టింగ్‌లను ఎంటర్‌ప్రైజ్ విధానం నియంత్రిస్తుంది. మరింత సమాచారం కోసం, దయచేసి మీ నిర్వాహకుడిని సంప్రదించండి.</translation>
 <translation id="1927632033341042996">వేలు <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">స్క్రీన్ లాక్ పిన్</translation>
-<translation id="1928202201223835302">పాత PINని నమోదు చేయండి</translation>
 <translation id="1928696683969751773">అప్‌డేట్‌లు</translation>
 <translation id="1929186283613845153">ఈ ఫైల్ స్కాన్ అవుతోంది.</translation>
 <translation id="1929343511231420085">ఏ సీరియల్ పోర్ట్ అయినా</translation>
@@ -924,7 +923,6 @@
 <translation id="1954813140452229842">షేర్‌ను మౌంట్ చేయడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మీ ఆధారాలను సరిచూసుకుని, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="1956050014111002555">ఫైల్ బహుళ ప్రమాణపత్రాలను కలిగి ఉంది, వీటిలో ఏది దిగుమతి చెయ్యబడింది:</translation>
 <translation id="1956390763342388273">ఇది "<ph name="FOLDER_PATH" />" నుండి అన్ని ఫైల్‌లను అప్‌లోడ్ చేస్తుంది. మీరు సైట్‌ను విశ్వసిస్తే మాత్రమే దీనిని చేయండి.</translation>
-<translation id="1958750704984086982">FLoC ఆసక్తి ఆధారిత యాడ్ ఎంపిక కోసం గోప్యతను పరిరక్షించే విధానాన్ని అందిస్తుంది.</translation>
 <translation id="1962233722219655970">ఈ పేజీ మీ కంప్యూటర్‌లో పని చేయని స్థానిక క్లయింట్ యాప్‌ను ఉపయోగిస్తుంది.</translation>
 <translation id="1963227389609234879">అన్నీ తొలగించు</translation>
 <translation id="1963976881984600709">ప్రామాణిక రక్షణ</translation>
@@ -1667,7 +1665,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />కు సైన్ ఇన్ చేయండి</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">స్పెల్ చెక్‌తో పాటు వ్యాకరణాన్ని కూడా తనిఖీ చేయి</translation>
-<translation id="2751131328353405138">Linux కంటెయినర్ sshfsను మౌంట్ చేస్తోంది</translation>
 <translation id="2753677631968972007">సైట్ అనుమతులను మాన్యువల్‌గా నియంత్రించడం.</translation>
 <translation id="2755349111255270002">ఈ <ph name="DEVICE_TYPE" />ను రీసెట్ చేయండి</translation>
 <translation id="2755367719610958252">యాక్సెస్‌ ఫీచ‌ర్‌ల‌ను నిర్వహించండి</translation>
@@ -1801,7 +1798,6 @@
 <translation id="2891922230654533301"><ph name="APP_NAME" />కు సైన్ ఇన్ చేయడానికి మీ పరికరాన్ని ఉపయోగించాలా?</translation>
 <translation id="2893168226686371498">ఆటోమేటిక్ బ్రౌజర్</translation>
 <translation id="2894757982205307093">సమూహంలో కొత్త ట్యాబ్</translation>
-<translation id="289644616180464099">SIM కార్డ్ లాక్ అయింది</translation>
 <translation id="289695669188700754">కీ ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">మీరు మీ అన్ని అజ్ఞాత విండోలను మూసివేసినప్పుడు, ఈ అనుకూల సెట్టింగ్ తీసివేయబడుతుంది</translation>
 <translation id="2897878306272793870">మీరు <ph name="TAB_COUNT" /> టాబ్‌లను తెరవాలనుకుంటున్నారా?</translation>
@@ -2268,7 +2264,6 @@
 <translation id="3427092606871434483">అనుమతించు (డిఫాల్ట్)</translation>
 <translation id="3428419049384081277">మీరు సైన్ ఇన్ చేసారు!</translation>
 <translation id="3428747202529429621">Chromeలో మిమ్మల్ని సురక్షితంగా ఉంచుతుంది, మీరు సైన్ ఇన్ చేసినప్పుడు ఇతర యాప్‌లలో మీ భద్రతను మెరుగుపరచడానికి ఉపయోగించబడవచ్చు</translation>
-<translation id="3428800329481094896">Linux కంటెయినర్ ssh కీలను పొందుతోంది</translation>
 <translation id="3429160811076349561">ట్రయల్ ఫీచర్‌లు ఆఫ్ చేయబడి ఉన్నాయి</translation>
 <translation id="3429271624041785769">వెబ్ కంటెంట్ భాషలు</translation>
 <translation id="3429275422858276529">ఈ పేజీని తర్వాత సులభంగా కనుగొనడానికి దీనిని బుక్‌మార్క్ చేయండి</translation>
@@ -3088,7 +3083,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K ప్రత్యక్షంగా)</translation>
 <translation id="4310139701823742692">ఫైల్ తప్పు ఫార్మాట్‌లో ఉంది. PPD ఫైల్‌ని తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="431076611119798497">&amp;వివరాలు</translation>
-<translation id="4312124410630786333">IDని రీసెట్ చేయండి</translation>
 <translation id="4312866146174492540">బ్లాక్ చేయి (డిఫాల్ట్)</translation>
 <translation id="4314815835985389558">సింక్‌ను నిర్వహించండి</translation>
 <translation id="4316850752623536204">డెవలపర్ వెబ్‌సైట్</translation>
@@ -3248,7 +3242,6 @@
 <translation id="4492698018379445570">మీరు షాపింగ్ కార్ట్‌లలో ఏం జోడించారో కనుగొని, మీరు సిద్ధంగా ఉన్నప్పుడు చెక్ అవుట్ చేయండి</translation>
 <translation id="4493468155686877504">సిఫార్సు చేయబడినది (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">ఈ పేజీని చూపవద్దు</translation>
-<translation id="4496796119038756382">FLoC ID</translation>
 <translation id="4497145443434063861">PC, Chromecast వేర్వేరు Wi-Fi నెట్‌వర్క్‌లలో (ఉదా. 2.4GHz
     వర్సెస్ 5GHz) ఉన్నాయి</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> క్రాష్ అయింది</translation>
@@ -3766,7 +3759,6 @@
 <translation id="5072900412896857127">Google Play సర్వీస్ నియమాలను లోడ్ చేయడం సాధ్యపడదు. దయచేసి మీ నెట్‌వర్క్ కనెక్షన్‌ను చెక్ చేసి, ఆపై మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" />, మరియు మరో #}}</translation>
 <translation id="5074318175948309511">కొత్త సెట్టింగ్‌లు ప్రభావంలోకి రావడానికి ముందు ఈ పేజీని మళ్లీ లోడ్ చేయాల్సి ఉండవచ్చు.</translation>
-<translation id="5075131525758602494">SIM PINను నమోదు చేయండి</translation>
 <translation id="5075910247684008552">సురక్షితమైన సైట్‌లలో డిఫాల్ట్‌గానే అసురక్షితమైన కంటెంట్ బ్లాక్ చేయబడుతుంది</translation>
 <translation id="5078638979202084724">అన్ని టాబ్‌లను బుక్‌మార్క్ చేయండి</translation>
 <translation id="5078796286268621944"> సరి కానటువంటి PIN</translation>
@@ -7135,7 +7127,6 @@
 <translation id="8803953437405899238">ఒక క్లిక్‌తో కొత్త ట్యాబ్‌ను తెరవండి</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{ట్యాబ్‌ను మరొక విండోకు తరలించండి}other{ట్యాబ్‌లను మరొక విండోకు తరలించండి}}</translation>
 <translation id="8805140816472474147">సమకాలీకరణను ప్రారంభించడం కోసం సమకాలీకరణ సెట్టింగ్‌లను నిర్ధారించండి.</translation>
-<translation id="8805985421503170600">ఫెడరేటెడ్ లెర్నింగ్ ఆఫ్ కోహోర్ట్స్</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> ఉపయోగించి అనుకోకుండా మూసివేసిన ట్యాబ్‌లను తిరిగి తెరవవచ్చు</translation>
 <translation id="8807632654848257479">స్థిరత్వం</translation>
 <translation id="8808478386290700967">వెబ్ స్టోర్</translation>

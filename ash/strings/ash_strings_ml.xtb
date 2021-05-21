@@ -24,7 +24,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> എന്നതിനുള്ള വിവരങ്ങളുടെ ഡയലോഗ് തുറക്കുക</translation>
 <translation id="1153356358378277386">ജോടിയാക്കിയ ഉപകരണങ്ങൾ</translation>
 <translation id="1165712434476988950">അപ്‌ഡേറ്റ് ബാധകമാക്കാൻ ഉപകരണം റീസ്‌റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്.</translation>
-<translation id="1170240434488307589">ഉപകരണത്തിന്റെ മൈക്രോഫോൺ ബട്ടൺ മ്യൂട്ട് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="1175572348579024023">സ്‌ക്രോൾ ചെയ്യുക</translation>
 <translation id="1178581264944972037">അല്പംനിര്‍ത്തൂ</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
@@ -373,7 +372,6 @@
 <translation id="4021716437419160885">താഴേയ്‌ക്ക് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="4028481283645788203">കൂടുതൽ സുരക്ഷയ്ക്ക് പാസ്‍വേഡ് ആവശ്യമാണ്</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">'<ph name="LAUNCHER_KEY_NAME" /> + നമ്പർ' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. F-കീകൾ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> + ഏറ്റവും മുകളിലെ വരിയിലുള്ള കീ അമർത്തുക.</translation>
 <translation id="4042660782729322247">നിങ്ങൾ സ്‌ക്രീൻ പങ്കിടുന്നു</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" /> ബ്രൗസർ ടാബുകളിൽ <ph name="INDEX" />-ാമത്തേത്. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ആപ്പിൽ അറിയിപ്പ് ഓഫ്}other{# ആപ്പിൽ അറിയിപ്പ് ഓഫ്}}</translation>

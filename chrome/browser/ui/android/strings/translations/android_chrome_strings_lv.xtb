@@ -186,6 +186,7 @@ Pieskarieties jebkuram vārdam, lai to meklētu. Ja vēlaties precizēt meklēš
 <translation id="22320125457191592">Jums</translation>
 <translation id="2234876718134438132">Sinhronizēšana un Google pakalp.</translation>
 <translation id="2239812875700136898">Pārvaldiet ziņas, izmantojot opciju pogu lapā Discover.</translation>
+<translation id="2251971221270904886">Ja tehnoloģija ir ieslēgta un statuss ir aktīvs, pārlūkā Chrome, izmantojot jūsu pārlūkošanas vēsturi no 7 dienu perioda, tiek noteikts, kādā grupā jeb kohortā jūs esat. Reklāmdevēji var atlasīt reklāmas, ko rādīt grupai. Jūsu pārlūkošanas vēsture ir konfidenciāla un saglabāta tikai jūsu ierīcē. Šis izmēģinājums ir aktīvs tikai <ph name="BEGIN_LINK" />dažos reģionos<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Paroļu eksportēšana…</translation>
 <translation id="2276696007612801991">Lai pārbaudītu paroles, pierakstieties Google kontā</translation>
 <translation id="2278052315791335171">Izdzēšot šo paroli, netiks dzēsts jūsu konts vietnē <ph name="SITE" />.</translation>
@@ -275,6 +276,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="2781151931089541271">Atlikusi 1 s</translation>
 <translation id="2801022321632964776">Veiciet atjaunināšanu, lai varētu lasīt savā valodā jaunākajā pārlūka Chrome versijā</translation>
 <translation id="2805756323405976993">Lietotnes</translation>
+<translation id="2806840421670364300">FPK</translation>
 <translation id="281504910091592009">Skatiet un pārvaldiet saglabātās paroles savā <ph name="BEGIN_LINK" />Google kontā<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Lai grāmatzīmes būtu pieejamas visās jūsu ierīcēs, pierakstieties un ieslēdziet sinhronizāciju.</translation>
 <translation id="2827278682606527653">Ir atvērta puse no plūsmas kartītes izvēlnes</translation>
@@ -293,6 +295,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="2901411048554510387">Tiek rādīti ar vietni <ph name="WEBSITE_TITLE" /> saistīti ieteikumi</translation>
 <translation id="2904414404539560095">Ierīču saraksts, ar ko kopīgot cilni, ir atvērts pilna ekrāna augstumā.</translation>
 <translation id="2905036901251765993">Lai kopīgotu saturu ar tuvumā esošajiem cilvēkiem, ļaujiet viņiem skenēt šo ātrās atbildes kodu</translation>
+<translation id="2908243544703713905">Ir pieejami nelasīti raksti</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Pārvaldiet tēmas, kuras jums interesē</translation>
 <translation id="2923908459366352541">Vārds nav derīgs</translation>
@@ -317,6 +320,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> grāmatzīme}zero{<ph name="BOOKMARKS_COUNT_MANY" /> grāmatzīmju}one{<ph name="BOOKMARKS_COUNT_MANY" /> grāmatzīme}other{<ph name="BOOKMARKS_COUNT_MANY" /> grāmatzīmes}}</translation>
 <translation id="3062802207422175757">Ar jūsu interesēm saistīti raksti pārlūkā Chrome</translation>
 <translation id="3070005020161560471">Automātiski tulkot</translation>
+<translation id="3083531420240576529">Jebkurā laikā varat atiestatīt grupu. Grupas noteikšana ilgst septiņas dienas.</translation>
 <translation id="3091010850649238832">Rādīt starpliktuves saturu</translation>
 <translation id="3098745985164956033">Daži attēli tiek sūtīti uz Google serveriem, lai uzlabotu aprakstus</translation>
 <translation id="3114507951000454849">Lasiet šodienas ziņas <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="4056223980640387499">Sēpija</translation>
 <translation id="4060598801229743805">Opcijas, kas pieejamas ekrāna augšdaļā</translation>
 <translation id="4062305924942672200">Juridiskā informācija</translation>
+<translation id="4082818367361753283">Grupas ID</translation>
 <translation id="4084682180776658562">Grāmatzīme</translation>
 <translation id="4084712963632273211">No izdevēja <ph name="PUBLISHER_ORIGIN" /> — <ph name="BEGIN_DEEMPHASIZED" />nodrošina Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Vai dzēst lietotnes datus?</translation>
@@ -533,7 +538,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4583164079174244168">{MINUTES,plural, =1{pirms # minūtes}zero{pirms # minūtēm}one{pirms # minūtes}other{pirms # minūtēm}}</translation>
 <translation id="4587589328781138893">Vietnes</translation>
 <translation id="4594952190837476234">Šī lapas bezsaistes versija (izveidota: <ph name="CREATION_TIME" />) var atšķirties no tiešsaistes versijas.</translation>
-<translation id="4615382002648696011">Sekojat, ir pieejami nelasīti raksti</translation>
 <translation id="4616150815774728855">Atvērt <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Apstiprināt identitāti</translation>
 <translation id="4634124774493850572">Izmantot paroli</translation>
@@ -889,6 +893,11 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6699370405921460408">Google serveri optimizēs jūsu apmeklētās lapas.</translation>
 <translation id="670498945988402717">Pārbaudīts: vakar</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
+<translation id="671333169801287922">Ja šeit parādītie konfidencialitātes aizsardzības risinājumi ir ieslēgti, vietnēs tie var tikt izmantoti satura un pakalpojumu nodrošināšanai. Šie risinājumi ietver arī alternatīvas starpvietņu izsekošanai. Laika gaitā var tikt pievienotas vēl citas izmēģinājuma versijas.
+
+<ph name="BEGIN_LIST_ITEM1" />Reklāmdevēji un izdevēji var izmantot tehnoloģiju FPK.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Reklāmdevēji un izdevēji var pētīt reklāmu efektivitāti, neizsekojot jūsu darbībām vairākās vietnēs.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Jūsu lietotnes <ph name="FQDN" /> taimera laiks ir beidzies. Tas atkal sāksies rīt.</translation>
 <translation id="6738516213925468394">Jūsu dati tika šifrēti, izmantojot jūsu <ph name="BEGIN_LINK" />sinhronizācijas ieejas frāzi<ph name="END_LINK" />šādā datumā: <ph name="TIME" />. Lai sāktu sinhronizāciju, ievadiet ieejas frāzi.</translation>
 <translation id="6738867403308150051">Notiek lejupielāde…</translation>
@@ -1079,6 +1088,9 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="7971136598759319605">Aktīva pirms 1 dienas</translation>
 <translation id="7975379999046275268">Priekšskatīt lapu <ph name="BEGIN_NEW" />Jauna<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Veikt lapu pirmsielādi, lai paātrinātu pārlūkošanu un meklēšanu</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Konfidencialitātes smilškaste<ph name="END_LINK" /> ir aktīva iniciatīva jaunu tehnoloģiju izstrādei, lai aizsargātu jūs no izsekošanas mehānismiem, saglabājot atvērtu tīmekli.
+
+Konfidencialitātes smilškastes izmēģinājuma versijas joprojām tiek izstrādātas, un šī tehnoloģiju kopa ir pieejama noteiktos reģionos. Pagaidām vietnēs vienlaikus var tikt izmēģinātas konfidencialitātes smilškastes tehnoloģijas un turpināta pašreizējo tīmekļa tehnoloģiju (piemēram, trešās puses sīkfailu) lietošana.</translation>
 <translation id="7986497153528221272">Lai skatītu paroles, vispirms iestatiet ierīcei ekrāna bloķēšanu</translation>
 <translation id="7998918019931843664">Vēlreiz atvērt aizvērto cilni</translation>
 <translation id="8004582292198964060">Pārlūkprogramma</translation>
@@ -1188,7 +1200,9 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="8662811608048051533">Jūs tiksiet izrakstīts no lielākās daļas vietņu.</translation>
 <translation id="8664979001105139458">Faila nosaukums jau pastāv</translation>
 <translation id="8676789164135894283">Pierakstīšanās verifikācija</translation>
+<translation id="867767487203716855">Nākamais atjauninājums</translation>
 <translation id="8683039184091909753">attēls</translation>
+<translation id="8683081248374354009">Atiestatīt grupu</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signāla stipruma līmenis: # josla}zero{Signāla stipruma līmenis: # joslu}one{Signāla stipruma līmenis: # josla}other{Signāla stipruma līmenis: # joslas}}</translation>
 <translation id="869891660844655955">Derīguma termiņš</translation>
 <translation id="8699120352855309748">Nepiedāvāt tulkot no šīm valodām</translation>

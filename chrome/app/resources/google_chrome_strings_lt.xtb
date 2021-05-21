@@ -175,6 +175,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 
 „Google Chrome“ negali atkurti nustatymų.</translation>
 <translation id="5434383153637353914">Šiame puslapyje galite tvarkyti „Google“ paskyras, prie kurių prisijungiate. Šios paskyros bus pasiekiamos „Chrome“ naršyklės ir „Play“ parduotuvės programose bei naudojant tokias paslaugas kaip „Gmail“, Diską ir „YouTube“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Įdiegti „Chrome“ OS</translation>
 <translation id="556024056938947818">„Google Chrome“ bando rodyti slaptažodžius.</translation>
 <translation id="5566025111015594046">„Google Chrome“ (mDNS-In)</translation>
 <translation id="5657226924540934362">Jei nustatymai šiame puslapyje nerodomi, jų ieškokite <ph name="LINK_BEGIN" />
@@ -258,6 +259,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7896673875602241923">Kažkas anksčiau prisijungė prie „Chrome“ šiame kompiuteryje kaip <ph name="ACCOUNT_EMAIL_LAST" />. Sukurkite naują „Chrome“ naudotoją, kad apsaugotumėte savo informaciją.</translation>
 <translation id="7905891027772979035">„Chrome“ negali patikrinti jūsų plėtinių. Vėliau bandykite dar kartą.</translation>
 <translation id="7930071585467473040">„Google Chrome“ bando kopijuoti slaptažodžius.</translation>
+<translation id="7951988079884443914">„Chrome“ rekomenduoja neatsisiųsti ar neatidaryti šio failo.</translation>
 <translation id="7962410387636238736">Šiame kompiuteryje nebebus gaunami „Google Chrome“ naujiniai, nes „Windows XP“ ir „Windows Vista“ nebepalaikomos.</translation>
 <translation id="79947657522496226">„Chrome“ OS, kaip ir <ph name="BEGIN_LINK_LINUX_OSS" />„Linux“ kūrimo aplinka<ph name="END_LINK_LINUX_OSS" />, pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="8008534537613507642">Iš naujo įdiegti „Chrome“</translation>

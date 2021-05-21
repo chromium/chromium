@@ -186,6 +186,7 @@
 <translation id="22320125457191592">आपके लिए</translation>
 <translation id="2234876718134438132">सिंक और Google सेवाएं</translation>
 <translation id="2239812875700136898">डिस्कवर बटन के विकल्पों से सामग्री को नियंत्रित करें</translation>
+<translation id="2251971221270904886">चालू होने पर और एक्टिव स्टेटस होने पर, Chrome आपके सात दिनों के ब्राउज़िंग इतिहास का इस्तेमाल करके, यह तय करता है कि आप कौनसे ग्रुप या “एक जैसे उपयोगकर्ताओं का ग्रुप” में हैं. विज्ञापन देने वाले, ग्रुप के लिए विज्ञापन चुन सकते हैं. आपका ब्राउज़िंग इतिहास आपके डिवाइस पर निजी रखा जाता है. यह ट्रायल सिर्फ़ <ph name="BEGIN_LINK" />कुछ इलाकों<ph name="END_LINK" /> में चालू है.</translation>
 <translation id="2259659629660284697">पासवर्ड निर्यात करें…</translation>
 <translation id="2276696007612801991">अपने पासवर्ड की जांच करने के लिए, Google खाते में साइन इन करें</translation>
 <translation id="2278052315791335171">यह पासवर्ड मिटाने से, आपका <ph name="SITE" /> वाला खाता नहीं मिटेगा</translation>
@@ -275,6 +276,7 @@
 <translation id="2781151931089541271">1 सेकंड शेष</translation>
 <translation id="2801022321632964776">Chrome के नए वर्शन में अपनी भाषा पाने के लिए अपडेट करें</translation>
 <translation id="2805756323405976993">ऐप्स</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">अपने <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> में सेव किए गए पासवर्ड देखें और उन्हें प्रबंधित करें</translation>
 <translation id="2818669890320396765">अपने सभी डिवाइस पर अपने बुकमार्क पाने के लिए, साइन इन करें और 'सिंक करें' को चालू करें</translation>
 <translation id="2827278682606527653">फ़ीड कार्ड मेन्यू आधा खुल गया है</translation>
@@ -293,6 +295,7 @@
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> के लिए सुझाव दिखाए जा रहे हैं</translation>
 <translation id="2904414404539560095">टैब शेयर करने वाले डिवाइस की सूची पूरी खुली हुई है.</translation>
 <translation id="2905036901251765993">आस-पास के लोगों से शेयर करने के लिए, उन्हें यह क्यूआर कोड स्कैन करने दें</translation>
+<translation id="2908243544703713905">वे कॉन्टेंट तैयार हैं जिन्हें पढ़ा नहीं गया है</translation>
 <translation id="2909615210195135082">Google सूचना प्लैटफ़ॉर्म</translation>
 <translation id="2912296070571964914">अपनी पसंद के विषयों को मैनेज करें</translation>
 <translation id="2923908459366352541">नाम अमान्य है</translation>
@@ -317,6 +320,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> बुकमार्क}one{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}other{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}}</translation>
 <translation id="3062802207422175757">Chrome पर आपकी पसंद के लेख</translation>
 <translation id="3070005020161560471">अपने-आप अनुवाद करें</translation>
+<translation id="3083531420240576529">आप किसी भी समय अपना ग्रुप आईडी रीसेट कर सकते हैं. आपके ग्रुप आईडी का पता लगाने में सात दिन लगते हैं.</translation>
 <translation id="3091010850649238832">क्लिपबोर्ड का कॉन्टेंट दिखाएं</translation>
 <translation id="3098745985164956033">कुछ इमेज Google को भेजी जाती हैं, ताकि आपको मिलने वाली जानकारी को बेहतर बनाया जा सके</translation>
 <translation id="3114507951000454849">आज की खबरें <ph name="NEWS_ICON" /> पढ़ें</translation>
@@ -458,6 +462,7 @@
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">स्क्रीन के शीर्ष भाग में मौजूद विकल्प</translation>
 <translation id="4062305924942672200">कानूनी जानकारी</translation>
+<translation id="4082818367361753283">ग्रुप आईडी</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084712963632273211">प्रकाशक: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google की ओर से डिलीवर किया गया<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ऐप्लिकेशन डेटा मिटाएं?</translation>
@@ -533,7 +538,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनट पहले}one{# मिनट पहले}other{# मिनट पहले}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">यह पेज <ph name="CREATION_TIME" /> का है और यह ऑनलाइन वर्शन से अलग हो सकता है.</translation>
-<translation id="4615382002648696011">आगे वाले फ़ीड में, वह कॉन्टेंट मौजूद है जिसे पढ़ा नहीं गया है</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> को खोलें</translation>
 <translation id="4619564267100705184">अपनी पहचान की पुष्टि करें</translation>
 <translation id="4634124774493850572">पासवर्ड का इस्तेमाल करें</translation>
@@ -889,6 +893,11 @@
 <translation id="6699370405921460408">Google के सर्वर उन पेज को ऑप्टिमाइज़ करेंगे जिन पर आप जाते हैं.</translation>
 <translation id="670498945988402717">कल जांच की गई</translation>
 <translation id="6710213216561001401">पिछला</translation>
+<translation id="671333169801287922">इन्हें चालू करने पर, साइटें अपना कॉन्टेंट और सेवाएं उपलब्ध कराने के लिए, यहां दिखाई गई 'निजता की सुरक्षा से जुड़ी तकनीकें' इस्तेमाल कर सकती हैं. इनमें ऐसे तरीके शामिल हैं जिन्हें क्रॉस-साइट ट्रैकिंग की जगह इस्तेमाल किया जा सकता है. बाद में ज़्यादा ट्रायल जोड़े जा सकते हैं.
+
+<ph name="BEGIN_LIST_ITEM1" />विज्ञापन देने वाले और प्रकाशक, FLoC तकनीक का इस्तेमाल कर सकते हैं.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />विज्ञापन देने वाले और प्रकाशक, सभी साइटों पर आपको ट्रैक किए बिना किसी खास तरीके से अपने विज्ञापनों की परफ़ॉर्मेंस को माप सकते हैं.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117"><ph name="FQDN" /> इस्तेमाल करने का समय खत्म हो गया. यह कल फिर से शुरू होगा.</translation>
 <translation id="6738516213925468394">आपका डेटा <ph name="TIME" /> को <ph name="BEGIN_LINK" />सिंक करने के लिए लंबा पासवर्ड बनाकर<ph name="END_LINK" /> सुरक्षित किया गया था. सिंक शुरू करने के लिए पासवर्ड डालें.</translation>
 <translation id="6738867403308150051">डाउनलोड हो रहे हैं...</translation>
@@ -1079,6 +1088,9 @@
 <translation id="7971136598759319605">एक दिन पहले सिंक किया गया</translation>
 <translation id="7975379999046275268">पेज की झलक देखें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ज़्यादा तेज़ी से ब्राउज़ करने और खोजने के लिए पेज पहले से लोड करें</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />निजता सैंडबॉक्स<ph name="END_LINK" /> नई टेक्नोलॉजी को डेवलप करने की पहल है, जो अब भी जारी है. यह ओपन वेब को सुरक्षित रखते हुए आपको ट्रैक करने वाले मैकेनिज़्म से बचाने में मदद करेगा.
+
+निजता सैंडबॉक्स को आज़माने की प्रोसेस को अब भी डेवलप किया जा रहा है. यह चुनिंदा इलाकों में उपलब्ध है. फ़िलहाल, साइटें मौजूदा वेब टेक्नोलॉजी (जैसे, तीसरे पक्ष की कुकी) का इस्तेमाल जारी रखते हुए, निजता सैंडबॉक्स को आज़मा सकती हैं.</translation>
 <translation id="7986497153528221272">पासवर्ड देखने के लिए, अपने डिवाइस पर एक स्क्रीन लॉक सेट करें</translation>
 <translation id="7998918019931843664">बंद टैब फिर से खोलें</translation>
 <translation id="8004582292198964060">ब्राउज़र</translation>
@@ -1188,7 +1200,9 @@
 <translation id="8662811608048051533">आपको ज़्यादातर साइट से साइन आउट कर देता है.</translation>
 <translation id="8664979001105139458">इस नाम की फ़ाइल पहले से मौजूद है</translation>
 <translation id="8676789164135894283">अन्य कंप्यूटर पर साइन इन करें</translation>
+<translation id="867767487203716855">अगला अपडेट</translation>
 <translation id="8683039184091909753">इमेज</translation>
+<translation id="8683081248374354009">ग्रुप को रीसेट करें</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{सिग्नल सशक्तता का स्तर: # बार}one{सिग्नल सशक्तता का स्तर: # बार}other{सिग्नल सशक्तता का स्तर: # बार}}</translation>
 <translation id="869891660844655955">समय समाप्ति तारीख</translation>
 <translation id="8699120352855309748">इन भाषाओं का अनुवाद करने की सुविधा न दें</translation>

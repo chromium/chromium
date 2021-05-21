@@ -281,6 +281,7 @@
 <translation id="1919345977826869612">広告</translation>
 <translation id="1919367280705858090">特定のエラー メッセージに関する情報</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{なし}=1{1 件のサイト}other{# 件のサイト}}</translation>
+<translation id="1924727005275031552">新</translation>
 <translation id="1945968466830820669">組織のアカウントにアクセスできなくなったり、個人情報が盗まれたりする可能性があります。今すぐパスワードを変更することをおすすめします。</translation>
 <translation id="1947454675006758438">ステープル（右上）</translation>
 <translation id="1958218078413065209">ハイスコアは <ph name="SCORE" /> です。</translation>
@@ -391,6 +392,7 @@
 <translation id="2357481397660644965">ご使用のデバイスは <ph name="DEVICE_MANAGER" /> で管理され、アカウントは <ph name="ACCOUNT_MANAGER" /> で管理されています。</translation>
 <translation id="2359629602545592467">複数</translation>
 <translation id="2359808026110333948">続行</translation>
+<translation id="2359961752320758691">仮想カード番号を適用しました。</translation>
 <translation id="2367567093518048410">レベル</translation>
 <translation id="2372464001869762664">確認後、Google アカウントのカード情報がこのサイトと共有されます。CVC は Plex アカウントの詳細で確認できます。</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -401,6 +403,7 @@
 <translation id="239429038616798445">この配送方法はご利用いただけません。別の方法を選択してください。</translation>
 <translation id="2396249848217231973">削除の取り消し（&amp;U）</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は取り消されている可能性があります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="2414886740292270097">暗</translation>
 <translation id="2438874542388153331">4 穴パンチ（右）</translation>
@@ -898,12 +901,14 @@
 <translation id="4275830172053184480">デバイスの再起動</translation>
 <translation id="4277028893293644418">パスワードを再設定</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{このカードを Google アカウントに保存しました}other{これらのカードを Google アカウントに保存しました}}</translation>
+<translation id="4287885627794386150">試用版を使用できますが有効になっていません</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ページのサムネイル</translation>
 <translation id="42981349822642051">展開</translation>
 <translation id="4300675098767811073">多穴パンチ（右）</translation>
 <translation id="4302514097724775343">プレイするには恐竜をタップしてください</translation>
 <translation id="4302965934281694568">長3（封筒）</translation>
 <translation id="4305666528087210886">ファイルにアクセスできませんでした</translation>
+<translation id="4306529830550717874">住所を保存しますか？</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ブロック（デフォルト）</translation>
 <translation id="4314815835985389558">同期の管理</translation>
@@ -1391,6 +1396,7 @@
 <translation id="610911394827799129">お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります</translation>
 <translation id="6116338172782435947">クリップボードにコピーしたテキストや画像へのアクセス</translation>
 <translation id="6120179357481664955">UPI ID を保存しますか？</translation>
+<translation id="6123290840358279103">仮想カードを表示</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connector</translation>
 <translation id="6146055958333702838">ケーブルを確認し、使用しているネットワーク デバイス（ルーター、モデムなど）を
     再起動してください。</translation>
@@ -1670,6 +1676,7 @@
 <translation id="7300012071106347854">コバルトブルー</translation>
 <translation id="7302712225291570345">「<ph name="TEXT" />」</translation>
 <translation id="7304030187361489308">高め</translation>
+<translation id="7305756307268530424">低速から開始</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">接続に関するヘルプ</translation>
 <translation id="7323804146520582233">「<ph name="SECTION" />」セクションを非表示にする</translation>
@@ -1695,6 +1702,7 @@
 <translation id="7378594059915113390">メディアの操作</translation>
 <translation id="7378627244592794276">いいえ</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">該当なし</translation>
 <translation id="7390545607259442187">カードの確認</translation>
 <translation id="7399802613464275309">安全確認</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1746,6 +1754,7 @@
 <translation id="7548892272833184391">接続エラーを解決する</translation>
 <translation id="7549584377607005141">このウェブページを正しく表示するには、先ほど入力したデータが必要です。データは再送信できますが、このページで先ほど行った操作を繰り返すことになります。</translation>
 <translation id="7550637293666041147">お客様のデバイスのユーザー名と Chrome のユーザー名</translation>
+<translation id="755279583747225797">試用版は有効です</translation>
 <translation id="7552846755917812628">次のことをお試しください。</translation>
 <translation id="7554475479213504905">再読み込みして表示</translation>
 <translation id="7554791636758816595">新しいタブ</translation>
@@ -1840,6 +1849,7 @@
 <translation id="7894280532028510793">タイプミスでない場合は、<ph name="BEGIN_LINK" />ネットワーク診断をお試しください<ph name="END_LINK" />。</translation>
 <translation id="7904208859782148177">C3（封筒）</translation>
 <translation id="7931318309563332511">不明</translation>
+<translation id="793209273132572360">住所を更新しますか？</translation>
 <translation id="7932579305932748336">コーティング</translation>
 <translation id="79338296614623784">有効な電話番号を入力してください</translation>
 <translation id="7934052535022478634">お支払いの完了</translation>
@@ -1916,7 +1926,6 @@
 <translation id="8202097416529803614">ご注文概要</translation>
 <translation id="8202370299023114387">競合</translation>
 <translation id="8206978196348664717">Prc4（封筒）</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{ID をリセットすると、現在の ID が無効になり、1 日以内に新しい ID が発行されます}=1{ID をリセットすると、現在の ID が無効になり、1 日後に新しい ID が発行されます}other{ID をリセットすると、現在の ID が無効になり、{NUM_DAYS} 日後に新しい ID が発行されます}}</translation>
 <translation id="8211406090763984747">この接続は保護されています</translation>
 <translation id="8213464188712611711">思い出</translation>
 <translation id="8218327578424803826">割り当てられた場所:</translation>

@@ -24,7 +24,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" />-এর জন্য অ্যাকাউন্টের তথ্য সহ ডায়ালগ খুলুন</translation>
 <translation id="1153356358378277386">যুক্ত করা ডিভাইসগুলি</translation>
 <translation id="1165712434476988950">আপটেড প্রয়োগ করতে ডিভাইস রিস্টার্ট করুন।</translation>
-<translation id="1170240434488307589">ডিভাইসের মাইক্রোফোন বোতাম মিউট করা আছে।</translation>
 <translation id="1175572348579024023">স্ক্রল করুন</translation>
 <translation id="1178581264944972037">বিরতি</translation>
 <translation id="1181037720776840403">সরান</translation>
@@ -373,7 +372,6 @@
 <translation id="4021716437419160885">নিচের দিকে স্ক্রল করুন</translation>
 <translation id="4028481283645788203">আরও নিরাপত্তার জন্য পাসওয়ার্ড দিতে হবে</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023"><ph name="LAUNCHER_KEY_NAME" /> + Number কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। বিভিন্ন F-কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> কী + কীবোর্ডের উপরের সারির যেকোনও একটি কী প্রেস করুন।</translation>
 <translation id="4042660782729322247">আপনার স্ক্রিন শেয়ার করছেন</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" />টির মধ্যে <ph name="INDEX" />টি ব্রাউজার ট্যাব। <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{একটি অ্যাপের জন্য বন্ধ}one{#টি অ্যাপের জন্য বন্ধ}other{#টি অ্যাপের জন্য বন্ধ}}</translation>

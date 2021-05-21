@@ -186,6 +186,7 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="22320125457191592">Pour vous</translation>
 <translation id="2234876718134438132">Synchronisation et services Google</translation>
 <translation id="2239812875700136898">Gérez vos histoires à l'aide du bouton Options pour Découvertes</translation>
+<translation id="2251971221270904886">Lorsqu'il est activé et que son état est défini à actif, Chrome utilise votre historique de navigation des sept derniers jours pour déterminer le groupe (la « cohorte ») auquel vous appartenez. Les annonceurs peuvent sélectionner des annonces à présenter au groupe. Votre historique de navigation reste privé sur votre appareil. Cette version d'essai est uniquement active dans <ph name="BEGIN_LINK" />certaines régions<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Exporter les mots de passe…</translation>
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
 <translation id="2278052315791335171">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="SITE" /></translation>
@@ -275,6 +276,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2781151931089541271">Il reste 1 s</translation>
 <translation id="2801022321632964776">Mettez Chrome à jour pour en profiter dans votre propre langue</translation>
 <translation id="2805756323405976993">Applications</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Affichez et gérez les mots de passe enregistrés dans votre <ph name="BEGIN_LINK" />compte google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Pour synchroniser vos favoris sur tous vos appareils, connectez-vous et activez la synchronisation</translation>
 <translation id="2827278682606527653">Le menu de la carte du flux est ouvert à mi-hauteur</translation>
@@ -293,6 +295,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2901411048554510387">Affichage des suggestions pour <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">La liste d'appareils avec lesquels partager un onglet est ouverte à la hauteur maximale.</translation>
 <translation id="2905036901251765993">Pour partager avec des personnes à proximité, faites-leur numériser ce code QR</translation>
+<translation id="2908243544703713905">Articles non lus prêts</translation>
 <translation id="2909615210195135082">Plateforme des notifications Google</translation>
 <translation id="2912296070571964914">Gérez les sujets qui vous intéressent</translation>
 <translation id="2923908459366352541">Le nom est incorrect</translation>
@@ -317,6 +320,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favori}one{<ph name="BOOKMARKS_COUNT_MANY" /> favori}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoris}}</translation>
 <translation id="3062802207422175757">Articles portant sur vos centres d'intérêt dans Chrome</translation>
 <translation id="3070005020161560471">Traduire automatiquement les pages rédigées en</translation>
+<translation id="3083531420240576529">Vous pouvez réinitialiser votre groupe en tout temps. Il faut sept jours pour déterminer un groupe.</translation>
 <translation id="3091010850649238832">Afficher le contenu du presse-papier</translation>
 <translation id="3098745985164956033">Certaines images sont envoyées à Google afin d'améliorer les descriptions pour vous</translation>
 <translation id="3114507951000454849">Actualités du jour <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4060598801229743805">Options disponibles vers le haut de l'écran</translation>
 <translation id="4062305924942672200">Mentions juridiques</translation>
+<translation id="4082818367361753283">Identifiant du groupe</translation>
 <translation id="4084682180776658562">Favoris</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />fourni par Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Supprimer les données de l'application?</translation>
@@ -533,7 +538,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4583164079174244168">{MINUTES,plural, =1{Il y a # minute}one{Il y a # minute}other{Il y a # minutes}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Cette page hors connexion a été créée le <ph name="CREATION_TIME" /> et peut différer de la version en ligne.</translation>
-<translation id="4615382002648696011">Il y a de nouvelles histoires que vous suivez prêtes pour la lecture</translation>
 <translation id="4616150815774728855">Ouvrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmer que c'est bien vous</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
@@ -889,6 +893,11 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6699370405921460408">Les serveurs de Google optimiseront les pages que vous consultez.</translation>
 <translation id="670498945988402717">Dernière vérification : hier</translation>
 <translation id="6710213216561001401">Précédent</translation>
+<translation id="671333169801287922">Lorsque cette fonctionnalité est activée, les sites peuvent utiliser les techniques de préservation de la confidentialité présentées ici pour fournir leur contenu et leurs services. Celles-ci comprennent des solutions de rechange au suivi intersites. D'autres essais pourront être ajoutés au fil du temps.
+
+<ph name="BEGIN_LIST_ITEM1" />Les annonceurs et les éditeurs peuvent utiliser la technique FLoC.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Les annonceurs et les éditeurs peuvent étudier l'efficacité des annonces sans vous suivre sur tous les sites.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Votre minuterie <ph name="FQDN" /> a expiré. Elle recommencera demain.</translation>
 <translation id="6738516213925468394">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />phrase de passe de synchronisation<ph name="END_LINK" /> le <ph name="TIME" />. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="6738867403308150051">Téléchargement en cours…</translation>
@@ -1079,6 +1088,9 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7971136598759319605">Actif il y a 1 jour</translation>
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Précharger les pages pour une navigation et une recherche plus rapides</translation>
+<translation id="7981546642162424360">Le <ph name="BEGIN_LINK" />bac à sable de confidentialité<ph name="END_LINK" /> est une initiative en cours visant à développer des technologies qui vous protégeront contre les mécanismes de suivi, tout en préservant le caractère ouvert du Web.
+
+Les versions d'essai du bac à sable de confidentialité sont toujours en cours de développement et ne sont offertes que dans certaines régions. Pour l'instant, les sites peuvent faire l'essai du bac à sable de confidentialité tout en continuant d'utiliser les technologies Web actuelles comme les témoins tiers.</translation>
 <translation id="7986497153528221272">Pour afficher les mots de passe, configurez d'abord un verrouillage d'écran sur votre appareil</translation>
 <translation id="7998918019931843664">Rouvrir l'onglet fermé</translation>
 <translation id="8004582292198964060">Navigateur</translation>
@@ -1188,7 +1200,9 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="8662811608048051533">Vous déconnecte de la plupart des sites.</translation>
 <translation id="8664979001105139458">Ce nom de fichier existe déjà</translation>
 <translation id="8676789164135894283">Vérifications de connexion</translation>
+<translation id="867767487203716855">Prochaine mise à jour</translation>
 <translation id="8683039184091909753">image</translation>
+<translation id="8683081248374354009">Réinitialiser le groupe</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Niveau du signal : # barre}one{Niveau du signal : # barre}other{Niveau du signal : # barres}}</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>

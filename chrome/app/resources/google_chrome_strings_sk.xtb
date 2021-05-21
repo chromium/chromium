@@ -173,6 +173,7 @@ Niektoré funkcie môžu byť nedostupné. Zadajte iný adresár profilu alebo p
 
 Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5434383153637353914">Táto stránka vám umožňuje spravovať účty Google prihlásených používateľov. Tieto účty budú k dispozícii v prehliadači Chrome a Obchode Play, ale aj službách, ako sú Gmail, Disk a YouTube. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Nainštalovať Chrome OS</translation>
 <translation id="556024056938947818">Prehliadač Google Chrome sa snaží zobraziť heslá.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Ak nevidíte určité nastavenie na tejto stránke, skontrolujte <ph name="LINK_BEGIN" />nastavenia operačného systému Chrome OS<ph name="LINK_END" /></translation>
@@ -255,6 +256,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7896673875602241923">Do Chromu sa už na tomto počítači niekto prihlásil pomocou účtu <ph name="ACCOUNT_EMAIL_LAST" />. Ak chcete ponechať svoje informácie oddelené, vytvorte v Chrome nového používateľa.</translation>
 <translation id="7905891027772979035">Chrome nemôže skontrolovať rozšírenia. Skúste to neskôr.</translation>
 <translation id="7930071585467473040">Google Chrome sa pokúša kopírovať heslá.</translation>
+<translation id="7951988079884443914">Chrome odporúča, aby ste tento súbor nesťahovali ani neotvárali.</translation>
 <translation id="7962410387636238736">Tento počítač už nebude dostávať aktualizácie prehliadača Google Chrome, pretože systémy Windows XP a Windows Vista už nie sú podporované</translation>
 <translation id="79947657522496226">Chrome OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru open source<ph name="END_LINK_CROS_OSS" />, ako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostredie systému Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Preinštalovať prehliadač Chrome</translation>

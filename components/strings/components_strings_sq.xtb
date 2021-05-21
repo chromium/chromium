@@ -284,6 +284,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1919345977826869612">Reklamat</translation>
 <translation id="1919367280705858090">Merr ndihmë për një mesazh specifik gabimi</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Asnjë}=1{1 sajt}other{# sajte}}</translation>
+<translation id="1924727005275031552">I ri</translation>
 <translation id="1945968466830820669">Mund të humbasësh qasjen në llogarinë e organizatës ose mund të pësosh vjedhje të identitetit. Chromium rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
 <translation id="1947454675006758438">Kapje me tel lart djathtas</translation>
 <translation id="1958218078413065209">Rezultati yt maksimal është <ph name="SCORE" />.</translation>
@@ -394,6 +395,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2357481397660644965">Pajisja jote menaxhohet nga <ph name="DEVICE_MANAGER" /> dhe llogaria jote menaxhohet nga <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Disa</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
+<translation id="2359961752320758691">Zbatohet numri yt i kartës virtuale.</translation>
 <translation id="2367567093518048410">Niveli</translation>
 <translation id="2372464001869762664">Pasi t'i konfirmosh, detajet e kartës nga "Llogaria jote e Google" do të ndahen me këtë sajt. Gjej kodin CVC në të dhënat e llogarisë Plex.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -404,6 +406,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="239429038616798445">Kjo mënyrë dërgimi nuk ofrohet. Provo një mënyrë tjetër.</translation>
 <translation id="2396249848217231973">&amp;Zhbëje fshirjen</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">I vjetër</translation>
 <translation id="2413528052993050574">Ky server nuk mund të dëshmonte se është  <ph name="DOMAIN" />; certifikata e tij e sigurisë mund të jetë e revokuar. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
 <translation id="2414886740292270097">E errët</translation>
 <translation id="2438874542388153331">Katër shpime djathtas</translation>
@@ -904,12 +907,14 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4275830172053184480">Rinise pajisjen</translation>
 <translation id="4277028893293644418">Rivendos fjalëkalimin</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Kjo kartë është ruajtur në "Llogarinë tënde të Google"}other{Këto karta janë ruajtur në "Llogarinë tënde të Google"}}</translation>
+<translation id="4287885627794386150">Ka të drejtë për provë, por nuk është aktiv</translation>
 <translation id="4297502707443874121">Miniatura për faqen <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Zgjero</translation>
 <translation id="4300675098767811073">Shumë shpime djathtas</translation>
 <translation id="4302514097724775343">Trokit te dinozauri për të luajtur</translation>
 <translation id="4302965934281694568">Chou3 (Zarf)</translation>
 <translation id="4305666528087210886">Qasja te skedari ishte e pamundur</translation>
+<translation id="4306529830550717874">Të ruhet adresa?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blloko (parazgjedhja)</translation>
 <translation id="4314815835985389558">Menaxho sinkronizimin</translation>
@@ -1397,6 +1402,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="610911394827799129">Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Shiko tekstin dhe imazhet e kopjuara te kujtesa e fragmenteve</translation>
 <translation id="6120179357481664955">Të kujtohet ID-ja e UPI?</translation>
+<translation id="6123290840358279103">Shiko kartën vrituale</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6146055958333702838">Kontrollo kabllot dhe rindiz router-it, modemët ose pajisjet e tjera të rrjetit që mund të jesh duke përdorur.</translation>
 <translation id="614940544461990577">Provo:</translation>
@@ -1675,6 +1681,7 @@ Detaje shtesë:
 <translation id="7300012071106347854">Blu kobalti</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">I lartë</translation>
+<translation id="7305756307268530424">Fillo më ngadalë</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ndihma e lidhjes</translation>
 <translation id="7323804146520582233">Fshihe seksionin "<ph name="SECTION" />"</translation>
@@ -1700,6 +1707,7 @@ Detaje shtesë:
 <translation id="7378594059915113390">Kontrollet e klipeve media</translation>
 <translation id="7378627244592794276">Jo</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Nuk është e zbatueshme</translation>
 <translation id="7390545607259442187">Konfirmo kartën</translation>
 <translation id="7399802613464275309">Kontrolli i sigurisë</translation>
 <translation id="7400418766976504921">URL-ja</translation>
@@ -1751,6 +1759,7 @@ Detaje shtesë:
 <translation id="7548892272833184391">Rregullo gabimet në lidhje</translation>
 <translation id="7549584377607005141">Që të shfaqet si duhet, kjo faqe uebi kërkon të dhëna që i ke futur më herët. Mund t'i dërgosh përsëri këto të dhëna, por duke bërë këtë, do të përsëritësh çdo veprim që ka kryer më parë kjo faqe.</translation>
 <translation id="7550637293666041147">Emri i përdoruesit të pajisjes dhe emri i përdoruesit të Chrome</translation>
+<translation id="755279583747225797">Prova është aktive</translation>
 <translation id="7552846755917812628">Provo këshillat e mëposhtme:</translation>
 <translation id="7554475479213504905">Ringarkoje dhe shfaqe gjithsesi</translation>
 <translation id="7554791636758816595">Skedë e re</translation>
@@ -1845,6 +1854,7 @@ Detaje shtesë:
 <translation id="7894280532028510793">Nëse nuk ka ndonjë gabim drejtshkrimor, <ph name="BEGIN_LINK" />provo të ekzekutosh "Diagnostikimin e rrjetit"<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Zarf)</translation>
 <translation id="7931318309563332511">E panjohur</translation>
+<translation id="793209273132572360">Të përditësohet adresa?</translation>
 <translation id="7932579305932748336">Veshje</translation>
 <translation id="79338296614623784">Fut një numër të vlefshëm telefoni</translation>
 <translation id="7934052535022478634">Pagesa përfundoi</translation>

@@ -186,6 +186,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="22320125457191592">Dla Ciebie</translation>
 <translation id="2234876718134438132">Synchronizacja i usługi Google</translation>
 <translation id="2239812875700136898">Zarządzaj wyświetlanymi wiadomościami za pomocą opcji przycisku Discover</translation>
+<translation id="2251971221270904886">Kiedy sfederowane uczenie się kohort jest włączone, a stan jest aktywny, Chrome korzysta z historii przeglądania z 7 dni, aby określić grupę („kohortę”), do której należysz. Reklamodawcy mogą wybierać reklamy na potrzeby grupy. Historia przeglądania jest prywatnie przechowywana na Twoim urządzeniu. Wersja próbna jest dostępna tylko w <ph name="BEGIN_LINK" />niektórych regionach<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Eksportuj hasła…</translation>
 <translation id="2276696007612801991">Aby sprawdzić swoje hasła, zaloguj się na konto Google</translation>
 <translation id="2278052315791335171">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta na stronie <ph name="SITE" /></translation>
@@ -275,6 +276,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2781151931089541271">Pozostała sekunda</translation>
 <translation id="2801022321632964776">Zaktualizuj Chrome do najnowszej wersji, by mieć w nim dostępny swój język</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
+<translation id="2806840421670364300">Sfederowane uczenie się kohort</translation>
 <translation id="281504910091592009">Zapisane hasła znajdziesz na swoim <ph name="BEGIN_LINK" />koncie Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Aby korzystać ze swoich zakładek na wszystkich urządzeniach, zaloguj się i włącz synchronizację</translation>
 <translation id="2827278682606527653">Menu karty kanału – połowa wysokości</translation>
@@ -293,6 +295,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2901411048554510387">Pokazuję sugestie dla witryny <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Lista urządzeń, którym udostępnisz kartę, jest otwarta na pełną wysokość.</translation>
 <translation id="2905036901251765993">Aby udostępniać pliki użytkownikom w pobliżu, pozwól im zeskanować ten kod QR</translation>
+<translation id="2908243544703713905">Nieprzeczytane artykuły są gotowe</translation>
 <translation id="2909615210195135082">Platforma powiadomień Google</translation>
 <translation id="2912296070571964914">Zarządzaj tematami, które Cię interesują</translation>
 <translation id="2923908459366352541">Nazwa jest nieprawidłowa.</translation>
@@ -317,6 +320,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> zakładka}few{<ph name="BOOKMARKS_COUNT_MANY" /> zakładki}many{<ph name="BOOKMARKS_COUNT_MANY" /> zakładek}other{<ph name="BOOKMARKS_COUNT_MANY" /> zakładki}}</translation>
 <translation id="3062802207422175757">Artykuły dopasowane do Twoich zainteresowań w Chrome</translation>
 <translation id="3070005020161560471">Tłumacz automatycznie</translation>
+<translation id="3083531420240576529">Możesz zresetować grupę w dowolnym momencie. Określenie grupy zajmuje 7 dni.</translation>
 <translation id="3091010850649238832">Pokaż zawartość schowka</translation>
 <translation id="3098745985164956033">Niektóre obrazy są wysyłane do Google, żebyśmy mogli dostarczać Ci lepsze opisy</translation>
 <translation id="3114507951000454849">Przeczytaj dzisiejsze wiadomości <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Opcje dostępne na górze ekranu</translation>
 <translation id="4062305924942672200">Informacje prawne</translation>
+<translation id="4082818367361753283">Identyfikator grupy</translation>
 <translation id="4084682180776658562">Dodaj do zakładek</translation>
 <translation id="4084712963632273211">Opublikowane na <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />wyświetlone przez Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Usunąć dane aplikacji?</translation>
@@ -533,7 +538,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minutę temu}few{# minuty temu}many{# minut temu}other{# minuty temu}}</translation>
 <translation id="4587589328781138893">Witryny</translation>
 <translation id="4594952190837476234">Ta strona offline jest z <ph name="CREATION_TIME" /> i może różnić się od wersji online.</translation>
-<translation id="4615382002648696011">Obserwujesz – gotowe są nieprzeczytane artykuły</translation>
 <translation id="4616150815774728855">Otwórz <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
 <translation id="4634124774493850572">Użyj hasła</translation>
@@ -889,6 +893,11 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6699370405921460408">Serwery Google będą optymalizować otwierane strony.</translation>
 <translation id="670498945988402717">Sprawdzano wczoraj</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
+<translation id="671333169801287922">Gdy włączysz tę funkcję, witryny będą mogły dostarczać swoje treści i usługi, używając wymienionych tu technik chroniących prywatność. Obejmują one rozwiązania alternatywne dla śledzenia w witrynach. Z czasem może pojawić się więcej wersji próbnych.
+
+<ph name="BEGIN_LIST_ITEM1" />Reklamodawcy i wydawcy mogą używać metody FLoC.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Reklamodawcy i wydawcy mogą analizować skuteczność reklam, stosując metody niewymagające śledzenia Cię w witrynach.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Licznik czasu w aplikacji <ph name="FQDN" /> dobiegł końca. Jutro zacznie działać od nowa.</translation>
 <translation id="6738516213925468394">Twoje dane zostały zaszyfrowane <ph name="BEGIN_LINK" />hasłem synchronizacji<ph name="END_LINK" /> w dniu <ph name="TIME" />. Wpisz to hasło, by rozpocząć synchronizację.</translation>
 <translation id="6738867403308150051">Pobieram…</translation>
@@ -1079,6 +1088,9 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7971136598759319605">Aktywność 1 dzień temu</translation>
 <translation id="7975379999046275268">Wyświetl podgląd strony <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Ładuj wstępnie strony, by przyspieszyć przeglądanie i wyszukiwanie</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Piaskownica prywatności<ph name="END_LINK" /> to inicjatywa, która ma na celu rozwijanie nowych technologii chroniących użytkowników przed mechanizmami śledzącymi, zapewniając jednocześnie otwartą sieć.
+
+Prace nad rozwojem Piaskownicy prywatności wciąż trwają, więc wersja próbna jest dostępna w wybranych regionach. Teraz witryny mogą ją wypróbować, korzystając nadal z obecnie stosowanych technologii sieciowych takich jak pliki cookie innych firm.</translation>
 <translation id="7986497153528221272">Aby wyświetlić hasła, najpierw ustaw blokadę ekranu na urządzeniu</translation>
 <translation id="7998918019931843664">Otwórz ponownie zamkniętą kartę</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
@@ -1188,7 +1200,9 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8662811608048051533">Wylogowuje z większości stron internetowych.</translation>
 <translation id="8664979001105139458">Ta nazwa pliku już istnieje</translation>
 <translation id="8676789164135894283">Weryfikacje logowania</translation>
+<translation id="867767487203716855">Następna aktualizacja</translation>
 <translation id="8683039184091909753">obraz</translation>
+<translation id="8683081248374354009">Resetuj grupę</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Poziom siły sygnału: # słupek}few{Poziom siły sygnału: # słupki}many{Poziom siły sygnału: # słupków}other{Poziom siły sygnału: # słupka}}</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>

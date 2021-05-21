@@ -186,6 +186,7 @@
 <translation id="22320125457191592">Танд зориулсан</translation>
 <translation id="2234876718134438132">Синк болон Google-н үйлчилгээ</translation>
 <translation id="2239812875700136898">Мэдээ, нийтлэлээ Discover-н сонголтуудын товчлуураас хянана уу</translation>
+<translation id="2251971221270904886">Асаалттай бөгөөд төлөв нь идэвхтэй үед Chrome таны 7-оос дээш хоногийн хөтчийн түүхийг таны байгаа бүлэг эсвэл "нэг үеийнхэн"-ийг тодорхойлоход ашиглана. Сурталчлагчид бүлэгт зар сонгох боломжтой. Таны хөтчийн түүхийг төхөөрөмж дээр тань аюулгүй хадгалдаг. Энэ туршилт нь зөвхөн <ph name="BEGIN_LINK" />зарим бүс нутагт<ph name="END_LINK" /> идэвхтэй байна.</translation>
 <translation id="2259659629660284697">Нууц үгийг экспортлох...</translation>
 <translation id="2276696007612801991">Нууц үгээ шалгахын тулд Google Бүртгэлдээ нэвтэрнэ үү</translation>
 <translation id="2278052315791335171">Энэ нууц үгийг устгаснаар таны бүртгэлийг <ph name="SITE" /> дээрээс устгахгүй</translation>
@@ -275,6 +276,7 @@
 <translation id="2781151931089541271">1 секунд үлдсэн</translation>
 <translation id="2801022321632964776">Chrome-н хамгийн сүүлийн хувилбарт хэлээ авахын тулд шинэчилнэ үү</translation>
 <translation id="2805756323405976993">Програм</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google Бүртгэл<ph name="END_LINK" />-дээ хадгалсан нууц үгнүүдийг харах болон удирдах</translation>
 <translation id="2818669890320396765">Хавчуургаа бүх төхөөрөмждөө авахын тулд нэвтрээд синкийг асаана уу</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -293,6 +295,7 @@
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" />-н зөвлөмжийг харуулж байна</translation>
 <translation id="2904414404539560095">Таб хуваалцах төхөөрөмжийн жагсаалтыг бүрэн өндрөөр нээлээ.</translation>
 <translation id="2905036901251765993">Ойролцоо байгаа хүмүүстэй хуваалцахын тулд тэдэнд энэ QR кодыг скан хийхийг зөвшөөрнө үү</translation>
+<translation id="2908243544703713905">Уншаагүй түүхүүд бэлэн байна</translation>
 <translation id="2909615210195135082">Google мэдэгдлийн платформ</translation>
 <translation id="2912296070571964914">Сонирхдог сэдвүүдээ удирдана уу</translation>
 <translation id="2923908459366352541">Нэр буруу байна</translation>
@@ -317,6 +320,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> хавчуурга}other{<ph name="BOOKMARKS_COUNT_MANY" /> хавчуурга}}</translation>
 <translation id="3062802207422175757">Таны сонирхолтой холбоотой Chrome дээрх нийтлэлүүд</translation>
 <translation id="3070005020161560471">Автоматаар орчуул</translation>
+<translation id="3083531420240576529">Та бүлгээ хүссэн үедээ шинэчлэх боломжтой. Таны бүлгийг тодорхойлоход 7 хоног шаардлагатай.</translation>
 <translation id="3091010850649238832">Түр санах ойн контентыг харуулах</translation>
 <translation id="3098745985164956033">Танд зориулан тайлбарыг сайжруулахын тулд зарим зургийг Google-д илгээдэг.</translation>
 <translation id="3114507951000454849">Өнөөдрийн мэдээг уншаарай <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privacy Sandbox нь идэвхтэй хөгжүүлэлтэд байгаа бө
 <translation id="4056223980640387499">Сепиа</translation>
 <translation id="4060598801229743805">Сонголт дэлгэцийн дээд хэсэгт байна</translation>
 <translation id="4062305924942672200">Хууль, эрх зүйн мэдээлэл</translation>
+<translation id="4082818367361753283">Бүлгийн ID</translation>
 <translation id="4084682180776658562">Хадгалах</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" />-с – <ph name="BEGIN_DEEMPHASIZED" />Google-с хүргэсэн<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Апп-н өгөгдлийг устгах уу?</translation>
@@ -533,7 +538,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минутын өмнө}other{# минутын өмнө}}</translation>
 <translation id="4587589328781138893">Сайт</translation>
 <translation id="4594952190837476234">Энэ офлайн хуудсыг <ph name="CREATION_TIME" />-с харуулж байгаа бөгөөд онлайн хувилбараас өөр байж болзошгүй.</translation>
-<translation id="4615382002648696011">Дагаж байна. Уншаагүй стори боломжтой байна</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />-г нээх</translation>
 <translation id="4619564267100705184">Өөрийгөө мөн болохыг бататгах</translation>
 <translation id="4634124774493850572">Нууц үг ашиглах</translation>
@@ -888,6 +892,11 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6699370405921460408">Google-н серверүүд таны зочилдог хуудсыг тохируулна.</translation>
 <translation id="670498945988402717">Өчигдөр шалгасан</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
+<translation id="671333169801287922">Асаалттай үед сайтууд өөрсдийн контент болон үйлчилгээг хүргэхдээ энд харуулсан нууцлал хадгалах техникийг ашиглаж магадгүй. Үүнд сайт хоорондын хяналтын хувилбарууд орно. Илүү олон туршилтыг аажимдаа нэмж магадгүй.
+
+<ph name="BEGIN_LIST_ITEM1" />Сурталчлагчид болон нийтлэгчид FLoC техникийг ашиглах боломжтой.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Сурталчлагчид болон нийтлэгчид таныг сайтууд дээр дагахгүйгээр зарын үр нөлөөг судлах боломжтой.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Таны <ph name="FQDN" />-н цаг хэмжигчийн хугацаа дууссан байна. Энэ нь маргааш дахин эхэлнэ.</translation>
 <translation id="6738516213925468394">Таны өгөгдлийг таны <ph name="BEGIN_LINK" />синкийн нэвтрэх үгтэй<ph name="END_LINK" /> <ph name="TIME" />-д синк хийсэн байна. Синкийг эхлүүлэхийн тулд үүнийг оруулна уу.</translation>
 <translation id="6738867403308150051">Татаж байна…</translation>
@@ -1078,6 +1087,9 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7971136598759319605">1 өдрийн өмнө идэвхтэй</translation>
 <translation id="7975379999046275268">Хуудсыг урьдчилан үзэх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Хурдан хөтлөх болон хайхын тулд хуудсыг урьдчилан ачаалах</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> нь нээлттэй вебийг хадгалах явцдаа таныг хянах механизмаас хамгаалах шинэ технологийг хөгжүүлэхийн тулд явагдаж буй санаачилга юм.
+
+Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд байгаа бөгөөд сонгосон бүс нутгуудад боломжтой. Одоогоор сайтууд гуравдагч талын күүки зэрэг одоогийн веб технологийг үргэлжлүүлэн ашиглах үедээ Privacy Sandbox-г туршиж үзэж болно.</translation>
 <translation id="7986497153528221272">Нууц үг харах бол, эхлээд төхөөрөмж дээрээ дэлгэцийн түгжээг тохируулна уу</translation>
 <translation id="7998918019931843664">Хаагдсан цонхыг дахин нээх</translation>
 <translation id="8004582292198964060">Хөтөч</translation>
@@ -1187,7 +1199,9 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8662811608048051533">Ихэнх сайтаас гаргах болно.</translation>
 <translation id="8664979001105139458">Файлын нэр ашиглалтад байна</translation>
 <translation id="8676789164135894283">Нэвтрэх баталгаажуулалт</translation>
+<translation id="867767487203716855">Дараагийн шинэчлэлт</translation>
 <translation id="8683039184091909753">зураг</translation>
+<translation id="8683081248374354009">Бүлгийг шинэчлэх</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Дохионы хүчний түвшин: # мөр}other{Дохионы хүчний түвшин: # мөр}}</translation>
 <translation id="869891660844655955">Дуусах хугацаа</translation>
 <translation id="8699120352855309748">Эдгээр хэлийг орчуулахыг бүү санал болго</translation>

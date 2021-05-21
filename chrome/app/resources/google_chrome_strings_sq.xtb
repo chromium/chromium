@@ -174,6 +174,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër të profil
 
 Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="5434383153637353914">Kjo faqe të lejon të menaxhosh "Llogaritë e tua të Google" ku je identifikuar. Këto llogari do të ofrohen në shfletuesin Chrome dhe në aplikacionet e "Dyqanit të Play", si dhe në shërbimet si Gmail, "Disku" dhe YouTube. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Instalo Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome po përpiqet të shfaqë fjalëkalimet.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Nëse cilësimi nuk shfaqet në këtë faqe, shiko te <ph name="LINK_BEGIN" />
@@ -257,6 +258,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7896673875602241923">Dikush është identifikuar më parë në Chrome në këtë kompjuter si <ph name="ACCOUNT_EMAIL_LAST" />. Krijo një përdorues të ri të Chrome për t'i mbajtur të ndara informacionet e tua.</translation>
 <translation id="7905891027772979035">Chrome nuk mund t'i kontrollojë shtesat e tua. Provo përsëri më vonë.</translation>
 <translation id="7930071585467473040">Google Chrome po përpiqet të kopjojë fjalëkalimet.</translation>
+<translation id="7951988079884443914">Chrome rekomandon që të mos e shkarkosh apo hapësh këtë skedar.</translation>
 <translation id="7962410387636238736">Ky kompjuter nuk do të marrë më përditësime të Google Chrome sepse Windows XP dhe Windows Vista nuk mbështeten më</translation>
 <translation id="79947657522496226">Chrome OS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Instalo përsëri Chrome</translation>

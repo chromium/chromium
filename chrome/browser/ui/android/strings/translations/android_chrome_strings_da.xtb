@@ -186,6 +186,7 @@ Tryk på et ord for at søge. Du kan tilpasse søgningen ved at holde fingeren n
 <translation id="22320125457191592">Til dig</translation>
 <translation id="2234876718134438132">Synkronisering og Google-tjenester</translation>
 <translation id="2239812875700136898">Administrer dine historier ved hjælp af knappen Indstillinger for Discover</translation>
+<translation id="2251971221270904886">Når Privacy Sandbox er aktiveret og angives som aktiv, anvender Chrome din browserhistorik over syv dage til at fastslå den gruppe eller "kohorte", du indgår i. Annoncører kan vælge annoncer til gruppen. Din browserhistorik forbliver privat på din enhed. Denne prøveperiode er kun aktiv i <ph name="BEGIN_LINK" />nogle områder<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Eksportér adgangskoder…</translation>
 <translation id="2276696007612801991">Log ind på din Google-konto for at tjekke dine adgangskoder</translation>
 <translation id="2278052315791335171">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="SITE" /></translation>
@@ -275,6 +276,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2781151931089541271">1 sekund tilbage</translation>
 <translation id="2801022321632964776">Opdater til den nyeste version af Chrome for at bruge dit eget sprog</translation>
 <translation id="2805756323405976993">Apps</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Se og administrer gemte adgangskoder på din <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Log ind, og aktivér synkronisering for at få vist dine bogmærker på alle dine enheder</translation>
 <translation id="2827278682606527653">Feedkortmenu i halv højde</translation>
@@ -293,6 +295,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2901411048554510387">Viser forslag for <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Åben liste i fuld højde over enheder, der skal deles en fane med.</translation>
 <translation id="2905036901251765993">Du kan dele med folk i nærheden ved at få dem til at scanne denne QR-kode</translation>
+<translation id="2908243544703713905">Ulæste historier er tilgængelige</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Administrer de emner, du er interesseret i</translation>
 <translation id="2923908459366352541">Navnet er ugyldigt</translation>
@@ -317,6 +320,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bogmærke}one{<ph name="BOOKMARKS_COUNT_MANY" />bogmærke}other{<ph name="BOOKMARKS_COUNT_MANY" />bogmærker}}</translation>
 <translation id="3062802207422175757">Artikler om dine interesser i Chrome</translation>
 <translation id="3070005020161560471">Oversæt automatisk</translation>
+<translation id="3083531420240576529">Du kan til enhver tid nulstille din adgangskode. Det tager syv dage at fastslå din gruppe.</translation>
 <translation id="3091010850649238832">Vis indhold i udklipsholderen</translation>
 <translation id="3098745985164956033">Nogle billeder sendes til Google for at give dig bedre beskrivelser</translation>
 <translation id="3114507951000454849">Læs dagens nyheder <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. I
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Du finder de tilgængelige valgmuligheder øverst på skærmen</translation>
 <translation id="4062305924942672200">Juridiske oplysninger</translation>
+<translation id="4082818367361753283">Gruppe-id</translation>
 <translation id="4084682180776658562">Bogmærke</translation>
 <translation id="4084712963632273211">Fra <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />leveret af Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Vil du slette appdata?</translation>
@@ -533,7 +538,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4583164079174244168">{MINUTES,plural, =1{For # minut siden}one{For # minut siden}other{For # minutter siden}}</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4594952190837476234">Denne offlineside er fra <ph name="CREATION_TIME" /> og kan afvige fra onlineversionen.</translation>
-<translation id="4615382002648696011">Følger, ulæste historier er tilgængelige</translation>
 <translation id="4616150815774728855">Åbn <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Bekræft din identitet</translation>
 <translation id="4634124774493850572">Brug adgangskode</translation>
@@ -889,6 +893,11 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6699370405921460408">Google-serverne optimerer de sider, du besøger.</translation>
 <translation id="670498945988402717">Tjekket i går</translation>
 <translation id="6710213216561001401">Forrige</translation>
+<translation id="671333169801287922">Når Privacy Sandbox er aktiveret, kan websites levere deres indhold og tjenester via den teknologi til beskyttelse af personlige oplysninger, som vises her. Denne teknologi omfatter alternative metoder til sporing på tværs af forskellige websites. Der kan blive tilføjet flere prøveperioder over tid.
+
+<ph name="BEGIN_LIST_ITEM1" />Annoncører og udgivere kan bruge FLoC-teknologien.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Annoncører og udgivere kan undersøge effektiviteten af annoncer på en måde, der ikke sporer dig på tværs af forskellige websites.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Din timer for <ph name="FQDN" /> udløb. Den starter igen i morgen.</translation>
 <translation id="6738516213925468394">Dine data blev krypteret med din <ph name="BEGIN_LINK" />adgangssætning til synkronisering<ph name="END_LINK" /> <ph name="TIME" />. Indtast adgangssætningen for at starte synkroniseringen.</translation>
 <translation id="6738867403308150051">Downloader…</translation>
@@ -1079,6 +1088,9 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7971136598759319605">Aktiv for 1 dag siden</translation>
 <translation id="7975379999046275268">Se forhåndsvisning af siden <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Forudindlæs sider, så du kan browse og søge hurtigere</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> er et igangværende initiativ til udvikling af teknologier, der beskytter dig mod sporingsmekanismer og samtidig bevarer det åbne net.
+
+Prøveperioder til Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. Indtil videre kan websites afprøve Privacy Sandbox, samtidig med at de anvender aktuelle webteknologier som f.eks. tredjepartscookies.</translation>
 <translation id="7986497153528221272">Hvis du vil se adgangskoder, skal du først konfigurere en skærmlås på din enhed</translation>
 <translation id="7998918019931843664">Åbn lukket fane igen</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1188,7 +1200,9 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="8662811608048051533">Logger dig ud af de fleste websites.</translation>
 <translation id="8664979001105139458">Filnavnet findes allerede</translation>
 <translation id="8676789164135894283">Loginbekræftelser</translation>
+<translation id="867767487203716855">Næste opdatering</translation>
 <translation id="8683039184091909753">billede</translation>
+<translation id="8683081248374354009">Nulstil gruppe</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signalstyrkeniveau: # søjle}one{Signalstyrkeniveau: # søjle}other{Signalstyrkeniveau: # søjler}}</translation>
 <translation id="869891660844655955">Udløbsdato</translation>
 <translation id="8699120352855309748">Tilbyd ikke at oversætte disse sprog</translation>

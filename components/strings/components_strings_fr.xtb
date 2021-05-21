@@ -1925,7 +1925,6 @@ Informations supplémentaires :
 <translation id="8202097416529803614">Récapitulatif de la commande</translation>
 <translation id="8202370299023114387">Conflit</translation>
 <translation id="8206978196348664717">Prc4 (enveloppe)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Si vous réinitialisez votre ID, l'ID actuel ne sera plus valide et un nouveau sera émis dans moins d'un jour}=1{Si vous réinitialisez votre ID, l'ID actuel ne sera plus valide et un nouveau sera émis dans 1 jour}one{Si vous réinitialisez votre ID, l'ID actuel ne sera plus valide et un nouveau sera émis dans {NUM_DAYS} jour}other{Si vous réinitialisez votre ID, l'ID actuel ne sera plus valide et un nouveau sera émis dans {NUM_DAYS} jours}}</translation>
 <translation id="8211406090763984747">La connexion est sécurisée</translation>
 <translation id="8213464188712611711">Souvenirs</translation>
 <translation id="8218327578424803826">Position attribuée : </translation>

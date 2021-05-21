@@ -175,6 +175,7 @@
 
 Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5434383153637353914">이 페이지에서는 로그인된 Google 계정을 관리할 수 있습니다. Gmail, Drive, YouTube 등의 서비스와 Chrome 브라우저, Play 스토어 앱에서 계정을 사용할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Chrome OS 설치</translation>
 <translation id="556024056938947818">Chrome에서 비밀번호를 표시하려고 합니다.</translation>
 <translation id="5566025111015594046">Chrome(mDNS-In)</translation>
 <translation id="5657226924540934362">페이지에 표시되지 않는 설정이 있다면 <ph name="LINK_BEGIN" />
@@ -258,6 +259,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7896673875602241923">다른 사용자가 이전에 이 컴퓨터에서 <ph name="ACCOUNT_EMAIL_LAST" />(으)로 Chrome에 로그인했습니다. 새 Chrome 사용자를 만들어 정보를 별도로 관리하세요.</translation>
 <translation id="7905891027772979035">Chrome에서 확장 프로그램을 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="7930071585467473040">Chrome에서 비밀번호를 복사하려고 합니다.</translation>
+<translation id="7951988079884443914">Chrome은 이 파일을 다운로드하거나 열지 않을 것을 권장합니다.</translation>
 <translation id="7962410387636238736">Windows XP와 Windows Vista가 더 이상 지원되지 않으므로 이 컴퓨터에서 Chrome 업데이트를 받을 수 없게 됩니다</translation>
 <translation id="79947657522496226"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, Chrome OS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="8008534537613507642">Chrome 재설치</translation>

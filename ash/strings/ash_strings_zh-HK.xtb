@@ -24,7 +24,6 @@
 <translation id="1148499908455722006">打開 <ph name="USER_NAME" /> 嘅資料對話框</translation>
 <translation id="1153356358378277386">已配對的裝置</translation>
 <translation id="1165712434476988950">裝置必須重新啟動，才能套用更新。</translation>
-<translation id="1170240434488307589">裝置的麥克風按鈕已靜音。</translation>
 <translation id="1175572348579024023">捲動</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -41,6 +40,7 @@
 <translation id="1247372569136754018">麥克風 (內置)</translation>
 <translation id="1252999807265626933">正在使用 <ph name="POWER_SOURCE" />充電</translation>
 <translation id="1255033239764210633">天氣點樣？</translation>
+<translation id="1266097335951928626">啟用自拍鏡頭</translation>
 <translation id="1267032506238418139">快速鍵有變動</translation>
 <translation id="1269405891096105529">訪客模式不支援周邊裝置</translation>
 <translation id="1270290102613614947">屏幕鍵盤已停用</translation>
@@ -85,6 +85,7 @@
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1570871743947603115">切換藍牙。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">存取此工作階段的所有活動紀錄</translation>
+<translation id="159255010947577753">標記</translation>
 <translation id="1611993646327628135">開啟</translation>
 <translation id="1615402009686901181">當畫面上出現機密內容時，管理員政策就會停用螢幕截圖擷取功能</translation>
 <translation id="1632985212731562677">您可在 [設定] &gt; [無障礙功能] 中停用「按鈕控制」。</translation>
@@ -136,8 +137,10 @@
 <translation id="2016340657076538683">輸入訊息</translation>
 <translation id="2018630726571919839">講笑話</translation>
 <translation id="2021864487439853900">按一下即可解鎖</translation>
+<translation id="2047639699071423250">新增重點</translation>
 <translation id="2049240716062114887">已將桌面名稱變更為「<ph name="DESK_NAME" />」</translation>
 <translation id="2050339315714019657">直向</translation>
+<translation id="2066708475850724665">停用放大鏡</translation>
 <translation id="2067602449040652523">鍵盤亮度</translation>
 <translation id="2078034614700056995">請用四隻手指向右滑動以切換至下一個桌面</translation>
 <translation id="2079504693865562705">在捷徑列中隱藏應用程式</translation>
@@ -145,10 +148,12 @@
 <translation id="2083190527011054446"><ph name="GIVEN_NAME" />，晚安：</translation>
 <translation id="209965399369889474">未連接網絡</translation>
 <translation id="2108303511227308752">「Alt + Backspace 鍵」的鍵盤快速鍵已變更。如要使用 Delete 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Backspace 鍵。</translation>
+<translation id="211328683600082144">開啟麥克風</translation>
 <translation id="2126242104232412123">新增虛擬桌面</translation>
 <translation id="2127372758936585790">低功率充電器</translation>
 <translation id="2132302418721800944">錄影全螢幕</translation>
 <translation id="2135456203358955318">固定的放大鏡</translation>
+<translation id="2146800439053023141">切換列位置</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重試</translation>
 <translation id="2167870087604746126">+ V 鍵</translation>
 <translation id="2170530631236737939">用三隻手指向下滑動即可結束「概覽」</translation>
@@ -328,6 +333,7 @@
 <translation id="3638400994746983214">切換私隱保護畫面。<ph name="STATE_TEXT" />。</translation>
 <translation id="366222428570480733">受管理嘅使用者：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">錄音麥克風</translation>
+<translation id="3680908746918359504">清除所有標記</translation>
 <translation id="36813544980941320">您的手機和 <ph name="DEVICE_NAME" /> 將共用 Wi-Fi 網絡</translation>
 <translation id="3702809606464356667">顯示緊來自目前桌面嘅視窗，㩒向上箭咀掣就可以顯示來自所有桌面嘅視窗</translation>
 <translation id="3702846122927433391">尼日利亞嘅人口</translation>
@@ -373,12 +379,12 @@
 <translation id="4021716437419160885">向下捲動</translation>
 <translation id="4028481283645788203">為安全起見，請輸入密碼</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">「<ph name="LAUNCHER_KEY_NAME" />鍵 + 數字鍵」的鍵盤快速鍵已變更。如要使用 F1 - F12 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 最上排的任一按鍵。</translation>
 <translation id="4042660782729322247">您正在分享螢幕畫面</translation>
 <translation id="4057003836560082631">第 <ph name="INDEX" /> 個瀏覽器分頁，共 <ph name="TOTAL_COUNT" /> 個。<ph name="SITE_TITLE" />，<ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{在 1 個應用程式上停止}other{在 # 個應用程式上停止}}</translation>
 <translation id="4066027111132117168">已開啟，<ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">訊號中等</translation>
+<translation id="4095366824370681039">鋼筆</translation>
 <translation id="4112140312785995938">向後回轉</translation>
 <translation id="4114315158543974537">開啟 Phone Hub</translation>
 <translation id="412298498316631026">視窗</translation>
@@ -447,12 +453,15 @@
 <translation id="4570957409596482333">「選取以朗讀」按鈕</translation>
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">顯示預覽</translation>
+<translation id="4578196883126898996">你的麥克風已關閉。請開啟裝置的麥克風按鈕。</translation>
 <translation id="4578906031062871102">開咗設定選單</translation>
 <translation id="4581047786858252841">麥克風已開啟</translation>
 <translation id="4585337515783392668">停止投放到不明嘅接收器</translation>
+<translation id="4586483766170476230">停用自拍鏡頭</translation>
 <translation id="4587299710837179226">麥克風已關閉</translation>
 <translation id="4596144739579517758">深色主題背景已關閉</translation>
 <translation id="4611292653554630842">登入</translation>
+<translation id="4614295562446151104">展開標記工具</translation>
 <translation id="4623167406982293031">驗證帳戶</translation>
 <translation id="4628757576491864469">裝置</translation>
 <translation id="4642092649622328492">擷取部分螢幕畫面</translation>
@@ -508,6 +517,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> 已連接至新手機</translation>
 <translation id="5035389544768382859">確認螢幕設定</translation>
 <translation id="504465286040788597">上一段</translation>
+<translation id="5071064518267176975">某個應用程式要求使用麥克風</translation>
+<translation id="5075554201838155866">啟用隱藏式輔助字幕</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多「Google 助理」功能。</translation>
 <translation id="5136175204352732067">已連接不同的鍵盤</translation>
@@ -678,6 +689,7 @@
 <translation id="6612802754306526077">揀咗螢幕錄影模式</translation>
 <translation id="6614169507485700968">已啟用私隱保護畫面</translation>
 <translation id="6627638273713273709">搜尋鍵 + Shift + K 鍵</translation>
+<translation id="6629480180092995136">「<ph name="APP_NAME" />」要求使用麥克風</translation>
 <translation id="6637729079642709226">變更時間</translation>
 <translation id="6641720045729354415">切換「即時字幕」。<ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 要求確認您的身分</translation>
@@ -731,6 +743,7 @@
 <translation id="7029814467594812963">結束工作階段</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />，Google 助理</translation>
 <translation id="7042322267639375032">收合狀態區</translation>
+<translation id="7045595904618419789">啟用放大鏡</translation>
 <translation id="7055910611768509537">您已超過一星期沒有使用觸控筆</translation>
 <translation id="7066646422045619941">管理員已停用此網絡。</translation>
 <translation id="7067196344162293536">自動旋轉</translation>
@@ -751,6 +764,7 @@
 <translation id="7256634071279256947">後置麥克風</translation>
 <translation id="726276584504105859">拖曳到此處即可分割畫面</translation>
 <translation id="7262906531272962081">建立提醒</translation>
+<translation id="7279434993080105272">標記顏色：<ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">「即時字幕」功能已關閉。</translation>
 <translation id="7303365578352795231">正在透過其他裝置回應。</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -780,6 +794,7 @@
 <translation id="7466449121337984263">請輕觸感應器</translation>
 <translation id="7477793887173910789">控制音樂、影片及其他內容</translation>
 <translation id="7483025031359818980">揀咗全螢幕作為來源</translation>
+<translation id="7486227320194954040">收合標記工具</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
 <translation id="7509246181739783082">驗證您的身分</translation>
 <translation id="7513622367902644023">揀咗螢幕截圖模式</translation>
@@ -798,6 +813,7 @@
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7618774594543487847">中性色調</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
+<translation id="7631906263969450674">彩色筆</translation>
 <translation id="7633755430369750696">顯示「咫尺共享」設定。</translation>
 <translation id="7641938616688887143">錄影</translation>
 <translation id="7642647758716480637">打開<ph name="NETWORK_NAME" />嘅設定，<ph name="CONNECTION_STATUS" /></translation>
@@ -813,6 +829,7 @@
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7745560842763881396">在捷徑列中顯示應用程式</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
+<translation id="7749640678855296659">你的麥克風目前已關閉</translation>
 <translation id="776344839111254542">按一下即可查看更新詳情</translation>
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7796353162336583443">輕按捷徑列的觸控按鈕即可寫筆記、擷取螢幕畫面，並使用「Google 助理」、雷射筆或放大鏡。</translation>
@@ -860,6 +877,7 @@
 <translation id="8113423164597455979">已在所有應用程式上啟用通知</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">確定</translation>
+<translation id="8132487352815776550">停用隱藏式輔助字幕</translation>
 <translation id="8132793192354020517">已連線至 <ph name="NAME" /></translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8142441511840089262">連按兩下</translation>

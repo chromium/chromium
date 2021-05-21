@@ -202,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />广告主可得知有数千名用户具有相似的兴趣（就像音乐会的听众一样），并选择要向该群体（而非个人）投放哪些广告。<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />广告主可通过一种不会对您进行跨网站跟踪的方式研究广告的效果。<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">预加载 Chrome 认为您可能会访问的网页。为此，Chrome 可能会使用 Cookie（如果您允许使用 Cookie 的话），并通过 Google 加密和发送网页以在网站中隐藏您的身份。</translation>
 <translation id="234265804618409743">无法打开您的摄像头。出了点问题。</translation>
 <translation id="2345671828921229300">若要执行搜索，请轻触并按住某个字词</translation>
 <translation id="2349710944427398404">Chrome 所使用的数据总量，包括帐号、书签和已保存的设置</translation>
@@ -292,6 +293,7 @@
 <translation id="2901411048554510387">下方显示的是与 <ph name="WEBSITE_TITLE" /> 相关的建议</translation>
 <translation id="2904414404539560095">要与之分享标签页的设备的列表已全屏打开。</translation>
 <translation id="2905036901251765993">要与附近的人分享，请让他们扫描此二维码</translation>
+<translation id="2908243544703713905">有未读内容</translation>
 <translation id="2909615210195135082">Google 通知平台</translation>
 <translation id="2912296070571964914">管理您感兴趣的主题</translation>
 <translation id="2923908459366352541">名称无效</translation>
@@ -532,7 +534,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分钟前}other{# 分钟前}}</translation>
 <translation id="4587589328781138893">网站</translation>
 <translation id="4594952190837476234">此离线网页是在 <ph name="CREATION_TIME" />创建的，可能与在线版本有所不同。</translation>
-<translation id="4615382002648696011">已关注，有未读内容</translation>
 <translation id="4616150815774728855">打开<ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
 <translation id="4634124774493850572">使用密码</translation>
@@ -995,6 +996,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" />（上次更新时间：<ph name="TIME_SINCE_UPDATE" />）</translation>
 <translation id="7494974237137038751">已节省的流量</translation>
 <translation id="7498271377022651285">请稍候…</translation>
+<translation id="750228856503700085">无法获取更新</translation>
 <translation id="7507207699631365376">请参阅此提供商的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="751961395872307827">无法连接到该网站</translation>
@@ -1097,6 +1099,7 @@
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8078096376109663956">只能分享文本</translation>
 <translation id="8084114998886531721">保存的密码</translation>
+<translation id="8084285576995584326">控制您的 Google 帐号数据</translation>
 <translation id="808747664143081553">已连接到设备</translation>
 <translation id="8103578431304235997">无痕模式标签页</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1192,6 +1195,7 @@
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8730621377337864115">完成</translation>
+<translation id="8746155870861185046">分享突出显示的内容</translation>
 <translation id="8748850008226585750">内容已隐藏</translation>
 <translation id="8773160212632396039">正在处理请求</translation>
 <translation id="8788265440806329501">导航历史记录已关闭</translation>

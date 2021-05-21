@@ -186,6 +186,7 @@
 <translation id="22320125457191592">Для вас</translation>
 <translation id="2234876718134438132">Синхронизация сервисов Google</translation>
 <translation id="2239812875700136898">Управляйте контентом с помощью кнопки "Параметры рекомендаций".</translation>
+<translation id="2251971221270904886">Если функции Privacy Sandbox включены и активированы, Chrome определяет группу или когорту, в которую вы входите, с помощью истории браузера за 7 дней. Рекламодатели могут выбрать объявления для группы. История браузера хранится на устройстве в закрытом доступе. Эта пробная функция доступна только в <ph name="BEGIN_LINK" />некоторых регионах<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Экспорт паролей…</translation>
 <translation id="2276696007612801991">Чтобы проверить пароли, войдите в свой аккаунт Google.</translation>
 <translation id="2278052315791335171">Это не приведет к удалению вашего аккаунта на сайте <ph name="SITE" />.</translation>
@@ -275,6 +276,7 @@
 <translation id="2781151931089541271">Осталась 1 сек.</translation>
 <translation id="2801022321632964776">Чтобы читать веб-страницы на своем языке, обновите Chrome до последней версии.</translation>
 <translation id="2805756323405976993">Сервисы</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Просматривать сохраненные пароли и управлять ими можно на странице <ph name="BEGIN_LINK" />Аккаунт Google<ph name="END_LINK" />.</translation>
 <translation id="2818669890320396765">Чтобы получить доступ к закладкам на всех устройствах, войдите в аккаунт и включите синхронизацию.</translation>
 <translation id="2827278682606527653">Меню карточки из ленты открыто наполовину</translation>
@@ -293,6 +295,7 @@
 <translation id="2901411048554510387">Показ подсказок для сайта "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="2904414404539560095">Список устройств для отправки вкладки развернут на весь экран.</translation>
 <translation id="2905036901251765993">Чтобы предоставить доступ пользователю поблизости, попросите его отсканировать этот QR-код.</translation>
+<translation id="2908243544703713905">Есть непрочитанные истории</translation>
 <translation id="2909615210195135082">Платформа уведомлений Google</translation>
 <translation id="2912296070571964914">Настройте темы, которые вас интересуют</translation>
 <translation id="2923908459366352541">Имя недействительно</translation>
@@ -317,6 +320,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладок}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}}</translation>
 <translation id="3062802207422175757">Прочитайте в Chrome статьи, подобранные с учетом ваших интересов.</translation>
 <translation id="3070005020161560471">Переводить автоматически</translation>
+<translation id="3083531420240576529">Вы можете сбросить настройки группы в любое время. Определение группы займет 7 дней.</translation>
 <translation id="3091010850649238832">Показать содержимое буфера обмена</translation>
 <translation id="3098745985164956033">Передавать некоторые изображения в Google, чтобы улучшить их описание</translation>
 <translation id="3114507951000454849">Будьте в курсе новостей <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4060598801229743805">Меню доступно в верхней части экрана</translation>
 <translation id="4062305924942672200">Юридическая информация</translation>
+<translation id="4082818367361753283">Идентификатор группы</translation>
 <translation id="4084682180776658562">Закладка</translation>
 <translation id="4084712963632273211">Контент сайта <ph name="PUBLISHER_ORIGIN" />. <ph name="BEGIN_DEEMPHASIZED" />Получен с помощью Google<ph name="END_DEEMPHASIZED" />.</translation>
 <translation id="4095146165863963773">Удалить данные приложения?</translation>
@@ -533,7 +538,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минуту назад}one{# минуту назад}few{# минуты назад}many{# минут назад}other{# минуты назад}}</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4594952190837476234">Офлайн-версия страницы сохранена <ph name="CREATION_TIME" />. Она может отличаться от онлайн-версии.</translation>
-<translation id="4615382002648696011">Вы подписаны, есть непрочитанные истории</translation>
 <translation id="4616150815774728855">Открыть <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Подтвердить личность</translation>
 <translation id="4634124774493850572">Использовать пароль</translation>
@@ -889,6 +893,11 @@
 <translation id="6699370405921460408">Серверы Google будут оптимизировать загружаемые страницы.</translation>
 <translation id="670498945988402717">Проверено вчера.</translation>
 <translation id="6710213216561001401">Назад</translation>
+<translation id="671333169801287922">Если функции Privacy Sandbox включены, сайты могут использовать представленные здесь технологии, в том числе межсайтовые альтернативы отслеживанию активности, обеспечивающие конфиденциальность пользователей. Со временем будет доступно больше пробных функций.
+
+<ph name="BEGIN_LIST_ITEM1" />Рекламодатели и издатели смогут использовать технологию FLoC.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Рекламодатели и издатели смогут оценивать эффективность рекламных объявлений, не отслеживая ваши действия в интернете.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Время на таймере <ph name="FQDN" /> истекло. Завтра сайт снова станет доступен.</translation>
 <translation id="6738516213925468394">Данные были зашифрованы <ph name="TIME" /> с помощью <ph name="BEGIN_LINK" />кодовой фразы<ph name="END_LINK" />. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="6738867403308150051">Скачивание…</translation>
@@ -1079,6 +1088,9 @@
 <translation id="7971136598759319605">Последние действия: 1 день назад</translation>
 <translation id="7975379999046275268">Просмотреть страницу <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Разрешить предзагрузку страниц для повышения скорости работы браузера и поиска</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> – инициатива, поддерживающая развитие открытого интернета и защищающая пользователей от механизмов отслеживания действий.
+
+Пробные функции Privacy Sandbox всё ещё находятся в стадии разработки и доступны не во всех регионах. Сайты могут использовать некоторые функции Privacy Sandbox, пока не отказываясь от уже существующих веб-технологий, таких как сторонние файлы cookie.</translation>
 <translation id="7986497153528221272">Чтобы просматривать пароли, включите на устройстве блокировку экрана.</translation>
 <translation id="7998918019931843664">Восстановить закрытую вкладку</translation>
 <translation id="8004582292198964060">Браузер</translation>
@@ -1188,7 +1200,9 @@
 <translation id="8662811608048051533">Вы автоматически выйдете из учетных записей на большинстве сайтов.</translation>
 <translation id="8664979001105139458">Файл с таким именем уже существует.</translation>
 <translation id="8676789164135894283">Подтверждение входа</translation>
+<translation id="867767487203716855">Следующее обновление</translation>
 <translation id="8683039184091909753">Изображение</translation>
+<translation id="8683081248374354009">Сбросить настройки группы</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Уровень сигнала: # линия}one{Уровень сигнала: # линия}few{Уровень сигнала: # линии}many{Уровень сигнала: # линий}other{Уровень сигнала: # линии}}</translation>
 <translation id="869891660844655955">Срок действия</translation>
 <translation id="8699120352855309748">Не предлагать переводить страницы на этих языках</translation>

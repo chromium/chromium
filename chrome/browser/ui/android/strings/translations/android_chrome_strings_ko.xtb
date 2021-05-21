@@ -186,6 +186,7 @@
 <translation id="22320125457191592">추천</translation>
 <translation id="2234876718134438132">동기화 및 Google 서비스</translation>
 <translation id="2239812875700136898">디스커버 버튼 옵션으로 새 탭 페이지에 표시될 뉴스를 관리하세요</translation>
+<translation id="2251971221270904886">사용 설정되어 있고 활성 상태인 경우 Chrome에서 지난 7일간의 방문 기록을 토대로 내가 속한 그룹 또는 '사용자 집단'을 결정합니다. 광고주는 그룹에 보여 줄 광고를 선택할 수 있습니다. 방문 기록은 기기에 비공개로 유지됩니다. 무료 체험은 <ph name="BEGIN_LINK" />일부 지역<ph name="END_LINK" />에서만 진행됩니다.</translation>
 <translation id="2259659629660284697">비밀번호 내보내기...</translation>
 <translation id="2276696007612801991">비밀번호를 확인하려면 Google 계정에 로그인하세요.</translation>
 <translation id="2278052315791335171">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다.</translation>
@@ -275,6 +276,7 @@
 <translation id="2781151931089541271">1초 남음</translation>
 <translation id="2801022321632964776">최신 버전의 Chrome에서 내가 사용하는 언어를 사용하려면 업데이트하세요.</translation>
 <translation id="2805756323405976993">앱</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
 <translation id="2818669890320396765">어느 기기에서나 내 북마크를 사용하려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="2827278682606527653">피드 카드 메뉴 절반 높이</translation>
@@ -293,6 +295,7 @@
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> 추천 표시됨</translation>
 <translation id="2904414404539560095">탭을 공유할 기기 목록이 전체 높이로 열렸습니다.</translation>
 <translation id="2905036901251765993">근처에 있는 사람과 공유하려면 상대방이 QR 코드를 스캔하도록 하세요.</translation>
+<translation id="2908243544703713905">읽지 않은 스토리 있음</translation>
 <translation id="2909615210195135082">Google 알림 플랫폼</translation>
 <translation id="2912296070571964914">관심 주제 관리</translation>
 <translation id="2923908459366352541">잘못된 이름</translation>
@@ -317,6 +320,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{북마크 <ph name="BOOKMARKS_COUNT_ONE" />개}other{북마크 <ph name="BOOKMARKS_COUNT_MANY" />개}}</translation>
 <translation id="3062802207422175757">Chrome에서 관심분야 기사를 읽어보세요.</translation>
 <translation id="3070005020161560471">자동으로 번역</translation>
+<translation id="3083531420240576529">언제든지 그룹을 재설정할 수 있습니다. 그룹을 결정하는 데는 7일이 걸립니다.</translation>
 <translation id="3091010850649238832">클립보드 내용 표시</translation>
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@
 <translation id="4056223980640387499">세피아</translation>
 <translation id="4060598801229743805">화면 상단에서 옵션을 선택할 수 있습니다.</translation>
 <translation id="4062305924942672200">법적 정보</translation>
+<translation id="4082818367361753283">그룹 ID</translation>
 <translation id="4084682180776658562">북마크</translation>
 <translation id="4084712963632273211">발신자: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google 제공<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">앱 데이터를 삭제하시겠습니까?</translation>
@@ -533,7 +538,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{#분 전}other{#분 전}}</translation>
 <translation id="4587589328781138893">사이트</translation>
 <translation id="4594952190837476234">이 오프라인 페이지는 <ph name="CREATION_TIME" />에 생성되었으며 온라인 버전과 다를 수 있습니다.</translation>
-<translation id="4615382002648696011">팔로우한 스토리 중 읽지 않은 스토리 준비됨</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> 열기</translation>
 <translation id="4619564267100705184">본인 인증</translation>
 <translation id="4634124774493850572">비밀번호 사용</translation>
@@ -889,6 +893,11 @@
 <translation id="6699370405921460408">Google 서버에서 내가 방문하는 페이지를 최적화합니다.</translation>
 <translation id="670498945988402717">어제 확인됨</translation>
 <translation id="6710213216561001401">이전</translation>
+<translation id="671333169801287922">사용 설정하면 사이트가 여기에 표시된 개인 정보 보호 기술을 이용해 콘텐츠와 서비스를 제공할 수 있습니다. 여기에는 크로스 사이트 추적의 대안이 포함됩니다. 시간이 지남에 따라 더 많은 무료 체험 기능이 포함될 수 있습니다.
+
+<ph name="BEGIN_LIST_ITEM1" />광고주와 게시자는 FLoC 기술을 사용할 수 있습니다.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />광고주와 게시자는 사이트 전반에서 사용자를 추적하지 않는 방식으로 광고의 효과를 연구할 수 있습니다.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117"><ph name="FQDN" /> 타이머가 종료되었습니다. 타이머는 내일 다시 시작됩니다.</translation>
 <translation id="6738516213925468394"><ph name="TIME" />자로 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />를 통해 데이터가 암호화되었습니다. 동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="6738867403308150051">다운로드 중...</translation>
@@ -1079,6 +1088,9 @@
 <translation id="7971136598759319605">1일 전 동기화됨</translation>
 <translation id="7975379999046275268">페이지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">더 빠른 인터넷 사용과 검색을 위해 페이지 미리 로드</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />개인 정보 보호 샌드박스<ph name="END_LINK" />는 열린 웹을 보호하는 동시에 추적 메커니즘으로부터 사용자를 보호하는 새로운 기술을 개발하기 위해 진행되는 이니셔티브입니다.
+
+개인 정보 보호 샌드박스 무료 체험판은 아직 개발 단계에 있으므로 일부 지역에서만 제공됩니다. 지금으로서는 사이트에서 타사 쿠키와 같은 기존 웹 기술을 계속 사용하면서 개인 정보 보호 샌드박스를 체험해 볼 수 있습니다.</translation>
 <translation id="7986497153528221272">비밀번호를 보려면 먼저 기기에 화면 잠금을 설정하세요.</translation>
 <translation id="7998918019931843664">닫은 탭 다시 열기</translation>
 <translation id="8004582292198964060">브라우저</translation>
@@ -1188,7 +1200,9 @@
 <translation id="8662811608048051533">대부분의 사이트에서 로그아웃됩니다.</translation>
 <translation id="8664979001105139458">이미 존재하는 이름입니다.</translation>
 <translation id="8676789164135894283">로그인 인증</translation>
+<translation id="867767487203716855">다음 업데이트</translation>
 <translation id="8683039184091909753">이미지</translation>
+<translation id="8683081248374354009">그룹 재설정</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{신호 강도: 막대 #개}other{신호 강도: 막대 #개}}</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>

@@ -24,7 +24,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> கணக்கிற்கான தகவலைக் காட்டும் உரையாடலைத் திறக்கும்</translation>
 <translation id="1153356358378277386">இணைத்த சாதனங்கள்</translation>
 <translation id="1165712434476988950">புதுப்பிப்பை நிறுவ சாதனத்தை மீண்டும் தொடங்க வேண்டும்.</translation>
-<translation id="1170240434488307589">சாதனத்தின் மைக்ரோஃபோன் பட்டன் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="1175572348579024023">நகர்த்து</translation>
 <translation id="1178581264944972037">இடைநிறுத்து</translation>
 <translation id="1181037720776840403">அகற்று</translation>
@@ -373,7 +372,6 @@
 <translation id="4021716437419160885">கீழே நகர்த்து</translation>
 <translation id="4028481283645788203">மேலும் பாதுகாப்பிற்குக் கடவுச்சொல் அவசியம்</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: <ph name="LAUNCHER_KEY_NAME" /> + எண். F பட்டன்களைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + மேல் வரிசையில் உள்ள ஒரு பட்டனை அழுத்தவும்.</translation>
 <translation id="4042660782729322247">திரையைப் பகிர்ந்துள்ளீர்கள்</translation>
 <translation id="4057003836560082631">உலாவி தாவல் <ph name="INDEX" />/<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ஒரு ஆப்ஸுக்கு ஆஃப்}other{# ஆப்ஸுக்கு ஆஃப்}}</translation>

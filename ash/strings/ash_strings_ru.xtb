@@ -24,7 +24,6 @@
 <translation id="1148499908455722006">Открыть диалоговое окно с информацией об аккаунте <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Сопряженные устройства</translation>
 <translation id="1165712434476988950">Чтобы применить обновление, необходимо перезапустить устройство.</translation>
-<translation id="1170240434488307589">Микрофон устройства отключен.</translation>
 <translation id="1175572348579024023">Прокрутка</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Удалить</translation>
@@ -41,6 +40,7 @@
 <translation id="1247372569136754018">Микрофон (встроенный)</translation>
 <translation id="1252999807265626933">Подключен источник питания: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какая сейчас погода?</translation>
+<translation id="1266097335951928626">Включить фронтальную камеру</translation>
 <translation id="1267032506238418139">Изменение сочетания клавиш</translation>
 <translation id="1269405891096105529">Периферийные устройства в гостевом режиме не поддерживаются.</translation>
 <translation id="1270290102613614947">Экранная клавиатура отключена</translation>
@@ -85,6 +85,7 @@
 <translation id="1555130319947370107">Синий</translation>
 <translation id="1570871743947603115">Изменить настройки Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
+<translation id="159255010947577753">Маркер</translation>
 <translation id="1611993646327628135">Включено</translation>
 <translation id="1615402009686901181">Администратор запретил запись экрана, когда видны конфиденциальные данные.</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
@@ -136,8 +137,10 @@
 <translation id="2016340657076538683">Введите сообщение</translation>
 <translation id="2018630726571919839">Расскажи анекдот</translation>
 <translation id="2021864487439853900">Нажать, чтобы разблокировать</translation>
+<translation id="2047639699071423250">Добавить основную идею</translation>
 <translation id="2049240716062114887">Название рабочего стола изменилось на "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Книжная</translation>
+<translation id="2066708475850724665">Выключить лупу</translation>
 <translation id="2067602449040652523">Яркость клавиатуры</translation>
 <translation id="2078034614700056995">Чтобы перейти на следующий рабочий стол, проведите четырьмя пальцами вправо.</translation>
 <translation id="2079504693865562705">Скрыть приложения на панели запуска</translation>
@@ -145,10 +148,12 @@
 <translation id="2083190527011054446">Доброй ночи, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Нет подключения к сети</translation>
 <translation id="2108303511227308752">Функция сочетания клавиш Alt + Backspace изменилась. Чтобы выполнить действие клавиши Delete, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
+<translation id="211328683600082144">ВКЛЮЧИТЬ МИКРОФОН</translation>
 <translation id="2126242104232412123">Добавить рабочий стол</translation>
 <translation id="2127372758936585790">Маломощное зарядное устройство</translation>
 <translation id="2132302418721800944">Запись видео со всего экрана</translation>
 <translation id="2135456203358955318">Закрепленная лупа</translation>
+<translation id="2146800439053023141">Показать/скрыть местоположение панели</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Повторить</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Чтобы выйти из режима обзора, проведите тремя пальцами вниз.</translation>
@@ -328,6 +333,7 @@
 <translation id="3638400994746983214">Включить или отключить экран конфиденциальности. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733">Управляемый пользователь <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Запись микрофона</translation>
+<translation id="3680908746918359504">Удалить все маркеры</translation>
 <translation id="36813544980941320">На вашем телефоне и устройстве <ph name="DEVICE_NAME" /> будут использоваться одинаковые сети Wi-Fi.</translation>
 <translation id="3702809606464356667">Показаны окна текущего рабочего стола. Чтобы показать окна со всех рабочих столов, нажмите на стрелку вверх.</translation>
 <translation id="3702846122927433391">Население Нигерии</translation>
@@ -373,12 +379,12 @@
 <translation id="4021716437419160885">Прокрутить вниз</translation>
 <translation id="4028481283645788203">В качестве дополнительной меры безопасности введите пароль.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Функция сочетания клавиш <ph name="LAUNCHER_KEY_NAME" /> + цифра изменилась. Чтобы выполнить действие функциональной клавиши, нажмите <ph name="LAUNCHER_KEY_NAME" /> + клавиша верхнего ряда.</translation>
 <translation id="4042660782729322247">Вы открыли доступ к своему экрану</translation>
 <translation id="4057003836560082631">Вкладка <ph name="INDEX" /> из <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Откл. 1 прил.}one{Откл. # прил.}few{Откл. # прил.}many{Откл. # прил.}other{Откл. # прил.}}</translation>
 <translation id="4066027111132117168">Включен, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">сигнал средней мощности</translation>
+<translation id="4095366824370681039">Ручка</translation>
 <translation id="4112140312785995938">Перемотать назад</translation>
 <translation id="4114315158543974537">Включите Phone Hub</translation>
 <translation id="412298498316631026">окно</translation>
@@ -447,12 +453,15 @@
 <translation id="4570957409596482333">Кнопка "Озвучивание при нажатии"</translation>
 <translation id="4577274620589681794">Время истекло · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Включить предпросмотр</translation>
+<translation id="4578196883126898996">Микрофон выключен. Включите его на устройстве.</translation>
 <translation id="4578906031062871102">Меню настроек открыто</translation>
 <translation id="4581047786858252841">Микрофон включен.</translation>
 <translation id="4585337515783392668">Остановить трансляцию на неизвестное устройство</translation>
+<translation id="4586483766170476230">Выключить фронтальную камеру</translation>
 <translation id="4587299710837179226">Микрофон отключен.</translation>
 <translation id="4596144739579517758">Тёмная тема отключена</translation>
 <translation id="4611292653554630842">Войти</translation>
+<translation id="4614295562446151104">Развернуть инструменты маркера</translation>
 <translation id="4623167406982293031">Подтвердите, что это ваш аккаунт.</translation>
 <translation id="4628757576491864469">Устройства</translation>
 <translation id="4642092649622328492">Сделать скриншот части экрана</translation>
@@ -509,6 +518,8 @@
 <translation id="5035236842988137213">Устройство <ph name="DEVICE_NAME" /> подключено к новому телефону</translation>
 <translation id="5035389544768382859">Подтвердите конфигурацию экрана</translation>
 <translation id="504465286040788597">Предыдущий абзац</translation>
+<translation id="5071064518267176975">Приложение запрашивает доступ к микрофону</translation>
+<translation id="5075554201838155866">Показать субтитры</translation>
 <translation id="5078796286268621944">Неверный PIN-код</translation>
 <translation id="5083553833479578423">Получите доступ к другим возможностям Ассистента.</translation>
 <translation id="5136175204352732067">Подключена другая клавиатура</translation>
@@ -679,6 +690,7 @@
 <translation id="6612802754306526077">Выбран режим записи видео с экрана</translation>
 <translation id="6614169507485700968">Экран конфиденциальности включен</translation>
 <translation id="6627638273713273709">Поиск + Shift + K</translation>
+<translation id="6629480180092995136">Приложение "<ph name="APP_NAME" />" запрашивает доступ к микрофону</translation>
 <translation id="6637729079642709226">Изменение времени</translation>
 <translation id="6641720045729354415">Переключатель автоматических субтитров. <ph name="STATE_TEXT" />.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> запрашивает подтверждение вашей личности.</translation>
@@ -732,6 +744,7 @@
 <translation id="7029814467594812963">Завершить сеанс</translation>
 <translation id="703425375924687388">Запрос "<ph name="QUERY_NAME" />" для Google Ассистента</translation>
 <translation id="7042322267639375032">Свернуть панель состояния</translation>
+<translation id="7045595904618419789">Включить лупу</translation>
 <translation id="7055910611768509537">Стилус не использовался больше недели</translation>
 <translation id="7066646422045619941">Эта сеть отключена администратором.</translation>
 <translation id="7067196344162293536">Автоповорот</translation>
@@ -752,6 +765,7 @@
 <translation id="7256634071279256947">Основной микрофон</translation>
 <translation id="726276584504105859">Перетащите сюда, чтобы разделить экран</translation>
 <translation id="7262906531272962081">Создать напоминание</translation>
+<translation id="7279434993080105272">Цвет маркера (<ph name="COLOR_PARAMETER" />)</translation>
 <translation id="7302889331339392448">Автоматические субтитры отключены</translation>
 <translation id="7303365578352795231">Ассистент отвечает на другом устройстве.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@
 <translation id="7466449121337984263">Приложите палец к сканеру.</translation>
 <translation id="7477793887173910789">Управляйте воспроизведением музыки, видео и других медиафайлов</translation>
 <translation id="7483025031359818980">Выбран весь экран</translation>
+<translation id="7486227320194954040">Свернуть инструменты маркера</translation>
 <translation id="7497767806359279797">Выберите язык и клавиатуру</translation>
 <translation id="7509246181739783082">Подтвердите личность</translation>
 <translation id="7513622367902644023">Выбран режим создания скриншота</translation>
@@ -799,6 +814,7 @@
 <translation id="7607002721634913082">Приостановлен</translation>
 <translation id="7618774594543487847">Нейтральные</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7631906263969450674">Фломастер</translation>
 <translation id="7633755430369750696">Показать настройки Обмена с окружением</translation>
 <translation id="7641938616688887143">Запись</translation>
 <translation id="7642647758716480637">Открыть настройки сети "<ph name="NETWORK_NAME" />", статус: <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7745560842763881396">Показать приложения на панели запуска</translation>
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>
+<translation id="7749640678855296659">Сейчас микрофон отключен.</translation>
 <translation id="776344839111254542">Нажмите, чтобы просмотреть информацию об обновлении</translation>
 <translation id="7780159184141939021">Поворот экрана</translation>
 <translation id="7796353162336583443">Нажмите кнопку стилуса на панели запуска, чтобы создать заметку, запустить Ассистента либо использовать стилус в качестве лупы или лазерной указки.</translation>
@@ -861,6 +878,7 @@
 <translation id="8113423164597455979">Вкл. для всех</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
+<translation id="8132487352815776550">Скрыть субтитры</translation>
 <translation id="8132793192354020517">Подключено к сети <ph name="NAME" /></translation>
 <translation id="813913629614996137">Инициализация...</translation>
 <translation id="8142441511840089262">Двойное нажатие кнопкой мыши</translation>

@@ -285,6 +285,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1919345977826869612">Mainokset</translation>
 <translation id="1919367280705858090">Tiettyjen virheiden korjaaminen</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ei mitään}=1{1 sivusto}other{# sivustoa}}</translation>
+<translation id="1924727005275031552">Uusi</translation>
 <translation id="1945968466830820669">Voit menettää organisaatiosi tilin käyttöoikeuden tai joutua identiteettivarkauden uhriksi. Chromium suosittelee vaihtamaan salasanan välittömästi.</translation>
 <translation id="1947454675006758438">Niitti oikeassa yläkulmassa</translation>
 <translation id="1958218078413065209">Parhaat pisteesi ovat <ph name="SCORE" />.</translation>
@@ -395,6 +396,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> ylläpitää laitettasi ja <ph name="ACCOUNT_MANAGER" /> tiliäsi.</translation>
 <translation id="2359629602545592467">Useita</translation>
 <translation id="2359808026110333948">Jatka</translation>
+<translation id="2359961752320758691">Virtuaalinen korttinumero on käytössä.</translation>
 <translation id="2367567093518048410">Taso</translation>
 <translation id="2372464001869762664">Vahvistamisen jälkeen korttitiedot Google-tililtäsi jaetaan tälle sivustolle. Etsi CVC Plex-tilisi tiedoista.</translation>
 <translation id="2380886658946992094">Lakiasiat</translation>
@@ -405,6 +407,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="239429038616798445">Lähetystapa ei ole käytettävissä. Kokeile toista tapaa.</translation>
 <translation id="2396249848217231973">K&amp;umoa poisto</translation>
 <translation id="2410754574180102685">Viranomaiset-lakiasiat</translation>
+<translation id="2413155254802890957">Vanha</translation>
 <translation id="2413528052993050574">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; sen suojausvarmenne ei välttämättä ole voimassa. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="2414886740292270097">Tumma</translation>
 <translation id="2438874542388153331">Neljä reikää oikealla</translation>
@@ -910,12 +913,14 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4275830172053184480">Käynnistä laite uudelleen</translation>
 <translation id="4277028893293644418">Pyydä uusi salasana</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Tämä kortti on tallennettu Google-tilillesi}other{Nämä kortit on tallennettu Google-tilillesi}}</translation>
+<translation id="4287885627794386150">Kokeiluun hyväksyttävä, mutta ei aktiivinen</translation>
 <translation id="4297502707443874121">Sivun <ph name="THUMBNAIL_PAGE" /> pikkukuva</translation>
 <translation id="42981349822642051">Laajenna</translation>
 <translation id="4300675098767811073">Useita reikiä oikealla</translation>
 <translation id="4302514097724775343">Pelaa napauttamalla dinosaurusta</translation>
 <translation id="4302965934281694568">Chou3 (kirjekuori)</translation>
 <translation id="4305666528087210886">Tiedostoa ei voi käyttää</translation>
+<translation id="4306529830550717874">Tallennetaanko osoite?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Estä (oletus)</translation>
 <translation id="4314815835985389558">Synkronointiasetusten muokkaus</translation>
@@ -1403,6 +1408,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="610911394827799129">Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">nähdä leikepöydälle kopioidun tekstin ja kuvat</translation>
 <translation id="6120179357481664955">Muistatko UPI-tunnuksesi?</translation>
+<translation id="6123290840358279103">Näytä virtuaalinen kortti</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6146055958333702838">Tarkista kaikki kaapelit ja käynnistä uudelleen reitittimet, modeemit ja muut
     käytössä olevat verkkolaitteet.</translation>
@@ -1682,6 +1688,7 @@ Lisätietoja:
 <translation id="7300012071106347854">Koboltinsininen</translation>
 <translation id="7302712225291570345"><ph name="TEXT" /></translation>
 <translation id="7304030187361489308">Korkea</translation>
+<translation id="7305756307268530424">Aloita hitaampana</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Yhteysohjeet</translation>
 <translation id="7323804146520582233">Piilota osio <ph name="SECTION" /></translation>
@@ -1707,6 +1714,7 @@ Lisätietoja:
 <translation id="7378594059915113390">Mediaohjaimet</translation>
 <translation id="7378627244592794276">Ei</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Ei sovellu</translation>
 <translation id="7390545607259442187">Vahvista kortti</translation>
 <translation id="7399802613464275309">Turvatarkistus</translation>
 <translation id="7400418766976504921">URL-osoite</translation>
@@ -1758,6 +1766,7 @@ Lisätietoja:
 <translation id="7548892272833184391">Yhteysvirheiden korjaaminen</translation>
 <translation id="7549584377607005141">Tämän sivun näyttäminen oikein edellyttää aiemmin lähetettyjä tietoja. Voit lähettää tiedot uudelleen, mutta tällöin sivulla mahdollisesti suoritettu toiminto toistetaan.</translation>
 <translation id="7550637293666041147">Käyttäjänimi laitteella ja käyttäjänimi Chromessa</translation>
+<translation id="755279583747225797">Kokeilu on aktiivinen</translation>
 <translation id="7552846755917812628">Kokeile seuraavia keinoja:</translation>
 <translation id="7554475479213504905">Päivitä ja näytä siitä huolimatta</translation>
 <translation id="7554791636758816595">Uusi välilehti</translation>
@@ -1852,6 +1861,7 @@ Lisätietoja:
 <translation id="7894280532028510793">Jos kirjoitusasu on oikein, <ph name="BEGIN_LINK" />kokeile verkon diagnostiikkaa<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (kirjekuori)</translation>
 <translation id="7931318309563332511">Tuntematon</translation>
+<translation id="793209273132572360">Päivitetäänkö osoite?</translation>
 <translation id="7932579305932748336">Päällystys</translation>
 <translation id="79338296614623784">Anna kelvollinen puhelinnumero.</translation>
 <translation id="7934052535022478634">Maksu valmis</translation>
@@ -1928,7 +1938,6 @@ Lisätietoja:
 <translation id="8202097416529803614">Tilauksen yhteenveto</translation>
 <translation id="8202370299023114387">Ristiriita</translation>
 <translation id="8206978196348664717">Prc4 (kirjekuori)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Kun nollaat tunnuksen, se ei enää ole käytettävissä ja uusi tunnus luodaan alle päivässä}=1{Kun nollaat tunnuksen, se ei enää ole käytettävissä ja uusi tunnus luodaan 1 päivän päästä}other{Kun nollaat tunnuksen, se ei enää ole käytettävissä ja uusi tunnus luodaan {NUM_DAYS} päivän päästä}}</translation>
 <translation id="8211406090763984747">Yhteys on turvallinen</translation>
 <translation id="8213464188712611711">Muistot</translation>
 <translation id="8218327578424803826">Määrätty sijainti:</translation>

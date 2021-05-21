@@ -292,6 +292,7 @@
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> માટે સૂચનો બતાવી રહ્યાં છીએ</translation>
 <translation id="2904414404539560095">કોઈ ટૅબ સાથે શેર કરવાના ડિવાઇસની સૂચિ સંપૂર્ણ ઊંચાઈએ ખૂલે છે.</translation>
 <translation id="2905036901251765993">નજીકના લોકો સાથે શેર કરવા માટે, તેમને આ QR કોડ તપાસવા દો</translation>
+<translation id="2908243544703713905">વાંચ્યા વિનાની સ્ટોરી, તમારા વાંચવા માટે તૈયાર છે</translation>
 <translation id="2909615210195135082">Google નોટિફિકેશન પ્લૅટફૉર્મ</translation>
 <translation id="2912296070571964914">તમને જેમાં રુચિ હોય એવા વિષયો મેનેજ કરો</translation>
 <translation id="2923908459366352541">નામ અમાન્ય છે</translation>
@@ -532,7 +533,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# મિનિટ પહેલાં}one{# મિનિટ પહેલાં}other{# મિનિટ પહેલાં}}</translation>
 <translation id="4587589328781138893">સાઇટ</translation>
 <translation id="4594952190837476234">આ ઑફલાઇન પેજ <ph name="CREATION_TIME" /> ના રોજનું છે અને તે ઑનલાઇન વર્ઝનથી અલગ હોઈ શકે છે.</translation>
-<translation id="4615382002648696011">આગળની, વાંચ્યા વગરની સ્ટોરી તૈયાર છે</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ખોલો</translation>
 <translation id="4619564267100705184">આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="4634124774493850572">પાસવર્ડનો ઉપયોગ કરો</translation>

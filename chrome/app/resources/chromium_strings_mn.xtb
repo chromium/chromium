@@ -40,6 +40,7 @@
 <translation id="2560420686485554789">Файл татахын тулд Chromium-д сангийн хандалт шаардлагатай</translation>
 <translation id="2572494885440352020">Chromium-ийн туслагч</translation>
 <translation id="2577788541081224677">Та бүх төхөөрөмж дээрээ Chromium-н зүйлсдээ хандахын тулд нэвтэрч синк хийхийг асаана уу.</translation>
+<translation id="2580426763510374355">Chromium OS суулгах</translation>
 <translation id="2583187216237139145">Энэ профайлыг ашиглах үед үүссэн Chromium-н аливаа өгөгдлийг (хавчуурга, түүх, нууц үг болон бусад тохиргоог үүсгэх зэрэг) ажлын профайлын админ хасах боломжтой. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Шинэчлэлтийг хэрэгжүүлэхийн тулд Chromium үйлдлийн системийг дахин эхлүүлнэ үү.</translation>
 <translation id="2648074677641340862">Суулгалтын явцад үйлдлийн системийн алдаа гарлаа. Chromium-ыг дахин татаж авна уу.</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Бета</translation>
 <translation id="5479196819031988440">Chromium үйлдлийн систем энэ хуудсыг нээх боломжгүй.</translation>
 <translation id="5480860683791598150">Таны байршлыг энэ сайттай хуваалцахын тулд Chromium-д таны байршилд хандах зөвшөөрөл шаардлагатай</translation>
+<translation id="5481338274774984070">Chromium таныг энэ файлыг татахгүй эсвэл нээхгүй байхыг зөвлөж байна.</translation>
 <translation id="549669000822060376">Chromium нь хамгийн сүүлийн үеийн системийн шинэчлэлтүүдийг суулгаж байгаа тул түр хүлээнэ үү.</translation>
 <translation id="5496810170689441661">Chromium нь нууц үгсийг засах гэж оролдож байна. Үүнийг зөвшөөрөхийн тулд Windows-н нууц үгээ бичнэ үү.</translation>
 <translation id="5527463683072221100">PDF-г Chromium-д нээх</translation>

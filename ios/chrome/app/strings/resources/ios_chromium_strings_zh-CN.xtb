@@ -48,6 +48,7 @@
 <translation id="4852878756222711218">若要充分利用 Chromium，请使用您的 Google 帐号登录</translation>
 <translation id="4985291216379576555">已离线，Chromium 无法检查是否有更新</translation>
 <translation id="4999538639245140991">由于您要退出的帐号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chromium 数据，但这些数据仍会保留在您的 Google 帐号中。</translation>
+<translation id="5171868502429358653">登录 Chromium</translation>
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
 <translation id="5308226104666789935">Chromium 无法检查是否有更新</translation>
 <translation id="5396916991083608703">将 Chromium 设为默认浏览器？</translation>
@@ -63,6 +64,7 @@
 1. 打开“设置”
 2. 点按“默认浏览器应用”
 3. 选择“Chromium”。</translation>
+<translation id="6155422572367400359">登录此网站、您的 Google 帐号和 Chromium。您可等到需要时再开启同步功能。</translation>
 <translation id="6268381023930128611">退出 Chromium？</translation>
 <translation id="632825460376924298">允许登录 Chromium</translation>
 <translation id="6337530241089703714">请选择是要清除还是要保留您在此设备上存储的 Chromium 数据</translation>

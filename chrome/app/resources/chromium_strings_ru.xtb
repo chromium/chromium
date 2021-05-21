@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">Для скачивания файлов браузеру Chromium требуется доступ к хранилищу.</translation>
 <translation id="2572494885440352020">Помощник по Chromium</translation>
 <translation id="2577788541081224677">Чтобы получить доступ к данным в Chromium на всех устройствах, войдите в аккаунт и включите синхронизацию.</translation>
+<translation id="2580426763510374355">Установить Chromium OS</translation>
 <translation id="2583187216237139145">Администратор рабочего профиля может удалять любые данные, сохраненные в браузере Chromium при использовании этого профиля (например, добавленные закладки, историю, пароли и настройки). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Перезагрузите Chromium OS, чтобы установить обновление.</translation>
 <translation id="2648074677641340862">В процессе установки произошла ошибка в операционной системе. Скачайте Chromium ещё раз.</translation>
@@ -134,6 +135,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium (бета-версия)</translation>
 <translation id="5479196819031988440">Chromium OS не может открыть эту страницу</translation>
 <translation id="5480860683791598150">Для этого сайта Chromium запрашивает доступ к данным о вашем местоположении.</translation>
+<translation id="5481338274774984070">Браузер Chromium рекомендует не скачивать и не открывать этот файл.</translation>
 <translation id="549669000822060376">Подождите, пока Chromium устанавливает последние обновления системы</translation>
 <translation id="5496810170689441661">Chromium пытается изменить пароли. Чтобы разрешить это действие, введите свой пароль Windows.</translation>
 <translation id="5527463683072221100">Открывать PDF-файлы в Chromium</translation>

@@ -293,6 +293,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2901411048554510387">Afficher des suggestions pour <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">La liste des appareils avec lesquels vous pouvez partager un onglet est ouverte à hauteur maximale.</translation>
 <translation id="2905036901251765993">Pour partager avec des personnes à proximité, laissez-les scanner ce code QR</translation>
+<translation id="2908243544703713905">Articles non lus prêts</translation>
 <translation id="2909615210195135082">Plate-forme de notifications Google</translation>
 <translation id="2912296070571964914">Gérer les thèmes qui vous intéressent</translation>
 <translation id="2923908459366352541">Le nom n'est pas valide</translation>
@@ -533,7 +534,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4583164079174244168">{MINUTES,plural, =1{Il y a # minute}one{Il y a # minute}other{Il y a # minutes}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Cette page hors connexion date du <ph name="CREATION_TIME" /> et peut différer de la version en ligne.</translation>
-<translation id="4615382002648696011">Suivi, articles non lus disponibles</translation>
 <translation id="4616150815774728855">Ouvrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmer votre identité</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>

@@ -186,6 +186,7 @@
 <translation id="22320125457191592">Fyrir þig</translation>
 <translation id="2234876718134438132">Samstilling og þjónusta Google</translation>
 <translation id="2239812875700136898">Stjórnaðu fréttunum þínum með hnappinum Valkostir fyrir Tillögur</translation>
+<translation id="2251971221270904886">Þegar kveikt er á þessu og staðan er „virk“ notar Chrome vafraferil síðustu 7 daga til að ákvarða flokkinn eða „hópinn“ sem þú tilheyrir. Auglýsendur geta valið auglýsingar fyrir hópinn. Vafraferlinum er haldið lokuðum í tækinu þínu. Þessi prufuútgáfa er aðeins virk á <ph name="BEGIN_LINK" />sumum svæðum<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Flytja út aðgangsorð…</translation>
 <translation id="2276696007612801991">Skráðu þig inn á Google reikninginn þinn til að athuga aðgangsorðin þín</translation>
 <translation id="2278052315791335171">Reikningnum þínum á <ph name="SITE" /> verður ekki eytt þó að þessu aðgangsorði verði eytt</translation>
@@ -275,6 +276,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="2781151931089541271">Ein sek. eftir</translation>
 <translation id="2801022321632964776">Uppfærðu til að fá tungumálið þitt í nýjustu útgáfunni af Chrome</translation>
 <translation id="2805756323405976993">Forrit</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Þú getur skoðað og haft umsjón með vistuðum aðgangsorðum á <ph name="BEGIN_LINK" />Google reikningnum<ph name="END_LINK" /> þínum</translation>
 <translation id="2818669890320396765">Skráðu þig inn og kveiktu á samstillingu til að fá aðgang að bókamerkjunum þínum í öllum tækjum</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -293,6 +295,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="2901411048554510387">Birtir tillögur fyrir <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Tækjalisti fyrir deilingu flipa sem er opinn á öllum skjánum.</translation>
 <translation id="2905036901251765993">Ef þú vilt deila með fólki í nágrenninu skaltu láta það skanna þennan QR-kóða</translation>
+<translation id="2908243544703713905">Ólesnar sögur tilbúnar</translation>
 <translation id="2909615210195135082">Tilkynningakerfi Google</translation>
 <translation id="2912296070571964914">Stjórna umfjöllunarefnum sem þú hefur áhuga á</translation>
 <translation id="2923908459366352541">Nafnið er ógilt</translation>
@@ -317,6 +320,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bókamerki}one{<ph name="BOOKMARKS_COUNT_MANY" /> bókamerki}other{<ph name="BOOKMARKS_COUNT_MANY" /> bókamerki}}</translation>
 <translation id="3062802207422175757">Greinar sem tengjast áhugamálum þínum í Chrome</translation>
 <translation id="3070005020161560471">Þýða sjálfkrafa</translation>
+<translation id="3083531420240576529">Þú getur endurstillt hópinn hvenær sem er. Það tekur 7 daga að áætla hópinn þinn.</translation>
 <translation id="3091010850649238832">Sýna innihald klippiborðs</translation>
 <translation id="3098745985164956033">Sumar myndir eru sendar til Google til að bæta lýsingar</translation>
 <translation id="3114507951000454849">Lestu fréttir dagsins <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privacy Sandbox er enn í þróun og er í boði á völdum svæðum. Eins og er
 <translation id="4056223980640387499">Brúnn blær</translation>
 <translation id="4060598801229743805">Valkosti er að finna ofarlega á skjánum</translation>
 <translation id="4062305924942672200">Lagalegar upplýsingar</translation>
+<translation id="4082818367361753283">Hópauðkenni</translation>
 <translation id="4084682180776658562">Bókamerki</translation>
 <translation id="4084712963632273211">Frá <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />birt af Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Eyða forritsgögnum?</translation>
@@ -533,7 +538,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4583164079174244168">{MINUTES,plural, =1{Fyrir # mínútu}one{Fyrir # mínútu}other{Fyrir # mínútum}}</translation>
 <translation id="4587589328781138893">Svæði</translation>
 <translation id="4594952190837476234">Þessi síða án nettengingar er frá <ph name="CREATION_TIME" /> og hún gæti verið frábrugðin útgáfunni sem er á netinu.</translation>
-<translation id="4615382002648696011">Þú ert með ólesnar sögur frá prófílum sem þú fylgir</translation>
 <translation id="4616150815774728855">Opna <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Staðfestu hver þú ert</translation>
 <translation id="4634124774493850572">Nota aðgangsorð</translation>
@@ -889,6 +893,11 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6699370405921460408">Vefþjónar Google munu sérsníða síðurnar sem þú heimsækir.</translation>
 <translation id="670498945988402717">Athugað í gær</translation>
 <translation id="6710213216561001401">Til baka</translation>
+<translation id="671333169801287922">Þegar kveikt er á þessu geta vefsvæði notað umrædda persónuverndartækni til að birta efni og veita þjónustu. Þar á meðal er tækni sem kemur í stað rakningar á vefsvæðum. Mögulegt er að fleiri prufueiginleikum verði bætt við reglulega.
+
+<ph name="BEGIN_LIST_ITEM1" />Auglýsendur og útgefendur geta notað FLoC-tæknina.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Auglýsendur og útgefendur geta metið árangur auglýsinga án þess að rekja virkni þína á vefsvæðum.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Tímamælir <ph name="FQDN" /> rann út. Hann byrjar aftur á morgun.</translation>
 <translation id="6738516213925468394">Gögnin þín voru dulkóðuð með <ph name="BEGIN_LINK" />aðgangsorði samstillingar<ph name="END_LINK" /> <ph name="TIME" />. Sláðu það inn til að hefja samstillingu.</translation>
 <translation id="6738867403308150051">Sækir…</translation>
@@ -1079,6 +1088,9 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="7971136598759319605">Virkt fyrir 1 degi</translation>
 <translation id="7975379999046275268">Forskoða síðu <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Forhlaða síðum til að geta leitað hraðar á netinu</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> er viðvarandi verkefni sem snýst um að þróa nýja tækni sem ver þig fyrir rakningartækni en varðveitir á sama tíma opinn vef.
+
+Prufuútgáfur Privacy Sandbox eru enn í þróun og eru í boði á völdum svæðum. Eins og er geta vefsvæði prófað persónuverndarafmörkun á sama tíma og þau nota núverandi veftækni á borð við fótspor þriðja aðila.</translation>
 <translation id="7986497153528221272">Til að sjá aðgangsorð þarftu fyrst að stilla á skjálás í tækinu</translation>
 <translation id="7998918019931843664">Opna aftur flipa sem var lokað</translation>
 <translation id="8004582292198964060">Vafri</translation>
@@ -1188,7 +1200,9 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="8662811608048051533">Skráir þig út af flestum vefsvæðum.</translation>
 <translation id="8664979001105139458">Skráarheiti er þegar til</translation>
 <translation id="8676789164135894283">Innskráningarstaðfestingar</translation>
+<translation id="867767487203716855">Næsta uppfærsla</translation>
 <translation id="8683039184091909753">mynd</translation>
+<translation id="8683081248374354009">Endurstilla hóp</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Sendistyrkur: # stika}one{Sendistyrkur: # stika}other{Sendistyrkur: # stikur}}</translation>
 <translation id="869891660844655955">Lokadagsetning</translation>
 <translation id="8699120352855309748">Ekki bjóða upp á að þýða þessi tungumál</translation>

@@ -293,6 +293,7 @@
 <translation id="2901411048554510387">ለ<ph name="WEBSITE_TITLE" /> የአስተያየት ጥቆማዎችን በማሳየት ላይ</translation>
 <translation id="2904414404539560095">በሙሉ ቁመቱ ላይ የተከፈተ ትር የሚጋሩ የመሣሪያዎች ዝርዝር።</translation>
 <translation id="2905036901251765993">በአቅራቢያ ካሉ ሰዎች ጋር ለማጋራት፣ ይህን QR ኮድ እንዲቃኙ ይፍቀዱላቸው</translation>
+<translation id="2908243544703713905">ያልተነበቡ ታሪኮች ተዘጋጅተዋል</translation>
 <translation id="2909615210195135082">የGoogle ማሳወቂያዎች መሣሪያ ስርዓት</translation>
 <translation id="2912296070571964914">የሚፈልጓቸውን ርዕሶች ያቀናብሩ</translation>
 <translation id="2923908459366352541">ስም ልክ ያልሆነ ነው</translation>
@@ -533,7 +534,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{ከ# ደቂቃ በፊት}one{ከ# ደቂቃዎች በፊት}other{ከ# ደቂቃዎች በፊት}}</translation>
 <translation id="4587589328781138893">ጣቢያዎች</translation>
 <translation id="4594952190837476234">ይህ የ<ph name="CREATION_TIME" />  የመስመር ውጭ ገጽ ከመስመር ላይ ስሪቱ የተለየ ሊሆን ይችላል።</translation>
-<translation id="4615382002648696011">በመከተል ላይ፣ ያልተነበቡ ታሪኮች ዝግጁ ናቸው</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ን ይክፈቱ</translation>
 <translation id="4619564267100705184">እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="4634124774493850572">የይለፍ ቃል ይጠቀሙ</translation>

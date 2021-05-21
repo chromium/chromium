@@ -897,7 +897,6 @@
 <translation id="1926339101652878330">እነዚህ ቅንብሮች በድርጅት መመሪያ ነው ቁጥጥር የሚደረግባቸው። እባክዎ ለተጨማሪ መረጃ አስተዳዳሪዎን ያግኙ።</translation>
 <translation id="1927632033341042996">ጣት <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">ማያ ገጽ መቆለፊያ ፒን</translation>
-<translation id="1928202201223835302">የድሮውን ፒን ያስገቡ</translation>
 <translation id="1928696683969751773">ዝማኔዎች</translation>
 <translation id="1929186283613845153">ይህ ፋይል እየተቃኘ ነው።</translation>
 <translation id="1929343511231420085">ማንኛውም ተከታታይ ወደብ</translation>
@@ -921,7 +920,6 @@
 <translation id="1954813140452229842">ማጋራትን ማፈናጠጥ ላይ ስህተት። እባክዎ ምስክርነቶችዎን ይፈትሹና እንደገና ይሞክሩ።</translation>
 <translation id="1956050014111002555">ፋይሉ እንዲገቡ ያልተደረጉ በርካታ የእውቅና ማረጋገጫዎችን ይዞ ነበር፦</translation>
 <translation id="1956390763342388273">ይህ ሁሉንም ፋይሎች ከ«<ph name="FOLDER_PATH" />» ይሰቅላል። ጣቢያውን የሚያምኑት ከሆነ ብቻ ይህን ያድርጉ።</translation>
-<translation id="1958750704984086982">FLoC በፍላጎት ላይ የተመረኮዘ የማስታወቂያ ምርጫ የግላዊነት ጥበቃ ዘዴን ይሰጣል።</translation>
 <translation id="1962233722219655970">ይህ ገጽ በኮምፒውተርዎ ላይ የማይሰራ የቤተኛ ደንበኛ መተግበሪያ ይጠቀማል።</translation>
 <translation id="1963227389609234879">ሁሉንም አስወግድ</translation>
 <translation id="1963976881984600709">መደበኛ ጥበቃ</translation>
@@ -1662,7 +1660,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> ውስጥ ይግቡ</translation>
 <translation id="2749836841884031656">ሲም</translation>
 <translation id="2749881179542288782">ሰዋሰው እና ሆሄ አርም</translation>
-<translation id="2751131328353405138">የLinux መያዣ sshfs በማፈናጠጥ ላይ</translation>
 <translation id="2753677631968972007">የጣቢያ ፈቃዶችን ራስዎ ይቆጣጠሩ።</translation>
 <translation id="2755349111255270002">ይህን <ph name="DEVICE_TYPE" /> ዳግም አቀናብር</translation>
 <translation id="2755367719610958252">የተደራሽነት ባህሪያትን ያቀናብሩ</translation>
@@ -1796,7 +1793,6 @@
 <translation id="2891922230654533301">ወደ <ph name="APP_NAME" /> ለመግባት መሣሪያዎን ይጠቀሙበት?</translation>
 <translation id="2893168226686371498">ነባሪ አሳሽ</translation>
 <translation id="2894757982205307093">በቡድን ውስጥ አዲስ ትር</translation>
-<translation id="289644616180464099">ሲም ካርድ ተዘግቷል</translation>
 <translation id="289695669188700754">ቁልፍ መታወቂያ፦ <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ሁሉንም ማንነት የማያሳውቁ መስኮቶችዎን ሲዘጉ ይህ ብጁ ቅንብር ይወገዳል</translation>
 <translation id="2897878306272793870">እርግጠኛ ነዎት <ph name="TAB_COUNT" /> ትሮችን መክፈት ይፈልጋሉ?</translation>
@@ -2263,7 +2259,6 @@
 <translation id="3427092606871434483">ፍቀድ (ነባሪ)</translation>
 <translation id="3428419049384081277">ወደ መለያ ገብተዋል!</translation>
 <translation id="3428747202529429621">በChrome ላይ ደህንነትዎን ይጠብቃል፣ እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ስራ ላይ ሊውል ይችላል።</translation>
-<translation id="3428800329481094896">የLinux መያዣ ssh ቁልፎችን በማምጣት ላይ</translation>
 <translation id="3429160811076349561">የሙከራ ባህሪዎች ጠፍተዋል</translation>
 <translation id="3429271624041785769">የድር ይዘት ቋንቋዎች</translation>
 <translation id="3429275422858276529">ይህን ገጽ በቀላሉ በኋላ እንዲያገኙ ዕልባት ያድርጉት</translation>
@@ -3081,7 +3076,6 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K በቀጥታ)</translation>
 <translation id="4310139701823742692">ፋይሉ በተሳሳተ ቅርጸት ነው ያለው። የPPD ፋይሉን ይመልከቱና እንደገና ይሞክሩ።</translation>
 <translation id="431076611119798497">&amp;ዝርዝሮች</translation>
-<translation id="4312124410630786333">መታወቂያን ዳግም አስጀምር</translation>
 <translation id="4312866146174492540">አግድ (ነባሪ)</translation>
 <translation id="4314815835985389558">ስምረትን ያቀናብሩ</translation>
 <translation id="4316850752623536204">የገንቢ ድር ጣቢያ</translation>
@@ -3241,7 +3235,6 @@
 <translation id="4492698018379445570">ወደ የግዢ ተሳቢዎች ያከሉትን ያግኙ እና ዝግጁ ሲሆኑ ይመልከቱ</translation>
 <translation id="4493468155686877504">የተመከሩ (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">በዚህ ገጽ ላይ አታሳይ</translation>
-<translation id="4496796119038756382">FLoC መታወቂያ</translation>
 <translation id="4497145443434063861">ፒሲ እና Chromecast በተለያዩ የWi-Fi አውታረ መረቦች ላይ ናቸው (ለምሳሌ፦ 2.4 ጊኸ እና 5 ጊኸ)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ተበላሽቷል</translation>
 <translation id="4500587658229086076">ደህንነቱ ያልተጠበቀ ይዘት</translation>
@@ -3758,7 +3751,6 @@
 <translation id="5072900412896857127">የGoogle Play የአገልግሎት ውልን መጫን አይቻልም። እባክዎ የእርስዎን አውታረ መረብ ይፈትሹ እና እንደገና ይሞክሩ።</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />፣ <ph name="FILE2" />}one{<ph name="FILE1" />፣ <ph name="FILE2" />፣ እና # ተጨማሪ}other{<ph name="FILE1" />፣ <ph name="FILE2" />፣ እና # ተጨማሪ}}</translation>
 <translation id="5074318175948309511">አዲሶቹ ቅንብሮች ከመተግበራቸው በፊት ይህ ገጽ ዳግም መጫን ሊኖርበት ይችላል።</translation>
-<translation id="5075131525758602494">የሲም ፒን ያስገቡ</translation>
 <translation id="5075910247684008552">ደህንነታቸው በተጠበቁ ጣቢያዎች ላይ በነባሪነት ደህንነቱ ያልተጠበቀ ይዘት ይታገዳል</translation>
 <translation id="5078638979202084724">ለሁሉም ትሮች ዕልባት ያብጁ</translation>
 <translation id="5078796286268621944">የተሳሳተ ፒን</translation>
@@ -7136,7 +7128,6 @@ nil</translation>
 <translation id="8803953437405899238">በአንድ ጠቅታ አዲስ ትር ይክፈቱ</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{ትር ወደ ሌላ መስኮት ውሰድ}one{ትሮችን ወደ ሌላ መስኮት ውሰድ}other{ትሮችን ወደ ሌላ መስኮት ውሰድ}}</translation>
 <translation id="8805140816472474147">ስምረትን ለመጀመር የስምረት ቅንብሮችን ያረጋግጡ።</translation>
-<translation id="8805985421503170600">የፌዴሬትድ የተመሳሳይ ሰዎች ስብስቦች ትምህርት</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> በስህተት የተዘጉ ትሮችን ዳግም መክፈት ይችላል</translation>
 <translation id="8807632654848257479">የረጋ</translation>
 <translation id="8808478386290700967">የድር  መደብር </translation>

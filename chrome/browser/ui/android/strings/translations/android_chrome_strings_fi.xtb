@@ -186,6 +186,7 @@ Hae napauttamalla sanaa. Jos haluat tarkentaa hakuasi, valitse enemmän tai väh
 <translation id="22320125457191592">Sinulle</translation>
 <translation id="2234876718134438132">Synkronointi ja Google-palvelut</translation>
 <translation id="2239812875700136898">Muuta juttujesi asetuksia Discover-asetuksissa</translation>
+<translation id="2251971221270904886">Kun se on päällä ja sen tila on aktiivinen, Chrome päättelee seuraavan seitsemän päivän aikana selaushistorian avulla, mihin ryhmään tai "kohorttiin" kuulut. Mainostajat voivat valita ryhmälle mainoksia. Selaushistoriasi pysyy yksityisenä laitteellasi. Tämä kokeilu on aktiivinen vain <ph name="BEGIN_LINK" />tietyillä alueilla<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Vie salasanat…</translation>
 <translation id="2276696007612801991">Kirjaudu Google-tilillesi tarkistaaksesi salasanasi</translation>
 <translation id="2278052315791335171">Vaikka poistat salasanan, tiliäsi (<ph name="SITE" />) ei poisteta</translation>
@@ -275,6 +276,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2781151931089541271">1 sekunti jäljellä</translation>
 <translation id="2801022321632964776">Päivitä Chrome uusimpaan versioon, niin se toimii omalla kielelläsi</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
+<translation id="2806840421670364300">FLoC-kohdentaminen</translation>
 <translation id="281504910091592009">Katso ja ylläpidä <ph name="BEGIN_LINK" />Google-tilille<ph name="END_LINK" /> tallennettuja salasanoja</translation>
 <translation id="2818669890320396765">Kirjaudu sisään ja ota synkronointi käyttöön, niin voit käyttää kirjanmerkkejäsi kaikilla laitteilla</translation>
 <translation id="2827278682606527653">Fiidikorttien valikko puolivälin korkuinen</translation>
@@ -293,6 +295,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2901411048554510387">Näytetään ehdotuksia: <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Välilehden jakamisen laiteluettelo avataan koko näytön korkeudella.</translation>
 <translation id="2905036901251765993">Jaa lähellä oleville ihmisille antamalla tämä QR-koodi skannattavaksi</translation>
+<translation id="2908243544703713905">Lukemattomia juttuja valmiina</translation>
 <translation id="2909615210195135082">Googlen ilmoitusalusta</translation>
 <translation id="2912296070571964914">Valitse sinua kiinnostavia aiheita</translation>
 <translation id="2923908459366352541">Nimi on virheellinen</translation>
@@ -317,6 +320,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> kirjanmerkki}other{<ph name="BOOKMARKS_COUNT_MANY" /> kirjanmerkkiä}}</translation>
 <translation id="3062802207422175757">Artikkeleita kiinnostuksen kohteistasi Chromessa</translation>
 <translation id="3070005020161560471">Käännä nämä automaattisesti</translation>
+<translation id="3083531420240576529">Voit nollata ryhmän milloin tahansa. Ryhmän määrittämisessä kestää seitsemän päivää.</translation>
 <translation id="3091010850649238832">Näytä leikepöydän sisältö</translation>
 <translation id="3098745985164956033">Jotkin kuvat lähetetään Googlelle, jotta näkemiäsi kuvauksia voidaan parantaa</translation>
 <translation id="3114507951000454849">Lue päivän uutiset <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4060598801229743805">Toimintoja on käytettävissä näytön yläosassa.</translation>
 <translation id="4062305924942672200">Oikeudelliset tiedot</translation>
+<translation id="4082818367361753283">Ryhmän tunnus</translation>
 <translation id="4084682180776658562">Kirjanmerkki</translation>
 <translation id="4084712963632273211">Lähde: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Googlen toimittama<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Poistetaanko sovellustiedot?</translation>
@@ -533,7 +538,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuutti sitten}other{# minuuttia sitten}}</translation>
 <translation id="4587589328781138893">Sivustot</translation>
 <translation id="4594952190837476234">Offline-sivu vastaa tilannetta <ph name="CREATION_TIME" /> ja saattaa poiketa nykyisestä verkkoversiosta.</translation>
-<translation id="4615382002648696011">Seurataan, lukemattomia juttuja valmiina</translation>
 <translation id="4616150815774728855">Avaa <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Todenna henkilöllisyytesi</translation>
 <translation id="4634124774493850572">Käytä salasanaa</translation>
@@ -889,6 +893,11 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6699370405921460408">Googlen palvelimet optimoivat sivut, joilla käyt.</translation>
 <translation id="670498945988402717">Tarkistettu eilen</translation>
 <translation id="6710213216561001401">Edellinen</translation>
+<translation id="671333169801287922">Kun se on päällä, sivustot voivat käyttää täällä näkyvää yksityisyyttä suojaavaa tekniikkaa sisällön ja palveluiden tarjoamiseen. Saatavilla on esimerkiksi vaihtoehtoja sivustojen väliselle seurannalle. Muita kokeiluja voidaan lisätä ajan myötä.
+
+<ph name="BEGIN_LIST_ITEM1" />Mainostajat ja julkaisijat voivat käyttää FLoC-tekniikkaa.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Mainostajat ja julkaisijat voivat tutkia mainosten vaikuttavuutta tavalla, joka ei seuraa sinua eri sivustoilla.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Ajastimesta (<ph name="FQDN" />) loppui aika. Se alkaa alusta huomenna.</translation>
 <translation id="6738516213925468394">Datasi salattiin <ph name="BEGIN_LINK" />synkronoinnin tunnuslauseella<ph name="END_LINK" /> <ph name="TIME" />. Aloita synkronointi antamalla tunnuslause.</translation>
 <translation id="6738867403308150051">Ladataan…</translation>
@@ -1079,6 +1088,9 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="7971136598759319605">Aktiivinen 1 päivä sitten</translation>
 <translation id="7975379999046275268">Esikatsele sivu <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Lataa sivuja nopeuttaaksesi lataamista ja hakemista</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> on aloite, jonka tarkoituksena on pitää verkko avoimena ja kehittää uusia tekniikoita, joiden avulla sinua voidaan suojata seurantamekanismeilta.
+
+Privacy Sandbox ‑kokeiluja kehitetään yhä aktiivisesti, ja ne ovat saatavilla vain tietyillä alueilla. Tällä hetkellä sivustot voivat kokeilla Privacy Sandboxia ja jatkaa samalla nykyisten verkkoteknologioiden, esim. kolmansien osapuolten evästeiden, käyttöä.</translation>
 <translation id="7986497153528221272">Jos haluat nähdä salasanat, sinun on asetettava näytön lukitus laitteellesi</translation>
 <translation id="7998918019931843664">Avaa suljettu välilehti uudelleen</translation>
 <translation id="8004582292198964060">Selain</translation>
@@ -1188,7 +1200,9 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="8662811608048051533">Kirjaa sinut ulos useimmilta sivustoilta.</translation>
 <translation id="8664979001105139458">Tiedoston nimi on jo käytössä</translation>
 <translation id="8676789164135894283">Sisäänkirjautumisen todennukset</translation>
+<translation id="867767487203716855">Seuraava päivitys</translation>
 <translation id="8683039184091909753">kuva</translation>
+<translation id="8683081248374354009">Nollaa ryhmä</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signaalin voimakkuus: # palkki}other{Signaalin voimakkuus: # palkkia}}</translation>
 <translation id="869891660844655955">Vanhenemispäivämäärä</translation>
 <translation id="8699120352855309748">Älä ehdota näiden kielten kääntämistä</translation>

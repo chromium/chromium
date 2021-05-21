@@ -24,7 +24,6 @@
 <translation id="1148499908455722006">Отворете го дијалогот со податоци за <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Спарени уреди</translation>
 <translation id="1165712434476988950">Потребно е да се рестартира уредот за да се примени ажурирањето.</translation>
-<translation id="1170240434488307589">Исклучен е звукот на копчето за микрофонот на уредот.</translation>
 <translation id="1175572348579024023">Лизгај</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Отстрани</translation>
@@ -41,6 +40,7 @@
 <translation id="1247372569136754018">Микрофон (внатрешен)</translation>
 <translation id="1252999807265626933">Се полни од <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какво е времето?</translation>
+<translation id="1266097335951928626">Стартувај ја камерата за селфи</translation>
 <translation id="1267032506238418139">Промена на кратенка</translation>
 <translation id="1269405891096105529">Периферниот уред не е поддржан во режим на гостин</translation>
 <translation id="1270290102613614947">Тастатурата на екранот е оневозможена</translation>
@@ -85,6 +85,7 @@
 <translation id="1555130319947370107">Сина</translation>
 <translation id="1570871743947603115">Вклучи/исклучи Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
+<translation id="159255010947577753">Означувач</translation>
 <translation id="1611993646327628135">Вклучено</translation>
 <translation id="1615402009686901181">Администраторското правило оневозможува снимање на екранот кога се видливи доверливи содржини</translation>
 <translation id="1632985212731562677">Пристапот со прекинувачи може да се оневозможи во „Поставки &gt; Пристапност“.</translation>
@@ -136,8 +137,10 @@
 <translation id="2016340657076538683">Напишете порака</translation>
 <translation id="2018630726571919839">Кажи ми шега</translation>
 <translation id="2021864487439853900">Кликнете за да отклучите</translation>
+<translation id="2047639699071423250">Додај клучна идеја</translation>
 <translation id="2049240716062114887">Името на работната површина е променето во <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Портрет</translation>
+<translation id="2066708475850724665">Сопри ја лупата</translation>
 <translation id="2067602449040652523">Осветленост на тастатурата</translation>
 <translation id="2078034614700056995">Повлечете надесно со четири прста за да се префрлите на следната работна површина</translation>
 <translation id="2079504693865562705">Сокриј ги апликациите од полицата</translation>
@@ -145,10 +148,12 @@
 <translation id="2083190527011054446">Добра ноќ <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Не е поврзан на мрежа</translation>
 <translation id="2108303511227308752">Кратенката од тастатура Alt + Backspace се промени. За да го користите копчето Delete, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
+<translation id="211328683600082144">ВКЛУЧИ ГО МИКРОФОНОТ</translation>
 <translation id="2126242104232412123">Нов работен простор</translation>
 <translation id="2127372758936585790">Полнач со ниско напојување</translation>
 <translation id="2132302418721800944">Снимање цел екран</translation>
 <translation id="2135456203358955318">Закотвена лупа</translation>
+<translation id="2146800439053023141">Вклучи/исклучи ја локацијата на лентата</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Обиди се пак</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Повлечете надолу со три прста за да излезете од „Преглед“</translation>
@@ -328,6 +333,7 @@
 <translation id="3638400994746983214">Вклучете/исклучете го екранот за приватност. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, управуван корисник</translation>
 <translation id="3665889125180354336">Микрофон за снимање</translation>
+<translation id="3680908746918359504">Исчисти ги сите означувачи</translation>
 <translation id="36813544980941320">Wi-Fi мрежите ќе се споделуваат помеѓу вашиот телефон и <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">Се прикажуваат прозорци од тековната работна површина, притиснете го копчето со стрелка за нагоре за да се прикажат прозорци од сите работни површини</translation>
 <translation id="3702846122927433391">Население во Нигерија</translation>
@@ -374,12 +380,12 @@
 <translation id="4021716437419160885">Оди надолу</translation>
 <translation id="4028481283645788203">Потребна е лозинка за поголема безбедност</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Кратенката од тастатура <ph name="LAUNCHER_KEY_NAME" /> + Број се промени. За да ги користите F-копчињата, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Копче од горниот ред.</translation>
 <translation id="4042660782729322247">Го споделувате екранот</translation>
 <translation id="4057003836560082631">Картичка <ph name="INDEX" /> од <ph name="TOTAL_COUNT" /> во прелистувачот. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Искл. за 1 апл.}one{Искл. за # апл.}other{Искл. за # апл.}}</translation>
 <translation id="4066027111132117168">Вклучено, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Среден сигнал</translation>
+<translation id="4095366824370681039">Пенкало со мастило</translation>
 <translation id="4112140312785995938">Премотај наназад</translation>
 <translation id="4114315158543974537">Вклучете ја Phone Hub</translation>
 <translation id="412298498316631026">прозорец</translation>
@@ -448,12 +454,15 @@
 <translation id="4570957409596482333">Копче за „Изберете за говор“</translation>
 <translation id="4577274620589681794">Времето истече · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Прикажи ги прегледите</translation>
+<translation id="4578196883126898996">Микрофонот е исклучен. Вклучете го микрофонот на уредот.</translation>
 <translation id="4578906031062871102">Менито со поставки е отворено</translation>
 <translation id="4581047786858252841">Микрофонот е вклучен</translation>
 <translation id="4585337515783392668">Престани со емитување на непознат приемник</translation>
+<translation id="4586483766170476230">Сопри ја камерата за селфи</translation>
 <translation id="4587299710837179226">Микрофонот е исклучен</translation>
 <translation id="4596144739579517758">Темната тема е исклучена</translation>
 <translation id="4611292653554630842">Најави се</translation>
+<translation id="4614295562446151104">Прошири алатки за означувач</translation>
 <translation id="4623167406982293031">Потврдете ја сметката</translation>
 <translation id="4628757576491864469">Уреди</translation>
 <translation id="4642092649622328492">Снимете делумна слика од екранот</translation>
@@ -510,6 +519,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> е поврзан со нов телефон</translation>
 <translation id="5035389544768382859">Потврдете ја конфигурацијата на екранот</translation>
 <translation id="504465286040788597">Претходен пасус</translation>
+<translation id="5071064518267176975">Дадена апликација сака да го користи микрофонот</translation>
+<translation id="5075554201838155866">Стартувај затворени титлови</translation>
 <translation id="5078796286268621944">Неточен PIN</translation>
 <translation id="5083553833479578423">Отклучете повеќе функции на „Помошникот“.</translation>
 <translation id="5136175204352732067">Поврзана е друга тастатура</translation>
@@ -680,6 +691,7 @@
 <translation id="6612802754306526077">Избран е режимот на снимање на екранот</translation>
 <translation id="6614169507485700968">Вклучен е екранот за приватност</translation>
 <translation id="6627638273713273709">„Пребарување“+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> сака да го користи микрофонот</translation>
 <translation id="6637729079642709226">Сменете го времето</translation>
 <translation id="6641720045729354415">Вклучете/исклучете „Автоматски титлови“. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> сака да потврдите дека сте вие</translation>
@@ -733,6 +745,7 @@
 <translation id="7029814467594812963">Излези од сесијата</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, „Помошник на Google“</translation>
 <translation id="7042322267639375032">Собери ја статусната област</translation>
+<translation id="7045595904618419789">Стартувај ја лупата</translation>
 <translation id="7055910611768509537">Пенкалото не е користено подолго од една седмица</translation>
 <translation id="7066646422045619941">Вашиот администратор ја оневозможил оваа мрежа</translation>
 <translation id="7067196344162293536">Автоматско ротирање</translation>
@@ -753,6 +766,7 @@
 <translation id="7256634071279256947">Заден микрофон</translation>
 <translation id="726276584504105859">Повлечете тука за да користите поделен екран</translation>
 <translation id="7262906531272962081">Создајте потсетник</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> боја на означувач</translation>
 <translation id="7302889331339392448">„Автоматските титлови“ се исклучени.</translation>
 <translation id="7303365578352795231">Се одговара на друг уред.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -782,6 +796,7 @@
 <translation id="7466449121337984263">Допрете го сензорот</translation>
 <translation id="7477793887173910789">Контролирајте ја музиката, видеата и др.</translation>
 <translation id="7483025031359818980">Областа за избор е цел екран</translation>
+<translation id="7486227320194954040">Собери ги алатките за означувачи</translation>
 <translation id="7497767806359279797">Изберете јазик и тастатура</translation>
 <translation id="7509246181739783082">Потврдете го вашиот идентитет</translation>
 <translation id="7513622367902644023">Избран е режимот на слика од екранот</translation>
@@ -800,6 +815,7 @@
 <translation id="7607002721634913082">Паузирано</translation>
 <translation id="7618774594543487847">Неутрална</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">Пенкало за означување</translation>
 <translation id="7633755430369750696">Прикажи поставки за „Споделување во близина“.</translation>
 <translation id="7641938616688887143">Снимајте</translation>
 <translation id="7642647758716480637">Отвори ги поставките за <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -815,6 +831,7 @@
 <translation id="7724603315864178912">Исечи</translation>
 <translation id="7745560842763881396">Прикажи ги апликациите од полицата</translation>
 <translation id="7749443890790263709">Достигнат е максималниот број работни простори.</translation>
+<translation id="7749640678855296659">Микрофонот е исклучен во моментов</translation>
 <translation id="776344839111254542">Кликнете за да ги погледнете деталите за ажурирањето</translation>
 <translation id="7780159184141939021">Ротација на екранот</translation>
 <translation id="7796353162336583443">Допрете го копчето за пенкало на полицата за да напишете белешка, да направите слика од екранот или пак, да го користите „Помошникотна Google“, ласерскиот покажувач или лупата.</translation>
@@ -862,6 +879,7 @@
 <translation id="8113423164597455979">Вкл. за сите апл.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Потврди</translation>
+<translation id="8132487352815776550">Сопри затворени титлови</translation>
 <translation id="8132793192354020517">Поврзано со <ph name="NAME" /></translation>
 <translation id="813913629614996137">Се иницијализира…</translation>
 <translation id="8142441511840089262">Двоен клик</translation>

@@ -24,7 +24,6 @@
 <translation id="1148499908455722006">打开“<ph name="USER_NAME" />”的信息对话框</translation>
 <translation id="1153356358378277386">已配对的设备</translation>
 <translation id="1165712434476988950">必须重启设备，才能应用这项更新。</translation>
-<translation id="1170240434488307589">设备麦克风按钮已被静音。</translation>
 <translation id="1175572348579024023">滚动</translation>
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -373,7 +372,6 @@
 <translation id="4021716437419160885">向下滚动</translation>
 <translation id="4028481283645788203">需要输入密码以增强安全性</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">键盘快捷键“<ph name="LAUNCHER_KEY_NAME" /> + 数字键”已更改。若要使用功能键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 顶排的某个键。</translation>
 <translation id="4042660782729322247">您正在共享屏幕</translation>
 <translation id="4057003836560082631">第 <ph name="INDEX" /> 个浏览器标签页，共 <ph name="TOTAL_COUNT" /> 个。<ph name="SITE_TITLE" />，<ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{对 1 个应用关闭}other{对 # 个应用关闭}}</translation>

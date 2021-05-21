@@ -48,6 +48,7 @@
 <translation id="4852878756222711218">Chromium-ի բոլոր գործառույթներն օգտագործելու համար մտեք ձեր Google հաշիվ</translation>
 <translation id="4985291216379576555">Կապ չկա, Chromium-ը չի կարող ստուգել թարմացումների առկայությունը</translation>
 <translation id="4999538639245140991">Դուք դուրս եք գալիս <ph name="SIGNOUT_MANAGED_DOMAIN" /> տիրույթի ադմինիստրատորի կողմից կառավարվող հաշվից: Նկատի առեք, որ Chromium-ի տվյալները սարքից կհեռացվեն, սակայն կմնան ձեր Google հաշվում:</translation>
+<translation id="5171868502429358653">Մուտք Chromium</translation>
 <translation id="5224391634244552924">Պահված գաղտնաբառեր չկան։ Chromium-ը կարող է ստուգել ձեր գաղտնաբառերը, երբ պահում եք դրանք։</translation>
 <translation id="5308226104666789935">Chromium-ին չհաջողվեց ստուգել թարմացումների առկայությունը</translation>
 <translation id="5396916991083608703">Սահմանե՞լ Chromium-ը որպես կանխադրված դիտարկիչ</translation>
@@ -63,6 +64,7 @@
 1. Բացեք կարգավորումները։
 2. Հպեք «Դիտարկիչի կանխադրված հավելված»։
 3. Ընտրեք Chromium-ը։</translation>
+<translation id="6155422572367400359">Մուտք գործեք այս կայքում, ձեր Google հաշիվ և Chromium։ Համաժամացումը կարող եք ավելի ուշ միացնել։</translation>
 <translation id="6268381023930128611">Դուրս գա՞լ Chromium-ից:</translation>
 <translation id="632825460376924298">Թույլատրել մուտքը Chromium-ում</translation>
 <translation id="6337530241089703714">Հեռացնե՞լ Chromium-ի տվյալներն այս սարքից</translation>

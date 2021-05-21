@@ -24,7 +24,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1148499908455722006">Öppna dialogrutan med information om <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Kopplade enheter</translation>
 <translation id="1165712434476988950">Enheten måste startas om för att uppdateringen ska tillämpas.</translation>
-<translation id="1170240434488307589">Enhetens mikrofon är avstängd.</translation>
 <translation id="1175572348579024023">Rulla</translation>
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1181037720776840403">Ta bort</translation>
@@ -41,6 +40,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1247372569136754018">Mikrofon (inbyggd)</translation>
 <translation id="1252999807265626933">Laddar från <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Vad är det för väder?</translation>
+<translation id="1266097335951928626">Starta selfiekameran</translation>
 <translation id="1267032506238418139">Kortkommandot har ändrats</translation>
 <translation id="1269405891096105529">Kringutrustningen stöds inte i gästläget</translation>
 <translation id="1270290102613614947">Skärmen på tangentbordet har inaktiverats</translation>
@@ -85,6 +85,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1570871743947603115">Aktivera och inaktivera Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
+<translation id="159255010947577753">Märkpenna</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1615402009686901181">Skärmbilder inaktiveras av en administratörspolicy när konfidentiellt innehåll är synligt</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
@@ -136,8 +137,10 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2016340657076538683">Skriv ett meddelande</translation>
 <translation id="2018630726571919839">Dra ett skämt</translation>
 <translation id="2021864487439853900">Klicka för att låsa upp</translation>
+<translation id="2047639699071423250">Lägg till ett nyckelbegrepp</translation>
 <translation id="2049240716062114887">Skrivbordsnamnet ändrades till <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
+<translation id="2066708475850724665">Stoppa förstoringsglaset</translation>
 <translation id="2067602449040652523">Ljusstyrka för tangentbordet</translation>
 <translation id="2078034614700056995">Svep till höger med fyra fingrar för att byta till nästa skrivbord</translation>
 <translation id="2079504693865562705">Dölj appar på hyllan</translation>
@@ -145,10 +148,12 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Ingen nätverksanslutning</translation>
 <translation id="2108303511227308752">Kortkommandot Alt + backsteg har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + backsteg för att använda Delete-tangenten.</translation>
+<translation id="211328683600082144">AKTIVERA MIKROFONEN.</translation>
 <translation id="2126242104232412123">Ny arbetsyta</translation>
 <translation id="2127372758936585790">Laddning med låg effekt</translation>
 <translation id="2132302418721800944">Spela in hela skärmen</translation>
 <translation id="2135456203358955318">Dockad skärmförstoring</translation>
+<translation id="2146800439053023141">Plats för fältet aktivera/inaktivera</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Försök igen</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Stäng översikten genom att svepa nedåt med tre fingrar</translation>
@@ -328,6 +333,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3638400994746983214">Aktivera och inaktivera sekretesskärmen. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Hanterad användare</translation>
 <translation id="3665889125180354336">Spela in via mikrofon</translation>
+<translation id="3680908746918359504">Rensa alla markeringar</translation>
 <translation id="36813544980941320">wifi-nätverk delas mellan telefonen och <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">Visar fönster från det aktuella skrivbordet, tryck på uppåtpilen för att visa fönster från alla skrivbord</translation>
 <translation id="3702846122927433391">Befolkning i Nigeria</translation>
@@ -373,12 +379,12 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4021716437419160885">Rulla ned</translation>
 <translation id="4028481283645788203">Du måste ange lösenord för större säkerhet</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Kortkommandot <ph name="LAUNCHER_KEY_NAME" /> + siffra har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + en tangent på översta raden om du vill använda F-tangenterna.</translation>
 <translation id="4042660782729322247">Skärmen delas</translation>
 <translation id="4057003836560082631">Webbläsarflik <ph name="INDEX" /> av <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Av för en app}other{Av för # appar}}</translation>
 <translation id="4066027111132117168">På, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">medelstark signal</translation>
+<translation id="4095366824370681039">Bläckpenna</translation>
 <translation id="4112140312785995938">Sök bakåt</translation>
 <translation id="4114315158543974537">Aktivera Phone Hub</translation>
 <translation id="412298498316631026">fönster</translation>
@@ -447,12 +453,15 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4570957409596482333">Knappen Textuppläsning</translation>
 <translation id="4577274620589681794">Tiden är ute · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Visa förhandsgranskningar</translation>
+<translation id="4578196883126898996">Mikrofonen är inaktiverad. Aktivera enhetens mikrofonknapp.</translation>
 <translation id="4578906031062871102">Inställningsmenyn har öppnats</translation>
 <translation id="4581047786858252841">Mikrofonen är på</translation>
 <translation id="4585337515783392668">Sluta casta till en okänd mottagare</translation>
+<translation id="4586483766170476230">Stoppa selfiekameran</translation>
 <translation id="4587299710837179226">Mikrofonen är av</translation>
 <translation id="4596144739579517758">Mörkt tema är av</translation>
 <translation id="4611292653554630842">Logga in</translation>
+<translation id="4614295562446151104">Utöka markeringsverktygen</translation>
 <translation id="4623167406982293031">Verifiera konto</translation>
 <translation id="4628757576491864469">Enheter</translation>
 <translation id="4642092649622328492">Ta en skärmbild av en del av skärmen</translation>
@@ -509,6 +518,8 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> har anslutits till en ny mobil</translation>
 <translation id="5035389544768382859">Bekräfta skärminställningarna</translation>
 <translation id="504465286040788597">Föregående stycke</translation>
+<translation id="5071064518267176975">En app vill använda mikrofonen</translation>
+<translation id="5075554201838155866">Starta textning</translation>
 <translation id="5078796286268621944">Fel pinkod</translation>
 <translation id="5083553833479578423">Lås upp fler funktioner för Assistent</translation>
 <translation id="5136175204352732067">Ett annat tangentbord har anslutits</translation>
@@ -679,6 +690,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6612802754306526077">Skärminspelningsläget har valts</translation>
 <translation id="6614169507485700968">Sekretesskärmen är aktiverad</translation>
 <translation id="6627638273713273709">Söktangenten + Skift + K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> vill använda mikrofonen</translation>
 <translation id="6637729079642709226">Ändra tid</translation>
 <translation id="6641720045729354415">Aktivera och inaktivera Live Caption. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vill kontrollera din identitet</translation>
@@ -732,6 +744,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7029814467594812963">Avsluta session</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Komprimera statusfält</translation>
+<translation id="7045595904618419789">Starta förstoringsglaset</translation>
 <translation id="7055910611768509537">E-pennan har inte använts på över en vecka.</translation>
 <translation id="7066646422045619941">Det här nätverket har inaktiverats av administratören.</translation>
 <translation id="7067196344162293536">Rotera automatiskt</translation>
@@ -752,6 +765,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7256634071279256947">Mikrofonen på baksidan</translation>
 <translation id="726276584504105859">Dra hit för att dela upp skärmen</translation>
 <translation id="7262906531272962081">Skapa påminnelse</translation>
+<translation id="7279434993080105272">Markeringsfärg: <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">Live Caption är inaktiverat.</translation>
 <translation id="7303365578352795231">Svarar på en annan enhet.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7466449121337984263">Tryck på sensorn</translation>
 <translation id="7477793887173910789">Styr uppspelningen av musik, videor med mera</translation>
 <translation id="7483025031359818980">Markeringsområdet är inställt på helskärm</translation>
+<translation id="7486227320194954040">Komprimera markeringsverktygen</translation>
 <translation id="7497767806359279797">Välj språk och tangentbord</translation>
 <translation id="7509246181739783082">Verifiera din identitet</translation>
 <translation id="7513622367902644023">Skärmbildsläget har valts</translation>
@@ -799,6 +814,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7607002721634913082">Pausad</translation>
 <translation id="7618774594543487847">Neutralt</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7631906263969450674">Märkpenna</translation>
 <translation id="7633755430369750696">Visa inställningar för Närdelning</translation>
 <translation id="7641938616688887143">Spela in</translation>
 <translation id="7642647758716480637">Öppnar inställningarna för <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7745560842763881396">Visa appar på hyllan</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
+<translation id="7749640678855296659">Mikrofonen är för närvarande inaktiverad</translation>
 <translation id="776344839111254542">Klicka här om du vill se mer information om uppdateringen</translation>
 <translation id="7780159184141939021">Rotera skärmen</translation>
 <translation id="7796353162336583443">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda Google Assistent, laserpekaren eller förstoringsglaset.</translation>
@@ -861,6 +878,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8113423164597455979">Alla appar på</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
+<translation id="8132487352815776550">Stoppa textning</translation>
 <translation id="8132793192354020517">Ansluten till <ph name="NAME" /></translation>
 <translation id="813913629614996137">Initierar …</translation>
 <translation id="8142441511840089262">Dubbelklicka</translation>

@@ -40,6 +40,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2560420686485554789">Chromium potrebuje na sťahovanie súborov prístup k úložisku</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">Ak chcete získať prístup k obsahu prehliadača Chromium vo všetkých svojich zariadeniach, prihláste sa, aby ste mohli zapnúť synchronizáciu.</translation>
+<translation id="2580426763510374355">Nainštalovať Chromium OS</translation>
 <translation id="2583187216237139145">Všetky údaje prehliadača Chromium vygenerované počas používania tohto profilu (napríklad vytvorenie záložiek, histórie, hesiel a ďalších nastavení) môžu byť odstránené správcom pracovného profilu. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Ak chcete uplatniť aktualizáciu, musíte reštartovať systém Chromium OS.</translation>
 <translation id="2648074677641340862">V priebehu inštalácie sa vyskytla chyba operačného systému. Stiahnite prehliadač Chromium znova.</translation>
@@ -138,6 +139,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5479196819031988440">Chromium OS nedokáže túto stránku otvoriť.</translation>
 <translation id="5480860683791598150">Chromium potrebuje prístup k vašej polohe, aby ju mohol zdieľať s týmto webom</translation>
+<translation id="5481338274774984070">Chromium odporúča, aby ste tento súbor nesťahovali ani neotvárali.</translation>
 <translation id="549669000822060376">Počkajte, kým Chromium nainštaluje najnovšie aktualizácie systému.</translation>
 <translation id="5496810170689441661">Chromium sa pokúša upraviť heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="5527463683072221100">Otvoriť súbory PDF v prehliadači Chromium</translation>

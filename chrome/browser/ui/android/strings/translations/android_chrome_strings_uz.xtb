@@ -186,6 +186,7 @@ Qidiruvni boshlash uchun istalgan soʻz ustiga bosing. Soʻrovni aniqlashtirish 
 <translation id="22320125457191592">Siz uchun</translation>
 <translation id="2234876718134438132">Sinxronizatsiya va Google xizmatlari</translation>
 <translation id="2239812875700136898">Parametrlar orqali Discover yangiliklarini boshqarish tugmasi</translation>
+<translation id="2251971221270904886">Privacy Sandbox funksiyalari yoniq va faol boʻlsa, Chrome oxirgi 7 kunlik brauzer tarixi yordamida siz kirgan guruh yoki kogortni aniqlaydi. Reklama beruvchilar eʼlonlarni guruh uchun tanlay oladi. Brauzer tarixi qurilmada maxfiy saqlanadi. Bu tajribaviy funksiya faqatgina <ph name="BEGIN_LINK" />ayrim mamlakatlarda<ph name="END_LINK" /> ishlaydi.</translation>
 <translation id="2259659629660284697">Parollarni eksport qilish…</translation>
 <translation id="2276696007612801991">Parollaringizni tekshirish uchun Google hisobingizga kiring</translation>
 <translation id="2278052315791335171">Bu parol olib tashlangani bilan <ph name="SITE" /> hisobingiz oʻchib ketmaydi</translation>
@@ -275,6 +276,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2781151931089541271">1 soniya qoldi</translation>
 <translation id="2801022321632964776">Chromeni eng oxirgi versiyagacha yangilab, internetni oʻz tilingizda kezing</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google hisobingizga<ph name="END_LINK" /> saqlangan parollarni ko‘rish va boshqarish</translation>
 <translation id="2818669890320396765">Xatcho‘plarni barcha qurilmalaringizda sinxronlash uchun hisobingizga kiring va sinxronizatsiyani yoqing</translation>
 <translation id="2827278682606527653">Quyi bildirgi menyu yarim hajmda ochildi</translation>
@@ -293,6 +295,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> uchun tavsiyalar koʻrsatilmoqda</translation>
 <translation id="2904414404539560095">Butun hajmda ochilgan varaq uzatiladigan qurilmalar roʻyxati.</translation>
 <translation id="2905036901251765993">Yaqin-atrofdagilarga ulashish uchun ular shu QR kodni skanerlashi kerak.</translation>
+<translation id="2908243544703713905">Ochilmagan hikoyalar tayyor</translation>
 <translation id="2909615210195135082">Google bildirishnomalar platformasi</translation>
 <translation id="2912296070571964914">Qiziqarli mavzularni boshqarish</translation>
 <translation id="2923908459366352541">Ism yaroqsiz</translation>
@@ -317,6 +320,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ta bukmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> ta bukmark}}</translation>
 <translation id="3062802207422175757">Chrome brauzerida qiziqishlaringizga oid maqolalar</translation>
 <translation id="3070005020161560471">Avtomatik tarjima qilinsin</translation>
+<translation id="3083531420240576529">Guruh sozlamalarini istalgan vaqtda tiklash mumkin. Guruhingiz 7 kunda aniqlanadi.</translation>
 <translation id="3091010850649238832">Vaqtincha xotira kontentini chiqarish</translation>
 <translation id="3098745985164956033">Tavsiflarini yaxshilash uchun ayrim rasmlar Googlega yuborildi</translation>
 <translation id="3114507951000454849">Bugungi yangiliklar bilan tanishing <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privacy Sandbox hali ishlab chiqish jarayonida va ayrim mamlakatlarda mavjud. Ho
 <translation id="4056223980640387499">Sepiya</translation>
 <translation id="4060598801229743805">Parametrlar ekranning yuqoriroq qismida joylashgan</translation>
 <translation id="4062305924942672200">Yuridik ma’lumot</translation>
+<translation id="4082818367361753283">Guruh ID</translation>
 <translation id="4084682180776658562">Xatcho‘p</translation>
 <translation id="4084712963632273211">Muallifi: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google tomonidan taqdim etildi<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Bu ilova maʼlumotlari oʻchirilsinmi?</translation>
@@ -533,7 +538,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4583164079174244168">{MINUTES,plural, =1{# daqiqa oldin}other{# daqiqa oldin}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Bu sahifa saytning <ph name="CREATION_TIME" /> kunidagi nusxasi va onlayn versiyasidan farq qilishi mumkin.</translation>
-<translation id="4615382002648696011">Kuzatilmoqda, ochilmagan hikoyalar tayyor</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> veb-ilovasini ochish</translation>
 <translation id="4619564267100705184">Bu siz ekaningizni isbotlang</translation>
 <translation id="4634124774493850572">Paroldan foydalanish</translation>
@@ -889,6 +893,11 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6699370405921460408">Google serverlari kiriladigan sahifalarni tezroq yuklaydi.</translation>
 <translation id="670498945988402717">Kecha tekshirilgan</translation>
 <translation id="6710213216561001401">Avvalgi</translation>
+<translation id="671333169801287922">Agar yoqilsa, saytlar oʻzlarining kontent va xizmatlarini taqdim etish uchun bu yerda koʻrsatilgan maxfiylikni saqlash texnikalaridan foydalanishi mumkin. Bunga muqobil saytlararo kuzatuv ham kiradi. Vaqti-vaqti bilan koʻproq sinov funksiyalari kiritiladi.
+
+<ph name="BEGIN_LIST_ITEM1" />Reklama beruvchilar va noshirlar FLoC uslubidan foydalanishi mumkin.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Reklama beruvchilar va noshirlar sizni internetda kuzatmasdan reklamalar samaradorligini oʻrganishlari mumkin.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117"><ph name="FQDN" /> taymeridagi vaqt tugadi. Ertaga qaytadan boshlanadi.</translation>
 <translation id="6738516213925468394">Maʼlumotlaringiz <ph name="TIME" /> sanasida <ph name="BEGIN_LINK" />kodli ibora<ph name="END_LINK" /> bilan shifrlangan. Sinxronizatsiyani boshlash uchun uni kiriting.</translation>
 <translation id="6738867403308150051">Yuklab olinmoqda...</translation>
@@ -1079,6 +1088,9 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7971136598759319605">1 kun oldin onlayn edi</translation>
 <translation id="7975379999046275268">Sahifaga razm solish <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Saytlarni kezish va qidiruv tezroq bajarilishi uchun sahifalar oldindan yuklansin</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> – bu ochiq internetni rivojlantirishni qoʻllab-quvvatlovchi va foydalanuvchilarni kuzatuv mexanizmlaridan himoya qiladigan texnologiyalarni ishlab chiquvchi tinimsiz tashabbus.
+
+Privacy Sandbox hali ishlab chiqish jarayonida va faqatgina ayrim mamlakatlarda mavjud. Hozircha uchinchi tomon cookie fayllari kabi veb texnologiyalardan voz kechmaslik sharti bilan, saytlar Privacy Sandbox funksiyalaridan foydalanishi mumkin.</translation>
 <translation id="7986497153528221272">Parollarni koʻrish uchun qurilmangizni ekran kodi bilan qulflang.</translation>
 <translation id="7998918019931843664">Yopiq ichki oynani qayta ochish</translation>
 <translation id="8004582292198964060">Brauzer</translation>
@@ -1188,7 +1200,9 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8662811608048051533">Bir nechta saytlardagi hisobingizdan chiqasiz.</translation>
 <translation id="8664979001105139458">Bunday nomli fayl allaqachon bor</translation>
 <translation id="8676789164135894283">Kirishni tasdiqlash</translation>
+<translation id="867767487203716855">Keyingi yangilanish</translation>
 <translation id="8683039184091909753">rasm</translation>
+<translation id="8683081248374354009">Guruh sozlamalarini tiklash</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signal darajasi: # chiziqda}other{Signal darajasi: # chiziqda}}</translation>
 <translation id="869891660844655955">Tugash muddati</translation>
 <translation id="8699120352855309748">Quyidagi tillarga tarjima taklif qilinmasin</translation>

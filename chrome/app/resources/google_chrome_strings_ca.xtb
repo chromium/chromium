@@ -167,6 +167,7 @@
 <translation id="5394833366792865639">Comparteix una pestanya de Chrome</translation>
 <translation id="5430073640787465221">El fitxer de preferències està malmès o no és vàlid. Google Chrome no pot recuperar la configuració.</translation>
 <translation id="5434383153637353914">En aquesta pàgina pots gestionar els Comptes de Google en què tinguis la sessió iniciada. Aquests comptes estaran disponibles al navegador Chrome i a les aplicacions de Play Store, i també en serveis com ara Gmail, Drive i YouTube. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Instal·la Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome està provant de mostrar les contrasenyes.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Si alguna opció de configuració no es mostra en aquesta pàgina, consulta la <ph name="LINK_BEGIN" />configuració de Chrome OS<ph name="LINK_END" />.</translation>
@@ -249,6 +250,7 @@
 <translation id="7896673875602241923">Algú ha iniciat anteriorment la sessió a Chrome en aquest ordinador com a <ph name="ACCOUNT_EMAIL_LAST" />. Crea un usuari de Chrome per mantenir la informació separada.</translation>
 <translation id="7905891027772979035">Chrome no pot comprovar les teves extensions. Torna-ho a provar més tard.</translation>
 <translation id="7930071585467473040">Google Chrome està provant de copiar les contrasenyes.</translation>
+<translation id="7951988079884443914">Chrome et recomana que no baixis ni obris aquest fitxer.</translation>
 <translation id="7962410387636238736">Aquest ordinador ja no rebrà més actualitzacions de Google Chrome perquè Windows XP i Windows Vista ja no són compatibles</translation>
 <translation id="79947657522496226">Chrome OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l‘<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Torna a instal·lar Chrome</translation>

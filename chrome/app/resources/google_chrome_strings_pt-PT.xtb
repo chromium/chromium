@@ -167,6 +167,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="5394833366792865639">Partilhe um separador do Chrome</translation>
 <translation id="5430073640787465221">O ficheiro de preferências está danificado ou não é válido. O Google Chrome não consegue recuperar as suas definições.</translation>
 <translation id="5434383153637353914">Esta página permite-lhe gerir Contas Google com sessão iniciada. Estas contas estarão disponíveis no navegador Chrome e nas apps da Play Store, bem como em serviços como o Gmail, o Drive e o YouTube. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Instalar o Chrome OS</translation>
 <translation id="556024056938947818">O Google Chrome está a tentar mostrar palavras-passe.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Se não encontrar uma definição nesta página, procure nas <ph name="LINK_BEGIN" />
@@ -250,6 +251,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="7896673875602241923">Anteriormente, alguém iniciou sessão no Chrome neste computador com a conta <ph name="ACCOUNT_EMAIL_LAST" />. Crie um novo utilizador do Chrome para manter as informações em separado.</translation>
 <translation id="7905891027772979035">O Chrome não consegue verificar as suas extensões. Tente novamente mais tarde.</translation>
 <translation id="7930071585467473040">O Google Chrome está a tentar copiar palavras-passe.</translation>
+<translation id="7951988079884443914">O Chrome recomenda que não instale nem abra este ficheiro.</translation>
 <translation id="7962410387636238736">Este computador deixará de receber atualizações do Google Chrome, uma vez que o Windows XP e o Windows Vista já não são suportados.</translation>
 <translation id="79947657522496226">A criação do Chrome OS foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de programação Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Reinstalar Chrome</translation>

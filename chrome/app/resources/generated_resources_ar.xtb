@@ -891,7 +891,6 @@
 <translation id="1926339101652878330">تتحكم سياسات المؤسسة في هذه الإعدادات. يُرجى الاتصال بالمشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="1927632033341042996">إصبع <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">رقم التعريف الشخصي لقفل الشاشة</translation>
-<translation id="1928202201223835302">إدخال رقم التعريف الشخصي القديم</translation>
 <translation id="1928696683969751773">التحديثات</translation>
 <translation id="1929186283613845153">جارٍ فحص الملف.</translation>
 <translation id="1929343511231420085">أي منفذ تسلسلي</translation>
@@ -1646,7 +1645,6 @@
 <translation id="2749756011735116528">تسجيل الدخول إلى <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">‏شريحة SIM</translation>
 <translation id="2749881179542288782">تحقق من التدقيق النحوي مع التدقيق الإملائي</translation>
-<translation id="2751131328353405138">‏جارٍ تثبيت نظام ملفات ssh لحاوية نظام التشغيل Linux</translation>
 <translation id="2753677631968972007">التحكّم اليدوي بأذونات المواقع الإلكترونية</translation>
 <translation id="2755349111255270002">إعادة ضبط جهاز <ph name="DEVICE_TYPE" /> هذا</translation>
 <translation id="2755367719610958252">إدارة ميزات تسهيل الاستخدام
@@ -1780,7 +1778,6 @@
 <translation id="2891922230654533301">هل تريد استخدام جهازك لتسجيل الدخول إلى <ph name="APP_NAME" />؟</translation>
 <translation id="2893168226686371498">المتصفح التلقائي</translation>
 <translation id="2894757982205307093">علامة تبويب جديدة في مجموعة</translation>
-<translation id="289644616180464099">‏تم قفل شريحة SIM</translation>
 <translation id="289695669188700754">معرّف المفتاح: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ستتم إزالة هذا الإعداد المخصّص عند إغلاق جميع نوافذ التصفّح المتخفي.</translation>
 <translation id="2897878306272793870">هل تريد فعلًا فتح هذا العدد من علامات التبويب<ph name="TAB_COUNT" />؟</translation>
@@ -2246,7 +2243,6 @@
 <translation id="3427092606871434483">السماح (تلقائي)</translation>
 <translation id="3428419049384081277">تم تسجيل دخولك!</translation>
 <translation id="3428747202529429621">‏يوفّر لك هذا الوضع حماية في Chrome، ويمكن استخدامه لتحسين مستوى أمانك في تطبيقات Google الأخرى عندما تكون مسجلًا دخولك.</translation>
-<translation id="3428800329481094896">‏جارٍ استرجاع مفاتيح SSH لحاوية نظام التشغيل Linux</translation>
 <translation id="3429160811076349561">تم إيقاف ميزات الإصدار التجريبي.</translation>
 <translation id="3429271624041785769">لغات محتوى الويب</translation>
 <translation id="3429275422858276529">ضَع إشارة على هذه الصفحة لسهولة العثور عليها لاحقًا</translation>
@@ -3727,7 +3723,6 @@
 <translation id="5072900412896857127">‏يتعذّر تحميل بنود خدمة Google Play. يُرجى التحقُّق من الاتصال بالشبكة وإعادة المحاولة.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" /> و<ph name="FILE2" />}zero{<ph name="FILE1" /> و<ph name="FILE2" /> و# آخر}few{<ph name="FILE1" /> و<ph name="FILE2" /> و# أخرى}many{<ph name="FILE1" /> و<ph name="FILE2" /> و# آخر}other{<ph name="FILE1" /> و<ph name="FILE2" /> و# آخر}}</translation>
 <translation id="5074318175948309511">قد تحتاج هذه الصفحة إلى إعادة التحميل قبل تنفيذ الإعدادات الجديدة.</translation>
-<translation id="5075131525758602494">‏أدخل رمز PIN لشريحة SIM</translation>
 <translation id="5075910247684008552">محتوى غير آمن محظور تلقائيًا على مواقع إلكترونية آمنة</translation>
 <translation id="5078638979202084724">وضع إشارات على كل علامات التبويب</translation>
 <translation id="5078796286268621944">رقم التعريف الشخصي غير صحيح</translation>

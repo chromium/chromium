@@ -1922,7 +1922,6 @@
 <translation id="8202097416529803614">Sifariş xülasəsi</translation>
 <translation id="8202370299023114387">Ziddiyət</translation>
 <translation id="8206978196348664717">Prc4 (Zərf)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{ID'ni sıfırladığınız zaman cari ID etibarsız olacaq və yenisi 1 gündən az müddətdə veriləcək}=1{ID'ni sıfırladığınız zaman cari ID etibarsız olacaq və yenisi 1 gün ərzində veriləcək}other{ID'ni sıfırladığınız zaman cari ID etibarsız olacaq və yenisi {NUM_DAYS} gün ərzində veriləcək}}</translation>
 <translation id="8211406090763984747">Bağlantı təhlükəsizdir</translation>
 <translation id="8213464188712611711">Yaddaşlar</translation>
 <translation id="8218327578424803826">Ayrılmış yer:</translation>

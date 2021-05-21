@@ -884,7 +884,6 @@
 <translation id="1926339101652878330">આ સેટિંગ એન્ટરપ્રાઇઝ પૉલિસી દ્વારા નિયંત્રિત થાય છે. વધુ માહિતી માટે કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="1927632033341042996">ફિંગર <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">સ્ક્રીન લૉકનો પિન</translation>
-<translation id="1928202201223835302">જૂનો PIN દાખલ કરો</translation>
 <translation id="1928696683969751773">અપડેટ</translation>
 <translation id="1929186283613845153">આ ફાઇલ સ્કૅન થઈ રહી છે.</translation>
 <translation id="1929343511231420085">કોઈપણ સીરિયલ પોર્ટ</translation>
@@ -1640,7 +1639,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> પર સાઇન ઇન કરો</translation>
 <translation id="2749836841884031656">સિમ</translation>
 <translation id="2749881179542288782">જોડણી સાથે વ્યાકરણ તપાસો</translation>
-<translation id="2751131328353405138">Linux કન્ટેનરનાં sshfsને માઉન્ટ કરી રહ્યાં છીએ</translation>
 <translation id="2753677631968972007">સાઇટની પરવાનગીઓને મેન્યુઅલી નિયંત્રિત કરો.</translation>
 <translation id="2755349111255270002">આ <ph name="DEVICE_TYPE" />ને રીસેટ કરો</translation>
 <translation id="2755367719610958252">ઍક્સેસિબિલિટી સુવિધાઓ મેનેજ કરો</translation>
@@ -1773,7 +1771,6 @@
 <translation id="2891922230654533301"><ph name="APP_NAME" />માં સાઇન ઇન કરવા માટે તમારા ડિવાઇસનો ઉપયોગ કરીએ?</translation>
 <translation id="2893168226686371498">ડિફૉલ્ટ બ્રાઉઝર</translation>
 <translation id="2894757982205307093">ગ્રૂપમાં નવું ટૅબ</translation>
-<translation id="289644616180464099">SIM કાર્ડ લૉક કરેલ છે</translation>
 <translation id="289695669188700754">કી ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">જ્યારે તમે તમારી બધી છુપી વિન્ડો બંધ કરશો, ત્યારે આ કસ્ટમ સેટિંગ કાઢી નાખવામાં આવશે</translation>
 <translation id="2897878306272793870">શું તમે ખરેખર <ph name="TAB_COUNT" /> ટૅબ્સ ખોલવા માંગો છો?</translation>
@@ -2238,7 +2235,6 @@
 <translation id="3427092606871434483">મંજૂરી આપો (ડિફૉલ્ટ)</translation>
 <translation id="3428419049384081277">તમે સાઇન ઇન છો!</translation>
 <translation id="3428747202529429621">તમને Chrome પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષા બહેતર બનાવવામાં ઉપયોગમાં લેવાઈ શકે છે</translation>
-<translation id="3428800329481094896">Linux કન્ટેનર ssh કી મેળવી રહ્યાં છીએ</translation>
 <translation id="3429160811076349561">અજમાયશની સુવિધાઓ બંધ છે</translation>
 <translation id="3429271624041785769">વેબના કન્ટેન્ટની ભાષાઓ</translation>
 <translation id="3429275422858276529">થોડા સમય પછી આ પેજને સરળતાથી શોધવા માટે તેને બુકમાર્ક કરો</translation>
@@ -3722,7 +3718,6 @@
 <translation id="5072900412896857127">Google Playની સેવાની શરતો લોડ કરી શકાઈ નથી. કૃપા કરીને તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" /> અને વધુ #}other{<ph name="FILE1" />, <ph name="FILE2" /> અને વધુ #}}</translation>
 <translation id="5074318175948309511">નવી સેટિંગ્સ પ્રભાવમાં આવે તે પહેલાં આ પૃષ્ઠને ફરીથી લોડ કરવાની જરૂર પડી શકે છે.</translation>
-<translation id="5075131525758602494">SIM નો PIN દાખલ કરો</translation>
 <translation id="5075910247684008552">સુરક્ષિત સાઇટ પર અસુરક્ષિત કન્ટેન્ટને બ્લૉક કરેલું હોય છે</translation>
 <translation id="5078638979202084724">બધા ટૅબ્સ બુકમાર્ક કરો</translation>
 <translation id="5078796286268621944">ખોટો PIN</translation>

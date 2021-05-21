@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">Chromium cần quyền truy cập vào bộ nhớ để tải tệp xuống</translation>
 <translation id="2572494885440352020">Trình trợ giúp của Chromium</translation>
 <translation id="2577788541081224677">Để truy cập vào nội dung của bạn trên Chromium bằng mọi thiết bị, hãy đăng nhập rồi bật tính năng đồng bộ hóa.</translation>
+<translation id="2580426763510374355">Cài đặt Chromium OS</translation>
 <translation id="2583187216237139145">Quản trị viên hồ sơ công việc có thể xóa mọi dữ liệu trên Chromium được tạo trong quá trình sử dụng hồ sơ này (chẳng hạn như hoạt động tạo dấu trang, các trang web đã truy cập, mật khẩu và các tùy chọn cài đặt khác). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS cần được khởi động lại để áp dụng bản cập nhật.</translation>
 <translation id="2648074677641340862">Đã xảy ra lỗi hệ điều hành khi cài đặt. Hãy tải xuống Chromium lại lần nữa.</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium phiên bản beta</translation>
 <translation id="5479196819031988440">Chromium OS không thể mở trang này.</translation>
 <translation id="5480860683791598150">Chromium cần quyền truy cập vào vị trí của bạn để chia sẻ thông tin vị trí với trang web này</translation>
+<translation id="5481338274774984070">Chromium khuyên bạn không nên mở hoặc tải tệp này xuống.</translation>
 <translation id="549669000822060376">Vui lòng đợi khi Chromium cài đặt các bản cập nhật hệ thống mới nhất.</translation>
 <translation id="5496810170689441661">Chromium đang cố gắng chỉnh sửa mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="5527463683072221100">Mở tệp PDF trong Chromium</translation>

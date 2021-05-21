@@ -186,6 +186,7 @@ Ketuk kata apa pun untuk menelusuri. Untuk menyaring penelusuran, sentuh lama un
 <translation id="22320125457191592">Untuk Anda</translation>
 <translation id="2234876718134438132">Sinkronisasi dan layanan Google</translation>
 <translation id="2239812875700136898">Kontrol artikel Anda dengan tombol Opsi untuk Discover</translation>
+<translation id="2251971221270904886">Jika diaktifkan dan statusnya aktif, Chrome akan menggunakan histori penjelajahan Anda selama 7 hari untuk menentukan grup, atau “kohor”, tempat Anda berada. Pengiklan dapat memilih iklan untuk grup tersebut. Histori penjelajahan Anda tetap bersifat pribadi di perangkat Anda. Uji coba ini hanya aktif di <ph name="BEGIN_LINK" />beberapa wilayah<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Ekspor sandi…</translation>
 <translation id="2276696007612801991">Login ke Akun Google Anda untuk memeriksa sandi</translation>
 <translation id="2278052315791335171">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="SITE" /></translation>
@@ -275,6 +276,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2781151931089541271">1 detik lagi</translation>
 <translation id="2801022321632964776">Update untuk mendapatkan bahasa Anda di versi terbaru Chrome</translation>
 <translation id="2805756323405976993">Apl</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Lihat dan kelola sandi tersimpan di <ph name="BEGIN_LINK" />Akun Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Untuk dapat mengakses bookmark Anda di semua perangkat, login dan aktifkan sinkronisasi</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -293,6 +295,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2901411048554510387">Menampilkan saran untuk <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Daftar perangkat yang dapat digunakan untuk berbagi tab terbuka dalam layar penuh.</translation>
 <translation id="2905036901251765993">Untuk berbagi dengan orang-orang di sekitar, izinkan mereka memindai kode QR ini</translation>
+<translation id="2908243544703713905">Tersedia artikel yang belum dibaca</translation>
 <translation id="2909615210195135082">Platform Notifikasi Google</translation>
 <translation id="2912296070571964914">Kelola topik yang menarik bagi Anda</translation>
 <translation id="2923908459366352541">Nama tidak valid</translation>
@@ -317,6 +320,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmark}}</translation>
 <translation id="3062802207422175757">Artikel di Chrome terkait minat Anda</translation>
 <translation id="3070005020161560471">Otomatis terjemahkan</translation>
+<translation id="3083531420240576529">Anda dapat mereset grup kapan saja. Perlu waktu 7 hari untuk menentukan grup Anda.</translation>
 <translation id="3091010850649238832">Tampilkan konten papan klip</translation>
 <translation id="3098745985164956033">Beberapa gambar dikirim ke Google guna menyempurnakan deskripsi untuk Anda</translation>
 <translation id="3114507951000454849">Baca berita hari ini <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Opsi yang tersedia di dekat bagian atas layar</translation>
 <translation id="4062305924942672200">Informasi hukum</translation>
+<translation id="4082818367361753283">ID Grup</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084712963632273211">Dari <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />dikirim oleh Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Hapus data aplikasi?</translation>
@@ -533,7 +538,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4583164079174244168">{MINUTES,plural, =1{# menit yang lalu}other{# menit yang lalu}}</translation>
 <translation id="4587589328781138893">Situs</translation>
 <translation id="4594952190837476234">Halaman offline ini dibuat pada <ph name="CREATION_TIME" /> dan mungkin berbeda dengan versi onlinenya.</translation>
-<translation id="4615382002648696011">Mengikuti, tersedia artikel yang belum dibaca</translation>
 <translation id="4616150815774728855">Buka <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifikasi diri Anda</translation>
 <translation id="4634124774493850572">Gunakan sandi</translation>
@@ -889,6 +893,11 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6699370405921460408">Server Google akan mengoptimalkan halaman yang Anda kunjungi.</translation>
 <translation id="670498945988402717">Diperiksa kemarin</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
+<translation id="671333169801287922">Jika aktif, situs dapat menggunakan teknik yang melindungi privasi seperti yang ditunjukkan di sini untuk menyediakan konten dan layanannya. Ini termasuk alternatif untuk pelacakan lintas situs. Uji coba lainnya dapat ditambahkan seiring waktu.
+
+<ph name="BEGIN_LIST_ITEM1" />Pengiklan dan penayang dapat menggunakan teknik FLoC.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Pengiklan dan penayang dapat mempelajari keefektifan iklan dengan cara yang tidak melacak Anda di seluruh situs.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Timer <ph name="FQDN" /> Anda telah berakhir. Timer akan dimulai lagi besok.</translation>
 <translation id="6738516213925468394">Data Anda dienkripsi dengan <ph name="BEGIN_LINK" />frasa sandi sinkronisasi<ph name="END_LINK" /> pada tanggal <ph name="TIME" />. Masukkan frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="6738867403308150051">Mendownload…</translation>
@@ -1079,6 +1088,9 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="7971136598759319605">Aktif 1 hari yang lalu</translation>
 <translation id="7975379999046275268">Pratinjau halaman <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pramuat halaman agar browsing dan menelusuri lebih cepat</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> adalah inisiatif berkelanjutan untuk mengembangkan teknologi baru yang akan mengamankan Anda dari mekanisme pelacakan sekaligus mempertahankan web terbuka.
+
+Uji coba Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah tertentu. Untuk saat ini, situs dapat mencoba Privacy Sandbox sambil tetap menggunakan teknologi web saat ini seperti cookie pihak ketiga.</translation>
 <translation id="7986497153528221272">Untuk melihat sandi, setel kunci layar di perangkat terlebih dahulu</translation>
 <translation id="7998918019931843664">Buka kembali tab yang ditutup</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1188,7 +1200,9 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="8662811608048051533">Membuat Anda logout dari sebagian besar situs.</translation>
 <translation id="8664979001105139458">Nama file sudah ada</translation>
 <translation id="8676789164135894283">Verifikasi login</translation>
+<translation id="867767487203716855">Update berikutnya</translation>
 <translation id="8683039184091909753">gambar</translation>
+<translation id="8683081248374354009">Reset grup</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Tingkat Kekuatan Sinyal: # batang}other{Tingkat Kekuatan Sinyal: # batang}}</translation>
 <translation id="869891660844655955">Masa berlaku</translation>
 <translation id="8699120352855309748">Jangan tawarkan penerjemahan bahasa ini</translation>

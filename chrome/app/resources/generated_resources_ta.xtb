@@ -899,7 +899,6 @@
 <translation id="1926339101652878330">இந்த அமைப்புகள் நிறுவனக் கொள்கையால் கட்டுப்படுத்தப்படுகின்றன. மேலும் தகவலுக்கு உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="1927632033341042996">விரல் <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">திரைப் பூட்டின் பின்</translation>
-<translation id="1928202201223835302">பழைய பின்னை உள்ளிடவும்</translation>
 <translation id="1928696683969751773">புதுப்பிப்புகள்</translation>
 <translation id="1929186283613845153">இந்தக் கோப்பு ஸ்கேன் செய்யப்படுகிறது.</translation>
 <translation id="1929343511231420085">சீரியல் போர்ட்டுகள் அனைத்தும்</translation>
@@ -1657,7 +1656,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> இல் உள்நுழையவும்</translation>
 <translation id="2749836841884031656">சிம்</translation>
 <translation id="2749881179542288782">இலக்கணம் மற்றும் எழுத்துப்பிழை சரிபார்</translation>
-<translation id="2751131328353405138">Linux கண்டெய்னர் sshfs ஐ ஏற்றுகிறது</translation>
 <translation id="2753677631968972007">தளத்தின் அனுமதிகளை நீங்களே கட்டுப்படுத்துங்கள்.</translation>
 <translation id="2755349111255270002">இந்த <ph name="DEVICE_TYPE" /> ஐ மீட்டமைத்தல்</translation>
 <translation id="2755367719610958252">அணுகல்தன்மை அம்சங்களை நிர்வகி</translation>
@@ -1790,7 +1788,6 @@
 <translation id="2891922230654533301"><ph name="APP_NAME" /> தளத்தில் உள்நுழைய உங்கள் சாதனத்தைப் பயன்படுத்த விரும்புகிறீர்களா?</translation>
 <translation id="2893168226686371498">இயல்புநிலை உலாவி</translation>
 <translation id="2894757982205307093">குழுவில் புதிய தாவல்</translation>
-<translation id="289644616180464099">சிம் கார்டு பூட்டப்பட்டுள்ளது</translation>
 <translation id="289695669188700754">விசை ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">மறைநிலைச் சாளரங்கள் அனைத்தையும் மூடினால் இந்தப் பிரத்தியேக அமைப்பு அகற்றப்படும்</translation>
 <translation id="2897878306272793870">நிச்சயமாக <ph name="TAB_COUNT" /> தாவல்களைத் திறக்க விரும்புகிறீர்களா?</translation>
@@ -2255,7 +2252,6 @@
 <translation id="3427092606871434483">அனுமதி (இயல்பு)</translation>
 <translation id="3428419049384081277">உள்நுழைந்துவிட்டீர்கள்!</translation>
 <translation id="3428747202529429621">Chromeமைப் பயன்படுத்தும்போது இது பாதுகாப்பை வழங்கும், அத்துடன் நீங்கள் பிற Google ஆப்ஸில் உள்நுழைந்திருக்கும்போது உங்கள் பாதுகாப்பை மேம்படுத்துவதற்காக இதைப் பயன்படுத்தலாம்</translation>
-<translation id="3428800329481094896">Linux கண்டெய்னர் ssh விசைகளைப் பெறுகிறது</translation>
 <translation id="3429160811076349561">சோதனையிலுள்ள அம்சங்கள் முடக்கப்பட்டுள்ளன</translation>
 <translation id="3429271624041785769">இணைய உள்ளடக்கத்திற்கான மொழிகள்</translation>
 <translation id="3429275422858276529">இந்தப் பக்கத்தைப் பிறகு எளிதாகக் கண்டறிய, புத்தகக்குறியிடவும்</translation>
@@ -3740,7 +3736,6 @@
 <translation id="5072900412896857127">Google Play சேவை விதிமுறைகளை ஏற்ற முடியவில்லை. நெட்வொர்க் இணைப்பைச் சரிபார்த்து, மீண்டும் முயலவும்.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" />, மேலும் #}}</translation>
 <translation id="5074318175948309511">புதிய அமைப்புகளைச் செயல்படுத்துவதற்கு முன், இந்தப் பக்கம் மீண்டும் ஏற்றப்பட வேண்டியிருக்கும்.</translation>
-<translation id="5075131525758602494">சிம்மின் பின்னை உள்ளிடுக</translation>
 <translation id="5075910247684008552">பாதுகாக்கப்பட்ட தளங்களில் பாதுகாப்பற்ற உள்ளடக்கம் இயல்பாகவே தடுக்கப்படும்</translation>
 <translation id="5078638979202084724">அனைத்து தாவல்களையும் புக்மார்க்கிடுக</translation>
 <translation id="5078796286268621944">தவறான PIN</translation>

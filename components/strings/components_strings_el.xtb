@@ -285,6 +285,7 @@
 <translation id="1919345977826869612">Διαφημίσεις</translation>
 <translation id="1919367280705858090">Λήψη βοήθειας για συγκεκριμένο μήνυμα σφάλματος</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Κανένας}=1{1 ιστότοπος}other{# ιστότοποι}}</translation>
+<translation id="1924727005275031552">Νέο</translation>
 <translation id="1945968466830820669">Υπάρχει κίνδυνος να χάσετε την πρόσβαση στον λογαριασμό της επιχείρησής σας ή να σας κλέψουν τη διαδικτυακή σας ταυτότητα. Το Chromium συνιστά να αλλάξετε τον κωδικό πρόσβασής σας τώρα.</translation>
 <translation id="1947454675006758438">Συρραφή επάνω δεξιά</translation>
 <translation id="1958218078413065209">Η υψηλότερη βαθμολογία σας είναι <ph name="SCORE" />.</translation>
@@ -395,6 +396,7 @@
 <translation id="2357481397660644965">Η διαχείριση της συσκευής σας γίνεται από τον τομέα <ph name="DEVICE_MANAGER" /> και του λογαριασμού σας από τον τομέα <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Πολλά</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
+<translation id="2359961752320758691">Εφαρμόστηκε ο αριθμός εικονικής κάρτας σας.</translation>
 <translation id="2367567093518048410">Επίπεδο</translation>
 <translation id="2372464001869762664">Μετά την επιβεβαίωση, τα στοιχεία της κάρτας από τον Λογαριασμό Google θα κοινοποιηθούν σε αυτόν τον ιστότοπο. Βρείτε το CVC στις πληροφορίες λογαριασμού Plex.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -405,6 +407,7 @@
 <translation id="239429038616798445">Αυτός ο τρόπος αποστολής δεν είναι διαθέσιμος. Δοκιμάστε έναν άλλο τρόπο.</translation>
 <translation id="2396249848217231973">&amp;Αναίρεση διαγραφής</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">Παλαιά</translation>
 <translation id="2413528052993050574">Ο διακομιστής δεν κατάφερε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του μπορεί να έχει ανακληθεί. Αυτό μπορεί να οφείλεται σε λανθασμένη ρύθμιση ή σε κάποιον τρίτο που επιτίθεται στη σύνδεσή σας.</translation>
 <translation id="2414886740292270097">Σκούρο</translation>
 <translation id="2438874542388153331">Τετραπλό τρύπημα στα δεξιά</translation>
@@ -911,12 +914,14 @@
 <translation id="4275830172053184480">Επανεκκινήστε τη συσκευή σας</translation>
 <translation id="4277028893293644418">Επαναφορά κωδικού πρόσβασης</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Αυτή η κάρτα αποθηκεύτηκε στον Λογαριασμό σας Google}other{Αυτές οι κάρτες αποθηκεύτηκαν στον Λογαριασμό σας Google}}</translation>
+<translation id="4287885627794386150">Πληροί τις προϋποθέσεις για δοκιμή αλλά δεν έχει ενεργοποιηθεί</translation>
 <translation id="4297502707443874121">Μικρογραφία για τη σελίδα <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Επέκταση</translation>
 <translation id="4300675098767811073">Πολλαπλό τρύπημα στα δεξιά</translation>
 <translation id="4302514097724775343">Πατήστε τον δεινόσαυρο για να παίξετε.</translation>
 <translation id="4302965934281694568">Chou3 (Φάκελος)</translation>
 <translation id="4305666528087210886">Δεν ήταν δυνατή η πρόσβαση στο αρχείο σας</translation>
+<translation id="4306529830550717874">Αποθήκευση διεύθυνσης;</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Αποκλεισμός (προεπιλογή)</translation>
 <translation id="4314815835985389558">Διαχείριση συγχρονισμού</translation>
@@ -1406,6 +1411,7 @@
 <translation id="610911394827799129">Ο Λογαριασμός Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Δει κείμενο και εικόνες που αντιγράψατε στο πρόχειρο</translation>
 <translation id="6120179357481664955">Θυμάστε το αναγνωριστικό UPI;</translation>
+<translation id="6123290840358279103">Προβολή εικονικής κάρτας</translation>
 <translation id="6124432979022149706">Εφαρμογές σύνδεσης Chrome για επιχειρήσεις</translation>
 <translation id="6146055958333702838">Ελέγξτε τυχόν καλώδια και επανεκκινήστε δρομολογητές, μόντεμ ή άλλες συσκευές
     του δικτύου που ενδεχομένως χρησιμοποιείτε.</translation>
@@ -1685,6 +1691,7 @@
 <translation id="7300012071106347854">Βαθύ μπλε</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">Υψηλός</translation>
+<translation id="7305756307268530424">Έναρξη σε πιο αργή ταχύτητα</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Βοήθεια σύνδεσης</translation>
 <translation id="7323804146520582233">Απόκρυψη της ενότητας "<ph name="SECTION" />"</translation>
@@ -1710,6 +1717,7 @@
 <translation id="7378594059915113390">Στοιχεία ελέγχου μέσων</translation>
 <translation id="7378627244592794276">Όχι</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Δεν ισχύει</translation>
 <translation id="7390545607259442187">Επιβεβαίωση κάρτας</translation>
 <translation id="7399802613464275309">Έλεγχος ασφαλείας</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1761,6 +1769,7 @@
 <translation id="7548892272833184391">Διόρθωση σφαλμάτων σύνδεσης</translation>
 <translation id="7549584377607005141">Για τη σωστή εμφάνιση αυτής της ιστοσελίδας, απαιτούνται δεδομένα που καταχωρίσατε νωρίτερα. Μπορείτε να αποστείλετε ξανά αυτά τα δεδομένα, ωστόσο, έτσι θα επαναλάβετε κάθε ενέργεια που εκτέλεσε νωρίτερα αυτή η σελίδα.</translation>
 <translation id="7550637293666041147">Το όνομα χρήστη της συσκευής σας και το όνομα χρήστη Chrome</translation>
+<translation id="755279583747225797">Η δοκιμή είναι ενεργή</translation>
 <translation id="7552846755917812628">Δοκιμάστε τις παρακάτω συμβουλές:</translation>
 <translation id="7554475479213504905">Επανάληψη φόρτωσης και εμφάνιση ούτως ή άλλως</translation>
 <translation id="7554791636758816595">Νέα καρτέλα</translation>
@@ -1855,6 +1864,7 @@
 <translation id="7894280532028510793">Εάν δεν υπάρχει ορθογραφικό λάθος, <ph name="BEGIN_LINK" />δοκιμάστε να εκτελέσετε έναν έλεγχο Διαγνωστικών δικτύου<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Φάκελος)</translation>
 <translation id="7931318309563332511">Άγνωστη</translation>
+<translation id="793209273132572360">Ενημέρωση διεύθυνσης;</translation>
 <translation id="7932579305932748336">Επικάλυψη</translation>
 <translation id="79338296614623784">Εισαγάγετε έναν έγκυρο αριθμό τηλεφώνου</translation>
 <translation id="7934052535022478634">Η πληρωμή ολοκληρώθηκε</translation>
@@ -1931,7 +1941,6 @@
 <translation id="8202097416529803614">Σύνοψη παραγγελίας</translation>
 <translation id="8202370299023114387">Διένεξη</translation>
 <translation id="8206978196348664717">Prc4 (Φάκελος)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Όταν επαναφέρετε το αναγνωριστικό, το τρέχον αναγνωριστικό θα είναι μη έγκυρο και θα εκδοθεί ένα καινούργιο σε λιγότερο από μία ημέρα.}=1{Όταν επαναφέρετε το αναγνωριστικό, το τρέχον αναγνωριστικό θα είναι μη έγκυρο και θα εκδοθεί ένα καινούργιο σε μία ημέρα.}other{Όταν επαναφέρετε το αναγνωριστικό, το τρέχον αναγνωριστικό θα είναι μη έγκυρο και θα εκδοθεί ένα καινούργιο σε {NUM_DAYS} ημέρες.}}</translation>
 <translation id="8211406090763984747">Η σύνδεση είναι ασφαλής</translation>
 <translation id="8213464188712611711">Αναμνήσεις</translation>
 <translation id="8218327578424803826">Εκχωρημένη τοποθεσία:</translation>

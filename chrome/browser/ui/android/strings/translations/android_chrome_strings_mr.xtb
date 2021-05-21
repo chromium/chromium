@@ -202,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />कॉन्सर्टमधील जनसमुदायाप्रमाणे, हजारो वापरकर्त्यांना एकाच प्रकारच्या गोष्टीमध्ये स्वारस्य आहे हे जाहिरातदार जाणून घेऊ शकतात आणि ते एखाद्या व्यक्तीसाठी जाहिराती निवडण्याऐवजी जनसमुदायासाठी निवडतात.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />जाहिरातदार जाहिरातींच्या परिणामकारकतेचा अशा प्रकारे अभ्यास करू शकतात ज्यामुळे ते तुम्हाला सर्व साइटवर ट्रॅक करत नाहीत.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">तुम्ही भेट देऊ शकता अशी पेज Chrome प्रीलोड करते. हे करण्यासाठी, तुम्ही कुकीना अनुमती दिली असल्यास आणि Google द्वारे पेज एंक्रिप्ट आणि पाठवली असल्यास, साइटवरून तुमची ओळख लपवण्याकरिता, Chrome कुकी वापरू शकते.</translation>
 <translation id="234265804618409743">तुमचा कॅमेरा उघडू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="2345671828921229300">शोधण्यासाठी, शब्दाला स्पर्श करा आणि धरून ठेवा</translation>
 <translation id="2349710944427398404">खाती, बुकमार्क आणि सेव्ह केलेल्या सेटिंग्जसह, Chrome ने वापरलेला एकूण डेटा</translation>
@@ -292,6 +293,7 @@
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> साठी सूचना दाखवत आहे</translation>
 <translation id="2904414404539560095">पूर्ण उंचीवर उघडलेल्या टॅबसह शेअर करण्यासाठी डिव्हाइसची सूची.</translation>
 <translation id="2905036901251765993">जवळपासच्या लोकांसोबत शेअर करण्यासाठी, त्यांना हा QR कोड स्कॅन करू द्या</translation>
+<translation id="2908243544703713905">न वाचलेल्या बातम्या तयार आहेत</translation>
 <translation id="2909615210195135082">Google सूचना प्लॅटफॉर्म</translation>
 <translation id="2912296070571964914">तुम्हाला स्वारस्य असलेले विषय व्यवस्थापित करा</translation>
 <translation id="2923908459366352541">नाव अवैध आहे</translation>
@@ -532,7 +534,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">हे <ph name="CREATION_TIME" /> पासूनचे ऑफलाइन पेज आहे आणि ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
-<translation id="4615382002648696011">फॉलो करत आहे, न वाचलेले लेख तयार आहेत</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> उघडा</translation>
 <translation id="4619564267100705184">हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="4634124774493850572">पासवर्ड वापरा</translation>
@@ -995,6 +996,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> वाजता अपडेट केले)</translation>
 <translation id="7494974237137038751">डेटा वाचवला</translation>
 <translation id="7498271377022651285">कृपया प्रतीक्षा करा...</translation>
+<translation id="750228856503700085">अपडेट उपलब्ध नाहीत</translation>
 <translation id="7507207699631365376">या पुरवठादाराचे <ph name="BEGIN_LINK" />गोपनीयता धोरण<ph name="END_LINK" /> पहा</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>
 <translation id="751961395872307827">साइटशी कनेक्ट करु शकत नाही</translation>
@@ -1097,6 +1099,7 @@
 <translation id="8076492880354921740">टॅब</translation>
 <translation id="8078096376109663956">फक्त मजकूर शेअर करा</translation>
 <translation id="8084114998886531721">सेव्ह केलेले पासवर्ड</translation>
+<translation id="8084285576995584326">तुमच्या Google खाते चा डेटा नियंत्रित करा</translation>
 <translation id="808747664143081553">डिव्हाइसशी कनेक्ट केले</translation>
 <translation id="8103578431304235997">गुप्त टॅब</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1192,6 +1195,7 @@
 <translation id="8712637175834984815">समजले</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
+<translation id="8746155870861185046">हायलाइट करा</translation>
 <translation id="8748850008226585750">आशय लपविली</translation>
 <translation id="8773160212632396039">विनंतीवर प्रक्रिया सुरू आहे</translation>
 <translation id="8788265440806329501">नेव्हिगेशन इतिहास बंद आहे</translation>

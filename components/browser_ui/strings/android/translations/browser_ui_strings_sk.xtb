@@ -3,6 +3,7 @@
 <translationbundle lang="sk">
 <translation id="1006017844123154345">Otvoriť online</translation>
 <translation id="1044891598689252897">Weby budú fungovať normálne</translation>
+<translation id="1100504063505580045">Aktuálna ikona</translation>
 <translation id="1124090076051167250">Týmto vymažete <ph name="DATASIZE" /> dát a súbory cookie uložené webmi alebo aplikáciami na ploche.</translation>
 <translation id="1124772482545689468">Používateľ</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">Mikrofón</translation>
 <translation id="3277252321222022663">Povoliť webom prístup k senzorom (odporúčané)</translation>
 <translation id="3295602654194328831">Skryť informácie</translation>
+<translation id="3317660236277031814">Zmenila sa ikona webovej aplikácie, ktorú ste nainštalovali.</translation>
 <translation id="3328801116991980348">Informácie o stránkach</translation>
 <translation id="3333961966071413176">Všetky kontakty</translation>
 <translation id="3386292677130313581">Pýtať sa, či chcete povoliť webu zisťovať vašu polohu (odporúčané)</translation>
+<translation id="345699454248713913">Zmenil sa názov webovej aplikácie, ktorú ste nainštalovali.</translation>
 <translation id="3538390592868664640">Brániť webom vytvárať priestorovú mapu okolia a sledovať pozíciu kamery</translation>
 <translation id="3551268116566418498">Chcete ukončiť režim inkognito?</translation>
 <translation id="3586500876634962664">Používanie kamery a mikrofónu</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">Otvoriť nastavenia polohy</translation>
 <translation id="4226663524361240545">Upozornenia môžu pri prijatí na zariadení spustiť vibrovanie</translation>
 <translation id="4259722352634471385">Navigácia je zablokovaná: <ph name="URL" /></translation>
+<translation id="4277239631747669329">Zmenil sa názov a ikona webovej aplikácie, ktorú ste nainštalovali.</translation>
 <translation id="4278390842282768270">Povolené</translation>
 <translation id="429312253194641664">Web prehráva médiá</translation>
 <translation id="42981349822642051">Rozbaliť</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">Povoliť webom spúšťať JavaScript (odporúča sa)</translation>
 <translation id="534295439873310000">Zariadenia NFC</translation>
 <translation id="5354152178998424783">Týmto vymažete <ph name="DATASIZE" /> dát a súborov cookie uložených webmi.</translation>
+<translation id="536508626067510330">Chcete aktualizovať ikonu na ploche?</translation>
 <translation id="5391532827096253100">Spojenie s týmto webom nie je zabezpečené. Informácie o webe</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ďalšie)}few{(+ # ďalšie)}many{(+ # more)}other{(+ # ďalších)}}</translation>
 <translation id="5403592356182871684">Názvy</translation>
 <translation id="5489227211564503167">Uplynutý čas: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokovať reklamy na weboch, ktoré zobrazujú obťažujúce alebo zavádzajúce reklamy</translation>
+<translation id="549957179819296104">Nová ikona</translation>
 <translation id="5502860503640766021">Povolené: <ph name="PERMISSION_1" />, blokované: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Weby nemôžu žiadať o odosielanie upozornení</translation>
 <translation id="5516455585884385570">Otvoriť nastavenia upozornení</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">Povolenia</translation>
 <translation id="5860033963881614850">Vypnuté</translation>
 <translation id="5876056640971328065">Pozastaviť video</translation>
+<translation id="5904826301761575486">Chcete aktualizovať názov a ikonu na ploche?</translation>
 <translation id="5916664084637901428">Zapnuté</translation>
 <translation id="5922853908706496913">Zdieľate obrazovku</translation>
 <translation id="5939518447894949180">Resetovať</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">Blokovať súbory cookie tretích strán</translation>
 <translation id="6206551242102657620">Spojenie je zabezpečené. Informácie o webe</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – možnosti</translation>
+<translation id="6260852843601447737">Zavrieť a nahlásiť zneužitie</translation>
 <translation id="6262279340360821358">Blokované: <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Weby môžu žiadať o odosielanie upozornení</translation>
 <translation id="6295158916970320988">Všetky weby</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="857943718398505171">Povolené (odporúčané)</translation>
 <translation id="8609465669617005112">Presunúť nahor</translation>
+<translation id="861748745608658996">Chcete aktualizovať názov na ploche?</translation>
 <translation id="8676374126336081632">Vymazať vstup</translation>
 <translation id="868929229000858085">Prehľadať kontakty</translation>
 <translation id="8702612070107455751">Všetky offline dáta budú vymazané.</translation>

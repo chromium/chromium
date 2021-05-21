@@ -186,6 +186,7 @@ Tik op een woord om te zoeken. Je kunt je zoekopdracht verfijnen door te tikken 
 <translation id="22320125457191592">Voor jou</translation>
 <translation id="2234876718134438132">Synchronisatie en Google-services</translation>
 <translation id="2239812875700136898">Beheer je artikelen met de knop 'Opties voor Discover'</translation>
+<translation id="2251971221270904886">Als deze functie aanstaat en de status Actief heeft, gebruikt Chrome je browsegeschiedenis gedurende 7 dagen om een groep (of cohort) te bepalen waarvan je deel uitmaakt. Adverteerders kunnen advertenties selecteren voor de groep. Je browsegeschiedenis blijft privé op je apparaat. Deze proef is alleen actief in <ph name="BEGIN_LINK" />bepaalde regio's<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Wachtwoorden exporteren…</translation>
 <translation id="2276696007612801991">Log in met je Google-account om je wachtwoorden te checken</translation>
 <translation id="2278052315791335171">Als je dit wachtwoord verwijdert, wordt je account op <ph name="SITE" /> niet verwijderd</translation>
@@ -275,6 +276,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2781151931089541271">1 seconde resterend</translation>
 <translation id="2801022321632964776">Voer een update uit om jouw taal te gebruiken in de nieuwste versie van Chrome</translation>
 <translation id="2805756323405976993">Apps</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Bekijk en beheer opgeslagen wachtwoorden in je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Log in en zet de synchronisatie aan om op al je apparaten toegang tot je bookmarks te hebben</translation>
 <translation id="2827278682606527653">Feedkaartmenu halve hoogte</translation>
@@ -293,6 +295,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2901411048554510387">Suggesties tonen voor <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">De lijst met apparaten om een tabblad mee te delen, is op volledige hoogte geopend.</translation>
 <translation id="2905036901251765993">Als je wilt delen met mensen in de buurt, laat je ze deze QR-code scannen</translation>
+<translation id="2908243544703713905">Ongelezen artikelen beschikbaar</translation>
 <translation id="2909615210195135082">Platform voor Google-meldingen</translation>
 <translation id="2912296070571964914">Beheer de onderwerpen waarin je geïnteresseerd bent</translation>
 <translation id="2923908459366352541">Naam is ongeldig</translation>
@@ -317,6 +320,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}}</translation>
 <translation id="3062802207422175757">Artikelen over je interesses in Chrome</translation>
 <translation id="3070005020161560471">Automatisch vertalen</translation>
+<translation id="3083531420240576529">Je kunt je groep op elk moment resetten. Het duurt 7 dagen om je groep te bepalen.</translation>
 <translation id="3091010850649238832">Content op het klembord tonen</translation>
 <translation id="3098745985164956033">Sommige afbeeldingen worden naar Google gestuurd om de beschrijvingen voor je te verbeteren</translation>
 <translation id="3114507951000454849">Lees het nieuws van vandaag <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regi
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Opties beschikbaar boven aan het scherm</translation>
 <translation id="4062305924942672200">Juridische informatie</translation>
+<translation id="4082818367361753283">Groeps-ID</translation>
 <translation id="4084682180776658562">Bookmark maken</translation>
 <translation id="4084712963632273211">Van <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />geleverd door Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">App-gegevens verwijderen?</translation>
@@ -533,7 +538,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuut geleden}other{# minuten geleden}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Deze offline pagina is van <ph name="CREATION_TIME" /> en kan afwijken van de online versie.</translation>
-<translation id="4615382002648696011">Wordt gevolgd, ongelezen verhalen beschikbaar</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> openen</translation>
 <translation id="4619564267100705184">Bevestigen dat jij het bent</translation>
 <translation id="4634124774493850572">Wachtwoord gebruiken</translation>
@@ -889,6 +893,11 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="6699370405921460408">De Google-servers optimaliseren de pagina's die je bezoekt.</translation>
 <translation id="670498945988402717">Gisteren gecheckt</translation>
 <translation id="6710213216561001401">Vorige</translation>
+<translation id="671333169801287922">Als de functie aanstaat, kunnen sites de hier vermelde privacybeschermende technieken gebruiken om hun content en services aan te bieden. Hiertoe behoren onder andere alternatieven voor tracking op verschillende sites. Er kunnen in de loop van de tijd meer proeffuncties worden toegevoegd.
+
+<ph name="BEGIN_LIST_ITEM1" />Adverteerders en uitgevers kunnen de FLoC-techniek gebruiken.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Adverteerders en uitgevers kunnen de effectiviteit van advertenties onderzoeken zonder dat je bezoeken aan sites worden bijgehouden.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Je <ph name="FQDN" />-timer is afgelopen. Deze begint morgen opnieuw.</translation>
 <translation id="6738516213925468394">Je gegevens zijn op <ph name="TIME" /> versleuteld met je <ph name="BEGIN_LINK" />wachtwoordzin voor synchronisatie<ph name="END_LINK" />. Geef deze op om de synchronisatie te starten.</translation>
 <translation id="6738867403308150051">Downloaden...</translation>
@@ -1079,6 +1088,9 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="7971136598759319605">1 dag geleden actief</translation>
 <translation id="7975379999046275268">Pagina bekijken <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pagina's vooraf laden voor sneller browsen en zoeken</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> is een lopend initiatief om nieuwe technologieën te ontwikkelen die je beschermen tegen mechanismen voor tracking terwijl het open web wordt behouden.
+
+Privacy Sandbox-proeven zijn nog actief in ontwikkeling en zijn beschikbaar in bepaalde regio's. Voorlopig kunnen sites Privacy Sandbox uitproberen en tegelijkertijd gebruik blijven maken van huidige webtechnologieën, zoals cookies van derden.</translation>
 <translation id="7986497153528221272">Als je wachtwoorden wilt bekijken, moet je eerst een schermvergrendeling instellen op je apparaat</translation>
 <translation id="7998918019931843664">Gesloten tabblad opnieuw openen</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1188,7 +1200,9 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="8662811608048051533">Hiermee word je uitgelogd van de meeste sites.</translation>
 <translation id="8664979001105139458">Bestandsnaam bestaat al</translation>
 <translation id="8676789164135894283">Inlogverificaties</translation>
+<translation id="867767487203716855">Volgende update</translation>
 <translation id="8683039184091909753">afbeelding</translation>
+<translation id="8683081248374354009">Groep resetten</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signaalsterkte: # streepje}other{Signaalsterkte: # streepjes}}</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699120352855309748">Niet aanbieden om deze talen te vertalen</translation>

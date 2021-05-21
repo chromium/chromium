@@ -293,6 +293,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2901411048554510387">Javaslatok megjelenítése a következőhöz: <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Lap megosztására szolgáló eszközök listája teljes magasságban megnyitva.</translation>
 <translation id="2905036901251765993">Ha szeretné engedélyezni a megosztást a közelben lévő személyekkel, olvastassa be velük ezt a QR-kódot</translation>
+<translation id="2908243544703713905">Az olvasatlan történetek készen állnak</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Az Önt érdeklő témakörök kezelése</translation>
 <translation id="2923908459366352541">A név érvénytelen</translation>
@@ -533,7 +534,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4583164079174244168">{MINUTES,plural, =1{# perce}other{# perce}}</translation>
 <translation id="4587589328781138893">Webhelyek</translation>
 <translation id="4594952190837476234">Az offline oldal létrehozási ideje: <ph name="CREATION_TIME" />. Az oldal eltérhet az online változattól.</translation>
-<translation id="4615382002648696011">A követett, olvasatlan hírek készen állnak</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> megnyitása</translation>
 <translation id="4619564267100705184">Igazolja személyazonosságát</translation>
 <translation id="4634124774493850572">Jelszó használata</translation>

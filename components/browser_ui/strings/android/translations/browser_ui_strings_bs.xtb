@@ -3,6 +3,7 @@
 <translationbundle lang="bs">
 <translation id="1006017844123154345">Otvori na mreži</translation>
 <translation id="1044891598689252897">Web lokacije će normalno funkcionirati</translation>
+<translation id="1100504063505580045">Trenutna ikona</translation>
 <translation id="1124090076051167250">Ovim će se obrisati <ph name="DATASIZE" /> podataka i kolačića koje su pohranile web lokacije ili aplikacije na početnom ekranu.</translation>
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3277252321222022663">Dozvolite web lokacijama pristup senzorima (preporučeno)</translation>
 <translation id="3295602654194328831">Sakrij informacije</translation>
+<translation id="3317660236277031814">Ikona web aplikacije koju ste instalirali je promijenjena.</translation>
 <translation id="3328801116991980348">Informacije o web lokaciji</translation>
 <translation id="3333961966071413176">Svi kontakti</translation>
 <translation id="3386292677130313581">Web lokacije moraju tražiti dozvolu za pristup lokaciji (preporučeno)</translation>
+<translation id="345699454248713913">Naziv web aplikacije koju ste instalirali je promijenjen.</translation>
 <translation id="3538390592868664640">Web lokacijama je blokirano kreiranje 3D mape vašeg okruženja ili praćenje položaja kamere</translation>
 <translation id="3551268116566418498">Napustiti anonimni načina rada?</translation>
 <translation id="3586500876634962664">Korištenje kamere i mikrofona</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">Otvaranje postavki lokacije</translation>
 <translation id="4226663524361240545">Obavještenja mogu aktivirati vibraciju uređaja</translation>
 <translation id="4259722352634471385">Navigacija je blokirana: <ph name="URL" /></translation>
+<translation id="4277239631747669329">Naziv i ikona web aplikacije koju ste instalirali su promijenjeni.</translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
 <translation id="429312253194641664">Web lokacija reproducira medij</translation>
 <translation id="42981349822642051">Proširi</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">Web-lokacije mogu pokretati JavaScript (preporučeno)</translation>
 <translation id="534295439873310000">NFC uređaji</translation>
 <translation id="5354152178998424783">Ovim će se obrisati <ph name="DATASIZE" /> podataka i kolačića koje su pohranile web lokacije.</translation>
+<translation id="536508626067510330">Ažurirati ikonu na početnom ekranu?</translation>
 <translation id="5391532827096253100">Veza s web lokacijom nije sigurna. Informacije o web lokaciji</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i još 1)}one{(i još #)}few{(i još #)}other{(i još #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
 <translation id="5489227211564503167">Proteklo vrijeme <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokiraj oglase na web lokacijama koje prikazuju nametljive ili obmanjujuće oglase</translation>
+<translation id="549957179819296104">Nova ikona</translation>
 <translation id="5502860503640766021">Dozvoljeno: <ph name="PERMISSION_1" />, blokirano: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Web lokacije ne mogu tražiti da šalju obavještenja</translation>
 <translation id="5516455585884385570">Otvori postavke obavještenja</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">Odobrenja</translation>
 <translation id="5860033963881614850">Isklj.</translation>
 <translation id="5876056640971328065">Pauziranje videozapisa</translation>
+<translation id="5904826301761575486">Ažurirati naziv i ikonu na početnom ekranu?</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5922853908706496913">Dijeljenje ekrana</translation>
 <translation id="5939518447894949180">Ponovno postavi</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
 <translation id="6206551242102657620">Veza je sigurna. Informacije o web lokaciji</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> opcije</translation>
+<translation id="6260852843601447737">Zatvori i prijavi zloupotrebu</translation>
 <translation id="6262279340360821358">Blokirano: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Web lokacije mogu tražiti da šalju obavještenja</translation>
 <translation id="6295158916970320988">Sve web-lokacije</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">Cijeli ekran</translation>
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
 <translation id="8609465669617005112">Pomjeri nagore</translation>
+<translation id="861748745608658996">Ažurirati naziv na početnom ekranu?</translation>
 <translation id="8676374126336081632">Brisanje unosa</translation>
 <translation id="868929229000858085">Pretražite kontakte</translation>
 <translation id="8702612070107455751">Obrisat će se svi offline podaci.</translation>

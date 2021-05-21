@@ -281,6 +281,7 @@
 <translation id="1919345977826869612">Annonces</translation>
 <translation id="1919367280705858090">Obtenir de l'aide pour un message d'erreur spécifique</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Aucun}=1{1 site}one{# site}other{# sites}}</translation>
+<translation id="1924727005275031552">Nouvelles</translation>
 <translation id="1945968466830820669">Vous risquez de perdre l'accès au compte de votre organisation ou d'être victime d'un vol d'identité. Chromium recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="1947454675006758438">Agrafe en haut à droite</translation>
 <translation id="1958218078413065209">Votre pointage le plus élevé est <ph name="SCORE" />.</translation>
@@ -391,6 +392,7 @@
 <translation id="2357481397660644965">Votre appareil est géré par <ph name="DEVICE_MANAGER" />, et votre compte est géré par <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Plusieurs</translation>
 <translation id="2359808026110333948">Continuer</translation>
+<translation id="2359961752320758691">Votre numéro de carte virtuelle a été appliqué.</translation>
 <translation id="2367567093518048410">Niveau</translation>
 <translation id="2372464001869762664">Après votre confirmation, les détails de la carte provenant de votre compte Google seront partagés avec ce site. Vous trouverez le code CVC dans les renseignements de votre compte Plex.</translation>
 <translation id="2380886658946992094">Légal</translation>
@@ -401,6 +403,7 @@
 <translation id="239429038616798445">Ce mode de livraison n'est pas disponible. Essayez un autre mode.</translation>
 <translation id="2396249848217231973">&amp;Annuler la suppression</translation>
 <translation id="2410754574180102685">Légal, gouvernement</translation>
+<translation id="2413155254802890957">Anciennes</translation>
 <translation id="2413528052993050574">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />. Il se peut que son certificat de sécurité ait été révoqué. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2414886740292270097">Foncé</translation>
 <translation id="2438874542388153331">Quadruple perforation à droite</translation>
@@ -898,12 +901,14 @@
 <translation id="4275830172053184480">Redémarrer l'appareil</translation>
 <translation id="4277028893293644418">Réinitialiser le mot de passe</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{La carte a été enregistrée dans votre compte Google}one{La carte a été enregistrée dans votre compte Google}other{Les cartes ont été enregistrées dans votre compte Google}}</translation>
+<translation id="4287885627794386150">Admissible à une version d'essai, mais pas actif</translation>
 <translation id="4297502707443874121">Miniature pour la page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Développer</translation>
 <translation id="4300675098767811073">Multiple perforation à droite</translation>
 <translation id="4302514097724775343">Touchez le dinosaure pour jouer</translation>
 <translation id="4302965934281694568">Enveloppe Chou3</translation>
 <translation id="4305666528087210886">Impossible d'accéder à votre fichier</translation>
+<translation id="4306529830550717874">Enregistrer l'adresse?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquer (par défaut)</translation>
 <translation id="4314815835985389558">Gérer la synchronisation</translation>
@@ -1391,6 +1396,7 @@
 <translation id="610911394827799129">D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Voir le texte et les images copiés dans le presse-papiers</translation>
 <translation id="6120179357481664955">Se souvenir de votre identifiant UPI?</translation>
+<translation id="6123290840358279103">Afficher la carte virtuelle</translation>
 <translation id="6124432979022149706">Connecteurs Chrome Enterprise</translation>
 <translation id="6146055958333702838">Vérifiez les câbles et redémarrez votre routeur, votre modem
     ou tout autre périphérique réseau utilisé.</translation>
@@ -1670,6 +1676,7 @@ Détails supplémentaires :
 <translation id="7300012071106347854">Cobalt</translation>
 <translation id="7302712225291570345">« <ph name="TEXT" /> »</translation>
 <translation id="7304030187361489308">Élevée</translation>
+<translation id="7305756307268530424">Vitesse plus lente</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Aide pour la connexion</translation>
 <translation id="7323804146520582233">Masquer la section « <ph name="SECTION" /> »</translation>
@@ -1695,6 +1702,7 @@ Détails supplémentaires :
 <translation id="7378594059915113390">Commandes multimédias</translation>
 <translation id="7378627244592794276">Pas maintenant</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Non applicable</translation>
 <translation id="7390545607259442187">Confirmer la carte</translation>
 <translation id="7399802613464275309">Vérification de sécurité</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1746,6 +1754,7 @@ Détails supplémentaires :
 <translation id="7548892272833184391">Corriger les erreurs de connexion</translation>
 <translation id="7549584377607005141">Pour s'afficher correctement, cette page Web a besoin des données que vous avez entrées précédemment. Vous pouvez envoyer de nouveau ces données. Cependant, en procédant ainsi, vous répéterez toute action déjà effectuée sur cette page.</translation>
 <translation id="7550637293666041147">Le nom d'utilisateur de votre appareil et de Chrome</translation>
+<translation id="755279583747225797">La version d'essai est active</translation>
 <translation id="7552846755917812628">Essayez les conseils suivants :</translation>
 <translation id="7554475479213504905">Relancer et afficher malgré tout</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>
@@ -1840,6 +1849,7 @@ Détails supplémentaires :
 <translation id="7894280532028510793">S'il n'y a pas d'erreur, <ph name="BEGIN_LINK" />essayez d'exécuter les diagnostics de réseau<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">Enveloppe C3</translation>
 <translation id="7931318309563332511">Inconnue</translation>
+<translation id="793209273132572360">Mettre à jour l'adresse?</translation>
 <translation id="7932579305932748336">Revêtement</translation>
 <translation id="79338296614623784">Entrez un numéro de téléphone valide</translation>
 <translation id="7934052535022478634">Paiement effectué</translation>
@@ -1916,7 +1926,6 @@ Détails supplémentaires :
 <translation id="8202097416529803614">Résumé de la commande</translation>
 <translation id="8202370299023114387">Conflit</translation>
 <translation id="8206978196348664717">Enveloppe Prc4</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Lorsque vous réinitialisez votre identifiant, votre identifiant actuel ne sera plus valide, et vous en recevrez un nouveau en moins de 1 jour}=1{Lorsque vous réinitialisez votre identifiant, votre identifiant actuel ne sera plus valide, et vous en recevrez un nouveau d'ici 1 jour}one{Lorsque vous réinitialisez votre identifiant, votre identifiant actuel ne sera plus valide, et vous en recevrez un nouveau d'ici {NUM_DAYS} jour}other{Lorsque vous réinitialisez votre identifiant, votre identifiant actuel ne sera plus valide, et vous en recevrez un nouveau d'ici {NUM_DAYS} jours}}</translation>
 <translation id="8211406090763984747">Connexion sécurisée</translation>
 <translation id="8213464188712611711">Souvenirs</translation>
 <translation id="8218327578424803826">Emplacement attribué :</translation>

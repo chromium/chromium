@@ -293,6 +293,7 @@
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> ਲਈ ਸੁਝਾਅ ਦਿਖਾਏ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="2904414404539560095">ਕਿਸੇ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਵਾਲੇ ਡੀਵਾਈਸਾਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਉਚਾਈ 'ਤੇ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
 <translation id="2905036901251765993">ਨਜ਼ਦੀਕੀ ਲੋਕਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰਨ ਲਈ, ਉਹਨਾਂ ਨੂੰ ਇਹ QR ਕੋਡ ਸਕੈਨ ਕਰਨ ਦਿਓ</translation>
+<translation id="2908243544703713905">ਨਾ-ਪੜ੍ਹੀਆਂ ਕਹਾਣੀਆਂ ਤਿਆਰ ਹਨ</translation>
 <translation id="2909615210195135082">Google ਸੂਚਨਾਵਾਂ ਪਲੇਟਫਾਰਮ</translation>
 <translation id="2912296070571964914">ਆਪਣੀ ਦਿਲਚਸਪੀ ਵਾਲੇ ਵਿਸ਼ਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2923908459366352541">ਨਾਮ ਅਵੈਧ ਹੈ</translation>
@@ -533,7 +534,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# ਮਿੰਟ ਪਹਿਲਾਂ}one{# ਮਿੰਟ ਪਹਿਲਾਂ}other{# ਮਿੰਟ ਪਹਿਲਾਂ}}</translation>
 <translation id="4587589328781138893">ਸਾਈਟਾਂ</translation>
 <translation id="4594952190837476234">ਇਹ ਆਫ਼ਲਾਈਨ ਪੰਨਾ <ph name="CREATION_TIME" /> ਦਾ ਹੈ ਅਤੇ ਆਨਲਾਈਨ ਵਰਜਨ ਤੋਂ ਵੱਖਰਾ ਹੋ ਸਕਦਾ ਹੈ।</translation>
-<translation id="4615382002648696011">ਅੱਗੇ ਦਿੱਤੀ ਫ਼ੀਡ ਲਈ ਨਾ-ਪੜ੍ਹੀਆਂ ਕਹਾਣੀਆਂ ਤਿਆਰ ਹਨ</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ਖੋਲ੍ਹੋ</translation>
 <translation id="4619564267100705184">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="4634124774493850572">ਪਾਸਵਰਡ ਵਰਤੋ</translation>

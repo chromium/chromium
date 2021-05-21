@@ -24,7 +24,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> ପାଇଁ ସୂଚନା ଡାଏଲଗ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="1153356358378277386">ପେୟାର୍ ହୋଇଥିବା ଡିଭାଇସ୍</translation>
 <translation id="1165712434476988950">ଅପଡେଟ୍ ଲାଗୁ କରିବା ପାଇଁ ଡିଭାଇସ୍ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ।</translation>
-<translation id="1170240434488307589">ଡିଭାଇସର ମାଇକ୍ରୋଫୋନ୍ ବଟନକୁ ମ୍ୟୁଟ୍ କରାଯାଇଛି।</translation>
 <translation id="1175572348579024023">ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="1178581264944972037">ବିରତି</translation>
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
@@ -373,7 +372,6 @@
 <translation id="4021716437419160885">ତଳକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="4028481283645788203">ଅଧିକ ସୁରକ୍ଷା ପାଇଁ ପାସୱାର୍ଡ ଆବଶ୍ୟକ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023"><ph name="LAUNCHER_KEY_NAME" /> + Number କୀବୋର୍ଡ ସର୍ଟକଟ୍ ବଦଳି ଯାଇଛି। F-କୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="LAUNCHER_KEY_NAME" /> କୀ ଶୀର୍ଷ ଧାଡ଼ିରେ ଥିବା ଏକ କୀକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="4042660782729322247">ଆପଣ, ଆପଣଙ୍କର ସ୍କ୍ରିନ୍ ସେୟାର୍ କରୁଛନ୍ତି</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" />ଟିରୁ <ph name="INDEX" /> ନମ୍ବର ବ୍ରାଉଜର୍ ଟାବ୍। <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ଏକ ଆପ୍ ପାଇଁ ବନ୍ଦ ଅଛି}other{#ଟି ଆପ୍ସ ପାଇଁ ବନ୍ଦ ଅଛି}}</translation>

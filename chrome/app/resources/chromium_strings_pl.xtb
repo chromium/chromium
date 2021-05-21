@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">Chromium musi mieć dostęp do pamięci, by pobierać pliki</translation>
 <translation id="2572494885440352020">Pomoc Chromium</translation>
 <translation id="2577788541081224677">Aby mieć dostęp do danych z Chromium na wszystkich swoich urządzeniach, zaloguj się, co umożliwi włączenie synchronizacji.</translation>
+<translation id="2580426763510374355">Zainstaluj system operacyjny Chromium</translation>
 <translation id="2583187216237139145">Wszystkie dane Chromium wygenerowane podczas używania tego profilu (takie jak zakładki, historia, hasła i inne ustawienia) mogą zostać usunięte przez administratora profilu służbowego. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Zastosowanie aktualizacji wymaga ponownego uruchomienia systemu operacyjnego Chromium.</translation>
 <translation id="2648074677641340862">Podczas instalacji wystąpił błąd systemu operacyjnego. Pobierz Chromium ponownie.</translation>
@@ -134,6 +135,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5479196819031988440">System operacyjny Chromium nie może otworzyć tej strony.</translation>
 <translation id="5480860683791598150">Chromium musi mieć dostęp do Twojej lokalizacji, by udostępnić ją tej stronie</translation>
+<translation id="5481338274774984070">Chromium zaleca, aby nie pobierać ani nie otwierać tego pliku.</translation>
 <translation id="549669000822060376">Poczekaj, aż Chromium zainstaluje najnowsze aktualizacje systemu.</translation>
 <translation id="5496810170689441661">Chromium próbuje edytować hasła. Aby na to zezwolić, podaj swoje hasło do systemu Windows.</translation>
 <translation id="5527463683072221100">Otwieranie plików PDF w Chromium</translation>

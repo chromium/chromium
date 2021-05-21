@@ -280,6 +280,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1919345977826869612">Advertenties</translation>
 <translation id="1919367280705858090">Hulp bij een specifieke foutmelding</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Geen}=1{1 site}other{# sites}}</translation>
+<translation id="1924727005275031552">Nieuw</translation>
 <translation id="1945968466830820669">Je kunt de toegang tot het account van je organisatie kwijtraken of slachtoffer worden van identiteitsdiefstal. Chromium raadt je aan je wachtwoord nu te wijzigen.</translation>
 <translation id="1947454675006758438">Nietje rechtsboven</translation>
 <translation id="1958218078413065209">Je hoogste score is <ph name="SCORE" />.</translation>
@@ -390,6 +391,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2357481397660644965">Je apparaat wordt beheerd door <ph name="DEVICE_MANAGER" /> en je account wordt beheerd door <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Meerdere</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
+<translation id="2359961752320758691">Je virtuele kaartnummer is toegepast.</translation>
 <translation id="2367567093518048410">Niveau</translation>
 <translation id="2372464001869762664">Nadat je hebt bevestigd, worden de kaartgegevens uit je Google-account gedeeld met deze site. Je vindt de CVC in de details van je Plex-account.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -400,6 +402,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="239429038616798445">Deze verzendmethode is niet beschikbaar. Kies een andere methode.</translation>
 <translation id="2396249848217231973">&amp;Verwijderen ongedaan maken</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">Oud</translation>
 <translation id="2413528052993050574">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is mogelijk ingetrokken. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="2414886740292270097">Donker</translation>
 <translation id="2438874542388153331">Vier perforaties rechts</translation>
@@ -897,12 +900,14 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4275830172053184480">Je apparaat opnieuw opstarten</translation>
 <translation id="4277028893293644418">Wachtwoord opnieuw instellen</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Deze pas is opgeslagen in je Google-account}other{Deze passen zijn opgeslagen in je Google-account}}</translation>
+<translation id="4287885627794386150">Komt in aanmerking voor proef maar is niet actief</translation>
 <translation id="4297502707443874121">Miniatuur voor pagina <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Uitvouwen</translation>
 <translation id="4300675098767811073">Meerdere perforaties rechts</translation>
 <translation id="4302514097724775343">Tik op de dino om te spelen</translation>
 <translation id="4302965934281694568">Chou3 (envelop)</translation>
 <translation id="4305666528087210886">Je bestand kan niet worden geopend</translation>
+<translation id="4306529830550717874">Adres opslaan?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokkeren (standaard)</translation>
 <translation id="4314815835985389558">Synchronisatie beheren</translation>
@@ -1388,6 +1393,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="610911394827799129">Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">Tekst en afbeeldingen bekijken die naar het klembord zijn gekopieerd</translation>
 <translation id="6120179357481664955">Weet je je UPI-ID nog?</translation>
+<translation id="6123290840358279103">Virtuele kaart bekijken</translation>
 <translation id="6124432979022149706">Chrome Enterprise-connectors</translation>
 <translation id="6146055958333702838">Controleer alle kabels en start alle routers, modems of andere netwerkapparaten die je gebruikt, opnieuw op.</translation>
 <translation id="614940544461990577">Probeer dit eens:</translation>
@@ -1666,6 +1672,7 @@ Aanvullende informatie:
 <translation id="7300012071106347854">Kobaltblauw</translation>
 <translation id="7302712225291570345">'<ph name="TEXT" />'</translation>
 <translation id="7304030187361489308">Hoog</translation>
+<translation id="7305756307268530424">Langzamer starten</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Hulp bij verbinding maken</translation>
 <translation id="7323804146520582233">Het gedeelte '<ph name="SECTION" />' verbergen</translation>
@@ -1691,6 +1698,7 @@ Aanvullende informatie:
 <translation id="7378594059915113390">Mediabediening</translation>
 <translation id="7378627244592794276">Nee</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Niet van toepassing</translation>
 <translation id="7390545607259442187">Creditcard bevestigen</translation>
 <translation id="7399802613464275309">Veiligheidscheck</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1742,6 +1750,7 @@ Aanvullende informatie:
 <translation id="7548892272833184391">Verbindingsfouten oplossen</translation>
 <translation id="7549584377607005141">Deze webpagina kan alleen correct worden weergegeven op basis van gegevens die je eerder hebt opgegeven. Je kunt deze gegevens opnieuw verzenden, maar hierdoor worden de acties herhaald die eerder op deze pagina zijn uitgevoerd.</translation>
 <translation id="7550637293666041147">De gebruikersnaam van je apparaat en je Chrome-gebruikersnaam</translation>
+<translation id="755279583747225797">Proef is actief</translation>
 <translation id="7552846755917812628">Probeer de volgende tips:</translation>
 <translation id="7554475479213504905">Opnieuw laden en toch tonen</translation>
 <translation id="7554791636758816595">Nieuw tabblad</translation>
@@ -1836,6 +1845,7 @@ Aanvullende informatie:
 <translation id="7894280532028510793">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een netwerkcontrole uit<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (envelop)</translation>
 <translation id="7931318309563332511">Onbekend</translation>
+<translation id="793209273132572360">Adres updaten?</translation>
 <translation id="7932579305932748336">Coaten</translation>
 <translation id="79338296614623784">Geef een geldig telefoonnummer op</translation>
 <translation id="7934052535022478634">Betaling voltooid</translation>
@@ -1912,7 +1922,6 @@ Aanvullende informatie:
 <translation id="8202097416529803614">Besteloverzicht</translation>
 <translation id="8202370299023114387">Conflict</translation>
 <translation id="8206978196348664717">Prc4 (envelop)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Als je de ID reset, wordt je huidige ID ongeldig en wordt er binnen 1 dag een nieuwe ID uitgegeven}=1{Als je de ID reset, wordt je huidige ID ongeldig en wordt er over 1 dag een nieuwe ID uitgegeven}other{Als je de ID reset, wordt je huidige ID ongeldig en wordt er binnen {NUM_DAYS} dagen een nieuwe ID uitgegeven}}</translation>
 <translation id="8211406090763984747">Verbinding is beveiligd</translation>
 <translation id="8213464188712611711">Herinneringen</translation>
 <translation id="8218327578424803826">Toegewezen locatie:</translation>

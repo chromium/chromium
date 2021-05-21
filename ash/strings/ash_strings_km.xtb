@@ -24,7 +24,6 @@
 <translation id="1148499908455722006">បើក​ប្រអប់ព័ត៌មាន​សម្រាប់ <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">ឧបករណ៍​ដែល​បាន​ផ្គូផ្គង</translation>
 <translation id="1165712434476988950">តម្រូវឱ្យ​ចាប់ផ្ដើម​ឧបករណ៍​ឡើងវិញ ដើម្បី​អនុវត្ត​កំណែថ្មី​។</translation>
-<translation id="1170240434488307589">ប៊ូតុងមីក្រូហ្វូន​របស់ឧបករណ៍ត្រូវ​បានបិទសំឡេង។</translation>
 <translation id="1175572348579024023">រំកិល</translation>
 <translation id="1178581264944972037">ផ្អាក</translation>
 <translation id="1181037720776840403">ដកចេញ</translation>
@@ -41,6 +40,7 @@
 <translation id="1247372569136754018">មីក្រូហ្វូន (ខាងក្នុង)</translation>
 <translation id="1252999807265626933">កំពុងសាកពី <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">តើអាកាសធាតុ​យ៉ាងម៉េចដែរ?</translation>
+<translation id="1266097335951928626">ចាប់ផ្ដើម​កាមេរ៉ា​សែលហ្វី</translation>
 <translation id="1267032506238418139">ការផ្លាស់ប្តូរផ្លូវកាត់</translation>
 <translation id="1269405891096105529">មិនអាចប្រើ​ឧបករណ៍​ខាងក្រៅ​នៅក្នុង​មុខងារភ្ញៀវ​បានទេ</translation>
 <translation id="1270290102613614947">ក្តារចុចលើអេក្រង់បានបិទដំណើរការ</translation>
@@ -85,6 +85,7 @@
 <translation id="1555130319947370107">ខៀវ</translation>
 <translation id="1570871743947603115">បិទ/បើកប៊្លូធូស។ <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ចូលប្រើសកម្មភាព​ទាំងអស់របស់អ្នកនៅក្នុង​រយៈពេលចូលប្រើនេះ</translation>
+<translation id="159255010947577753">ហ្វឺត</translation>
 <translation id="1611993646327628135">បើក</translation>
 <translation id="1615402009686901181">គោលការណ៍​របស់អ្នកគ្រប់គ្រង​បិទការថត​អេក្រង់ នៅពេលអាច​មើលឃើញខ្លឹមសារ​សម្ងាត់</translation>
 <translation id="1632985212731562677">អាចបិទ​ការប្រើប៊ូតុងចុច​នៅក្នុងការកំណត់ &gt; ភាពងាយស្រួល។</translation>
@@ -136,8 +137,10 @@
 <translation id="2016340657076538683">សរសេរ​សារ</translation>
 <translation id="2018630726571919839">និយាយ​រឿងកំប្លែង​ឱ្យខ្ញុំស្ដាប់</translation>
 <translation id="2021864487439853900">ចុចដើម្បីដោះសោ</translation>
+<translation id="2047639699071423250">បញ្ចូល​គំនិត​សំខាន់</translation>
 <translation id="2049240716062114887">ឈ្មោះតុត្រូវ​បានប្ដូរទៅ <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">បញ្ឈរ</translation>
+<translation id="2066708475850724665">បញ្ឈប់​កែវពង្រីក</translation>
 <translation id="2067602449040652523">ពន្លឺកា្តរចុច</translation>
 <translation id="2078034614700056995">អូសទៅស្ដាំ​ដោយប្រើម្រាមដៃបួន ដើម្បីប្ដូរទៅតុបន្ទាប់</translation>
 <translation id="2079504693865562705">លាក់កម្មវិធីនៅក្នុងធ្នើរ</translation>
@@ -145,10 +148,12 @@
 <translation id="2083190527011054446">រាត្រីសួស្ដី <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">មិនបាន​ភ្ជាប់ទៅ​បណ្ដាញ​ទេ</translation>
 <translation id="2108303511227308752">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុច Alt + Backspace។ ដើម្បីប្រើ​គ្រាប់ចុច Delete សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + backspace។</translation>
+<translation id="211328683600082144">បើក​មីក្រូហ្វូន</translation>
 <translation id="2126242104232412123">តុធ្វើការថ្មី</translation>
 <translation id="2127372758936585790">ឆ្នាំងសាកផ្តល់ថាមពលទាប</translation>
 <translation id="2132302418721800944">ថតវីដេអូ​ពេញអេក្រង់</translation>
 <translation id="2135456203358955318">កែវ​ពង្រីក​ដាក់​ខាង​លើ​បំផុត</translation>
+<translation id="2146800439053023141">បិទ/បើក​ទីតាំង​របារ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />៖ ព្យាយាម​ម្ដងទៀត</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">អូសចុះក្រោម​ដោយប្រើ​ម្រាមដៃបី ដើម្បីចាកចេញពី​ទិដ្ឋភាពរួម</translation>
@@ -328,6 +333,7 @@
 <translation id="3638400994746983214">បិទ/បើកអេក្រង់ឯកជនភាព។ <ph name="STATE_TEXT" />។</translation>
 <translation id="366222428570480733">អ្នកប្រើប្រាស់​ដែលគ្រប់គ្រង​ដោយ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">ថតសំឡេង​ដោយ​ប្រើ​មីក្រូហ្វូន</translation>
+<translation id="3680908746918359504">សម្អាត​ហ្វឺត​ទាំងអស់</translation>
 <translation id="36813544980941320">បណ្ដាញ Wi-Fi នឹងត្រូវបានចែករំលែក​រវាង​ទូរសព្ទរបស់អ្នក និង <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">កំពុងបង្ហាញ​វិនដូពី​តុបច្ចុប្បន្ន សូមចុចគ្រាប់ចុច​ព្រួញឡើងលើ ដើម្បីបង្ហាញ​វិនដូ​ពីតុទាំងអស់</translation>
 <translation id="3702846122927433391">ចំនួនប្រជាជននៅប្រទេសនីហ្សេរីយ៉ា</translation>
@@ -373,12 +379,12 @@
 <translation id="4021716437419160885">រំកិលចុះក្រោម</translation>
 <translation id="4028481283645788203">តម្រូវឱ្យបញ្ចូលពាក្យសម្ងាត់​សម្រាប់សុវត្ថិភាពបន្ថែម</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុច <ph name="LAUNCHER_KEY_NAME" /> + គ្រាប់ចុចលេខ។ ដើម្បីប្រើបណ្ដាគ្រាប់ចុច F សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + គ្រាប់ចុចជួរខាងលើ។</translation>
 <translation id="4042660782729322247">អ្នក​កំពុង​ចែករំលែក​អេក្រង់​របស់អ្នក</translation>
 <translation id="4057003836560082631">ផ្ទាំងកម្មវិធីរុករកតាមអ៊ីនធឺណិត <ph name="INDEX" /> នៃ <ph name="TOTAL_COUNT" />។ <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{បិទសម្រាប់កម្មវិធីមួយ}other{បិទសម្រាប់កម្មវិធីមួយ #}}</translation>
 <translation id="4066027111132117168">បើក <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">សេវាមធ្យម</translation>
+<translation id="4095366824370681039">ប៊ិក</translation>
 <translation id="4112140312785995938">សា​ថយក្រោយ</translation>
 <translation id="4114315158543974537">បើក Phone Hub</translation>
 <translation id="412298498316631026">វិនដូ</translation>
@@ -447,12 +453,15 @@
 <translation id="4570957409596482333">ប៊ូតុង​ជ្រើសរើស​ដើម្បី​អាន</translation>
 <translation id="4577274620589681794">ដល់​ម៉ោងហើយ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">បង្ហាញ​ការមើល​សាកល្បង</translation>
+<translation id="4578196883126898996">មីក្រូហ្វូន​របស់អ្នក​ត្រូវបានបិទ។ សូមបើក​ប៊ូតុង​មីក្រូហ្វូន​របស់ឧបករណ៍អ្នក។</translation>
 <translation id="4578906031062871102">បានបើកម៉ឺនុយការ​កំណត់</translation>
 <translation id="4581047786858252841">មីក្រូហ្វូន​ត្រូវ​បាន​បើក</translation>
 <translation id="4585337515783392668">ឈប់បញ្ជូន​​ទៅឧបករណ៍ទទួលដែល​មិនស្គាល់</translation>
+<translation id="4586483766170476230">បញ្ឈប់​កាមេរ៉ា​សែលហ្វី</translation>
 <translation id="4587299710837179226">មីក្រូហ្វូន​ត្រូវបានបិទ</translation>
 <translation id="4596144739579517758">​រចនាប័ទ្ម​ងងឹតបានបិទ</translation>
 <translation id="4611292653554630842">ចូល</translation>
+<translation id="4614295562446151104">ពង្រីក​ឧបករណ៍​ហ្វឺត</translation>
 <translation id="4623167406982293031">ផ្ទៀងផ្ទាត់​គណនី</translation>
 <translation id="4628757576491864469">ឧបករណ៍</translation>
 <translation id="4642092649622328492">ថត​រូប​អេក្រង់​មួយ​ផ្នែក</translation>
@@ -509,6 +518,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> បានភ្ជាប់​ទៅទូរសព្ទថ្មី</translation>
 <translation id="5035389544768382859">បញ្ជាក់​កំណត់​រចនាសម្ព័ន្ធផ្ទាំងអេក្រង់</translation>
 <translation id="504465286040788597">កថាខណ្ឌមុន</translation>
+<translation id="5071064518267176975">មានកម្មវិធីមួយ​ចង់ប្រើ​មីក្រូហ្វូន</translation>
+<translation id="5075554201838155866">ចាប់ផ្ដើម​អក្សររត់</translation>
 <translation id="5078796286268621944">លេខសម្គាល់មិនត្រឹមត្រូវ</translation>
 <translation id="5083553833479578423">ដោះសោ​មុខងារ​ជំនួយការ​ជាច្រើនទៀត។</translation>
 <translation id="5136175204352732067">បាន​ភ្ជាប់​ក្ដារចុច​ផ្សេង</translation>
@@ -679,6 +690,7 @@
 <translation id="6612802754306526077">បានជ្រើសរើសមុខងារថតវីដេអូអេក្រង់</translation>
 <translation id="6614169507485700968">អេក្រង់​ឯកជនភាព​ត្រូវបានបើក</translation>
 <translation id="6627638273713273709">ស្វែងរក+ប្ដូរ (Shift)+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> ចង់ប្រើ​មីក្រូហ្វូន</translation>
 <translation id="6637729079642709226">ប្ដូរម៉ោង</translation>
 <translation id="6641720045729354415">បិទ/បើក​អក្សររត់ក្នុងពេលជាក់ស្ដែង។ <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ចង់បញ្ជាក់ថា​ជាអ្នក</translation>
@@ -732,6 +744,7 @@
 <translation id="7029814467594812963">ចាកចេញពីវេន</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google ជំនួយការ</translation>
 <translation id="7042322267639375032">បង្រួម​តំបន់​ស្ថានភាព</translation>
+<translation id="7045595904618419789">ចាប់ផ្ដើម​កែវពង្រីក</translation>
 <translation id="7055910611768509537">មិនបានប្រើប៊ិកជាងមួយសប្ដាហ៍ហើយ</translation>
 <translation id="7066646422045619941">បណ្តាញនេះត្រូវបានបិទដំណើរការដោយអ្នកគ្រប់គ្រងរបស់អ្នក។</translation>
 <translation id="7067196344162293536">បង្វិល​ស្វ័យ​ប្រវត្តិ</translation>
@@ -752,6 +765,7 @@
 <translation id="7256634071279256947">មីក្រូហ្វូន​ខាងក្រោយ</translation>
 <translation id="726276584504105859">អូសនៅទីនេះដើម្បីប្រើអេក្រង់បំបែក</translation>
 <translation id="7262906531272962081">បង្កើត​ការ​រំលឹក</translation>
+<translation id="7279434993080105272">ពណ៌ហ្វឺត <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">មុខងារអក្សររត់ក្នុងពេលជាក់ស្ដែង​ត្រូវបានបិទ។</translation>
 <translation id="7303365578352795231">កំពុង​ឆ្លើយតប​នៅលើ​ឧបករណ៍​ផ្សេង​ទៀត។</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@
 <translation id="7466449121337984263">សូមប៉ះ​ឧបករណ៍​ចាប់សញ្ញា</translation>
 <translation id="7477793887173910789">គ្រប់គ្រងតន្ត្រី វីដេអូរបស់អ្នក និងអ្វីៗជាច្រើនទៀត</translation>
 <translation id="7483025031359818980">ផ្នែកនៃការជ្រើសរើសត្រូវបានកំណត់ទៅអេក្រង់ពេញ</translation>
+<translation id="7486227320194954040">បង្រួម​ឧបករណ៍​ហ្វឺត</translation>
 <translation id="7497767806359279797">ជ្រើសរើស​ភាសា និងក្ដារចុច</translation>
 <translation id="7509246181739783082">ផ្ទៀងផ្ទាត់អត្តសញ្ញាណរបស់អ្នក</translation>
 <translation id="7513622367902644023">បានជ្រើសរើសមុខងារថត​រូបអេក្រង់</translation>
@@ -799,6 +814,7 @@
 <translation id="7607002721634913082">បានផ្អាក</translation>
 <translation id="7618774594543487847">ស្រាល</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">ប៊ិកហ្វឺត</translation>
 <translation id="7633755430369750696">បង្ហាញ​ការកំណត់​ការចែករំលែកនៅជិត។</translation>
 <translation id="7641938616688887143">ថតវីដេអូ</translation>
 <translation id="7642647758716480637">បើក​ការកំណត់​សម្រាប់ <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@
 <translation id="7724603315864178912">កាត់</translation>
 <translation id="7745560842763881396">បង្ហាញកម្មវិធីនៅក្នុងធ្នើរ</translation>
 <translation id="7749443890790263709">ចំនួនតុ​បាន​ឈានដល់កម្រិតអតិបរមាហើយ។</translation>
+<translation id="7749640678855296659">បច្ចុប្បន្ននេះ មីក្រូហ្វូន​របស់អ្នក​ត្រូវបានបិទ</translation>
 <translation id="776344839111254542">ចុចដើម្បី​មើល​ព័ត៌មាន​លម្អិត​អំពីកំណែថ្មី</translation>
 <translation id="7780159184141939021">បង្វិល​អេក្រង់</translation>
 <translation id="7796353162336583443">ចុច​ប៊ូតុងប៊ិច​នៅលើ​ធ្នើដើម្បី​កត់ចំណាំ ថត​អេក្រង់ ប្រើ​ Google ជំនួយការ សញ្ញា​ព្រួញ​ឡាស៊ែរ ឬ​កែវ​ពង្រីក។</translation>
@@ -861,6 +878,7 @@
 <translation id="8113423164597455979">បើក កម្មវិធីទាំងអស់</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">អះអាង</translation>
+<translation id="8132487352815776550">បញ្ឈប់​អក្សររត់</translation>
 <translation id="8132793192354020517">បានភ្ជាប់ទៅ <ph name="NAME" /></translation>
 <translation id="813913629614996137">កំពុង​ចាប់ផ្ដើម…</translation>
 <translation id="8142441511840089262">ចុចពីរដង</translation>

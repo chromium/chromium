@@ -281,6 +281,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1919345977826869612">Reklamy</translation>
 <translation id="1919367280705858090">Nápověda ke konkrétní chybové zprávě</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Žádné}=1{1 web}few{# weby}many{# webu}other{# webů}}</translation>
+<translation id="1924727005275031552">Nová</translation>
 <translation id="1945968466830820669">Mohli byste ztratit přístup k účtu organizace nebo by mohlo dojít k odcizení vaší identity. Chromium doporučuje okamžitě změnit heslo.</translation>
 <translation id="1947454675006758438">Sponka vpravo nahoře</translation>
 <translation id="1958218078413065209">Vaše nejvyšší skóre je <ph name="SCORE" />.</translation>
@@ -391,6 +392,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2357481397660644965">Vaše zařízení spravuje doména <ph name="DEVICE_MANAGER" /> a váš účet spravuje doména <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Několik</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
+<translation id="2359961752320758691">Je použito číslo vaší virtuální karty.</translation>
 <translation id="2367567093518048410">Úroveň</translation>
 <translation id="2372464001869762664">Po potvrzení budou údaje o kartě z vašeho účtu Google poskytnuty tomuto webu. Kód CVC najdete v podrobnostech o svém účtu Plex.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -401,6 +403,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="239429038616798445">Tento způsob dopravy není k dispozici. Zkuste použít jiný způsob.</translation>
 <translation id="2396249848217231973">&amp;Vrátit smazání zpět</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">Stará</translation>
 <translation id="2413528052993050574">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát byl zřejmě zrušen. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="2414886740292270097">Tmavé</translation>
 <translation id="2438874542388153331">Čtyři otvory vpravo</translation>
@@ -894,12 +897,14 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4275830172053184480">Restartovat zařízení</translation>
 <translation id="4277028893293644418">Resetovat heslo</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Tato karta byla uložena do vašeho učtu Google}few{Tyto karty byly uloženy do vašeho účtu Google.}many{Tyto karty byly uloženy do vašeho účtu Google.}other{Tyto karty byly uloženy do vašeho účtu Google.}}</translation>
+<translation id="4287885627794386150">Vhodné k testování technologie, ale neaktivní</translation>
 <translation id="4297502707443874121">Miniatura stránky <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Rozbalit</translation>
 <translation id="4300675098767811073">Několik děr vpravo</translation>
 <translation id="4302514097724775343">Klepnutím na dinosaura spustíte hru</translation>
 <translation id="4302965934281694568">Chou3 (obálka)</translation>
 <translation id="4305666528087210886">K souboru nelze získat přístup</translation>
+<translation id="4306529830550717874">Uložit adresu?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokovat (výchozí)</translation>
 <translation id="4314815835985389558">Správa synchronizace</translation>
@@ -1386,6 +1391,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="610911394827799129">Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="6116338172782435947">Přístup k textu a obrázkům zkopírovaným do schránky</translation>
 <translation id="6120179357481664955">Uložit vaše UPI ID?</translation>
+<translation id="6123290840358279103">Zobrazit virtuální kartu</translation>
 <translation id="6124432979022149706">Konektory Chrome Enterprise</translation>
 <translation id="6146055958333702838">Zkontrolujte všechny kabely a restartujte všechny směrovače, modemy a další síťová zařízení, která používáte.</translation>
 <translation id="614940544461990577">Zkuste:</translation>
@@ -1663,6 +1669,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7300012071106347854">Sytě modrá</translation>
 <translation id="7302712225291570345">„<ph name="TEXT" />“</translation>
 <translation id="7304030187361489308">Vysoký</translation>
+<translation id="7305756307268530424">Začít pomaleji</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Pomoc s připojením</translation>
 <translation id="7323804146520582233">Skrýt sekci <ph name="SECTION" /></translation>
@@ -1688,6 +1695,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7378594059915113390">Ovládání médií</translation>
 <translation id="7378627244592794276">Ne</translation>
 <translation id="7378810950367401542"> / </translation>
+<translation id="7386364858855961704">Nelze použít</translation>
 <translation id="7390545607259442187">Ověření karty</translation>
 <translation id="7399802613464275309">Bezpečnostní kontrola</translation>
 <translation id="7400418766976504921">Adresa URL</translation>
@@ -1739,6 +1747,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7548892272833184391">Oprava chyb připojení</translation>
 <translation id="7549584377607005141">Tato stránka potřebuje ke správnému zobrazení data, která jste zadali dříve. Tyto údaje můžete odeslat znovu, ale zopakujete tím všechny akce, které tato stránka již předtím provedla.</translation>
 <translation id="7550637293666041147">Vaše uživatelské jméno na zařízení a v Chromu</translation>
+<translation id="755279583747225797">Testování technologie je aktivní</translation>
 <translation id="7552846755917812628">Vyzkoušejte následující tipy:</translation>
 <translation id="7554475479213504905">Přesto znovu načíst a zobrazit</translation>
 <translation id="7554791636758816595">Nová karta</translation>
@@ -1833,6 +1842,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7894280532028510793">Pokud je adresa zadána správně, <ph name="BEGIN_LINK" />zkuste spustit Diagnostiku sítě<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (obálka)</translation>
 <translation id="7931318309563332511">Neznámé</translation>
+<translation id="793209273132572360">Aktualizovat adresu?</translation>
 <translation id="7932579305932748336">Potah</translation>
 <translation id="79338296614623784">Zadejte platné telefonní číslo</translation>
 <translation id="7934052535022478634">Platba dokončena</translation>
@@ -1909,7 +1919,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8202097416529803614">Shrnutí objednávky</translation>
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8206978196348664717">Prc4 (obálka)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Když resetujete ID, vaše aktuální ID přestane platit a za méně než jeden den bude vydáno nové}=1{Když resetujete ID, vaše aktuální ID přestane platit a do jednoho dne bude vydáno nové}few{Když resetujete ID, vaše aktuální ID přestane platit a do {NUM_DAYS} dní bude vydáno nové}many{Když resetujete ID, vaše aktuální ID přestane platit a do {NUM_DAYS} dne bude vydáno nové}other{Když resetujete ID, vaše aktuální ID přestane platit a do {NUM_DAYS} dní bude vydáno nové}}</translation>
 <translation id="8211406090763984747">Připojení je zabezpečené</translation>
 <translation id="8213464188712611711">Vzpomínky</translation>
 <translation id="8218327578424803826">Přiřazené místo:</translation>

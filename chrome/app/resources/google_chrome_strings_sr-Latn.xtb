@@ -175,6 +175,7 @@ Neke funkcije su možda nedostupne. Navedite drugi direktorijum profila ili kori
 
 Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="5434383153637353914">Ova stranica vam omogućava da upravljate Google nalozima na koje ste prijavljeni. Nalozi će biti dostupni u Chrome pregledaču i aplikacijama iz Play prodavnice, kao i u uslugama kao što su Gmail, Disk i YouTube. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Instaliraj Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome pokušava da prikaže lozinke.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Ako se podešavanje ne prikazuje na ovoj stranici, potražite ga u <ph name="LINK_BEGIN" />
@@ -258,6 +259,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7896673875602241923">Neko se prethodno prijavio na Chrome na ovom računaru kao <ph name="ACCOUNT_EMAIL_LAST" />. Napravite novog korisnika Chrome-a da bi informacije bile razdvojene.</translation>
 <translation id="7905891027772979035">Chrome ne može da vam proverava dodatke. Probajte ponovo kasnije.</translation>
 <translation id="7930071585467473040">Google Chrome pokušava da kopira lozinke.</translation>
+<translation id="7951988079884443914">Chrome preporučuje da ne preuzimate niti otvarate ovaj fajl.</translation>
 <translation id="7962410387636238736">Ovaj računar više neće dobijati ažuriranja za Google Chrome jer Windows XP i Windows Vista više nisu podržani</translation>
 <translation id="79947657522496226">Chrome OS je omogućen zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru sa otvorenim kodom<ph name="END_LINK_CROS_OSS" />, kao što je <ph name="BEGIN_LINK_LINUX_OSS" />Linux okruženje za programiranje<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Ponovo instaliraj Chrome</translation>

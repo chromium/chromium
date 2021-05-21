@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">Chromium må ha lagringstilgang for å laste ned filer</translation>
 <translation id="2572494885440352020">Chromium-hjelper</translation>
 <translation id="2577788541081224677">For å få tilgang til Chromium-tingene dine på alle enhetene dine, logg på slik at du kan slå på synkronisering.</translation>
+<translation id="2580426763510374355">Installer Chromium OS</translation>
 <translation id="2583187216237139145">Alle Chromium-data som genereres mens denne profilen brukes (f.eks. oppretting av bokmerker, logg, passord og andre innstillinger), kan fjernes av administratoren for jobbprofilen. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS må startes på nytt for at oppdateringen skal tas i bruk.</translation>
 <translation id="2648074677641340862">Det oppsto en systemfeil under installering. Last ned Chromium på nytt.</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – betaversjon av Chromium</translation>
 <translation id="5479196819031988440">Chromium OS kan ikke åpne denne siden.</translation>
 <translation id="5480860683791598150">Chromium trenger tilgang til posisjonen din for å kunne dele den med dette nettstedet</translation>
+<translation id="5481338274774984070">Chromium fraråder deg å laste ned eller åpne denne filen.</translation>
 <translation id="549669000822060376">Vent mens Chromium installerer de nyeste systemoppdateringene.</translation>
 <translation id="5496810170689441661">Chromium prøver å redigere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="5527463683072221100">Åpne PDF-filer i Chromium</translation>

@@ -40,6 +40,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2560420686485554789">Kailangan ng Chromium ang access sa storage upang maka-download ng mga file</translation>
 <translation id="2572494885440352020">Helper ng Chromium</translation>
 <translation id="2577788541081224677">Para ma-access ang iyong mga bagay sa Chromium sa lahat ng device mo, mag-sign in para ma-on mo ang pag-sync.</translation>
+<translation id="2580426763510374355">I-install ang Chromium OS</translation>
 <translation id="2583187216237139145">Puwedeng alisin ng administrator ng profile sa trabaho ang anumang data ng Chromium na nabuo sa panahon ng paggamit ng profile na ito (gaya ng paggawa ng mga bookmark, history, mga password, at iba pang setting). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Kailangang ma-restart ang Chromium OS upang mailapat ang update.</translation>
 <translation id="2648074677641340862">May naganap na error sa operating system sa panahon ng pag-install. Mangyaring i-download muli ang Chromium.</translation>
@@ -138,6 +139,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5479196819031988440">Hindi mabuksan ng Chromium OS ang page na ito.</translation>
 <translation id="5480860683791598150">Kailangan ng Chromium ng access sa iyong lokasyon upang maibahagi ang lokasyon mo sa site na ito</translation>
+<translation id="5481338274774984070">Inirerekomenda ng Chromium na huwag mong i-download o buksan ang file na ito.</translation>
 <translation id="549669000822060376">Mangyaring maghintay habang ini-install ng Chromium ang mga pinakabagong update sa system.</translation>
 <translation id="5496810170689441661">Sinusubukan ng Chromium na i-edit ang mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="5527463683072221100">Magbukas ng mga PDF sa Chromium</translation>

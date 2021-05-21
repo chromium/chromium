@@ -885,7 +885,6 @@
 <translation id="1926339101652878330">Bu ayarlar sahibkarlıq qaydaları ilə tənzimlənir. Ətraflı məlumat üçün administratorunuzla əlaqə saxlayın.</translation>
 <translation id="1927632033341042996"><ph name="NEW_FINGER_NUMBER" /> barmaq</translation>
 <translation id="192817607445937251">Ekran kilidi PIN-kodu</translation>
-<translation id="1928202201223835302">Köhnə PİN kodu daxil edin</translation>
 <translation id="1928696683969751773">Güncəlləşmələr</translation>
 <translation id="1929186283613845153">Bu fayl skanlanır.</translation>
 <translation id="1929343511231420085">Hər hansı bir ardıcıl port</translation>
@@ -909,7 +908,6 @@
 <translation id="1954813140452229842">Paylaşım xətası. Kredensiallarınızı yoxlayaraq yenidən cəhd edin.</translation>
 <translation id="1956050014111002555">Fayl heç biri import olunmayan çoxsaylı sertifikatlardan ibarətdir:</translation>
 <translation id="1956390763342388273">Bu "<ph name="FOLDER_PATH" />" ünvanındakı bütün faylları yükləyəcək. Bunu yalnız sayta inandığınız təqdirdə edin.</translation>
-<translation id="1958750704984086982">FLoC maraq əsaslı reklam seçimi üçün məxfiliyi qoruyan bir mexanizm təmin edir.</translation>
 <translation id="1962233722219655970">Bu səhifə Native Client istifadə edir ki, kompüterinizdə işləmir.</translation>
 <translation id="1963227389609234879">Hamısını Silin</translation>
 <translation id="1963976881984600709">Standart qoruma</translation>
@@ -1651,7 +1649,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> məhsuluna daxil olun</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Qrammatikanı Orfoqrafiya ilə yoxlayın</translation>
-<translation id="2751131328353405138">Linux konteyneri ssh fayl sistemi quraşdırılır</translation>
 <translation id="2753677631968972007">Sayt icazələrini əl ilə idarə edin.</translation>
 <translation id="2755349111255270002">Bu <ph name="DEVICE_TYPE" /> cihazını sıfırlayın</translation>
 <translation id="2755367719610958252">Əlçatımlılıq funksiyalarını idarə edin</translation>
@@ -1785,7 +1782,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2891922230654533301"><ph name="APP_NAME" /> tətbiqinə daxil olmaq üçün cihazınız istifadə edilsin?</translation>
 <translation id="2893168226686371498">Defolt brauzer</translation>
 <translation id="2894757982205307093">Qrupa yeni tab</translation>
-<translation id="289644616180464099">SIM kart kilidlənib</translation>
 <translation id="289695669188700754">Əsas ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Bu fərdi ayar bütün Anonim pəncərələri bağladığınızda silinəcəkdir</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> panellərini açmaq istədiyinizə əminsiniz?</translation>
@@ -2252,7 +2248,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3427092606871434483">İcazə verin (defolt)</translation>
 <translation id="3428419049384081277">Hesaba daxil olmusunuz!</translation>
 <translation id="3428747202529429621">Daxil olduğunuzda Chrome'da sizi qoruyur və digər Google tətbiqlərində təhlükəsizliyinizi artırmaq üçün istifadə edilə bilər</translation>
-<translation id="3428800329481094896">Linux konteyneri ssh açarları əldə edilir</translation>
 <translation id="3429160811076349561">Sınaq funksiyaları deaktivdir</translation>
 <translation id="3429271624041785769">Veb məzmun dilləri</translation>
 <translation id="3429275422858276529">Səhifəni sonradan asanlıqla tapmaq üçün əlfəcin qoyun</translation>
@@ -3070,7 +3065,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K canlı)</translation>
 <translation id="4310139701823742692">Fayl yanlış formatdadır. PPD faylını yenidən yoxlayın və təkrar sınayın.</translation>
 <translation id="431076611119798497">Detallar</translation>
-<translation id="4312124410630786333">ID'ni sıfırlayın</translation>
 <translation id="4312866146174492540">Blok edin (defolt)</translation>
 <translation id="4314815835985389558">Sinxronizasiyanı idarə edin</translation>
 <translation id="4316850752623536204">Developer Saytı</translation>
@@ -3230,7 +3224,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4492698018379445570">Hazır olduğunuz zaman alış-veriş arabalarına əlavə etdiklərinizi tapın və ödəniş edin</translation>
 <translation id="4493468155686877504">Tövsiyə olunur (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Bu səhifədə göstərməyin</translation>
-<translation id="4496796119038756382">FLoC ID'si</translation>
 <translation id="4497145443434063861">PC və Chromecast müxtəlif Wi-Fi şəbəkələrindədir (məsələn, 2.4GHz və ya 5GHz)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ilə bağlı xəta oldu</translation>
 <translation id="4500587658229086076">təhlükəli məzmun</translation>
@@ -3747,7 +3740,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5072900412896857127">Google Play Xidmət Şərtlərini yükləmək olmur. Şəbəkə bağlantınızı yoxlayıb yenidən cəhd edin.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> və daha #}}</translation>
 <translation id="5074318175948309511">Yeni ayarlar qüvvəyə minməmişdən əvvəl bu səhifə yenidən yüklənilməlidir.</translation>
-<translation id="5075131525758602494">SIM PIN kodu daxil edin</translation>
 <translation id="5075910247684008552">Təhlükəli məzmun defolt olaraq təhlükəsiz saytlarda blok edildi</translation>
 <translation id="5078638979202084724">Bütün vərəqələri əlfəcinləyin</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
@@ -7114,7 +7106,6 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
 <translation id="8803953437405899238">Bir klik ilə yeni tab açın</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Tabı Başqa Pəncərəyə Köçürün}other{Tabları Başqa Pəncərəyə Köçürün}}</translation>
 <translation id="8805140816472474147">Sinxronizasiyaya başlamaq üçün sinxronizasiyanı təsdiq edin.</translation>
-<translation id="8805985421503170600">Koqortaların Birgə Öyrənilməsi</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> ilə təsadüfən bağlanmış tabları yenidən aça bilərsiniz</translation>
 <translation id="8807632654848257479">Stabil</translation>
 <translation id="8808478386290700967">Veb Dükanı</translation>

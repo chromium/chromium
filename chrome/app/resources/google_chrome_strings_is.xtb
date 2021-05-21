@@ -174,6 +174,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 
 Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5434383153637353914">Á þessari síðu geturðu haft umsjón með Google reikningunum sem þú ert skráð(ur) inn á. Reikningarnir verða tiltækir í Chrome vafranum og Play Store forritum sem og í þjónustum á borð við Gmail, Drive og YouTube. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Setja upp Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome er að reyna að birta aðgangsorð.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-inn)</translation>
 <translation id="5657226924540934362">Ef stilling sést ekki á þessari síðu skaltu athuga <ph name="LINK_BEGIN" />
@@ -257,6 +258,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7896673875602241923">Einhver hefur skráð sig inn á Chrome í þessari tölvu sem <ph name="ACCOUNT_EMAIL_LAST" />. Búðu til nýjan notanda í Chrome til að halda upplýsingum ykkar aðskildum.</translation>
 <translation id="7905891027772979035">Chrome getur ekki athugað viðbæturnar þínar. Reyndu aftur síðar.</translation>
 <translation id="7930071585467473040">Google Chrome er að reyna að afrita aðgangsorð.</translation>
+<translation id="7951988079884443914">Chrome mælir með að þú hvorki sækir né opnir þessa skrá.</translation>
 <translation id="7962410387636238736">Þessi tölva tekur ekki lengur við uppfærslum á Google Chrome vegna þess að stýrikerfin Windows XP og Windows Vista eru ekki lengur studd</translation>
 <translation id="79947657522496226">Chrome OS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" /> og það sama á við um <ph name="BEGIN_LINK_LINUX_OSS" />Linux-forritunarumhverfið <ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Setja Chrome aftur upp</translation>

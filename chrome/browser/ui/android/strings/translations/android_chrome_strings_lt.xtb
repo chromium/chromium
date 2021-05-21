@@ -186,6 +186,7 @@ Norėdami ieškoti, palieskite bet kurį žodį. Jei norite patikslinti paiešk�
 <translation id="22320125457191592">Jums</translation>
 <translation id="2234876718134438132">Sinchron. ir „Google“ paslaugos</translation>
 <translation id="2239812875700136898">Valdykite pasakojimus naudodami mygtuką „Discover“ parinktys“</translation>
+<translation id="2251971221270904886">Kai technologija įjungta, o būsena aktyvi, „Chrome“ naudoja septynių dienų naršymo istoriją, kad nustatytų grupę, kuriai priklausote. Reklamuotojai gali pasirinkti grupei skirtus skelbimus. Jūsų naršymo istorija saugoma privačiai įrenginyje. Ši bandomoji versija aktyvi tik <ph name="BEGIN_LINK" />kai kuriuose regionuose<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Eksportuoti slaptažodžius…</translation>
 <translation id="2276696007612801991">Prisijunkite prie „Google“ paskyros, kad patikrintumėte slaptažodžius</translation>
 <translation id="2278052315791335171">Ištrynus šį slaptažodį jūsų paskyra svetainėje <ph name="SITE" /> nebus ištrinta</translation>
@@ -275,6 +276,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2781151931089541271">Liko 1 sek.</translation>
 <translation id="2801022321632964776">Norėdami gauti naujausią versiją su įdiegta savo kalba, atnaujinkite „Chrome“</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Peržiūrėkite ir tvarkykite išsaugotus slaptažodžius <ph name="BEGIN_LINK" />„Google“ paskyroje<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Jei norite pasiekti žymes visuose įrenginiuose, prisijunkite ir įjunkite sinchronizavimą</translation>
 <translation id="2827278682606527653">Sklaidos kanalo kortelės meniu atidarytas iki pusės</translation>
@@ -293,6 +295,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2901411048554510387">Rodomi pasiūlymai, susiję su svetaine „<ph name="WEBSITE_TITLE" />“</translation>
 <translation id="2904414404539560095">Įrenginių, su kuriais reikia bendrinti skirtuką, sąrašas atidarytas (visas aukštis).</translation>
 <translation id="2905036901251765993">Jei norite bendrinti su netoliese esančiais žmonėmis, leiskite jiems nuskaityti šį QR kodą</translation>
+<translation id="2908243544703713905">Neskaitytos istorijos paruoštos</translation>
 <translation id="2909615210195135082">„Google“ pranešimų platforma</translation>
 <translation id="2912296070571964914">Tvarkykite jus dominančias temas</translation>
 <translation id="2923908459366352541">Netinkamas pavadinimas</translation>
@@ -317,6 +320,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> žymė}one{<ph name="BOOKMARKS_COUNT_MANY" /> žymė}few{<ph name="BOOKMARKS_COUNT_MANY" /> žymės}many{<ph name="BOOKMARKS_COUNT_MANY" /> žymės}other{<ph name="BOOKMARKS_COUNT_MANY" /> žymių}}</translation>
 <translation id="3062802207422175757">Su jūsų pomėgiais susiję straipsniai naršyklėje „Chrome“</translation>
 <translation id="3070005020161560471">Versti automatiškai</translation>
+<translation id="3083531420240576529">Grupę bet kuriuo metu galite nustatyti iš naujo. Gali praeiti septynios dienos, kol grupė bus nustatyta.</translation>
 <translation id="3091010850649238832">Rodyti iškarpinės turinį</translation>
 <translation id="3098745985164956033">Vaizdai siunčiami „Google“ norint patobulinti jums teikiamus aprašus</translation>
 <translation id="3114507951000454849">Skaitykite šiandienos naujienas <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Privatumo „sandbox“ (smėlio dėžė) vis dar intensyviai kuriama ir pasieki
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4060598801229743805">Parinktys pasiekiamos netoli ekrano viršaus</translation>
 <translation id="4062305924942672200">Teisinė informacija</translation>
+<translation id="4082818367361753283">Grupės ID</translation>
 <translation id="4084682180776658562">Žymė</translation>
 <translation id="4084712963632273211">Nuo <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />pateikė „Google“<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Ištrinti programos duomenis?</translation>
@@ -533,7 +538,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4583164079174244168">{MINUTES,plural, =1{Prieš 1 minutę}one{Prieš # minutę}few{Prieš # minutes}many{Prieš # minutės}other{Prieš # minučių}}</translation>
 <translation id="4587589328781138893">Svetainės</translation>
 <translation id="4594952190837476234">Šis neprisijungus naudojamas puslapis sukurtas <ph name="CREATION_TIME" />, todėl gali skirtis nuo prisijungus pateiktos versijos.</translation>
-<translation id="4615382002648696011">Paruoštos stebimos, neskaitytos istorijos</translation>
 <translation id="4616150815774728855">Atidaryti „<ph name="WEBAPK_NAME" />“</translation>
 <translation id="4619564267100705184">Patvirtinti tapatybę</translation>
 <translation id="4634124774493850572">Naudoti slaptažodį</translation>
@@ -889,6 +893,11 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6699370405921460408">„Google“ serveriai optimizuos puslapius, kuriuose lankotės.</translation>
 <translation id="670498945988402717">Tikrinta vakar</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
+<translation id="671333169801287922">Įjungus svetainėse galima naudoti čia nurodytus privatumą užtikrinančius metodus turiniui ir paslaugoms teikti. Įtraukiami alternatyvūs veiklos skirtingose svetainėse stebėjimo metodai. Laikui bėgant gali būti pridėta daugiau bandomųjų versijų.
+
+<ph name="BEGIN_LIST_ITEM1" />Reklamuotojai ir leidėjai gali naudoti „FLoC“ metodą.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Reklamuotojai ir leidėjai gali tyrinėti skelbimų efektyvumą nestebėdami jūsų svetainėse.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117"><ph name="FQDN" /> laikmatis sustojo. Jis vėl bus paleistas rytoj.</translation>
 <translation id="6738516213925468394"><ph name="TIME" /> duomenys buvo užšifruoti naudojant <ph name="BEGIN_LINK" />sinchronizavimo slaptafrazę<ph name="END_LINK" />. Įveskite ją, kad pradėtumėte sinchronizuoti.</translation>
 <translation id="6738867403308150051">Atsisiunčiama...</translation>
@@ -1079,6 +1088,9 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="7971136598759319605">Aktyvus prieš 1 d.</translation>
 <translation id="7975379999046275268">Peržiūrėti puslapį <ph name="BEGIN_NEW" />Naujas<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Iš anksto įkelti puslapius, kad naršymo ir paieškos procesai vyktų greičiau</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privatumo „sandbox“ (smėlio dėžė)<ph name="END_LINK" /> tai šiuo metu vykdoma iniciatyva, kuria siekiama kurti naujas technologijas, kad būtų teikiamas atviras žiniatinklis, padedantis apsisaugoti nuo stebėjimo mechanizmų ir išlaikyti atvirą žiniatinklį.
+
+Privatumo „sandbox“ (smėlio dėžės) bandomosios versijos vis dar intensyviai kuriamos ir pasiekiamos tam tikruose regionuose. Kol kas svetainėse galima išbandyti privatumo „sandbox“ (smėlio dėžę) toliau naudojant dabartines žiniatinklio technologijas, pvz., trečiųjų šalių slapukus.</translation>
 <translation id="7986497153528221272">Jei norite peržiūrėti slaptažodžius, pirmiausia nustatykite įrenginio ekrano užraktą</translation>
 <translation id="7998918019931843664">Iš naujo atidarykite uždarytą skirtuko lapą</translation>
 <translation id="8004582292198964060">Naršyklė</translation>
@@ -1188,7 +1200,9 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="8662811608048051533">Būsite atjungti nuo daugelio svetainių.</translation>
 <translation id="8664979001105139458">Failas pavadinimas jau yra</translation>
 <translation id="8676789164135894283">Prisijungimo patvirtinimai</translation>
+<translation id="867767487203716855">Kitas naujinys</translation>
 <translation id="8683039184091909753">vaizdas</translation>
+<translation id="8683081248374354009">Iš naujo nustatyti grupę</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signalo stiprumo lygis: # juosta}one{Signalo stiprumo lygis: # juosta}few{Signalo stiprumo lygis: # juostos}many{Signalo stiprumo lygis: # juostos}other{Signalo stiprumo lygis: # juostų}}</translation>
 <translation id="869891660844655955">Galiojimo data</translation>
 <translation id="8699120352855309748">Nesiūlyti versti šių kalbų</translation>

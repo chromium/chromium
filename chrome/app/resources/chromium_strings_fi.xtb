@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">Chromium tarvitsee tallennustilan käyttöoikeuden tiedostojen lataamiseen.</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">Jos haluat pääsyn Chromium-sisältöösi kaikilla laitteilla, kirjaudu sisään voidaksesi laittaa synkronoinnin päälle.</translation>
+<translation id="2580426763510374355">Asenna Chromium-käyttöjärjestelmä</translation>
 <translation id="2583187216237139145">Työprofiilin järjestelmänvalvoja voi poistaa tämän profiilin käytön aikana luotua Chromium-dataa (esim. kirjanmerkit, historia, salasanat ja muut asetukset). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium-käyttöjärjestelmä täytyy käynnistää uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
 <translation id="2648074677641340862">Asennuksessa ilmeni käyttöjärjestelmävirhe. Lataa Chromium uudelleen.</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5479196819031988440">Chromium-käyttöjärjestelmä ei voi avata tätä sivua.</translation>
 <translation id="5480860683791598150">Chromium tarvitsee oikeuden käyttää sijaintiasi, jotta se voidaan jakaa tämän sivuston kanssa.</translation>
+<translation id="5481338274774984070">Chromium suosittelee, ettet lataa tai avaa tätä tiedostoa.</translation>
 <translation id="549669000822060376">Odota hetki, Chromium asentaa uusimpia järjestelmäpäivityksiä.</translation>
 <translation id="5496810170689441661">Chromium yrittää muuttaa salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="5527463683072221100">Avaa PDF-tiedostot Chromiumissa</translation>

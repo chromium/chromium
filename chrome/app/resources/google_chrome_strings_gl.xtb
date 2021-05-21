@@ -174,6 +174,7 @@
 
 Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5434383153637353914">Desde esta páxina podes xestionar as contas de Google coas que teñas a sesión iniciada. Estas contas estarán dispoñibles no navegador Chrome e nas aplicacións de Play Store, así como noutros servizos (por exemplo, Gmail, Drive e YouTube). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Instalar Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome está intentando mostrar contrasinais.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Se non se mostra algunha opción de configuración nesta páxina, accede á <ph name="LINK_BEGIN" />
@@ -257,6 +258,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7896673875602241923">Anteriormente, alguén iniciou sesión como <ph name="ACCOUNT_EMAIL_LAST" /> en Chrome neste ordenador. Crea un novo usuario de Chrome para manter a túa información por separado.</translation>
 <translation id="7905891027772979035">Chrome non puido comprobar as túas extensións. Téntao de novo máis tarde.</translation>
 <translation id="7930071585467473040">Google Chrome está tentando copiar os contrasinais.</translation>
+<translation id="7951988079884443914">Chrome recomenda que non descargues nin abras este ficheiro.</translation>
 <translation id="7962410387636238736">Este ordenador deixará de recibir actualizacións de Google Chrome porque xa non se admiten Windows XP nin Windows Vista.</translation>
 <translation id="79947657522496226">Chrome OS é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Reinstalar Chrome</translation>

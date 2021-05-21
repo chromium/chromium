@@ -24,7 +24,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> 정보 대화상자 열기</translation>
 <translation id="1153356358378277386">페어링된 기기</translation>
 <translation id="1165712434476988950">업데이트를 적용하려면 기기를 다시 시작해야 합니다.</translation>
-<translation id="1170240434488307589">기기 마이크 버튼이 음소거되었습니다.</translation>
 <translation id="1175572348579024023">스크롤</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1181037720776840403">삭제</translation>
@@ -41,6 +40,7 @@
 <translation id="1247372569136754018">마이크(내부)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />에서 충전 중</translation>
 <translation id="1255033239764210633">날씨가 어때?</translation>
+<translation id="1266097335951928626">셀카 카메라 시작</translation>
 <translation id="1267032506238418139">단축키 변경</translation>
 <translation id="1269405891096105529">게스트 모드에서는 주변기기가 지원되지 않습니다.</translation>
 <translation id="1270290102613614947">터치 키보드 사용 중지됨</translation>
@@ -85,6 +85,7 @@
 <translation id="1555130319947370107">파란색</translation>
 <translation id="1570871743947603115">블루투스를 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">이 세션의 모든 활동에 액세스</translation>
+<translation id="159255010947577753">마커</translation>
 <translation id="1611993646327628135">켜짐</translation>
 <translation id="1615402009686901181">기밀 콘텐츠가 보일 때 관리자 정책에서 화면 캡처를 사용 중지합니다.</translation>
 <translation id="1632985212731562677">설정 &gt; 접근성에서 스위치 제어를 사용 중지할 수 있습니다.</translation>
@@ -136,8 +137,10 @@
 <translation id="2016340657076538683">메시지 입력</translation>
 <translation id="2018630726571919839">재미있는 이야기 듣기</translation>
 <translation id="2021864487439853900">잠금 해제하려면 클릭</translation>
+<translation id="2047639699071423250">핵심 아이디어 추가</translation>
 <translation id="2049240716062114887">데스크 이름이 <ph name="DESK_NAME" />(으)로 변경되었습니다.</translation>
 <translation id="2050339315714019657">세로 방향</translation>
+<translation id="2066708475850724665">돋보기 중지</translation>
 <translation id="2067602449040652523">키보드 밝기</translation>
 <translation id="2078034614700056995">다음 데스크로 전환하려면 네 손가락을 사용해 오른쪽으로 스와이프하세요.</translation>
 <translation id="2079504693865562705">실행기에서 앱 숨기기</translation>
@@ -145,10 +148,12 @@
 <translation id="2083190527011054446">편안한 밤 보내세요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="209965399369889474">네트워크에 연결되어 있지 않음</translation>
 <translation id="2108303511227308752">Alt + Backspace 단축키가 변경되었습니다. Delete 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + backspace 키를 누르세요.</translation>
+<translation id="211328683600082144">마이크 켜기</translation>
 <translation id="2126242104232412123">새 데스크</translation>
 <translation id="2127372758936585790">저출력 충전기</translation>
 <translation id="2132302418721800944">화면 전체 녹화</translation>
 <translation id="2135456203358955318">고정 돋보기</translation>
+<translation id="2146800439053023141">전환 바 위치</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: 다시 시도</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">최근 사용을 종료하려면 세 손가락을 사용해 아래로 스와이프하세요.</translation>
@@ -328,6 +333,7 @@
 <translation id="3638400994746983214">개인정보 보호 화면을 켜거나 끕니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> 관리 사용자</translation>
 <translation id="3665889125180354336">마이크 녹음</translation>
+<translation id="3680908746918359504">모든 마커 지우기</translation>
 <translation id="36813544980941320">Wi-Fi 네트워크가 휴대전화와 <ph name="DEVICE_NAME" /> 간에 공유됩니다.</translation>
 <translation id="3702809606464356667">현재 데스크의 창을 표시합니다. 모든 데스크의 창을 표시하려면 위쪽 화살표 키를 누르세요</translation>
 <translation id="3702846122927433391">나이지리아의 인구</translation>
@@ -373,12 +379,12 @@
 <translation id="4021716437419160885">아래로 스크롤</translation>
 <translation id="4028481283645788203">보안 강화를 위해 비밀번호가 필요합니다.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023"><ph name="LAUNCHER_KEY_NAME" /> + 숫자 단축키가 변경되었습니다. 기능 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 맨 윗줄의 키를 누르세요.</translation>
 <translation id="4042660782729322247">화면 공유 중</translation>
 <translation id="4057003836560082631">브라우저 탭 <ph name="INDEX" />/<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{앱 1개에서 사용 중지됨}other{앱 #개에서 사용 중지됨}}</translation>
 <translation id="4066027111132117168">사용, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">신호 보통</translation>
+<translation id="4095366824370681039">잉크 펜</translation>
 <translation id="4112140312785995938">뒤로 탐색</translation>
 <translation id="4114315158543974537">휴대전화 허브 사용 설정</translation>
 <translation id="412298498316631026">창</translation>
@@ -447,12 +453,15 @@
 <translation id="4570957409596482333">텍스트 읽어주기 버튼</translation>
 <translation id="4577274620589681794">타이머 종료 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">미리보기 표시</translation>
+<translation id="4578196883126898996">마이크가 꺼져 있습니다. 기기의 마이크 스위치를 켜세요.</translation>
 <translation id="4578906031062871102">설정 메뉴가 열림</translation>
 <translation id="4581047786858252841">마이크 켜짐</translation>
 <translation id="4585337515783392668">알 수 없는 수신기에 전송 중지</translation>
+<translation id="4586483766170476230">셀카 카메라 중지</translation>
 <translation id="4587299710837179226">마이크 꺼짐</translation>
 <translation id="4596144739579517758">어두운 테마가 꺼져 있습니다.</translation>
 <translation id="4611292653554630842">로그인</translation>
+<translation id="4614295562446151104">마커 도구 펼치기</translation>
 <translation id="4623167406982293031">계정을 인증하세요.</translation>
 <translation id="4628757576491864469">기기</translation>
 <translation id="4642092649622328492">부분 스크린샷 찍기</translation>
@@ -509,6 +518,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />이(가) 새 휴대전화에 연결되었습니다.</translation>
 <translation id="5035389544768382859">화면 구성 확인</translation>
 <translation id="504465286040788597">이전 단락</translation>
+<translation id="5071064518267176975">앱에서 마이크를 사용하려고 함</translation>
+<translation id="5075554201838155866">자막 사용</translation>
 <translation id="5078796286268621944">잘못된 PIN</translation>
 <translation id="5083553833479578423">더 많은 어시스턴트 기능을 사용해 보세요.</translation>
 <translation id="5136175204352732067">다른 키보드 연결됨</translation>
@@ -679,6 +690,7 @@
 <translation id="6612802754306526077">화면 녹화 모드 선택됨</translation>
 <translation id="6614169507485700968">개인정보 보호 화면이 켜져 있습니다</translation>
 <translation id="6627638273713273709">검색+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> 앱에서 마이크를 사용하려고 합니다</translation>
 <translation id="6637729079642709226">시간 변경</translation>
 <translation id="6641720045729354415">실시간 자막을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" />에서 본인 확인을 요청합니다.</translation>
@@ -732,6 +744,7 @@
 <translation id="7029814467594812963">세션 종료</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google 어시스턴트</translation>
 <translation id="7042322267639375032">상태 영역 접기</translation>
+<translation id="7045595904618419789">돋보기 시작</translation>
 <translation id="7055910611768509537">1주일 넘게 스타일러스가 사용되지 않았습니다.</translation>
 <translation id="7066646422045619941">관리자가 사용 중지한 네트워크입니다.</translation>
 <translation id="7067196344162293536">자동 회전</translation>
@@ -752,6 +765,7 @@
 <translation id="7256634071279256947">후면 마이크</translation>
 <translation id="726276584504105859">화면 분할을 사용하려면 여기를 드래그하세요.</translation>
 <translation id="7262906531272962081">알림 만들기</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> 마커 색</translation>
 <translation id="7302889331339392448">실시간 자막이 꺼져 있습니다.</translation>
 <translation id="7303365578352795231">다른 기기에서 응답 중입니다.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@
 <translation id="7466449121337984263">센서를 터치하세요.</translation>
 <translation id="7477793887173910789">음악, 동영상 등의 항목 제어하기</translation>
 <translation id="7483025031359818980">선택 영역이 전체 화면으로 설정됨</translation>
+<translation id="7486227320194954040">마커 도구 접기</translation>
 <translation id="7497767806359279797">언어 및 키보드 선택</translation>
 <translation id="7509246181739783082">본인 확인</translation>
 <translation id="7513622367902644023">스크린샷 모드 선택됨</translation>
@@ -799,6 +814,7 @@
 <translation id="7607002721634913082">일시중지됨</translation>
 <translation id="7618774594543487847">중성 색상</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
+<translation id="7631906263969450674">마커 펜</translation>
 <translation id="7633755430369750696">Nearby Share 설정 표시</translation>
 <translation id="7641938616688887143">녹화</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> 설정 열기, <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@
 <translation id="7724603315864178912">잘라내기</translation>
 <translation id="7745560842763881396">실행기에 앱 표시</translation>
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>
+<translation id="7749640678855296659">현재 마이크가 꺼져 있습니다.</translation>
 <translation id="776344839111254542">업데이트 세부정보를 보려면 클릭하세요.</translation>
 <translation id="7780159184141939021">화면 회전</translation>
 <translation id="7796353162336583443">실행기에서 스타일러스 버튼을 탭하여 메모를 작성하거나, 스크린샷을 찍거나, Google 어시스턴트, 레이저 포인터, 돋보기를 활용할 수 있습니다.</translation>
@@ -861,6 +878,7 @@
 <translation id="8113423164597455979">모든 앱에서 사용 중</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">확인</translation>
+<translation id="8132487352815776550">자막 중지</translation>
 <translation id="8132793192354020517"><ph name="NAME" />에 연결됨</translation>
 <translation id="813913629614996137">초기화 중...</translation>
 <translation id="8142441511840089262">더블클릭</translation>

@@ -24,7 +24,6 @@
 <translation id="1148499908455722006">ເປີດກ່ອງໂຕ້​ຕອບຂໍ້ມູນສຳລັບ <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">ອຸປະກອນທີ່ຈັບຄູ່ກັນແລ້ວ</translation>
 <translation id="1165712434476988950">ຈຳເປັນຕ້ອງຣິສະຕາດອຸປະກອນເພື່ອນຳໃຊ້ການອັບເດດ.</translation>
-<translation id="1170240434488307589">ປຸ່ມໄມໂຄຣໂຟນອຸປະກອນຖືກປິດສຽງໄວ້ແລ້ວ.</translation>
 <translation id="1175572348579024023">ເລື່ອນ</translation>
 <translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
@@ -41,6 +40,7 @@
 <translation id="1247372569136754018">ໄມໂຄຣໂຟນ (ພາຍໃນ)</translation>
 <translation id="1252999807265626933">ກຳລັງສາກຈາກ <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">ສະພາບອາກາດເປັນແນວໃດ?</translation>
+<translation id="1266097335951928626">ເລີ່ມກ້ອງຖ່າຍຮູບເຊວຟີ</translation>
 <translation id="1267032506238418139">ການປ່ຽນແປງທາງລັດ</translation>
 <translation id="1269405891096105529">ບໍ່ຮອງຮັບອຸປະກອນຕໍ່ພ່ວງໃນໂໝດແຂກ</translation>
 <translation id="1270290102613614947">ແປ້ນພິມ​ເທິງ​ໜ້າ​ຈໍ​ປິດ​ໃຊ້​ງານ​ແລ້ວ</translation>
@@ -85,6 +85,7 @@
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="1570871743947603115">ປິດເປີດ Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ເຂົ້າເຖິງທຸກການເຄື່ອນໄຫວຂອງທ່ານໃນເຊດຊັນນີ້</translation>
+<translation id="159255010947577753">ມາກເກີ</translation>
 <translation id="1611993646327628135">ເປີດ</translation>
 <translation id="1615402009686901181">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບປິດການນຳໃຊ້ການຖ່າຍຮູບໜ້າຈໍໄວ້ເມື່ອສະແດງເນື້ອຫາທີ່ເປັນຄວາມລັບຢູ່</translation>
 <translation id="1632985212731562677">ປິດການນຳໃຊ້ການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດໄດ້ໃນການຕັ້ງຄ່າ &gt; ການຊ່ວຍເຂົ້າເຖິງ.</translation>
@@ -136,8 +137,10 @@
 <translation id="2016340657076538683">ພິມຂໍ້ຄວາມ</translation>
 <translation id="2018630726571919839">ເລົ່າເລື່ອງຕະຫຼົກໃຫ້ຂ້ອຍຟັງ</translation>
 <translation id="2021864487439853900">ຄລິກເພື່ອປົດລັອກ</translation>
+<translation id="2047639699071423250">ເພີ່ມໄອເດຍຫຼັກ</translation>
 <translation id="2049240716062114887">ຊື່ໂຕະໄດ້ຖືກປ່ຽນເປັນ <ph name="DESK_NAME" /> ແລ້ວ</translation>
 <translation id="2050339315714019657">ລວງຕັ້ງ</translation>
+<translation id="2066708475850724665">ຢຸດແວ່ນຂະຫຍາຍ</translation>
 <translation id="2067602449040652523">ຄວາມແຈ້ງຂອງແປ້ນພິມ</translation>
 <translation id="2078034614700056995">ໃຊ້ສີ່ນິ້ວມືປັດໄປຂວາເພື່ອປ່ຽນໄປໃຊ້ໂຕະກ່ອນໜ້າ</translation>
 <translation id="2079504693865562705">ເຊື່ອງແອັບໃນຖ້ານ</translation>
@@ -145,10 +148,12 @@
 <translation id="2083190527011054446">ຝັນດີ <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">ບໍ່ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍ</translation>
 <translation id="2108303511227308752">ຄີລັດ Alt + Backspace ຖືກປ່ຽນແປງແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ Delete, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
+<translation id="211328683600082144">ເປີດໃຊ້ໄມໂຄຣໂຟນ</translation>
 <translation id="2126242104232412123">ພື້ນທີ່ເຮັດວຽກໃໝ່</translation>
 <translation id="2127372758936585790">ເຄື່ອງສາກໄຟຕໍ່າ</translation>
 <translation id="2132302418721800944">ບັນທຶກໜ້າຈໍເຕັມ</translation>
 <translation id="2135456203358955318">ແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້ແລ້ວ</translation>
+<translation id="2146800439053023141">ສະຫຼັບສະຖານທີ່ແຖບ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ລອງໃໝ່</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">ໃຊ້ສາມນິ້ວມືປັດລົງເພື່ອອອກຈາກພາບຮວມ</translation>
@@ -328,6 +333,7 @@
 <translation id="3638400994746983214">ສະຫຼັບໜ້າຈໍຄວາມເປັນສ່ວນຕົວ. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733">ຜູ້ໃຊ້ທີ່ມີການຈັດການ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">ບັນທຶກສຽງຈາກໄມໂຄຣໂຟນ</translation>
+<translation id="3680908746918359504">ລຶບລ້າງມາກເກີທັງໝົດ</translation>
 <translation id="36813544980941320">ຈະມີການແບ່ງປັນເຄືອຂ່າຍ Wi-Fi ລະຫວ່າງໂທລະສັບຂອງທ່ານກັບ <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">ກຳລັງສະແດງໜ້າຈໍຈາກໂຕະປັດຈຸບັນ, ກົດປຸ່ມລູກສອນຂຶ້ນເພື່ອສະແດງໜ້າຈໍຈາກໂຕະທັງໝົດ</translation>
 <translation id="3702846122927433391">ປະຊາກອນໃນໄນຈີເຣຍ</translation>
@@ -373,12 +379,12 @@
 <translation id="4021716437419160885">ເລື່ອນລົງ</translation>
 <translation id="4028481283645788203">ຈຳເປັນຕ້ອງມີລະຫັດຜ່ານເພື່ອຄວາມປອດໄພຍິ່ງຂຶ້ນ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">ຄີລັດ <ph name="LAUNCHER_KEY_NAME" /> + ຕົວເລກຖືກປ່ຽນແປງແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ F, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ປຸ່ມໃດໜຶ່ງຢູ່ແຖວເທິງສຸດ.</translation>
 <translation id="4042660782729322247">ທ່ານກຳລັງແບ່ງປັນໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="4057003836560082631">ແຖບໂປຣແກຣມທ່ອງເວັບ <ph name="INDEX" /> ແຖບຈາກທັງໝົດ <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ປິດສຳລັບໜຶ່ງແອັບ}other{ປິດສຳລັບ # ແອັບ}}</translation>
 <translation id="4066027111132117168">ເປີດ, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">ສັນຍານປານກາງ</translation>
+<translation id="4095366824370681039">ບິກໝຶກ</translation>
 <translation id="4112140312785995938">ເລື່ອນກັບຫຼັງ</translation>
 <translation id="4114315158543974537">ເປີດ Phone Hub</translation>
 <translation id="412298498316631026">ໜ້າຈໍ</translation>
@@ -447,12 +453,15 @@
 <translation id="4570957409596482333">ປຸ່ມເລືອກເພື່ອເວົ້າ</translation>
 <translation id="4577274620589681794">ໝົດເວລາແລ້ວ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ສະແດງຕົວຢ່າງ</translation>
+<translation id="4578196883126898996">ໄມໂຄຣໂຟນຂອງທ່ານປິດຢູ່. ກະລຸນາເປີດໃຊ້ປຸ່ມໄມໂຄຣໂຟນຂອງອຸປະກອນທ່ານ.</translation>
 <translation id="4578906031062871102">ເປີດເມນູການຕັ້ງຄ່າແລ້ວ</translation>
 <translation id="4581047786858252841">ໄມໂຄຣໂຟນເປີດຢູ່</translation>
 <translation id="4585337515783392668">ຢຸດການສົ່ງສັນຍານໃນເຄື່ອງຮັບທີ່ບໍ່ຮູ້ຈັກ</translation>
+<translation id="4586483766170476230">ຢຸດກ້ອງຖ່າຍຮູບເຊວຟີ</translation>
 <translation id="4587299710837179226">ໄມໂຄຣໂຟນປິດຢູ່</translation>
 <translation id="4596144739579517758">ຮູບແບບສີສັນມືດປິດຢູ່</translation>
 <translation id="4611292653554630842">ເຂົ້າສູ່ລະບົບ</translation>
+<translation id="4614295562446151104">ຂະຫຍາຍເຄື່ອງມືມາກເກີ</translation>
 <translation id="4623167406982293031">ຢັ້ງຢືນບັນຊີ</translation>
 <translation id="4628757576491864469">ອຸ​ປະ​ກອນ</translation>
 <translation id="4642092649622328492">ຖ່າຍຮູບໜ້າຈໍບາງສ່ວນ</translation>
@@ -509,6 +518,8 @@
 <translation id="5035236842988137213">ເຊື່ອມຕໍ່ <ph name="DEVICE_NAME" />ກັບໂທລະສັບໃໝ່ແລ້ວ</translation>
 <translation id="5035389544768382859">ຢືນຢັນການຕັ້ງຄ່າຈໍສະແດງຜົນ</translation>
 <translation id="504465286040788597">ຫຍໍ້ໜ້າກ່ອນໜ້າ</translation>
+<translation id="5071064518267176975">ມີແອັບຕ້ອງການໃຊ້ໄມໂຄຣໂຟນ</translation>
+<translation id="5075554201838155866">ເລີ່ມຄຳບັນຍາຍ</translation>
 <translation id="5078796286268621944">PIN ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="5083553833479578423">ປົດລັອກຄຸນສົມບັດເພີ່ມເຕີມຂອງຜູ້ຊ່ວຍ.</translation>
 <translation id="5136175204352732067">ເຊື່ອມຕໍ່ແປ້ນພິມອື່ນແລ້ວ</translation>
@@ -679,6 +690,7 @@
 <translation id="6612802754306526077">ເລືອກໂໝດການບັນທຶກໜ້າຈໍແລ້ວ</translation>
 <translation id="6614169507485700968">ໜ້າຈໍຄວາມເປັນສ່ວນຕົວເປີດຢູ່</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> ຕ້ອງການໃຊ້ໄມໂຄຣໂຟນ</translation>
 <translation id="6637729079642709226">ປ່ຽນເວລາ</translation>
 <translation id="6641720045729354415">ສະຫຼັບຄຳບັນຍາຍສົດ. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ຕ້ອງການຢືນຢັນວ່າມັນແມ່ນທ່ານ</translation>
@@ -732,6 +744,7 @@
 <translation id="7029814467594812963">ອອກຈາກເຊດຊັນ</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, ຜູ້ຊ່ວຍ Google</translation>
 <translation id="7042322267639375032">ຍຸບພື້ນທີ່ສະແດງສະຖານະ</translation>
+<translation id="7045595904618419789">ເລີ່ມແວ່ນຂະຫຍາຍ</translation>
 <translation id="7055910611768509537">ບໍ່ໄດ້ໃຊ້ປາກກາເປັນເວລາຫຼາຍກວ່າໜຶ່ງອາທິດແລ້ວ</translation>
 <translation id="7066646422045619941">ເຄືອຂ່າຍນີ້ຖືກປິດການນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="7067196344162293536">ໝຸນອັດຕະໂນມັດ</translation>
@@ -752,6 +765,7 @@
 <translation id="7256634071279256947">ໄມໂຄຣໂຟນຫຼັງ</translation>
 <translation id="726276584504105859">ລາກມາບ່ອນນີ້ເພື່ອໃຊ້ການແບ່ງໜ້າຈໍ</translation>
 <translation id="7262906531272962081">ສ້າງການແຈ້ງເຕືອນ</translation>
+<translation id="7279434993080105272">ສີມາກເກີ <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">ຄຳບັນຍາຍສົດປິດຢູ່.</translation>
 <translation id="7303365578352795231">ກຳລັງຕອບຢູ່ໃນອຸປະກອນອື່ນ.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@
 <translation id="7466449121337984263">ກະລຸນາແຕະເຊັນເຊີ</translation>
 <translation id="7477793887173910789">ຄວບຄຸມເພງ, ວິດີໂອຂອງທ່ານ ແລະ ອື່ນໆອີກ</translation>
 <translation id="7483025031359818980">ຕັ້ງຄ່າພື້ນທີ່ການເລືອກເປັນເຕັມຈໍແລ້ວ</translation>
+<translation id="7486227320194954040">ຫຍໍ້ເຄື່ອງໝາຍມາກເກີ</translation>
 <translation id="7497767806359279797">ເລືອກພາສາ ແລະ ແປ້ນພິມ</translation>
 <translation id="7509246181739783082">ຢັ້ງຢືນຕົວຕົນຂອງທ່ານ</translation>
 <translation id="7513622367902644023">ເລືອກໂໝດຮູບໜ້າຈໍແລ້ວ</translation>
@@ -799,6 +814,7 @@
 <translation id="7607002721634913082">ຢຸດແລ້ວ</translation>
 <translation id="7618774594543487847">ປານກາງ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">ບິກມາກເກີ</translation>
 <translation id="7633755430369750696">ສະແດງການຕັ້ງຄ່າການແບ່ງປັນໃກ້ຄຽງ.</translation>
 <translation id="7641938616688887143">ບັນທຶກ</translation>
 <translation id="7642647758716480637">ເປີດການຕັ້ງຄ່າສຳລັບ <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@
 <translation id="7724603315864178912">ຕັດ</translation>
 <translation id="7745560842763881396">ສະແດງແອັບໃນຖ້ານ</translation>
 <translation id="7749443890790263709">ຮອດຈຳນວນສູງສຸດຂອງພື້ນທີ່ເຮັດວຽກແລ້ວ</translation>
+<translation id="7749640678855296659">ຕອນນີ້ໄມໂຄຣໂຟນຂອງທ່ານປິດໄວ້ຢູ່</translation>
 <translation id="776344839111254542">ຄລິກເພື່ອເບິ່ງລາຍລະອຽດການອັບເດດ</translation>
 <translation id="7780159184141939021">ໝຸນໜ້າຈໍ</translation>
 <translation id="7796353162336583443">ແຕະປຸ່ມປາຍປາກກາໃນຖ້ານເພື່ອຈົດບັນທຶກ, ຖ່າຍຮູບໜ້າຈໍ, ໃຊ້ຜູ້ຊ່ວຍ Google, ຕົວຊີ້ແບບເລເຊີ ຫຼື ແວ່ນຂະຫຍາຍ.</translation>
@@ -861,6 +878,7 @@
 <translation id="8113423164597455979">ເປີດ, ທຸກແອັບ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
+<translation id="8132487352815776550">ຢຸດຄຳບັນຍາຍ</translation>
 <translation id="8132793192354020517">ເຊື່ອມຕໍ່ກັບ <ph name="NAME" /> ແລ້ວ</translation>
 <translation id="813913629614996137">ກຳລັງລິເລີ່ມ...</translation>
 <translation id="8142441511840089262">ຄລິກສອງຄັ້ງ</translation>

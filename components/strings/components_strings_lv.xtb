@@ -285,6 +285,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1919345977826869612">Reklāmas</translation>
 <translation id="1919367280705858090">Palīdzība par konkrētu kļūdas ziņojumu</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nav}=1{1 vietne}zero{# vietnes}one{# vietne}other{# vietnes}}</translation>
+<translation id="1924727005275031552">Jaunā</translation>
 <translation id="1945968466830820669">Varat zaudēt piekļuvi savam organizācijas kontam, vai jūsu identitāte var tikt nozagta. Chromium iesaka nekavējoties nomainīt paroli.</translation>
 <translation id="1947454675006758438">Skavojums augšējā labajā malā</translation>
 <translation id="1958218078413065209">Jūsu vislabākais rezultāts ir <ph name="SCORE" />.</translation>
@@ -395,6 +396,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2357481397660644965">Jūsu ierīci pārvalda <ph name="DEVICE_MANAGER" />, un jūsu kontu pārvalda <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Vairākas</translation>
 <translation id="2359808026110333948">Turpināt</translation>
+<translation id="2359961752320758691">Tika lietots jūsu virtuālās kartes numurs.</translation>
 <translation id="2367567093518048410">Līmenis</translation>
 <translation id="2372464001869762664">Pēc apstiprināšanas kartes informācija no Google konta tiks kopīgota ar šo vietni. Atrodiet CVC kodu sava Plex konta informācijā.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -405,6 +407,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="239429038616798445">Šis nosūtīšanas veids nav pieejams. Izmēģiniet citu veidu.</translation>
 <translation id="2396249848217231973">&amp;Atsaukt dzēšanu</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">Vecā</translation>
 <translation id="2413528052993050574">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts, iespējams, ir atsaukts. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="2414886740292270097">Tumšs</translation>
 <translation id="2438874542388153331">Četri caurumi labajā pusē</translation>
@@ -906,12 +909,14 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4275830172053184480">Ierīces restartēšana</translation>
 <translation id="4277028893293644418">Atiestatīt paroli</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Šī karte tika saglabāta jūsu Google kontā}zero{Šīs kartes tika saglabātas jūsu Google kontā}one{Šīs kartes tika saglabātas jūsu Google kontā}other{Šīs kartes tika saglabātas jūsu Google kontā}}</translation>
+<translation id="4287885627794386150">Varat piedalīties izmēģinājumā, taču tas nav aktīvs</translation>
 <translation id="4297502707443874121">Lappuses numur <ph name="THUMBNAIL_PAGE" /> sīktēls</translation>
 <translation id="42981349822642051">Izvērst</translation>
 <translation id="4300675098767811073">Vairāki caurumi labajā pusē</translation>
 <translation id="4302514097724775343">Lai spēlētu, pieskarieties dinozauram</translation>
 <translation id="4302965934281694568">Chou3 (aploksne)</translation>
 <translation id="4305666528087210886">Jūsu failam nevarēja piekļūt</translation>
+<translation id="4306529830550717874">Vai saglabāt adresi?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloķēt (pēc noklusējuma)</translation>
 <translation id="4314815835985389558">Sinhronizācijas pārvaldība</translation>
@@ -1399,6 +1404,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="610911394827799129">Jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">Skatīt starpliktuvē kopēto tekstu un attēlus</translation>
 <translation id="6120179357481664955">Vai iegaumēt jūsu UPI ID?</translation>
+<translation id="6123290840358279103">Skatīt virtuālo karti</translation>
 <translation id="6124432979022149706">Chrome Enterprise savienotāji</translation>
 <translation id="6146055958333702838">Pārbaudiet vadus un atkārtoti palaidiet maršrutētājus, modemus vai citas
     izmantotās tīkla ierīces.</translation>
@@ -1678,6 +1684,7 @@ Papildu informācija:
 <translation id="7300012071106347854">Kobalta zila</translation>
 <translation id="7302712225291570345">“<ph name="TEXT" />”</translation>
 <translation id="7304030187361489308">Augsts</translation>
+<translation id="7305756307268530424">Sākt lēnāk</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Savienojuma palīdzība</translation>
 <translation id="7323804146520582233">Paslēpt sadaļu “<ph name="SECTION" />”</translation>
@@ -1703,6 +1710,7 @@ Papildu informācija:
 <translation id="7378594059915113390">Multivides vadīklas</translation>
 <translation id="7378627244592794276">Nē</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Nav piemērojams</translation>
 <translation id="7390545607259442187">Kartes apstiprināšana</translation>
 <translation id="7399802613464275309">Drošības pārbaude</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1754,6 +1762,7 @@ Papildu informācija:
 <translation id="7548892272833184391">Savienojuma kļūdu novēršana</translation>
 <translation id="7549584377607005141">Lai tīmekļa lapu varētu attēlot pareizi, tai nepieciešami jūsu iepriekš ievadītie dati. Varat atkārtoti nosūtīt šos datus, taču tādā gadījumā tiks atkārtota ikviena darbība, ko pirms tam veica lapa.</translation>
 <translation id="7550637293666041147">Jūsu lietotājvārds ierīcē un pārlūkā Chrome</translation>
+<translation id="755279583747225797">Izmēģinājums ir aktīvs</translation>
 <translation id="7552846755917812628">Izmantojiet tālāk sniegtos padomus.</translation>
 <translation id="7554475479213504905">Tik un tā atkārtoti ielādēt un parādīt</translation>
 <translation id="7554791636758816595">Jauna cilne</translation>
@@ -1848,6 +1857,7 @@ Papildu informācija:
 <translation id="7894280532028510793">Ja nav pareizrakstības kļūdu, <ph name="BEGIN_LINK" />mēģiniet palaist tīkla diagnostiku<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (aploksne)</translation>
 <translation id="7931318309563332511">Nezināma</translation>
+<translation id="793209273132572360">Vai atjaunināt adresi?</translation>
 <translation id="7932579305932748336">Pārklājums</translation>
 <translation id="79338296614623784">Ievadiet derīgu tālruņa numuru</translation>
 <translation id="7934052535022478634">Maksājums pabeigts</translation>
@@ -1924,7 +1934,6 @@ Papildu informācija:
 <translation id="8202097416529803614">Pasūtījuma kopsavilkums</translation>
 <translation id="8202370299023114387">Konflikts</translation>
 <translation id="8206978196348664717">Prc4 (aploksne)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Ja atiestatīsiet ID, pašreizējais ID vairs nebūs derīgs, savukārt jauns ID tiks piešķirts mazāk nekā vienas dienas laikā}=1{Ja atiestatīsiet ID, pašreizējais ID vairs nebūs derīgs, savukārt jauns ID tiks piešķirts vienas dienas laikā}zero{Ja atiestatīsiet ID, pašreizējais ID vairs nebūs derīgs, savukārt jauns ID tiks piešķirts {NUM_DAYS} dienu laikā}one{Ja atiestatīsiet ID, pašreizējais ID vairs nebūs derīgs, savukārt jauns ID tiks piešķirts {NUM_DAYS} dienas laikā}other{Ja atiestatīsiet ID, pašreizējais ID vairs nebūs derīgs, savukārt jauns ID tiks piešķirts {NUM_DAYS} dienu laikā}}</translation>
 <translation id="8211406090763984747">Savienojums ir drošs</translation>
 <translation id="8213464188712611711">Atmiņas</translation>
 <translation id="8218327578424803826">Piešķirtā atrašanās vieta:</translation>

@@ -1923,7 +1923,6 @@ További részletek:
 <translation id="8202097416529803614">Rendelés összegzése</translation>
 <translation id="8202370299023114387">Ütközés</translation>
 <translation id="8206978196348664717">Prc4 (boríték)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{Az azonosító visszaállításakor jelenlegi azonosítója érvénytelenné válik, és 1 napon belül újat kap a rendszertől.}=1{Az azonosító visszaállításakor jelenlegi azonosítója érvénytelenné válik, és 1 napon belül újat kap a rendszertől.}other{Az azonosító visszaállításakor jelenlegi azonosítója érvénytelenné válik, és {NUM_DAYS} napon belül újat kap a rendszertől.}}</translation>
 <translation id="8211406090763984747">A kapcsolat biztonságos</translation>
 <translation id="8213464188712611711">Emlékek</translation>
 <translation id="8218327578424803826">Hozzárendelt helyszín:</translation>

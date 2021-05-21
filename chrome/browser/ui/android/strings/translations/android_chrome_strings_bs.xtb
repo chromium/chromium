@@ -186,6 +186,7 @@ Dodirnite bilo koju riječ da je pretražite. Za fino podešavanje pretraživanj
 <translation id="22320125457191592">Za vas</translation>
 <translation id="2234876718134438132">Sinhronizacija i Googleove usluge</translation>
 <translation id="2239812875700136898">Kontrolirajte priče pomoću dugmeta Opcije za Discover</translation>
+<translation id="2251971221270904886">Kada je uključeno i status je aktivan, Chrome koristi vašu historiju pregledanja iz prethodnih 7 dana da odredi grupu ili "kohortu" u kojoj se nalazite. Oglašivači mogu odabrati oglase za grupu. Vaša historija pregledanja se privatno pohranjuje na vašem uređaju. Ovaj probni period je aktivan samo u <ph name="BEGIN_LINK" />određenim regijama<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Izvoz lozinki…</translation>
 <translation id="2276696007612801991">Prijavite se na svoj Google račun da provjerite lozinke</translation>
 <translation id="2278052315791335171">Brisanjem ove lozinke se neće izbrisati vaš račun na web lokaciji <ph name="SITE" /></translation>
@@ -275,6 +276,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="2781151931089541271">Preostala je 1 sek</translation>
 <translation id="2801022321632964776">Ažurirajte da preuzmete svoj jezik u najnovijoj verziji Chromea</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Prikažite i upravljajte sačuvanim lozinkama u svom <ph name="BEGIN_LINK" />Google računu<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Da biste imali svoje oznake na svim svojim uređajima, prijavite se i uključite sinhronizaciju</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -293,6 +295,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="2901411048554510387">Prikazuju se prijedlozi za web lokaciju <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Spisak uređaja s kojim će se dijeliti kartica je otvoren u punoj visini.</translation>
 <translation id="2905036901251765993">Za dijeljenje sadržaja s osobama u blizini, dozvolite im da skeniraju ovaj QR kôd</translation>
+<translation id="2908243544703713905">Nepročitane priče su spremne</translation>
 <translation id="2909615210195135082">Platforma za Google obavještenja</translation>
 <translation id="2912296070571964914">Upravljajte temama koje vas zanimaju</translation>
 <translation id="2923908459366352541">Ime je nevažeće</translation>
@@ -317,6 +320,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> oznaka}one{<ph name="BOOKMARKS_COUNT_MANY" /> oznaka}few{<ph name="BOOKMARKS_COUNT_MANY" /> oznake}other{<ph name="BOOKMARKS_COUNT_MANY" /> oznaka}}</translation>
 <translation id="3062802207422175757">Članci o vašim interesovanjima na Chromeu</translation>
 <translation id="3070005020161560471">Automatski prevodi</translation>
+<translation id="3083531420240576529">Možete vratiti grupu na zadano kad god želite. Potrebno je 7 dana da se odredi vaša grupa.</translation>
 <translation id="3091010850649238832">Prikažite sadržaj međumemorije</translation>
 <translation id="3098745985164956033">Neke slike se šalju Googleu radi poboljšanja opisa</translation>
 <translation id="3114507951000454849">Pročitajte današnje vijesti <ph name="NEWS_ICON" /></translation>
@@ -458,6 +462,7 @@ Okruženje zaštićene privatnosti i dalje je u fazi aktivnog razvoja i dostupno
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4060598801229743805">Opcije su dostupne pri vrhu zaslona</translation>
 <translation id="4062305924942672200">Pravne informacije</translation>
+<translation id="4082818367361753283">ID grupe</translation>
 <translation id="4084682180776658562">Oznaka</translation>
 <translation id="4084712963632273211">Od izvora <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />dostavlja Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Izbrisati podatke aplikacija?</translation>
@@ -533,7 +538,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4583164079174244168">{MINUTES,plural, =1{prije # minute}one{prije # minute}few{prije # minute}other{prije # minuta}}</translation>
 <translation id="4587589328781138893">Web lokacije</translation>
 <translation id="4594952190837476234">Stranica van mreže je od <ph name="CREATION_TIME" /> i može se razlikovati od verzije koja je na mreži.</translation>
-<translation id="4615382002648696011">Pratite, nepročitane priče su spremne</translation>
 <translation id="4616150815774728855">Otvori <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potvrdite identitet</translation>
 <translation id="4634124774493850572">Koristi lozinku</translation>
@@ -889,6 +893,11 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6699370405921460408">Googleovi serveri će optimizirati stranice koje posjećujete.</translation>
 <translation id="670498945988402717">Provjereno jučer</translation>
 <translation id="6710213216561001401">Nazad</translation>
+<translation id="671333169801287922">Kada je uključeno, web lokacije mogu koristiti tehnike kojima se štiti privatnost prikazane ovdje u svrhu pružanja sadržaja i usluga. Tehnike uključuju alternative praćenju kretanja između web lokacija. S vremenom se može dodati više probnih perioda.
+
+<ph name="BEGIN_LIST_ITEM1" />Oglašivači i izdavači mogu koristiti FLoC tehniku.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Oglašivači i izdavači mogu proučavati učinkovitost oglasa, a da pri tome ne prate vaše aktivnosti na web lokacijama.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Tajmer aplikacije <ph name="FQDN" /> je istekao. Počet će ponovo sutra.</translation>
 <translation id="6738516213925468394">Vaši podaci su šifrirani vašim <ph name="BEGIN_LINK" />izrazom za pristup sinhroniziranju<ph name="END_LINK" /> u <ph name="TIME" />. Unesite ga da započnete sinhronizaciju.</translation>
 <translation id="6738867403308150051">Preuzimanje…</translation>
@@ -1079,6 +1088,9 @@ Podaci iz vaših anonimnih sesija će se obrisati iz Chromea kada <ph name="BEGI
 <translation id="7971136598759319605">Aktivan prije 1 dan</translation>
 <translation id="7975379999046275268">Pregledaj stranicu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Prethodno učitaj stranice za brže pregledavanje i pretraživanje</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Okruženje zaštićene privatnosti<ph name="END_LINK" /> predstavlja trajnu inicijativu da se razviju nove tehnologije koje će vas zaštititi od mehanizama za praćenje, a pri tome će očuvati otvoreni web.
+
+Probni periodi Okruženja zaštićene privatnosti i dalje su u fazi aktivnog razvoja i dostupni su u odabranim područjima. Za sada web lokacije mogu isprobati Okruženje zaštićene privatnosti dok pri tome nastavljaju koristiti trenutne web tehnologije kao što su kolačići trećih strana.</translation>
 <translation id="7986497153528221272">Da pogledate lozinke, najprije postavite zaključavanje ekrana na uređaju</translation>
 <translation id="7998918019931843664">Ponovono otvaranje zatvorenih kartica</translation>
 <translation id="8004582292198964060">Preglednik</translation>
@@ -1188,7 +1200,9 @@ Podaci iz vaših anonimnih sesija će se obrisati iz Chromea kada <ph name="BEGI
 <translation id="8662811608048051533">Odjavljuje vas s većine web lokacija.</translation>
 <translation id="8664979001105139458">Naziv fajla već postoji</translation>
 <translation id="8676789164135894283">Potvrde prijave</translation>
+<translation id="867767487203716855">Sljedeće ažuriranje</translation>
 <translation id="8683039184091909753">slika</translation>
+<translation id="8683081248374354009">Poništi grupu</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Nivo jačine signala: # stubac}one{Nivo jačine signala: # stubac}few{Nivo jačine signala: # stupca}other{Nivo jačine signala: # stubaca}}</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699120352855309748">Nemoj nuditi prevođenje ovih jezika</translation>

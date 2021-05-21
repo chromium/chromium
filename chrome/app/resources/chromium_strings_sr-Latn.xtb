@@ -40,6 +40,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2560420686485554789">Chromium traži pristup memorijskom prostoru da bi preuzimao datoteke</translation>
 <translation id="2572494885440352020">Chromium pomagač</translation>
 <translation id="2577788541081224677">Da biste pristupali Chromium sadržaju na svim uređajima, prijavite se da biste mogli da uključite sinhronizaciju.</translation>
+<translation id="2580426763510374355">Instaliraj Chromium OS</translation>
 <translation id="2583187216237139145">Administrator poslovnog profila može da ukloni sve podatke Chromium-a koji se generišu tokom korišćenja ovog profila (poput pravljenja obeleživača, istorije, lozinki i drugih podešavanja). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Treba da restartujete Chromium OS da biste primenili ažuriranje.</translation>
 <translation id="2648074677641340862">Tokom instalacije je došlo do greške u operativnom sistemu. Preuzmite Chromium ponovo.</translation>
@@ -138,6 +139,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium beta</translation>
 <translation id="5479196819031988440">Chromium OS ne može da otvori ovu stranicu.</translation>
 <translation id="5480860683791598150">Chromium traži pristup vašoj lokaciji da biste je delili sa ovim sajtom</translation>
+<translation id="5481338274774984070">Chromium preporučuje da ne preuzimate niti otvarate ovaj fajl.</translation>
 <translation id="549669000822060376">Sačekajte da Chromium instalira najnovija ažuriranja sistema.</translation>
 <translation id="5496810170689441661">Chromium pokušava da izmeni lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="5527463683072221100">Otvarajte PDF-ove u Chromium-u</translation>

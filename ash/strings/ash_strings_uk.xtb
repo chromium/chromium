@@ -24,7 +24,6 @@
 <translation id="1148499908455722006">Відкрити вікно з інформацією про обліковий запис <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Підключені пристрої</translation>
 <translation id="1165712434476988950">Щоб застосувати оновлення, потрібно перезапустити пристрій.</translation>
-<translation id="1170240434488307589">Мікрофон пристрою вимкнено.</translation>
 <translation id="1175572348579024023">Прокрутити</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Видалити</translation>
@@ -41,6 +40,7 @@
 <translation id="1247372569136754018">Мікрофон (внутрішній)</translation>
 <translation id="1252999807265626933">Джерело заряджання: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Який прогноз погоди?</translation>
+<translation id="1266097335951928626">Увімкнути камеру для селфі</translation>
 <translation id="1267032506238418139">Зміна комбінацій клавіш</translation>
 <translation id="1269405891096105529">Периферійні пристрої не підтримуються в режимі гостя</translation>
 <translation id="1270290102613614947">Екранну клавіатуру вимкнено</translation>
@@ -85,6 +85,7 @@
 <translation id="1555130319947370107">Синій</translation>
 <translation id="1570871743947603115">Увімкнути/вимкнути Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">мати доступ до всіх ваших дій у цьому сеансі</translation>
+<translation id="159255010947577753">Маркер</translation>
 <translation id="1611993646327628135">Увімкнено</translation>
 <translation id="1615402009686901181">Адміністратор заборонив запис екрана, якщо видно конфіденційний контент</translation>
 <translation id="1632985212731562677">Щоб вимкнути кнопковий доступ, відкрийте "Налаштування" &gt; "Спеціальні можливості".</translation>
@@ -136,8 +137,10 @@
 <translation id="2016340657076538683">Введіть повідомлення</translation>
 <translation id="2018630726571919839">Розкажи жарт</translation>
 <translation id="2021864487439853900">Натисніть, щоб розблокувати</translation>
+<translation id="2047639699071423250">Додати ключову ідею</translation>
 <translation id="2049240716062114887">Назву робочого столу змінено на "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Портретна</translation>
+<translation id="2066708475850724665">Вимкнути лупу</translation>
 <translation id="2067602449040652523">Яскравість клавіатури</translation>
 <translation id="2078034614700056995">Проведіть чотирма пальцями праворуч, щоб перейти до наступного робочого столу</translation>
 <translation id="2079504693865562705">Приховати додатки на полиці</translation>
@@ -145,10 +148,12 @@
 <translation id="2083190527011054446">Доброї ночі, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Немає з’єднання з мережею</translation>
 <translation id="2108303511227308752">Комбінацію клавіш Alt + Backspace змінено. Щоб скористатися клавішею Delete, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
+<translation id="211328683600082144">УВІМКНУТИ МІКРОФОН</translation>
 <translation id="2126242104232412123">Новий робочий стіл</translation>
 <translation id="2127372758936585790">Зарядний пристрій низької потужності</translation>
 <translation id="2132302418721800944">Записувати весь екран</translation>
 <translation id="2135456203358955318">Закріплена лупа</translation>
+<translation id="2146800439053023141">Перемкнути місцезнаходження панелі</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Повторити</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Щоб вийти з режиму огляду, проведіть трьома пальцями вниз</translation>
@@ -328,6 +333,7 @@
 <translation id="3638400994746983214">Перемикає екран конфіденційності. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – керований користувач</translation>
 <translation id="3665889125180354336">Мікрофон для запису</translation>
+<translation id="3680908746918359504">Видалити всі маркери</translation>
 <translation id="36813544980941320">Ваш телефон і пристрій <ph name="DEVICE_NAME" /> підключатимуться до однакових мереж Wi-Fi</translation>
 <translation id="3702809606464356667">Показано вікна поточного робочого столу. Щоб показати вікна всіх робочих столів, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="3702846122927433391">Яка чисельність населення в Нігерії</translation>
@@ -373,12 +379,12 @@
 <translation id="4021716437419160885">Прокрутити вниз</translation>
 <translation id="4028481283645788203">Для додаткового захисту потрібно ввести пароль</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Комбінацію клавіш <ph name="LAUNCHER_KEY_NAME" /> + цифра змінено. Щоб скористатися клавішами F, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + клавішу у верхньому рядку.</translation>
 <translation id="4042660782729322247">Ви ділитеся екраном</translation>
 <translation id="4057003836560082631">Вкладка веб-переглядача: <ph name="INDEX" /> з <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Вимк. для додатка}one{Вимк. для # додатка}few{Вимк. для # додатків}many{Вимк. для # додатків}other{Вимк. для # додатка}}</translation>
 <translation id="4066027111132117168">Увімкнено, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">середній сигнал</translation>
+<translation id="4095366824370681039">Чорнильне перо</translation>
 <translation id="4112140312785995938">Перейти назад</translation>
 <translation id="4114315158543974537">Увімкнути Phone Hub</translation>
 <translation id="412298498316631026">вікна</translation>
@@ -447,12 +453,15 @@
 <translation id="4570957409596482333">Кнопка "Читання з екрана"</translation>
 <translation id="4577274620589681794">Час минув   <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Увімкнути попередній перегляд</translation>
+<translation id="4578196883126898996">Мікрофон вимкнено. Увімкніть його відповідною кнопкою на пристрої.</translation>
 <translation id="4578906031062871102">Меню налаштувань відкрито</translation>
 <translation id="4581047786858252841">Мікрофон увімкнено</translation>
 <translation id="4585337515783392668">Зупинити трансляцію на невідомий пристрій</translation>
+<translation id="4586483766170476230">Вимкнути камеру для селфі</translation>
 <translation id="4587299710837179226">Мікрофон вимкнено</translation>
 <translation id="4596144739579517758">Темну тему вимкнено</translation>
 <translation id="4611292653554630842">Увійти</translation>
+<translation id="4614295562446151104">Розгорнути інструменти маркера</translation>
 <translation id="4623167406982293031">Підтвердьте обліковий запис</translation>
 <translation id="4628757576491864469">Пристрої</translation>
 <translation id="4642092649622328492">Зробити частковий знімок екрана</translation>
@@ -509,6 +518,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> під’єднано до нового телефона</translation>
 <translation id="5035389544768382859">Підтвердьте налаштування дисплея</translation>
 <translation id="504465286040788597">Попередній абзац</translation>
+<translation id="5071064518267176975">Додаток хоче використовувати мікрофон</translation>
+<translation id="5075554201838155866">Увімкнути субтитри</translation>
 <translation id="5078796286268621944">Неправильний PIN-код</translation>
 <translation id="5083553833479578423">Розблокуйте інші функції Асистента.</translation>
 <translation id="5136175204352732067">Під’єднано іншу клавіатуру</translation>
@@ -679,6 +690,7 @@
 <translation id="6612802754306526077">Вибрано режим запису екрана</translation>
 <translation id="6614169507485700968">Екран конфіденційності ввімкнено</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
+<translation id="6629480180092995136">Додаток <ph name="APP_NAME" /> хоче використовувати мікрофон</translation>
 <translation id="6637729079642709226">Змінення часу</translation>
 <translation id="6641720045729354415">Перемкнути живі субтитри. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">Сайт <ph name="ORIGIN_NAME" /> хоче підтвердити вашу особу</translation>
@@ -732,6 +744,7 @@
 <translation id="7029814467594812963">Завершити сеанс</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Асистент</translation>
 <translation id="7042322267639375032">Згорнути панель стану</translation>
+<translation id="7045595904618419789">Увімкнути лупу</translation>
 <translation id="7055910611768509537">Стилус не використовувався більше ніж тиждень</translation>
 <translation id="7066646422045619941">Ваш адміністратор вимкнув цю мережу.</translation>
 <translation id="7067196344162293536">Автоматичне обертання</translation>
@@ -752,6 +765,7 @@
 <translation id="7256634071279256947">Мікрофон на задній панелі</translation>
 <translation id="726276584504105859">Перетягніть сюди, щоб розділити екран</translation>
 <translation id="7262906531272962081">Створити нагадування</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> колір маркера</translation>
 <translation id="7302889331339392448">Живі субтитри вимкнено.</translation>
 <translation id="7303365578352795231">Відповідь на іншому пристрої.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@
 <translation id="7466449121337984263">Торкніться сканера</translation>
 <translation id="7477793887173910789">Керуйте музикою, відео й іншим контентом</translation>
 <translation id="7483025031359818980">Вибрано весь екран</translation>
+<translation id="7486227320194954040">Згорнути інструменти маркера</translation>
 <translation id="7497767806359279797">Вибрати мову та клавіатуру</translation>
 <translation id="7509246181739783082">Підтвердьте свою особу</translation>
 <translation id="7513622367902644023">Вибрано режим знімка екрана</translation>
@@ -799,6 +814,7 @@
 <translation id="7607002721634913082">Призупинено</translation>
 <translation id="7618774594543487847">Нейтральні кольори</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">Перо маркера</translation>
 <translation id="7633755430369750696">Показати налаштування функції "Передавання поблизу".</translation>
 <translation id="7641938616688887143">Записати</translation>
 <translation id="7642647758716480637">Відкрити налаштування мережі "<ph name="NETWORK_NAME" />", <ph name="CONNECTION_STATUS" /></translation>
@@ -814,6 +830,7 @@
 <translation id="7724603315864178912">Вирізати</translation>
 <translation id="7745560842763881396">Показати додатки на полиці</translation>
 <translation id="7749443890790263709">Ви додали максимальну кількість робочих столів.</translation>
+<translation id="7749640678855296659">Мікрофон наразі вимкнено</translation>
 <translation id="776344839111254542">Натисніть, щоб переглянути деталі оновлення</translation>
 <translation id="7780159184141939021">Обернути екран</translation>
 <translation id="7796353162336583443">Щоб додавати примітки та знімки екрана, користуватися Google Асистентом або використовувати стилус як лазерний вказівник чи лупу, торкніться кнопки стилуса на полиці.</translation>
@@ -861,6 +878,7 @@
 <translation id="8113423164597455979">Увімкнено всі</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
+<translation id="8132487352815776550">Вимкнути субтитри</translation>
 <translation id="8132793192354020517">З'єднано з <ph name="NAME" /></translation>
 <translation id="813913629614996137">Ініціалізація...</translation>
 <translation id="8142441511840089262">Двічі натиснути</translation>

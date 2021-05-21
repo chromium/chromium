@@ -24,7 +24,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> کیلئے معلومات کا ڈائلاگ کھولیں</translation>
 <translation id="1153356358378277386">جوڑا بنائے ہوئے آلات</translation>
 <translation id="1165712434476988950">اپ ڈیٹ لاگو کرنے کیلئے آلے کو ری سٹارٹ کرنا درکار ہے۔</translation>
-<translation id="1170240434488307589">آلے کا مائیکروفون خاموش کیا ہوا ہے۔</translation>
 <translation id="1175572348579024023">اسکرول کریں</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
@@ -373,7 +372,6 @@
 <translation id="4021716437419160885">نیچے اسکرول کریں</translation>
 <translation id="4028481283645788203">مزید سیکیورٹی کیلئے پاس ورڈ درکار ہے</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">‏Number + <ph name="LAUNCHER_KEY_NAME" /> کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ F کلیدوں کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + سب سے اوپر کی قطار پر ایک کلید کو دبائیں۔</translation>
 <translation id="4042660782729322247">آپ اپنی اسکرین کا اشتراک کر رہے ہیں</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" /> میں سے <ph name="INDEX" /> براؤزر ٹیب۔ <ph name="SITE_TITLE" />، <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ایک ایپ کیلئے آف ہے}other{# ایپس کیلئے آف ہے}}</translation>

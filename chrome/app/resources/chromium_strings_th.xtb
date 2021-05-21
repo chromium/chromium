@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">Chromium ต้องการสิทธิ์เข้าถึงพื้นที่เก็บข้อมูลเพื่อดาวน์โหลดไฟล์</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">หากต้องการเข้าถึงข้อมูล Chromium ในอุปกรณ์ทั้งหมด ให้ลงชื่อเข้าใช้เพื่อเปิดการซิงค์</translation>
+<translation id="2580426763510374355">ติดตั้ง Chromium OS</translation>
 <translation id="2583187216237139145">ผู้ดูแลโปรไฟล์งานนำข้อมูล Chromium ที่สร้างขึ้นในช่วงที่มีการใช้โปรไฟล์นี้ออกได้ (เช่น การสร้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ) <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">ต้องรีสตาร์ท Chromium OS เพื่อให้ระบบนำเวอร์ชันอัปเดตไปใช้</translation>
 <translation id="2648074677641340862">เกิดข้อผิดพลาดของระบบปฏิบัติในระหว่างการติดตั้ง โปรดดาวน์โหลด Chromium อีกครั้ง</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium เบต้า</translation>
 <translation id="5479196819031988440">Chromium OS ไม่สามารถเปิดหน้านี้</translation>
 <translation id="5480860683791598150">Chromium ต้องการสิทธิ์เข้าถึงตำแหน่งของคุณเพื่อแชร์ตำแหน่งกับเว็บไซต์นี้</translation>
+<translation id="5481338274774984070">Chromium แนะนำว่าอย่าดาวน์โหลดหรือเปิดไฟล์นี้</translation>
 <translation id="549669000822060376">โปรดรอขณะที่ Chromium ติดตั้งการอัปเดตระบบล่าสุด</translation>
 <translation id="5496810170689441661">Chromium กำลังพยายามแก้ไขรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="5527463683072221100">เปิด PDF ใน Chromium</translation>

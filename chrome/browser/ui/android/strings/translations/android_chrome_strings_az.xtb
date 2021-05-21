@@ -293,6 +293,7 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> üçün təkliflər göstərilir</translation>
 <translation id="2904414404539560095">Tam hündürlükdə açılan tabı paylaşa biləcəyiniz cihazların siyahısı.</translation>
 <translation id="2905036901251765993">Yaxınlıqdakı insanlarla paylaşmaq üçün onlara bu QR kodu skanlamaq icazəsi verin</translation>
+<translation id="2908243544703713905">Oxunmamış hekayələr hazırdır</translation>
 <translation id="2909615210195135082">Google Bildiriş Platforması</translation>
 <translation id="2912296070571964914">Sizi maraqlandıran mövzuları idarə edin</translation>
 <translation id="2923908459366352541">Ad yanlışdır</translation>
@@ -533,7 +534,6 @@ Təhlükəsiz Sandbox hələ də aktiv inkişaf etdirilir və seçilmiş bölgə
 <translation id="4583164079174244168">{MINUTES,plural, =1{# dəqiqə öncə}other{# dəqiqə öncə}}</translation>
 <translation id="4587589328781138893">Saytlar</translation>
 <translation id="4594952190837476234">Bu səhifə <ph name="CREATION_TIME" /> tarixində yaradılıb və onlayn versiyadan fərqli ola bilər.</translation>
-<translation id="4615382002648696011">İzlənilir, oxunmamış hekayələr hazırdır</translation>
 <translation id="4616150815774728855">Açın: <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Kimliyinizi doğrulayın</translation>
 <translation id="4634124774493850572">Parol istifadə edin</translation>

@@ -24,7 +24,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1148499908455722006">Vula ibhokisi lolwazi lwe-<ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Amadivaysi abhanqene</translation>
 <translation id="1165712434476988950">Ukuqala kabusha idivayisi kudingekile ukuze usebenzise isibuyekezo.</translation>
-<translation id="1170240434488307589">Inkinobho yemakrofoni yedivayisi ithulisiwe.</translation>
 <translation id="1175572348579024023">Skrola</translation>
 <translation id="1178581264944972037">Misa isikhashana</translation>
 <translation id="1181037720776840403">Susa</translation>
@@ -373,7 +372,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4021716437419160885">Skrolela phansi</translation>
 <translation id="4028481283645788203">Kudingeka iphasiwedi mayelana nokuphepha okwengeziwe</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">Isifunyezo sekhibhodi se-<ph name="LAUNCHER_KEY_NAME" /> + Inombolo sishintshile. Ukuze usebenzise Okhiye be-F, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + ukhiye ophezulu emugqeni.</translation>
 <translation id="4042660782729322247">Wabelana ngesikrini sakho</translation>
 <translation id="4057003836560082631">Ithebhu yesiphequluli sokungu-<ph name="INDEX" /> kokungu-<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Kuvaliwe kwi-app}one{Kuvaliwe ama-app angu-#}other{Kuvalwe ama-app angu-#}}</translation>

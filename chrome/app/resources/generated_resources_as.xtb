@@ -897,7 +897,6 @@
 <translation id="1926339101652878330">এণ্টাৰপ্ৰাইজৰ নীতিয়ে এই ছেটিংসমূহ নিয়ন্ত্ৰণ কৰে। অধিক তথ্যৰ বাবে আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="1927632033341042996"><ph name="NEW_FINGER_NUMBER" /> আঙুলি</translation>
 <translation id="192817607445937251">স্ক্রীন লকৰ পিন</translation>
-<translation id="1928202201223835302">পুৰণি পিন দিয়ক</translation>
 <translation id="1928696683969751773">আপডে’টসমূহ</translation>
 <translation id="1929186283613845153">এই ফাইলটো স্কেন কৰি থকা হৈছে।</translation>
 <translation id="1929343511231420085">যিকোনো ক্ৰমিক পৰ্ট</translation>
@@ -1654,7 +1653,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />ত ছাইন ইন কৰক</translation>
 <translation id="2749836841884031656">ছিম</translation>
 <translation id="2749881179542288782">বানান আৰু ব্যাকৰণত থকা ভুলবোৰ চাওক</translation>
-<translation id="2751131328353405138">Linux কণ্টেইনাৰৰ sshfs মাউণ্ট কৰি থকা হৈছে</translation>
 <translation id="2753677631968972007">ছাইটৰ অনুমতিবোৰ মেনুৱেলী নিয়ন্ত্ৰণ কৰক।</translation>
 <translation id="2755349111255270002">এই <ph name="DEVICE_TYPE" />টো ৰিছেট কৰক</translation>
 <translation id="2755367719610958252">সাধ্য সুবিধাসমূহ পৰিচালনা কৰক</translation>
@@ -1787,7 +1785,6 @@
 <translation id="2891922230654533301"><ph name="APP_NAME" />ত ছাইন ইন কৰিবলৈ আপোনাৰ ডিভাইচটো ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="2893168226686371498">ডিফ’ল্ট ব্ৰাউজাৰ</translation>
 <translation id="2894757982205307093">গোটটোত নতুন টেব</translation>
-<translation id="289644616180464099">ছিম কাৰ্ড লক কৰা হৈছে</translation>
 <translation id="289695669188700754">চাবিৰ আইডি: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">আপুনি আটাইবোৰ ইনক'গনিট' ৱিণ্ড' বন্ধ কৰিলে এইটো কাষ্টম ছেটিং আঁতৰোৱা হ'ব</translation>
 <translation id="2897878306272793870">আপুনি <ph name="TAB_COUNT" />টা টেব খুলিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
@@ -2252,7 +2249,6 @@
 <translation id="3427092606871434483">অনুমতি দিয়ক (ডিফ'ল্ট)</translation>
 <translation id="3428419049384081277">আপুনি ছাইন ইন কৰিলে!</translation>
 <translation id="3428747202529429621">আপোনাক Chromeত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা সময়ত অন্য Google এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰিব পাৰে</translation>
-<translation id="3428800329481094896">Linux কণ্টেইনাৰ ssh কীসমূহ আহৰণ কৰি থকা হৈছে</translation>
 <translation id="3429160811076349561">ট্ৰায়েলৰ সুবিধা অফ আছে</translation>
 <translation id="3429271624041785769">ৱেবৰ সমলৰ ভাষা</translation>
 <translation id="3429275422858276529">পৰৱর্তী সময়ত এই পৃষ্ঠাটো সহজে বিচাৰি পাবলৈ ইয়াক বুকমার্ক কৰক</translation>
@@ -3733,7 +3729,6 @@
 <translation id="5072900412896857127">Google Playৰ সেৱাৰ চৰ্তাৱলী ল’ড কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি আপোনাৰ নেটৱৰ্কৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" /> আৰু #টা অধিক}other{<ph name="FILE1" />, <ph name="FILE2" /> আৰু #টা অধিক}}</translation>
 <translation id="5074318175948309511">নতুন ছেটিংসমূহ প্ৰযোজ্য হোৱাৰ পূর্বে এই পৃষ্ঠাটো পুনৰ ল'ড কৰিব লগা হ'ব পাৰে।</translation>
-<translation id="5075131525758602494">ছিম-ৰ পিন দিয়ক</translation>
 <translation id="5075910247684008552">সুৰক্ষিত ছাইটসমূহত অসুৰক্ষিত সমল ডিফ’ল্ট হিচাপে অৱৰোধ কৰা হৈছে</translation>
 <translation id="5078638979202084724">সকলো টেব বুকমাৰ্ক কৰক</translation>
 <translation id="5078796286268621944">ভুল পিন</translation>

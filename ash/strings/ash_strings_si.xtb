@@ -24,7 +24,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> සඳහා තතු සංවාදය විවෘත කරන්න</translation>
 <translation id="1153356358378277386">යුගලිත උපාංග</translation>
 <translation id="1165712434476988950">යාවත්කාලීනය යෙදීම සඳහා උපාංග නැවත ආරම්භ කිරීම අවශ්‍ය වේ.</translation>
-<translation id="1170240434488307589">උපාංග මයික්‍රෆෝන බොත්තම නිහඬ කර ඇත.</translation>
 <translation id="1175572348579024023">අනුචලන කරන්න</translation>
 <translation id="1178581264944972037">විරාමය</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
@@ -41,6 +40,7 @@
 <translation id="1247372569136754018">මයික්‍රෆෝනය (අභ්‍යන්තර)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> වෙතින් ආරෝපණය වෙමින්</translation>
 <translation id="1255033239764210633">කාලගුණය කෙසේද?</translation>
+<translation id="1266097335951928626">සෙල්ෆි කැමරාව ආරම්භ කරන්න</translation>
 <translation id="1267032506238418139">කෙටිමඟ වෙනස් කිරීම</translation>
 <translation id="1269405891096105529">උපාංගය ආගන්තුක ප්‍රකාරය තුළ සහාය නොදක්වයි</translation>
 <translation id="1270290102613614947">තිරය මත යතුරු පුවරුව අබල කර ඇත</translation>
@@ -85,6 +85,7 @@
 <translation id="1555130319947370107">නිල්</translation>
 <translation id="1570871743947603115">බ්ලූටූත් ටොගල කරන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">මෙම සැසියෙහි ඔබේ සියලු ක්‍රියාකාරකම්වලට ප්‍රවේශය</translation>
+<translation id="159255010947577753">ලකුණුකරය</translation>
 <translation id="1611993646327628135">ක්‍රියාත්මකයි</translation>
 <translation id="1615402009686901181">රහසිගත අන්තර්ගතය දෘශ්‍යමාන විට පරිපාලක ප්‍රතිපත්තිය තිර ග්‍රහණය අබල කරයි</translation>
 <translation id="1632985212731562677">ප්‍රවේශය මාරු කිරීම සැකසීම් &gt; ප්‍රවේශ්‍යතාව තුළ අබල කළ හැක.</translation>
@@ -136,8 +137,10 @@
 <translation id="2016340657076538683">පණිවිඩයක් ටයිප් කරන්න</translation>
 <translation id="2018630726571919839">මට විහිළුවක් කියන්න</translation>
 <translation id="2021864487439853900">අගුලු හැරීමට ක්ලික් කරන්න</translation>
+<translation id="2047639699071423250">මූලික අදහසක් එක් කරන්න</translation>
 <translation id="2049240716062114887">ඩෙස්ක් නම <ph name="DESK_NAME" /> ලෙස වෙනස් කරන ලදි</translation>
 <translation id="2050339315714019657">සිරස්</translation>
+<translation id="2066708475850724665">විශාලකය නවත්වන්න</translation>
 <translation id="2067602449040652523">යතුරු පුවරුවේ දීප්තිය</translation>
 <translation id="2078034614700056995">ඊළඟ මේසයට මාරු වීමට ඇඟිලි හතරකින් දකුණට ස්වයිප් කරන්න</translation>
 <translation id="2079504693865562705">රාක්කය තුළ යෙදුම් සඟවන්න</translation>
@@ -145,10 +148,12 @@
 <translation id="2083190527011054446">සුබ රාත්‍රියක් <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">ජාලයට සම්බන්ධ වී නැත</translation>
 <translation id="2108303511227308752">Alt + Backspace යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. Delete යතුර භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + Backspace ඔබන්න.</translation>
+<translation id="211328683600082144">මයික්‍රෆෝනය ක්‍රියාත්මක කරන්න</translation>
 <translation id="2126242104232412123">නව මේසය</translation>
 <translation id="2127372758936585790">බලය අඩු චාජරයකි</translation>
 <translation id="2132302418721800944">පූර්ණ තිරය පටිගත කරන්න</translation>
 <translation id="2135456203358955318">ඈඳන ලද විශාලකය</translation>
+<translation id="2146800439053023141">තීරුවේ ස්ථානය ටොගල කරන්න</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: යළි උත්සාහ කරන්න</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">දළ විශ්ලේෂණයෙන් පිටවීමට ඇඟිලි තුනකින් පහළට ස්වයිප් කරන්න</translation>
@@ -328,6 +333,7 @@
 <translation id="3638400994746983214">පෞද්ගලිකත්ව තිරය ටොගල් කරන්න. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> කළමනා කරන පරිශීලකයා</translation>
 <translation id="3665889125180354336">මයික්‍රෆෝනය පටිගත කරන්න</translation>
+<translation id="3680908746918359504">සියලු ලකුණුකර ඉවත් කරන්න</translation>
 <translation id="36813544980941320">Wi-Fi ජාල ඔබගේ දුරකථනය සහ <ph name="DEVICE_NAME" /> අතර බෙදා ගනු ඇත</translation>
 <translation id="3702809606464356667">වත්මන් මේසයෙන් කවුළු පෙන්වමින්, සියලු මේසවලින් කවුළු පෙන්වීමට ඉහළට ඊතලය යතුර ඔබන්න</translation>
 <translation id="3702846122927433391">නයිජීරියාවේ ජනගහනය</translation>
@@ -373,12 +379,12 @@
 <translation id="4021716437419160885">පහළට අනුචලනය කරන්න</translation>
 <translation id="4028481283645788203">වැඩිපුර ආරක්‍ෂාව සඳහා මුරපදය අවශ්‍යයි</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023"><ph name="LAUNCHER_KEY_NAME" /> + Number යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. F-යතුරු භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + ඉහළම පේළියේ ඇති යතුරක් ඔබන්න.</translation>
 <translation id="4042660782729322247">ඔබ ඔබේ තිරය බෙදා ගනියි</translation>
 <translation id="4057003836560082631">බ්‍රව්සර් ටැබ් <ph name="TOTAL_COUNT" />කින් <ph name="INDEX" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{යෙදුමකට අක්‍රියයි}one{යෙදුම් #කට අක්‍රියයි}other{යෙදුම් #කට අක්‍රියයි}}</translation>
 <translation id="4066027111132117168"><ph name="REMAINING_TIME" />ට</translation>
 <translation id="4072264167173457037">මධ්‍යම සංඥාව</translation>
+<translation id="4095366824370681039">තීන්ත පෑන</translation>
 <translation id="4112140312785995938">පසුපසට සොයන්න</translation>
 <translation id="4114315158543974537">දුරකථන මධ්‍යස්ථානය ක්‍රියාත්මක කරන්න</translation>
 <translation id="412298498316631026">කවුළුව</translation>
@@ -447,12 +453,15 @@
 <translation id="4570957409596482333">කථා-කිරීමට-තෝරන්න බොත්තම</translation>
 <translation id="4577274620589681794">කාලය ඉවරයි · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">පෙරදසුන් පෙන්වන්න</translation>
+<translation id="4578196883126898996">ඔබගේ මයික්‍රෆෝනය ක්‍රියාවිරහිතයි. ඔබගේ උපාංගයේ මයික්‍රෆෝන බොත්තම ක්‍රියාත්මක කරන්න.</translation>
 <translation id="4578906031062871102">සැකසීම් මෙනුව විවෘත කරන ලදි</translation>
 <translation id="4581047786858252841">මයික්‍රෆෝනය ක්‍රියාත්මක කර ඇත</translation>
 <translation id="4585337515783392668">නොදන්නා ග්‍රාහකයෙකු මත විකාශය කිරීම නවත්වන්න</translation>
+<translation id="4586483766170476230">සෙල්ෆි කැමරාව නවත්වන්න</translation>
 <translation id="4587299710837179226">මයික්‍රෆෝනය ක්‍රියාවිරහිත කර ඇත</translation>
 <translation id="4596144739579517758">අඳුරු තේමාව ක්‍රියාවිරහිතයි</translation>
 <translation id="4611292653554630842">පුරන්න</translation>
+<translation id="4614295562446151104">ලකුණුකර මෙවලම් දිග හරින්න</translation>
 <translation id="4623167406982293031">ගිණුම සත්‍යාපනය කරන්න</translation>
 <translation id="4628757576491864469">උපාංග</translation>
 <translation id="4642092649622328492">අර්ධ තිර රුවක් ගන්න</translation>
@@ -509,6 +518,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> නව දුරකථනයකට සම්බන්ධයි</translation>
 <translation id="5035389544768382859">සංදර්ශක වින්‍යාසය තහවුරු කරන්න</translation>
 <translation id="504465286040788597">පෙර ඡේදය</translation>
+<translation id="5071064518267176975">යෙදුමකට මයික්‍රෆෝනය භාවිත කිරීමට අවශ්‍යය</translation>
+<translation id="5075554201838155866">සංවෘත සිරස්තල ආරම්භ කරන්න</translation>
 <translation id="5078796286268621944">වැරදි PIN</translation>
 <translation id="5083553833479578423">තව සහායක අංග අගුලු හරින්න</translation>
 <translation id="5136175204352732067">වෙනස් යතුරු පුවරුවක් සම්බන්ධ කර ඇත</translation>
@@ -679,6 +690,7 @@
 <translation id="6612802754306526077">තිර පටිගත කිරීම් ප්‍රකාරය තෝරන ලදි</translation>
 <translation id="6614169507485700968">පෞද්ගලිකත්ව තිරය සක්‍රීයයි</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> හට මයික්‍රෆෝනය භාවිත කිරීමට අවශ්‍යයි</translation>
 <translation id="6637729079642709226">වේලාව වෙනස් කරන්න</translation>
 <translation id="6641720045729354415">සජීවී සිරස්තල ටොගල කරන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ඒ ඔබ බව තහවුරු කිරීමට කැමතියි</translation>
@@ -732,6 +744,7 @@
 <translation id="7029814467594812963">වාරයෙන් පිටවන්න</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google සහායක</translation>
 <translation id="7042322267639375032">තත්ත්ව ප්‍රදේශය හකුළන්න</translation>
+<translation id="7045595904618419789">විශාලකය අරඹන්න</translation>
 <translation id="7055910611768509537">සතියකට වඩා වැඩි කාලයක් තුළ පන්හිඳ භාවිත කර නැත</translation>
 <translation id="7066646422045619941">මෙම ජාලය ඔබේ පරිපාලක විසින් අබල කෙරේ.</translation>
 <translation id="7067196344162293536">ස්වයං කරකැවීම</translation>
@@ -752,6 +765,7 @@
 <translation id="7256634071279256947">පසුපස මයික්‍රෆෝනය</translation>
 <translation id="726276584504105859">බෙදුම් තිරය භාවිතයට මෙතැනට අදින්න</translation>
 <translation id="7262906531272962081">සිහිකැඳවීමක් සාදන්න</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> ලකුණුකර වර්ණය</translation>
 <translation id="7302889331339392448">සජීවී සිරස්තල ක්‍රියාවිරහිතයි.</translation>
 <translation id="7303365578352795231">වෙනත් උපාංගයක් මත පිළිතුරු ලබා දෙයි.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@
 <translation id="7466449121337984263">සංවේදකය ස්පර්ශ කරන්න</translation>
 <translation id="7477793887173910789">ඔබේ සංගීත, වීඩියෝ, සහ තවත් ඒවා පාලන කරන්න</translation>
 <translation id="7483025031359818980">තේරීම් ප්‍රදේශය පූර්ණ තිරයට සකසා ඇත</translation>
+<translation id="7486227320194954040">ලකුණුකර මෙවලම් හකුළන්න</translation>
 <translation id="7497767806359279797">භාෂාව සහ යතුරු පුවරුව තෝරන්න</translation>
 <translation id="7509246181739783082">ඔබගේ අනන්‍යතාව සත්‍යාපනය කරන්න</translation>
 <translation id="7513622367902644023">තිර රූ ප්‍රකාරය තෝරන ලදි</translation>
@@ -799,6 +814,7 @@
 <translation id="7607002721634913082">අත්හිටුවන ලදි</translation>
 <translation id="7618774594543487847">උදාසීන</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">මාකර් පෑන</translation>
 <translation id="7633755430369750696">ළඟ බෙදා ගැනීමේ සැකසීම් පෙන්වන්න.</translation>
 <translation id="7641938616688887143">පටිගත කරන්න</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> සඳහා සැකසුම් විවෘත කරන්න</translation>
@@ -814,6 +830,7 @@
 <translation id="7724603315864178912">කැපීම</translation>
 <translation id="7745560842763881396">රාක්කය තුළ යෙදුම් පෙන්වන්න</translation>
 <translation id="7749443890790263709">උපරිම මේස ගණන ළඟා විය.</translation>
+<translation id="7749640678855296659">ඔබගේ මයික්‍රෆෝනය දැනට ක්‍රියාවිරහිතයි</translation>
 <translation id="776344839111254542">යාවත්කාලීන විස්තර බැලීමට ක්ලික් කරන්න</translation>
 <translation id="7780159184141939021">තිරය කරකවන්න</translation>
 <translation id="7796353162336583443">සටහනක්, තිර රුවක් ගැනීමට, Google සහායක, ලේසර් දර්ශකය හෝ විශාලක කදාව භාවිතා කිරීමට රාක්කයේ පන්හිඳ බොත්තම තට්ටු කරන්න.</translation>
@@ -861,6 +878,7 @@
 <translation id="8113423164597455979">සියලු යෙදුම් සක්‍රිය.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">තහවුරු කරන්න</translation>
+<translation id="8132487352815776550">සංවෘත සිරස්තල නවත්වන්න</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> වෙත සබඳව ඇත</translation>
 <translation id="813913629614996137">මුල පුරමින්…</translation>
 <translation id="8142441511840089262">ද්විත්ව ක්ලික් කරන්න</translation>

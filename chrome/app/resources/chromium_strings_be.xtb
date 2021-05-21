@@ -40,6 +40,7 @@
 <translation id="2560420686485554789">Для спампоўвання файлаў браўзеру Chrome патрабуецца доступ да сховішча</translation>
 <translation id="2572494885440352020">Памочнік Chromium</translation>
 <translation id="2577788541081224677">Каб мець доступ да даных браўзера Chromium на ўсіх вашых прыладах, уключыце сінхранізацыю, увайшоўшы ва ўліковы запіс.</translation>
+<translation id="2580426763510374355">Усталяваць Chromium OS</translation>
 <translation id="2583187216237139145">Любыя даныя Chromium, створаныя пры выкарыстанні гэтага профілю (напрыклад, закладкі, гісторыя, паролі і іншыя налады), могуць быць выдалены адміністратарам працоўнага профілю. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Каб прымяніць абнаўленне, трэба перазапусціць Chromium OS.</translation>
 <translation id="2648074677641340862">Падчас усталявання адбылася памылка аперацыйнай сістэмы. Спампуйце Chromium зноў.</translation>
@@ -138,6 +139,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium (бэта-версія)</translation>
 <translation id="5479196819031988440">Сістэме Chromium OS не ўдалося адкрыць гэту старонку.</translation>
 <translation id="5480860683791598150">Chromium патрабуецца доступ да геаданых, каб абагуліць звесткі аб вашым месцазнаходжанні з гэтым сайтам</translation>
+<translation id="5481338274774984070">Chromium рэкамендуе не спампоўваць і не адкрываць гэты файл.</translation>
 <translation id="549669000822060376">Пачакайце, пакуль Chromium усталюе апошнія абнаўленні сістэмы.</translation>
 <translation id="5496810170689441661">Chromium спрабуе змяніць паролі. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
 <translation id="5527463683072221100">Адкрываць PDF-файлы ў Chromium</translation>

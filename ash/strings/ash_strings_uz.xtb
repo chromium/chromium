@@ -24,7 +24,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> axborot oynasini ochish</translation>
 <translation id="1153356358378277386">Ulangan qurilmalar</translation>
 <translation id="1165712434476988950">Yangilanishni tatbiq qilish uchun qurilmani oʻchirib yoqing.</translation>
-<translation id="1170240434488307589">Qurilma mikrofoni tugmasi ovozsiz qilingan.</translation>
 <translation id="1175572348579024023">Aylantirish</translation>
 <translation id="1178581264944972037">Pauza</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
@@ -41,6 +40,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1247372569136754018">Mikrofon (ichki)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> orqali quvvat olmoqda</translation>
 <translation id="1255033239764210633">Ob-havo qanday?</translation>
+<translation id="1266097335951928626">Old kamerani yoqish</translation>
 <translation id="1267032506238418139">Tugmalar birikmasini o‘zgartirish</translation>
 <translation id="1269405891096105529">Mehmon rejimida tashqi qurilmalar ishlamaydi</translation>
 <translation id="1270290102613614947">Ekran klaviaturasi o‘chirib qo‘yilgan</translation>
@@ -85,6 +85,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
 <translation id="1570871743947603115">Bluetooth qurilmasini yoqish/o‘chirish <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Bu seansdagi barcha harakatlaringizga ruxsat</translation>
+<translation id="159255010947577753">Marker</translation>
 <translation id="1611993646327628135">Yoniq</translation>
 <translation id="1615402009686901181">Maxfiy axborotlar koʻrinib turganda administrator ekranni tasvirga olishni taqiqlagan</translation>
 <translation id="1632985212731562677">Switch Access funksiyasini Sozlamalar &gt; Maxsus imkoniyatlar orqali faolsizlantirish mumkin.</translation>
@@ -136,8 +137,10 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2016340657076538683">Xabar yozing</translation>
 <translation id="2018630726571919839">Bitta latifa aytib ber</translation>
 <translation id="2021864487439853900">Ochish uchun bosing</translation>
+<translation id="2047639699071423250">Asosiy gʻoyani kiritish</translation>
 <translation id="2049240716062114887">Ish stoli nomi yangilandi: <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Bo‘yiga</translation>
+<translation id="2066708475850724665">Lupani yopish</translation>
 <translation id="2067602449040652523">Klaviatura yorqinligi</translation>
 <translation id="2078034614700056995">Keyingi ish stoliga qaytish uchun 4 ta barmoq bilan oʻngga suring</translation>
 <translation id="2079504693865562705">Ilovalar ishga tushirish panelida chiqmasin</translation>
@@ -145,10 +148,12 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2083190527011054446">Xayrli tun, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Tarmoqqa ulanmagan</translation>
 <translation id="2108303511227308752">Alt + Backspace tezkor tugmasi oʻzgardi. Delete tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Backspace tugmasini bosing.</translation>
+<translation id="211328683600082144">MIKROFONNI YOQISH</translation>
 <translation id="2126242104232412123">Yangi ish stoli</translation>
 <translation id="2127372758936585790">Kam quvvatli zaryadlovchi vosita</translation>
 <translation id="2132302418721800944">Butun ekranni yozib olish</translation>
 <translation id="2135456203358955318">Mahkamlangan lupa</translation>
+<translation id="2146800439053023141">Panel joylashuvini ochish/yopish</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Qayta urinish</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Umumiy nazarni yopish uchun 3 ta barmoq bilan pastga suring</translation>
@@ -328,6 +333,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3638400994746983214">Maxfiylik ekraniga kirish/chiqish. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> boshqariladigan hisob</translation>
 <translation id="3665889125180354336">Mikrofon bilan yozib olish</translation>
+<translation id="3680908746918359504">Barcha markerlarni tozalash</translation>
 <translation id="36813544980941320">Telefoningiz va <ph name="DEVICE_NAME" /> qurilmangizda bitta Wi-Fi tarmoq ishlatiladi</translation>
 <translation id="3702809606464356667">Joriy ish stoli oynalari chiqarilgan, barcha ish stollar oynalarini chiqarish uchun yuqoriga strelkani bosing</translation>
 <translation id="3702846122927433391">Nigeriyada aholi soni</translation>
@@ -373,12 +379,12 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4021716437419160885">Pastga tushish</translation>
 <translation id="4028481283645788203">Xavfsizlikni oshirish uchun parol kiriting</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023"><ph name="LAUNCHER_KEY_NAME" /> + Raqam tezkor tugmasi oʻzgardi. Funksiya tugmalaridan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + yuqori qatordagi kalitni bosing.</translation>
 <translation id="4042660782729322247">Ekraningiz namoyish qilinmoqda</translation>
 <translation id="4057003836560082631">Brauzerdagi <ph name="INDEX" />-varaq, jami <ph name="TOTAL_COUNT" /> ta. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Yoqilmagan, 1 ta ilova}other{Yoqilmagan, # ta ilova}}</translation>
 <translation id="4066027111132117168">Yoniq, <ph name="REMAINING_TIME" /> qoldi</translation>
 <translation id="4072264167173457037">Signal o‘rtacha</translation>
+<translation id="4095366824370681039">Moʻyqalam</translation>
 <translation id="4112140312785995938">Orqaga qaytarish</translation>
 <translation id="4114315158543974537">Phone Hub funksiyasini yoqish</translation>
 <translation id="412298498316631026">oyna</translation>
@@ -447,12 +453,15 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4570957409596482333">Teginib tinglash tugmasi</translation>
 <translation id="4577274620589681794">Vaqt tugadi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Razm solishni yoqish</translation>
+<translation id="4578196883126898996">Mikrofon oʻchiq. Uni qurilma tugmasi orqali yoqing.</translation>
 <translation id="4578906031062871102">Sozlamalar menyusi ochildi</translation>
 <translation id="4581047786858252841">Mikrofon yoniq</translation>
 <translation id="4585337515783392668">Ekranni notanish qurilmaga translatsiya qilinishi to‘xtatilsin</translation>
+<translation id="4586483766170476230">Old kamerani oʻchirish</translation>
 <translation id="4587299710837179226">Mikrofon yoqilmagan</translation>
 <translation id="4596144739579517758">Tungi mavzu yoqilmagan</translation>
 <translation id="4611292653554630842">Kirish</translation>
+<translation id="4614295562446151104">Marker vositalarini yoyish</translation>
 <translation id="4623167406982293031">Hisobni tasdiqlang</translation>
 <translation id="4628757576491864469">Qurilmalar</translation>
 <translation id="4642092649622328492">Qisman skrinshot olish</translation>
@@ -509,6 +518,8 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> yangi telefonga ulandi</translation>
 <translation id="5035389544768382859">Displey sozlamalarini tasdiqlash</translation>
 <translation id="504465286040788597">Avvalgi xatboshi</translation>
+<translation id="5071064518267176975">Ilova mikrofondan foydalanmoqchi</translation>
+<translation id="5075554201838155866">Taglavhalarni chiqarish</translation>
 <translation id="5078796286268621944">Noto‘g‘ri PIN-kod</translation>
 <translation id="5083553833479578423">Assistentning boshqa imkoniyatlarini oching.</translation>
 <translation id="5136175204352732067">Boshqa klaviatura ulandi</translation>
@@ -679,6 +690,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6612802754306526077">Ekranni yozib olish rejimi tanlandi</translation>
 <translation id="6614169507485700968">Maxfiylik ekrani yoniq</translation>
 <translation id="6627638273713273709">Qidiruv+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> mikrofondan foydalanmoqchi</translation>
 <translation id="6637729079642709226">Vaqtni oʻzgartirish</translation>
 <translation id="6641720045729354415">Jonli izohni yoqish/faolsizlantirish. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> shaxsingizni tasdiqlamoqchi</translation>
@@ -732,6 +744,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7029814467594812963">Seansdan chiqish</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Holat panelini yopish</translation>
+<translation id="7045595904618419789">Lupani yoqish</translation>
 <translation id="7055910611768509537">Stilus bir haftadan beri ishlatilmagan</translation>
 <translation id="7066646422045619941">Bu tarmoq administrator tomonidan o‘chirib qo‘yilgan.</translation>
 <translation id="7067196344162293536">Avtomatik burilish</translation>
@@ -752,6 +765,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7256634071279256947">Orqa mikrofon</translation>
 <translation id="726276584504105859">Ekranni bo‘lish xususiyatidan foydalanish uchun bu yerga torting</translation>
 <translation id="7262906531272962081">Eslatma yaratish</translation>
+<translation id="7279434993080105272">Marker rangi (<ph name="COLOR_PARAMETER" />)</translation>
 <translation id="7302889331339392448">Jonli izoh yoqilmagan.</translation>
 <translation id="7303365578352795231">Boshqa qurilmada javob berilmoqda</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -781,6 +795,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7466449121337984263">Sensorga tegining</translation>
 <translation id="7477793887173910789">Multimedia boshqaruvi</translation>
 <translation id="7483025031359818980">Tanlash hududi sifatida butun ekran belgilandi</translation>
+<translation id="7486227320194954040">Marker vositalarini yigʻish</translation>
 <translation id="7497767806359279797">Til va klaviaturani tanlang</translation>
 <translation id="7509246181739783082">Shaxsni tasdiqlash</translation>
 <translation id="7513622367902644023">Skrinshot rejimi tanlandi</translation>
@@ -799,6 +814,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7607002721634913082">Vaqtincha to‘xtatildi</translation>
 <translation id="7618774594543487847">Neytral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">Flomaster</translation>
 <translation id="7633755430369750696">Nearby Share sozlamalarini ochish.</translation>
 <translation id="7641938616688887143">Yozib olish</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> sozlamalarini ochish</translation>
@@ -814,6 +830,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7724603315864178912">Qirqish</translation>
 <translation id="7745560842763881396">Ilovalarni ishga tushirish panelida chiqarish</translation>
 <translation id="7749443890790263709">Ish stollari maksimal miqdorda.</translation>
+<translation id="7749640678855296659">Mikrofon hozir yoniq emas</translation>
 <translation id="776344839111254542">Yangilanish tafsilotlarini ko‘rish uchun bosing</translation>
 <translation id="7780159184141939021">Ekranni burish</translation>
 <translation id="7796353162336583443">Eslatma va skrinshotlar olish hamda assistent, lazerli kursor yoki lupadan foydalanish uchun javondagi stilus tugmasini bosing.</translation>
@@ -861,6 +878,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8113423164597455979">Yoniq, hammasi</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Tasdiqlash</translation>
+<translation id="8132487352815776550">Taglavhalarni yopish</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> tarmog‘iga ulanilgan</translation>
 <translation id="813913629614996137">Ishga tushirilmoqda...</translation>
 <translation id="8142441511840089262">Ikki marta bosish</translation>

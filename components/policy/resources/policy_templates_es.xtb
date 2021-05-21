@@ -2128,9 +2128,9 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
      Si no se establece esta política, los usuarios podrán elegir su propia configuración del proxy.</translation>
 <translation id="3758249152301468420">Inhabilitar las Herramientas para desarrolladores</translation>
-<translation id="3759650373178711405">A menos que la política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> se configure para que siempre restaure las URL de sesiones anteriores, podrás asignarle el valor <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> para crear una lista de patrones de URL que especifique qué sitios pueden establecer cookies en una sesión y cuáles no.
+<translation id="3759650373178711405">A menos que la política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> se configure para que siempre restaure las URLs de sesiones anteriores, podrás asignarle el valor <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> para crear una lista de patrones de URL que especifique qué sitios pueden establecer cookies en una sesión y cuáles no.
 
-      Si no se le asigna ningún valor, se utilizará <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> en todos los sitios, si se ha definido previamente. Si no, se aplicará la configuración personal del usuario. También se utilizarán valores predeterminados para aquellas URL que no se vean afectadas por los patrones especificados.
+      Si no se le asigna ningún valor, se utilizará <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> en todos los sitios, si se ha definido previamente. Si no, se aplicará la configuración personal del usuario. También se utilizarán valores predeterminados para aquellas URLs que no se vean afectadas por los patrones especificados.
 
       Aunque ninguna política específica prevalece sobre las otras, consulta <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> y <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Los patrones de URL de estas tres políticas no deben interferir entre sí.</translation>
 <translation id="3760148113224469113">Pedir siempre a los usuarios que confirmen las indicaciones de protocolos externos</translation>
@@ -2221,15 +2221,15 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Los usuarios no pueden quitar un controlador de protocolo registrado por la política. Sin embargo, si instalan un controlador predeterminado nuevo, podrán cambiar los controladores de protocolo instalados por la política.</translation>
 <translation id="3857816702027059082">Habilita <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> para obtener una lista de URLs.
 
-      Si se establece esta política, se especificarán las URL que podrán formar parte del flujo de atestación para obtener un conjunto de señales del equipo.
+      Si se establece esta política, se especificarán las URLs que podrán formar parte del flujo de atestación para obtener un conjunto de señales del equipo.
 
       Si no se establece esta política o se deja vacía, ningún punto final podrá iniciar el flujo de atestación ni obtener señales procedentes del equipo.
 
-      Las URL deben tener una estructura de HTTPS (por ejemplo, https://example.com).
+      Las URLs deben tener una estructura de HTTPS (por ejemplo, https://example.com).
 
       Nota: Se permiten los comodines (<ph name="WILDCARD_VALUE" />).
 
-      Para ChromeOS, esta política está relacionada con la atestación remota en la que un certificado se genera automáticamente y se sube al servidor de administración de dispositivos.
+      Para Chrome OS, esta política está relacionada con la atestación remota en la que un certificado se genera automáticamente y se sube al servidor de administración de dispositivos.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3858128774616573616">Si se asigna el valor "Habilitada" a esta política, se mostrará el icono de Google Cast en la barra de herramientas o en el menú adicional y los usuarios no podrán quitarlo.
@@ -3129,9 +3129,9 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
           Si habilitas esta opción, <ph name="PRODUCT_NAME" /> ignorará todas las opciones relacionadas con el proxy que se especifiquen en la línea de comandos.
 
           Si no se asigna ningún valor a esta política, los usuarios podrán elegir su propia configuración del proxy.</translation>
-<translation id="5172841243186654432">A menos que la política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> se configure para que siempre restaure las URL de sesiones anteriores, podrás asignarle el valor <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> para crear una lista de patrones de URL que especifique qué sitios pueden establecer cookies en una sesión y cuáles no.
+<translation id="5172841243186654432">A menos que la política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> se configure para que siempre restaure las URLs de sesiones anteriores, podrás asignarle el valor <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> para crear una lista de patrones de URL que especifique qué sitios pueden establecer cookies en una sesión y cuáles no.
 
-      Si no se le asigna ningún valor, se utilizará <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> en todos los sitios, si se ha definido previamente. Si no, se aplicará la configuración personal del usuario. También se utilizarán valores predeterminados para aquellas URL que no se vean afectadas por los patrones especificados.
+      Si no se le asigna ningún valor, se utilizará <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> en todos los sitios, si se ha definido previamente. Si no, se aplicará la configuración personal del usuario. También se utilizarán valores predeterminados para aquellas URLs que no se vean afectadas por los patrones especificados.
 
       Aunque ninguna política específica prevalece sobre las otras, consulta <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> y <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Los patrones de URL de estas tres políticas no deben interferir entre sí.
 
@@ -5845,13 +5845,13 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si se asigna el valor "true" a esta política, las pestañas que hayan estado en segundo plano durante un mínimo de 5 minutos podrían inmovilizarse. Inmovilizar las pestañas reduce el consumo de CPU, batería y memoria. <ph name="PRODUCT_NAME" /> usa métodos heurísticos para evitar inmovilizar pestañas que realicen funciones útiles en segundo plano, como mostrar notificaciones, reproducir sonidos o emitir vídeos en streaming. Los desarrolladores web pueden inhabilitar la inmovilización en sus sitios web (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Si se asigna el valor "false" a esta política, no se inmovilizará ninguna pestaña.</translation>
-<translation id="8619480582976056396">Si se define esta política, se impide que páginas web con URL prohibidas puedan cargarse. Contiene una lista de patrones de URL que especifican las URL prohibidas. Si la política no se define, no se prohibirá ninguna URL en el navegador. Los patrones de URL deben tener el formato que se indica en la página https://www.chromium.org/administrators/url-blocklist-filter-format. Se pueden definir un máximo de 1000 excepciones en <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+<translation id="8619480582976056396">Si se define esta política, se impide que páginas web con URLs prohibidas puedan cargarse. Contiene una lista de patrones de URL que especifican las URLs prohibidas. Si la política no se define, no se prohibirá ninguna URL en el navegador. Los patrones de URL deben tener el formato que se indica en la página https://www.chromium.org/administrators/url-blocklist-filter-format. Se pueden definir un máximo de 1000 excepciones en <ph name="URL_ALLOWLIST_POLICY_NAME" />.
 
-      Puedes bloquear las URL javascript://* a partir de la versión 73 de <ph name="PRODUCT_NAME" />. Sin embargo, esto solo afecta al código JavaScript que se introduce en la barra de direcciones (por ejemplo, con los bookmarklets). Las URL JavaScript in-page que cargan datos dinámicamente no están sujetas a esta política. Por ejemplo, si bloqueas example.com/abc, la página example.com podrá cargar example.com/abc a través de XMLHTTPRequest.
+      Puedes bloquear las URLs javascript://* a partir de la versión 73 de <ph name="PRODUCT_NAME" />. Sin embargo, esto solo afecta al código JavaScript que se introduce en la barra de direcciones (por ejemplo, con los bookmarklets). Las URLs JavaScript in-page que cargan datos dinámicamente no están sujetas a esta política. Por ejemplo, si bloqueas example.com/abc, la página example.com podrá cargar example.com/abc a través de XMLHTTPRequest.
 
       A partir la versión 92 de <ph name="PRODUCT_NAME" />, esta política también está admitida en el modo sin interfaz gráfica.
 
-      Nota: Bloquear las URL internas chrome://* podría provocar errores inesperados.</translation>
+      Nota: Bloquear las URLs internas chrome://* podría provocar errores inesperados.</translation>
 <translation id="8631434304112909927">hasta la versión <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">La lista de aplicaciones para tomar notas que están permitidas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8637566476051166626">Puertos de red con permiso explícito</translation>

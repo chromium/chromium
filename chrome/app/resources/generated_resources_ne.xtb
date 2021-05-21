@@ -884,7 +884,6 @@
 <translation id="1926339101652878330">यी सेटिङहरू व्यवसाय नीतिद्वारा नियन्त्रण गरिन्छन्। कृपया थप जानकारीका लागि तपाईँको प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="1927632033341042996">औंला <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">स्क्रिन लक PIN</translation>
-<translation id="1928202201223835302">पुरानो PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="1928696683969751773">अपडेटहरू</translation>
 <translation id="1929186283613845153">यो फाइल स्क्यान गरिँदै छ।</translation>
 <translation id="1929343511231420085">जुनसुकै सिरियल पोर्ट</translation>
@@ -1639,7 +1638,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">व्याकरणसँगै हिज्जे पनि जाँच्नुहोस्</translation>
-<translation id="2751131328353405138">Linux कन्टेनरको sshfs माउन्ट हुँदै छ</translation>
 <translation id="2753677631968972007">म्यानुअल रूपमा साइटका अनुमतिहरू नियन्त्रण गर्नुहोस्।</translation>
 <translation id="2755349111255270002">यो <ph name="DEVICE_TYPE" /> रिसेट गर्नुहोस्</translation>
 <translation id="2755367719610958252">पहुँच सम्बन्धी सुविधाहरूलाई व्यवस्थापन गर्नुहोस्</translation>
@@ -1772,7 +1770,6 @@
 <translation id="2891922230654533301"><ph name="APP_NAME" /> मा साइन इन गर्न तपाईंको यन्त्र प्रयोग गर्ने हो?</translation>
 <translation id="2893168226686371498">डिफल्ट ब्राउजर</translation>
 <translation id="2894757982205307093">समूहमा नयाँ ट्याब थप्नुहोस्</translation>
-<translation id="289644616180464099">SIM कार्ड लक गरिएको छ</translation>
 <translation id="289695669188700754">कुञ्जी आइडी: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">तपाईंले सबै इन्कोग्निटो विन्डो बन्द गरेपछि तपाईंको रोजाइअनुसारको यो सेटिङ हटाइने छ</translation>
 <translation id="2897878306272793870">के तपाईं <ph name="TAB_COUNT" /> ट्याबहरू खोल्न चाहनुभएकोमा निश्चित हुनुहुन्छ?</translation>
@@ -2238,7 +2235,6 @@
 <translation id="3427092606871434483">अनुमति दिनुहोस् (डिफल्ट मान)</translation>
 <translation id="3428419049384081277">तपाईं साइन इन हुनुभएको छ!</translation>
 <translation id="3428747202529429621">तपाईं साइन इन भएका बेला यस सुविधाले Chrome मा तपाईंलाई सुरक्षित राख्छ। त्यस्तै, यो सुविधा तपाईंलाई Google का अन्य एपहरूमा अझ् धेरै सुरक्षा प्रदान गर्न पनि प्रयोग गरिन सक्छ</translation>
-<translation id="3428800329481094896">Linux कन्टेनरका ssh कुञ्जीहरू प्राप्त हुँदै छन्</translation>
 <translation id="3429160811076349561">ट्रायल सुविधाहरू अफ गरिएका छन्</translation>
 <translation id="3429271624041785769">वेब सामग्रीका भाषाहरू</translation>
 <translation id="3429275422858276529">यो पृष्ठलाई पछि सजिलैसँग फेला पार्नका लागि यसमा पुस्तक चिन्ह लगाउनुहोस्</translation>
@@ -3721,7 +3717,6 @@
 <translation id="5072900412896857127">Google Play का सेवाका सर्तहरू लोड गर्न सकिएन। कृपया आफ्नो इन्टरनेट कनेक्सन जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" />, र थप # वटा}}</translation>
 <translation id="5074318175948309511">नयाँ सेटिङहरू लागू हुनु अघि यो पृष्ठ पुन: लोड हुन आवश्यक छ।</translation>
-<translation id="5075131525758602494">SIM को PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="5075910247684008552">सुरक्षित साइटहरूमा असुरक्षित सामग्रीलाई डिफल्ट रूपमा रोक लगाइन्छ</translation>
 <translation id="5078638979202084724">सबै ट्याबहरू पृष्ठमञ्जूषा गर्नुहोस्</translation>
 <translation id="5078796286268621944">गलत PIN</translation>

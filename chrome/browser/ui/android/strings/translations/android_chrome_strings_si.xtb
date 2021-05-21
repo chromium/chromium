@@ -186,6 +186,7 @@
 <translation id="22320125457191592">ඔබ සඳහා</translation>
 <translation id="2234876718134438132">සමමුහුව සහ Google සේවා</translation>
 <translation id="2239812875700136898">Discover සඳහා විකල්ප බොත්තමෙන් ඔබේ කතා පාලන කරන්න</translation>
+<translation id="2251971221270904886">ක්‍රියාත්මක සහ තත්ත්වය සක්‍රිය විට, ඔබ සිටින සමූහයක් හෝ “කණ්ඩායම” තීරණය කිරීම සඳහා Chrome දින 7කට වඩා වැඩි ඔබගේ ගවේෂණ ඉතිහාසය භාවිත කරයි. වෙළඳ ප්‍රචාරකයන්ට සමූහය සඳහා වෙළඳ දැන්වීම් තේරිය හැකිය. ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය ඔබගේ උපාංගයේ පුද්ගලිකව තබා ගැනේ. මෙම අත්හදා බැලීම <ph name="BEGIN_LINK" />සමහර කලාප<ph name="END_LINK" /> තුළ පමණක් සක්‍රියයි.</translation>
 <translation id="2259659629660284697">මුරපද නිර්යාත කරන්න…</translation>
 <translation id="2276696007612801991">ඔබගේ මුරපද පරීක්ෂා කිරීමට ඔබගේ Google ගිණුමට පුරන්න</translation>
 <translation id="2278052315791335171">මෙම මුරපදය මැකීම <ph name="SITE" /> හි ඔබගේ ගිණුම මකන්නේ නැත</translation>
@@ -275,6 +276,7 @@
 <translation id="2781151931089541271">තත්පර 1ක් ඉතිරියි</translation>
 <translation id="2801022321632964776">Chrome හි නවතම අනුවාදයේ ඔබේ භාෂාව ලබා ගැනීමට යාවත්කාලීන කරන්න</translation>
 <translation id="2805756323405976993">යෙදුම්</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">ඔබේ <ph name="BEGIN_LINK" />Google ගිණුම<ph name="END_LINK" /> තුළ සුරකින ලද මුරපද බලන්න සහ කළමනාකරණය කරන්න</translation>
 <translation id="2818669890320396765">ඔබේ සියලු උපාංග මත ඇති ඔබේ පිටුසන් ලබා ගැනීමට, පුරනය වී සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="2827278682606527653">සංග්‍රහ කාඩ්පත් මෙනුව අඩක් උස</translation>
@@ -293,6 +295,7 @@
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> සඳහා යෝජනා පෙන්වමින්</translation>
 <translation id="2904414404539560095">පූර්ණ උසකින් විවෘත කර ඇති පටිත්තක් බෙදා ගැනීම සඳහා වන උපාංග ලැයිස්තුව.</translation>
 <translation id="2905036901251765993">අවට පුද්ගලයින් සමඟ බෙදා ගැනීමට, ඔවුන්ට මෙම QR කේතය ස්කෑන් කිරීමට ඉඩ දෙන්න</translation>
+<translation id="2908243544703713905">නොකියවූ කතන්දර සූදානම්ය</translation>
 <translation id="2909615210195135082">Google දැනුම්දීම් වේදිකාව</translation>
 <translation id="2912296070571964914">ඔබ ලැදිකමක් දක්වන මාතෘකා කළමනාකරණය කරන්න</translation>
 <translation id="2923908459366352541">නම අවලංගුයි</translation>
@@ -317,6 +320,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> පිටුසනක්}one{පිටුසන් <ph name="BOOKMARKS_COUNT_MANY" />ක්}other{පිටුසන් <ph name="BOOKMARKS_COUNT_MANY" />ක්}}</translation>
 <translation id="3062802207422175757">Chrome හි ඔබේ රුචිකත්ව ගැන ලිපි</translation>
 <translation id="3070005020161560471">ස්වයංක්‍රියව පරිවර්තනය කරන්න</translation>
+<translation id="3083531420240576529">ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. ඔබගේ සමූහය තීරණය කිරීමට දින 7ක් ගතවේ.</translation>
 <translation id="3091010850649238832">පසුරු පුවරු අන්තර්ගතය පෙන්වන්න</translation>
 <translation id="3098745985164956033">ඔබ සඳහා විස්තර වැඩි දියුණු කිරීම සඳහා සමහර පින්තූර Google වෙත යවනු ලැබේ</translation>
 <translation id="3114507951000454849">අද දවසේ <ph name="NEWS_ICON" /> පුවත් කියවන්න</translation>
@@ -458,6 +462,7 @@
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">තිරයේ ඉහළට ආසන්නව විකල්ප තිබේ</translation>
 <translation id="4062305924942672200">නෛතික තොරතුරු</translation>
+<translation id="4082818367361753283">සමූහ ID</translation>
 <translation id="4084682180776658562">පිටු සලකුණ</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> වෙතින් – <ph name="BEGIN_DEEMPHASIZED" />Google විසින් බෙදා හරින ලදි<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">යෙදුම් දත්ත මකා දමනවා ද?</translation>
@@ -533,7 +538,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{මිනිත්තු #කට පෙර}one{මිනිත්තු #කට පෙර}other{මිනිත්තු #කට පෙර}}</translation>
 <translation id="4587589328781138893">අඩවි</translation>
 <translation id="4594952190837476234">මෙම නොබැඳි පිටුව <ph name="CREATION_TIME" /> වෙතින් වන අතර සබැඳි අනුවාදයෙන් වෙනස් විය හැකිය.</translation>
-<translation id="4615382002648696011">අනුගමනය කරමින්, නොකියවූ කතන්දර සූදානම්ය</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> විවෘත කරන්න</translation>
 <translation id="4619564267100705184">ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="4634124774493850572">මුරපදය භාවිත කරන්න</translation>
@@ -889,6 +893,11 @@
 <translation id="6699370405921460408">Google සේවාදායක ඔබ පැමිණෙන පිටු ප්‍රශස්ත කරයි.</translation>
 <translation id="670498945988402717">ඊයේ පරීක්ෂා කරන ලදි</translation>
 <translation id="6710213216561001401">පෙර</translation>
+<translation id="671333169801287922">ක්‍රියාත්මක විට, අඩවි ඒවායෙහි අන්තර්ගතය සහ සේවා සැපයීම සඳහා මෙහි පෙන්වා ඇති පෞද්ගලිකත්වය සංරක්ෂණය කිරීමේ ක්‍රම භාවිත කළ හැකිය. හරස්-අඩවි හඹා යාම සඳහා විකල්ප මේවාට ඇතුළත්ය. කාලයත් සමඟ තවත් අත්හදා බැලීම් එක් කළ හැකිය.
+
+<ph name="BEGIN_LIST_ITEM1" />වෙළඳ ප්‍රචාරකයන්ට සහ ප්‍රකාශකයින්ට FLoC තාක්ෂණය භාවිත කළ හැකිය.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />වෙළඳ ප්‍රචාරකයන්ට සහ ප්‍රකාශකයින්ට අඩවි හරහා ඔබව හඹා නොයන ආකාරයකින් වෙළඳ දැන්වීම්වල ඵලදායීතාවය අධ්‍යයනය කළ හැකිය.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">ඔබේ <ph name="FQDN" /> මුහූර්තකය ඉවර විය. එය හෙට නැවත ඇරඹෙයි.</translation>
 <translation id="6738516213925468394">ඔබේ දත්ත <ph name="TIME" /> වූ විට ඔබේ <ph name="BEGIN_LINK" />මුර වැකිකඩ<ph name="END_LINK" /> සංකේතන කරනු ලැබුවේය. සමමුහූර්තය ආරම්භ කිරීමට එය ඇතුළත් කරන්න.</translation>
 <translation id="6738867403308150051">බාගනිමින්...</translation>
@@ -1079,6 +1088,9 @@
 <translation id="7971136598759319605">1 දිනකට පෙර ක්‍රියාත්මකයි</translation>
 <translation id="7975379999046275268">පිටුව පෙරදකින්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">වේගවත් බ්‍රවුස් කිරීම සහ සෙවීම සඳහා පිටු පෙර පූරණය කරන්න</translation>
+<translation id="7981546642162424360"><ph name="BEGIN_LINK" />පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස්<ph name="END_LINK" /> යනු විවෘත වෙබය සංරක්ෂණය කරන අතරතුර ඔබව හඹා යාමේ යාන්ත්‍රණවලින් ආරක්ෂා කරනු ඇති නව තාක්ෂණ සංවර්ධනය කිරීම සඳහා සිදු වන මුලපිරීමකි.
+
+පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස් අත්හදා බැලීම් තවම සක්‍රිය සංවර්ධනයක පවතින අතර තෝරා ගත් කලාපවල ලබා ගත හැකිය. දැනට, අඩවි තෙවන පාර්ශ්ව කුකී වැනි වර්තමාන වෙබ් තාක්ෂණ දිගටම භාවිත කරන අතරතුර පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස් අත්හදා බැලිය හැකිය.</translation>
 <translation id="7986497153528221272">මුරපද බැලීමට, ඔබේ උපාංගයේ තිර අගුලක් සකසන්න</translation>
 <translation id="7998918019931843664">වැසූ ටැබය යළි විවෘත කරන්න</translation>
 <translation id="8004582292198964060">බ්‍රවුසරය</translation>
@@ -1188,7 +1200,9 @@
 <translation id="8662811608048051533">ඔබව බොහෝ අඩවිවලින් වරනු ඇත.</translation>
 <translation id="8664979001105139458">ගොනු නාමය දැනටමත් පවතී</translation>
 <translation id="8676789164135894283">පිරීම් සත්‍යාපනය කිරීම්</translation>
+<translation id="867767487203716855">ඊළඟ යාවත්කාලීනය</translation>
 <translation id="8683039184091909753">රූපය</translation>
+<translation id="8683081248374354009">සමූහය යළි සකසන්න</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{සංඥා ප්‍රබලතා මට්ටම: කණු #}one{සංඥා ප්‍රබලතා මට්ටම: කණු #}other{සංඥා ප්‍රබලතා මට්ටම: කණු #}}</translation>
 <translation id="869891660844655955">කල් ඉකුත් වීමේ දිනය:</translation>
 <translation id="8699120352855309748">මෙම භාෂා පරිවර්තනය කිරීමට පිරිනමන්න එපා</translation>

@@ -283,6 +283,7 @@
 <translation id="1919345977826869612">ಜಾಹೀರಾತುಗಳು</translation>
 <translation id="1919367280705858090">ನಿರ್ದಿಷ್ಟ ದೋಷ ಸಂದೇಶಕ್ಕೆ ಸಹಾಯ ಪಡೆಯಿರಿ</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಸೈಟ್}one{# ಸೈಟ್‌ಗಳು}other{# ಸೈಟ್‌ಗಳು}}</translation>
+<translation id="1924727005275031552">ಹೊಸತು</translation>
 <translation id="1945968466830820669">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಖಾತೆಗೆ ನೀವು ಪ್ರವೇಶವನ್ನು ಕಳೆದುಕೊಳ್ಳಬಹುದು ಅಥವಾ ಗುರುತು ಕಳ್ಳತನಕ್ಕೆ ಒಳಗಾಗಬಹುದು. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಇದೀಗ ಬದಲಾಯಿಸುವಂತೆ Chromium ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="1947454675006758438">ಮೇಲಿನ ಬಲಭಾಗದಲ್ಲಿ ಸ್ಟೇಪಲ್ ಹಾಕಿ</translation>
 <translation id="1958218078413065209">ನಿಮ್ಮ ಅತಿ ಹೆಚ್ಚು ಸ್ಕೋರ್ <ph name="SCORE" /> ಆಗಿದೆ.</translation>
@@ -393,6 +394,7 @@
 <translation id="2357481397660644965">ನಿಮ್ಮ ಸಾಧನವನ್ನು <ph name="DEVICE_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ ಮತ್ತು ನಿಮ್ಮ ಖಾತೆಯನ್ನು <ph name="ACCOUNT_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="2359629602545592467">ಬಹು</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
+<translation id="2359961752320758691">ನಿಮ್ಮ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ಅನ್ವಯಿಸಲಾಗಿದೆ.</translation>
 <translation id="2367567093518048410">ಹಂತ</translation>
 <translation id="2372464001869762664">ನೀವು ಖಚಿತಪಡಿಸಿದ ನಂತರ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿನ ಕಾರ್ಡ್ ವಿವರಗಳನ್ನು ಈ ಸೈಟ್ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ. ನಿಮ್ಮ Plex ಖಾತೆಯ ವಿವರಗಳನ್ನು CVC ಯಲ್ಲಿ ಹುಡುಕಿ.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -403,6 +405,7 @@
 <translation id="239429038616798445">ಈ ಶಿಪ್ಪಿಂಗ್ ವಿಧಾನ ಲಭ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಧಾನವನ್ನು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2396249848217231973">&amp;ಅಳಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸು</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">ಹಳೆಯ</translation>
 <translation id="2413528052993050574">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಲಾಗಿರಬಹುದು. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="2414886740292270097">ಗಾಢ</translation>
 <translation id="2438874542388153331">ಬಲಭಾಗದಲ್ಲಿ ನಾಲ್ಕು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
@@ -897,12 +900,14 @@
 <translation id="4275830172053184480">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4277028893293644418">ಪಾಸ್‌ವರ್ಡ್ ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ಈ ಕಾರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ}one{ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ}other{ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ}}</translation>
+<translation id="4287885627794386150">ಪ್ರಯೋಗಕ್ಕೆ ಅರ್ಹವಾಗಿದೆ ಆದರೆ ಸಕ್ರಿಯವಾಗಿರುವುದಿಲ್ಲ</translation>
 <translation id="4297502707443874121">ಪುಟ <ph name="THUMBNAIL_PAGE" /> ರ ಥಂಬ್‌ನೇಲ್</translation>
 <translation id="42981349822642051">ವಿಸ್ತರಿಸಿ</translation>
 <translation id="4300675098767811073">ಬಲಭಾಗದಲ್ಲಿ ಅನೇಕ ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="4302514097724775343">ಆಡಲು, ಡೈನೋ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">ನಿಮ್ಮ ಫೈಲ್ ಅನ್ನು ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
+<translation id="4306529830550717874">ವಿಳಾಸವನ್ನು ಉಳಿಸಬೇಕೆ?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ನಿರ್ಬಂಧಿಸು (ಡಿಫಾಲ್ಟ್)</translation>
 <translation id="4314815835985389558">ಸಿಂಕ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -1390,6 +1395,7 @@
 <translation id="610911394827799129">ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಇತರ ವಿಧಗಳ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೊಂದಿರಬಹುದು</translation>
 <translation id="6116338172782435947">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿರುವ ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="6120179357481664955">ನಿಮ್ಮ UPI ಐಡಿ ನೆನಪಿದೆಯೇ?</translation>
+<translation id="6123290840358279103">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="6124432979022149706">Chrome ಎಂಟರ್‌ಪ್ರೈಸ್ ಕನೆಕ್ಟರ್‌ಗಳು</translation>
 <translation id="6146055958333702838">ಯಾವುದೇ ಕೇಬಲ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ. ನೀವು ಬಳಸುತ್ತಿರಬಹುದಾದ ಯಾವುದೇ ರೂಟರ್‌ಗಳು, ಮೋಡೆಮ್‌ಗಳು ಅಥವಾ ಇತರ ನೆಟ್‌ವರ್ಕ್ ಸಾಧನಗಳನ್ನು ರೀಬೂಟ್ ಮಾಡಿ.</translation>
 <translation id="614940544461990577">ಪ್ರಯತ್ನಿಸಿ:</translation>
@@ -1668,6 +1674,7 @@
 <translation id="7300012071106347854">ಕೋಬಾಲ್ಟ್ ನೀಲಿ</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">ಅಧಿಕ</translation>
+<translation id="7305756307268530424">ನಿಧಾನವಾಗಿ ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ಸಂಪರ್ಕ ಸಹಾಯ</translation>
 <translation id="7323804146520582233">ಈ "<ph name="SECTION" />" ವಿಭಾಗವನ್ನು ಮರೆಮಾಡಿ</translation>
@@ -1693,6 +1700,7 @@
 <translation id="7378594059915113390">ಮೀಡಿಯಾ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="7378627244592794276">ಬೇಡ</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">ಅನ್ವಯಿಸುವುದಿಲ್ಲ</translation>
 <translation id="7390545607259442187">ಕಾರ್ಡ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="7399802613464275309">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1743,6 +1751,7 @@
 <translation id="7548892272833184391">ಸಂಪರ್ಕ ದೋಷಗಳನ್ನು ಸರಿಪಡಿಸಿ</translation>
 <translation id="7549584377607005141">ಈ ವೆಬ್‌ಪುಟವು ಸರಿಯಾಗಿ ಪ್ರದರ್ಶನಗೊಳ್ಳಲು ಈ ಮೊದಲು ನೀವು ನಮೂದಿಸಿದ ಡೇಟಾದ ಅಗತ್ಯವಿದೆ. ನೀವು ಈ ಡೇಟಾವನ್ನು ಮತ್ತೆ ಕಳುಹಿಸಬಹುದು, ಆದರೆ ಹಾಗೆ ಮಾಡುವುದರಿಂದ ಈ ಪುಟವು ಈ ಮೊದಲು ಪೂರೈಸಿದ ಯಾವುದೇ ಕ್ರಿಯೆಯನ್ನು ನೀವು ಪುನರಾವರ್ತಿಸುತ್ತೀರಿ.</translation>
 <translation id="7550637293666041147">ನಿಮ್ಮ ಸಾಧನದ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು Chrome ಬಳಕೆದಾರರ ಹೆಸರು</translation>
+<translation id="755279583747225797">ಪ್ರಯೋಗವು ಸಕ್ರಿಯವಾಗಿದೆ</translation>
 <translation id="7552846755917812628">ಕೆಳಗಿನ ಸಲಹೆಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ:</translation>
 <translation id="7554475479213504905">ಹೇಗಿದ್ದರೂ ಮರುಲೋಡ್ ಮಾಡಿ ಮತ್ತು ತೋರಿಸಿ</translation>
 <translation id="7554791636758816595">ಹೊಸ ಟ್ಯಾಬ್</translation>
@@ -1837,6 +1846,7 @@
 <translation id="7894280532028510793">ಕಾಗುಣಿತ ಸರಿಯಾಗಿದ್ದರೆ, <ph name="BEGIN_LINK" />ನೆಟ್‌ವರ್ಕ್ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್‌‌ ರನ್ ಮಾಡಿ ನೋಡಿ<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7931318309563332511">ಅಪರಿಚಿತ</translation>
+<translation id="793209273132572360">ವಿಳಾಸವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="7932579305932748336">ಹಚ್ಚು</translation>
 <translation id="79338296614623784">ಮಾನ್ಯವಾದ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="7934052535022478634">ಪಾವತಿ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
@@ -1913,7 +1923,6 @@
 <translation id="8202097416529803614">ಆರ್ಡರ್ ಸಾರಾಂಶ</translation>
 <translation id="8202370299023114387">ಸಂಘರ್ಷ</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
-<translation id="8210188585510256139">{NUM_DAYS,plural, =0{ನೀವು ID ಯನ್ನು ರೀಸೆಟ್ ಮಾಡಿದಾಗ, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ID ಅಮಾನ್ಯವಾಗುತ್ತದೆ ಮತ್ತು 1 ದಿನಕ್ಕಿಂತ ಕಡಿಮೆ ಅವಧಿಯಲ್ಲಿ ಹೊಸದನ್ನು ನೀಡಲಾಗುತ್ತದೆ}=1{ನೀವು ID ಯನ್ನು ರೀಸೆಟ್ ಮಾಡಿದಾಗ, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ID ಅಮಾನ್ಯವಾಗುತ್ತದೆ ಮತ್ತು 1 ದಿನದಲ್ಲಿ ಹೊಸದನ್ನು ನೀಡಲಾಗುತ್ತದೆ}one{ನೀವು ID ಯನ್ನು ರೀಸೆಟ್ ಮಾಡಿದಾಗ, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ID ಅಮಾನ್ಯವಾಗುತ್ತದೆ ಮತ್ತು {NUM_DAYS} ದಿನಗಳಲ್ಲಿ ಹೊಸದನ್ನು ನೀಡಲಾಗುತ್ತದೆ}other{ನೀವು ID ಯನ್ನು ರೀಸೆಟ್ ಮಾಡಿದಾಗ, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ID ಅಮಾನ್ಯವಾಗುತ್ತದೆ ಮತ್ತು {NUM_DAYS} ದಿನಗಳಲ್ಲಿ ಹೊಸದನ್ನು ನೀಡಲಾಗುತ್ತದೆ}}</translation>
 <translation id="8211406090763984747">ಸಂಪರ್ಕ ಸುರಕ್ಷಿತವಾಗಿದೆ</translation>
 <translation id="8213464188712611711">ನೆನಪುಗಳು</translation>
 <translation id="8218327578424803826">ನಿಯೋಜಿಸಲಾದ ಸ್ಥಳ:</translation>

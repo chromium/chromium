@@ -24,7 +24,6 @@
 <translation id="1148499908455722006">Információs párbeszédpanel, <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Párosított eszközök</translation>
 <translation id="1165712434476988950">A frissítés alkalmazásához az eszköz újraindítása szükséges.</translation>
-<translation id="1170240434488307589">Az eszköz mikrofon gombja le van némítva.</translation>
 <translation id="1175572348579024023">Görgetés</translation>
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
@@ -374,7 +373,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4021716437419160885">Görgetés lefelé</translation>
 <translation id="4028481283645788203">A nagyobb biztonság érdekében jelszó szükséges</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
-<translation id="403337028234783023">A(z) <ph name="LAUNCHER_KEY_NAME" /> + szám billentyűparancs módosult. Az F-billentyűk használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + a kívánt billentyű a felső soron.</translation>
 <translation id="4042660782729322247">Jelenleg megosztja a képernyőt</translation>
 <translation id="4057003836560082631">Böngészőlap: <ph name="TOTAL_COUNT" />/<ph name="INDEX" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Ki, 1 appnál}other{Ki, # appnál}}</translation>
