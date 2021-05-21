@@ -15,7 +15,13 @@ import '../strings.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-class SidePanel extends PolymerElement {
+/**
+ * Key for localStorage object that refers to the last active tab's ID.
+ * @const {string}
+ */
+export const LOCAL_STORAGE_TAB_ID_KEY = 'lastActiveTab';
+
+export class SidePanelAppElement extends PolymerElement {
   static get is() {
     return 'side-panel-app';
   }
@@ -26,13 +32,13 @@ class SidePanel extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {!Array<string>} */
+      /** @private {!Object<string, string>} */
       tabs_: {
-        type: Array,
-        value: () => ([
-          'title',
-          'bookmarksTabTitle',
-        ].map(id => loadTimeData.getString(id))),
+        type: Object,
+        value: () => ({
+          'readingList': loadTimeData.getString('title'),
+          'bookmarks': loadTimeData.getString('bookmarksTabTitle'),
+        }),
       },
 
       /** @private {number} */
@@ -42,5 +48,31 @@ class SidePanel extends PolymerElement {
       },
     };
   }
+
+  connectedCallback() {
+    super.connectedCallback();
+    const lastActiveTab = window.localStorage[LOCAL_STORAGE_TAB_ID_KEY];
+    if (lastActiveTab) {
+      this.selectedTab_ = Object.keys(this.tabs_).indexOf(lastActiveTab) || 0;
+    }
+  }
+
+  /**
+   * @return {!Array<string>}
+   * @private
+   */
+  getTabNames_() {
+    return Object.values(this.tabs_);
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onSelectedTabChanged_(event) {
+    const tabIndex = event.detail.value;
+    window.localStorage[LOCAL_STORAGE_TAB_ID_KEY] =
+        Object.keys(this.tabs_)[tabIndex];
+  }
 }
-customElements.define(SidePanel.is, SidePanel);
+customElements.define(SidePanelAppElement.is, SidePanelAppElement);

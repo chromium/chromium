@@ -21,6 +21,18 @@ class SidePanelBrowserTest extends PolymerTest {
 }
 
 // eslint-disable-next-line no-var
+var SidePanelAppTest = class extends SidePanelBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://read-later.top-chrome/test_loader.html?module=read_later/side_panel/side_panel_app_test.js';
+  }
+};
+
+TEST_F('SidePanelAppTest', 'All', function() {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
 var SidePanelBookmarksListTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {

@@ -27,7 +27,11 @@
 
 <header>
   <h1>Lists</h1>
-  <cr-tabs tab-names="[[tabs_]]" selected="{{selectedTab_}}" new-material>
+  <cr-tabs
+      tab-names="[[getTabNames_(tabs_)]]"
+      selected="{{selectedTab_}}"
+      on-selected-changed="onSelectedTabChanged_"
+      new-material>
   </cr-tabs>
 </header>
 
