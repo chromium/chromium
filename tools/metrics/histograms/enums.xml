@@ -48018,6 +48018,7 @@ from previous Chrome versions.
   <int value="674627327" label="MagnifierNewFocusFollowing:enabled"/>
   <int value="674788251" label="EnableNewBadgeOnMenuItems:enabled"/>
   <int value="677866592" label="ClickToCallUI:disabled"/>
+  <int value="677883800" label="DiagnosticsAppNavigation:disabled"/>
   <int value="679931272" label="DcheckIsFatal:enabled"/>
   <int value="680070635"
       label="enable-fullscreen-handwriting-virtual-keyboard:disabled"/>
@@ -48722,6 +48723,7 @@ from previous Chrome versions.
   <int value="1288713607" label="EcheSWAResizing:disabled"/>
   <int value="1289433604" label="RecoverFromNeverSaveAndroid:enabled"/>
   <int value="1289495171" label="AssistantBetterOnboarding:disabled"/>
+  <int value="1290904214" label="DiagnosticsAppNavigation:enabled"/>
   <int value="1291257442" label="TabsInCBD:disabled"/>
   <int value="1291761696" label="CCTModuleDexLoading:disabled"/>
   <int value="1291966558" label="ScrollAnchoring:disabled"/>

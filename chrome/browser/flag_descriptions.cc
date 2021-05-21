@@ -1001,6 +1001,10 @@ const char kDiagnosticsAppDescription[] =
     "view their system telemetric information and run diagnostic tests for "
     "their device.";
 
+const char kDiagnosticsAppNavigationName[] = "Diagnostics app navigation";
+const char kDiagnosticsAppNavigationDescription[] =
+    "Enables the navigation panel in the Diagnostics app.";
+
 const char kDisableKeepaliveFetchName[] = "Disable fetch with keepalive set";
 const char kDisableKeepaliveFetchDescription[] =
     "Disable fetch with keepalive set "

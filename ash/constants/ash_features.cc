@@ -241,6 +241,10 @@ const base::Feature kDemoModeSWA{"DemoModeSWA",
 const base::Feature kDiagnosticsApp{"DiagnosticsApp",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, the navigation panel will be shown in the diagnostics app.
+const base::Feature kDiagnosticsAppNavigation{
+    "DiagnosticsAppNavigation", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Disables the CryptAuth v1 DeviceSync flow. Note: During the first phase
 // of the v2 DeviceSync rollout, v1 and v2 DeviceSync run in parallel. This flag
 // is needed to disable the v1 service during the second phase of the rollout.
@@ -883,7 +887,8 @@ bool IsMinimumChromeVersionEnabled() {
 }
 
 bool IsNetworkingInDiagnosticsAppEnabled() {
-  return base::FeatureList::IsEnabled(kEnableNetworkingInDiagnosticsApp);
+  return base::FeatureList::IsEnabled(kEnableNetworkingInDiagnosticsApp) &&
+         base::FeatureList::IsEnabled(kDiagnosticsAppNavigation);
 }
 
 bool IsNewOobeLayoutEnabled() {

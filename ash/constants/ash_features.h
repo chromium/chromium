@@ -108,6 +108,8 @@ extern const base::Feature kCrostiniUseDlc;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDiagnosticsApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kDiagnosticsAppNavigation;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDisableCryptAuthV1DeviceSync;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCryptAuthV2DeviceActivityStatus;

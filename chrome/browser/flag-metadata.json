@@ -974,6 +974,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "diagnostics-app-navigation",
+    "owners": [ "//chromeos/components/diagnostics_ui/OWNERS" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "dice-web-signin-interception",
     "owners": [ "droger", "my-chrome-everywhere@google.com" ],
     "expiry_milestone": 92
