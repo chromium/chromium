@@ -22,6 +22,7 @@ polymer_element_files = [
 generate_grd("build_grd") {
   input_files = [
     "app_icon_192.png",
+    "fake_data.js",
     "fake_shimless_rma_service.js",
     "index.html",
     "mojo_interface_provider.js",
@@ -64,6 +65,9 @@ js_library("base_page") {
   ]
 }
 
+js_library("fake_data") {
+}
+
 js_library("fake_shimless_rma_service") {
   deps = [
     ":shimless_rma_types",
@@ -75,6 +79,7 @@ js_library("fake_shimless_rma_service") {
 
 js_library("mojo_interface_provider") {
   deps = [
+    ":fake_data",
     ":fake_shimless_rma_service",
     ":shimless_rma_types",
     "//ui/webui/resources/js:cr.m",

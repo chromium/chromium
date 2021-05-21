@@ -7,18 +7,29 @@ import './onboarding_landing_page.js';
 import './onboarding_update_page.js';
 import './shimless_rma_shared_css.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {CurrentState, NextState, PrevState, RmadErrorCode, RmaState, ShimlessRmaServiceInterface} from './shimless_rma_types.js'
 
 /**
+ * Enum for button states.
+ * @enum {string}
+ */
+const BtnState = {
+  VISIBLE: 'visible',
+  DISABLED: 'disable',
+  HIDDEN: 'hidden'
+};
+
+/**
  * @typedef {{
  *  componentIs: string,
- *  btnNext: string,
+ *  btnNext: !BtnState,
  *  btnNextLabel: string,
- *  btnCancel: string,
- *  btnBack: string,
+ *  btnCancel: !BtnState,
+ *  btnBack: !BtnState,
  * }}
  */
 let PageInfo;
@@ -27,9 +38,24 @@ let PageInfo;
  * @type {!Object<!RmaState, !PageInfo>}
  */
 const StateComponentMapping = {
-  [RmaState.kUnknown]: {componentIs: 'badcomponent'},
-  [RmaState.kWelcomeScreen]: {componentIs: 'onboarding-landing-page'},
-  [RmaState.kUpdateChrome]: {componentIs: 'onboarding-update-page'},
+  [RmaState.kUnknown]: {
+    componentIs: 'badcomponent',
+    btnNext: BtnState.HIDDEN,
+    btnCancel: BtnState.VISIBLE,
+    btnBack: BtnState.HIDDEN,
+  },
+  [RmaState.kWelcomeScreen]: {
+    componentIs: 'onboarding-landing-page',
+    btnNext: BtnState.VISIBLE,
+    btnCancel: BtnState.VISIBLE,
+    btnBack: BtnState.HIDDEN,
+  },
+  [RmaState.kSelectComponents]: {
+    componentIs: 'onboarding-update-page',
+    btnNext: BtnState.HIDDEN,
+    btnCancel: BtnState.VISIBLE,
+    btnBack: BtnState.VISIBLE,
+  },
 };
 
 /**
@@ -56,14 +82,21 @@ export class ShimlessRmaElement extends PolymerElement {
         type: Object,
         value: {},
       },
-      /**
-       * @private
-       * @type {ShimlessRmaServiceInterface}
-       */
+
+      /** @private {ShimlessRmaServiceInterface} */
       shimlessRmaService_: {
         type: Object,
         value: {},
       },
+
+      /**
+       * Initial state to cancel to
+       * @private {?RmaState}
+       */
+      initialState_: {
+        type: Object,
+        value: null,
+      }
     };
   }
 
@@ -73,7 +106,10 @@ export class ShimlessRmaElement extends PolymerElement {
     this.shimlessRmaService_ = getShimlessRmaService();
 
     // Get the initial state.
-    this.fetchState_().then((state) => this.loadState_(state));
+    this.fetchState_().then((state) => {
+      this.initialState_ = state.currentState;
+      this.loadState_(state.currentState);
+    });
   }
 
   /** @private */
@@ -93,30 +129,12 @@ export class ShimlessRmaElement extends PolymerElement {
 
   /**
    * @private
-   * @param { !CurrentState } state
+   * @param {!RmaState} state
    */
   loadState_(state) {
-    const pageInfo = StateComponentMapping[state.currentState];
-    this.currentPage_ = pageInfo;
-    // TODO(joonbug): Load component
-  }
+    const pageInfo = StateComponentMapping[state];
+    assert(pageInfo);
 
-  /**
-   * @private
-   * @param { !NextState } state
-   */
-  loadNextState_(state) {
-    const pageInfo = StateComponentMapping[state.nextState];
-    this.currentPage_ = pageInfo;
-    // TODO(joonbug): Load component
-  }
-
-  /**
-   * @private
-   * @param { !PrevState } state
-   */
-  loadPrevState_(state) {
-    const pageInfo = StateComponentMapping[state.prevState];
     this.currentPage_ = pageInfo;
     this.showComponent_(pageInfo.componentIs);
   }
@@ -175,22 +193,19 @@ export class ShimlessRmaElement extends PolymerElement {
 
   /** @protected */
   onBackBtnClicked_() {
-    // TODO(joonbug): fill with action
-    this.fetchPrevState_().then((state) => this.loadPrevState_(state));
-    return;
+    // TODO(joonbug): error handling based on state.error
+    this.fetchPrevState_().then((state) => this.loadState_(state.prevState));
   }
 
   /** @protected */
   onNextBtnClicked_() {
-    // TODO(joonbug): fill with action
-    this.fetchNextState_().then((state) => this.loadNextState_(state));
-    return;
+    // TODO(joonbug): error handling based on state.error
+    this.fetchNextState_().then((state) => this.loadState_(state.nextState));
   }
 
   /** @protected */
   onCancelBtnClicked_() {
-    // TODO(joonbug): fill with action
-    return;
+    this.loadState_(assert(this.initialState_));
   }
 };
 
