@@ -82,6 +82,11 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   static std::string GetAppsCountHistogramNameForTest(
       AppTypeName app_type_name);
 
+  // UMA metrics name for installed apps count per InstallSource in Chrome OS.
+  static std::string GetAppsCountPerInstallSourceHistogramNameForTest(
+      AppTypeName app_type_name,
+      apps::mojom::InstallSource install_source);
+
   // UMA metrics name for apps running duration in Chrome OS.
   static std::string GetAppsRunningDurationHistogramNameForTest(
       AppTypeName app_type_name);

@@ -36,6 +36,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="WebApp" summary="Web apps"/>
 </variants>
 
+<variants name="InstallSource">
+  <variant name="Oem" summary="Installed by an OEM"/>
+  <variant name="Policy" summary="Installed by policy"/>
+  <variant name="Preload" summary="Preinstalled by default"/>
+  <variant name="Sync" summary="Installed by sync"/>
+  <variant name="System" summary="Installed with the system"/>
+  <variant name="Unknown" summary="Installed with unknownn source"/>
+  <variant name="User" summary="Installed by user"/>
+</variants>
+
 <histogram name="Apps.ActivatedCount.{AppType}" units="ms"
     expires_after="2021-10-28">
   <owner>dominickn@chromium.org</owner>
@@ -1415,6 +1425,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     capped at 1000; values above this go into the overflow bucket.
   </summary>
   <token key="AppType" variants="AppType"/>
+</histogram>
+
+<histogram name="Apps.AppsCountPerInstallSource.{AppType}.{InstallSource}"
+    units="Apps" expires_after="2021-10-28">
+  <owner>dominickn@chromium.org</owner>
+  <owner>nancylingwang@chromium.org</owner>
+  <summary>
+    The total number of installed {AppType} for each app type {InstallSource} in
+    Chrome OS. This is logged when more than 24 hours pass after last log, or
+    during the system startup phase if more than 24 hours passed after last log.
+    This histogram is capped at 1000; values above this go into the overflow
+    bucket.
+  </summary>
+  <token key="AppType" variants="AppType"/>
+  <token key="InstallSource" variants="InstallSource"/>
 </histogram>
 
 <histogram name="Apps.AppShimErrorVersion" units="units" expires_after="M78">
