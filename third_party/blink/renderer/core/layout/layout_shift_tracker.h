@@ -87,6 +87,7 @@ class CORE_EXPORT LayoutShiftTracker final
   base::TimeTicks MostRecentInputTimestamp() {
     return most_recent_input_timestamp_;
   }
+  void ResetTimerForTesting();
   void Trace(Visitor* visitor) const;
 
   // Saves and restores geometry on layout boxes when a layout tree is rebuilt
@@ -263,6 +264,11 @@ class CORE_EXPORT LayoutShiftTracker final
 
   // Nodes that have contributed to the impact region for the current frame.
   std::array<Attribution, LayoutShift::kMaxAttributions> attributions_;
+
+  // Set to true when we see MouseMove events with any button pressed, and
+  // reset to false when we see a MouseUp or MouseDown event. This helps to set
+  // the MouseUp event after mouse dragging to be hasRecentInput.
+  bool saw_dragged_mousemove_ = false;
 };
 
 }  // namespace blink

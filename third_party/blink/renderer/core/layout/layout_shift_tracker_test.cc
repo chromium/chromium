@@ -333,6 +333,75 @@ TEST_F(LayoutShiftTrackerPointerdownTest, PointerdownBecomesScroll) {
           false /* expect_exclusion */);
 }
 
+TEST_F(LayoutShiftTrackerSimTest, MouseMoveDraggingAction) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <style>
+      body { margin: 0; height: 1500px; }
+      #box {
+        left: 0px;
+        top: 0px;
+        width: 400px;
+        height: 600px;
+        background: yellow;
+        position: absolute;
+      }
+    </style>
+    <div id="box"></div>
+    <script>
+      box.addEventListener("mousemove", (e) => {
+        box.style.top = "100px";
+        e.preventDefault();
+      });
+    </script>
+  )HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  WebMouseEvent event1(WebInputEvent::Type::kMouseDown, gfx::PointF(),
+                       gfx::PointF(), WebPointerProperties::Button::kLeft, 0,
+                       WebInputEvent::Modifiers::kLeftButtonDown,
+                       base::TimeTicks::Now());
+  WebMouseEvent event2(WebInputEvent::Type::kMouseMove, gfx::PointF(),
+                       gfx::PointF(), WebPointerProperties::Button::kLeft, 1,
+                       WebInputEvent::Modifiers::kLeftButtonDown,
+                       base::TimeTicks::Now());
+
+  // Coordinates inside #box.
+  event1.SetPositionInWidget(50, 150);
+  event2.SetPositionInWidget(50, 160);
+
+  WebView().MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(event1, ui::LatencyInfo()));
+
+  WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
+  auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_FLOAT_EQ(0.0, tracker.Score());
+
+  tracker.ResetTimerForTesting();
+  WebView().MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(event2, ui::LatencyInfo()));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto entries = perf.getBufferedEntriesByType("layout-shift");
+  EXPECT_EQ(1u, entries.size());
+  LayoutShift* shift = static_cast<LayoutShift*>(entries.front().Get());
+
+  // region fraction 50%, distance fraction 1/8
+  const double expected_shift = 0.5 * 0.125;
+  EXPECT_TRUE(shift->hadRecentInput());
+  EXPECT_FLOAT_EQ(expected_shift, shift->value());
+  EXPECT_FLOAT_EQ(0, tracker.Score());
+}
+
 TEST_F(LayoutShiftTrackerTest, StableCompositingChanges) {
   SetBodyInnerHTML(R"HTML(
     <style>

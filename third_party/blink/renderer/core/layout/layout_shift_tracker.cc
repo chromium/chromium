@@ -646,6 +646,17 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
       type == WebInputEvent::Type::kPointerDown &&
       static_cast<const WebPointerEvent&>(event).hovering;
 
+  const bool mousemove_with_button_down =
+      type == WebInputEvent::Type::kMouseMove &&
+      (event.GetModifiers() & WebInputEvent::kLeftButtonDown ||
+       event.GetModifiers() & WebInputEvent::kMiddleButtonDown ||
+       event.GetModifiers() & WebInputEvent::kRightButtonDown ||
+       event.GetModifiers() & WebInputEvent::kBackButtonDown ||
+       event.GetModifiers() & WebInputEvent::kForwardButtonDown);
+
+  const bool mouseup_after_dragging =
+      type == WebInputEvent::Type::kMouseUp && saw_dragged_mousemove_;
+
   const bool should_trigger_shift_exclusion =
       type == WebInputEvent::Type::kMouseDown ||
       type == WebInputEvent::Type::kKeyDown ||
@@ -653,7 +664,8 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
       // We need to explicitly include tap, as if there are no listeners, we
       // won't receive the pointer events.
       type == WebInputEvent::Type::kGestureTap || is_hovering_pointerdown ||
-      pointerdown_became_tap;
+      pointerdown_became_tap || mousemove_with_button_down ||
+      mouseup_after_dragging;
 
   if (should_trigger_shift_exclusion) {
     observed_input_or_scroll_ = true;
@@ -671,6 +683,13 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
   }
   if (type == WebInputEvent::Type::kPointerDown && !is_hovering_pointerdown)
     pointerdown_pending_data_.saw_pointerdown = true;
+
+  if (mousemove_with_button_down)
+    saw_dragged_mousemove_ = mousemove_with_button_down;
+  if (type == WebInputEvent::Type::kMouseUp ||
+      type == WebInputEvent::Type::kMouseDown) {
+    saw_dragged_mousemove_ = false;
+  }
 }
 
 void LayoutShiftTracker::UpdateInputTimestamp(base::TimeTicks timestamp) {
@@ -793,6 +812,10 @@ void LayoutShiftTracker::SendLayoutShiftRectsToHud(
       cc_layer->layer_tree_host()->hud_layer()->SetNeedsPushProperties();
     }
   }
+}
+
+void LayoutShiftTracker::ResetTimerForTesting() {
+  timer_.Stop();
 }
 
 void LayoutShiftTracker::Trace(Visitor* visitor) const {
