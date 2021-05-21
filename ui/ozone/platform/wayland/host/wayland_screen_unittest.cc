@@ -457,7 +457,8 @@ TEST_P(WaylandScreenTest, GetDisplayForAcceleratedWidget) {
   ValidateTheDisplayForWidget(widget, secondary_display.id());
 
   // Leaving the same output twice (check comment in
-  // WaylandWindow::RemoveEnteredOutputId), must be ok and nothing must change.
+  // WaylandWindow::OnEnteredOutputIdRemoved), must be ok and nothing must
+  // change.
   wl_surface_send_leave(surface->resource(), output_->resource());
 
   Sync();

@@ -34,7 +34,6 @@ class OSExchangeData;
 class WaylandConnection;
 class WaylandSubsurface;
 class WaylandWindowDragController;
-class WaylandOutput;
 class WaylandPopup;
 
 using WidgetSubsurfaceSet = base::flat_set<std::unique_ptr<WaylandSubsurface>>;
@@ -113,9 +112,6 @@ class WaylandWindow : public PlatformWindow,
   // factor, the very first entered output is chosen as there is no way to
   // figure out what output the window occupies the most.
   uint32_t GetPreferredEnteredOutputId();
-  const std::vector<WaylandOutput*>& entered_outputs() const {
-    return entered_outputs_;
-  }
 
   // Returns current type of the window.
   PlatformWindowType type() const { return type_; }
@@ -204,13 +200,13 @@ class WaylandWindow : public PlatformWindow,
   // Returns a top most child window within the same hierarchy.
   WaylandWindow* GetTopMostChildWindow();
 
-  // This should be called when a WaylandSurface part of this window becomes
-  // partially or fully within the scanout region of |output|.
-  void AddEnteredOutputId(struct wl_output* output);
+  // Called by the WaylandSurface attached to this window when that surface
+  // becomes partially or fully within the scanout region of |output|.
+  void OnEnteredOutputIdAdded();
 
-  // This should be called when a WaylandSurface part of this window becomes
-  // fully outside of the scanout region of |output|.
-  void RemoveEnteredOutputId(struct wl_output* output);
+  // Called by the WaylandSurface attached to this window when that surface
+  // becomes fully outside of the scanout region of |output|.
+  void OnEnteredOutputIdRemoved();
 
   // Returns true iff this window is opaque.
   bool IsOpaqueWindow() const;
@@ -326,16 +322,6 @@ class WaylandWindow : public PlatformWindow,
 
   // Stores current opacity of the window. Set on ::Initialize call.
   ui::PlatformWindowOpacity opacity_;
-
-  // For top level window, stores outputs that the window is currently rendered
-  // at.
-  //
-  // Not used by popups.  When sub-menus are hidden and shown again, Wayland
-  // 'repositions' them to wrong outputs by sending them leave and enter
-  // events so their list of entered outputs becomes meaningless after they have
-  // been hidden at least once.  To determine which output the popup belongs to,
-  // we ask its parent.
-  std::vector<WaylandOutput*> entered_outputs_;
 
   // The type of the current WaylandWindow object.
   ui::PlatformWindowType type_ = ui::PlatformWindowType::kWindow;

@@ -187,7 +187,7 @@ TEST_P(WaylandWindowManagerTest, GetWindowsOnOutput) {
 
   Sync();
 
-  auto entered_outputs_window1 = window1->entered_outputs();
+  auto entered_outputs_window1 = window1->root_surface()->entered_outputs();
   EXPECT_EQ(1u, entered_outputs_window1.size());
 
   uint32_t output_id = (*entered_outputs_window1.begin())->output_id();

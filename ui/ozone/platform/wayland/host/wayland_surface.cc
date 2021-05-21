@@ -14,6 +14,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
@@ -302,16 +303,37 @@ wl::Object<wl_subsurface> WaylandSurface::CreateSubsurface(
 void WaylandSurface::Enter(void* data,
                            struct wl_surface* wl_surface,
                            struct wl_output* output) {
-  if (auto* root_window = static_cast<WaylandSurface*>(data)->root_window_)
-    root_window->AddEnteredOutputId(output);
+  auto* const surface = static_cast<WaylandSurface*>(data);
+  DCHECK(surface);
+
+  surface->entered_outputs_.emplace_back(
+      static_cast<WaylandOutput*>(wl_output_get_user_data(output)));
+
+  if (surface->root_window_)
+    surface->root_window_->OnEnteredOutputIdAdded();
 }
 
 // static
 void WaylandSurface::Leave(void* data,
                            struct wl_surface* wl_surface,
                            struct wl_output* output) {
-  if (auto* root_window = static_cast<WaylandSurface*>(data)->root_window_)
-    root_window->RemoveEnteredOutputId(output);
+  auto* const surface = static_cast<WaylandSurface*>(data);
+  DCHECK(surface);
+
+  auto entered_outputs_it_ = std::find(
+      surface->entered_outputs_.begin(), surface->entered_outputs_.end(),
+      static_cast<WaylandOutput*>(wl_output_get_user_data(output)));
+  // Workaround: when a user switches physical output between two displays,
+  // a surface does not necessarily receive enter events immediately or until
+  // a user resizes/moves it.  This means that switching output between
+  // displays in a single output mode results in leave events, but the surface
+  // might not have received enter event before.  Thus, remove the id of the
+  // output that the surface leaves only if it was stored before.
+  if (entered_outputs_it_ != surface->entered_outputs_.end())
+    surface->entered_outputs_.erase(entered_outputs_it_);
+
+  if (surface->root_window_)
+    surface->root_window_->OnEnteredOutputIdRemoved();
 }
 
 }  // namespace ui

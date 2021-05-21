@@ -150,7 +150,7 @@ uint32_t WaylandWindow::GetPreferredEnteredOutputId() {
   // It can be either a toplevel window that hasn't entered any outputs yet, or
   // still a non toplevel window that doesn't have a parent (for example, a
   // wl_surface that is being dragged).
-  if (entered_outputs_.empty())
+  if (root_surface_->entered_outputs().empty())
     return 0;
 
   // PlatformWindowType::kPopup are created as toplevel windows as well.
@@ -161,8 +161,8 @@ uint32_t WaylandWindow::GetPreferredEnteredOutputId() {
   // output that has the biggest scale factor. Otherwise, use the very first one
   // that was entered. This way, we can be sure that the contents of the Window
   // are rendered at correct dpi when a user moves the window between displays.
-  auto* preferred_output = *entered_outputs_.begin();
-  for (WaylandOutput* output : entered_outputs_) {
+  auto* preferred_output = *root_surface_->entered_outputs().begin();
+  for (WaylandOutput* output : root_surface_->entered_outputs()) {
     if (output->scale_factor() > preferred_output->scale_factor())
       preferred_output = output;
   }
@@ -560,37 +560,22 @@ WaylandWindow* WaylandWindow::GetRootParentWindow() {
   return parent_window_ ? parent_window_->GetRootParentWindow() : this;
 }
 
-void WaylandWindow::AddEnteredOutputId(struct wl_output* output) {
+void WaylandWindow::OnEnteredOutputIdAdded() {
   // Wayland does weird things for menus so instead of tracking outputs that
   // we entered or left, we take that from the parent window and ignore this
   // event.
   if (AsWaylandPopup())
     return;
-
-  entered_outputs_.emplace_back(
-      static_cast<WaylandOutput*>(wl_output_get_user_data(output)));
 
   UpdateBufferScale(true);
 }
 
-void WaylandWindow::RemoveEnteredOutputId(struct wl_output* output) {
+void WaylandWindow::OnEnteredOutputIdRemoved() {
   // Wayland does weird things for menus so instead of tracking outputs that
   // we entered or left, we take that from the parent window and ignore this
   // event.
   if (AsWaylandPopup())
     return;
-
-  auto entered_outputs_it_ =
-      std::find(entered_outputs_.begin(), entered_outputs_.end(),
-                static_cast<WaylandOutput*>(wl_output_get_user_data(output)));
-  // Workaround: when a user switches physical output between two displays,
-  // a window does not necessarily receive enter events immediately or until
-  // a user resizes/moves the window. It means that switching output between
-  // displays in a single output mode results in leave events, but the surface
-  // might not have received enter event before. Thus, remove the id of left
-  // output only if it was stored before.
-  if (entered_outputs_it_ != entered_outputs_.end())
-    entered_outputs_.erase(entered_outputs_it_);
 
   UpdateBufferScale(true);
 }

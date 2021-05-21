@@ -1794,7 +1794,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   output2->SetRect(gfx::Rect(1921, 0, 1920, 1080));
   Sync();
 
-  auto entered_outputs = window_->entered_outputs();
+  auto entered_outputs = window_->root_surface()->entered_outputs();
   EXPECT_EQ(0u, entered_outputs.size());
 
   // Send the window to |output1|.
@@ -1806,7 +1806,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   Sync();
 
   // The window entered two outputs.
-  entered_outputs = window_->entered_outputs();
+  entered_outputs = window_->root_surface()->entered_outputs();
   EXPECT_EQ(2u, entered_outputs.size());
 
   // The window must prefer the output that it entered first.
@@ -1824,7 +1824,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   Sync();
 
   // The window entered three outputs...
-  entered_outputs = window_->entered_outputs();
+  entered_outputs = window_->root_surface()->entered_outputs();
   EXPECT_EQ(3u, entered_outputs.size());
 
   // but it still must prefer the output that it entered first.
@@ -1836,7 +1836,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   output2->Flush();
   Sync();
 
-  entered_outputs = window_->entered_outputs();
+  entered_outputs = window_->root_surface()->entered_outputs();
   EXPECT_EQ(3u, entered_outputs.size());
 
   // It must be the second entered output now.
@@ -1853,7 +1853,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   Sync();
 
   // It must be the very first output now.
-  entered_outputs = window_->entered_outputs();
+  entered_outputs = window_->root_surface()->entered_outputs();
   expected_entered_output = *entered_outputs.begin();
   EXPECT_EQ(expected_entered_output->output_id(),
             window_->GetPreferredEnteredOutputId());
@@ -1864,7 +1864,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   Sync();
 
   // It must be the very the second output now.
-  entered_outputs = window_->entered_outputs();
+  entered_outputs = window_->root_surface()->entered_outputs();
   expected_entered_output = *(++entered_outputs.begin());
   EXPECT_EQ(expected_entered_output->output_id(),
             window_->GetPreferredEnteredOutputId());
@@ -1875,7 +1875,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   output2->Flush();
   Sync();
 
-  entered_outputs = window_->entered_outputs();
+  entered_outputs = window_->root_surface()->entered_outputs();
   expected_entered_output = *(entered_outputs.begin());
   EXPECT_EQ(expected_entered_output->output_id(),
             window_->GetPreferredEnteredOutputId());
@@ -1906,10 +1906,10 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
   output2->SetRect(gfx::Rect(1921, 0, 1920, 1080));
   Sync();
 
-  auto entered_outputs = window_->entered_outputs();
+  auto entered_outputs = window_->root_surface()->entered_outputs();
   EXPECT_EQ(0u, entered_outputs.size());
 
-  auto menu_entered_outputs = menu_window->entered_outputs();
+  auto menu_entered_outputs = menu_window->root_surface()->entered_outputs();
   EXPECT_EQ(0u, menu_entered_outputs.size());
 
   // Enter |output1|.
@@ -1920,26 +1920,26 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
   Sync();
 
   // The window entered the output.
-  entered_outputs = window_->entered_outputs();
+  entered_outputs = window_->root_surface()->entered_outputs();
   EXPECT_EQ(1u, entered_outputs.size());
 
-  // The menu also things it entered the same output.
-  menu_entered_outputs = menu_window->entered_outputs();
+  // The menu also thinks it entered the same output.
+  menu_entered_outputs = menu_window->root_surface()->entered_outputs();
   EXPECT_EQ(0u, menu_entered_outputs.size());
 
   EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
             menu_window->GetPreferredEnteredOutputId());
 
   // Pretend Wayland sends that menu entered output2, while the toplevel is on
-  // output1. Output1 must still be preferred by the menu.
+  // output1.  Output1 must still be preferred by the menu.
   wl::MockSurface* menu_surface = server_.GetObject<wl::MockSurface>(
       menu_window->root_surface()->GetSurfaceId());
   wl_surface_send_enter(menu_surface->resource(), output1->resource());
   Sync();
 
-  // Nothing should have been changed here.
-  EXPECT_EQ(1u, window_->entered_outputs().size());
-  EXPECT_EQ(0u, menu_window->entered_outputs().size());
+  // The menu surface should be aware of the output that Wayland sent it.
+  EXPECT_EQ(1u, window_->root_surface()->entered_outputs().size());
+  EXPECT_EQ(1u, menu_window->root_surface()->entered_outputs().size());
 
   EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
             menu_window->GetPreferredEnteredOutputId());
@@ -1948,8 +1948,8 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
   wl_surface_send_enter(surface->resource(), output1->resource());
   Sync();
 
-  EXPECT_EQ(2u, window_->entered_outputs().size());
-  EXPECT_EQ(0u, menu_window->entered_outputs().size());
+  EXPECT_EQ(2u, window_->root_surface()->entered_outputs().size());
+  EXPECT_EQ(1u, menu_window->root_surface()->entered_outputs().size());
 
   EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
             menu_window->GetPreferredEnteredOutputId());
@@ -1960,7 +1960,7 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
   Sync();
 
   // It must be the very the second output now.
-  entered_outputs = window_->entered_outputs();
+  entered_outputs = window_->root_surface()->entered_outputs();
   auto* expected_entered_output = *(++entered_outputs.begin());
   EXPECT_EQ(expected_entered_output->output_id(),
             window_->GetPreferredEnteredOutputId());

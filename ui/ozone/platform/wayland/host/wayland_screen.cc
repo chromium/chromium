@@ -166,7 +166,7 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
   // has not received enter surface events yet. Another case is when a user
   // switches between displays in a single output mode - Wayland may not send
   // enter events immediately, which can result in empty container of entered
-  // ids (check comments in WaylandWindow::RemoveEnteredOutputId). In this
+  // ids (check comments in WaylandWindow::OnEnteredOutputIdRemoved). In this
   // case, it's also safe to return the primary display.
   if (entered_output_id == 0)
     return GetPrimaryDisplay();

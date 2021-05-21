@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SURFACE_H_
 
 #include <cstdint>
+#include <vector>
 
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -17,6 +18,7 @@
 namespace ui {
 
 class WaylandConnection;
+class WaylandOutput;
 class WaylandWindow;
 
 // Wrapper of a wl_surface, owned by a WaylandWindow or a WlSubsurface.
@@ -33,6 +35,11 @@ class WaylandSurface {
   zwp_linux_surface_synchronization_v1* surface_sync() const {
     return surface_sync_.get();
   }
+
+  const std::vector<WaylandOutput*>& entered_outputs() const {
+    return entered_outputs_;
+  }
+
   int32_t buffer_scale() const { return buffer_scale_; }
   void set_buffer_scale(int32_t scale) { buffer_scale_ = scale; }
 
@@ -112,6 +119,16 @@ class WaylandSurface {
   wl::Object<wl_surface> surface_;
   wl::Object<wp_viewport> viewport_;
   wl::Object<zwp_linux_surface_synchronization_v1> surface_sync_;
+
+  // For top level window, stores outputs that the window is currently rendered
+  // at.
+  //
+  // Not used by popups.  When sub-menus are hidden and shown again, Wayland
+  // 'repositions' them to wrong outputs by sending them leave and enter
+  // events so their list of entered outputs becomes meaningless after they have
+  // been hidden at least once.  To determine which output the popup belongs to,
+  // we ask its parent.
+  std::vector<WaylandOutput*> entered_outputs_;
 
   // Transformation for how the compositor interprets the contents of the
   // buffer.

@@ -26,6 +26,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
+#include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
@@ -109,15 +110,21 @@ void WaylandDataDragController::StartSession(const OSExchangeData& data,
   // Create drag icon surface (if any) and store the data to be exchanged.
   icon_bitmap_ = GetDragImage(data);
   if (icon_bitmap_) {
-    icon_surface_ = connection_->CreateSurface();
-    wl_surface_set_buffer_scale(icon_surface_.get(),
-                                origin_window_->buffer_scale());
+    icon_surface_ = std::make_unique<WaylandSurface>(connection_, nullptr);
+    if (icon_surface_->Initialize()) {
+      wl_surface_set_buffer_scale(icon_surface_->surface(),
+                                  origin_window_->buffer_scale());
+    } else {
+      LOG(ERROR) << "Failed to create wl_surface";
+      icon_surface_.reset();
+    }
   }
   data_ = std::make_unique<OSExchangeData>(data.provider().Clone());
 
   // Starts the wayland drag session setting |this| object as delegate.
   state_ = State::kStarted;
-  data_device_->StartDrag(*data_source_, *origin_window_, icon_surface_.get(),
+  data_device_->StartDrag(*data_source_, *origin_window_,
+                          icon_surface_ ? icon_surface_->surface() : nullptr,
                           this);
 
   window_manager_->AddObserver(this);
@@ -145,9 +152,10 @@ void WaylandDataDragController::DrawIcon() {
     }
   }
   wl::DrawBitmap(*icon_bitmap_, shm_buffer_.get());
-  wl_surface_attach(icon_surface_.get(), shm_buffer_->get(), 0, 0);
-  wl_surface_damage(icon_surface_.get(), 0, 0, size.width(), size.height());
-  wl_surface_commit(icon_surface_.get());
+  auto* const surface = icon_surface_->surface();
+  wl_surface_attach(surface, shm_buffer_->get(), 0, 0);
+  wl_surface_damage(surface, 0, 0, size.width(), size.height());
+  wl_surface_commit(surface);
 }
 
 void WaylandDataDragController::OnDragOffer(
