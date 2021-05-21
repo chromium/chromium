@@ -8,21 +8,15 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/simple_menu_model.h"
 
-class Browser;
 namespace sharing_hub {
 
-class SharingHubSubMenuModel : public ui::SimpleMenuModel,
-                               public ui::SimpleMenuModel::Delegate {
+class SharingHubSubMenuModel : public ui::SimpleMenuModel {
  public:
-  explicit SharingHubSubMenuModel(Browser* browser);
-
-  // Overridden from ui::SimpleMenuModel::Delegate:
-  bool IsCommandIdEnabled(int command_id) const override;
-  void ExecuteCommand(int command_id, int event_flags) override;
+  SharingHubSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+                         content::WebContents* web_contents);
 
  private:
   void Build(content::WebContents* web_contents);
-  Browser* browser_;
 
   DISALLOW_COPY_AND_ASSIGN(SharingHubSubMenuModel);
 };

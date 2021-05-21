@@ -826,8 +826,8 @@ void AppMenuModel::Build() {
   AddSeparator(ui::UPPER_SEPARATOR);
 
   if (base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu)) {
-    sub_menus_.push_back(
-        std::make_unique<sharing_hub::SharingHubSubMenuModel>(browser_));
+    sub_menus_.push_back(std::make_unique<sharing_hub::SharingHubSubMenuModel>(
+        this, browser_->tab_strip_model()->GetActiveWebContents()));
     AddSubMenuWithStringId(IDC_SHARING_HUB_MENU, IDS_SHARING_HUB_TITLE,
                            sub_menus_.back().get());
   }

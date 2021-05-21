@@ -9,6 +9,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
@@ -28,6 +29,11 @@ void SharingHubModel::GetActionList(content::WebContents* web_contents,
   for (const auto& action : action_list_) {
     if (action.command_id == IDC_SEND_TAB_TO_SELF) {
       if (DoShowSendTabToSelfForWebContents(web_contents)) {
+        list->push_back(action);
+      }
+    } else if (action.command_id == IDC_QRCODE_GENERATOR) {
+      if (qrcode_generator::QRCodeGeneratorBubbleController::
+              IsGeneratorAvailable(web_contents->GetLastCommittedURL())) {
         list->push_back(action);
       }
     } else {

@@ -21,28 +21,11 @@
 
 namespace sharing_hub {
 
-SharingHubSubMenuModel::SharingHubSubMenuModel(Browser* browser)
-    : SimpleMenuModel(this), browser_(browser) {
-  Build(browser_->tab_strip_model()->GetActiveWebContents());
-}
-
-bool SharingHubSubMenuModel::IsCommandIdEnabled(int command_id) const {
-  // TODO crbug.com/1186848 ensure that commands are enabled based on sharing
-  // criteria.
-  return true;
-}
-
-void SharingHubSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
-  GlobalError* error =
-      GlobalErrorServiceFactory::GetForProfile(browser_->profile())
-          ->GetGlobalErrorByMenuItemCommandID(command_id);
-  if (error) {
-    error->ExecuteMenuItem(browser_);
-    return;
-  }
-
-  // TODO crbug.com/1186848  Log metrics per command_id;
-  chrome::ExecuteCommand(browser_, command_id);
+SharingHubSubMenuModel::SharingHubSubMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate,
+    content::WebContents* web_contents)
+    : SimpleMenuModel(delegate) {
+  Build(web_contents);
 }
 
 void SharingHubSubMenuModel::Build(content::WebContents* web_contents) {
