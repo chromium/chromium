@@ -8192,3 +8192,47 @@ proto_library("profile_proto_db_test_proto") {
   sources =
       [ "../browser/persisted_state_db/profile_proto_db_test_proto.proto" ]
 }
+
+# This target is defined for Lacros testing.
+# See //chrome/test/base/chromeos/README.md for more information.
+if (is_chromeos_ash) {
+  assert(use_aura)
+
+  _target_name = "test_ash_chrome"
+  executable(_target_name) {
+    output_name = _target_name
+
+    sources = [
+      "//chrome/app/chrome_exe_main_aura.cc",
+      "//chrome/app/chrome_main_delegate.cc",
+      "//chrome/app/chrome_main_delegate.h",
+      "base/chromeos/fake_ash_test_chrome_browser_main_extra_parts.cc",
+      "base/chromeos/fake_ash_test_chrome_browser_main_extra_parts.h",
+      "base/chromeos/test_chrome_base.cc",
+      "base/chromeos/test_chrome_base.h",
+      "base/chromeos/test_chrome_main.cc",
+    ]
+    deps = [
+      "//chromeos/services/machine_learning/public/cpp:stub",
+
+      # On Linux, link the dependencies (libraries) that make up actual
+      # Chromium functionality directly into the executable.
+      "//chrome:browser_dependencies",
+      "//chrome:child_dependencies",
+
+      # For the sampling profiler.
+      # The way it's currently implemented requires us to keep it, but from a
+      # technical perspective it shouldn't be necessary
+      "//chrome/common/profiler",
+      "//content/public/app",
+
+      # For headless mode.
+      "//headless:headless_shell_lib",
+    ]
+    data = [ "$root_out_dir/resources.pak" ]
+    data_deps = [
+      # The step's output are needed at runtime, so we also need a data_dep.
+      "//chrome:packed_resources",
+    ]
+  }
+}

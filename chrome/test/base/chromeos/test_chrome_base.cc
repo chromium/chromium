@@ -1,0 +1,52 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "test_chrome_base.h"
+
+#include <memory>
+
+#include "base/bind.h"
+#include "base/command_line.h"
+#include "chrome/browser/chrome_browser_main.h"
+#include "chrome/test/base/chromeos/fake_ash_test_chrome_browser_main_extra_parts.h"
+#include "content/public/browser/browser_main_parts.h"
+#include "headless/public/headless_shell.h"
+#include "ui/gfx/switches.h"
+
+namespace test {
+
+TestChromeBase::TestChromeBase(const content::ContentMainParams& params)
+    : params_(params) {
+  auto created_main_parts_closure =
+      std::make_unique<content::CreatedMainPartsClosure>(
+          base::BindOnce(&TestChromeBase::CreatedBrowserMainPartsImpl,
+                         weak_ptr_factory_.GetWeakPtr()));
+  params_.created_main_parts_closure = created_main_parts_closure.release();
+}
+
+TestChromeBase::~TestChromeBase() = default;
+
+int TestChromeBase::Start() {
+  int rv = 0;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless)) {
+    rv = headless::HeadlessShellMain(params_);
+  } else {
+    rv = content::ContentMain(params_);
+  }
+  return rv;
+}
+
+void TestChromeBase::CreatedBrowserMainPartsImpl(
+    content::BrowserMainParts* browser_main_parts) {
+  browser_main_parts_ =
+      static_cast<ChromeBrowserMainParts*>(browser_main_parts);
+  CreateFakeAshTestChromeBrowserMainExtraParts();
+}
+
+void TestChromeBase::CreateFakeAshTestChromeBrowserMainExtraParts() {
+  browser_main_parts_->AddParts(
+      std::make_unique<test::FakeAshTestChromeBrowserMainExtraParts>());
+}
+
+}  // namespace test
