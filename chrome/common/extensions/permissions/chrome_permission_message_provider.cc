@@ -9,7 +9,6 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/common/extensions_client.h"

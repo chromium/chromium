@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <string>
 
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_animation_state.h"

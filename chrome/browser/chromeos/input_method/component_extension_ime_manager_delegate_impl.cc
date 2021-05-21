@@ -14,7 +14,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"

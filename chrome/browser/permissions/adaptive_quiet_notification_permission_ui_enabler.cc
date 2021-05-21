@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"

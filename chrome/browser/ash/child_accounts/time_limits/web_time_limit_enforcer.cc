@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_allowlist_policy_wrapper.h"

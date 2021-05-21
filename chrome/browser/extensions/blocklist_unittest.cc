@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
 #include "chrome/browser/extensions/fake_safe_browsing_database_manager.h"

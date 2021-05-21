@@ -11,7 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"

@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"

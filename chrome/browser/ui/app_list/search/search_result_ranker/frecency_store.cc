@@ -9,8 +9,8 @@
 #include <limits>
 #include <utility>
 
+#include "base/check.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/frecency_store.pb.h"
 
 namespace app_list {

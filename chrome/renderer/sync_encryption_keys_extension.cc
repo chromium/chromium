@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"

@@ -10,7 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"

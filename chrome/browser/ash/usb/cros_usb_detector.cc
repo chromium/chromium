@@ -13,7 +13,6 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"

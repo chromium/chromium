@@ -21,7 +21,6 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/values.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_views.h"
 
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"

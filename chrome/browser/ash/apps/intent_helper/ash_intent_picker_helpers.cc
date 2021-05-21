@@ -10,7 +10,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/stl_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"

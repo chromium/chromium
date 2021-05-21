@@ -8,7 +8,6 @@
 
 #include <vector>
 
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"

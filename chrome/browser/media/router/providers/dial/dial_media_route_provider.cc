@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/data_decoder_util.h"

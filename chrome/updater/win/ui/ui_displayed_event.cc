@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/ui/constants.h"
 #include "chrome/updater/win/util.h"

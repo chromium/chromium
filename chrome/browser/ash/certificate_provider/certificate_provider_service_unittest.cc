@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"

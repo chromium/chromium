@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "chrome/browser/expired_flags_list.h"
 #include "chrome/browser/unexpire_flags_gen.h"
 #include "chrome/common/chrome_version.h"

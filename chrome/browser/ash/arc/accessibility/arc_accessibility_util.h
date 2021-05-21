@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/stl_util.h"
 #include "components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enum_util.h"

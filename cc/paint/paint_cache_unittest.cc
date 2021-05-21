@@ -4,7 +4,6 @@
 
 #include "cc/paint/paint_cache.h"
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {

@@ -7,7 +7,6 @@
 #include <array>
 #include <memory>
 
-#include "base/stl_util.h"
 #include "chrome/browser/chromeos/power/ml/user_activity_event.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

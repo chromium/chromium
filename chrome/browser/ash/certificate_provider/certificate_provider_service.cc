@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/task_runner.h"
 #include "base/task_runner_util.h"

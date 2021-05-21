@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
 #include "chrome/browser/chromeos/input_method/textinput_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"

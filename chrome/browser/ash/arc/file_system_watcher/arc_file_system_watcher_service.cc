@@ -17,7 +17,6 @@
 #include "base/files/file_path_watcher.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

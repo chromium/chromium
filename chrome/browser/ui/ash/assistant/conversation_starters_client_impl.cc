@@ -11,7 +11,6 @@
 #include "ash/public/cpp/assistant/conversation_starter.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/assistant/conversation_starters_parser.h"

@@ -17,7 +17,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"

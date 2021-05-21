@@ -14,7 +14,6 @@
 #include "ash/public/cpp/ash_features.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

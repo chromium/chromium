@@ -7,7 +7,6 @@
 #include <set>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
 #include "chrome/browser/video_tutorials/internal/config.h"
 #include "chrome/browser/video_tutorials/prefs.h"
 #include "components/prefs/pref_service.h"

@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"

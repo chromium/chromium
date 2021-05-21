@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/animation_events.h"

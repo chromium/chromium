@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/stl_util.h"
 
 // static
 constexpr int ThumbnailSchedulerImpl::kMaxTotalCaptures;

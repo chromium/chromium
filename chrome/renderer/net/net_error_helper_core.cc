@@ -14,7 +14,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "components/error_page/common/localized_error.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_thread.h"

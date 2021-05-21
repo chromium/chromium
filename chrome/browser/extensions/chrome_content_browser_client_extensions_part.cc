@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"

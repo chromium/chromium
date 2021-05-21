@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/stl_util.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/json/json_writer.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/supervised_user/child_accounts/kids_management_api.h"

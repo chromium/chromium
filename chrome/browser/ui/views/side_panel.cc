@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/side_panel.h"
 
-#include "base/stl_util.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"

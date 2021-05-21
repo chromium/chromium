@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "base/stl_util.h"
 
 namespace chromeos {
 namespace power {

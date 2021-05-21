@@ -10,7 +10,6 @@
 
 #include "base/hash/hash.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/tab.h"

@@ -10,7 +10,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

@@ -5,7 +5,6 @@
 #include "chrome/browser/media_galleries/win/portable_device_map_service.h"
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace {

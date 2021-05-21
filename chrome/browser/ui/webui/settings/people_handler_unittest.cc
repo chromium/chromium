@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "build/build_config.h"

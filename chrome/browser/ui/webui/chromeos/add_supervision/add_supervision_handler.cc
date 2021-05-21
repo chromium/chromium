@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/stl_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"

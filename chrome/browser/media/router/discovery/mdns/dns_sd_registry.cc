@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/stl_util.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"  // nogncheck
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_device_lister.h"
 #include "chrome/common/buildflags.h"

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"

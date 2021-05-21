@@ -18,7 +18,6 @@
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"

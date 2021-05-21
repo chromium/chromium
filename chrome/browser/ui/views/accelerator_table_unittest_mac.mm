@@ -6,7 +6,6 @@
 
 #include <set>
 
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #import "chrome/browser/global_keyboard_shortcuts_mac.h"

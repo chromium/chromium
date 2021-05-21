@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/observer_list.h"
-#include "base/stl_util.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "chrome/browser/chromeos/printing/usb_printer_notification_controller.h"
 
 namespace chromeos {

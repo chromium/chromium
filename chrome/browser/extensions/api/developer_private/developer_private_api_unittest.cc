@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/error_console/error_console.h"

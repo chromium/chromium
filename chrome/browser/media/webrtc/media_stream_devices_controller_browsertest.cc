@@ -9,7 +9,6 @@
 #include "base/callback.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/camera_pan_tilt_zoom_permission_context.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"

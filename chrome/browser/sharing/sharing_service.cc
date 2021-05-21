@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_constants.h"

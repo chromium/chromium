@@ -28,7 +28,6 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

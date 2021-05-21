@@ -8,7 +8,6 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"

@@ -14,7 +14,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/task/post_task.h"
 #include "base/threading/scoped_blocking_call.h"

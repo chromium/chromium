@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

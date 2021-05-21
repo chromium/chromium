@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
 #import "chrome/browser/app_controller_mac.h"

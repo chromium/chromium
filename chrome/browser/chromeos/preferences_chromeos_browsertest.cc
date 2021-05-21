@@ -8,7 +8,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "base/command_line.h"
-#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"

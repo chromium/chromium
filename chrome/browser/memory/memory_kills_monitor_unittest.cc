@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/memory/memory_kills_histogram.h"
 #include "content/public/test/browser_task_environment.h"

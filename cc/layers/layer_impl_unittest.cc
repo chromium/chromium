@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/stl_util.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/paint/filter_operation.h"

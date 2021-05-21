@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 
-#include "base/stl_util.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_service.h"
 #include "chrome/browser/extensions/extension_util.h"

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
 #include "chrome/browser/ssl/insecure_sensitive_input_driver.h"
 #include "components/security_state/content/ssl_status_input_event_data.h"
 #include "content/public/browser/navigation_entry.h"
