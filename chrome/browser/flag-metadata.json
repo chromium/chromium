@@ -4849,7 +4849,7 @@
   {
     "name" : "side-panel",
     "owners": [ "chrome-desktop-ui-sea@google.com", "pbos" ],
-    "expiry_milestone" : 92
+    "expiry_milestone" : 96
   },
   {
     "name": "silent-debugger-extension-api",
