@@ -47,5 +47,6 @@ public class TabWindowManagerSingleton {
     @VisibleForTesting
     public static void resetTabModelSelectorFactoryForTesting() {
         sInstance = null;
+        sSelectorFactoryForTesting = null;
     }
 }

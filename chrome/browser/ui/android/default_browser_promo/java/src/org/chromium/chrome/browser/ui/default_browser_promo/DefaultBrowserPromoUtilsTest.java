@@ -75,6 +75,9 @@ public class DefaultBrowserPromoUtilsTest {
         List<ResolveInfo> infoList = new ArrayList<>();
         ShadowPackageManager packageManager =
                 Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
+        // Setting android_manifest in the junit_binary build rule causes the current package to
+        // appear in the PackageManager.
+        packageManager.deletePackage(RuntimeEnvironment.application.getPackageName());
 
         DefaultBrowserPromoDeps deps = DefaultBrowserPromoDeps.getInstance();
         infoList.add(createResolveInfo(DefaultBrowserPromoDeps.CHROME_STABLE_PACKAGE_NAME, 1));

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
@@ -150,5 +151,12 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
         for (ButtonDataObserver observer : mObservers) {
             observer.buttonDataChanged(canShowHint);
         }
+    }
+
+    /** Returns the {@link ButtonDataProvider} used in a single-variant mode. */
+    @Nullable
+    @VisibleForTesting
+    public ButtonDataProvider getSingleProviderForTesting() {
+        return mSingleProvider;
     }
 }

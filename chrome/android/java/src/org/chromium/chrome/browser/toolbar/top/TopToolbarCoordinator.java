@@ -700,14 +700,19 @@ public class TopToolbarCoordinator implements Toolbar {
         }
     }
 
-    /**
-     * @return The {@link ToolbarLayout} that constitutes the toolbar.
-     */
+    /** Returns the {@link OptionalBrowsingModeButtonController}. */
+    @VisibleForTesting
+    public OptionalBrowsingModeButtonController getOptionalButtonControllerForTesting() {
+        return mOptionalButtonController;
+    }
+
+    /** Returns the {@link ToolbarLayout} that constitutes the toolbar. */
     @VisibleForTesting
     public ToolbarLayout getToolbarLayoutForTesting() {
         return mToolbarLayout;
     }
 
+    /** Returns the {@link StartSurfaceToolbarCoordinator}. */
     @VisibleForTesting
     public StartSurfaceToolbarCoordinator getStartSurfaceToolbarForTesting() {
         return mStartSurfaceToolbarCoordinator;

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -79,7 +80,9 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         }
 
         public boolean isValid() {
-            return surfaceHolder().getSurface().isValid();
+            Surface surface = surfaceHolder().getSurface();
+            if (surface == null) return false;
+            return surface.isValid();
         }
 
         // Attach to |parent|, such that isAttached() will be correct immediately.  Otherwise,
