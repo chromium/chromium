@@ -106,6 +106,21 @@ SessionStorageManager* GetOrCreateSessionStorage(
   return session_manager;
 }
 
+// Returns a nested dictionary Value converted from a ValueChange.
+base::Value ValueChangeToValue(
+    std::vector<SessionStorageManager::ValueChange> changes) {
+  base::Value changes_value(base::Value::Type::DICTIONARY);
+  for (auto& change : changes) {
+    base::Value change_value(base::Value::Type::DICTIONARY);
+    if (change.old_value.has_value())
+      change_value.SetKey("oldValue", std::move(change.old_value.value()));
+    if (change.new_value)
+      change_value.SetKey("newValue", change.new_value->Clone());
+    changes_value.SetKey(change.key, std::move(change_value));
+  }
+  return changes_value;
+}
+
 }  // namespace
 
 // SettingsFunction
@@ -129,6 +144,7 @@ bool SettingsFunction::ShouldSkipQuotaLimiting() const {
 ExtensionFunction::ResponseAction SettingsFunction::Run() {
   std::string storage_area_string;
   EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &storage_area_string));
+
   args_->Remove(0, nullptr);
   storage_area_ = StorageAreaFromString(storage_area_string);
   EXTENSION_FUNCTION_VALIDATE(storage_area_ != StorageAreaNamespace::kInvalid);
@@ -136,8 +152,6 @@ ExtensionFunction::ResponseAction SettingsFunction::Run() {
   // Session is the only storage area that does not use ValueStore, and will
   // return synchronously.
   if (storage_area_ == StorageAreaNamespace::kSession) {
-    // TODO(crbug.com/1185226): Get observers to dispatch OnChanged event after
-    // creating OnChangedEventSession in the observer.
     return RespondNow(RunInSession());
   }
 
@@ -203,6 +217,17 @@ ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
   }
 
   return NoArguments();
+}
+
+void SettingsFunction::OnSessionSettingsChanged(
+    std::vector<SessionStorageManager::ValueChange> changes) {
+  if (!changes.empty()) {
+    scoped_refptr<SettingsObserverList> observers =
+        StorageFrontend::Get(browser_context())->GetObservers();
+    observers->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
+                      extension_id(), storage_area_,
+                      ValueChangeToValue(std::move(changes)));
+  }
 }
 
 ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
@@ -356,11 +381,7 @@ ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunInSession() {
         "Session storage quota bytes exceeded. Values were not stored.");
   }
 
-  if (!changes.empty()) {
-    // TODO(crbug.com/1185226): Notify changes after creating
-    // OnChangedEventSession in the observer.
-  }
-
+  OnSessionSettingsChanged(std::move(changes));
   return NoArguments();
 }
 

@@ -497,6 +497,7 @@ enum HistogramValue {
   FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG = 475,
   TTS_ENGINE_ON_SPEAK_WITH_AUDIO_STREAM = 476,
   ACCESSIBILITY_PRIVATE_ON_SHOW_CHROMEVOX_TUTORIAL = 477,
+  STORAGE_SESSION_ON_CHANGE = 478,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

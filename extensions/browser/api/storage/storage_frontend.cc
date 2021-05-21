@@ -48,14 +48,11 @@ events::HistogramValue StorageAreaToEventHistogram(
     case StorageAreaNamespace::kManaged:
       return events::STORAGE_MANAGED_ON_CHANGE;
     case StorageAreaNamespace::kSession:
-      // TODO(emiliapaz): Update after onChangedEvent is implemented for
-      // `session`.
-      break;
+      return events::STORAGE_SESSION_ON_CHANGE;
     case StorageAreaNamespace::kInvalid:
-      break;
+      NOTREACHED();
+      return events::UNKNOWN;
   }
-  NOTREACHED();
-  return events::UNKNOWN;
 }
 
 // Settings change Observer which forwards changes on to the extension

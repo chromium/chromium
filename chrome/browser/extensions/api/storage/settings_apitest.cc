@@ -349,27 +349,42 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest, SplitModeIncognito) {
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
+// TODO(crbug.com/1185226): Change parent class to `ExtensionSettingsApiTest`
+// when chrome.storage.session is released in stable.
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest,
                        OnChangedNotificationsBetweenBackgroundPages) {
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.
-  ResultCatcher catcher, catcher_incognito;
+  ResultCatcher catcher;
+  ResultCatcher catcher_incognito;
   catcher.RestrictToBrowserContext(browser()->profile());
   catcher_incognito.RestrictToBrowserContext(
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
+  StorageAreaNamespace storage_areas[2] = {StorageAreaNamespace::kSync,
+                                           StorageAreaNamespace::kSession};
   LoadAndReplyWhenSatisfied(StorageAreaNamespace::kSync,
                             "assertNoNotifications", "assertNoNotifications",
                             "split_incognito");
-  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "noop", "setFoo");
-  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertAddFooNotification",
-                     "assertAddFooNotification");
-  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "clearNotifications",
-                     "clearNotifications");
-  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "removeFoo", "noop");
-  FinalReplyWhenSatisfied(StorageAreaNamespace::kSync,
-                          "assertDeleteFooNotification",
-                          "assertDeleteFooNotification");
+  for (const StorageAreaNamespace& storage_area : storage_areas) {
+    ReplyWhenSatisfied(storage_area, "assertNoNotifications",
+                       "assertNoNotifications");
+    ReplyWhenSatisfied(storage_area, "noop", "setFoo");
+    ReplyWhenSatisfied(storage_area, "assertAddFooNotification",
+                       "assertAddFooNotification");
+    // TODO(crbug.com/1185226): Skip next parts of the test for `session` since
+    // not all SettingFunction's are implemented.
+    if (storage_area == StorageAreaNamespace::kSession) {
+      FinalReplyWhenSatisfied(storage_area, "clearNotifications",
+                              "clearNotifications");
+      break;
+    }
+    ReplyWhenSatisfied(storage_area, "clearNotifications",
+                       "clearNotifications");
+    ReplyWhenSatisfied(storage_area, "removeFoo", "noop");
+    ReplyWhenSatisfied(storage_area, "assertDeleteFooNotification",
+                       "assertDeleteFooNotification");
+  }
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();
@@ -401,8 +416,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest,
                      "assertNoNotifications");
   ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertEmpty",
                      "assertEmpty");
-  // TODO(crbug.com/1185226): Assert no notifications when onChangedEvent
-  // implemented for 'session'.
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertNoNotifications",
+                     "assertNoNotifications");
 
   ReplyWhenSatisfied(StorageAreaNamespace::kSync, "clearNotifications",
                      "clearNotifications");
@@ -416,16 +431,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest,
                      "assertNoNotifications");
   ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertEmpty",
                      "assertEmpty");
-  // TODO(crbug.com/1185226): Assert no notifications when onChangedEvent
-  // implemented for 'session'.
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertNoNotifications",
+                     "assertNoNotifications");
 
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "clearNotifications",
                      "clearNotifications");
 
   ReplyWhenSatisfied(StorageAreaNamespace::kSession, "setFoo", "noop");
   ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertFoo", "assertFoo");
-  // TODO(crbug.com/1185226): Assert add notification when onChangedEvent
-  // implemented for 'session'.
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertAddFooNotification",
+                     "assertAddFooNotification");
   ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertFoo", "assertFoo");
   ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertNoNotifications",
                      "assertNoNotifications");
@@ -433,8 +448,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest,
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertNoNotifications",
                      "assertNoNotifications");
 
-  // TODO(crbug.com/1185226): Clear notifications when onChangedEvent
-  // implemented for 'session'.
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "clearNotifications",
+                     "clearNotifications");
 
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "noop", "removeFoo");
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertEmpty",
@@ -446,8 +461,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest,
   ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertNoNotifications",
                      "assertNoNotifications");
   ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertFoo", "assertFoo");
-  // TODO(crbug.com/1185226): Assert no notifications when onChangedEvent
-  // implemented for 'session'.
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertNoNotifications",
+                     "assertNoNotifications");
 
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "clearNotifications",
                      "clearNotifications");
@@ -460,10 +475,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest,
                      "assertEmpty");
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertNoNotifications",
                      "assertNoNotifications");
-  FinalReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertFoo",
-                          "assertFoo");
-  // TODO(crbug.com/1185226): Assert no notifications when onChangedEvent
-  // implemented for 'session'.
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertFoo", "assertFoo");
+  FinalReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertNoNotifications",
+                          "assertNoNotifications");
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();

@@ -149,4 +149,7 @@ chrome.test.runTests([
   function testSessionGet() {
     testGetStorage(chrome.storage.session, sessionKey, sessionValue);
   },
+  function testSessionOnStorageChanged() {
+    testOnStorageChanged(chrome.storage.session);
+  },
 ]);

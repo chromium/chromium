@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-['sync', 'local'].forEach(function(namespace) {
+['sync', 'local', 'session'].forEach(function(namespace) {
   chrome.storage[namespace].notifications = {};
   chrome.storage.onChanged.addListener(function(changes, event_namespace) {
     if (event_namespace == namespace) {

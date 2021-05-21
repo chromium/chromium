@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
+#include "extensions/browser/api/storage/session_storage_manager.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/extension_function.h"
@@ -43,6 +44,10 @@ class SettingsFunction : public ExtensionFunction {
   //   appropriate, and return no arguments.
   // - If the |result| failed will return an error object.
   ResponseValue UseWriteResult(ValueStore::WriteResult result);
+
+  // Notifies the given `changes`, if non empty, to the observer.
+  void OnSessionSettingsChanged(
+      std::vector<SessionStorageManager::ValueChange> changes);
 
  private:
   // Called via PostTask from Run. Calls RunWithStorage and then

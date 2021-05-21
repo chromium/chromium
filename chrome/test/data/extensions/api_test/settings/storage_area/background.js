@@ -27,6 +27,11 @@ var storageAreaOnChanged = function() {
                            'storage update');
   });
 
+  chrome.storage.session.onChanged.addListener(function(changes, namespace) {
+    chrome.test.notifyFail(
+        'session.onChanged should not be called when local storage update');
+  });
+
   localStorageArea.set({key: 'value'});
 };
 
