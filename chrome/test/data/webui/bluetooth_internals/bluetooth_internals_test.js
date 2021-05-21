@@ -92,13 +92,13 @@ suite('bluetooth_internals', function() {
     var nameForDisplayColumn = deviceRow.children[0];
     var addressColumn = deviceRow.children[1];
     var rssiColumn = deviceRow.children[2];
-    var servicesColumn = deviceRow.children[3];
+    var serviceUuidsColumn = deviceRow.children[3];
     var manufacturerDataColumn = deviceRow.children[4];
 
     expectTrue(!!nameForDisplayColumn);
     expectTrue(!!addressColumn);
     expectTrue(!!rssiColumn);
-    expectTrue(!!servicesColumn);
+    expectTrue(!!serviceUuidsColumn);
     expectTrue(!!manufacturerDataColumn);
 
     adapterBroker.deviceChanged(deviceInfo);
@@ -110,11 +110,10 @@ suite('bluetooth_internals', function() {
       expectEquals(String(deviceInfo.rssi.value), rssiColumn.textContent);
     }
 
-    if (deviceInfo.services) {
+    if (deviceInfo.serviceUuids) {
       expectEquals(
-          String(deviceInfo.services.length), servicesColumn.textContent);
-    } else {
-      expectEquals('Unknown', servicesColumn.textContent);
+          formatServiceUuids(deviceInfo.serviceUuids),
+          serviceUuidsColumn.textContent);
     }
 
     if (deviceInfo.manufacturerDataMap) {
@@ -122,6 +121,18 @@ suite('bluetooth_internals', function() {
           formatManufacturerDataMap(deviceInfo.manufacturerDataMap),
           manufacturerDataColumn.textContent);
     }
+  }
+
+  /**
+   * Format in a user readable way service UUIDs.
+   * @param ?Array<bluetooth.mojom.UUID> uuids
+   * @return {string}
+   */
+  function formatServiceUuids(serviceUuids) {
+    if (!serviceUuids) {
+      return '';
+    }
+    return serviceUuids.map(service => service.uuid).join(', ');
   }
 
   /**
@@ -206,7 +217,10 @@ suite('bluetooth_internals', function() {
     var newDeviceInfo = fakeDeviceInfo1();
     newDeviceInfo.nameForDisplay = 'DDDD';
     newDeviceInfo.rssi = {value: -20};
-    newDeviceInfo.services = ['service1', 'service2', 'service3'];
+    newDeviceInfo.serviceUuids = [
+      {uuid: '00002a05-0000-1000-8000-00805f9b34fb'},
+      {uuid: '0000180d-0000-1000-8000-00805f9b34fb'}
+    ];
 
     changeDevice(newDeviceInfo);
   });
@@ -225,7 +239,10 @@ suite('bluetooth_internals', function() {
     var newDeviceInfo = fakeDeviceInfo3();
     newDeviceInfo.nameForDisplay = 'DDDD';
     newDeviceInfo.rssi = {value: -20};
-    newDeviceInfo.services = ['service1', 'service2', 'service3'];
+    newDeviceInfo.serviceUuids = [
+      {uuid: '00002a05-0000-1000-8000-00805f9b34fb'},
+      {uuid: '0000180d-0000-1000-8000-00805f9b34fb'}
+    ];
 
     changeDevice(newDeviceInfo);
     changeDevice(originalDeviceInfo);
@@ -477,7 +494,7 @@ suite('bluetooth_internals', function() {
      'address',
      'isGattConnected',
      'rssi.value',
-     'services.length',
+     'serviceUuids',
      'manufacturerDataMap',
     ].forEach(function(propName) {
       var valueCell =
@@ -493,6 +510,8 @@ suite('bluetooth_internals', function() {
 
       if (propName === 'isGattConnected') {
         value = value ? 'Connected' : 'Not Connected';
+      } else if (propName === 'serviceUuids') {
+        value = formatServiceUuids(value);
       } else if (propName === 'manufacturerDataMap') {
         value = formatManufacturerDataMap(value);
       }

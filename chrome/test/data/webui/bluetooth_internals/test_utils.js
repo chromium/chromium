@@ -204,10 +204,10 @@ export function fakeDeviceInfo1() {
     name: 'AAA',
     nameForDisplay: 'AAA',
     rssi: {value: -40},
+    serviceUuids: [{uuid: '00002a05-0000-1000-8000-00805f9b34fb'}],
     isGattConnected: false,
     manufacturerDataMap: {'1': [1, 2], '2': [3, 4]},
     serviceDataMap: {},
-    services: [],
   };
 }
 
@@ -221,16 +221,16 @@ export function fakeDeviceInfo2() {
     name: 'BBB',
     nameForDisplay: 'BBB',
     rssi: null,
+    serviceUuids: [],
     isGattConnected: false,
     manufacturerDataMap: {},
     serviceDataMap: {},
-    services: [],
   };
 }
 
 /**
  * Returns a copy of fake device info object. The returned device info lack
- * rssi and services properties.
+ * rssi and serviceUuids properties.
  * @return {!Object}
  */
 export function fakeDeviceInfo3() {

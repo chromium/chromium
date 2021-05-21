@@ -67,6 +67,9 @@ struct DeviceInfo {
   string address;
   bool is_gatt_connected;
   RSSIWrapper? rssi;
+  // Returns the list of service UUIDs that the device supports.
+  // See device::BluetoothDevice::GetUUIDs().
+  array<UUID> service_uuids;
 
   // Important: the blobs associated with each key are arbitrary and untrusted.
   // Please refer to the note on "The Rule of 2" at the top of this file.

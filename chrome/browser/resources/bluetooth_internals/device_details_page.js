@@ -12,7 +12,7 @@ import {$} from 'chrome://resources/js/util.m.js';
 
 import {connectToDevice} from './device_broker.js';
 import {ConnectionStatus} from './device_collection.js';
-import {formatManufacturerDataMap} from './device_utils.js';
+import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';
 import {ObjectFieldSet} from './object_fieldset.js';
 import {Page} from './page.js';
 import {ServiceList} from './service_list.js';
@@ -27,7 +27,7 @@ const PROPERTY_NAMES = {
   address: 'Address',
   isGattConnected: 'GATT Connected',
   'rssi.value': 'Latest RSSI',
-  'services.length': 'Services',
+  serviceUuids: 'Services',
   manufacturerDataMap: 'Manufacturer Data',
 };
 
@@ -156,17 +156,13 @@ export class DeviceDetailsPage extends Page {
     const connectedText = isConnected ? 'Connected' : 'Not Connected';
 
     const rssi = this.deviceInfo.rssi || {};
-    const services = this.services;
 
     let rssiValue = 'Unknown';
     if (rssi.value != null && rssi.value <= 0) {
       rssiValue = rssi.value;
     }
 
-    let serviceCount = 'Unknown';
-    if (services != null && services.length >= 0) {
-      serviceCount = services.length;
-    }
+    const serviceUuidsText = formatServiceUuids(this.deviceInfo.serviceUuids);
 
     const manufacturerDataMapText =
         formatManufacturerDataMap(this.deviceInfo.manufacturerDataMap);
@@ -176,7 +172,7 @@ export class DeviceDetailsPage extends Page {
       address: this.deviceInfo.address,
       isGattConnected: connectedText,
       'rssi.value': rssiValue,
-      'services.length': serviceCount,
+      serviceUuids: serviceUuidsText,
       manufacturerDataMap: manufacturerDataMapText,
     };
 

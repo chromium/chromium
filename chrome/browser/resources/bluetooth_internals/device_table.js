@@ -10,14 +10,14 @@ import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
 import {DeviceCollection} from './device_collection.js';
-import {formatManufacturerDataMap} from './device_utils.js';
+import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';
 
 const COLUMNS = {
   NAME: 0,
   ADDRESS: 1,
   RSSI: 2,
   MANUFACTURER_DATA: 3,
-  SERVICES: 4,
+  SERVICE_UUIDS: 4,
   CONNECTION_STATE: 5,
   LINKS: 6,
 };
@@ -232,6 +232,8 @@ DeviceTable.prototype = {
 
       if (propName == 'isGattConnected') {
         obj = obj ? 'Connected' : 'Not Connected';
+      } else if (propName == 'serviceUuids') {
+        obj = formatServiceUuids(obj);
       } else if (propName == 'manufacturerDataMap') {
         obj = formatManufacturerDataMap(obj);
       }
