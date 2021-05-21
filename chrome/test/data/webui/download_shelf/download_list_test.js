@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DownloadListElement} from 'chrome://download-shelf.top-chrome/download_list.js';
-import {DangerType, DownloadItem, DownloadMode, DownloadState, MixedContentStatus} from 'chrome://download-shelf.top-chrome/download_shelf.mojom-webui.js';
-import {DownloadShelfApiProxyImpl} from 'chrome://download-shelf.top-chrome/download_shelf_api_proxy.js';
+import {DangerType, DownloadItem, DownloadListElement, DownloadMode, DownloadShelfApiProxyImpl, DownloadState, MixedContentStatus} from 'chrome://download-shelf.top-chrome/download_shelf.js';
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';

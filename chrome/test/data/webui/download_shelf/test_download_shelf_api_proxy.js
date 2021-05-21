@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DownloadItem, PageCallbackRouter, PageRemote} from 'chrome://download-shelf.top-chrome/download_shelf.mojom-webui.js';
-import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from 'chrome://download-shelf.top-chrome/download_shelf_api_proxy.js';
+import {DownloadItem, DownloadShelfApiProxy, DownloadShelfApiProxyImpl, PageCallbackRouter, PageRemote} from 'chrome://download-shelf.top-chrome/download_shelf.js';
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 
 /** @implements {DownloadShelfApiProxy} */

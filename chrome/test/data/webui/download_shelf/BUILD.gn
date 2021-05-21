@@ -27,6 +27,7 @@ js_library("download_list_test") {
   deps = [
     ":test_download_shelf_api_proxy",
     "..:chai_assert",
+    "//chrome/browser/resources/download_shelf:download_shelf",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -34,7 +35,7 @@ js_library("download_list_test") {
 js_library("test_download_shelf_api_proxy") {
   deps = [
     "..:test_browser_proxy.m",
-    "//chrome/browser/resources/download_shelf:app",
+    "//chrome/browser/resources/download_shelf:download_shelf",
     "//chrome/browser/ui/webui/download_shelf:mojo_bindings_js_library_for_compile",
   ]
 }

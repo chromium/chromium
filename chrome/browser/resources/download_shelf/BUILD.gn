@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
@@ -15,28 +16,65 @@ preprocess_manifest = "preprocessed_manifest.json"
 preprocess_web_components_manifest = "preprocessed_gen_manifest.json"
 preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 
+if (optimize_webui) {
+  build_manifest = "build_manifest.json"
+
+  optimize_webui("build") {
+    host = "download-shelf.top-chrome"
+    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    js_out_files = [ "download_shelf.rollup.js" ]
+    js_module_in_files = [ "download_shelf.js" ]
+    out_manifest = "$target_gen_dir/$build_manifest"
+
+    excludes = [
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
+      "chrome://resources/mojo/mojo/public/js/bindings.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
+    ]
+
+    deps = [
+      ":preprocess",
+      ":preprocess_mojo",
+      ":preprocess_web_components",
+      "../../../../ui/webui/resources:preprocess",
+    ]
+  }
+}
+
 generate_grd("build_grd") {
   grd_prefix = "download_shelf"
   out_grd = "$target_gen_dir/resources.grd"
   input_files = [ "download_shelf.html" ]
   input_files_base_dir = rebase_path(".", "//")
-  deps = [
-    ":preprocess",
-    ":preprocess_mojo",
-    ":preprocess_web_components",
-  ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_manifest",
-    "$target_gen_dir/$preprocess_mojo_manifest",
-    "$target_gen_dir/$preprocess_web_components_manifest",
-  ]
+
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [ "download_shelf.rollup.js|download_shelf.js" ]
+  } else {
+    deps = [
+      ":preprocess",
+      ":preprocess_mojo",
+      ":preprocess_web_components",
+    ]
+    manifest_files = [
+      "$target_gen_dir/$preprocess_manifest",
+      "$target_gen_dir/$preprocess_mojo_manifest",
+      "$target_gen_dir/$preprocess_web_components_manifest",
+    ]
+  }
 }
 
 preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [ "download_shelf_api_proxy.js" ]
+  in_files = [
+    "download_shelf_api_proxy.js",
+    "download_shelf.js",
+  ]
 }
 
 preprocess_if_expr("preprocess_mojo") {
@@ -134,6 +172,10 @@ js_library("app") {
     "//ui/webui/resources/js:custom_element",
     "//ui/webui/resources/js:icon.m",
   ]
+}
+
+js_library("download_shelf") {
+  deps = [ ":app" ]
 }
 
 html_to_js("web_components") {
