@@ -73,14 +73,6 @@ class WebCursor;
 class WebContentsAccessibility;
 class DelegatedFrameHost;
 
-// The TooltipObserver is used in browser tests only.
-class CONTENT_EXPORT TooltipObserver {
- public:
-  virtual ~TooltipObserver() = default;
-
-  virtual void OnTooltipTextUpdated(const std::u16string& tooltip_text) = 0;
-};
-
 // Basic implementation shared by concrete RenderWidgetHostView subclasses.
 class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
  public:
