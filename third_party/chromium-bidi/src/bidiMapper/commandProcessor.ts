@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import { IServer } from './utils/iServer';
-import Context from './domains/browsingContext';
+import { Context, BrowsingContextProcessor } from './domains/browsingContext';
 
 export class CommandProcessor {
   private _cdpServer: IServer;
   private _bidiServer: IServer;
   private _selfTargetId: string;
+  private _contextProcessor: BrowsingContextProcessor;
 
   static run(cdpServer: IServer, bidiServer: IServer, selfTargetId: string) {
     const commandProcessor = new CommandProcessor(
@@ -42,18 +43,23 @@ export class CommandProcessor {
   }
 
   private run() {
-    this._cdpServer.setOnMessage(this._onCdpMessage);
-    this._bidiServer.setOnMessage(this._onBidiMessage);
+    this._contextProcessor = new BrowsingContextProcessor(
+      this._cdpServer,
+      this._selfTargetId,
+      (t: Context) => {
+        return this._onContextCreated(t);
+      },
+      (t: Context) => {
+        return this._onContextDestroyed(t);
+      }
+    );
 
-    Context.selfTargetId = this._selfTargetId;
-    Context.cdpServer = this._cdpServer;
-
-    Context.onContextCreated = (t: Context) => {
-      return this._onContextCreated(t);
-    };
-    Context.onContextDestroyed = (t: Context) => {
-      return this._onContextDestroyed(t);
-    };
+    this._cdpServer.setOnMessage((messageObj) => {
+      return this._onCdpMessage(messageObj);
+    });
+    this._bidiServer.setOnMessage((messageObj) => {
+      return this._onBidiMessage(messageObj);
+    });
   }
 
   private _isValidTarget = (target) => {
@@ -130,16 +136,15 @@ export class CommandProcessor {
   }
 
   private _onCdpMessage = function (messageObj: any) {
-    console.log('!!@@## got CDP message', messageObj);
     switch (messageObj.method) {
       case 'Target.attachedToTarget':
-        Context.handleAttachedToTargetEvent(messageObj);
+        this._contextProcessor.handleAttachedToTargetEvent(messageObj);
         return Promise.resolve();
       case 'Target.targetInfoChanged':
-        Context.handleInfoChangedEvent(messageObj);
+        this._contextProcessor.handleInfoChangedEvent(messageObj);
         return Promise.resolve();
       case 'Target.detachedFromTarget':
-        Context.handleDetachedFromTargetEvent(messageObj);
+        this._contextProcessor.handleDetachedFromTargetEvent(messageObj);
         return Promise.resolve();
     }
   };
@@ -155,7 +160,9 @@ export class CommandProcessor {
         return await this._process_browsingContext_getTree(commandData.params);
 
       case 'PROTO.browsingContext.createContext':
-        return await Context.process_createContext(commandData.params);
+        return await this._contextProcessor.process_createContext(
+          commandData.params
+        );
 
       case 'DEBUG.Page.close':
         return await this._process_DEBUG_Page_close(commandData.params);

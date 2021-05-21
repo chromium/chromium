@@ -38,6 +38,8 @@ const logSystem = log('system');
   CommandProcessor.run(cdpServer, bidiServer, selfTargetId);
 
   logSystem('launched');
+
+  bidiServer.sendMessage('launched');
 })();
 
 function createCdpServer() {

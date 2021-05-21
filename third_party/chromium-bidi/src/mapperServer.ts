@@ -28,6 +28,10 @@ export class MapperServer implements IServer {
   private _commandCallbacks: Map<number, (messageObj: any) => void> = new Map();
   private _ws: WebSocket;
   private _mapperSessionId;
+  private _launchedPromiseResolve: () => void;
+  private _launchedPromise: Promise<void> = new Promise((resolve) => {
+    this._launchedPromiseResolve = resolve;
+  });
 
   static async create(
     cdpUrl: string,
@@ -90,6 +94,12 @@ export class MapperServer implements IServer {
         data.params &&
         data.params.name === 'sendBidiResponse'
       ) {
+        // Needed to check when Mapper is launched on the frontend.
+        if (data.params.payload === '"launched"') {
+          this._launchedPromiseResolve();
+          return;
+        }
+
         this._onBidiMessage(data.params.payload);
         return;
       }
@@ -177,6 +187,7 @@ export class MapperServer implements IServer {
       },
     });
 
+    await this._launchedPromise;
     debugInternal('Launched!');
   }
 }

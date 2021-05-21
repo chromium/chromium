@@ -17,106 +17,122 @@ import { log } from '../utils/log';
 import { IServer } from '../utils/iServer';
 const logContext = log('context');
 
-export default class Context {
-  private static _contexts: Map<string, Context> = new Map();
-  private static _sessionToTargets: Map<string, Context> = new Map();
+export class BrowsingContextProcessor {
+  private _contexts: Map<string, Context> = new Map();
+  private _sessionToTargets: Map<string, Context> = new Map();
 
   // Set from outside.
-  static cdpServer: IServer;
-  static selfTargetId: string;
+  private _cdpServer: IServer;
+  private _selfTargetId: string;
 
-  static onContextCreated: (t: Context) => Promise<void>;
-  static onContextDestroyed: (t: Context) => Promise<void>;
+  private _onContextCreated: (t: Context) => Promise<void>;
+  private _onContextDestroyed: (t: Context) => Promise<void>;
 
-  private static _getOrCreateContext(contextId: string): Context {
-    if (!Context._isKnownContext(contextId))
-      Context._contexts.set(contextId, new Context(contextId));
-    return Context._getContext(contextId);
+  constructor(
+    cdpServer: IServer,
+    selfTargetId: string,
+    onContextCreated: (t: Context) => Promise<void>,
+    onContextDestroyed: (t: Context) => Promise<void>
+  ) {
+    this._cdpServer = cdpServer;
+    this._selfTargetId = selfTargetId;
+    this._onContextCreated = onContextCreated;
+    this._onContextDestroyed = onContextDestroyed;
   }
 
-  private static _getContext(contextId: string): Context {
-    if (!Context._isKnownContext(contextId))
-      throw new Error('context not found');
-    return Context._contexts.get(contextId);
+  private _getOrCreateContext(contextId: string): Context {
+    if (!this._isKnownContext(contextId)) {
+      this._contexts.set(contextId, new Context(contextId));
+    }
+    return this._getContext(contextId);
   }
 
-  private static _isKnownContext(contextId: string): boolean {
-    return Context._contexts.has(contextId);
+  private _getContext(contextId: string): Context {
+    if (!this._isKnownContext(contextId)) throw new Error('context not found');
+    return this._contexts.get(contextId);
   }
 
-  static handleAttachedToTargetEvent(eventData: any) {
+  private _isKnownContext(contextId: string): boolean {
+    return this._contexts.has(contextId);
+  }
+
+  handleAttachedToTargetEvent(eventData: any) {
     logContext('AttachedToTarget event recevied', eventData);
 
     const targetInfo: TargetInfo = eventData.params.targetInfo;
-    if (!Context._isValidTarget(targetInfo)) return;
+    if (!this._isValidTarget(targetInfo)) return;
 
-    const context = Context._getOrCreateContext(targetInfo.targetId);
+    const context = this._getOrCreateContext(targetInfo.targetId);
     context._updateTargetInfo(targetInfo);
-    context._setSessionId(eventData.params.sessionId);
 
-    Context.onContextCreated(context);
+    const sessionId = eventData.params.sessionId;
+    if (sessionId) this._sessionToTargets.delete(sessionId);
+
+    this._sessionToTargets.set(sessionId, context);
+
+    // context._setSessionId(eventData.params.sessionId);
+
+    this._onContextCreated(context);
   }
 
-  static handleInfoChangedEvent(eventData: any) {
+  handleInfoChangedEvent(eventData: any) {
     logContext('infoChangedEvent event recevied', eventData);
 
     const targetInfo: TargetInfo = eventData.params.targetInfo;
-    if (!Context._isValidTarget(targetInfo)) return;
+    if (!this._isValidTarget(targetInfo)) return;
 
-    const context = Context._getOrCreateContext(targetInfo.targetId);
+    const context = this._getOrCreateContext(targetInfo.targetId);
     context._onInfoChangedEvent(targetInfo);
   }
 
   // { "method": "Target.detachedFromTarget", "params": { "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9", "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
-  static async handleDetachedFromTargetEvent(eventData: any) {
+  async handleDetachedFromTargetEvent(eventData: any) {
     logContext('detachedFromTarget event recevied', eventData);
 
     const targetId = eventData.params.targetId;
-    if (!Context._isKnownContext(targetId)) return;
+    if (!this._isKnownContext(targetId)) return;
 
-    const context = Context._getOrCreateContext(targetId);
-    Context.onContextDestroyed(context);
+    const context = this._getOrCreateContext(targetId);
+    this._onContextDestroyed(context);
 
-    if (context._sessionId)
-      Context._sessionToTargets.delete(context._sessionId);
+    if (context._sessionId) this._sessionToTargets.delete(context._sessionId);
 
-    delete Context._contexts[context._contextId];
+    delete this._contexts[context._contextId];
   }
 
-  static async process_createContext(params: any): Promise<any> {
-    const { targetId } = await Context.cdpServer.sendMessage({
+  async process_createContext(params: any): Promise<any> {
+    const { targetId } = await this._cdpServer.sendMessage({
       method: 'Target.createTarget',
       params: { url: params.url },
     });
-    return Context._getOrCreateContext(targetId).toBidi();
+    return this._getOrCreateContext(targetId).toBidi();
   }
 
-  static _isValidTarget = (target: TargetInfo) => {
-    if (target.targetId === Context.selfTargetId) return false;
+  _isValidTarget = (target: TargetInfo) => {
+    if (target.targetId === this._selfTargetId) return false;
     if (!target.type || target.type !== 'page') return false;
     return true;
   };
+}
 
-  private _targetInfo: TargetInfo;
-  private _contextId: string;
-  private _sessionId: string;
+export class Context {
+  _targetInfo: TargetInfo;
+  _contextId: string;
+  _sessionId: string;
 
   constructor(contextId: string) {
-    Context._contexts[contextId] = this;
+    this._contextId = contextId;
   }
 
-  private _setSessionId(sessionId: string): void {
-    if (this._sessionId) Context._sessionToTargets.delete(sessionId);
-
+  _setSessionId(sessionId: string): void {
     this._sessionId = sessionId;
-    Context._sessionToTargets.set(sessionId, this);
   }
 
-  private _updateTargetInfo(targetInfo: TargetInfo) {
+  _updateTargetInfo(targetInfo: TargetInfo) {
     this._targetInfo = targetInfo;
   }
 
-  private _onInfoChangedEvent(targetInfo: TargetInfo) {
+  _onInfoChangedEvent(targetInfo: TargetInfo) {
     this._updateTargetInfo(targetInfo);
   }
 
