@@ -238,7 +238,7 @@
         Showing saved payment methods
       </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARDS" desc="Text used for the In-Product-Help bubble suggesting that the current credit card suggestion is a virtual card.">
-        Hides your actual card number for added security
+        Use your virtual card for added security
       </message>
     </messages>
   </release>
