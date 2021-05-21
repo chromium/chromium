@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -25,7 +26,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -68,8 +68,7 @@ public class OptionalNewTabButtonControllerActivityTest {
         private static MockTabModelSelector sTabModelSelector;
         private static boolean sIsNTP;
 
-        @Resetter
-        public void reset() {
+        protected static void reset() {
             sTabModelSelector = null;
             sTabCreatorManager = null;
             sIsNTP = false;
@@ -110,6 +109,8 @@ public class OptionalNewTabButtonControllerActivityTest {
                     doReturn(Mockito.mock(WebContents.class)).when(tab).getWebContents();
                     return tab;
                 });
+        assertNull(ShadowDelegate.sTabModelSelector);
+        assertNull(ShadowDelegate.sTabCreatorManager);
         ShadowDelegate.sTabModelSelector = tabModelSelector;
         ShadowDelegate.sTabCreatorManager = new MockTabCreatorManager(tabModelSelector);
         mTab = tabModelSelector.getCurrentTab();
@@ -127,6 +128,7 @@ public class OptionalNewTabButtonControllerActivityTest {
     }
 
     private static void resetStaticState() {
+        ShadowDelegate.reset();
         // DisplayAndroidManager will reuse the Display between tests. This can cause
         // AsyncInitializationActivity#applyOverrides to set incorrect smallestWidth.
         DisplayAndroidManager.resetInstanceForTesting();
