@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher.AccessP
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
 import org.chromium.components.browser_ui.widget.impression.OneShotImpressionListener;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
@@ -226,7 +225,7 @@ public class SigninPromoController {
      *         onDismissListener marks that the promo is not dismissible and as a result the close
      *         button is hidden.
      */
-    public void setupPromoView(PersonalizedSigninPromoView view,
+    void setupPromoView(PersonalizedSigninPromoView view,
             final @Nullable DisplayableProfileData profileData,
             final @Nullable OnDismissListener onDismissListener) {
         detach();
@@ -293,24 +292,28 @@ public class SigninPromoController {
 
         view.getDescription().setText(mDescriptionStringId);
 
-        String continueAsButtonText = context.getString(
-                R.string.signin_promo_continue_as, mProfileData.getGivenNameOrFullNameOrEmail());
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_PROMOS)) {
-            IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                    Profile.getLastUsedRegularProfile());
-            boolean hasPrimaryAccount =
-                    identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null;
-            view.getPrimaryButton().setText(hasPrimaryAccount
-                            ? context.getString(R.string.sync_promo_turn_on_sync)
-                            : continueAsButtonText);
-        } else {
-            view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
-        }
         view.getPrimaryButton().setOnClickListener(v -> signinWithDefaultAccount(context));
+        final boolean hasPrimaryAccount =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
+                != null;
+        if (hasPrimaryAccount) {
+            view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
+            view.getSecondaryButton().setVisibility(View.GONE);
+        } else {
+            final String primaryButtonText =
+                    ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_PROMOS)
+                    ? context.getString(R.string.signin_promo_continue_as,
+                            mProfileData.getGivenNameOrFullNameOrEmail())
+                    : context.getString(R.string.sync_promo_turn_on_sync);
+            view.getPrimaryButton().setText(primaryButtonText);
 
-        view.getSecondaryButton().setText(R.string.signin_promo_choose_another_account);
-        view.getSecondaryButton().setOnClickListener(v -> signinWithNotDefaultAccount(context));
-        view.getSecondaryButton().setVisibility(View.VISIBLE);
+            view.getSecondaryButton().setText(R.string.signin_promo_choose_another_account);
+            view.getSecondaryButton().setOnClickListener(v -> signinWithNotDefaultAccount(context));
+            view.getSecondaryButton().setVisibility(View.VISIBLE);
+        }
     }
 
     private int getNumImpressions() {

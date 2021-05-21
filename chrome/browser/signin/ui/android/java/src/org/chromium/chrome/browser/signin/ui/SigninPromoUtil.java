@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.signin.ui;
 import android.accounts.Account;
 import android.content.Context;
 import android.text.TextUtils;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -138,9 +137,6 @@ public final class SigninPromoUtil {
         assert signedInAccount != null : "Sync promo should only be shown for a signed in account";
         signinPromoController.setupPromoView(
                 view, profileDataCache.getProfileDataOrDefault(signedInAccount), listener);
-
-        view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
-        view.getSecondaryButton().setVisibility(View.GONE);
     }
 
     /**
