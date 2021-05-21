@@ -237,6 +237,9 @@
       <message name="IDS_CREDIT_CARD_ACCESSORY_SHEET_OPENED" desc="Accessibility announcement when opening a sheet containing users' saved payment methods (e.g., credit cards) for use when filling web forms.">
         Showing saved payment methods
       </message>
+      <message name="IDS_IPH_KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARDS" desc="Text used for the In-Product-Help bubble suggesting that the current credit card suggestion is a virtual card.">
+        Hides your actual card number for added security
+      </message>
     </messages>
   </release>
 </grit>

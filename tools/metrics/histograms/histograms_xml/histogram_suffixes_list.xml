@@ -8222,7 +8222,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="IPH_KeyboardAccessoryPaymentFilling"
       label="In-product help for payments autofill suggestions."/>
   <suffix name="IPH_KeyboardAccessoryPaymentOffer"
-      label="In-product help for payments autofill suggestions."/>
+      label="In-product help for payments autofill suggestions that have an
+             offer."/>
+  <suffix name="IPH_KeyboardAccessoryPaymentVirtualCard"
+      label="In-product help for payment autofill suggestions that are
+             virtual cards."/>
   <suffix name="IPH_LiveCaption" label="In product help for Live Caption."/>
   <suffix name="IPH_LongPressToolbarTip"
       label="In product help LongPress toolbar."/>

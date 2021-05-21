@@ -233,7 +233,7 @@ public class KeyboardAccessoryModernViewTest {
             mModel.get(BAR_ITEMS).set(new BarItem[] {
                     new AutofillBarItem(
                             new AutofillSuggestion("Johnathan", "Smith", "", DropdownItem.NO_ICON,
-                                    false, 1, false, false, false),
+                                    false, 1, false, false, false, /* featureForIPH= */ ""),
                             new Action("Unused", AUTOFILL_SUGGESTION,
                                     result -> {}, result -> clickRecorded.set(true))),
                     createTabs()});
@@ -274,10 +274,10 @@ public class KeyboardAccessoryModernViewTest {
     @Test
     @MediumTest
     public void testDismissesPasswordEducationBubbleOnFilling() {
-        AutofillBarItem itemWithIPH =
-                new AutofillBarItem(new AutofillSuggestion("Johnathan", "Smith", /*itemTag=*/"",
-                                            DropdownItem.NO_ICON, false, -2, false, false, false),
-                        new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
+        AutofillBarItem itemWithIPH = new AutofillBarItem(
+                new AutofillSuggestion("Johnathan", "Smith", /*itemTag=*/"", DropdownItem.NO_ICON,
+                        false, -2, false, false, false, /* featureForIPH= */ ""),
+                new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE);
 
         TestTracker tracker = new TestTracker();
@@ -302,10 +302,10 @@ public class KeyboardAccessoryModernViewTest {
     @Test
     @MediumTest
     public void testDismissesAddressEducationBubbleOnFilling() {
-        AutofillBarItem itemWithIPH =
-                new AutofillBarItem(new AutofillSuggestion("Johnathan", "Smith", /*itemTag=*/"",
-                                            DropdownItem.NO_ICON, false, 1, false, false, false),
-                        new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
+        AutofillBarItem itemWithIPH = new AutofillBarItem(
+                new AutofillSuggestion("Johnathan", "Smith", /*itemTag=*/"", DropdownItem.NO_ICON,
+                        false, 1, false, false, false, /* featureForIPH= */ ""),
+                new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE);
 
         TestTracker tracker = new TestTracker();
@@ -330,7 +330,7 @@ public class KeyboardAccessoryModernViewTest {
     public void testDismissesPaymentEducationBubbleOnFilling() {
         AutofillBarItem itemWithIPH = new AutofillBarItem(
                 new AutofillSuggestion("Johnathan", "Smith", /*itemTag=*/"", DropdownItem.NO_ICON,
-                        false, 70000, false, false, false),
+                        false, 70000, false, false, false, /* featureForIPH= */ ""),
                 new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE);
 
@@ -387,7 +387,7 @@ public class KeyboardAccessoryModernViewTest {
         String itemTag = "Cashback linked";
         AutofillBarItem itemWithIPH = new AutofillBarItem(
                 new AutofillSuggestion("Johnathan", "Smith", itemTag, R.drawable.ic_offer_tag,
-                        false, 70000, false, false, false),
+                        false, 70000, false, false, false, /* featureForIPH= */ ""),
                 new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE);
 
@@ -472,8 +472,9 @@ public class KeyboardAccessoryModernViewTest {
     }
 
     private AutofillBarItem createAutofillBarItem(String label, Callback<Action> chipCallback) {
-        return new AutofillBarItem(new AutofillSuggestion(label, "Smith", /*itemTag=*/"",
-                                           DropdownItem.NO_ICON, false, 1, false, false, false),
+        return new AutofillBarItem(
+                new AutofillSuggestion(label, "Smith", /*itemTag=*/"", DropdownItem.NO_ICON, false,
+                        1, false, false, false, /* featureForIPH= */ ""),
                 new KeyboardAccessoryData.Action("Unused", AUTOFILL_SUGGESTION, chipCallback));
     }
 

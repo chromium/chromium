@@ -159,7 +159,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
         array[index] = new AutofillSuggestion(label, sublabel, itemTag, drawableId,
                 false /* isIconAtStart */, suggestionId, isDeletable, false /* isMultilineLabel */,
-                false /* isBoldLabel */);
+                false /* isBoldLabel */, /* featureForIPH= */ "");
     }
 
     /**

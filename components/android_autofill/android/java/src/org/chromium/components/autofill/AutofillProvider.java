@@ -697,7 +697,8 @@ public class AutofillProvider {
         for (int i = 0; i < mDatalistSuggestions.length; i++) {
             mDatalistSuggestions[i] = new AutofillSuggestion(datalistValues[i], datalistLabels[i],
                     /* itemTag= */ "", DropdownItem.NO_ICON, false /* isIconAtLeft */, i,
-                    false /* isDeletable */, false /* isMultilineLabel */, false /* isBoldLabel */);
+                    false /* isDeletable */, false /* isMultilineLabel */, false /* isBoldLabel */,
+                    /* featureForIPH= */ "");
         }
         if (mWebContentsAccessibility == null) {
             mWebContentsAccessibility = WebContentsAccessibility.fromWebContents(mWebContents);

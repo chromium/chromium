@@ -328,6 +328,11 @@ class KeyboardAccessoryMediator
     }
 
     private static String getFeatureBySuggestionId(AutofillSuggestion suggestion) {
+        // If the suggestion has an explicit IPH feature defined, prefer that over the default IPH
+        // features.
+        if (!suggestion.getFeatureForIPH().isEmpty()) {
+            return suggestion.getFeatureForIPH();
+        }
         if (containsPasswordInfo(suggestion)) {
             return FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE;
         }

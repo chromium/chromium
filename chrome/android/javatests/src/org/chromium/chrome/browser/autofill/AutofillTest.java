@@ -107,24 +107,28 @@ public class AutofillTest {
     private AutofillSuggestion[] createTwoAutofillSuggestionArray() {
         return new AutofillSuggestion[] {
                 new AutofillSuggestion("Sherlock Holmes", "221B Baker Street", /*itemTag=*/"",
-                        DropdownItem.NO_ICON, false, 42, false, false, false),
+                        DropdownItem.NO_ICON, false, 42, false, false, false,
+                        /* featureForIPH= */ ""),
                 new AutofillSuggestion("Arthur Dent", "West Country", /*itemTag=*/"",
-                        DropdownItem.NO_ICON, false, 43, false, false, false),
+                        DropdownItem.NO_ICON, false, 43, false, false, false,
+                        /* featureForIPH= */ ""),
         };
     }
 
     private AutofillSuggestion[] createFiveAutofillSuggestionArray() {
         return new AutofillSuggestion[] {
                 new AutofillSuggestion("Sherlock Holmes", "221B Baker Street", /*itemTag=*/"",
-                        DropdownItem.NO_ICON, false, 42, false, false, false),
+                        DropdownItem.NO_ICON, false, 42, false, false, false,
+                        /* featureForIPH= */ ""),
                 new AutofillSuggestion("Arthur Dent", "West Country", /*itemTag=*/"",
-                        DropdownItem.NO_ICON, false, 43, false, false, false),
+                        DropdownItem.NO_ICON, false, 43, false, false, false,
+                        /* featureForIPH= */ ""),
                 new AutofillSuggestion("Arthos", "France", /*itemTag=*/"", DropdownItem.NO_ICON,
-                        false, 44, false, false, false),
+                        false, 44, false, false, false, /* featureForIPH= */ ""),
                 new AutofillSuggestion("Porthos", "France", /*itemTag=*/"", DropdownItem.NO_ICON,
-                        false, 45, false, false, false),
+                        false, 45, false, false, false, /* featureForIPH= */ ""),
                 new AutofillSuggestion("Aramis", "France", /*itemTag=*/"", DropdownItem.NO_ICON,
-                        false, 46, false, false, false),
+                        false, 46, false, false, false, /* featureForIPH= */ ""),
         };
     }
 

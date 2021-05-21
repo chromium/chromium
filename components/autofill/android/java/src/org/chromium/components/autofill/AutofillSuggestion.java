@@ -19,6 +19,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final boolean mIsDeletable;
     private final boolean mIsMultilineLabel;
     private final boolean mIsBoldLabel;
+    private final String mFeatureForIPH;
 
     /**
      * Constructs a Autofill suggestion container.
@@ -33,10 +34,12 @@ public class AutofillSuggestion extends DropdownItemBase {
      * @param isDeletable Whether the item can be deleted by the user.
      * @param isMultilineLabel Whether the label is displayed over multiple lines.
      * @param isBoldLabel Whether the label is displayed in {@code Typeface.BOLD}.
+     * @param featureForIPH The IPH feature for the autofill suggestion. If present, it'll be
+     *         attempted to be shown in the keyboard accessory.
      */
     public AutofillSuggestion(String label, String sublabel, String itemTag, int iconId,
             boolean isIconAtStart, int suggestionId, boolean isDeletable, boolean isMultilineLabel,
-            boolean isBoldLabel) {
+            boolean isBoldLabel, String featureForIPH) {
         mLabel = label;
         mSublabel = sublabel;
         mItemTag = itemTag;
@@ -46,6 +49,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         mIsDeletable = isDeletable;
         mIsMultilineLabel = isMultilineLabel;
         mIsBoldLabel = isBoldLabel;
+        mFeatureForIPH = featureForIPH;
     }
 
     @Override
@@ -106,5 +110,9 @@ public class AutofillSuggestion extends DropdownItemBase {
         // Negative suggestion ID indiciates a tool like "settings" or "scan credit card."
         // Non-negative suggestion ID indicates suggestions that can be filled into the form.
         return mSuggestionId >= 0;
+    }
+
+    public String getFeatureForIPH() {
+        return mFeatureForIPH;
     }
 }
