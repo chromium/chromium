@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_checker.h"
 #include "ipc/ipc.mojom.h"
@@ -23,7 +22,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
-#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/system/core.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
@@ -70,13 +68,10 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
   //
   // Note that MessagePipeReader doesn't delete |delegate|.
   MessagePipeReader(mojo::MessagePipeHandle pipe,
-                    mojo::PendingAssociatedRemote<mojom::Channel> sender,
+                    mojo::AssociatedRemote<mojom::Channel> sender,
                     mojo::PendingAssociatedReceiver<mojom::Channel> receiver,
-                    scoped_refptr<base::SequencedTaskRunner> task_runner,
                     Delegate* delegate);
   ~MessagePipeReader() override;
-
-  void FinishInitializationOnIOThread(base::ProcessId self_pid);
 
   // Close and destroy the MessagePipe.
   void Close();
@@ -93,7 +88,6 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
                           mojo::ScopedInterfaceEndpointHandle handle);
 
   mojo::AssociatedRemote<mojom::Channel>& sender() { return sender_; }
-  mojom::Channel& thread_safe_sender() { return thread_safe_sender_->proxy(); }
 
  protected:
   void OnPipeClosed();
@@ -108,16 +102,11 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
       mojo::PendingAssociatedReceiver<mojom::GenericInterface> receiver)
       override;
 
-  void ForwardMessage(mojo::Message message);
-
   // |delegate_| is null once the message pipe is closed.
   Delegate* delegate_;
   mojo::AssociatedRemote<mojom::Channel> sender_;
-  std::unique_ptr<mojo::ThreadSafeForwarder<mojom::Channel>>
-      thread_safe_sender_;
   mojo::AssociatedReceiver<mojom::Channel> receiver_;
   base::ThreadChecker thread_checker_;
-  base::WeakPtrFactory<MessagePipeReader> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MessagePipeReader);
 };

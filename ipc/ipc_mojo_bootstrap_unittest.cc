@@ -26,9 +26,7 @@ class Connection {
   explicit Connection(std::unique_ptr<IPC::MojoBootstrap> bootstrap,
                       int32_t sender_id)
       : bootstrap_(std::move(bootstrap)) {
-    mojo::PendingAssociatedRemote<IPC::mojom::Channel> sender;
-    bootstrap_->Connect(&sender, &receiver_);
-    sender_.Bind(std::move(sender));
+    bootstrap_->Connect(&sender_, &receiver_);
     sender_->SetPeerPid(sender_id);
   }
 

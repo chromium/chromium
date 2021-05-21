@@ -98,6 +98,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // Connector will read messages from the pipe regardless of whether or not an
   // incoming receiver has been set.
   void set_incoming_receiver(MessageReceiver* receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     incoming_receiver_ = receiver;
   }
 
@@ -105,6 +106,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // state, where no more messages will be processed. This method is used
   // during testing to prevent that from happening.
   void set_enforce_errors_from_incoming_receiver(bool enforce) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     enforce_errors_from_incoming_receiver_ = enforce;
   }
 
@@ -118,6 +120,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // Sets the error handler to receive notifications when an error is
   // encountered while reading from the pipe or waiting to read from the pipe.
   void set_connection_error_handler(base::OnceClosure error_handler) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     connection_error_handler_ = std::move(error_handler);
   }
 
