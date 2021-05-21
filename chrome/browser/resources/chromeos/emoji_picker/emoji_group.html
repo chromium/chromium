@@ -1,7 +1,9 @@
 <style>
   :host {
-    margin-top: 10px;
     --emoji-group-clear-recents-icon-size: 16px;
+    --emoji-group-heading-size: 32px
+    margin-top: 10px;
+    position: relative;
   }
 
   #heading {
@@ -18,8 +20,8 @@
   }
 
   #heading-left {
-    height: 32px;
-    line-height: 32px;
+    height: var(--emoji-group-heading-size);
+    line-height: var(--emoji-group-heading-size);
     width: 100%;
   }
 
@@ -31,6 +33,7 @@
   }
 
   #show-clear {
+    height: var(--emoji-group-heading-size);
     margin: 0;
     margin-inline-end: calc(
       (var(--emoji-group-button-size) -
@@ -45,14 +48,15 @@
     box-shadow: var(--cr-elevation-3);
     color: var(--cr-secondary-text-color);
     cursor: pointer;
-    display: float;
     font-family: 'Roboto', sans-serif;
     font-size: 12px;
-    margin: auto 0 auto auto;
+    height: var(--emoji-group-heading-size);
     outline: none;
     padding: 0;
     position: absolute;
-    right: var(--emoji-picker-side-padding);
+    right: calc(2px
+      + 2*var(--emoji-picker-side-padding) - var(--emoji-picker-width));
+    white-space: nowrap;
     width: fit-content;
     z-index: 200;
   }
