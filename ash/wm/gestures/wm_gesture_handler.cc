@@ -184,15 +184,6 @@ bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
   if (Shell::Get()->screen_pinning_controller()->IsPinned())
     return false;
 
-  // Also disable horizontal touchpad swipe when alt-tab is open. See
-  // crbug.com/1204345.
-  float delta_x = event.x_offset();
-  float delta_y = event.y_offset();
-  if (Shell::Get()->window_cycle_controller()->IsWindowListVisible() &&
-      std::fabs(delta_x) > std::fabs(delta_y)) {
-    return false;
-  }
-
   // ET_SCROLL_FLING_CANCEL means a touchpad swipe has started.
   if (event.type() == ui::ET_SCROLL_FLING_CANCEL) {
     scroll_data_ = ScrollData();
@@ -207,7 +198,8 @@ bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
   }
   DCHECK_EQ(ui::ET_SCROLL, event.type());
 
-  return ProcessEventImpl(event.finger_count(), delta_x, delta_y);
+  return ProcessEventImpl(event.finger_count(), event.x_offset(),
+                          event.y_offset());
 }
 
 bool WmGestureHandler::ProcessEventImpl(int finger_count,

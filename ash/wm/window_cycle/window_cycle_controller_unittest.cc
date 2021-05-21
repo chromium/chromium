@@ -1363,18 +1363,13 @@ TEST_F(WindowCycleControllerTest,
   Shell::Get()->overview_controller()->StartOverview();
   EXPECT_TRUE(InOverviewSession());
 
-  // Open the window cycle list. Scroll right to second item. Scroll should only
-  // go to the window cycle list so the overview focus should not be visible.
+  // Open the window cycle list. Scroll right to second item. Overview mode
+  // should be dismissed at this point as they do the same thing by design.
   // Current order is [2,4,5,3,1].
   auto* cycle_controller = Shell::Get()->window_cycle_controller();
   cycle_controller->StartCycling();
   Scroll(GetOffsetX(horizontal_scroll), 0, kNumFingersForTrackpad);
-  EXPECT_TRUE(InOverviewSession());
-  EXPECT_FALSE(Shell::Get()
-                   ->overview_controller()
-                   ->overview_session()
-                   ->highlight_controller()
-                   ->IsFocusHighlightVisible());
+  EXPECT_FALSE(InOverviewSession());
 
   CompleteCycling(cycle_controller);
   EXPECT_FALSE(InOverviewSession());
