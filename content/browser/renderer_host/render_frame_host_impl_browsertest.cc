@@ -5420,25 +5420,62 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   ASSERT_TRUE(rfh_b);
   EXPECT_EQ(LifecycleStateImpl::kSpeculative, rfh_b->lifecycle_state());
 
-  // ForEachRenderFrameHost does not expose the speculative RFH.
-  EXPECT_THAT(CollectAllRenderFrameHosts(rfh_a), testing::ElementsAre(rfh_a));
+  // We test that the following properties hold during both the speculative and
+  // pending commit lifecycle state of |rfh_b|.
+  base::RepeatingClosure test_expectations = base::BindRepeating(
+      [](RenderFrameHostImpl* rfh_a, RenderFrameHostImpl* rfh_b) {
+        // ForEachRenderFrameHost does not expose the speculative RFH.
+        EXPECT_THAT(CollectAllRenderFrameHosts(rfh_a),
+                    testing::ElementsAre(rfh_a));
 
-  // When we request the speculative RFH, we visit it.
-  EXPECT_THAT(CollectAllRenderFrameHostsIncludingSpeculative(rfh_a),
-              testing::UnorderedElementsAre(rfh_a, rfh_b));
+        // When we request the speculative RFH, we visit it.
+        EXPECT_THAT(CollectAllRenderFrameHostsIncludingSpeculative(rfh_a),
+                    testing::UnorderedElementsAre(rfh_a, rfh_b));
 
-  // If ForEachRenderFrameHost is called on a speculative RFH directly, do
-  // nothing.
-  rfh_b->ForEachRenderFrameHost(
-      base::BindRepeating([](RenderFrameHostImpl* rfh) {
-        ADD_FAILURE() << "Visited speculative RFH";
-        return RenderFrameHost::FrameIterationAction::kStop;
-      }));
+        // If ForEachRenderFrameHost is called on a speculative RFH directly, do
+        // nothing.
+        rfh_b->ForEachRenderFrameHost(
+            base::BindRepeating([](RenderFrameHostImpl* rfh) {
+              ADD_FAILURE() << "Visited speculative RFH";
+              return RenderFrameHost::FrameIterationAction::kStop;
+            }));
 
-  // If we request speculative RFHs and directly call this on a speculative RFH,
-  // just visit the given speculative RFH.
-  EXPECT_THAT(CollectAllRenderFrameHostsIncludingSpeculative(rfh_b),
-              testing::ElementsAre(rfh_b));
+        // If we request speculative RFHs and directly call this on a
+        // speculative RFH, just visit the given speculative RFH.
+        EXPECT_THAT(CollectAllRenderFrameHostsIncludingSpeculative(rfh_b),
+                    testing::ElementsAre(rfh_b));
+      },
+      rfh_a, rfh_b);
+
+  {
+    SCOPED_TRACE("Speculative LifecycleState");
+    test_expectations.Run();
+  }
+
+  class ReadyToCommitObserver : public WebContentsObserver {
+   public:
+    explicit ReadyToCommitObserver(WebContentsImpl* web_contents,
+                                   base::RepeatingClosure test_expectations)
+        : WebContentsObserver(web_contents),
+          test_expectations_(test_expectations) {}
+
+    // WebContentsObserver:
+    void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+      EXPECT_EQ(static_cast<RenderFrameHostImpl*>(
+                    navigation_handle->GetRenderFrameHost())
+                    ->lifecycle_state(),
+                LifecycleStateImpl::kPendingCommit);
+      SCOPED_TRACE("PendingCommit LifecycleState");
+      test_expectations_.Run();
+    }
+
+   private:
+    base::RepeatingClosure test_expectations_;
+  };
+
+  ReadyToCommitObserver ready_to_commit_observer(web_contents(),
+                                                 test_expectations);
+  nav_manager.WaitForNavigationFinished();
 }
 
 // Like ForEachRenderFrameHostSpeculative, but for a speculative RFH for a
