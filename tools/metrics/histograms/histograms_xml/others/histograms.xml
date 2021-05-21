@@ -12608,7 +12608,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
-  <owner>viviy@google.com</owner>
   <summary>
     When a Service Worker receives a pushsubscriptionchange event, this records
     whether the overall operation was successful, or otherwise the type of error
