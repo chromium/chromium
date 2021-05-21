@@ -57,9 +57,10 @@ void StyleTraversalRoot::Update(ContainerNode* common_ancestor,
 }
 
 #if DCHECK_IS_ON()
-bool StyleTraversalRoot::InDOMRemoval() const {
+bool StyleTraversalRoot::IsModifyingFlatTree() const {
   DCHECK(root_node_);
-  return root_node_->GetDocument().GetStyleEngine().InDOMRemoval();
+  return root_node_->GetDocument().GetStyleEngine().InDOMRemoval() ||
+         root_node_->GetDocument().IsInSlotAssignmentRecalc();
 }
 #endif
 
