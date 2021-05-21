@@ -206,6 +206,7 @@ BorealisContextManagerImpl::GetTasks() {
   task_queue.push(std::make_unique<StartBorealisVm>());
   task_queue.push(
       std::make_unique<AwaitBorealisStartup>(profile_, kBorealisVmName));
+  task_queue.push(std::make_unique<AwaitBorealisWindowOrLaunchApp>(profile_));
   return task_queue;
 }
 

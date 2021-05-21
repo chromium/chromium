@@ -6,11 +6,15 @@
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_TASK_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_launch_watcher.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
+
+class Profile;
 
 namespace borealis {
 
@@ -96,6 +100,39 @@ class AwaitBorealisStartup : public BorealisTask {
                               absl::optional<std::string> container);
   BorealisLaunchWatcher watcher_;
   base::WeakPtrFactory<AwaitBorealisStartup> weak_factory_{this};
+};
+
+// Waits to see if a borealis window launches (as a result of startup). If one
+// does not appear, launches a certain borealis app.
+//
+// TODO(b/171668019): remove this stage once we've factored launch of the
+// "certain app" into the necessary pieces (i.e. post-install) AND we've upreved
+// borealis s.t. it doesn't try to launch the app itself.
+class AwaitBorealisWindowOrLaunchApp
+    : public BorealisTask,
+      public BorealisWindowManager::AppWindowLifetimeObserver {
+ public:
+  explicit AwaitBorealisWindowOrLaunchApp(Profile* profile);
+  ~AwaitBorealisWindowOrLaunchApp() override;
+  void RunInternal(BorealisContext* context) override;
+
+ private:
+  // Called by a timer if no window appears.
+  void WindowDidNotAppear(BorealisContext* context);
+
+  // Called with the status of the attempted app launch (if the window didn't
+  // appear by itself).
+  void OnAppLaunched(BorealisAppLauncher::LaunchResult result);
+
+  // BorealisWindowManager::AppWindowLifetimeObserver overrides.
+  void OnSessionStarted() override;
+  void OnWindowManagerDeleted(BorealisWindowManager* window_manager) override;
+
+  base::ScopedObservation<BorealisWindowManager,
+                          BorealisWindowManager::AppWindowLifetimeObserver>
+      window_observation_;
+  base::TimeDelta timeout_ = base::TimeDelta::FromSeconds(10);
+  base::WeakPtrFactory<AwaitBorealisWindowOrLaunchApp> weak_factory_{this};
 };
 
 }  // namespace borealis

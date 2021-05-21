@@ -12,8 +12,11 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
@@ -157,6 +160,7 @@ void StartBorealisVm::OnStartBorealisVm(
 AwaitBorealisStartup::AwaitBorealisStartup(Profile* profile,
                                            std::string vm_name)
     : watcher_(profile, vm_name) {}
+
 AwaitBorealisStartup::~AwaitBorealisStartup() = default;
 
 void AwaitBorealisStartup::RunInternal(BorealisContext* context) {
@@ -180,4 +184,52 @@ void AwaitBorealisStartup::OnAwaitBorealisStartup(
   context->set_container_name(container.value());
   Complete(BorealisStartupResult::kSuccess, "");
 }
+
+AwaitBorealisWindowOrLaunchApp::AwaitBorealisWindowOrLaunchApp(Profile* profile)
+    : window_observation_(this) {
+  window_observation_.Observe(
+      &BorealisService::GetForProfile(profile)->WindowManager());
+}
+
+AwaitBorealisWindowOrLaunchApp::~AwaitBorealisWindowOrLaunchApp() = default;
+
+void AwaitBorealisWindowOrLaunchApp::RunInternal(BorealisContext* context) {
+  // Technically the launch can race with startup, but this is very unlikely and
+  // at worst only causes the same problem we see currently, so we won't bother
+  // protecting against it.
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AwaitBorealisWindowOrLaunchApp::WindowDidNotAppear,
+                     weak_factory_.GetWeakPtr(), context),
+      timeout_);
+}
+
+void AwaitBorealisWindowOrLaunchApp::WindowDidNotAppear(
+    BorealisContext* context) {
+  BorealisAppLauncher::Launch(
+      *context, kBorealisMainAppId,
+      base::BindOnce(&AwaitBorealisWindowOrLaunchApp::OnAppLaunched,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void AwaitBorealisWindowOrLaunchApp::OnAppLaunched(
+    BorealisAppLauncher::LaunchResult result) {
+  // If launch succeeds we wait for OnSessionStarted to signal completion
+  if (result == BorealisAppLauncher::LaunchResult::kSuccess)
+    return;
+  Complete(BorealisStartupResult::kAwaitBorealisStartupFailed,
+           "Failed to launch app on startup (code " +
+               base::NumberToString(static_cast<int>(result)) + ")");
+}
+
+void AwaitBorealisWindowOrLaunchApp::OnSessionStarted() {
+  Complete(BorealisStartupResult::kSuccess, "");
+}
+
+void AwaitBorealisWindowOrLaunchApp::OnWindowManagerDeleted(
+    BorealisWindowManager* window_manager) {
+  DCHECK(window_observation_.IsObservingSource(window_manager));
+  window_observation_.Reset();
+}
+
 }  // namespace borealis
