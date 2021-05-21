@@ -12450,7 +12450,7 @@ In case of new special images, values 3 to 9 can be used. -->
 
 <enum name="ClipboardHistoryDisplayFormat">
   <int value="0" label="Text"/>
-  <int value="1" label="Bitmap"/>
+  <int value="1" label="Png"/>
   <int value="2" label="Html"/>
   <int value="3" label="File"/>
 </enum>

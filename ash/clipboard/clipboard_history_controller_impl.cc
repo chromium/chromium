@@ -320,10 +320,10 @@ base::Value ClipboardHistoryControllerImpl::GetHistoryValues(
 
     base::Value item_value(base::Value::Type::DICTIONARY);
     switch (ash::ClipboardHistoryUtil::CalculateDisplayFormat(item.data())) {
-      case ash::ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kBitmap:
-        item_value.SetKey(
-            kImageDataKey,
-            base::Value(webui::GetBitmapDataUrl(item.data().bitmap())));
+      case ash::ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kPng:
+        item_value.SetKey(kImageDataKey, base::Value(webui::GetPngDataUrl(
+                                             item.data().png().data(),
+                                             item.data().png().size())));
         break;
       case ash::ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml: {
         const SkBitmap& bitmap =

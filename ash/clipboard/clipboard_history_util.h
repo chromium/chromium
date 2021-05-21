@@ -70,7 +70,7 @@ enum ClipboardHistoryMenuViewID {
 // must add to it, add at the end.
 enum class ClipboardHistoryDisplayFormat {
   kText = 0,
-  kBitmap = 1,
+  kPng = 1,
   kHtml = 2,
   kFile = 3,
   kMaxValue = 3,

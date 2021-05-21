@@ -83,7 +83,7 @@ ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
   switch (display_format) {
     case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kText:
       return std::make_unique<ClipboardHistoryTextItemView>(&item, container);
-    case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kBitmap:
+    case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kPng:
     case ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml:
       return std::make_unique<ClipboardHistoryBitmapItemView>(
           &item, resource_manager, container);

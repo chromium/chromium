@@ -54,8 +54,7 @@ ClipboardHistoryDisplayFormat CalculateDisplayFormat(
     const ui::ClipboardData& data) {
   switch (CalculateMainFormat(data).value()) {
     case ui::ClipboardInternalFormat::kPng:
-      // TODO(crbug.com/1207638): Rename this to kImage or kPng.
-      return ClipboardHistoryDisplayFormat::kBitmap;
+      return ClipboardHistoryDisplayFormat::kPng;
     case ui::ClipboardInternalFormat::kHtml:
       if ((data.markup_data().find("<img") == std::string::npos) &&
           (data.markup_data().find("<table") == std::string::npos)) {
