@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 import { runBidiCommandsProcessor } from './bidiCommandsProcessor.js';
-import { createBidiClient } from './bidiClient.js';
 
-import { CdpBinding } from './utils/cdpServer';
+import { CdpServer } from './utils/cdpServer';
+import { BidiServer } from './utils/bidiServer';
+import { ServerBinding } from './utils/iServer';
 
 import { log } from './utils/log';
 const logSystem = log('system');
@@ -24,34 +25,42 @@ const logSystem = log('system');
 // `currentTargetId` is set by `setCurrentTargetId` + `Runtime.evaluate`.
 let currentTargetId;
 
-/**
- * `window.cdp` is exposed by `Target.exposeDevToolsProtocol`.
- */
-const cdpServer = CdpBinding.runCdpServer(window.cdp.send, (handler) => {
-  window.cdp.onmessage = handler;
-});
+//`window.cdp` is exposed by `Target.exposeDevToolsProtocol`:
+// https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-exposeDevToolsProtocol
+const cdpBinding = new ServerBinding(
+  (message) => {
+    window.cdp.send(message);
+  },
+  (handler) => {
+    window.cdp.onmessage = handler;
+  }
+);
+const cdpServer = new CdpServer(cdpBinding);
 
-// `window.sendBidiResponse` is exposed by `Runtime.addBinding`.
-const sendBidiResponse = window.sendBidiResponse;
+const bidiBinding = new ServerBinding(
+  (message) => {
+    // `window.sendBidiResponse` is exposed by `Runtime.addBinding` from the server side.
+    window.sendBidiResponse(message);
+  },
+  (handler) => {
+    // `window.onBidiMessage` is called via `Runtime.evaluate` from the server side.
+    window.onBidiMessage = handler;
+  }
+);
+const bidiServer = new BidiServer(bidiBinding);
+
 // Needed to filter out info related to BiDi target.
 window.setCurrentTargetId = function (targetId) {
   logSystem('current target ID: ' + targetId);
   currentTargetId = targetId;
 };
 
-// Run via `Runtime.evaluate` from the bidi server side.
-window.onBidiMessage = function (messageStr) {
-  bidiClient.onBidiMessageReceived(messageStr);
-};
-
-const bidiClient = createBidiClient(sendBidiResponse);
-
 const runBidiMapper = async function () {
   window.document.documentElement.innerHTML = `<h1>Bidi mapper runs here!</h1><h2>Don't close.</h2>`;
 
   window.document.title = 'BiDi Mapper';
 
-  await runBidiCommandsProcessor(cdpServer, bidiClient, () => currentTargetId);
+  await runBidiCommandsProcessor(cdpServer, bidiServer, () => currentTargetId);
 
   await cdpServer.sendMessage({
     method: 'Target.setDiscoverTargets',

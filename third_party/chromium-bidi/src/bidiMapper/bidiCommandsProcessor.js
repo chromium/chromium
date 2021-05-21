@@ -17,7 +17,7 @@ import Context from './domains/browsingContext';
 
 export async function runBidiCommandsProcessor(
   cdpServer,
-  bidiClient,
+  bidiServer,
   getCurrentTargetId
 ) {
   Context.getCurrentContextId = getCurrentTargetId;
@@ -53,7 +53,7 @@ export async function runBidiCommandsProcessor(
       errorCode,
       errorMessage
     );
-    bidiClient.sendBidiMessage(errorResponse);
+    bidiServer.sendMessage(errorResponse);
   };
 
   const targetToContext = (t) => ({
@@ -94,13 +94,13 @@ export async function runBidiCommandsProcessor(
   };
 
   Context.onContextCreated = (context) => {
-    bidiClient.sendBidiMessage({
+    bidiServer.sendMessage({
       method: 'browsingContext.contextCreated',
       params: context.toBidi(),
     });
   };
   Context.onContextDestroyed = (context) => {
-    bidiClient.sendBidiMessage({
+    bidiServer.sendMessage({
       method: 'browsingContext.contextDestroyed',
       params: context.toBidi(),
     });
@@ -149,7 +149,7 @@ export async function runBidiCommandsProcessor(
           result,
         };
 
-        bidiClient.sendBidiMessage(response);
+        bidiServer.sendMessage(response);
       })
       .catch((e) => {
         console.error(e);
@@ -158,7 +158,7 @@ export async function runBidiCommandsProcessor(
   };
 
   cdpServer.setOnMessage(onCdpMessage);
-  bidiClient.setBidiMessageHandler(onBidiMessage);
+  bidiServer.setOnMessage(onBidiMessage);
 
   await cdpServer.sendMessage({
     method: 'Target.setAutoAttach',

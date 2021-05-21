@@ -13,52 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IServer } from './iServer';
+import { ServerBinding, IServer } from './iServer';
 import { log } from './log';
 const logCdp = log('cdp');
 
-/**
- * An abstruction providing access to CDP.
- */
-export class CdpBinding {
-  private _messageHandlerSetter: (messageHandler: (string) => void) => void;
-  private _sendMessage: (string) => void;
-
-  static runCdpServer(
-    sendMessage: (cdpMessage: string) => void,
-    messageHandlerSetter: (messageHandler: (cdpMessage: string) => void) => void
-  ): CdpServer {
-    const cdpBinding = new CdpBinding(sendMessage, messageHandlerSetter);
-    return new CdpServer(cdpBinding);
-  }
-
-  constructor(
-    sendMessage: (cdpMessage: string) => void,
-    messageHandlerSetter: (messageHandler: (cdpMessage: string) => void) => void
-  ) {
-    this._messageHandlerSetter = messageHandlerSetter;
-    this._sendMessage = sendMessage;
-  }
-
-  public set onmessage(messageHandler: (string) => void) {
-    this._messageHandlerSetter(messageHandler);
-  }
-
-  public sendMessage(message: string) {
-    this._sendMessage(message);
-  }
-}
-
 export class CdpServer implements IServer {
-  private _cdpBinding: CdpBinding;
-  private _commandCallbacks: Map<number, (cdpMessageObj: any) => void> =
-    new Map();
-  private _handlers: ((cdMessageObj: any) => void)[] = new Array();
+  private _cdpBinding: ServerBinding;
+  private _commandCallbacks: Map<number, (messageObj: any) => void> = new Map();
+  private _handlers: ((messageObj: any) => void)[] = new Array();
 
-  constructor(cdpBinding: CdpBinding) {
+  constructor(cdpBinding: ServerBinding) {
     this._cdpBinding = cdpBinding;
-    this._cdpBinding.onmessage = (cdpMessageStr: string) => {
-      this._onCdpMessage(cdpMessageStr);
+    this._cdpBinding.onmessage = (messageStr: string) => {
+      this._onCdpMessage(messageStr);
     };
   }
 
@@ -87,15 +54,15 @@ export class CdpServer implements IServer {
     });
   }
 
-  private _onCdpMessage(cdpMessageStr: string): void {
-    logCdp('received < ' + cdpMessageStr);
+  private _onCdpMessage(messageStr: string): void {
+    logCdp('received < ' + messageStr);
 
-    const cdpMessageObj = JSON.parse(cdpMessageStr);
-    if (this._commandCallbacks.has(cdpMessageObj.id)) {
-      this._commandCallbacks.get(cdpMessageObj.id)(cdpMessageObj.result);
+    const messageObj = JSON.parse(messageStr);
+    if (this._commandCallbacks.has(messageObj.id)) {
+      this._commandCallbacks.get(messageObj.id)(messageObj.result);
       return;
     } else {
-      for (let handler of this._handlers) handler(cdpMessageObj);
+      for (let handler of this._handlers) handler(messageObj);
     }
   }
 }
