@@ -40,7 +40,7 @@ void LoginTooltipView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void LoginTooltipView::OnThemeChanged() {
-  views::View::OnThemeChanged();
+  LoginBaseBubbleView::OnThemeChanged();
   info_icon_->SetImage(gfx::CreateVectorIcon(
       views::kInfoIcon,
       AshColorProvider::Get()->GetContentLayerColor(

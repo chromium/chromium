@@ -28,14 +28,13 @@ class ASH_EXPORT SystemLabelButton : public views::LabelButton {
   // views::LabelButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
   gfx::Insets GetInsets() const override;
+  void OnThemeChanged() override;
 
   // Switch display type from {DEFAULT, ALERT_NO_ICON} to
   // {DEFAULT, ALERT_NO_ICON}. We can't change display type from or to
   // ALERT_WITH_ICON once it has been set (no UX interest to do so right now).
   void SetDisplayType(DisplayType display_type);
 
-  // views::View:
-  void OnThemeChanged() override;
 
  private:
   // Mode could be either default or alert. This methods set the background and

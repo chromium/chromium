@@ -180,6 +180,8 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void RequestFocus() override;
+
+  // NonAccessibleView:
   void OnThemeChanged() override;
 
  private:

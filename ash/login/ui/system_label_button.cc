@@ -81,17 +81,8 @@ gfx::Insets SystemLabelButton::GetInsets() const {
       kSystemButtonMarginTopBottomDp, kSystemButtonMarginLeftRightDp);
 }
 
-void SystemLabelButton::SetDisplayType(DisplayType display_type) {
-  // We only support transitions from a non-icon display type to another.
-  DCHECK(display_type_ != DisplayType::ALERT_WITH_ICON);
-  DCHECK(display_type != DisplayType::ALERT_WITH_ICON);
-  display_type_ = display_type;
-  bool alert_mode = display_type == DisplayType::ALERT_NO_ICON;
-  SetAlertMode(alert_mode);
-}
-
 void SystemLabelButton::OnThemeChanged() {
-  views::View::OnThemeChanged();
+  views::LabelButton::OnThemeChanged();
   if (display_type_ == DisplayType::ALERT_WITH_ICON) {
     SetImage(
         views::Button::STATE_NORMAL,
@@ -103,6 +94,15 @@ void SystemLabelButton::OnThemeChanged() {
   bool is_alert = display_type_ == DisplayType::ALERT_WITH_ICON ||
                   display_type_ == DisplayType::ALERT_NO_ICON;
   SetAlertMode(is_alert);
+}
+
+void SystemLabelButton::SetDisplayType(DisplayType display_type) {
+  // We only support transitions from a non-icon display type to another.
+  DCHECK(display_type_ != DisplayType::ALERT_WITH_ICON);
+  DCHECK(display_type != DisplayType::ALERT_WITH_ICON);
+  display_type_ = display_type;
+  bool alert_mode = display_type == DisplayType::ALERT_NO_ICON;
+  SetAlertMode(alert_mode);
 }
 
 void SystemLabelButton::SetAlertMode(bool alert_mode) {

@@ -192,9 +192,9 @@ class MediaActionButton : public views::ImageButton {
     UpdateIcon();
   }
 
-  // views::View:
+  // views::ImageButton:
   void OnThemeChanged() override {
-    views::View::OnThemeChanged();
+    views::ImageButton::OnThemeChanged();
     UpdateIcon();
   }
 

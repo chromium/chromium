@@ -93,6 +93,12 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
     PaintLoadingArc(canvas, rect, loading_animation_->GetCurrentValue());
 }
 
+void ArrowButtonView::OnThemeChanged() {
+  LoginButton::OnThemeChanged();
+  AshColorProvider::Get()->DecorateIconButton(
+      this, kLockScreenArrowIcon, /*toggled_=*/false, kArrowIconSizeDp);
+}
+
 void ArrowButtonView::EnableLoadingAnimation(bool enabled) {
   if (!enabled) {
     if (!loading_animation_)
@@ -114,12 +120,6 @@ void ArrowButtonView::EnableLoadingAnimation(bool enabled) {
       });
   loading_animation_->set_delegate(&loading_animation_delegate_);
   loading_animation_->Start();
-}
-
-void ArrowButtonView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  AshColorProvider::Get()->DecorateIconButton(
-      this, kLockScreenArrowIcon, /*toggled_=*/false, kArrowIconSizeDp);
 }
 
 ArrowButtonView::LoadingAnimationDelegate::LoadingAnimationDelegate(
