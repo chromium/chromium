@@ -150,12 +150,6 @@ void VerifyButtonTitleCache(const WebFormElement& form_target,
                                                  expected_button_titles)));
 }
 
-LocalFrameToken GetLocalFrameToken(blink::WebLocalFrame* frame) {
-  blink::LocalFrameToken frame_token = frame->GetLocalFrameToken();
-  base::UnguessableToken unguessable_token = frame_token.value();
-  return LocalFrameToken(unguessable_token);
-}
-
 class FormAutofillUtilsTest : public content::RenderViewTest {
  public:
   FormAutofillUtilsTest() {}
@@ -900,60 +894,6 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
 
   EXPECT_TRUE(form_data.fields.back().datalist_values.empty());
   EXPECT_TRUE(form_data.fields.back().datalist_labels.empty());
-}
-
-LocalFrameToken ExtractAndCheckFrame(const WebDocument& doc,
-                                     const WebString& inputId) {
-  auto web_control = doc.GetElementById(inputId).To<WebInputElement>();
-  FormData form_data;
-  EXPECT_FALSE(form_data.global_id());
-  FormFieldData form_field_data;
-  auto local_token = GetLocalFrameToken(doc.GetFrame());
-  EXPECT_TRUE(form_data.host_frame->is_empty());
-  EXPECT_TRUE(form_field_data.host_frame->is_empty());
-  FindFormAndFieldForFormControlElement(web_control,
-                                        nullptr /*field_data_manager*/,
-                                        &form_data, &form_field_data);
-  EXPECT_TRUE(form_data.fields.back().global_id());
-  EXPECT_FALSE(form_data.host_frame->is_empty());
-  EXPECT_FALSE(form_data.fields.back().host_frame->is_empty());
-  EXPECT_EQ(local_token, form_data.host_frame);
-  EXPECT_EQ(local_token, form_data.fields.back().host_frame);
-  return local_token;
-}
-
-// Tests that the |host_frame| of forms and fields is set to the frame's local
-// token.
-TEST_F(FormAutofillUtilsTest, SetHostFrameOwnedForm) {
-  LoadHTML("<body><form><input id='i'></form></body>");
-  ExtractAndCheckFrame(GetMainFrame()->GetDocument(), "i");
-}
-
-// Tests that the |host_frame| of unowned forms and fields is set to the frame's
-// local token.
-TEST_F(FormAutofillUtilsTest, SetHostFrameUnownedForm) {
-  LoadHTML("<body><input id='i'></body>");
-  ExtractAndCheckFrame(GetMainFrame()->GetDocument(), "i");
-}
-
-// Tests distinct frames have distinct |host_frame| tokens.
-TEST_F(FormAutofillUtilsTest, SetHostFrameDistinctTokens) {
-  LoadHTML(R"(<body>
-      <iframe id="1" srcdoc="<form><input id='i'></form>"></iframe>
-      <iframe id="2" srcdoc="<form><input id='i'></form>"></iframe>
-      </body>)");
-  WebDocument doc = GetMainFrame()->GetDocument();
-  WebDocument frameDoc1 =
-      blink::WebFrame::FromFrameOwnerElement(doc.GetElementById("1"))
-          ->ToWebLocalFrame()
-          ->GetDocument();
-  WebDocument frameDoc2 =
-      blink::WebFrame::FromFrameOwnerElement(doc.GetElementById("2"))
-          ->ToWebLocalFrame()
-          ->GetDocument();
-  auto token1 = ExtractAndCheckFrame(frameDoc1, "i");
-  auto token2 = ExtractAndCheckFrame(frameDoc2, "i");
-  EXPECT_NE(token1, token2);
 }
 
 }  // namespace

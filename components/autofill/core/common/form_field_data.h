@@ -73,6 +73,10 @@ struct FormFieldData {
   FormFieldData& operator=(FormFieldData&&);
   ~FormFieldData();
 
+  // An identifier of the field that can be considered unique for the lifetime
+  // of the browser process. This identifier should not be sent to a renderer
+  // process because the host_frame must not be leaked to other renderer
+  // processes.
   FieldGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
 
   // Returns true if both fields are identical, ignoring value- and
@@ -146,10 +150,11 @@ struct FormFieldData {
   std::u16string aria_label;
   std::u16string aria_description;
 
-  // Unique ID of the containing frame. A FormData must not be serialized if
-  // |host_frame| is default-initialized.
+  // A unique identifier of the containing frame. This value is not serialized
+  // because LocalFrameTokens must not be leaked to other renderer processes.
   LocalFrameToken host_frame;
-  // Unique renderer id returned by
+
+  // A unique renderer id returned by
   // WebFormControlElement::UniqueRendererFormId(). It is not persistent between
   // page loads, so it is not saved and not used in comparison in SameFieldAs().
   FieldRendererId unique_renderer_id;

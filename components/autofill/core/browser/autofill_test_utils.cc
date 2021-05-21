@@ -371,6 +371,18 @@ void CreateTestCreditCardFormData(FormData* form,
   form->fields.push_back(field);
 }
 
+FormData WithoutUnserializedData(FormData form) {
+  form.host_frame = {};
+  for (FormFieldData& field : form.fields)
+    field = WithoutUnserializedData(std::move(field));
+  return form;
+}
+
+FormFieldData WithoutUnserializedData(FormFieldData field) {
+  field.host_frame = {};
+  return field;
+}
+
 inline void check_and_set(
     FormGroup* profile,
     ServerFieldType type,

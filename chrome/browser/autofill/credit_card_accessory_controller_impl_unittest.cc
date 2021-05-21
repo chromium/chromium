@@ -274,7 +274,6 @@ TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
 
   std::u16string expected_number = kFirstTwelveDigits + card.number();
 
-  // TODO(crbug/1187858): Fill in correct renderer ID here.
   content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
   ASSERT_TRUE(rfh);
   FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),

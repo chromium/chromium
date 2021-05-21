@@ -1835,10 +1835,6 @@ void WebFormControlElementToFormField(
   field->name = element.NameForAutofill().Utf16();
   field->id_attribute = element.GetIdAttribute().Utf16();
   field->name_attribute = element.GetAttribute(*kName).Utf16();
-  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer)) {
-    field->host_frame = LocalFrameToken(
-        element.GetDocument().GetFrame()->GetLocalFrameToken().value());
-  }
   field->unique_renderer_id =
       FieldRendererId(element.UniqueRendererFormControlId());
   field->form_control_ax_id = element.GetAxId();
@@ -2003,8 +1999,6 @@ bool WebFormElementToFormData(
     return false;
 
   form->name = GetFormIdentifier(form_element);
-  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer))
-    form->host_frame = LocalFrameToken(frame->GetLocalFrameToken().value());
   form->unique_renderer_id =
       FormRendererId(form_element.UniqueRendererFormId());
   if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer))
@@ -2074,8 +2068,6 @@ bool UnownedFormElementsAndFieldSetsToFormData(
   if (!frame)
     return false;
 
-  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer))
-    form->host_frame = LocalFrameToken(frame->GetLocalFrameToken().value());
   form->unique_renderer_id = FormRendererId();
   if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer))
     form->url = GetCanonicalOriginForDocument(document);

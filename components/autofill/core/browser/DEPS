@@ -19,7 +19,6 @@ include_rules = [
   "+components/version_info",
   "+components/webdata/common",
   "+components/webdata_services",
-  "+content/public/test",
   "+crypto/hkdf.h",
   "+crypto/random.h",
   "+google_apis/gaia",
@@ -38,6 +37,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  ".*test.(cc|h)": [
+    "+content/public/test",
+  ],
   "autofill_download_manager_unittest\.cc": [
     "+services/network/test",
   ],

@@ -158,6 +158,11 @@ void CreateTestCreditCardFormData(FormData* form,
                                   bool split_names = false,
                                   const char* unique_id = nullptr);
 
+// Strips those members from |form| and |field| that are not serialized via
+// mojo, i.e., resets them to `{}`.
+FormData WithoutUnserializedData(FormData form);
+FormFieldData WithoutUnserializedData(FormFieldData field);
+
 // Returns a full profile with valid info according to rules for Canada.
 AutofillProfile GetFullValidProfileForCanada();
 

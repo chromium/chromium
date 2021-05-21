@@ -127,7 +127,7 @@ bool FormData::IdentityComparator::operator()(const FormData& a,
   // set; the other members compared below together uniquely identify the form
   // as well.
   auto tie = [](const FormData& f) {
-    return std::tie(f.unique_renderer_id, f.name, f.id_attribute,
+    return std::tie(f.host_frame, f.unique_renderer_id, f.name, f.id_attribute,
                     f.name_attribute, f.url, f.action, f.is_form_tag);
   };
   if (tie(a) < tie(b))
@@ -237,6 +237,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormData& form) {
   buffer << Tag{"div"} << Attrib{"class", "form"};
   buffer << Tag{"table"};
   buffer << Tr{} << "Form name:" << form.name;
+  buffer << Tr{} << "Host frame:" << form.host_frame.ToString();
   buffer << Tr{} << "Unique renderer Id:" << form.unique_renderer_id.value();
   buffer << Tr{} << "URL:" << form.url;
   buffer << Tr{} << "Action:" << form.action;

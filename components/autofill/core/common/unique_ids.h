@@ -34,6 +34,8 @@ using FormRendererIdType = ::util::IdTypeU32<class FormRendererIdMarker>;
 
 using FieldRendererIdType = ::util::IdTypeU32<class FieldRendererIdMarker>;
 
+// TODO(crbug/1207920) Move to core/browser once browser-specific parts of
+// FormData, FormFieldData are split off.
 template <typename RendererId>
 struct GlobalId {
   LocalFrameToken frame_token;
@@ -79,6 +81,8 @@ class FieldRendererId : public internal::FieldRendererIdType {
   using internal::FieldRendererIdType::IdType;
 };
 
+// TODO(crbug/1207920) Move to core/browser once browser-specific parts of
+// FormData, FormFieldData are split off.
 using FormGlobalId = internal::GlobalId<FormRendererId>;
 using FieldGlobalId = internal::GlobalId<FieldRendererId>;
 

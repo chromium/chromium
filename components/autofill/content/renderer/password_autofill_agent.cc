@@ -1110,8 +1110,6 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
       password_forms_data.push_back(FormData());
       if (base::FeatureList::IsEnabled(
               features::kAutofillAugmentFormsInRenderer)) {
-        password_forms_data.back().host_frame =
-            autofill::LocalFrameToken(frame->GetLocalFrameToken().value());
         password_forms_data.back().url =
             form_util::GetCanonicalOriginForDocument(frame->GetDocument());
         password_forms_data.back().full_url =

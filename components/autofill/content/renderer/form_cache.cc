@@ -380,6 +380,10 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
       std::string field_id =
           base::NumberToString(field_data.unique_renderer_id.value());
 
+      blink::LocalFrameToken frame_token;
+      if (auto* frame = element.GetDocument().GetFrame())
+        frame_token = frame->GetLocalFrameToken();
+
       std::string title = base::StrCat({"overall type: ",
                                         field.overall_type,
                                         "\nserver type: ",
@@ -396,10 +400,8 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
                                         field.signature,
                                         "\nform signature: ",
                                         form.signature,
-                                        "\nform frame token: ",
-                                        form.data.host_frame.ToString(),
                                         "\nfield frame token: ",
-                                        field_data.host_frame.ToString(),
+                                        frame_token.ToString(),
                                         "\nform renderer id: ",
                                         form_id,
                                         "\nfield renderer id: ",

@@ -189,7 +189,6 @@ void VerifyNoSubmitMessagesReceived(
 
 FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
   FormData data;
-  data.host_frame = LocalFrameToken(main_frame->GetLocalFrameToken().value());
   data.name = u"name";
   data.url = GURL("http://example.com/");
   data.action = GURL("http://example.com/blade.php");
@@ -207,8 +206,6 @@ FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
   field_data.name = u"fname";
   field_data.value = u"John";
   field_data.is_autofilled = true;
-  field_data.host_frame = LocalFrameToken(
-      fname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
   field_data.unique_renderer_id =
       FieldRendererId(fname_element.UniqueRendererFormControlId());
   data.fields.push_back(field_data);
@@ -217,8 +214,6 @@ FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
   field_data.value = u"Smith";
   field_data.is_autofilled = true;
   if (!lname_element.IsNull()) {
-    field_data.host_frame = LocalFrameToken(
-        lname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
     field_data.unique_renderer_id =
         FieldRendererId(lname_element.UniqueRendererFormControlId());
   }
@@ -271,7 +266,6 @@ void SimulateFillFormWithNonFillableFields(
   ASSERT_FALSE(lname_element.IsNull());
 
   FormData data;
-  data.host_frame = LocalFrameToken(main_frame->GetLocalFrameToken().value());
   data.name = u"name";
   data.url = GURL("http://example.com/");
   data.action = GURL("http://example.com/blade.php");
@@ -281,8 +275,6 @@ void SimulateFillFormWithNonFillableFields(
   field_data.name = u"fname";
   field_data.value = u"John";
   field_data.is_autofilled = true;
-  field_data.host_frame = LocalFrameToken(
-      fname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
   field_data.unique_renderer_id =
       FieldRendererId(fname_element.UniqueRendererFormControlId());
   data.fields.push_back(field_data);
@@ -290,8 +282,6 @@ void SimulateFillFormWithNonFillableFields(
   field_data.name = u"lname";
   field_data.value = u"Smith";
   field_data.is_autofilled = true;
-  field_data.host_frame = LocalFrameToken(
-      lname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
   field_data.unique_renderer_id =
       FieldRendererId(lname_element.UniqueRendererFormControlId());
   data.fields.push_back(field_data);
@@ -300,8 +290,6 @@ void SimulateFillFormWithNonFillableFields(
   field_data.name = u"mname";
   field_data.value = u"James";
   field_data.is_autofilled = false;
-  field_data.host_frame = LocalFrameToken(
-      mname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
   field_data.unique_renderer_id =
       FieldRendererId(mname_element.UniqueRendererFormControlId());
   data.fields.push_back(field_data);
