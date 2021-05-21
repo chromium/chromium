@@ -54,6 +54,7 @@ class AnchorElementMetricsTest : public SimTest {
 
   base::test::ScopedFeatureList feature_list_;
 };
+
 constexpr int AnchorElementMetricsTest::kViewportWidth;
 constexpr int AnchorElementMetricsTest::kViewportHeight;
 
@@ -122,6 +123,90 @@ TEST_F(AnchorElementMetricsTest, AnchorFeatureImageLink) {
   EXPECT_TRUE(metrics->contains_image);
   EXPECT_TRUE(metrics->is_same_host);
   EXPECT_FALSE(metrics->is_url_incremented_by_one);
+}
+
+// The main frame contains one anchor element without a text sibling.
+TEST_F(AnchorElementMetricsTest, AnchorWithoutTextSibling) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(
+      R"HTML(<body><a id='anchor' href="https://example.com/page2">foo</a></body>)HTML");
+
+  Element* anchor = GetDocument().getElementById("anchor");
+  auto* anchor_element = To<HTMLAnchorElement>(anchor);
+
+  auto metrics = CreateAnchorElementMetrics(*anchor_element);
+  EXPECT_FALSE(metrics->has_text_sibling);
+}
+
+// The main frame contains one anchor element with empty text siblings.
+TEST_F(AnchorElementMetricsTest, AnchorWithEmptyTextSibling) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(
+      R"HTML(<body> <a id='anchor' href="https://example.com/page2">foo</a> </body>)HTML");
+
+  Element* anchor = GetDocument().getElementById("anchor");
+  auto* anchor_element = To<HTMLAnchorElement>(anchor);
+
+  auto metrics = CreateAnchorElementMetrics(*anchor_element);
+  EXPECT_FALSE(metrics->has_text_sibling);
+}
+
+// The main frame contains one anchor element with a previous text sibling.
+TEST_F(AnchorElementMetricsTest, AnchorWithPreviousTextSibling) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(
+      R"HTML(<body>bar<a id='anchor' href="https://example.com/page2">foo</a></body>)HTML");
+
+  Element* anchor = GetDocument().getElementById("anchor");
+  auto* anchor_element = To<HTMLAnchorElement>(anchor);
+
+  auto metrics = CreateAnchorElementMetrics(*anchor_element);
+  EXPECT_TRUE(metrics->has_text_sibling);
+}
+
+// The main frame contains one anchor element with a next text sibling.
+TEST_F(AnchorElementMetricsTest, AnchorWithNextTextSibling) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(
+      R"HTML(<body><a id='anchor' href="https://example.com/page2">foo</a>bar</body>)HTML");
+
+  Element* anchor = GetDocument().getElementById("anchor");
+  auto* anchor_element = To<HTMLAnchorElement>(anchor);
+
+  auto metrics = CreateAnchorElementMetrics(*anchor_element);
+  EXPECT_TRUE(metrics->has_text_sibling);
+}
+
+// The main frame contains one anchor element with a font size of 23px.
+TEST_F(AnchorElementMetricsTest, AnchorFontSize) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(
+      R"HTML(<body><a id='anchor' style="font-size: 23px" href="https://example.com/page2">foo</a>bar</body>)HTML");
+
+  Element* anchor = GetDocument().getElementById("anchor");
+  auto* anchor_element = To<HTMLAnchorElement>(anchor);
+
+  auto metrics = CreateAnchorElementMetrics(*anchor_element);
+  EXPECT_EQ(metrics->font_size_px, 23u);
+}
+
+// The main frame contains one anchor element with a font weight of 438.
+TEST_F(AnchorElementMetricsTest, AnchorFontWeight) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(
+      R"HTML(<body><a id='anchor' style='font-weight: 438' href="https://example.com/page2">foo</a>bar</body>)HTML");
+
+  Element* anchor = GetDocument().getElementById("anchor");
+  auto* anchor_element = To<HTMLAnchorElement>(anchor);
+
+  auto metrics = CreateAnchorElementMetrics(*anchor_element);
+  EXPECT_EQ(metrics->font_weight, 438u);
 }
 
 // The main frame contains an anchor element.

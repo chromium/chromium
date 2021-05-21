@@ -56,6 +56,16 @@ struct AnchorElementMetrics {
   // and the number in target URL equals the one in host URL plus one.
   bool is_url_incremented_by_one;
 
+  // Whether the anchor element has an immediate sibling that is a text node.
+  bool has_text_sibling;
+
+  // The font size in pixels of the anchor element according to its computed
+  // style.
+  uint32 font_size_px;
+
+  // The font weight of the anchor element according to its computed style.
+  uint32 font_weight;
+
   // The source URL of the root document and the target URL (href) specified by
   // the anchor element. URLs sent from a renderer process are not trusted,
   // however it is intended here since it is only used for metrics calculation.
@@ -77,6 +87,10 @@ struct AnchorElementClick {
 struct AnchorElementEnteredViewport {
   // The ID of the anchor that entered the viewport.
   uint32 anchor_id;
+
+  // The time between navigation start and the time the anchor element entered
+  // the viewport in milliseconds.
+  uint64 navigation_start_to_entered_viewport_ms;
 };
 
 // An interface to pass descriptive information about anchor elements from
