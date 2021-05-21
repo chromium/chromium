@@ -7,7 +7,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.password_manager.PasswordManagerDialogContents;
 import org.chromium.chrome.browser.password_manager.PasswordManagerDialogCoordinator;
 import org.chromium.ui.base.WindowAndroid;
@@ -24,15 +24,16 @@ public class SafeBrowsingPasswordReuseDialogBridge {
     // objects.
     private final PasswordManagerDialogCoordinator mDialogCoordinator;
     // Used to initialize the custom view of the dialog.
-    private final WeakReference<ChromeActivity> mActivity;
+    private final WindowAndroid mWindowAndroid;
 
     private SafeBrowsingPasswordReuseDialogBridge(
             WindowAndroid windowAndroid, long nativePasswordReuseDialogViewAndroid) {
         mNativePasswordReuseDialogViewAndroid = nativePasswordReuseDialogViewAndroid;
-        ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
-        mActivity = new WeakReference<>(activity);
-        mDialogCoordinator = new PasswordManagerDialogCoordinator(activity.getModalDialogManager(),
-                activity.findViewById(android.R.id.content), activity.getBrowserControlsManager());
+        mWindowAndroid = windowAndroid;
+        mDialogCoordinator =
+                new PasswordManagerDialogCoordinator(mWindowAndroid.getModalDialogManager(),
+                        mWindowAndroid.getActivity().get().findViewById(android.R.id.content),
+                        BrowserControlsManagerSupplier.getValueOrNullFrom(mWindowAndroid));
     }
 
     @CalledByNative
@@ -44,13 +45,13 @@ public class SafeBrowsingPasswordReuseDialogBridge {
     @CalledByNative
     public void showDialog(String dialogTitle, String dialogDetails, String buttonText,
             int[] boldStartRanges, int[] boldEndRanges) {
-        if (mActivity.get() == null) return;
+        if (mWindowAndroid.getActivity().get() == null) return;
 
         PasswordManagerDialogContents contents =
                 createDialogContents(dialogTitle, dialogDetails, buttonText);
         contents.setBoldRanges(boldStartRanges, boldEndRanges);
 
-        mDialogCoordinator.initialize(mActivity.get(), contents);
+        mDialogCoordinator.initialize(mWindowAndroid.getActivity().get(), contents);
         mDialogCoordinator.showDialog();
     }
 
