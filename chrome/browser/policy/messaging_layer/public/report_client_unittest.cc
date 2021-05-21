@@ -87,6 +87,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
       // Prepare the key.
       signed_encryption_key_ = GenerateAndSignKey();
     } else {
+      // Disable encryption.
       scoped_feature_list_.InitFromCommandLine("EncryptedReportingPipeline",
                                                "EncryptedReporting");
     }
@@ -127,7 +128,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     auto prepare_key_result = prepare_key_pair.result();
     DCHECK(prepare_key_result.ok());
     public_key_id = prepare_key_result.ValueOrDie();
-    // Deliver public key to storage.
+    // Prepare public key to be delivered to Storage.
     SignedEncryptionInfo signed_encryption_key;
     signed_encryption_key.set_public_asymmetric_key(
         std::string(reinterpret_cast<const char*>(public_value), kKeySize));
@@ -154,44 +155,12 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     return signed_encryption_key;
   }
 
-  std::unique_ptr<ReportQueue> CreateQueue(bool expect_key_roundtrip) {
+  std::unique_ptr<ReportQueue> CreateQueue() {
     auto config_result = ReportQueueConfiguration::Create(
         dm_token_, destination_, policy_checker_callback_);
     EXPECT_TRUE(config_result.ok());
 
     test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> create_queue_event;
-    if (expect_key_roundtrip) {
-      EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
-          .WillOnce(WithArgs<0, 2>(Invoke(
-              [this](base::Value payload,
-                     policy::CloudPolicyClient::ResponseCallback done_cb) {
-                absl::optional<bool> const attach_encryption_settings =
-                    payload.FindBoolKey("attachEncryptionSettings");
-                ASSERT_TRUE(attach_encryption_settings.has_value());
-                ASSERT_TRUE(attach_encryption_settings
-                                .value());  // If set, must be true.
-                ASSERT_TRUE(is_encryption_enabled());
-
-                base::Value encryption_settings{base::Value::Type::DICTIONARY};
-                std::string public_key;
-                base::Base64Encode(
-                    signed_encryption_key_.public_asymmetric_key(),
-                    &public_key);
-                encryption_settings.SetStringKey("publicKey", public_key);
-                encryption_settings.SetIntKey(
-                    "publicKeyId", signed_encryption_key_.public_key_id());
-                std::string public_key_signature;
-                base::Base64Encode(signed_encryption_key_.signature(),
-                                   &public_key_signature);
-                encryption_settings.SetStringKey("publicKeySignature",
-                                                 public_key_signature);
-                base::Value response{base::Value::Type::DICTIONARY};
-                response.SetPath("encryptionSettings",
-                                 std::move(encryption_settings));
-                std::move(done_cb).Run(std::move(response));
-              })))
-          .RetiresOnSaturation();
-    }
     ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),
                                      create_queue_event.cb());
     auto result = create_queue_event.result();
@@ -233,30 +202,61 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
 
 // Tests that a ReportQueue can be created using the ReportingClient.
 TEST_P(ReportClientTest, CreatesReportQueue) {
-  auto report_queue = CreateQueue(is_encryption_enabled());
+  auto report_queue = CreateQueue();
   ASSERT_THAT(report_queue.get(), Ne(nullptr));
 }
 
 // Ensures that created ReportQueues are actually different.
 TEST_P(ReportClientTest, CreatesTwoDifferentReportQueues) {
   // Create first queue.
-  auto report_queue_1 = CreateQueue(is_encryption_enabled());
+  auto report_queue_1 = CreateQueue();
   ASSERT_THAT(report_queue_1.get(), Ne(nullptr));
 
   // Create second queue. It will reuse the same ReportClient, so even if
   // encryption is enabled, there will be no roundtrip to server to get the key.
-  auto report_queue_2 = CreateQueue(/*expect_key_roundtrip=*/false);
+  auto report_queue_2 = CreateQueue();
   ASSERT_THAT(report_queue_2.get(), Ne(nullptr));
 
   EXPECT_NE(report_queue_1.get(), report_queue_2.get());
 }
 
-// Creates queue, enqueues messages and verifies they are uploaded.
+// Creates queue, enqueues message and verifies it is uploaded.
 TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
   // Create queue.
-  auto report_queue = CreateQueue(is_encryption_enabled());
+  auto report_queue = CreateQueue();
 
   // Enqueue event.
+  if (is_encryption_enabled()) {
+    EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+        .WillOnce(WithArgs<0, 2>(
+            Invoke([this](base::Value payload,
+                          policy::CloudPolicyClient::ResponseCallback done_cb) {
+              absl::optional<bool> const attach_encryption_settings =
+                  payload.FindBoolKey("attachEncryptionSettings");
+              ASSERT_TRUE(attach_encryption_settings.has_value());
+              ASSERT_TRUE(
+                  attach_encryption_settings.value());  // If set, must be true.
+              ASSERT_TRUE(is_encryption_enabled());
+
+              base::Value encryption_settings{base::Value::Type::DICTIONARY};
+              std::string public_key;
+              base::Base64Encode(signed_encryption_key_.public_asymmetric_key(),
+                                 &public_key);
+              encryption_settings.SetStringKey("publicKey", public_key);
+              encryption_settings.SetIntKey(
+                  "publicKeyId", signed_encryption_key_.public_key_id());
+              std::string public_key_signature;
+              base::Base64Encode(signed_encryption_key_.signature(),
+                                 &public_key_signature);
+              encryption_settings.SetStringKey("publicKeySignature",
+                                               public_key_signature);
+              base::Value response{base::Value::Type::DICTIONARY};
+              response.SetPath("encryptionSettings",
+                               std::move(encryption_settings));
+              std::move(done_cb).Run(std::move(response));
+            })))
+        .RetiresOnSaturation();
+  }
   test::TestEvent<Status> enqueue_record_event;
   report_queue->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
   const auto enqueue_record_result = enqueue_record_event.result();

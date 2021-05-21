@@ -187,9 +187,11 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
   explicit MockUploadClient(
       LastRecordDigestMap* last_record_digest_map,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
+      base::OnceClosure key_generation,
       scoped_refptr<test::Decryptor> decryptor)
       : last_record_digest_map_(last_record_digest_map),
         sequenced_task_runner_(sequenced_task_runner),
+        key_generation_(std::move(key_generation)),
         decryptor_(decryptor) {}
 
   void ProcessRecord(EncryptedRecord encrypted_record,
@@ -266,6 +268,8 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
   }
 
   void Completed(Status status) override { UploadComplete(status); }
+
+  void KeyGeneration() { std::move(key_generation_).Run(); }
 
   MOCK_METHOD(void, EncounterSeqId, (Priority, int64_t), (const));
   MOCK_METHOD(bool,
@@ -370,7 +374,11 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
     ~SetKeyDelivery() {
       EXPECT_CALL(*client_, UploadRecord(_, _, _)).Times(0);
       EXPECT_CALL(*client_, UploadRecordFailure(_, _, _)).Times(0);
-      EXPECT_CALL(*client_, UploadComplete(Eq(Status::StatusOK()))).Times(1);
+      EXPECT_CALL(*client_, UploadComplete(Eq(Status::StatusOK())))
+          .WillOnce(
+              // Provision the storage with a key.
+              // Key delivery must have been requested above.
+              Invoke(client_, &MockUploadClient::KeyGeneration));
     }
 
    private:
@@ -479,6 +487,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
   LastRecordDigestMap* const last_record_digest_map_;
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
+  base::OnceClosure key_generation_;
   const scoped_refptr<test::Decryptor> decryptor_;
 
   Sequence test_encounter_sequence_;
@@ -509,7 +518,9 @@ class StorageTest
       auto decryptor_result = test::Decryptor::Create();
       ASSERT_OK(decryptor_result.status()) << decryptor_result.status();
       decryptor_ = std::move(decryptor_result.ValueOrDie());
-      // First creation of Storage would need key delivered.
+      // Prepare the key.
+      signed_encryption_key_ = GenerateAndSignKey();
+      // First record enqueue to Storage would need key delivered.
       expect_to_need_key_ = true;
     } else {
       // Disable encryption.
@@ -530,6 +541,14 @@ class StorageTest
   StatusOr<scoped_refptr<Storage>> CreateTestStorage(
       const StorageOptions& options,
       scoped_refptr<EncryptionModuleInterface> encryption_module) {
+    // Initialize Storage with no key.
+    test::TestEvent<StatusOr<scoped_refptr<Storage>>> e;
+    Storage::Create(options,
+                    base::BindRepeating(&StorageTest::AsyncStartMockUploader,
+                                        base::Unretained(this)),
+                    encryption_module, e.cb());
+    ASSIGN_OR_RETURN(auto storage, e.result());
+
     if (expect_to_need_key_) {
       // Set uploader expectations for any queue; expect no records and need
       // key. Make sure no uploads happen, and key is requested.
@@ -541,20 +560,7 @@ class StorageTest
           })))
           .RetiresOnSaturation();
     }
-    // Initialize Storage with no key.
-    test::TestEvent<StatusOr<scoped_refptr<Storage>>> e;
-    Storage::Create(options,
-                    base::BindRepeating(&StorageTest::AsyncStartMockUploader,
-                                        base::Unretained(this)),
-                    encryption_module, e.cb());
-    ASSIGN_OR_RETURN(auto storage, e.result());
-    // Let asynchronous activity finish.
-    task_environment_.RunUntilIdle();
-    if (expect_to_need_key_) {
-      // Provision the storage with a key.
-      // Key delivery must have been requested above.
-      GenerateAndDeliverKey(storage.get());
-    }
+
     return storage;
   }
 
@@ -618,7 +624,11 @@ class StorageTest
       bool need_encryption_key,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
     auto uploader = std::make_unique<MockUploadClient>(
-        &last_record_digest_map_, sequenced_task_runner_, decryptor_);
+        &last_record_digest_map_, sequenced_task_runner_,
+        base::BindOnce(&Storage::UpdateEncryptionKey,
+                       base::Unretained(storage_.get()),
+                       signed_encryption_key_),
+        decryptor_);
     const auto status = set_mock_uploader_expectations_.Call(
         priority, need_encryption_key, uploader.get());
     if (!status.ok()) {
@@ -667,8 +677,8 @@ class StorageTest
     ASSERT_OK(c_result) << c_result;
   }
 
-  void GenerateAndDeliverKey(Storage* storage) {
-    ASSERT_TRUE(decryptor_) << "Decryptor not created";
+  SignedEncryptionInfo GenerateAndSignKey() {
+    DCHECK(decryptor_) << "Decryptor not created";
     // Generate new pair of private key and public value.
     uint8_t private_key[kKeySize];
     Encryptor::PublicKeyId public_key_id;
@@ -680,9 +690,9 @@ class StorageTest
         std::string(reinterpret_cast<const char*>(public_value), kKeySize),
         prepare_key_pair.cb());
     auto prepare_key_result = prepare_key_pair.result();
-    ASSERT_OK(prepare_key_result.status());
+    DCHECK(prepare_key_result.ok());
     public_key_id = prepare_key_result.ValueOrDie();
-    // Deliver public key to storage.
+    // Prepare signed encryption key to be delivered to Storage.
     SignedEncryptionInfo signed_encryption_key;
     signed_encryption_key.set_public_asymmetric_key(
         std::string(reinterpret_cast<const char*>(public_value), kKeySize));
@@ -701,12 +711,12 @@ class StorageTest
     signed_encryption_key.set_signature(
         std::string(reinterpret_cast<const char*>(signature), kSignatureSize));
     // Double check signature.
-    ASSERT_TRUE(VerifySignature(
+    DCHECK(VerifySignature(
         signature_verification_public_key_,
         base::StringPiece(reinterpret_cast<const char*>(value_to_sign),
                           sizeof(value_to_sign)),
         signature));
-    storage->UpdateEncryptionKey(signed_encryption_key);
+    return signed_encryption_key;
   }
 
   bool is_encryption_enabled() const { return ::testing::get<0>(GetParam()); }
@@ -725,6 +735,7 @@ class StorageTest
   base::ScopedTempDir location_;
   scoped_refptr<test::Decryptor> decryptor_;
   scoped_refptr<Storage> storage_;
+  SignedEncryptionInfo signed_encryption_key_;
   bool expect_to_need_key_{false};
   std::atomic<size_t> key_delivery_failure_count_{0};
 
@@ -1364,6 +1375,7 @@ TEST_P(StorageTest, WriteEncryptFailure) {
   test_encryption_module->UpdateAsymmetricKey("DUMMY KEY", 0,
                                               key_update_event.cb());
   ASSERT_OK(key_update_event.result());
+  expect_to_need_key_ = false;
   CreateTestStorageOrDie(BuildTestStorageOptions(), test_encryption_module);
   EXPECT_CALL(*test_encryption_module, EncryptRecordImpl(_, _))
       .WillOnce(WithArg<1>(
@@ -1476,7 +1488,7 @@ TEST_P(StorageTest, ForceConfirm) {
   }
 }
 
-TEST_P(StorageTest, KayDeliveryFailureOnNewStorage) {
+TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
   static constexpr size_t kFailuresCount = 3;
 
   if (!is_encryption_enabled()) {
@@ -1496,9 +1508,8 @@ TEST_P(StorageTest, KayDeliveryFailureOnNewStorage) {
     // Failing attempt to write
     const Status write_result = WriteString(FAST_BATCH, kData[0]);
     EXPECT_FALSE(write_result.ok());
-    EXPECT_THAT(write_result.error_code(), Eq(error::NOT_FOUND));
-    EXPECT_THAT(write_result.message(),
-                HasSubstr("Cannot encrypt record - no key"));
+    EXPECT_THAT(write_result.error_code(), Eq(error::FAILED_PRECONDITION));
+    EXPECT_THAT(write_result.message(), HasSubstr("Test cannot start upload"));
 
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -1517,13 +1528,6 @@ TEST_P(StorageTest, KayDeliveryFailureOnNewStorage) {
 
   // Forward time to trigger upload
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
-
-  // Let asynchronous activity finish.
-  task_environment_.RunUntilIdle();
-
-  // Provision the storage with a key.
-  // Key delivery must have been requested above.
-  GenerateAndDeliverKey(storage_.get());
 
   // Successfully write data
   WriteStringOrDie(FAST_BATCH, kData[0]);

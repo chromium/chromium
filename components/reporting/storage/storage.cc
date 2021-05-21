@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -170,6 +171,95 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
 
   const Priority priority_;
   const std::unique_ptr<UploaderInterface> storage_interface_;
+};
+
+class Storage::KeyDelivery {
+ public:
+  using RequestCallback = base::OnceCallback<void(Status)>;
+  explicit KeyDelivery(
+      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb)
+      : async_start_upload_cb_(async_start_upload_cb),
+        sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+            {base::TaskPriority::BEST_EFFORT, base::MayBlock()})) {
+    DETACH_FROM_SEQUENCE(sequence_checker_);
+  }
+
+  ~KeyDelivery() = default;
+
+  void Request(RequestCallback callback) {
+    sequenced_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&KeyDelivery::EuqueueRequestAndStart,
+                                  base::Unretained(this), std::move(callback)));
+  }
+
+  void OnCompletion(Status status) {
+    sequenced_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&KeyDelivery::PostResponses,
+                                  base::Unretained(this), status));
+  }
+
+ private:
+  void EuqueueRequestAndStart(RequestCallback callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    const bool first_call = callbacks_.empty();
+    callback_subscriptions_.emplace_back(callbacks_.Add(std::move(callback)));
+    DCHECK(callback_subscriptions_.back());
+    if (!first_call) {
+      // Already started.
+      return;
+    }
+    // The first request, starting the roundtrip.
+    // Initiate upload with need_encryption_key flag and no records.
+    UploaderInterface::UploaderInterfaceResultCb start_uploader_cb =
+        base::BindOnce(&KeyDelivery::EncryptionKeyReceiverReady,
+                       base::Unretained(this));
+    async_start_upload_cb_.Run(
+        /*priority=*/MANUAL_BATCH,  // Any priority would do.
+        /*need_encryption_key=*/true,
+        base::BindOnce(&KeyDelivery::WrapInstantiatedKeyUploader,
+                       /*priority=*/MANUAL_BATCH,
+                       std::move(start_uploader_cb)));
+  }
+
+  void PostResponses(Status status) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    callbacks_.Notify(status);
+    DCHECK(callbacks_.empty());
+    callback_subscriptions_.clear();
+  }
+
+  static void WrapInstantiatedKeyUploader(
+      Priority priority,
+      UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
+      StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
+    if (!uploader_result.ok()) {
+      std::move(start_uploader_cb).Run(uploader_result.status());
+      return;
+    }
+    std::move(start_uploader_cb)
+        .Run(std::make_unique<QueueUploaderInterface>(
+            priority, std::move(uploader_result.ValueOrDie())));
+  }
+
+  void EncryptionKeyReceiverReady(
+      StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
+    if (!uploader_result.ok()) {
+      OnCompletion(uploader_result.status());
+      return;
+    }
+    uploader_result.ValueOrDie()->Completed(Status::StatusOK());
+  }
+
+  // Upload provider callback.
+  const UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
+
+  // List of all request callbacks (protected by |sequenced_task_runner_|).
+  base::OnceCallbackList<void(Status)> callbacks_;
+  std::vector<base::CallbackListSubscription> callback_subscriptions_;
+
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 class Storage::KeyInStorage {
@@ -474,6 +564,7 @@ void Storage::Create(
           storage_->key_in_storage_->DownloadKeyFile();
       if (!download_key_result.ok()) {
         // Key not found or corrupt. Proceed with queues creation directly.
+        // We will download the key on the first Enqueue.
         EncryptionSetUp(download_key_result.status());
         return;
       }
@@ -498,19 +589,10 @@ void Storage::Create(
         // Encryption key has been found and set up. Must be available now.
         DCHECK(storage_->encryption_module_->has_encryption_key());
       } else {
-        if (EncryptionModuleInterface::is_enabled()) {
-          // Initiate upload with need_encryption_key flag and no records.
-          UploaderInterface::UploaderInterfaceResultCb start_uploader_cb =
-              base::BindOnce(&StorageInitContext::EncryptionKeyReceiverReady);
-          storage_->async_start_upload_cb_.Run(
-              /*priority=*/MANUAL_BATCH,  // Any priority would do.
-              /*need_encryption_key=*/true,
-              base::BindOnce(&StorageInitContext::WrapInstantiatedKeyUploader,
-                             /*priority=*/MANUAL_BATCH,
-                             std::move(start_uploader_cb)));
-          // Continue initialization without waiting for it to respond.
-          // Until the response arrives, we will reject Enqueues.
-        }
+        LOG(WARNING)
+            << "Encryption is enabled, but the key is not available yet, "
+               "status="
+            << status;
       }
 
       // Construct all queues.
@@ -527,26 +609,6 @@ void Storage::Create(
             base::BindOnce(&StorageInitContext::ScheduleAddQueue,
                            base::Unretained(this),
                            /*priority=*/queue_options.first));
-      }
-    }
-
-    static void WrapInstantiatedKeyUploader(
-        Priority priority,
-        UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
-        StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
-      if (!uploader_result.ok()) {
-        std::move(start_uploader_cb).Run(uploader_result.status());
-        return;
-      }
-      std::move(start_uploader_cb)
-          .Run(std::make_unique<QueueUploaderInterface>(
-              priority, std::move(uploader_result.ValueOrDie())));
-    }
-
-    static void EncryptionKeyReceiverReady(
-        StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
-      if (uploader_result.ok()) {
-        uploader_result.ValueOrDie()->Completed(Status::StatusOK());
       }
     }
 
@@ -603,10 +665,11 @@ Storage::Storage(const StorageOptions& options,
                  UploaderInterface::AsyncStartUploaderCb async_start_upload_cb)
     : options_(options),
       encryption_module_(encryption_module),
+      key_delivery_(std::make_unique<KeyDelivery>(async_start_upload_cb)),
       key_in_storage_(std::make_unique<KeyInStorage>(
           options.signature_verification_public_key(),
           options.directory())),
-      async_start_upload_cb_(std::move(async_start_upload_cb)) {}
+      async_start_upload_cb_(async_start_upload_cb) {}
 
 Storage::~Storage() = default;
 
@@ -617,7 +680,28 @@ void Storage::Write(Priority priority,
   // no need to protect or serialize access to it.
   ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(scoped_refptr<StorageQueue> queue,
                                      completion_cb, GetQueue(priority));
-  queue->Write(std::move(record), std::move(completion_cb));
+
+  KeyDelivery::RequestCallback action = base::BindOnce(
+      [](scoped_refptr<StorageQueue> queue, Record record,
+         base::OnceCallback<void(Status)> completion_cb, Status status) {
+        if (!status.ok()) {
+          std::move(completion_cb).Run(status);
+          return;
+        }
+        queue->Write(std::move(record), std::move(completion_cb));
+      },
+      queue, std::move(record), std::move(completion_cb));
+
+  if (EncryptionModuleInterface::is_enabled() &&
+      !encryption_module_->has_encryption_key()) {
+    // Key was not found at startup time. Note that if the key is outdated,
+    // we still can't use it, and won't load it now. So this processing can
+    // only happen after Storage is initialized (until the first successful
+    // delivery of a key).
+    key_delivery_->Request(std::move(action));
+  } else {
+    std::move(action).Run(Status::StatusOK());
+  }
 }
 
 void Storage::Confirm(Priority priority,
@@ -646,19 +730,25 @@ void Storage::UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) {
   if (!signature_verification_status.ok()) {
     LOG(WARNING) << "Key failed verification, status="
                  << signature_verification_status;
+    key_delivery_->OnCompletion(signature_verification_status);
     return;
   }
 
   // Assign the received key to encryption module.
   encryption_module_->UpdateAsymmetricKey(
       signed_encryption_key.public_asymmetric_key(),
-      signed_encryption_key.public_key_id(), base::BindOnce([](Status status) {
-        if (!status.ok()) {
-          LOG(WARNING) << "Encryption key update failed, status=" << status;
-          return;
-        }
-        // Encryption key updated successfully.
-      }));
+      signed_encryption_key.public_key_id(),
+      base::BindOnce(
+          [](Storage* storage, Status status) {
+            if (!status.ok()) {
+              LOG(WARNING) << "Encryption key update failed, status=" << status;
+              storage->key_delivery_->OnCompletion(status);
+              return;
+            }
+            // Encryption key updated successfully.
+            storage->key_delivery_->OnCompletion(Status::StatusOK());
+          },
+          base::Unretained(this)));
 
   // Serialize whole signed_encryption_key to a new file, discard the old
   // one(s). Do it on a thread which may block doing file operations.

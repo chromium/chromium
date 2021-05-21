@@ -81,6 +81,11 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // Private helper class for key upload/download to the file system.
   class KeyInStorage;
 
+  // Private helper class for initial key delivery from the server.
+  // It can be invoked multiple times in parallel, but will only do
+  // one server roundtrip and notify all requestors upon its completion.
+  class KeyDelivery;
+
   // Private constructor, to be called by Create factory method only.
   // Queues need to be added afterwards.
   Storage(const StorageOptions& options,
@@ -103,6 +108,9 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
 
   // Encryption module.
   scoped_refptr<EncryptionModuleInterface> encryption_module_;
+
+  // Internal module for initiail key delivery from server.
+  std::unique_ptr<KeyDelivery> key_delivery_;
 
   // Internal key management module.
   std::unique_ptr<KeyInStorage> key_in_storage_;
