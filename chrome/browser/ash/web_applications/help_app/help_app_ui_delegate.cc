@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -158,4 +159,10 @@ void ChromeHelpAppUIDelegate::ShowParentalControls() {
 
 PrefService* ChromeHelpAppUIDelegate::GetLocalState() {
   return g_browser_process->local_state();
+}
+
+void ChromeHelpAppUIDelegate::MaybeShowDiscoverNotification() {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  ash::UserSessionManager::GetInstance()->MaybeShowHelpAppDiscoverNotification(
+      profile);
 }

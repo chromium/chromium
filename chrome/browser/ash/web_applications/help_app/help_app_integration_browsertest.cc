@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/web_applications/help_app/help_app_discover_tab_notification.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -43,6 +44,7 @@
 #include "chromeos/components/help_app_ui/search/search_handler.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -273,23 +275,68 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 #endif
 }
 
-// Test that clicking the discover tab notification opens Help App.
+// Test that discover tab notification shows and has functional interactions.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
-                       HelpAppV2LaunchDiscoverTabFromNotification) {
+                       HelpAppV2DiscoverTabNotification) {
   WaitForTestSystemAppInstall();
+  content::WebContents* web_contents = LaunchApp(web_app::SystemAppType::HELP);
   auto display_service =
       std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
-  auto discover_tab_notification =
-      std::make_unique<chromeos::HelpAppDiscoverTabNotification>(profile());
+  base::UserActionTester user_action_tester;
+  profile()->GetPrefs()->SetString(prefs::kSupervisedUserId,
+                                   supervised_users::kChildAccountSUID);
+  profile()->GetPrefs()->SetInteger(
+      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                prefs::kDiscoverTabSuggestionChipTimesLeftToShow),
+            0);
 
-  discover_tab_notification->Show();
+  // Script that simulates what the Help App background page would do to show
+  // the discover notification.
+  constexpr char kScript[] = R"(
+    (async () => {
+      const app = document.querySelector('showoff-app');
+      await app.getDelegate().maybeShowDiscoverNotification();
+      window.domAutomationController.send(true);
+    })();
+  )";
+  // Use ExecuteScript instead of EvalJsInAppFrame because the script needs to
+  // run in the same world as the page's code.
+  bool script_finished;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript,
+      &script_finished));
+  EXPECT_TRUE(script_finished);
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                prefs::kDiscoverTabSuggestionChipTimesLeftToShow),
+            3);
+  // Close the web contents we just created to simulate what would happen in
+  // production with a background page. This helps us ensure that our
+  // notification shows up and can be interacted with even after the web ui
+  // that triggered it has died.
+  web_contents->Close();
+  // Wait until the web contents closes.
+  // TODO(b/186819234): Add a way to wait for the task instead of polling.
+  base::RunLoop run_loop;
+  base::RepeatingTimer check_timer;
+  auto original_browser_count = chrome::GetTotalBrowserCount();
+  check_timer.Start(
+      FROM_HERE, base::TimeDelta::FromMilliseconds(10),
+      base::BindLambdaForTesting([&]() {
+        if (chrome::GetTotalBrowserCount() == original_browser_count)
+          return;
+        run_loop.QuitClosure().Run();
+      }));
+  run_loop.Run();
+
   // Assert that the notification really is there.
   auto notifications = display_service->GetDisplayedNotificationsForType(
       NotificationHandler::Type::TRANSIENT);
   ASSERT_EQ(1u, notifications.size());
   ASSERT_EQ(chromeos::kShowHelpAppDiscoverTabNotificationId,
             notifications[0].id());
-  // Then click.
+
+  // Click on the notification.
   display_service->SimulateClick(
       NotificationHandler::Type::TRANSIENT,
       chromeos::kShowHelpAppDiscoverTabNotificationId, absl::nullopt,

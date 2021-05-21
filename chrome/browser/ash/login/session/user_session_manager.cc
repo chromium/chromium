@@ -2375,11 +2375,16 @@ void UserSessionManager::MaybeShowU2FNotification() {
 void UserSessionManager::MaybeShowHelpAppNotification(Profile* profile) {
   if (!ProfileHelper::IsPrimaryProfile(profile))
     return;
-  if (!help_app_notification_controller_) {
-    help_app_notification_controller_ =
-        std::make_unique<HelpAppNotificationController>(profile);
-    help_app_notification_controller_->MaybeShowNotification();
-  }
+  // The help app controller takes responsibility of ensuring it doesn't
+  // show a notification twice.
+  GetHelpAppNotificationController(profile)->MaybeShowNotification();
+}
+
+void UserSessionManager::MaybeShowHelpAppDiscoverNotification(
+    Profile* profile) {
+  if (!ProfileHelper::IsPrimaryProfile(profile))
+    return;
+  GetHelpAppNotificationController(profile)->MaybeShowDiscoverNotification();
 }
 
 void UserSessionManager::CreateTokenUtilIfMissing() {
@@ -2457,6 +2462,15 @@ void UserSessionManager::OnUserEligibleForOnboardingSurvey(Profile* profile) {
 void UserSessionManager::LoadShillProfile(const AccountId& account_id) {
   SessionManagerClient::Get()->LoadShillProfile(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id));
+}
+
+HelpAppNotificationController*
+UserSessionManager::GetHelpAppNotificationController(Profile* profile) {
+  if (!help_app_notification_controller_) {
+    help_app_notification_controller_ =
+        std::make_unique<HelpAppNotificationController>(profile);
+  }
+  return help_app_notification_controller_.get();
 }
 
 }  // namespace ash

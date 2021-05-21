@@ -47,3 +47,7 @@ void HelpAppPageHandler::IsLauncherSearchEnabled(
     IsLauncherSearchEnabledCallback callback) {
   std::move(callback).Run(is_launcher_search_enabled_);
 }
+
+void HelpAppPageHandler::MaybeShowDiscoverNotification() {
+  help_app_ui_->delegate()->MaybeShowDiscoverNotification();
+}

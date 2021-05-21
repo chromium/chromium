@@ -12,6 +12,7 @@
 #include "base/version.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_discover_tab_notification.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -23,6 +24,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/version_info/version_info.h"
@@ -136,15 +138,17 @@ TEST_F(HelpAppNotificationControllerTest,
   controller->MaybeShowNotification();
 
   EXPECT_EQ(0, notification_count_);
-  EXPECT_EQ(false, HasDiscoverTabNotification());
   EXPECT_EQ(false, HasReleaseNotesNotification());
+
+  controller->MaybeShowDiscoverNotification();
+
+  EXPECT_EQ(0, notification_count_);
+  EXPECT_EQ(false, HasDiscoverTabNotification());
 }
 
 TEST_F(HelpAppNotificationControllerTest,
-       ShowsReleaseNotesNotificationIfBothShownInOlderMilestone) {
+       ShowsReleaseNotesNotificationIfShownInOlderMilestone) {
   std::unique_ptr<Profile> profile = CreateRegularProfile();
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
   profile->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, 20);
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
@@ -152,27 +156,23 @@ TEST_F(HelpAppNotificationControllerTest,
   controller->MaybeShowNotification();
 
   EXPECT_EQ(1, notification_count_);
-  EXPECT_EQ(false, HasDiscoverTabNotification());
   EXPECT_EQ(true, HasReleaseNotesNotification());
   EXPECT_EQ(CurrentMilestone(), profile->GetPrefs()->GetInteger(
                                     prefs::kReleaseNotesLastShownMilestone));
 }
 
 TEST_F(HelpAppNotificationControllerTest,
-       DoesNotShowReleaseNotesNotificationIfAlreadyShownInCurrentMilestone) {
+       DoesNotShowDiscoverNotificationIfNotChildProfile) {
   std::unique_ptr<Profile> profile = CreateRegularProfile();
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
-  profile->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
-                                  CurrentMilestone());
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
+  profile->GetPrefs()->SetInteger(
+      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
 
-  controller->MaybeShowNotification();
+  controller->MaybeShowDiscoverNotification();
 
   EXPECT_EQ(0, notification_count_);
   EXPECT_EQ(false, HasDiscoverTabNotification());
-  EXPECT_EQ(false, HasReleaseNotesNotification());
 }
 
 // Tests for Child profile.
@@ -185,62 +185,56 @@ TEST_F(HelpAppNotificationControllerTest,
   controller->MaybeShowNotification();
 
   EXPECT_EQ(0, notification_count_);
-  EXPECT_EQ(false, HasDiscoverTabNotification());
   EXPECT_EQ(false, HasReleaseNotesNotification());
-}
 
-TEST_F(HelpAppNotificationControllerTest,
-       OnlyShowsDiscoverTabNotificationIfBothShownInOlderMilestone) {
-  std::unique_ptr<Profile> profile = CreateChildProfile();
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
-  profile->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, 20);
-  std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
-
-  controller->MaybeShowNotification();
-
-  EXPECT_EQ(1, notification_count_);
-  EXPECT_EQ(true, HasDiscoverTabNotification());
-  EXPECT_EQ(false, HasReleaseNotesNotification());
-  EXPECT_EQ(CurrentMilestone(),
-            profile->GetPrefs()->GetInteger(
-                prefs::kDiscoverTabNotificationLastShownMilestone));
-}
-
-TEST_F(HelpAppNotificationControllerTest, FallsbackToReleaseNotesNotification) {
-  std::unique_ptr<Profile> profile = CreateChildProfile();
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, CurrentMilestone());
-  profile->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, 20);
-  std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
-
-  controller->MaybeShowNotification();
-
-  EXPECT_EQ(1, notification_count_);
-  EXPECT_EQ(false, HasDiscoverTabNotification());
-  EXPECT_EQ(true, HasReleaseNotesNotification());
-  EXPECT_EQ(CurrentMilestone(),
-            profile->GetPrefs()->GetInteger(
-                prefs::kDiscoverTabNotificationLastShownMilestone));
-}
-
-TEST_F(HelpAppNotificationControllerTest,
-       DoesNotShowNotificationIfAlreadyShownInCurrentMilestone) {
-  std::unique_ptr<Profile> profile = CreateChildProfile();
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, CurrentMilestone());
-  profile->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
-                                  CurrentMilestone());
-  std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
-
-  controller->MaybeShowNotification();
+  controller->MaybeShowDiscoverNotification();
 
   EXPECT_EQ(0, notification_count_);
   EXPECT_EQ(false, HasDiscoverTabNotification());
-  EXPECT_EQ(false, HasReleaseNotesNotification());
+}
+
+TEST_F(HelpAppNotificationControllerTest,
+       DoesNotShowDiscoverNotificationIfAlreadyShownInCurrentMilestone) {
+  std::unique_ptr<Profile> profile = CreateChildProfile();
+  profile->GetPrefs()->SetInteger(
+      prefs::kDiscoverTabNotificationLastShownMilestone, CurrentMilestone());
+  std::unique_ptr<HelpAppNotificationController> controller =
+      std::make_unique<HelpAppNotificationController>(profile.get());
+
+  controller->MaybeShowDiscoverNotification();
+
+  EXPECT_EQ(0, notification_count_);
+  EXPECT_EQ(false, HasDiscoverTabNotification());
+}
+
+// TODO(b/187774783): Remove this when discover tab is supported in all locales.
+TEST_F(HelpAppNotificationControllerTest,
+       DoesNotShowDiscoverNotificationIfSystemLanguageNotEnglish) {
+  std::unique_ptr<Profile> profile = CreateChildProfile();
+  g_browser_process->SetApplicationLocale("fr");
+  profile->GetPrefs()->SetInteger(
+      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
+  std::unique_ptr<HelpAppNotificationController> controller =
+      std::make_unique<HelpAppNotificationController>(profile.get());
+
+  controller->MaybeShowDiscoverNotification();
+
+  EXPECT_EQ(0, notification_count_);
+  EXPECT_EQ(false, HasDiscoverTabNotification());
+}
+
+TEST_F(HelpAppNotificationControllerTest,
+       DoesShowDiscoverNotificationIfShownInPreviousMilestone) {
+  std::unique_ptr<Profile> profile = CreateChildProfile();
+  profile->GetPrefs()->SetInteger(
+      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
+  std::unique_ptr<HelpAppNotificationController> controller =
+      std::make_unique<HelpAppNotificationController>(profile.get());
+
+  controller->MaybeShowDiscoverNotification();
+
+  EXPECT_EQ(1, notification_count_);
+  EXPECT_EQ(true, HasDiscoverTabNotification());
 }
 
 // Tests for suggestion chips.
@@ -253,15 +247,11 @@ TEST_F(HelpAppNotificationControllerTest,
 
   EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
-  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
-                   prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
 
   controller->MaybeShowNotification();
 
   EXPECT_EQ(3, profile->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
-  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
-                   prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
 }
 
 TEST_F(HelpAppNotificationControllerTest,
@@ -274,13 +264,9 @@ TEST_F(HelpAppNotificationControllerTest,
 
   EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
-  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
-                   prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
 
-  controller->MaybeShowNotification();
+  controller->MaybeShowDiscoverNotification();
 
-  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
-                   prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
   EXPECT_EQ(3, profile->GetPrefs()->GetInteger(
                    prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
 }

@@ -9,14 +9,17 @@
 #include "base/version.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_discover_tab_notification.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -41,6 +44,16 @@ bool ShouldShowDiscoverTabNotification(Profile* profile) {
   }
 
   if (!profile->IsChild()) {
+    return false;
+  }
+
+  // We only support the discover tab in English at the moment.
+  // TODO(b/187774783): Remove this when discover tab is supported in all
+  // locales.
+  const std::string global_app_locale =
+      g_browser_process->GetApplicationLocale();
+  std::string language_code = l10n_util::GetLanguage(global_app_locale);
+  if (language_code != "en") {
     return false;
   }
 
@@ -76,7 +89,7 @@ HelpAppNotificationController::HelpAppNotificationController(Profile* profile)
 
 HelpAppNotificationController::~HelpAppNotificationController() = default;
 
-void HelpAppNotificationController::MaybeShowNotification() {
+void HelpAppNotificationController::MaybeShowDiscoverNotification() {
   if (ShouldShowDiscoverTabNotification(profile_) &&
       !discover_tab_notification_) {
     discover_tab_notification_ =
@@ -90,7 +103,11 @@ void HelpAppNotificationController::MaybeShowNotification() {
     // suggestion chip in the launcher.
     profile_->GetPrefs()->SetInteger(
         prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
-  } else if (!release_notes_notification_) {
+  }
+}
+
+void HelpAppNotificationController::MaybeShowNotification() {
+  if (!release_notes_notification_) {
     release_notes_notification_ =
         std::make_unique<ash::ReleaseNotesNotification>(profile_);
     // Let the ReleaseNotesNotification decide if it should show itself.
