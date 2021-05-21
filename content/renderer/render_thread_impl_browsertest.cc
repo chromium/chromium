@@ -164,6 +164,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
         ChildProcessHost::Create(this, ChildProcessHost::IpcMode::kNormal);
     process_host_->CreateChannelMojo();
 
+    CHECK(!process_.get());
     process_ = std::make_unique<RenderProcess>();
     test_task_counter_ = base::MakeRefCounted<TestTaskCounter>();
 
@@ -205,14 +206,13 @@ class RenderThreadImplBrowserTest : public testing::Test,
   }
 
   void TearDown() override {
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kSingleProcessTests)) {
-      // In a single-process mode, we need to avoid destructing process_
-      // because it will call _exit(0) and kill the process before the browser
-      // side is ready to exit.
-      ANNOTATE_LEAKING_OBJECT_PTR(process_.get());
-      process_.release();
-    }
+    CHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
+        switches::kSingleProcessTests));
+    // In a single-process mode, we need to avoid destructing `process_`
+    // because it will call _exit(0) and kill the process before the browser
+    // side is ready to exit.
+    ANNOTATE_LEAKING_OBJECT_PTR(process_.get());
+    process_.release();
   }
 
   // ChildProcessHostDelegate implementation:
