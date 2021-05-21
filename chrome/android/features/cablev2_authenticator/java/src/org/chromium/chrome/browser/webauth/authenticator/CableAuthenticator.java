@@ -63,6 +63,13 @@ class CableAuthenticator {
     private static final int CTAP2_ERR_UNSUPPORTED_OPTION = 0x2D;
     private static final int CTAP2_ERR_OTHER = 0x7F;
 
+    // sOwnBluetooth is true if this class owns the fact that Bluetooth is enabled and needs to
+    // disable it once complete.
+    private static boolean sOwnBluetooth;
+    // sInstanceCount is the number of instances of this class that have been created and not
+    // closed.
+    private static int sInstanceCount;
+
     private final Context mContext;
     private final CableAuthenticatorUI mUi;
     private final SingleThreadTaskRunner mTaskRunner;
@@ -87,6 +94,8 @@ class CableAuthenticator {
     public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
             long registration, byte[] secret, boolean isFcmNotification, UsbAccessory accessory,
             byte[] serverLink) {
+        sInstanceCount++;
+
         mContext = context;
         mUi = ui;
 
@@ -423,9 +432,12 @@ class CableAuthenticator {
 
     /**
      * Called to indicate that Bluetooth is now enabled and a cloud message can be processed.
+     *
+     * @param needToDisable true if BLE needs to be disabled afterwards
      */
-    void onBluetoothReadyForCloudMessage() {
+    void onBluetoothReadyForCloudMessage(boolean needToDisable) {
         assert mTaskRunner.belongsToCurrentThread();
+        sOwnBluetooth |= needToDisable;
         mHandle = CableAuthenticatorJni.get().startCloudMessage(this);
     }
 
@@ -437,6 +449,22 @@ class CableAuthenticator {
     void close() {
         assert mTaskRunner.belongsToCurrentThread();
         CableAuthenticatorJni.get().stop(mHandle);
+
+        // If Bluetooth was enabled by CableAuthenticatorUI then |sOwnBluetooth| will be true.
+        // However, if another instance has already been created (because the user pressed another
+        // notification while this was still outstanding) then don't disable it yet.
+        sInstanceCount--;
+        if (sOwnBluetooth) {
+            if (sInstanceCount == 0) {
+                Log.i(TAG, "disabling Bluetooth");
+                BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+                adapter.disable();
+
+                sOwnBluetooth = false;
+            } else {
+                Log.i(TAG, "not disabling Bluetooth yet because other instances exist");
+            }
+        }
     }
 
     static String getName() {
