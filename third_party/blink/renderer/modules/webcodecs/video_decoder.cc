@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
+#include "third_party/blink/renderer/modules/webcodecs/gpu_factories_retriever.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder_broker.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -51,11 +52,6 @@ namespace blink {
 
 namespace {
 
-media::GpuVideoAcceleratorFactories* GetGpuFactoriesOnMainThread() {
-  DCHECK(IsMainThread());
-  return Platform::Current()->GetGpuFactories();
-}
-
 void DecoderSupport_OnKnown(
     VideoDecoderSupport* support,
     std::unique_ptr<VideoDecoder::MediaConfigType> media_config,
@@ -66,30 +62,6 @@ void DecoderSupport_OnKnown(
       gpu_factories->IsDecoderConfigSupported(*media_config) ==
       media::GpuVideoAcceleratorFactories::Supported::kTrue);
   resolver->Resolve(support);
-}
-
-void DecoderSupport_OnGpuFactories(
-    VideoDecoderSupport* support,
-    std::unique_ptr<VideoDecoder::MediaConfigType> media_config,
-    ScriptPromiseResolver* resolver,
-    media::GpuVideoAcceleratorFactories* gpu_factories) {
-  if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled()) {
-    support->setSupported(false);
-    resolver->Resolve(support);
-    return;
-  }
-
-  if (gpu_factories->IsDecoderSupportKnown()) {
-    DecoderSupport_OnKnown(support, std::move(media_config), resolver,
-                           gpu_factories);
-    return;
-  }
-
-  gpu_factories->NotifyDecoderSupportKnown(
-      ConvertToBaseOnceCallback(CrossThreadBindOnce(
-          &DecoderSupport_OnKnown, WrapCrossThreadPersistent(support),
-          std::move(media_config), WrapCrossThreadPersistent(resolver),
-          CrossThreadUnretained(gpu_factories))));
 }
 
 bool ParseCodecString(const String& codec_string,
@@ -435,22 +407,9 @@ ScriptPromise VideoDecoder::IsAcceleratedConfigSupported(
   VideoDecoderSupport* support = VideoDecoderSupport::Create();
   support->setConfig(CopyConfig(*config));
 
-  if (IsMainThread()) {
-    media::GpuVideoAcceleratorFactories* gpu_factories =
-        Platform::Current()->GetGpuFactories();
-    DecoderSupport_OnGpuFactories(support, std::move(media_config), resolver,
-                                  gpu_factories);
-  } else {
-    auto on_gpu_factories_cb = CrossThreadBindOnce(
-        &DecoderSupport_OnGpuFactories, WrapCrossThreadPersistent(support),
-        std::move(media_config), WrapCrossThreadPersistent(resolver));
-
-    Thread::MainThread()->GetTaskRunner()->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        ConvertToBaseOnceCallback(
-            CrossThreadBindOnce(&GetGpuFactoriesOnMainThread)),
-        ConvertToBaseOnceCallback(std::move(on_gpu_factories_cb)));
-  }
+  RetrieveGpuFactoriesWithKnownDecoderSupport(CrossThreadBindOnce(
+      &DecoderSupport_OnKnown, WrapCrossThreadPersistent(support),
+      std::move(media_config), WrapCrossThreadPersistent(resolver)));
 
   return promise;
 }

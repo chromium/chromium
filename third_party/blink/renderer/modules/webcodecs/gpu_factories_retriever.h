@@ -21,11 +21,16 @@ using OutputCB = CrossThreadOnceFunction<void(
 // Specifically
 //   1. It gets GPU factories from the main thread when called from a worker
 //   2. Makes sure that GPU factories already know about supported encoding
-//      and decoding profiles.
+//      profiles.
 void RetrieveGpuFactoriesWithKnownEncoderSupport(OutputCB callback);
 
-// TODO: Add RetrieveGpuFactoriesWithKnownDecoderSupport and use it in
-// VideoDecoder.
+// Retrieves an instance of GpuVideoAcceleratorFactories ready
+// for accelerated video decoding.
+// Specifically
+//   1. It gets GPU factories from the main thread when called from a worker
+//   2. Makes sure that GPU factories already know about supported decoding
+//      profiles.
+void RetrieveGpuFactoriesWithKnownDecoderSupport(OutputCB callback);
 
 }  // namespace blink
 

@@ -133,6 +133,9 @@ class MODULES_EXPORT DecoderTemplate
 
   void ProcessRequests();
   bool ProcessConfigureRequest(Request* request);
+  void ContinueConfigureWithGpuFactories(
+      Request* request,
+      media::GpuVideoAcceleratorFactories* factories);
   bool ProcessDecodeRequest(Request* request);
   bool ProcessFlushRequest(Request* request);
   bool ProcessResetRequest(Request* request);
@@ -168,7 +171,9 @@ class MODULES_EXPORT DecoderTemplate
 
   std::unique_ptr<CodecLogger> logger_;
 
-  media::GpuVideoAcceleratorFactories* gpu_factories_ = nullptr;
+  // Empty - GPU factories haven't been retrieved yet.
+  // nullptr - We tried to get GPU factories, but acceleration is unavailable.
+  absl::optional<media::GpuVideoAcceleratorFactories*> gpu_factories_;
 
   // Cached config from the last kConfigure request which successfully completed
   // initialization.

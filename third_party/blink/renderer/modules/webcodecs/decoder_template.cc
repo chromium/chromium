@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
+#include "third_party/blink/renderer/modules/webcodecs/gpu_factories_retriever.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -44,18 +45,6 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
-
-namespace {
-
-void GetGpuFactoriesOnMainThread(
-    media::GpuVideoAcceleratorFactories** gpu_factories_out,
-    base::WaitableEvent* waitable_event) {
-  DCHECK(IsMainThread());
-  *gpu_factories_out = Platform::Current()->GetGpuFactories();
-  waitable_event->Signal();
-}
-
-}  // namespace
 
 template <typename Traits>
 DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
@@ -85,21 +74,6 @@ DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
 
   output_cb_ = init->output();
   error_cb_ = init->error();
-
-  if (Traits::kNeedsGpuFactories) {
-    if (IsMainThread()) {
-      gpu_factories_ = Platform::Current()->GetGpuFactories();
-    } else {
-      base::WaitableEvent waitable_event;
-      if (PostCrossThreadTask(
-              *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
-              CrossThreadBindOnce(&GetGpuFactoriesOnMainThread,
-                                  CrossThreadUnretained(&gpu_factories_),
-                                  CrossThreadUnretained(&waitable_event)))) {
-        waitable_event.Wait();
-      }
-    }
-  }
 }
 
 template <typename Traits>
@@ -284,48 +258,67 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
   DCHECK_EQ(request->type, Request::Type::kConfigure);
   DCHECK(request->media_config);
 
-  // TODO(sandersd): Record this configuration as pending but don't apply it
-  // until there is a decode request.
-
-  if (!decoder_) {
-    decoder_ = Traits::CreateDecoder(*ExecutionContext::From(script_state_),
-                                     gpu_factories_, logger_->log());
-    if (!decoder_) {
-      Shutdown(
-          logger_->MakeException("Internal error: Could not create decoder.",
-                                 media::StatusCode::kDecoderCreationFailed));
-      return false;
-    }
-
-    // Processing continues in OnInitializeDone().
-    // Note: OnInitializeDone() must not call ProcessRequests() reentrantly,
-    // which can happen if InitializeDecoder() calls it synchronously.
-    pending_request_ = request;
-    initializing_sync_ = true;
-
-    SetHardwarePreference(pending_request_->hw_pref.value());
-    Traits::InitializeDecoder(
-        *decoder_, pending_request_->low_delay.value(),
-        *pending_request_->media_config,
-        WTF::Bind(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
-        WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
-                           reset_generation_));
-    initializing_sync_ = false;
-    return true;
-  }
-
-  if (pending_decodes_.size() + 1 >
-      size_t{Traits::GetMaxDecodeRequests(*decoder_)}) {
+  if (decoder_ && pending_decodes_.size() + 1 >
+                      size_t{Traits::GetMaxDecodeRequests(*decoder_)}) {
     // Try again after OnDecodeDone().
     return false;
   }
 
-  // Processing continues in OnFlushDone().
+  // TODO(sandersd): Record this configuration as pending but don't apply it
+  // until there is a decode request.
   pending_request_ = request;
+
+  if (gpu_factories_.has_value()) {
+    ContinueConfigureWithGpuFactories(request, gpu_factories_.value());
+  } else if (Traits::kNeedsGpuFactories) {
+    RetrieveGpuFactoriesWithKnownDecoderSupport(CrossThreadBindOnce(
+        &DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories,
+        WrapCrossThreadPersistent(this), WrapCrossThreadPersistent(request)));
+  } else {
+    ContinueConfigureWithGpuFactories(request, nullptr);
+  }
+  return true;
+}
+
+template <typename Traits>
+void DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories(
+    Request* request,
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  DCHECK(request);
+  DCHECK_EQ(request->type, Request::Type::kConfigure);
+
+  gpu_factories_ = gpu_factories;
+
+  if (request->reset_generation != reset_generation_)
+    return;
+  if (!decoder_) {
+    decoder_ = Traits::CreateDecoder(*ExecutionContext::From(script_state_),
+                                     gpu_factories_.value(), logger_->log());
+    if (!decoder_) {
+      Shutdown(
+          logger_->MakeException("Internal error: Could not create decoder.",
+                                 media::StatusCode::kDecoderCreationFailed));
+      return;
+    }
+
+    SetHardwarePreference(request->hw_pref.value());
+    // Processing continues in OnInitializeDone().
+    // Note: OnInitializeDone() must not call ProcessRequests() reentrantly,
+    // which can happen if InitializeDecoder() calls it synchronously.
+    initializing_sync_ = true;
+    Traits::InitializeDecoder(
+        *decoder_, request->low_delay.value(), *request->media_config,
+        WTF::Bind(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
+        WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
+                           reset_generation_));
+    initializing_sync_ = false;
+    return;
+  }
+
+  // Processing continues in OnFlushDone().
   decoder_->Decode(
       media::DecoderBuffer::CreateEOSBuffer(),
       WTF::Bind(&DecoderTemplate::OnFlushDone, WrapWeakPersistent(this)));
-  return true;
 }
 
 template <typename Traits>
@@ -415,8 +408,10 @@ bool DecoderTemplate<Traits>::ProcessResetRequest(Request* request) {
 
   // Signal [[codec implementation]] to cease producing output for the previous
   // configuration.
-  decoder_->Reset(
-      WTF::Bind(&DecoderTemplate::OnResetDone, WrapWeakPersistent(this)));
+  if (decoder_) {
+    decoder_->Reset(
+        WTF::Bind(&DecoderTemplate::OnResetDone, WrapWeakPersistent(this)));
+  }
   return true;
 }
 
