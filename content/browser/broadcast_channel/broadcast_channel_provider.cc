@@ -5,7 +5,6 @@
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 
 #include "base/bind.h"
-#include "base/stl_util.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 

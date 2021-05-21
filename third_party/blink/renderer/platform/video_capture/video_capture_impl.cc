@@ -24,7 +24,6 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"

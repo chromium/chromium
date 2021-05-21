@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/properties/css_direction_aware_resolver.h"
 
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 
 namespace blink {

@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"

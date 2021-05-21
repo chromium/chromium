@@ -4,7 +4,6 @@
 
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 
-#include "base/stl_util.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 
 namespace content {

@@ -8,7 +8,6 @@
 #include <limits>
 
 #include "base/check.h"
-#include "base/stl_util.h"
 #include "media/base/audio_bus.h"
 
 namespace blink {

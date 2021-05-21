@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 

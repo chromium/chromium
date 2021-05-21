@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_unsupported_value.h"
 #include "third_party/blink/renderer/core/css/cssom/style_value_factory.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"

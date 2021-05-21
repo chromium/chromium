@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
 
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_pose.h"

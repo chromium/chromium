@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"

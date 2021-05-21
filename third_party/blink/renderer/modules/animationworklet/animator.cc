@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/animationworklet/animator.h"
 
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_animate_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_state_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_workletanimationeffect_workletgroupeffect.h"

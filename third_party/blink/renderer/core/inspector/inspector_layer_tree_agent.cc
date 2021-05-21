@@ -33,7 +33,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "cc/base/features.h"
 #include "cc/base/region.h"
 #include "cc/layers/picture_layer.h"

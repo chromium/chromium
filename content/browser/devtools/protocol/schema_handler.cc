@@ -4,7 +4,6 @@
 
 #include "content/browser/devtools/protocol/schema_handler.h"
 
-#include "base/stl_util.h"
 
 namespace content {
 namespace protocol {

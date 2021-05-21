@@ -5,7 +5,6 @@
 #include "content/public/browser/permission_type.h"
 
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription.h"
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription.h"

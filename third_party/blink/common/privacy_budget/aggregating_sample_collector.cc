@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/synchronization/lock.h"
 #include "base/template_util.h"
 #include "base/time/time.h"
