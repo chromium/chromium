@@ -236,6 +236,18 @@ const std::string& FakeDownloadItem::GetLastModifiedTime() const {
   return last_modified_time_;
 }
 
+void FakeDownloadItem::SetPercentComplete(int percent_complete) {
+  percent_complete_ = percent_complete;
+}
+
+int FakeDownloadItem::PercentComplete() const {
+  return percent_complete_;
+}
+
+void FakeDownloadItem::SetDummyFilePath(const base::FilePath& file_path) {
+  dummy_file_path = file_path;
+}
+
 // The methods below are not supported and are not expected to be called.
 void FakeDownloadItem::ValidateDangerousDownload() {
   NOTREACHED();
@@ -451,11 +463,6 @@ bool FakeDownloadItem::TimeRemaining(base::TimeDelta* remaining) const {
 }
 
 int64_t FakeDownloadItem::CurrentSpeed() const {
-  NOTREACHED();
-  return 1;
-}
-
-int FakeDownloadItem::PercentComplete() const {
   NOTREACHED();
   return 1;
 }

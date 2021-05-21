@@ -175,6 +175,12 @@ ASH_PUBLIC_EXPORT extern const base::Feature kNotificationsInContextMenu;
 // it later.
 ASH_PUBLIC_EXPORT extern const base::Feature kHoldingSpaceArcIntegration;
 
+// Enables in-progress downloads integration with the productivity feature that
+// aims to reduce context switching by enabling users to collect content and
+// transfer or access it later.
+ASH_PUBLIC_EXPORT extern const base::Feature
+    kHoldingSpaceInProgressDownloadsIntegration;
+
 // Enables dragging an unpinned open app to pinned app side to pin.
 ASH_PUBLIC_EXPORT extern const base::Feature kDragUnpinnedAppToPin;
 
@@ -255,6 +261,8 @@ ASH_PUBLIC_EXPORT bool IsDisplayAlignmentAssistanceEnabled();
 ASH_PUBLIC_EXPORT bool IsNotificationsInContextMenuEnabled();
 
 ASH_PUBLIC_EXPORT bool IsHoldingSpaceArcIntegrationEnabled();
+
+ASH_PUBLIC_EXPORT bool IsHoldingSpaceInProgressDownloadsIntegrationEnabled();
 
 ASH_PUBLIC_EXPORT bool IsDragUnpinnedAppToPinEnabled();
 

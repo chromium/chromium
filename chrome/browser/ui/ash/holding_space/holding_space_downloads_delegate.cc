@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,9 +41,12 @@ bool IsInProgress(download::DownloadItem* download_item) {
 // HoldingSpaceDownloadsDelegate::InProgressDownload ---------------------------
 
 // A wrapper around an in-progress `download::DownloadItem` which notifies its
-// associated delegate of changes in download state.
+// associated delegate of changes in download state. Each in-progress download
+// is associated with a single in-progress holding space item once the target
+// file path for the in-progress download has been set.
 // NOTE: Instances of this class are immediately destroyed when the underlying
-// `download::DownloadItem` is no longer in-progress.
+// `download::DownloadItem` is no longer in-progress or when the associated
+// in-progress holding space item is removed from the model.
 class HoldingSpaceDownloadsDelegate::InProgressDownload
     : public download::DownloadItem::Observer {
  public:
@@ -79,6 +83,20 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
     return progress;
   }
 
+  // Associates this in-progress download with the specified in-progress
+  // `holding_space_item`. NOTE: This association may be performed only once.
+  void SetHoldingSpaceItem(const HoldingSpaceItem* holding_space_item) {
+    DCHECK(!holding_space_item_);
+    holding_space_item_ = holding_space_item;
+  }
+
+  // Returns the in-progress `holding_space_item_` associated with this
+  // in-progress download. NOTE: This may be `nullptr` if no holding space item
+  // has yet been associated with the in-progress download.
+  const HoldingSpaceItem* GetHoldingSpaceItem() const {
+    return holding_space_item_;
+  }
+
  private:
   // download::DownloadItem::Observer:
   void OnDownloadUpdated(download::DownloadItem* download_item) override {
@@ -108,6 +126,12 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
 
   HoldingSpaceDownloadsDelegate* const delegate_;  // NOTE: Owns `this`.
   download::DownloadItem* const download_item_;
+
+  // The in-progress holding space item associated with this in-progress
+  // download. NOTE: This may be `nullptr` until the target file path for the
+  // in-progress download has been set and a holding space item has been created
+  // and associated.
+  const HoldingSpaceItem* holding_space_item_ = nullptr;
 
   base::ScopedObservation<download::DownloadItem,
                           download::DownloadItem::Observer>
@@ -169,6 +193,16 @@ void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
 
   if (download_manager->IsManagerInitialized())
     OnManagerInitialized();
+}
+
+void HoldingSpaceDownloadsDelegate::OnHoldingSpaceItemsRemoved(
+    const std::vector<const HoldingSpaceItem*>& items) {
+  // If the user removes a holding space item associated with an in-progress
+  // download, that in-progress download can be destroyed. The download will
+  // continue, but it will no longer be associated with a holding space item.
+  base::EraseIf(in_progress_downloads_, [&](const auto& in_progress_download) {
+    return base::Contains(items, in_progress_download->GetHoldingSpaceItem());
+  });
 }
 
 void HoldingSpaceDownloadsDelegate::OnArcDownloadAdded(
@@ -239,15 +273,37 @@ void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
   }
 }
 
-// TODO(crbug.com/1184438): Support in-progress downloads.
+// TODO(crbug.com/1208910): Support incognito.
+void HoldingSpaceDownloadsDelegate::OnLacrosDownloadUpdated(
+    const crosapi::mojom::DownloadEvent& event) {
+  if (event.is_from_incognito_profile)
+    return;
+  if (event.state == crosapi::mojom::DownloadState::kComplete) {
+    service()->AddDownload(ash::HoldingSpaceItem::Type::kLacrosDownload,
+                           event.target_file_path);
+  }
+}
+
 void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
-    const InProgressDownload* in_progress_download) {}
+    InProgressDownload* in_progress_download) {
+  // If in-progress downloads integration is disabled, a holding space item will
+  // be associated with a download only upon download completion.
+  if (!features::IsHoldingSpaceInProgressDownloadsIntegrationEnabled())
+    return;
+
+  // Downloads will not have an associated file path until the target file path
+  // is set. In some cases, this requires the user to actively select the target
+  // file path from a selection dialog. Only once file path information is set
+  // should a holding space item be associated with the in-progress download.
+  if (!in_progress_download->GetFilePath().empty())
+    CreateOrUpdateHoldingSpaceItem(in_progress_download);
+}
 
 void HoldingSpaceDownloadsDelegate::OnDownloadCompleted(
-    const InProgressDownload* in_progress_download) {
-  service()->AddDownload(HoldingSpaceItem::Type::kDownload,
-                         in_progress_download->GetFilePath(),
-                         in_progress_download->GetProgress());
+    InProgressDownload* in_progress_download) {
+  // If in-progress downloads integration is enabled, a holding space item will
+  // have already been associated with the download while it was in-progress.
+  CreateOrUpdateHoldingSpaceItem(in_progress_download);
   EraseDownload(in_progress_download);
 }
 
@@ -263,14 +319,28 @@ void HoldingSpaceDownloadsDelegate::EraseDownload(
   in_progress_downloads_.erase(it);
 }
 
-void HoldingSpaceDownloadsDelegate::OnLacrosDownloadUpdated(
-    const crosapi::mojom::DownloadEvent& event) {
-  // For now, we ignore incognito downloads to match current behavior.
-  if (event.is_from_incognito_profile)
+void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
+    InProgressDownload* in_progress_download) {
+  // Create.
+  if (!in_progress_download->GetHoldingSpaceItem()) {
+    service()->AddDownload(HoldingSpaceItem::Type::kDownload,
+                           in_progress_download->GetFilePath(),
+                           in_progress_download->GetProgress());
+    in_progress_download->SetHoldingSpaceItem(
+        model()->GetItem(HoldingSpaceItem::Type::kDownload,
+                         in_progress_download->GetFilePath()));
     return;
-  if (event.state == crosapi::mojom::DownloadState::kComplete) {
-    service()->AddDownload(ash::HoldingSpaceItem::Type::kLacrosDownload,
-                           event.target_file_path);
   }
+
+  // Update.
+  model()->UpdateBackingFileForItem(
+      in_progress_download->GetHoldingSpaceItem()->id(),
+      in_progress_download->GetFilePath(),
+      holding_space_util::ResolveFileSystemUrl(
+          profile(), in_progress_download->GetFilePath()));
+  model()->UpdateProgressForItem(
+      in_progress_download->GetHoldingSpaceItem()->id(),
+      in_progress_download->GetProgress());
 }
+
 }  // namespace ash

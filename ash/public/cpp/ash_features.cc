@@ -129,6 +129,10 @@ const base::Feature kNotificationsInContextMenu{
 const base::Feature kHoldingSpaceArcIntegration{
     "HoldingSpaceArcIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kHoldingSpaceInProgressDownloadsIntegration{
+    "HoldingSpaceInProgressDownloadsIntegration",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDragUnpinnedAppToPin{"DragUnpinnedAppToPin",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -297,6 +301,11 @@ bool IsNotificationsInContextMenuEnabled() {
 
 bool IsHoldingSpaceArcIntegrationEnabled() {
   return base::FeatureList::IsEnabled(kHoldingSpaceArcIntegration);
+}
+
+bool IsHoldingSpaceInProgressDownloadsIntegrationEnabled() {
+  return base::FeatureList::IsEnabled(
+      kHoldingSpaceInProgressDownloadsIntegration);
 }
 
 bool IsDragUnpinnedAppToPinEnabled() {
