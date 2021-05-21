@@ -5,6 +5,10 @@
 
 """Chromium presubmit script for src/tools/media_engagement_preload."""
 
+# This line is 'magic' in that git-cl looks for it to decide whether to
+# use Python3 instead of Python2 when running the code in this file.
+USE_PYTHON3 = True
+
 
 def _RunMakeDafsaTests(input_api, output_api):
   """Runs unittest for make_dafsa if any related file has been modified."""
@@ -12,16 +16,14 @@ def _RunMakeDafsaTests(input_api, output_api):
            'tools/media_engagement_preload/make_dafsa_unittest.py')
   if not any(f in input_api.LocalPaths() for f in files):
     return []
-  test_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                     'make_dafsa_unittest.py')
-  cmd_name = 'make_dafsa_unittest'
-  cmd = [input_api.python_executable, test_path]
-  test_cmd = input_api.Command(
-    name=cmd_name,
-    cmd=cmd,
-    kwargs={},
-    message=output_api.PresubmitPromptWarning)
-  return input_api.RunTests([test_cmd])
+
+  return input_api.RunTests(
+      input_api.canned_checks.RunUnitTestsInDirectory(
+          input_api,
+          output_api,
+          input_api.PresubmitLocalPath(),
+          files_to_check=['.*test\.py$'],
+          run_on_python2=False))
 
 
 def CheckChangeOnUpload(input_api, output_api):

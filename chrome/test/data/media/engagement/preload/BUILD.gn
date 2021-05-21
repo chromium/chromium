@@ -3,11 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/compiled_action.gni")
-import("//build/config/python.gni")
 
 # Generates a proto file based on the real list.
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action_foreach("generate_preload_list") {
+action_foreach("generate_preload_list") {
   script = "//tools/media_engagement_preload/make_dafsa.py"
 
   sources = [ "test.json" ]

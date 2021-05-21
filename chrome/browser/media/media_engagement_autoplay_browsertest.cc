@@ -28,18 +28,8 @@
 namespace {
 
 base::FilePath GetPythonPath() {
-#if defined(OS_WIN)
-  // Windows bots do not have python installed and available on the PATH.
-  // Please see infra/doc/users/python.md
-  base::FilePath bot_path =
-      base::FilePath(FILE_PATH_LITERAL("c:/infra-system/bin/python.exe"));
-
-  if (base::PathExists(bot_path))
-    return bot_path;
-  return base::FilePath(FILE_PATH_LITERAL("python.exe"));
-#else
-  return base::FilePath(FILE_PATH_LITERAL("python"));
-#endif
+  // Every environment should have python3.
+  return base::FilePath(FILE_PATH_LITERAL("python3"));
 }
 
 const base::FilePath kTestDataPath = base::FilePath(
