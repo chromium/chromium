@@ -4774,8 +4774,6 @@
           'linux-xenial',
         ],
       },
-      # TODO(crbug.com/1210877): Add test suites back when instability issue
-      # is fixed.
       'Fuchsia x64': {
         'additional_compile_targets': [
           'all',
@@ -4791,6 +4789,11 @@
               'kvm': '1',
             },
           ],
+        },
+        'test_suites': {
+          'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'fuchsia_x64_isolated_scripts',
+          'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
         },
       },
       'Leak Detection Linux': {
