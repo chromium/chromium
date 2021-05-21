@@ -99,7 +99,6 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragmentTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroControllerTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedMainMenuItemTest.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedSnackbarControllerTest.java",
   ]
 
   deps = [
@@ -134,5 +133,45 @@ android_library("javatests") {
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
+  ]
+}
+
+android_library("junit") {
+  testonly = true
+
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+
+  sources = [ "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedSnackbarControllerTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/feature_engagement:feature_engagement_java",
+    "//components/feed/core/v2:feedv2_core_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }
