@@ -3235,6 +3235,10 @@ enum WebFeature {
   kAccessibilityTouchPassthroughSet = 3920,
   kTextFragmentBlockedByForceLoadAtTop = 3921,
   kUrnDocumentAccessedCookies = 3922,
+  kFontFaceAscentOverride = 3923,
+  kFontFaceDescentOverride = 3924,
+  kFontFaceLineGapOverride = 3925,
+  kFontFaceSizeAdjust = 3926,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
