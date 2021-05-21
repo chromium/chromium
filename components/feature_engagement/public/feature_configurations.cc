@@ -189,6 +189,34 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     k10YearsInDays, k10YearsInDays);
     return config;
   }
+
+  if (kIPHWebFeedFollowFeature.name == feature->name) {
+    // A config that allows the WebFeed follow intro to be shown up to 5x per
+    // week.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("web_feed_follow_intro_trigger",
+                                  Comparator(LESS_THAN, 5), 7, 360);
+    config->used = EventConfig("web_feed_follow_intro_clicked",
+                               Comparator(ANY, 0), 360, 360);
+    return config;
+  }
+
+  if (kIPHWebFeedPostFollowDialogFeature.name == feature->name) {
+    // A config that allows one of the WebFeed post follow dialogs to be
+    // presented once.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("web_feed_post_follow_dialog_trigger",
+                                  Comparator(LESS_THAN, 1), 360, 360);
+    config->used = EventConfig("web_feed_post_follow_dialog_shown",
+                               Comparator(ANY, 0), 360, 360);
+    return config;
+  }
 #endif  // defined(OS_ANDROID)
 
   if (kIPHDummyFeature.name == feature->name) {
