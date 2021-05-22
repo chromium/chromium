@@ -48,6 +48,22 @@ namespace autofill {
 
 namespace {
 
+class ErrorIconView : public views::ImageView {
+ public:
+  METADATA_HEADER(ErrorIconView);
+
+  // views::ImageView:
+  void OnThemeChanged() override {
+    ImageView::OnThemeChanged();
+    const SkColor warning_text_color = views::style::GetColor(
+        *this, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL, STYLE_RED);
+    SetImage(gfx::CreateVectorIcon(kBrowserToolsErrorIcon, warning_text_color));
+  }
+};
+
+BEGIN_METADATA(ErrorIconView, views::ImageView)
+END_METADATA
+
 static views::GridLayout* ResetOverlayLayout(views::View* overlay) {
   views::GridLayout* overlay_layout =
       overlay->SetLayoutManager(std::make_unique<views::GridLayout>());
@@ -222,8 +238,11 @@ void CardUnmaskPromptViews::OnThemeChanged() {
   SkColor bg_color = GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_DialogBackground);
   overlay_->SetBackground(views::CreateSolidBackground(bg_color));
-  if (overlay_label_)
+  if (overlay_label_) {
     overlay_label_->SetBackgroundColor(bg_color);
+    overlay_label_->SetEnabledColor(GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_ThrobberSpinningColor));
+  }
 }
 
 std::u16string CardUnmaskPromptViews::GetWindowTitle() const {
@@ -327,11 +346,9 @@ void CardUnmaskPromptViews::InitIfNecessary() {
   controls_container_ = AddChildView(std::move(controls_container));
 
   // Instruction text of the dialog.
-  auto instructions =
-      std::make_unique<views::Label>(controller_->GetInstructionsMessage());
-  instructions->SetEnabledColor(views::style::GetColor(
-      *instructions.get(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY));
+  auto instructions = std::make_unique<views::Label>(
+      controller_->GetInstructionsMessage(),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
   instructions->SetMultiLine(true);
   instructions->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   instructions_ = controls_container_->AddChildView(std::move(instructions));
@@ -388,18 +405,13 @@ void CardUnmaskPromptViews::InitIfNecessary() {
   temporary_error_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  const SkColor warning_text_color = views::style::GetColor(
-      *instructions_, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-      STYLE_RED);
-  auto error_icon = std::make_unique<views::ImageView>();
-  error_icon->SetImage(
-      gfx::CreateVectorIcon(kBrowserToolsErrorIcon, warning_text_color));
   temporary_error->SetVisible(false);
-  temporary_error->AddChildView(std::move(error_icon));
+  temporary_error->AddChildView(std::make_unique<ErrorIconView>());
 
-  auto error_label = std::make_unique<views::Label>();
+  auto error_label = std::make_unique<views::Label>(
+      std::u16string(), ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+      STYLE_RED);
   error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  error_label->SetEnabledColor(warning_text_color);
   error_label_ = temporary_error->AddChildView(std::move(error_label));
   temporary_error_layout->SetFlexForView(error_label_, 1);
   temporary_error_ = input_container->AddChildView(std::move(temporary_error));
@@ -417,9 +429,6 @@ void CardUnmaskPromptViews::InitIfNecessary() {
 
   auto overlay_label = std::make_unique<views::Label>(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_IN_PROGRESS));
-  overlay_label->SetEnabledColor(
-      overlay_label->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_ThrobberSpinningColor));
   overlay_label_ = overlay_layout->AddView(std::move(overlay_label));
 
   overlay_ = AddChildView(std::move(overlay));

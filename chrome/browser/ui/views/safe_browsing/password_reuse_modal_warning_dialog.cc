@@ -35,22 +35,25 @@ using views::BoxLayout;
 
 namespace {
 
-// Updates the image displayed on the illustration based on the current theme.
-void SafeBrowsingUpdateImageView(NonAccessibleImageView* image_view,
-                                 bool dark_mode_enabled) {
-  image_view->SetImage(
-      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          dark_mode_enabled ? IDR_PASSWORD_CHECK_DARK : IDR_PASSWORD_CHECK));
-}
+class SafeBrowsingImageView : public NonAccessibleImageView {
+ public:
+  METADATA_HEADER(SafeBrowsingImageView);
+  SafeBrowsingImageView() {
+    SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  }
+  ~SafeBrowsingImageView() override = default;
 
-// Creates the illustration which is rendered on top of the dialog.
-std::unique_ptr<NonAccessibleImageView> SafeBrowsingCreateIllustration(
-    bool dark_mode_enabled) {
-  auto image_view = std::make_unique<NonAccessibleImageView>();
-  SafeBrowsingUpdateImageView(image_view.get(), dark_mode_enabled);
-  image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-  return image_view;
-}
+  // NonAccessibleImageView:
+  void OnThemeChanged() override {
+    NonAccessibleImageView::OnThemeChanged();
+    SetImage(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+        GetNativeTheme()->ShouldUseDarkColors() ? IDR_PASSWORD_CHECK_DARK
+                                                : IDR_PASSWORD_CHECK));
+  }
+};
+
+BEGIN_METADATA(SafeBrowsingImageView, NonAccessibleImageView)
+END_METADATA
 
 // Sets up the content containing the title and description for the dialog
 // rendered below the illustration.
@@ -198,8 +201,6 @@ void PasswordReuseModalWarningDialog::
   SetLayoutManager(std::make_unique<BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       0 /* between_child_spacing */));
-  std::unique_ptr<NonAccessibleImageView> illustration =
-      SafeBrowsingCreateIllustration(GetNativeTheme()->ShouldUseDarkColors());
   std::unique_ptr<views::View> content = SetupContent(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY));
 
@@ -216,7 +217,7 @@ void PasswordReuseModalWarningDialog::
         bold_style);
   }
   styled_message_body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(std::move(illustration));
+  AddChildView(std::make_unique<SafeBrowsingImageView>());
   AddChildView(std::move(content));
 }
 

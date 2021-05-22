@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
@@ -44,6 +45,35 @@ constexpr int kGooglePayLogoSeparatorHeight = 12;
 
 constexpr SkColor kTitleSeparatorColor = SkColorSetRGB(0x9E, 0x9E, 0x9E);
 
+class PayIconView : public views::ImageView {
+ public:
+  METADATA_HEADER(PayIconView);
+
+  // views::ImageView:
+  void OnThemeChanged() override {
+    ImageView::OnThemeChanged();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    // kGooglePayLogoIcon is square, and CreateTiledImage() will clip it whereas
+    // setting the icon size would rescale it incorrectly.
+    gfx::ImageSkia image = gfx::ImageSkiaOperations::CreateTiledImage(
+        gfx::CreateVectorIcon(kGooglePayLogoIcon,
+                              GetNativeTheme()->ShouldUseDarkColors()
+                                  ? gfx::kGoogleGrey200
+                                  : gfx::kGoogleGrey700),
+        /*x=*/0, /*y=*/0, kGooglePayLogoWidth, kGooglePayLogoHeight);
+#else
+    gfx::ImageSkia image =
+        gfx::CreateVectorIcon(kCreditCardIcon, kGooglePayLogoHeight,
+                              GetNativeTheme()->GetSystemColor(
+                                  ui::NativeTheme::kColorId_DefaultIconColor));
+#endif
+    SetImage(image);
+  }
+};
+
+BEGIN_METADATA(PayIconView, views::ImageView)
+END_METADATA
+
 }  // namespace
 
 TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
@@ -65,24 +95,7 @@ TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
 
-  auto icon_view = std::make_unique<views::ImageView>();
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // kGooglePayLogoIcon is square, and CreateTiledImage() will clip it whereas
-  // setting the icon size would rescale it incorrectly.
-  gfx::ImageSkia image = gfx::ImageSkiaOperations::CreateTiledImage(
-      gfx::CreateVectorIcon(kGooglePayLogoIcon,
-                            GetNativeTheme()->ShouldUseDarkColors()
-                                ? gfx::kGoogleGrey200
-                                : gfx::kGoogleGrey700),
-      /*x=*/0, /*y=*/0, kGooglePayLogoWidth, kGooglePayLogoHeight);
-#else
-  gfx::ImageSkia image =
-      gfx::CreateVectorIcon(kCreditCardIcon, kGooglePayLogoHeight,
-                            GetNativeTheme()->GetSystemColor(
-                                ui::NativeTheme::kColorId_DefaultIconColor));
-#endif
-  icon_view->SetImage(image);
-  auto* icon_view_ptr = layout->AddView(std::move(icon_view));
+  auto* icon_view_ptr = layout->AddView(std::make_unique<PayIconView>());
 
   auto separator = std::make_unique<views::Separator>();
   separator->SetColor(kTitleSeparatorColor);
