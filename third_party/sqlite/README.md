@@ -122,6 +122,15 @@ following:
     ../scripts/sqlite_cherry_picker.py --continue
     ```
 
+    If the cherry-picking script is unable to cherry-pick a commit, like in
+    https://crbug.com/1162100, manually apply the change from a sqlite or git,
+    in //third_party/sqlite/src's files modified in the sqlite tracker, like at
+    https://sqlite.org/src/info/a0bf931bd712037e. From there, run
+    `../scripts/generate_amalgamation.py` to propagate these changes over to
+    the amalgamation files. The sqlite_cherry_picker should generally be
+    preferred though, as it updates hashes and makes tracking easier.
+
+
 3. Run local tests.
 
     Follow steps in [Running Tests](#running-tests) below to execute all
