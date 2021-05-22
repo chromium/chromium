@@ -909,7 +909,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   // If this is first run, show the first run UI on top of the new tab.
   // If this isn't first run, check if the sign-in promo needs to display.
-  if (firstRun && launchMode != ApplicationMode::INCOGNITO &&
+  if (firstRun &&
       !self.sceneState.appState.startupInformation.isPresentingFirstRunUI) {
     [self showFirstRunUI];
     // Do not ever show the 'restore' infobar during first run.
