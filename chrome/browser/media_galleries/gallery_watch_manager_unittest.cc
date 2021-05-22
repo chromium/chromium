@@ -112,6 +112,10 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
     test_user_manager_.reset();
 #endif
 
+    // Make sure any pending network events are run before the
+    // NetworkConnectionTracker is cleared.
+    task_environment_.RunUntilIdle();
+
     // The MediaFileSystemRegistry owned by the TestingBrowserProcess must be
     // destroyed before the StorageMonitor because it calls
     // StorageMonitor::RemoveObserver() in its destructor.
