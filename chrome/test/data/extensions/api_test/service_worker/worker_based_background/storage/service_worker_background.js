@@ -93,6 +93,9 @@ var testOnStorageChanged = function(storageArea) {
   }
 };
 
+// TODO(emiliapaz): After all `session` functions are added, create
+// an array of objects(storage_area, key, value) that loops through the tests
+// since they are the same.
 var localKey = '_local_key';
 var localValue = 'this is a local value';
 var syncKey = '_sync_key';
@@ -152,4 +155,10 @@ chrome.test.runTests([
   function testSessionOnStorageChanged() {
     testOnStorageChanged(chrome.storage.session);
   },
+  function testSessionClearSetup() {
+    testSetStorage(chrome.storage.session, sessionKey, sessionValue);
+  },
+  function testSessionClear() {
+    testClearStorage(chrome.storage.session, sessionKey);
+  }
 ]);

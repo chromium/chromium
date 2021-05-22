@@ -431,8 +431,10 @@ StorageStorageAreaClearFunction::RunWithStorage(ValueStore* storage) {
 
 ExtensionFunction::ResponseValue
 StorageStorageAreaClearFunction::RunInSession() {
-  // TODO(crbug.com/1185226): Implement RunInSession for
-  // chrome.storage.session.clear .
+  std::vector<SessionStorageManager::ValueChange> changes;
+  GetOrCreateSessionStorage(browser_context())->Clear(extension_id(), changes);
+
+  OnSessionSettingsChanged(std::move(changes));
   return NoArguments();
 }
 

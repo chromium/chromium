@@ -178,7 +178,7 @@ chrome.test.runTests([
       assertEq({}, settings);
       this.succeed();
     }
-    test(stage0);
+    test(stage0, true);
   },
 
   function clearWhenNonempty() {
@@ -199,7 +199,7 @@ chrome.test.runTests([
       assertEq({}, settings);
       this.succeed();
     }
-    test(stage0);
+    test(stage0, true);
   },
 
   function keysWithDots() {

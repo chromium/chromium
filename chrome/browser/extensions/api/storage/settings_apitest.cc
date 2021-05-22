@@ -328,16 +328,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest, SplitModeIncognito) {
   for (const StorageAreaNamespace& storage_area : storage_areas) {
     ReplyWhenSatisfied(storage_area, "assertEmpty", "assertEmpty");
     ReplyWhenSatisfied(storage_area, "noop", "setFoo");
+    ReplyWhenSatisfied(storage_area, "assertFoo", "assertFoo");
+    ReplyWhenSatisfied(storage_area, "clear", "noop");
     // TODO(crbug.com/1185226): Move this condition accordingly as `session`
     // SettingFunction's are implemented. Currently it skips the
     // functions that `session` has not implemented yet. When all functions are
     // implemented, FinalReplyWhenSatisfied() will be moved outside the loop.
     if (storage_area == StorageAreaNamespace::kSession) {
-      FinalReplyWhenSatisfied(storage_area, "assertFoo", "assertFoo");
+      FinalReplyWhenSatisfied(storage_area, "assertEmpty", "assertEmpty");
       break;
     }
-    ReplyWhenSatisfied(storage_area, "assertFoo", "assertFoo");
-    ReplyWhenSatisfied(storage_area, "clear", "noop");
     ReplyWhenSatisfied(storage_area, "assertEmpty", "assertEmpty");
     ReplyWhenSatisfied(storage_area, "setFoo", "noop");
     ReplyWhenSatisfied(storage_area, "assertFoo", "assertFoo");
