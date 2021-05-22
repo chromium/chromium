@@ -42,14 +42,6 @@ namespace automationInternal {
     long requestID;
   };
 
-  // Actions internally used by automation.
-  enum ActionTypePrivate {
-    resumeMedia,
-    startDuckingMedia,
-    stopDuckingMedia,
-    suspendMedia
-  };
-
   // Arguments required for all actions supplied to performAction.
   dictionary PerformActionRequiredParams {
     DOMString treeID;

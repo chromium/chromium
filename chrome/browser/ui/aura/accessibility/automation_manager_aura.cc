@@ -35,6 +35,12 @@
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/automation_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // static
 AutomationManagerAura* AutomationManagerAura::GetInstance() {
   static base::NoDestructor<AutomationManagerAura> instance;
@@ -104,6 +110,13 @@ void AutomationManagerAura::Disable() {
 
   if (automation_event_router_observer_.IsObserving())
     automation_event_router_observer_.Reset();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // CrosapiManager may not be initialized on unit testing.
+  // Propagate the Disable signal to crosapi clients.
+  if (crosapi::CrosapiManager::IsInitialized())
+    crosapi::CrosapiManager::Get()->crosapi_ash()->automation_ash()->Disable();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void AutomationManagerAura::OnViewEvent(views::View* view,

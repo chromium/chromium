@@ -341,8 +341,8 @@ enum State {
 // An action to be taken on an accessibility node.
 // In contrast to |AXDefaultActionVerb|, these describe what happens to the
 // object, e.g. "FOCUS".
-// Next version: 1
-// Next value: 33
+// Next version: 2
+// Next value: 38
 [Extensible, Stable, Uuid="ed8e4466-0522-4f98-ac28-59a523b70232"]
 enum Action {
   [Default]kNone = 0,
@@ -401,6 +401,8 @@ enum Action {
   // insert |AXActionData::value| in its place, like when typing or pasting.
   kReplaceSelectedText = 17,
 
+  [MinVersion=1] kResumeMedia = 34,
+
   // Scrolls by approximately one screen in a specific direction. Should be
   // called on a node that has scrollable boolean set to true.
   kScrollBackward = 18,
@@ -440,6 +442,10 @@ enum Action {
   // Send an event signaling the end of a test.
   kSignalEndOfTest = 32,
   kShowTooltip = 33,
+
+  [MinVersion=1] kStartDuckingMedia = 35,
+  [MinVersion=1] kStopDuckingMedia = 36,
+  [MinVersion=1] kSuspendMedia = 37,
 };
 
 enum ActionFlags {

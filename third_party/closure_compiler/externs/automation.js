@@ -7,7 +7,7 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.automation.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 /** @fileoverview Externs generated from namespace: automation */
 
@@ -378,6 +378,7 @@ chrome.automation.ActionType = {
   INTERNAL_INVALIDATE_TREE: 'internalInvalidateTree',
   LOAD_INLINE_TEXT_BOXES: 'loadInlineTextBoxes',
   REPLACE_SELECTED_TEXT: 'replaceSelectedText',
+  RESUME_MEDIA: 'resumeMedia',
   SCROLL_BACKWARD: 'scrollBackward',
   SCROLL_DOWN: 'scrollDown',
   SCROLL_FORWARD: 'scrollForward',
@@ -394,6 +395,9 @@ chrome.automation.ActionType = {
   SHOW_CONTEXT_MENU: 'showContextMenu',
   SIGNAL_END_OF_TEST: 'signalEndOfTest',
   SHOW_TOOLTIP: 'showTooltip',
+  START_DUCKING_MEDIA: 'startDuckingMedia',
+  STOP_DUCKING_MEDIA: 'stopDuckingMedia',
+  SUSPEND_MEDIA: 'suspendMedia',
 };
 
 /**

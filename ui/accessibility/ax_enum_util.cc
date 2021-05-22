@@ -590,6 +590,8 @@ const char* ToString(ax::mojom::Action action) {
       return "loadInlineTextBoxes";
     case ax::mojom::Action::kReplaceSelectedText:
       return "replaceSelectedText";
+    case ax::mojom::Action::kResumeMedia:
+      return "resumeMedia";
     case ax::mojom::Action::kScrollBackward:
       return "scrollBackward";
     case ax::mojom::Action::kScrollForward:
@@ -630,6 +632,12 @@ const char* ToString(ax::mojom::Action action) {
       return "hideTooltip";
     case ax::mojom::Action::kInternalInvalidateTree:
       return "internalInvalidateTree";
+    case ax::mojom::Action::kStartDuckingMedia:
+      return "startDuckingMedia";
+    case ax::mojom::Action::kStopDuckingMedia:
+      return "stopDuckingMedia";
+    case ax::mojom::Action::kSuspendMedia:
+      return "suspendMedia";
   }
 
   return "";

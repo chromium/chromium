@@ -33,11 +33,7 @@ class AXActionHandlerObserver : public base::CheckedObserver {
   // routing is asynchronous and we do not know which observers intend to
   // respond to which actions -- so we forward all actions to all observers.
   // Only the observer that owns the unique |tree_id| will perform the action.
-  virtual void PerformAction(const ui::AXTreeID& tree_id,
-                             int32_t automation_node_id,
-                             const std::string& action_type,
-                             int32_t request_id,
-                             const base::DictionaryValue& optional_args) = 0;
+  virtual void PerformAction(const ui::AXActionData& action_data) = 0;
 };
 
 // This class generates and saves a runtime id for an accessibility tree.
@@ -76,11 +72,7 @@ class AX_BASE_EXPORT AXActionHandlerRegistry {
   void RemoveObserver(AXActionHandlerObserver* observer);
 
   // Calls PerformAction on all observers.
-  void PerformAction(const ui::AXTreeID& tree_id,
-                     int32_t automation_node_id,
-                     const std::string& action_type,
-                     int32_t request_id,
-                     const base::DictionaryValue& optional_args);
+  void PerformAction(const ui::AXActionData& action_data);
 
  private:
   friend struct base::DefaultSingletonTraits<AXActionHandlerRegistry>;

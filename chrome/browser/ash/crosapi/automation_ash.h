@@ -35,6 +35,7 @@ class AutomationAsh : public mojom::Automation,
   // Called by ash's internal a11y implementation. Data is forwarded to Lacros.
   void EnableDesktop();
   void EnableTree(const ui::AXTreeID& tree_id);
+  void Disable();
 
   // crosapi::mojom::Automation:
   void RegisterAutomationClientDeprecated(
@@ -49,17 +50,17 @@ class AutomationAsh : public mojom::Automation,
       const std::vector<ui::AXTreeUpdate>& updates,
       const gfx::Point& mouse_location,
       const std::vector<ui::AXEvent>& events) override;
+  void DispatchAccessibilityLocationChange(
+      const base::UnguessableToken& tree_id,
+      int32_t node_id,
+      const ui::AXRelativeBounds& bounds) override;
   void DispatchTreeDestroyedEvent(
       const base::UnguessableToken& tree_id) override;
   void DispatchActionResult(const ui::AXActionData& already_handled_action_data,
                             bool result) override;
 
   // ui::AXActionHandlerObserver:
-  void PerformAction(const ui::AXTreeID& tree_id,
-                     int32_t automation_node_id,
-                     const std::string& action_type,
-                     int32_t request_id,
-                     const base::DictionaryValue& optional_args) override;
+  void PerformAction(const ui::AXActionData& action_data) override;
 
   // crosapi::mojom::AutomationFactory:
   void BindAutomation(

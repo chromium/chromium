@@ -38,14 +38,9 @@ void AXActionHandlerRegistry::RemoveObserver(
 }
 
 void AXActionHandlerRegistry::PerformAction(
-    const ui::AXTreeID& tree_id,
-    int32_t automation_node_id,
-    const std::string& action_type,
-    int32_t request_id,
-    const base::DictionaryValue& optional_args) {
+    const ui::AXActionData& action_data) {
   for (AXActionHandlerObserver& observer : observers_) {
-    observer.PerformAction(tree_id, automation_node_id, action_type, request_id,
-                           optional_args);
+    observer.PerformAction(action_data);
   }
 }
 

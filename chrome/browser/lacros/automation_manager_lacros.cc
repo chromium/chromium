@@ -62,7 +62,15 @@ void AutomationManagerLacros::DispatchAccessibilityEvents(
 
 void AutomationManagerLacros::DispatchAccessibilityLocationChange(
     const ExtensionMsg_AccessibilityLocationChangeParams& params) {
-  // TODO(https://crbug.com/1185764): Implement me.
+  if (!automation_remote_)
+    return;
+
+  ui::AXTreeID tree_id = params.tree_id;
+  if (!tree_id.token())
+    return;
+
+  automation_remote_->DispatchAccessibilityLocationChange(
+      *tree_id.token(), params.id, params.new_location);
 }
 
 void AutomationManagerLacros::DispatchTreeDestroyedEvent(
@@ -89,7 +97,7 @@ void AutomationManagerLacros::DispatchActionResult(
 void AutomationManagerLacros::DispatchGetTextLocationDataResult(
     const ui::AXActionData& data,
     const absl::optional<gfx::Rect>& rect) {
-  // TODO(https://crbug.com/1185764): Implement me.
+  // Unsupported by Laros.
 }
 
 void AutomationManagerLacros::Enable() {
@@ -102,16 +110,19 @@ void AutomationManagerLacros::EnableTree(const base::UnguessableToken& token) {
       tree_id, /*extension_id=*/"");
 }
 
-void AutomationManagerLacros::PerformActionPrototype(
+void AutomationManagerLacros::Disable() {
+  AutomationManagerAura::GetInstance()->Disable();
+}
+
+void AutomationManagerLacros::PerformActionDeprecated(
     const base::UnguessableToken& token,
     int32_t automation_node_id,
     const std::string& action_type,
     int32_t request_id,
-    base::Value optional_args) {
-  ui::AXTreeID tree_id = ui::AXTreeID::FromToken(token);
-  const base::DictionaryValue& dict =
-      base::Value::AsDictionaryValue(optional_args);
+    base::Value optional_args) {}
+
+void AutomationManagerLacros::PerformAction(
+    const ui::AXActionData& action_data) {
   extensions::AutomationInternalPerformActionFunction::PerformAction(
-      tree_id, automation_node_id, action_type, request_id, dict,
-      /*extension_id=*/"", /*extension=*/nullptr, /*automation_info=*/nullptr);
+      action_data, /*extension=*/nullptr, /*automation_info=*/nullptr);
 }

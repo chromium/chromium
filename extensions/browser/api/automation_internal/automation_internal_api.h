@@ -49,15 +49,9 @@ class AutomationInternalPerformActionFunction : public ExtensionFunction {
 
   // Exposed to allow crosapi to reuse the implementation. |extension_id| can be
   // the empty string. |extension| and |automation_info| can be nullptr.
-  static Result PerformAction(
-      const ui::AXTreeID& tree_id,
-      int32_t automation_node_id,
-      const std::string& action_type,
-      int request_id,
-      const base::DictionaryValue& additional_properties,
-      const std::string& extension_id,
-      const Extension* extension,
-      const AutomationInfo* automation_info);
+  static Result PerformAction(const ui::AXActionData& data,
+                              const Extension* extension,
+                              const AutomationInfo* automation_info);
 
  protected:
   ~AutomationInternalPerformActionFunction() override = default;

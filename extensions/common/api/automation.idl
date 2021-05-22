@@ -373,6 +373,7 @@
     internalInvalidateTree,
     loadInlineTextBoxes,
     replaceSelectedText,
+    resumeMedia,
     scrollBackward,
     scrollDown,
     scrollForward,
@@ -388,7 +389,10 @@
     setValue,
     showContextMenu,
     signalEndOfTest,
-    showTooltip
+    showTooltip,
+    startDuckingMedia,
+    stopDuckingMedia,
+    suspendMedia
   };
 
   // Possible changes to the automation tree. For any given atomic change

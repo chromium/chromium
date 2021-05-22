@@ -52,6 +52,8 @@ class AutomationEventRouterInterface {
       content::BrowserContext* browser_context = nullptr) = 0;
 
   // Notify the source extension of the result to getTextLocation.
+  // Currently only supported by ARC++ in response to
+  // ax::mojom::Action::kGetTextLocation.
   virtual void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
       const absl::optional<gfx::Rect>& rect) = 0;

@@ -40,6 +40,12 @@ void AutomationAsh::EnableTree(const ui::AXTreeID& tree_id) {
   }
 }
 
+void AutomationAsh::Disable() {
+  for (auto& client : automation_client_remotes_) {
+    client->Disable();
+  }
+}
+
 void AutomationAsh::DispatchAccessibilityEvents(
     const base::UnguessableToken& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,
@@ -47,6 +53,18 @@ void AutomationAsh::DispatchAccessibilityEvents(
     const std::vector<ui::AXEvent>& events) {
   extensions::AutomationEventRouter::GetInstance()->DispatchAccessibilityEvents(
       ui::AXTreeID::FromToken(tree_id), updates, mouse_location, events);
+}
+
+void AutomationAsh::DispatchAccessibilityLocationChange(
+    const base::UnguessableToken& tree_id,
+    int32_t node_id,
+    const ui::AXRelativeBounds& bounds) {
+  ExtensionMsg_AccessibilityLocationChangeParams params;
+  params.tree_id = ui::AXTreeID::FromToken(tree_id);
+  params.id = node_id;
+  params.new_location = bounds;
+  extensions::AutomationEventRouter::GetInstance()
+      ->DispatchAccessibilityLocationChange(params);
 }
 
 void AutomationAsh::DispatchTreeDestroyedEvent(
@@ -64,18 +82,9 @@ void AutomationAsh::DispatchActionResult(
 
 // Forwards an action to all crosapi clients. This has no effect on production
 // builds of chrome. It exists for prototyping for developers.
-void AutomationAsh::PerformAction(const ui::AXTreeID& tree_id,
-                                  int32_t automation_node_id,
-                                  const std::string& action_type,
-                                  int32_t request_id,
-                                  const base::DictionaryValue& optional_args) {
-  if (!tree_id.token().has_value())
-    return;
-  for (auto& client : automation_client_remotes_) {
-    client->PerformActionPrototype(tree_id.token().value(), automation_node_id,
-                                   action_type, request_id,
-                                   optional_args.Clone());
-  }
+void AutomationAsh::PerformAction(const ui::AXActionData& action_data) {
+  for (auto& client : automation_client_remotes_)
+    client->PerformAction(action_data);
 }
 
 void AutomationAsh::BindAutomation(

@@ -611,6 +611,18 @@ AutomationInternalPerformActionFunction::ConvertToAXActionData(
     case api::automation::ACTION_TYPE_EXPAND:
       action->action = ax::mojom::Action::kExpand;
       break;
+    case api::automation::ACTION_TYPE_RESUMEMEDIA:
+      action->action = ax::mojom::Action::kResumeMedia;
+      break;
+    case api::automation::ACTION_TYPE_STARTDUCKINGMEDIA:
+      action->action = ax::mojom::Action::kStartDuckingMedia;
+      break;
+    case api::automation::ACTION_TYPE_STOPDUCKINGMEDIA:
+      action->action = ax::mojom::Action::kStopDuckingMedia;
+      break;
+    case api::automation::ACTION_TYPE_SUSPENDMEDIA:
+      action->action = ax::mojom::Action::kSuspendMedia;
+      break;
     case api::automation::ACTION_TYPE_ANNOTATEPAGEIMAGES:
     case api::automation::ACTION_TYPE_SIGNALENDOFTEST:
     case api::automation::ACTION_TYPE_INTERNALINVALIDATETREE:
@@ -625,34 +637,29 @@ AutomationInternalPerformActionFunction::Result::Result(const Result&) =
     default;
 AutomationInternalPerformActionFunction::Result::~Result() = default;
 
+// static
 AutomationInternalPerformActionFunction::Result
 AutomationInternalPerformActionFunction::PerformAction(
-    const ui::AXTreeID& tree_id,
-    int32_t automation_node_id,
-    const std::string& action_type,
-    int request_id,
-    const base::DictionaryValue& additional_properties,
-    const std::string& extension_id,
+    const ui::AXActionData& data,
     const Extension* extension,
     const AutomationInfo* automation_info) {
   Result result;
   result.validation_success = true;
 
-  ui::AXActionHandlerRegistry* registry =
-      ui::AXActionHandlerRegistry::GetInstance();
-
   // The ash implementation of crosapi registers itself as an action observer.
   // This allows it to forward actions in parallel to Lacros.
-  registry->PerformAction(tree_id, automation_node_id, action_type, request_id,
-                          additional_properties);
+  ui::AXActionHandlerRegistry* registry =
+      ui::AXActionHandlerRegistry::GetInstance();
+  registry->PerformAction(data);
 
-  ui::AXActionHandlerBase* action_handler = registry->GetActionHandler(tree_id);
+  ui::AXActionHandlerBase* action_handler =
+      registry->GetActionHandler(data.target_tree_id);
   if (action_handler) {
     // Handle an AXActionHandler with a rfh first. Some actions require a rfh ->
     // web contents and this api requires web contents to perform a permissions
     // check.
     content::RenderFrameHost* rfh =
-        content::RenderFrameHost::FromAXTreeID(tree_id);
+        content::RenderFrameHost::FromAXTreeID(data.target_tree_id);
     if (rfh) {
       content::WebContents* contents =
           content::WebContents::FromRenderFrameHost(rfh);
@@ -672,32 +679,25 @@ AutomationInternalPerformActionFunction::PerformAction(
       }
 
       // Handle internal actions.
-      api::automation_internal::ActionTypePrivate internal_action_type =
-          api::automation_internal::ParseActionTypePrivate(action_type);
       content::MediaSession* session = content::MediaSession::Get(contents);
-      switch (internal_action_type) {
-        case api::automation_internal::ACTION_TYPE_PRIVATE_STARTDUCKINGMEDIA:
+      switch (data.action) {
+        case ax::mojom::Action::kStartDuckingMedia:
           session->StartDucking();
           return result;
-        case api::automation_internal::ACTION_TYPE_PRIVATE_STOPDUCKINGMEDIA:
+        case ax::mojom::Action::kStopDuckingMedia:
           session->StopDucking();
           return result;
-        case api::automation_internal::ACTION_TYPE_PRIVATE_RESUMEMEDIA:
+        case ax::mojom::Action::kResumeMedia:
           session->Resume(content::MediaSession::SuspendType::kSystem);
           return result;
-        case api::automation_internal::ACTION_TYPE_PRIVATE_SUSPENDMEDIA:
+        case ax::mojom::Action::kSuspendMedia:
           session->Suspend(content::MediaSession::SuspendType::kSystem);
           return result;
-        case api::automation_internal::ACTION_TYPE_PRIVATE_NONE:
-          // Not a private action.
+        default:
           break;
       }
     }
 
-    ui::AXActionData data;
-    Result result = ConvertToAXActionData(
-        tree_id, automation_node_id, action_type, request_id,
-        additional_properties, extension_id, &data);
     action_handler->PerformAction(data);
     return result;
   }
@@ -716,11 +716,20 @@ AutomationInternalPerformActionFunction::Run() {
 
   int* request_id_ptr = params->args.request_id.get();
   int request_id = request_id_ptr ? *request_id_ptr : -1;
-  Result result =
-      PerformAction(ui::AXTreeID::FromString(params->args.tree_id),
-                    params->args.automation_node_id, params->args.action_type,
-                    request_id, params->opt_args.additional_properties,
-                    extension_id(), extension(), automation_info);
+
+  ui::AXActionData data;
+  Result result = ConvertToAXActionData(
+      ui::AXTreeID::FromString(params->args.tree_id),
+      params->args.automation_node_id, params->args.action_type, request_id,
+      params->opt_args.additional_properties, extension_id(), &data);
+
+  if (!result.validation_success) {
+    // This macro has a built in |return|.
+    EXTENSION_FUNCTION_VALIDATE(false);
+  }
+
+  result = PerformAction(data, extension(), automation_info);
+
   if (!result.validation_success) {
     // This macro has a built in |return|.
     EXTENSION_FUNCTION_VALIDATE(false);

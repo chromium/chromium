@@ -44,11 +44,13 @@ class AutomationManagerLacros
   // AutomationClient:
   void Enable() override;
   void EnableTree(const base::UnguessableToken& token) override;
-  void PerformActionPrototype(const base::UnguessableToken& tree_id,
-                              int32_t automation_node_id,
-                              const std::string& action_type,
-                              int32_t request_id,
-                              base::Value optional_args) override;
+  void Disable() override;
+  void PerformActionDeprecated(const base::UnguessableToken& tree_id,
+                               int32_t automation_node_id,
+                               const std::string& action_type,
+                               int32_t request_id,
+                               base::Value optional_args) override;
+  void PerformAction(const ui::AXActionData& action_data) override;
 
   mojo::Remote<crosapi::mojom::Automation> automation_remote_;
   mojo::Receiver<crosapi::mojom::AutomationClient> automation_client_receiver_{

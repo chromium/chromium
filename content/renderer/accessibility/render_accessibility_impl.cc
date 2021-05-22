@@ -421,6 +421,10 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kShowTooltip:
     case ax::mojom::Action::kHideTooltip:
     case ax::mojom::Action::kInternalInvalidateTree:
+    case ax::mojom::Action::kResumeMedia:
+    case ax::mojom::Action::kStartDuckingMedia:
+    case ax::mojom::Action::kStopDuckingMedia:
+    case ax::mojom::Action::kSuspendMedia:
       break;
   }
 }
