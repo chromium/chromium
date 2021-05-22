@@ -424,12 +424,16 @@ LayoutBox::LayoutBox(ContainerNode* node)
       intrinsic_content_logical_height_(-1),
       intrinsic_logical_widths_initial_block_size_(LayoutUnit::Min()),
       inline_box_wrapper_(nullptr) {
+  // Pointer registration is needed for storing in SnapCoordinator::UpdateSnapContainerData.
+  recordreplay::RegisterPointer(this);
   SetIsBox();
   if (blink::IsA<HTMLLegendElement>(node))
     SetIsHTMLLegendElement();
 }
 
-LayoutBox::~LayoutBox() = default;
+LayoutBox::~LayoutBox() {
+  recordreplay::UnregisterPointer(this);
+}
 
 PaintLayerType LayoutBox::LayerTypeRequired() const {
   NOT_DESTROYED();

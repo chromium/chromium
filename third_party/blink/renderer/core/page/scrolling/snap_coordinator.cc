@@ -315,7 +315,14 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
             : cc::TargetSnapAreaElementIds();
 
     if (SnapAreaSet* snap_areas = snap_container.SnapAreas()) {
+      std::vector<const LayoutBox*> snap_area_vector;
       for (const LayoutBox* snap_area : *snap_areas) {
+        snap_area_vector.push_back(snap_area);
+      }
+      std::sort(snap_area_vector.begin(), snap_area_vector.end(),
+                recordreplay::CompareByPointerId());
+
+      for (const LayoutBox* snap_area : snap_area_vector) {
         cc::SnapAreaData snap_area_data =
             CalculateSnapAreaData(*snap_area, snap_container);
         // The target snap elements should be preserved in the new container
