@@ -215,7 +215,12 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
     // No bytes needed could mean the operation failed or that there are simply
     // no printer drivers installed.  Rely upon system error code to
     // distinguish between these.
-    return GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode());
+    logging::SystemErrorCode code = logging::GetLastSystemErrorCode();
+    if (code != ERROR_SUCCESS) {
+      LOG(ERROR) << "Error enumerating printers: "
+                 << logging::SystemErrorCodeToString(code);
+    }
+    return GetResultCodeFromSystemErrorCode(code);
   }
 
   auto printer_info_buffer = std::make_unique<BYTE[]>(bytes_needed);
@@ -244,12 +249,15 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
 std::string PrintBackendWin::GetDefaultPrinterName() {
   DWORD size = MAX_PATH;
   TCHAR default_printer_name[MAX_PATH];
-  std::string ret;
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  if (::GetDefaultPrinter(default_printer_name, &size))
-    ret = base::WideToUTF8(default_printer_name);
-  return ret;
+  if (!::GetDefaultPrinter(default_printer_name, &size)) {
+    LOG(ERROR) << "Error getting default printer: "
+               << logging::SystemErrorCodeToString(
+                      logging::GetLastSystemErrorCode());
+    return std::string();
+  }
+  return base::WideToUTF8(default_printer_name);
 }
 
 mojom::ResultCode PrintBackendWin::GetPrinterBasicInfo(
