@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/sync/base/sync_base_switches.h"
 
 namespace syncer {

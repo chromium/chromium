@@ -6,6 +6,7 @@
 
 #include <objbase.h>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/scoped_native_library.h"

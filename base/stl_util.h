@@ -23,7 +23,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

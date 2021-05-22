@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "base/system/sys_info.h"

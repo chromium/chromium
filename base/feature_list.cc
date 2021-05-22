@@ -16,6 +16,7 @@
 
 #include "base/base_paths.h"
 #include "base/base_switches.h"
+#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"

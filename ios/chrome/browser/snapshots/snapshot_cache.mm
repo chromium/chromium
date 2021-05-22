@@ -9,6 +9,7 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

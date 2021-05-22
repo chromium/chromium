@@ -27,6 +27,7 @@
 #include "base/base_switches.h"
 #include "base/bits.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/stack.h"
 #include "base/environment.h"
 #include "base/files/file_enumerator.h"

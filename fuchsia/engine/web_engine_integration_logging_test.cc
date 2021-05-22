@@ -6,6 +6,7 @@
 
 #include <cstring>
 
+#include "base/containers/contains.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/test_log_listener_safe.h"

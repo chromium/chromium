@@ -5,6 +5,7 @@
 #include "base/metrics/persistent_sample_map.h"
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/notreached.h"

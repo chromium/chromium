@@ -11,6 +11,7 @@
 #include <map>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/win/vector.h"
