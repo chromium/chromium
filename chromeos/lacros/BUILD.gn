@@ -69,15 +69,15 @@ if (is_chromeos_device) {
   }
 
   lacros_tast_tests("lacros_fyi_tast_tests") {
-    # The following expression filters out all non-critical tests. See the link
-    # below for more details:
-    # https://chromium.googlesource.com/chromiumos/platform/tast/+/main/docs/test_attributes.md
-    tast_attr_expr = "\"group:mainline\" && (\"dep:lacros\" || \"dep:lacros_stable\" || \"dep:lacros_unstable\")"
-
-    tast_disabled_tests = [
-      # Chromium CI/CQ is meant to test the tip of the trunk or branch, but
-      # test tests again the live Lacros on Omaha, so it's not applicable here.
-      "lacros.ShelfLaunch.omaha",
+    tast_tests = [
+      "lacros.AppLauncherLaunch",
+      "lacros.AppLauncherLaunch.unstable",
+      "lacros.AudioPlay",
+      "lacros.AudioPlay.unstable",
+      "lacros.Basic",
+      "lacros.Basic.unstable",
+      "lacros.ShelfLaunch",
+      "lacros.ShelfLaunch.unstable",
     ]
   }
 }
