@@ -397,10 +397,6 @@ crbug.com/1129879 [ android ] Pixel_Video_Media_Stream_Incompatible_Stride [ Ski
 crbug.com/1129879 [ chromeos ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
 crbug.com/1129879 [ fuchsia ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
 
-# Produce incorrect image on Win10 AMD RX 5500 XT
-crbug.com/1151797 [ win10 amd-0x7340 skia-renderer-gl ] Pixel_DirectComposition_Video_VP9_YUY2 [ Failure ]
-crbug.com/1151797 [ win10 amd-0x7340 skia-renderer-gl ] Pixel_DirectComposition_Video_VP9_BGRA [ Failure ]
-
 # Flakes on Mac dual-GPU
 crbug.com/1069339 [ mojave amd-0x6821 ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ RetryOnFailure ]  # finder:disable Very low flake rate (1 in 1k+ builds)
 
