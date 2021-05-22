@@ -174,6 +174,15 @@ class QemuTarget(emu_target.EmuTarget):
     # Don't 'reboot' the emulator if the kernel crashes
     kernel_args.append('kernel.halt-on-panic=true')
 
+    # Prevent Zircon CPU lockup watchdogs from crashing the system
+    # due to scheduling starvation on heavily loaded VM hosts.
+    # TODO(crbug.com/1211461): Consider removing these lines once the
+    # issue is root caused and resolved.
+    kernel_args.append(
+        'kernel.lockup-detector.critical-section-fatal-threshold-ms=0')
+    kernel_args.append(
+        'kernel.lockup-detector.heartbeat-age-fatal-threshold-ms=0')
+
     emu_command.extend(['-append', ' '.join(kernel_args)])
 
     return emu_command
