@@ -1118,6 +1118,10 @@ bool CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID property_id) {
   }
 }
 
+bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {
+  return value_id >= CSSValueID::kCaption && value_id <= CSSValueID::kStatusBar;
+}
+
 static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
                                    const String& string,
                                    CSSParserMode parser_mode) {

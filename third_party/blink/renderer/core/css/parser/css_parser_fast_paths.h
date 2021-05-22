@@ -32,6 +32,8 @@ class CORE_EXPORT CSSParserFastPaths {
                                              CSSValueID,
                                              CSSParserMode);
 
+  static bool IsValidSystemFont(CSSValueID);
+
   static CSSValue* ParseColor(const String&, CSSParserMode);
 };
 

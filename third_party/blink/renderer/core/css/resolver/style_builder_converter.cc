@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
+#include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
@@ -221,6 +222,10 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
     const CSSValue& value,
     FontBuilder* font_builder,
     const Document* document_for_count) {
+  if (const auto* system_font =
+          DynamicTo<cssvalue::CSSPendingSystemFontValue>(value))
+    return system_font->ResolveFontFamily();
+
   FontDescription::FamilyDescription desc(FontDescription::kNoFamily);
   FontFamily* curr_family = nullptr;
 
@@ -388,7 +393,8 @@ static float ComputeFontSize(const CSSToLengthConversionData& conversion_data,
 FontDescription::Size StyleBuilderConverterBase::ConvertFontSize(
     const CSSValue& value,
     const CSSToLengthConversionData& conversion_data,
-    FontDescription::Size parent_size) {
+    FontDescription::Size parent_size,
+    const Document* document) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID value_id = identifier_value->GetValueID();
     if (FontSizeFunctions::IsValidValueID(value_id)) {
@@ -402,6 +408,10 @@ FontDescription::Size StyleBuilderConverterBase::ConvertFontSize(
     NOTREACHED();
     return FontBuilder::InitialSize();
   }
+
+  if (const auto* system_font =
+          DynamicTo<cssvalue::CSSPendingSystemFontValue>(value))
+    return system_font->ResolveFontSize(document);
 
   const auto& primitive_value = To<CSSPrimitiveValue>(value);
   if (primitive_value.IsPercentage()) {
@@ -439,7 +449,7 @@ FontDescription::Size StyleBuilderConverter::ConvertFontSize(
   }
 
   return StyleBuilderConverterBase::ConvertFontSize(
-      value, state.FontSizeConversionData(), parent_size);
+      value, state.FontSizeConversionData(), parent_size, &state.GetDocument());
 }
 
 float StyleBuilderConverter::ConvertFontSizeAdjust(StyleResolverState& state,
@@ -486,6 +496,10 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStretch(
         break;
     }
   }
+
+  if (value.IsPendingSystemFontValue())
+    return NormalWidthValue();
+
   NOTREACHED();
   return NormalWidthValue();
 }
@@ -511,6 +525,11 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStyle(
         NOTREACHED();
         return NormalSlopeValue();
     }
+  } else if (const auto* system_font =
+                 DynamicTo<cssvalue::CSSPendingSystemFontValue>(value)) {
+    if (system_font->ResolveFontStyle() == ItalicSlopeValue())
+      return ItalicSlopeValue();
+    return NormalSlopeValue();
   } else if (const auto* style_range_value =
                  DynamicTo<cssvalue::CSSFontStyleRangeValue>(value)) {
     const CSSValueList* values = style_range_value->GetObliqueValues();
@@ -546,6 +565,10 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontWeight(
       return clampTo<FontSelectionValue>(primitive_value->GetFloatValue());
   }
 
+  if (const auto* system_font =
+          DynamicTo<cssvalue::CSSPendingSystemFontValue>(value))
+    return system_font->ResolveFontWeight();
+
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     switch (identifier_value->GetValueID()) {
       case CSSValueID::kNormal:
@@ -574,6 +597,9 @@ FontSelectionValue StyleBuilderConverter::ConvertFontWeight(
 
 FontDescription::FontVariantCaps
 StyleBuilderConverterBase::ConvertFontVariantCaps(const CSSValue& value) {
+  if (value.IsPendingSystemFontValue())
+    return FontDescription::kCapsNormal;
+
   CSSValueID value_id = To<CSSIdentifierValue>(value).GetValueID();
   switch (value_id) {
     case CSSValueID::kNormal:
@@ -641,6 +667,9 @@ StyleBuilderConverter::ConvertFontVariantLigatures(StyleResolverState&,
     return ligatures;
   }
 
+  if (value.IsPendingSystemFontValue())
+    return FontDescription::VariantLigatures();
+
   if (To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kNone) {
     return FontDescription::VariantLigatures(
         FontDescription::kDisabledLigaturesState);
@@ -657,6 +686,9 @@ FontVariantNumeric StyleBuilderConverter::ConvertFontVariantNumeric(
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNormal);
     return FontVariantNumeric();
   }
+
+  if (value.IsPendingSystemFontValue())
+    return FontVariantNumeric();
 
   FontVariantNumeric variant_numeric;
   for (const CSSValue* feature : To<CSSValueList>(value)) {
@@ -703,6 +735,9 @@ FontVariantEastAsian StyleBuilderConverter::ConvertFontVariantEastAsian(
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNormal);
     return FontVariantEastAsian();
   }
+
+  if (value.IsPendingSystemFontValue())
+    return FontVariantEastAsian();
 
   FontVariantEastAsian variant_east_asian;
   for (const CSSValue* feature : To<CSSValueList>(value)) {
@@ -1227,6 +1262,9 @@ Length StyleBuilderConverter::ConvertLineHeight(StyleResolverState& state,
           zoomed_length, LayoutUnit(state.Style()->ComputedFontSize())));
     }
   }
+
+  if (value.IsPendingSystemFontValue())
+    return ComputedStyleInitialValues::InitialLineHeight();
 
   DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNormal);
   return ComputedStyleInitialValues::InitialLineHeight();

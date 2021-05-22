@@ -6422,6 +6422,7 @@ TEST_P(CompositedSelectionBoundsTest, Iframe) {
                            {"composited_selection_bounds_basic.html"});
 }
 TEST_P(CompositedSelectionBoundsTest, Editable) {
+  web_view_helper_.GetWebView()->GetSettings()->SetDefaultFontSize(16);
   RunTest("composited_selection_bounds_editable.html");
 }
 TEST_P(CompositedSelectionBoundsTest, EditableDiv) {
@@ -6436,9 +6437,11 @@ TEST_P(CompositedSelectionBoundsTest, SVGTextWithFragments) {
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #if !defined(OS_ANDROID)
 TEST_P(CompositedSelectionBoundsTest, Input) {
+  web_view_helper_.GetWebView()->GetSettings()->SetDefaultFontSize(16);
   RunTest("composited_selection_bounds_input.html");
 }
 TEST_P(CompositedSelectionBoundsTest, InputScrolled) {
+  web_view_helper_.GetWebView()->GetSettings()->SetDefaultFontSize(16);
   RunTest("composited_selection_bounds_input_scrolled.html");
 }
 #endif

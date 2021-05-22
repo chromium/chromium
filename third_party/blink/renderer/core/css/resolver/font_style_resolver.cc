@@ -27,7 +27,7 @@ FontDescription FontStyleResolver::ComputeFont(
   if (property_set.HasProperty(CSSPropertyID::kFontSize)) {
     builder.SetSize(StyleBuilderConverterBase::ConvertFontSize(
         *property_set.GetPropertyCSSValue(CSSPropertyID::kFontSize),
-        conversionData, FontDescription::Size(0, 0.0f, false)));
+        conversionData, FontDescription::Size(0, 0.0f, false), nullptr));
   }
 
   // CSSPropertyID::kFontFamily

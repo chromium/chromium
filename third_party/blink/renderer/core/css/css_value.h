@@ -166,6 +166,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsPendingSubstitutionValue() const {
     return class_type_ == kPendingSubstitutionValueClass;
   }
+  bool IsPendingSystemFontValue() const {
+    return class_type_ == kPendingSystemFontValueClass;
+  }
   bool IsInvalidVariableValue() const {
     return class_type_ == kInvalidVariableValueClass ||
            class_type_ == kCyclicVariableValueClass;
@@ -265,6 +268,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kVariableReferenceClass,
     kCustomPropertyDeclarationClass,
     kPendingSubstitutionValueClass,
+    kPendingSystemFontValueClass,
     kInvalidVariableValueClass,
     kCyclicVariableValueClass,
     kLayoutFunctionClass,

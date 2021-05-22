@@ -42,6 +42,7 @@
 namespace blink {
 
 class ComputedStyle;
+class Document;
 class Element;
 class File;
 class FontDescription;
@@ -146,7 +147,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   virtual base::TimeDelta CaretBlinkInterval() const;
 
   // System fonts and colors for CSS.
-  void SystemFont(CSSValueID system_font_id, FontDescription&);
+  void SystemFont(CSSValueID system_font_id, FontDescription&, const Document*);
   virtual Color SystemColor(CSSValueID,
                             mojom::blink::ColorScheme color_scheme) const;
 

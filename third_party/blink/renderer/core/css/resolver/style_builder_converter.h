@@ -89,7 +89,8 @@ class StyleBuilderConverterBase {
   static FontDescription::Size ConvertFontSize(
       const CSSValue&,
       const CSSToLengthConversionData&,
-      FontDescription::Size parent_size);
+      FontDescription::Size parent_size,
+      const Document*);
 };
 
 // Note that we assume the parser only allows valid CSSValue types.

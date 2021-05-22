@@ -3832,4 +3832,50 @@ TEST_F(StyleEngineTest, CounterStyleDisabledInShadowDOM) {
   EXPECT_EQ("1. ", GetListMarkerText(shadow_bar));
 }
 
+TEST_F(StyleEngineTest, SystemFontsObeyDefaultFontSize) {
+  // <input> get assigned "font: -webkit-small-control" in the UA sheet.
+  Element* body = GetDocument().body();
+  body->setInnerHTML("<input>");
+  Element* input = GetDocument().QuerySelector("input");
+
+  // Test the standard font sizes that can be chosen in chrome://settings/
+  for (int fontSize : {9, 12, 16, 20, 24}) {
+    GetDocument().GetSettings()->SetDefaultFontSize(fontSize);
+    UpdateAllLifecyclePhases();
+    EXPECT_EQ(fontSize, body->GetComputedStyle()->FontSize());
+    EXPECT_EQ(fontSize - 3, input->GetComputedStyle()->FontSize());
+  }
+
+  // Now test degenerate cases
+  GetDocument().GetSettings()->SetDefaultFontSize(-1);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(1, body->GetComputedStyle()->FontSize());
+  EXPECT_EQ(1, input->GetComputedStyle()->FontSize());
+
+  GetDocument().GetSettings()->SetDefaultFontSize(0);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(1, body->GetComputedStyle()->FontSize());
+  EXPECT_EQ(13, input->GetComputedStyle()->FontSize());
+
+  GetDocument().GetSettings()->SetDefaultFontSize(1);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(1, body->GetComputedStyle()->FontSize());
+  EXPECT_EQ(1, input->GetComputedStyle()->FontSize());
+
+  GetDocument().GetSettings()->SetDefaultFontSize(2);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(2, body->GetComputedStyle()->FontSize());
+  EXPECT_EQ(2, input->GetComputedStyle()->FontSize());
+
+  GetDocument().GetSettings()->SetDefaultFontSize(3);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(3, body->GetComputedStyle()->FontSize());
+  EXPECT_EQ(0, input->GetComputedStyle()->FontSize());
+
+  GetDocument().GetSettings()->SetDefaultFontSize(12345);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(10000, body->GetComputedStyle()->FontSize());
+  EXPECT_EQ(10000, input->GetComputedStyle()->FontSize());
+}
+
 }  // namespace blink

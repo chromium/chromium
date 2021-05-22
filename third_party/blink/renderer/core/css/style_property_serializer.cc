@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
+#include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -729,6 +730,26 @@ String StylePropertySerializer::FontValue() const {
        east_asian_identifier_value->GetValueID() != CSSValueID::kNormal) ||
       east_asian_value->IsValueList())
     return g_empty_string;
+
+  const StylePropertyShorthand& shorthand = fontShorthand();
+  const CSSProperty** longhands = shorthand.properties();
+  unsigned length = shorthand.length();
+  const CSSValue* first = property_set_.GetPropertyCSSValue(*longhands[0]);
+  if (const auto* system_font =
+          DynamicTo<cssvalue::CSSPendingSystemFontValue>(first)) {
+    for (unsigned i = 1; i < length; i++) {
+      const CSSValue* value = property_set_.GetPropertyCSSValue(*longhands[i]);
+      if (!DataEquivalent(first, value))
+        return g_empty_string;
+    }
+    return getValueName(system_font->SystemFontId());
+  } else {
+    for (unsigned i = 1; i < length; i++) {
+      const CSSValue* value = property_set_.GetPropertyCSSValue(*longhands[i]);
+      if (value->IsPendingSystemFontValue())
+        return g_empty_string;
+    }
+  }
 
   StringBuilder result;
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontStyle(), result);

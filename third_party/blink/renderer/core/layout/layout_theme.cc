@@ -572,22 +572,21 @@ static FontDescription& GetCachedFontDescription(CSSValueID system_font_id) {
 }
 
 void LayoutTheme::SystemFont(CSSValueID system_font_id,
-                             FontDescription& font_description) {
+                             FontDescription& font_description,
+                             const Document* document) {
   font_description = GetCachedFontDescription(system_font_id);
   if (font_description.IsAbsoluteSize())
     return;
 
-  FontSelectionValue font_slope = NormalSlopeValue();
-  FontSelectionValue font_weight = NormalWeightValue();
-  float font_size = 0;
-  AtomicString font_family;
-  LayoutThemeFontProvider::SystemFont(system_font_id, font_slope, font_weight,
-                                      font_size, font_family);
-  font_description.SetStyle(font_slope);
-  font_description.SetWeight(font_weight);
-  font_description.SetSpecifiedSize(font_size);
+  font_description.SetStyle(
+      LayoutThemeFontProvider::SystemFontStyle(system_font_id));
+  font_description.SetWeight(
+      LayoutThemeFontProvider::SystemFontWeight(system_font_id));
+  font_description.SetSpecifiedSize(
+      LayoutThemeFontProvider::SystemFontSize(system_font_id, document));
   font_description.SetIsAbsoluteSize(true);
-  font_description.FirstFamily().SetFamily(font_family);
+  font_description.FirstFamily().SetFamily(
+      LayoutThemeFontProvider::SystemFontFamily(system_font_id));
   font_description.SetGenericFamily(FontDescription::kNoFamily);
 }
 

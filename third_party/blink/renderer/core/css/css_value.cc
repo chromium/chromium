@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
+#include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
@@ -278,6 +279,9 @@ bool CSSValue::operator==(const CSSValue& other) const {
       case kPendingSubstitutionValueClass:
         return CompareCSSValues<cssvalue::CSSPendingSubstitutionValue>(*this,
                                                                        other);
+      case kPendingSystemFontValueClass:
+        return CompareCSSValues<cssvalue::CSSPendingSystemFontValue>(*this,
+                                                                     other);
       case kInvalidVariableValueClass:
         return CompareCSSValues<CSSInvalidVariableValue>(*this, other);
       case kCyclicVariableValueClass:
@@ -404,6 +408,8 @@ String CSSValue::CssText() const {
       return To<CSSCustomPropertyDeclaration>(this)->CustomCSSText();
     case kPendingSubstitutionValueClass:
       return To<cssvalue::CSSPendingSubstitutionValue>(this)->CustomCSSText();
+    case kPendingSystemFontValueClass:
+      return To<cssvalue::CSSPendingSystemFontValue>(this)->CustomCSSText();
     case kInvalidVariableValueClass:
       return To<CSSInvalidVariableValue>(this)->CustomCSSText();
     case kCyclicVariableValueClass:
@@ -587,6 +593,10 @@ void CSSValue::FinalizeGarbageCollectedObject() {
     case kPendingSubstitutionValueClass:
       To<cssvalue::CSSPendingSubstitutionValue>(this)
           ->~CSSPendingSubstitutionValue();
+      return;
+    case kPendingSystemFontValueClass:
+      To<cssvalue::CSSPendingSystemFontValue>(this)
+          ->~CSSPendingSystemFontValue();
       return;
     case kInvalidVariableValueClass:
       To<CSSInvalidVariableValue>(this)->~CSSInvalidVariableValue();
@@ -774,6 +784,10 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kPendingSubstitutionValueClass:
       To<cssvalue::CSSPendingSubstitutionValue>(this)->TraceAfterDispatch(
+          visitor);
+      return;
+    case kPendingSystemFontValueClass:
+      To<cssvalue::CSSPendingSystemFontValue>(this)->TraceAfterDispatch(
           visitor);
       return;
     case kInvalidVariableValueClass:

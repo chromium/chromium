@@ -25,10 +25,10 @@ static const float kReplacementTextRoundedRectOpacity = 0.20f;
 static const float kReplacementTextRoundedRectRadius = 5;
 static const float kReplacementTextTextOpacity = 0.55f;
 
-static Font ReplacementTextFont() {
+static Font ReplacementTextFont(const Document* document) {
   FontDescription font_description;
   LayoutTheme::GetTheme().SystemFont(CSSValueID::kWebkitSmallControl,
-                                     font_description);
+                                     font_description, document);
   font_description.SetWeight(BoldWeightValue());
   font_description.SetComputedSize(font_description.SpecifiedSize());
   Font font(font_description);
@@ -56,7 +56,7 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
   BoxDrawingRecorder recorder(context, layout_embedded_object_,
                               paint_info.phase, paint_offset);
 
-  Font font = ReplacementTextFont();
+  Font font = ReplacementTextFont(&layout_embedded_object_.GetDocument());
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
   if (!font_data)

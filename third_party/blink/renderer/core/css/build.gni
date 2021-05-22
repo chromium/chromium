@@ -149,6 +149,8 @@ blink_core_sources_css = [
   "css_path_value.h",
   "css_pending_substitution_value.cc",
   "css_pending_substitution_value.h",
+  "css_pending_system_font_value.cc",
+  "css_pending_system_font_value.h",
   "css_primitive_value.cc",
   "css_primitive_value.h",
   "css_primitive_value_mappings.h",
