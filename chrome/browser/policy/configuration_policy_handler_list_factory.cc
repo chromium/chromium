@@ -115,6 +115,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/policy/local_sync_policy_handler.h"
 #include "chrome/browser/policy/managed_account_policy_handler.h"
+#include "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
 #endif  // defined(OS_ANDROID)
 
 #if !defined(OS_CHROMEOS)
@@ -706,9 +707,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::LIST },
   { key::kWebRtcEventLogCollectionAllowed,
     prefs::kWebRtcEventLogCollectionAllowed,
-    base::Value::Type::BOOLEAN },
-  { key::kCloudReportingEnabled,
-    enterprise_reporting::kCloudReportingEnabled,
     base::Value::Type::BOOLEAN },
   { key::kSuppressUnsupportedOSWarning,
     prefs::kSuppressUnsupportedOSWarning,
@@ -1614,6 +1612,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           chrome_schema.GetValidationSchema(),
           SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
           SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+  handlers->AddHandler(
+      std::make_unique<enterprise_reporting::CloudReportingPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<enterprise_reporting::ExtensionRequestPolicyHandler>());
 

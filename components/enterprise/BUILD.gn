@@ -29,6 +29,8 @@ static_library("enterprise") {
     sources += [
       "browser/reporting/browser_report_generator.cc",
       "browser/reporting/browser_report_generator.h",
+      "browser/reporting/cloud_reporting_policy_handler.cc",
+      "browser/reporting/cloud_reporting_policy_handler.h",
       "browser/reporting/policy_info.cc",
       "browser/reporting/policy_info.h",
       "browser/reporting/profile_report_generator.cc",
@@ -96,6 +98,7 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [
+      "browser/reporting/cloud_reporting_policy_handler_unittest.cc",
       "browser/reporting/real_time_uploader_unittest.cc",
       "browser/reporting/report_uploader_unittest.cc",
     ]
@@ -103,7 +106,9 @@ source_set("unit_tests") {
     deps += [
       "//build:chromeos_buildflags",
       "//components/enterprise/common/proto:extensions_workflow_events_proto",
+      "//components/policy/core/browser:test_support",
       "//components/policy/core/common:test_support",
+      "//components/prefs:test_support",
       "//components/reporting/client:test_support",
     ]
   }

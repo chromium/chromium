@@ -163,6 +163,9 @@
   <message name="IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR" desc="The text displayed in the status column when a policy that should only be set in the cloud is set from another source.">
     Ignored because the policy is not set by a cloud source.
   </message>
+  <message name="IDS_POLICY_CLOUD_MANAGEMENT_ENROLLMENT_ONLY_ERROR" desc="The text displayed in the status column when a policy that is effective only when the machine is enrolled with the Chrome Browser Cloud Management.">
+    Ignored because the machine is not enrolled with Chrome Browser Cloud Management.
+  </message>
   <message name="IDS_POLICY_DEFAULT_SEARCH_DISABLED" desc="The text displayed in the status column when a policy value has been ignored because default search has not been enabled.">
     Ignored because default search is not enabled by policy.
   </message>

@@ -36,6 +36,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#else
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace policy {
@@ -86,6 +88,10 @@ class PolicyPrefsTest : public InProcessBrowserTest {
 // Verifies that policies make their corresponding preferences become managed,
 // and that the user can't override that setting.
 IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, PolicyToPrefsMapping) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  policy::FakeBrowserDMTokenStorage storage;
+  policy::BrowserDMTokenStorage::SetForTesting(&storage);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   PrefService* local_state = g_browser_process->local_state();
   PrefService* user_prefs = browser()->profile()->GetPrefs();
 
