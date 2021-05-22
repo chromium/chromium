@@ -57,6 +57,9 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
                       std::unique_ptr<WebrtcVideoEncoder::EncodedFrame> frame);
 
+  // Notifies WebRTC that this encoder has dropped a frame.
+  void NotifyFrameDropped();
+
   // Sets whether top-off is active, and fires a notification if the setting
   // changes.
   void SetTopOffActive(bool active);
@@ -81,6 +84,10 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   bool top_off_active_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   webrtc::VideoCodecType codec_type_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // True when a frame is being encoded. This guards against encoding multiple
+  // frames in parallel, which the encoders are not prepared to handle.
+  bool encode_pending_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // TaskRunner used for notifying |video_channel_state_observer_|.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
