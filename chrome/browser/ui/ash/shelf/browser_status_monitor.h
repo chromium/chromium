@@ -90,6 +90,9 @@ class BrowserStatusMonitor : public BrowserListObserver,
                      content::WebContents* contents);
   void OnTabClosing(content::WebContents* contents);
 
+  // Called by LocalWebContentsObserver.
+  void OnTabNavigationFinished(content::WebContents* contents);
+
   // Create LocalWebContentsObserver for |contents|.
   void AddWebContentsObserver(content::WebContents* contents);
 

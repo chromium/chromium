@@ -58,18 +58,9 @@ class BrowserStatusMonitor::LocalWebContentsObserver
   // content::WebContentsObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (!navigation_handle->IsInMainFrame() ||
-        !navigation_handle->HasCommitted())
-      return;
-
-    monitor_->UpdateAppItemState(web_contents(), false /*remove*/);
-    monitor_->UpdateBrowserItemState();
-
-    // Navigating may change the ShelfID associated with the WebContents.
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-    if (browser &&
-        browser->tab_strip_model()->GetActiveWebContents() == web_contents()) {
-      monitor_->SetShelfIDForBrowserWindowContents(browser, web_contents());
+    if (navigation_handle->IsInMainFrame() &&
+        navigation_handle->HasCommitted()) {
+      monitor_->OnTabNavigationFinished(web_contents());
     }
   }
 
@@ -333,6 +324,19 @@ void BrowserStatusMonitor::OnTabClosing(content::WebContents* contents) {
   RemoveWebContentsObserver(contents);
   if (app_service_instance_helper_)
     app_service_instance_helper_->OnTabClosing(contents);
+}
+
+void BrowserStatusMonitor::OnTabNavigationFinished(
+    content::WebContents* contents) {
+  UpdateAppItemState(contents, false /*remove*/);
+  UpdateBrowserItemState();
+
+  // Navigating may change the ShelfID associated with the WebContents.
+  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  if (browser &&
+      browser->tab_strip_model()->GetActiveWebContents() == contents) {
+    SetShelfIDForBrowserWindowContents(browser, contents);
+  }
 }
 
 void BrowserStatusMonitor::AddWebContentsObserver(
