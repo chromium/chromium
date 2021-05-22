@@ -148,13 +148,6 @@ WebNode WebElement::ShadowRoot() const {
   return WebNode(root);
 }
 
-WebElement WebElement::OwnerShadowHost() const {
-  if (auto* host = ConstUnwrap<Element>()->OwnerShadowHost()) {
-    return WebElement(host);
-  }
-  return WebElement();
-}
-
 WebNode WebElement::OpenOrClosedShadowRoot() {
   if (IsNull())
     return WebNode();

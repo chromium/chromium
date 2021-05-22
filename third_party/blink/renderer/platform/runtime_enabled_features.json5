@@ -209,10 +209,6 @@
       status: "experimental",
     },
     {
-      name: "AutofillShadowDOM",
-      status: "experimental",
-    },
-    {
       name: "AutoLazyLoadOnReloads",
       depends_on: ["LazyFrameLoading"],
     },
