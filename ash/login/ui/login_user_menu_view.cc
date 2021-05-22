@@ -251,6 +251,23 @@ LoginButton* LoginUserMenuView::GetBubbleOpener() const {
   return bubble_opener_;
 }
 
+void LoginUserMenuView::OnThemeChanged() {
+  LoginBaseBubbleView::OnThemeChanged();
+  username_label_->SetEnabledColor(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary));
+  email_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
+  if (remove_user_confirm_data_) {
+    DCHECK_EQ(2u, remove_user_confirm_data_->children().size());
+    for (views::View* label : remove_user_confirm_data_->children()) {
+      static_cast<views::Label*>(label)->SetEnabledColor(
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kTextColorPrimary));
+    }
+  }
+}
+
 void LoginUserMenuView::RequestFocus() {
   // This view has no actual interesting contents to focus, so immediately
   // forward to the button.
@@ -284,23 +301,6 @@ void LoginUserMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
   node_data->role = ax::mojom::Role::kDialog;
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
-}
-
-void LoginUserMenuView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  username_label_->SetEnabledColor(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary));
-  email_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
-  if (remove_user_confirm_data_) {
-    DCHECK_EQ(2u, remove_user_confirm_data_->children().size());
-    for (views::View* label : remove_user_confirm_data_->children()) {
-      static_cast<views::Label*>(label)->SetEnabledColor(
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kTextColorPrimary));
-    }
-  }
 }
 
 views::FocusTraversable* LoginUserMenuView::GetPaneFocusTraversable() {

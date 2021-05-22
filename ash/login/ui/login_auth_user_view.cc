@@ -260,14 +260,15 @@ class FingerprintLabel : public views::Label {
     SetAccessibleName(l10n_util::GetStringUTF16(get_accessible_id()));
   }
 
-  // views::View:
+  // views::Label:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kStaticText;
     node_data->SetName(accessible_name_);
   }
 
+  // views::Label:
   void OnThemeChanged() override {
-    views::View::OnThemeChanged();
+    views::Label::OnThemeChanged();
     SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorSecondary));
   }
@@ -1559,7 +1560,7 @@ void LoginAuthUserView::RequestFocus() {
 }
 
 void LoginAuthUserView::OnThemeChanged() {
-  views::View::OnThemeChanged();
+  NonAccessibleView::OnThemeChanged();
   const LoginPalette palette = CreateDefaultLoginPalette();
   password_view_->UpdatePalette(palette);
   pin_input_view_->UpdatePalette(palette);

@@ -437,7 +437,7 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
 }
 
 void ScrollableUsersListView::OnThemeChanged() {
-  views::View::OnThemeChanged();
+  views::ScrollView::OnThemeChanged();
   gradient_params_ = GradientParams::BuildForStyle(display_style_);
 }
 

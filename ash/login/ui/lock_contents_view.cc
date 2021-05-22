@@ -882,7 +882,7 @@ bool LockContentsView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 }
 
 void LockContentsView::OnThemeChanged() {
-  views::View::OnThemeChanged();
+  NonAccessibleView::OnThemeChanged();
   UpdateBottomStatusIndicatorColors();
   UpdateSystemInfoColors();
 }

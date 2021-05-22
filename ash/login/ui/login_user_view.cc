@@ -305,9 +305,9 @@ class LoginUserView::UserLabel : public NonAccessibleView {
                                        gfx::ElideBehavior::ELIDE_TAIL));
   }
 
-  // views::View:
+  // NonAccessibleView:
   void OnThemeChanged() override {
-    views::View::OnThemeChanged();
+    NonAccessibleView::OnThemeChanged();
     user_name_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
   }

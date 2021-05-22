@@ -154,6 +154,8 @@ class ASH_EXPORT LockContentsView
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+
+  // NonAccessibleView:
   void OnThemeChanged() override;
 
   // LoginDataDispatcher::Observer:
