@@ -49,7 +49,7 @@ public class GamepadMappingsTest {
      * Set bits indicate that we don't expect the axis at mMappedAxes[index] to be mapped.
      */
     private BitSet mUnmappedAxes = new BitSet(CanonicalAxisIndex.COUNT);
-    private float[] mMappedButtons = new float[CanonicalButtonIndex.COUNT];
+    private float[] mMappedButtons = new float[CanonicalButtonIndex.COUNT + 2];
     private float[] mMappedAxes = new float[CanonicalAxisIndex.COUNT];
     private float[] mRawButtons = new float[GamepadDevice.MAX_RAW_BUTTON_VALUES];
     private float[] mRawAxes = new float[GamepadDevice.MAX_RAW_AXIS_VALUES];
@@ -556,6 +556,43 @@ public class GamepadMappingsTest {
                 mMappedButtons[CanonicalButtonIndex.LEFT_TRIGGER], 0.0, ERROR_TOLERANCE);
         Assert.assertEquals(mMappedButtons[CanonicalButtonIndex.RIGHT_TRIGGER],
                 -mRawAxes[MotionEvent.AXIS_Z], ERROR_TOLERANCE);
+
+        assertMapping(mappings);
+    }
+
+    @Test
+    @Feature({"Gamepad"})
+    public void testStadiaControllerMappings() {
+        int[] axes = {
+                MotionEvent.AXIS_X,
+                MotionEvent.AXIS_Y,
+                MotionEvent.AXIS_Z,
+                MotionEvent.AXIS_RZ,
+                MotionEvent.AXIS_HAT_X,
+                MotionEvent.AXIS_HAT_Y,
+                MotionEvent.AXIS_GAS,
+                MotionEvent.AXIS_BRAKE,
+        };
+        GamepadMappings mappings = GamepadMappings.getMappings(GamepadMappings.GOOGLE_VENDOR_ID,
+                GamepadMappings.STADIA_CONTROLLER_PRODUCT_ID, axes);
+        mappings.mapToStandardGamepad(mMappedAxes, mMappedButtons, mRawAxes, mRawButtons);
+
+        assertMappedCommonXYABButtons();
+        assertMappedTriggerButtonsToTopShoulder();
+        assertMappedPedalAxesToBottomShoulder();
+        assertMappedCommonStartSelectMetaButtons();
+        assertMappedCommonThumbstickButtons();
+        assertMappedHatAxisToDpadButtons();
+        assertMappedXYAxes();
+        assertMappedZAndRZAxesToRightStick();
+
+        // The Assistant and Capture buttons should be mapped after the last
+        // Standard Gamepad button index.
+        Assert.assertEquals(mappings.getButtonsLength(), CanonicalButtonIndex.COUNT + 2);
+        Assert.assertEquals(mMappedButtons[CanonicalButtonIndex.COUNT],
+                mRawButtons[KeyEvent.KEYCODE_BUTTON_1], ERROR_TOLERANCE);
+        Assert.assertEquals(mMappedButtons[CanonicalButtonIndex.COUNT + 1],
+                mRawButtons[KeyEvent.KEYCODE_BUTTON_2], ERROR_TOLERANCE);
 
         assertMapping(mappings);
     }

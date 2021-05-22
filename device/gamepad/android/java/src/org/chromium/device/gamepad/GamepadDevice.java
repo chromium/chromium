@@ -33,6 +33,11 @@ class GamepadDevice {
     // Allow for devices that have more buttons than the Standard Gamepad.
     static final int MAX_BUTTON_INDEX = CanonicalButtonIndex.COUNT;
 
+    // Minimum and maximum scancodes for extra gamepad buttons. Android does not assign KeyEvent
+    // keycodes for these buttons.
+    static final int MIN_BTN_TRIGGER_HAPPY = 0x2c0;
+    static final int MAX_BTN_TRIGGER_HAPPY = 0x2cf;
+
     /** Keycodes which might be mapped by {@link GamepadMappings}. Keep sorted by keycode. */
     @VisibleForTesting
     static final int RELEVANT_KEYCODES[] = {
@@ -76,7 +81,12 @@ class GamepadDevice {
     // should correspond to "down" or "right".
     private final float[] mAxisValues = new float[CanonicalAxisIndex.COUNT];
 
-    private final float[] mButtonsValues = new float[MAX_BUTTON_INDEX + 1];
+    // Array of values for all buttons of the gamepad. All button values must be
+    // linearly normalized to the range [0.0 .. 1.0]. 0.0 should correspond to
+    // a neutral, unpressed state and 1.0 should correspond to a pressed state.
+    // Allocate enough room for all Standard Gamepad buttons plus two extra
+    // buttons.
+    private final float[] mButtonsValues = new float[MAX_BUTTON_INDEX + 2];
 
     // When the user agent recognizes the attached inputDevice, it is recommended
     // that it be remapped to a canonical ordering when possible. Devices that are
@@ -221,9 +231,18 @@ class GamepadDevice {
      * @return True if the key event from the gamepad device has been consumed.
      */
     public boolean handleKeyEvent(KeyEvent event) {
-        // Ignore event if it is not for standard gamepad key.
-        if (!GamepadList.isGamepadEvent(event)) return false;
+        // Extra gamepad and joystick buttons use Linux scancodes starting from BTN_TRIGGER_HAPPY
+        // but don't have specific Android keycodes and are mapped as KEYCODE_UNKNOWN. Handle the
+        // first 16 extra buttons as if they had KEYCODE_BUTTON_# keycodes.
         int keyCode = event.getKeyCode();
+        int scanCode = event.getScanCode();
+        if (keyCode == KeyEvent.KEYCODE_UNKNOWN && scanCode >= MIN_BTN_TRIGGER_HAPPY
+                && scanCode <= MAX_BTN_TRIGGER_HAPPY) {
+            keyCode = KeyEvent.KEYCODE_BUTTON_1 + scanCode - MIN_BTN_TRIGGER_HAPPY;
+        }
+
+        // Ignore the event if it is not for a gamepad key.
+        if (!GamepadList.isGamepadEvent(event)) return false;
         assert keyCode < MAX_RAW_BUTTON_VALUES;
         // Button value 0.0 must mean fully unpressed, and 1.0 must mean fully pressed.
         if (event.getAction() == KeyEvent.ACTION_DOWN) {

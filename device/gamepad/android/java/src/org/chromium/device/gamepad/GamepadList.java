@@ -289,8 +289,17 @@ public class GamepadList {
             case KeyEvent.KEYCODE_MEDIA_RECORD:
                 return true;
             default:
-                return KeyEvent.isGamepadButton(keyCode);
+                break;
         }
+
+        // If the scancode is in the BTN_TRIGGER_HAPPY range it is an extra gamepad button.
+        int scanCode = event.getScanCode();
+        if (keyCode == KeyEvent.KEYCODE_UNKNOWN && scanCode >= GamepadDevice.MIN_BTN_TRIGGER_HAPPY
+                && scanCode <= GamepadDevice.MAX_BTN_TRIGGER_HAPPY) {
+            return true;
+        }
+
+        return KeyEvent.isGamepadButton(keyCode);
     }
 
     @CalledByNative

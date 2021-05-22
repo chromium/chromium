@@ -53,6 +53,11 @@ abstract class GamepadMappings {
     @VisibleForTesting
     static final int SNAKEBYTE_IDROIDCON_PRODUCT_ID = 0x8502;
 
+    @VisibleForTesting
+    static final int GOOGLE_VENDOR_ID = 0x18d1;
+    @VisibleForTesting
+    static final int STADIA_CONTROLLER_PRODUCT_ID = 0x9400;
+
     private static final float BUTTON_AXIS_DEADZONE = 0.01f;
 
     public static GamepadMappings getMappings(InputDevice device, int[] axes, BitSet buttons) {
@@ -103,6 +108,9 @@ abstract class GamepadMappings {
         }
         if (vendorId == BROADCOM_VENDOR_ID && productId == SNAKEBYTE_IDROIDCON_PRODUCT_ID) {
             return new SnakebyteIDroidConMappings(axes);
+        }
+        if (vendorId == GOOGLE_VENDOR_ID && productId == STADIA_CONTROLLER_PRODUCT_ID) {
+            return new StadiaControllerMappings();
         }
         return null;
     }
@@ -584,6 +592,36 @@ abstract class GamepadMappings {
 
             mapXYAxes(mappedAxes, rawAxes);
             mapRXAndRYAxesToRightStick(mappedAxes, rawAxes);
+        }
+    }
+
+    private static class StadiaControllerMappings extends GamepadMappings {
+        private static final int BUTTON_INDEX_ASSISTANT = CanonicalButtonIndex.COUNT;
+        private static final int BUTTON_INDEX_CAPTURE = CanonicalButtonIndex.COUNT + 1;
+        /**
+         * Method for mapping Stadia Controller axis and button values to
+         * standard gamepad button and axes values.
+         */
+        @Override
+        public void mapToStandardGamepad(
+                float[] mappedAxes, float[] mappedButtons, float[] rawAxes, float[] rawButtons) {
+            mapCommonXYABButtons(mappedButtons, rawButtons);
+            mapTriggerButtonsToTopShoulder(mappedButtons, rawButtons);
+            mapPedalAxesToBottomShoulder(mappedButtons, rawAxes);
+            mapCommonThumbstickButtons(mappedButtons, rawButtons);
+            mapCommonStartSelectMetaButtons(mappedButtons, rawButtons);
+            mapHatAxisToDpadButtons(mappedButtons, rawAxes);
+            mappedButtons[BUTTON_INDEX_ASSISTANT] = rawButtons[KeyEvent.KEYCODE_BUTTON_1];
+            mappedButtons[BUTTON_INDEX_CAPTURE] = rawButtons[KeyEvent.KEYCODE_BUTTON_2];
+
+            mapXYAxes(mappedAxes, rawAxes);
+            mapZAndRZAxesToRightStick(mappedAxes, rawAxes);
+        }
+
+        @Override
+        public int getButtonsLength() {
+            // Include the Assistant and Capture buttons.
+            return CanonicalButtonIndex.COUNT + 2;
         }
     }
 
