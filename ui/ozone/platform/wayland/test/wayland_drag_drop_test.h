@@ -42,6 +42,15 @@ class WaylandDragDropTest : public WaylandTest,
   void ReadData(const std::string& mime_type,
                 wl::TestDataSource::ReadDataCallback callback);
 
+  virtual void SendPointerEnter(WaylandWindow* window,
+                                MockPlatformWindowDelegate* delegate);
+  virtual void SendPointerLeave(WaylandWindow* window,
+                                MockPlatformWindowDelegate* delegate);
+  virtual void SendPointerButton(WaylandWindow* window,
+                                 MockPlatformWindowDelegate* delegate,
+                                 int button,
+                                 bool pressed);
+
  protected:
   // WaylandTest:
   void SetUp() override;
@@ -58,9 +67,14 @@ class WaylandDragDropTest : public WaylandTest,
   void ScheduleTestTask(base::OnceClosure test_task);
   void RunTestTask(base::OnceClosure test_task);
 
+  WaylandWindowManager* window_manager() const {
+    return connection_->wayland_window_manager();
+  }
+
   // Server objects
   wl::TestDataDeviceManager* data_device_manager_;
   wl::TestDataSource* data_source_;
+  wl::MockPointer* pointer_;
 };
 
 }  // namespace ui

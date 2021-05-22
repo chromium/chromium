@@ -73,9 +73,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
       delete;
   ~WaylandDataDragController() override;
 
-  // Starts a data drag and drop session for |data|. Only one DND session can
-  // run at a given time.
-  void StartSession(const ui::OSExchangeData& data, int operation);
+  // Starts a data drag and drop session for |data|. Returns true if it is
+  // successfully started, false otherwise. Only one DND session can run at a
+  // given time.
+  bool StartSession(const ui::OSExchangeData& data, int operation);
 
   State state() const { return state_; }
 

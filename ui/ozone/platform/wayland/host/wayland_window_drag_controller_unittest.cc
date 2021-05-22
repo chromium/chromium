@@ -52,14 +52,6 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
   void SetUp() override {
     WaylandDragDropTest::SetUp();
 
-    screen_ = std::make_unique<WaylandScreen>(connection_.get());
-
-    wl_seat_send_capabilities(server_.seat()->resource(),
-                              WL_SEAT_CAPABILITY_POINTER);
-    Sync();
-    pointer_ = server_.seat()->pointer();
-    ASSERT_TRUE(pointer_);
-
     EXPECT_FALSE(window_->has_pointer_focus());
     EXPECT_EQ(State::kIdle, drag_controller()->state());
   }
@@ -68,44 +60,32 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     return connection_->window_drag_controller();
   }
 
-  WaylandWindowManager* window_manager() const {
-    return connection_->wayland_window_manager();
-  }
-
   MockPlatformWindowDelegate& delegate() { return delegate_; }
 
  protected:
   using State = WaylandWindowDragController::State;
 
   void SendPointerEnter(WaylandWindow* window,
-                        MockPlatformWindowDelegate* delegate) {
-    auto* surface = server_.GetObject<wl::MockSurface>(
-        window->root_surface()->GetSurfaceId());
-    wl_pointer_send_enter(pointer_->resource(), NextSerial(),
-                          surface->resource(), 0, 0);
+                        MockPlatformWindowDelegate* delegate) override {
     EXPECT_CALL(*delegate, DispatchEvent(_)).Times(1);
+    WaylandDragDropTest::SendPointerEnter(window, delegate);
     Sync();
-
     EXPECT_EQ(window, window_manager()->GetCurrentFocusedWindow());
   }
 
   void SendPointerLeave(WaylandWindow* window,
-                        MockPlatformWindowDelegate* delegate) {
-    auto* surface = server_.GetObject<wl::MockSurface>(
-        window->root_surface()->GetSurfaceId());
-    wl_pointer_send_leave(pointer_->resource(), NextSerial(),
-                          surface->resource());
+                        MockPlatformWindowDelegate* delegate) override {
     EXPECT_CALL(*delegate, DispatchEvent(_)).Times(1);
+    WaylandDragDropTest::SendPointerLeave(window, delegate);
     Sync();
-
     EXPECT_EQ(nullptr, window_manager()->GetCurrentFocusedWindow());
   }
 
   void SendPointerPress(WaylandWindow* window,
                         MockPlatformWindowDelegate* delegate,
                         int button) {
-    wl_pointer_send_button(pointer_->resource(), NextSerial(), NextTime(),
-                           button, WL_POINTER_BUTTON_STATE_PRESSED);
+    WaylandDragDropTest::SendPointerButton(window, delegate, button,
+                                           /*pressed=*/true);
     EXPECT_CALL(*delegate, DispatchEvent(_)).Times(1);
     Sync();
 
@@ -139,12 +119,6 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
   //
   // TODO(crbug.com/1116431): Support extended-drag in test compositor.
   void SendDndDrop() { SendDndCancelled(); }
-
-  // client objects
-  std::unique_ptr<WaylandScreen> screen_;
-
-  // server objects
-  wl::MockPointer* pointer_;
 };
 
 // Check the following flow works as expected:

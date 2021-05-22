@@ -184,9 +184,11 @@ bool WaylandWindow::StartDrag(const ui::OSExchangeData& data,
                               gfx::NativeCursor cursor,
                               bool can_grab_pointer,
                               WmDragHandler::Delegate* delegate) {
+  if (!connection_->data_drag_controller()->StartSession(data, operation))
+    return false;
+
   DCHECK(!drag_handler_delegate_);
   drag_handler_delegate_ = delegate;
-  connection()->data_drag_controller()->StartSession(data, operation);
 
   base::RunLoop drag_loop(base::RunLoop::Type::kNestableTasksAllowed);
   drag_loop_quit_closure_ = drag_loop.QuitClosure();

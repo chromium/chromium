@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/test/wayland_drag_drop_test.h"
 
+#include <wayland-server-protocol.h>
 #include <wayland-util.h>
 
 #include <cstdint>
@@ -12,11 +13,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_data_device.h"
 #include "ui/ozone/platform/wayland/test/test_data_device_manager.h"
 #include "ui/ozone/platform/wayland/test/test_data_offer.h"
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
+
+using testing::_;
 
 namespace ui {
 
@@ -52,9 +56,43 @@ void WaylandDragDropTest::ReadData(
   data_source_->ReadData(mime_type, std::move(callback));
 }
 
+void WaylandDragDropTest::SendPointerEnter(
+    WaylandWindow* window,
+    MockPlatformWindowDelegate* delegate) {
+  auto* surface = server_.GetObject<wl::MockSurface>(
+      window->root_surface()->GetSurfaceId());
+  wl_pointer_send_enter(pointer_->resource(), NextSerial(), surface->resource(),
+                        0, 0);
+}
+
+void WaylandDragDropTest::SendPointerLeave(
+    WaylandWindow* window,
+    MockPlatformWindowDelegate* delegate) {
+  auto* surface = server_.GetObject<wl::MockSurface>(
+      window->root_surface()->GetSurfaceId());
+  wl_pointer_send_leave(pointer_->resource(), NextSerial(),
+                        surface->resource());
+}
+
+void WaylandDragDropTest::SendPointerButton(
+    WaylandWindow* window,
+    MockPlatformWindowDelegate* delegate,
+    int button,
+    bool pressed) {
+  uint32_t state = pressed ? WL_POINTER_BUTTON_STATE_PRESSED
+                           : WL_POINTER_BUTTON_STATE_RELEASED;
+  wl_pointer_send_button(pointer_->resource(), NextSerial(), NextTime(), button,
+                         state);
+}
+
 void WaylandDragDropTest::SetUp() {
   WaylandTest::SetUp();
+
+  wl_seat_send_capabilities(server_.seat()->resource(),
+                            WL_SEAT_CAPABILITY_POINTER);
   Sync();
+  pointer_ = server_.seat()->pointer();
+  ASSERT_TRUE(pointer_);
 
   data_device_manager_ = server_.data_device_manager();
   ASSERT_TRUE(data_device_manager_);
