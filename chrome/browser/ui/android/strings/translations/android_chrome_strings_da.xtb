@@ -186,7 +186,6 @@ Tryk på et ord for at søge. Du kan tilpasse søgningen ved at holde fingeren n
 <translation id="22320125457191592">Til dig</translation>
 <translation id="2234876718134438132">Synkronisering og Google-tjenester</translation>
 <translation id="2239812875700136898">Administrer dine historier ved hjælp af knappen Indstillinger for Discover</translation>
-<translation id="2251971221270904886">Når Privacy Sandbox er aktiveret og angives som aktiv, anvender Chrome din browserhistorik over syv dage til at fastslå den gruppe eller "kohorte", du indgår i. Annoncører kan vælge annoncer til gruppen. Din browserhistorik forbliver privat på din enhed. Denne prøveperiode er kun aktiv i <ph name="BEGIN_LINK" />nogle områder<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Eksportér adgangskoder…</translation>
 <translation id="2276696007612801991">Log ind på din Google-konto for at tjekke dine adgangskoder</translation>
 <translation id="2278052315791335171">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bogmærke}one{<ph name="BOOKMARKS_COUNT_MANY" />bogmærke}other{<ph name="BOOKMARKS_COUNT_MANY" />bogmærker}}</translation>
 <translation id="3062802207422175757">Artikler om dine interesser i Chrome</translation>
 <translation id="3070005020161560471">Oversæt automatisk</translation>
-<translation id="3083531420240576529">Du kan til enhver tid nulstille din adgangskode. Det tager syv dage at fastslå din gruppe.</translation>
 <translation id="3091010850649238832">Vis indhold i udklipsholderen</translation>
 <translation id="3098745985164956033">Nogle billeder sendes til Google for at give dig bedre beskrivelser</translation>
 <translation id="3114507951000454849">Læs dagens nyheder <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. I
 <translation id="3568688522516854065">Log ind, og aktivér synkronisering for at få adgang til dine faner på dine andre enheder</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587596251841506391">Gør sikkerheden på nettet bedre</translation>
-<translation id="3598653140581545904">Log ind i inkognitotilstand</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3631987586758005671">Deler med <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5964805880140440652">Hvis du vil dele denne side med en anden enhed, skal du aktivere synkronisering i indstillingerne for Chrome</translation>
 <translation id="5964869237734432770">Stop billedbeskrivelser</translation>
 <translation id="5979084224081478209">Tjek adgangskoder</translation>
-<translation id="5982307838673692400">Åbn en inkognitofane</translation>
 <translation id="6000066717592683814">Behold Google</translation>
 <translation id="6000203700195075278">Følg igen</translation>
 <translation id="6002623704405939939">Du kan rydde dine <ph name="BEGIN_LINK1" />søgninger<ph name="END_LINK1" /> eller andre former for historik ved at gå til <ph name="BEGIN_LINK2" />Min Google-aktivitet<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6277522088822131679">Der opstod et problem med udskrivning af siden. Prøv igen.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Når du bruger Chrome, accepterer du <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og de <ph name="BEGIN_LINK2" />yderligere servicevilkår for Google Chrome og Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Konto</translation>
 <translation id="6297765934698848803">Den organisation, der administrerer din enhed, har deaktiveret dit kamera.</translation>
 <translation id="6301525844455696527">Hold styr på din læseliste</translation>
 <translation id="6303969859164067831">Log ud, og deaktiver synkronisering</translation>
 <translation id="6312687380483398334">Webapps (lydløs)</translation>
 <translation id="6316139424528454185">Android-versionen understøttes ikke</translation>
 <translation id="6324034347079777476">Synkronisering af Android-systemet blev deaktiveret</translation>
+<translation id="6324916366299863871">Rediger genvej</translation>
 <translation id="6324977638108296054">Der kan ikke oprettes et link til fremhævning</translation>
 <translation id="6324997754869598316">(fejl <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Del via <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6699370405921460408">Google-serverne optimerer de sider, du besøger.</translation>
 <translation id="670498945988402717">Tjekket i går</translation>
 <translation id="6710213216561001401">Forrige</translation>
-<translation id="671333169801287922">Når Privacy Sandbox er aktiveret, kan websites levere deres indhold og tjenester via den teknologi til beskyttelse af personlige oplysninger, som vises her. Denne teknologi omfatter alternative metoder til sporing på tværs af forskellige websites. Der kan blive tilføjet flere prøveperioder over tid.
-
-<ph name="BEGIN_LIST_ITEM1" />Annoncører og udgivere kan bruge FLoC-teknologien.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Annoncører og udgivere kan undersøge effektiviteten af annoncer på en måde, der ikke sporer dig på tværs af forskellige websites.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Din timer for <ph name="FQDN" /> udløb. Den starter igen i morgen.</translation>
 <translation id="6738516213925468394">Dine data blev krypteret med din <ph name="BEGIN_LINK" />adgangssætning til synkronisering<ph name="END_LINK" /> <ph name="TIME" />. Indtast adgangssætningen for at starte synkroniseringen.</translation>
 <translation id="6738867403308150051">Downloader…</translation>
@@ -922,9 +913,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6900532703269623216">Forbedret beskyttelse</translation>
 <translation id="6903907808598579934">Aktivér synkronisering</translation>
 <translation id="6929699136511445623">Aktivér synkronisering af Android-system</translation>
-<translation id="6941901516114974832">I inkognito kan din aktivitet <ph name="BEGIN_BOLD1" />stadig være synlig<ph name="END_BOLD1" /> for de websites, du besøger, din arbejdsgiver, din skole og din internetudbyder.
-
-Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_BOLD2" />lukker alle inkognitofaner<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Du kan til enhver tid ændre standardplaceringen for downloads via menuen Indstillinger</translation>
 <translation id="694267552845942083">Du er i øjeblikket ved at tilpasse dine indstillinger for Synkronisering. Afslut aktiveringen af Synkronisering ved at trykke på knappen Bekræft nederst på skærmen. Gå op</translation>
 <translation id="6945221475159498467">Vælg</translation>
@@ -1088,9 +1076,6 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7971136598759319605">Aktiv for 1 dag siden</translation>
 <translation id="7975379999046275268">Se forhåndsvisning af siden <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Forudindlæs sider, så du kan browse og søge hurtigere</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> er et igangværende initiativ til udvikling af teknologier, der beskytter dig mod sporingsmekanismer og samtidig bevarer det åbne net.
-
-Prøveperioder til Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. Indtil videre kan websites afprøve Privacy Sandbox, samtidig med at de anvender aktuelle webteknologier som f.eks. tredjepartscookies.</translation>
 <translation id="7986497153528221272">Hvis du vil se adgangskoder, skal du først konfigurere en skærmlås på din enhed</translation>
 <translation id="7998918019931843664">Åbn lukket fane igen</translation>
 <translation id="8004582292198964060">Browser</translation>

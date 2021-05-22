@@ -186,7 +186,6 @@ Toque em qualquer palavra para pesquisar. Para refinar a pesquisa, toque na tela
 <translation id="22320125457191592">Para você</translation>
 <translation id="2234876718134438132">Serviços do Google e de sincronização</translation>
 <translation id="2239812875700136898">Controle suas matérias com o botão "Opções do Discover"</translation>
-<translation id="2251971221270904886">Quando esse recurso estiver ativado, o Chrome usará seu histórico de navegação de sete dias para determinar seu grupo ou "coorte". Os anunciantes podem selecionar anúncios para o grupo. Seu histórico de navegação é mantido no dispositivo. Esse teste está disponível apenas em <ph name="BEGIN_LINK" />algumas regiões<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Exportar senhas…</translation>
 <translation id="2276696007612801991">Faça login na Conta do Google para verificar suas senhas</translation>
 <translation id="2278052315791335171">A exclusão desta senha não excluirá a conta em <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favorito}one{<ph name="BOOKMARKS_COUNT_MANY" /> favorito}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoritos}}</translation>
 <translation id="3062802207422175757">Artigos sobre seus interesses no Chrome</translation>
 <translation id="3070005020161560471">Traduzir automaticamente</translation>
-<translation id="3083531420240576529">Você pode redefinir o grupo a qualquer momento. Seu grupo é identificado em sete dias.</translation>
 <translation id="3091010850649238832">Mostrar conteúdo da área de transferência</translation>
 <translation id="3098745985164956033">Algumas imagens são enviadas ao Google para que possamos melhorar as descrições</translation>
 <translation id="3114507951000454849">Leia as notícias de hoje <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Essa tecnologia ainda está em desenvolvimento ativo e está disponível apenas 
 <translation id="3568688522516854065">Para ver as guias dos seus outros dispositivos, faça login e ative a sincronização</translation>
 <translation id="3587482841069643663">Tudo</translation>
 <translation id="3587596251841506391">Ajudar a melhorar a segurança na Web</translation>
-<translation id="3598653140581545904">Usar a navegação anônima para fazer login</translation>
 <translation id="3602290021589620013">Visualizar</translation>
 <translation id="3616113530831147358">Áudio</translation>
 <translation id="3631987586758005671">Compartilhando com <ph name="DEVICE_NAME" /></translation>
@@ -765,7 +762,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5964805880140440652">Para compartilhar esta página com outro dispositivo, ative a sincronização nas configurações do Chrome</translation>
 <translation id="5964869237734432770">Parar descrição de imagens</translation>
 <translation id="5979084224081478209">Verificar senhas</translation>
-<translation id="5982307838673692400">Abrir uma guia anônima</translation>
 <translation id="6000066717592683814">Continuar usando o Google</translation>
 <translation id="6000203700195075278">Voltar a seguir</translation>
 <translation id="6002623704405939939">Para limpar a <ph name="BEGIN_LINK1" />pesquisa<ph name="END_LINK1" /> ou outras formas de histórico, acesse a página <ph name="BEGIN_LINK2" />Minha atividade no Google<ph name="END_LINK2" /></translation>
@@ -807,13 +803,13 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6277522088822131679">Ocorreu um problema ao imprimir a página. Tente novamente.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Ao usar o Chrome, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Conta</translation>
 <translation id="6297765934698848803">A organização que gerencia seu dispositivo desativou a câmera.</translation>
 <translation id="6301525844455696527">Veja sua lista de leitura</translation>
 <translation id="6303969859164067831">Sair e desativar a sincronização</translation>
 <translation id="6312687380483398334">Apps da Web (silenciosos)</translation>
 <translation id="6316139424528454185">Versão Android não compatível</translation>
 <translation id="6324034347079777476">Sincronização do sistema Android desativada</translation>
+<translation id="6324916366299863871">Editar atalho</translation>
 <translation id="6324977638108296054">Não é possível criar um link para o conteúdo destacado</translation>
 <translation id="6324997754869598316">(Erro <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Compartilhar via <ph name="APPLICATION" /></translation>
@@ -894,11 +890,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6699370405921460408">Os servidores do Google otimizarão as páginas visitadas.</translation>
 <translation id="670498945988402717">Verificado ontem</translation>
 <translation id="6710213216561001401">Anterior</translation>
-<translation id="671333169801287922">Quando esse recurso estiver ativado, os sites poderão usar as técnicas de preservação de privacidade mostradas aqui para exibir conteúdo e serviços. Isso inclui alternativas ao rastreamento entre sites. Ao longo do tempo, é possível que outros testes sejam adicionados.
-
-<ph name="BEGIN_LIST_ITEM1" />Os anunciantes e editores podem usar a técnica de FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Eles também podem estudar a eficácia dos anúncios sem rastrear você nos sites.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Seu timer para <ph name="FQDN" /> chegou ao fim. Ele será iniciado novamente amanhã.</translation>
 <translation id="6738516213925468394">Seus dados foram criptografados com sua <ph name="BEGIN_LINK" />senha longa de sincronização<ph name="END_LINK" /> em <ph name="TIME" />. Digite-a para iniciar a sincronização.</translation>
 <translation id="6738867403308150051">Fazendo o download...</translation>
@@ -923,9 +914,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6900532703269623216">Proteção reforçada</translation>
 <translation id="6903907808598579934">Ativar a sincronização</translation>
 <translation id="6929699136511445623">Ativar o sistema de sincronização do Android</translation>
-<translation id="6941901516114974832">Na navegação anônima, sua atividade <ph name="BEGIN_BOLD1" />ainda pode ficar visível<ph name="END_BOLD1" /> para os sites que você visita, seu empregador ou sua escola e o provedor de acesso à internet.
-
-Os dados da sessão anônima só serão excluídos do Chrome quando você <ph name="BEGIN_BOLD2" />fechar todas as guias anônimas<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Altere o local padrão de download a qualquer momento usando a opção do menu "Configurações"</translation>
 <translation id="694267552845942083">No momento, você está personalizando suas configurações de sincronização. Para terminar de ativar a sincronização, toque no botão "Confirmar" na parte inferior da tela. Navegar para cima</translation>
 <translation id="6945221475159498467">Selecionar</translation>
@@ -1089,9 +1077,6 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="7971136598759319605">Ativado há um dia</translation>
 <translation id="7975379999046275268">Visualizar página <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pré-carregar páginas para possibilitar navegação e pesquisa mais rápidas</translation>
-<translation id="7981546642162424360">O <ph name="BEGIN_LINK" />Sandbox de privacidade<ph name="END_LINK" /> é uma iniciativa em andamento para desenvolver novas tecnologias de proteção contra mecanismos de rastreamento enquanto mantém a Web livre.
-
-Os testes dessa tecnologia ainda estão em desenvolvimento ativo e estão disponíveis apenas em algumas regiões. Por enquanto, os sites podem testar o Privacy Sandbox enquanto continuam usando as tecnologias atuais da Web, como cookies de terceiros.</translation>
 <translation id="7986497153528221272">Para poder ver as senhas, configure um bloqueio de tela no dispositivo</translation>
 <translation id="7998918019931843664">Reabrir guia fechada</translation>
 <translation id="8004582292198964060">Navegador</translation>
@@ -1210,7 +1195,7 @@ Os testes dessa tecnologia ainda estão em desenvolvimento ativo e estão dispon
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8730621377337864115">Concluído</translation>
-<translation id="8746155870861185046">Compartilhar destaque</translation>
+<translation id="8746155870861185046">Compartilhar texto em destaque</translation>
 <translation id="8748850008226585750">Conteúdo oculto</translation>
 <translation id="8773160212632396039">Processando a solicitação</translation>
 <translation id="8788265440806329501">O histórico de navegação está fechado</translation>

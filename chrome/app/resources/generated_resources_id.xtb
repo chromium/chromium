@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Administrator telah menyetel tema default yang tidak dapat diubah.</translation>
 <translation id="1163931534039071049">&amp;Lihat sumber bingkai</translation>
 <translation id="1164891049599601209">Dimasukkan pada situs penipuan</translation>
-<translation id="1164899421101904659">Masukkan Kunci Pembuka PIN</translation>
 <translation id="1165039591588034296">Kesalahan</translation>
 <translation id="1166212789817575481">Tutup Tab di Sebelah Kanan</translation>
-<translation id="116624467691206283">PUK tidak valid. Tersisa 1 upaya lagi.</translation>
 <translation id="1168020859489941584">Dibuka dalam waktu <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Server nama Google</translation>
 <translation id="1170288591054440704">Tanyakan saat situs ingin menggunakan font yang diinstal di perangkat</translation>
@@ -1213,7 +1211,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
     Untuk membantu memecahkan masalah terkait transmisi, lihat
     <ph name="BEGIN_LINK" />
     pusat bantuan<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">PUK salah. Tersisa <ph name="RETRIES" /> upaya lagi sebelum Anda harus menghubungi operator untuk mendapatkan kembali akses jaringan.</translation>
 <translation id="22665427234727190">Tanyakan saat situs ingin mengakses perangkat Bluetooth (direkomendasikan)</translation>
 <translation id="2266957463645820432">IPP melalui USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Menukar data dengan perangkat apa pun dalam domain <ph name="DOMAIN" /></translation>
@@ -1444,7 +1441,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2502719318159902502">Akses penuh</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Layar #}other{Layar #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> dari <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">EID perangkat Anda adalah <ph name="EID_NUMBER" />. Perwakilan layanan pelanggan dapat menggunakan nomor EID untuk membantu Anda mengaktifkan layanan.</translation>
+<translation id="2505669838803949807">EID perangkat Anda adalah <ph name="EID_NUMBER" />. Perwakilan layanan pelanggan dapat menggunakan nomor EID tersebut untuk membantu Anda mengaktifkan layanan.</translation>
 <translation id="250704661983564564">Pengaturan tampilan</translation>
 <translation id="2507253002925770350">Tiket dihapus</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> dijeda</translation>
@@ -1497,7 +1494,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2553440850688409052">Sembunyikan Plugin Ini</translation>
 <translation id="2554553592469060349">File yang dipilih terlalu besar (ukuran maksimum: 3 MB).</translation>
 <translation id="2558896001721082624">Selalu tampilkan opsi aksesibilitas di menu sistem</translation>
-<translation id="2562743677925229011">Tidak masuk ke <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Eksekusi JavaScript melalui AppleScript dinonaktifkan. Untuk mengaktifkannya, buka panel menu lalu pilih View &gt; Developer &gt; Allow JavaScript from Apple Events. Untuk informasi selengkapnya: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Pemeriksaan ejaan yang disempurnakan</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
@@ -2411,7 +2407,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3569407787324516067">Screen saver</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> dapat melihat file dan folder berikut ini</translation>
 <translation id="3571734092741541777">Siapkan</translation>
-<translation id="3574210789297084292">login</translation>
 <translation id="3575121482199441727">Izinkan untuk situs ini</translation>
 <translation id="3576324189521867626">Berhasil dipasang</translation>
 <translation id="3578594933904494462">Konten tab ini sedang dibagikan.</translation>
@@ -2862,7 +2857,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4022426551683927403">T&amp;ambahkan ke Kamus</translation>
 <translation id="4023146161712577481">Menentukan konfigurasi perangkat.</translation>
 <translation id="4025039777635956441">Bisukan Situs Terpilih</translation>
-<translation id="4027804175521224372">(Anda melewatkan—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Tambahkan metode input</translation>
 <translation id="4029556917477724407">Kembali dari halaman <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofon diizinkan</translation>
@@ -3809,7 +3803,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Hard disk Anda sudah penuh. Simpan ke lokasi lain atau kosongkan lebih banyak ruang pada hard disk.</translation>
 <translation id="5123433949759960244">Bola basket</translation>
-<translation id="5125167430897995218">PUK salah. Tersisa 1 upaya lagi sebelum Anda harus menghubungi operator untuk mendapatkan kembali akses jaringan.</translation>
 <translation id="5125751979347152379">URL tidak valid.</translation>
 <translation id="5126611267288187364">Lihat perubahan</translation>
 <translation id="5127620150973591153">ID koneksi aman: <ph name="TOKEN" /></translation>
@@ -4057,7 +4050,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="540296380408672091">Selalu blokir cookie di <ph name="HOST" /></translation>
 <translation id="540495485885201800">Tukar dengan sebelumnya</translation>
 <translation id="5405146885510277940">Reset setelan</translation>
-<translation id="5407119150486192764">Masukkan Kode Pembuka PIN 8 digit yang diberikan oleh operator Anda</translation>
 <translation id="5407167491482639988">Tidak dapat dipahami</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Dari Akun Google Anda</translation>
@@ -6626,7 +6618,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8206745257863499010">Jazzy</translation>
 <translation id="8206859287963243715">Seluler</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notifikasi baru}other{# notifikasi baru}}</translation>
-<translation id="8211551284753798479">PUK tidak valid. Tersisa <ph name="RETRIES" /> upaya lagi.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Proses download sedang berlangsung}other{Proses download sedang berlangsung}}</translation>
 <translation id="8213449224684199188">Masuk ke mode foto</translation>
 <translation id="8214489666383623925">Buka File...</translation>

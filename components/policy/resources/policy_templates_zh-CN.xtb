@@ -1085,13 +1085,6 @@
 <translation id="2448315169529769573">如果此政策已启用，<ph name="PRODUCT_OS_NAME" />便会将使用情况指标和诊断数据（包括崩溃报告）反馈给 Google。如果此政策已停用，系统会关闭指标和诊断数据报告功能。
 
        如果此政策未设置，在不受管理的设备上，指标和诊断数据报告功能会保持关闭状态；但在受管理的设备上，该功能会保持开启状态。</translation>
-<translation id="2449263772062368618">此政策用于配置一系列应在浏览器关闭后删除的浏览数据类型。
-      可用的数据类型有浏览记录 (<ph name="DATA_TYPE_BROWSING_HISTORY" />)、下载记录 (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />)、Cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />)、缓存 <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、自动填充 (<ph name="DATA_TYPE_AUTOFILL" />)、密码 (<ph name="DATA_TYPE_PASSWORD" />)、网站设置 (<ph name="DATA_TYPE_SITE_SETTINGS" />) 和托管的应用数据 (<ph name="DATA_TYPE_HOSTED_APP_DATA" />)。
-      此政策不会优先于 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />。
-      仅当 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策设为 true 时，此政策才不会被忽略。
-      如果在平台级别设置了此政策，则应在平台级别停用同步功能。
-      如果在用户级别设置了此政策，则应为该用户停用同步功能，才能使此政策生效。
-      </translation>
 <translation id="244950822854046436">让您能够指定要应用于<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />的设置列表，以供系统在有人下载文件时调用。
 
       <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 字段用于确定当用户从网页下载某个文件时，该接口是否应将此文件发送给服务提供商。相应的网页网址必须与已关联到“enable”格式但未关联到“disable”格式的格式匹配。此文件的 MIME 类型也必须如此。
@@ -3001,13 +2994,6 @@
       如果您不设置此政策，系统不会将任何网站加入列表。
 
       注意：系统也可通过 <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> 政策向该列表添加元素。</translation>
-<translation id="5065753964276395784">此政策已被弃用，请改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
-
-       如果您设置了此政策，<ph name="PRODUCT_NAME" /> 会绕过此列表指定的域名，不对其使用任何代理。此政策仅在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未被指定并且您选择了 <ph name="PROXY_MODE_POLICY_NAME" /> 中的 <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> 时生效。
-
-       如果您选择了任何其他用于设置代理政策的模式，请勿设置此政策。
-
-      注意：如需查看更详细的示例，请访问 Chromium 项目 ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="5067143124345820993">登录用户白名单</translation>
 <translation id="5073609397321802133">如果此政策设为 false，“新标签页”页面将不允许用户自定义背景。所有现有的自定义背景都将被永久移除，即使此政策后来又改设为 true 也是如此。
 
@@ -3163,26 +3149,6 @@
       如果此政策设为 False 或未设置，系统将关闭“统一桌面”，而且用户无法开启该功能。</translation>
 <translation id="5255162913209987122">可推荐</translation>
 <translation id="5257395339965216304">托管的应用数据</translation>
-<translation id="5264066441613395613">通过设置此政策，您可为 Chrome 和 ARC 应用配置代理设置，它们会忽略通过命令行指定的所有与代理有关的选项。
-
-       如果您未设置此政策，用户便可自行选择代理设置。
-
-       设置 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策时可使用以下字段：
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />，该字段让您能够指定 Chrome 使用的代理服务器，并禁止用户更改代理设置
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />，即代理 .pac 文件的网址
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />，即代理服务器的网址
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />，即 <ph name="PRODUCT_NAME" /> 会绕过、不对其使用代理的域名列表
-
-       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> 字段已被弃用且已被 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 字段取代，后者让您能够指定 Chrome 使用的代理服务器并禁止用户更改代理设置。
-
-        对于 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />，如果您选择以下值：
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />，系统永远不会使用代理，并且会忽略所有其他字段。
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />，系统会使用自己的代理，并且会忽略所有其他字段。
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />，系统会忽略所有其他字段。
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />，系统会使用 <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 字段。
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />，系统会使用 <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 字段。
-
-      注意：如需查看更详细的示例，请访问 Chromium 项目 ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="5266173014392157048">此政策已被弃用，请改用“<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />”政策。
 
       通过设置此政策，您可以指定 <ph name="PRODUCT_NAME" /> 可将用户凭据委派给哪台/哪些服务器。若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。

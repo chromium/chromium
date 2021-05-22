@@ -88,7 +88,6 @@
 <translation id="1692118695553449118">सिंक खुला छ</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> चयन गरियो</translation>
 <translation id="1740468249224277719">स्थापना गर्न डबल ट्याप गर्नुहोस्।</translation>
-<translation id="1746815479209538200">वेब ब्राउज गर्न कुनै नयाँ ट्याब थप्नुहोस्।</translation>
 <translation id="1752547299766512813">पासवर्डहरू सेभ गर्नुहोस्</translation>
 <translation id="1753905327828125965">धेरै भ्रमण गरिएको</translation>
 <translation id="1803264062614276815">कार्डवालाको नाम</translation>
@@ -673,7 +672,6 @@
 <translation id="7646772052135772216">पासवर्ड सिंक गर्ने सुविधाले काम गर्दै छैन</translation>
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
-<translation id="766891008101699113">निजी रूपमा वेब ब्राउज गर्न कुनै नयाँ ट्याब थप्नुहोस्।</translation>
 <translation id="7671141431838911305">स्थापना गर्नुहोस्</translation>
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
 <translation id="7741325291586284254">इन्कोग्निटो ट्याबसम्बन्धी नयाँ पेज</translation>
@@ -814,6 +812,7 @@
 <translation id="9203116392574189331">ह्यान्डअफ</translation>
 <translation id="9223358826628549784">क्र्याश रिपोर्ट पठाइयो।</translation>
 <translation id="952704832371081537">रद्द गर्नुहोस्</translation>
+<translation id="984509647832111802">सिंक गर्ने सुविधाले काम गरिरहेको छैन।</translation>
 <translation id="988141524645182168">अन्य डिभाइसहरू</translation>
 <translation id="989988560359834682">इमेल ठेगाना</translation>
 <translation id="994757059139821576">लेखका सुझावहरू</translation>

@@ -202,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />يمكن للمعلنين رصد الاهتمام المشترك بين الآلاف من المستخدمين، مثل حشد في حفل موسيقي، كما يمكنهم اختيار الإعلانات على مستوى هذا الحشد بدلاً من اختيارها على مستوى فردي.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />يمكن للمعلنين تحديد مدى فعالية الإعلانات بدون الحاجة إلى تتبّعك في المواقع الإلكترونية.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">‏يتيح هذا الإعداد التحميل المُسبق لصفحات الويب التي يظن متصفّح Chrome أنّك قد تزورها. ولتنفيذ ذلك، قد يستخدم Chrome ملفات تعريف الارتباط، في حال كنت تسمح بها، وقد يُشفّر الصفحات ويرسلها من خلال Google لإخفاء هويتك عن المواقع الإلكترونية.</translation>
 <translation id="234265804618409743">تعذّر فتح الكاميرا. حدث خطأ ما.</translation>
 <translation id="2345671828921229300">للبحث، انقر مع الاستمرار على كلمة معيّنة.</translation>
 <translation id="2349710944427398404">‏إجمالي البيانات المُستخدَمة من قِبل Chrome، بما في ذلك الحسابات والإشارات المرجعية والإعدادات المحفوظة</translation>
@@ -395,7 +396,6 @@
 <translation id="3568688522516854065">للحصول على علامات التبويب من أجهزتك الأخرى، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="3587482841069643663">الكل</translation>
 <translation id="3587596251841506391">المساعدة في تحسين الأمان على الويب</translation>
-<translation id="3598653140581545904">استخدام التصفُّح المتخفي لتسجيل الدخول</translation>
 <translation id="3602290021589620013">معاينة</translation>
 <translation id="3616113530831147358">المقاطع الصوتية</translation>
 <translation id="3631987586758005671">جارٍ المشاركة مع <ph name="DEVICE_NAME" /></translation>
@@ -759,7 +759,6 @@
 <translation id="5964805880140440652">‏لمشاركة هذه الصفحة مع جهاز آخر، يُرجى تفعيل المزامنة في إعدادات Chrome.</translation>
 <translation id="5964869237734432770">إيقاف عرض أوصاف الصور</translation>
 <translation id="5979084224081478209">التحقق من كلمات المرور</translation>
-<translation id="5982307838673692400">فتح علامة تبويب في وضع التصفُّح المتخفي</translation>
 <translation id="6000066717592683814">‏الاستمرار في استخدام محرك Google</translation>
 <translation id="6000203700195075278">المتابعة مجدّدًا</translation>
 <translation id="6002623704405939939">‏لمحو <ph name="BEGIN_LINK1" />سجلّ البحث<ph name="END_LINK1" /> أو غيره من السجلّات، انتقِل إلى صفحة <ph name="BEGIN_LINK2" />نشاطي على Google<ph name="END_LINK2" />.</translation>
@@ -801,13 +800,13 @@
 <translation id="6277522088822131679">حدثت مشكلة أثناء طباعة الصفحة. يُرجى إعادة المحاولة.</translation>
 <translation id="6278428485366576908">مظهر</translation>
 <translation id="6292420053234093573">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome و"نظام التشغيل Chrome"<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">الحساب</translation>
 <translation id="6297765934698848803">إن المؤسسة التي تدير الجهاز أوقفت الكاميرا.</translation>
 <translation id="6301525844455696527">متابعة قراءة ما فاتك في قائمة القراءة</translation>
 <translation id="6303969859164067831">تسجيل الخروج وإيقاف المزامنة</translation>
 <translation id="6312687380483398334">تطبيقات الويب (غير مزعجة)</translation>
 <translation id="6316139424528454185">‏إصدار Android غير متوافق</translation>
 <translation id="6324034347079777476">‏تمّ إيقاف مزامنة نظام Android</translation>
+<translation id="6324916366299863871">تعديل الاختصار</translation>
 <translation id="6324977638108296054">يتعذّر إنشاء رابط يؤدي إلى النصوص التي تم تمييزها.</translation>
 <translation id="6324997754869598316">(الخطأ <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">المشاركة عن طريق <ph name="APPLICATION" /></translation>
@@ -912,9 +911,6 @@
 <translation id="6900532703269623216">حماية مُحسّنة</translation>
 <translation id="6903907808598579934">تفعيل المزامنة</translation>
 <translation id="6929699136511445623">‏تفعيل مزامنة نظام Android</translation>
-<translation id="6941901516114974832">‏قد يظل نشاطك في وضع "التصفُّح المتخفي" <ph name="BEGIN_BOLD1" />مرئيًا <ph name="END_BOLD1" />للمواقع الإلكترونية التي تزورها والموقع الإلكتروني للمؤسسة التعليمية أو صاحب العمل ومزوّد خدمة الإنترنت.
-
-وسيتم محو البيانات من جلسة التصفُّح المتخفي من Chrome عند <ph name="BEGIN_BOLD2" />إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">تغيير موقع التنزيل التلقائي في أي وقت باستخدام خيار قائمة "الإعدادات"</translation>
 <translation id="694267552845942083">يتم حاليًا تخصيص إعدادات المزامنة. لتفعيل المزامنة، يُرجى الضغط على زر "التأكيد" بالقرب من أسفل الشاشة. الانتقال إلى أعلى</translation>
 <translation id="6945221475159498467">تحديد</translation>
@@ -995,6 +991,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (تم التحديث منذ <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">حجم البيانات التي تم توفيرها</translation>
 <translation id="7498271377022651285">يُرجى الانتظار...</translation>
+<translation id="750228856503700085">ميزة تلقّي آخر الأخبار غير متاحة.</translation>
 <translation id="7507207699631365376">الاطّلاع على <ph name="BEGIN_LINK" />سياسة خصوصية<ph name="END_LINK" /> مقدّم الخدمة</translation>
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="751961395872307827">يتعذّر الاتصال بالموقع</translation>
@@ -1097,6 +1094,7 @@
 <translation id="8076492880354921740">علامات التبويب</translation>
 <translation id="8078096376109663956">يمكنك مشاركة النص فقط.</translation>
 <translation id="8084114998886531721">كلمة مرور محفوظة</translation>
+<translation id="8084285576995584326">‏التحكُّم في بيانات حسابك على Google</translation>
 <translation id="808747664143081553">اكتمل الاتصال بالجهاز.</translation>
 <translation id="8103578431304235997">علامة تبويب للتصفح المتخفي</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1192,6 +1190,7 @@
 <translation id="8712637175834984815">تم</translation>
 <translation id="8725066075913043281">أعد المحاولة</translation>
 <translation id="8730621377337864115">تم</translation>
+<translation id="8746155870861185046">مشاركة النص المُحدَّد</translation>
 <translation id="8748850008226585750">المحتوى مخفي</translation>
 <translation id="8773160212632396039">جارٍ معالجة الطلب</translation>
 <translation id="8788265440806329501">يتم إغلاق سجلّ التنقُّل.</translation>

@@ -186,7 +186,6 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="22320125457191592">För dig</translation>
 <translation id="2234876718134438132">Synk och Googles tjänster</translation>
 <translation id="2239812875700136898">Du kan styra artiklarna med knappen Alternativ för Förslag</translation>
-<translation id="2251971221270904886">När tekniken är på och statusen är Aktiv använder Chrome webbhistoriken från de senaste sju dagarna för att fastställa vilken grupp, eller kohort, som du ingår i. Annonsörerna kan välja annonser för gruppen. Webbhistoriken förblir privat på enheten. Provperioden är endast aktiv i <ph name="BEGIN_LINK" />några regioner<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Exportera lösenord …</translation>
 <translation id="2276696007612801991">Logga in på ditt Google-konto om du vill kontrollera lösenorden</translation>
 <translation id="2278052315791335171">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="SITE" /> raderas</translation>
@@ -320,7 +319,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmärke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmärken}}</translation>
 <translation id="3062802207422175757">Artiklar om dina intressen i Chrome</translation>
 <translation id="3070005020161560471">Översätt automatiskt</translation>
-<translation id="3083531420240576529">Du kan återställa gruppen när som helst. Det tar sju dagar att fastställa gruppen.</translation>
 <translation id="3091010850649238832">Visa innehållet i Urklipp</translation>
 <translation id="3098745985164956033">Vissa bilder skickas till Google så att du får bättre beskrivningar</translation>
 <translation id="3114507951000454849">Läs dagens nyheter <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="3568688522516854065">Logga in och aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter</translation>
 <translation id="3587482841069643663">Alla</translation>
 <translation id="3587596251841506391">Förbättra säkerheten på webben</translation>
-<translation id="3598653140581545904">Logga in med inkognitoläget</translation>
 <translation id="3602290021589620013">Förhandsgranskning</translation>
 <translation id="3616113530831147358">Ljud</translation>
 <translation id="3631987586758005671">Delas med <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5964805880140440652">Aktivera synkronisering i inställningarna för Chrome om du vill dela den här sidan med annan enhet</translation>
 <translation id="5964869237734432770">Stoppa bildbeskrivning</translation>
 <translation id="5979084224081478209">Kontrollera lösenord</translation>
-<translation id="5982307838673692400">Öppna en inkognitoflik</translation>
 <translation id="6000066717592683814">Behåll Google</translation>
 <translation id="6000203700195075278">Följ på nytt</translation>
 <translation id="6002623704405939939">Du kan rensa <ph name="BEGIN_LINK1" />sökhistoriken<ph name="END_LINK1" /> och annan historik på <ph name="BEGIN_LINK2" />Min aktivitet på Google<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6277522088822131679">Det gick inte att skriva ut sidan. Försök igen.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Genom att använda Chrome godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Konto</translation>
 <translation id="6297765934698848803">Organisationen som hanterar din enhet har inaktiverat kameran.</translation>
 <translation id="6301525844455696527">Läs ikapp i läslistan</translation>
 <translation id="6303969859164067831">Logga ut och inaktivera synkronisering</translation>
 <translation id="6312687380483398334">Webbappar (tyst)</translation>
 <translation id="6316139424528454185">Android-versionen stöds inte</translation>
 <translation id="6324034347079777476">Synkronisering av Android-system har inaktiverats</translation>
+<translation id="6324916366299863871">Redigera genväg</translation>
 <translation id="6324977638108296054">Det gick inte att skapa en länk till markeringen</translation>
 <translation id="6324997754869598316">(Fel <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Dela via <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6699370405921460408">Googles servrar optimerar sidor du besöker.</translation>
 <translation id="670498945988402717">Genomsöktes i går</translation>
 <translation id="6710213216561001401">Föregående</translation>
-<translation id="671333169801287922">När det här alternativet är aktiverat kan webbplatser tillhandahålla sina tjänster med hjälp av de integritetsbevarande metoder som visas här. Det gäller bland annat alternativ till att spåra användaren från webbplats till webbplats. Fler provfunktioner kan läggas till med tiden.
-
-<ph name="BEGIN_LIST_ITEM1" />Annonsörer och utgivare kan använda sig av FLoC-tekniken.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Annonsörerna och utgivarna kan utvärdera annonsernas effektivitet med hjälp av andra metoder än att spåra dig från webbplats till webbplats.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Timern för <ph name="FQDN" /> har löpt ut. Den börjar om igen i morgon.</translation>
 <translation id="6738516213925468394">Din data krypterades med din <ph name="BEGIN_LINK" />lösenfras för synkronisering<ph name="END_LINK" /> den <ph name="TIME" />. Ange den om du vill starta synkroniseringen.</translation>
 <translation id="6738867403308150051">Laddar ned …</translation>
@@ -922,9 +913,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6900532703269623216">Förbättrat skydd</translation>
 <translation id="6903907808598579934">Aktivera synkronisering</translation>
 <translation id="6929699136511445623">Aktivera synkronisering av Android-systemet</translation>
-<translation id="6941901516114974832">Webbplatserna du besöker, din arbetsgivare eller skola samt internetleverantören <ph name="BEGIN_BOLD1" />kan fortfarande se<ph name="END_BOLD1" /> din aktivitet när du använder inkognitoläget.
-
-Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOLD2" />stänger alla inkognitoflikar<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Ändra standardplats för nedladdningar när som helst via alternativet i inställningsmenyn</translation>
 <translation id="694267552845942083">Du anpassar synkroniseringsinställningarna. Aktivera synkroniseringen genom att trycka på Bekräfta längst ned på skärmen. Navigera uppåt</translation>
 <translation id="6945221475159498467">Välj</translation>
@@ -1088,9 +1076,6 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7971136598759319605">Aktiv för 1 dag sedan</translation>
 <translation id="7975379999046275268">Förhandsgranska sida <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Läs in sidor i förväg så att det går snabbare att surfa och söka</translation>
-<translation id="7981546642162424360">Initiativet <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> syftar till att skapa ny teknik som skyddar dig från funktioner som spårar dig samtidigt som den öppna webben bevaras.
-
-Provfunktioner i Privacy Sandbox är för närvarande under utveckling och tillgängliga i vissa regioner. För närvarande går det att testa Privacy Sandbox på en webbplats samtidigt som gängse webbteknik som tredjepartscookies används på den.</translation>
 <translation id="7986497153528221272">Om du vill kunna se lösenorden måste du först ställa in ett skärmlås på enheten</translation>
 <translation id="7998918019931843664">Öppna en stängd flik på nytt</translation>
 <translation id="8004582292198964060">Webbläsare</translation>

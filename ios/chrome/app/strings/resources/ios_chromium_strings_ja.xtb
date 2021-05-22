@@ -17,7 +17,6 @@
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium でアップデートを確認できませんでした。インターネット接続を確認してみてください。</translation>
 <translation id="2054703085270098503">Chromium でいつでも安全にブラウジング</translation>
-<translation id="2075400798887076382">パソコンで開いたタブにこちらからアクセスできます。パソコンで Chromium を開き、メニューから [Chromium にログイン] を選択してください。</translation>
 <translation id="2168108852149185974">アドオンが原因で Chromium がクラッシュしました。次をアンインストールしてください:</translation>
 <translation id="2178608107313874732">現在 Chromium ではカメラを使用できません</translation>
 <translation id="2195025571279539885">次回から Chromium でこのサイトの <ph name="LANGUAGE_NAME" /> ページの翻訳を表示しますか？</translation>
@@ -42,7 +41,6 @@
 <translation id="4585809515399340748">メッセージ、ドキュメント、他のアプリでタップしたリンクが常に Chromium で開かれるようになります。</translation>
 <translation id="4681781466797808448">Chromium のスキャナをオンにしてください</translation>
 <translation id="4736424910885271643">アカウントは <ph name="HOSTED_DOMAIN" /> で管理されているため、Chromium データはこのデバイスから削除されます</translation>
-<translation id="4787850887676698916">他のデバイスの Chromium で開いているタブがここに表示されます。</translation>
 <translation id="4806326830773390517">使用統計情報と障害レポートを Google に送信して Chromium の機能向上に役立てる</translation>
 <translation id="4828317641996116749">Chromium ですべてのパスワードを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="4852878756222711218">Chromium を最大限に活用するには、Google アカウントでログインしてください</translation>

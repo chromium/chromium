@@ -186,7 +186,6 @@
 <translation id="22320125457191592">おすすめ</translation>
 <translation id="2234876718134438132">同期と Google サービス</translation>
 <translation id="2239812875700136898">Discover ボタンのオプションから記事を管理できます</translation>
-<translation id="2251971221270904886">FLoC をオンにして、ステータスが有効な場合、Chrome で 7 日間の閲覧履歴に基づいて、特定の「コホート」つまりグループに分類されます。広告主はこのグループに対して広告を表示するよう設定できます。閲覧履歴はデバイスに保存され、プライバシーが保たれます。この試用版は、<ph name="BEGIN_LINK" />一部の地域<ph name="END_LINK" />でのみ使用できます。</translation>
 <translation id="2259659629660284697">パスワードをエクスポート…</translation>
 <translation id="2276696007612801991">パスワードを確認するには、Google アカウントにログインしてください</translation>
 <translation id="2278052315791335171">このパスワードを削除しても、<ph name="SITE" /> のアカウントは削除されません</translation>
@@ -320,7 +319,6 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個のブックマーク}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個のブックマーク}}</translation>
 <translation id="3062802207422175757">Chrome の履歴に基づくおすすめの記事を表示します</translation>
 <translation id="3070005020161560471">自動的に翻訳する</translation>
-<translation id="3083531420240576529">グループはいつでもリセットできます。グループへの分類には、7 日間かかります。</translation>
 <translation id="3091010850649238832">クリップボードの内容を表示</translation>
 <translation id="3098745985164956033">正確な説明を生成するため、画像が Google に送信される場合があります</translation>
 <translation id="3114507951000454849">今日のニュースをチェック <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@
 <translation id="3568688522516854065">他のデバイスと同じタブを使用するには、ログインして同期を有効にします</translation>
 <translation id="3587482841069643663">すべて</translation>
 <translation id="3587596251841506391">ウェブ上のセキュリティ強化に協力する</translation>
-<translation id="3598653140581545904">シークレット モードでログイン</translation>
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3616113530831147358">音声</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> と共有しています</translation>
@@ -764,7 +761,6 @@
 <translation id="5964805880140440652">このページを別のデバイスと共有するには、Chrome 設定で同期をオンにしてください</translation>
 <translation id="5964869237734432770">画像の説明文の取得を停止する</translation>
 <translation id="5979084224081478209">パスワードを確認</translation>
-<translation id="5982307838673692400">シークレット タブを開く</translation>
 <translation id="6000066717592683814">Google のままにする</translation>
 <translation id="6000203700195075278">再フォロー</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />検索<ph name="END_LINK1" />や他の履歴を削除するには、<ph name="BEGIN_LINK2" />Google マイ アクティビティ<ph name="END_LINK2" />にアクセスしてください</translation>
@@ -806,13 +802,13 @@
 <translation id="6277522088822131679">ページの印刷中に問題が発生しました。もう一度お試しください。</translation>
 <translation id="6278428485366576908">テーマ</translation>
 <translation id="6292420053234093573">Chrome を使用すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したことになります。</translation>
-<translation id="629730747756840877">アカウント</translation>
 <translation id="6297765934698848803">デバイスの管理者がカメラをオフにしています。</translation>
 <translation id="6301525844455696527">リーディング リストをチェックしよう</translation>
 <translation id="6303969859164067831">ログアウトして同期をオフにする</translation>
 <translation id="6312687380483398334">ウェブアプリ（サイレント）</translation>
 <translation id="6316139424528454185">Android のバージョンはサポートされていません</translation>
 <translation id="6324034347079777476">Android システムの同期が無効です</translation>
+<translation id="6324916366299863871">ショートカットの編集</translation>
 <translation id="6324977638108296054">選択箇所へのリンクを作成できません</translation>
 <translation id="6324997754869598316">（エラー <ph name="ERROR_CODE" />）</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> で共有します</translation>
@@ -893,11 +889,6 @@
 <translation id="6699370405921460408">アクセスするページを Google のサーバーで最適化します。</translation>
 <translation id="670498945988402717">前回の確認: 昨日</translation>
 <translation id="6710213216561001401">前へ</translation>
-<translation id="671333169801287922">オンにすると、サイトでコンテンツやサービスを提供する際に、ここで示されているプライバシー保護技術が使用される場合があります。これには、クロスサイト トラッキングの代わりとなる技術も含まれます。今後、試用版の技術がさらに追加される可能性があります。
-
-<ph name="BEGIN_LIST_ITEM1" />広告主やパブリッシャーは、FLoC 技術を使用できます。<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />広告主やパブリッシャーは、サイトをまたいでユーザーをトラッキングすることなく、広告の成果を把握できます。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117"><ph name="FQDN" /> のタイマーが切れました。タイマーはまた明日開始されます。</translation>
 <translation id="6738516213925468394">データは <ph name="TIME" />に<ph name="BEGIN_LINK" />同期パスフレーズ<ph name="END_LINK" />で暗号化されました。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="6738867403308150051">ダウンロードしています…</translation>
@@ -922,9 +913,6 @@
 <translation id="6900532703269623216">保護強化機能</translation>
 <translation id="6903907808598579934">同期を有効にする</translation>
 <translation id="6929699136511445623">Android システムの同期を有効にする</translation>
-<translation id="6941901516114974832">シークレット モードでも、訪問先のウェブサイト、雇用主または学校、ご利用のインターネット サービス プロバイダには、あなたのアクティビティが<ph name="BEGIN_BOLD1" />知られる可能性があります<ph name="END_BOLD1" />。
-
-シークレット モード セッションでのデータは、<ph name="BEGIN_BOLD2" />すべてのシークレット タブを閉じた<ph name="END_BOLD2" />ときにのみ、Chrome から削除されます。</translation>
 <translation id="6942665639005891494">デフォルトのダウンロード保存先は [設定] メニューでいつでも変更できます</translation>
 <translation id="694267552845942083">同期の設定をカスタマイズしています。同期を有効にしたら、画面の下部にある [確認] をタップしてください。上へ移動</translation>
 <translation id="6945221475159498467">選択</translation>
@@ -1088,9 +1076,6 @@
 <translation id="7971136598759319605">最終同期: 1 日前</translation>
 <translation id="7975379999046275268">ページをプレビュー <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ページをプリロードして、閲覧と検索をすばやく行えるようにする</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />プライバシー サンドボックス<ph name="END_LINK" />は、トラッキング メカニズムからユーザーを保護しながら、オープンウェブの理念を支える新しい技術を開発する取り組みです。
-
-プライバシー サンドボックスの試用版はまだ開発段階にあり、一部の地域でのみご利用可能です。このため、現時点では多くのサイトでサードパーティ Cookie など現行のウェブ技術を引き続き使用しつつ、プライバシー サンドボックスが試験的に導入されると考えられます。</translation>
 <translation id="7986497153528221272">パスワードを表示するには、まずデバイスで画面ロックを設定してください</translation>
 <translation id="7998918019931843664">閉じたタブを開く</translation>
 <translation id="8004582292198964060">ブラウザ</translation>

@@ -202,7 +202,7 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <ph name="BEGIN_LIST_ITEM1" />Les annonceurs peuvent déterminer que des milliers d'utilisateurs partagent un centre d'intérêt commun (à l'instar d'une foule rassemblée à un concert) et sélectionner des annonces pour ce groupe plutôt que pour une personne spécifique.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Les annonceurs peuvent évaluer l'efficacité des annonces sans utiliser le suivi intersites.<ph name="END_LIST_ITEM2" /></translation>
-<translation id="2337236196941929873">Chrome précharge les pages susceptibles de vous intéresser. Pour cela, il peut utiliser des cookies (si vous les autorisez) et envoyer ces pages via Google en les chiffrant pour cacher votre identité aux sites.</translation>
+<translation id="2337236196941929873">Chrome précharge les pages qu'il estime que vous pourriez consulter. Pour cela, il peut utiliser des cookies (si vous les autorisez), et chiffrer et envoyer ces pages via Google pour cacher votre identité aux sites.</translation>
 <translation id="234265804618409743">Impossible d'ouvrir l'appareil photo. Un problème est survenu.</translation>
 <translation id="2345671828921229300">Pour faire une recherche, appuyez de manière prolongée sur un mot</translation>
 <translation id="2349710944427398404">Espace de stockage utilisé pour l'ensemble des données Chrome, y compris les comptes, favoris et paramètres enregistrés</translation>
@@ -275,6 +275,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2781151931089541271">1 seconde restante</translation>
 <translation id="2801022321632964776">Lancez la mise à jour pour obtenir votre langue dans la dernière version de Chrome</translation>
 <translation id="2805756323405976993">Applications</translation>
+<translation id="2806840421670364300">FLoC (Federated Learning of Cohorts)</translation>
 <translation id="281504910091592009">Afficher et gérer les mots de passe enregistrés dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Connectez-vous et activez la synchronisation pour accéder à vos favoris sur tous vos appareils</translation>
 <translation id="2827278682606527653">Le menu de la carte de flux est ouvert à mi-hauteur</translation>
@@ -396,7 +397,6 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="3568688522516854065">Connectez-vous et activez la synchronisation pour accéder à vos onglets sur vos autres appareils</translation>
 <translation id="3587482841069643663">Tous</translation>
 <translation id="3587596251841506391">Contribuer à sécuriser le Web</translation>
-<translation id="3598653140581545904">Se connecter en mode navigation privée</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Partage avec <ph name="DEVICE_NAME" />…</translation>
@@ -459,6 +459,7 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4060598801229743805">Options disponibles à proximité du haut de l'écran</translation>
 <translation id="4062305924942672200">Informations légales</translation>
+<translation id="4082818367361753283">ID du groupe</translation>
 <translation id="4084682180776658562">Favori</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" />, <ph name="BEGIN_DEEMPHASIZED" />proposé par Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Supprimer les données de l'application ?</translation>
@@ -760,7 +761,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5964805880140440652">Pour partager cette page avec un autre appareil, activez la synchronisation dans les paramètres Chrome</translation>
 <translation id="5964869237734432770">Arrêter descriptions images</translation>
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
-<translation id="5982307838673692400">Ouvrir un onglet de navigation privée</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
 <translation id="6000203700195075278">Se réabonner</translation>
 <translation id="6002623704405939939">Pour effacer l'<ph name="BEGIN_LINK1" />historique des recherches<ph name="END_LINK1" /> ou d'autres historiques, consultez <ph name="BEGIN_LINK2" />Mon activité Google<ph name="END_LINK2" /></translation>
@@ -802,13 +802,13 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6277522088822131679">Un problème est survenu lors de l'impression de la page. Veuillez réessayer.</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6292420053234093573">En utilisant Chrome, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Compte</translation>
 <translation id="6297765934698848803">L'organisation qui gère votre appareil a désactivé la caméra.</translation>
 <translation id="6301525844455696527">Rattrapez votre retard sur votre liste de lecture</translation>
 <translation id="6303969859164067831">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6312687380483398334">Applications Web (discrètes)</translation>
 <translation id="6316139424528454185">Version Android non compatible</translation>
 <translation id="6324034347079777476">La synchronisation du système Android est désactivée.</translation>
+<translation id="6324916366299863871">Modifier le raccourci</translation>
 <translation id="6324977638108296054">Impossible de créer un lien vers le texte en surbrillance</translation>
 <translation id="6324997754869598316">(Erreur <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Partager via <ph name="APPLICATION" /></translation>
@@ -913,9 +913,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6900532703269623216">Protection renforcée</translation>
 <translation id="6903907808598579934">Activer la synchronisation</translation>
 <translation id="6929699136511445623">Activer la synchronisation du système Android</translation>
-<translation id="6941901516114974832">Lorsque vous utilisez le mode navigation privée, votre employeur ou votre établissement scolaire, votre fournisseur d'accès à Internet et les sites Web que vous consultez <ph name="BEGIN_BOLD1" />peuvent quand même voir<ph name="END_BOLD1" /> votre activité.
-
-Les données de votre session de navigation privée ne sont effacées de Chrome que lorsque vous <ph name="BEGIN_BOLD2" />fermez tous les onglets de navigation privée<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Modifier à tout moment l'emplacement de téléchargement par défaut à l'aide de l'option de menu "Paramètres"</translation>
 <translation id="694267552845942083">Vous personnalisez actuellement vos paramètres de synchronisation. Pour valider l'activation de la synchronisation, appuyez sur le bouton "Confirmer" en bas de l'écran. Revenir en haut de la page</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
@@ -1188,14 +1185,16 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="8662811608048051533">Vous déconnecte de la plupart des sites.</translation>
 <translation id="8664979001105139458">Nom de fichier déjà attribué</translation>
 <translation id="8676789164135894283">Validations de connexion</translation>
+<translation id="867767487203716855">Prochaine mise à jour</translation>
 <translation id="8683039184091909753">image</translation>
+<translation id="8683081248374354009">Réinitialiser le groupe</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Intensité du signal : # barre}one{Intensité du signal : # barre}other{Intensité du signal : # barres}}</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8730621377337864115">OK</translation>
-<translation id="8746155870861185046">Partager le texte mis en surbrillance</translation>
+<translation id="8746155870861185046">Partager le texte en surbrillance</translation>
 <translation id="8748850008226585750">Contenu masqué</translation>
 <translation id="8773160212632396039">Traitement de la requête…</translation>
 <translation id="8788265440806329501">Historique de navigation fermé</translation>

@@ -157,10 +157,8 @@
 <translation id="116173250649946226">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಡೀಫಾಲ್ಟ್ ಥೀಮ್ ಅನ್ನು ಹೊಂದಿಸಿರುವುದರಿಂದ, ಅದನ್ನು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="1163931534039071049">ಫ್ರೇಮ್ ಮೂಲವನ್ನು &amp;ವೀಕ್ಷಿಸಿ</translation>
 <translation id="1164891049599601209">ವಂಚನೆ ಮಾಡುವ ಸೈಟ್‌ನಲ್ಲಿ ನಮೂದಿಸಲಾಗಿದೆ</translation>
-<translation id="1164899421101904659">ಪಿನ್ ಅನ್‌ಲಾಕ್ ಕೀ ನಮೂದಿಸಿ</translation>
 <translation id="1165039591588034296">ದೋಷ</translation>
 <translation id="1166212789817575481">ಬಲಗಡೆಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ</translation>
-<translation id="116624467691206283">ಅಮಾನ್ಯ PUK. ನೀವು 1 ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನವನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> ನಲ್ಲಿ ತೆರೆದುಕೊಳ್ಳುತ್ತಿದೆ...</translation>
 <translation id="1168100932582989117">Google ಹೆಸರು ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="1170288591054440704">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಫಾಂಟ್‌ಗಳನ್ನು ಬಳಸಲು ಸೈಟ್ ಬಯಸಿದಾಗ ಸೂಚನೆ ನೀಡಿ</translation>
@@ -1206,7 +1204,6 @@
     ಬಿತ್ತರಿಸುವಿಕೆಯಲ್ಲಿನ ಸಮಸ್ಯೆ ನಿವಾರಣೆ ಸಹಾಯಕ್ಕಾಗಿ
     <ph name="BEGIN_LINK" />
     ಸಹಾಯ ಕೇಂದ್ರವನ್ನು<ph name="END_LINK" /> ಉಲ್ಲೇಖಿಸಿ.</translation>
-<translation id="2265889263013046172">ತಪ್ಪಾದ PUK. ನೆಟ್‌ವರ್ಕ್ ಪ್ರವೇಶವನ್ನು ಮರಳಿ ಪಡೆಯುವುದಕ್ಕಾಗಿ ನಿಮ್ಮ ಕ್ಯಾರಿಯರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸುವ ಮೊದಲು ನಿಮಗೆ <ph name="RETRIES" /> ಪ್ರಯತ್ನಗಳು ಬಾಕಿ ಉಳಿದಿವೆ.</translation>
 <translation id="22665427234727190">ಸೈಟ್, ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಬಯಸಿದಾಗ ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿರುವುದು)</translation>
 <translation id="2266957463645820432">USB ನಲ್ಲಿ IPP (IPPUSB)</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> ಡೊಮೇನ್‌ನಲ್ಲಿನ ಯಾವುದೇ ಸಾಧನದೊಂದಿಗೆ ಡೇಟಾ ವಿನಿಮಯ ಮಾಡಿ</translation>
@@ -1490,7 +1487,6 @@
 <translation id="2553440850688409052">ಈ ಪ್ಲಗ್‌ ಇನ್ ಅನ್ನು ಮರೆಮಾಡು</translation>
 <translation id="2554553592469060349">ಆಯ್ಕೆ ಮಾಡಿರುವ ಫೈಲ್ ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ (ಗರಿಷ್ಠ ಗಾತ್ರ: 3mb).</translation>
 <translation id="2558896001721082624">ಸಿಸ್ಟಂ ಮೆನುವಿನಲ್ಲಿ ಪ್ರವೇಶದ ಆಯ್ಕೆಗಳನ್ನು ಯಾವಾಗಲೂ ತೋರಿಸಿ</translation>
-<translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿಲ್ಲ</translation>
 <translation id="2564520396658920462">JavaScript ಅನ್ನು AppleScript ಮೂಲಕ ಎಕ್ಸಿಕ್ಯೂಟ್ ಮಾಡುವ ಸೌಲಭ್ಯವನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ. ಅದನ್ನು ಆನ್ ಮಾಡಲು, ಮೆನು ಬಾರ್‌ ಮೂಲಕ, ವೀಕ್ಷಣೆ &gt; ಡೆವಲಪರ್ &gt; Apple ಈವೆಂಟ್‌ಗಳಿಂದ JavaScript ಅನ್ನು ಅನುಮತಿಸಿಗೆ ಹೋಗಿ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಇಲ್ಲಿಗೆ ಭೇಟಿ ನೀಡಿ: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">ವರ್ಧಿತ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆ</translation>
 <translation id="2568774940984945469">ಮಾಹಿತಿಪಟ್ಟಿಯ ಕಂಟೇನರ್</translation>
@@ -2403,7 +2399,6 @@
 <translation id="3569407787324516067">ಸ್ಕ್ರೀನ್ ಸೇವರ್</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />, ಈ ಕೆಳಗಿನ ಫೈಲ್‌ಗಳು ಹಾಗೂ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
 <translation id="3571734092741541777">ಹೊಂದಿಸು</translation>
-<translation id="3574210789297084292">ಸೈನ್ ಇನ್</translation>
 <translation id="3575121482199441727">ಈ ಸೈಟ್‌ಗಾಗಿ ಅನುಮತಿಸಿ</translation>
 <translation id="3576324189521867626">ಯಶಸ್ವಿಯಾಗಿ ಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="3578594933904494462">ಈ ಟ್ಯಾಬ್ ವಿಷಯವನ್ನು ಹಂಚಲಾಗುತ್ತಿದೆ.</translation>
@@ -2855,7 +2850,6 @@
 <translation id="4022426551683927403">ನಿಘಂಟಿಗೆ &amp;ಸೇರಿಸಿ</translation>
 <translation id="4023146161712577481">ಸಾಧನದ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ನಿರ್ಣಯಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="4025039777635956441">ಆಯ್ಕೆ ಮಾಡಿದ ಸೈಟ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
-<translation id="4027804175521224372">(ನೀವು ಕಾಣೆಯಾಗಿರುವಿರಿ —<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">ಇನ್‌ಪುಟ್ ವಿಧಾನಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> ಪುಟದಿಂದ ಹಿಂದಕ್ಕೆ</translation>
 <translation id="4031179711345676612">ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -3802,7 +3796,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">ನಿಮ್ಮ ಹಾರ್ಡ್ ಡಿಸ್ಕ್ ಭರ್ತಿಯಾಗಿದೆ. ದಯವಿಟ್ಟು ಬೇರೊಂದು ಸ್ಥಳದಲ್ಲಿ ಉಳಿಸಿ ಇಲ್ಲವೇ ಹಾರ್ಡ್ ಡಿಸ್ಕ್‌ನಲ್ಲಿ ಹೆಚ್ಚಿನ ಅವಕಾಶ ಕಲ್ಪಿಸಿ.</translation>
 <translation id="5123433949759960244">ಬ್ಯಾಸ್ಕೆಟ್‌ಬಾಲ್‌</translation>
-<translation id="5125167430897995218">ತಪ್ಪಾದ PUK. ನೆಟ್‌ವರ್ಕ್ ಪ್ರವೇಶವನ್ನು ಮರಳಿ ಪಡೆಯುವುದಕ್ಕಾಗಿ ನಿಮ್ಮ ಕ್ಯಾರಿಯರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸುವ ಮೊದಲು ನಿಮಗೆ 1 ಪ್ರಯತ್ನ ಬಾಕಿ ಉಳಿದಿದೆ.</translation>
 <translation id="5125751979347152379">ಅಮಾನ್ಯವಾದ URL.</translation>
 <translation id="5126611267288187364">ಬದಲಾವಣೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="5127620150973591153">ಭದ್ರತಾ ಸಂಪರ್ಕ ಐಡಿ: <ph name="TOKEN" /></translation>
@@ -4050,7 +4043,6 @@
 <translation id="540296380408672091"><ph name="HOST" /> ನಲ್ಲಿ ಕುಕೀಗಳನ್ನು ಯಾವಾಗಲೂ ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="540495485885201800">ಹಿಂದಿನದರ ಮೂಲಕ ಸ್ವ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5405146885510277940">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
-<translation id="5407119150486192764">ವಾಹಕವು ಒದಗಿಸಿದ 8 ಅಂಕಿಯ ಪಿನ್ ನಿರ್ಬಂಧ ರದ್ದುಗೊಳಿಸುವಿಕೆ ಕೀಯನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="5407167491482639988">ಗ್ರಹಿಸಲಾಗದ</translation>
 <translation id="5408750356094797285">ಝೂಮ್: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ</translation>
@@ -6617,7 +6609,6 @@
 <translation id="8206745257863499010">ಬ್ಲೂಸಿ</translation>
 <translation id="8206859287963243715">ಸೆಲ್ಯುಲಾರ್</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ಹೊಸ ಅಧಿಸೂಚನೆ}one{# ಹೊಸ ಅಧಿಸೂಚನೆಗಳು}other{# ಹೊಸ ಅಧಿಸೂಚನೆಗಳು}}</translation>
-<translation id="8211551284753798479">ಅಮಾನ್ಯ PUK. ನೀವು <ph name="RETRIES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನಗಳನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ಡೌನ್‌ಲೋಡ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ}one{ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪ್ರಗತಿಯಲ್ಲಿವೆ}other{ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪ್ರಗತಿಯಲ್ಲಿವೆ}}</translation>
 <translation id="8213449224684199188">ಫೋಟೋ ಮೋಡ್ ನಮೂದಿಸಲಾಗಿದೆ</translation>
 <translation id="8214489666383623925">ಫೈಲ್ ತೆರೆಯಿರಿ...</translation>

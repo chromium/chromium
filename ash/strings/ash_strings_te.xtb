@@ -40,6 +40,7 @@
 <translation id="1247372569136754018">మైక్రోఫోన్ (అంతర్గతం)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> నుండి ఛార్జ్ అవుతోంది</translation>
 <translation id="1255033239764210633">వాతావరణం ఎలా ఉంది?</translation>
+<translation id="1266097335951928626">సెల్ఫీ కెమెరాను ప్రారంభించు</translation>
 <translation id="1267032506238418139">షార్ట్‌కట్ మార్పు</translation>
 <translation id="1269405891096105529">గెస్ట్ మోడ్‌లో పెరిఫెరల్ సపోర్ట్ చేయదు</translation>
 <translation id="1270290102613614947">స్క్రీన్‌పై కనిపించే కీబోర్డ్ నిలిపివేయబడింది</translation>
@@ -84,6 +85,7 @@
 <translation id="1555130319947370107">నీలం</translation>
 <translation id="1570871743947603115">బ్లూటూత్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ఈ సెషన్‌లో మీ మొత్తం కార్యకలాపాన్ని యాక్సెస్ చేయండి</translation>
+<translation id="159255010947577753">మార్కర్</translation>
 <translation id="1611993646327628135">ఆన్</translation>
 <translation id="1615402009686901181">గోప్యమైన కంటెంట్ కనిపించినప్పుడు, అడ్మినిస్ట్రేటర్ పాలసీ స్క్రీన్ క్యాప్చర్‌ను డిజేబుల్ చేస్తుంది</translation>
 <translation id="1632985212731562677">సెట్టింగ్‌లు &gt; యాక్సెసిబిలిటీలో స్విచ్ యాక్సెస్‌ను డిజేబుల్ చేయవచ్చు.</translation>
@@ -135,8 +137,10 @@
 <translation id="2016340657076538683">సందేశాన్ని టైప్ చేయండి</translation>
 <translation id="2018630726571919839">ఒక జోక్ చెప్పు</translation>
 <translation id="2021864487439853900">అన్‌లాక్ కోసం క్లిక్ చేయండి</translation>
+<translation id="2047639699071423250">ముఖ్య ఐడియాను జోడించు</translation>
 <translation id="2049240716062114887">డెస్క్ పేరు <ph name="DESK_NAME" />గా మార్చబడింది</translation>
 <translation id="2050339315714019657">పోర్ట్రెయిట్</translation>
+<translation id="2066708475850724665">మాగ్నిఫైయర్‌ను ఆపివేయి</translation>
 <translation id="2067602449040652523">కీబోర్డ్ ప్రకాశం</translation>
 <translation id="2078034614700056995">తర్వాతి డెస్క్‌కు మారడానికి నాలుగు వేళ్లతో కుడి వైపు స్వైప్ చేయండి</translation>
 <translation id="2079504693865562705">షెల్ఫ్‌లో ఉన్న యాప్‌లను దాచు</translation>
@@ -144,10 +148,12 @@
 <translation id="2083190527011054446">శుభరాత్రి <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">నెట్‌వర్క్‌కు కనెక్ట్ కాలేదు</translation>
 <translation id="2108303511227308752">Alt + బ్యాక్‌స్పేస్ కీబోర్డ్ షార్ట్‌కట్ మార్చబడింది. తొలగింపు కీని ఉపయోగించడానికి, <ph name="LAUNCHER_KEY_NAME" /> కీ +బ్యాక్‌స్పేస్‌ను నొక్కండి.</translation>
+<translation id="211328683600082144">మైక్రోఫోన్‌ను ఆన్ చేయి</translation>
 <translation id="2126242104232412123">కొత్త డెస్క్</translation>
 <translation id="2127372758936585790">తక్కువ-పవర్ గల ఛార్జర్</translation>
 <translation id="2132302418721800944">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="2135456203358955318">డాక్ చేయబడిన మాగ్నిఫైయర్</translation>
+<translation id="2146800439053023141">టోగుల్ బార్ లొకేషన్</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: మళ్లీ ట్రై చేయండి</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">ఓవర్‌వ్యూ నుండి నిష్క్రమించడానికి మూడు వేళ్లతో కిందకు స్వైప్ చేయండి</translation>
@@ -282,7 +288,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ఇప్పటికీ తర్వాత సైన్ ఇన్ చేయవచ్చు.</translation>
 <translation id="3321628682574733415">తల్లి/తండ్రి కోడ్ తప్పు</translation>
 <translation id="332587331255250389">దయచేసి బ్యాటరీని భర్తీ చేయండి</translation>
-<translation id="3333741161915951567">మోడెమ్ రీబూట్. మళ్లీ ట్రై చేయడానికి ముందు 30 సెకన్ల పాటు వేచి ఉండండి.</translation>
 <translation id="3341303451326249809">స్క్రీన్‌షాట్ క్యాప్చర్ చేయబడింది</translation>
 <translation id="334252345105450327">స్క్రీన్‌షాట్ తీయండి</translation>
 <translation id="3351879221545518001">ప్రస్తుతం మీరు స్క్రీన్‌ని ప్రసారం చేస్తున్నారు.</translation>
@@ -327,6 +332,7 @@
 <translation id="3638400994746983214">గోప్యతా స్క్రీన్‌ను టోగుల్ చేస్తుంది. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> మేనేజ్ చేయబడిన యూజర్</translation>
 <translation id="3665889125180354336">మైక్రోఫోన్‌తో రికార్డ్ చేయి</translation>
+<translation id="3680908746918359504">అన్ని మార్కర్‌లను క్లియర్ చేయి</translation>
 <translation id="36813544980941320">Wi-Fi నెట్‌వర్క్‌లు మీ ఫోన్, <ph name="DEVICE_NAME" /> మధ్య షేర్ చేయబడతాయి</translation>
 <translation id="3702809606464356667">ప్రస్తుత డెస్క్ నుండి విండోలను చూపుతోంది, అన్ని డెస్క్‌ల నుండి విండోలను చూపడానికి పై వైపు బాణం కీని నొక్కండి</translation>
 <translation id="3702846122927433391">నైజీరియాలో జనాభా</translation>
@@ -378,6 +384,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ఒక యాప్‌కు ఆఫ్}other{# యాప్‌లకు ఆఫ్}}</translation>
 <translation id="4066027111132117168">ఆన్‌లో ఉంది, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">సిగ్నల్ ఓ మోస్తరుగా ఉంది</translation>
+<translation id="4095366824370681039">ఇంక్ పెన్</translation>
 <translation id="4112140312785995938">వెనుకకు జరుపు</translation>
 <translation id="4114315158543974537">ఫోన్ హబ్‌ను ఆన్ చేయండి</translation>
 <translation id="412298498316631026">విండో</translation>
@@ -446,12 +453,15 @@
 <translation id="4570957409596482333">వినడానికి ఎంచుకోండి బటన్</translation>
 <translation id="4577274620589681794">సమయం ముగిసింది · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ప్రివ్యూలను చూపు</translation>
+<translation id="4578196883126898996">మీ మైక్రోఫోన్ ఆఫ్ చేయబడింది. మీ పరికర మైక్రోఫోన్ బటన్‌ను ఆన్ చేయండి.</translation>
 <translation id="4578906031062871102">సెట్టింగ్‌ల మెనూ తెరవబడింది</translation>
 <translation id="4581047786858252841">మైక్రోఫోన్ ఆన్‌లో ఉంది</translation>
 <translation id="4585337515783392668">తెలియని రిసీవర్‌లో ప్రసారం చేయడాన్ని ఆపివేయి</translation>
+<translation id="4586483766170476230">సెల్ఫీ కెమెరాను ఆపివేయి</translation>
 <translation id="4587299710837179226">మైక్రోఫోన్ ఆఫ్‌లో ఉంది</translation>
 <translation id="4596144739579517758">ముదురు రంగు రూపం ఆఫ్‌లో ఉంది</translation>
 <translation id="4611292653554630842">లాగిన్ చేయండి</translation>
+<translation id="4614295562446151104">మార్కర్ టూల్స్‌ను విస్తరించు</translation>
 <translation id="4623167406982293031">ఖాతాను వెరిఫై చేయండి</translation>
 <translation id="4628757576491864469">పరికరాలు</translation>
 <translation id="4642092649622328492">పాక్షిక స్క్రీన్‌షాట్ తీయండి</translation>
@@ -508,6 +518,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ఒక కొత్త ఫోన్‌కి కనెక్ట్ చేయబడింది</translation>
 <translation id="5035389544768382859">డిస్‌ప్లే కాన్ఫిగరేషన్‌ను నిర్ధారించండి</translation>
 <translation id="504465286040788597">మునుపటి పేరా</translation>
+<translation id="5071064518267176975">యాప్ మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
+<translation id="5075554201838155866">క్యాప్షన్‌లను ప్రారంభించు</translation>
 <translation id="5078796286268621944"> సరి కానటువంటి PIN</translation>
 <translation id="5083553833479578423">మరిన్ని Assistant ఫీచర్‌లను అన్‌లాక్ చేయండి.</translation>
 <translation id="5136175204352732067">వేరే కీబోర్డ్ కనెక్ట్ చేయబడింది</translation>
@@ -678,6 +690,7 @@
 <translation id="6612802754306526077">స్క్రీన్ రికార్డింగ్ మోడ్ ఎంచుకోబడింది</translation>
 <translation id="6614169507485700968">గోప్యతా స్క్రీన్ ఆన్‌లో ఉంది</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> మీ మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="6637729079642709226">సమయాన్ని మార్చండి</translation>
 <translation id="6641720045729354415">లైవ్ క్యాప్షన్‌ను టోగుల్ చేయి. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> అది మీరేనని నిర్ధారించాలనుకుంటుంది</translation>
@@ -731,6 +744,7 @@
 <translation id="7029814467594812963">సెషన్ నిష్క్రమించు</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google అసిస్టెంట్</translation>
 <translation id="7042322267639375032">స్టేటస్ ప్రాంతాన్ని కుదించండి</translation>
+<translation id="7045595904618419789">మాగ్నిఫైయర్‌ను ప్రారంభించు</translation>
 <translation id="7055910611768509537">ఒక వారం నుండి స్టైలస్ ఉపయోగించబడలేదు</translation>
 <translation id="7066646422045619941">ఈ నెట్‌వర్క్‌ను మీ నిర్వాహ‌కుడు నిలిపివేశారు.</translation>
 <translation id="7067196344162293536">స్వయంచాలకంగా తిప్పు</translation>
@@ -751,6 +765,7 @@
 <translation id="7256634071279256947">వెనుకవైపు మైక్రోఫోన్</translation>
 <translation id="726276584504105859">విభజన స్క్రీన్‌ను ఉపయోగించడానికి ఇక్కడికి లాగండి</translation>
 <translation id="7262906531272962081">రిమైండర్‌ను సృష్టించండి</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> మార్కర్ రంగు</translation>
 <translation id="7302889331339392448">లైవ్ క్యాప్షన్ ఆఫ్ చేయబడింది.</translation>
 <translation id="7303365578352795231">మరొక పరికరంలో సమాధానం ఇవ్వబడుతోంది.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -780,6 +795,7 @@
 <translation id="7466449121337984263">దయచేసి సెన్సార్‌ను తాకండి</translation>
 <translation id="7477793887173910789">మీ సంగీతం, వీడియోలు అలాగే ఇంకా మరిన్నింటిని నియంత్రించండి</translation>
 <translation id="7483025031359818980">ఎంపిక చేసుకోవాల్సిన చోటు ఫుల్ స్క్రీన్‌కు సెట్ చేయబడింది</translation>
+<translation id="7486227320194954040">మార్కర్ టూల్స్‌ను కుదించు</translation>
 <translation id="7497767806359279797">భాషను మరియు కీబోర్డ్‌ను ఎంచుకోండి</translation>
 <translation id="7509246181739783082">మీ గుర్తింపును వెరిఫై చేయండి</translation>
 <translation id="7513622367902644023">స్క్రీన్‌షాట్ మోడ్ ఎంచుకోబడింది</translation>
@@ -798,6 +814,7 @@
 <translation id="7607002721634913082">పాజ్ చెయ్యబడింది</translation>
 <translation id="7618774594543487847">తటస్థం</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">మార్కర్ పెన్</translation>
 <translation id="7633755430369750696">సమీప షేరింగ్ సెట్టింగ్‌లను చూపించు.</translation>
 <translation id="7641938616688887143">రికార్డ్</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> సెట్టింగ్‌లను తెరవండి, <ph name="CONNECTION_STATUS" /></translation>
@@ -813,6 +830,7 @@
 <translation id="7724603315864178912">కత్తిరించు</translation>
 <translation id="7745560842763881396">యాప్‌లను షెల్ఫ్‌లో చూపించు</translation>
 <translation id="7749443890790263709">గరిష్ట డెస్క్‌ల సంఖ్యను చేరుకుంది.</translation>
+<translation id="7749640678855296659">మీ మైక్రోఫోన్ ప్రస్తుతం ఆఫ్ చేయబడింది</translation>
 <translation id="776344839111254542">అప్‌డేట్ వివరాలను వీక్షించడం కోసం క్లిక్ చేయండి</translation>
 <translation id="7780159184141939021">స్క్రీన్‌ను తిప్పండి</translation>
 <translation id="7796353162336583443">గమనికను రాయడానికి, స్క్రీన్‌షాట్‌ను తీయడానికి, Google అసిస్టెంట్, లేజర్ పాయింటర్ లేదా భూతద్దాన్ని ఉపయోగించడానికి అరలో స్టైలస్ బటన్‌ను నొక్కండి.</translation>
@@ -860,6 +878,7 @@
 <translation id="8113423164597455979">యాప్‌లన్నీ ఆన్</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>
+<translation id="8132487352815776550">క్యాప్షన్‌లను ఆపివేయి</translation>
 <translation id="8132793192354020517"><ph name="NAME" />కు కనెక్ట్ చేయబడింది</translation>
 <translation id="813913629614996137">ప్రారంభిస్తోంది...</translation>
 <translation id="8142441511840089262">రెండు సార్లు క్లిక్ చేయండి</translation>

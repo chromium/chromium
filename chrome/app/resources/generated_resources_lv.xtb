@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Jūsu administrators ir iestatījis noklusējuma motīvu, ko nevar nomainīt.</translation>
 <translation id="1163931534039071049">Skatīt rāmja avotu</translation>
 <translation id="1164891049599601209">Ievadīta maldinošā vietnē</translation>
-<translation id="1164899421101904659">Ievadiet PIN atbloķēšanas atslēgu</translation>
 <translation id="1165039591588034296">Kļūda</translation>
 <translation id="1166212789817575481">Aizvērt cilnes pa labi</translation>
-<translation id="116624467691206283">PUK nav derīgs. Atlicis viens mēģinājums.</translation>
 <translation id="1168020859489941584">Atveras <ph name="TIME_REMAINING" /> ...</translation>
 <translation id="1168100932582989117">Google nosaukumu serveri</translation>
 <translation id="1170288591054440704">Vaicāt, ja vietne vēlas izmantot jūsu ierīcē instalētos fontus</translation>
@@ -1200,7 +1198,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2263189956353037928">Izrakstīties un vēlreiz pierakstīties</translation>
 <translation id="2263371730707937087">Ekrāna atsvaidzināšanas biežums</translation>
 <translation id="2263679799334060788">Mēs novērtējam jūsu atsauksmes — tās palīdz mums uzlabot pakalpojumu Google Cast. Lai saņemtu palīdzību apraides problēmu novēršanā, apmeklējiet <ph name="BEGIN_LINK" />palīdzības centru<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Nepareizs PUK. Atlikuši vēl <ph name="RETRIES" /> mēģinājumi. Pēc tam, lai atgūtu piekļuvi tīklam, jums būs jāsazinās ar savu mobilo sakaru operatoru.</translation>
 <translation id="22665427234727190">Vaicāt, ja vietne vēlas piekļūt Bluetooth ierīcēm (ieteicams)</translation>
 <translation id="2266957463645820432">IPP, izmantojot USB (IPPUSB)</translation>
 <translation id="2270450558902169558">apmainīties datiem ar jebkuru ierīci domēnā <ph name="DOMAIN" /></translation>
@@ -1484,7 +1481,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2553440850688409052">Slēpt šo spraudni</translation>
 <translation id="2554553592469060349">Atlasītais fails ir pārāk liels (maksimālais lielums: 3 MB).</translation>
 <translation id="2558896001721082624">Vienmēr rādīt piekļūstamības opcijas sistēmas izvēlnē</translation>
-<translation id="2562743677925229011">Nav pierakstījies pakalpojumā <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">JavaScript izpilde, izmantojot AppleScript, ir izslēgta. Lai to ieslēgtu, izvēļņu joslā atveriet View (Skats) &gt; Developer (Izstrādātājs) &gt; Allow JavaScript from Apple Events (Atļaut izmantot JavaScript no Apple Events). Plašāku informāciju skatiet vietnē https://support.google.com/chrome/?p=applescript.</translation>
 <translation id="2564653188463346023">Uzlabota pareizrakstības pārbaude</translation>
 <translation id="2568774940984945469">Informācijas joslas konteiners</translation>
@@ -2398,7 +2394,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3569407787324516067">Ekrānsaudzētājs</translation>
 <translation id="3569682580018832495">Vietne <ph name="ORIGIN" /> var skatīt šos failus un mapes:</translation>
 <translation id="3571734092741541777">Iestatīt</translation>
-<translation id="3574210789297084292">pierakstīties</translation>
 <translation id="3575121482199441727">Atļaut šajā vietnē</translation>
 <translation id="3576324189521867626">Veiksmīgi instalēta</translation>
 <translation id="3578594933904494462">Šīs cilnes saturs tiek kopīgots.</translation>
@@ -2849,7 +2844,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4022426551683927403">Pievienot vārdnīc&amp;ai</translation>
 <translation id="4023146161712577481">Tiek noteikta ierīces konfigurācija.</translation>
 <translation id="4025039777635956441">Izslēgt skaņu atlasītajai vietnei</translation>
-<translation id="4027804175521224372">(Neesat pierakstījies — <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Pievienot ievades metodes</translation>
 <translation id="4029556917477724407">Atpakaļ no lapas “<ph name="PAGE_TITLE" />”</translation>
 <translation id="4031179711345676612">Mikrofona lietošana ir atļauta</translation>
@@ -3795,7 +3789,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Cietais disks ir pilns. Saglabājiet citā atrašanās vietā vai atbrīvojiet vietu cietajā diskā.</translation>
 <translation id="5123433949759960244">Basketbols</translation>
-<translation id="5125167430897995218">Nepareizs PUK. Atlicis vēl viens mēģinājums. Pēc tam, lai atgūtu piekļuvi tīklam, jums būs jāsazinās ar savu mobilo sakaru operatoru.</translation>
 <translation id="5125751979347152379">Nederīgs URL.</translation>
 <translation id="5126611267288187364">Skatīt izmaiņas</translation>
 <translation id="5127620150973591153">Droša savienojuma ID: <ph name="TOKEN" /></translation>
@@ -4043,7 +4036,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="540296380408672091">Vienmēr bloķēt sīkfailus vietnē <ph name="HOST" /></translation>
 <translation id="540495485885201800">Mainīt ar iepriekšējo</translation>
 <translation id="5405146885510277940">Iestatījumu atiestatīšana</translation>
-<translation id="5407119150486192764">Ievadiet 8 ciparu PIN atbloķēšanas atslēgu, ko nodrošina jūsu mobilo sakaru operators.</translation>
 <translation id="5407167491482639988">Nesaklausāma skaņa</translation>
 <translation id="5408750356094797285">Tālummaiņa: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">No jūsu Google konta</translation>
@@ -6608,7 +6600,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8206745257863499010">Blūzs</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Jauns paziņojums}zero{# jaunu paziņojumu}one{# jauns paziņojums}other{# jauni paziņojumi}}</translation>
-<translation id="8211551284753798479">PUK nav derīgs. Atlikuši <ph name="RETRIES" /> mēģinājumi.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Notiek lejupielāde}zero{Notiek lejupielāde}one{Notiek lejupielāde}other{Notiek lejupielāde}}</translation>
 <translation id="8213449224684199188">Ievadīts foto režīms</translation>
 <translation id="8214489666383623925">Atvērt failu...</translation>

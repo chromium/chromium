@@ -24,7 +24,7 @@
 <translation id="2695886661449553974">Chrome n'est pas parvenu à rechercher les mises à jour. Réessayez plus tard.</translation>
 <translation id="2732745070297234559">Chrome n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="2740105938841089077">Utiliser Chrome pour ouvrir des liens</translation>
-<translation id="2869959624320573933">Se connecter à Chrome</translation>
+<translation id="2869959624320573933">Connectez-vous à Chrome</translation>
 <translation id="2919738076569633423">En utilisant Chrome, vous acceptez les <ph name="BEGIN_LINK_TOS" />Conditions d'utilisation<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chrome seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="3167189358072330585">Votre compte n'est pas compatible avec Google Chrome. Veuillez contacter l'administrateur de votre domaine ou utiliser un compte Google standard pour vous connecter.</translation>
@@ -64,7 +64,6 @@
 <translation id="6063091872902370735">Autoriser la connexion à Chrome</translation>
 <translation id="6181930887571472871">Passer à Chrome</translation>
 <translation id="6238746320622508509">Chrome peut verrouiller vos onglets de navigation privée.</translation>
-<translation id="6573431926118603307">Les onglets que vous avez ouverts dans Chrome sur vos autres appareils s'affichent ici.</translation>
 <translation id="6600954340915313787">Copiée dans Chrome</translation>
 <translation id="6634107063912726160">Lorsque vous vous déconnectez, Chrome cesse de synchroniser vos données avec votre compte Google. Les données déjà synchronisées ne sont pas effacées.</translation>
 <translation id="6648150602980899529">Vous vous connectez avec un compte géré par <ph name="DOMAIN" />, ce qui permettra à son administrateur de contrôler vos données Chrome. Celles-ci seront définitivement associées à ce compte. Si vous vous déconnectez de Chrome, vos données seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
@@ -78,7 +77,6 @@
 <translation id="7172660552945675509">Conseil : <ph name="BEGIN_LINK" />Placez Chrome dans le dock.<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome utilise Face ID pour autoriser l'accès à vos mots de passe.</translation>
 <translation id="7261678641327190792">Chrome ne parvient pas à vérifier vos mots de passe</translation>
-<translation id="7265369419224458312">Accédez ici aux onglets ouverts sur votre ordinateur. Il vous suffit d'ouvrir Chrome sur votre ordinateur, d'accéder au menu, puis de sélectionner "Se connecter à Chrome".</translation>
 <translation id="7272930098487145294">Pour enregistrer une image, appuyez sur "Paramètres" afin que Chrome puisse l'ajouter à vos photos</translation>
 <translation id="7275945473750112644">Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chrome seront effacées de cet appareil</translation>
 <translation id="7400722733683201933">À propos de Google Chrome</translation>

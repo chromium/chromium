@@ -174,6 +174,7 @@ Certaines fonctionnalités peuvent être indisponibles. Veuillez spécifier un r
 
 Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5434383153637353914">Cette page vous permet de gérer les comptes Google auxquels vous êtes connecté. Ils seront accessibles depuis le navigateur Chrome et l'appli Play Store, et vous pourrez les utiliser avec des services comme Gmail, Drive et YouTube. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">Installer Chrome OS</translation>
 <translation id="556024056938947818">Tentative d'affichage des mots de passe dans Google Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Si un paramètre ne s'affiche pas sur cette page, accédez aux <ph name="LINK_BEGIN" />paramètres Chrome OS<ph name="LINK_END" /></translation>
@@ -254,8 +255,8 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7855730255114109580">Google Chrome est à jour</translation>
 <translation id="7890208801193284374">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Chrome comme bon leur semble et naviguer sur le Web à leur manière.</translation>
 <translation id="7896673875602241923">Un utilisateur s'est récemment connecté à Chrome sur cet ordinateur en tant que <ph name="ACCOUNT_EMAIL_LAST" />. Veuillez créer un autre utilisateur Chrome pour séparer vos informations.</translation>
-<translation id="7905891027772979035">Chrome ne parvient pas à vérifier vos extensions. Réessayez plus tard.</translation>
 <translation id="7930071585467473040">Google Chrome tente de copier les mots de passe.</translation>
+<translation id="7951988079884443914">Chrome vous recommande de ne pas télécharger ni ouvrir ce fichier.</translation>
 <translation id="7962410387636238736">Cet ordinateur ne recevra plus les mises à jour de Google Chrome, car la compatibilité n'est plus assurée sur Windows XP et Windows Vista</translation>
 <translation id="79947657522496226">Chrome OS dépend d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />, et l'<ph name="BEGIN_LINK_LINUX_OSS" />environnement de développement Linux<ph name="END_LINK_LINUX_OSS" /> en est un.</translation>
 <translation id="8008534537613507642">Réinstaller Chrome</translation>

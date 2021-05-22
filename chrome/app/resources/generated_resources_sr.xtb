@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Администратор је подесио подразумевану тему која не може да се мења.</translation>
 <translation id="1163931534039071049">&amp;Прикажи извор оквира</translation>
 <translation id="1164891049599601209">Унето је на обмањујућем сајту</translation>
-<translation id="1164899421101904659">Унесите шифру за откључавање PIN-а</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1166212789817575481">Затвори картице са десне стране</translation>
-<translation id="116624467691206283">Неважећи PUK. Имате још 1 покушај.</translation>
 <translation id="1168020859489941584">Отварање за <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Google сервери назива</translation>
 <translation id="1170288591054440704">Питај када сајт жели да користи фонтове инсталиране на уређају</translation>
@@ -1197,7 +1195,6 @@
 <translation id="2263189956353037928">Одјави ме и поново ме пријави</translation>
 <translation id="2263371730707937087">Учесталост освежавања екрана</translation>
 <translation id="2263679799334060788">Повратне информације нам помажу да побољшамо Google Cast и захвални смо вам на њима. Да бисте решили проблеме са пребацивањем, посетите <ph name="BEGIN_LINK" />центар за помоћ<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Нетачан PUK. Имате још <ph name="RETRIES" /> покушаја, а онда морате да се обратите мобилном оператеру да бисте поново добили приступ мрежи.</translation>
 <translation id="22665427234727190">Питај када сајт жели да приступа Bluetooth уређајима (препоручено)</translation>
 <translation id="2266957463645820432">IPP преко USB-а (IPPUSB)</translation>
 <translation id="2270450558902169558">Размена података са било којим уређајем на домену <ph name="DOMAIN" /></translation>
@@ -1481,7 +1478,6 @@
 <translation id="2553440850688409052">Сакриј овај додатак</translation>
 <translation id="2554553592469060349">Изабрана датотека је превелика (максимална величина: 3 MB).</translation>
 <translation id="2558896001721082624">Увек приказуј опције приступачности у системском менију</translation>
-<translation id="2562743677925229011">Нисте пријављени на <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Извршавање JavaScript-а помоћу AppleScript-а је искључено. Да бисте га укључили, на траци менија изаберите View &gt; Developer &gt; Allow JavaScript from Apple Events (Приказ &gt; Програмер &gt; Дозволи JavaScript из Apple Events-а). Додатне информације: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Побољшана провера правописа</translation>
 <translation id="2568774940984945469">Контејнер траке са информацијама</translation>
@@ -2395,7 +2391,6 @@
 <translation id="3569407787324516067">Чувар екрана</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> може да прегледа датотеке и директоријуме у наставку</translation>
 <translation id="3571734092741541777">Подеси</translation>
-<translation id="3574210789297084292">пријави ме</translation>
 <translation id="3575121482199441727">Дозволи за овај сајт</translation>
 <translation id="3576324189521867626">Инсталирано је</translation>
 <translation id="3578594933904494462">Садржај ове картице се дели.</translation>
@@ -2846,7 +2841,6 @@
 <translation id="4022426551683927403">&amp;Додај у речник</translation>
 <translation id="4023146161712577481">Утврђивање конфигурације уређаја.</translation>
 <translation id="4025039777635956441">Искључи звук изабраног сајта</translation>
-<translation id="4027804175521224372">(Пропуштате – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Додај методе уноса</translation>
 <translation id="4029556917477724407">Назад са странице <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Микрофон је дозвољен</translation>
@@ -3792,7 +3786,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Хард-диск је пун. Сачувајте на другу локацију или направите више простора на хард-диску.</translation>
 <translation id="5123433949759960244">Кошаркашка лопта</translation>
-<translation id="5125167430897995218">Нетачан PUK. Имате још 1 покушај, а онда морате да се обратите мобилном оператеру да бисте поново добили приступ мрежи.</translation>
 <translation id="5125751979347152379">Неважећа URL адреса.</translation>
 <translation id="5126611267288187364">Прегледајте промене</translation>
 <translation id="5127620150973591153">ИД безбедне везе: <ph name="TOKEN" /></translation>
@@ -4040,7 +4033,6 @@
 <translation id="540296380408672091">Увек блокирај колачиће на <ph name="HOST" /></translation>
 <translation id="540495485885201800">Замени претходним</translation>
 <translation id="5405146885510277940">Ресетујте подешавања</translation>
-<translation id="5407119150486192764">Унесите осмоцифрену шифру за откључавање PIN-а коју пружа мобилни оператер</translation>
 <translation id="5407167491482639988">Неразумљив</translation>
 <translation id="5408750356094797285">Зумирајте: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Са Google налога</translation>
@@ -6607,7 +6599,6 @@
 <translation id="8206745257863499010">Блузи</translation>
 <translation id="8206859287963243715">Мобилни уређај</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново обавештење}one{# ново обавештење}few{# нова обавештења}other{# нових обавештења}}</translation>
-<translation id="8211551284753798479">Неважећи PUK. Преосталих покушаја: <ph name="RETRIES" />.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Преузимање је у току}one{Преузимања су у току}few{Преузимања су у току}other{Преузимања су у току}}</translation>
 <translation id="8213449224684199188">Активиран је режим слика</translation>
 <translation id="8214489666383623925">Отвори датотеку...</translation>

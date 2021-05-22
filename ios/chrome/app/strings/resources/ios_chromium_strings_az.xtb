@@ -17,7 +17,6 @@
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium güncəlləmələri yoxlaya bilmədi. İnternet bağlantınızı yoxlayın.</translation>
 <translation id="2054703085270098503">Chromium ilə təhlükəsiz qalın</translation>
-<translation id="2075400798887076382">Kompüterdə açdığınız panellərə buradan daxil olun. Kompüterinizdə Chromium tətbiqini açın, menyuya daxil olun və "Chromium'a daxil olun..." seçin</translation>
 <translation id="2168108852149185974">Bəzi addonlar Chromium'da xətaya səbəb olur. Lütfən, sistemdən silin:</translation>
 <translation id="2178608107313874732">Chromium hazırda kameranızı istifadə edə bilməz</translation>
 <translation id="2195025571279539885">Növbəti dəfə Chromium'un bu saytdakı <ph name="LANGUAGE_NAME" /> səhifələrini tərcümə etməyini istəyirsiniz?</translation>
@@ -42,7 +41,6 @@
 <translation id="4585809515399340748">İndi istənilən vaxt mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chromium'u istifadə edə bilərsiniz.</translation>
 <translation id="4681781466797808448">Chromium skanerini aktiv edin</translation>
 <translation id="4736424910885271643">Hesabınız <ph name="HOSTED_DOMAIN" /> tərəfindən idarə edildiyinə görə Chromium datanız bu cihazdan silinəcək</translation>
-<translation id="4787850887676698916">Başqa cihaz ilə Chromium'da açdığınız panellər burada görünəcək.</translation>
 <translation id="4806326830773390517">İstifadə statistikası və qəza hesabatlarını Google'a göndərməklə Chromium'u təkmilləşdirməyə kömək edin</translation>
 <translation id="4828317641996116749">Chromium bütün parolları yoxlaya bilmədi. Sonra cəhd edin.</translation>
 <translation id="4852878756222711218">Chromium'dan maksimum yararlanmaq üçün Google Hesabınızla daxil olun</translation>

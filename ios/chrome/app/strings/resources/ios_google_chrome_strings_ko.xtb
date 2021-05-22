@@ -64,7 +64,6 @@
 <translation id="6063091872902370735">Chrome 로그인 허용</translation>
 <translation id="6181930887571472871">Chrome으로 전환</translation>
 <translation id="6238746320622508509">Chrome에서 시크릿 탭을 잠그도록 허용합니다.</translation>
-<translation id="6573431926118603307">다른 기기의 Chrome에서 연 탭이 여기에 표시됩니다.</translation>
 <translation id="6600954340915313787">Chrome에 복사됨</translation>
 <translation id="6634107063912726160">로그아웃하면 Chrome에서 더 이상 새로운 데이터를 내 Google 계정에 동기화하지 않습니다. 이전에 동기화된 데이터는 계정에 그대로 유지됩니다.</translation>
 <translation id="6648150602980899529"><ph name="DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chrome 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chrome에서 로그아웃하면 데이터가 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
@@ -78,7 +77,6 @@
 <translation id="7172660552945675509">도움말: <ph name="BEGIN_LINK" />Chrome을 내 Dock에 추가하세요.<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome은 얼굴 ID를 사용하여 승인된 사용자만 비밀번호에 액세스할 수 있도록 합니다.</translation>
 <translation id="7261678641327190792">Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
-<translation id="7265369419224458312">여기에서 컴퓨터에서 열어 둔 탭에 바로 액세스할 수 있습니다. 컴퓨터에서 Chrome을 열고 메뉴로 이동하여 'Chrome에 로그인...'을 선택하세요.</translation>
 <translation id="7272930098487145294">이미지를 저장하려면 '설정'을 탭하여 Chrome에 사진 추가 권한을 부여하세요.</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" />에서 관리하는 계정이므로 이 기기에서 내 Chrome 데이터가 삭제됩니다</translation>
 <translation id="7400722733683201933">Chrome 정보</translation>

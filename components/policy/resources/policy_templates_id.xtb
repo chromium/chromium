@@ -1106,13 +1106,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2448315169529769573">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan melaporkan kembali metrik penggunaan dan data diagnostik, termasuk laporan kerusakan, ke Google. Jika kebijakan disetel ke Nonaktif, pelaporan metrik dan data diagnostik akan dinonaktifkan.
 
        Jika kebijakan tidak disetel, pelaporan metrik dan data diagnostik akan dinonaktifkan di perangkat yang tidak terkelola dan akan diaktifkan di perangkat terkelola.</translation>
-<translation id="2449263772062368618">Mengonfigurasi daftar jenis data penjelajahan yang harus dihapus saat browser ditutup.
-      Jenis data yang tersedia adalah histori penjelajahan (<ph name="DATA_TYPE_BROWSING_HISTORY" />), histori download (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, isi otomatis (<ph name="DATA_TYPE_AUTOFILL" />), sandi (<ph name="DATA_TYPE_PASSWORD" />), setelan situs (<ph name="DATA_TYPE_SITE_SETTINGS" />), dan data aplikasi yang dihosting (<ph name="DATA_TYPE_HOSTED_APP_DATA" />).
-      Kebijakan ini tidak akan lebih diprioritaskan daripada <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-      Kebijakan ini mengharuskan kebijakan <ph name="SYNC_DISABLED_POLICY_NAME" /> disetel ke benar (true). Jika tidak, kebijakan ini akan diabaikan.
-      Jika kebijakan ini disetel di tingkat platform, Sinkronisasi harus dinonaktifkan di tingkat platform.
-      Jika kebijakan ini disetel di tingkat pengguna, Sinkronisasi harus dinonaktifkan untuk pengguna tersebut agar kebijakan ini dapat berlaku.
-      </translation>
 <translation id="244950822854046436">Daftar setelan yang akan diterapkan ke <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, yang aktif saat file didownload.
 
       Kolom <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan file ke penyedia layanan saat mendownload dari halaman web. URL halaman web harus cocok dengan pola yang terkait ke pola 'enable' dan tidak terkait ke pola 'disable'.  Jenis MIME file juga harus cocok dengan pola yang terkait ke pola 'enable' dan tidak terkait ke pola 'disable'.
@@ -2130,7 +2123,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3758249152301468420">Nonaktifkan Alat Pengembang</translation>
 <translation id="3759650373178711405">Menyetel <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> memungkinkan Anda membuat daftar pola URL yang menentukan situs yang dapat dan tidak dapat menyetel cookie untuk satu sesi, kecuali jika kebijakan <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> disetel untuk memulihkan URL dari sesi sebelumnya secara permanen.
 
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> akan digunakan untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan. Jika URL tidak dicakup oleh pola yang ditentukan, setelan default juga akan digunakan.
+      Jika kebijakan tidak disetel berarti <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> akan digunakan untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan. Jika URL tidak dicakup oleh pola yang ditentukan, setelan default juga akan digunakan.
 
       Jika tidak ada kebijakan tertentu yang diprioritaskan, lihat <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> dan <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Pola URL di antara 3 kebijakan ini tidak boleh bertentangan.</translation>
 <translation id="3760148113224469113">Selalu wajibkan pengguna mengonfirmasi perintah protokol eksternal</translation>
@@ -2229,7 +2222,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Catatan: Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
 
-      Untuk Chrome OS, kebijakan ini berhubungan dengan pengesahan jarak jauh dengan sertifikat yang otomatis dibuat dan diupload ke Server Pengelolaan Perangkat.
+      Untuk Chrome OS, kebijakan ini berhubungan dengan pengesahan jarak jauh dengan sertifikat yang otomatis dibuat dan diupload ke Server Pengelola Perangkat.
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3858128774616573616">Jika kebijakan disetel ke Aktif, ikon toolbar Cast akan ditampilkan di toolbar atau menu tambahan, dan pengguna tidak dapat menghapusnya.
@@ -2507,7 +2500,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4248277954659222481">Izinkan pemutaran otomatis media pada pola URL yang diizinkan</translation>
 <translation id="4250680216510889253">Tidak</translation>
 <translation id="4261820385751181068">Lokal layar login perangkat</translation>
-<translation id="4266547484666068234">Jika kebijakan disetel, URL yang tercantum akan diberikan akses sebagai pengecualian untuk <ph name="URL_BLOCKLIST_POLICY_NAME" />. Lihat deskripsi kebijakan tersebut untuk mengetahui format entri daftar ini. Misalnya, menyetel <ph name="URL_BLOCKLIST_POLICY_NAME" /> ke * akan memblokir semua permintaan, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Filter paling spesifik akan menentukan apakah URL diblokir atau diizinkan. Kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" /> akan lebih diprioritaskan daripada <ph name="URL_BLOCKLIST_POLICY_NAME" />. Kebijakan ini terbatas untuk 1.000 entri.
+<translation id="4266547484666068234">Jika kebijakan disetel, akses ke URL yang tercantum akan diberikan sebagai pengecualian untuk <ph name="URL_BLOCKLIST_POLICY_NAME" />. Lihat deskripsi kebijakan tersebut untuk mengetahui format entri daftar ini. Misalnya, menyetel <ph name="URL_BLOCKLIST_POLICY_NAME" /> ke * akan memblokir semua permintaan, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Filter paling spesifik akan menentukan apakah URL diblokir atau diizinkan. Kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" /> akan lebih diprioritaskan daripada <ph name="URL_BLOCKLIST_POLICY_NAME" />. Kebijakan ini terbatas untuk 1.000 entri.
 
       Dengan kebijakan ini, panggilan otomatis dapat dilakukan oleh browser aplikasi eksternal yang terdaftar sebagai pengendali protokol untuk protokol yang tercantum seperti "tel:" atau "ssh:".
 
@@ -3046,13 +3039,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan tidak disetel, tidak ada situs yang akan ditambahkan ke daftar.
 
       Catatan: Elemen juga dapat ditambahkan ke daftar ini melalui kebijakan <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
-<translation id="5065753964276395784">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-       Jika kebijakan disetel, <ph name="PRODUCT_NAME" /> akan mengabaikan proxy apa pun untuk daftar host yang diberikan di sini. Kebijakan ini hanya berlaku jika kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> tidak ditentukan dan Anda memilih <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> dengan <ph name="PROXY_MODE_POLICY_NAME" />.
-
-       Biarkan kebijakan ini tidak disetel, jika Anda memilih mode lain untuk menyetel kebijakan proxy.
-
-       Catatan: Untuk contoh yang lebih mendetail, buka Project Chromium ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="5067143124345820993">Daftar putih pengguna masuk</translation>
 <translation id="5073609397321802133">Jika kebijakan ditetapkan ke false, halaman Tab Baru tidak akan mengizinkan pengguna menyesuaikan latar belakang. Latar belakang kustom yang ada akan dihapus secara permanen meskipun nanti kebijakan ditetapkan ke true.
 
@@ -3130,7 +3116,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
           Jika kebijakan ini tidak ditetapkan, pengguna dapat memilih sendiri setelan proxy.</translation>
 <translation id="5172841243186654432">Menyetel <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> memungkinkan Anda membuat daftar pola URL yang menentukan situs yang dapat dan tidak dapat menyetel cookie untuk satu sesi, kecuali jika kebijakan <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> disetel untuk memulihkan URL dari sesi sebelumnya secara permanen.
 
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> akan digunakan untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan. Jika URL tidak dicakup oleh pola yang ditentukan, setelan default juga akan digunakan.
+      Jika kebijakan tidak disetel berarti <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> akan digunakan untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan. Jika URL tidak dicakup oleh pola yang ditentukan, setelan default juga akan digunakan.
 
       Jika tidak ada kebijakan tertentu yang diprioritaskan, lihat <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> dan <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Pola URL di antara 3 kebijakan ini tidak boleh bertentangan.
 
@@ -3209,26 +3195,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, Desktop Terpadu akan dinonaktifkan dan pengguna tidak dapat mengaktifkannya.</translation>
 <translation id="5255162913209987122">Dapat Direkomendasikan</translation>
 <translation id="5257395339965216304">Data aplikasi yang dihosting</translation>
-<translation id="5264066441613395613">Menyetel kebijakan akan mengonfigurasi setelan proxy untuk Chrome dan aplikasi ARC, yang mengabaikan semua opsi terkait proxy yang ditentukan dari command line.
-
-       Jika kebijakan tidak disetel, pengguna dapat memilih setelan proxy mereka.
-
-       Menyetel kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> akan menyetujui kolom berikut:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, yang memungkinkan Anda menentukan server proxy yang digunakan oleh Chrome dan mencegah pengguna mengubah setelan proxy
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, URL ke file .pac proxy
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, URL server proxy
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, daftar host proxy yang diabaikan oleh <ph name="PRODUCT_NAME" />
-
-       Kolom <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> tidak digunakan lagi dan digantikan dengan kolom <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, yang memungkinkan Anda menentukan server proxy yang digunakan oleh Chrome dan mencegah pengguna mengubah setelan proxy.
-
-        Untuk <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, jika Anda memilih nilai:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, proxy tidak akan pernah digunakan dan semua kolom lainnya akan diabaikan.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, proxy sistem akan digunakan dan semua kolom lainnya akan diabaikan.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, semua kolom lainnya akan diabaikan.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />, kolom <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> dan <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> akan digunakan.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, kolom <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> dan <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> akan digunakan.
-
-      Catatan: Untuk contoh yang lebih mendetail, buka Project Chromium ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="5266173014392157048">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />'.
 
       Menyetel kebijakan akan menetapkan server mana yang menjadi tujuan delegasi <ph name="PRODUCT_NAME" />. Pisahkan beberapa nama server dengan koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.

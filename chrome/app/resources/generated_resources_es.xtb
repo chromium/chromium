@@ -155,10 +155,8 @@
 <translation id="116173250649946226">El administrador ha establecido un tema predeterminado que no se puede cambiar.</translation>
 <translation id="1163931534039071049">&amp;Ver fuente del marco</translation>
 <translation id="1164891049599601209">Introducida en un sitio web engañoso</translation>
-<translation id="1164899421101904659">Introducir código PUK</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Cerrar pestañas a la derecha</translation>
-<translation id="116624467691206283">PUK no válido. Te queda 1 intento.</translation>
 <translation id="1168020859489941584">Abriendo en <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Servidores de nombres de Google</translation>
 <translation id="1170288591054440704">Preguntar cuando un sitio web quiera usar fuentes instaladas en el dispositivo</translation>
@@ -1199,7 +1197,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2263371730707937087">Frecuencia de actualización de la pantalla</translation>
 <translation id="2263679799334060788">Tus comentarios nos ayudan a mejorar Google Cast. Gracias por enviarlos.
     Si quieres consultar cómo solucionar problemas relacionados con el envío de contenido, ve al <ph name="BEGIN_LINK" />Centro de Ayuda<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">PUK incorrecto. Te quedan <ph name="RETRIES" /> intentos más antes de tener que ponerte en contacto con tu operador para recuperar el acceso a la red.</translation>
 <translation id="22665427234727190">Preguntar cuando un sitio web quiera acceder a los dispositivos Bluetooth (recomendado)</translation>
 <translation id="2266957463645820432">Protocolo IPP por USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Intercambiar datos con cualquier dispositivo del dominio <ph name="DOMAIN" /></translation>
@@ -1483,7 +1480,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2553440850688409052">Ocultar este complemento</translation>
 <translation id="2554553592469060349">El archivo seleccionado es demasiado grande (tamaño máximo: 3 MB).</translation>
 <translation id="2558896001721082624">Mostrar siempre opciones de accesibilidad en el menú del sistema</translation>
-<translation id="2562743677925229011">No has iniciado sesión en <ph name="SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2564520396658920462">La ejecución de JavaScript a través de AppleScript está desactivada. Para activarla, en la barra de menú, accede a Ver &gt; Opciones para desarrolladores &gt; Permitir JavaScript desde Eventos de Apple. Puedes consultar más información en la página https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Revisión ortográfica mejorada</translation>
 <translation id="2568774940984945469">Contenedor de barra de información</translation>
@@ -2396,7 +2392,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3569407787324516067">Salvapantallas</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> puede ver los siguientes archivos y carpetas:</translation>
 <translation id="3571734092741541777">Configurar</translation>
-<translation id="3574210789297084292">iniciar sesión</translation>
 <translation id="3575121482199441727">Permitir para este sitio web</translation>
 <translation id="3576324189521867626">Se ha instalado correctamente</translation>
 <translation id="3578594933904494462">Se está compartiendo el contenido de esta pestaña.</translation>
@@ -2846,7 +2841,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4022426551683927403">&amp;Añadir al diccionario</translation>
 <translation id="4023146161712577481">Determinando la configuración del dispositivo.</translation>
 <translation id="4025039777635956441">Silenciar el sitio web seleccionado</translation>
-<translation id="4027804175521224372">(Te lo estás perdiendo: <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Añadir métodos de introducción de texto</translation>
 <translation id="4029556917477724407">Volver de la página <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Micrófono permitido</translation>
@@ -3792,7 +3786,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Tu disco duro está lleno. Guarda el archivo en otra ubicación o libera espacio en el disco duro.</translation>
 <translation id="5123433949759960244">Balón de baloncesto</translation>
-<translation id="5125167430897995218">PUK incorrecto. Te queda 1 intento más antes de tener que ponerte en contacto con tu operador para recuperar el acceso a la red.</translation>
 <translation id="5125751979347152379">La URL no es válida.</translation>
 <translation id="5126611267288187364">Ver cambios</translation>
 <translation id="5127620150973591153">Identificador de conexión segura: <ph name="TOKEN" /></translation>
@@ -4040,7 +4033,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="540296380408672091">Bloquear siempre cookies en <ph name="HOST" /></translation>
 <translation id="540495485885201800">Intercambiar con el anterior</translation>
 <translation id="5405146885510277940">Restablecer configuración</translation>
-<translation id="5407119150486192764">Escribe el código PUK de 8 dígitos proporcionado por tu operador.</translation>
 <translation id="5407167491482639988">Ininteligible</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">De tu cuenta de Google</translation>
@@ -6609,7 +6601,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8206745257863499010">Música</translation>
 <translation id="8206859287963243715">Móvil</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
-<translation id="8211551284753798479">PUK no válido. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Descarga en curso}other{Descargas en curso}}</translation>
 <translation id="8213449224684199188">Se ha cambiado al modo de foto</translation>
 <translation id="8214489666383623925">Abrir archivo...</translation>

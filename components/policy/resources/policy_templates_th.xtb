@@ -1092,13 +1092,6 @@
 <translation id="2448315169529769573">การตั้งค่านโยบายเป็น "เปิดใช้" จะทำให้ <ph name="PRODUCT_OS_NAME" /> รายงานเมตริกการใช้งานและข้อมูลการวินิจฉัย รวมถึงรายงานข้อขัดข้อง กลับมาที่ Google การตั้งค่านโยบายเป็น "ปิดใช้" จะปิดการรายงานเมตริกและข้อมูลการวินิจฉัย
 
        การไม่ตั้งค่านโยบายจะปิดการรายงานเมตริกและข้อมูลการวินิจฉัยเสมอในอุปกรณ์ที่ไม่มีการจัดการและเปิดในอุปกรณ์ที่มีการจัดการ</translation>
-<translation id="2449263772062368618">กำหนดค่ารายการประเภทข้อมูลการท่องเว็บที่ควรจะลบออกเมื่อปิดเบราว์เซอร์
-      ประเภทข้อมูลที่มี ได้แก่ ประวัติการท่องเว็บ (<ph name="DATA_TYPE_BROWSING_HISTORY" />) ประวัติการดาวน์โหลด (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />) คุกกี้ (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />) แคช <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" /> ข้อความป้อนอัตโนมัติ (<ph name="DATA_TYPE_AUTOFILL" />) รหัสผ่าน (<ph name="DATA_TYPE_PASSWORD" />) การตั้งค่าเว็บไซต์ (<ph name="DATA_TYPE_SITE_SETTINGS" />) และข้อมูลแอปที่โฮสต์ไว้ (<ph name="DATA_TYPE_HOSTED_APP_DATA" />)
-      นโยบายนี้ไม่มีความสำคัญเหนือ <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />
-      นโยบายนี้กำหนดให้ตั้งค่านโยบาย <ph name="SYNC_DISABLED_POLICY_NAME" /> เป็น "จริง" มิเช่นนั้นระบบจะไม่สนใจนโยบายดังกล่าว
-      หากตั้งค่านโยบายนี้ไว้ที่ระดับแพลตฟอร์ม ก็ควรจะปิดใช้การซิงค์ที่ระดับแพลตฟอร์ม
-      หากตั้งค่านโยบายนี้ไว้ที่ระดับผู้ใช้ ก็ควรจะปิดใช้การซิงค์สำหรับผู้ใช้รายดังกล่าวเพื่อให้นโยบายนี้มีผล
-      </translation>
 <translation id="244950822854046436">รายการตั้งค่าที่จะใช้กับ <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> ซึ่งจะเรียกใช้งานเมื่อมีการดาวน์โหลดไฟล์
 
       ช่อง <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> และ <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> ใช้เพื่อกำหนดว่าเครื่องมือเชื่อมต่อควรส่งไฟล์ไปยังผู้ให้บริการหรือไม่เมื่อดาวน์โหลดไฟล์นั้นจากหน้าเว็บ URL ของหน้าเว็บต้องตรงกับรูปแบบที่เกี่ยวข้องกับรูปแบบ "เปิดใช้" และไม่เกี่ยวข้องกับรูปแบบ "ปิดใช้"  นอกจากนี้ประเภท MIME ของไฟล์จะต้องตรงกับรูปแบบที่เกี่ยวข้องกับรูปแบบ "เปิดใช้" และไม่เกี่ยวข้องกับรูปแบบ "ปิดใช้" ด้วย
@@ -3001,13 +2994,6 @@
       การไม่ตั้งค่านโยบายนี้จะไม่เพิ่มเว็บไซต์ลงในรายการ
 
       โปรดทราบว่าคุณเพิ่มเอลิเมนต์ลงในรายการนี้ผ่านนโยบาย <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> ได้ด้วย</translation>
-<translation id="5065753964276395784">นโยบายนี้เลิกใช้งานไปแล้ว โปรดใช้ <ph name="PROXY_SETTINGS_POLICY_NAME" /> แทน
-
-       การตั้งค่านโยบายนี้หมายความว่า <ph name="PRODUCT_NAME" /> จะข้ามพร็อกซีสำหรับรายชื่อโฮสต์ที่ระบุไว้ที่นี่ นโยบายนี้จะมีผลก็ต่อเมื่อไม่ได้ระบุนโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" /> และคุณเลือก <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> ด้วย <ph name="PROXY_MODE_POLICY_NAME" /> เท่านั้น
-
-       ไม่ต้องตั้งค่านโยบายนี้หากได้เลือกโหมดอื่นสำหรับการตั้งค่านโยบายพร็อกซีแล้ว
-
-       หมายเหตุ: ดูตัวอย่างโดยละเอียดเพิ่มเติมได้ที่ The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )</translation>
 <translation id="5067143124345820993">ลงชื่อเข้าใช้รายชื่อผู้ใช้ที่อนุญาต</translation>
 <translation id="5073609397321802133">หากตั้งค่านโยบายนี้เป็น "เท็จ" หน้าแท็บใหม่จะไม่อนุญาตให้ผู้ใช้ปรับแต่งพื้นหลัง ระบบจะนำพื้นหลังที่กำหนดเองที่มีอยู่ทั้งหมดออกอย่างถาวร แม้จะมีการตั้งค่านโยบายเป็น "จริง" ในภายหลัง
 
@@ -3163,26 +3149,6 @@
       การตั้งค่านโยบายเป็น "เท็จ" หรือไม่ได้ตั้งค่าจะปิดเดสก์ท็อปแบบรวมหลายหน้าจอ และผู้ใช้จะเปิดไม่ได้</translation>
 <translation id="5255162913209987122">สามารถรับคำแนะนำได้</translation>
 <translation id="5257395339965216304">ข้อมูลแอปที่โฮสต์ไว้</translation>
-<translation id="5264066441613395613">การตั้งค่านโยบายนี้จะกำหนดค่าพร็อกซีสำหรับ Chrome และแอป ARC โดยไม่พิจารณาตัวเลือกเกี่ยวกับพร็อกซีทั้งหมดที่ระบุจากบรรทัดคำสั่ง
-
-       การไม่ตั้งค่านโยบายนี้จะทำให้ผู้ใช้เลือกการตั้งค่าพร็อกซีได้
-
-       การตั้งค่านโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" /> จะยอมรับช่องต่อไปนี้
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> ซึ่งช่วยให้คุณระบุพร็อกซีเซิร์ฟเวอร์ที่ Chrome จะใช้ได้ และป้องกันไม่ให้ผู้ใช้เปลี่ยนการตั้งค่าพร็อกซี
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> URL ไปยังไฟล์ .pac ของพร็อกซี
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> URL ของพร็อกซีเซิร์ฟเวอร์
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> รายการโฮสต์พร็อกซีที่ <ph name="PRODUCT_NAME" /> จะข้าม
-
-       ช่อง <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> เลิกใช้งานแล้วเพื่อใช้ช่อง <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> แทน ซึ่งช่วยให้คุณระบุพร็อกซีเซิร์ฟเวอร์ที่ Chrome จะใช้ได้ และป้องกันไม่ให้ผู้ใช้เปลี่ยนการตั้งค่าพร็อกซี
-
-        สำหรับ <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> หากคุณเลือกค่าต่อไปนี้
-          * <ph name="PROXY_MODE_ENUM_DIRECT" /> ระบบจะไม่ใช้พร็อกซีและจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> ระบบจะใช้พร็อกซีของระบบและจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> ระบบจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" /> ระบบจะใช้ช่อง <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> และ <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> ระบบจะใช้ช่อง <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> และ <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />
-
-      หมายเหตุ: ดูตัวอย่างโดยละเอียดเพิ่มเติมได้ที่ The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )</translation>
 <translation id="5266173014392157048">นโยบายนี้เลิกใช้งานไปแล้ว โปรดใช้นโยบาย "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />" แทน
 
       การตั้งค่านโยบายจะกำหนดเซิร์ฟเวอร์ที่ <ph name="PRODUCT_NAME" /> อาจมอบสิทธิ์ให้ คั่นชื่อเซิร์ฟเวอร์หลายรายการด้วยเครื่องหมายจุลภาค ใช้ไวลด์การ์ด (<ph name="WILDCARD_VALUE" />) ได้

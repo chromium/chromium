@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Administratzaileak gai lehenetsi bat ezarri du, eta ezin da aldatu.</translation>
 <translation id="1163931534039071049">&amp;Ikusi markoaren iturburua</translation>
 <translation id="1164891049599601209">Webgune engainagarri batean idatzi duzu</translation>
-<translation id="1164899421101904659">Idatzi PIN kodea desblokeatzeko gakoa</translation>
 <translation id="1165039591588034296">Errorea</translation>
 <translation id="1166212789817575481">Itxi eskuineko fitxak</translation>
-<translation id="116624467691206283">PUK kodeak ez du balio. Saiakera bat gelditzen zaizu.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> igarotakoan irekiko da…</translation>
 <translation id="1168100932582989117">Google izen-zerbitzariak</translation>
 <translation id="1170288591054440704">Galdetu webgune batek gailuan instalatutako letrak erabili nahi dituenean</translation>
@@ -1198,7 +1196,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2263189956353037928">Amaitu saioa eta hasi berriro</translation>
 <translation id="2263371730707937087">Pantailaren freskatze-abiadura</translation>
 <translation id="2263679799334060788">Asko eskertzen dizugu iritzia ematea, Google Cast hobetzeko erabiltzen baitugu. Igortzeko arazoak konpontzeko laguntza nahi baduzu, joan <ph name="BEGIN_LINK" />laguntza-zentrora<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Okerreko PUK kodea. <ph name="RETRIES" /> saiakera gelditzen zaizkizu; oker idatziz gero, operadorearekin harremanetan jarri beharko duzu sarerako sarbidea berreskuratzeko.</translation>
 <translation id="22665427234727190">Eskatu nire baimena webguneren batek Bluetooth bidezko gailuak atzitu nahi dituenean (gomendatua)</translation>
 <translation id="2266957463645820432">USB bidezko IPP protokoloa (IPPUSB)</translation>
 <translation id="2270450558902169558">Partekatu datuak <ph name="DOMAIN" /> domeinuko edozein gailurekin</translation>
@@ -1482,7 +1479,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2553440850688409052">Ezkutatu plugina</translation>
 <translation id="2554553592469060349">Hautatutako fitxategia handiegia da (3 MB gehienez).</translation>
 <translation id="2558896001721082624">Erakutsi beti erabilerraztasun-aukerak sistemaren menuan</translation>
-<translation id="2562743677925229011">Ez duzu saioa hasi <ph name="SHORT_PRODUCT_NAME" />-n</translation>
 <translation id="2564520396658920462">Desaktibatuta dago AppleScript bitartez JavaScript exekutatzeko aukera. Aktibatzeko, joan menu-barrara eta sakatu Ikusi &gt; Garatzailea &gt; Baimendu JavaScript Apple gertaeretan. Informazio gehiago lortzeko, joan https://support.google.com/chrome/?p=applescript helbidera.</translation>
 <translation id="2564653188463346023">Ortografia-zuzentzaile hobetua</translation>
 <translation id="2568774940984945469">Informazio-barraren edukiontzia</translation>
@@ -2395,7 +2391,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3569407787324516067">Pantaila-babeslea</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> webguneak honako fitxategi eta karpeta hauek ikus ditzake</translation>
 <translation id="3571734092741541777">Konfiguratu</translation>
-<translation id="3574210789297084292">hasi saioa</translation>
 <translation id="3575121482199441727">Eman webgune honen jakinarazpenak ikusteko baimena</translation>
 <translation id="3576324189521867626">Instalatu da</translation>
 <translation id="3578594933904494462">Fitxa honetako edukia partekatzen ari zara.</translation>
@@ -2846,7 +2841,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4022426551683927403">&amp;Gehitu hiztegian</translation>
 <translation id="4023146161712577481">Gailuaren konfigurazioa zehazten.</translation>
 <translation id="4025039777635956441">Ezkutatu hautatutako webgunea</translation>
-<translation id="4027804175521224372">(Aukera galtzen ari zara: <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Gehitu idazketa-metodoak</translation>
 <translation id="4029556917477724407">Egin "<ph name="PAGE_TITLE" />" orritik atzera</translation>
 <translation id="4031179711345676612">Mikrofonoa erabil daiteke</translation>
@@ -3792,7 +3786,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Disko gogorra beteta duzu. Gorde beste kokapen batean edo libratu espazioa disko gogorrean.</translation>
 <translation id="5123433949759960244">Saskibaloiko baloia</translation>
-<translation id="5125167430897995218">Okerreko PUK kodea. Saiakera bat gelditzen zaizu; oker idatziz gero, operadorearekin harremanetan jarri beharko duzu sarerako sarbidea berreskuratzeko.</translation>
 <translation id="5125751979347152379">URLak ez du balio.</translation>
 <translation id="5126611267288187364">Ikusi aldaketak</translation>
 <translation id="5127620150973591153">Konexio seguruaren IDa: <ph name="TOKEN" /></translation>
@@ -4040,7 +4033,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="540296380408672091">Blokeatu beti webguneko cookieak <ph name="HOST" /></translation>
 <translation id="540495485885201800">Aldatu aurrekoarekin</translation>
 <translation id="5405146885510277940">Berrezarri ezarpenak</translation>
-<translation id="5407119150486192764">Idatzi operadoreak emandako zortzi digituko gakoa, PIN kodea desblokeatzeko.</translation>
 <translation id="5407167491482639988">Ulertezina</translation>
 <translation id="5408750356094797285">Zooma: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Google-ko kontutik</translation>
@@ -6076,7 +6068,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7662283695561029522">Sakatu konfiguratzeko</translation>
 <translation id="7663719505383602579">Hartzailea: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Lasterbideak erabil daitezke</translation>
-<translation id="7663859337051362114">Gehitu eSIM txartelaren profila</translation>
+<translation id="7663859337051362114">Gehitu eSIMaren profila</translation>
 <translation id="7664620655576155379">Bluetooth bidezko gailu ez-bateragarria: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="7665082356120621510">Gorde tamaina</translation>
 <translation id="7665369617277396874">Gehitu kontu bat</translation>
@@ -6508,7 +6500,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="810185532889603849">Kolore pertsonalizatua</translation>
 <translation id="8101987792947961127">Fabrikako ezarpenak berrezarri behar dira Powerwash bidez hurrengo aldiz berrabiaraztean</translation>
 <translation id="8102139037507939978">Kendu jendea pertsonalki identifikatzeko balio duen informazioa system_logs.txt dokumentutik.</translation>
-<translation id="8104088837833760645">Deskargatu eSIM txartelaren profila</translation>
+<translation id="8104088837833760645">Deskargatu eSIMaren profila</translation>
 <translation id="8107015733319732394">Google Play Store <ph name="DEVICE_TYPE" /> gailuan instalatzen ari gara. Minutu batzuk beharko ditugu.</translation>
 <translation id="810728361871746125">Pantailaren bereizmena</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Ez dago hirugarrenen cookierik}=1{Hirugarrenen 1 cookie blokeatu da}other{Hirugarrenen # cookie blokeatu dira}}</translation>
@@ -6527,7 +6519,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8118860139461251237">Kudeatu deskargak</translation>
 <translation id="8119438628456698432">Erregistro-fitxategiak sortzen…</translation>
 <translation id="811994229154425014">Zuriune bikoitza puntua idazteko</translation>
-<translation id="8120505434908124087">Instalatu eSIM txartelaren profila</translation>
+<translation id="8120505434908124087">Instalatu eSIMaren profila</translation>
 <translation id="8123590694679414600">Sinkronizazio-pasaesaldiarekin enkriptatu dira datuak ordu honetan:
           <ph name="TIME" />. Ez dira hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak.</translation>
 <translation id="81238879832906896">Lore hori eta zuria</translation>
@@ -6608,7 +6600,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8206745257863499010">Blues-zalea</translation>
 <translation id="8206859287963243715">Konexio mugikorra</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Jakinarazpen berria}other{# jakinarazpen berri}}</translation>
-<translation id="8211551284753798479">PUK kodeak ez du balio. <ph name="RETRIES" /> saiakera gelditzen zaizkizu.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Deskarga abian da}other{Deskargak abian dira}}</translation>
 <translation id="8213449224684199188">Argazki moduan sartu zara</translation>
 <translation id="8214489666383623925">Ireki fitxategia…</translation>

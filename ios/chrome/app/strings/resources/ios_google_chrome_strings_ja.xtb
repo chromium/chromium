@@ -64,7 +64,6 @@
 <translation id="6063091872902370735">Chrome へのログインを許可する</translation>
 <translation id="6181930887571472871">Chrome に切り替え</translation>
 <translation id="6238746320622508509">Chrome でシークレット タブをロックできるようにします。</translation>
-<translation id="6573431926118603307">他のデバイスの Chrome で開いているタブがここに表示されます。</translation>
 <translation id="6600954340915313787">Chrome にコピー済み</translation>
 <translation id="6634107063912726160">ログアウトすると、Chrome で新しいデータが Google アカウントと同期されなくなります。これまでに同期されたデータはアカウントに残ります。</translation>
 <translation id="6648150602980899529"><ph name="DOMAIN" /> で管理されているアカウントでログインし、管理者に Chrome データの管理を委託します。今後 Chrome データはこのアカウントに関連付けられます。Chrome からログアウトすると、データはこのデバイスから削除されますが、Google アカウントで保持されます。</translation>
@@ -78,7 +77,6 @@
 <translation id="7172660552945675509">ヒント: <ph name="BEGIN_LINK" />Chrome を Dock に移動<ph name="END_LINK" />するとアクセスしやすくなります</translation>
 <translation id="7173660919484573146">Chrome では Face ID の使用により、パスワードへの認証されたアクセスのみが許可されます。</translation>
 <translation id="7261678641327190792">Chrome でパスワードを確認できません</translation>
-<translation id="7265369419224458312">パソコンで開いたタブにこちらからアクセスできます。パソコンでChromeを開き、メニューから[Chromeにログイン]を選択してください。</translation>
 <translation id="7272930098487145294">画像を保存するには、[設定] をタップして写真への追加を Chrome に許可してください</translation>
 <translation id="7275945473750112644">アカウントは <ph name="HOSTED_DOMAIN" /> で管理されているため、Chrome データはこのデバイスから削除されます</translation>
 <translation id="7400722733683201933">Google Chrome について</translation>

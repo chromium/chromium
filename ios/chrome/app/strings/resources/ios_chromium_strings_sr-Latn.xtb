@@ -17,7 +17,6 @@
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium ne može da traži ažuriranja. Proverite internet vezu.</translation>
 <translation id="2054703085270098503">Ostanite bezbedni uz Chromium</translation>
-<translation id="2075400798887076382">Ovde pristupajte karticama koje ste otvorili na računaru. Samo otvorite Chromium na računaru, idite na meni i izaberite „Prijavi me u Chromium...“</translation>
 <translation id="2168108852149185974">Neki programski dodaci izazivaju otkazivanje Chromium-a. Deinstalirajte:</translation>
 <translation id="2178608107313874732">Chromium trenutno ne može da koristi kameru</translation>
 <translation id="2195025571279539885">Želite li da Chromium sledeći put ponudi da prevede stranice sa ovog sajta čiji je jezik <ph name="LANGUAGE_NAME" />?</translation>
@@ -42,7 +41,6 @@
 <translation id="4585809515399340748">Sada možete da koristite Chromium svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="4681781466797808448">Uključite Chromium skener</translation>
 <translation id="4736424910885271643">Nalogom upravlja <ph name="HOSTED_DOMAIN" />, pa će se Chromium podaci obrisati sa ovog uređaja</translation>
-<translation id="4787850887676698916">Ovde će se prikazati kartice koje ste otvorili u Chromium-u na drugim uređajima.</translation>
 <translation id="4806326830773390517">Pomozite nam da poboljšamo Chromium slanjem statistike korišćenja i izveštaja o otkazivanju Google-u</translation>
 <translation id="4828317641996116749">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo kasnije.</translation>
 <translation id="4852878756222711218">Da biste iskoristili Chromium na najbolji način, prijavite se pomoću Google naloga</translation>

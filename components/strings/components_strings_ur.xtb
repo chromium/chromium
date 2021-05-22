@@ -286,6 +286,7 @@
 <translation id="1919345977826869612">اشتہارات</translation>
 <translation id="1919367280705858090">خرابی کے کسی مخصوص پیغام کے بارے میں مدد حاصل کریں</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{کوئی سائٹ نہیں}=1{1 سائٹ}other{# سائٹس}}</translation>
+<translation id="1924727005275031552">نئی</translation>
 <translation id="1945968466830820669">‏آپ اپنی تنظیم کے اکاؤنٹ تک رسائی سے محروم ہو سکتے ہیں یا شناخت کی چوری ہو سکتی ہے۔ Chromium آپ کو ابھی اپنا پاس ورڈ تبدیل کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="1947454675006758438">اوپر دائیں طرف سٹیپل</translation>
 <translation id="1958218078413065209">آپ کا اعلی ترین اسکور <ph name="SCORE" /> ہے۔</translation>
@@ -396,6 +397,7 @@
 <translation id="2357481397660644965">آپ کا آلہ <ph name="DEVICE_MANAGER" /> کے زیر انتظام ہے اور آپ کا اکاؤنٹ <ph name="ACCOUNT_MANAGER" /> کے زیر انتظام ہے۔</translation>
 <translation id="2359629602545592467">متعدد</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
+<translation id="2359961752320758691">آپ کا ورچوئل کارڈ نمبر لاگو ہے۔</translation>
 <translation id="2367567093518048410">سطح</translation>
 <translation id="2372464001869762664">‏آپ کے توثیق کرنے کے بعد آپ کے Google اکاؤنٹ سے کارڈ کی تفصیلات کا اشتراک اس سائٹ کے ساتھ کر دیا جائے گا۔ اپنے Plex اکاؤنٹ کی تفصیلات میں CVC تلاش کریں۔</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -406,6 +408,7 @@
 <translation id="239429038616798445">ترسیل کا یہ طریقہ دستیاب نہیں ہے۔ کوئی دوسرا طریقہ آزمائیں۔</translation>
 <translation id="2396249848217231973">حذف کردہ کو &amp;کالعدم کریں</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">پرانا</translation>
 <translation id="2413528052993050574">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ ممکن ہے کہ اس کا سیکیورٹی سرٹیفکیٹ کالعدم قرار دے دیا گیا ہو۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="2414886740292270097">گہری</translation>
 <translation id="2438874542388153331">دائیں طرف مستطیل سوراخ</translation>
@@ -912,12 +915,14 @@
 <translation id="4275830172053184480">اپنا آلہ دوبارہ شروع کریں</translation>
 <translation id="4277028893293644418">پاس ورڈ ری سیٹ کریں</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{‏اس کارڈ کو آپ کے Google اکاؤنٹ میں محفوظ کر دیا گیا ہے}other{‏ان کارڈز کو آپ کے Google اکاؤنٹ میں محفوظ کر دیا گیا ہے}}</translation>
+<translation id="4287885627794386150">ٹرائل کے اہل ہے لیکن فعال نہیں ہے</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> صفحہ کا تھمب نیل</translation>
 <translation id="42981349822642051">پھیلائیں</translation>
 <translation id="4300675098767811073">دائیں طرف متعدد سوراخ</translation>
 <translation id="4302514097724775343">کھیلنے کے لیے ڈائنوسار گیم کھیلنے پر تھپتھپائیں</translation>
 <translation id="4302965934281694568">Chou3 ‎(Envelope‎)‎</translation>
 <translation id="4305666528087210886">آپ کی فائل تک رسائی نہیں ہو سکی</translation>
+<translation id="4306529830550717874">پتہ محفوظ کریں؟</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">مسدود کریں (ڈیفالٹ)</translation>
 <translation id="4314815835985389558">مطابقت پذیری کا نظم کريں</translation>
@@ -1405,6 +1410,7 @@
 <translation id="610911394827799129">‏ممکن ہے کہ ‎<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں</translation>
 <translation id="6116338172782435947">کلپ بورڈ میں کاپی کیے گئے متن اور تصاویر دیکھیں</translation>
 <translation id="6120179357481664955">‏آپ کی UPI ID یاد رکھیں؟</translation>
+<translation id="6123290840358279103">ورچوئل کارڈ دیکھیں</translation>
 <translation id="6124432979022149706">‏Chrome Enterprise کنیکٹرز</translation>
 <translation id="6146055958333702838">کوئی بھی کیبلز چیک کریں اور کوئی بھی
     روٹرز، موڈمز
@@ -1685,6 +1691,7 @@
 <translation id="7300012071106347854">کوبالٹ نیلا</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">زیادہ</translation>
+<translation id="7305756307268530424">آہستہ شروع کریں</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">کنکشن سے متعلق مدد</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" سیکشن چھپائیں</translation>
@@ -1710,6 +1717,7 @@
 <translation id="7378594059915113390">میڈیا کنٹرولز</translation>
 <translation id="7378627244592794276">نہیں</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">ناقابل اطلاق</translation>
 <translation id="7390545607259442187">کارڈ کی توثیق کریں</translation>
 <translation id="7399802613464275309">سیفٹی چیک</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1761,6 +1769,7 @@
 <translation id="7548892272833184391">کنکشن کی خرابیاں ٹھیک کریں</translation>
 <translation id="7549584377607005141">ٹھیک سے ڈسپلے کیے جانے کیلئے یہ ویب صفحہ آپ کی جانب سے پہلے داخل کردہ ڈیٹا کا تقاضہ کرتا ہے۔ آپ اس ڈیٹا کو دوبارہ بھیج سکتے ہیں لیکن ایسا کرنے سے آپ کسی ایسی کارروائی کو دوہرائیں گے جسے اس صفحہ نے پہلے انجام دیا ہے۔</translation>
 <translation id="7550637293666041147">‏آپ کے آلے کا صارف نام اور Chrome کا صارف نام</translation>
+<translation id="755279583747225797">ٹرائل فعال ہے</translation>
 <translation id="7552846755917812628">درج ذیل تجاویز کی کوشش کریں:</translation>
 <translation id="7554475479213504905">دوبارہ لوڈ کریں اور بہرصورت دکھائیں</translation>
 <translation id="7554791636758816595">نیا ٹیب</translation>
@@ -1855,6 +1864,7 @@
 <translation id="7894280532028510793">اگر ہجے درست ہیں تو <ph name="BEGIN_LINK" />نیٹ ورک کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="7904208859782148177">C3 ‎(Envelope‎)‎</translation>
 <translation id="7931318309563332511">نامعلوم</translation>
+<translation id="793209273132572360">پتہ اپ ڈیٹ کریں؟</translation>
 <translation id="7932579305932748336">کوٹ</translation>
 <translation id="79338296614623784">ایک درست فون نمبر درج کریں</translation>
 <translation id="7934052535022478634">ادائیگی مکمل ہوگئی</translation>

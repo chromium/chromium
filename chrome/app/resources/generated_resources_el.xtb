@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Ο διαχειριστής σας έχει ορίσει ένα προεπιλεγμένο θέμα που δεν μπορεί να αλλάξει.</translation>
 <translation id="1163931534039071049">&amp;Προβολή κώδικα πλαισίου</translation>
 <translation id="1164891049599601209">Εισήχθη σε παραπλανητικό ιστότοπο</translation>
-<translation id="1164899421101904659">Καταχωρίστε το κλειδί ξεκλειδώματος PIN (PUK)</translation>
 <translation id="1165039591588034296">Σφάλμα</translation>
 <translation id="1166212789817575481">Κλείσιμο Καρτελών Δεξιά</translation>
-<translation id="116624467691206283">Μη έγκυρος κωδικός PUK. Απομένει 1 ακόμη προσπάθεια.</translation>
 <translation id="1168020859489941584">Άνοιγμα σε <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Διακομιστές ονομάτων της Google</translation>
 <translation id="1170288591054440704">Να γίνεται ερώτηση όταν ένας ιστότοπος θέλει να χρησιμοποιήσει γραμματοσειρές που είναι εγκατεστημένες στη συσκευή σας</translation>
@@ -1213,7 +1211,6 @@
     Για βοήθεια σχετικά με την αντιμετώπιση προβλημάτων σχετικά με τη μετάδοση, ανατρέξτε στο
     <ph name="BEGIN_LINK" />
     Κέντρο βοήθειας<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Εσφαλμένος κωδικός PUK. Απομένουν <ph name="RETRIES" /> προσπάθειες. Στη συνέχεια, θα πρέπει να επικοινωνήσετε με την εταιρεία κινητής τηλεφωνίας για να αποκτήσετε ξανά πρόσβαση.</translation>
 <translation id="22665427234727190">Να γίνεται ερώτηση όταν κάποιος ιστότοπος θέλει να αποκτήσει πρόσβαση σε συσκευές Bluetooth (συνιστάται)</translation>
 <translation id="2266957463645820432">IPP μέσω USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Ανταλλαγή δεδομένων με συσκευές στον τομέα <ph name="DOMAIN" /></translation>
@@ -1497,7 +1494,6 @@
 <translation id="2553440850688409052">Απόκρυψη αυτής της προσθήκης</translation>
 <translation id="2554553592469060349">Το επιλεγμένο αρχείο είναι πολύ μεγάλο (μέγ. μέγεθος: 3 mb).</translation>
 <translation id="2558896001721082624">Πάντα εμφάνιση επιλογών προσβασιμότητας στο μενού συστήματος</translation>
-<translation id="2562743677925229011">Δεν είστε συνδεδεμένος στο <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Η εκτέλεση JavaScript μέσω του AppleScript είναι απενεργοποιημένη. Για να την ενεργοποιήσετε, από τη γραμμή μενού, μεταβείτε στο μενού Προβολή &gt; Προγραμματιστής &gt; Να επιτρέπεται η JavaScript από τα Apple Events. Για περισσότερες πληροφορίες: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Ενισχυμένος ορθογραφικός έλεγχος</translation>
 <translation id="2568774940984945469">Υποδοχέας γραμμής πληροφοριών</translation>
@@ -2411,7 +2407,6 @@
 <translation id="3569407787324516067">Προφύλαξη οθόνης</translation>
 <translation id="3569682580018832495">Το <ph name="ORIGIN" /> μπορεί να προβάλλει τα παρακάτω αρχεία και φακέλους.</translation>
 <translation id="3571734092741541777">Ρύθμιση</translation>
-<translation id="3574210789297084292">σύνδεση</translation>
 <translation id="3575121482199441727">Να επιτρέπεται για αυτόν τον ιστότοπο</translation>
 <translation id="3576324189521867626">Εγκαταστάθηκε επιτυχώς</translation>
 <translation id="3578594933904494462">Το περιεχόμενο αυτής της ετικέτας είναι κοινόχρηστο.</translation>
@@ -2862,7 +2857,6 @@
 <translation id="4022426551683927403">&amp;Προσθήκη στο λεξικό</translation>
 <translation id="4023146161712577481">Καθορισμός διαμόρφωσης συσκευής.</translation>
 <translation id="4025039777635956441">Σίγαση επιλεγμένου ιστοτόπου</translation>
-<translation id="4027804175521224372">(Απουσιάζετε—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Προσθήκη μεθόδων εισαγωγής</translation>
 <translation id="4029556917477724407">Επιστροφή από τη σελίδα <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Επιτρέπεται το μικρόφωνο</translation>
@@ -3809,7 +3803,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Ο σκληρός σας δίσκος είναι πλήρης. Αποθηκεύστε σε άλλη τοποθεσία ή αδειάστε τον σκληρό δίσκο.</translation>
 <translation id="5123433949759960244">Μπάλα μπάσκετ</translation>
-<translation id="5125167430897995218">Εσφαλμένος κωδικός PUK. Απομένει 1 ακόμη προσπάθεια. Στη συνέχεια, θα πρέπει να επικοινωνήσετε με την εταιρεία κινητής τηλεφωνίας για να αποκτήσετε ξανά πρόσβαση.</translation>
 <translation id="5125751979347152379">Μη έγκυρη διεύθυνση URL.</translation>
 <translation id="5126611267288187364">Προβολή αλλαγών</translation>
 <translation id="5127620150973591153">Αναγνωριστικό ασφαλούς σύνδεσης: <ph name="TOKEN" /></translation>
@@ -4057,7 +4050,6 @@
 <translation id="540296380408672091">Να γίνεται πάντα αποκλεισμός των cookie για <ph name="HOST" /></translation>
 <translation id="540495485885201800">Αντικατάσταση με προηγούμενο</translation>
 <translation id="5405146885510277940">Επαναφορά ρυθμίσεων</translation>
-<translation id="5407119150486192764">Εισαγάγετε το κλειδί ξεκλειδώματος PIN 8 ψηφίων που σας παρασχέθηκε από την εταιρεία κινητής τηλεφωνίας σας.</translation>
 <translation id="5407167491482639988">Μη κατανοητή</translation>
 <translation id="5408750356094797285">Εστίαση <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Από τον Λογαριασμό σας Google.</translation>
@@ -6627,7 +6619,6 @@
 <translation id="8206745257863499010">Μπλουζ</translation>
 <translation id="8206859287963243715">Κινητό</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Νέα ειδοποίηση}other{# νέες ειδοποιήσεις}}</translation>
-<translation id="8211551284753798479">Μη έγκυρος κωδικός PUK. Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Λήψη σε εξέλιξη}other{Λήψεις σε εξέλιξη}}</translation>
 <translation id="8213449224684199188">Έγινε είσοδος στη λειτουργία φωτογραφίας</translation>
 <translation id="8214489666383623925">Άνοιγμα Αρχείου...</translation>

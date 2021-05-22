@@ -186,7 +186,6 @@ Qidiruvni boshlash uchun istalgan soʻz ustiga bosing. Soʻrovni aniqlashtirish 
 <translation id="22320125457191592">Siz uchun</translation>
 <translation id="2234876718134438132">Sinxronizatsiya va Google xizmatlari</translation>
 <translation id="2239812875700136898">Parametrlar orqali Discover yangiliklarini boshqarish tugmasi</translation>
-<translation id="2251971221270904886">Privacy Sandbox funksiyalari yoniq va faol boʻlsa, Chrome oxirgi 7 kunlik brauzer tarixi yordamida siz kirgan guruh yoki kogortni aniqlaydi. Reklama beruvchilar eʼlonlarni guruh uchun tanlay oladi. Brauzer tarixi qurilmada maxfiy saqlanadi. Bu tajribaviy funksiya faqatgina <ph name="BEGIN_LINK" />ayrim mamlakatlarda<ph name="END_LINK" /> ishlaydi.</translation>
 <translation id="2259659629660284697">Parollarni eksport qilish…</translation>
 <translation id="2276696007612801991">Parollaringizni tekshirish uchun Google hisobingizga kiring</translation>
 <translation id="2278052315791335171">Bu parol olib tashlangani bilan <ph name="SITE" /> hisobingiz oʻchib ketmaydi</translation>
@@ -320,7 +319,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ta bukmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> ta bukmark}}</translation>
 <translation id="3062802207422175757">Chrome brauzerida qiziqishlaringizga oid maqolalar</translation>
 <translation id="3070005020161560471">Avtomatik tarjima qilinsin</translation>
-<translation id="3083531420240576529">Guruh sozlamalarini istalgan vaqtda tiklash mumkin. Guruhingiz 7 kunda aniqlanadi.</translation>
 <translation id="3091010850649238832">Vaqtincha xotira kontentini chiqarish</translation>
 <translation id="3098745985164956033">Tavsiflarini yaxshilash uchun ayrim rasmlar Googlega yuborildi</translation>
 <translation id="3114507951000454849">Bugungi yangiliklar bilan tanishing <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox hali ishlab chiqish jarayonida va ayrim mamlakatlarda mavjud. Ho
 <translation id="3568688522516854065">Boshqa qurilmalaringizdagi brauzer sahifalarini ko‘rish uchun hisobingizga kiring va sinxronizatsiyani yoqing</translation>
 <translation id="3587482841069643663">Barchasi</translation>
 <translation id="3587596251841506391">Himoyani oshirishga yordam bering</translation>
-<translation id="3598653140581545904">Inkognito rejimida kiring</translation>
 <translation id="3602290021589620013">Razm solish</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> qurilmasiga ulashilmoqda</translation>
@@ -764,7 +761,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5964805880140440652">Bu sahifani boshqa qurilmaga ulashish uchun Chrome sozlamalarida sinxronizatsiyani yoqing</translation>
 <translation id="5964869237734432770">Rasm tavsiflari yuklanmasin</translation>
 <translation id="5979084224081478209">Parollarni tekshiring</translation>
-<translation id="5982307838673692400">Inkognito rejimida ochish</translation>
 <translation id="6000066717592683814">Google qolaversin</translation>
 <translation id="6000203700195075278">Qayta obuna</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />Qidiruv<ph name="END_LINK1" /> soʻrovlari yoki boshqa tarix qaydlarini tozalash uchun <ph name="BEGIN_LINK2" />Google xizmatidagi harakatlarim<ph name="END_LINK2" /> sahifasini oching</translation>
@@ -806,13 +802,13 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6277522088822131679">Sahifani chop etishda muammo yuzaga keldi. Qayta urinib ko‘ring.</translation>
 <translation id="6278428485366576908">Mavzu</translation>
 <translation id="6292420053234093573">Chromeni ishlatish bilan siz <ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" /> bilan <ph name="BEGIN_LINK2" />Google Chrome va Chrome OS qoʻshimcha xizmat shartlariga<ph name="END_LINK2" /> rozilik bildirgan hisoblanasiz.</translation>
-<translation id="629730747756840877">Hisob</translation>
 <translation id="6297765934698848803">Kamerangiz qurilmangizni boshqaruvchi tashkilot tomonidan oʻchirib qoʻyildi.</translation>
 <translation id="6301525844455696527">Mutolaa roʻyxatingiz esdan chiqmasin</translation>
 <translation id="6303969859164067831">Hisobdan chiqish va sinxronizatsiyani to‘xtatish</translation>
 <translation id="6312687380483398334">Veb-ilovalar (sokin)</translation>
 <translation id="6316139424528454185">Android versiyasi bilan mos emas</translation>
 <translation id="6324034347079777476">Android tizimini sinxronlash o‘chirib qo‘yilgan</translation>
+<translation id="6324916366299863871">Yorliqni tahrirlash</translation>
 <translation id="6324977638108296054">Tanlangan matnga havola yaratish imkonsiz</translation>
 <translation id="6324997754869598316">(Xato: <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> orqali ulashish</translation>
@@ -893,11 +889,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6699370405921460408">Google serverlari kiriladigan sahifalarni tezroq yuklaydi.</translation>
 <translation id="670498945988402717">Kecha tekshirilgan</translation>
 <translation id="6710213216561001401">Avvalgi</translation>
-<translation id="671333169801287922">Agar yoqilsa, saytlar oʻzlarining kontent va xizmatlarini taqdim etish uchun bu yerda koʻrsatilgan maxfiylikni saqlash texnikalaridan foydalanishi mumkin. Bunga muqobil saytlararo kuzatuv ham kiradi. Vaqti-vaqti bilan koʻproq sinov funksiyalari kiritiladi.
-
-<ph name="BEGIN_LIST_ITEM1" />Reklama beruvchilar va noshirlar FLoC uslubidan foydalanishi mumkin.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklama beruvchilar va noshirlar sizni internetda kuzatmasdan reklamalar samaradorligini oʻrganishlari mumkin.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117"><ph name="FQDN" /> taymeridagi vaqt tugadi. Ertaga qaytadan boshlanadi.</translation>
 <translation id="6738516213925468394">Maʼlumotlaringiz <ph name="TIME" /> sanasida <ph name="BEGIN_LINK" />kodli ibora<ph name="END_LINK" /> bilan shifrlangan. Sinxronizatsiyani boshlash uchun uni kiriting.</translation>
 <translation id="6738867403308150051">Yuklab olinmoqda...</translation>
@@ -922,9 +913,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6900532703269623216">Kuchaytirilgan himoya</translation>
 <translation id="6903907808598579934">Sinxronizatsiyani yoqish</translation>
 <translation id="6929699136511445623">Android tizimi sinxronizatsiyasini yoqish</translation>
-<translation id="6941901516114974832">Inkognito rejimidagi faoliyatingizni siz tashrif buyurgan saytlar, ishxonangiz, maktabingiz va internet provayderingiz <ph name="BEGIN_BOLD1" />kuzatishi mumkin<ph name="END_BOLD1" />.
-
-<ph name="BEGIN_BOLD2" />Barcha inkognito varaqlari yopilganidan keyin<ph name="END_BOLD2" /> inkognito seansida jamlangan axborotlar Chrome xotirasidan tozalab tashlanadi.</translation>
 <translation id="6942665639005891494">Yuklanmalar standart jildini istalgan vaqtda sozlamalar menyusidan o‘zgartirish mumkin</translation>
 <translation id="694267552845942083">Siz hozirda sinxronizatsiya sozlamalarini sozlayapsiz. Sinxronizatsiyani yoqish uchun ekranning quyi qismidagi Tasdiqlash tugmasini bosing. Tepaga</translation>
 <translation id="6945221475159498467">Tanlash</translation>
@@ -1088,9 +1076,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7971136598759319605">1 kun oldin onlayn edi</translation>
 <translation id="7975379999046275268">Sahifaga razm solish <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Saytlarni kezish va qidiruv tezroq bajarilishi uchun sahifalar oldindan yuklansin</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> – bu ochiq internetni rivojlantirishni qoʻllab-quvvatlovchi va foydalanuvchilarni kuzatuv mexanizmlaridan himoya qiladigan texnologiyalarni ishlab chiquvchi tinimsiz tashabbus.
-
-Privacy Sandbox hali ishlab chiqish jarayonida va faqatgina ayrim mamlakatlarda mavjud. Hozircha uchinchi tomon cookie fayllari kabi veb texnologiyalardan voz kechmaslik sharti bilan, saytlar Privacy Sandbox funksiyalaridan foydalanishi mumkin.</translation>
 <translation id="7986497153528221272">Parollarni koʻrish uchun qurilmangizni ekran kodi bilan qulflang.</translation>
 <translation id="7998918019931843664">Yopiq ichki oynani qayta ochish</translation>
 <translation id="8004582292198964060">Brauzer</translation>

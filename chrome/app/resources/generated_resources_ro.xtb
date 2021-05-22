@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Administratorul a setat o temă prestabilită care nu poate fi schimbată.</translation>
 <translation id="1163931534039071049">&amp;Afișează sursa cadrului</translation>
 <translation id="1164891049599601209">A fost introdusă pe un site înșelător</translation>
-<translation id="1164899421101904659">Introdu cheia de deblocare a codului PIN</translation>
 <translation id="1165039591588034296">Eroare</translation>
 <translation id="1166212789817575481">Închide filele de la dreapta</translation>
-<translation id="116624467691206283">PUK nevalid. Mai ai o încercare.</translation>
 <translation id="1168020859489941584">Se deschide în <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Servere de nume Google</translation>
 <translation id="1170288591054440704">Întreabă-mă atunci când un site vrea să folosească fonturi instalate pe dispozitiv</translation>
@@ -1199,7 +1197,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2263189956353037928">Deconectează-te și reconectează-te</translation>
 <translation id="2263371730707937087">Rata de actualizare a ecranului</translation>
 <translation id="2263679799334060788">Feedbackul tău ne ajută să îmbunătățim Google Cast și este apreciat. Pentru ajutor la remedierea problemelor privind proiectarea, accesează <ph name="BEGIN_LINK" />centrul de ajutor<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Cod PUK incorect. Mai ai <ph name="RETRIES" /> încercări, după care va trebui să contactezi operatorul pentru a redobândi accesul la rețea.</translation>
 <translation id="22665427234727190">Anunță-mă dacă un site vrea să acceseze dispozitive Bluetooth (recomandat)</translation>
 <translation id="2266957463645820432">IPP prin USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Fă schimb de date cu orice dispozitiv din domeniul <ph name="DOMAIN" /></translation>
@@ -1483,7 +1480,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2553440850688409052">Ascunde acest plugin</translation>
 <translation id="2554553592469060349">Fișierul selectat este prea mare (dimensiune maximă: 3 MB).</translation>
 <translation id="2558896001721082624">Afișează mereu opțiunile de accesibilitate în meniul de sistem</translation>
-<translation id="2562743677925229011">Nu sunteți conectat(ă) la <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Rularea JavaScript prin AppleScript este dezactivată. Pentru a o activa, din bara de meniu, accesează Vizualizare &gt; Dezvoltator &gt; Permite JavaScript de la Apple Events. Pentru mai multe informații: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Verificarea îmbunătățită a ortografiei</translation>
 <translation id="2568774940984945469">Container bară de informații</translation>
@@ -2397,7 +2393,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3569407787324516067">Screensaver</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> poate să vadă următoarele fișiere și dosare</translation>
 <translation id="3571734092741541777">Configurează</translation>
-<translation id="3574210789297084292">conectați-vă</translation>
 <translation id="3575121482199441727">Permite pentru acest site</translation>
 <translation id="3576324189521867626">S-a instalat</translation>
 <translation id="3578594933904494462">La conținutul acestei file se permite accesul.</translation>
@@ -2848,7 +2843,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4022426551683927403">&amp;Adaugă în dicționar</translation>
 <translation id="4023146161712577481">Se determină configurația dispozitivului.</translation>
 <translation id="4025039777635956441">Dezactivează sunetul pentru site-ul selectat</translation>
-<translation id="4027804175521224372">(Iată ce ratați – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Adaugă metode de introducere a textului</translation>
 <translation id="4029556917477724407">Înapoi de la pagina <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Microfonul este permis</translation>
@@ -3794,7 +3788,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Hard diskul este plin. Salvați în altă locație sau eliberați mai mult spațiu pe hard disk.</translation>
 <translation id="5123433949759960244">Baschet</translation>
-<translation id="5125167430897995218">Cod PUK incorect. Mai ai o încercare, după care va trebui să contactezi operatorul pentru a redobândi accesul la rețea.</translation>
 <translation id="5125751979347152379">Adresă URL nevalidă.</translation>
 <translation id="5126611267288187364">Vezi modificările</translation>
 <translation id="5127620150973591153">ID-ul conexiunii securizate: <ph name="TOKEN" /></translation>
@@ -4042,7 +4035,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="540296380408672091">Blochează întotdeauna cookie-urile pe <ph name="HOST" /></translation>
 <translation id="540495485885201800">Schimbă cu anteriorul</translation>
 <translation id="5405146885510277940">Resetează browserul</translation>
-<translation id="5407119150486192764">Introdu cheia de deblocare PIN, formată din 8 cifre, oferită de operator</translation>
 <translation id="5407167491482639988">Neinteligibilă</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Din Contul Google</translation>
@@ -6611,7 +6603,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8206745257863499010">Albăstrel</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificare nouă}few{# notificări noi}other{# de notificări noi}}</translation>
-<translation id="8211551284753798479">PUK nevalid. Mai ai <ph name="RETRIES" /> încercări.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Descărcarea este în desfășurare}few{Descărcările sunt în desfășurare}other{Descărcările sunt în desfășurare}}</translation>
 <translation id="8213449224684199188">Modul foto a fost activat</translation>
 <translation id="8214489666383623925">Deschide fișierul...</translation>

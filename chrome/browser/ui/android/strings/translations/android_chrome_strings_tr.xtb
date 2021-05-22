@@ -186,7 +186,6 @@ Arama yapmak için herhangi bir kelimeye dokunun. Aramanızı hassaslaştırmak 
 <translation id="22320125457191592">Size özel</translation>
 <translation id="2234876718134438132">Senkronizasyon ve Google hizmetleri</translation>
 <translation id="2239812875700136898">Haberlerinizi, Keşfet için Seçenekler düğmesinden kontrol edin</translation>
-<translation id="2251971221270904886">Chrome, açıkken ve etkin durumdayken dahil olduğunuz bir grubu veya "kohortu" belirlemek için 7 günden eski tarama geçmişinizi kullanır. Reklamverenler, grup için reklam seçebilirler. Tarama geçmişiniz cihazınızda gizli tutulur. Bu deneme yalnızca <ph name="BEGIN_LINK" />bazı bölgelerde<ph name="END_LINK" /> etkindir.</translation>
 <translation id="2259659629660284697">Şifreleri dışa aktar…</translation>
 <translation id="2276696007612801991">Şifrelerinizi kontrol etmek için Google hesabınızda oturum açın</translation>
 <translation id="2278052315791335171">Bu şifre silindiğinde <ph name="SITE" /> üzerindeki hesabınız silinmez</translation>
@@ -320,7 +319,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> yer işareti}other{<ph name="BOOKMARKS_COUNT_MANY" /> yer işareti}}</translation>
 <translation id="3062802207422175757">İlgilendiğiniz makaleler Chrome'da</translation>
 <translation id="3070005020161560471">Otomatik olarak çevir</translation>
-<translation id="3083531420240576529">Grubunuzu istediğiniz zaman sıfırlayabilirsiniz. Grubunuzu belirlemek 7 gün sürer.</translation>
 <translation id="3091010850649238832">Pano içeriklerini göster</translation>
 <translation id="3098745985164956033">Bazı resimler size daha iyi açıklamalar sunmak için Google'a gönderilir</translation>
 <translation id="3114507951000454849">Bugünkü haberleri <ph name="NEWS_ICON" /> okuyun</translation>
@@ -399,7 +397,6 @@ Günümüzde web siteleri, alakalı reklamlar göstermek ve bir sitenin performa
 <translation id="3568688522516854065">Diğer cihazlarınızdaki sekmelerinize ulaşmak için oturum açın ve senkronizasyonu etkinleştirin</translation>
 <translation id="3587482841069643663">Tümü</translation>
 <translation id="3587596251841506391">Web'de güvenliğin iyileştirilmesine yardımcı olun</translation>
-<translation id="3598653140581545904">Gizli modda oturum açın</translation>
 <translation id="3602290021589620013">Önizleme</translation>
 <translation id="3616113530831147358">Ses</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> ile paylaşılıyor</translation>
@@ -764,7 +761,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5964805880140440652">Bu sayfayı başka bir cihazla paylaşmak için Chrome ayarlarında senkronizasyonu açın</translation>
 <translation id="5964869237734432770">Resim açıklamasını durdur</translation>
 <translation id="5979084224081478209">Şifreleri kontrol et</translation>
-<translation id="5982307838673692400">Gizli sekme aç</translation>
 <translation id="6000066717592683814">Google kalsın</translation>
 <translation id="6000203700195075278">Yeniden takip et</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />Arama<ph name="END_LINK1" /> veya başka biçimlerdeki geçmişi temizlemek için <ph name="BEGIN_LINK2" />Google Etkinliğim<ph name="END_LINK2" />'i ziyaret edin</translation>
@@ -806,13 +802,13 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6277522088822131679">Sayfa yazdırılırken bir sorun oluştu. Lütfen tekrar deneyin.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Chrome'u kullanarak <ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" /> ile <ph name="BEGIN_LINK2" />Google Chrome ve Chrome OS Ek Hizmet Şartları<ph name="END_LINK2" />'nı kabul etmiş olursunuz.</translation>
-<translation id="629730747756840877">Hesap</translation>
 <translation id="6297765934698848803">Cihazınızı yöneten kuruluş, kameranızı kapattı.</translation>
 <translation id="6301525844455696527">Okuma listenizde geride kalmayın</translation>
 <translation id="6303969859164067831">Oturumu ve senkronizasyonu kapat</translation>
 <translation id="6312687380483398334">Web uygulamaları (sessiz)</translation>
 <translation id="6316139424528454185">Android sürümü desteklenmiyor</translation>
 <translation id="6324034347079777476">Android sistem senkronizasyonu devre dışı</translation>
+<translation id="6324916366299863871">Kısayolu düzenleyin</translation>
 <translation id="6324977638108296054">Seçili metne bağlantı oluşturulamıyor</translation>
 <translation id="6324997754869598316">(Hata <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Paylaşım yöntemi: <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6699370405921460408">Google sunucuları ziyaret ettiğiniz sayfaları optimize eder.</translation>
 <translation id="670498945988402717">Dün kontrol edildi</translation>
 <translation id="6710213216561001401">Önceki</translation>
-<translation id="671333169801287922">Etkinleştirildiğinde, siteler içeriklerini ve hizmetlerini sunmak için burada gösterilen gizliliği koruma tekniklerini kullanabilir. Bu teknikler, siteler arası izlemeye alternatif çözümler sağlar. Zaman içinde başka denemeler de eklenebilir.
-
-<ph name="BEGIN_LIST_ITEM1" />Reklamverenler ve yayıncılar, FLoC tekniğini kullanabilirler.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklamverenler ve yayıncılar, sizi sitelerde izlemeden reklamların etkisini inceleyebilirler.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117"><ph name="FQDN" /> zamanlayıcınızın süresi doldu. Yarın tekrar başlatılacak.</translation>
 <translation id="6738516213925468394">Verileriniz <ph name="TIME" /> tarihinde <ph name="BEGIN_LINK" />senkronizasyon parolanızla<ph name="END_LINK" /> şifrelendi. Senkronizasyonu başlatmak için senkronizasyon parolanızı girin.</translation>
 <translation id="6738867403308150051">İndiriliyor…</translation>
@@ -922,9 +913,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6900532703269623216">Gelişmiş koruma</translation>
 <translation id="6903907808598579934">Senkronizasyonu aç</translation>
 <translation id="6929699136511445623">Android sistem senkronizasyonunu etkinleştir</translation>
-<translation id="6941901516114974832">Gizli modda etkinliğiniz ziyaret ettiğiniz web siteleri, işvereniniz veya okulunuz ve internet servis sağlayıcınız tarafından <ph name="BEGIN_BOLD1" />yine de görülebilir<ph name="END_BOLD1" />.
-
-Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekmelerinizi kapattığınızda<ph name="END_BOLD2" /> Chrome'dan temizlenir.</translation>
 <translation id="6942665639005891494">Dosyaların indirileceği varsayılan konumu istediğiniz zaman Ayarlar menü seçeneğini kullanarak değiştirebilirsiniz</translation>
 <translation id="694267552845942083">Şu anda Senkronizasyon ayarlarınızı özelleştiriyorsunuz. Senkronizasyonu etkinleştirme işlemini tamamlamak için ekranın altına yakın bir yerde bulunan Onayla düğmesine dokunun. Yukarı git</translation>
 <translation id="6945221475159498467">Seç</translation>
@@ -1088,9 +1076,6 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="7971136598759319605">1 gün önce etkindi</translation>
 <translation id="7975379999046275268">Sayfanın önizlemesini aç <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Daha hızlı göz atmak ve arama yapmak için sayfaları önceden yükle</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Özel Korumalı Alan<ph name="END_LINK" />, açık web'i korurken sizi de izleme mekanizmalarından koruyacak yeni teknolojiler geliştirmeye yönelik devam etmekte olan bir girişimdir.
-
-Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli bölgelerde kullanılmaktadır. Şimdilik, siteler üçüncü taraf çerezler gibi geçerli web teknolojilerini kullanmaya devam ederken Özel Korumalı Alan'ı deneyebilir.</translation>
 <translation id="7986497153528221272">Şifreleri görüntülemek için önce cihazınızda ekran kilidi ayarlayın</translation>
 <translation id="7998918019931843664">Kapatılan sekmeyi yeniden aç</translation>
 <translation id="8004582292198964060">Tarayıcı</translation>

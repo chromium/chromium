@@ -186,7 +186,6 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <translation id="22320125457191592">For deg</translation>
 <translation id="2234876718134438132">Synkronisering/Google-tjenester</translation>
 <translation id="2239812875700136898">Styr nyhetssakene dine via Alternativer for Discover-knappen</translation>
-<translation id="2251971221270904886">Når nettleserloggen er på og statusen er aktiv, bruker Chrome nettleserloggen for de siste sju dagene til å fastslå gruppen, eller «kohorten», du er i. Annonsører kan velge annonser for gruppen. Nettleserloggen holdes privat på enheten din. Denne utprøvingen er kun aktiv i <ph name="BEGIN_LINK" />enkelte regioner<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Eksportér passord</translation>
 <translation id="2276696007612801991">Logg på Google-kontoen din for å sjekke passordene dine</translation>
 <translation id="2278052315791335171">Sletting av dette passordet sletter ikke kontoen din på <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmerke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmerker}}</translation>
 <translation id="3062802207422175757">Artikler om interessene dine i Chrome</translation>
 <translation id="3070005020161560471">Oversett automatisk</translation>
-<translation id="3083531420240576529">Du kan tilbakestille gruppen når som helst. Det tar sju dager å fastslå gruppen din.</translation>
 <translation id="3091010850649238832">Vis innholdet på utklippstavlen</translation>
 <translation id="3098745985164956033">Noen bilder blir sendt til Google for å gjøre beskrivelsene bedre</translation>
 <translation id="3114507951000454849">Les dagens nyheter <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="3568688522516854065">For å få fanene dine fra de andre enhetene du bruker, logg på og slå på synkronisering.</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587596251841506391">Bidra til å gjøre nettet sikrere</translation>
-<translation id="3598653140581545904">Bruk Inkognito for å logge på</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3631987586758005671">Deler med <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5964805880140440652">For å dele denne siden med andre enheter, slå på synkronisering i Chrome-innstillingene</translation>
 <translation id="5964869237734432770">Stopp bildebeskrivelser</translation>
 <translation id="5979084224081478209">Kontrollér passordene</translation>
-<translation id="5982307838673692400">Åpne inkognitofane</translation>
 <translation id="6000066717592683814">Behold Google</translation>
 <translation id="6000203700195075278">Følg på nytt</translation>
 <translation id="6002623704405939939">For å tømme <ph name="BEGIN_LINK1" />søkeloggen<ph name="END_LINK1" /> eller andre logger, besøk <ph name="BEGIN_LINK2" />Min Google-aktivitet<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6277522088822131679">Det oppsto et problem med å skrive ut siden. Prøv på nytt.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Ved å bruke Chrome samtykker du i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Google Chrome og Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Konto</translation>
 <translation id="6297765934698848803">Organisasjonen som administrerer enheten din, har slått av kameraet.</translation>
 <translation id="6301525844455696527">Kom à jour med leselisten din</translation>
 <translation id="6303969859164067831">Logg av og slå av synkronisering</translation>
 <translation id="6312687380483398334">Nettprogrammer (stille)</translation>
 <translation id="6316139424528454185">Android-versjonen støttes ikke</translation>
 <translation id="6324034347079777476">Synkronisering for Android-systemet er slått av</translation>
+<translation id="6324916366299863871">Endre snarvei</translation>
 <translation id="6324977638108296054">Kan ikke opprette noen link til den markerte teksten</translation>
 <translation id="6324997754869598316">(Feil <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Del via <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6699370405921460408">Google-tjenere optimaliserer sidene du besøker.</translation>
 <translation id="670498945988402717">Sjekket i går</translation>
 <translation id="6710213216561001401">Forrige</translation>
-<translation id="671333169801287922">Når dette er på, kan nettsteder bruke de personvernbevarende teknikkene som vises her, for å levere innhold og tjenester. Disse omfatter alternativer til sporing på tvers av nettsteder. Flere prøvefunksjoner kan bli lagt til over tid.
-
-<ph name="BEGIN_LIST_ITEM1" />Annonsører og utgivere kan bruke FLoC-teknikken.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Annonsører og utgivere kan studere effektiviteten av annonser på en måte som ikke sporer deg på tvers av nettsteder.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Tidtakeren for <ph name="FQDN" /> gikk ut. Den starter igjen i morgen.</translation>
 <translation id="6738516213925468394">Dataene dine ble kryptert med <ph name="BEGIN_LINK" />passordfrasen for synkronisering<ph name="END_LINK" /> <ph name="TIME" />. Skriv den inn for å starte synkroniseringen.</translation>
 <translation id="6738867403308150051">Laster ned …</translation>
@@ -922,9 +913,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6900532703269623216">Økt beskyttelse</translation>
 <translation id="6903907808598579934">Slå på synkronisering</translation>
 <translation id="6929699136511445623">Slå på Android-systemsynkronisering</translation>
-<translation id="6941901516114974832">I Inkognito kan aktiviteten din <ph name="BEGIN_BOLD1" />fremdeles være synlig<ph name="END_BOLD1" /> for nettstedene du besøker, internettleverandøren din og arbeidsgiveren eller skolen din.
-
-Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD2" />lukker alle inkognitofaner<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Endre standard nedlastingssted når som helst via menyalternativet Innstillinger</translation>
 <translation id="694267552845942083">Du holder på å tilpasse innstillingene for Synkronisering. For å gjøre deg ferdig med å slå på synkronisering, trykk på Bekreft-knappen nederst på skjermen. Gå opp</translation>
 <translation id="6945221475159498467">Velg</translation>
@@ -1088,9 +1076,6 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="7971136598759319605">Aktiv for én dag siden</translation>
 <translation id="7975379999046275268">Forhåndsvis siden <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Last inn sider på forhånd for raskere nettlesing og søk</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> er et pågående initiativ for å utvikle nye teknologier som beskytter deg mot sporingsmekanismer, samtidig som det åpne nettet ivaretas.
-
-Utprøving av Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte regioner. Inntil videre kan nettsteder prøve Privacy Sandbox samtidig som de fortsetter å bruke dagens netteknologier, som tredjeparts informasjonskapsler.</translation>
 <translation id="7986497153528221272">For å se passord må du først angi en skjermlås på enheten din</translation>
 <translation id="7998918019931843664">Åpne lukkede faner igjen</translation>
 <translation id="8004582292198964060">Nettleser</translation>

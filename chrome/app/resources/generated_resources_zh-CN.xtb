@@ -155,10 +155,8 @@
 <translation id="116173250649946226">您的管理员已设置默认主题，您无法更改。</translation>
 <translation id="1163931534039071049">查看框架的源代码(&amp;V)</translation>
 <translation id="1164891049599601209">在诈骗网站上输入过</translation>
-<translation id="1164899421101904659">输入 PIN 码解锁密钥</translation>
 <translation id="1165039591588034296">错误</translation>
 <translation id="1166212789817575481">关闭右侧标签页</translation>
-<translation id="116624467691206283">PUK 无效。您还有 1 次尝试机会。</translation>
 <translation id="1168020859489941584">即将在 <ph name="TIME_REMAINING" />后打开...</translation>
 <translation id="1168100932582989117">Google 域名服务器</translation>
 <translation id="1170288591054440704">在网站想使用您设备上安装的字体时询问您</translation>
@@ -1192,7 +1190,6 @@
 <translation id="2263189956353037928">退出并重新登录</translation>
 <translation id="2263371730707937087">屏幕刷新频率</translation>
 <translation id="2263679799334060788">非常感谢您的反馈！这对我们改进 Google Cast 很有帮助。如需获取与排查投射问题有关的帮助，请参阅<ph name="BEGIN_LINK" />帮助中心<ph name="END_LINK" />。</translation>
-<translation id="2265889263013046172">PUK 不正确。您还有 <ph name="RETRIES" /> 次尝试机会。如果输入仍不正确，您就必须联系运营商以重获网络访问权限。</translation>
 <translation id="22665427234727190">在网站想访问蓝牙设备时询问您（推荐）</translation>
 <translation id="2266957463645820432">USB 型 IPP (IPPUSB)</translation>
 <translation id="2270450558902169558">与网域 <ph name="DOMAIN" /> 中的任何设备交换数据</translation>
@@ -1476,7 +1473,6 @@
 <translation id="2553440850688409052">隐藏此插件</translation>
 <translation id="2554553592469060349">所选文件太大（大小上限为3mb）。</translation>
 <translation id="2558896001721082624">始终在系统菜单中显示无障碍选项</translation>
-<translation id="2562743677925229011">尚未登录 <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">通过 AppleScript 执行 JavaScript 的功能已关闭。要开启此功能，请在菜单栏中依次转到“查看”&gt;“开发者”&gt;“允许 Apple 事件中的 JavaScript”。如需更多信息，请访问 https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">增强的“拼写检查”功能</translation>
 <translation id="2568774940984945469">信息栏容器</translation>
@@ -2386,7 +2382,6 @@
 <translation id="3569407787324516067">屏保</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可查看以下文件和文件夹</translation>
 <translation id="3571734092741541777">设置</translation>
-<translation id="3574210789297084292">登录</translation>
 <translation id="3575121482199441727">允许此网站显示通知</translation>
 <translation id="3576324189521867626">已成功安装</translation>
 <translation id="3578594933904494462">此标签页的内容正在共享中。</translation>
@@ -2836,7 +2831,6 @@
 <translation id="4022426551683927403">添加到字典中(&amp;A)</translation>
 <translation id="4023146161712577481">正在确定设备配置。</translation>
 <translation id="4025039777635956441">将所选网站静音</translation>
-<translation id="4027804175521224372">（无法同步 - <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />）</translation>
 <translation id="4028467762035011525">添加输入法</translation>
 <translation id="4029556917477724407">从“<ph name="PAGE_TITLE" />”页面返回</translation>
 <translation id="4031179711345676612">已允许使用麦克风</translation>
@@ -3778,7 +3772,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">您的硬盘已满。请保存到其他位置或在硬盘上腾出更多空间。</translation>
 <translation id="5123433949759960244">篮球</translation>
-<translation id="5125167430897995218">PUK 不正确。您还有 1 次尝试机会。如果输入仍不正确，您就必须联系运营商以重获网络访问权限。</translation>
 <translation id="5125751979347152379">网址无效。</translation>
 <translation id="5126611267288187364">查看更改</translation>
 <translation id="5127620150973591153">安全配对号码：<ph name="TOKEN" /></translation>
@@ -4026,7 +4019,6 @@
 <translation id="540296380408672091">始终禁止在 <ph name="HOST" /> 上设置 Cookie</translation>
 <translation id="540495485885201800">与前一项调换</translation>
 <translation id="5405146885510277940">重置设置</translation>
-<translation id="5407119150486192764">请输入您的运营商提供的 PIN 码解锁密钥（8 位数）</translation>
 <translation id="5407167491482639988">无法听清</translation>
 <translation id="5408750356094797285">缩放比例：<ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">保存在您的 Google 帐号中的密码</translation>
@@ -6589,7 +6581,6 @@
 <translation id="8206745257863499010">音符</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 条新通知}}</translation>
-<translation id="8211551284753798479">PUK 无效。您还有 <ph name="RETRIES" /> 次尝试机会。</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{有 1 项下载正在进行中}other{有多项下载正在进行中}}</translation>
 <translation id="8213449224684199188">已进入照片模式</translation>
 <translation id="8214489666383623925">打开文件...</translation>

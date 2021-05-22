@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Váš správca nastavil predvolený motív, ktorý sa nedá zmeniť.</translation>
 <translation id="1163931534039071049">&amp;Zobraziť zdrojový kód rámu</translation>
 <translation id="1164891049599601209">Zadané na klamlivom webe</translation>
-<translation id="1164899421101904659">Zadanie kľúča na odomknutie kódu PIN</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1166212789817575481">Zatvoriť karty vpravo</translation>
-<translation id="116624467691206283">Neplatný kód PUK. Zostáva vám jeden pokus.</translation>
 <translation id="1168020859489941584">Čas do otvorenia: <ph name="TIME_REMAINING" /></translation>
 <translation id="1168100932582989117">Menné servery Google</translation>
 <translation id="1170288591054440704">Opýtať sa, keď chce web používať písma nainštalované vo vašom zariadení</translation>
@@ -1200,7 +1198,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2263189956353037928">Odhlásiť sa a znova prihlásiť</translation>
 <translation id="2263371730707937087">Frekvencia obnovenia obrazovky</translation>
 <translation id="2263679799334060788">Vaša spätná väzba nám pomáha zlepšovať Google Cast, a preto si ju ceníme. Pomoc s riešením problémov s prenosom nájdete v <ph name="BEGIN_LINK" />centre pomoci<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Nesprávny kód PUK. Zostáva vám tento počet pokusov: <ph name="RETRIES" />. Potom budete musieť kontaktovať svojho operátora, aby ste si zachovali prístup k sieti.</translation>
 <translation id="22665427234727190">Opýtať sa, keď chce web získať prístup k zariadeniam Bluetooth (odporúčané)</translation>
 <translation id="2266957463645820432">IPP cez USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Vymieňať údaje s ktorýmkoľvek zariadením z domény <ph name="DOMAIN" /></translation>
@@ -1484,7 +1481,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2553440850688409052">Skryť tento doplnok</translation>
 <translation id="2554553592469060349">Vybratý súbor je príliš veľký (maximálna veľkosť: 3 MB).</translation>
 <translation id="2558896001721082624">Zobrazovať možnosti dostupnosti v ponuke systému</translation>
-<translation id="2562743677925229011">Nie ste prihlásený/-á v prehliadači <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Spúšťanie JavaScriptu prostredníctvom AppleScriptu je vypnuté. Ak ho chcete zapnúť, prejdite na panel s ponukami a potom do časti Zobraziť &gt; Vývojár &gt; Povoliť JavaScript z udalostí Apple. Ďalšie informácie získate na adrese https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Rozšírená kontrola pravopisu</translation>
 <translation id="2568774940984945469">Kontajner informačného panela</translation>
@@ -2398,7 +2394,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3569407787324516067">Šetrič obrazovky</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> uvidí nasledujúce súbory a priečinky</translation>
 <translation id="3571734092741541777">Nastaviť</translation>
-<translation id="3574210789297084292">prihlásiť sa</translation>
 <translation id="3575121482199441727">Povoliť pre tento web</translation>
 <translation id="3576324189521867626">Úspešne nainštalovaná</translation>
 <translation id="3578594933904494462">Obsah tejto karty sa zdieľa.</translation>
@@ -2849,7 +2844,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4022426551683927403">Prid&amp;ať do slovníka</translation>
 <translation id="4023146161712577481">Určovanie konfigurácie zariadenia</translation>
 <translation id="4025039777635956441">Ignorovať vybraný web</translation>
-<translation id="4027804175521224372">(Chýbate nám — <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Pridať metódy vstupu</translation>
 <translation id="4029556917477724407">Späť zo stránky <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofón je povolený</translation>
@@ -3795,7 +3789,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Pevný disk je plný. Uložte inde alebo uvoľnite viac miesta na pevnom disku. </translation>
 <translation id="5123433949759960244">Basketbal</translation>
-<translation id="5125167430897995218">Nesprávny kód PUK. Zostáva vám jeden pokus. Potom budete musieť kontaktovať svojho operátora, aby ste si zachovali prístup k sieti.</translation>
 <translation id="5125751979347152379">Neplatná webová adresa.</translation>
 <translation id="5126611267288187364">Zobraziť zmeny</translation>
 <translation id="5127620150973591153">Bezpečný spojovací kód: <ph name="TOKEN" /></translation>
@@ -4043,7 +4036,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="540296380408672091">Vždy blokovať súbory cookie na stránkach <ph name="HOST" /></translation>
 <translation id="540495485885201800">Vymeniť s predchádzajúcou</translation>
 <translation id="5405146885510277940">Resetovať nastavenia</translation>
-<translation id="5407119150486192764">Zadajte osemmiestny kľúč na odblokovanie kódu PIN, ktorý vám poskytol operátor</translation>
 <translation id="5407167491482639988">Nezrozumiteľný zvuk</translation>
 <translation id="5408750356094797285">Lupa: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Z vášho účtu Google</translation>
@@ -6611,7 +6603,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8206745257863499010">Bluesový</translation>
 <translation id="8206859287963243715">Mobilné</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nové upozornenie}few{# nové upozornenia}many{# new notifications}other{# nových upozornení}}</translation>
-<translation id="8211551284753798479">Neplatný kód PUK. Zostáva vám tento počet pokusov: <ph name="RETRIES" />.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Sťahuje sa}few{Sťahujú sa}many{Sťahujú sa}other{Sťahujú sa}}</translation>
 <translation id="8213449224684199188">Bol aktivovaný fotografický režim</translation>
 <translation id="8214489666383623925">Otvoriť súbor...</translation>

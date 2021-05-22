@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Вашиот администратор поставил стандардна тема што не може да се менува.</translation>
 <translation id="1163931534039071049">&amp;Прикажи извор на рамка</translation>
 <translation id="1164891049599601209">Внесена на измамнички сајт</translation>
-<translation id="1164899421101904659">Внесете клуч (PUK) за отклучување PIN</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1166212789817575481">Затвори картички на десно</translation>
-<translation id="116624467691206283">Погрешен PUK. Имате уште 1 обид.</translation>
 <translation id="1168020859489941584">Ќе се отвори за <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Сервери за име на Google</translation>
 <translation id="1170288591054440704">Прашувај кога некој сајт сака да ги користи фонтовите инсталирани на уредот</translation>
@@ -1214,7 +1212,6 @@
     За помош околу решавањето проблеми со Google Cast, обратете се во
     <ph name="BEGIN_LINK" />
     Центарот за помош<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Погрешен PUK. Имате уште <ph name="RETRIES" /> обиди пред да мора да контактирате со операторот за да си го вратите пристапот до мрежата.</translation>
 <translation id="22665427234727190">Прашувај кога некој сајт сака да пристапи до Bluetooth-уредите (препорачано)</translation>
 <translation id="2266957463645820432">IPP преку USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Разменете податоци со кој било уред во доменот <ph name="DOMAIN" /></translation>
@@ -1498,7 +1495,6 @@
 <translation id="2553440850688409052">Сокриј го приклучокот</translation>
 <translation id="2554553592469060349">Избраната датотека е преголема (максимална големина: 3 MB).</translation>
 <translation id="2558896001721082624">Секогаш прикажувај опции за пристап во системското мени</translation>
-<translation id="2562743677925229011">Не е најавен на <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Извршувањето на JavaScript преку AppleScript е исклучено. За да го вклучите, од лентата со мени, одете на „Приказ &gt; Програмер &gt; Дозволи JavaScript“ од настаните на Apple. За повеќе информации: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Подобрена проверка на правописот</translation>
 <translation id="2568774940984945469">Контејнер на лента со информации</translation>
@@ -2412,7 +2408,6 @@
 <translation id="3569407787324516067">Заштитник на екран</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> може да ги прегледува следниве датотеки и папки</translation>
 <translation id="3571734092741541777">Постави</translation>
-<translation id="3574210789297084292">најави се</translation>
 <translation id="3575121482199441727">Дозволи за овој сајт</translation>
 <translation id="3576324189521867626">Успешно е инсталирана</translation>
 <translation id="3578594933904494462">Содржината на картичкава се споделува.</translation>
@@ -2863,7 +2858,6 @@
 <translation id="4022426551683927403">&amp;Додај во речник</translation>
 <translation id="4023146161712577481">Се утврдува конфигурацијата на уредот.</translation>
 <translation id="4025039777635956441">Исклучи звук на избраниот сајт</translation>
-<translation id="4027804175521224372">(Го пропуштате – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Додајте методи за внесување</translation>
 <translation id="4029556917477724407">Вратете се наназад од страницата <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Микрофон е дозволен</translation>
@@ -3810,7 +3804,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Тврдиот диск е полн. Зачувувајте на друга локација или направете простор на тврдиот диск.</translation>
 <translation id="5123433949759960244">Баскет</translation>
-<translation id="5125167430897995218">Погрешен PUK. Имате уште 1 обид пред да мора да контактирате со операторот за да си го вратите пристапот до мрежата.</translation>
 <translation id="5125751979347152379">Неважечка URL-адреса.</translation>
 <translation id="5126611267288187364">Погледнете ги промените</translation>
 <translation id="5127620150973591153">ID на безбедна врска: <ph name="TOKEN" /></translation>
@@ -4058,7 +4051,6 @@
 <translation id="540296380408672091">Секогаш блокирај ги колачињата на <ph name="HOST" /></translation>
 <translation id="540495485885201800">Заменете ја со претходната</translation>
 <translation id="5405146885510277940">Ресетирање поставки</translation>
-<translation id="5407119150486192764">Внесете го 8-цифрениот клуч за одблокирање PIN обезбеден од операторот</translation>
 <translation id="5407167491482639988">Неразбирливо</translation>
 <translation id="5408750356094797285">Зумирај: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Од сметката на Google</translation>
@@ -6626,7 +6618,6 @@
 <translation id="8206745257863499010">Блузист</translation>
 <translation id="8206859287963243715">Мобилен</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново известување}one{# ново известување}other{# нови известувања}}</translation>
-<translation id="8211551284753798479">Погрешен PUK. Имате уште <ph name="RETRIES" /> обиди.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Преземањето е во тек}one{Преземањата се во тек}other{Преземањата се во тек}}</translation>
 <translation id="8213449224684199188">Влеговте во режим на фотографија</translation>
 <translation id="8214489666383623925">Отвори датотека...</translation>

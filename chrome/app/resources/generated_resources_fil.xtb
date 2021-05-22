@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Nagtakda ang iyong administrator ng default na tema na hindi puwedeng baguhin.</translation>
 <translation id="1163931534039071049">&amp;View frame source</translation>
 <translation id="1164891049599601209">Inilagay sa mapanlinlang na site</translation>
-<translation id="1164899421101904659">Ilagay ang PIN Unlock Key</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Isara ang Mga Tab na nasa Kanan</translation>
-<translation id="116624467691206283">Invalid ang PUK. Mayroon ka na lang 1 natitirang pagsubok.</translation>
 <translation id="1168020859489941584">Binubuksan sa <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Mga server ng pangalan ng Google</translation>
 <translation id="1170288591054440704">Magtanong kapag gusto ng isang site na gamitin ang mga font na naka-install sa iyong device</translation>
@@ -1214,7 +1212,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
     Para sa tulong sa pag-troubleshoot ng mga isyu sa cast, sumangguni sa
     <ph name="BEGIN_LINK" />
     help center<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Mali ang PUK. Mayroon ka na lang <ph name="RETRIES" /> (na) natitirang pagsubok bago mo kailanganing makipag-ugnayan sa iyong carrier para magkaroon ulit ng access sa network.</translation>
 <translation id="22665427234727190">Magtanong kapag gusto ng isang site na i-access ang mga Bluetooth device (inirerekomenda)</translation>
 <translation id="2266957463645820432">IPP sa USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Makipagpalit ng data sa device na nasa domain ng <ph name="DOMAIN" /></translation>
@@ -1498,7 +1495,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2553440850688409052">Itago ang Plugin na Ito</translation>
 <translation id="2554553592469060349">Masyadong malaki ang napiling file (max na laki: 3mb).</translation>
 <translation id="2558896001721082624">Ipakita ang mga opsyon sa accessibility sa menu ng system</translation>
-<translation id="2562743677925229011">Hindi naka-sign in sa <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Na-off ang pagpapatupad ng JavaScript sa pamamagitan ng AppleScript. Para i-on ito, mula sa menu bar, pumunta sa Tingnan &gt; Developer &gt; Payagan ang JavaScript mula sa Mga Event ng Apple. Para sa higit pang impormasyon: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Pinahusay na pang-check ng pagbabaybay</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
@@ -2412,7 +2408,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3569407787324516067">Screen saver</translation>
 <translation id="3569682580018832495">Puwedeng tingnan ng <ph name="ORIGIN" /> ang mga sumusunod na file at folder</translation>
 <translation id="3571734092741541777">I-set up</translation>
-<translation id="3574210789297084292">mag-sign in</translation>
 <translation id="3575121482199441727">Payagan para sa site na ito</translation>
 <translation id="3576324189521867626">Matagumpay na na-install</translation>
 <translation id="3578594933904494462">Ibinabahagi ang nilalaman ng tab na ito.</translation>
@@ -2863,7 +2858,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4022426551683927403">&amp;Idagdag sa Diksyunaryo</translation>
 <translation id="4023146161712577481">Tinutukoy ang configuration ng device.</translation>
 <translation id="4025039777635956441">I-mute ang Napiling Site</translation>
-<translation id="4027804175521224372">(Hindi ka nakakakuha—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Magdagdag ng mga pamamaraan ng pag-input</translation>
 <translation id="4029556917477724407">Bumalik mula sa page na <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
@@ -3810,7 +3804,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Puno na ang iyong hard disk. Mangyaring i-save sa isa pang lokasyon o magbakante ng espasyo sa hard disk.</translation>
 <translation id="5123433949759960244">Basketball</translation>
-<translation id="5125167430897995218">Mali ang PUK. Mayroon ka na lang 1 natitirang pagsubok bago mo kailanganing makipag-ugnayan sa iyong carrier para magkaroon ulit ng access sa network.</translation>
 <translation id="5125751979347152379">Di-wastong URL.</translation>
 <translation id="5126611267288187364">Tingnan ang mga pagbabago</translation>
 <translation id="5127620150973591153">Secure na connection ID: <ph name="TOKEN" /></translation>
@@ -4058,7 +4051,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="540296380408672091">Laging i-block ang cookies sa <ph name="HOST" /></translation>
 <translation id="540495485885201800">I-swap sa nakaraan</translation>
 <translation id="5405146885510277940">I-reset ang mga setting</translation>
-<translation id="5407119150486192764">Ilagay ang 8-digit na PIN Unblocking Key mula sa iyong carrier</translation>
 <translation id="5407167491482639988">Hindi maintindihan</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Mula sa iyong Google Account</translation>
@@ -6627,7 +6619,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8206745257863499010">Musika</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Bagong notification}one{# bagong notification}other{# na bagong notification}}</translation>
-<translation id="8211551284753798479">Invalid ang PUK. Mayroon ka na lang <ph name="RETRIES" /> (na) natitirang pagsubok.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Kasalukuyang isinasagawa ang pag-download}one{Kasalukuyang isinasagawa ang mga pag-download}other{Kasalukuyang isinasagawa ang mga pag-download}}</translation>
 <translation id="8213449224684199188">Nailagay sa photo mode</translation>
 <translation id="8214489666383623925">Open File...</translation>

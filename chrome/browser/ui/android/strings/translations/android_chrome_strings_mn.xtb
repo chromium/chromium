@@ -186,7 +186,6 @@
 <translation id="22320125457191592">Танд зориулсан</translation>
 <translation id="2234876718134438132">Синк болон Google-н үйлчилгээ</translation>
 <translation id="2239812875700136898">Мэдээ, нийтлэлээ Discover-н сонголтуудын товчлуураас хянана уу</translation>
-<translation id="2251971221270904886">Асаалттай бөгөөд төлөв нь идэвхтэй үед Chrome таны 7-оос дээш хоногийн хөтчийн түүхийг таны байгаа бүлэг эсвэл "нэг үеийнхэн"-ийг тодорхойлоход ашиглана. Сурталчлагчид бүлэгт зар сонгох боломжтой. Таны хөтчийн түүхийг төхөөрөмж дээр тань аюулгүй хадгалдаг. Энэ туршилт нь зөвхөн <ph name="BEGIN_LINK" />зарим бүс нутагт<ph name="END_LINK" /> идэвхтэй байна.</translation>
 <translation id="2259659629660284697">Нууц үгийг экспортлох...</translation>
 <translation id="2276696007612801991">Нууц үгээ шалгахын тулд Google Бүртгэлдээ нэвтэрнэ үү</translation>
 <translation id="2278052315791335171">Энэ нууц үгийг устгаснаар таны бүртгэлийг <ph name="SITE" /> дээрээс устгахгүй</translation>
@@ -320,7 +319,6 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> хавчуурга}other{<ph name="BOOKMARKS_COUNT_MANY" /> хавчуурга}}</translation>
 <translation id="3062802207422175757">Таны сонирхолтой холбоотой Chrome дээрх нийтлэлүүд</translation>
 <translation id="3070005020161560471">Автоматаар орчуул</translation>
-<translation id="3083531420240576529">Та бүлгээ хүссэн үедээ шинэчлэх боломжтой. Таны бүлгийг тодорхойлоход 7 хоног шаардлагатай.</translation>
 <translation id="3091010850649238832">Түр санах ойн контентыг харуулах</translation>
 <translation id="3098745985164956033">Танд зориулан тайлбарыг сайжруулахын тулд зарим зургийг Google-д илгээдэг.</translation>
 <translation id="3114507951000454849">Өнөөдрийн мэдээг уншаарай <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox нь идэвхтэй хөгжүүлэлтэд байгаа бө
 <translation id="3568688522516854065">Бусад төхөөрөмжөөсөө чихтэй хуудсаа авахын тулд нэвтрээд синкийг асаана уу`</translation>
 <translation id="3587482841069643663">Бүгд</translation>
 <translation id="3587596251841506391">Веб дэх аюулгүй байдлыг сайжруулахад туслах</translation>
-<translation id="3598653140581545904">Нэвтрэхийн тулд Нууцлалтай горимыг ашиглана уу</translation>
 <translation id="3602290021589620013">Мэдээллийг урьдчилж харах</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />-тай хуваалцаж байна</translation>
@@ -763,7 +760,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5964805880140440652">Энэ хуудсыг өөр төхөөрөмжтэй хуваалцахын тулд Chrome-н тохиргоонд синк хийхийг асаана уу</translation>
 <translation id="5964869237734432770">Зургийн тайлбарыг зогсоох</translation>
 <translation id="5979084224081478209">Нууц үгийг шалгах</translation>
-<translation id="5982307838673692400">Нууцлалтай табыг нээх</translation>
 <translation id="6000066717592683814">Google хэвээр байлгах</translation>
 <translation id="6000203700195075278">Дахин дагах</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />Хайлт<ph name="END_LINK1" /> эсвэл түүхийн бусад хэлбэрийг арилгахын тулд <ph name="BEGIN_LINK2" />Миний Google-н үйл ажиллагаа<ph name="END_LINK2" />-нд зочилно уу</translation>
@@ -805,13 +801,13 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6277522088822131679">Энэ хуудсыг хэвлэхэд алдаа гарсан байна. Та дахин ачаална уу.</translation>
 <translation id="6278428485366576908">Загвар</translation>
 <translation id="6292420053234093573">Chrome-г ашигласнаар та <ph name="BEGIN_LINK1" />Google-н Үйлчилгээний нөхцөл<ph name="END_LINK1" /> ба <ph name="BEGIN_LINK2" />Google Chrome болон Chrome үйлдлийн системийн Үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK2" /> зөвшөөрч байна.</translation>
-<translation id="629730747756840877">Данс</translation>
 <translation id="6297765934698848803">Таны төхөөрөмжийг удирддаг байгууллага таны камерыг унтраасан байна.</translation>
 <translation id="6301525844455696527">Унших жагсаалтаа гүйцээрэй</translation>
 <translation id="6303969859164067831">Гараад синк хийхийг унтраах</translation>
 <translation id="6312687380483398334">Веб программууд (чимээгүй)</translation>
 <translation id="6316139424528454185">Android-н хувилбарыг дэмжээгүй байна</translation>
 <translation id="6324034347079777476">Андройд системийн синкийг идэвхгүй болгосон</translation>
+<translation id="6324916366299863871">Товчлолыг засах</translation>
 <translation id="6324977638108296054">Тодруулсан текстийн холбоосыг үүсгэх боломжгүй</translation>
 <translation id="6324997754869598316">(Алдаа <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" />-аар дамжуулан хуваалцах</translation>
@@ -892,11 +888,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6699370405921460408">Google-н серверүүд таны зочилдог хуудсыг тохируулна.</translation>
 <translation id="670498945988402717">Өчигдөр шалгасан</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
-<translation id="671333169801287922">Асаалттай үед сайтууд өөрсдийн контент болон үйлчилгээг хүргэхдээ энд харуулсан нууцлал хадгалах техникийг ашиглаж магадгүй. Үүнд сайт хоорондын хяналтын хувилбарууд орно. Илүү олон туршилтыг аажимдаа нэмж магадгүй.
-
-<ph name="BEGIN_LIST_ITEM1" />Сурталчлагчид болон нийтлэгчид FLoC техникийг ашиглах боломжтой.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Сурталчлагчид болон нийтлэгчид таныг сайтууд дээр дагахгүйгээр зарын үр нөлөөг судлах боломжтой.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Таны <ph name="FQDN" />-н цаг хэмжигчийн хугацаа дууссан байна. Энэ нь маргааш дахин эхэлнэ.</translation>
 <translation id="6738516213925468394">Таны өгөгдлийг таны <ph name="BEGIN_LINK" />синкийн нэвтрэх үгтэй<ph name="END_LINK" /> <ph name="TIME" />-д синк хийсэн байна. Синкийг эхлүүлэхийн тулд үүнийг оруулна уу.</translation>
 <translation id="6738867403308150051">Татаж байна…</translation>
@@ -921,9 +912,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6900532703269623216">Сайжруулсан хамгаалалт</translation>
 <translation id="6903907808598579934">Синк хийхийг асаах</translation>
 <translation id="6929699136511445623">Android системийн синкийг идэвхжүүлэх</translation>
-<translation id="6941901516114974832">Нууцлалтай горимд байх үед таны үйл ажиллагаа таны зочилсон веб сайтууд, ажил олгогч, сургууль эсвэл интернэт үйлчилгээ нийлүүлэгчид <ph name="BEGIN_BOLD1" />харагдсан хэвээр байж болзошгүй<ph name="END_BOLD1" />.
-
-Таныг <ph name="BEGIN_BOLD2" />нууцлалтай бүх табыг хаах<ph name="END_BOLD2" /> үед л зөвхөн таны Нууцлалтай харилцан үйлдлийн өгөгдлийг Chrome-с устгах болно.</translation>
 <translation id="6942665639005891494">Тохиргооны цэсийн сонголтоор таталтын өгөгдмөл байршлыг дурын үед өөрчлөх</translation>
 <translation id="694267552845942083">Та одоогоор Синк хийх тохиргоогоо өөрчилж байна. Синкийг асааж дуусгахын тулд дэлгэцийн доод хэсгийн ойролцоо байгаа Баталгаажуулах товчлуурыг товшино уу. Дээш шилжих</translation>
 <translation id="6945221475159498467">Сонгох</translation>
@@ -1087,9 +1075,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7971136598759319605">1 өдрийн өмнө идэвхтэй</translation>
 <translation id="7975379999046275268">Хуудсыг урьдчилан үзэх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Хурдан хөтлөх болон хайхын тулд хуудсыг урьдчилан ачаалах</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> нь нээлттэй вебийг хадгалах явцдаа таныг хянах механизмаас хамгаалах шинэ технологийг хөгжүүлэхийн тулд явагдаж буй санаачилга юм.
-
-Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд байгаа бөгөөд сонгосон бүс нутгуудад боломжтой. Одоогоор сайтууд гуравдагч талын күүки зэрэг одоогийн веб технологийг үргэлжлүүлэн ашиглах үедээ Privacy Sandbox-г туршиж үзэж болно.</translation>
 <translation id="7986497153528221272">Нууц үг харах бол, эхлээд төхөөрөмж дээрээ дэлгэцийн түгжээг тохируулна уу</translation>
 <translation id="7998918019931843664">Хаагдсан цонхыг дахин нээх</translation>
 <translation id="8004582292198964060">Хөтөч</translation>

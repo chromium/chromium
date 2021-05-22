@@ -40,6 +40,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1247372569136754018">Mikrofon (intern)</translation>
 <translation id="1252999807265626933">Wird über ein <ph name="POWER_SOURCE" /> aufgeladen</translation>
 <translation id="1255033239764210633">Wie ist das Wetter?</translation>
+<translation id="1266097335951928626">Selfiekamera öffnen</translation>
 <translation id="1267032506238418139">Änderung der Tastenkombination</translation>
 <translation id="1269405891096105529">Peripheriegerät wird im Gastmodus nicht unterstützt</translation>
 <translation id="1270290102613614947">Bildschirmtastatur deaktiviert</translation>
@@ -84,6 +85,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1570871743947603115">Bluetooth aktivieren/deaktivieren. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Auf alle Ihre Aktivitäten in dieser Sitzung zugreifen</translation>
+<translation id="159255010947577753">Filzstift</translation>
 <translation id="1611993646327628135">An</translation>
 <translation id="1615402009686901181">Die Administratorrichtlinie blockiert die Bildschirmaufnahme, wenn vertrauliche Inhalte sichtbar sind</translation>
 <translation id="1632985212731562677">Der Schalterzugriff kann unter "Einstellungen" &gt; "Bedienungshilfen" deaktiviert werden.</translation>
@@ -135,8 +137,10 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2016340657076538683">Nachricht eingeben</translation>
 <translation id="2018630726571919839">Erzähl mir einen Witz</translation>
 <translation id="2021864487439853900">Zum Entsperren klicken</translation>
+<translation id="2047639699071423250">Wichtige Idee hinzufügen</translation>
 <translation id="2049240716062114887">Der Name des Desktops wurde zu "<ph name="DESK_NAME" />" geändert</translation>
 <translation id="2050339315714019657">Hochformat</translation>
+<translation id="2066708475850724665">Lupe beenden</translation>
 <translation id="2067602449040652523">Tastaturhelligkeit</translation>
 <translation id="2078034614700056995">Wischen Sie mit vier Fingern nach rechts, um zum nächsten Desktop zu wechseln</translation>
 <translation id="2079504693865562705">Apps in Ablage ausblenden</translation>
@@ -144,10 +148,12 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2083190527011054446">Gute Nacht <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Keine Netzwerkverbindung</translation>
 <translation id="2108303511227308752">Die Tastenkombination Alt + Rücktaste hat sich geändert. Wenn Sie jetzt die Löschen-Taste benötigen, drücken Sie die <ph name="LAUNCHER_KEY_NAME" />-Taste + Rücktaste.</translation>
+<translation id="211328683600082144">MIKROFON EINSCHALTEN</translation>
 <translation id="2126242104232412123">Neuer Desktop</translation>
 <translation id="2127372758936585790">Schwaches Ladegerät</translation>
 <translation id="2132302418721800944">Ganzen Bildschirm aufzeichnen</translation>
 <translation id="2135456203358955318">Angedockte Lupe</translation>
+<translation id="2146800439053023141">Position der Leiste wechseln</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Wiederholen</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Wischen Sie mit drei Fingern nach unten, um die Übersicht zu schließen</translation>
@@ -282,7 +288,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kann sich später weiterhin anmelden.</translation>
 <translation id="3321628682574733415">Falscher Elterncode</translation>
 <translation id="332587331255250389">Bitte tauschen Sie die Batterien aus</translation>
-<translation id="3333741161915951567">Modem wird neu gestartet. Warten Sie 30 Sekunden und versuchen Sie es dann noch einmal.</translation>
 <translation id="3341303451326249809">Screenshot aufgenommen</translation>
 <translation id="334252345105450327">Screenshot erstellen</translation>
 <translation id="3351879221545518001">Sie streamen gerade den Bildschirm.</translation>
@@ -327,6 +332,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3638400994746983214">Der Datenschutzbildschirm kann aktiviert oder deaktiviert werden. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Verwalteter Nutzer</translation>
 <translation id="3665889125180354336">Ton über Mikrofon aufnehmen</translation>
+<translation id="3680908746918359504">Alle Markierungen löschen</translation>
 <translation id="36813544980941320">WLANs werden zwischen Ihrem Smartphone und <ph name="DEVICE_NAME" /> geteilt</translation>
 <translation id="3702809606464356667">Fenster vom aktuellen Desktop werden angezeigt – drücken Sie den Aufwärtspfeil, um die Fenster von allen Desktops anzuzeigen</translation>
 <translation id="3702846122927433391">Einwohnerzahl von Nigeria</translation>
@@ -377,6 +383,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Aus für 1 App}other{Aus für # Apps}}</translation>
 <translation id="4066027111132117168">An, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Durchschnittliches Signal</translation>
+<translation id="4095366824370681039">Füllfederhalter</translation>
 <translation id="4112140312785995938">Zurück springen</translation>
 <translation id="4114315158543974537">Phone Hub aktivieren</translation>
 <translation id="412298498316631026">Fenster</translation>
@@ -445,12 +452,15 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4570957409596482333">Vorlese-Schaltfläche</translation>
 <translation id="4577274620589681794">Die Zeit ist um · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Vorschauen anzeigen</translation>
+<translation id="4578196883126898996">Ihr Mikrofon ist ausgeschaltet, drücken Sie auf die Mikrofontaste Ihres Geräts.</translation>
 <translation id="4578906031062871102">Einstellungsmenü geöffnet</translation>
 <translation id="4581047786858252841">Mikrofon aktiviert</translation>
 <translation id="4585337515783392668">Streaming an unbekannten Empfänger beenden</translation>
+<translation id="4586483766170476230">Selfiekamera schließen</translation>
 <translation id="4587299710837179226">Mikrofon deaktiviert</translation>
 <translation id="4596144739579517758">Dunkles Design ist deaktiviert</translation>
 <translation id="4611292653554630842">Anmelden</translation>
+<translation id="4614295562446151104">Markierungstools maximieren</translation>
 <translation id="4623167406982293031">Konto bestätigen</translation>
 <translation id="4628757576491864469">Geräte</translation>
 <translation id="4642092649622328492">Screenshot eines Bildschirmausschnitts erstellen</translation>
@@ -507,6 +517,8 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ist mit einem neuen Smartphone verbunden</translation>
 <translation id="5035389544768382859">Displaykonfiguration bestätigen</translation>
 <translation id="504465286040788597">Vorheriger Absatz</translation>
+<translation id="5071064518267176975">Eine App möchte das Mikrofon verwenden</translation>
+<translation id="5075554201838155866">Untertitel verwenden</translation>
 <translation id="5078796286268621944">Falsche PIN</translation>
 <translation id="5083553833479578423">Möchten Sie weitere Assistant-Funktionen freischalten?</translation>
 <translation id="5136175204352732067">Andere Tastatur angeschlossen</translation>
@@ -677,6 +689,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6612802754306526077">Modus für Aufzeichnung des Bildschirms ausgewählt</translation>
 <translation id="6614169507485700968">Der Datenschutzbildschirm ist momentan aktiviert</translation>
 <translation id="6627638273713273709">Suchtaste + Umschalttaste + K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> möchte das Mikrofon verwenden</translation>
 <translation id="6637729079642709226">Zeitraum ändern</translation>
 <translation id="6641720045729354415">Automatische Untertitel ein-/ausschalten. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> möchte sichergehen, dass Sie das sind</translation>
@@ -730,6 +743,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="7029814467594812963">Sitzung beenden</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Statusbereich minimieren</translation>
+<translation id="7045595904618419789">Lupe verwenden</translation>
 <translation id="7055910611768509537">Eingabestift wurde seit über einer Woche nicht mehr verwendet</translation>
 <translation id="7066646422045619941">Dieses Netzwerk wurde von Ihrem Administrator deaktiviert.</translation>
 <translation id="7067196344162293536">Automatisch drehen</translation>
@@ -750,6 +764,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="7256634071279256947">Mikrofon auf der Rückseite</translation>
 <translation id="726276584504105859">Hierher ziehen, um den Bildschirm zu teilen</translation>
 <translation id="7262906531272962081">Erinnerung erstellen</translation>
+<translation id="7279434993080105272">Filzstift mit der Farbe „<ph name="COLOR_PARAMETER" />“</translation>
 <translation id="7302889331339392448">Automatische Untertitel sind aus.</translation>
 <translation id="7303365578352795231">Antwort auf einem anderen Gerät.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -779,6 +794,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="7466449121337984263">Berühren Sie den Sensor</translation>
 <translation id="7477793887173910789">Musik, Videos und andere Medien steuern</translation>
 <translation id="7483025031359818980">Auswahlbereich auf ganzen Bildschirm festgelegt</translation>
+<translation id="7486227320194954040">Markierungstools minimieren</translation>
 <translation id="7497767806359279797">Sprache und Tastatur auswählen</translation>
 <translation id="7509246181739783082">Identität bestätigen</translation>
 <translation id="7513622367902644023">Screenshotmodus ausgewählt</translation>
@@ -797,6 +813,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="7607002721634913082">Angehalten</translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7631906263969450674">Filzstift</translation>
 <translation id="7633755430369750696">Nearby Share-Einstellungen anzeigen.</translation>
 <translation id="7641938616688887143">Aufnehmen</translation>
 <translation id="7642647758716480637">Einstellungen für <ph name="NETWORK_NAME" /> öffnen (<ph name="CONNECTION_STATUS" />)</translation>
@@ -812,6 +829,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="7724603315864178912">Ausschneiden</translation>
 <translation id="7745560842763881396">Apps in Ablage anzeigen</translation>
 <translation id="7749443890790263709">Maximale Anzahl von Arbeitsbereichen erreicht.</translation>
+<translation id="7749640678855296659">Ihr Mikrofon ist derzeit ausgeschaltet</translation>
 <translation id="776344839111254542">Zum Aufrufen von Aktualisierungsdetails klicken</translation>
 <translation id="7780159184141939021">Bildschirm drehen</translation>
 <translation id="7796353162336583443">Tippen Sie auf die Eingabestift-Schaltfläche in der Ablage, um Notizen oder Screenshots zu erstellen, Google Assistant zu aktivieren oder den Laserpointer oder die Lupe zu verwenden.</translation>
@@ -859,6 +877,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8113423164597455979">An: alle Apps</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Bestätigen</translation>
+<translation id="8132487352815776550">Untertitel deaktivieren</translation>
 <translation id="8132793192354020517">Verbunden mit <ph name="NAME" /></translation>
 <translation id="813913629614996137">Initialisierung…</translation>
 <translation id="8142441511840089262">Doppelklick</translation>

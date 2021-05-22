@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Administratoren har angitt et standardtema som ikke kan endres.</translation>
 <translation id="1163931534039071049">&amp;Vis rammekilde</translation>
 <translation id="1164891049599601209">Skrevet inn på et villedende nettsted</translation>
-<translation id="1164899421101904659">Skriv inn PUK-koden</translation>
 <translation id="1165039591588034296">Feil</translation>
 <translation id="1166212789817575481">Lukk fanene til høyre</translation>
-<translation id="116624467691206283">Ugyldig PUK. Du har ett forsøk igjen.</translation>
 <translation id="1168020859489941584">Åpner om <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Google-navnetjenere</translation>
 <translation id="1170288591054440704">Spør når nettsteder vil bruke skrifttyper som er installert på enheten din</translation>
@@ -1207,7 +1205,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
     For å få hjelp med å feilsøke problemer med casting, se
     <ph name="BEGIN_LINK" />
     brukerstøtten<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Feil PUK. Du har <ph name="RETRIES" /> forsøk igjen før du må kontakte operatøren for å få tilbake nettverkstilgangen.</translation>
 <translation id="22665427234727190">Spør når nettsteder vil ha tilgang til Bluetooth-enheter (anbefales)</translation>
 <translation id="2266957463645820432">IPP over USB (IPPUSB)</translation>
 <translation id="2270450558902169558">utveksle data med en hvilken som helst enhet på domenet <ph name="DOMAIN" />.</translation>
@@ -1491,7 +1488,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2553440850688409052">Skjul dette programtillegget</translation>
 <translation id="2554553592469060349">Den valgte filen er for stor (maksimal størrelse: 3 MB).</translation>
 <translation id="2558896001721082624">Vis alltid alternativene for tilgjengelighet i systemmenyen</translation>
-<translation id="2562743677925229011">Ikke logget på <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Kjøring av JavaScript gjennom AppleScript er slått av. For å slå det på, gå til menylinjen og velg Vis &gt; Utvikler &gt; Tillat JavaScript fra Apple Events. For mer informasjon, se: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Bedre stavekontroll</translation>
 <translation id="2568774940984945469">Beholder for inforad</translation>
@@ -2405,7 +2401,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3569407787324516067">Skjermsparer</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> kan se disse filene og mappene</translation>
 <translation id="3571734092741541777">Konfigurer</translation>
-<translation id="3574210789297084292">logg på</translation>
 <translation id="3575121482199441727">Tillat for dette nettstedet</translation>
 <translation id="3576324189521867626">Installert</translation>
 <translation id="3578594933904494462">Innholdet i denne fanen blir delt.</translation>
@@ -2854,7 +2849,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4022426551683927403">&amp;Legg til i ordliste</translation>
 <translation id="4023146161712577481">Fastslår enhetskonfigurasjonen.</translation>
 <translation id="4025039777635956441">Kutt lyden for det valgte nettstedet</translation>
-<translation id="4027804175521224372">(Du går glipp av ting – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Legg til inndatametoder</translation>
 <translation id="4029556917477724407">Tilbake fra siden <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofonen er tillatt</translation>
@@ -3800,7 +3794,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Harddisken din er full. Lagre på et annet sted, eller frigjør plass på harddisken.</translation>
 <translation id="5123433949759960244">Basketball</translation>
-<translation id="5125167430897995218">Feil PUK. Du har 1 forsøk igjen før du må kontakte operatøren for å få tilbake nettverkstilgangen.</translation>
 <translation id="5125751979347152379">Ugyldig nettadresse.</translation>
 <translation id="5126611267288187364">Se endringene</translation>
 <translation id="5127620150973591153">ID for sikker tilkobling: <ph name="TOKEN" /></translation>
@@ -4048,7 +4041,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="540296380408672091">Blokkér alltid informasjonskapsler på <ph name="HOST" /></translation>
 <translation id="540495485885201800">Bytt med forrige</translation>
 <translation id="5405146885510277940">Tilbakestill innstillingene</translation>
-<translation id="5407119150486192764">Skriv inn den åttesifrede nøkkelen du har fått av operatøren for å oppheve blokkeringen av PIN-koden</translation>
 <translation id="5407167491482639988">Uforståelig</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Fra Google-kontoen din</translation>
@@ -6617,7 +6609,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8206745257863499010">Plystre</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nytt varsel}other{# nye varsler}}</translation>
-<translation id="8211551284753798479">Ugyldig PUK. Du har <ph name="RETRIES" /> forsøk igjen.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Nedlasting pågår}other{Nedlastinger pågår}}</translation>
 <translation id="8213449224684199188">Fotomodus er aktivert</translation>
 <translation id="8214489666383623925">Åpne fil</translation>

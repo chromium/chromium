@@ -64,7 +64,6 @@
 <translation id="6063091872902370735">Dozvolite prijavljivanje u Chrome</translation>
 <translation id="6181930887571472871">Pređite na Chrome</translation>
 <translation id="6238746320622508509">Dozvolite Chrome-u da zaključa kartice bez arhiviranja.</translation>
-<translation id="6573431926118603307">Ovde će se prikazati kartice koje otvorite u Chrome-u na drugim uređajima.</translation>
 <translation id="6600954340915313787">Kopirana u Chrome</translation>
 <translation id="6634107063912726160">Kada se odjavite, Chrome ne sinhronizuje nikakve nove podatke sa Google nalogom. Prethodno sinhronizovani podaci ostaju na nalogu.</translation>
 <translation id="6648150602980899529">Prijavljujete se pomoću naloga kojim upravlja <ph name="DOMAIN" /> i dajete njegovom administratoru kontrolu nad svojim Chrome podacima. Podaci će postati trajno povezani sa tim nalogom. Odjavljivanjem iz Chrome-a ćete izbrisati podatke sa ovog uređaja, ali će oni ostati sačuvani na Google nalogu.</translation>
@@ -78,7 +77,6 @@
 <translation id="7172660552945675509">Savet: <ph name="BEGIN_LINK" />Premestite Chrome na dok<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome koristi Face ID da bi lozinkama mogle da pristupaju samo ovlašćene osobe.</translation>
 <translation id="7261678641327190792">Chrome ne može da vam proverava lozinke</translation>
-<translation id="7265369419224458312">Ovde pristupajte karticama koje ste otvorili na računaru. Samo otvorite Chrome na računaru, idite na meni i izaberite „Prijavi me u Chrome...“</translation>
 <translation id="7272930098487145294">Da biste sačuvali slike, dodirnite Podešavanja da biste omogućili Chrome-u da dodaje slike</translation>
 <translation id="7275945473750112644">Nalogom upravlja <ph name="HOSTED_DOMAIN" />, pa će se Chrome podaci obrisati sa ovog uređaja</translation>
 <translation id="7400722733683201933">O programu Google Chrome</translation>

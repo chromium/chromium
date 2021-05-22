@@ -186,7 +186,6 @@ Ketuk kata apa pun untuk menelusuri. Untuk menyaring penelusuran, sentuh lama un
 <translation id="22320125457191592">Untuk Anda</translation>
 <translation id="2234876718134438132">Sinkronisasi dan layanan Google</translation>
 <translation id="2239812875700136898">Kontrol artikel Anda dengan tombol Opsi untuk Discover</translation>
-<translation id="2251971221270904886">Jika diaktifkan dan statusnya aktif, Chrome akan menggunakan histori penjelajahan Anda selama 7 hari untuk menentukan grup, atau “kohor”, tempat Anda berada. Pengiklan dapat memilih iklan untuk grup tersebut. Histori penjelajahan Anda tetap bersifat pribadi di perangkat Anda. Uji coba ini hanya aktif di <ph name="BEGIN_LINK" />beberapa wilayah<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Ekspor sandi…</translation>
 <translation id="2276696007612801991">Login ke Akun Google Anda untuk memeriksa sandi</translation>
 <translation id="2278052315791335171">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmark}}</translation>
 <translation id="3062802207422175757">Artikel di Chrome terkait minat Anda</translation>
 <translation id="3070005020161560471">Otomatis terjemahkan</translation>
-<translation id="3083531420240576529">Anda dapat mereset grup kapan saja. Perlu waktu 7 hari untuk menentukan grup Anda.</translation>
 <translation id="3091010850649238832">Tampilkan konten papan klip</translation>
 <translation id="3098745985164956033">Beberapa gambar dikirim ke Google guna menyempurnakan deskripsi untuk Anda</translation>
 <translation id="3114507951000454849">Baca berita hari ini <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="3568688522516854065">Untuk membuka tab dari perangkat Anda yang lain, login dan aktifkan sinkronisasi</translation>
 <translation id="3587482841069643663">Semua</translation>
 <translation id="3587596251841506391">Bantu sempurnakan keamanan di web</translation>
-<translation id="3598653140581545904">Gunakan mode Samaran untuk login</translation>
 <translation id="3602290021589620013">Pratinjau</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Membagikan ke <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5964805880140440652">Untuk membagikan halaman ini ke perangkat lain, aktifkan sinkronisasi di setelan Chrome</translation>
 <translation id="5964869237734432770">Hentikan deskripsi gambar</translation>
 <translation id="5979084224081478209">Periksa sandi</translation>
-<translation id="5982307838673692400">Buka tab Samaran</translation>
 <translation id="6000066717592683814">Tetap menggunakan Google</translation>
 <translation id="6000203700195075278">Ikuti kembali</translation>
 <translation id="6002623704405939939">Untuk menghapus <ph name="BEGIN_LINK1" />penelusuran<ph name="END_LINK1" /> atau bentuk histori lainnya, buka <ph name="BEGIN_LINK2" />Aktivitas Google Saya<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6277522088822131679">Terjadi masalah saat mencetak halaman. Coba lagi.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Dengan menggunakan Chrome, Anda menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> serta <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Google Chrome dan Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Akun</translation>
 <translation id="6297765934698848803">Organisasi yang mengelola perangkat telah menonaktifkan kamera Anda.</translation>
 <translation id="6301525844455696527">Selesaikan daftar bacaan Anda</translation>
 <translation id="6303969859164067831">Logout dan nonaktifkan sinkronisasi</translation>
 <translation id="6312687380483398334">Aplikasi web (minim notifikasi)</translation>
 <translation id="6316139424528454185">Versi Android tidak didukung</translation>
 <translation id="6324034347079777476">Sinkronisasi sistem Android dinonaktifkan</translation>
+<translation id="6324916366299863871">Edit pintasan</translation>
 <translation id="6324977638108296054">Tidak dapat membuat link ke sorotan</translation>
 <translation id="6324997754869598316">(Error <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Bagikan dengan <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6699370405921460408">Server Google akan mengoptimalkan halaman yang Anda kunjungi.</translation>
 <translation id="670498945988402717">Diperiksa kemarin</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
-<translation id="671333169801287922">Jika aktif, situs dapat menggunakan teknik yang melindungi privasi seperti yang ditunjukkan di sini untuk menyediakan konten dan layanannya. Ini termasuk alternatif untuk pelacakan lintas situs. Uji coba lainnya dapat ditambahkan seiring waktu.
-
-<ph name="BEGIN_LIST_ITEM1" />Pengiklan dan penayang dapat menggunakan teknik FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Pengiklan dan penayang dapat mempelajari keefektifan iklan dengan cara yang tidak melacak Anda di seluruh situs.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Timer <ph name="FQDN" /> Anda telah berakhir. Timer akan dimulai lagi besok.</translation>
 <translation id="6738516213925468394">Data Anda dienkripsi dengan <ph name="BEGIN_LINK" />frasa sandi sinkronisasi<ph name="END_LINK" /> pada tanggal <ph name="TIME" />. Masukkan frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="6738867403308150051">Mendownload…</translation>
@@ -922,9 +913,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6900532703269623216">Perlindungan yang disempurnakan</translation>
 <translation id="6903907808598579934">Aktifkan sinkronisasi</translation>
 <translation id="6929699136511445623">Aktifkan sinkronisasi sistem Android</translation>
-<translation id="6941901516114974832">Dalam mode Samaran, aktivitas Anda <ph name="BEGIN_BOLD1" />mungkin masih terlihat <ph name="END_BOLD1" />oleh situs yang dikunjungi, perusahaan, sekolah, dan internet service provider.
-
-Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="BEGIN_BOLD2" />menutup semua tab Samaran<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Ubah lokasi download default kapan saja menggunakan opsi menu Setelan</translation>
 <translation id="694267552845942083">Anda sedang menyesuaikan setelan Sinkronisasi. Untuk menyelesaikan pengaktifan sinkronisasi, ketuk tombol Konfirmasi di dekat bagian bawah layar. Kembali ke atas</translation>
 <translation id="6945221475159498467">Pilih</translation>
@@ -1088,9 +1076,6 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="7971136598759319605">Aktif 1 hari yang lalu</translation>
 <translation id="7975379999046275268">Pratinjau halaman <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pramuat halaman agar browsing dan menelusuri lebih cepat</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> adalah inisiatif berkelanjutan untuk mengembangkan teknologi baru yang akan mengamankan Anda dari mekanisme pelacakan sekaligus mempertahankan web terbuka.
-
-Uji coba Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah tertentu. Untuk saat ini, situs dapat mencoba Privacy Sandbox sambil tetap menggunakan teknologi web saat ini seperti cookie pihak ketiga.</translation>
 <translation id="7986497153528221272">Untuk melihat sandi, setel kunci layar di perangkat terlebih dahulu</translation>
 <translation id="7998918019931843664">Buka kembali tab yang ditutup</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1111,7 +1096,7 @@ Uji coba Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wi
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8078096376109663956">Bagikan teks saja</translation>
 <translation id="8084114998886531721">Sandi tersimpan</translation>
-<translation id="8084285576995584326">Kontrol data Akun Google Anda</translation>
+<translation id="8084285576995584326">Mengontrol data Akun Google Anda</translation>
 <translation id="808747664143081553">Terhubung ke perangkat</translation>
 <translation id="8103578431304235997">Tab Samaran</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>

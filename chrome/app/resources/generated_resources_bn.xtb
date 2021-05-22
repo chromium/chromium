@@ -157,10 +157,8 @@
 <translation id="116173250649946226">আপনার অ্যাডমিনিস্ট্রেটর একটি ডিফল্ট থিম সেট করেছেন যা আপনি বদলাতে পারবেন না।</translation>
 <translation id="1163931534039071049">ফ্রেম উৎস &amp;দেখুন</translation>
 <translation id="1164891049599601209">প্রতারণামূলক সাইটে পাসওয়ার্ডটি লিখেছেন</translation>
-<translation id="1164899421101904659">পিন আনলক কী লিখুন</translation>
 <translation id="1165039591588034296">ত্রুটি</translation>
 <translation id="1166212789817575481">ডানদিকের ট্যাবগুলি বন্ধ করুন</translation>
-<translation id="116624467691206283">ভুল PUK দিয়েছেন। আপনি আর ১ বার চেষ্টা করতে পারেন।</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" />-এর মধ্যে খুলছে...</translation>
 <translation id="1168100932582989117">Google নাম সার্ভার</translation>
 <translation id="1170288591054440704">কোনও সাইট আপনার ডিভাইসে ইনস্টল করা ফন্ট ব্যবহার করতে চাইলে তাকে অনুমতি নিতে বলুন</translation>
@@ -1207,7 +1205,6 @@
     Cast-এর ব্যাপারে কোনও সমস্যার সমাধান করতে
     <ph name="BEGIN_LINK" />
     সহায়তা কেন্দ্র<ph name="END_LINK" /> দেখুন।</translation>
-<translation id="2265889263013046172">ভুল PUK দিয়েছেন। আপনি আরও <ph name="RETRIES" /> বার চেষ্টা করতে পারেন। কিন্তু, তার আগে নেটওয়ার্ক আবার অ্যাক্সেস করার জন্য আপনাকে অবশ্যই পরিষেবা প্রদানকারীর সাথে যোগাযোগ করতে হবে।</translation>
 <translation id="22665427234727190">কোনও সাইট ব্লুটুথ ডিভাইস অ্যাক্সেস করতে চাইলে, একবার জিজ্ঞাসা করে নিন (সাজেস্ট করা হয়েছে)</translation>
 <translation id="2266957463645820432">USB এর মাধ্যমে IPP (IPPUSB)</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> ডোমেনের মধ্যে যে কোনও ডিভাইসের সাথে ডেটা বিনিময় করুন</translation>
@@ -1486,7 +1483,6 @@
 <translation id="2553440850688409052">এই প্লাগ-ইনটি লুকান</translation>
 <translation id="2554553592469060349">নির্বাচিত ফাইল খুবই বড়  (সর্বোচ্চ আকার: 3MB )৷</translation>
 <translation id="2558896001721082624">সিস্টেম মেনুতে সবসময় ব্যবহারযোগ্যতার বিকল্পগুলি দেখান</translation>
-<translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" />-এ প্রবেশ করেননি</translation>
 <translation id="2564520396658920462">AppleScript-এর মাধ্যমে জাভাস্ক্রিপ্ট চালানো বন্ধ করা আছে। এটি চালু করতে মেনু বার থেকে, ভিউ &gt; ডেভেলপার &gt; জাভাস্ক্রিপ্টের অনুমতি দিন-এ যান। আরও তথ্যের জন্য: https://support.google.com/chrome/?p=applescript-এ যান</translation>
 <translation id="2564653188463346023">আরও উন্নত বানান পরীক্ষা</translation>
 <translation id="2568774940984945469">তথ্যবার ধারক</translation>
@@ -2391,7 +2387,6 @@
 <translation id="3569407787324516067">স্ক্রিন সেভার</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> নিচে উল্লেখ করা ফাইল এবং ফোল্ডারগুলি দেখতে পারবে</translation>
 <translation id="3571734092741541777">সেট-আপ</translation>
-<translation id="3574210789297084292">সাইন-ইন করুন</translation>
 <translation id="3575121482199441727">এই সাইটের জন্য অনুমতি দিন</translation>
 <translation id="3576324189521867626">সফলভাবে ইনস্টল হয়েছে</translation>
 <translation id="3578594933904494462">এই ট্যাবের কন্টেন্ট শেয়ার করা হচ্ছে৷</translation>
@@ -2837,7 +2832,6 @@
 <translation id="4022426551683927403">&amp;অভিধানে যুক্ত করুন</translation>
 <translation id="4023146161712577481">ডিভাইসের কনফিগারেশন নির্ধারণ করা হচ্ছে।</translation>
 <translation id="4025039777635956441">বেছে নেওয়া সাইট মিউট করুন</translation>
-<translation id="4027804175521224372">(আপনি এটিকে ছাড়ছেন—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">ইনপুট পদ্ধতি যোগ করুন</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> পৃষ্ঠা থেকে ফিরে আসুন</translation>
 <translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
@@ -3774,7 +3768,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">আপনার হার্ড ডিস্ক পূর্ণ৷ দয়া করে অন্য কোনো স্থানে সেভ করুন অথবা হার্ড ডিস্কে আরও জায়গা তৈরী করুন৷</translation>
 <translation id="5123433949759960244">বাস্কেটবল</translation>
-<translation id="5125167430897995218">ভুল PUK দিয়েছেন। আপনি আরও ১ বার চেষ্টা করতে পারেন। কিন্তু, তার আগে নেটওয়ার্ক আবার অ্যাক্সেস করার জন্য আপনাকে অবশ্যই পরিষেবা প্রদানকারীর সাথে যোগাযোগ করতে হবে।</translation>
 <translation id="5125751979347152379">ভুল ইউআরএল৷</translation>
 <translation id="5126611267288187364">পরিবর্তনগুলি দেখুন</translation>
 <translation id="5127620150973591153">নিরাপদ কানেকশন আইডি: <ph name="TOKEN" /></translation>
@@ -4021,7 +4014,6 @@
 <translation id="540296380408672091"><ph name="HOST" /> এ সর্বদা কুকিজ অবরুদ্ধ করুন</translation>
 <translation id="540495485885201800">পূর্ববর্তীতে পাল্টান</translation>
 <translation id="5405146885510277940">সেটিংস রিসেট করুন</translation>
-<translation id="5407119150486192764">আপনার পরিষেবা প্রদানকারীর পাঠানো আনব্লকিং কী ৮-সংখ্যার পিন লিখুন</translation>
 <translation id="5407167491482639988">দুর্বোধ্য</translation>
 <translation id="5408750356094797285">জুম করুন: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">আপনার Google অ্যাকাউন্ট থেকে</translation>
@@ -6565,7 +6557,6 @@
 <translation id="8206745257863499010">ব্লুজস</translation>
 <translation id="8206859287963243715">সেলুলার</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{একটি নতুন বিজ্ঞপ্তি}one{#টি নতুন বিজ্ঞপ্তি}other{#টি নতুন বিজ্ঞপ্তি}}</translation>
-<translation id="8211551284753798479">ভুল PUK দিয়েছেন। আপনি আর <ph name="RETRIES" /> বার চেষ্টা করতে পারবেন।</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ডাউনলোড করা হচ্ছে}one{ডাউনলোডগুলি করা হচ্ছে}other{ডাউনলোডগুলি করা হচ্ছে}}</translation>
 <translation id="8213449224684199188">ফটো মোডটি চালু হয়েছে</translation>
 <translation id="8214489666383623925">ফাইল খুলুন...</translation>

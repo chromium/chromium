@@ -64,7 +64,6 @@
 <translation id="6063091872902370735">Salli Chrome-kirjautuminen</translation>
 <translation id="6181930887571472871">Vaihda Chromeen</translation>
 <translation id="6238746320622508509">Anna Chromen lukita incognito-välilehtesi.</translation>
-<translation id="6573431926118603307">Muilla laitteilla Chromessa avaamasi välilehdet näytetään täällä.</translation>
 <translation id="6600954340915313787">Kopioitiin Chromeen.</translation>
 <translation id="6634107063912726160">Kun kirjaudut ulos, Chrome ei synkronoi uutta dataa Google-tilillesi. Aiemmin synkronoitu data säilytetään tilillä.</translation>
 <translation id="6648150602980899529">Olet kirjautumassa sisään verkkotunnuksen <ph name="DOMAIN" /> hallinnoimalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chrome-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromesta uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
@@ -78,7 +77,6 @@
 <translation id="7172660552945675509">Vinkki: <ph name="BEGIN_LINK" />Siirrä Chrome Dockiin.<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome varmistaa Face ID:llä, että sinulla on lupa käyttää salasanoja.</translation>
 <translation id="7261678641327190792">Chrome ei voi tarkistaa salasanojasi</translation>
-<translation id="7265369419224458312">Voit käyttää tietokoneella avoinna olevia välilehtiä myös täällä. Avaa Chrome tietokoneella, siirry valikkoon ja valitse Kirjaudu Chromeen…</translation>
 <translation id="7272930098487145294">Anna Chromen lisätä uusia kuvia valitsemalla Asetukset, niin voit tallentaa kuvia.</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliäsi, joten Chrome-datasi poistetaan tältä laitteelta</translation>
 <translation id="7400722733683201933">Tietoja Google Chromesta</translation>

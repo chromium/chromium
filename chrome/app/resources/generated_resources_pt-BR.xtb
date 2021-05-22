@@ -157,10 +157,8 @@
 <translation id="116173250649946226">O administrador definiu um tema padrão que você não pode mudar.</translation>
 <translation id="1163931534039071049">&amp;Exibir código fonte do frame</translation>
 <translation id="1164891049599601209">Inserida em fraudulento</translation>
-<translation id="1164899421101904659">Informar chave para desbloqueio de PIN</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1166212789817575481">Fechar guias à direita</translation>
-<translation id="116624467691206283">PUK inválida. Você tem 1 tentativa restante.</translation>
 <translation id="1168020859489941584">Abrindo em <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Servidores de nome do Google</translation>
 <translation id="1170288591054440704">Perguntar quando um site quiser usar fontes instaladas no seu dispositivo</translation>
@@ -1214,7 +1212,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
     Para resolver problemas com o Google Cast, consulte a
     <ph name="BEGIN_LINK" />
     Central de Ajuda<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">PUK incorreta. Você tem <ph name="RETRIES" /> tentativas restantes antes de precisar entrar em contato com a operadora para recuperar o acesso à rede.</translation>
 <translation id="22665427234727190">Perguntar quando um site quiser acessar dispositivos Bluetooth (recomendado)</translation>
 <translation id="2266957463645820432">IPP via USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Trocar dados com qualquer dispositivo no domínio <ph name="DOMAIN" /></translation>
@@ -1498,7 +1495,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2553440850688409052">Ocultar este plug-in</translation>
 <translation id="2554553592469060349">O arquivo selecionado é muito grande (tamanho máximo: 3 MB).</translation>
 <translation id="2558896001721082624">Sempre mostrar as opções de acessibilidade no menu do sistema</translation>
-<translation id="2562743677925229011">Não conectado a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">A execução do JavaScript por AppleScript está desativada. Para ativá-la, na barra de menu, acesse Ver &gt; Desenvolvedor &gt; Permitir o JavaScript do Eventos da Apple. Para ver mais informações: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Verificação ortográfica aprimorada</translation>
 <translation id="2568774940984945469">Recipiente da barra de informações</translation>
@@ -2413,7 +2409,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3569407787324516067">Protetor de tela</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> pode ver os arquivos e as pastas a seguir</translation>
 <translation id="3571734092741541777">Configurar</translation>
-<translation id="3574210789297084292">fazer login</translation>
 <translation id="3575121482199441727">Permitir para este site</translation>
 <translation id="3576324189521867626">Instalação concluída</translation>
 <translation id="3578594933904494462">O conteúdo desta guia está sendo compartilhado.</translation>
@@ -2864,7 +2859,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4022426551683927403">&amp;Adicionar ao dicionário</translation>
 <translation id="4023146161712577481">Determinando a configuração do dispositivo.</translation>
 <translation id="4025039777635956441">Desativar som do site selecionado</translation>
-<translation id="4027804175521224372">(Não perca - <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Adicionar métodos de entrada</translation>
 <translation id="4029556917477724407">Voltar da página <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Microfone permitido</translation>
@@ -3811,7 +3805,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Seu disco rígido está cheio. Salve em outro local ou libere mais espaço no disco rígido.</translation>
 <translation id="5123433949759960244">Basquete</translation>
-<translation id="5125167430897995218">PUK incorreta. Você tem 1 tentativa restante antes de precisar entrar em contato com a operadora para recuperar o acesso à rede.</translation>
 <translation id="5125751979347152379">URL inválido.</translation>
 <translation id="5126611267288187364">Ver alterações</translation>
 <translation id="5127620150973591153">Código da conexão segura: <ph name="TOKEN" /></translation>
@@ -4059,7 +4052,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="540296380408672091">Sempre bloquear cookies em <ph name="HOST" /></translation>
 <translation id="540495485885201800">Trocar com anterior</translation>
 <translation id="5405146885510277940">Redefinir configurações</translation>
-<translation id="5407119150486192764">Insira a chave PIN de oito dígitos para desbloqueio fornecida pela operadora</translation>
 <translation id="5407167491482639988">Ininteligível</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Da sua Conta do Google</translation>
@@ -6629,7 +6621,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8206745257863499010">Chorinho</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova notificação}one{# nova notificação}other{# novas notificações}}</translation>
-<translation id="8211551284753798479">PUK inválida. Você tem <ph name="RETRIES" /> tentativas restantes.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{O download está em andamento}one{O download está em andamento}other{Os downloads estão em andamento}}</translation>
 <translation id="8213449224684199188">Alterado para o modo de foto</translation>
 <translation id="8214489666383623925">Abrir arquivo...</translation>

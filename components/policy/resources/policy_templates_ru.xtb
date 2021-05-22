@@ -1094,13 +1094,6 @@
 <translation id="2448315169529769573">Если правило включено, из <ph name="PRODUCT_OS_NAME" /> в Google отправляется статистика использования и диагностическая информация, в том числе отчеты о сбоях. Если правило отключено, эти данные не отправляются.
 
        Если правило не настроено, данные отправляются только с устройств, которыми управляют администраторы.</translation>
-<translation id="2449263772062368618">Правило позволяет настроить список данных о работе в браузере, которые должны удаляться при выходе.
-      Вы можете выбрать следующие типы данных: история браузера (<ph name="DATA_TYPE_BROWSING_HISTORY" />), история скачиваний (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), файлы cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), кеш <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, информация для автозаполнения (<ph name="DATA_TYPE_AUTOFILL" />), пароли (<ph name="DATA_TYPE_PASSWORD" />), настройки сайтов (<ph name="DATA_TYPE_SITE_SETTINGS" />) и данные размещенных приложений (<ph name="DATA_TYPE_HOSTED_APP_DATA" />).
-Это правило не имеет приоритет над правилом <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-      Это правило работает, если для правила <ph name="SYNC_DISABLED_POLICY_NAME" /> задано значение True. В противном случае правило игнорируется.
-      Если правило настроено на уровне платформы, необходимо отключить синхронизацию для всей этой платформы.
-      Если правило настроено на уровне пользователя, оно работает только при условии, что синхронизация отключена для этого пользователя.
-      </translation>
 <translation id="244950822854046436">Список настроек, применяемых к коннектору <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, который будет запускаться при скачивании файлов.
 
       Значения полей <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> и <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> определяют, должен ли коннектор при скачивании файла с веб-страницы отправить его поставщику услуг. URL веб-страницы должен совпадать с шаблоном в поле enable и не должен соответствовать какому-либо шаблону в поле disable.  Такие же ограничения действуют для MIME-типа файла.
@@ -3015,13 +3008,6 @@
       Если правило не настроено, список остается пустым.
 
       Для добавления элементов в список можно также использовать правило <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
-<translation id="5065753964276395784">Это правило больше не поддерживается. Используйте вместо него правило <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-       Оно позволяет <ph name="PRODUCT_NAME" /> игнорировать любые прокси-серверы для хостов, перечисленных в этом списке. Это правило действует, только если не настроено <ph name="PROXY_SETTINGS_POLICY_NAME" />. Также должны быть выбраны <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> и <ph name="PROXY_MODE_POLICY_NAME" />.
-
-       Если выбран какой-либо другой параметр, не настраивайте это правило.
-
-       Примечание. Подробную информацию можно найти здесь: https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett.</translation>
 <translation id="5067143124345820993">Список разрешенных пользователей</translation>
 <translation id="5073609397321802133">Если для правила установлено значение False, пользователи не смогут изменять фон страницы быстрого доступа. Уже используемые изображения удаляются без возможности восстановления даже в том случае, если позже будет выбрано значение True.
 
@@ -3175,26 +3161,6 @@
       Если правило не настроено или указано значение False, режим единого рабочего стола будет отключен и пользователи не смогут его включить.</translation>
 <translation id="5255162913209987122">Рекомендуется</translation>
 <translation id="5257395339965216304">Данные размещенных приложений</translation>
-<translation id="5264066441613395613">Правило позволяет задать настройки прокси-сервера для Chrome и ARC-приложений, игнорируя все настройки прокси, указанные с помощью командной строки.
-
-       Если правило не задано, пользователи смогут самостоятельно настраивать прокси-сервер.
-
-       Правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> позволяет указать значения следующих полей:
-         * поле <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> задает прокси-сервер для Chrome и запрещает пользователям изменять эти настройки;
-         * поле <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> задает URL файла PAC прокси-сервера;
-         * поле <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> задает URL прокси-сервера;
-         * поле <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> задает список прокси-серверов, которые <ph name="PRODUCT_NAME" /> игнорирует.
-
-       Поле <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> заменено полем <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, которое задает прокси-сервер для Chrome и запрещает пользователям изменять эти настройки.
-
-        Выбор значения поля <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" /> – прокси-сервер никогда не будет использоваться, а значения остальных полей будут игнорироваться.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> – будут использоваться системные настройки прокси-сервера, значения остальных полей будут игнорироваться.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> – значения остальных полей будут игнорироваться.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" /> – будут использоваться поля <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> и <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> – будут использоваться поля <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> и <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-
-      Примечание. Подробную информацию можно найти здесь: https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett.</translation>
 <translation id="5266173014392157048">Это правило больше не поддерживается. Используйте вместо него правило <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
 
       Правило позволяет указать список серверов, которым <ph name="PRODUCT_NAME" /> может предоставлять учетные данные пользователей. Названия серверов нужно разделять запятыми. Допустимы подстановочные знаки (<ph name="WILDCARD_VALUE" />).

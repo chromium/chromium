@@ -155,10 +155,8 @@
 <translation id="116173250649946226">O teu administrador definiu un tema predeterminado que non se pode cambiar.</translation>
 <translation id="1163931534039071049">&amp;Ver orixe do marco</translation>
 <translation id="1164891049599601209">O contrasinal utilizouse nun sitio enganoso</translation>
-<translation id="1164899421101904659">Introducir clave de desbloqueo do PIN</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1166212789817575481">Pechar as pestanas situadas á dereita</translation>
-<translation id="116624467691206283">O PUK non é válido. Quédache 1 intento.</translation>
 <translation id="1168020859489941584">O ficheiro abrirase en <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Servidores de nomes de Google</translation>
 <translation id="1170288591054440704">Preguntar cando un sitio queira usar os tipos de letra que tes instalados no dispositivo</translation>
@@ -1197,7 +1195,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2263189956353037928">Pechar sesión e volver iniciala</translation>
 <translation id="2263371730707937087">Taxa de actualización da pantalla</translation>
 <translation id="2263679799334060788">Valoramos moito os teus comentarios, que nos axudan a mellorar Google Cast. Se queres axuda para solucionar problemas relacionados coa emisión, consulta o <ph name="BEGIN_LINK" />Centro de Axuda<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">O PUK é incorrecto. Quédanche <ph name="RETRIES" /> intentos antes de que teñas que poñerte en contacto co teu operador para recuperar o acceso á rede.</translation>
 <translation id="22665427234727190">Preguntar cando un sitio queira acceder aos dispositivos Bluetooth (recomendado)</translation>
 <translation id="2266957463645820432">Protocolo IPP por USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Intercambiar datos con calquera dispositivo do dominio <ph name="DOMAIN" /></translation>
@@ -1481,7 +1478,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2553440850688409052">Ocultar este plugin</translation>
 <translation id="2554553592469060349">O ficheiro seleccionado é demasiado grande (tamaño máximo: 3 MB).</translation>
 <translation id="2558896001721082624">Mostrar sempre opcións de accesibilidade no menú do sistema</translation>
-<translation id="2562743677925229011">Non iniciaches sesión en <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Está desactivada a execución de JavaScript a través de AppleScript. Para activala, na barra de menú, accede a Ver &gt; Programador &gt; Permitir JavaScript desde eventos de Apple. Podes obter máis información en: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Corrector ortográfico mellorado</translation>
 <translation id="2568774940984945469">Contedor da barra de información</translation>
@@ -2394,7 +2390,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3569407787324516067">Protector de pantalla</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> pode ver os seguintes ficheiros e cartafoles</translation>
 <translation id="3571734092741541777">Configurar</translation>
-<translation id="3574210789297084292">iniciar sesión</translation>
 <translation id="3575121482199441727">Permitir para este sitio</translation>
 <translation id="3576324189521867626">A instalación realizouse correctamente</translation>
 <translation id="3578594933904494462">Estase compartindo o contido desta pestana.</translation>
@@ -2845,7 +2840,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4022426551683927403">&amp;Engadir ao dicionario</translation>
 <translation id="4023146161712577481">Determinando a configuración do dispositivo.</translation>
 <translation id="4025039777635956441">Silenciar sitio seleccionado</translation>
-<translation id="4027804175521224372">(Non perdas opcións, <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Engadir métodos de introdución de texto</translation>
 <translation id="4029556917477724407">Ir atrás desde a páxina <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Permítese o micrófono</translation>
@@ -3791,7 +3785,6 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">O teu disco duro está cheo. Garda o ficheiro noutra localización ou libera espazo no disco duro.</translation>
 <translation id="5123433949759960244">Baloncesto</translation>
-<translation id="5125167430897995218">O PUK é incorrecto. Quédache 1 intento antes de que teñas que poñerte en contacto co teu operador para recuperar o acceso á rede.</translation>
 <translation id="5125751979347152379">URL non válido.</translation>
 <translation id="5126611267288187364">Ver cambios</translation>
 <translation id="5127620150973591153">Código de conexión segura: <ph name="TOKEN" /></translation>
@@ -4039,7 +4032,6 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="540296380408672091">Bloquear sempre as cookies de <ph name="HOST" /></translation>
 <translation id="540495485885201800">Substituír polo anterior</translation>
 <translation id="5405146885510277940">Restablecer configuración</translation>
-<translation id="5407119150486192764">Pon a clave de desbloqueo do PIN de 8 díxitos que che proporcionase o teu operador</translation>
 <translation id="5407167491482639988">Inintelixible</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Da túa Conta de Google</translation>
@@ -6607,7 +6599,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8206745257863499010">Tipo blues</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{1 notificación nova}other{# notificacións novas}}</translation>
-<translation id="8211551284753798479">O PUK non é válido. Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{A descarga está en curso}other{As descargas están en curso}}</translation>
 <translation id="8213449224684199188">Iniciouse o modo de foto</translation>
 <translation id="8214489666383623925">Abrir ficheiro...</translation>

@@ -157,10 +157,8 @@
 <translation id="116173250649946226">आपके एडमिन ने डिफ़ॉल्ट थीम सेट की है. इसे बदला नहीं जा सकता.</translation>
 <translation id="1163931534039071049">फ़्रेम का स्रोत &amp;देखें</translation>
 <translation id="1164891049599601209">यह पासवर्ड धोखाधड़ी वाली साइट पर डाला गया था</translation>
-<translation id="1164899421101904659">पिन अनलॉक कुंजी डालें</translation>
 <translation id="1165039591588034296">गड़बड़ी</translation>
 <translation id="1166212789817575481">दाईं ओर के टैब बंद करें</translation>
-<translation id="116624467691206283">आपने गलत PUK डाला है. आप 1 बार और कोशिश कर सकते हैं.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> में खुल रहा है ...</translation>
 <translation id="1168100932582989117">Google नाम सर्वर</translation>
 <translation id="1170288591054440704">जब कोई साइट आपके डिवाइस पर इंस्टॉल किए गए फ़ॉन्ट का इस्तेमाल करना चाहे, तो वह इसके लिए आपसे पूछे</translation>
@@ -570,7 +568,7 @@
 <translation id="1604432177629086300">प्रिंट नहीं किया जा सका. प्रिंटर की जांच करें और फिर से कोशिश करें</translation>
 <translation id="1605544918554600534"><ph name="PROFILE_NAME" />: पासवर्ड को सिंक करने की सुविधा काम नहीं कर रही</translation>
 <translation id="1607139524282324606">प्रविष्टि हटाएं</translation>
-<translation id="1607499585984539560">उपयोगकर्ता डोमेन के साथ जुड़ा हुआ नहीं है</translation>
+<translation id="1607499585984539560">उपयोगकर्ता, एंटरप्राइज़ डोमेन के साथ जुड़ा हुआ नहीं है</translation>
 <translation id="1608626060424371292">इस उपयोगकर्ता को हटाएं</translation>
 <translation id="1608668830839595724">चुने गए आइटम के लिए और कार्रवाई</translation>
 <translation id="161042844686301425">स्यान</translation>
@@ -1214,7 +1212,6 @@
     Google Cast से जुड़ी समस्याओं का हल करने के लिए, कृपया
     <ph name="BEGIN_LINK" />
     सहायता केंद्र<ph name="END_LINK" /> देखें.</translation>
-<translation id="2265889263013046172">आपने गलत PUK डाला है. आप <ph name="RETRIES" /> बार और कोशिश कर सकते हैं. अगर फिर भी नेटवर्क का ऐक्सेस नहीं मिलता, तो आपको मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करना होगा.</translation>
 <translation id="22665427234727190">जब कोई साइट ब्लूटूथ डिवाइस ऐक्सेस करना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
 <translation id="2266957463645820432">यूएसबी पर IPP (IPPUSB)</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> डोमेन के किसी भी डिवाइस से डेटा का लेन-देन करें</translation>
@@ -1498,7 +1495,6 @@
 <translation id="2553440850688409052">यह प्लग इन छुपाएं</translation>
 <translation id="2554553592469060349">चुनी गई फ़ाइल बहुत बड़ी है (अधिकतम आकार: 3mb).</translation>
 <translation id="2558896001721082624">सिस्टम मेन्यू में सुलभता विकल्प हमेशा दिखाएं</translation>
-<translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> में प्रवेश नहीं है</translation>
 <translation id="2564520396658920462">AppleScript के ज़रिए JavaScript काम में लेने की सुविधा बंद है. उसे चालू करने के लिए, मेन्यू बार से, View &gt; Developer &gt; Allow JavaScript from Apple Events पर जाएं. ज़्यादा जानकारी के लिए: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">वर्तनी की बेहतर जांच</translation>
 <translation id="2568774940984945469">जानकारी बार कंटेनर</translation>
@@ -2411,7 +2407,6 @@
 <translation id="3569407787324516067">स्क्रीन सेवर</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों और फ़ोल्डर काे देख सकती है</translation>
 <translation id="3571734092741541777">सेट करें</translation>
-<translation id="3574210789297084292">साइन इन करें</translation>
 <translation id="3575121482199441727">इस साइट के लिए सूचनाओं को अनुमति दें</translation>
 <translation id="3576324189521867626">सफलतापूर्वक इंस्टॉल हो गया है</translation>
 <translation id="3578594933904494462">इस टैब की सामग्री को शेयर किया जा रहा है.</translation>
@@ -2861,7 +2856,6 @@
 <translation id="4022426551683927403">शब्दकोश में &amp;जोड़ें</translation>
 <translation id="4023146161712577481">डिवाइस कॉन्फ़िगरेशन तय करना.</translation>
 <translation id="4025039777635956441">चुनी गई साइट म्यूट करें</translation>
-<translation id="4027804175521224372">(आप इसे छोड़ रहे हैं—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">इनपुट का तरीका जोड़ें</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> पेज से वापस जाएं</translation>
 <translation id="4031179711345676612">माइक्रोफ़ोन की अनुमति है</translation>
@@ -3808,7 +3802,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">आपकी हार्ड डिस्‍क भर गई है.  कृपया किसी दूसरी जगह पर सेव करें या हार्ड डिस्‍क में जगह बनाएं.</translation>
 <translation id="5123433949759960244">बास्केटबॉल</translation>
-<translation id="5125167430897995218">आपने गलत PUK डाला है. आप 1 बार और कोशिश कर सकते हैं. अगर फिर भी नेटवर्क का ऐक्सेस नहीं मिलता, तो आपको मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करना होगा.</translation>
 <translation id="5125751979347152379">गलत यूआरएल.</translation>
 <translation id="5126611267288187364">बदलाव देखें</translation>
 <translation id="5127620150973591153">सुरक्षित कनेक्शन आईडी: <ph name="TOKEN" /></translation>
@@ -4056,7 +4049,6 @@
 <translation id="540296380408672091"><ph name="HOST" /> पर कुकी को हमेशा ब्लॉक करें</translation>
 <translation id="540495485885201800">पिछले आइटम से बदलें</translation>
 <translation id="5405146885510277940">सेटिंग रीसेट करें</translation>
-<translation id="5407119150486192764">आठ अंकों वाली पिन अनब्लॉकिंग कुंजी डालें. यह आपको, मोबाइल और इंटरनेट सेवा देने वाली कंपनी ने दी होगी</translation>
 <translation id="5407167491482639988">धुंधला</translation>
 <translation id="5408750356094797285">ज़ूम करें: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">आपके Google खाते से</translation>
@@ -6624,7 +6616,6 @@
 <translation id="8206745257863499010">ब्‍लुसी</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{नई सूचना}one{# नई सूचना}other{# नई सूचनाएं}}</translation>
-<translation id="8211551284753798479">आपने गलत PUK डाला है. आप <ph name="RETRIES" /> बार और कोशिश कर सकते हैं.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{डाउनलोड जारी है}one{डाउनलोड जारी हैं}other{डाउनलोड जारी हैं}}</translation>
 <translation id="8213449224684199188">आप फ़ोटो मोड में हैं</translation>
 <translation id="8214489666383623925">फ़ाइल खोलें...</translation>

@@ -275,6 +275,7 @@
 <translation id="2781151931089541271">1 ሰከንድ ይቀራል</translation>
 <translation id="2801022321632964776">ቋንቋዎን በቅርብ ጊዜው የChrome ስሪት ለማግኘት ያዘምኑ</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">የተቀመጡ የይለፍ ቃላትን በእርስዎ <ph name="BEGIN_LINK" />Google መለያ<ph name="END_LINK" /> ውስጥ ይመልከቱ እና ያስተዳድሩ</translation>
 <translation id="2818669890320396765">የእርስዎን ዕልባቶች በሁሉም መሣሪያዎችዎ ላይ ለማግኘት በመለያ መግባት እና ስምረትን ማብራት ለማግኘት</translation>
 <translation id="2827278682606527653">የምግብ ካርድ ምናሌ በግማሽ ቁመት</translation>
@@ -396,7 +397,6 @@
 <translation id="3568688522516854065">ትሮችዎን ከሌሎች መሣሪያዎችዎ በመለያ መግባት እና ስምረትን ማብራት ለማግኘት</translation>
 <translation id="3587482841069643663">ሁሉም</translation>
 <translation id="3587596251841506391">ድር ላይ ደህንነትን ለማሻሻል ያግዙ</translation>
-<translation id="3598653140581545904">በመለያ ለመግባት ማንነት የማያሳውቅ ሁነታን ይጠቀሙ</translation>
 <translation id="3602290021589620013">ቅድመ-ዕይታ</translation>
 <translation id="3616113530831147358">ድምጽ</translation>
 <translation id="3631987586758005671">ለ <ph name="DEVICE_NAME" /> በማጋራት ላይ</translation>
@@ -459,6 +459,7 @@
 <translation id="4056223980640387499">ቀይ ቡናማ</translation>
 <translation id="4060598801229743805">አማራጮች ከማያ ገጹ ግርጌ አጠገብ ይገኛሉ</translation>
 <translation id="4062305924942672200">የህግ መረጃ</translation>
+<translation id="4082818367361753283">የቡድን መታወቂያ</translation>
 <translation id="4084682180776658562">ዕልባት</translation>
 <translation id="4084712963632273211">ከ<ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />በGoogle የተላከ<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">የመተግበሪያ ውሂብ ይሰረዝ?</translation>
@@ -760,7 +761,6 @@
 <translation id="5964805880140440652">ይህን ገጽ ለሌላ መሣሪያ ለማጋራት በChrome ቅንብሮች ውስጥ ስምረትን ያብሩ</translation>
 <translation id="5964869237734432770">የምስል መግለጫዎችን አቁም</translation>
 <translation id="5979084224081478209">የይለፍ ቃላትዎን ይፈትሹ</translation>
-<translation id="5982307838673692400">ማንነት የማያሳውቅ ትር ክፈት</translation>
 <translation id="6000066717592683814">Googleን አቆየው</translation>
 <translation id="6000203700195075278">እንደገና ይከተሉ</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />ፍለጋ<ph name="END_LINK1" />ን ወይም ሌሎች የታሪክ ቅርጾችን ለማጽዳት <ph name="BEGIN_LINK2" />የእኔ የGoogle እንቅስቃሴ<ph name="END_LINK2" />ን ይጎብኙ</translation>
@@ -802,13 +802,13 @@
 <translation id="6277522088822131679">ገጹን ማተም ላይ ችግር ነበር። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="6278428485366576908">ገጽታ</translation>
 <translation id="6292420053234093573">Chromeን በመጠቀምዎ በ<ph name="BEGIN_LINK1" />የGoogle አገልግሎት ውል<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የGoogle Chrome እና የChrome OS ተጨማሪ አገልግሎት ውል<ph name="END_LINK2" /> ይስማማሉ።</translation>
-<translation id="629730747756840877">መለያ</translation>
 <translation id="6297765934698848803">የእርስዎን መሣሪያ የሚያስተዳድረው ድርጅት ካሜራዎን አጥፍቶታል።</translation>
 <translation id="6301525844455696527">በንባብ ዝርዝርዎ ላይ ተከታትለው ይድረሱባቸው</translation>
 <translation id="6303969859164067831">ዘግተው ይውጡ እና ስምረትን ያጥፉ</translation>
 <translation id="6312687380483398334">የድር መተግበሪያዎች (ጸጥታ)</translation>
 <translation id="6316139424528454185">የAndroid ስሪቱ አይደገፍም</translation>
 <translation id="6324034347079777476">የAndroid ሥርዓት ስምረት ተሰናክሏል</translation>
+<translation id="6324916366299863871">አቋራጭን ያርትዑ</translation>
 <translation id="6324977638108296054">ወደ ድምቀቱ የሚወስድ አገናኝን መፍጠር አልተቻለም</translation>
 <translation id="6324997754869598316">(ስሕተት <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">በ<ph name="APPLICATION" /> በኩል ያጋሩ</translation>
@@ -913,9 +913,6 @@
 <translation id="6900532703269623216">የላቀ ጥበቃ</translation>
 <translation id="6903907808598579934">ስምረትን አብራ</translation>
 <translation id="6929699136511445623">የAndroid ስርዓት ስምረትን አንቃ</translation>
-<translation id="6941901516114974832">ማንነት በማያሳውቅ ሁኔታ ውስጥ እንቅስቃሴዎ አሁንም እርስዎ ለሚጎበኟቸው ድር ጣቢያዎች፣ ለአሰሪዎ ወይም ለትምህርት ቤትዎ እና ለበይነመረብ አገልግሎት አቅራቢዎ <ph name="BEGIN_BOLD1" />ሊታይ ይችላል<ph name="END_BOLD1" />።
-
-የማንነት የማያሳውቅ ክፍለ-ጊዜዎ ውሂብ ከChrome የሚጠፋው እርስዎ <ph name="BEGIN_BOLD2" />ሁሉንም ማንነት የማያሳውቁ ትሮችን ከዘጉ<ph name="END_BOLD2" /> ብቻ ነው።</translation>
 <translation id="6942665639005891494">የቅንብሮች ምናሌ አማራጩን በመጠቀም ነባሪውን የማውረጃ ቦታ ይጠቀሙ</translation>
 <translation id="694267552845942083">በአሁኑ ጊዜ የስንረት ቅንብሮችዎን እያበጁ ነው። ስምረትን ማብራቱን ለመጨረስ ከማያ ገጹ ታችኛው ክፍል አጠገብ ያለውን የአረጋግጥ አዝራር መታ ያድርጉ። ወደ ላይ ያስሱ</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
@@ -1188,7 +1185,9 @@
 <translation id="8662811608048051533">ከአብዛኛዎቹ ጣቢያዎች ዘግተው እንዲወጡ ያደርገዎታል።</translation>
 <translation id="8664979001105139458">የፋይል ስም አስቀድሞ አለ</translation>
 <translation id="8676789164135894283">የመግቢያ ማረጋገጫዎች</translation>
+<translation id="867767487203716855">ቀጣዩ ዝማኔ</translation>
 <translation id="8683039184091909753">ምስል</translation>
+<translation id="8683081248374354009">ቡድንን ዳግም አስጀምር</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{የሲግናል ጥንካሬ ደረጃ፦ # አሞሌ}one{የሲግናል ጥንካሬ ደረጃ፦ # አሞሌዎች}other{የሲግናል ጥንካሬ ደረጃ፦ # አሞሌዎች}}</translation>
 <translation id="869891660844655955">የሚያበቀበት ጊዜ</translation>
 <translation id="8699120352855309748">እነዚህን ቋንቋዎች ለመተርጎም አያቅርቡ</translation>

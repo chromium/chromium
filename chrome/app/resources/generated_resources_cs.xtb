@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Administrátor nastavil výchozí motiv, který nelze změnit.</translation>
 <translation id="1163931534039071049">Zobrazit zdrojový kód rámu</translation>
 <translation id="1164891049599601209">Zadáno na klamavém webu</translation>
-<translation id="1164899421101904659">Zadejte klíč k odemknutí kódu PIN</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1166212789817575481">Zavřít karty napravo</translation>
-<translation id="116624467691206283">Neplatný kód PUK. Zbývá vám jeden pokus.</translation>
 <translation id="1168020859489941584">Složka se otevře za <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Názvové servery Google</translation>
 <translation id="1170288591054440704">Zeptat se, když chce web použít písma nainstalovaná v zařízení</translation>
@@ -1199,7 +1197,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2263189956353037928">Odhlásit se a znovu se přihlásit</translation>
 <translation id="2263371730707937087">Obnovovací frekvence obrazovky</translation>
 <translation id="2263679799334060788">Vaše zpětná vazba nám pomáhá technologii Google Cast vylepšovat a velmi ji oceňujeme. Pokud potřebujete pomoci odstranit problémy s odesíláním, přejděte do <ph name="BEGIN_LINK" />centra nápovědy<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Nesprávný kód PUK. Zbývá vám tento počet pokusů: <ph name="RETRIES" />. Poté budete muset požádat operátora o opětovnou aktivaci přístupu k síti.</translation>
 <translation id="22665427234727190">Zeptat se, když chce web získat přístup k zařízením Bluetooth (doporučeno)</translation>
 <translation id="2266957463645820432">IPP přes USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Výměna dat s libovolným zařízením v doméně <ph name="DOMAIN" /></translation>
@@ -1483,7 +1480,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2553440850688409052">Skrýt tento plugin</translation>
 <translation id="2554553592469060349">Vybraný soubor je příliš velký (maximální velikost je 3 MB).</translation>
 <translation id="2558896001721082624">Vždy v nabídce systému zobrazovat možnosti usnadnění přístupu</translation>
-<translation id="2562743677925229011">Nejste v prohlížeči <ph name="SHORT_PRODUCT_NAME" /> přihlášeni</translation>
 <translation id="2564520396658920462">Spouštění JavaScriptu prostřednictvím AppleScriptu je vypnuto. Chcete-li jej zapnout, na liště s nabídkou přejděte na Zobrazení &gt; Vývojář &gt; Povolit JavaScript z událostí Apple. Další informace najdete na stránce https://support.google.com/chrome/?p=applescript.</translation>
 <translation id="2564653188463346023">Vylepšená kontrola pravopisu</translation>
 <translation id="2568774940984945469">Kontejner informačního panelu</translation>
@@ -2395,7 +2391,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3569407787324516067">Spořič obrazovky</translation>
 <translation id="3569682580018832495">Web <ph name="ORIGIN" /> může číst následující soubory a složky</translation>
 <translation id="3571734092741541777">Nastavit</translation>
-<translation id="3574210789297084292">Přihlaste se</translation>
 <translation id="3575121482199441727">Povolit pro tento web</translation>
 <translation id="3576324189521867626">Úspěšně nainstalováno</translation>
 <translation id="3578594933904494462">Obsah této karty je sdílen.</translation>
@@ -2845,7 +2840,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4022426551683927403">Přid&amp;at do slovníku</translation>
 <translation id="4023146161712577481">Zjišťování konfigurace zařízení</translation>
 <translation id="4025039777635956441">Ztlumit vybraný web</translation>
-<translation id="4027804175521224372">(Využijte všech funkcí — <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Přidat metody zadávání</translation>
 <translation id="4029556917477724407">Zpět ze stránky <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofon je povolen</translation>
@@ -3791,7 +3785,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Pevný disk je plný. Uložte prosím soubor do jiného umístění nebo uvolněte místo na disku.</translation>
 <translation id="5123433949759960244">Basketbal</translation>
-<translation id="5125167430897995218">Nesprávný kód PUK. Zbývá vám 1 pokus. Poté budete muset požádat operátora o opětovnou aktivaci přístupu k síti.</translation>
 <translation id="5125751979347152379">Neplatná adresa URL.</translation>
 <translation id="5126611267288187364">Zobrazit změny</translation>
 <translation id="5127620150973591153">ID bezpečného připojení: <ph name="TOKEN" /></translation>
@@ -4039,7 +4032,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="540296380408672091">Vždy blokovat soubory cookie u hostitele <ph name="HOST" /></translation>
 <translation id="540495485885201800">Vyměnit s předchozí</translation>
 <translation id="5405146885510277940">Resetovat nastavení</translation>
-<translation id="5407119150486192764">Zadejte osmimístný kód PIN pro odblokování od vašeho operátora</translation>
 <translation id="5407167491482639988">Nesrozumitelný zvuk</translation>
 <translation id="5408750356094797285">Lupa: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Z vašeho účtu Google</translation>
@@ -6603,7 +6595,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8206745257863499010">Melodie</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nové oznámení}few{# nová oznámení}many{# nového oznámení}other{# nových oznámení}}</translation>
-<translation id="8211551284753798479">Neplatný kód PUK. Počet zbývajících pokusů: <ph name="RETRIES" />.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Probíhá stahování}few{Probíhají stahování}many{Probíhají stahování}other{Probíhají stahování}}</translation>
 <translation id="8213449224684199188">Přešli jste do režimu fotek</translation>
 <translation id="8214489666383623925">Otevřít soubor...</translation>

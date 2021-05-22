@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Ձեր ադմինիստրատորը սահմանել է կանխադրված թեմա, որը հնարավոր չէ փոխել։</translation>
 <translation id="1163931534039071049">&amp;Դիտել շրջանակի սկզբնաղբյուրը</translation>
 <translation id="1164891049599601209">Մուտքագրել եք կասկածելի կայքում</translation>
-<translation id="1164899421101904659">Մուտքագրեք PUK կոդը</translation>
 <translation id="1165039591588034296">Սխալ</translation>
 <translation id="1166212789817575481">Փակել աջ կողմի ներդիրները</translation>
-<translation id="116624467691206283">PUK կոդն անվավեր է։ Մնաց 1 փորձ։</translation>
 <translation id="1168020859489941584">Բացվում է <ph name="TIME_REMAINING" />-ից…</translation>
 <translation id="1168100932582989117">Google-ի DNS-սերվերներ</translation>
 <translation id="1170288591054440704">Հարցնել, երբ որևէ կայք ուզենա օգտագործել ձեր սարքում տեղադրված տառատեսակները</translation>
@@ -1200,7 +1198,6 @@
 <translation id="2263189956353037928">Դուրս գալ ու նորից մտնել</translation>
 <translation id="2263371730707937087">Էկրանի թարմացման հաճախականությունը</translation>
 <translation id="2263679799334060788">Ձեր կարծիքը բարձր է գնահատվում և օգնում է մեզ բարելավել Google Cast-ը։ Հեռարձակման հետ կապված անսարքությունները վերացնելու համար անցեք <ph name="BEGIN_LINK" />օգնության կենտրոն<ph name="END_LINK" />։</translation>
-<translation id="2265889263013046172">PUK կոդը սխալ է։ Մնաց <ph name="RETRIES" /> փորձ, որից հետո պետք է դիմեք ձեր օպերատորին՝ ցանցի հասանելիությունը վերականգնելու համար։</translation>
 <translation id="22665427234727190">Հարցնել, երբ որևէ կայք ուզում է օգտագործել Bluetooth սարքեր (խորհուրդ է տրվում)</translation>
 <translation id="2266957463645820432">IPP` USB-ի միջոցով (IPPUSB)</translation>
 <translation id="2270450558902169558">Տվյալներ փոխանակել ցանկացած սարքի հետ <ph name="DOMAIN" /> տիրույթում</translation>
@@ -1484,7 +1481,6 @@
 <translation id="2553440850688409052">Թաքցնել այս փլագինը</translation>
 <translation id="2554553592469060349">Ընտրված ֆայլը չափազանց մեծ է (առավ. չափը` 3 ՄԲ):</translation>
 <translation id="2558896001721082624">Ցույց տալ մատչելիության ընտրանքները համակարգի ընտրացանկում</translation>
-<translation id="2562743677925229011">Մուտք գործած չեք <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">AppleScript-ի միջոցով JavaScript-ի օգտագործումն անջատված է: Միացնելու համար ցանկագոտուց անցեք Դիտում &gt; Մշակող &gt; Թույլատրել JavaScript-ը Apple-ի իրադարձություններից: Լրացուցիչ տեղեկությունների համար անցեք https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Ուղղագրության ընդլայնված ստուգում</translation>
 <translation id="2568774940984945469">Տեղեկագոտու կոնտեյներ</translation>
@@ -2397,7 +2393,6 @@
 <translation id="3569407787324516067">Էկրանապահ</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> կայքը կարող է դիտել հետևյալ ֆայլերն ու պանակները</translation>
 <translation id="3571734092741541777">Տեղակայել</translation>
-<translation id="3574210789297084292">մուտք գործել</translation>
 <translation id="3575121482199441727">Թույլատրել այս կայքի համար</translation>
 <translation id="3576324189521867626">Հաջողությամբ տեղադրվեց</translation>
 <translation id="3578594933904494462">Այս ներդիրի բովանդակությունը համօգտագործվում է:</translation>
@@ -2848,7 +2843,6 @@
 <translation id="4022426551683927403">&amp;Ավելացնել բառացանկին</translation>
 <translation id="4023146161712577481">Սահմանվում է սարքի կազմաձևումը:</translation>
 <translation id="4025039777635956441">Անջատել նշված կայքի ձայնը</translation>
-<translation id="4027804175521224372">(Մի բաց թողեք հնարավորությունը - <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Ավելացնել ներածման մեթոդներ</translation>
 <translation id="4029556917477724407">Վերադառնալ «<ph name="PAGE_TITLE" />» էջից</translation>
 <translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
@@ -3795,7 +3789,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Ձեր կոշտ սկավառակը լցված է: Պահեք այլ տեղադրությունում կամ տեղ ազատեք կոշտ սկավառակի վրա:</translation>
 <translation id="5123433949759960244">Բասկետբոլ</translation>
-<translation id="5125167430897995218">PUK կոդը սխալ է։ Մնաց 1 փորձ, որից հետո պետք է դիմեք ձեր օպերատորին՝ ցանցի հասանելիությունը վերականգնելու համար։</translation>
 <translation id="5125751979347152379">URL-ն անվավեր է:</translation>
 <translation id="5126611267288187364">Դիտել փոփոխությունները</translation>
 <translation id="5127620150973591153">Անվտանգ միացման կոդ՝ <ph name="TOKEN" /></translation>
@@ -4045,7 +4038,6 @@
 <translation id="540296380408672091">Միշտ արգելափակել քուքիները <ph name="HOST" />-ում</translation>
 <translation id="540495485885201800">Փոխել տեղերով նախորդի հետ</translation>
 <translation id="5405146885510277940">Զրոյացնել կարգավորումները</translation>
-<translation id="5407119150486192764">Ցանցն ապակողպելու համար մուտքագրեք ձեր օպերատորի տրամադրած 8 թվանշանով PIN կոդը։</translation>
 <translation id="5407167491482639988">Անհասկանալի</translation>
 <translation id="5408750356094797285">Մասշտաբ՝ <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Ձեր Google հաշվից</translation>
@@ -6612,7 +6604,6 @@
 <translation id="8206745257863499010">Բլյուզ</translation>
 <translation id="8206859287963243715">Բջջային</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Նոր ծանուցում}one{# նոր ծանուցում}other{# նոր ծանուցում}}</translation>
-<translation id="8211551284753798479">PUK կոդն անվավեր է։ Մնաց <ph name="RETRIES" /> փորձ։</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Ներբեռնումն ընթացքում է}one{Ներբեռնումն ընթացքում է}other{Ներբեռնումներն ընթացքում են}}</translation>
 <translation id="8213449224684199188">Լուսանկարելու ռեժիմը միացավ</translation>
 <translation id="8214489666383623925">Open File...</translation>

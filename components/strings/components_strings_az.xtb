@@ -285,6 +285,7 @@
 <translation id="1919345977826869612">Reklamlar</translation>
 <translation id="1919367280705858090">Spesifik xəta mesajı ilə bağlı yardım əldə edin</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Yoxdur}=1{1 sayt}other{# sayt}}</translation>
+<translation id="1924727005275031552">Yeni</translation>
 <translation id="1945968466830820669">Təşkilat hesabına girişi itirə və ya kimlik oğurluğu ilə üzləşə bilərsiniz. Chromium parollarınızı indi dəyişməyi məsləhət görür.</translation>
 <translation id="1947454675006758438">Yuxarı sağ tərəfdən ştapel vurun</translation>
 <translation id="1958218078413065209">Ən yüksək xalınız: <ph name="SCORE" />.</translation>
@@ -395,6 +396,7 @@
 <translation id="2357481397660644965">Cihazı <ph name="DEVICE_MANAGER" />, hesabı isə<ph name="ACCOUNT_MANAGER" /> idarə edir.</translation>
 <translation id="2359629602545592467">Çoxsaylı</translation>
 <translation id="2359808026110333948">Davam edin</translation>
+<translation id="2359961752320758691">Virtual kart adınız tətbiq edildi.</translation>
 <translation id="2367567093518048410">Səviyyə</translation>
 <translation id="2372464001869762664">Təsdiqlədikdən sonra Google Hesabınızdakı kart məlumatları bu sayt ilə paylaşılacaq. Plex Hesabı detallarınızda CVC kodunu tapın.</translation>
 <translation id="2380886658946992094">Hüquqi</translation>
@@ -405,6 +407,7 @@
 <translation id="239429038616798445">Bu göndərmə üsulu əlçatan deyil. Başqa üsul seçin.</translation>
 <translation id="2396249848217231973">&amp;Silinməni ləğv edin</translation>
 <translation id="2410754574180102685">Hüquqi Hökumət</translation>
+<translation id="2413155254802890957">Köhnə</translation>
 <translation id="2413528052993050574">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmir; təhlükəsizlik sertifikatı ləğv edilə bilər. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.</translation>
 <translation id="2414886740292270097">Qara</translation>
 <translation id="2438874542388153331">Sağdan dördlü deşik açın</translation>
@@ -904,12 +907,14 @@
 <translation id="4275830172053184480">Cihazınızı yenidən başladın</translation>
 <translation id="4277028893293644418">Parolu sıfırlayın</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Bu kart Google Hesabında yadda saxlanılıb}other{Bu kartlar Google Hesabında yadda saxlanılıb}}</translation>
+<translation id="4287885627794386150">Sınaq üçün uyğundur, lakin aktiv deyil</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> səhifəsi üçün miniatür</translation>
 <translation id="42981349822642051">Genişləndirin</translation>
 <translation id="4300675098767811073">Sağdan çoxsaylı deşik açın</translation>
 <translation id="4302514097724775343">Oxutmaq üçün dinozavra toxunun</translation>
 <translation id="4302965934281694568">Chou3 (Zərf)</translation>
 <translation id="4305666528087210886">Faylınıza giriş mümkün olmadı</translation>
+<translation id="4306529830550717874">Ünvan saxlanılsın?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blok edin (defolt)</translation>
 <translation id="4314815835985389558">Sinxronizasiyanı idarə edin</translation>
@@ -1397,6 +1402,7 @@
 <translation id="610911394827799129"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> linkində Google Hesabına məxsus axtarış tarixçəsinin başqa formaları ola bilər</translation>
 <translation id="6116338172782435947">Buferə kopyalanan mətn və şəkillərə baxın</translation>
 <translation id="6120179357481664955">UPI ID'niz yadda saxlansın?</translation>
+<translation id="6123290840358279103">Virtual karta baxın</translation>
 <translation id="6124432979022149706">Chrome Enterprise Birləşdiriciləri</translation>
 <translation id="6146055958333702838">Kabelləri yoxlayın və istifadə edəcəyiniz hər hansı router, modem və ya digər
         şəbəkə cihazlarını yenidən yükləyin.</translation>
@@ -1676,6 +1682,7 @@
 <translation id="7300012071106347854">Kobalt Mavisi</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">Yüksək</translation>
+<translation id="7305756307268530424">Daha asta sürəti başladın</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Bağlantı Yardımı</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" bölməsini gizlədin</translation>
@@ -1701,6 +1708,7 @@
 <translation id="7378594059915113390">Media Nəzarətləri</translation>
 <translation id="7378627244592794276">Xeyr</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Tətbiq edilə bilməz</translation>
 <translation id="7390545607259442187">Kartı Təsdiqləyin</translation>
 <translation id="7399802613464275309">Təhlükəsizlik Yoxlanışı</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1752,6 +1760,7 @@
 <translation id="7548892272833184391">Bağlantı xətalarını həll edin</translation>
 <translation id="7549584377607005141">Bu veb səhifə düzgün görüntülənmək üçün əvvəlcə daxil etdiyiniz datanı tələb edir. Bu datanı yenidən göndərə bilərsiniz, amma bununla, bu səhifənin əvvəllər etdiyi əməliyyatı təkrarlamış olacaqsınız.</translation>
 <translation id="7550637293666041147">Cihazın istifadəçi adı və Chrome istifadəçi adı</translation>
+<translation id="755279583747225797">Sınaq aktivdir</translation>
 <translation id="7552846755917812628">Aşağıdakı məsləhətləri sınayın:</translation>
 <translation id="7554475479213504905">İstənilən halda yenidən yükləyin və göstərin</translation>
 <translation id="7554791636758816595">Yeni Panel</translation>
@@ -1846,6 +1855,7 @@
 <translation id="7894280532028510793">Yazılış doğrudursa, <ph name="BEGIN_LINK" />Şəbəkə Diaqnostikasını icra edin<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Zərf)</translation>
 <translation id="7931318309563332511">Naməlum</translation>
+<translation id="793209273132572360">Ünvan yenilənsin?</translation>
 <translation id="7932579305932748336">Palto</translation>
 <translation id="79338296614623784">Düzgün telefon nömrəsi daxil edin</translation>
 <translation id="7934052535022478634">Ödəmə tamamlandı</translation>

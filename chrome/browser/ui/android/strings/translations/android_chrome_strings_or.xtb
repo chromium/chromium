@@ -202,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />ଯେତେବେଳେ ହଜାର ହଜାର ଉପଯୋଗକର୍ତ୍ତା – ଏକ କନସର୍ଟରେ କ୍ରାଉଡ୍ ପରି — ସମାନ ରୁଚି ସେୟାର୍ କରନ୍ତି, ସେତେବେଳେ ବିଜ୍ଞାପନଦାତାମାନେ ଜାଣିପାରିବେ ଏବଂ ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ବ୍ୟକ୍ତି ପରିବର୍ତ୍ତେ, କ୍ରାଉଡ୍ ପାଇଁ ବିଜ୍ଞାପନଗୁଡ଼ିକୁ ଚୟନ କରିପାରିବେ।<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />ବିଜ୍ଞାପନଦାତାମାନେ ଏପରି ଉପାୟରେ ବିଜ୍ଞାପନଗୁଡ଼ିକର ପ୍ରଭାବକୁ ଅଧ୍ୟୟନ କରିପାରିବେ ଯାହା ଆପଣଙ୍କୁ ବିଭିନ୍ନ ସାଇଟରେ ଟ୍ରାକ୍ କରେ ନାହିଁ।<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">ଆପଣ ଭିଜିଟ୍ କରିପାରନ୍ତି ବୋଲି Chrome ଭାବୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ୍ କରେ। ଏହା କରିବା ପାଇଁ, ଆପଣ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦେଲେ Chrome ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରେ ଏବଂ ଆପଣଙ୍କ ପରିଚୟକୁ ସାଇଟଗୁଡ଼ିକରୁ ଲୁଚାଇବା ପାଇଁ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରି Google ମାଧ୍ୟମରେ ପଠାଇପାରେ।</translation>
 <translation id="234265804618409743">ଆପଣଙ୍କ କ୍ୟାମେରାକୁ ଖୋଲାଯାଇ ପାରିବ ନାହିଁ। କିଛି ତ୍ରୁଟି ହୋଇଗଲା।</translation>
 <translation id="2345671828921229300">ସନ୍ଧାନ କରିବାକୁ, କୌଣସି ଏକ ଶବ୍ଦକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ</translation>
 <translation id="2349710944427398404">ଆକାଉଣ୍ଟ, ବୁକ୍‌ମାର୍କ୍ସ ତଥା ସେଭ୍ କରାଯାଇଥିବା ସେଟିଂସ୍ ସମେତ Chrome ଦ୍ୱାରା ବ୍ୟବହୃତ ସମୁଦାୟ ଡାଟା</translation>
@@ -274,6 +275,7 @@
 <translation id="2781151931089541271">1 ସେକେଣ୍ଡ ବାକି ଅଛି</translation>
 <translation id="2801022321632964776">Chromeର ନବୀନତମ ସଂସ୍କରଣରେ ଆପଣଙ୍କ ଭାଷା ପାଇବା ନିମନ୍ତେ ଅପ୍‌ଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">ଆପଣଙ୍କର <ph name="BEGIN_LINK" />Google ଆକାଉଣ୍ଟ<ph name="END_LINK" />ରେ ସେଭ୍ ହୋ‍ଇଥିବା ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ ଓ ପରିଚାଳନା କରନ୍ତୁ।</translation>
 <translation id="2818669890320396765">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସ୍‌ରେ ବୁକ୍‍ମାର୍କଗୁଡ଼ିକ ପ୍ରାପ୍ତ କରିବାକୁ, ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ ଏବଂ ସିଙ୍କ୍‌ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -395,7 +397,6 @@
 <translation id="3568688522516854065">ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସ୍‍ଗୁଡ଼ିକରୁ ନିଜର ଟାବ୍ ପ୍ରାପ୍ତ କରିବା ପାଇଁ, ସାଇନ୍ ଇନ୍ କରି ସିଙ୍କ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="3587482841069643663">ସମସ୍ତ</translation>
 <translation id="3587596251841506391">ୱେବରେ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
-<translation id="3598653140581545904">ସାଇନ୍ ଇନ୍ କରିବାକୁ ଇନକଗ୍ନିଟୋ ମୋଡ୍ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3602290021589620013">ପ୍ରିଭ୍ୟୁ</translation>
 <translation id="3616113530831147358">ଅଡିଓ</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> ସହ ସେୟାର୍ କରାଯାଉଛି</translation>
@@ -458,6 +459,7 @@
 <translation id="4056223980640387499">ସେପିଆ</translation>
 <translation id="4060598801229743805">ସ୍କ୍ରିନ୍‌ର ଶୀର୍ଷଭାଗରେ ବିକଳ୍ପଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="4062305924942672200">ଆଇନଗତ ସୂଚନା</translation>
+<translation id="4082818367361753283">ଗୋଷ୍ଠୀ ID</translation>
 <translation id="4084682180776658562">ବୁକମାର୍କ</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" />ଙ୍କ ଠାରୁ – <ph name="BEGIN_DEEMPHASIZED" />Google ଦ୍ୱାରା ବିତରଣ କରାଯାଇଛି<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ଆପ୍ ଡାଟା ଡିଲିଟ୍ କରିବେ କି?</translation>
@@ -759,7 +761,6 @@
 <translation id="5964805880140440652">ଅନ୍ୟ ଏକ ଡିଭାଇସ୍ ସହ ଏହି ପୃଷ୍ଠା ସେୟାର୍ କରିବା ପାଇଁ Chrome ସେଟିଂସରେ ସିଙ୍କ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5964869237734432770">ଛବିର ବର୍ଣ୍ଣନା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5979084224081478209">ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
-<translation id="5982307838673692400">ଏକ ଇନକଗ୍ନିଟୋ ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="6000066717592683814">Googleକୁ ଡିଫଲ୍ଟ ଭାବେ ରଖନ୍ତୁ</translation>
 <translation id="6000203700195075278">ପୁଣି ଅନୁସରଣ କରନ୍ତୁ</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />ସନ୍ଧାନ<ph name="END_LINK1" /> କିମ୍ବା ଅନ୍ୟ ଫର୍ମର ଇତିହାସଗୁଡ଼ିକୁ ଖାଲି କରିବା ପାଇଁ, <ph name="BEGIN_LINK2" />ମୋ Google କାର୍ଯ୍ୟକଳାପ<ph name="END_LINK2" />କୁ ଭିଜିଟ୍ କରନ୍ତୁ</translation>
@@ -801,13 +802,13 @@
 <translation id="6277522088822131679">ପୃଷ୍ଟା ପ୍ରିଣ୍ଟ କରିବାରେ କିଛି ସମସ୍ୟା ଦେଖାଦେଇଛି। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6278428485366576908">ଥିମ୍</translation>
 <translation id="6292420053234093573">Chrome ବ୍ୟବହାର କରିବା ଦ୍ୱାରା, ଆପଣ <ph name="BEGIN_LINK1" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />Google Chrome ଏବଂ Chrome OS ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" /> ସହିତ ସହମତ ହେଉଛନ୍ତି।</translation>
-<translation id="629730747756840877">ଆକାଉଣ୍ଟ</translation>
 <translation id="6297765934698848803">ଆପଣଙ୍କର ଡିଭାଇସକୁ ପରିଚାଳନା କରୁଥିବା ସଂସ୍ଥା ଆପଣଙ୍କ କ୍ୟାମେରାକୁ ବନ୍ଦ କରିଦେଇଛି।</translation>
 <translation id="6301525844455696527">ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକା ଦେଖନ୍ତୁ</translation>
 <translation id="6303969859164067831">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ ଏବଂ ସିଙ୍କ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6312687380483398334">ୱେବ୍ ଆପଗୁଡ଼ିକ (ନୀରବ)</translation>
 <translation id="6316139424528454185">Android ସଂସ୍କରଣ ଅସମର୍ଥିତ ଅଟେ</translation>
 <translation id="6324034347079777476">Android ସିଷ୍ଟମ୍‌ର ସିଙ୍କ ଅକ୍ଷମ କରାଗଲା</translation>
+<translation id="6324916366299863871">ସର୍ଟକଟ୍‌କୁ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="6324977638108296054">ହାଇଲାଇଟ୍ କରାଯାଇଥିବା ଟେକ୍ସଟର ଲିଙ୍କକୁ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="6324997754869598316">(ତ୍ରୁଟି <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ମାଧ୍ୟମରେ ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -912,9 +913,6 @@
 <translation id="6900532703269623216">ଉନ୍ନତ ସୁରକ୍ଷା</translation>
 <translation id="6903907808598579934">ସିଙ୍କ୍‌ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6929699136511445623">Android ସିଷ୍ଟମ୍ ସିଙ୍କକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
-<translation id="6941901516114974832">ଇନକଗ୍ନିଟୋ ମୋଡରେ, ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ ଆପଣ ଭିଜିଟ୍ କରିଥିବା ୱେବସାଇଟଗୁଡ଼ିକୁ, ଆପଣଙ୍କ ନିଯୁକ୍ତିଦାତା କିମ୍ବା ସ୍କୁଲ୍ ଏବଂ ଆପଣଙ୍କ ଇଣ୍ଟରନେଟ୍ ସେବା ପ୍ରଦାନକାରୀଙ୍କୁ, <ph name="BEGIN_BOLD1" />ଏବେ ବି ଦୃଶ୍ୟମାନ ହୋଇପାରେ<ph name="END_BOLD1" />।
-
-ଆପଣ <ph name="BEGIN_BOLD2" />ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବ୍ ବନ୍ଦ<ph name="END_BOLD2" /> କଲେ ହିଁ କେବଳ ଆପଣଙ୍କ ଇନକଗ୍ନିଟୋ ସେସନର ଡାଟା Chromeରୁ ଖାଲି ହେବ।</translation>
 <translation id="6942665639005891494">ସେଟିଂସ୍‌ ମେନୁ ବିକଳ୍ପ ବ୍ୟବହାର କରି ଯେକୌଣସି ସମୟରେ ଡାଉନ୍‌ଲୋଡ୍‌ କରିବାର ଡିଫଲ୍ଟ ଲୋକେସନ୍‌କୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="694267552845942083">ବର୍ତ୍ତମାନ ଆପଣ ଆପଣଙ୍କ ସିଙ୍କ ସେଟିଂସକୁ କଷ୍ଟମାଇଜ୍ କରୁଛନ୍ତି। ସିଙ୍କ ଚାଲୁ କରିବା ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ସ୍କ୍ରିନର ତଳ ପାର୍ଶ୍ୱରେ ଥିବା 'ସୁନିଶ୍ଚିତ କରନ୍ତୁ' ବଟନରେ ଟାପ୍ କରନ୍ତୁ। ଉପରକୁ ନାଭିଗେଟ୍ କରନ୍ତୁ</translation>
 <translation id="6945221475159498467">ଚୟନ କରନ୍ତୁ</translation>
@@ -995,6 +993,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> ଅପ୍‌ଡେଟ୍ କରାଯାଇଛି)</translation>
 <translation id="7494974237137038751">ଡାଟା ସେଭ୍ ହୋଇଛି</translation>
 <translation id="7498271377022651285">ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ…</translation>
+<translation id="750228856503700085">ଅପଡେଟଗୁଡ଼ିକ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="7507207699631365376">ଏହି ପ୍ରଦାନକାରୀଙ୍କର <ph name="BEGIN_LINK" />ଗୋପନୀୟତା ନୀତି<ph name="END_LINK" /> ଦେଖନ୍ତୁ</translation>
 <translation id="7514365320538308">ଡାଉନ୍‌‌ଲୋଡ୍‌ କରନ୍ତୁ</translation>
 <translation id="751961395872307827">ସାଇଟ୍‍କୁ ସଂଯୋଗ କରିପାରିବ ନାହିଁ।</translation>
@@ -1097,6 +1096,7 @@
 <translation id="8076492880354921740">ଟାବ୍</translation>
 <translation id="8078096376109663956">କେବଳ ଟେକ୍ସଟ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="8084114998886531721">ସେଭ୍‌ ହୋ‍ଇଥିବା ପାସ୍‌ୱର୍ଡ</translation>
+<translation id="8084285576995584326">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ଡାଟା ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
 <translation id="808747664143081553">ଡିଭାଇସ୍ ସହ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="8103578431304235997">ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1185,13 +1185,16 @@
 <translation id="8662811608048051533">ଆପଣଙ୍କୁ ଅଧିକାଂଶ ସାଇଟ୍‌ରୁ ସାଇନ୍ ଆଉଟ୍ କରିଦିଏ।</translation>
 <translation id="8664979001105139458">ଫାଇଲ୍‌ର ନାମ ପୂର୍ବରୁ ଅଛି</translation>
 <translation id="8676789164135894283">ସାଇନ୍-ଇନ୍ ପାଇଁ ଯାଞ୍ଚକରଣ</translation>
+<translation id="867767487203716855">ପରବର୍ତ୍ତୀ ଅପଡେଟ୍</translation>
 <translation id="8683039184091909753">ଛବି</translation>
+<translation id="8683081248374354009">ଗୋଷ୍ଠୀ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{ସିଗ୍‍ନାଲ୍‌ ଦକ୍ଷତାର ସ୍ତର: #ଟି ବାର୍‍}other{ସିଗ୍‍ନାଲ୍‌ ଦକ୍ଷତାର ସ୍ତର: #ଟି ବାର୍‍}}</translation>
 <translation id="869891660844655955">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ</translation>
 <translation id="8699120352855309748">ଏହି ଭାଷାଗୁଡ଼ିକର ଅନୁବାଦ କରିବାକୁ ଅଫର୍ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="8725066075913043281">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="8730621377337864115">ସମାପ୍ତ ହୋଇଛି</translation>
+<translation id="8746155870861185046">ହାଇଲାଇଟ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="8748850008226585750">ଲୁଚାଯାଇଥିବା ବିଷୟବସ୍ତୁ</translation>
 <translation id="8773160212632396039">ପ୍ରକ୍ରିୟାକରଣ ପାଇଁ ଅନୁରୋଧ</translation>
 <translation id="8788265440806329501">ନାଭିଗେସନ୍ ଇତିହାସ ବନ୍ଦ କରାଯାଇଛି</translation>

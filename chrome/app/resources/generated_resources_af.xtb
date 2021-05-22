@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Jou administrateur het 'n verstektema gestel wat nie verander kan word nie.</translation>
 <translation id="1163931534039071049">Bekyk raambron</translation>
 <translation id="1164891049599601209">Op misleidende werf ingevoer</translation>
-<translation id="1164899421101904659">Voer PIN-ontsluitingsleutel in</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1166212789817575481">Maak oortjies aan die regterkant toe</translation>
-<translation id="116624467691206283">Ongeldige PUK. Jy het 1 poging oor.</translation>
 <translation id="1168020859489941584">Maak oop oor <ph name="TIME_REMAINING" /> …</translation>
 <translation id="1168100932582989117">Google-naambedieners</translation>
 <translation id="1170288591054440704">Vra wanneer 'n werf lettertipes wil gebruik wat op jou toestel geïnstalleer is</translation>
@@ -1213,7 +1211,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
     Vir hulp met die foutsporing van uitsaaikwessies, kan jy die
     <ph name="BEGIN_LINK" />
     hulpsentrum<ph name="END_LINK" /> raadpleeg.</translation>
-<translation id="2265889263013046172">Verkeerde PUK. Jy het <ph name="RETRIES" /> pogings oor voordat jy jou diensverskaffer moet kontak om netwerktoegang terug te kry.</translation>
 <translation id="22665427234727190">Vra wanneer 'n werf toegang tot Bluetooth-toestelle wil hê (aanbeveel)</translation>
 <translation id="2266957463645820432">IPP oor USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Ruil data uit met enige toestel in die domein <ph name="DOMAIN" /></translation>
@@ -1497,7 +1494,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2553440850688409052">Versteek hierdie inprop</translation>
 <translation id="2554553592469060349">Gekose lêer is te groot (maksimumgrootte: 3 MB).</translation>
 <translation id="2558896001721082624">Wys altyd toeganklikheidopsies in die stelselkieslys</translation>
-<translation id="2562743677925229011">Nie by <ph name="SHORT_PRODUCT_NAME" /> aangemeld nie</translation>
 <translation id="2564520396658920462">Die opsie om JavaScript deur AppleScript uit te voer, is afgeskakel. Om dit van die kieslysbalk af aan te skakel, gaan na Aansig &gt; Ontwikkelaar &gt; Laat JavaScript van Apple-geleenthede af toe. Vir meer inligting: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Verbeterde speltoets</translation>
 <translation id="2568774940984945469">Inligtingbalkhouer</translation>
@@ -2411,7 +2407,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3569407787324516067">Sluimerskerm</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> kan die volgende lêers en vouers bekyk</translation>
 <translation id="3571734092741541777">Stel op</translation>
-<translation id="3574210789297084292">meld aan</translation>
 <translation id="3575121482199441727">Laat vir hierdie werf toe</translation>
 <translation id="3576324189521867626">Suksesvol geïnstalleer</translation>
 <translation id="3578594933904494462">Hierdie oortjie se inhoud word tans gedeel.</translation>
@@ -2862,7 +2857,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4022426551683927403">Voeg by Woordeboek</translation>
 <translation id="4023146161712577481">Bepaal tans toestelopstelling.</translation>
 <translation id="4025039777635956441">Demp geslekteerde werf</translation>
-<translation id="4027804175521224372">(Jy mis uit – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Voeg invoermetodes by</translation>
 <translation id="4029556917477724407">Terug vanaf <ph name="PAGE_TITLE" />-bladsy</translation>
 <translation id="4031179711345676612">Mikrofoon word toegelaat</translation>
@@ -3809,7 +3803,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Jou hardeskyf is vol. Stoor asseblief na 'n ander ligging of maak plek op die hardeskyf.</translation>
 <translation id="5123433949759960244">Basketbal</translation>
-<translation id="5125167430897995218">Verkeerde PUK. Jy het 1 poging oor voordat jy jou diensverskaffer moet kontak om netwerktoegang terug te kry.</translation>
 <translation id="5125751979347152379">Ongeldige URL.</translation>
 <translation id="5126611267288187364">Bekyk veranderinge</translation>
 <translation id="5127620150973591153">Veiligeverbinding-ID: <ph name="TOKEN" /></translation>
@@ -4057,7 +4050,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="540296380408672091">Blokkeer altyd webkoekies op <ph name="HOST" /></translation>
 <translation id="540495485885201800">Ruil met vorige</translation>
 <translation id="5405146885510277940">Stel instellings terug</translation>
-<translation id="5407119150486192764">Voer die 8-syfer-PIN-sleutel vir deblokkering in wat jou diensverskaffer verskaf het</translation>
 <translation id="5407167491482639988">Onverstaanbaar</translation>
 <translation id="5408750356094797285">Zoem: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Van jou Google-rekening af</translation>
@@ -6626,7 +6618,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8206745257863499010">Blues</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nuwe kennisgewing}other{# nuwe kennisgewings}}</translation>
-<translation id="8211551284753798479">Ongeldige PUK. Jy het <ph name="RETRIES" /> pogings oor.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Aflaai is aan die gang}other{Aflaaie is aan die gang}}</translation>
 <translation id="8213449224684199188">Het fotomodus ingevoer</translation>
 <translation id="8214489666383623925">Maak lêer oop …</translation>

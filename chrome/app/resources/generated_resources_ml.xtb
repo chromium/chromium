@@ -157,10 +157,8 @@
 <translation id="116173250649946226">നിങ്ങളുടെ അഡ്‌മിൻ മാറ്റാനാകാത്ത വിധത്തിലുള്ള ഡിഫോൾട്ട് തീം സജ്ജീകരിച്ചിരിക്കുന്നു.</translation>
 <translation id="1163931534039071049">ഫ്രെയിം ഉറവിടം &amp;കാണുക</translation>
 <translation id="1164891049599601209">വഞ്ചനാപരമായ സൈറ്റിൽ നൽകിയതാണ്</translation>
-<translation id="1164899421101904659">പിൻ അൺലോക്ക് കീ നൽകുക</translation>
 <translation id="1165039591588034296">പിശക്</translation>
 <translation id="1166212789817575481">ടാബുകള്‍ വലത്തേയ്‌ക്ക് അടയ്‌ക്കുക</translation>
-<translation id="116624467691206283">PUK അസാധുവാണ്. നിങ്ങൾക്ക് ഒരു ശ്രമം കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> ല്‍ തുറക്കുന്നു...</translation>
 <translation id="1168100932582989117">Google നാമ സെർവറുകൾ</translation>
 <translation id="1170288591054440704">ഒരു സൈറ്റിന് നിങ്ങളുടെ ഉപകരണത്തിൽ ഇൻസ്‌റ്റാൾ ചെയ്‌തിട്ടുള്ള ഫോണ്ടുകൾ ഉപയോഗിക്കണമെന്നുള്ളപ്പോൾ ചോദിക്കുക</translation>
@@ -170,6 +168,7 @@
 <translation id="1173894706177603556">പേരുമാറ്റുക</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="1174073918202301297">കുറുക്കുവഴി ചേർത്തു</translation>
+<translation id="1174366174291287894">നിങ്ങളുടെ കണക്ഷൻ സുരക്ഷിതമല്ലെന്ന് Chrome പറഞ്ഞിട്ടില്ലെങ്കിൽ, അത് എല്ലായ്‌പ്പോഴും സുരക്ഷിതമാണ്</translation>
 <translation id="117445914942805388">നിങ്ങളുടെ സമന്വയിപ്പിച്ച എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും Google അക്കൗണ്ടിൽ നിന്നും ബ്രൗസിംഗ് ഡാറ്റ മായ്ക്കാൻ, <ph name="BEGIN_LINK" />സമന്വയ ക്രമീകരണം സന്ദർശിക്കുക<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;അച്ചടിക്കൂ...</translation>
 <translation id="1176471985365269981">നിങ്ങളുടെ ഉപകരണത്തിൽ ഫയലുകളോ ഫോൾഡറുകളോ എഡിറ്റ് ചെയ്യാൻ അനുവാദമില്ല</translation>
@@ -748,6 +747,7 @@
 <translation id="1781398670452016618">നിങ്ങൾ ഇപ്പോൾ വൈഫൈയിൽ കണക്റ്റ് ചെയ്‌ത് അപ്‌ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യാൻ <ph name="DOMAIN" /> ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="1781502536226964113">പുതിയ ടാബ് പേജ് തുറക്കുക</translation>
 <translation id="1781771911845953849">അക്കൗണ്ടുകളും സമന്വയവും</translation>
+<translation id="1782101999402987960">അപ്ഡേറ്റുകൾ നിങ്ങളുടെ അഡ്‌മിൻ ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="1782196717298160133">നിങ്ങളുടെ ഫോൺ കണ്ടെത്തുന്നു</translation>
 <translation id="1784707308176068866">സഹകരിക്കുന്ന നേറ്റീവ് ആപ്പ് അഭ്യർത്ഥിച്ചാൽ പശ്ചാത്തലത്തിൽ പ്രവർത്തിപ്പിക്കുക</translation>
 <translation id="1784849162047402014">ഉപകരണത്തിൽ ഡിസ്‌ക് ഇടം കുറവാണ്</translation>
@@ -1136,6 +1136,7 @@
 <translation id="2193365732679659387">വിശ്വസ്ഥത ക്രമീകരണം</translation>
 <translation id="2195331105963583686">ആ സമയത്തിന് ശേഷവും നിങ്ങൾക്ക് <ph name="DEVICE_TYPE" /> ഉപയോഗിക്കാനാവും, എന്നാൽ തുടർന്നങ്ങോട്ട് സ്വയമേവയുള്ള സോഫ്‌റ്റ്‌വെയർ, സുരക്ഷാ അപ്ഡേറ്റുകൾ ലഭിക്കില്ല</translation>
 <translation id="2195729137168608510">ഇമെയില്‍‌ പരിരക്ഷണം</translation>
+<translation id="2198625180564913276">പ്രൊഫെെൽ ചേർക്കുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="2199298570273670671">പിശക്</translation>
 <translation id="2199719347983604670">Chrome സമന്വയത്തിൽ നിന്നുള്ള ഡാറ്റ</translation>
 <translation id="2200094388063410062">ഇമെയില്‍</translation>
@@ -1194,7 +1195,6 @@
 <translation id="2263189956353037928">സൈൻ ഔട്ട് ചെ‌യ്‌ത് വീണ്ടും സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2263371730707937087">സ്‌ക്രീൻ പുതുക്കൽ നിരക്ക്</translation>
 <translation id="2263679799334060788">Google Cast മെച്ചപ്പെടുത്താൻ നിങ്ങളുടെ ഫീഡ്‌ബാക്ക്, ഞങ്ങളെ സഹായിക്കുന്നു. ഇത് അഭിനന്ദനാർഹമാണ്. കാസ്‌റ്റിലെ പ്രശ്‌ന പരിഹാരത്തിന്, <ph name="BEGIN_LINK" /> സഹായകേന്ദ്രം<ph name="END_LINK" /> സന്ദർശിക്കുക.</translation>
-<translation id="2265889263013046172">PUK തെറ്റാണ്. നെറ്റ്‌വർക്ക് ആക്‌സസ് വീണ്ടും ലഭിക്കാൻ നിങ്ങളുടെ സേവനദാതാവിനെ ബന്ധപ്പെടുന്നതിന് മുമ്പ് നിങ്ങൾക്ക് <ph name="RETRIES" /> ശ്രമങ്ങൾ കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="22665427234727190">Bluetooth ഉപകരണങ്ങൾ ആക്‌സസ് ചെയ്യാൻ ഒരു സൈറ്റ് താൽപ്പര്യപ്പെടുമ്പോൾ ചോദിക്കുക (ശുപാർശ ചെയ്യുന്നു)</translation>
 <translation id="2266957463645820432">USB (IPPUSB) വഴി IPP</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> എന്ന ഡൊമെയ്‌നിലുള്ള ഏത് ഉപകരണം ഉപയോഗിച്ചും ഡാറ്റ എക്‌സ്‌ചേഞ്ച് ചെയ്യുക</translation>
@@ -1478,7 +1478,6 @@
 <translation id="2553440850688409052">ഈ പ്ലഗിന്‍ മറയ്ക്കുക</translation>
 <translation id="2554553592469060349">തിരഞ്ഞെടുത്ത ഫയൽ വളരെ വലുതാണ് (പരമാവധി വലുപ്പം: 3mb).</translation>
 <translation id="2558896001721082624">സിസ്റ്റം മെനുവിൽ ഉപയോഗസഹായി ഓപ്‌ഷനുകൾ എല്ലായ്പ്പോഴും കാണിക്കുക</translation>
-<translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" />-ലേക്ക് പ്രവേശിച്ചിട്ടില്ല</translation>
 <translation id="2564520396658920462">AppleScript-ലൂടെ JavaScript നടപ്പിലാക്കുന്നത് ഓഫാക്കിയിരിക്കുന്നു. അത് ഓണാക്കാൻ, മെനു ബാറിൽ നിന്നും കാഴ്‌ച &gt; ഡെവലപ്പർ &gt; Apple Events-ൽ നിന്ന് JavaScript അനുവദിക്കൽ, എന്നതിലേക്ക് പോവുക. കൂടുതൽ വിവരങ്ങൾക്ക്: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">മെച്ചപ്പെടുത്തിയ സ്പെൽ ചെക്ക്</translation>
 <translation id="2568774940984945469">വിവരബാര്‍ കണ്ടെയ്നര്‍</translation>
@@ -1706,6 +1705,7 @@
 <translation id="2805760958323556153">ExtensionInstallForcelist എന്നതിന്റെ നയ മൂല്യം അസാധുവാണ്. നിങ്ങളുടെ അഡ്മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="2805770823691782631">കൂടുതൽ വിശദാംശങ്ങൾ</translation>
 <translation id="2806372837663997957">നിങ്ങൾ ഫയൽ പങ്കിടാൻ ശ്രമിച്ച ഉപകരണം അത് സ്വീകരിച്ചില്ല</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">കുറുക്കുവഴി മുമ്പേ നിലവിലുണ്ട്</translation>
 <translation id="2807517655263062534">നിങ്ങൾ ഡൗൺലോഡ് ചെയ്യുന്ന ഫയലുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="2809586584051668049">ഒപ്പം <ph name="NUMBER_ADDITIONAL_DISABLED" /> എണ്ണം കൂടി</translation>
@@ -2021,6 +2021,7 @@
 <translation id="315116470104423982">മൊബൈല്‍ ഡാറ്റ</translation>
 <translation id="3151539355209957474">ആരംഭിക്കുന്ന സമയം</translation>
 <translation id="3151562827395986343">ചരിത്രവും കുക്കികളും കാഷെയും മറ്റും മായ്‌ക്കുക</translation>
+<translation id="3151616662954589507">സെൽഫി ക്യാമറ</translation>
 <translation id="3151786313568798007">ഓറിയന്റേഷൻ</translation>
 <translation id="3154351730702813399">നിങ്ങളുടെ ബ്രൗസിംഗ് ആക്‌റ്റിവിറ്റി ഉപകരണ അഡ്‌മിൻ നിരീക്ഷിച്ചേക്കാം.</translation>
 <translation id="3154429428035006212">ഒരു മാസത്തിലേറെയായി ഓഫ്‌ലൈനിലാണ്</translation>
@@ -2135,6 +2136,7 @@
 <translation id="32939749466444286">Linux കണ്ടെയ്‌നർ ആരംഭിച്ചില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3294437725009624529">അതിഥി</translation>
 <translation id="3294686910656423119">ഉപയോഗ വിവരക്കണക്കും ക്രാഷ് റിപ്പോർട്ടുകളും</translation>
+<translation id="3295357220137379386">ഉപകരണം തിരക്കിലാണ്</translation>
 <translation id="329838636886466101">റിപ്പയർ ചെയ്യുക</translation>
 <translation id="3298789223962368867">അസാധുവായ URL നല്‍കി.</translation>
 <translation id="32991397311664836">ഉപകരണങ്ങൾ:</translation>
@@ -2389,7 +2391,6 @@
 <translation id="3569407787324516067">സ്ക്രീൻ സേവർ</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />-ന് ചുവടെയുള്ള ഫയലുകളും ഫോൾഡറുകളും കാണാനാവും</translation>
 <translation id="3571734092741541777">സജ്ജീകരിക്കുക</translation>
-<translation id="3574210789297084292">സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3575121482199441727">ഈ സൈറ്റിന് അനുവദിക്കുക</translation>
 <translation id="3576324189521867626">ഇൻസ്‌റ്റാൾ ചെയ്‌തു</translation>
 <translation id="3578594933904494462">ഈ ടാബിന്റെ ഉള്ളടക്കം പങ്കിടുന്നു.</translation>
@@ -2839,7 +2840,6 @@
 <translation id="4022426551683927403">&amp;നിഘണ്ടുവിലേക്ക് ചേര്‍ക്കുക</translation>
 <translation id="4023146161712577481">ഉപകരണ കോൺഫിഗറേഷൻ നിർണ്ണയിക്കുന്നു.</translation>
 <translation id="4025039777635956441">തിരഞ്ഞെടുത്ത സൈറ്റ് മ്യൂട്ട് ചെയ്യുക</translation>
-<translation id="4027804175521224372">(നിങ്ങൾ നഷ്‌പ്പെടുത്തി—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">ഇന്‍‌പുട്ട് രീതികൾ ചേർക്കുക</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> പേജിൽ നിന്ന് തിരികെ പോകുക</translation>
 <translation id="4031179711345676612">മൈക്രോഫോൺ അനുവദനീയം</translation>
@@ -3046,6 +3046,7 @@
 <translation id="4285498937028063278">പിൻചെയ്യൽ മാറ്റുക</translation>
 <translation id="428565720843367874">ഈ ഫയൽ സ്‌കാൻ ചെയ്യുന്നതിൽ ആന്റി വൈറസ് സോഫ്റ്റ്‌വെയർ അപ്രതീക്ഷിതമായി പരാജയപ്പെട്ടു.</translation>
 <translation id="4287099557599763816">സ്‌ക്രീൻ റീഡർ</translation>
+<translation id="428715201724021596">പ്രൊഫൈലിലേക്ക് കണക്‌റ്റ് ചെയ്യുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="4287157641315808225">വേണം, ChromeVox സജീവമാക്കുക</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{കാണിക്കുക}other{എല്ലാം കാണിക്കുക}}</translation>
 <translation id="4289372044984810120">നിങ്ങളുടെ അക്കൗണ്ടുകൾ ഇവിടെ മാനേജ് ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
@@ -3272,6 +3273,7 @@
 <translation id="4538792345715658285">എന്റർപ്രൈസ് നയത്തിനാൽ ഇൻസ്റ്റാൾ ചെയ്യപ്പെട്ടത്</translation>
 <translation id="4541123282641193691">നിങ്ങളുടെ അക്കൗണ്ട് പരിശോധിച്ചുറപ്പിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ Chromebook റീസ്‌റ്റാർട്ട് ചെയ്യുക.</translation>
 <translation id="4541662893742891060">ഈ പ്രൊഫൈലിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല. സാങ്കേതിക പിന്തുണയ്ക്ക് നിങ്ങളുടെ സേവനദാതാവിനെ ബന്ധപ്പെടുക.</translation>
+<translation id="4541706525461326392">പ്രൊഫൈല്‍ നീക്കം ചെയ്യുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="4541810033354695636">അനുബന്ധയാഥാർത്ഥ്യം</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> എന്നിവയിലെ നിങ്ങളുടെ വിവരം വായിക്കുക</translation>
 <translation id="454331522350252598">സംഗീതമേള ആസ്വദിക്കാനെത്തിയ ആൾക്കൂട്ടം പോലെ, ആയിരക്കണക്കിന് ഉപയോക്താക്കൾ സമാന താൽപ്പര്യങ്ങൾ പങ്കിടുമ്പോൾ അത് മനസ്സിലാക്കാനും ഒരു വ്യക്തിക്കല്ലാതെ ആൾക്കൂട്ടത്തിനായി പരസ്യങ്ങൾ തിരഞ്ഞെടുക്കാനും പരസ്യദാതാക്കൾക്ക് കഴിയും.</translation>
@@ -3649,6 +3651,7 @@
 <translation id="4953808748584563296">ഡിഫോൾട്ടായ ഓറഞ്ച് അവതാർ</translation>
 <translation id="4955710816792587366">നിങ്ങളുടെ പിൻ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4959262764292427323">പാസ്‌വേഡുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കുന്നതിനാൽ, ഏത് ഉപകരണത്തിലും അവ നിങ്ങൾക്ക് ഉപയോഗിക്കാനാവും</translation>
+<translation id="496027654926814138">ആക്രമണകാരികളെ നിങ്ങളുടെ വ്യക്തിപരമായ വിവരങ്ങൾ മോഷ്‌ടിക്കാൻ <ph name="FILE_NAME" /> അനുവദിച്ചേക്കാം.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961361269522589229">റെസിപ്പി ആശയങ്ങൾ</translation>
 <translation id="496185450405387901">ഈ ആപ്പ് നിങ്ങളുടെ അഡ്‌മിൻ ഇൻസ്‌റ്റാൾ ചെയ്‌തതാണ്.</translation>
@@ -3688,6 +3691,7 @@
 <translation id="5007392906805964215">അവലോകനം ചെയ്യുക</translation>
 <translation id="50080882645628821">പ്രൊഫൈൽ നീക്കം ചെയ്യുക</translation>
 <translation id="5008936837313706385">ആക്റ്റിവിറ്റിയുടെ പേര്</translation>
+<translation id="5009463889040999939">പ്രൊഫൈലിന്റെ പേര് മാറ്റുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="5010043101506446253">സർട്ടിഫിക്കറ്റ് അധികാരി</translation>
 <translation id="5015344424288992913">റിസോള്‍വിംഗ് പ്രോക്സി...</translation>
 <translation id="5017633213534173756">ഓർമിക്കുക</translation>
@@ -3781,7 +3785,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">നിങ്ങളുടെ ഹാർഡ് ഡിസ്‌ക് നിറഞ്ഞു.  മറ്റൊരു ലൊക്കേഷനിലേക്ക് സംരക്ഷിക്കുകയോ ഹാർഡ് ഡിസ്‌കിൽ കൂടുതൽ ഇടം സൃഷ്‌ടിക്കുകയോ ചെയ്യുക.</translation>
 <translation id="5123433949759960244">ബാസ്ക്കറ്റ്ബോൾ</translation>
-<translation id="5125167430897995218">PUK തെറ്റാണ്. നെറ്റ്‌വർക്ക് ആക്‌സസ് വീണ്ടും ലഭിക്കാൻ നിങ്ങളുടെ സേവനദാതാവിനെ ബന്ധപ്പെടുന്നതിന് മുമ്പ് നിങ്ങൾക്ക് ഒരു ശ്രമം കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="5125751979347152379">URL അസാധുവാണ്.</translation>
 <translation id="5126611267288187364">മാറ്റങ്ങൾ കാണുക</translation>
 <translation id="5127620150973591153">സുരക്ഷിത കണക്ഷൻ ഐഡി: <ph name="TOKEN" /></translation>
@@ -4029,11 +4032,11 @@
 <translation id="540296380408672091"><ph name="HOST" /> എന്നതിൽ എല്ലായ്‌പ്പോഴും കുക്കികളെ തടയുക</translation>
 <translation id="540495485885201800">മുമ്പത്തേതുമായി സ്വാപ്പ് ചെയ്യുക</translation>
 <translation id="5405146885510277940">ക്രമീകരണം റീസെറ്റ് ചെയ്യുക</translation>
-<translation id="5407119150486192764">സേവനദാതാവ് നൽകിയ 8 അക്ക പിൻ അൺലോക്ക് ചെയ്യൽ കീ നല്‍കുക</translation>
 <translation id="5407167491482639988">വ്യക്തതയില്ലാത്തത്</translation>
 <translation id="5408750356094797285">സൂം ചെയ്യുക: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ നിന്നുള്ളത്</translation>
 <translation id="5411472733320185105">ഈ ഹോസ്റ്റുകള്‍ക്കും ഡൊമെയ്നുകള്‍ക്കുമായി പ്രോക്സി ക്രമീകരണങ്ങള്‍ ഉപയോഗിക്കരുത്:</translation>
+<translation id="5414198321558177633">പ്രൊഫൈല്‍ ലിസ്റ്റ് റീഫ്രഷ് ചെയ്യുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="5414566801737831689">നിങ്ങൾ സന്ദർശിക്കുന്ന വെബ്‌സൈറ്റുകളുടെ ഐക്കൺ റീഡ് ചെയ്യുക</translation>
 <translation id="5417312524372586921">ബ്രൗസർ തീമുകൾ</translation>
 <translation id="5419405654816502573">Voice Match</translation>
@@ -4313,6 +4316,7 @@
 <translation id="5709557627224531708">Chrome-നെ നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറായി സജ്ജീകരിക്കുക</translation>
 <translation id="5711983031544731014">അൺലോക്ക് ചെയ്യാനായില്ല. നിങ്ങളുടെ പാസ്‌വേഡ് നൽകുക.</translation>
 <translation id="5712153969432126546">സൈറ്റുകൾ ചിലപ്പോൾ ഡോക്യുമെന്റുകളും കരാറുകളും ഫോമുകളും പോലുള്ള PDF-കൾ പ്രസിദ്ധീകരിക്കുന്നു</translation>
+<translation id="5712323955984474772">അടുത്ത അപ്ഡേറ്റ്</translation>
 <translation id="5715711091495208045">പ്ലഗിൻ ബ്രോക്കർ: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ഡിഫോൾട്ട് തിരയൽ യന്ത്രങ്ങൾ</translation>
 <translation id="5719637365829998022">QR കോഡ് സ്കാൻ ചെയ്തു.</translation>
@@ -4600,6 +4604,7 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> എന്നതുമായി Chrome ടാബും ഓഡിയോയും പങ്കിടുന്നു.</translation>
 <translation id="6045114302329202345">പ്രാഥമിക TrackPoint ബട്ടൺ</translation>
 <translation id="6047632800149092791">സമന്വയിപ്പിക്കൽ പ്രവർത്തിക്കുന്നില്ല. സൈൻ ഔട്ട് ചെയ്‌ത ശേഷം വീണ്ടും സൈൻ ഇൻ ചെയ്‌ത് നോക്കുക.</translation>
+<translation id="6049797270917061226">ആക്രമണകാരികളെ നിങ്ങളുടെ വ്യക്തിപരമായ വിവരങ്ങൾ മോഷ്‌ടിക്കാൻ ഈ ഫയൽ അനുവദിച്ചേക്കാം.</translation>
 <translation id="6051354611314852653">ക്ഷമിക്കണം! ഈ ഉപകരണത്തിന്റെ API ആക്‌സസ് അംഗീകൃതമാക്കുന്നതിൽ സിസ്റ്റം പരാജയപ്പെട്ടു.</translation>
 <translation id="6052976518993719690">SSL സര്‍‌ട്ടിഫിക്കേഷന്‍‌ അതോറിറ്റി</translation>
 <translation id="6053401458108962351">&amp;ബ്രൌസിംഗ് ഡാറ്റാ മായ്ക്കുക...</translation>
@@ -4828,6 +4833,7 @@
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{നിങ്ങളുടെ നെറ്റ്‌വർക്കിലെ പുതിയ പ്രിന്റർ}other{നിങ്ങളുടെ നെറ്റ്‌വർക്കിലെ പുതിയ പ്രിന്ററുകൾ}}</translation>
 <translation id="6285770818046456882">നിങ്ങളുമായി പങ്കിടുന്ന ഉപകരണം, കൈമാറ്റം റദ്ദാക്കി</translation>
 <translation id="6290613030083731160">പങ്കിടുന്ന ഉപകരണങ്ങളൊന്നും സമീപത്ത് ലഭ്യമല്ല. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
+<translation id="6291086328725007688">സജീവമാക്കൽ കോഡ് പരിശോധിച്ചുറപ്പിക്കുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="6291741848715722067">സ്ഥിരീകരണ കോഡ്</translation>
 <translation id="6291949900244949761">USB ഉപകരണങ്ങൾ ആക്‌സസ് ചെയ്യാൻ ഒരു സൈറ്റ് താൽപ്പര്യപ്പെടുമ്പോൾ ചോദിക്കുക (ശുപാർശ ചെയ്‌തത്)</translation>
 <translation id="6291953229176937411">&amp;ഫൈന്‍‌ഡറില്‍ കാണിക്കുക</translation>
@@ -4958,6 +4964,7 @@
 <translation id="6438234780621650381">ക്രമീകരണം റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ഓഡിയോ പ്ലേ ചെയ്യുന്നു</translation>
 <translation id="6442187272350399447">ആകര്‍‌ഷണീയമായ</translation>
+<translation id="6442445294758185945">അപ്‌ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6444070574980481588">തീയതിയും സമയവും സജ്ജമാക്കുക</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - Bluetooth സ്‌കാൻ സജീവമാണ്</translation>
 <translation id="6445450263907939268">ഈ മാറ്റങ്ങൾ ആവശ്യമില്ലെങ്കിൽ, നിങ്ങൾക്ക് മുമ്പത്തെ ക്രമീകരണങ്ങൾ പുനഃസ്ഥാപിക്കാം.</translation>
@@ -6595,7 +6602,6 @@
 <translation id="8206745257863499010">ബ്ലൂസി</translation>
 <translation id="8206859287963243715">സെല്ലുലാര്‍‌</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{പുതിയ അറിയിപ്പ്}other{# പുതിയ അറിയിപ്പുകൾ}}</translation>
-<translation id="8211551284753798479">PUK അസാധുവാണ്. നിങ്ങൾക്ക് <ph name="RETRIES" /> ശ്രമങ്ങൾ കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ഡൗൺലോഡ് പുരോഗമിക്കുന്നു}other{ഡൗൺലോഡുകൾ പുരോഗമിക്കുന്നു}}</translation>
 <translation id="8213449224684199188">ഫോട്ടോ മോഡിലേക്ക് പ്രവേശിച്ചു</translation>
 <translation id="8214489666383623925">ഫയല്‍ തുറക്കുക...</translation>
@@ -7003,6 +7009,7 @@
 <translation id="8680251145628383637">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ, മറ്റ് ക്രമീകരണം എന്നിവ ലഭിക്കാൻ സൈൻ ഇൻ ചെയ്യുക. നിങ്ങളുടെ Google സേവനങ്ങളിലേക്ക് സ്വയമേവ നിങ്ങൾ സൈൻ ഇൻ ആകുന്നതുമാണ്.</translation>
 <translation id="8681614230122836773">Chrome നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ ദോഷകരമായ സോഫ്റ്റ്‌വെയർ കണ്ടെത്തി</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> കണക്‌റ്റ് ചെയ്‌ത് തയ്യാറാണ്</translation>
+<translation id="8683081248374354009">ഗ്രൂപ്പ് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="8688591111840995413">പാസ്‌വേഡ് മോശമാണ്</translation>
 <translation id="8688672835843460752">ലഭ്യമാണ്</translation>
 <translation id="8690129572193755009">പ്രോട്ടോകോളുകൾ കൈകാര്യം ചെയ്യാൻ സൈറ്റുകൾക്ക് അനുവാദം ചോദിക്കാം</translation>

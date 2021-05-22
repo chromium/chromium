@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Msimamizi wako ameweka mandhari chaguomsingi ambayo hayawezi kubadilishwa.</translation>
 <translation id="1163931534039071049">&amp;Tazama asili ya fremu</translation>
 <translation id="1164891049599601209">Limewekwa kwenye tovuti ya kulaghai</translation>
-<translation id="1164899421101904659">Weka Ufunguo wa Kufungua PIN</translation>
 <translation id="1165039591588034296">Hitilafu</translation>
 <translation id="1166212789817575481">Funga Vichupo vilivyo Upande wa Kulia</translation>
-<translation id="116624467691206283">PUK si sahihi. Umebakisha jaribio moja.</translation>
 <translation id="1168020859489941584">Inafungua baada ya <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Seva za jina la Google</translation>
 <translation id="1170288591054440704">Uliza wakati tovuti inataka kutumia fonti zilizosakinishwa kwenye kifaa chako</translation>
@@ -1209,7 +1207,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
     Ili upate usaidizi wa kutatua matatizo ya kutuma maudhui, tafadhali rejelea
     <ph name="BEGIN_LINK" />
     kituo cha usaidizi<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">PUK si sahihi. Umebakisha majaribio <ph name="RETRIES" />. Baada ya hapo utahitaji kuwasiliana na mtoa huduma wako ili uweze kufikia mtandao tena.</translation>
 <translation id="22665427234727190">Uliza wakati tovuti inataka kufikia vifaa vya Bluetooth (inapendekezwa)</translation>
 <translation id="2266957463645820432">IPP kupitia USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Badilisha data kwa kifaa chochote kwenye kikoa <ph name="DOMAIN" /></translation>
@@ -1493,7 +1490,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2553440850688409052">Ficha Programu jalizi Hii</translation>
 <translation id="2554553592469060349">Faili iliyochaguliwa ni kubwa mno (Upeo wa juu wa ukubwa: MB 3).</translation>
 <translation id="2558896001721082624">Onyesha chaguo za zana za walio na matatizo ya kuona au kusikia katika menyu ya mfumo</translation>
-<translation id="2562743677925229011">Hajaingia kwenye <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Kipengele cha kutekeleza JavaScript kupitia AppleScript kimezimwa. Ili kukiwasha kutoka upau wa menyu, nenda kwenye Angalia &gt; Msanidi Programu &gt; Ruhusu JavaScript kutoka Matukio ya Apple. Kwa maelezo zaidi: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Kikagua maendelezo kilichoboreshwa</translation>
 <translation id="2568774940984945469">Hifadhi ya Upau wa Maelezo</translation>
@@ -2407,7 +2403,6 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3569407787324516067">Taswira ya skrini</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> inaweza kuona faili na folda zifuatazo</translation>
 <translation id="3571734092741541777">Weka mipangilio</translation>
-<translation id="3574210789297084292">ingia</translation>
 <translation id="3575121482199441727">Ruhusu kutoka tovuti hii</translation>
 <translation id="3576324189521867626">Imesakinishwa</translation>
 <translation id="3578594933904494462">Maudhui ya kichupo hiki yanashirikiwa</translation>
@@ -2858,7 +2853,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4022426551683927403">Ongez&amp;a kwenye Kamusi</translation>
 <translation id="4023146161712577481">Inaamua usanidi wa kifaa.</translation>
 <translation id="4025039777635956441">Zima Sauti ya Tovuti Iliyochaguliwa</translation>
-<translation id="4027804175521224372">(Unakosekana—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Ongeza mbinu ya kuingiza data</translation>
 <translation id="4029556917477724407">Rudi nyuma kutoka kwenye ukurasa unaoitwa <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Maikrofoni imeruhusiwa</translation>
@@ -3803,7 +3797,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Diski yako kuu imejaa. Tafadhali hifadhi kwenye eneo jingine au utafute nafasi zaidi kwenye diski kuu.</translation>
 <translation id="5123433949759960244">Mpira wa kikapu</translation>
-<translation id="5125167430897995218">PUK si sahihi. Umebakisha jaribio moja. Baada ya hapo utahitaji kuwasiliana na mtoa huduma wako ili uweze kufikia mtandao tena.</translation>
 <translation id="5125751979347152379">URL hiyo si sahihi.</translation>
 <translation id="5126611267288187364">Angalia mabadiliko</translation>
 <translation id="5127620150973591153">Nambari salama ya kuunganisha: <ph name="TOKEN" /></translation>
@@ -4051,7 +4044,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="540296380408672091">Zuia vidakuzi kwenye <ph name="HOST" /> wakati wowote</translation>
 <translation id="540495485885201800">Badilisha na iliyotangulia</translation>
 <translation id="5405146885510277940">Badilisha mipangilio</translation>
-<translation id="5407119150486192764">Weka Nambari ya Kufungua PIN yenye tarakimu nane uliyopewa na mtoa huduma wako</translation>
 <translation id="5407167491482639988">Inakanganya</translation>
 <translation id="5408750356094797285">Kuza: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Kwenye Akaunti yako ya Google</translation>
@@ -6622,7 +6614,6 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8206745257863499010">Kimuziki</translation>
 <translation id="8206859287963243715">Simu ya Mkononi</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Arifa mpya}other{Arifa # mpya}}</translation>
-<translation id="8211551284753798479">PUK si sahihi. Umebakisha majaribio <ph name="RETRIES" />.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Inaendelea kupakua}other{Inaendelea kupakua}}</translation>
 <translation id="8213449224684199188">Umeweka hali ya picha</translation>
 <translation id="8214489666383623925">Fungua Faili...</translation>

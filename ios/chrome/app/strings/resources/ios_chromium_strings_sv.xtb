@@ -17,7 +17,6 @@
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="2054703085270098503">Surfa säkert med Chromium</translation>
-<translation id="2075400798887076382">Använd flikar som du öppnar på datorn även här. Du behöver bara öppna Chromium på datorn, öppna menyn och välja Logga in i Chromium …</translation>
 <translation id="2168108852149185974">Några tillägg har fått Chromium att krascha. Avinstallera följande:</translation>
 <translation id="2178608107313874732">Chromium kan inte använda kameran just nu</translation>
 <translation id="2195025571279539885">Vill du att Chromium ska översätta sidor skrivna på <ph name="LANGUAGE_NAME" /> på den här webbplatsen nästa gång?</translation>
@@ -42,7 +41,6 @@
 <translation id="4585809515399340748">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="4681781466797808448">Aktivera Chromium som skanner</translation>
 <translation id="4736424910885271643">Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i Chromium från enheten</translation>
-<translation id="4787850887676698916">Här visas flikar som du har öppnat i Chromium på andra enheter.</translation>
 <translation id="4806326830773390517">Hjälp oss att göra Chromium bättre genom att skicka användningsstatistik och felrapporter till Google</translation>
 <translation id="4828317641996116749">Chromium kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
 <translation id="4852878756222711218">Logga in med Google-kontot så att du får ut mesta möjliga av Chromium</translation>

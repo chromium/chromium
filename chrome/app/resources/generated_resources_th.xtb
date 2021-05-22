@@ -155,10 +155,8 @@
 <translation id="116173250649946226">ผู้ดูแลระบบได้ตั้งค่าธีมเริ่มต้นไว้ซึ่งเปลี่ยนไม่ได้</translation>
 <translation id="1163931534039071049">&amp;ดูรหัสต้นฉบับของเฟรม</translation>
 <translation id="1164891049599601209">มีการป้อนในเว็บไซต์ที่มีการหลอกลวง</translation>
-<translation id="1164899421101904659">ป้อนคีย์ปลดล็อก PIN</translation>
 <translation id="1165039591588034296">ข้อผิดพลาด</translation>
 <translation id="1166212789817575481">ปิดแท็บทางด้านขวา</translation>
-<translation id="116624467691206283">PUK ไม่ถูกต้อง คุณลองได้อีก 1 ครั้ง</translation>
 <translation id="1168020859489941584">กำลังจะเปิดภายใน <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">เซิร์ฟเวอร์ชื่อของ Google</translation>
 <translation id="1170288591054440704">ถามเมื่อเว็บไซต์ต้องการใช้แบบอักษรที่ติดตั้งอยู่ในอุปกรณ์</translation>
@@ -1198,7 +1196,6 @@
 <translation id="2263189956353037928">ออกจากระบบและลงชื่อเข้าใช้ใหม่</translation>
 <translation id="2263371730707937087">อัตราการรีเฟรชหน้าจอ</translation>
 <translation id="2263679799334060788">ความคิดเห็นของคุณช่วยปรับปรุง Google Cast ซึ่งเป็นประโยชน์สำหรับเรา หากต้องการความช่วยเหลือในการแก้ปัญหาที่เกิดขึ้นกับการแคสต์ โปรดไปที่<ph name="BEGIN_LINK" />ศูนย์ช่วยเหลือ<ph name="END_LINK" /></translation>
-<translation id="2265889263013046172">PUK ไม่ถูกต้อง คุณลองได้อีก <ph name="RETRIES" /> ครั้งก่อนที่จะต้องติดต่อผู้ให้บริการเพื่อขอสิทธิ์เข้าถึงเครือข่ายอีกครั้ง</translation>
 <translation id="22665427234727190">ถามเมื่อเว็บไซต์ต้องการเข้าถึงอุปกรณ์บลูทูธ (แนะนำ)</translation>
 <translation id="2266957463645820432">IPP ผ่าน USB (IPPUSB)</translation>
 <translation id="2270450558902169558">แลกเปลี่ยนข้อมูลกับอุปกรณ์ในโดเมน <ph name="DOMAIN" /></translation>
@@ -1482,7 +1479,6 @@
 <translation id="2553440850688409052">ซ่อนปลั๊กอินนี้</translation>
 <translation id="2554553592469060349">ไฟล์ที่เลือกมีขนาดใหญ่เกินไป (ขนาดสูงสุด: 3 MB)</translation>
 <translation id="2558896001721082624">แสดงตัวเลือกการเข้าถึงในเมนูระบบไว้เสมอ</translation>
-<translation id="2562743677925229011">ไม่ได้ลงชื่อเข้าใช้ <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">การเรียกใช้ JavaScript ผ่าน AppleScript ปิดอยู่ หากต้องการเปิด จากแถบเมนู ให้ไปที่ มุมมอง &gt; นักพัฒนาซอฟต์แวร์ &gt; อนุญาตให้เรียกใช้ JavaScript จากกิจกรรมใน Apple ดูข้อมูลเพิ่มเติมที่ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">การตรวจตัวสะกดที่ได้รับการปรับปรุง</translation>
 <translation id="2568774940984945469">ที่เก็บแถบข้อมูล</translation>
@@ -2396,7 +2392,6 @@
 <translation id="3569407787324516067">โปรแกรมรักษาหน้าจอ</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> ดูไฟล์และโฟลเดอร์ต่อไปนี้ได้</translation>
 <translation id="3571734092741541777">ตั้งค่า</translation>
-<translation id="3574210789297084292">ลงชื่อเข้าใช้</translation>
 <translation id="3575121482199441727">อนุญาตสำหรับเว็บไซต์นี้</translation>
 <translation id="3576324189521867626">ติดตั้งเรียบร้อยแล้ว</translation>
 <translation id="3578594933904494462">เนื้อหาของแท็บนี้กำลังถูกแชร์</translation>
@@ -2847,7 +2842,6 @@
 <translation id="4022426551683927403">&amp;เพิ่มลงในพจนานุกรม</translation>
 <translation id="4023146161712577481">กำลังกำหนดการกำหนดค่าของอุปกรณ์</translation>
 <translation id="4025039777635956441">ปิดเสียงเว็บไซต์ที่เลือก</translation>
-<translation id="4027804175521224372">(คุณยังไม่ได้ <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">เพิ่มวิธีการป้อนข้อมูล</translation>
 <translation id="4029556917477724407">กลับไปจากหน้า <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">อนุญาตให้ใช้ไมโครโฟน</translation>
@@ -3793,7 +3787,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">ฮาร์ดดิสก์ของคุณเต็ม โปรดบันทึกลงในตำแหน่งอื่นหรือเพิ่มเนื้อที่ว่างในฮาร์ดดิสก์</translation>
 <translation id="5123433949759960244">บาสเกตบอล</translation>
-<translation id="5125167430897995218">PUK ไม่ถูกต้อง คุณลองได้อีก 1 ครั้งก่อนที่จะต้องติดต่อผู้ให้บริการเพื่อขอสิทธิ์เข้าถึงเครือข่ายอีกครั้ง</translation>
 <translation id="5125751979347152379">URL ไม่ถูกต้อง</translation>
 <translation id="5126611267288187364">ดูการเปลี่ยนแปลง</translation>
 <translation id="5127620150973591153">รหัสการเชื่อมต่อที่ปลอดภัย: <ph name="TOKEN" /></translation>
@@ -4041,7 +4034,6 @@
 <translation id="540296380408672091">บล็อกคุกกี้เสมอบน <ph name="HOST" /></translation>
 <translation id="540495485885201800">สลับกับชั้นวางก่อนหน้า</translation>
 <translation id="5405146885510277940">รีเซ็ตการตั้งค่า</translation>
-<translation id="5407119150486192764">ป้อนคีย์การเลิกบล็อก PIN 8 หลักจากผู้ให้บริการ</translation>
 <translation id="5407167491482639988">ไม่สามารถเข้าใจได้</translation>
 <translation id="5408750356094797285">ซูม: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">จากบัญชี Google</translation>
@@ -6610,7 +6602,6 @@
 <translation id="8206745257863499010">บลูซี</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{การแจ้งเตือนใหม่}other{การแจ้งเตือนใหม่ # รายการ}}</translation>
-<translation id="8211551284753798479">PUK ไม่ถูกต้อง คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{อยู่ระหว่างการดาวน์โหลด}other{อยู่ระหว่างการดาวน์โหลด}}</translation>
 <translation id="8213449224684199188">เข้าสู่โหมดรูปภาพแล้ว</translation>
 <translation id="8214489666383623925">เปิดไฟล์...</translation>

@@ -17,7 +17,6 @@
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="2006345422933397527">A Chromium nem tudott frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="2054703085270098503">Gondoskodjon biztonságáról a Chromiummal</translation>
-<translation id="2075400798887076382">Itt is hozzáférhet a számítógépen megnyitott lapokhoz. Ehhez elég elindítani a Chromiumot számítógépén, megnyitni a menüt, majd a „Bejelentkezés a Chromiumba…” lehetőséget választani.</translation>
 <translation id="2168108852149185974">Bizonyos bővítmények a Chromium összeomlását eredményezik. Távolítsa el a következőket:</translation>
 <translation id="2178608107313874732">A Chromium jelenleg nem tudja használni a kamerát</translation>
 <translation id="2195025571279539885">Szeretné, hogy a Chromium a jövőben felajánlja e webhely <ph name="LANGUAGE_NAME" /> nyelvű oldalainak fordítását?</translation>
@@ -42,7 +41,6 @@
 <translation id="4585809515399340748">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
 <translation id="4681781466797808448">Kapcsolja be a Chromium szkennerét</translation>
 <translation id="4736424910885271643">Fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, ezért Chromium-adatai törölve lesznek erről az eszközről.</translation>
-<translation id="4787850887676698916">A más eszközökön futó Chromium böngészőben megnyitott lapok itt jelennek meg.</translation>
 <translation id="4806326830773390517">Küldjön használati statisztikákat és hibajelentéseket a Google-nak, így segíthet a Chromium fejlesztésében</translation>
 <translation id="4828317641996116749">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra később.</translation>
 <translation id="4852878756222711218">Annak érdekében, hogy a legtöbbet hozhassa ki Chromiumból, jelentkezzen be Google-fiókjával</translation>

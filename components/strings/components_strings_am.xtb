@@ -281,6 +281,7 @@
 <translation id="1919345977826869612">ማስታወቂያዎች</translation>
 <translation id="1919367280705858090">በአንድ የተወሰነ የስህተት መልዕክት ላይ እገዛ ያግኙ</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ምንም}=1{1 ጣቢያ}one{# ጣቢያዎች}other{# ጣቢያዎች}}</translation>
+<translation id="1924727005275031552">አዲስ</translation>
 <translation id="1945968466830820669">የድርጅት መለያዎን መዳረሻ ሊያጡ ወይም የማንነት ስርቆት ሊያጋጥመዎት ይችላሉ። Chromium የይለፍ ቃልዎን አሁን እንዲቀይሩ ይመክራል።</translation>
 <translation id="1947454675006758438">በቀኝ በኩል ስቴፕለር ምታ</translation>
 <translation id="1958218078413065209">የእርስዎ ከፍተኛ ውጤት <ph name="SCORE" /> ነው።</translation>
@@ -391,6 +392,7 @@
 <translation id="2357481397660644965">የእርስዎ መሣሪያ የሚተዳደረው በ<ph name="DEVICE_MANAGER" /> ሲሆን መለያዎ የሚተዳደረው በ<ph name="ACCOUNT_MANAGER" /> ነው።</translation>
 <translation id="2359629602545592467">በርካታ</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
+<translation id="2359961752320758691">የእርስዎ ምናባዊ ካርድ ቁጥር ተተግብሯል።</translation>
 <translation id="2367567093518048410">ደረጃ</translation>
 <translation id="2372464001869762664">ካረጋገጡ በኋላ የGoogle መለያዎ ካርድ ዝርዝሮች ለዚህ ጣቢያ ይጋራሉ። በእርስዎ Plex መለያ ዝርዝሮች ውስጥ CVC ያግኙ።</translation>
 <translation id="2380886658946992094">የሕግ</translation>
@@ -401,6 +403,7 @@
 <translation id="239429038616798445">ይህ የመላኪያ ዘዴ አይገኝም። የተለየ ዘዴ ይሞክሩ።</translation>
 <translation id="2396249848217231973">&amp;ስረዛን ቀልብስ</translation>
 <translation id="2410754574180102685">መንግስት-የህግ</translation>
+<translation id="2413155254802890957">የቆየ</translation>
 <translation id="2413528052993050574">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው ተሽሮ ሊሆን ይችላል። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="2414886740292270097">ጨለማ</translation>
 <translation id="2438874542388153331">በቀኝ በኩል አራቴ ብሳ</translation>
@@ -899,12 +902,14 @@
 <translation id="4275830172053184480">መሣሪያዎን ዳግም ያስጀምሩ</translation>
 <translation id="4277028893293644418">የይለፍ ቃል ዳግም አቀናብር</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ይህ ካርድ በእርስዎ የGoogle መለያ ላይ ተቀምጧል}one{እነዚህ ካርዶች በእርስዎ የGoogle መለያ ላይ ተቀምጠዋል}other{እነዚህ ካርዶች በእርስዎ የGoogle መለያ ላይ ተቀምጠዋል}}</translation>
+<translation id="4287885627794386150">ለሙከራ ብቁ ነው፣ ነገር ግን ንቁ አይደለም</translation>
 <translation id="4297502707443874121">የገጽ <ph name="THUMBNAIL_PAGE" /> ድንክዬ</translation>
 <translation id="42981349822642051">ዘርጋ</translation>
 <translation id="4300675098767811073">በርካታ ብስ ቀኝ</translation>
 <translation id="4302514097724775343">ለማጫወት ዲኖውን መታ ያድርጉ</translation>
 <translation id="4302965934281694568">Chou3 (የደብዳቤ ፖስታ)</translation>
 <translation id="4305666528087210886">የእርስዎ ፋይል ሊደርስበት አልተቻለም</translation>
+<translation id="4306529830550717874">አድራሻ ይቀመጥ?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">አግድ (ነባሪ)</translation>
 <translation id="4314815835985389558">ስምረትን ያቀናብሩ</translation>
@@ -1392,6 +1397,7 @@
 <translation id="610911394827799129">የእርስዎ Google መለያ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል።</translation>
 <translation id="6116338172782435947">ወደ ቅንጥብ ሰሌዳው የተቀዱ ጽሑፍ እና ምስሎችን ይመልከቱ</translation>
 <translation id="6120179357481664955">የእርስዎን UPI መታወቂያ ያስታውሳሉ?</translation>
+<translation id="6123290840358279103">ምናባዊ ካርድ ይመልከቱ</translation>
 <translation id="6124432979022149706">Chrome Enterprise አያያዦች</translation>
 <translation id="6146055958333702838">ማናቸውም ገመዶችን ይፈትሹና እየተጠቀሙ ሊሆኑ የሚችሏቸውን ማንኛውም ራውተሮች፣
         ሞደሞችን ወይም ሌላ አውታረ መረብ መሣሪያዎችን ዳግም ያስጀምሩ።</translation>
@@ -1671,6 +1677,7 @@
 <translation id="7300012071106347854">በራ ያለ ውሃ ሰማያዊ</translation>
 <translation id="7302712225291570345">«<ph name="TEXT" />»</translation>
 <translation id="7304030187361489308">ከፍ ያለ</translation>
+<translation id="7305756307268530424">በዝግታ ይጀምሩ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">የግንኙነት እገዛ</translation>
 <translation id="7323804146520582233">የ«<ph name="SECTION" />» ክፍሉን ሰርዝ</translation>
@@ -1696,6 +1703,7 @@
 <translation id="7378594059915113390">የሚዲያ መቆጣጠሪያዎች</translation>
 <translation id="7378627244592794276">አይ</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">የለም</translation>
 <translation id="7390545607259442187">ካርድ ያረጋግጡ</translation>
 <translation id="7399802613464275309">የደህንነት ፍተሻ</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1747,6 +1755,7 @@
 <translation id="7548892272833184391">የግንኙነት ስህተቶችን ያስተካክሉ</translation>
 <translation id="7549584377607005141">ይህ ድረ-ገጽ በአግባቡ እንዲታይ ቀደም ብለው ያስገቡት ውሂብ ያስፈልገዋል። ይህን ውሂብ እንደገና መላክ ይችላሉ፣ ነገር ግን ይህን በማድረግዎ ይህ ገጽ ከዚህ በፊት ያከናወነው ማንኛውም እርምጃ ይደግማሉ።</translation>
 <translation id="7550637293666041147">የእርስዎ መሣሪያ ተጠቃሚ ስም እና የ Chrome ተጠቃሚ ስም</translation>
+<translation id="755279583747225797">ሙከራ ንቁ ነው</translation>
 <translation id="7552846755917812628">የሚከተሉትን ጠቃሚ ምክሮች ይሞክሩ፦</translation>
 <translation id="7554475479213504905">ለማንኛውም እንደገና ጫን እና አሳይ</translation>
 <translation id="7554791636758816595">አዲስ ትር</translation>
@@ -1841,6 +1850,7 @@
 <translation id="7894280532028510793">የፊደል አጻጻፉ ትክክል ከሆነ <ph name="BEGIN_LINK" />የአውታረ መረብ ምርመራን ለማስኬድ ይሞክሩ<ph name="END_LINK" />።</translation>
 <translation id="7904208859782148177">C3 (የደብዳቤ ፖስታ)</translation>
 <translation id="7931318309563332511">ያልታወቀ</translation>
+<translation id="793209273132572360">አድራሻ ይዘምን?</translation>
 <translation id="7932579305932748336">ኮት</translation>
 <translation id="79338296614623784">የሚሰራ ስልክ ቁጥር ያስገቡ</translation>
 <translation id="7934052535022478634">ክፍያ ተጠናቅቋል</translation>

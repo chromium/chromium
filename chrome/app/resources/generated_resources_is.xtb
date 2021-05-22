@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Stjórnandinn hefur stillt sjálfgefið þema sem ekki er hægt að breyta.</translation>
 <translation id="1163931534039071049">Skoða frumkóða ramma</translation>
 <translation id="1164891049599601209">Fært inn á villandi vefsvæði</translation>
-<translation id="1164899421101904659">Sláðu inn PUK-númer til að opna</translation>
 <translation id="1165039591588034296">Villa</translation>
 <translation id="1166212789817575481">Loka flipum hægra megin</translation>
-<translation id="116624467691206283">Ógilt PUK-númer. Þú átt 1 tilraun eftir.</translation>
 <translation id="1168020859489941584">Opnar í <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Nafnaþjónar Google</translation>
 <translation id="1170288591054440704">Spyrja þegar vefsvæði vill nota leturgerðir sem eru uppsettar í þessu tæki</translation>
@@ -1214,7 +1212,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
     Ef upp koma vandamál sem tengjast útsendingum bendum við á
     <ph name="BEGIN_LINK" />
     hjálparmiðstöðina<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Rangt PUK-númer. Þú átt <ph name="RETRIES" /> tilraunir eftir áður en þú þarft að hafa samband við símafyrirtækið þitt til að fá netaðgang á ný.</translation>
 <translation id="22665427234727190">Spyrja þegar vefsvæði vill fá aðgang að Bluetooth-tækjum (ráðlagt)</translation>
 <translation id="2266957463645820432">IPP yfir USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Skiptast á gögnum við hvaða tæki sem er á léninu <ph name="DOMAIN" /></translation>
@@ -1498,7 +1495,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2553440850688409052">Fela þessa viðbót</translation>
 <translation id="2554553592469060349">Valin skrá er of stór (hámarksstærð: 3 MB).</translation>
 <translation id="2558896001721082624">Sýna alltaf aðgengisvalkosti í kerfisvalmyndinni</translation>
-<translation id="2562743677925229011">Ekki skráð(ur) inn á <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Slökkt er á keyrslu JavaScript í gegnum AppleScript. Þú getur kveikt á henni með því að fara í valmyndarstikuna og velja Yfirlit &gt; Þróunaraðili &gt; Leyfa JavaScript úr Apple Events. Nánari upplýsingar eru á: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Endurbætt villuleit</translation>
 <translation id="2568774940984945469">Rammi upplýsingastiku</translation>
@@ -2411,7 +2407,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3569407787324516067">Skjávari</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> getur skoðað eftirfarandi skrár og möppur</translation>
 <translation id="3571734092741541777">Setja upp</translation>
-<translation id="3574210789297084292">skrá inn</translation>
 <translation id="3575121482199441727">Leyfa fyrir þetta vefsvæði</translation>
 <translation id="3576324189521867626">Uppsetning tókst</translation>
 <translation id="3578594933904494462">Verið er að deila efni þessa flipa.</translation>
@@ -2862,7 +2857,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4022426551683927403">Bæt&amp;a við orðabók</translation>
 <translation id="4023146161712577481">Ákvarðar stillingar tækis.</translation>
 <translation id="4025039777635956441">Slökkva á hljóði valins svæðis</translation>
-<translation id="4027804175521224372">(Þú ert að missa af allskonar – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Bæta við innfærsluaðferðum</translation>
 <translation id="4029556917477724407">Aftur á síðuna <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Hljóðnemi er leyfður</translation>
@@ -3809,7 +3803,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Harði diskurinn er fullur. Vistaðu á öðrum stað eða búðu til pláss á harða diskinum.</translation>
 <translation id="5123433949759960244">Körfubolti</translation>
-<translation id="5125167430897995218">Rangt PUK-númer. Þú átt 1 tilraun eftir áður en þú þarft að hafa samband við símafyrirtækið þitt til að fá netaðgang á ný.</translation>
 <translation id="5125751979347152379">Ógild vefslóð.</translation>
 <translation id="5126611267288187364">Skoða breytingar</translation>
 <translation id="5127620150973591153">Auðkenni öruggrar tengingar: <ph name="TOKEN" /></translation>
@@ -4057,7 +4050,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="540296380408672091">Loka alltaf á fótspor á <ph name="HOST" /></translation>
 <translation id="540495485885201800">Skipta út fyrir fyrra</translation>
 <translation id="5405146885510277940">Endurstilla</translation>
-<translation id="5407119150486192764">Sláðu inn 8 talna PUK-númerið frá símafyrirtækinu</translation>
 <translation id="5407167491482639988">Óskýrt</translation>
 <translation id="5408750356094797285">Aðdráttur: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Af Google reikningnum þínum</translation>
@@ -6625,7 +6617,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8206745257863499010">Blúsaður</translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ný tilkynning}one{# ný tilkynning}other{# nýjar tilkynningar}}</translation>
-<translation id="8211551284753798479">Ógilt PUK-númer. <ph name="RETRIES" /> tilraunir eru eftir.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Niðurhal er í gangi}one{Niðurhal er í gangi}other{Niðurhal er í gangi}}</translation>
 <translation id="8213449224684199188">Myndastilling valin</translation>
 <translation id="8214489666383623925">Opna skrá...</translation>

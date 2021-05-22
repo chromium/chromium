@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Järjestelmänvalvojasi on valinnut oletusteeman, jota ei voi muuttaa.</translation>
 <translation id="1163931534039071049">&amp;Näytä kehyksen lähdekoodi</translation>
 <translation id="1164891049599601209">Käytetty petollisella sivustolla</translation>
-<translation id="1164899421101904659">Anna PUK-koodi</translation>
 <translation id="1165039591588034296">Virhe</translation>
 <translation id="1166212789817575481">Sulje oikealla olevat välilehdet</translation>
-<translation id="116624467691206283">Väärä PUK-koodi. Sinulla on 1 yritys jäljellä.</translation>
 <translation id="1168020859489941584">Avautuu ajassa <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Googlen nimipalvelimet</translation>
 <translation id="1170288591054440704">Pyydä lupaa, kun sivusto haluaa käyttää laitteelle asennettuja fontteja</translation>
@@ -1212,7 +1210,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
     tärkeää. Jos tarvitset apua Cast-ongelmien korjaamiseen, siirry
     <ph name="BEGIN_LINK" />ohjekeskukseen
     <ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Väärä PUK-koodi. Sinulla on <ph name="RETRIES" /> yritystä jäljellä, ennen kuin sinun on otettava yhteys operaattoriin saadaksesi verkon käyttöoikeudet takaisin.</translation>
 <translation id="22665427234727190">Kysy aina, jos sivusto pyytää pääsyä Bluetooth-laitteelle (suositus)</translation>
 <translation id="2266957463645820432">IPP–USB-yhteys (IPPUSB)</translation>
 <translation id="2270450558902169558">Vaihtaa tietoja minkä tahansa verkkotunnusta <ph name="DOMAIN" /> käyttävän laitteen kanssa.</translation>
@@ -1496,7 +1493,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2553440850688409052">Piilota tämä laajennus</translation>
 <translation id="2554553592469060349">Valittu tiedosto on liian iso (enimmäiskoko: 3 Mt).</translation>
 <translation id="2558896001721082624">Näytä esteettömyysvalinnat aina järjestelmävalikossa</translation>
-<translation id="2562743677925229011">Ei kirjautunut tuotteeseen <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">JavaScriptin suorittaminen AppleScriptin kautta on poistettu käytöstä. Voit ottaa sen käyttöön valitsemalla valikkoriviltä Näytä &gt; Kehittäjä &gt; Salli JavaScript Apple Eventsistä. Lisätietoja: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Parannettu oikeinkirjoituksen tarkistus</translation>
 <translation id="2568774940984945469">Tietopalkki</translation>
@@ -2410,7 +2406,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3569407787324516067">Näytönsäästäjä</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> saa nähdä seuraavat tiedostot ja kansiot</translation>
 <translation id="3571734092741541777">Määritä</translation>
-<translation id="3574210789297084292">kirjaudu sisään</translation>
 <translation id="3575121482199441727">Salli tällä sivustolla</translation>
 <translation id="3576324189521867626">Asennus onnistui.</translation>
 <translation id="3578594933904494462">Tämän välilehden sisältöä jaetaan.</translation>
@@ -2858,7 +2853,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4022426551683927403">Lisää s&amp;anakirjaan</translation>
 <translation id="4023146161712577481">Selvitetään laitteen kokoonpanoa.</translation>
 <translation id="4025039777635956441">Mykistä valittu sivusto</translation>
-<translation id="4027804175521224372">(Ota täysi hyöty käyttöön — <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Lisää syöttötapoja</translation>
 <translation id="4029556917477724407">Edellinen sivu: <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofoni sallittu</translation>
@@ -3805,7 +3799,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Kiintolevy on täynnä. Tallenna muuhun sijaintiin tai vapauta levytilaa.</translation>
 <translation id="5123433949759960244">Koripallo</translation>
-<translation id="5125167430897995218">Väärä PUK-koodi. Sinulla on 1 yritys jäljellä, ennen kuin sinun on otettava yhteys operaattoriin saadaksesi verkon käyttöoikeudet takaisin.</translation>
 <translation id="5125751979347152379">Virheellinen URL-osoite.</translation>
 <translation id="5126611267288187364">Näytä muutokset</translation>
 <translation id="5127620150973591153">Suojatun yhteyden tunnus: <ph name="TOKEN" /></translation>
@@ -4053,7 +4046,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="540296380408672091">Estä aina sivuston <ph name="HOST" /> evästeet</translation>
 <translation id="540495485885201800">Vaihda edellisen kanssa</translation>
 <translation id="5405146885510277940">Nollaa asetukset</translation>
-<translation id="5407119150486192764">Lisää operaattorilta saamasi 8-numeroinen PUK-koodi</translation>
 <translation id="5407167491482639988">Mahdoton kuulla</translation>
 <translation id="5408750356094797285">Zoomaus: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Google-tililtäsi</translation>
@@ -6621,7 +6613,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8206745257863499010">Muusikko</translation>
 <translation id="8206859287963243715">Matkapuhelin</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Uusi ilmoitus}other{# uutta ilmoitusta}}</translation>
-<translation id="8211551284753798479">Väärä PUK-koodi. Sinulla on <ph name="RETRIES" /> yritystä jäljellä.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Lataus on käynnissä}other{Latauksia on käynnissä}}</translation>
 <translation id="8213449224684199188">Valokuvatilaan siirrytty</translation>
 <translation id="8214489666383623925">Avaa tiedosto...</translation>

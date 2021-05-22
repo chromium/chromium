@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Votre administrateur a défini un thème par défaut qui ne peut pas être modifié.</translation>
 <translation id="1163931534039071049">&amp;Afficher le code source du cadre</translation>
 <translation id="1164891049599601209">Entré sur un site trompeur</translation>
-<translation id="1164899421101904659">Entrer la clé de déverrouillage du NIP</translation>
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1166212789817575481">Fermer les onglets à la droite</translation>
-<translation id="116624467691206283">Code PUK incorrect. Il vous reste 1 tentative.</translation>
 <translation id="1168020859489941584">Ouverture dans <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Serveurs de noms Google</translation>
 <translation id="1170288591054440704">Demander une autorisation quand un site veut utiliser des polices installées sur votre appareil</translation>
@@ -168,7 +166,7 @@
 <translation id="1173894706177603556">Renommer</translation>
 <translation id="1173916544412572294">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, pile du téléphone : <ph name="BATTERY_STATUS" /> %, détails</translation>
 <translation id="1174073918202301297">Raccourci ajouté</translation>
-<translation id="1174366174291287894">Votre connexion est toujours sécuritaire, à moins que Chrome ne vous indique le contraire</translation>
+<translation id="1174366174291287894">Votre connexion est toujours sécuritaire, à moins que Chrome vous indique le contraire</translation>
 <translation id="117445914942805388">Pour effacer les données de navigation de tous vos appareils synchronisés et de votre compte Google, <ph name="BEGIN_LINK" />accédez aux paramètres de synchronisation<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">Im&amp;primer...</translation>
 <translation id="1176471985365269981">Non autorisés à modifier les fichiers ni les dossiers qui se trouvent sur votre appareil</translation>
@@ -1198,7 +1196,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2263189956353037928">Se déconnecter et se reconnecter</translation>
 <translation id="2263371730707937087">Fréquence d'actualisation de l'écran</translation>
 <translation id="2263679799334060788">Nous vous remercions de vos commentaires, qui vont nous aider à améliorer la technologie Google Cast. Pour obtenir de l'aide avec la résolution de problèmes liés à la diffusion, veuillez vous reporter au <ph name="BEGIN_LINK" />centre d'aide<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Code PUK incorrect. Il vous reste <ph name="RETRIES" /> tentatives avant que vous deviez communiquer avec votre fournisseur de services pour rétablir l'accès au réseau.</translation>
 <translation id="22665427234727190">Demander une autorisation lorsqu'un site veut accéder à des appareils Bluetooth (recommandé)</translation>
 <translation id="2266957463645820432">IPP sur USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Échanger des données avec n'importe quel appareil du domaine <ph name="DOMAIN" /></translation>
@@ -1271,7 +1268,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2336228925368920074">Ajouter tous les onglets aux favoris…</translation>
 <translation id="2336376423977300504">Toujours effacer les témoins à la fermeture des fenêtres</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">Précharge les pages que Chrome pense que vous pourriez visiter. Pour ce faire, Chrome peut utiliser des témoins, si vous les acceptez, et peut chiffrer et envoyer des pages par l'intermédiaire de Google afin de masquer votre identité auprès des sites.</translation>
+<translation id="2337236196941929873">Précharge les pages que Chrome pense que vous pourriez visiter. Pour ce faire, Chrome peut utiliser des témoins, si vous les acceptez, et peut chiffrer et envoyer des pages par l'intermédiaire de Google pour masquer votre identité auprès des sites.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> ne peut pas être téléchargé de manière sécuritaire</translation>
 <translation id="2342740338116612727">Favoris ajoutés</translation>
 <translation id="2343747224442182863">Mettre cet onglet en évidence</translation>
@@ -1482,7 +1479,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2553440850688409052">Masquer ce plugiciel</translation>
 <translation id="2554553592469060349">Le fichier sélectionné est trop volumineux (taille maximale : 3 Mo).</translation>
 <translation id="2558896001721082624">Toujours afficher les options d'accessibilité dans le menu système</translation>
-<translation id="2562743677925229011">Non connecté à <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">L'exécution de JavaScript par AppleScript est désactivée. Vous pouvez l'activer à partir de la barre de menu en accédant à Affichage &gt; Concepteur &gt; Autoriser JavaScript à partir des Événements Apple. Pour en savoir plus :
 https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Correcteur orthographique amélioré</translation>
@@ -1818,7 +1814,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
 <translation id="2923234477033317484">Supprimer ce compte</translation>
 <translation id="2926085873880284723">Rétablir les raccourcis par défaut</translation>
-<translation id="2926620265753325858">L'appareil <ph name="DEVICE_NAME" /> n'est pas pris en charge</translation>
+<translation id="2926620265753325858">L'appareil <ph name="DEVICE_NAME" /> n'est pas pris en charge.</translation>
 <translation id="2927017729816812676">Stockage du cache</translation>
 <translation id="2928795416630981206">Autorisés à suivre la position de votre caméra</translation>
 <translation id="2931157624143513983">Ajuster à la zone imprimable</translation>
@@ -2397,7 +2393,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3569407787324516067">Écran de veille</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> peut consulter les fichiers et les dossiers suivants</translation>
 <translation id="3571734092741541777">Configurer</translation>
-<translation id="3574210789297084292">Se connecter</translation>
 <translation id="3575121482199441727">Autoriser pour ce site</translation>
 <translation id="3576324189521867626">Installation réussie</translation>
 <translation id="3578594933904494462">Le contenu de cet onglet est en cours de partage.</translation>
@@ -2848,7 +2843,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4022426551683927403">&amp;Ajouter au dictionnaire</translation>
 <translation id="4023146161712577481">Détermination de la configuration de l'appareil en cours…</translation>
 <translation id="4025039777635956441">Désactiver le son pour le site sélectionné</translation>
-<translation id="4027804175521224372">(Bénéficiez de toutes les fonctionnalités — <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Ajouter des méthodes d'entrée</translation>
 <translation id="4029556917477724407">Retour à partir de la page <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Le microphone est autorisé</translation>
@@ -3263,7 +3257,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="452039078290142656">appareils inconnus de <ph name="VENDOR_NAME" /></translation>
 <translation id="4522570452068850558">Détails</translation>
 <translation id="4522600456902129422">Continuer à autoriser ce site à voir le presse-papiers</translation>
-<translation id="4522890784888918985">Les comptes enfants ne sont pas pris en charge</translation>
+<translation id="4522890784888918985">Les comptes d'enfants ne sont pas pris en charge</translation>
 <translation id="4524832533047962394">Le mode d'inscription fourni n'est pas compatible avec cette version du système d'exploitation. Veuillez vous assurer que vous utilisez la version la plus récente.</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4527929807707405172">Activer le défilement inversé. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -3794,7 +3788,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Votre disque dur est plein. Veuillez faire l'enregistrement à un autre endroit ou libérer de l'espace sur le disque dur.</translation>
 <translation id="5123433949759960244">Basketball</translation>
-<translation id="5125167430897995218">Code PUK incorrect. Il vous reste 1 tentative avant que vous deviez communiquer avec votre fournisseur de services pour rétablir l'accès au réseau.</translation>
 <translation id="5125751979347152379">URL incorrecte.</translation>
 <translation id="5126611267288187364">Afficher les modifications</translation>
 <translation id="5127620150973591153">Identifiant de connexion sécurisé : <ph name="TOKEN" /></translation>
@@ -6148,7 +6141,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7730449930968088409">Effectuer une saisie d'écran</translation>
 <translation id="7730683939467795481">Cette page a été modifiée par l'extension « <ph name="EXTENSION_NAME" /> »</translation>
 <translation id="7732111077498238432">Le réseau est contrôlé par une politique</translation>
-<translation id="7734486794139738745">Je n'utilise qu'un commutateur</translation>
+<translation id="7734486794139738745">J'utilise un seul commutateur</translation>
 <translation id="7737115349420013392">Association avec « <ph name="DEVICE_NAME" /> » en cours…</translation>
 <translation id="7737948071472253612">Non autorisés à utiliser votre caméra</translation>
 <translation id="7740996059027112821">Standard</translation>
@@ -6509,7 +6502,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="810185532889603849">Couleur personnalisée</translation>
 <translation id="8101987792947961127">Réinitialisation « Powerwash » nécessaire au prochain démarrage</translation>
 <translation id="8102139037507939978">Supprimer les renseignements personnels du fichier system_logs.txt.</translation>
-<translation id="8104088837833760645">Télécharger le profil eSIM</translation>
+<translation id="8104088837833760645">Télécharger un profil eSIM</translation>
 <translation id="8107015733319732394">Installation du Google Play Store sur votre <ph name="DEVICE_TYPE" /> en cours… Cela peut prendre quelques minutes.</translation>
 <translation id="810728361871746125">Résolution de l'écran</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Aucun témoin tiers}=1{1 témoin tiers est bloqué}one{# témoin tiers est bloqué}other{# témoins tiers sont bloqués}}</translation>
@@ -6609,7 +6602,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8206745257863499010">Mélodie</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nouvelle notification}one{# nouvelle notification}other{# nouvelles notifications}}</translation>
-<translation id="8211551284753798479">Code PUK incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Téléchargement en cours…}one{Téléchargement en cours…}other{Téléchargements en cours…}}</translation>
 <translation id="8213449224684199188">Mode photo activé</translation>
 <translation id="8214489666383623925">Ouvrir...</translation>

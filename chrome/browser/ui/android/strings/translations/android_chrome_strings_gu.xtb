@@ -202,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />જાહેરાતકર્તાઓ જાણી શકે છે કે ક્યારે હજારો વપરાશકર્તાઓ એક સમાન રુચિ શેર કરે છે – કૉન્સર્ટમાં ઉમટેલી ભીડની જેમ જ — અને કોઈ એક વ્યક્તિને બદલે ભીડ માટે જાહેરાતો પસંદ કરે છે.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />જાહેરાતકર્તાઓ જાહેરાતોની અસરકારકતાનો એવી રીતે અભ્યાસ કરી શકે છે કે તમને કોઈ પણ સાઇટ પર ટ્રૅક કરવામાં ન આવે.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">તમે મુલાકાત લઈ શકો એવું Chromeનું માનવું હોય, તે પેજ તે પહેલેથી લોડ કરે છે. આમ કરવા માટે, Chrome કુકીનો ઉપયોગ કરી શકે છે. જો તમે કુકી માટે મંજૂરી આપો, તો સાઇટથી તમારી ઓળખ છુપાવવા માટે તેને એન્ક્રિપ્ટ કરવામાં અને Google મારફતે પેજ મોકલવામાં આવી શકે છે.</translation>
 <translation id="234265804618409743">તમારો કૅમેરા ખોલી શકતાં નથી. કંઈક ખોટું થયું.</translation>
 <translation id="2345671828921229300">કોઈ શબ્દને શોધવા માટે, તેને સ્પર્શ કરી રાખો</translation>
 <translation id="2349710944427398404">Chrome દ્વારા ઉપયોગમાં લેવાયેલ કુલ સ્ટોરેજ, એકાઉન્ટ્સ, બુકમાર્ક્સ અને સાચવેલ સેટિંગ્સ સહિત</translation>
@@ -395,7 +396,6 @@
 <translation id="3568688522516854065">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ મેળવવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો.</translation>
 <translation id="3587482841069643663">બધા</translation>
 <translation id="3587596251841506391">વેબ પર સુરક્ષા સુધારવા સહાય કરો</translation>
-<translation id="3598653140581545904">સાઇન ઇન કરવા માટે છૂપી ટૅબનો ઉપયોગ કરો</translation>
 <translation id="3602290021589620013">પ્રીવ્યૂ કરો</translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> પર શેર કરી રહ્યાં છે</translation>
@@ -759,7 +759,6 @@
 <translation id="5964805880140440652">આ પેજને બીજા ડિવાઇસ પર શેર કરવા માટે, Chrome સેટિંગમાં સિંક ચાલુ કરો</translation>
 <translation id="5964869237734432770">છબીના વર્ણનો મેળવવાનું બંધ કરો</translation>
 <translation id="5979084224081478209">પાસવર્ડ ચેક કરો</translation>
-<translation id="5982307838673692400">છૂપી ટૅબમાં ખોલો</translation>
 <translation id="6000066717592683814">Google રાખો</translation>
 <translation id="6000203700195075278">ફરીથી ફૉલો કરો</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />શોધ<ph name="END_LINK1" /> ઇતિહાસ અથવા ઇતિહાસના અન્ય પ્રકારની માહિતી સાફ કરવા માટે <ph name="BEGIN_LINK2" />મારી Google પ્રવૃત્તિ<ph name="END_LINK2" />ની મુલાકાત લો</translation>
@@ -801,13 +800,13 @@
 <translation id="6277522088822131679">પૃષ્ઠને છાપવામાં સમસ્યા હતી. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="6278428485366576908">થીમ</translation>
 <translation id="6292420053234093573">Chromeનો ઉપયોગ કરીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા Chrome OSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો.</translation>
-<translation id="629730747756840877">એકાઉન્ટ</translation>
 <translation id="6297765934698848803">જે સંસ્થા તમારા ડિવાઇસને મેનેજ કરે છે તેણે તમારો કૅમેરા બંધ કર્યો છે.</translation>
 <translation id="6301525844455696527">વાંચવાની સૂચિમાં બાકી હોય તે વાંચી લો</translation>
 <translation id="6303969859164067831">સાઇન આઉટ કરો અને સિંક બંધ કરો</translation>
 <translation id="6312687380483398334">વેબ ઍપ (છોડો)</translation>
 <translation id="6316139424528454185">Android વર્ઝન અસમર્થિત છે</translation>
 <translation id="6324034347079777476">Android સિસ્ટમ સમન્વયન અક્ષમ છે</translation>
+<translation id="6324916366299863871">શૉર્ટકટમાંમાં ફેરફાર કરો</translation>
 <translation id="6324977638108296054">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક બનાવી શકતા નથી</translation>
 <translation id="6324997754869598316">(ભૂલ <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> મારફતે શેર કરો</translation>
@@ -912,9 +911,6 @@
 <translation id="6900532703269623216">વધારેલું સંરક્ષણ</translation>
 <translation id="6903907808598579934">સમન્વયન ચાલુ કરો</translation>
 <translation id="6929699136511445623">Android સિસ્ટમ સિંક ચાલુ કરો</translation>
-<translation id="6941901516114974832">છૂપી ટૅબમાં, તમે મુલાકાત લો તે વેબસાઇટને, તમારા નિયોક્તાને કે શાળાને અને તમને ઇન્ટરનેટ સેવા આપનાર કંપનીને તમારી પ્રવૃત્તિ <ph name="BEGIN_BOLD1" />હજી પણ દેખાઈ શકે છે<ph name="END_BOLD1" />.
-
-જ્યારે તમે <ph name="BEGIN_BOLD2" />બધી છૂપી ટૅબ બંધ કરો<ph name="END_BOLD2" />, ત્યારે જ Chromeમાંથી તમારા છૂપા સત્રમાંનો ડેટા સાફ કરવામાં આવશે.</translation>
 <translation id="6942665639005891494">સેટિંગ મેનૂ વિકલ્પનો ઉપયોગ કરીને ડિફૉલ્ટ ડાઉનલોડ સ્થાનને કોઈપણ સમયે બદલો</translation>
 <translation id="694267552845942083">તમે હાલમાં તમારા સિંક સેટિંગને કસ્ટમાઇઝ કરી રહ્યાં છો. સિંક ચાલુ કરવાનું પૂર્ણ કરવા માટે, સ્ક્રીનની નીચેની બાજુએ કન્ફર્મ કરો બટન પર ટૅપ કરો. ઉપર નૅવિગેટ કરો</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
@@ -995,6 +991,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (અપડેટ કર્યું <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">ડેટા બચત</translation>
 <translation id="7498271377022651285">કૃપા કરીને રાહ જુઓ…</translation>
+<translation id="750228856503700085">અપડેટ અનુપલબ્ધ છે</translation>
 <translation id="7507207699631365376">આ પ્રદાતાની <ph name="BEGIN_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_LINK" /> જુઓ</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="751961395872307827">સાઇટ સાથે કનેક્ટ કરી શકાતું નથી</translation>
@@ -1097,6 +1094,7 @@
 <translation id="8076492880354921740">ટૅબ્સ</translation>
 <translation id="8078096376109663956">માત્ર ટેક્સ્ટ શેર કરો</translation>
 <translation id="8084114998886531721">સાચવેલ પાસવર્ડ</translation>
+<translation id="8084285576995584326">તમારા Google એકાઉન્ટનો ડેટા નિયંત્રિત કરો</translation>
 <translation id="808747664143081553">ડિવાઇસ સાથે કનેક્ટ કરેલો છે</translation>
 <translation id="8103578431304235997">છૂપું ટૅબ</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1192,6 +1190,7 @@
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
+<translation id="8746155870861185046">હાઇલાઇટ કરેલી ટેક્સ્ટ શેર કરો</translation>
 <translation id="8748850008226585750">સામગ્રીઓ છુપાવેલ છે</translation>
 <translation id="8773160212632396039">વિનંતી પર પ્રક્રિયા ચાલુ છે</translation>
 <translation id="8788265440806329501">નૅવિગેશન ઇતિહાસ બંધ છે</translation>

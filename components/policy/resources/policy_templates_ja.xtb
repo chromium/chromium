@@ -1072,13 +1072,6 @@
 <translation id="2448315169529769573">このポリシーを有効に設定すると、<ph name="PRODUCT_OS_NAME" /> から Google に、使用状況に関する統計情報と診断データが送信されます。このポリシーを無効に設定すると、統計情報と診断データは送信されません。
 
        このポリシーを未設定のままにすると、統計情報と診断データの送信は管理対象外のデバイスではオフになり、管理対象のデバイスではオンになります。</translation>
-<translation id="2449263772062368618">ブラウザを終了したときに削除する閲覧データの種類のリストを設定します。
-      指定できるデータの種類は、閲覧履歴（<ph name="DATA_TYPE_BROWSING_HISTORY" />）、ダウンロード履歴（<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />）、Cookie（<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />）、キャッシュ（<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />）、自動入力（<ph name="DATA_TYPE_AUTOFILL" />）、パスワード（<ph name="DATA_TYPE_PASSWORD" />）、サイトの設定（<ph name="DATA_TYPE_SITE_SETTINGS" />）、ホストされているアプリデータ（<ph name="DATA_TYPE_HOSTED_APP_DATA" />）です。
-      このポリシーは <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> より優先されません。
-      このポリシーを適用するには、<ph name="SYNC_DISABLED_POLICY_NAME" /> ポリシーを true に設定する必要があります。設定されていない場合、このポリシーは無視されます。
-      このポリシーをプラットフォーム レベルで設定する場合は、プラットフォーム レベルで同期を無効にする必要があります。
-      このポリシーをユーザーレベルで設定する場合は、そのユーザーに対して同期を無効にする必要があります。
-      </translation>
 <translation id="244950822854046436"><ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> に適用する設定のリストです。これはファイルがダウンロードされるときに呼び出されます。<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、ウェブページからダウンロードされるファイルをコネクタがサービス プロバイダに送信すべきかどうかを判別する際に使用されます。ウェブページの URL は、「有効」パターンと関連付けられ、かつ「無効」パターンと関連付けられていないパターンに一致する必要があります。ファイルの MIME タイプも、「有効」パターンと関連付けられ、かつ「無効」パターンと関連付けられていないパターンに一致する必要があります。<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。<ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> フィールドは、サービス プロバイダでお客様のアカウントを識別するパートナー サービス プロバイダの一意の ID です。<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> の設定の一部としてログインが必要な場合、このお客様のサービス プロバイダ アカウントと関連付けられたユーザー アカウントのみが許可されます。このポリシーは <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> からのみ設定できます。</translation>
 <translation id="2454228136871844693">安定性を重視します。</translation>
 <translation id="2455033019778127130">デフォルトのブラウザ処理を行い、利用規約を表示してユーザーの同意を待ちます。</translation>
@@ -2952,13 +2945,6 @@
       このポリシーを未設定のままにした場合、リストにウェブサイトは追加されません。
 
       注: このリストには、<ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> ポリシーからも要素が追加される可能性があります。</translation>
-<translation id="5065753964276395784">このポリシーはサポートが終了しています。代わりに <ph name="PROXY_SETTINGS_POLICY_NAME" /> を使用してください。
-
-       このポリシーを設定した場合、<ph name="PRODUCT_NAME" /> では、ここで指定したホストリストに対してプロキシを一切使用しません。このポリシーは、<ph name="PROXY_SETTINGS_POLICY_NAME" /> ポリシーを指定せずに、<ph name="PROXY_MODE_POLICY_NAME" /> で <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> を選択した場合のみ適用されます。
-
-       プロキシ ポリシーの設定で他のモードを選択した場合は、このポリシーを未設定のままにしてください。
-
-       注: 詳しい例については、Chromium プロジェクトの説明（https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett）をご覧ください。</translation>
 <translation id="5067143124345820993">ログイン ユーザーのホワイト リスト</translation>
 <translation id="5073609397321802133">このポリシーを false に設定した場合、ユーザーは新しいタブページの背景をカスタイマイズできなくなります。既存のカスタムの背景は削除され、後からこのポリシーを true に設定しても元に戻すことはできません。
 
@@ -3104,26 +3090,6 @@
       このポリシーを False に設定するか未設定のままにした場合、統合デスクトップはオフになり、ユーザーはこの設定をオンにすることはできません。</translation>
 <translation id="5255162913209987122">推奨ポリシーの表示</translation>
 <translation id="5257395339965216304">ホストされているアプリデータ</translation>
-<translation id="5264066441613395613">このポリシーでは、Chrome と ARC アプリのプロキシ設定を行います。いずれもコマンドラインで指定されたプロキシ関連の設定はすべて無視されます。
-
-       このポリシーを未設定のままにした場合、ユーザーはプロキシ設定を選択できます。
-
-       <ph name="PROXY_SETTINGS_POLICY_NAME" /> ポリシーを設定すると、次のフィールドを受け取れるようになります。
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Chrome で使用するプロキシ サーバーを指定して、ユーザーがプロキシ設定を変更できないようにします
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: プロキシ .pac ファイルへの URL
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: プロキシ サーバーの URL
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: <ph name="PRODUCT_NAME" /> で回避するプロキシホストのリスト
-
-       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> フィールドはサポートを終了しました。代わりに <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> フィールドを使用してください。このフィールドを使用すると、Chrome で使用するプロキシ サーバーを指定して、ユーザーがプロキシ設定を変更できないようにすることができます。
-
-        <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> については、以下のいずれかの値を指定します。
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />: プロキシは一切使用せず、他のフィールドをすべて無視します。
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: システムのプロキシを使用して、他のフィールドをすべて無視します。
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: 他のフィールドをすべて無視します。
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />: <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> フィールドと <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> フィールドと <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
-
-      注: 詳しい例については、Chromium プロジェクトの説明（https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett）をご覧ください。</translation>
 <translation id="5266173014392157048">このポリシーはサポートが終了しています。代わりに <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
 
       このポリシーでは、<ph name="PRODUCT_NAME" /> が委任できるサーバーを割り当てることができます。複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。

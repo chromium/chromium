@@ -17,7 +17,6 @@
 <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium, güncellemeleri denetleyemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="2054703085270098503">Chromium ile Güvende Kalın</translation>
-<translation id="2075400798887076382">Bilgisayarınızda açtığınız sekmelere doğrudan buradan erişin. Bunun için bilgisayarınızda Chromium'u açmanız ve menüye gidip "Chromium'da oturum aç…" seçeneğini belirlemeniz yeterlidir.</translation>
 <translation id="2168108852149185974">Bazı eklentiler Chromium'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>
 <translation id="2178608107313874732">Chromium şu anda kameranızı kullanamıyor</translation>
 <translation id="2195025571279539885">Chromium'un bir dahaki sefere bu siteden <ph name="LANGUAGE_NAME" /> dilindeki sayfaları çevirmeyi önermesini ister misiniz?</translation>
@@ -42,7 +41,6 @@
 <translation id="4585809515399340748">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chromium'u kullanabilirsiniz.</translation>
 <translation id="4681781466797808448">Chromium tarayıcıyı açın</translation>
 <translation id="4736424910885271643">Hesabınız, <ph name="HOSTED_DOMAIN" /> tarafından yönetildiği için Chromium verileri bu cihazdan silinecek</translation>
-<translation id="4787850887676698916">Diğer cihazlarınızda Chromium'da açtığınız sekmeler burada görünür.</translation>
 <translation id="4806326830773390517">Kullanıcı istatistiklerini ve kilitlenme raporlarını Google'a göndererek Chromium'u geliştirmemize yardımcı olun</translation>
 <translation id="4828317641996116749">Chromium, şifrelerin tümünü kontrol edemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="4852878756222711218">Chromium'dan en iyi şekilde yararlanmak için Google Hesabınızla oturum açın</translation>

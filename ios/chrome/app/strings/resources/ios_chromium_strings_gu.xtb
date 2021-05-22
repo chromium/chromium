@@ -17,7 +17,6 @@
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium અપડેટ ચેક કરી શક્યું નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="2054703085270098503">Chromiumનો ઉપયોગ કરીને સલામત રહો</translation>
-<translation id="2075400798887076382">તમે તમારા કમ્પ્યુટર પર ખોલેલા ટૅબ્સને અહીંથી જ ઍક્સેસ કરો. બસ તમારા કમ્પ્યુટર પર Chromium ખોલો, મેનૂ પર જાઓ અને "Chromium માં સાઇન ઇન કરો..." પસંદ કરો</translation>
 <translation id="2168108852149185974">કેટલાક એડ-ઓનને કારણે Chromium ક્રૅશ થાય છે. કૃપા કરી આને અનઇન્સ્ટૉલ કરો:</translation>
 <translation id="2178608107313874732">Chromium, અત્યારે તમારા કૅમેરાનો ઉપયોગ કરી શકતું નથી</translation>
 <translation id="2195025571279539885">શું તમે Chromiumને આ સાઇટથી આગલી વખતે <ph name="LANGUAGE_NAME" /> પેજને અનુવાદ કરવાની ઓફર કરવા માગો છો?</translation>
@@ -42,12 +41,12 @@
 <translation id="4585809515399340748">હવે તમે સંદેશા, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromiumનો ઉપયોગ કરી શકશો.</translation>
 <translation id="4681781466797808448">Chromium સ્કૅન ચાલુ કરો</translation>
 <translation id="4736424910885271643">તમારું એકાઉન્ટ <ph name="HOSTED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવતું હોવાથી, આ ડિવાઇસમાંથી તમારો Chromium ડેટા સાફ કરવામાં આવશે</translation>
-<translation id="4787850887676698916">તમારા અન્ય ઉપકરણો પર તમે Chromium માં ખોલેલા ટૅબ્સ અહીં દેખાશે.</translation>
 <translation id="4806326830773390517">Googleને વપરાશનાં આંકડા અને ક્રૅશ રિપોર્ટ ઑટોમૅટિક રીતે મોકલીને Chromiumને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="4828317641996116749">Chromium બધા પાસવર્ડ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="4852878756222711218">Chromiumનો સૌથી વધુ લાભ લેવા માટે, તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરો</translation>
 <translation id="4985291216379576555">ઑફલાઇન, Chromium અપડેટ ચેક કરી શકતાં નથી</translation>
 <translation id="4999538639245140991">કારણ કે તમે <ph name="SIGNOUT_MANAGED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવેલ એકાઉન્ટમાંથી સાઇન આઉટ કરી રહ્યાં છો, આ ડિવાઇસમાંથી તમારા Chromium ડેટા ડિલીટ થઈ જશે. તમારો ડેટા તમારા Google એકાઉન્ટમાં જળવાઈ રહેશે.</translation>
+<translation id="5171868502429358653">Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="5224391634244552924">કોઈ સાચવેલા પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chromium તેને ચેક કરી શકે છે.</translation>
 <translation id="5308226104666789935">Chromium અપડેટ ચેક કરી શકતું નથી</translation>
 <translation id="5396916991083608703">Chromiumને ડિફૉલ્ટ તરીકે સેટ કરીએ?</translation>
@@ -63,6 +62,7 @@
 1. સેટિંગ ખોલો
 2. ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો
 3. Chromium પસંદ કરો.</translation>
+<translation id="6155422572367400359">આ સાઇટમાં, તમારા Google એકાઉન્ટમાં અને Chromiumમાં સાઇન ઇન કરો. તમે પછીથી તમારી સિંક કરવાની સુવિધા ચાલુ કરી શકો છો.</translation>
 <translation id="6268381023930128611">Chromiumમાંથી સાઇન આઉટ કરીએ?</translation>
 <translation id="632825460376924298">Chromiumમાં સાઇન-ઇનની મંજૂરી આપો</translation>
 <translation id="6337530241089703714">આ ડિવાઇસમાંથી તમારો Chromium ડેટા સાફ કરવો છે કે તેને જાળવી રાખવો છે તે પસંદ કરો</translation>

@@ -155,10 +155,8 @@
 <translation id="116173250649946226">O seu administrador predefiniu um tema, o qual não pode alterar.</translation>
 <translation id="1163931534039071049">&amp;Ver fonte da moldura</translation>
 <translation id="1164891049599601209">Entrou num site fraudulento.</translation>
-<translation id="1164899421101904659">Introduzir chave de desbloqueio do PIN</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1166212789817575481">Fechar Separadores à Direita</translation>
-<translation id="116624467691206283">PUK inválido. Tem 1 tentativa restante.</translation>
 <translation id="1168020859489941584">A abrir dentro de <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Servidores de nome Google</translation>
 <translation id="1170288591054440704">Perguntar quando um site pretender utilizar tipos de letra instalados no dispositivo</translation>
@@ -1198,7 +1196,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2263189956353037928">Terminar sessão e voltar a iniciar sessão</translation>
 <translation id="2263371730707937087">Taxa de atualização do ecrã</translation>
 <translation id="2263679799334060788">O seu feedback é importante e ajuda-nos a melhorar o Google Cast. Para obter ajuda na resolução de problemas relacionados com a transmissão, consulte o <ph name="BEGIN_LINK" />Centro de Ajuda<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">PUK incorreto. Tem <ph name="RETRIES" /> tentativas restantes antes de ter de contactar o seu operador para recuperar o acesso à rede.</translation>
 <translation id="22665427234727190">Perguntar quando um site pretender aceder a dispositivos Bluetooth (recomendado)</translation>
 <translation id="2266957463645820432">IPP através de USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Trocar dados com qualquer dispositivo do domínio <ph name="DOMAIN" /></translation>
@@ -1482,7 +1479,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2553440850688409052">Ocultar este plug-in</translation>
 <translation id="2554553592469060349">O ficheiro selecionado é demasiado grande (tamanho máx.: 3 MB).</translation>
 <translation id="2558896001721082624">Mostrar sempre opções de acessibilidade no menu do sistema</translation>
-<translation id="2562743677925229011">Não tem sessão iniciada no <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">A opção de execução do JavaScript através do AppleScript está desativada. Para a ativar, na barra de menu aceda a Vista &gt; Programador &gt; Permitir JavaScript de eventos Apple. Para mais informações: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Verificação ortográfica melhorada</translation>
 <translation id="2568774940984945469">Contentor da Barra de informações</translation>
@@ -2397,7 +2393,6 @@ Pretende pará-lo?</translation>
 <translation id="3569407787324516067">Proteção de ecrã</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> pode ver os seguintes ficheiros e pastas</translation>
 <translation id="3571734092741541777">Configurar</translation>
-<translation id="3574210789297084292">iniciar sessão</translation>
 <translation id="3575121482199441727">Permitir neste site</translation>
 <translation id="3576324189521867626">Instalação com êxito</translation>
 <translation id="3578594933904494462">O conteúdo deste separador está a ser partilhado.</translation>
@@ -2848,7 +2843,6 @@ Pretende pará-lo?</translation>
 <translation id="4022426551683927403">&amp;Adicionar ao Dicionário</translation>
 <translation id="4023146161712577481">A determinar a configuração do dispositivo.</translation>
 <translation id="4025039777635956441">Desativar o som do site selecionado</translation>
-<translation id="4027804175521224372">(Está a perder - <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Adicionar métodos de introdução</translation>
 <translation id="4029556917477724407">Voltar à página <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Microfone permitido</translation>
@@ -3794,7 +3788,6 @@ Pretende pará-lo?</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">O seu disco rígido está cheio. Guarde noutra localização ou liberte espaço no disco rígido.</translation>
 <translation id="5123433949759960244">Bola de basquetebol</translation>
-<translation id="5125167430897995218">PUK incorreto. Tem 1 tentativa restante de ter de contactar o seu operador para recuperar o acesso à rede.</translation>
 <translation id="5125751979347152379">URL inválido.</translation>
 <translation id="5126611267288187364">Ver alterações</translation>
 <translation id="5127620150973591153">ID de ligação segura: <ph name="TOKEN" /></translation>
@@ -4042,7 +4035,6 @@ Pretende pará-lo?</translation>
 <translation id="540296380408672091">Bloquear sempre cookies em <ph name="HOST" /></translation>
 <translation id="540495485885201800">Trocar com o anterior</translation>
 <translation id="5405146885510277940">Repor definições</translation>
-<translation id="5407119150486192764">Introduza a chave de desbloqueio do PIN de 8 dígitos fornecida pelo seu operador</translation>
 <translation id="5407167491482639988">Ininteligível</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Da sua Conta Google</translation>
@@ -6611,7 +6603,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Telemóvel</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova notificação}other{# novas notificações}}</translation>
-<translation id="8211551284753798479">PUK inválido. Tem mais <ph name="RETRIES" /> tentativas.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Transferência em curso}other{Transferências em curso}}</translation>
 <translation id="8213449224684199188">Entrou no modo de foto</translation>
 <translation id="8214489666383623925">Abrir ficheiro...</translation>

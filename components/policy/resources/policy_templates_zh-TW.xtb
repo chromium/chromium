@@ -1090,13 +1090,6 @@
 <translation id="2448315169529769573">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />會將使用指標和診斷資料 (包括當機報告) 回報給 Google。如果將這項政策設為停用，系統會停用指標和診斷資料的報告功能。
 
        如果未設定這項政策，系統會在未受管理的裝置上，將指標和診斷資料的報告功能保持停用，而在受管理的裝置上則保持啟用。</translation>
-<translation id="2449263772062368618">設定在瀏覽器關閉時要刪除的瀏覽資料類型清單。
-      可用的資料類型有瀏覽記錄 (<ph name="DATA_TYPE_BROWSING_HISTORY" />)、下載記錄 (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />)、Cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />)、快取內容<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、自動填入內容 (<ph name="DATA_TYPE_AUTOFILL" />)、密碼 (<ph name="DATA_TYPE_PASSWORD" />)、網站設定 (<ph name="DATA_TYPE_SITE_SETTINGS" />) 和代管的應用程式資料 (<ph name="DATA_TYPE_HOSTED_APP_DATA" />)。
-      這項政策的優先順序低於 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />。
-      如要使用這項政策，必須將 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策設為 True，否則系統會予以忽略。
-      如果是在平台層級設定這項政策，必須在平台層級停用同步功能。
-      如果是在使用者層級設定這項政策，則必須為該使用者停用同步功能，這樣這項政策才會生效。
-      </translation>
 <translation id="244950822854046436">指定要套用 <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />的設定清單，這份清單會在下載檔案時觸發。
 
       從網頁執行下載作業時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 欄位來判斷連接器是否應將檔案傳送至服務供應商。相應的網頁網址必須符合與「enable」模式相關聯的模式，而非與「disable」模式相關聯的模式。該檔案的 MIME 類型也必須符合與「enable」模式相關聯的模式，而非與「disable」模式相關聯的模式。
@@ -3001,13 +2994,6 @@
       如果未設定這項政策，系統不會將任何網站加入清單。
 
       注意：系統也可以透過 <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> 政策將元素加入這份清單。</translation>
-<translation id="5065753964276395784">這項政策已遭淘汰，請改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
-
-       如果設定這項政策，<ph name="PRODUCT_NAME" /> 會略過此處所列主機的 Proxy。只有在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未設定，且你為 <ph name="PROXY_MODE_POLICY_NAME" /> 選取 <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> 時，這項政策才會生效。
-
-       如果你選擇了透過任何其他模式設定 Proxy 政策，請勿設定這項政策。
-
-       注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="5067143124345820993">登入使用者許可清單</translation>
 <translation id="5073609397321802133">如果將這項政策設為 False，系統將禁止使用者自訂新分頁的背景。即使日後將這項政策設為 True，系統仍會永久移除任何現有的自訂背景。
 
@@ -3161,26 +3147,6 @@
       如果將這項政策設為 False 或不設定，系統會停用整合桌面，且使用者無法啟用這項功能。</translation>
 <translation id="5255162913209987122">建議使用</translation>
 <translation id="5257395339965216304">代管的應用程式資料</translation>
-<translation id="5264066441613395613">你可以透過這項政策，設定 Chrome 和 ARC 應用程式的 Proxy 設定，系統會忽略所有從指令列所指定的 Proxy 相關選項。
-
-       如果不設定這項政策，使用者將可選擇要使用的 Proxy 設定。
-
-      設定 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策時，可使用下列欄位：
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 可讓你指定 Chrome 要使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> 是 Proxy .pac 檔案的網址
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 是 Proxy 伺服器的網址
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 是 <ph name="PRODUCT_NAME" /> 會略過的 Proxy 主機清單
-
-       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> 欄位已遭淘汰，請改用 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 欄位，該欄位可讓你指定 Chrome 要使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定。
-
-        如果將 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 的值設為：
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />：Chrome 一律不會使用 Proxy，且會忽略所有其他欄位。
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />：Chrome 會使用系統 Proxy，並忽略所有其他欄位。
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />：Chrome 會忽略所有其他欄位。
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />：Chrome 會使用 <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 欄位。
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />：Chrome 會使用 <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 欄位。
-
-      注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="5266173014392157048">這項政策已遭淘汰，請改用「<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />」政策。
 
       你可以透過這項政策，指派 <ph name="PRODUCT_NAME" /> 可能會委派的目標伺服器。每個伺服器名稱須以半形逗號分隔，亦可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。

@@ -88,7 +88,6 @@
 <translation id="1692118695553449118">المزامنة مفعَّلة</translation>
 <translation id="1700629756560807968">تم اختيار <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">انقر مرّتين للتثبيت.</translation>
-<translation id="1746815479209538200">لتصفُّح الويب، يمكنك إضافة علامة تبويب جديدة.</translation>
 <translation id="1752547299766512813">حفظ كلمات المرور</translation>
 <translation id="1753905327828125965">الأكثر زيارة</translation>
 <translation id="1803264062614276815">اسم حامل البطاقة</translation>
@@ -673,7 +672,6 @@
 <translation id="7646772052135772216">مزامنة كلمات المرور لا تعمل</translation>
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7658239707568436148">إلغاء</translation>
-<translation id="766891008101699113">لتصفح الويب بخصوصية تامّة، يمكنك إضافة علامة تبويب جديدة.</translation>
 <translation id="7671141431838911305">تثبيت</translation>
 <translation id="7701040980221191251">لا يوجد</translation>
 <translation id="7741325291586284254">صفحة علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
@@ -814,6 +812,7 @@
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">تم إرسال تقرير الأعطال.</translation>
 <translation id="952704832371081537">إلغاء</translation>
+<translation id="984509647832111802">المزامنة لا تعمل.</translation>
 <translation id="988141524645182168">أجهزة أخرى</translation>
 <translation id="989988560359834682">تعديل العنوان</translation>
 <translation id="994757059139821576">اقتراحات المقالات</translation>

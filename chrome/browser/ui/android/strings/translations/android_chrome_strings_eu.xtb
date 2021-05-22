@@ -186,7 +186,6 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="22320125457191592">Zuretzat</translation>
 <translation id="2234876718134438132">Sinkronizazioa eta Google-ren zerbitzuak</translation>
 <translation id="2239812875700136898">Istorioak kontrolatzeko, sakatu "Discover-en aukerak" botoia</translation>
-<translation id="2251971221270904886">Teknologia abian denean eta aktibo dagoenean, azken zazpi egunetako arakatze-historia erabiltzen du Chrome-k zer talde demografikotan zauden zehazteko. Iragarleek iragarkiak hauta ditzakete talde horretarako. Arakatze-historia pribatu mantentzen da gailuan. <ph name="BEGIN_LINK" />Lurralde batzuetan<ph name="END_LINK" /> soilik dago aktibo probaldia.</translation>
 <translation id="2259659629660284697">Esportatu pasahitzak…</translation>
 <translation id="2276696007612801991">Hasi saioa Google-ko kontuan pasahitzak egiaztatzeko</translation>
 <translation id="2278052315791335171">Pasahitza ezabatzen baduzu ere, ez da ezabatuko <ph name="SITE" /> webguneko kontua</translation>
@@ -320,7 +319,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> laster-marka}other{<ph name="BOOKMARKS_COUNT_MANY" /> laster-marka}}</translation>
 <translation id="3062802207422175757">Interesatzen zaizkizun gaiei buruzko artikuluak Chrome-n</translation>
 <translation id="3070005020161560471">Itzuli automatikoki edukia hizkuntza hauetako batean badago:</translation>
-<translation id="3083531420240576529">Edozein unetan berrezar dezakezu taldea. Zazpi egun behar dira dagokizun taldea zehazteko.</translation>
 <translation id="3091010850649238832">Erakutsi arbeleko edukia</translation>
 <translation id="3098745985164956033">Jasotzen dituzun deskribapenak hobetzeko bidaltzen zaizkio irudi batzuk Google-ri</translation>
 <translation id="3114507951000454849">Irakurri gaurko albisteak <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="3568688522516854065">Beste gailuetako fitxak eskura izateko, hasi saioa eta aktibatu sinkronizazioa</translation>
 <translation id="3587482841069643663">Guztiak</translation>
 <translation id="3587596251841506391">Hobetu sareko segurtasuna</translation>
-<translation id="3598653140581545904">Erabili ezkutuko modua saioa hasteko</translation>
 <translation id="3602290021589620013">Aurrebista</translation>
 <translation id="3616113530831147358">Audioa</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> gailuarekin partekatzen</translation>
@@ -764,7 +761,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5964805880140440652">Orri hau beste gailu batekin partekatzeko, joan Chrome-ren ezarpenetara eta aktibatu sinkronizazioa</translation>
 <translation id="5964869237734432770">Gelditu irudi-deskribapenak</translation>
 <translation id="5979084224081478209">Egiaztatu pasahitzak</translation>
-<translation id="5982307838673692400">Ireki ezkutuko moduko fitxa bat</translation>
 <translation id="6000066717592683814">Jarraitu Google erabiltzen</translation>
 <translation id="6000203700195075278">Jarraitu berriro</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />Bilaketa-historia<ph name="END_LINK1" /> edo beste historia mota batzuk ezabatzeko, joan <ph name="BEGIN_LINK2" />Google-ko nire jarduerak<ph name="END_LINK2" /> atalera</translation>
@@ -806,13 +802,13 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6277522088822131679">Arazo bat izan da orria inprimatzean. Saiatu berriro.</translation>
 <translation id="6278428485366576908">Gaia</translation>
 <translation id="6292420053234093573">Chrome erabiltzen baduzu, onartu egingo dituzu <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Google Chrome-ren eta Chrome OS-en Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Kontua</translation>
 <translation id="6297765934698848803">Gailua kudeatzen duen erakundeak kamera desaktibatu du.</translation>
 <translation id="6301525844455696527">Ekin zain daukazun irakurketa-zerrendari</translation>
 <translation id="6303969859164067831">Amaitu saioa eta desaktibatu sinkronizazioa</translation>
 <translation id="6312687380483398334">Sareko aplikazioak (audioa eta jakinarazpenak desaktibatuta)</translation>
 <translation id="6316139424528454185">Android-en bertsio bateraezina</translation>
 <translation id="6324034347079777476">Desgaitu da Android sistemarekin sinkronizatzeko aukera</translation>
+<translation id="6324916366299863871">Editatu lasterbidea</translation>
 <translation id="6324977638108296054">Ezin da sortu nabarmendutako testurako estekarik</translation>
 <translation id="6324997754869598316">(Errorea: <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Partekatu <ph name="APPLICATION" /> bidez</translation>
@@ -893,11 +889,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6699370405921460408">Google-ren zerbitzariek ikusten dituzun orriak optimizatuko dituzte.</translation>
 <translation id="670498945988402717">Atzo egiaztatu zuen</translation>
 <translation id="6710213216561001401">Aurrekoa</translation>
-<translation id="671333169801287922">Aktibatuta dagoenean, hemen agertzen diren pribatutasuna babesteko teknikak erabil ditzakete webguneek haien edukia eta zerbitzuak eskaintzeko. Besteak beste, webguneen arteko jarraipenaren ordezko aukerak hartzen dira barnean. Litekeena da beste probaldi batzuk gehitzea denborak aurrera egin ahala.
-
-<ph name="BEGIN_LIST_ITEM1" />Iragarleek eta argitaratzaileek FLoC teknika erabil dezakete.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Iragarleek eta argitaratzaileek iragarkien eraginkortasuna azter dezakete, webguneetan zure jarraipena egin beharrik gabe.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Agortu da <ph name="FQDN" /> tenporizadorearen denbora. Bihar hasiko da berriro.</translation>
 <translation id="6738516213925468394">Data honetan hasi ziren enkriptatzen zure datuak <ph name="BEGIN_LINK" />Sinkronizatzeko pasaesaldiaren<ph name="END_LINK" /> bidez: <ph name="TIME" />. Idatz ezazu sinkronizatzen hasteko.</translation>
 <translation id="6738867403308150051">Deskargatzen…</translation>
@@ -922,9 +913,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6900532703269623216">Babes hobetua</translation>
 <translation id="6903907808598579934">Aktibatu sinkronizazioa</translation>
 <translation id="6929699136511445623">Gaitu Android sistemarekin sinkronizatzeko aukera</translation>
-<translation id="6941901516114974832">Nahiz eta ezkutuko moduan egon, baliteke bisitatzen dituzun webguneek, zure enpresak edo ikastetxeak, eta Interneteko zerbitzu-hornitzaileek zure jarduerak <ph name="BEGIN_BOLD1" />ikusten jarraitzea<ph name="END_BOLD1" />.
-
-Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa guztiak ixten<ph name="END_BOLD2" /> dituzunean soilik ezabatuko dira Chrome-tik.</translation>
 <translation id="6942665639005891494">Deskargen kokapen lehenetsia aldatzeko, erabili Ezarpenak menuko aukera</translation>
 <translation id="694267552845942083">Sinkronizazio-ezarpenak pertsonalizatzen ari zara. Sinkronizazioa aktibatzen amaitzeko, sakatu pantailaren behealdean dagoen "Berretsi" botoia. Joan gora</translation>
 <translation id="6945221475159498467">Hautatu</translation>
@@ -1005,7 +993,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="7493994139787901920"><ph name="VERSION" /> (azken eguneratzea: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">aurreztutako datuak</translation>
 <translation id="7498271377022651285">Itxaron, mesedez…</translation>
-<translation id="750228856503700085">Eguneratzeak ez daude erabilgarri</translation>
+<translation id="750228856503700085">Ez dago berritasunik</translation>
 <translation id="7507207699631365376">Ikusi hornitzailearen <ph name="BEGIN_LINK" />pribatutasun-gidalerroak<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Deskargatu</translation>
 <translation id="751961395872307827">Ezin da konektatu webgunera</translation>
@@ -1088,9 +1076,6 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="7971136598759319605">Aktibo duela 1 egun</translation>
 <translation id="7975379999046275268">Aurreikusi orria <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Aurrekargatu orriak azkarrago arakatzeko eta bilatzeko</translation>
-<translation id="7981546642162424360">Teknologia berriak garatzeko abian den ekimen bat da <ph name="BEGIN_LINK" />Privacy Sandbox-a<ph name="END_LINK" />, eta sare irekia mantendu bitartean zu jarraipen-mekanismoetatik babestea du helburu.
-
-Privacy Sandbox-eko probaldiak garapen-prozesuan daude oraindik eta lurralde jakin batzuetan baino ezin dira egin. Oraingoz, une honetako sare-teknologiak (hirugarrenen cookieak, kasu) erabiltzen jarraitzen duten bitartean Privacy Sandbox-a proba dezakete webguneek.</translation>
 <translation id="7986497153528221272">Pasahitzak ikusteko, ezarri lehendabizi pantailaren blokeoa gailuan</translation>
 <translation id="7998918019931843664">Ireki berriro itxitako fitxa</translation>
 <translation id="8004582292198964060">Arakatzailea</translation>

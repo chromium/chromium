@@ -186,7 +186,6 @@ Tik op een woord om te zoeken. Je kunt je zoekopdracht verfijnen door te tikken 
 <translation id="22320125457191592">Voor jou</translation>
 <translation id="2234876718134438132">Synchronisatie en Google-services</translation>
 <translation id="2239812875700136898">Beheer je artikelen met de knop 'Opties voor Discover'</translation>
-<translation id="2251971221270904886">Als deze functie aanstaat en de status Actief heeft, gebruikt Chrome je browsegeschiedenis gedurende 7 dagen om een groep (of cohort) te bepalen waarvan je deel uitmaakt. Adverteerders kunnen advertenties selecteren voor de groep. Je browsegeschiedenis blijft privé op je apparaat. Deze proef is alleen actief in <ph name="BEGIN_LINK" />bepaalde regio's<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Wachtwoorden exporteren…</translation>
 <translation id="2276696007612801991">Log in met je Google-account om je wachtwoorden te checken</translation>
 <translation id="2278052315791335171">Als je dit wachtwoord verwijdert, wordt je account op <ph name="SITE" /> niet verwijderd</translation>
@@ -320,7 +319,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}}</translation>
 <translation id="3062802207422175757">Artikelen over je interesses in Chrome</translation>
 <translation id="3070005020161560471">Automatisch vertalen</translation>
-<translation id="3083531420240576529">Je kunt je groep op elk moment resetten. Het duurt 7 dagen om je groep te bepalen.</translation>
 <translation id="3091010850649238832">Content op het klembord tonen</translation>
 <translation id="3098745985164956033">Sommige afbeeldingen worden naar Google gestuurd om de beschrijvingen voor je te verbeteren</translation>
 <translation id="3114507951000454849">Lees het nieuws van vandaag <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regi
 <translation id="3568688522516854065">Log in en zet de synchronisatie aan om de tabbladen van je andere apparaten te bekijken</translation>
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3587596251841506391">Bijdragen aan veiliger internet</translation>
-<translation id="3598653140581545904">Incognitomodus gebruiken om in te loggen</translation>
 <translation id="3602290021589620013">Voorbeeld</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Delen met <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5964805880140440652">Als je deze pagina wilt delen met een ander apparaat, zet je de synchronisatie aan via de Chrome-instellingen</translation>
 <translation id="5964869237734432770">Afbeeldingsbeschrijvingen stoppen</translation>
 <translation id="5979084224081478209">Wachtwoorden controleren</translation>
-<translation id="5982307838673692400">Incognitotabblad openen</translation>
 <translation id="6000066717592683814">Google blijven gebruiken</translation>
 <translation id="6000203700195075278">Opnieuw volgen</translation>
 <translation id="6002623704405939939">Als je je <ph name="BEGIN_LINK1" />zoekgeschiedenis<ph name="END_LINK1" /> of andere geschiedenis wilt wissen, ga je naar <ph name="BEGIN_LINK2" />Mijn Google-activiteit<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="6277522088822131679">Er is een fout opgetreden bij het afdrukken van de pagina. Probeer het opnieuw.</translation>
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6292420053234093573">Door Chrome te gebruiken, ga je akkoord met de <ph name="BEGIN_LINK1" />servicevoorwaarden van Google<ph name="END_LINK1" /> en met de <ph name="BEGIN_LINK2" />aanvullende servicevoorwaarden van Google Chrome en Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Account</translation>
 <translation id="6297765934698848803">De organisatie die je apparaat beheert, heeft de camera uitgezet.</translation>
 <translation id="6301525844455696527">Lees wat van je leeslijst</translation>
 <translation id="6303969859164067831">Uitloggen en synchronisatie uitzetten</translation>
 <translation id="6312687380483398334">Web-apps (stil)</translation>
 <translation id="6316139424528454185">Android-versie wordt niet ondersteund</translation>
 <translation id="6324034347079777476">Systeemsynchronisatie van Android staat uit</translation>
+<translation id="6324916366299863871">Snelkoppeling bewerken</translation>
 <translation id="6324977638108296054">Kan geen link naar de markering maken</translation>
 <translation id="6324997754869598316">(Fout <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Delen via <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="6699370405921460408">De Google-servers optimaliseren de pagina's die je bezoekt.</translation>
 <translation id="670498945988402717">Gisteren gecheckt</translation>
 <translation id="6710213216561001401">Vorige</translation>
-<translation id="671333169801287922">Als de functie aanstaat, kunnen sites de hier vermelde privacybeschermende technieken gebruiken om hun content en services aan te bieden. Hiertoe behoren onder andere alternatieven voor tracking op verschillende sites. Er kunnen in de loop van de tijd meer proeffuncties worden toegevoegd.
-
-<ph name="BEGIN_LIST_ITEM1" />Adverteerders en uitgevers kunnen de FLoC-techniek gebruiken.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Adverteerders en uitgevers kunnen de effectiviteit van advertenties onderzoeken zonder dat je bezoeken aan sites worden bijgehouden.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Je <ph name="FQDN" />-timer is afgelopen. Deze begint morgen opnieuw.</translation>
 <translation id="6738516213925468394">Je gegevens zijn op <ph name="TIME" /> versleuteld met je <ph name="BEGIN_LINK" />wachtwoordzin voor synchronisatie<ph name="END_LINK" />. Geef deze op om de synchronisatie te starten.</translation>
 <translation id="6738867403308150051">Downloaden...</translation>
@@ -922,9 +913,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="6900532703269623216">Geoptimaliseerde beveiliging</translation>
 <translation id="6903907808598579934">Synchronisatie aanzetten</translation>
 <translation id="6929699136511445623">Synchronisatie van Android-systeem aanzetten</translation>
-<translation id="6941901516114974832">Je activiteit in de incognitomodus <ph name="BEGIN_BOLD1" />is mogelijk nog altijd zichtbaar<ph name="END_BOLD1" /> voor websites die je bezoekt, je werkgever of school en je internetprovider.
-
-Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="BEGIN_BOLD2" />alle incognitotabbladen sluit<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Je kunt via de menuoptie Instellingen op elk gewenst moment de standaard downloadlocatie wijzigen</translation>
 <translation id="694267552845942083">Je past momenteel je synchronisatie-instellingen aan. Als je synchronisatie wilt aanzetten, tik je onderaan het scherm op Bevestigen. Omhoog navigeren</translation>
 <translation id="6945221475159498467">Selecteren</translation>
@@ -1088,9 +1076,6 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="7971136598759319605">1 dag geleden actief</translation>
 <translation id="7975379999046275268">Pagina bekijken <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pagina's vooraf laden voor sneller browsen en zoeken</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> is een lopend initiatief om nieuwe technologieën te ontwikkelen die je beschermen tegen mechanismen voor tracking terwijl het open web wordt behouden.
-
-Privacy Sandbox-proeven zijn nog actief in ontwikkeling en zijn beschikbaar in bepaalde regio's. Voorlopig kunnen sites Privacy Sandbox uitproberen en tegelijkertijd gebruik blijven maken van huidige webtechnologieën, zoals cookies van derden.</translation>
 <translation id="7986497153528221272">Als je wachtwoorden wilt bekijken, moet je eerst een schermvergrendeling instellen op je apparaat</translation>
 <translation id="7998918019931843664">Gesloten tabblad opnieuw openen</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1209,7 +1194,7 @@ Privacy Sandbox-proeven zijn nog actief in ontwikkeling en zijn beschikbaar in b
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
 <translation id="8730621377337864115">Klaar</translation>
-<translation id="8746155870861185046">Markering delen</translation>
+<translation id="8746155870861185046">Gemarkeerde tekst delen</translation>
 <translation id="8748850008226585750">Content verborgen</translation>
 <translation id="8773160212632396039">Verzoek verwerken</translation>
 <translation id="8788265440806329501">Navigatiegeschiedenis is gesloten</translation>

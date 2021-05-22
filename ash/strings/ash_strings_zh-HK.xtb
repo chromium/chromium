@@ -288,7 +288,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 稍後仍可登入。</translation>
 <translation id="3321628682574733415">家長存取碼錯誤</translation>
 <translation id="332587331255250389">請更換電池</translation>
-<translation id="3333741161915951567">已重新啟動數據機。請等候 30 秒，然後再試一次。</translation>
 <translation id="3341303451326249809">擷取咗螢幕畫面</translation>
 <translation id="334252345105450327">擷取螢幕擷圖</translation>
 <translation id="3351879221545518001">您目前正在投放畫面。</translation>
@@ -384,7 +383,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{在 1 個應用程式上停止}other{在 # 個應用程式上停止}}</translation>
 <translation id="4066027111132117168">已開啟，<ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">訊號中等</translation>
-<translation id="4095366824370681039">鋼筆</translation>
+<translation id="4095366824370681039">墨水筆</translation>
 <translation id="4112140312785995938">向後回轉</translation>
 <translation id="4114315158543974537">開啟 Phone Hub</translation>
 <translation id="412298498316631026">視窗</translation>
@@ -453,7 +452,7 @@
 <translation id="4570957409596482333">「選取以朗讀」按鈕</translation>
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">顯示預覽</translation>
-<translation id="4578196883126898996">你的麥克風已關閉。請開啟裝置的麥克風按鈕。</translation>
+<translation id="4578196883126898996">麥克風已關閉。請開啟裝置的麥克風按鈕。</translation>
 <translation id="4578906031062871102">開咗設定選單</translation>
 <translation id="4581047786858252841">麥克風已開啟</translation>
 <translation id="4585337515783392668">停止投放到不明嘅接收器</translation>
@@ -517,8 +516,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> 已連接至新手機</translation>
 <translation id="5035389544768382859">確認螢幕設定</translation>
 <translation id="504465286040788597">上一段</translation>
-<translation id="5071064518267176975">某個應用程式要求使用麥克風</translation>
-<translation id="5075554201838155866">啟用隱藏式輔助字幕</translation>
+<translation id="5071064518267176975">有應用程式要求使用麥克風</translation>
+<translation id="5075554201838155866">啟用字幕</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多「Google 助理」功能。</translation>
 <translation id="5136175204352732067">已連接不同的鍵盤</translation>
@@ -689,7 +688,7 @@
 <translation id="6612802754306526077">揀咗螢幕錄影模式</translation>
 <translation id="6614169507485700968">已啟用私隱保護畫面</translation>
 <translation id="6627638273713273709">搜尋鍵 + Shift + K 鍵</translation>
-<translation id="6629480180092995136">「<ph name="APP_NAME" />」要求使用麥克風</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> 要求使用麥克風</translation>
 <translation id="6637729079642709226">變更時間</translation>
 <translation id="6641720045729354415">切換「即時字幕」。<ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 要求確認您的身分</translation>
@@ -813,7 +812,7 @@
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7618774594543487847">中性色調</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
-<translation id="7631906263969450674">彩色筆</translation>
+<translation id="7631906263969450674">箱頭筆</translation>
 <translation id="7633755430369750696">顯示「咫尺共享」設定。</translation>
 <translation id="7641938616688887143">錄影</translation>
 <translation id="7642647758716480637">打開<ph name="NETWORK_NAME" />嘅設定，<ph name="CONNECTION_STATUS" /></translation>
@@ -829,7 +828,7 @@
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7745560842763881396">在捷徑列中顯示應用程式</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
-<translation id="7749640678855296659">你的麥克風目前已關閉</translation>
+<translation id="7749640678855296659">麥克風目前已關閉</translation>
 <translation id="776344839111254542">按一下即可查看更新詳情</translation>
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7796353162336583443">輕按捷徑列的觸控按鈕即可寫筆記、擷取螢幕畫面，並使用「Google 助理」、雷射筆或放大鏡。</translation>
@@ -877,7 +876,7 @@
 <translation id="8113423164597455979">已在所有應用程式上啟用通知</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">確定</translation>
-<translation id="8132487352815776550">停用隱藏式輔助字幕</translation>
+<translation id="8132487352815776550">停用字幕</translation>
 <translation id="8132793192354020517">已連線至 <ph name="NAME" /></translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8142441511840089262">連按兩下</translation>

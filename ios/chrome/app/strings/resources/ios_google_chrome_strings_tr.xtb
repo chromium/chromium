@@ -24,7 +24,7 @@
 <translation id="2695886661449553974">Chrome, güncellemeleri denetleyemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="2732745070297234559">Chrome, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>
 <translation id="2740105938841089077">Bağlantıları Açmak İçin Chrome'u Kullanın</translation>
-<translation id="2869959624320573933">Chrome'da Oturum Açma</translation>
+<translation id="2869959624320573933">Chrome'da Oturum Açın</translation>
 <translation id="2919738076569633423">Chrome'u kullanarak <ph name="BEGIN_LINK_TOS" />Hizmet Şartları<ph name="END_LINK_TOS" />'nı kabul etmiş sayılırsınız.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tarafından yönetilen bir hesabın oturumunu kapattığınız için Chrome verileriniz bu cihazdan silinecek. Ancak verileriniz Google Hesabınızda kalmaya devam edecek.</translation>
 <translation id="3167189358072330585">Hesabınız Google Chrome'da kullanılamıyor. Lütfen alan adı yöneticinizle iletişim kurun veya oturum açmak için normal bir Google Hesabı kullanın.</translation>
@@ -64,7 +64,6 @@
 <translation id="6063091872902370735">Chrome'da oturum açmaya izin ver</translation>
 <translation id="6181930887571472871">Chrome'a Geçin</translation>
 <translation id="6238746320622508509">Chrome'un Gizli sekmeleri kilitlemesine izin verin.</translation>
-<translation id="6573431926118603307">Diğer cihazlarınızda Chrome ile açtığınız sekmeler burada görünür.</translation>
 <translation id="6600954340915313787">Chrome'a kopyalandı</translation>
 <translation id="6634107063912726160">Oturumu kapattığınızda Chrome, hiçbir yeni veriyi Google Hesabınızla senkronize etmez. Önceden senkronize edilmiş veriler hesapta kalır.</translation>
 <translation id="6648150602980899529"><ph name="DOMAIN" /> tarafından yönetilen bir hesapla oturum açıyorsunuz ve yöneticiye tüm Chrome verileriniz üzerinde denetim olanağı veriyorsunuz. Verileriniz kalıcı olarak bu hesaba bağlanacaktır. Chrome'da oturumu kapattığınızda verileriniz bu cihazdan silinir ancak Google Hesabınızda kalmaya devam eder.</translation>
@@ -78,7 +77,6 @@
 <translation id="7172660552945675509">İpucu: <ph name="BEGIN_LINK" />Chrome'u yuva bölümüne taşıyın<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome, şifrelerinize yetkili erişim sağlanması için Face ID kullanır.</translation>
 <translation id="7261678641327190792">Chrome, şifrelerinizi kontrol edemiyor</translation>
-<translation id="7265369419224458312">Bilgisayarınızda açtığınız sekmelere doğrudan buradan erişin. Bunun için bilgisayarınızda Chrome'u açmanız ve menüye gidip "Chrome'da oturum aç…" seçeneğini belirlemeniz yeterlidir.</translation>
 <translation id="7272930098487145294">Resimleri kaydetmek için Ayarlar'a dokunup Chrome'un resimlerinize eklemesine izin verin</translation>
 <translation id="7275945473750112644">Hesabınız, <ph name="HOSTED_DOMAIN" /> tarafından yönetildiği için Chrome verileri bu cihazdan silinecek</translation>
 <translation id="7400722733683201933">Google Chrome hakkında</translation>

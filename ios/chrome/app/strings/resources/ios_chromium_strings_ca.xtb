@@ -17,7 +17,6 @@
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium no ha pogut cercar actualitzacions. Comprova la connexió a Internet.</translation>
 <translation id="2054703085270098503">Protegeix-te amb Chromium</translation>
-<translation id="2075400798887076382">Accedeix a les pestanyes que tens obertes a l'ordinador des d'aquí mateix. Per fer-ho, obre Chromium a l'ordinador, ves al menú i selecciona Inicia la sessió a Chromium.</translation>
 <translation id="2168108852149185974">Alguns complements fan que Chromium es bloquegi. Desinstal·la:</translation>
 <translation id="2178608107313874732">Chromium no pot utilitzar la càmera en aquest moment</translation>
 <translation id="2195025571279539885">La propera vegada, voleu que Chromium s'ofereixi per traduir les pàgines d'aquest lloc escrites en <ph name="LANGUAGE_NAME" />?</translation>
@@ -42,7 +41,6 @@
 <translation id="4585809515399340748">Ara pots utilitzar Chromium cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="4681781466797808448">Activa l'escàner de Chromium</translation>
 <translation id="4736424910885271643">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chromium s'esborraran d'aquest dispositiu</translation>
-<translation id="4787850887676698916">Les pestanyes que tinguis obertes a Chromium als altres dispositius es mostraran aquí.</translation>
 <translation id="4806326830773390517">Ajuda a millorar Chromium enviant les estadístiques d'ús i els informes d'error a Google</translation>
 <translation id="4828317641996116749">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
 <translation id="4852878756222711218">Per treure el màxim profit de Chromium, inicia la sessió amb el teu Compte de Google</translation>

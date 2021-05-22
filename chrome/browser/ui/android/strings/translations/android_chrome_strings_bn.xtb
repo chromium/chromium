@@ -395,7 +395,6 @@
 <translation id="3568688522516854065">আপনার অন্যান্য ডিভাইস থেকে ট্যাবগুলি পেতে সাইন-ইন করে সিঙ্ক বিকল্প চালু করুন</translation>
 <translation id="3587482841069643663">সকল</translation>
 <translation id="3587596251841506391">ওয়েবে নিরাপত্তা উন্নত করতে সাহায্য করে</translation>
-<translation id="3598653140581545904">ছদ্মবেশী মোডে সাইন-ইন করুন</translation>
 <translation id="3602290021589620013">প্রিভিউ</translation>
 <translation id="3616113530831147358">অডিও</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />-এর সাথে শেয়ার করা হচ্ছে</translation>
@@ -761,7 +760,6 @@
 <translation id="5964805880140440652">এই পৃষ্ঠাটিকে অন্য ডিভাইসের সাথে শেয়ার করার জন্য, Chrome সেটিংস থেকে সিঙ্ক চালু করুন</translation>
 <translation id="5964869237734432770">ছবির বিবরণ বন্ধ করুন</translation>
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
-<translation id="5982307838673692400">একটি ছদ্মবেশী ট্যাব খুলুন</translation>
 <translation id="6000066717592683814">Google কে রাখুন</translation>
 <translation id="6000203700195075278">আবার ফলো করুন</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />সার্চ<ph name="END_LINK1" /> বা অন্যান্য ধরনের অ্যাক্টিভিটির ইতিহাস মুছে দিতে হলে, <ph name="BEGIN_LINK2" />আমার Google অ্যাক্টিভিটি<ph name="END_LINK2" /> দেখুন</translation>
@@ -803,13 +801,13 @@
 <translation id="6277522088822131679">পৃষ্ঠাটি প্রিন্ট করার সময় একটি সমস্যা হয়েছিল৷ দয়া করে আবার চেষ্টা করুন৷</translation>
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6292420053234093573">Chrome ব্যবহার করার মাধ্যমে, আপনি <ph name="BEGIN_LINK1" />Google পরিষেবার শর্তাবলী<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Google Chrome ও Chrome OS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_LINK2" /> মেনে নিচ্ছেন।</translation>
-<translation id="629730747756840877">অ্যাকাউন্ট</translation>
 <translation id="6297765934698848803">যে সংস্থাটি আপনার ডিভাইস ম্যানেজ করে সেটি আপনার ক্যামেরা বন্ধ করে দিয়েছে।</translation>
 <translation id="6301525844455696527">আপনি যা পড়তে চান সেগুলি দেখুন</translation>
 <translation id="6303969859164067831">সাইন-আউট করুন এবং সিঙ্ক করা বন্ধ করুন</translation>
 <translation id="6312687380483398334">ওয়েব অ্যাপ (কোনও রকম আওয়াজ ছাড়া)</translation>
 <translation id="6316139424528454185">এই Android ভার্সন সমর্থিত নয়</translation>
 <translation id="6324034347079777476">Android সিস্টেম সিঙ্ক অক্ষম করা হয়েছে</translation>
+<translation id="6324916366299863871">শর্টকার্ট এডিট করুন</translation>
 <translation id="6324977638108296054">হাইলাইট করা টেক্সটের লিঙ্ক কপি করা যাচ্ছে না</translation>
 <translation id="6324997754869598316">(সমস্যা <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> এর মাধ্যমে শেয়ার করুন</translation>
@@ -914,9 +912,6 @@
 <translation id="6900532703269623216">উন্নত সুরক্ষা</translation>
 <translation id="6903907808598579934">সিঙ্ক চালু করুন</translation>
 <translation id="6929699136511445623">Android সিস্টেম সিঙ্ক চালু করুন</translation>
-<translation id="6941901516114974832">ছদ্মবেশী মোডে আপনি যাদের ওয়েবসাইট দেখছেন তারা, আপনার নিয়োগকর্তা অথবা স্কুল ও ইন্টারনেট সার্ভিস প্রোভাইডার আপনার অ্যাক্টিভিটি <ph name="BEGIN_BOLD1" />হয়ত এখনও দেখতে পাবে<ph name="END_BOLD1" />।
-
-আপনি <ph name="BEGIN_BOLD2" />সব ছদ্মবেশী মোড বন্ধ করলে<ph name="END_BOLD2" /> তবেই Chrome থেকে আপনার ছদ্মবেশী সেশনের ডেটা মুছে ফেলা হবে।</translation>
 <translation id="6942665639005891494">সেটিংস মেনুর বিকল্পে গিয়ে যেকোনও সময় ডাউনলোডের ডিফল্ট লোকেশন পরিবর্তন করুন</translation>
 <translation id="694267552845942083">এখন আপনার সিঙ্ক সেটিংস কাস্টমাইজ করছেন। স্ক্রিনের নিচের দিকে থাকা "কনফার্ম করুন" বোতামে ট্যাপ করে সিঙ্ক চালু করুন। উপরের দিকে নেভিগেট করুন</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>

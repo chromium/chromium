@@ -186,7 +186,6 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="22320125457191592">Pour vous</translation>
 <translation id="2234876718134438132">Synchronisation et services Google</translation>
 <translation id="2239812875700136898">Gérez vos histoires à l'aide du bouton Options pour Découvertes</translation>
-<translation id="2251971221270904886">Lorsqu'il est activé et que son état est défini à actif, Chrome utilise votre historique de navigation des sept derniers jours pour déterminer le groupe (la « cohorte ») auquel vous appartenez. Les annonceurs peuvent sélectionner des annonces à présenter au groupe. Votre historique de navigation reste privé sur votre appareil. Cette version d'essai est uniquement active dans <ph name="BEGIN_LINK" />certaines régions<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Exporter les mots de passe…</translation>
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
 <translation id="2278052315791335171">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="SITE" /></translation>
@@ -203,7 +202,7 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <ph name="BEGIN_LIST_ITEM1" />Les annonceurs peuvent tirer des apprentissages auprès de milliers d'utilisateurs qui partagent un intérêt similaire, comme une foule qui assiste à un concert, et ainsi sélectionner des annonces pour cette foule, plutôt que pour une personne en particulier.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />Les annonceurs peuvent étudier l'efficacité des annonces sans vous suivre sur tous les sites.<ph name="END_LIST_ITEM2" /></translation>
-<translation id="2337236196941929873">Précharge les pages que Chrome pense que vous pourriez visiter. Pour ce faire, Chrome peut utiliser des témoins, si vous les acceptez, et peut chiffrer et envoyer des pages par l'intermédiaire de Google afin de masquer votre identité auprès des sites.</translation>
+<translation id="2337236196941929873">Précharge les pages que Chrome pense que vous pourriez visiter. Pour ce faire, Chrome peut utiliser des témoins, si vous les acceptez, et peut chiffrer et envoyer des pages par l'intermédiaire de Google pour masquer votre identité auprès des sites.</translation>
 <translation id="234265804618409743">Impossible d'ouvrir votre appareil photo. Un problème s'est produit.</translation>
 <translation id="2345671828921229300">Pour effectuer une recherche, maintenez le doigt sur un mot</translation>
 <translation id="2349710944427398404">Le total des données utilisées par Chrome, comprenant les comptes, les favoris et les paramètres enregistrés</translation>
@@ -320,7 +319,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favori}one{<ph name="BOOKMARKS_COUNT_MANY" /> favori}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoris}}</translation>
 <translation id="3062802207422175757">Articles portant sur vos centres d'intérêt dans Chrome</translation>
 <translation id="3070005020161560471">Traduire automatiquement les pages rédigées en</translation>
-<translation id="3083531420240576529">Vous pouvez réinitialiser votre groupe en tout temps. Il faut sept jours pour déterminer un groupe.</translation>
 <translation id="3091010850649238832">Afficher le contenu du presse-papier</translation>
 <translation id="3098745985164956033">Certaines images sont envoyées à Google afin d'améliorer les descriptions pour vous</translation>
 <translation id="3114507951000454849">Actualités du jour <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="3568688522516854065">Pour synchroniser vos onglets sur vos autres appareils, connectez-vous et activez la synchronisation</translation>
 <translation id="3587482841069643663">Tous</translation>
 <translation id="3587596251841506391">Contribuer à la sécurité sur le Web</translation>
-<translation id="3598653140581545904">Utiliser le mode de navigation privée pour se connecter</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Partage avec <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5964805880140440652">Pour partager cette page avec un autre appareil, activez la synchronisation dans les paramètres de Chrome</translation>
 <translation id="5964869237734432770">Arrêter les descriptions</translation>
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
-<translation id="5982307838673692400">Ouvrir un onglet de navigation privée</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
 <translation id="6000203700195075278">Se réabonner</translation>
 <translation id="6002623704405939939">Pour effacer vos <ph name="BEGIN_LINK1" />recherches<ph name="END_LINK1" /> ou d'autres types d'historiques, visitez la page<ph name="BEGIN_LINK2" />Mon activité Google<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6277522088822131679">Un problème est survenu lors de l'impression de la page. Veuillez réessayer.</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6292420053234093573">En utilisant Chrome, vous acceptez les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires pour Google Chrome et Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Compte</translation>
 <translation id="6297765934698848803">L'organisation qui gère votre appareil a désactivé votre appareil photo.</translation>
 <translation id="6301525844455696527">Lisez des livres de votre liste</translation>
 <translation id="6303969859164067831">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6312687380483398334">Applications Web (mode silencieux)</translation>
 <translation id="6316139424528454185">Version Android non compatible</translation>
 <translation id="6324034347079777476">La synchronisation du système Android est désactivée</translation>
+<translation id="6324916366299863871">Modifier un raccourci</translation>
 <translation id="6324977638108296054">Impossible de créer un lien vers l'élément en surbrillance</translation>
 <translation id="6324997754869598316">(Erreur <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Partager à l'aide de <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6699370405921460408">Les serveurs de Google optimiseront les pages que vous consultez.</translation>
 <translation id="670498945988402717">Dernière vérification : hier</translation>
 <translation id="6710213216561001401">Précédent</translation>
-<translation id="671333169801287922">Lorsque cette fonctionnalité est activée, les sites peuvent utiliser les techniques de préservation de la confidentialité présentées ici pour fournir leur contenu et leurs services. Celles-ci comprennent des solutions de rechange au suivi intersites. D'autres essais pourront être ajoutés au fil du temps.
-
-<ph name="BEGIN_LIST_ITEM1" />Les annonceurs et les éditeurs peuvent utiliser la technique FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Les annonceurs et les éditeurs peuvent étudier l'efficacité des annonces sans vous suivre sur tous les sites.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Votre minuterie <ph name="FQDN" /> a expiré. Elle recommencera demain.</translation>
 <translation id="6738516213925468394">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />phrase de passe de synchronisation<ph name="END_LINK" /> le <ph name="TIME" />. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="6738867403308150051">Téléchargement en cours…</translation>
@@ -922,9 +913,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6900532703269623216">Protection renforcée</translation>
 <translation id="6903907808598579934">Activer la synchronisation</translation>
 <translation id="6929699136511445623">Activer la synchronisation système pour Android</translation>
-<translation id="6941901516114974832">En mode de navigation privée, votre activité <ph name="BEGIN_BOLD1" />peut rester visible<ph name="END_BOLD1" /> pour les sites Web que vous consultez, votre employeur ou votre établissement scolaire, ainsi que votre fournisseur d'accès Internet.
-
-Les données de votre session de navigation privée ne seront effacées de Chrome que lorsque vous <ph name="BEGIN_BOLD2" />fermerez tous les onglets de navigation privée<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Vous pouvez changer le dossier de téléchargement par défaut en tout temps grâce à l'option de menu Paramètres.</translation>
 <translation id="694267552845942083">Vous êtes en train de personnaliser vos paramètres de synchronisation. Pour valider l'activation de la synchronisation, touchez le bouton Confirmer dans le bas de l'écran. Revenir en haut</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
@@ -1088,9 +1076,6 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7971136598759319605">Actif il y a 1 jour</translation>
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Précharger les pages pour une navigation et une recherche plus rapides</translation>
-<translation id="7981546642162424360">Le <ph name="BEGIN_LINK" />bac à sable de confidentialité<ph name="END_LINK" /> est une initiative en cours visant à développer des technologies qui vous protégeront contre les mécanismes de suivi, tout en préservant le caractère ouvert du Web.
-
-Les versions d'essai du bac à sable de confidentialité sont toujours en cours de développement et ne sont offertes que dans certaines régions. Pour l'instant, les sites peuvent faire l'essai du bac à sable de confidentialité tout en continuant d'utiliser les technologies Web actuelles comme les témoins tiers.</translation>
 <translation id="7986497153528221272">Pour afficher les mots de passe, configurez d'abord un verrouillage d'écran sur votre appareil</translation>
 <translation id="7998918019931843664">Rouvrir l'onglet fermé</translation>
 <translation id="8004582292198964060">Navigateur</translation>

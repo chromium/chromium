@@ -186,7 +186,6 @@ Tik op enige woord om te soek. Raak en hou om meer of minder woorde te kies as j
 <translation id="22320125457191592">Vir jou</translation>
 <translation id="2234876718134438132">Sinkronisering en Google-dienste</translation>
 <translation id="2239812875700136898">Beheer jou berigte vanaf die "Opsies vir Ontdek"-knoppie</translation>
-<translation id="2251971221270904886">Wanneer dit aan is en die status aktief is, gebruik Chrome jou blaaigeskiedenis oor 7 dae om 'n groep, of "kohort", te bepaal waarin jy is. Adverteerders kan advertensies vir die groep kies. Jou blaaigeskiedenis word privaat gehou op jou toestel. Hierdie proeflopie is net in <ph name="BEGIN_LINK" />sekere streke<ph name="END_LINK" /> aktief.</translation>
 <translation id="2259659629660284697">Voer wagwoorde uit …</translation>
 <translation id="2276696007612801991">Meld by jou Google-rekening aan om jou wagwoorde na te gaan</translation>
 <translation id="2278052315791335171">Jou rekening op <ph name="SITE" /> sal nie uitgevee word as hierdie wagwoord uitgevee word nie</translation>
@@ -320,7 +319,6 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> boekmerk}other{<ph name="BOOKMARKS_COUNT_MANY" /> boekmerke}}</translation>
 <translation id="3062802207422175757">Artikels oor jou belangstellings op Chrome</translation>
 <translation id="3070005020161560471">Vertaal outomaties</translation>
-<translation id="3083531420240576529">Jy kan jou groep enige tyd terugstel. Dit neem 7 dae om jou groep te bepaal.</translation>
 <translation id="3091010850649238832">Wys knipbordinhoud</translation>
 <translation id="3098745985164956033">Sommige prente word na Google toe gestuur om hul beskrywings vir jou te verbeter</translation>
 <translation id="3114507951000454849">Lees vandag se nuus <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox word nog aktief ontwikkel en is in sekere streke beskikbaar. Vir
 <translation id="3568688522516854065">Meld aan en skakel sinkronisering aan om jou oortjies van jou ander toestelle af te kry</translation>
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3587596251841506391">Help websekuriteit verbeter</translation>
-<translation id="3598653140581545904">Gebruik Incognito om aan te meld</translation>
 <translation id="3602290021589620013">Voorskou</translation>
 <translation id="3616113530831147358">Oudio</translation>
 <translation id="3631987586758005671">Deel tans na <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5964805880140440652">Skakel sinkronisering in Chrome-instellings aan om hierdie bladsy met 'n ander toestel te deel</translation>
 <translation id="5964869237734432770">Stop prentbeskrywings</translation>
 <translation id="5979084224081478209">Gaan wagwoorde na</translation>
-<translation id="5982307838673692400">Maak 'n Incognito-oortjie oop</translation>
 <translation id="6000066717592683814">Hou Google</translation>
 <translation id="6000203700195075278">Volg weer</translation>
 <translation id="6002623704405939939">Besoek <ph name="BEGIN_LINK2" />My Google-aktiwiteit<ph name="END_LINK2" /> om <ph name="BEGIN_LINK1" />soektog<ph name="END_LINK1" /> of ander vorme van geskiedenis uit te vee</translation>
@@ -806,13 +802,13 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6277522088822131679">Kon nie die bladsy uitdruk nie. Probeer asseblief weer.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">As jy Chrome gebruik, stem jy in tot <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Rekening</translation>
 <translation id="6297765934698848803">Die organisasie wat jou toestel bestuur, het jou kamera afgeskakel.</translation>
 <translation id="6301525844455696527">Haal in met jou leeslys</translation>
 <translation id="6303969859164067831">Meld af en skakel sinkronisering af</translation>
 <translation id="6312687380483398334">Webprogramme (stil)</translation>
 <translation id="6316139424528454185">Steun nie Android-weergawe nie</translation>
 <translation id="6324034347079777476">Android-stelsel se sinkronisering is gedeaktiveer</translation>
+<translation id="6324916366299863871">Wysig kortpad</translation>
 <translation id="6324977638108296054">Kan nie skakel na hoogtepunt skep nie</translation>
 <translation id="6324997754869598316">(Fout <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Deel via <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6699370405921460408">Google-bedieners sal die bladsye wat jy besoek, optimeer.</translation>
 <translation id="670498945988402717">Gister nagegaan</translation>
 <translation id="6710213216561001401">Vorige</translation>
-<translation id="671333169801287922">Wanneer dit aan is, kan werwe die privaatheidinstandhoudingtegnieke wat hier gewys word, gebruik om hul inhoud en dienste te verskaf. Dit sluit alternatiewe vir kruiswerfnasporing in. Nog proeflopies kan met verloop van tyd bygevoeg word.
-
-<ph name="BEGIN_LIST_ITEM1" />Adverteerders en uitgewers kan die FLoC-tegniek gebruik.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Adverteerders en uitgewers kan die doeltreffendheid van advertensies op 'n manier bestudeer wat jou nie oor werwe heen naspoor nie.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Jou <ph name="FQDN" />-tydteller het uitgetel. Dit sal môre weer begin.</translation>
 <translation id="6738516213925468394">Jou data is om <ph name="TIME" /> met jou <ph name="BEGIN_LINK" />sinkroniseringwagfrase<ph name="END_LINK" /> geënkripeer. Voer dit in om sinkronisering te begin.</translation>
 <translation id="6738867403308150051">Laai tans af …</translation>
@@ -922,9 +913,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6900532703269623216">Verbeterde beskerming</translation>
 <translation id="6903907808598579934">Skakel sinkronisering aan</translation>
 <translation id="6929699136511445623">Aktiveer Android-stelselsinkronisering</translation>
-<translation id="6941901516114974832">In Incognito kan webwerwe wat jy besoek, jou werkgewer of skool, en jou internetdiensverskaffer <ph name="BEGIN_BOLD1" />dalk steeds jou aktiwiteit sien<ph name="END_BOLD1" />.
-
-Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <ph name="BEGIN_BOLD2" />alle Incognito-oortjies toemaak<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Verander enige tyd die verstekaflaailigging met die Instellingskieslysopsie</translation>
 <translation id="694267552845942083">Jy pasmaak tans jou sinkroniseringinstellings. Tik op die Bevestig-knoppie naby die onderkant van die skerm om die aanskakel van sinkronisering te voltooi. Gaan op</translation>
 <translation id="6945221475159498467">Kies</translation>
@@ -1088,9 +1076,6 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="7971136598759319605">1 dag gelede aktief</translation>
 <translation id="7975379999046275268">Voorbeskou bladsy <ph name="BEGIN_NEW" />Nuwe<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Laai bladsye vooraf om vinniger te blaai en te soek</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> is 'n voortgesette inisiatief om nuwe tegnologieë te ontwikkel wat jou sal beveilig teen nasporingmeganismes terwyl dit die oop web in stand hou.
-
-Privacy Sandbox-proeflopies word nog aktief ontwikkel en is in uitgesoekte streke beskikbaar. Werwe kan vir eers Privacy Sandbox probeer terwyl hulle aanhou om huidige webtegnologieë, soos derdepartywebkoekies, te gebruik.</translation>
 <translation id="7986497153528221272">Stel eers 'n skermslot op jou toestel om wagwoorde te bekyk</translation>
 <translation id="7998918019931843664">Heropen toegemaakte oortjie</translation>
 <translation id="8004582292198964060">Blaaier</translation>

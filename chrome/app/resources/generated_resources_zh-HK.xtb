@@ -157,10 +157,8 @@
 <translation id="116173250649946226">管理員設定的預設主題不可變更。</translation>
 <translation id="1163931534039071049">檢視頁框原始碼(&amp;V)</translation>
 <translation id="1164891049599601209">已在欺詐網站上輸入</translation>
-<translation id="1164899421101904659">輸入 PIN 解鎖金鑰</translation>
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1166212789817575481">關閉右側分頁</translation>
-<translation id="116624467691206283">PUK 無效。您還可嘗試 1 次。</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 後開啟…</translation>
 <translation id="1168100932582989117">Google 名稱伺服器</translation>
 <translation id="1170288591054440704">在網站要求使用安裝在您裝置上的字型時詢問您</translation>
@@ -170,7 +168,7 @@
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1173916544412572294">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="PHONE_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，手機電量係 <ph name="BATTERY_STATUS" />%，詳情</translation>
 <translation id="1174073918202301297">已新增捷徑</translation>
-<translation id="1174366174291287894">除非 Chrome 另行通知，否則你的連線都安全無虞</translation>
+<translation id="1174366174291287894">除非 Chrome 另行通知，否則您的連線一律安全無虞</translation>
 <translation id="117445914942805388">如要從所有已同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />前往同步處理設定<ph name="END_LINK" />。</translation>
 <translation id="1175364870820465910">列印(&amp;P)…</translation>
 <translation id="1176471985365269981">不允許編輯裝置上的檔案或資料夾</translation>
@@ -760,7 +758,7 @@
 <translation id="1781398670452016618"><ph name="DOMAIN" /> 要求您立即連接 Wi-Fi 並下載更新。</translation>
 <translation id="1781502536226964113">開啟新分頁</translation>
 <translation id="1781771911845953849">帳戶同埋同步處理</translation>
-<translation id="1782101999402987960">管理員已禁止更新作業</translation>
+<translation id="1782101999402987960">您的管理員已封鎖更新</translation>
 <translation id="1782196717298160133">正在搜尋您的手機</translation>
 <translation id="1784707308176068866">合作內置應用程式提出要求時在背景執行</translation>
 <translation id="1784849162047402014">裝置的磁碟儲存空間即將用盡</translation>
@@ -1150,7 +1148,7 @@
 <translation id="2193365732679659387">信任設定</translation>
 <translation id="2195331105963583686">您仍可在該時間點後使用此 <ph name="DEVICE_TYPE" />，但屆時此裝置將無法自動取得軟件和安全性更新</translation>
 <translation id="2195729137168608510">電郵保護</translation>
-<translation id="2198625180564913276">正在新增設定檔。請稍候片刻。</translation>
+<translation id="2198625180564913276">正在新增設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="2199298570273670671">錯誤</translation>
 <translation id="2199719347983604670">從 Chrome 同步的資料</translation>
 <translation id="2200094388063410062">電郵</translation>
@@ -1212,7 +1210,6 @@
     如需解決投放問題的相關資訊，請參閱
     <ph name="BEGIN_LINK" />
 說明中心<ph name="END_LINK" />的說明。</translation>
-<translation id="2265889263013046172">PUK 不正確。您還可嘗試 <ph name="RETRIES" /> 次。如果仍然輸入錯誤，您必須聯絡流動網絡供應商以重新取得網絡存取權。</translation>
 <translation id="22665427234727190">在網站要求存取藍牙裝置時詢問您 (建議)</translation>
 <translation id="2266957463645820432">透過 USB 的 IPP (IPPUSB)</translation>
 <translation id="2270450558902169558">與網域 <ph name="DOMAIN" /> 中的任何裝置交換數據</translation>
@@ -1496,7 +1493,6 @@
 <translation id="2553440850688409052">隱藏這個外掛程式</translation>
 <translation id="2554553592469060349">選取的檔案過大 (大小上限：3 MB)。</translation>
 <translation id="2558896001721082624">一律在系統選單中顯示無障礙功能選項</translation>
-<translation id="2562743677925229011">未登入「<ph name="SHORT_PRODUCT_NAME" />」</translation>
 <translation id="2564520396658920462">透過 AppleScript 執行 JavaScript 的功能已關閉。如要開啟此功能，請從選單列前往「檢視模式」&gt;「開發人員」&gt;「允許透過 Apple 活動執行 JavaScript」。如需瞭解詳情，請瀏覽：https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">強化的拼字檢查</translation>
 <translation id="2568774940984945469">資料列容器</translation>
@@ -1724,7 +1720,7 @@
 <translation id="2805760958323556153">ExtensionInstallForcelist 的政策值無效，請聯絡您的管理員。</translation>
 <translation id="2805770823691782631">其他詳細資料</translation>
 <translation id="2806372837663997957">您嘗試分享檔案的目標裝置並未接受檔案分享</translation>
-<translation id="2806840421670364300">FLoC</translation>
+<translation id="2806840421670364300">群組聯合學習 : FLoC</translation>
 <translation id="2806891468525657116">捷徑已存在</translation>
 <translation id="2807517655263062534">您下載的檔案會在這裡顯示</translation>
 <translation id="2809586584051668049">和另外 <ph name="NUMBER_ADDITIONAL_DISABLED" /> 個</translation>
@@ -2410,7 +2406,6 @@
 <translation id="3569407787324516067">螢幕保護程式</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可查看以下檔案和資料夾</translation>
 <translation id="3571734092741541777">設定</translation>
-<translation id="3574210789297084292">登入</translation>
 <translation id="3575121482199441727">允許此網站的通知</translation>
 <translation id="3576324189521867626">已成功安裝</translation>
 <translation id="3578594933904494462">正在分享這個分頁的內容。</translation>
@@ -2861,7 +2856,6 @@
 <translation id="4022426551683927403">新增到字典(&amp;A)</translation>
 <translation id="4023146161712577481">正在確定裝置設定。</translation>
 <translation id="4025039777635956441">將已選取的網站設定為靜音</translation>
-<translation id="4027804175521224372">(登入以體驗更佳效能 — <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">新增輸入方法</translation>
 <translation id="4029556917477724407">從「<ph name="PAGE_TITLE" />」頁面返回</translation>
 <translation id="4031179711345676612">已允許使用麥克風</translation>
@@ -3068,7 +3062,7 @@
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428565720843367874">掃描這個檔案時，防毒軟件發生意外錯誤。</translation>
 <translation id="4287099557599763816">螢幕閱讀器</translation>
-<translation id="428715201724021596">正在連線至設定檔。請稍候片刻。</translation>
+<translation id="428715201724021596">正在連線至設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="4287157641315808225">是，啟動 ChromeVox</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{顯示}other{顯示全部}}</translation>
 <translation id="4289372044984810120">請在這裡管理帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -3296,7 +3290,7 @@
 <translation id="4538792345715658285">由公司政策安裝</translation>
 <translation id="4541123282641193691">無法驗證您的帳戶，請再試一次，或重新啟動 Chromebook。</translation>
 <translation id="4541662893742891060">無法連線至此設定檔。如需技術支援，請聯絡您的流動網絡供應商。</translation>
-<translation id="4541706525461326392">正在移除設定檔。請稍候片刻。</translation>
+<translation id="4541706525461326392">正在移除設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="4541810033354695636">擴張實境</translation>
 <translation id="4542520061254486227">讀取您在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 上的資料</translation>
 <translation id="454331522350252598">廣告客戶能夠在數千位使用者擁有類似興趣時學習 (類似演唱會中的群眾)，並為群眾 (而非單一使用者) 選取廣告。</translation>
@@ -3674,7 +3668,7 @@
 <translation id="4953808748584563296">預設橙色圖片</translation>
 <translation id="4955710816792587366">選擇 PIN</translation>
 <translation id="4959262764292427323">密碼會儲存在您的 Google 帳戶中，讓您可在任何裝置上使用</translation>
-<translation id="496027654926814138">攻擊者可能透過「<ph name="FILE_NAME" />」竊取你的個人資訊。</translation>
+<translation id="496027654926814138">攻擊者可能透過「<ph name="FILE_NAME" />」盜取您的個人資料。</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961361269522589229">食譜提議</translation>
 <translation id="496185450405387901">您的管理員已安裝此應用程式。</translation>
@@ -3714,7 +3708,7 @@
 <translation id="5007392906805964215">查看</translation>
 <translation id="50080882645628821">移除設定檔</translation>
 <translation id="5008936837313706385">活動名稱</translation>
-<translation id="5009463889040999939">正在重新命名設定檔。請稍候片刻。</translation>
+<translation id="5009463889040999939">正在重新命名設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="5010043101506446253">憑證授權單位</translation>
 <translation id="5015344424288992913">正在解析 Proxy…</translation>
 <translation id="5017633213534173756">記住</translation>
@@ -3808,7 +3802,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">您的硬碟已滿。請儲存至其他位置或在硬碟上騰出更多空間。</translation>
 <translation id="5123433949759960244">籃球</translation>
-<translation id="5125167430897995218">PUK 不正確。您還可嘗試 1 次。如果仍然輸入錯誤，您必須聯絡流動網絡供應商以重新取得網絡存取權。</translation>
 <translation id="5125751979347152379">網址無效。</translation>
 <translation id="5126611267288187364">查看變更</translation>
 <translation id="5127620150973591153">安全連線 ID：<ph name="TOKEN" /></translation>
@@ -4056,12 +4049,11 @@
 <translation id="540296380408672091">永遠在 <ph name="HOST" /> 上封鎖 Cookie</translation>
 <translation id="540495485885201800">與上一個交換</translation>
 <translation id="5405146885510277940">重設設定</translation>
-<translation id="5407119150486192764">請輸入流動網絡供應商提供的 8 位數 PIN 解鎖金鑰</translation>
 <translation id="5407167491482639988">無法辨識</translation>
 <translation id="5408750356094797285">縮放：<ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">您 Google 帳戶中的密碼</translation>
 <translation id="5411472733320185105">不要對以下主機和網域使用 Proxy 設定：</translation>
-<translation id="5414198321558177633">正在重新整理設定檔清單。請稍候片刻。</translation>
+<translation id="5414198321558177633">正在重新整理設定檔清單。這項操作可能需時數分鐘。</translation>
 <translation id="5414566801737831689">讀取您所瀏覽網站的圖示</translation>
 <translation id="5417312524372586921">瀏覽器主題背景</translation>
 <translation id="5419405654816502573">Voice Match</translation>
@@ -4628,7 +4620,7 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> 正在與 <ph name="TAB_NAME" /> 共用 Chrome 分頁和音效。</translation>
 <translation id="6045114302329202345">主要 TrackPoint 按鈕</translation>
 <translation id="6047632800149092791">同步功能無法正常運作。請嘗試登出，然後重新登入。</translation>
-<translation id="6049797270917061226">攻擊者可能透過這個檔案竊取你的個人資訊。</translation>
+<translation id="6049797270917061226">攻擊者可能透過此檔案盜取您的個人資料。</translation>
 <translation id="6051354611314852653">糟糕！系統無法將 API 存取權授予這部裝置。</translation>
 <translation id="6052976518993719690">SSL 憑證授權單位</translation>
 <translation id="6053401458108962351">清除瀏覽數據(&amp;C)…</translation>
@@ -4856,7 +4848,7 @@
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{您網絡上的新打印機}other{您網絡上的新打印機}}</translation>
 <translation id="6285770818046456882">正在與您分享的裝置現已取消傳輸</translation>
 <translation id="6290613030083731160">附近沒有可分享內容的裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="6291086328725007688">正在驗證啟用代碼。請稍候片刻。</translation>
+<translation id="6291086328725007688">正在驗證啟動碼。這項操作可能需時數分鐘。</translation>
 <translation id="6291741848715722067">確認碼</translation>
 <translation id="6291949900244949761">在網站要存取 USB 裝置時詢問您 (建議)</translation>
 <translation id="6291953229176937411">在 Finder 中顯示(&amp;S)</translation>
@@ -6624,7 +6616,6 @@
 <translation id="8206745257863499010">藍調</translation>
 <translation id="8206859287963243715">蜂窩</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
-<translation id="8211551284753798479">PUK 無效。您還可嘗試 <ph name="RETRIES" /> 次。</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在進行一項下載}other{正在進行多項下載}}</translation>
 <translation id="8213449224684199188">進入咗相片模式</translation>
 <translation id="8214489666383623925">開啟檔案…</translation>

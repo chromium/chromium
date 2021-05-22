@@ -186,7 +186,6 @@ Pieskarieties jebkuram vārdam, lai to meklētu. Ja vēlaties precizēt meklēš
 <translation id="22320125457191592">Jums</translation>
 <translation id="2234876718134438132">Sinhronizēšana un Google pakalp.</translation>
 <translation id="2239812875700136898">Pārvaldiet ziņas, izmantojot opciju pogu lapā Discover.</translation>
-<translation id="2251971221270904886">Ja tehnoloģija ir ieslēgta un statuss ir aktīvs, pārlūkā Chrome, izmantojot jūsu pārlūkošanas vēsturi no 7 dienu perioda, tiek noteikts, kādā grupā jeb kohortā jūs esat. Reklāmdevēji var atlasīt reklāmas, ko rādīt grupai. Jūsu pārlūkošanas vēsture ir konfidenciāla un saglabāta tikai jūsu ierīcē. Šis izmēģinājums ir aktīvs tikai <ph name="BEGIN_LINK" />dažos reģionos<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Paroļu eksportēšana…</translation>
 <translation id="2276696007612801991">Lai pārbaudītu paroles, pierakstieties Google kontā</translation>
 <translation id="2278052315791335171">Izdzēšot šo paroli, netiks dzēsts jūsu konts vietnē <ph name="SITE" />.</translation>
@@ -320,7 +319,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> grāmatzīme}zero{<ph name="BOOKMARKS_COUNT_MANY" /> grāmatzīmju}one{<ph name="BOOKMARKS_COUNT_MANY" /> grāmatzīme}other{<ph name="BOOKMARKS_COUNT_MANY" /> grāmatzīmes}}</translation>
 <translation id="3062802207422175757">Ar jūsu interesēm saistīti raksti pārlūkā Chrome</translation>
 <translation id="3070005020161560471">Automātiski tulkot</translation>
-<translation id="3083531420240576529">Jebkurā laikā varat atiestatīt grupu. Grupas noteikšana ilgst septiņas dienas.</translation>
 <translation id="3091010850649238832">Rādīt starpliktuves saturu</translation>
 <translation id="3098745985164956033">Daži attēli tiek sūtīti uz Google serveriem, lai uzlabotu aprakstus</translation>
 <translation id="3114507951000454849">Lasiet šodienas ziņas <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="3568688522516854065">Lai varētu piekļūt cilnēm no citām ierīcēm, pierakstieties un ieslēdziet sinhronizāciju.</translation>
 <translation id="3587482841069643663">Visi</translation>
 <translation id="3587596251841506391">Palīdzēt uzlabot drošību tīmeklī</translation>
-<translation id="3598653140581545904">Pierakstīšanās inkognito režīmā</translation>
 <translation id="3602290021589620013">Priekšskatīt</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Notiek kopīgošana ar ierīci <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5964805880140440652">Lai kopīgotu šo lapu citā ierīcē, Chrome iestatījumos ieslēdziet sinhronizāciju.</translation>
 <translation id="5964869237734432770">Atspējot attēlu aprakstus</translation>
 <translation id="5979084224081478209">Pārbaudīt paroles</translation>
-<translation id="5982307838673692400">Atvērt inkognito cilni</translation>
 <translation id="6000066717592683814">Arī turpmāk izmantot Google</translation>
 <translation id="6000203700195075278">Atsākt sekošanu</translation>
 <translation id="6002623704405939939">Lai notīrītu <ph name="BEGIN_LINK1" />meklēšanas vaicājumus<ph name="END_LINK1" /> vai citu vēstures informāciju, atveriet lapu <ph name="BEGIN_LINK2" />Manas Google darbības<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6277522088822131679">Drukājot lapu, radās problēma. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="6278428485366576908">Motīvs</translation>
 <translation id="6292420053234093573">Izmantojot pārlūkprogrammu Chrome, jūs piekrītat <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumiem<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />Google Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumiem<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Konts</translation>
 <translation id="6297765934698848803">Organizācija, kas pārvalda jūsu ierīci, ir izslēgusi kameru.</translation>
 <translation id="6301525844455696527">Neaizmirstiet ielūkoties savā lasīšanas sarakstā</translation>
 <translation id="6303969859164067831">Izrakstīties un izslēgt sinhronizēšanu</translation>
 <translation id="6312687380483398334">Tīmekļa lietotnes (bez skaņas)</translation>
 <translation id="6316139424528454185">Neatbalstīta Android versija</translation>
 <translation id="6324034347079777476">Android sistēmas sinhronizācija atspējota</translation>
+<translation id="6324916366299863871">Saīsnes rediģēšana</translation>
 <translation id="6324977638108296054">Nevar izveidot saiti uz atzīmēto tekstu.</translation>
 <translation id="6324997754869598316">(<ph name="ERROR_CODE" />. kļūda)</translation>
 <translation id="6333140779060797560">Kopīgot, izmantojot <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6699370405921460408">Google serveri optimizēs jūsu apmeklētās lapas.</translation>
 <translation id="670498945988402717">Pārbaudīts: vakar</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
-<translation id="671333169801287922">Ja šeit parādītie konfidencialitātes aizsardzības risinājumi ir ieslēgti, vietnēs tie var tikt izmantoti satura un pakalpojumu nodrošināšanai. Šie risinājumi ietver arī alternatīvas starpvietņu izsekošanai. Laika gaitā var tikt pievienotas vēl citas izmēģinājuma versijas.
-
-<ph name="BEGIN_LIST_ITEM1" />Reklāmdevēji un izdevēji var izmantot tehnoloģiju FPK.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklāmdevēji un izdevēji var pētīt reklāmu efektivitāti, neizsekojot jūsu darbībām vairākās vietnēs.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Jūsu lietotnes <ph name="FQDN" /> taimera laiks ir beidzies. Tas atkal sāksies rīt.</translation>
 <translation id="6738516213925468394">Jūsu dati tika šifrēti, izmantojot jūsu <ph name="BEGIN_LINK" />sinhronizācijas ieejas frāzi<ph name="END_LINK" />šādā datumā: <ph name="TIME" />. Lai sāktu sinhronizāciju, ievadiet ieejas frāzi.</translation>
 <translation id="6738867403308150051">Notiek lejupielāde…</translation>
@@ -922,9 +913,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6900532703269623216">Uzlabota aizsardzība</translation>
 <translation id="6903907808598579934">Ieslēgt sinhronizāciju</translation>
 <translation id="6929699136511445623">Iespējot Android sistēmas sinhronizāciju</translation>
-<translation id="6941901516114974832">Inkognito režīmā jūsu darbības <ph name="BEGIN_BOLD1" />joprojām var būt redzamas<ph name="END_BOLD1" /> jūsu apmeklētajām vietnēm, darba devējam, mācību iestādei vai interneta pakalpojumu sniedzējam.
-
-No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <ph name="BEGIN_BOLD2" />aizvērsiet visas inkognito cilnes<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Noklusējuma lejupielādes vietu var mainīt jebkurā laikā, izmantojot izvēlnes Iestatījumi opciju.</translation>
 <translation id="694267552845942083">Pašlaik jūs pielāgojat sinhronizācijas iestatījumus. Lai pabeigtu sinhronizācijas ieslēgšanu, pieskarieties pogai “Apstiprināt” ekrāna apakšdaļā. Pārvietoties augšup</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
@@ -1088,9 +1076,6 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="7971136598759319605">Aktīva pirms 1 dienas</translation>
 <translation id="7975379999046275268">Priekšskatīt lapu <ph name="BEGIN_NEW" />Jauna<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Veikt lapu pirmsielādi, lai paātrinātu pārlūkošanu un meklēšanu</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Konfidencialitātes smilškaste<ph name="END_LINK" /> ir aktīva iniciatīva jaunu tehnoloģiju izstrādei, lai aizsargātu jūs no izsekošanas mehānismiem, saglabājot atvērtu tīmekli.
-
-Konfidencialitātes smilškastes izmēģinājuma versijas joprojām tiek izstrādātas, un šī tehnoloģiju kopa ir pieejama noteiktos reģionos. Pagaidām vietnēs vienlaikus var tikt izmēģinātas konfidencialitātes smilškastes tehnoloģijas un turpināta pašreizējo tīmekļa tehnoloģiju (piemēram, trešās puses sīkfailu) lietošana.</translation>
 <translation id="7986497153528221272">Lai skatītu paroles, vispirms iestatiet ierīcei ekrāna bloķēšanu</translation>
 <translation id="7998918019931843664">Vēlreiz atvērt aizvērto cilni</translation>
 <translation id="8004582292198964060">Pārlūkprogramma</translation>

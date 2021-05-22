@@ -3,6 +3,7 @@
 <translationbundle lang="ur">
 <translation id="1006017844123154345">آن لائن کھولیں</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
+<translation id="1100504063505580045">موجودہ آئیکن</translation>
 <translation id="1124090076051167250">اس سے آپ کی ہوم اسکرین پر موجود سائٹس یا ایپس کے ذریعے اسٹور کردہ <ph name="DATASIZE" /> ڈیٹا اور کوکیز صاف ہو جائیں گی۔</translation>
 <translation id="1124772482545689468">صارف</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">مائیکروفون</translation>
 <translation id="3277252321222022663">سائٹس کو سینسرز تک رسائی حاصل کرنے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="3295602654194328831">معلومات چھپائیں</translation>
+<translation id="3317660236277031814">آپ کی انسٹال کردہ ویب ایپ کا آئیکن تبدیل ہو گیا ہے۔</translation>
 <translation id="3328801116991980348">سائٹ کی معلومات</translation>
 <translation id="3333961966071413176">تمام رابطے</translation>
 <translation id="3386292677130313581">سائٹس کو آپ کا مقام جاننے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
+<translation id="345699454248713913">آپ کی انسٹال کردہ ویب ایپ کا نام تبدیل ہو گیا ہے۔</translation>
 <translation id="3538390592868664640">‏سائٹس کو اپنے اطراف کا 3D نقشہ تخلیق یا کیمرے کی پوزیشن ٹریک کرنے سے مسدود کریں</translation>
 <translation id="3551268116566418498">پوشیدگی وضع ترک کریں؟</translation>
 <translation id="3586500876634962664">کیمرا اور مائیکروفون کا استعمال</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">مقام کی ترتیبات کھولیں</translation>
 <translation id="4226663524361240545">اطلاعات آلہ کو وائبریٹ کر سکتی ہیں</translation>
 <translation id="4259722352634471385">نیویگیشن مسدود ہے: <ph name="URL" /></translation>
+<translation id="4277239631747669329">آپ کی انسٹال کردہ ویب ایپ کا نام اور آئیکن تبدیل ہو گیا ہے۔</translation>
 <translation id="4278390842282768270">اجازت یافتہ</translation>
 <translation id="429312253194641664">سائٹ پر میڈیا چل رہا ہے</translation>
 <translation id="42981349822642051">پھیلائیں</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">‏سائٹس کو JavaScript چلانے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="534295439873310000">‏NFC آلات</translation>
 <translation id="5354152178998424783">اس سے سائٹس کے ذریعے اسٹور کردہ <ph name="DATASIZE" /> ڈیٹا اور کوکیز صاف ہو جائیں گی۔</translation>
+<translation id="536508626067510330">آپ کی ہوم اسکرین پر آئیکن کو اپ ڈیٹ کریں؟</translation>
 <translation id="5391532827096253100">اس سائٹ کے لیے آپ کا کنکشن محفوظ نہيں ہے۔ سائٹ کی معلومات</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{‏(‎+1 مزید)}other{(# + مزید)}}</translation>
 <translation id="5403592356182871684">نام</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> میں سے <ph name="ELAPSED_TIME" /> وقت گزر گیا۔</translation>
 <translation id="5494752089476963479">دخل انداز یا گمراہ کن اشتہارات دکھانے والی سائٹس پر اشتہارات کو مسدود کریں</translation>
+<translation id="549957179819296104">نیا آئیکن</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> کی اجازت دی گئی، <ph name="PERMISSION_2" /> کو مسدود کر دیا گیا</translation>
 <translation id="5505264765875738116">سائٹس اطلاعات بھیجنے کے لیے نہیں کہہ سکتی ہیں</translation>
 <translation id="5516455585884385570">اطلاع کی ترتیبات کھولیں</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">اجازتیں</translation>
 <translation id="5860033963881614850">آف</translation>
 <translation id="5876056640971328065">ویڈیو موقوف کریں</translation>
+<translation id="5904826301761575486">آپ کی ہوم اسکرین پر نام اور آئیکن اپ ڈیٹ کریں؟</translation>
 <translation id="5916664084637901428">آن</translation>
 <translation id="5922853908706496913">آپ کی اسکرین کا اشتراک کیا جا رہا ہے</translation>
 <translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="6206551242102657620">کنیکشن محفوظ ہے۔ سائٹ کی معلومات</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> اختیارات</translation>
+<translation id="6260852843601447737">بند کریں اور بیجا استعمال کی اطلاع دیں</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> اور <ph name="PERMISSION_2" /> کو مسدود کیا گیا</translation>
 <translation id="6270391203985052864">سائٹس اطلاعات بھیجنے کے لیے کہہ سکتی ہیں</translation>
 <translation id="6295158916970320988">سبھی سائٹس</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">پوری اسکرین</translation>
 <translation id="857943718398505171">اجازت یافتہ (تجویز کردہ)</translation>
 <translation id="8609465669617005112">اوپر منتقل کریں</translation>
+<translation id="861748745608658996">آپ کی ہوم اسکرین پر نام اپ ڈیٹ کریں؟</translation>
 <translation id="8676374126336081632">ان پٹ صاف کریں</translation>
 <translation id="868929229000858085">اپنے رابطوں کو تلاش کریں</translation>
 <translation id="8702612070107455751">تمام آف لائن ڈیٹا حذف ہو جائے گا۔</translation>

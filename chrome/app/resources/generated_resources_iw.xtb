@@ -157,10 +157,8 @@
 <translation id="116173250649946226">מנהל המערכת הגדיר עיצוב כברירת מחדל שלא ניתן לשנות.</translation>
 <translation id="1163931534039071049">&amp;הצגת מקור המסגרת</translation>
 <translation id="1164891049599601209">הוזנה באתר מטעה</translation>
-<translation id="1164899421101904659">יש להזין מפתח לביטול נעילת קוד האימות</translation>
 <translation id="1165039591588034296">שגיאה</translation>
 <translation id="1166212789817575481">סגירת הכרטיסיות משמאל</translation>
-<translation id="116624467691206283">‏PUK לא חוקי. נותר לך עוד ניסיון אחד.</translation>
 <translation id="1168020859489941584">הפתיחה תתבצע בעוד <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">‏שרתי שמות Google</translation>
 <translation id="1170288591054440704">תוצג שאלה כשאתר ירצה להשתמש בגופנים שמותקנים במכשיר</translation>
@@ -1212,7 +1210,6 @@
     לקבלת עזרה בפתרון של בעיות העברה, ניתן לעיין
     <ph name="BEGIN_LINK" />
     במרכז העזרה<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">‏ה-PUK שגוי. נותרו לך <ph name="RETRIES" /> ניסיונות. לאחר מכן, יהיה עליך לפנות לספק כדי לקבל שוב גישה לרשת.</translation>
 <translation id="22665427234727190">‏צריך לבקש ממני אישור כשאתר רוצה לגשת למכשירי Bluetooth (מומלץ)</translation>
 <translation id="2266957463645820432">‏IPP בחיבור USB ‏(IPPUSB)</translation>
 <translation id="2270450558902169558">החלפת נתונים עם כל מכשיר בדומיין <ph name="DOMAIN" /></translation>
@@ -1496,7 +1493,6 @@
 <translation id="2553440850688409052">הסתרת הפלאגין</translation>
 <translation id="2554553592469060349">‏הקובץ שנבחר גדול מדי (גודל מרבי: ‎3mb).</translation>
 <translation id="2558896001721082624">אפשרויות נגישות מוצגות תמיד בתפריט המערכת</translation>
-<translation id="2562743677925229011">לא נכנסת לחשבון <ph name="SHORT_PRODUCT_NAME" /> שלך</translation>
 <translation id="2564520396658920462">‏הפעלת JavaScript דרך AppleScript מושבתת. כדי להפעיל את האפשרות הזו, מסרגל התפריטים יש לעבור אל 'תצוגה' &gt; 'מפתח' &gt; 'התרת JavaScript מאירועי Apple'. מידע נוסף זמין בכתובת https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">בדיקת איות משופרת</translation>
 <translation id="2568774940984945469">גורם מכיל של סרגל המידע</translation>
@@ -2411,7 +2407,6 @@
 <translation id="3569407787324516067">שומר מסך</translation>
 <translation id="3569682580018832495">ל-<ph name="ORIGIN" /> יש אפשרות להציג את התיקיות והקבצים הבאים</translation>
 <translation id="3571734092741541777">הגדרה</translation>
-<translation id="3574210789297084292">כניסה</translation>
 <translation id="3575121482199441727">אישור לאתר הזה</translation>
 <translation id="3576324189521867626">הותקנה בהצלחה</translation>
 <translation id="3578594933904494462">התוכן בכרטיסייה הזו משותף.</translation>
@@ -2862,7 +2857,6 @@
 <translation id="4022426551683927403">&amp;הוספה למילון</translation>
 <translation id="4023146161712577481">קביעת התצורה של המכשיר.</translation>
 <translation id="4025039777635956441">השתקת האתרים שנבחרו</translation>
-<translation id="4027804175521224372">(כדאי לך – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">הוספה של שיטות קלט</translation>
 <translation id="4029556917477724407">חזרה מהדף <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">ניתן להשתמש במיקרופון בדף זה</translation>
@@ -3809,7 +3803,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">הדיסק הקשיח מלא. יש לשמור במיקום אחר או לפנות מקום בדיסק הקשיח.</translation>
 <translation id="5123433949759960244">כדורסל</translation>
-<translation id="5125167430897995218">‏ה-PUK שגוי. נותר לך עוד ניסיון אחד. לאחר מכן, יהיה עליך לפנות לספק כדי לקבל שוב גישה לרשת.</translation>
 <translation id="5125751979347152379">כתובת אתר לא חוקית.</translation>
 <translation id="5126611267288187364">צפייה בשינויים</translation>
 <translation id="5127620150973591153">מזהה חיבור בטוח: <ph name="TOKEN" /></translation>
@@ -4057,7 +4050,6 @@
 <translation id="540296380408672091">‏לחסום תמיד קובצי Cookie ב-<ph name="HOST" /></translation>
 <translation id="540495485885201800">החלפה עם הקודם</translation>
 <translation id="5405146885510277940">איפוס הגדרות</translation>
-<translation id="5407119150486192764">עליך להזין את מפתח ביטול הנעילה של קוד האימות בן 8 הספרות שניתן על ידי הספק.</translation>
 <translation id="5407167491482639988">לא ברור</translation>
 <translation id="5408750356094797285">שינוי מרחק התצוגה: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">‏מחשבון Google שלך</translation>
@@ -6627,7 +6619,6 @@
 <translation id="8206745257863499010">בלוז</translation>
 <translation id="8206859287963243715">סלולארי</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{התראה חדשה}two{# התראות חדשות}many{# התראות חדשות}other{# התראות חדשות}}</translation>
-<translation id="8211551284753798479">‏PUK לא חוקי. נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{הורדה מתבצעת}two{הורדות מתבצעות}many{הורדות מתבצעות}other{הורדות מתבצעות}}</translation>
 <translation id="8213449224684199188">עברת למצב תמונות</translation>
 <translation id="8214489666383623925">פתיחת קובץ...</translation>

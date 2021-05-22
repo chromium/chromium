@@ -155,10 +155,8 @@
 <translation id="116173250649946226">თქვენმა ადმინისტრატორმა დააყენა ნაგულისხმევი თემა, რომელიც ვერ შეიცვლება.</translation>
 <translation id="1163931534039071049">ჩარჩოს წყაროს &amp;ნახვა</translation>
 <translation id="1164891049599601209">შეყვანილია შეცდომაში შემყვან საიტზე</translation>
-<translation id="1164899421101904659">PIN-კოდის განბლოკვის გასაღების შეყვანა</translation>
 <translation id="1165039591588034296">შეცდომა</translation>
 <translation id="1166212789817575481">ჩანართების დახურვა მარჯვნივ</translation>
-<translation id="116624467691206283">PUK-კოდი არასწორია. 1 მცდელობა დაგრჩათ.</translation>
 <translation id="1168020859489941584">დრო გახსნამდე: <ph name="TIME_REMAINING" />…</translation>
 <translation id="1168100932582989117">Google სახელთა სერვერები</translation>
 <translation id="1170288591054440704">შეკითხვა საიტის მიერ თქვენს მოწყობილობაზე დაინსტალირებული შრიფტების გამოყენების მოთხოვნისას</translation>
@@ -1198,7 +1196,6 @@
 <translation id="2263189956353037928">გამოსვლა და ხელახლა შესვლა</translation>
 <translation id="2263371730707937087">ეკრანის განახლების სიხშირე</translation>
 <translation id="2263679799334060788">თქვენი გამოხმაურება ჩვენთვის მნიშვნელოვანია და Google Cast-ის გაუმჯობესებაში გვეხმარება. ტრანსლირებასთან დაკავშირებული პრობლემების აღმოსაფხვრელად ეწვიეთ ჩვენს <ph name="BEGIN_LINK" />დახმარების ცენტრს<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">PUK-კოდი არასწორია. <ph name="RETRIES" /> მცდელობა დაგრჩათ, რის შემდეგაც, ქსელზე წვდომის აღსადგენად, თქვენს ოპერატორს უნდა დაუკავშირდეთ.</translation>
 <translation id="22665427234727190">საიტების მიერ Bluetooth მოწყობილობებზე წვდომის მოთხოვნა (რეკომენდებულია)</translation>
 <translation id="2266957463645820432">IPP USB-ის მეშვეობით (IPPUSB)</translation>
 <translation id="2270450558902169558">დომენში: <ph name="DOMAIN" /> არსებულ ნებისმიერ მოწყობილობასთან მონაცემთა მიმოცვლა</translation>
@@ -1482,7 +1479,6 @@
 <translation id="2553440850688409052">ამ დანამატის დამალვა</translation>
 <translation id="2554553592469060349">არჩეული ფაილი ძალიან დიდია (მაქს. ზომა: 3 მბ).</translation>
 <translation id="2558896001721082624">სისტემის მენიუში მარტივი წვდომის ვარიანტების ყოველთვის ჩვენება</translation>
-<translation id="2562743677925229011">არ არის შესული <ph name="SHORT_PRODUCT_NAME" />-ში</translation>
 <translation id="2564520396658920462">AppleScript-ის მეშვეობით JavaScript-ის შესრულების ფუნქცია გამორთულია. მის ჩასართავად მენიუს ზოლიან გადადით აქ: ხედი &gt; დეველოპერი &gt; Apple-ის მოვლენებიდან JavaScript-ის დაშვება. დამატებითი ინფორმაციისთვის იხილეთ: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">გაძლიერებული მართლწერის შემოწმება</translation>
 <translation id="2568774940984945469">საინფორმაციო ზოლის კონტეინერი</translation>
@@ -2396,7 +2392,6 @@
 <translation id="3569407787324516067">ეკრანმზოგი</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />-ს შეუძლია მითითებული ფაილებისა და საქაღალდეების ნახვა</translation>
 <translation id="3571734092741541777">დაყენება</translation>
-<translation id="3574210789297084292">შესვლა</translation>
 <translation id="3575121482199441727">დაშვება ამ საიტისთვის</translation>
 <translation id="3576324189521867626">წარმატებით დაინსტალირდა</translation>
 <translation id="3578594933904494462">ამ ჩანართის შიგთავსი გაზიარებულია.</translation>
@@ -2847,7 +2842,6 @@
 <translation id="4022426551683927403">ლექსიკონში &amp;დამატება</translation>
 <translation id="4023146161712577481">მოწყობილობის კონფიგურაციის განსაზღვრა.</translation>
 <translation id="4025039777635956441">არჩეული საიტის დადუმება</translation>
-<translation id="4027804175521224372">(თქვენ გამოტოვეთt - <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">შეყვანის მეთოდების დამატება</translation>
 <translation id="4029556917477724407">დაბრუნება გვერდიდან <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">მიკროფონი დაშვებულია</translation>
@@ -3793,7 +3787,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">თქვენს ხისტი დისკი სავსეა. გთხოვთ, შეინახოთ სხვა ადგილას ან გაანთავისუფლოთ ადგილი ხისტ დისკზე.</translation>
 <translation id="5123433949759960244">კალათბურთის ბურთი</translation>
-<translation id="5125167430897995218">PUK-კოდი არასწორია. 1 მცდელობა დაგრჩათ, რის შემდეგაც, ქსელზე წვდომის აღსადგენად, თქვენს ოპერატორს უნდა დაუკავშირდეთ.</translation>
 <translation id="5125751979347152379">არასწორი URL.</translation>
 <translation id="5126611267288187364">ცვლილებების ნახვა</translation>
 <translation id="5127620150973591153">დაცული კავშირის ID: <ph name="TOKEN" /></translation>
@@ -4041,7 +4034,6 @@
 <translation id="540296380408672091"><ph name="HOST" />-ზე ქუქი-ჩანაწერების ყოველთვის დაბლოკვა</translation>
 <translation id="540495485885201800">წინათი ჩანაცვლება</translation>
 <translation id="5405146885510277940">პარამეტრების გადაყენება</translation>
-<translation id="5407119150486192764">შეიყვანეთ PIN-კოდის განბლოკვის 8-ციფრიანი გასაღები, რომელიც ოპერატორმა მოგაწოდათ</translation>
 <translation id="5407167491482639988">გარჩევა შეუძლებელია</translation>
 <translation id="5408750356094797285">მასშტაბი: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">თქვენი Google ანგარიშიდან</translation>
@@ -6608,7 +6600,6 @@
 <translation id="8206745257863499010">ბლუზი</translation>
 <translation id="8206859287963243715">ფიჭური</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ახალი შეტყობინება}other{# ახალი შეტყობინება}}</translation>
-<translation id="8211551284753798479">PUK-კოდი არასწორია. <ph name="RETRIES" /> მცდელობა დაგრჩათ.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{მიმდინარეობს ჩამოტვირთვა}other{მიმდინარეობს ჩამოტვირთვები}}</translation>
 <translation id="8213449224684199188">გაშვებულია ფოტო რეჟიმი</translation>
 <translation id="8214489666383623925">ფაილის გახსნა…</translation>

@@ -155,10 +155,8 @@
 <translation id="116173250649946226">デフォルトのテーマは管理者が設定しており、変更できません。</translation>
 <translation id="1163931534039071049">フレームのソースを表示(&amp;V)</translation>
 <translation id="1164891049599601209">不正なサイトで入力</translation>
-<translation id="1164899421101904659">PIN ロック解除キーを入力</translation>
 <translation id="1165039591588034296">エラー</translation>
 <translation id="1166212789817575481">右側のタブを閉じる</translation>
-<translation id="116624467691206283">無効な PUK です。入力できるのはあと 1 回です。</translation>
 <translation id="1168020859489941584">後 <ph name="TIME_REMAINING" />でファイルが開きます...</translation>
 <translation id="1168100932582989117">Google ネーム サーバー</translation>
 <translation id="1170288591054440704">サイトがデバイスにインストールされたフォントを使おうとしたときに確認する</translation>
@@ -1198,7 +1196,6 @@
 <translation id="2263189956353037928">ログアウトして再度ログイン</translation>
 <translation id="2263371730707937087">画面のリフレッシュ レート</translation>
 <translation id="2263679799334060788">お送りいただいたフィードバックは、Google Cast の改善に役立てさせていただきます。Google Cast に関する問題のトラブルシューティングについては、<ph name="BEGIN_LINK" />ヘルプセンター<ph name="END_LINK" />をご覧ください。</translation>
-<translation id="2265889263013046172">PUK が正しくありません。入力できるのはあと <ph name="RETRIES" /> 回です。この回数を超えると、再びネットワークにアクセスするには携帯通信会社にお問い合わせいただく必要があります。</translation>
 <translation id="22665427234727190">サイトから Bluetooth デバイスへのアクセスを求められたときに確認する（推奨）</translation>
 <translation id="2266957463645820432">IPP over USB（IPPUSB）</translation>
 <translation id="2270450558902169558">ドメイン <ph name="DOMAIN" /> 内のデバイスとのデータ交換</translation>
@@ -1482,7 +1479,6 @@
 <translation id="2553440850688409052">このプラグインを表示しない</translation>
 <translation id="2554553592469060349">選択したファイルが大きすぎます（最大サイズ: 3 MB）。</translation>
 <translation id="2558896001721082624">システム メニューにユーザー補助オプションを常に表示する</translation>
-<translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> にログインしていません</translation>
 <translation id="2564520396658920462">AppleScript からの JavaScript の実行がオフになっています。オンにするには、メニューバーから [表示] &gt; [デベロッパー] &gt; [Apple Events からの JavaScript を許可] を選択してください。詳しくは、https://support.google.com/chrome/?p=applescript をご覧ください。</translation>
 <translation id="2564653188463346023">拡張スペルチェック</translation>
 <translation id="2568774940984945469">情報バー コンテナ</translation>
@@ -2396,7 +2392,6 @@
 <translation id="3569407787324516067">スクリーンセーバー</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> は次のファイルとフォルダを表示できます</translation>
 <translation id="3571734092741541777">設定</translation>
-<translation id="3574210789297084292">ログイン</translation>
 <translation id="3575121482199441727">このサイトの通知を許可</translation>
 <translation id="3576324189521867626">インストールが完了しました</translation>
 <translation id="3578594933904494462">このタブのコンテンツは共有されています。</translation>
@@ -2847,7 +2842,6 @@
 <translation id="4022426551683927403">辞書に追加(&amp;A)</translation>
 <translation id="4023146161712577481">デバイスの設定を確認しています。</translation>
 <translation id="4025039777635956441">選択したサイトをミュート</translation>
-<translation id="4027804175521224372">（詳細についてはこちら —<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />）</translation>
 <translation id="4028467762035011525">入力方法を追加</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> ページから戻る</translation>
 <translation id="4031179711345676612">マイクを使用できます</translation>
@@ -3793,7 +3787,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">ハード ディスクがいっぱいです。別の場所に保存するか、ハード ディスクの空き容量を増やしてください。</translation>
 <translation id="5123433949759960244">バスケットボール</translation>
-<translation id="5125167430897995218">PUK が正しくありません。入力できるのはあと 1 回です。この回数を超えると、再びネットワークにアクセスするには携帯通信会社にお問い合わせいただく必要があります。</translation>
 <translation id="5125751979347152379">URL が無効です。</translation>
 <translation id="5126611267288187364">変更の表示</translation>
 <translation id="5127620150973591153">安全な接続 ID: <ph name="TOKEN" /></translation>
@@ -4041,7 +4034,6 @@
 <translation id="540296380408672091"><ph name="HOST" /> の Cookie を常にブロックする</translation>
 <translation id="540495485885201800">前と交換</translation>
 <translation id="5405146885510277940">設定のリセット</translation>
-<translation id="5407119150486192764">携帯通信会社から提供された 8 桁の PIN ロック解除キーを入力してください</translation>
 <translation id="5407167491482639988">聞き取り不能</translation>
 <translation id="5408750356094797285">ズーム: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Google アカウントから削除</translation>
@@ -6610,7 +6602,6 @@
 <translation id="8206745257863499010">ブルース</translation>
 <translation id="8206859287963243715">携帯電話</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新しい通知}other{# 件の新しい通知}}</translation>
-<translation id="8211551284753798479">無効な PUK です。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ダウンロードが進行中です}other{ダウンロードが進行中です}}</translation>
 <translation id="8213449224684199188">写真モードに切り替えました</translation>
 <translation id="8214489666383623925">ファイルを開く...</translation>

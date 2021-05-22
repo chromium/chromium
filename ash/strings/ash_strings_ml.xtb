@@ -40,6 +40,7 @@
 <translation id="1247372569136754018">മൈക്രോഫോൺ (ഇന്റേണൽ)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> എന്നതിൽ നിന്നും ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="1255033239764210633">കാലാവസ്ഥ എങ്ങനെയുണ്ട്?</translation>
+<translation id="1266097335951928626">സെൽഫി ക്യാമറ ആരംഭിക്കുക</translation>
 <translation id="1267032506238418139">കുറുക്കുവഴി മാറ്റം</translation>
 <translation id="1269405891096105529">അതിഥി മോഡിൽ പെരിഫറൽ പിന്തുണയ്‌ക്കുന്നില്ല</translation>
 <translation id="1270290102613614947">ഓൺ-സ്‌ക്രീൻ കീബോർഡ് പ്രവർത്തനരഹിതമാക്കി</translation>
@@ -84,6 +85,7 @@
 <translation id="1555130319947370107">നീല</translation>
 <translation id="1570871743947603115">Bluetooth മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ഈ സെഷനിൽ നിങ്ങളുടെ എല്ലാ ആക്‌റ്റിവിറ്റികളും ആക്‌സസ് ചെയ്യുക</translation>
+<translation id="159255010947577753">മാര്‍ക്കര്‍</translation>
 <translation id="1611993646327628135">ഓണാണ്</translation>
 <translation id="1615402009686901181">രഹസ്യാത്മക ഉള്ളടക്കം ദൃശ്യമായിരിക്കുമ്പോൾ അഡ്‌മിൻ നയം സ്ക്രീൻ ക്യാപ്‌ചർ പ്രവർത്തനരഹിതമാക്കുന്നു</translation>
 <translation id="1632985212731562677">ക്രമീകരണം &gt; ഉപയോഗസഹായി എന്നതിൽ 'ആക്‌സസ് മാറുക' പ്രവർത്തനരഹിതമാക്കാം.</translation>
@@ -135,8 +137,10 @@
 <translation id="2016340657076538683">ഒരു സന്ദേശം ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="2018630726571919839">എന്നോട് ഒരു തമാശ പറയൂ</translation>
 <translation id="2021864487439853900">അൺലോക്കുചെയ്യാൻ ക്ലിക്കുചെയ്യൂ</translation>
+<translation id="2047639699071423250">കീ ഐഡിയ ബട്ടൺ ചേർക്കുക</translation>
 <translation id="2049240716062114887">ഡെസ്‌കിന്റെ പേര് <ph name="DESK_NAME" /> എന്നാക്കി മാറ്റി</translation>
 <translation id="2050339315714019657">പോർട്രെയ്റ്റ്</translation>
+<translation id="2066708475850724665">മാഗ്നിഫയർ ഉപയോഗിക്കുന്നത് നിർത്തുക</translation>
 <translation id="2067602449040652523">കീബോർഡ് തെളിച്ചം</translation>
 <translation id="2078034614700056995">അടുത്ത ഡെസ്‌ക്കിലേക്ക് മാറാൻ, നാല് വിരലുകൾ ഉപയോഗിച്ച് വലത്തേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="2079504693865562705">ഷെൽഫിലെ ആപ്പുകൾ മറയ്ക്കുക</translation>
@@ -144,10 +148,12 @@
 <translation id="2083190527011054446">ഗുഡ്‌നെെറ്റ് <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">നെറ്റ്‌വർക്കിൽ കണക്‌റ്റ് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="2108303511227308752">'Alt + Backspace' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Delete കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ + Backspace അമർത്തുക.</translation>
+<translation id="211328683600082144">മൈക്രോഫോൺ ഓണാക്കുക</translation>
 <translation id="2126242104232412123">പുതിയ ഡെസ്‌ക്</translation>
 <translation id="2127372758936585790">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജർ</translation>
 <translation id="2132302418721800944">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="2135456203358955318">ഡോക്ക് ചെയ്‌ത മാഗ്‌നിഫയർ</translation>
+<translation id="2146800439053023141">ബാർ ലൊക്കേഷൻ മാറ്റുക</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">അവലോകനത്തിൽ നിന്ന് പുറത്ത് കടക്കാൻ മൂന്നു വിരലുകൾ ഉപയോഗിച്ച് താഴേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
@@ -282,7 +288,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിന് പിന്നീട്, തുടർന്നും സൈൻ ഇൻ ചെയ്യാനാവും.</translation>
 <translation id="3321628682574733415">രക്ഷാകർതൃ കോഡ് തെറ്റാണ്</translation>
 <translation id="332587331255250389">ബാറ്ററി മാറ്റി പുതിയത് വയ്ക്കുക</translation>
-<translation id="3333741161915951567">മോഡം റീബൂട്ട് ചെയ്യുന്നു. വീണ്ടും ശ്രമിക്കുന്നതിന് മുമ്പ് 30 സെക്കൻഡ് കാത്തിരിക്കുക.</translation>
 <translation id="3341303451326249809">സ്‌ക്രീൻഷോട്ട് ക്യാപ്‌ചർ ചെയ്തു</translation>
 <translation id="334252345105450327">സ്‌ക്രീൻഷോട്ട് എടുക്കൂ</translation>
 <translation id="3351879221545518001">നിലവിൽ നിങ്ങൾ സ്ക്രീൻ കാസ്‌റ്റ് ചെയ്യുന്നു.</translation>
@@ -327,6 +332,7 @@
 <translation id="3638400994746983214">സ്വകാര്യതാ സ്‌ക്രീൻ മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733">നിയന്ത്രിത ഉപയോക്താവ് <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">മൈക്രോഫോൺ റെക്കോർഡ് ചെയ്യുക</translation>
+<translation id="3680908746918359504">എല്ലാ മാർക്കറുകളും മായ്ക്കുക</translation>
 <translation id="36813544980941320">നിങ്ങളുടെ ഫോണിനും <ph name="DEVICE_NAME" /> എന്നതിനുമിടയിൽ വെെഫെെ നെറ്റ്‌വർക്കുകൾ പങ്കിടും</translation>
 <translation id="3702809606464356667">നിലവിലെ ഡെസ്ക്കിൽ നിന്നുള്ള വിൻഡോകൾ കാണിക്കുന്നു, എല്ലാ ഡെസ്‌ക്കിലും നിന്നുള്ള വിൻഡോകൾ കാണിക്കാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാള കീ അമർത്തുക</translation>
 <translation id="3702846122927433391">നൈജീരിയയിലെ ജനസംഖ്യ</translation>
@@ -377,6 +383,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ആപ്പിൽ അറിയിപ്പ് ഓഫ്}other{# ആപ്പിൽ അറിയിപ്പ് ഓഫ്}}</translation>
 <translation id="4066027111132117168">ഓണാണ്, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">ഇടത്തരം സിഗ്നൽ</translation>
+<translation id="4095366824370681039">മഷി പേന</translation>
 <translation id="4112140312785995938">പുറകിലേക്ക് നീക്കുക</translation>
 <translation id="4114315158543974537">ഫോൺ ഹബ് ഓണാക്കുക</translation>
 <translation id="412298498316631026">വിൻഡോ</translation>
@@ -445,12 +452,15 @@
 <translation id="4570957409596482333">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക ബട്ടൺ</translation>
 <translation id="4577274620589681794"><ph name="LABEL" /> · സമയം കഴിഞ്ഞു</translation>
 <translation id="4577990005084629481">പ്രിവ്യുകൾ കാണിക്കുക</translation>
+<translation id="4578196883126898996">നിങ്ങളുടെ മൈക്രോഫോൺ ഓഫാണ്. ഉപകരണത്തിന്റെ മൈക്രോഫോൺ ബട്ടൺ ഓണാക്കുക.</translation>
 <translation id="4578906031062871102">ക്രമീകരണം മെനു തുറന്നു</translation>
 <translation id="4581047786858252841">മൈക്രോഫോൺ ഓണാണ്</translation>
 <translation id="4585337515783392668">അജ്ഞാത റിസീവറിൽ കാസ്‌റ്റ് ചെയ്യുന്നത് നിർത്തുക</translation>
+<translation id="4586483766170476230">സെൽഫി ക്യാമറ നിർത്തുക</translation>
 <translation id="4587299710837179226">മൈക്രോഫോൺ ഓഫാണ്</translation>
 <translation id="4596144739579517758">ഡാർക്ക് തീം ഓഫാണ്</translation>
 <translation id="4611292653554630842">ലോഗ് ഇന്‍ ചെയ്യുക</translation>
+<translation id="4614295562446151104">മാർക്കർ ടൂളുകൾ വികസിപ്പിക്കുക</translation>
 <translation id="4623167406982293031">അക്കൗണ്ട് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="4628757576491864469">ഉപകരണങ്ങൾ</translation>
 <translation id="4642092649622328492">ഭാഗിക സ്‌ക്രീൻഷോട്ട് എടുക്കുക</translation>
@@ -507,6 +517,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> പുതിയ ഫോണിലേക്ക് കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="5035389544768382859">ഡിസ്പ്ലേ കോൺഫിഗറേഷൻ സ്ഥിരീകരിക്കുക</translation>
 <translation id="504465286040788597">മുമ്പത്തെ പാരഗ്രാഫ്</translation>
+<translation id="5071064518267176975">ഒരു ആപ്പിന് മൈക്രോഫോൺ ഉപയോഗിക്കണം</translation>
+<translation id="5075554201838155866">സബ്‌ടൈറ്റിലുകൾ ആരംഭിക്കുക</translation>
 <translation id="5078796286268621944">തെറ്റായ PIN</translation>
 <translation id="5083553833479578423">കൂടുതൽ അസിസ്റ്റന്റ് ഫീച്ചറുകൾ അൺലോക്ക് ചെയ്യുക.</translation>
 <translation id="5136175204352732067">വ്യത്യസ്ത കീബോർഡ് കണക്‌റ്റ് ചെയ്‌തു</translation>
@@ -677,6 +689,7 @@
 <translation id="6612802754306526077">സ്ക്രീൻ റെക്കോർഡിംഗ് മോഡ് തിരഞ്ഞെടുത്തു</translation>
 <translation id="6614169507485700968">സ്വകാര്യതാ സ്‌ക്രീൻ ഓണാണ്</translation>
 <translation id="6627638273713273709">തിരയല്‍+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> ആപ്പിന് നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കണം</translation>
 <translation id="6637729079642709226">സമയം മാറ്റുക</translation>
 <translation id="6641720045729354415">തത്സമയ ക്യാപ്ഷൻ മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് സ്ഥിരീകരിക്കാൻ <ph name="ORIGIN_NAME" /> ആഗ്രഹിക്കുന്നു</translation>
@@ -730,6 +743,7 @@
 <translation id="7029814467594812963">സെഷൻ എക്സിറ്റ്</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google അസിസ്‌റ്റന്റ്</translation>
 <translation id="7042322267639375032">സ്റ്റാറ്റസ് ഏരിയ ചുരുക്കുക</translation>
+<translation id="7045595904618419789">മാഗ്നിഫയർ ഉപയോഗിക്കാൻ ആരംഭിക്കുക</translation>
 <translation id="7055910611768509537">ഒരാഴ്‌ചയിലധികമായി സ്റ്റൈലസ് ഉപയോഗിച്ചിട്ടില്ല</translation>
 <translation id="7066646422045619941">നിങ്ങളുടെ അഡ്‌മിൻ ഈ നെറ്റ്‌വർക്ക് പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="7067196344162293536">സ്വയമേവ തിരിക്കുക</translation>
@@ -750,6 +764,7 @@
 <translation id="7256634071279256947">പിൻഭാഗത്തെ മൈക്രോഫോൺ</translation>
 <translation id="726276584504105859">സ്പ്ലിറ്റ് സ്ക്രീൻ ഉപയോഗിക്കുന്നതിന് ഇവിടെ വലിച്ചിടുക</translation>
 <translation id="7262906531272962081">റിമൈൻഡർ സൃഷ്‌ടിക്കുക</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> മാർക്കർ നിറം</translation>
 <translation id="7302889331339392448">തത്സമയ ക്യാപ്ഷൻ ഓഫാണ്.</translation>
 <translation id="7303365578352795231">മറ്റൊരു ഉപകരണത്തിൽ മറുപടി നൽകുന്നു.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -779,6 +794,7 @@
 <translation id="7466449121337984263">സെൻസറിൽ സ്‌പർശിക്കുക</translation>
 <translation id="7477793887173910789">നിങ്ങളുടെ സംഗീതവും വീഡിയോകളും മറ്റും നിയന്ത്രിക്കുക</translation>
 <translation id="7483025031359818980">തിരഞ്ഞെടുക്കൽ ഏരിയ പൂർണ്ണ സ്ക്രീനായി സജ്ജീകരിച്ചു</translation>
+<translation id="7486227320194954040">മാർക്കർ ടൂളുകൾ ചുരുക്കുക</translation>
 <translation id="7497767806359279797">ഭാഷയും കീബോഡും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7509246181739783082">ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="7513622367902644023">സ്ക്രീൻഷോട്ട് മോഡ് തിരഞ്ഞടുത്തു</translation>
@@ -797,6 +813,7 @@
 <translation id="7607002721634913082">അല്പംനിര്‍ത്തി</translation>
 <translation id="7618774594543487847">ന്യൂട്രൽ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">മാർക്കർ പേന</translation>
 <translation id="7633755430369750696">'സമീപമുള്ള പങ്കിടൽ' ക്രമീകരണം കാണിക്കുക.</translation>
 <translation id="7641938616688887143">റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> എന്നതിനുള്ള ക്രമീകരണം തുറക്കുക, <ph name="CONNECTION_STATUS" /></translation>
@@ -812,6 +829,7 @@
 <translation id="7724603315864178912">മുറിക്കുക</translation>
 <translation id="7745560842763881396">ഷെൽഫിലെ ആപ്പുകൾ കാണിക്കുക</translation>
 <translation id="7749443890790263709">ഡെസ്‌ക്കുകളുടെ പരമാവധി എണ്ണത്തിൽ എത്തിയിരിക്കുന്നു.</translation>
+<translation id="7749640678855296659">നിങ്ങളുടെ മൈക്രോഫോൺ നിലവിൽ ഓഫാണ്</translation>
 <translation id="776344839111254542">അപ്‌ഡേറ്റ് ചെയ്‌ത വിശദാംശങ്ങൾ കാണാൻ ‌ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="7780159184141939021">സ്‌ക്രീൻ തിരിക്കുക</translation>
 <translation id="7796353162336583443">കുറിപ്പോ സ്‌ക്രീന്‍ഷോട്ടോ എടുക്കാനും Google സഹായിയോ ലേസർ പോയിന്‍ററോ ഭൂതക്കണ്ണാടിയോ ഉപയോഗിക്കാനും ഷെൽഫിലെ സ്‌റ്റൈലസ് ബട്ടൺ ടാപ്പ് ചെയ്യുക.</translation>
@@ -859,6 +877,7 @@
 <translation id="8113423164597455979">ആപ്പിലെല്ലാം ഓൺ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">സ്ഥിരീകരിക്കുക</translation>
+<translation id="8132487352815776550">സബ്‌ടൈറ്റിലുകൾ നിർത്തുക</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> എന്നതിലേക്ക് ബന്ധിപ്പിച്ചു</translation>
 <translation id="813913629614996137">ആരംഭിക്കുന്നു...</translation>
 <translation id="8142441511840089262">ഇരട്ട ക്ലിക്ക് ചെയ്യുക</translation>

@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Bạn không thể thay đổi giao diện vì đây là giao diện mặc định do quản trị viên đặt.</translation>
 <translation id="1163931534039071049">&amp;Xem nguồn khung</translation>
 <translation id="1164891049599601209">Đã được nhập trên trang web lừa đảo</translation>
-<translation id="1164899421101904659">Nhập khóa mở khóa mã PIN</translation>
 <translation id="1165039591588034296">Lỗi</translation>
 <translation id="1166212789817575481">Đóng Thẻ Bên phải</translation>
-<translation id="116624467691206283">Mã PUK không hợp lệ. Bạn còn 1 lần nhập.</translation>
 <translation id="1168020859489941584">Đang mở trong <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Máy chủ có tên của Google</translation>
 <translation id="1170288591054440704">Hỏi khi có một trang web muốn dùng phông chữ đã cài đặt trên thiết bị của bạn</translation>
@@ -1213,7 +1211,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
     Để được trợ giúp khắc phục sự cố xảy ra với tính năng truyền, vui lòng tham khảo
     <ph name="BEGIN_LINK" />
     trung tâm trợ giúp<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Mã PUK không chính xác. Bạn còn <ph name="RETRIES" /> lần nhập trước khi phải liên hệ với nhà mạng để lấy lại quyền truy cập vào mạng.</translation>
 <translation id="22665427234727190">Hỏi khi một trang web muốn truy cập vào các thiết bị Bluetooth (khuyên dùng)</translation>
 <translation id="2266957463645820432">IPP qua USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Trao đổi dữ liệu với bất kỳ thiết bị nào trong miền <ph name="DOMAIN" /></translation>
@@ -1497,7 +1494,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2553440850688409052">Ẩn plugin này</translation>
 <translation id="2554553592469060349">Tệp đã chọn quá lớn (kích thước tối đa: 3mb).</translation>
 <translation id="2558896001721082624">Luôn hiển thị tùy chọn trợ năng trong menu hệ thống</translation>
-<translation id="2562743677925229011">Chưa được đăng nhập vào <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Tùy chọn thực thi JavaScript qua AppleScript đã bị tắt. Để bật tùy chọn này, từ thanh menu, hãy chuyển đến Xem&gt; Nhà phát triển &gt; Cho phép JavaScript từ Apple Events. Để biết thêm thông tin, hãy truy cập vào https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Cải thiện khả năng kiểm tra chính trả</translation>
 <translation id="2568774940984945469">Bộ chứa Thanh thông tin</translation>
@@ -2411,7 +2407,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3569407787324516067">Trình bảo vệ màn hình</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> có thể xem các tệp và thư mục sau</translation>
 <translation id="3571734092741541777">Thiết lập</translation>
-<translation id="3574210789297084292">đăng nhập</translation>
 <translation id="3575121482199441727">Cho phép đối với trang web này</translation>
 <translation id="3576324189521867626">Đã cài đặt thành công</translation>
 <translation id="3578594933904494462">Nội dung của thẻ này đang được chia sẻ.</translation>
@@ -2862,7 +2857,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4022426551683927403">&amp;Thêm vào Từ điển</translation>
 <translation id="4023146161712577481">Cấu hình thiết bị đang chờ xác định.</translation>
 <translation id="4025039777635956441">Tắt tiếng trang web đã chọn</translation>
-<translation id="4027804175521224372">(Bạn chưa được đăng nhập—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Thêm phương thức nhập</translation>
 <translation id="4029556917477724407">Quay về trang trước trang <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Cho phép micrô</translation>
@@ -3809,7 +3803,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Đĩa cứng của bạn đã đầy.  Hãy lưu vào một vị trí khác hoặc tạo thêm dung lượng trống trên đĩa cứng.</translation>
 <translation id="5123433949759960244">Bóng rổ</translation>
-<translation id="5125167430897995218">Mã PUK không chính xác. Bạn còn 1 lần nhập trước khi phải liên hệ với nhà mạng để lấy lại quyền truy cập vào mạng.</translation>
 <translation id="5125751979347152379">URL không hợp lệ.</translation>
 <translation id="5126611267288187364">Xem các thay đổi</translation>
 <translation id="5127620150973591153">Mã kết nối bảo mật: <ph name="TOKEN" /></translation>
@@ -4057,7 +4050,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="540296380408672091">Luôn chặn cookie trên <ph name="HOST" /></translation>
 <translation id="540495485885201800">Hoán đổi với mục trước</translation>
 <translation id="5405146885510277940">Đặt lại chế độ cài đặt</translation>
-<translation id="5407119150486192764">Nhập Khóa mở mã PIN gồm 8 chữ số do nhà mạng cung cấp</translation>
 <translation id="5407167491482639988">Khó hiểu</translation>
 <translation id="5408750356094797285">Thu phóng: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Từ Tài khoản Google của bạn</translation>
@@ -6626,7 +6618,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8206745257863499010">Nốt nhạc xanh</translation>
 <translation id="8206859287963243715">Di động</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Thông báo mới}other{# thông báo mới}}</translation>
-<translation id="8211551284753798479">Mã PUK không hợp lệ. Bạn còn <ph name="RETRIES" /> lần nhập.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Đang tải xuống}other{Đang tải xuống}}</translation>
 <translation id="8213449224684199188">Đã chuyển sang chế độ ảnh</translation>
 <translation id="8214489666383623925">Mở Tệp...</translation>

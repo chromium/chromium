@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Din administrator har indstillet et standardtema, der ikke kan ændres.</translation>
 <translation id="1163931534039071049">&amp;Vis rammens kildetekst</translation>
 <translation id="1164891049599601209">Angivet på vildledende website</translation>
-<translation id="1164899421101904659">Angiv nøgle til oplåsning af pinkode</translation>
 <translation id="1165039591588034296">Fejl</translation>
 <translation id="1166212789817575481">Luk fanerne til højre</translation>
-<translation id="116624467691206283">PUK-koden er ugyldig. Du har 1 forsøg tilbage.</translation>
 <translation id="1168020859489941584">Åbner om <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Googles navneservere</translation>
 <translation id="1170288591054440704">Spørg, når et website vil anvende skrifttyper, der er installeret på din enhed</translation>
@@ -1214,7 +1212,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
     Du kan få hjælp til problemer med fejlfinding ved at gå til
     <ph name="BEGIN_LINK" />
     Hjælp<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">PUK-koden er forkert. Du har <ph name="RETRIES" /> forsøg tilbage, før du skal kontakte dit mobilselskab for at få adgang til netværket igen.</translation>
 <translation id="22665427234727190">Spørg, når et website vil have adgang til Bluetooth-enheder (anbefales)</translation>
 <translation id="2266957463645820432">IPP via USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Udveksle data med en enhed på domænet <ph name="DOMAIN" /></translation>
@@ -1498,7 +1495,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2553440850688409052">Skjul dette plugin</translation>
 <translation id="2554553592469060349">Den valgte fil er for stor (maksimal størrelse: 3 MB).</translation>
 <translation id="2558896001721082624">Vis altid indstillingerne for hjælpefunktioner i systemmenuen</translation>
-<translation id="2562743677925229011">Ikke logget ind på <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Kørsel af JavaScript via AppleScript er deaktiveret. Du kan aktivere funktionen ved at gå til menubjælken og vælge Se &gt; Udvikler &gt; Tillad JavaScript via Apple Events. Få flere oplysninger på https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Forbedret stavekontrol</translation>
 <translation id="2568774940984945469">Container til oplysningsbjælke</translation>
@@ -2412,7 +2408,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3569407787324516067">Pauseskærm</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> kan se følgende filer og mapper</translation>
 <translation id="3571734092741541777">Konfigurer</translation>
-<translation id="3574210789297084292">log ind</translation>
 <translation id="3575121482199441727">Tillad for dette website</translation>
 <translation id="3576324189521867626">Appen blev installeret</translation>
 <translation id="3578594933904494462">Indholdet på denne fane deles.</translation>
@@ -2863,7 +2858,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4022426551683927403">&amp;Føj til ordbog</translation>
 <translation id="4023146161712577481">Enhedskonfigurationen fastslås.</translation>
 <translation id="4025039777635956441">Slå lyden fra på det valgte website</translation>
-<translation id="4027804175521224372">(Du går glip af noget – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Tilføj indtastningsmetoder</translation>
 <translation id="4029556917477724407">Tilbage fra siden <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Der er givet adgang til mikrofonen</translation>
@@ -3810,7 +3804,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Din harddisk er fuld. Gem på en anden placering, eller frigør mere plads på harddisken.</translation>
 <translation id="5123433949759960244">Basketball</translation>
-<translation id="5125167430897995218">PUK-koden er forkert. Du har 1 forsøg tilbage, før du skal kontakte dit mobilselskab for at få adgang til netværket igen.</translation>
 <translation id="5125751979347152379">Ugyldig webadresse.</translation>
 <translation id="5126611267288187364">Se ændringer</translation>
 <translation id="5127620150973591153">Id for sikker forbindelse: <ph name="TOKEN" /></translation>
@@ -4058,7 +4051,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="540296380408672091">Bloker altid cookies på <ph name="HOST" /></translation>
 <translation id="540495485885201800">Byt rundt med forrige</translation>
 <translation id="5405146885510277940">Nulstil indstillinger</translation>
-<translation id="5407119150486192764">Angiv den 8-cifrede nøgle til ophævelse af blokering af pinkode, som du har fået af dit mobilselskab</translation>
 <translation id="5407167491482639988">Uforståelig</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Fra din Google-konto</translation>
@@ -6626,7 +6618,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8206745257863499010">BB King</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ny notifikation}one{# ny notifikation}other{# nye notifikationer}}</translation>
-<translation id="8211551284753798479">PUK-koden er ugyldig. Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Downloaden er i gang}one{Downloaden er i gang}other{Downloadene er i gang}}</translation>
 <translation id="8213449224684199188">Fototilstand er aktiveret</translation>
 <translation id="8214489666383623925">Åbn fil...</translation>
@@ -6823,7 +6814,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8446884382197647889">Få flere oplysninger</translation>
 <translation id="8447409163267621480">Skal indeholde enten Ctrl eller Alt</translation>
 <translation id="8448729345478502352">Gør elementer på skærmen mindre eller større</translation>
-<translation id="8449008133205184768">Sæt ind og match stil</translation>
+<translation id="8449008133205184768">Indsæt og match stil</translation>
 <translation id="8449036207308062757">Administrer lagerplads</translation>
 <translation id="8452135315243592079">SIM-kort mangler</translation>
 <translation id="8455026683977728932">Illustration, der viser, at ADB kunne ikke aktiveres</translation>

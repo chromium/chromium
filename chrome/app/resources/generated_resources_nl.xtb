@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Je beheerder heeft een standaardthema ingesteld dat niet kan worden gewijzigd.</translation>
 <translation id="1163931534039071049">&amp;Framebron tonen</translation>
 <translation id="1164891049599601209">Ingevoerd op misleidende site</translation>
-<translation id="1164899421101904659">Pukcode opgeven</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1166212789817575481">Tabbladen aan de rechterkant sluiten</translation>
-<translation id="116624467691206283">Ongeldige pukcode. Je hebt nog 1 poging.</translation>
 <translation id="1168020859489941584">Openen in <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Google-naamservers</translation>
 <translation id="1170288591054440704">Vragen als een site lettertypen wilt gebruiken die op je apparaat zijn geïnstalleerd</translation>
@@ -1198,7 +1196,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2263189956353037928">Uitloggen en weer inloggen</translation>
 <translation id="2263371730707937087">Vernieuwingssnelheid van het scherm</translation>
 <translation id="2263679799334060788">We ontvangen graag feedback, zodat we Google Cast kunnen verbeteren. Als je hulp nodig hebt bij het oplossen van castproblemen, ga je naar het <ph name="BEGIN_LINK" />Helpcentrum<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Onjuiste pukcode. Je hebt nog <ph name="RETRIES" /> pogingen voordat je contact met je provider moet opnemen om opnieuw netwerktoegang te krijgen.</translation>
 <translation id="22665427234727190">Vragen als een site toegang wil krijgen tot bluetooth-apparaten (aanbevolen)</translation>
 <translation id="2266957463645820432">IPP over USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Gegevens uitwisselen met elk apparaat in het domein <ph name="DOMAIN" /></translation>
@@ -1482,7 +1479,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2553440850688409052">Deze plugin verbergen</translation>
 <translation id="2554553592469060349">Het geselecteerde bestand is te groot (max. grootte: 3 MB).</translation>
 <translation id="2558896001721082624">Toegankelijkheidsopties altijd tonen in het systeemmenu</translation>
-<translation id="2562743677925229011">Niet ingelogd bij <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Het uitvoeren van JavaScript via AppleScript staat uit. Als je dit wilt aanzetten, ga je vanaf de menubalk naar Weergave &gt; Ontwikkelaar &gt; JavaScript vanuit Apple Events toestaan. Meer informatie: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Uitgebreide spellingcontrole</translation>
 <translation id="2568774940984945469">Container voor infobalk</translation>
@@ -2395,7 +2391,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3569407787324516067">Screensaver</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> kan de volgende bestanden en mappen bekijken</translation>
 <translation id="3571734092741541777">Instellen</translation>
-<translation id="3574210789297084292">inloggen</translation>
 <translation id="3575121482199441727">Toestaan voor deze site</translation>
 <translation id="3576324189521867626">Installatie geslaagd</translation>
 <translation id="3578594933904494462">De content van dit tabblad wordt gedeeld.</translation>
@@ -2846,7 +2841,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4022426551683927403">Toevoegen &amp;aan woordenboek</translation>
 <translation id="4023146161712577481">Apparaatconfiguratie bepalen.</translation>
 <translation id="4025039777635956441">Geluid van geselecteerde site uitzetten</translation>
-<translation id="4027804175521224372">(Dit kan handiger: <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Invoermethoden toevoegen</translation>
 <translation id="4029556917477724407">Terug vanaf de pagina <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Microfoon toegestaan</translation>
@@ -3790,7 +3784,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Je vaste schijf is vol. Sla op een andere locatie op of maak ruimte vrij op de vaste schijf.</translation>
 <translation id="5123433949759960244">Basketbal</translation>
-<translation id="5125167430897995218">Onjuiste pukcode. Je hebt nog 1 poging voordat je contact met je provider moet opnemen om opnieuw netwerktoegang te krijgen.</translation>
 <translation id="5125751979347152379">Ongeldige URL.</translation>
 <translation id="5126611267288187364">Wijzigingen bekijken</translation>
 <translation id="5127620150973591153">Beveiligde verbindings-ID: <ph name="TOKEN" /></translation>
@@ -4038,7 +4031,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="540296380408672091">Cookies op <ph name="HOST" /> altijd blokkeren</translation>
 <translation id="540495485885201800">Wisselen met vorige</translation>
 <translation id="5405146885510277940">Instellingen resetten</translation>
-<translation id="5407119150486192764">Geef de ontgrendelingscode van 8 cijfers voor je pincode op die je van je provider hebt gekregen</translation>
 <translation id="5407167491482639988">Niet te begrijpen</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Uit je Google-account.</translation>
@@ -5266,7 +5258,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="6781284683813954823">Link naar doodle</translation>
 <translation id="6781978626986383437">Back-up voor Linux geannuleerd</translation>
 <translation id="6782067259631821405">Ongeldige pincode</translation>
-<translation id="6784523122863989144">Profiel wordt niet ondersteund</translation>
+<translation id="6784523122863989144">Profiel wordt ondersteund</translation>
 <translation id="6785518634832172390">Pincode mag maximaal 12 cijfers bevatten</translation>
 <translation id="6786747875388722282">Extensies</translation>
 <translation id="6787097042755590313">Ander tabblad</translation>
@@ -6060,7 +6052,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="7650511557061837441">'<ph name="TRIGGERING_EXTENSION_NAME" />' wil '<ph name="EXTENSION_NAME" />' verwijderen.</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 vingerafdruk ingesteld}other{{COUNT} vingerafdrukken ingesteld}}</translation>
 <translation id="7650677314924139716">Huidige instelling voor datagebruik is 'Alleen wifi'</translation>
-<translation id="7650920359639954963">Niet aangezet: <ph name="REASON" /></translation>
+<translation id="7650920359639954963">Niet ingesteld: <ph name="REASON" /></translation>
 <translation id="765293928828334535">Apps, extensies en gebruikersscripts kunnen niet worden toegevoegd vanaf deze website</translation>
 <translation id="7652954539215530680">Een pincode instellen</translation>
 <translation id="7654941827281939388">Dit account wordt al gebruikt op deze computer.</translation>
@@ -6606,7 +6598,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Mobiel</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nieuwe melding}other{# nieuwe meldingen}}</translation>
-<translation id="8211551284753798479">Ongeldige pukcode. Je hebt nog <ph name="RETRIES" /> pogingen.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download wordt uitgevoerd}other{Downloads worden uitgevoerd}}</translation>
 <translation id="8213449224684199188">Fotomodus geopend</translation>
 <translation id="8214489666383623925">Open bestand...</translation>

@@ -186,7 +186,6 @@ Dodirnite bilo koju riječ da je pretražite. Za fino podešavanje pretraživanj
 <translation id="22320125457191592">Za vas</translation>
 <translation id="2234876718134438132">Sinhronizacija i Googleove usluge</translation>
 <translation id="2239812875700136898">Kontrolirajte priče pomoću dugmeta Opcije za Discover</translation>
-<translation id="2251971221270904886">Kada je uključeno i status je aktivan, Chrome koristi vašu historiju pregledanja iz prethodnih 7 dana da odredi grupu ili "kohortu" u kojoj se nalazite. Oglašivači mogu odabrati oglase za grupu. Vaša historija pregledanja se privatno pohranjuje na vašem uređaju. Ovaj probni period je aktivan samo u <ph name="BEGIN_LINK" />određenim regijama<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Izvoz lozinki…</translation>
 <translation id="2276696007612801991">Prijavite se na svoj Google račun da provjerite lozinke</translation>
 <translation id="2278052315791335171">Brisanjem ove lozinke se neće izbrisati vaš račun na web lokaciji <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> oznaka}one{<ph name="BOOKMARKS_COUNT_MANY" /> oznaka}few{<ph name="BOOKMARKS_COUNT_MANY" /> oznake}other{<ph name="BOOKMARKS_COUNT_MANY" /> oznaka}}</translation>
 <translation id="3062802207422175757">Članci o vašim interesovanjima na Chromeu</translation>
 <translation id="3070005020161560471">Automatski prevodi</translation>
-<translation id="3083531420240576529">Možete vratiti grupu na zadano kad god želite. Potrebno je 7 dana da se odredi vaša grupa.</translation>
 <translation id="3091010850649238832">Prikažite sadržaj međumemorije</translation>
 <translation id="3098745985164956033">Neke slike se šalju Googleu radi poboljšanja opisa</translation>
 <translation id="3114507951000454849">Pročitajte današnje vijesti <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Okruženje zaštićene privatnosti i dalje je u fazi aktivnog razvoja i dostupno
 <translation id="3568688522516854065">Da dobijete svoje kartice s vaših drugih uređaja, prijavite se i uključite sinhronizaciju</translation>
 <translation id="3587482841069643663">Sve</translation>
 <translation id="3587596251841506391">Poboljšajte sigurnost na webu</translation>
-<translation id="3598653140581545904">Koristite anonimni način rada da se prijavite</translation>
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3631987586758005671">Dijeljenje s uređajem <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5964805880140440652">Da dijelite ovu stranicu s drugim uređajem, u postavkama Chromea uključite sinhronizaciju</translation>
 <translation id="5964869237734432770">Zaustavi opise slika</translation>
 <translation id="5979084224081478209">Provjeri lozinke</translation>
-<translation id="5982307838673692400">Otvori anonimnu karticu</translation>
 <translation id="6000066717592683814">Zadrži Google</translation>
 <translation id="6000203700195075278">Prati ponovo</translation>
 <translation id="6002623704405939939">Da obrišete <ph name="BEGIN_LINK1" />pretraživanje<ph name="END_LINK1" /> ili druge oblike historije, posjetite <ph name="BEGIN_LINK2" />Moju aktivnost na Googleu<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6277522088822131679">Došlo je do problema sa štampanjem stranice. Pokušajte ponovo.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Korištenjem Chromea pristajete na <ph name="BEGIN_LINK1" />Googleove Uslove korištenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne Uslove korištenja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Račun</translation>
 <translation id="6297765934698848803">Organizacija koja upravlja vašim uređajem je isključila kameru.</translation>
 <translation id="6301525844455696527">Nemojte zaboraviti svoju listu za čitanje</translation>
 <translation id="6303969859164067831">Odjavite se i isključite sinhronizaciju</translation>
 <translation id="6312687380483398334">Web aplikacije (tiho)</translation>
 <translation id="6316139424528454185">Verzija Androida nije podržana</translation>
 <translation id="6324034347079777476">Sinhronizacija Android sistema je onemogućena</translation>
+<translation id="6324916366299863871">Uredite prečicu</translation>
 <translation id="6324977638108296054">Nije moguće kreirati link za istaknuti tekst</translation>
 <translation id="6324997754869598316">(Kȏd greške <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Dijeli pomoću aplikacije <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6699370405921460408">Googleovi serveri će optimizirati stranice koje posjećujete.</translation>
 <translation id="670498945988402717">Provjereno jučer</translation>
 <translation id="6710213216561001401">Nazad</translation>
-<translation id="671333169801287922">Kada je uključeno, web lokacije mogu koristiti tehnike kojima se štiti privatnost prikazane ovdje u svrhu pružanja sadržaja i usluga. Tehnike uključuju alternative praćenju kretanja između web lokacija. S vremenom se može dodati više probnih perioda.
-
-<ph name="BEGIN_LIST_ITEM1" />Oglašivači i izdavači mogu koristiti FLoC tehniku.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Oglašivači i izdavači mogu proučavati učinkovitost oglasa, a da pri tome ne prate vaše aktivnosti na web lokacijama.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Tajmer aplikacije <ph name="FQDN" /> je istekao. Počet će ponovo sutra.</translation>
 <translation id="6738516213925468394">Vaši podaci su šifrirani vašim <ph name="BEGIN_LINK" />izrazom za pristup sinhroniziranju<ph name="END_LINK" /> u <ph name="TIME" />. Unesite ga da započnete sinhronizaciju.</translation>
 <translation id="6738867403308150051">Preuzimanje…</translation>
@@ -922,9 +913,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6900532703269623216">Poboljšana zaštita</translation>
 <translation id="6903907808598579934">Uključi sinhronizaciju</translation>
 <translation id="6929699136511445623">Omogući sinhronizaciju Android sistema</translation>
-<translation id="6941901516114974832">U anonimnom načinu rada, vašu aktivnost <ph name="BEGIN_BOLD1" />će možda i dalje moći vidjeti<ph name="END_BOLD1" /> web lokacije koje posjetite, vaš poslodavac ili škola te pružalac internet usluga.
-
-Podaci iz vaših anonimnih sesija će se obrisati iz Chromea kada <ph name="BEGIN_BOLD2" />zatvorite sve anonimne kartice<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Promijenite zadanu lokaciju za preuzimanje bilo kada koristeći opciju Postavke u meniju</translation>
 <translation id="694267552845942083">Trenutno prilagođavate postavke sinhronizacije. Da završite uključivanje sinhronizacije, dodirnite dugme Potvrdi pri dnu ekrana. Idi nagore</translation>
 <translation id="6945221475159498467">Odaberi</translation>
@@ -1088,9 +1076,6 @@ Podaci iz vaših anonimnih sesija će se obrisati iz Chromea kada <ph name="BEGI
 <translation id="7971136598759319605">Aktivan prije 1 dan</translation>
 <translation id="7975379999046275268">Pregledaj stranicu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Prethodno učitaj stranice za brže pregledavanje i pretraživanje</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Okruženje zaštićene privatnosti<ph name="END_LINK" /> predstavlja trajnu inicijativu da se razviju nove tehnologije koje će vas zaštititi od mehanizama za praćenje, a pri tome će očuvati otvoreni web.
-
-Probni periodi Okruženja zaštićene privatnosti i dalje su u fazi aktivnog razvoja i dostupni su u odabranim područjima. Za sada web lokacije mogu isprobati Okruženje zaštićene privatnosti dok pri tome nastavljaju koristiti trenutne web tehnologije kao što su kolačići trećih strana.</translation>
 <translation id="7986497153528221272">Da pogledate lozinke, najprije postavite zaključavanje ekrana na uređaju</translation>
 <translation id="7998918019931843664">Ponovono otvaranje zatvorenih kartica</translation>
 <translation id="8004582292198964060">Preglednik</translation>

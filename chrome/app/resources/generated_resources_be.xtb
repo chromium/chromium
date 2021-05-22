@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Адміністратар задаў стандартную тэму, якую нельга змяняць.</translation>
 <translation id="1163931534039071049">&amp;Прагляд крыніцы фрэйма</translation>
 <translation id="1164891049599601209">Уведзены на сайце, вядомым падманнымі паводзінамі</translation>
-<translation id="1164899421101904659">Увядзіце PUK-код</translation>
 <translation id="1165039591588034296">Памылка</translation>
 <translation id="1166212789817575481">Закрыць укладкі справа</translation>
-<translation id="116624467691206283">Няправільны PUK-код. У вас засталася 1 спроба.</translation>
 <translation id="1168020859489941584">Адкрыецца праз <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Серверы даменных імён Google</translation>
 <translation id="1170288591054440704">Пытацца, калі сайт запытвае дазвол выкарыстоўваць шрыфты, усталяваныя на прыладзе</translation>
@@ -1201,7 +1199,6 @@
 <translation id="2263189956353037928">Выйсці і зноў увайсці</translation>
 <translation id="2263371730707937087">Хуткасць абнаўлення экрана</translation>
 <translation id="2263679799334060788">Ваш водгук дапаможа палепшыць Google Cast, і мы цэнім гэта. Каб атрымаць дапамогу па пошуку і выпраўленні непаладак з Cast, наведайце<ph name="BEGIN_LINK" />даведачны цэнтр<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Няправільны PUK-код. Засталося спроб: <ph name="RETRIES" />. Калі ўсе яны акажуцца няўдалымі, для ўзнаўлення доступу да сеткі вам прыйдзецца звязацца з аператарам.</translation>
 <translation id="22665427234727190">Пытацца, калі сайт запытвае доступ да прылад Bluetooth (рэкамендуецца)</translation>
 <translation id="2266957463645820432">IPP-over-USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Абмен данымі з прыладамі ў дамене <ph name="DOMAIN" /></translation>
@@ -1485,7 +1482,6 @@
 <translation id="2553440850688409052">Схаваць гэту ўбудову</translation>
 <translation id="2554553592469060349">Выбраны файл занадта вялікі (максімальны памер: 3 МБ).</translation>
 <translation id="2558896001721082624">Заўсёды паказваць параметры спецыяльных магчымасцей у сістэмным меню</translation>
-<translation id="2562743677925229011">Не выкананы ўваход у <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Выкананне JavaScript праз AppleScript выключана. Каб уключыць яго, перайдзіце з панэлі меню ў "Прагляд &gt; Распрацоўшчык &gt; Дазволіць JavaScript з падзей Apple". Падрабязную інфармацыю глядзіце тут: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Палепшаная праверка правапісу</translation>
 <translation id="2568774940984945469">Кантэйнер панэлі інфармацыі</translation>
@@ -2398,7 +2394,6 @@
 <translation id="3569407787324516067">Экранная застаўка</translation>
 <translation id="3569682580018832495">Сайт <ph name="ORIGIN" /> можа праглядаць наступныя файлы і папкі</translation>
 <translation id="3571734092741541777">Наладзіць</translation>
-<translation id="3574210789297084292">увайсці</translation>
 <translation id="3575121482199441727">Дазволіць для гэтага сайта</translation>
 <translation id="3576324189521867626">Усталявана</translation>
 <translation id="3578594933904494462">Змесціва гэтай укладкі абагульваецца.</translation>
@@ -2849,7 +2844,6 @@
 <translation id="4022426551683927403">&amp;Дадаць у слоўнік</translation>
 <translation id="4023146161712577481">Вызначаецца канфігурацыя прылады.</translation>
 <translation id="4025039777635956441">Выключыць гук на выбраным сайце</translation>
-<translation id="4027804175521224372">(Карыстайцеся ўсімі магчымасцямі – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Дадаць метады ўводу</translation>
 <translation id="4029556917477724407">Вярнуцца назад са старонкі "<ph name="PAGE_TITLE" />"</translation>
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
@@ -3793,7 +3787,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Цвёрды дыск поўны.  Захавайце спампоўку ў іншае месца або вызваліце месца на цвёрдым дыску.</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
-<translation id="5125167430897995218">Няправільны PUK-код. У вас засталася 1 спроба. Калі яна акажацца няўдалай, для ўзнаўлення доступу да сеткі вам прыйдзецца звязацца з аператарам.</translation>
 <translation id="5125751979347152379">Няправільны URL-адрас.</translation>
 <translation id="5126611267288187364">Прагляд змяненняў</translation>
 <translation id="5127620150973591153">Абаронены ідэнтыфікатар злучэння: <ph name="TOKEN" /></translation>
@@ -4041,7 +4034,6 @@
 <translation id="540296380408672091">Заўсёды блакіраваць файлы cookie ад хоста <ph name="HOST" /></translation>
 <translation id="540495485885201800">Памяняць месцамі з папярэднім</translation>
 <translation id="5405146885510277940">Скінуць налады</translation>
-<translation id="5407119150486192764">Увядзіце 8-значны PUK-код, атрыманы ад аператара</translation>
 <translation id="5407167491482639988">Словы немагчыма разабраць</translation>
 <translation id="5408750356094797285">Маштаб: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">З Уліковага запісу Google</translation>
@@ -6606,7 +6598,6 @@
 <translation id="8206745257863499010">Блюзавы</translation>
 <translation id="8206859287963243715">Мабільная сетка</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Новае апавяшчэнне}one{# новае апавяшчэнне}few{# новыя апавяшчэнні}many{# новых апавяшчэнняў}other{# новага апавяшчэння}}</translation>
-<translation id="8211551284753798479">Няправільны PUK-код. Засталося спроб: <ph name="RETRIES" />.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Ажыццяўляецца спампоўка}one{Ажыццяўляюцца спампоўкі}few{Ажыццяўляюцца спампоўкі}many{Ажыццяўляюцца спампоўкі}other{Ажыццяўляюцца спампоўкі}}</translation>
 <translation id="8213449224684199188">Уключаны рэжым фота</translation>
 <translation id="8214489666383623925">Адкрыць файл...</translation>

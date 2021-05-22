@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Skrbnik je nastavil privzeto temo, ki je ni mogoče spremeniti.</translation>
 <translation id="1163931534039071049">&amp;Ogled vira okvirja</translation>
 <translation id="1164891049599601209">Vneseno na zavajajočem spletnem mestu</translation>
-<translation id="1164899421101904659">Vnos kode za odklepanje kode PIN</translation>
 <translation id="1165039591588034296">Napaka</translation>
 <translation id="1166212789817575481">Zapri zavihke na desni</translation>
-<translation id="116624467691206283">Neveljavna koda PUK. Imate še 1 poskus.</translation>
 <translation id="1168020859489941584">Odpiranje čez <ph name="TIME_REMAINING" /> ...</translation>
 <translation id="1168100932582989117">Googlovi imenski strežniki</translation>
 <translation id="1170288591054440704">Vprašaj, ko želi spletno mesto uporabiti pisave, nameščene v napravi</translation>
@@ -1216,7 +1214,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
     Če želite pomoč pri odpravljanju težav s predvajanjem, se obrnite na
     <ph name="BEGIN_LINK" />
     center za pomoč<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Napačna koda PUK. Imate še toliko poskusov: <ph name="RETRIES" />. Nato se boste morali obrniti na operaterja, če boste želeli znova dobiti dostop do omrežja.</translation>
 <translation id="22665427234727190">Vprašaj, ko želi spletno mesto dostopati do naprav Bluetooth (priporočeno)</translation>
 <translation id="2266957463645820432">IPP prek USB-ja (IPPUSB)</translation>
 <translation id="2270450558902169558">Izmenjava podatkov z vsemi napravami v domeni: <ph name="DOMAIN" /></translation>
@@ -1500,7 +1497,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2553440850688409052">Skrij ta vtičnik</translation>
 <translation id="2554553592469060349">Izbrana datoteka je prevelika (največja velikost: 3 MB).</translation>
 <translation id="2558896001721082624">Vedno pokaži možnosti funkcij za ljudi s posebnimi potrebami v sistemskem meniju</translation>
-<translation id="2562743677925229011">Niste prijavljeni v <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Izvajanje JavaScripta z AppleScriptom je izklopljeno. Če ga želite vklopiti, v menijski vrstici odprite »Ogled &gt; Razvijalec &gt; Dovoli JavaScript v Applovih dogodkih«. Če želite več informacij: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Izboljšano preverjanje črkovanja</translation>
 <translation id="2568774940984945469">Vsebnik informacijske vrstice</translation>
@@ -2414,7 +2410,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3569407787324516067">Ohranjevalnik zaslona</translation>
 <translation id="3569682580018832495">Spletno mesto <ph name="ORIGIN" /> si lahko ogleda te datoteke in mape</translation>
 <translation id="3571734092741541777">Nastavi</translation>
-<translation id="3574210789297084292">prijava</translation>
 <translation id="3575121482199441727">Dovoli za to spletno mesto</translation>
 <translation id="3576324189521867626">Uspešno nameščeno</translation>
 <translation id="3578594933904494462">Vsebina tega zavihka je v skupni rabi.</translation>
@@ -2865,7 +2860,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4022426551683927403">&amp;Dodaj v slovar</translation>
 <translation id="4023146161712577481">Ugotavljanje konfiguracije naprave.</translation>
 <translation id="4025039777635956441">Izklopi zvok na izbranem spletnem mestu</translation>
-<translation id="4027804175521224372">(Zamujate dogajanje – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Dodaj načine vnosa</translation>
 <translation id="4029556917477724407">Nazaj s strani <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofon je dovoljen</translation>
@@ -3812,7 +3806,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Trdi disk je poln. Shranite na drugo mesto ali sprostite prostor na trdem disku.</translation>
 <translation id="5123433949759960244">Košarkarska žoga</translation>
-<translation id="5125167430897995218">Napačna koda PUK. Imate še 1 poskus. Nato se boste morali obrniti na operaterja, če boste želeli znova dobiti dostop do omrežja.</translation>
 <translation id="5125751979347152379">Neveljaven spletni naslov.</translation>
 <translation id="5126611267288187364">Ogled sprememb</translation>
 <translation id="5127620150973591153">ID varne povezave: <ph name="TOKEN" /></translation>
@@ -4060,7 +4053,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="540296380408672091">Vedno blokiraj piškotke na <ph name="HOST" /></translation>
 <translation id="540495485885201800">Zamenjaj s prejšnjim</translation>
 <translation id="5405146885510277940">Ponastavitev nastavitev</translation>
-<translation id="5407119150486192764">Vnesite 8-mestno kodo PIN za odklepanje, ki jo dobite od operaterja</translation>
 <translation id="5407167491482639988">Nerazumljivo</translation>
 <translation id="5408750356094797285">Povečava: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Iz računa Google</translation>
@@ -6631,7 +6623,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8206745257863499010">Glasbenik</translation>
 <translation id="8206859287963243715">Prenosni</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Novo obvestilo}one{# novo obvestilo}two{# novi obvestili}few{# nova obvestila}other{# novih obvestil}}</translation>
-<translation id="8211551284753798479">Neveljavna koda PUK. Imate še toliko poskusov: <ph name="RETRIES" />.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Poteka prenos}one{Poteka prenos}two{Potekata prenosa}few{Potekajo prenosi}other{Potekajo prenosi}}</translation>
 <translation id="8213449224684199188">Izbran je način za fotografije</translation>
 <translation id="8214489666383623925">Odpri datoteko ...</translation>

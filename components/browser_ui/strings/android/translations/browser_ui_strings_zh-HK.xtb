@@ -89,11 +89,11 @@
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3277252321222022663">允許網站存取感應器 (建議)</translation>
 <translation id="3295602654194328831">隱藏資料</translation>
-<translation id="3317660236277031814">你安裝的某個網頁應用程式已變更圖示。</translation>
+<translation id="3317660236277031814">您已安裝的網絡應用程式已變更圖示。</translation>
 <translation id="3328801116991980348">網站資料</translation>
 <translation id="3333961966071413176">所有聯絡人</translation>
 <translation id="3386292677130313581">允許網站存取您的位置前先詢問您 (建議)</translation>
-<translation id="345699454248713913">你安裝的某個網頁應用程式已變更名稱。</translation>
+<translation id="345699454248713913">您已安裝的網絡應用程式已變更名稱。</translation>
 <translation id="3538390592868664640">禁止網站建立您身處環境的 3D 地圖或追蹤攝錄機位置</translation>
 <translation id="3551268116566418498">要退出無痕模式嗎？</translation>
 <translation id="3586500876634962664">使用攝錄機和麥克風</translation>
@@ -118,7 +118,7 @@
 <translation id="4200726100658658164">開啟位置設定</translation>
 <translation id="4226663524361240545">裝置會在收到通知時震動</translation>
 <translation id="4259722352634471385">瀏覽網址被封鎖：<ph name="URL" /></translation>
-<translation id="4277239631747669329">你安裝的某個網頁應用程式已變更名稱和圖示。</translation>
+<translation id="4277239631747669329">您已安裝的網絡應用程式已變更名稱和圖示。</translation>
 <translation id="4278390842282768270">已允許</translation>
 <translation id="429312253194641664">網站正在播放媒體</translation>
 <translation id="42981349822642051">展開</translation>
@@ -199,7 +199,7 @@
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6206551242102657620">連線安全。網站資料</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />選項</translation>
-<translation id="6260852843601447737">關閉並檢舉濫用情形</translation>
+<translation id="6260852843601447737">關閉並報告濫用情況</translation>
 <translation id="6262279340360821358">已封鎖「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="6270391203985052864">網站將可以要求向您傳送通知</translation>
 <translation id="6295158916970320988">所有網站</translation>

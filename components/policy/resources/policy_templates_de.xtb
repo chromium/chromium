@@ -1084,13 +1084,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2448315169529769573">Wenn die Richtlinie aktiviert ist, meldet <ph name="PRODUCT_OS_NAME" /> Nutzungsdaten und Fehlerberichte, inklusive Absturzberichte, an Google. Ist die Richtlinie deaktiviert, werden Nutzungsdaten und Fehlerberichte nicht gemeldet.
 
        Ist sie nicht konfiguriert, werden Nutzungsdaten und Fehlerberichte nur für verwaltete Geräte gemeldet.</translation>
-<translation id="2449263772062368618">Konfiguriert eine Liste von Browserdatentypen, die beim Schließen des Browsers gelöscht werden sollen.
-      Die folgenden Datentypen sind verfügbar: Browserverlauf (<ph name="DATA_TYPE_BROWSING_HISTORY" />), Downloadverlauf (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), Cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), Cache <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, die Funktion „Automatisches Ausfüllen“ (<ph name="DATA_TYPE_AUTOFILL" />), Passwörter (<ph name="DATA_TYPE_PASSWORD" />), Website-Einstellungen(<ph name="DATA_TYPE_SITE_SETTINGS" />) und Daten von gehosteten Apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />).
-      Diese Richtlinie hat keinen Vorrang vor <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-      Laut dieser Richtlinie muss die Richtlinie <ph name="SYNC_DISABLED_POLICY_NAME" /> auf „True“ gesetzt sein. Andernfalls wird sie ignoriert.
-      Wenn diese Richtlinie auf Plattformebene eingestellt wird, muss die Synchronisierung auf Plattformebene deaktiviert werden.
-      Wenn diese Richtlinie auf Nutzerebene eingestellt wird, muss die Synchronisierung für diesen Nutzer deaktiviert werden, damit die Richtlinie wirksam wird.
-      </translation>
 <translation id="244950822854046436">Liste der Einstellungen für den <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> – dieser wird ausgelöst, wenn eine Datei heruntergeladen wird.
 
       Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />“ wird festgelegt, ob der Connector eine Datei beim Download von einer Webseite an den Anbieter senden soll. Die URL dieser Webseite muss mit einem Muster übereinstimmen, das einem „enable“-Muster zugeordnet ist, nicht einem „disable“-Muster.  Der MIME-Typ der Datei muss ebenfalls mit einem Muster übereinstimmen, das einem „enable“-Muster zugeordnet ist, nicht einem „disable“-Muster.
@@ -2100,11 +2093,11 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 
       Sind diese Richtlinien nicht konfiguriert, so können Nutzer ihre eigenen Proxy-Einstellungen wählen.</translation>
 <translation id="3758249152301468420">Entwickler-Tools deaktivieren</translation>
-<translation id="3759650373178711405">Wenn die Richtlinie <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> nicht so konfiguriert ist, dass URLs aus vorherigen Sitzungen wiederhergestellt werden, lässt sich durch die Konfiguration von <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> eine Liste von URL-Mustern erstellen, die angeben, welche Websites Cookies für eine Sitzung setzen dürfen oder nicht.
+<translation id="3759650373178711405">Wenn die Richtlinie <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> nicht so konfiguriert ist, dass URLs aus vorherigen Sitzungen dauerhaft wiederhergestellt werden, lässt sich durch die Konfiguration von <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> eine Liste von URL-Mustern erstellen, die angeben, welche Websites Cookies für eine Sitzung setzen dürfen oder nicht.
 
       Wenn die Richtlinie nicht konfiguriert ist, wird für alle Websites <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> verwendet, sofern diese Einstellung konfiguriert ist. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet. Bei URLs, die nicht zu den angegebenen Mustern gehören, werden ebenfalls die Standardeinstellungen verwendet.
 
-      Selbst wenn keine Richtlinie Vorrang hat, sehen Sie sich <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> und <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> an. Es darf hinsichtlich der URL-Muster keine Konflikte zwischen diesen drei Richtlinien geben.</translation>
+      Weder die Richtlinie mit Standardwerten noch eine der beiden folgenden Richtlinien, d. h. <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> oder <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />,  hat automatisch Vorrang. Es darf nur hinsichtlich der URL-Muster keine Konflikte zwischen diesen drei Richtlinien geben.</translation>
 <translation id="3760148113224469113">Bei Aufforderungen externer Protokolle immer eine Bestätigung des Nutzers erfordern</translation>
 <translation id="3760231600118073732">Aktuelle Sitzung sperren.</translation>
 <translation id="3761222804122755011">WebRTC verwendet nur die Schnittstelle, die mit dem öffentlichen Internet verbunden ist, kann aber über private IP-Adressen eine Verbindung herstellen.</translation>
@@ -3017,13 +3010,6 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Ist die Richtlinie nicht konfiguriert, werden der Liste keine Websites hinzugefügt.
 
       Hinweis: Dieser Liste können auch über die Richtlinie "<ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />" Elemente hinzugefügt werden.</translation>
-<translation id="5065753964276395784">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />".
-
-       Wenn diese Richtlinie festgelegt ist, umgeht <ph name="PRODUCT_NAME" /> alle Proxys für die hier angegebenen Hosts. Diese Richtlinie ist nur dann wirksam, wenn die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" nicht konfiguriert ist und Sie "<ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />" mit "<ph name="PROXY_MODE_POLICY_NAME" />" ausgewählt haben.
-
-       Konfigurieren Sie diese Richtlinie nicht, wenn Sie sich für eine andere Methode zur Festlegung der Proxyrichtlinien entschieden haben.
-
-       Hinweis: Ausführliche Beispiele finden Sie in den Chromium-Projekten ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="5067143124345820993">Zulassungsliste für Nutzer bei der Anmeldung</translation>
 <translation id="5073609397321802133">Wenn diese Richtlinie auf "false" gesetzt ist, können Nutzer auf der "Neuer Tab"-Seite den Hintergrund nicht anpassen. Falls bereits ein benutzerdefinierter Hintergrund vorhanden ist, wird er dauerhaft entfernt, auch wenn die Richtlinie später auf "true" gesetzt wird.
 
@@ -3098,11 +3084,11 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
           Wenn Sie diese Einstellung aktivieren, werden alle Proxyoptionen, die über die Befehlszeile eingegeben werden, von <ph name="PRODUCT_NAME" /> ignoriert.
 
           Wird die Richtlinie nicht konfiguriert, so können Nutzer ihre eigenen Proxyeinstellungen vornehmen.</translation>
-<translation id="5172841243186654432">Wenn die Richtlinie <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> nicht so konfiguriert ist, dass URLs aus vorherigen Sitzungen wiederhergestellt werden, lässt sich durch die Konfiguration von <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> eine Liste von URL-Mustern erstellen, die angeben, welche Websites Cookies für eine Sitzung setzen dürfen oder nicht.
+<translation id="5172841243186654432">Wenn die Richtlinie <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> nicht so konfiguriert ist, dass URLs aus vorherigen Sitzungen dauerhaft wiederhergestellt werden, lässt sich durch die Konfiguration von <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> eine Liste von URL-Mustern erstellen, die angeben, welche Websites Cookies für eine Sitzung setzen dürfen oder nicht.
 
       Wenn die Richtlinie nicht konfiguriert ist, wird für alle Websites <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> verwendet, sofern diese Einstellung konfiguriert ist. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet. Bei URLs, die nicht zu den angegebenen Mustern gehören, werden ebenfalls die Standardeinstellungen verwendet.
 
-      Selbst wenn keine Richtlinie Vorrang hat, sehen Sie sich <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> und <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> an. Es darf hinsichtlich der URL-Muster keine Konflikte zwischen diesen drei Richtlinien geben.
+      Weder die Richtlinie mit Standardwerten noch eine der beiden folgenden Richtlinien, d. h. <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> oder <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />,  hat automatisch Vorrang. Es darf nur hinsichtlich der URL-Muster keine Konflikte zwischen diesen drei Richtlinien geben.
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="5177260184597743704">Konfigurationsrichtlinie für den Chrome Enterprise Connector "OnSecurityEvent"</translation>
@@ -3179,26 +3165,6 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
       Ist diese Richtlinie auf "False" gesetzt oder nicht konfiguriert, wird Unified Desktop deaktiviert und kann vom Nutzer nicht aktiviert werden.</translation>
 <translation id="5255162913209987122">Empfehlenswert</translation>
 <translation id="5257395339965216304">Daten für gehostete Apps</translation>
-<translation id="5264066441613395613">Durch Festlegen der Richtlinie werden die Proxyeinstellungen für Chrome- und ARC-Apps so konfiguriert, dass alle Proxyoptionen, die über die Befehlszeile eingegeben werden, ignoriert werden.
-
-       Wird die Richtlinie nicht konfiguriert, können Nutzer die Proxyeinstellungen auswählen.
-
-       Durch Festlegen der Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ werden die folgenden Felder übernommen:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> legt fest, welcher Proxyserver von Chrome verwendet werden soll, und verhindert, dass Nutzer die Proxyeinstellungen ändern
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, die URL zu einer PAC-Proxydatei
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, die URL des Proxyservers
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, eine Liste mit Proxy-Hosts, die von <ph name="PRODUCT_NAME" /> umgangen werden
-
-       Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zugunsten des Felds „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ eingestellt, mit dem Sie angeben können, welcher Proxyserver von Chrome verwendet werden soll, und verhindern können, dass Nutzer die Proxyeinstellungen ändern.
-
-        Für „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ können folgende Werte festgelegt werden:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" /> – kein Proxy wird verwendet und alle anderen Felder werden ignoriert.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> – der Proxy des Systems wird verwendet und alle anderen Felder werden ignoriert.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> – alle anderen Felder werden ignoriert.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" /> – die Felder „<ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />“ und „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“ werden verwendet.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> – die Felder „<ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />“ und „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“ werden verwendet.
-
-      Hinweis: Ausführliche Beispiele finden Sie in den Chromium-Projekten unter https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett.</translation>
 <translation id="5266173014392157048">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
 
       Wenn diese Richtlinie konfiguriert ist, werden Server zugewiesen, an die <ph name="PRODUCT_NAME" /> Anmeldedaten von Nutzern weiterleiten kann. Trennen Sie mehrere Servernamen durch Kommas. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
@@ -6276,7 +6242,7 @@ Auf <ph name="PRODUCT_OS_NAME" />-Version 75 und höher unterstützt. Bei älte
       Hinweis: Wenn interne „chrome://*“-URLs blockiert werden, können unerwartete Fehler auftreten.</translation>
 <translation id="957778406002650056">URL, über die das <ph name="PLUGIN_VM_NAME" />-Image heruntergeladen werden kann.</translation>
 <translation id="974349541138387272">Die URI-Vorlage des gewünschten DoH-Resolvers (DNS over HTTPS) angeben</translation>
-<translation id="980218166381006412">Wenn diese Richtlinie aktiviert ist, wird der Hintergrundmodus aktiviert. Im Hintergrundmodus beginnt bei der Anmeldung im Betriebssystem ein <ph name="PRODUCT_NAME" />-Prozess, der bis zum Schließen des letzten Browserfensters ausgeführt wird. So bleiben Hintergrund-Apps und die Browsersitzung aktiv. Der Hintergrundprozess kann jederzeit über ein entsprechendes Symbol in der Taskleiste beendet werden.
+<translation id="980218166381006412">Wenn diese Richtlinie aktiviert ist, wird der Hintergrundmodus aktiviert. Im Hintergrundmodus beginnt bei der Anmeldung im Betriebssystem ein <ph name="PRODUCT_NAME" />-Prozess, der bis zum Schließen des letzten Browserfensters ausgeführt wird. Dadurch bleiben Hintergrund-Apps und die Browsersitzung aktiv. Der Hintergrundprozess kann jederzeit über ein entsprechendes Symbol in der Taskleiste beendet werden.
 
       Ist die Richtlinie deaktiviert, wird der Hintergrundmodus deaktiviert.
 

@@ -157,10 +157,8 @@
 <translation id="116173250649946226">သင့်စီမံခန့်ခွဲသူသည် ပြောင်း၍မရသော မူရင်းအပြင်အဆင်ကို သတ်မှတ်ထားပါသည်။</translation>
 <translation id="1163931534039071049">ဖရိန် အရင်းမြစ်အား ကြည့်ရန်</translation>
 <translation id="1164891049599601209">လှည့်စားတတ်သော ဝဘ်ဆိုက်တွင် ထည့်ခဲ့သည်</translation>
-<translation id="1164899421101904659">သော့ဖွင့်ရန် ပင်ကုဒ် (PUK) ကို ထည့်ပါ</translation>
 <translation id="1165039591588034296">အမှား</translation>
 <translation id="1166212789817575481">ညာဘက်ရှိ တဲဘ်များကို ပိတ်ရန်</translation>
-<translation id="116624467691206283">PUK မမှန်ပါ။ သင့်တွင် ကြိုးစားခွင့် 1 ကြိမ် ကျန်သည်။</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> အကြာမှာ ဖွင့်ပေးမည်...</translation>
 <translation id="1168100932582989117">Google အမည် ဆာဗာများ</translation>
 <translation id="1170288591054440704">ဝဘ်ဆိုက်တစ်ခုက သင့်စက်ပေါ်တွင်ထည့်သွင်းထားသော ဖောင့်များကို အသုံးပြုလိုသည့်အခါ မေးသည်</translation>
@@ -1212,7 +1210,6 @@
     ကာစ်လုပ်ခြင်းနှင့် ပတ်သက်သည့် ပြဿနာများကို ကူညီအဖြေရှာရန်
     <ph name="BEGIN_LINK" />
     ကူညီရေးဌာန<ph name="END_LINK" /> သို့ သွားပါ။</translation>
-<translation id="2265889263013046172">PUK မမှန်ပါ။ ကွန်ရက်သုံးခွင့်ပြန်ရရှိရန် သင်၏ဝန်ဆောင်မှုပေးသူကို မဆက်သွယ်မီ သင့်တွင် ကြိုးစားခွင့် <ph name="RETRIES" /> ကြိမ် ကျန်သည်။</translation>
 <translation id="22665427234727190">ဝဘ်ဆိုက်က ဘလူးတုသ်စက်များကို အသုံးပြုလိုသည့်အခါ ခွင့်တောင်းရန် (အကြံပြုထားသည်)</translation>
 <translation id="2266957463645820432">USB မှတစ်ဆင့် IPP (IPPUSB)</translation>
 <translation id="2270450558902169558">ဒိုမိန်း <ph name="DOMAIN" /> တွင် မည်သည့်စက်ကိရိယာဖြင့်မဆို ဒေတာများ အလဲအလှယ်ပြုရန်</translation>
@@ -1496,7 +1493,6 @@
 <translation id="2553440850688409052">ဤပလတ်အင်အား ဝှက်ထားရန်</translation>
 <translation id="2554553592469060349">ရွေးထားသည့် ဖိုင်မှာ ကြီးလွန်း(အများဆုံး ဆိုက်: 3mb)။</translation>
 <translation id="2558896001721082624">စနစ်မီနူးတွင် အများသုံးစွဲနိုင်မှု ရွေးချယ်စရာများကို အမြဲပြရန်</translation>
-<translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" />သို့ လက်မှတ်ထိုး မဝင်ထား</translation>
 <translation id="2564520396658920462">JavaScript ကို AppleScript မှတစ်ဆင့် ဖွင့်ခြင်းကို ပိတ်ထားသည်။ ၎င်းကို ဖွင့်ရန် မီနူးဘားမှနေ၍ မြင်ကွင်း &gt; ဆော့ဖ်ဝဲအင်ဂျင်နီယာ &gt; 'Apple ပွဲများ မှ JavaScript ကို ခွင့်ပြုပါ' သို့သွားပါ။ နောက်ထပ် အချက်အလက်များအတွက်− https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">ပိုမိုကောင်းမွန်အောင် ပြုလုပ်ထားသည့် စာလုံးပေါင်းစစ်ဆေးမှု</translation>
 <translation id="2568774940984945469">အချက်လက်ဘား ကွန်တိန်နာ</translation>
@@ -2410,7 +2406,6 @@
 <translation id="3569407787324516067">ဖန်သားပြင်နားချိန်</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> သည် အောက်ပါဖိုင်နှင့် ဖိုင်တွဲများကို ကြည့်နိုင်သည်</translation>
 <translation id="3571734092741541777">စဖွင့်သတ်မှတ်ရန်</translation>
-<translation id="3574210789297084292">လက်မှတ်ထိုး ဝင်ရန်</translation>
 <translation id="3575121482199441727">ဤဝဘ်ဆိုက်အတွက် ခွင့်ပြုရန်</translation>
 <translation id="3576324189521867626">အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ</translation>
 <translation id="3578594933904494462">ဤတဲပ်အကြောင်းအရာအား ဝေမျှထားသည်။</translation>
@@ -2860,7 +2855,6 @@
 <translation id="4022426551683927403">&amp;အဘိဓာန်သို့ ထည့်ရန်</translation>
 <translation id="4023146161712577481">ကိရိယာ၏ စီစဉ် ဖွဲ့စည်းမှုကို စူးစမ်းနေ</translation>
 <translation id="4025039777635956441">ရွေးထားသောဝဘ်ဆိုက် ဖျောက်ထားရန်</translation>
-<translation id="4027804175521224372">(သင် လက်လွှတ်သွားသည်များ—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">လက်ကွက်များ ထည့်ရန်</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> စာမျက်နှာမှ နောက်ပြန်သွားရန်</translation>
 <translation id="4031179711345676612">မိုက်ခရိုဖုန်းကို သုံးခွင့်ပြုထားသည်</translation>
@@ -3807,7 +3801,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">သင့်ဟာ့ဒစ် ပြည့်ပါပြီ။ ကျေးဇူးပြု၍ အခြားတည်နေရာတစ်ခုသို့ သိမ်းပါ သို့မဟုတ် ဟာ့ဒစ်ပေါ်တွင် နေရာများရန် ပြုလုပ်ပါ။</translation>
 <translation id="5123433949759960244">ဘတ်စကက်ဘော</translation>
-<translation id="5125167430897995218">PUK မမှန်ပါ။ ကွန်ရက်သုံးခွင့်ပြန်ရရှိရန် သင်၏ဝန်ဆောင်မှုပေးသူကို မဆက်သွယ်မီ သင့်တွင် ကြိုးစားခွင့် 1 ကြိမ် ကျန်သည်။</translation>
 <translation id="5125751979347152379">URL မမှန်</translation>
 <translation id="5126611267288187364">ပြောင်းလဲမှုများကို ကြည့်ရန်</translation>
 <translation id="5127620150973591153">လုံခြုံသော ချိတ်ဆက်မှု ID−<ph name="TOKEN" /></translation>
@@ -4055,7 +4048,6 @@
 <translation id="540296380408672091"><ph name="HOST" /> ရှိ ကူကီးများအား အမြဲပိတ်ထားပါ</translation>
 <translation id="540495485885201800">ယခင်တစ်ခုဖြင့် လဲလှယ်ရန်</translation>
 <translation id="5405146885510277940">ဆက်တင်များကို ပြင်ဆင်သတ်မှတ်ခြင်း</translation>
-<translation id="5407119150486192764">သင့်ဝန်ဆောင်မှုပေးသူက ထုတ်ပေးသော ဂဏန်း ၈ လုံးပါ ‘ပင်နံပါတ် ပြန်ဖွင့်သည့်ကီး’ ထည့်ပါ</translation>
 <translation id="5407167491482639988">ဗလုံးဗထွေး</translation>
 <translation id="5408750356094797285">ဇူးမ် − <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">သင်၏ Google Account မှ</translation>
@@ -6621,7 +6613,6 @@
 <translation id="8206745257863499010">အပြာရောင်ဂီတသင်္ကေတ</translation>
 <translation id="8206859287963243715">ဆဲလ်လူလာ</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{အကြောင်းကြားချက်အသစ်}other{အကြောင်းကြားချက်အသစ် # ခု}}</translation>
-<translation id="8211551284753798479">PUK မမှန်ပါ။ သင့်တွင် ကြိုးစားခွင့် <ph name="RETRIES" /> ကြိမ် ကျန်သည်။</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ဒေါင်းလုဒ် လုပ်နေဆဲဖြစ်သည်}other{ဒေါင်းလုဒ်များ လုပ်နေဆဲဖြစ်သည်}}</translation>
 <translation id="8213449224684199188">ဓာတ်ပုံမုဒ်သို့ ပြောင်းလိုက်ပါပြီ</translation>
 <translation id="8214489666383623925">ဖိုင် ဖွင့်ရန်...</translation>

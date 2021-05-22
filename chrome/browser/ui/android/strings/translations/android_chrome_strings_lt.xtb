@@ -186,7 +186,6 @@ Norėdami ieškoti, palieskite bet kurį žodį. Jei norite patikslinti paiešk�
 <translation id="22320125457191592">Jums</translation>
 <translation id="2234876718134438132">Sinchron. ir „Google“ paslaugos</translation>
 <translation id="2239812875700136898">Valdykite pasakojimus naudodami mygtuką „Discover“ parinktys“</translation>
-<translation id="2251971221270904886">Kai technologija įjungta, o būsena aktyvi, „Chrome“ naudoja septynių dienų naršymo istoriją, kad nustatytų grupę, kuriai priklausote. Reklamuotojai gali pasirinkti grupei skirtus skelbimus. Jūsų naršymo istorija saugoma privačiai įrenginyje. Ši bandomoji versija aktyvi tik <ph name="BEGIN_LINK" />kai kuriuose regionuose<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Eksportuoti slaptažodžius…</translation>
 <translation id="2276696007612801991">Prisijunkite prie „Google“ paskyros, kad patikrintumėte slaptažodžius</translation>
 <translation id="2278052315791335171">Ištrynus šį slaptažodį jūsų paskyra svetainėje <ph name="SITE" /> nebus ištrinta</translation>
@@ -320,7 +319,6 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> žymė}one{<ph name="BOOKMARKS_COUNT_MANY" /> žymė}few{<ph name="BOOKMARKS_COUNT_MANY" /> žymės}many{<ph name="BOOKMARKS_COUNT_MANY" /> žymės}other{<ph name="BOOKMARKS_COUNT_MANY" /> žymių}}</translation>
 <translation id="3062802207422175757">Su jūsų pomėgiais susiję straipsniai naršyklėje „Chrome“</translation>
 <translation id="3070005020161560471">Versti automatiškai</translation>
-<translation id="3083531420240576529">Grupę bet kuriuo metu galite nustatyti iš naujo. Gali praeiti septynios dienos, kol grupė bus nustatyta.</translation>
 <translation id="3091010850649238832">Rodyti iškarpinės turinį</translation>
 <translation id="3098745985164956033">Vaizdai siunčiami „Google“ norint patobulinti jums teikiamus aprašus</translation>
 <translation id="3114507951000454849">Skaitykite šiandienos naujienas <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privatumo „sandbox“ (smėlio dėžė) vis dar intensyviai kuriama ir pasieki
 <translation id="3568688522516854065">Jei norite pasiekti skirtukus iš kitų įrenginių, prisijunkite ir įjunkite sinchronizavimą</translation>
 <translation id="3587482841069643663">Visi</translation>
 <translation id="3587596251841506391">Padėti gerinti saugą žiniatinkl.</translation>
-<translation id="3598653140581545904">Prisijunkite naudodami inkognito režimą</translation>
 <translation id="3602290021589620013">Peržiūra</translation>
 <translation id="3616113530831147358">Garsas</translation>
 <translation id="3631987586758005671">Bendrinama su „<ph name="DEVICE_NAME" />“</translation>
@@ -764,7 +761,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5964805880140440652">Jei norite bendrinti šį puslapį su kitu įrenginiu, įjunkite sinchronizavimą „Chrome“ nustatymuose</translation>
 <translation id="5964869237734432770">Stabdyti vaizdų aprašus</translation>
 <translation id="5979084224081478209">Patikrinti slaptažodžius</translation>
-<translation id="5982307838673692400">Atidaryti inkognito skirtuką</translation>
 <translation id="6000066717592683814">Palikti „Google“</translation>
 <translation id="6000203700195075278">Stebėti iš naujo</translation>
 <translation id="6002623704405939939">Norėdami išvalyti <ph name="BEGIN_LINK1" />paieškos<ph name="END_LINK1" /> ar kitos veiklos istoriją, apsilankykite puslapyje <ph name="BEGIN_LINK2" />„Mano „Google“ veikla“<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6277522088822131679">Spausdinant puslapį kilo problema. Bandykite dar kartą.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Naudodami „Chrome“ sutinkate su <ph name="BEGIN_LINK1" />„Google“ paslaugų teikimo sąlygomis<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />„Google Chrome“ bei „Chrome“ OS papildomomis paslaugų teikimo sąlygomis<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Paskyra</translation>
 <translation id="6297765934698848803">Jūsų įrenginį tvarkanti organizacija išjungė kamerą.</translation>
 <translation id="6301525844455696527">Skaitymo sąrašo peržiūra</translation>
 <translation id="6303969859164067831">Atsijungti ir išjungti sinchronizavimą</translation>
 <translation id="6312687380483398334">Žiniatinklio programos (nutildyta)</translation>
 <translation id="6316139424528454185">„Android“ versija nepalaikoma</translation>
 <translation id="6324034347079777476">„Android“ sistemos sinchronizavimas išjungtas</translation>
+<translation id="6324916366299863871">Redaguoti spartųjį klavišą</translation>
 <translation id="6324977638108296054">Nepavyko sukurti nuorodos į paryškintą tekstą</translation>
 <translation id="6324997754869598316">(Klaida: <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Bendrinti per „<ph name="APPLICATION" />“</translation>
@@ -893,11 +889,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6699370405921460408">„Google“ serveriai optimizuos puslapius, kuriuose lankotės.</translation>
 <translation id="670498945988402717">Tikrinta vakar</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
-<translation id="671333169801287922">Įjungus svetainėse galima naudoti čia nurodytus privatumą užtikrinančius metodus turiniui ir paslaugoms teikti. Įtraukiami alternatyvūs veiklos skirtingose svetainėse stebėjimo metodai. Laikui bėgant gali būti pridėta daugiau bandomųjų versijų.
-
-<ph name="BEGIN_LIST_ITEM1" />Reklamuotojai ir leidėjai gali naudoti „FLoC“ metodą.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklamuotojai ir leidėjai gali tyrinėti skelbimų efektyvumą nestebėdami jūsų svetainėse.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117"><ph name="FQDN" /> laikmatis sustojo. Jis vėl bus paleistas rytoj.</translation>
 <translation id="6738516213925468394"><ph name="TIME" /> duomenys buvo užšifruoti naudojant <ph name="BEGIN_LINK" />sinchronizavimo slaptafrazę<ph name="END_LINK" />. Įveskite ją, kad pradėtumėte sinchronizuoti.</translation>
 <translation id="6738867403308150051">Atsisiunčiama...</translation>
@@ -922,9 +913,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6900532703269623216">Sustiprinta apsauga</translation>
 <translation id="6903907808598579934">Įjungti sinchronizavimą</translation>
 <translation id="6929699136511445623">Įgalinti „Android“ sistemos sinchronizavimą</translation>
-<translation id="6941901516114974832">Naudojant inkognito režimą veikla <ph name="BEGIN_BOLD1" />vis tiek gali būti matoma<ph name="END_BOLD1" /> svetainėms, kuriose lankotės, jūsų darbdaviui ar ugdymo įstaigai bei interneto paslaugų teikėjui.
-
-Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <ph name="BEGIN_BOLD2" />uždarysite visus inkognito skirtukus<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Numatytąją atsisiuntimo vietą galite bet kada pakeisti naudodami nustatymų meniu parinktį</translation>
 <translation id="694267552845942083">Šiuo metu tinkinate savo sinchronizavimo nustatymus. Jei norite užbaigti sinchronizavimo įjungimo procesą, palieskite mygtuką „Patvirtinti“ netoli ekrano apačios. Eiti į viršų</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
@@ -1088,9 +1076,6 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="7971136598759319605">Aktyvus prieš 1 d.</translation>
 <translation id="7975379999046275268">Peržiūrėti puslapį <ph name="BEGIN_NEW" />Naujas<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Iš anksto įkelti puslapius, kad naršymo ir paieškos procesai vyktų greičiau</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privatumo „sandbox“ (smėlio dėžė)<ph name="END_LINK" /> tai šiuo metu vykdoma iniciatyva, kuria siekiama kurti naujas technologijas, kad būtų teikiamas atviras žiniatinklis, padedantis apsisaugoti nuo stebėjimo mechanizmų ir išlaikyti atvirą žiniatinklį.
-
-Privatumo „sandbox“ (smėlio dėžės) bandomosios versijos vis dar intensyviai kuriamos ir pasiekiamos tam tikruose regionuose. Kol kas svetainėse galima išbandyti privatumo „sandbox“ (smėlio dėžę) toliau naudojant dabartines žiniatinklio technologijas, pvz., trečiųjų šalių slapukus.</translation>
 <translation id="7986497153528221272">Jei norite peržiūrėti slaptažodžius, pirmiausia nustatykite įrenginio ekrano užraktą</translation>
 <translation id="7998918019931843664">Iš naujo atidarykite uždarytą skirtuko lapą</translation>
 <translation id="8004582292198964060">Naršyklė</translation>

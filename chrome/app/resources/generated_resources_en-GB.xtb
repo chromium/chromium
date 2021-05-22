@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Your administrator has set a default theme which cannot be changed.</translation>
 <translation id="1163931534039071049">&amp;View frame source</translation>
 <translation id="1164891049599601209">Entered on deceptive site</translation>
-<translation id="1164899421101904659">Enter PIN Unlock Key</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Close tabs to the right</translation>
-<translation id="116624467691206283">Invalid PUK. You have one remaining attempt.</translation>
 <translation id="1168020859489941584">Opening in <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Google name servers</translation>
 <translation id="1170288591054440704">Ask when a site wants to use fonts installed on your device</translation>
@@ -1213,7 +1211,6 @@ You can manage this account’s settings by installing the Family Link app on yo
     For help troubleshooting issues with cast, please refer to the
     <ph name="BEGIN_LINK" />
     Help Centre<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Incorrect PUK. You have <ph name="RETRIES" /> remaining attempts before you must contact your operator to regain network access.</translation>
 <translation id="22665427234727190">Ask when a site wants to access HID devices (recommended)</translation>
 <translation id="2266957463645820432">IPP over USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Exchange data with any device in the domain <ph name="DOMAIN" /></translation>
@@ -1497,7 +1494,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2553440850688409052">Hide This Plug-in</translation>
 <translation id="2554553592469060349">Selected file is too big (max size: 3mb).</translation>
 <translation id="2558896001721082624">Always show accessibility options in the system menu</translation>
-<translation id="2562743677925229011">Not signed in to <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Executing JavaScript through AppleScript is turned off. To turn it on, from the menu bar, go to View &gt; Developer &gt; Allow JavaScript from Apple Events. For more information: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Enhanced spell check</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
@@ -2411,7 +2407,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3569407787324516067">Screensaver</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> can view the following files and folders</translation>
 <translation id="3571734092741541777">Set up</translation>
-<translation id="3574210789297084292">sign in</translation>
 <translation id="3575121482199441727">Allow for this site</translation>
 <translation id="3576324189521867626">Successfully installed</translation>
 <translation id="3578594933904494462">This tab's content is being shared.</translation>
@@ -2862,7 +2857,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4022426551683927403">&amp;Add to Dictionary</translation>
 <translation id="4023146161712577481">Determining device configuration.</translation>
 <translation id="4025039777635956441">Mute Selected Site</translation>
-<translation id="4027804175521224372">(You're missing out—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Add input methods</translation>
 <translation id="4029556917477724407">Back from <ph name="PAGE_TITLE" /> page</translation>
 <translation id="4031179711345676612">Microphone allowed</translation>
@@ -3809,7 +3803,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Your hard disk is full.  Please save to another location or make more room on the hard disk.</translation>
 <translation id="5123433949759960244">Basketball</translation>
-<translation id="5125167430897995218">Incorrect PUK. You have one remaining attempt before you must contact your operator to regain network access.</translation>
 <translation id="5125751979347152379">Invalid URL.</translation>
 <translation id="5126611267288187364">View changes</translation>
 <translation id="5127620150973591153">Secure connection ID: <ph name="TOKEN" /></translation>
@@ -4057,7 +4050,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="540296380408672091">Always block cookies on <ph name="HOST" /></translation>
 <translation id="540495485885201800">Swap with previous</translation>
 <translation id="5405146885510277940">Reset settings</translation>
-<translation id="5407119150486192764">Enter the 8-digit PIN unblocking key provided by your operator</translation>
 <translation id="5407167491482639988">Unintelligible</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">From your Google Account</translation>
@@ -6626,7 +6618,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{New notification}other{# new notifications}}</translation>
-<translation id="8211551284753798479">Invalid PUK. You have <ph name="RETRIES" /> remaining attempts.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download is in progress}other{Downloads are in progress}}</translation>
 <translation id="8213449224684199188">Photo mode entered</translation>
 <translation id="8214489666383623925">Open File...</translation>

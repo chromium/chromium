@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Administratören har ställt in ett standardtema som inte kan ändras.</translation>
 <translation id="1163931534039071049">&amp;Visa ramkälla</translation>
 <translation id="1164891049599601209">Har angetts på en bedräglig webbplats</translation>
-<translation id="1164899421101904659">Ange upplåsningskod för pinkod</translation>
 <translation id="1165039591588034296">Fel</translation>
 <translation id="1166212789817575481">Stäng flikar till höger</translation>
-<translation id="116624467691206283">Ogiltig PUK-kod. Du har 1 försök kvar</translation>
 <translation id="1168020859489941584">Öppnar om <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Googles namnservrar</translation>
 <translation id="1170288591054440704">Fråga när en webbplats vill använda teckensnitt som är installerade på enheten</translation>
@@ -1213,7 +1211,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
     Besök
     <ph name="BEGIN_LINK" />
     hjälpcentret<ph name="END_LINK" /> om du vill felsöka problem med Cast.</translation>
-<translation id="2265889263013046172">Fel PUK-kod. Du har <ph name="RETRIES" /> försök kvar innan du måste kontakta operatören för att få åtkomst till nätverket igen.</translation>
 <translation id="22665427234727190">Fråga när en webbplats vill få åtkomst till Bluetooth-enheter (rekommenderas)</translation>
 <translation id="2266957463645820432">IPP över USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Utväxla  data med enheter i domänen <ph name="DOMAIN" /></translation>
@@ -1497,7 +1494,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2553440850688409052">Dölj det här plugin-programmet</translation>
 <translation id="2554553592469060349">Den valda filen är för stor (största storlek: 3 MB).</translation>
 <translation id="2558896001721082624">Visa alltid tillgänglighetsalternativ i systemmenyn</translation>
-<translation id="2562743677925229011">Inte inloggad i <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Funktionen att köra JavaScript via AppleScript är inaktiverad. Om du vill aktivera funktionen väljer du Visa &gt; Utvecklare &gt; Tillåt JavaScript från Apple Events. Läs mer på: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Förbättrad stavningskontroll</translation>
 <translation id="2568774940984945469">Infobar-behållare</translation>
@@ -2411,7 +2407,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3569407787324516067">Skärmsläckare</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> har visningsbehörighet till följande filer och mappar</translation>
 <translation id="3571734092741541777">Konfigurera</translation>
-<translation id="3574210789297084292">logga in</translation>
 <translation id="3575121482199441727">Tillåt för den här webbplatsen</translation>
 <translation id="3576324189521867626">Appen har installerats</translation>
 <translation id="3578594933904494462">Flikens innehåll delas.</translation>
@@ -2862,7 +2857,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4022426551683927403">&amp;Lägg till i ordlistan</translation>
 <translation id="4023146161712577481">Kontrollerar enhetskonfiguration.</translation>
 <translation id="4025039777635956441">Stäng av ljudet för den valda webbplatsen</translation>
-<translation id="4027804175521224372">(Du går miste om att <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Lägg till inmatningsmetoder</translation>
 <translation id="4029556917477724407">Tillbaka från sidan <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofon är tillåten</translation>
@@ -3809,7 +3803,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Hårddisken är full. Spara på en annan plats eller gör mer plats på hårddisken.</translation>
 <translation id="5123433949759960244">Basketboll</translation>
-<translation id="5125167430897995218">Fel PUK-kod. Du har 1 försök kvar innan du måste kontakta operatören för att få åtkomst till nätverket igen.</translation>
 <translation id="5125751979347152379">Ogiltig webbadress.</translation>
 <translation id="5126611267288187364">Visa ändringar</translation>
 <translation id="5127620150973591153">Id för säker anslutning: <ph name="TOKEN" /></translation>
@@ -4057,7 +4050,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="540296380408672091">Blockera alltid cookies på <ph name="HOST" /></translation>
 <translation id="540495485885201800">Byta mot föregående</translation>
 <translation id="5405146885510277940">Återställ inställningarna</translation>
-<translation id="5407119150486192764">Ange den åttasiffriga nyckeln för återaktivering av pinkoden från operatören.</translation>
 <translation id="5407167491482639988">Ohörbart</translation>
 <translation id="5408750356094797285">Zoomar: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Från Google-kontot</translation>
@@ -6626,7 +6618,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8206745257863499010">Bluesig</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ny avisering}other{# nya aviseringar}}</translation>
-<translation id="8211551284753798479">Ogiltig PUK-kod. Du har <ph name="RETRIES" /> försök kvar.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Nedladdning pågår}other{Nedladdningar pågår}}</translation>
 <translation id="8213449224684199188">Fotoläget har aktiverats</translation>
 <translation id="8214489666383623925">Öppna fil...</translation>

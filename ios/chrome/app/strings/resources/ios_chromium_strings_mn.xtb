@@ -17,7 +17,6 @@
 <ph name="BEGIN_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium-н шинэчлэлтийг шалгаж чадсангүй. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="2054703085270098503">Chromium-н тусламжтай аюулгүй байгаарай</translation>
-<translation id="2075400798887076382">Таны компьютерт нээлттэй байгаа табад эндээс хандана уу. Компьютероос Chromium-г нээж, цэс рүү очоод "Chromium-д нэвтрэх..." гэснийг сонгоно уу</translation>
 <translation id="2168108852149185974">Зарим нэмэлт онцлог нь Chromium-г эвдрэхэд хүргэдэг. Тиймээс тэдгээрийг устгана уу:</translation>
 <translation id="2178608107313874732">Chromium одоогоор таны камерыг ашиглах боломжгүй байна</translation>
 <translation id="2195025571279539885">Та дараагийн удаад Chromium-г энэ сайтаас <ph name="LANGUAGE_NAME" /> хуудсыг хөрвүүлэхийг зөвшөөрөх үү?</translation>
@@ -42,7 +41,6 @@
 <translation id="4585809515399340748">Та одоо Chromium-г хэзээд ч мессеж, документ болон бусад аппын холбоосон дээр товшин ашиглах боломжтой.</translation>
 <translation id="4681781466797808448">Chromium сканнерыг асаах</translation>
 <translation id="4736424910885271643">Таны бүртгэлийг <ph name="HOSTED_DOMAIN" />-с удирддаг тул таны Chromium-н өгөгдлийг энэ төхөөрөмжөөс арилгана</translation>
-<translation id="4787850887676698916">Таны бусад төхөөрөмжийн Chromium-д нээсэн таб энд харагдана.</translation>
 <translation id="4806326830773390517">Статистик хэрэглээ болон гэмтлийн тайланг Google-д илгээж, Chromium-г сайжруулахад туслаарай</translation>
 <translation id="4828317641996116749">Chromium бүх нууц үгийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="4852878756222711218">Chromium-г бүрэн ашиглахын тулд Google Бүртгэлээрээ нэвтрээрэй</translation>

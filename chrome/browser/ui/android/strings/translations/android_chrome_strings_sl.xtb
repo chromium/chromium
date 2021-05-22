@@ -186,7 +186,6 @@ Dotaknite se poljubne besede, če želite iskati. Če želite izboljšati iskanj
 <translation id="22320125457191592">Za vas</translation>
 <translation id="2234876718134438132">Sinhroniz. in Googlove storitve</translation>
 <translation id="2239812875700136898">Nadzirajte članke v možnostih za gumb Odkrivanja</translation>
-<translation id="2251971221270904886">Če je vklopljeno in je stanje aktivno, Chrome zgodovino brskanja uporablja 7 dni, da določi skupino oziroma »kohorto«, v kateri ste. Oglaševalci lahko izberejo oglase za skupino. Vaša zgodovina brskanja je zasebna v napravi. Ta preizkus je aktiven samo v <ph name="BEGIN_LINK" />nekaterih regijah<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Izvozi gesla …</translation>
 <translation id="2276696007612801991">Če želite preveriti gesla, se prijavite v račun Google</translation>
 <translation id="2278052315791335171">Če izbrišete to geslo, ne izbrišete računa na <ph name="SITE" />.</translation>
@@ -320,7 +319,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> zaznamek}one{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamek}two{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamka}few{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamki}other{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamkov}}</translation>
 <translation id="3062802207422175757">Članki na temo vaših zanimanj v Chromu</translation>
 <translation id="3070005020161560471">Samodejno prevedi</translation>
-<translation id="3083531420240576529">Skupino lahko kadar koli ponastavite. Določanje skupine traja 7 dni.</translation>
 <translation id="3091010850649238832">Prikaz vsebine odložišča</translation>
 <translation id="3098745985164956033">Nekatere slike so poslane Googlu zaradi izboljšanja opisov.</translation>
 <translation id="3114507951000454849">Preberite današnje novice <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Zasebni peskovnik je še vedno v aktivnem razvoju in na voljo le na izbranih obm
 <translation id="3568688522516854065">Če želite dostopati do zavihkov iz drugih naprav, vklopite sinhronizacijo</translation>
 <translation id="3587482841069643663">Vse</translation>
 <translation id="3587596251841506391">Izboljšanje varnosti v spletu</translation>
-<translation id="3598653140581545904">Uporaba anonimnega načina za prijavo</translation>
 <translation id="3602290021589620013">Predogled</translation>
 <translation id="3616113530831147358">Zvok</translation>
 <translation id="3631987586758005671">Deljenje z napravo <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5964805880140440652">Če želite to stran deliti z drugo napravo, v nastavitvah Chroma vklopite sinhronizacijo</translation>
 <translation id="5964869237734432770">Ustavi prenos opisov slik</translation>
 <translation id="5979084224081478209">Preveri gesla</translation>
-<translation id="5982307838673692400">Odpiranje anonimnega zavihka</translation>
 <translation id="6000066717592683814">Ohrani Google</translation>
 <translation id="6000203700195075278">Znova spremljaj</translation>
 <translation id="6002623704405939939">Če želite počistiti <ph name="BEGIN_LINK1" />iskanje<ph name="END_LINK1" /> ali druge oblike zgodovine, obiščite <ph name="BEGIN_LINK2" />Mojo dejavnost v Googlu<ph name="END_LINK2" />.</translation>
@@ -806,13 +802,13 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6277522088822131679">Pri tiskanju strani je prišlo do težave. Poskusite znova.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Če uporabljate Chrome, se strinjate z <ph name="BEGIN_LINK1" />Googlovimi pogoji storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatnimi pogoji storitve za Google Chrome in Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Račun</translation>
 <translation id="6297765934698848803">Organizacija, ki upravlja vašo napravo, je izklopila kamero.</translation>
 <translation id="6301525844455696527">Ne pozabite na svoj bralni seznam</translation>
 <translation id="6303969859164067831">Odjava in izklop sinhronizacije</translation>
 <translation id="6312687380483398334">Spletni programi (tiho)</translation>
 <translation id="6316139424528454185">Različica Androida ni podprta</translation>
 <translation id="6324034347079777476">Sinhronizacija sistema Android je onemogočena.</translation>
+<translation id="6324916366299863871">Urejanje bližnjice</translation>
 <translation id="6324977638108296054">Povezave do označitve ni mogoče ustvariti.</translation>
 <translation id="6324997754869598316">(Napaka <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Skupna raba prek: <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6699370405921460408">Googlovi strežniki optimizirajo strani, ki jih obiščete.</translation>
 <translation id="670498945988402717">Preverjeno včeraj</translation>
 <translation id="6710213216561001401">Prejšnji</translation>
-<translation id="671333169801287922">Če je funkcija vklopljena, lahko spletna mesta uporabljajo tukaj prikazane tehnike za ohranitev zasebnosti zaradi zagotavljanja svoje vsebine in storitev. Mednje sodijo nadomestne rešitve sledenju na več spletnih mestih. Sčasoma bo morda dodanih več preizkusov.
-
-<ph name="BEGIN_LIST_ITEM1" />Oglaševalci in izdajatelji lahko uporabljajo tehniko FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Oglaševalci in izdajatelji lahko preučujejo učinkovitost oglasov na način, ki vam ne sledi na spletnih mestih.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Merilnik časa za <ph name="FQDN" /> je potekel. Jutri se začne znova.</translation>
 <translation id="6738516213925468394">Podatki so bili šifrirani (<ph name="TIME" />) z vašim <ph name="BEGIN_LINK" />geslom za sinhronizacijo<ph name="END_LINK" />. Vnesite ga, če želite začeti sinhronizacijo.</translation>
 <translation id="6738867403308150051">Prenašanje ...</translation>
@@ -922,9 +913,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6900532703269623216">Izboljšana zaščita</translation>
 <translation id="6903907808598579934">Vklopi sinhronizacijo</translation>
 <translation id="6929699136511445623">Omogoči sinhronizacijo sistema Android</translation>
-<translation id="6941901516114974832">V anonimnem načinu je vaša dejavnost <ph name="BEGIN_BOLD1" />morda še vedno vidna<ph name="END_BOLD1" /> spletnim mestom, ki jih obiščete, delodajalcu ali šoli ter ponudniku internetnih storitev.
-
-Podatki anonimne seje se iz Chroma izbrišejo šele, ko <ph name="BEGIN_BOLD2" />zaprete vse anonimne zavihke<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Z možnostjo v meniju z nastavitvami lahko kadar koli spremenite privzeto mesto za prenose</translation>
 <translation id="694267552845942083">Trenutno prilagajate nastavitve sinhronizacije. Če želite dokončati vklop sinhronizacije, se dotaknite gumba za potrditev pri dnu zaslona. Pomik navzgor</translation>
 <translation id="6945221475159498467">Izberi</translation>
@@ -1088,9 +1076,6 @@ Podatki anonimne seje se iz Chroma izbrišejo šele, ko <ph name="BEGIN_BOLD2" /
 <translation id="7971136598759319605">Aktivna pred 1 dnevom</translation>
 <translation id="7975379999046275268">Predogled strani <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Vnaprejšnje nalaganje strani zaradi hitrejšega brskanja in iskanja</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Zasebni peskovnik<ph name="END_LINK" /> je aktualna pobuda za razvijanje novih tehnologij, ki vam bodo pomagale pri zaščiti pred mehanizmi za sledenje in bodo hkrati ohranile odprtost spleta.
-
-Preizkusi peskovnika za zasebnost so še vedno v aktivnem razvoju in na voljo le na izbranih območjih. Spletna mesta lahko za zdaj preizkusijo peskovnik za zasebnost, obenem pa še naprej uporabljajo spletne tehnologije, kot so piškotki drugih ponudnikov.</translation>
 <translation id="7986497153528221272">Če si želite ogledati gesla, najprej v napravi nastavite zaklepanje zaslona</translation>
 <translation id="7998918019931843664">Vnovično odpiranje zaprtega zavihka</translation>
 <translation id="8004582292198964060">Brskalnik</translation>

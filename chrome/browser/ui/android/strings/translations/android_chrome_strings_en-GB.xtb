@@ -186,7 +186,6 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="22320125457191592">For you</translation>
 <translation id="2234876718134438132">Sync and Google services</translation>
 <translation id="2239812875700136898">Control your stories from the 'Options for Discover' button</translation>
-<translation id="2251971221270904886">When on and the status is active, Chrome uses your browsing history over seven days to determine a group, or 'cohort', that you’re in. Advertisers can select ads for the group. Your browsing history is kept private on your device. This trial is active only in <ph name="BEGIN_LINK" />some regions<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Export passwords…</translation>
 <translation id="2276696007612801991">Sign in to your Google Account to check your passwords</translation>
 <translation id="2278052315791335171">Deleting this password will not delete your account on <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}}</translation>
 <translation id="3062802207422175757">Articles on your interests on Chrome</translation>
 <translation id="3070005020161560471">Automatically translate</translation>
-<translation id="3083531420240576529">You can reset your group at any time. It takes seven days to determine your group.</translation>
 <translation id="3091010850649238832">Show clipboard contents</translation>
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="3568688522516854065">To get your tabs from your other devices, sign in and turn on sync</translation>
 <translation id="3587482841069643663">All</translation>
 <translation id="3587596251841506391">Help improve security on the web</translation>
-<translation id="3598653140581545904">Use Incognito to sign in</translation>
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Sharing to <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5964805880140440652">To share this page to another device, turn on sync in Chrome settings</translation>
 <translation id="5964869237734432770">Stop image descriptions</translation>
 <translation id="5979084224081478209">Check passwords</translation>
-<translation id="5982307838673692400">Open an Incognito tab</translation>
 <translation id="6000066717592683814">Keep Google</translation>
 <translation id="6000203700195075278">Refollow</translation>
 <translation id="6002623704405939939">To clear <ph name="BEGIN_LINK1" />search<ph name="END_LINK1" /> or other forms of history, visit <ph name="BEGIN_LINK2" />My Google activity<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6277522088822131679">There was a problem printing the page. Please try again.</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6292420053234093573">By using Chrome, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Account</translation>
 <translation id="6297765934698848803">The organisation that manages your device has turned off your camera.</translation>
 <translation id="6301525844455696527">Catch up on your reading list</translation>
 <translation id="6303969859164067831">Sign out and turn off sync</translation>
 <translation id="6312687380483398334">Web apps (quiet)</translation>
 <translation id="6316139424528454185">Android version is unsupported</translation>
 <translation id="6324034347079777476">Android system sync disabled</translation>
+<translation id="6324916366299863871">Edit shortcut</translation>
 <translation id="6324977638108296054">Can’t create link to highlight</translation>
 <translation id="6324997754869598316">(Error <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Share via <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6699370405921460408">Google servers will optimise the pages that you visit.</translation>
 <translation id="670498945988402717">Checked yesterday</translation>
 <translation id="6710213216561001401">Previous</translation>
-<translation id="671333169801287922">When on, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.
-
-<ph name="BEGIN_LIST_ITEM1" />Advertisers and publishers can use the FLoC technique.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Advertisers and publishers can study the effectiveness of ads in a way that does not track you across sites.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Your <ph name="FQDN" /> timer ran out. It will start again tomorrow.</translation>
 <translation id="6738516213925468394">Your data was encrypted with your <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" /> on <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="6738867403308150051">Downloading…</translation>
@@ -922,9 +913,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6900532703269623216">Enhanced protection</translation>
 <translation id="6903907808598579934">Turn on sync</translation>
 <translation id="6929699136511445623">Enable Android system sync</translation>
-<translation id="6941901516114974832">In Incognito, your activity <ph name="BEGIN_BOLD1" />might still be visible <ph name="END_BOLD1" />to websites that you visit, your employer or school, and your Internet service provider.
-
-Data from your Incognito session will only be cleared from Chrome when you <ph name="BEGIN_BOLD2" />close all Incognito tabs<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Change the default download location at any time using the Settings menu option</translation>
 <translation id="694267552845942083">You are currently customising your Sync settings. To finish turning on sync, tap the Confirm button near the bottom of the screen. Navigate up</translation>
 <translation id="6945221475159498467">Select</translation>
@@ -1088,9 +1076,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7971136598759319605">Active 1 day ago</translation>
 <translation id="7975379999046275268">Preview page <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Preload pages for faster browsing and searching</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> is an ongoing initiative to develop new technologies that will safeguard you from tracking mechanisms while preserving the open web.
-
-Privacy Sandbox trials are still in active development and are available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies.</translation>
 <translation id="7986497153528221272">To view passwords, first set a screen lock on your device</translation>
 <translation id="7998918019931843664">Re-open closed tab</translation>
 <translation id="8004582292198964060">Browser</translation>

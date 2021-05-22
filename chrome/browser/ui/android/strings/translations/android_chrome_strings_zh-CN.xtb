@@ -396,7 +396,6 @@
 <translation id="3568688522516854065">要访问您在其他设备上的标签页，请登录您的帐号并开启同步功能</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587596251841506391">帮助我们改善网络安全环境</translation>
-<translation id="3598653140581545904">在无痕模式下登录</translation>
 <translation id="3602290021589620013">预览</translation>
 <translation id="3616113530831147358">音频</translation>
 <translation id="3631987586758005671">正在分享给<ph name="DEVICE_NAME" /></translation>
@@ -760,7 +759,6 @@
 <translation id="5964805880140440652">如果想将此页分享到其他设备，请在 Chrome 设置中开启同步</translation>
 <translation id="5964869237734432770">停止获取图片说明</translation>
 <translation id="5979084224081478209">检查密码</translation>
-<translation id="5982307838673692400">打开一个无痕式标签页</translation>
 <translation id="6000066717592683814">继续使用 Google</translation>
 <translation id="6000203700195075278">重新关注</translation>
 <translation id="6002623704405939939">若要清除<ph name="BEGIN_LINK1" />搜索<ph name="END_LINK1" />记录或其他形式的历史记录，请前往<ph name="BEGIN_LINK2" />我的 Google 活动记录<ph name="END_LINK2" />页面</translation>
@@ -802,13 +800,13 @@
 <translation id="6277522088822131679">打印该页面时出现问题，请重试。</translation>
 <translation id="6278428485366576908">主题背景</translation>
 <translation id="6292420053234093573">使用 Chrome 即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
-<translation id="629730747756840877">帐号</translation>
 <translation id="6297765934698848803">负责管理您设备的组织已关闭您的摄像头。</translation>
 <translation id="6301525844455696527">请尽快补看阅读清单中的内容</translation>
 <translation id="6303969859164067831">退出帐号并关闭同步功能</translation>
 <translation id="6312687380483398334">Web 应用（安静）</translation>
 <translation id="6316139424528454185">Android 版本不受支持</translation>
 <translation id="6324034347079777476">Android 系统同步功能已停用</translation>
+<translation id="6324916366299863871">修改快捷方式</translation>
 <translation id="6324977638108296054">无法创建指向突出显示的内容的链接</translation>
 <translation id="6324997754869598316">（错误 <ph name="ERROR_CODE" />）</translation>
 <translation id="6333140779060797560">通过<ph name="APPLICATION" />分享</translation>
@@ -913,9 +911,6 @@
 <translation id="6900532703269623216">增强型保护</translation>
 <translation id="6903907808598579934">开启同步功能</translation>
 <translation id="6929699136511445623">启用 Android 系统同步</translation>
-<translation id="6941901516114974832">在无痕模式下，以下各方<ph name="BEGIN_BOLD1" />或许仍能看到<ph name="END_BOLD1" />您的活动：您访问的网站、您的雇主或学校，以及您的互联网服务提供商。
-
-仅当您<ph name="BEGIN_BOLD2" />关闭所有无痕式标签页<ph name="END_BOLD2" />后，系统才会从 Chrome 中清除在您的无痕式会话期间生成的数据。</translation>
 <translation id="6942665639005891494">使用“设置”菜单选项随时更改默认的下载内容保存位置</translation>
 <translation id="694267552845942083">您正在自定义您的同步设置。如需完成开启同步功能的操作，请点按屏幕底部附近的“确认”按钮。转到上一层级</translation>
 <translation id="6945221475159498467">选择</translation>

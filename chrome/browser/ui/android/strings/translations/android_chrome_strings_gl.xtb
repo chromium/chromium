@@ -186,7 +186,6 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="22320125457191592">Para ti</translation>
 <translation id="2234876718134438132">Servizos de Google e sincronización</translation>
 <translation id="2239812875700136898">Fai clic no botón Opcións de Discover e controla as túas historias</translation>
-<translation id="2251971221270904886">Cando a opción está habilitada e co estado activo, Chrome usa o historial de navegación de máis de 7 días para determinar a que grupo ou "cohorte" pertences. Os anunciantes poden seleccionar anuncios para o grupo. O teu historial de navegación mantense privado no dispositivo. A proba está dispoñible só <ph name="BEGIN_LINK" />nalgunhas rexións<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Exportar contrasinais…</translation>
 <translation id="2276696007612801991">Inicia sesión na túa Conta de Google para comprobar os teus contrasinais</translation>
 <translation id="2278052315791335171">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcador}other{<ph name="BOOKMARKS_COUNT_MANY" /> marcadores}}</translation>
 <translation id="3062802207422175757">Artigos sobre os teus intereses en Chrome</translation>
 <translation id="3070005020161560471">Traducir automaticamente</translation>
-<translation id="3083531420240576529">Podes restablecer o grupo en calquera momento. Ten en conta que para a súa determinación se requiren 7 días.</translation>
 <translation id="3091010850649238832">Mostrar contido do portapapeis</translation>
 <translation id="3098745985164956033">Algunhas imaxes envíanse a Google coa finalidade de mellorar as descricións para ti</translation>
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="3568688522516854065">Inicia sesión e activa a sincronización para sincronizar as pestanas dos demais dispositivos</translation>
 <translation id="3587482841069643663">Todos</translation>
 <translation id="3587596251841506391">Axudar a mellorar a seguranza na Web</translation>
-<translation id="3598653140581545904">Usar o modo de incógnito para iniciar sesión</translation>
 <translation id="3602290021589620013">Previsualizar</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Compartindo co dispositivo <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5964805880140440652">Para compartir esta páxina con outro dispositivo, activa a sincronización na configuración de Chrome</translation>
 <translation id="5964869237734432770">Descricións de imaxes: non</translation>
 <translation id="5979084224081478209">Comprobar contrasinais</translation>
-<translation id="5982307838673692400">Abrir unha pestana do modo de incógnito</translation>
 <translation id="6000066717592683814">Manter Google</translation>
 <translation id="6000203700195075278">Volver seguir</translation>
 <translation id="6002623704405939939">Para borrar o historial de <ph name="BEGIN_LINK1" />busca<ph name="END_LINK1" /> ou doutros tipos, visita <ph name="BEGIN_LINK2" />A miña actividade de Google<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6277522088822131679">Produciuse un problema ao imprimir a páxina. Téntao de novo.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Ao utilizar Chrome, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Conta</translation>
 <translation id="6297765934698848803">A organización que xestiona o teu dispositivo desactivou a cámara.</translation>
 <translation id="6301525844455696527">Ponte ao día coa túa lista de lectura</translation>
 <translation id="6303969859164067831">Pechar sesión e desactivar a sincronización</translation>
 <translation id="6312687380483398334">Aplicacións web (silenciadas)</translation>
 <translation id="6316139424528454185">Versión Android non compatible</translation>
 <translation id="6324034347079777476">A sincronización do sistema Android está desactivada</translation>
+<translation id="6324916366299863871">Editar atallo</translation>
 <translation id="6324977638108296054">Non se puido crear unha ligazón ao texto destacado</translation>
 <translation id="6324997754869598316">(Erro <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Comparte a través de <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6699370405921460408">Os servidores de Google optimizarán as páxinas que visites.</translation>
 <translation id="670498945988402717">A comprobación realizouse onte</translation>
 <translation id="6710213216561001401">Anterior</translation>
-<translation id="671333169801287922">Ao activar esta opción, os sitios poden usar técnicas que permiten protexer a privacidade (entre as que se inclúen alternativas ao seguimento en varios sitios) para ofrecer contido e servizos. É posible que se engadan máis probas no futuro.
-
-<ph name="BEGIN_LIST_ITEM1" />Os anunciantes e os editores poden usar a técnica Federated Learning of Cohorts (FLoC).<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Os anunciantes e os editores poden estudar a eficacia dos anuncios sen facer un seguimento da túa actividade nos sitios.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">O temporizador de <ph name="FQDN" /> chegou ao final. Volverá comezar mañá.</translation>
 <translation id="6738516213925468394">Os teus datos encriptáronse coa túa <ph name="BEGIN_LINK" />frase de acceso de sincronización<ph name="END_LINK" /> o <ph name="TIME" />. Introdúcea para comezar a sincronización.</translation>
 <translation id="6738867403308150051">Descargando...</translation>
@@ -922,9 +913,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6900532703269623216">Protección mellorada</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6929699136511445623">Activar sincronización do sistema Android</translation>
-<translation id="6941901516114974832">Lembra que ese modo non impide que os sitios web que visites, a túa empresa, o teu centro educativo e o teu fornecedor de servizos de Internet <ph name="BEGIN_BOLD1" />poidan ver a túa actividade<ph name="END_BOLD1" />.
-
-Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />pechar todas as pestanas do modo de incógnito<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Cambia a localización de descarga predeterminada en calquera momento usando a opción do menú Configuración</translation>
 <translation id="694267552845942083">Estás personalizando a configuración da sincronización. Pera rematar de activar a sincronización, toca o botón Confirmar, situado preto da parte inferior da pantalla. Desprazarse cara arriba</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
@@ -1088,9 +1076,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7971136598759319605">Dispositivo activo hai 1 día</translation>
 <translation id="7975379999046275268">Vista previa: páxina <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Cargar previamente as páxinas para que a navegación e as buscas sexan máis rápidas</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> é unha iniciativa continua deseñada para desenvolver novas tecnoloxías que te protexerán dos mecanismos de seguimento e que ao mesmo tempo manterán a Web aberta.
-
-As probas de Privacy Sandbox aínda están en desenvolvemento activo e están dispoñibles en rexións seleccionadas. Polo momento, os sitios poden probar Privacy Sandbox sen deixar de usar as tecnoloxías web actuais, como as cookies de terceiros.</translation>
 <translation id="7986497153528221272">Para poder ver os contrasinais, define un bloqueo de pantalla no teu dispositivo</translation>
 <translation id="7998918019931843664">Abre de novo a pestana pechada</translation>
 <translation id="8004582292198964060">Navegador</translation>

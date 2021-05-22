@@ -186,7 +186,6 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="22320125457191592">Dành cho bạn</translation>
 <translation id="2234876718134438132">Đồng bộ hóa và các dịch vụ của Google</translation>
 <translation id="2239812875700136898">Kiểm soát các tin bài của bạn bằng các Tùy chọn của nút Khám phá</translation>
-<translation id="2251971221270904886">Khi tùy chọn này bật và trạng thái là đang hoạt động, Chrome sẽ dùng nhật ký duyệt web của bạn trong hơn 7 ngày để xác định một nhóm hoặc “nhóm thuần tập” mà bạn tham gia. Các nhà quảng cáo có thể chọn quảng cáo cho nhóm đó. Nhật ký duyệt web được lưu giữ riêng tư trên thiết bị của bạn. Chế độ dùng thử này chỉ hoạt động ở <ph name="BEGIN_LINK" />một số khu vực<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Xuất mật khẩu...</translation>
 <translation id="2276696007612801991">Đăng nhập vào Tài khoản Google của bạn để kiểm tra mật khẩu</translation>
 <translation id="2278052315791335171">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> dấu trang}other{<ph name="BOOKMARKS_COUNT_MANY" /> dấu trang}}</translation>
 <translation id="3062802207422175757">Các bài viết về chủ đề mà bạn quan tâm trên Chrome</translation>
 <translation id="3070005020161560471">Tự động dịch</translation>
-<translation id="3083531420240576529">Bạn có thể đặt lại nhóm của mình bất cứ lúc nào. Quá trình xác định nhóm của bạn sẽ mất 7 ngày.</translation>
 <translation id="3091010850649238832">Hiện các nội dung của bảng nhớ tạm</translation>
 <translation id="3098745985164956033">Một số hình ảnh được gửi đến Google để cải thiện nội dung mô tả cho bạn</translation>
 <translation id="3114507951000454849">Đọc tin tức hôm nay <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="3568688522516854065">Để sử dụng các thẻ từ những thiết bị khác, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
 <translation id="3587482841069643663">Tất cả</translation>
 <translation id="3587596251841506391">Giúp tăng cường an ninh trên web</translation>
-<translation id="3598653140581545904">Dùng chế độ Ẩn danh để đăng nhập</translation>
 <translation id="3602290021589620013">Xem trước</translation>
 <translation id="3616113530831147358">Âm thanh</translation>
 <translation id="3631987586758005671">Đang chia sẻ đến <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5964805880140440652">Để chia sẻ trang này với một thiết bị khác, hãy bật tính năng đồng bộ hóa trong phần cài đặt Chrome</translation>
 <translation id="5964869237734432770">Dừng lấy nội dung mô tả hình ảnh</translation>
 <translation id="5979084224081478209">Kiểm tra mật khẩu</translation>
-<translation id="5982307838673692400">Mở một thẻ Ẩn danh</translation>
 <translation id="6000066717592683814">Giữ Google làm công cụ tìm kiếm mặc định</translation>
 <translation id="6000203700195075278">Theo dõi lại</translation>
 <translation id="6002623704405939939">Để xóa <ph name="BEGIN_LINK1" />nội dung tìm kiếm<ph name="END_LINK1" /> hoặc các dạng nhật ký khác, hãy truy cập vào trang <ph name="BEGIN_LINK2" />Hoạt động của tôi trên Google<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6277522088822131679">Đã xảy ra sự cố khi in trang này. Vui lòng thử lại.</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6292420053234093573">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Tài khoản</translation>
 <translation id="6297765934698848803">Tổ chức giữ quyền quản lý thiết bị của bạn đã tắt máy ảnh của bạn.</translation>
 <translation id="6301525844455696527">Hãy hoàn thành danh sách đọc của bạn</translation>
 <translation id="6303969859164067831">Đăng xuất và tắt đồng bộ hóa</translation>
 <translation id="6312687380483398334">Ứng dụng web (im lặng)</translation>
 <translation id="6316139424528454185">Phiên bản Android không được hỗ trợ</translation>
 <translation id="6324034347079777476">Đồng bộ hóa hệ thống Android đã bị tắt</translation>
+<translation id="6324916366299863871">Chỉnh sửa phím tắt</translation>
 <translation id="6324977638108296054">Không thể tạo đường liên kết đến văn bản được làm nổi bật</translation>
 <translation id="6324997754869598316">(Lỗi <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Chia sẻ qua <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6699370405921460408">Máy chủ của Google sẽ tối ưu hóa các trang bạn truy cập.</translation>
 <translation id="670498945988402717">Đã kiểm tra hôm qua</translation>
 <translation id="6710213216561001401">Trước</translation>
-<translation id="671333169801287922">Khi bạn bật Hộp cát về quyền riêng tư, các trang web có thể dùng kỹ thuật bảo vệ quyền riêng tư theo mô tả ở đây để cung cấp nội dung và dịch vụ của mình. Các kỹ thuật này gồm có những biện pháp thay thế cho hoạt động theo dõi trên nhiều trang web. Theo thời gian, chúng tôi có thể bổ sung thêm nhiều chế độ dùng thử khác.
-
-<ph name="BEGIN_LIST_ITEM1" />Các nhà quảng cáo và nhà xuất bản có thể dùng kỹ thuật FLoC (Học liên kết theo nhóm cùng sở thích).<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Các nhà quảng cáo và nhà xuất bản có thể nghiên cứu tính hiệu quả của quảng cáo mà không cần theo dõi bạn trên các trang web.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Thời gian hẹn giờ của <ph name="FQDN" /> đã hết. Thời gian hẹn giờ sẽ bắt đầu lại vào ngày mai.</translation>
 <translation id="6738516213925468394">Dữ liệu của bạn đã được mã hóa bằng <ph name="BEGIN_LINK" />cụm mật khẩu đồng bộ hóa<ph name="END_LINK" /> vào <ph name="TIME" />. Hãy nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
 <translation id="6738867403308150051">Đang tải xuống...</translation>
@@ -922,9 +913,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6900532703269623216">Chế độ bảo vệ nâng cao</translation>
 <translation id="6903907808598579934">Bật đồng bộ hóa</translation>
 <translation id="6929699136511445623">Bật tính năng đồng bộ hóa hệ thống Android</translation>
-<translation id="6941901516114974832">Trong chế độ Ẩn danh, hoạt động của bạn <ph name="BEGIN_BOLD1" />có thể vẫn hiển thị<ph name="END_BOLD1" /> với các trang web mà bạn truy cập, cơ quan/trường học và nhà cung cấp dịch vụ Internet của bạn.
-
-Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn <ph name="BEGIN_BOLD2" />đóng tất cả thẻ Ẩn danh<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Thay đổi vị trí tải xuống mặc định bất cứ lúc nào bằng cách sử dụng tùy chọn menu Cài đặt</translation>
 <translation id="694267552845942083">Bạn hiện đang tùy chỉnh các chế độ cài đặt Đồng bộ hóa của mình. Để hoàn tất thao tác bật tính năng đồng bộ hóa, hãy nhấn vào nút Xác nhận ở gần cuối màn hình. Di chuyển lên</translation>
 <translation id="6945221475159498467">Chọn</translation>
@@ -1088,9 +1076,6 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7971136598759319605">Hoạt động 1 ngày trước</translation>
 <translation id="7975379999046275268">Xem trước trang <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Tải trước các trang để tìm kiếm và duyệt web nhanh hơn</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Hộp cát về quyền riêng tư<ph name="END_LINK" /> là một sáng kiến đang được thực hiện nhằm phát triển các công nghệ mới sẽ bảo vệ bạn khỏi các cơ chế theo dõi trong khi vẫn duy trì môi trường web mở.
-
-Chế độ dùng thử Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển và được cung cấp ở một số khu vực. Các trang hiện web có thể dùng thử Hộp cát về quyền riêng tư trong khi tiếp tục sử dụng các công nghệ web hiện tại như cookie của bên thứ ba.</translation>
 <translation id="7986497153528221272">Để xem mật khẩu, trước tiên, hãy đặt phương thức khóa màn hình trên thiết bị của bạn</translation>
 <translation id="7998918019931843664">Mở lại thẻ đã đóng</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>

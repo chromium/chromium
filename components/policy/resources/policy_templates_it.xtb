@@ -1098,13 +1098,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2448315169529769573">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> segnala a Google metriche relative all'utilizzo e dati diagnostici, ad esempio rapporti sugli arresti anomali. Se il criterio viene impostato su Disattivato, la segnalazione di metriche e dati diagnostici viene disattivata.
 
        Se il criterio non viene configurato, la segnalazione di metriche e dati diagnostici rimane disattivata sui dispositivi non gestiti e attiva sui dispositivi gestiti.</translation>
-<translation id="2449263772062368618">Consente di configurare un elenco dei tipi di dati di navigazione che dovrebbero essere eliminati alla chiusura del browser.
-      Tra i tipi di dati disponibili ci sono: cronologia di navigazione (<ph name="DATA_TYPE_BROWSING_HISTORY" />), cronologia dei download (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, compilazione automatica (<ph name="DATA_TYPE_AUTOFILL" />), password (<ph name="DATA_TYPE_PASSWORD" />), impostazioni sito (<ph name="DATA_TYPE_SITE_SETTINGS" />) e dati di app ospitate (<ph name="DATA_TYPE_HOSTED_APP_DATA" />).
-      Questo criterio non ha la precedenza su <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-      Questo criterio richiede l'impostazione del criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> su Vero, altrimenti sarà ignorato.
-      Se questo criterio viene impostato a livello di piattaforma, la sincronizzazione dovrebbe essere disattivata a livello di piattaforma.
-      Se questo criterio viene impostato a livello di utente, la sincronizzazione dovrebbe essere disattivata per quell'utente affinché il criterio venga applicato.
-      </translation>
 <translation id="244950822854046436">Elenco di impostazioni da applicare al <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, che si attiva quando viene scaricato un file.
 
       I campi <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare un file al fornitore di servizi quando il download viene effettuato da una pagina web. L'URL della pagina web deve corrispondere a un pattern associato a un pattern "enable" e non a un pattern "disable".  Anche il tipo MIME del file deve corrispondere a un pattern associato a un pattern "enable" e non a un pattern "disable".
@@ -3024,13 +3017,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio non viene impostato, non viene aggiunto alcun sito web all'elenco.
 
       Nota: puoi aggiungere elementi all'elenco anche tramite il criterio <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
-<translation id="5065753964276395784">Questo criterio è deprecato. Usa il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-       Se il criterio viene configurato, <ph name="PRODUCT_NAME" /> aggira qualsiasi proxy per l'elenco di host fornito. Questo criterio viene applicato solo se il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> non è specificato e hai selezionato <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> con <ph name="PROXY_MODE_POLICY_NAME" />.
-
-       Non configurare questo criterio se hai selezionato una qualsiasi altra modalità per i criteri di impostazione del proxy.
-
-       Nota: per esempi più approfonditi, consulta la pagina The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="5067143124345820993">Whitelist di utenti con accesso</translation>
 <translation id="5073609397321802133">Se il criterio viene impostato su false, gli utenti non possono personalizzare lo sfondo della pagina Nuova scheda. L'eventuale sfondo personalizzato esistente viene rimosso definitivamente anche se il criterio viene impostato su true in un secondo momento.
 
@@ -3186,26 +3172,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio viene impostato su False o non viene impostato, la modalità Desktop unificato viene disattivata e gli utenti non possono attivarla.</translation>
 <translation id="5255162913209987122">Può essere consigliata</translation>
 <translation id="5257395339965216304">Dati app ospitate</translation>
-<translation id="5264066441613395613">L'impostazione del criterio consente di configurare le impostazioni del proxy per Chrome e le app ARC, ignorando tutte le opzioni relative al proxy specificate dalla riga di comando.
-
-       Se non viene configurato, gli utenti possono scegliere le impostazioni del proxy.
-
-       La configurazione del criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> consente di accettare i seguenti campi:
-         * Il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, che consente di specificare il server proxy utilizzato da Chrome e di impedire agli utenti di modificare le impostazioni del proxy
-         * Il campo <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, un URL a un file proxy .pac
-         * Il campo <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, un URL a un server proxy
-         * Il campo <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, un elenco di host proxy aggirati da <ph name="PRODUCT_NAME" />
-
-       Il campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> è deprecato a favore del campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, che consente di specificare il server proxy utilizzato da Chrome e di impedire agli utenti di modificare le impostazioni del proxy.
-
-        Per il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se scegli il valore:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, non viene mai utilizzato un proxy e tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, viene utilizzato il proxy del sistema e tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />, vengono utilizzati i campi <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, vengono utilizzati i campi <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-
-      Nota: per esempi più approfonditi, consulta la pagina The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="5266173014392157048">Questo criterio è deprecato. Utilizza il criterio "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />".
 
       La configurazione del criterio consente di assegnare i server a cui <ph name="PRODUCT_NAME" /> può delegare le credenziali utente. Separa i nomi dei server con le virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.

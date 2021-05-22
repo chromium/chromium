@@ -155,10 +155,8 @@
 <translation id="116173250649946226">管理員設定的預設主題不可變更。</translation>
 <translation id="1163931534039071049">檢視框架原始碼(&amp;V)</translation>
 <translation id="1164891049599601209">已在詐騙網站上輸入</translation>
-<translation id="1164899421101904659">輸入 PIN 解鎖金鑰</translation>
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1166212789817575481">關閉右側分頁</translation>
-<translation id="116624467691206283">PUK 無效，你只剩 1 次重試機會。</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 內開啟...</translation>
 <translation id="1168100932582989117">Google 名稱伺服器</translation>
 <translation id="1170288591054440704">網站必須先詢問你，才能使用裝置上安裝的字型</translation>
@@ -1198,7 +1196,6 @@
 <translation id="2263189956353037928">登出再重新登入</translation>
 <translation id="2263371730707937087">畫面重新整理頻率</translation>
 <translation id="2263679799334060788">你的寶貴意見可協助我們讓 Google Cast 更臻完美。如需排解投放問題的相關說明，請參閱<ph name="BEGIN_LINK" />說明中心<ph name="END_LINK" />的文章。</translation>
-<translation id="2265889263013046172">PUK 不正確，你還有 <ph name="RETRIES" /> 次重試機會。如果仍然輸入錯誤，就必須請電信業者協助重新取得網路存取權。</translation>
 <translation id="22665427234727190">網站必須先詢問你，才能存取藍牙裝置 (建議)</translation>
 <translation id="2266957463645820432">USB 型 IPP (IPPUSB)</translation>
 <translation id="2270450558902169558">與 <ph name="DOMAIN" /> 網域中的任何裝置交換資料</translation>
@@ -1482,7 +1479,6 @@
 <translation id="2553440850688409052">隱藏這個外掛程式</translation>
 <translation id="2554553592469060349">選取的檔案過大 (大小上限：3MB)。</translation>
 <translation id="2558896001721082624">一律在系統選單中顯示無障礙選項</translation>
-<translation id="2562743677925229011">未登入「<ph name="SHORT_PRODUCT_NAME" />」</translation>
 <translation id="2564520396658920462">透過 AppleScript 執行 JavaScript 的功能已關閉。如要開啟，請在選單列中依序前往 [檢視] &gt; [開發人員] &gt; [允許 Apple 事件的 JavaScript]。詳情請見：https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">進階拼字檢查功能</translation>
 <translation id="2568774940984945469">資訊列容器</translation>
@@ -2396,7 +2392,6 @@
 <translation id="3569407787324516067">螢幕保護程式</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可以檢視下列檔案和資料夾</translation>
 <translation id="3571734092741541777">設定</translation>
-<translation id="3574210789297084292">登入</translation>
 <translation id="3575121482199441727">允許這個網站的通知</translation>
 <translation id="3576324189521867626">已成功安裝</translation>
 <translation id="3578594933904494462">正在分享這個分頁的內容。</translation>
@@ -2846,7 +2841,6 @@
 <translation id="4022426551683927403">新增到字典(&amp;A)</translation>
 <translation id="4023146161712577481">正在確定裝置設定。</translation>
 <translation id="4025039777635956441">將所選網站設為靜音</translation>
-<translation id="4027804175521224372">(你錯過了下列步驟 - <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">新增輸入法</translation>
 <translation id="4029556917477724407">從「<ph name="PAGE_TITLE" />」頁面返回</translation>
 <translation id="4031179711345676612">可使用麥克風</translation>
@@ -3792,7 +3786,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">你的硬碟已滿。請選擇其他儲存位置，或清出足夠的硬碟空間。</translation>
 <translation id="5123433949759960244">籃球</translation>
-<translation id="5125167430897995218">PUK 不正確，你只剩 1 次重試機會。如果仍然輸入錯誤，就必須請電信業者協助重新取得網路存取權。</translation>
 <translation id="5125751979347152379">網址無效。</translation>
 <translation id="5126611267288187364">查看變更</translation>
 <translation id="5127620150973591153">安全連線 ID：<ph name="TOKEN" /></translation>
@@ -4040,7 +4033,6 @@
 <translation id="540296380408672091">一律封鎖 <ph name="HOST" /> 的 Cookie</translation>
 <translation id="540495485885201800">與上一個交換</translation>
 <translation id="5405146885510277940">重設設定</translation>
-<translation id="5407119150486192764">輸入電信業者提供的 8 位數 PIN 碼解鎖金鑰</translation>
 <translation id="5407167491482639988">無法辨識</translation>
 <translation id="5408750356094797285">縮放比例：<ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">從 Google 帳戶</translation>
@@ -6608,7 +6600,6 @@
 <translation id="8206745257863499010">藍調</translation>
 <translation id="8206859287963243715">手機</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
-<translation id="8211551284753798479">PUK 無效，你還有 <ph name="RETRIES" /> 次重試機會。</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在執行一項下載作業}other{正在執行多項下載作業}}</translation>
 <translation id="8213449224684199188">已進入相片模式</translation>
 <translation id="8214489666383623925">開啟檔案...</translation>

@@ -17,7 +17,6 @@
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
 <translation id="2054703085270098503">Chromium 可确保您始终处于保护之下</translation>
-<translation id="2075400798887076382">直接在此处访问您在计算机上打开的标签页。您只需在计算机上打开 Chromium，点击相应菜单，然后选择“登录 Chromium…”即可</translation>
 <translation id="2168108852149185974">部分插件会导致 Chromium 崩溃，请卸载这些插件：</translation>
 <translation id="2178608107313874732">Chromium 目前无法使用您的相机</translation>
 <translation id="2195025571279539885">下次访问这个网站时，您希望 Chromium 翻译其中的<ph name="LANGUAGE_NAME" />网页吗？</translation>
@@ -42,7 +41,6 @@
 <translation id="4585809515399340748">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>
 <translation id="4681781466797808448">开启 Chromium 扫描器</translation>
 <translation id="4736424910885271643">您的帐号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chromium 数据将会被清除</translation>
-<translation id="4787850887676698916">您在其他设备上的 Chromium 中打开的标签页将列在此处。</translation>
 <translation id="4806326830773390517">将使用情况统计信息和崩溃报告发送给 Google，帮助我们改进 Chromium</translation>
 <translation id="4828317641996116749">Chromium 无法检查所有密码。请稍后再试。</translation>
 <translation id="4852878756222711218">若要充分利用 Chromium，请使用您的 Google 帐号登录</translation>

@@ -186,7 +186,6 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="22320125457191592">Dla Ciebie</translation>
 <translation id="2234876718134438132">Synchronizacja i usługi Google</translation>
 <translation id="2239812875700136898">Zarządzaj wyświetlanymi wiadomościami za pomocą opcji przycisku Discover</translation>
-<translation id="2251971221270904886">Kiedy sfederowane uczenie się kohort jest włączone, a stan jest aktywny, Chrome korzysta z historii przeglądania z 7 dni, aby określić grupę („kohortę”), do której należysz. Reklamodawcy mogą wybierać reklamy na potrzeby grupy. Historia przeglądania jest prywatnie przechowywana na Twoim urządzeniu. Wersja próbna jest dostępna tylko w <ph name="BEGIN_LINK" />niektórych regionach<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Eksportuj hasła…</translation>
 <translation id="2276696007612801991">Aby sprawdzić swoje hasła, zaloguj się na konto Google</translation>
 <translation id="2278052315791335171">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta na stronie <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> zakładka}few{<ph name="BOOKMARKS_COUNT_MANY" /> zakładki}many{<ph name="BOOKMARKS_COUNT_MANY" /> zakładek}other{<ph name="BOOKMARKS_COUNT_MANY" /> zakładki}}</translation>
 <translation id="3062802207422175757">Artykuły dopasowane do Twoich zainteresowań w Chrome</translation>
 <translation id="3070005020161560471">Tłumacz automatycznie</translation>
-<translation id="3083531420240576529">Możesz zresetować grupę w dowolnym momencie. Określenie grupy zajmuje 7 dni.</translation>
 <translation id="3091010850649238832">Pokaż zawartość schowka</translation>
 <translation id="3098745985164956033">Niektóre obrazy są wysyłane do Google, żebyśmy mogli dostarczać Ci lepsze opisy</translation>
 <translation id="3114507951000454849">Przeczytaj dzisiejsze wiadomości <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="3568688522516854065">Aby korzystać z kart ze swoich innych urządzeń, zaloguj się i włącz synchronizację</translation>
 <translation id="3587482841069643663">Wszystkie</translation>
 <translation id="3587596251841506391">Pomóż poprawić bezpieczeństwo w sieci</translation>
-<translation id="3598653140581545904">Zaloguj się w trybie incognito</translation>
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
 <translation id="3631987586758005671">Udostępniam urządzeniu <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5964805880140440652">Aby udostępnić tę stronę na innym urządzeniu, włącz synchronizację w ustawieniach Chrome</translation>
 <translation id="5964869237734432770">Wstrzymaj opisy obrazów</translation>
 <translation id="5979084224081478209">Sprawdź hasła</translation>
-<translation id="5982307838673692400">Otwórz kartę w trybie incognito</translation>
 <translation id="6000066717592683814">Zachowaj Google</translation>
 <translation id="6000203700195075278">Ponownie dodaj do obserwowanych</translation>
 <translation id="6002623704405939939">Aby wyczyścić historię <ph name="BEGIN_LINK1" />wyszukiwania<ph name="END_LINK1" /> lub innych zdarzeń, otwórz <ph name="BEGIN_LINK2" />Moją aktywność w Google<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6277522088822131679">Podczas drukowania strony wystąpił problem. Spróbuj ponownie.</translation>
 <translation id="6278428485366576908">Motyw</translation>
 <translation id="6292420053234093573">Korzystając z Chrome, wyrażasz zgodę na <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Konto</translation>
 <translation id="6297765934698848803">Organizacja, która zarządza Twoim urządzeniem, wyłączyła aparat.</translation>
 <translation id="6301525844455696527">Nadrób zaległości w czytaniu</translation>
 <translation id="6303969859164067831">Wyloguj się i wyłącz synchronizację</translation>
 <translation id="6312687380483398334">Aplikacje internetowe (wyciszenie)</translation>
 <translation id="6316139424528454185">Ta wersja Androida jest nieobsługiwana</translation>
 <translation id="6324034347079777476">Synchronizacja systemu Android jest wyłączona</translation>
+<translation id="6324916366299863871">Edytuj skrót</translation>
 <translation id="6324977638108296054">Nie udało się utworzyć linku do podświetlenia</translation>
 <translation id="6324997754869598316">(Błąd <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Udostępnij przez: <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6699370405921460408">Serwery Google będą optymalizować otwierane strony.</translation>
 <translation id="670498945988402717">Sprawdzano wczoraj</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
-<translation id="671333169801287922">Gdy włączysz tę funkcję, witryny będą mogły dostarczać swoje treści i usługi, używając wymienionych tu technik chroniących prywatność. Obejmują one rozwiązania alternatywne dla śledzenia w witrynach. Z czasem może pojawić się więcej wersji próbnych.
-
-<ph name="BEGIN_LIST_ITEM1" />Reklamodawcy i wydawcy mogą używać metody FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklamodawcy i wydawcy mogą analizować skuteczność reklam, stosując metody niewymagające śledzenia Cię w witrynach.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Licznik czasu w aplikacji <ph name="FQDN" /> dobiegł końca. Jutro zacznie działać od nowa.</translation>
 <translation id="6738516213925468394">Twoje dane zostały zaszyfrowane <ph name="BEGIN_LINK" />hasłem synchronizacji<ph name="END_LINK" /> w dniu <ph name="TIME" />. Wpisz to hasło, by rozpocząć synchronizację.</translation>
 <translation id="6738867403308150051">Pobieram…</translation>
@@ -922,9 +913,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6900532703269623216">Silniejsza ochrona</translation>
 <translation id="6903907808598579934">Włącz synchronizację</translation>
 <translation id="6929699136511445623">Włącz synchronizację systemu Android</translation>
-<translation id="6941901516114974832">W trybie incognito Twoja aktywność <ph name="BEGIN_BOLD1" />może być nadal widoczna<ph name="END_BOLD1" /> dla odwiedzanych stron, Twojego pracodawcy lub szkoły oraz dostawcy internetu.
-
-Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOLD2" />zamknięciu wszystkich kart incognito<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">W dowolnej chwili w Ustawieniach możesz zmienić domyślną lokalizację pobierania</translation>
 <translation id="694267552845942083">W tej chwili dostosowujesz ustawienia synchronizacji. Aby zakończyć włączanie synchronizacji, na dole ekranu kliknij przycisk Potwierdź. Przejdź wyżej</translation>
 <translation id="6945221475159498467">Wybierz</translation>
@@ -1088,9 +1076,6 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7971136598759319605">Aktywność 1 dzień temu</translation>
 <translation id="7975379999046275268">Wyświetl podgląd strony <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Ładuj wstępnie strony, by przyspieszyć przeglądanie i wyszukiwanie</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Piaskownica prywatności<ph name="END_LINK" /> to inicjatywa, która ma na celu rozwijanie nowych technologii chroniących użytkowników przed mechanizmami śledzącymi, zapewniając jednocześnie otwartą sieć.
-
-Prace nad rozwojem Piaskownicy prywatności wciąż trwają, więc wersja próbna jest dostępna w wybranych regionach. Teraz witryny mogą ją wypróbować, korzystając nadal z obecnie stosowanych technologii sieciowych takich jak pliki cookie innych firm.</translation>
 <translation id="7986497153528221272">Aby wyświetlić hasła, najpierw ustaw blokadę ekranu na urządzeniu</translation>
 <translation id="7998918019931843664">Otwórz ponownie zamkniętą kartę</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>

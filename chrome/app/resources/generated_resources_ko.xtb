@@ -157,10 +157,8 @@
 <translation id="116173250649946226">관리자가 기본 테마를 설정했으며, 이는 수정할 수 없습니다.</translation>
 <translation id="1163931534039071049">프레임 소스 보기(&amp;V)</translation>
 <translation id="1164891049599601209">사기성 사이트에서 입력됨</translation>
-<translation id="1164899421101904659">PIN 잠금 해제 키 입력</translation>
 <translation id="1165039591588034296">오류</translation>
 <translation id="1166212789817575481">오른쪽 탭 닫기</translation>
-<translation id="116624467691206283">잘못된 PUK입니다. 기회가 1번 남았습니다.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> 후에 파일이 열립니다...</translation>
 <translation id="1168100932582989117">Google 네임서버</translation>
 <translation id="1170288591054440704">사이트에서 기기에 설치된 글꼴을 사용하려고 할 때 확인</translation>
@@ -1213,7 +1211,6 @@
     전송 문제를 해결하는 데 도움이 필요하다면
     <ph name="BEGIN_LINK" />
 고객센터<ph name="END_LINK" />를 확인하세요.</translation>
-<translation id="2265889263013046172">잘못된 PUK입니다. <ph name="RETRIES" />번 더 실패하면 이동통신사에 문의하여 네트워크 액세스 권한을 다시 받아야 합니다.</translation>
 <translation id="22665427234727190">사이트에서 블루투스 기기에 액세스하려고 할 때 확인(권장)</translation>
 <translation id="2266957463645820432">USB를 통한 IPP(IPPUSB)</translation>
 <translation id="2270450558902169558">도메인 <ph name="DOMAIN" />에 있는 모든 기기와 데이터 교환</translation>
@@ -1497,7 +1494,6 @@
 <translation id="2553440850688409052">이 플러그인 숨기기</translation>
 <translation id="2554553592469060349">선택한 파일이 너무 큽니다(최대 크기: 3MB).</translation>
 <translation id="2558896001721082624">시스템 메뉴에 접근성 옵션 항상 표시</translation>
-<translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" />에 로그인되어 있지 않습니다.</translation>
 <translation id="2564520396658920462">AppleScript를 통한 자바스크립트 실행 기능이 꺼져 있습니다. 이 기능을 사용하도록 설정하려면 메뉴 바에서 보기 &gt; 개발자 &gt; Apple Events의 자바스크립트 허용으로 이동하세요. 자세한 내용은 다음 페이지에서 확인하세요. https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">향상된 맞춤법 검사</translation>
 <translation id="2568774940984945469">정보 표시줄 컨테이너</translation>
@@ -2411,7 +2407,6 @@
 <translation id="3569407787324516067">화면 보호기</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />에서 다음 파일과 폴더를 볼 수 있습니다.</translation>
 <translation id="3571734092741541777">설정</translation>
-<translation id="3574210789297084292">로그인</translation>
 <translation id="3575121482199441727">이 사이트에 허용</translation>
 <translation id="3576324189521867626">설치되었습니다.</translation>
 <translation id="3578594933904494462">이 탭의 콘텐츠를 공유 중입니다.</translation>
@@ -2862,7 +2857,6 @@
 <translation id="4022426551683927403">사전에 추가(&amp;A)</translation>
 <translation id="4023146161712577481">기기 설정을 확인합니다.</translation>
 <translation id="4025039777635956441">선택한 사이트 음소거</translation>
-<translation id="4027804175521224372">(로그인하지 않음 - <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">입력 방법 추가</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> 페이지에서 돌아오기</translation>
 <translation id="4031179711345676612">마이크 허용됨</translation>
@@ -3806,7 +3800,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">하드 디스크가 가득 찼습니다. 다른 위치에 저장하거나 하드 디스크에 더 많은 공간을 확보하시기 바랍니다.</translation>
 <translation id="5123433949759960244">농구공</translation>
-<translation id="5125167430897995218">잘못된 PUK입니다. 1번 더 실패하면 이동통신사에 문의하여 네트워크 액세스 권한을 다시 받아야 합니다.</translation>
 <translation id="5125751979347152379">잘못된 URL입니다.</translation>
 <translation id="5126611267288187364">변경사항 보기</translation>
 <translation id="5127620150973591153">보안 연결 ID: <ph name="TOKEN" /></translation>
@@ -4054,7 +4047,6 @@
 <translation id="540296380408672091"><ph name="HOST" />에서 쿠키 항상 차단</translation>
 <translation id="540495485885201800">이전 항목과 교환</translation>
 <translation id="5405146885510277940">설정 초기화</translation>
-<translation id="5407119150486192764">이동통신사에서 제공하는 8자리 PIN을 입력하여 키 차단 해제</translation>
 <translation id="5407167491482639988">알아들을 수 없음</translation>
 <translation id="5408750356094797285">확대/축소: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Google 계정에서 삭제</translation>
@@ -6623,7 +6615,6 @@
 <translation id="8206745257863499010">음악</translation>
 <translation id="8206859287963243715">휴대전화</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{새 알림}other{새 알림 #개}}</translation>
-<translation id="8211551284753798479">잘못된 PUK입니다. 기회가 <ph name="RETRIES" />번 남았습니다.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{다운로드 진행 중}other{다운로드 진행 중}}</translation>
 <translation id="8213449224684199188">사진 모드 시작됨</translation>
 <translation id="8214489666383623925">파일 열기...</translation>

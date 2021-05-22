@@ -275,6 +275,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2781151931089541271">1 másodperc van hátra</translation>
 <translation id="2801022321632964776">Frissítsen, hogy a saját nyelvén használhassa a Chrome legújabb verzióját</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Mentett jelszavait megtekintheti és kezelheti <ph name="BEGIN_LINK" />Google-fiókjában<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Ha az összes eszközén szeretné elérni könyvjelzőit, jelentkezzen be, és kapcsolja be a szinkronizálást</translation>
 <translation id="2827278682606527653">A hírcsatornakártya menüje félmagasságban van megnyitva</translation>
@@ -396,7 +397,6 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="3568688522516854065">Ha a többi eszközén is szeretné elérni lapjait, jelentkezzen be, és kapcsolja be a szinkronizálást</translation>
 <translation id="3587482841069643663">Mind</translation>
 <translation id="3587596251841506391">Legyen biztonságos a böngészés</translation>
-<translation id="3598653140581545904">Inkognitó mód használata a bejelentkezéshez</translation>
 <translation id="3602290021589620013">Előnézet</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Megosztás a következővel: <ph name="DEVICE_NAME" /></translation>
@@ -459,6 +459,7 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="4056223980640387499">Szépia</translation>
 <translation id="4060598801229743805">A lehetőségek a képernyő tetején találhatók</translation>
 <translation id="4062305924942672200">Jogi információk</translation>
+<translation id="4082818367361753283">Csoportazonosító</translation>
 <translation id="4084682180776658562">Könyvjelző</translation>
 <translation id="4084712963632273211">A következőtől: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />megjelenítette a Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Törli az alkalmazásadatokat?</translation>
@@ -760,7 +761,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5964805880140440652">Úgy oszthatja meg az oldalt más eszközzel, hogy bekapcsolja rajta a szinkronizálást a Chrome beállításai között</translation>
 <translation id="5964869237734432770">Képleírások leállítása</translation>
 <translation id="5979084224081478209">Jelszavak ellenőrzése</translation>
-<translation id="5982307838673692400">Inkognitó lap megnyitása</translation>
 <translation id="6000066717592683814">A Google megtartása</translation>
 <translation id="6000203700195075278">Újrakövetés</translation>
 <translation id="6002623704405939939">A <ph name="BEGIN_LINK1" />keresések<ph name="END_LINK1" /> vagy más előzmények törléséhez keresse fel a <ph name="BEGIN_LINK2" />Saját Google-tevékenységek<ph name="END_LINK2" /> oldalt</translation>
@@ -802,13 +802,13 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6277522088822131679">Hiba történt az oldal nyomtatásakor. Próbálja újra.</translation>
 <translation id="6278428485366576908">Téma</translation>
 <translation id="6292420053234093573">A Chrome használatával elfogadja a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />A Google Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Fiók</translation>
 <translation id="6297765934698848803">Az eszközét kezelő szervezet kikapcsolta a kamerát.</translation>
 <translation id="6301525844455696527">Ne feledkezzen meg az olvasási listájáról</translation>
 <translation id="6303969859164067831">Kijelentkezés, és a szinkronizálás kikapcsolása</translation>
 <translation id="6312687380483398334">Webalkalmazások (csendes)</translation>
 <translation id="6316139424528454185">Nem támogatott Android-verzió</translation>
 <translation id="6324034347079777476">Az Android rendszer szinkronizálása letiltva</translation>
+<translation id="6324916366299863871">Billentyűparancs szerkesztése</translation>
 <translation id="6324977638108296054">Nem sikerült linket létrehozni a kiemelt szöveghez</translation>
 <translation id="6324997754869598316">(Hiba: <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Megosztás a következőn keresztül: <ph name="APPLICATION" /></translation>
@@ -913,9 +913,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6900532703269623216">Speciális védelem</translation>
 <translation id="6903907808598579934">Szinkronizálás bekapcsolása</translation>
 <translation id="6929699136511445623">Az Android rendszer szinkronizálásának engedélyezése</translation>
-<translation id="6941901516114974832">Előfordulhat, hogy inkognitó módban tevékenységei <ph name="BEGIN_BOLD1" />láthatók maradnak<ph name="END_BOLD1" /> a felkeresett webhelyek, az Ön munkáltatója vagy iskolája, illetve internetszolgáltatója számára.
-
-Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkognitólap bezárásával<ph name="END_BOLD2" /> törlődnek a Chrome-ból.</translation>
 <translation id="6942665639005891494">Az alapértelmezett letöltési helyet bármikor módosíthatja a Beállítások menüben</translation>
 <translation id="694267552845942083">Jelenleg a szinkronizálási beállításokat szabja személyre. A szinkronizálás bekapcsolásának véglegesítéséhez koppintson a képernyő alján található Megerősítés gombra. Fel</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
@@ -1188,7 +1185,9 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="8662811608048051533">A rendszer a legtöbb webhelyről kijelentkezteti Önt.</translation>
 <translation id="8664979001105139458">Már van ilyen nevű fájl</translation>
 <translation id="8676789164135894283">Bejelentkezési hitelesítések</translation>
+<translation id="867767487203716855">Következő frissítés</translation>
 <translation id="8683039184091909753">kép</translation>
+<translation id="8683081248374354009">Csoport visszaállítása</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Jelerősség szintje: # sáv}other{Jelerősség szintje: # sáv}}</translation>
 <translation id="869891660844655955">Lejárati dátum</translation>
 <translation id="8699120352855309748">Ne ajánlja fel a fordítást ezekről a nyelvekről</translation>

@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Administrator je podesio podrazumevanu temu koja ne može da se menja.</translation>
 <translation id="1163931534039071049">&amp;Prikaži izvor okvira</translation>
 <translation id="1164891049599601209">Uneto je na obmanjujućem sajtu</translation>
-<translation id="1164899421101904659">Unesite šifru za otključavanje PIN-a</translation>
 <translation id="1165039591588034296">Greška</translation>
 <translation id="1166212789817575481">Zatvori kartice sa desne strane</translation>
-<translation id="116624467691206283">Nevažeći PUK. Imate još 1 pokušaj.</translation>
 <translation id="1168020859489941584">Otvaranje za <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Google serveri naziva</translation>
 <translation id="1170288591054440704">Pitaj kada sajt želi da koristi fontove instalirane na uređaju</translation>
@@ -1197,7 +1195,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2263189956353037928">Odjavi me i ponovo me prijavi</translation>
 <translation id="2263371730707937087">Učestalost osvežavanja ekrana</translation>
 <translation id="2263679799334060788">Povratne informacije nam pomažu da poboljšamo Google Cast i zahvalni smo vam na njima. Da biste rešili probleme sa prebacivanjem, posetite <ph name="BEGIN_LINK" />centar za pomoć<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Netačan PUK. Imate još <ph name="RETRIES" /> pokušaja, a onda morate da se obratite mobilnom operateru da biste ponovo dobili pristup mreži.</translation>
 <translation id="22665427234727190">Pitaj kada sajt želi da pristupa Bluetooth uređajima (preporučeno)</translation>
 <translation id="2266957463645820432">IPP preko USB-a (IPPUSB)</translation>
 <translation id="2270450558902169558">Razmena podataka sa bilo kojim uređajem na domenu <ph name="DOMAIN" /></translation>
@@ -1481,7 +1478,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2553440850688409052">Sakrij ovaj dodatak</translation>
 <translation id="2554553592469060349">Izabrana datoteka je prevelika (maksimalna veličina: 3 MB).</translation>
 <translation id="2558896001721082624">Uvek prikazuj opcije pristupačnosti u sistemskom meniju</translation>
-<translation id="2562743677925229011">Niste prijavljeni na <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Izvršavanje JavaScript-a pomoću AppleScript-a je isključeno. Da biste ga uključili, na traci menija izaberite View &gt; Developer &gt; Allow JavaScript from Apple Events (Prikaz &gt; Programer &gt; Dozvoli JavaScript iz Apple Events-a). Dodatne informacije: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Poboljšana provera pravopisa</translation>
 <translation id="2568774940984945469">Kontejner trake sa informacijama</translation>
@@ -2395,7 +2391,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3569407787324516067">Čuvar ekrana</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> može da pregleda datoteke i direktorijume u nastavku</translation>
 <translation id="3571734092741541777">Podesi</translation>
-<translation id="3574210789297084292">prijavi me</translation>
 <translation id="3575121482199441727">Dozvoli za ovaj sajt</translation>
 <translation id="3576324189521867626">Instalirano je</translation>
 <translation id="3578594933904494462">Sadržaj ove kartice se deli.</translation>
@@ -2846,7 +2841,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4022426551683927403">&amp;Dodaj u rečnik</translation>
 <translation id="4023146161712577481">Utvrđivanje konfiguracije uređaja.</translation>
 <translation id="4025039777635956441">Isključi zvuk izabranog sajta</translation>
-<translation id="4027804175521224372">(Propuštate – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Dodaj metode unosa</translation>
 <translation id="4029556917477724407">Nazad sa stranice <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofon je dozvoljen</translation>
@@ -3792,7 +3786,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Hard-disk je pun. Sačuvajte na drugu lokaciju ili napravite više prostora na hard-disku.</translation>
 <translation id="5123433949759960244">Košarkaška lopta</translation>
-<translation id="5125167430897995218">Netačan PUK. Imate još 1 pokušaj, a onda morate da se obratite mobilnom operateru da biste ponovo dobili pristup mreži.</translation>
 <translation id="5125751979347152379">Nevažeća URL adresa.</translation>
 <translation id="5126611267288187364">Pregledajte promene</translation>
 <translation id="5127620150973591153">ID bezbedne veze: <ph name="TOKEN" /></translation>
@@ -4040,7 +4033,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="540296380408672091">Uvek blokiraj kolačiće na <ph name="HOST" /></translation>
 <translation id="540495485885201800">Zameni prethodnim</translation>
 <translation id="5405146885510277940">Resetujte podešavanja</translation>
-<translation id="5407119150486192764">Unesite osmocifrenu šifru za otključavanje PIN-a koju pruža mobilni operater</translation>
 <translation id="5407167491482639988">Nerazumljiv</translation>
 <translation id="5408750356094797285">Zumirajte: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Sa Google naloga</translation>
@@ -6607,7 +6599,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8206745257863499010">Bluzi</translation>
 <translation id="8206859287963243715">Mobilni uređaj</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Novo obaveštenje}one{# novo obaveštenje}few{# nova obaveštenja}other{# novih obaveštenja}}</translation>
-<translation id="8211551284753798479">Nevažeći PUK. Preostalih pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Preuzimanje je u toku}one{Preuzimanja su u toku}few{Preuzimanja su u toku}other{Preuzimanja su u toku}}</translation>
 <translation id="8213449224684199188">Aktiviran je režim slika</translation>
 <translation id="8214489666383623925">Otvori datoteku...</translation>

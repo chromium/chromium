@@ -64,7 +64,6 @@
 <translation id="6063091872902370735">Consenti l'accesso a Chrome</translation>
 <translation id="6181930887571472871">Passa a Chrome</translation>
 <translation id="6238746320622508509">Consenti a Chrome di bloccare le schede di navigazione in incognito.</translation>
-<translation id="6573431926118603307">Le schede aperte in Chrome sugli altri dispositivi verranno visualizzate qui.</translation>
 <translation id="6600954340915313787">Copiata in Chrome</translation>
 <translation id="6634107063912726160">Se esci, Chrome non sincronizzerà gli eventuali nuovi dati con il tuo Account Google. I dati sincronizzati in precedenza rimangono memorizzati nell'account.</translation>
 <translation id="6648150602980899529">Stai per eseguire l'accesso con un account gestito da <ph name="DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chrome. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chrome, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
@@ -78,7 +77,6 @@
 <translation id="7172660552945675509">Suggerimento. <ph name="BEGIN_LINK" />Sposta Chrome nel dock<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome utilizza Face ID per garantire accesso autorizzato alle tue password.</translation>
 <translation id="7261678641327190792">Chrome non può controllare le tue password</translation>
-<translation id="7265369419224458312">Accedi alle schede che hai aperto sul computer direttamente qui. Apri Chrome sul computer, apri il menu e seleziona "Accedi a Chrome…".</translation>
 <translation id="7272930098487145294">Per salvare le immagini, tocca Impostazioni e consenti a Chrome di aggiungere le tue foto</translation>
 <translation id="7275945473750112644">Il tuo account è gestito da <ph name="HOSTED_DOMAIN" />, pertanto i tuoi dati di Chrome verranno cancellati da questo dispositivo</translation>
 <translation id="7400722733683201933">Informazioni su Google Chrome</translation>

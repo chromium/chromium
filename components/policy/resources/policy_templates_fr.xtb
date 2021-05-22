@@ -1108,13 +1108,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2448315169529769573">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> envoie à Google les statistiques d'utilisation et les données de diagnostic, y compris les rapports d'erreur. Si cette règle est désactivée, ces statistiques et ces données ne sont pas envoyées.
 
        Si cette règle n'est pas configurée, les statistiques et les données de diagnostic ne sont pas envoyées concernant les appareils non gérés, mais le sont pour les appareils gérés.</translation>
-<translation id="2449263772062368618">Configure une liste des types de données de navigation devant être supprimés à la fermeture du navigateur.
-      Les types de données disponibles sont les suivants : historique de navigation (<ph name="DATA_TYPE_BROWSING_HISTORY" />), historique des téléchargements (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), saisie automatique (<ph name="DATA_TYPE_AUTOFILL" />), mots de passe (<ph name="DATA_TYPE_PASSWORD" />), paramètres des sites (<ph name="DATA_TYPE_SITE_SETTINGS" />) et données des applications hébergées (<ph name="DATA_TYPE_HOSTED_APP_DATA" />).
-      Cette règle ne prévaut pas sur la règle <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-      Cette règle nécessite que la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> soit définie sur "True". Si ce n'est pas le cas, elle sera ignorée.
-      Si cette règle est définie au niveau de la plate-forme, la synchronisation devra y être désactivée.
-      Si cette règle est définie au niveau d'un utilisateur, la synchronisation devra être désactivée au niveau de cet utilisateur pour que la règle prenne effet.
-      </translation>
 <translation id="244950822854046436">Liste des paramètres à appliquer au <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsqu'un fichier est téléchargé.
 
       Les champs "<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" permettent de déterminer si le connecteur doit envoyer un fichier au fournisseur de services lors du téléchargement à partir d'une page Web. L'URL de la page Web doit correspondre à un format associé à un format "enable" et non "disable".  Le type MIME du fichier doit également correspondre à un format associé à un format "enable" et non "disable".
@@ -2103,11 +2096,11 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si ces règles ne sont pas configurées, les utilisateurs peuvent choisir eux-mêmes leurs paramètres de proxy.</translation>
 <translation id="3758249152301468420">Désactiver les outils de développement</translation>
-<translation id="3759650373178711405">Si la règle <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> est configurée, vous pouvez dresser la liste des formats d'URL indiquant les sites autorisés ou non à placer des cookies lors d'une session, sauf si la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> est définie pour restaurer définitivement les URL des sessions précédentes.
+<translation id="3759650373178711405">La règle <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> vous permet de dresser la liste des formats d'URL indiquant les sites autorisés ou non à placer des cookies lors d'une session, à moins que la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> soit définie pour restaurer définitivement les URL des sessions précédentes.
 
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> est utilisée pour tous les sites (à condition qu'elle soit configurée). Sinon, le paramètre défini par l'utilisateur s'applique. Si le format d'URL concerné ne figure pas dans la liste établie, le paramètre par défaut est utilisé.
+      Si cette règle n'est pas configurée, <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> est utilisé pour tous les sites (si configuré). Sinon, le paramètre défini par l'utilisateur s'applique. Si le format d'URL concerné ne figure pas dans la liste établie, le paramètre par défaut est utilisé.
 
-      Même si aucune règle spécifique ne prévaut, consultez les règles <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> et <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. En revanche, les formats d'URL parmi ces trois règles ne doivent pas être en conflit.</translation>
+      Lorsqu'aucune règle spécifique ne prévaut, consultez <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> et <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Les formats d'URL entre ces trois règles ne doivent pas être en conflit.</translation>
 <translation id="3760148113224469113">Toujours demander aux utilisateurs de confirmer les invites de protocoles externes</translation>
 <translation id="3760231600118073732">Verrouiller la session en cours.</translation>
 <translation id="3761222804122755011">WebRTC utilisera uniquement l'interface pour se connecter à l'Internet public, mais pourra se connecter à l'aide d'adresses IP privées.</translation>
@@ -2196,9 +2189,9 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Les utilisateurs ne peuvent pas supprimer un gestionnaire de protocoles enregistré par une règle. Toutefois, l'installation d'un nouveau gestionnaire par défaut leur permet de modifier les gestionnaires de protocoles installés par une règle.</translation>
 <translation id="3857816702027059082">Activer <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> pour une liste d'URL.
 
-      La définition de cette règle indique quelles URL doivent être autorisées à faire partie du flux d'attestation pour obtenir l'ensemble de signaux depuis la machine.
+      Cette règle indique quelles URL doivent être autorisées à faire partie du parcours d'attestation visant à obtenir l'ensemble de signaux auprès de la machine.
 
-      Si cette règle n'est pas configurée ou qu'elle est vide, aucun point de terminaison ne peut démarrer le flux d'attestation ni obtenir de signaux depuis la machine.
+      Si cette règle n'est pas configurée ou qu'elle est vide, aucun point de terminaison ne peut lancer le parcours d'attestation ni obtenir de signaux auprès de la machine.
 
       Les URL doivent être au format HTTPS, comme "https://example.com".
 
@@ -2482,15 +2475,15 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4248277954659222481">Autoriser la lecture automatique des contenus multimédias pour les formats d'URL sur liste d'autorisation</translation>
 <translation id="4250680216510889253">Non</translation>
 <translation id="4261820385751181068">Paramètres régionaux de l'écran de connexion de l'appareil</translation>
-<translation id="4266547484666068234">Si cette règle est configurée, l'accès aux URL répertoriées comme exceptions à <ph name="URL_BLOCKLIST_POLICY_NAME" /> est autorisé. Consultez la description de la règle pour connaître le format des entrées de cette liste. Par exemple, définir la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> sur "*" entraîne le blocage de toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à un nombre limité d'URL. Cela vous permet d'ouvrir des exceptions pour certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines utilisant le format spécifié à la page https://www.chromium.org/administrators/url-blocklist-filter-format. Le filtre le plus spécifique détermine si une URL est bloquée ou non. La règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> prévaut sur la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
+<translation id="4266547484666068234">Configurer cette règle autorise l'accès aux URL répertoriées (prévaut sur <ph name="URL_BLOCKLIST_POLICY_NAME" />). Consultez la description de la règle pour connaître le format des entrées de cette liste. Par exemple, définir <ph name="URL_BLOCKLIST_POLICY_NAME" /> sur "*" bloque toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à une liste limitée d'URL. Utilisez-la pour définir des exceptions à certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines à l'aide du format spécifié sur https://www.chromium.org/administrators/url-blocklist-filter-format. Le filtre le plus spécifique détermine si une URL est bloquée ou autorisée. La règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> prévaut sur <ph name="URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
 
-      Elle permet également d'autoriser ou non le navigateur d'une application externe enregistrée comme gestionnaire de protocoles à appeler automatiquement les protocoles répertoriés tels que "tel:" ou "ssh:".
+      Elle permet aussi d'autoriser le navigateur d'une application externe enregistrée comme gestionnaire de protocoles à appeler automatiquement les protocoles répertoriés tels que "tel:" ou "ssh:".
 
-      Si cette règle n'est pas configurée, aucune exception n'est autorisée pour <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+      Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLIST_POLICY_NAME" /> n'est autorisée.
 
       À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode sans interface graphique.
 
-      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
+      Sous <ph name="MS_WIN_NAME" />, cette fonctionnalité n'est disponible que sur les instances jointes à un domaine <ph name="MS_AD_NAME" />, s'exécutant sous Windows 10 Pro ou bénéficiant de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou jointes à un domaine via MCX.</translation>
 <translation id="4269859918103560644">Laisser l'utilisateur décider</translation>
 <translation id="4274691295133617461">Si cette règle est définie sur "3", les sites Web peuvent demander l'accès en lecture aux fichiers et répertoires qui figurent dans le système de fichiers du système d'exploitation hôte via l'API File System. Si cette règle est définie sur "2", l'accès est refusé.
 
@@ -3019,13 +3012,6 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Si cette règle n'est pas configurée, aucun site Web n'est ajouté à la liste.
 
       Remarque : Vous pouvez également utiliser la règle <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> pour ajouter des éléments à cette liste.</translation>
-<translation id="5065753964276395784">Cette règle étant obsolète, veuillez utiliser la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> à la place.
-
-       Si cette règle est configurée, <ph name="PRODUCT_NAME" /> contourne tout proxy de la liste d'hôtes indiquée ici. Elle ne s'applique que si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> n'est pas spécifiée et si vous avez sélectionné l'option <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> dans la règle <ph name="PROXY_MODE_POLICY_NAME" />.
-
-       Ne configurez pas cette règle si vous avez sélectionné un autre mode pour spécifier les règles de proxy.
-
-       Remarque : Pour consulter des exemples détaillés, accédez au site The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="5067143124345820993">Liste des utilisateurs autorisés à se connecter</translation>
 <translation id="5073609397321802133">Si cette règle est définie sur "False", les utilisateurs ne peuvent pas personnaliser l'arrière-plan sur la page "Nouvel onglet". Tout arrière-plan personnalisé actuel sera définitivement supprimé, même si la règle est définie sur "True" par la suite.
 
@@ -3100,11 +3086,11 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les options liées au proxy spécifiées à partir de la ligne de commande.
 
           Si cette règle n'est pas configurée, les utilisateurs peuvent choisir eux-mêmes leurs paramètres de proxy.</translation>
-<translation id="5172841243186654432">Si la règle <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> est configurée, vous pouvez dresser la liste des formats d'URL indiquant les sites autorisés ou non à placer des cookies lors d'une session, sauf si la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> est définie pour restaurer définitivement les URL des sessions précédentes.
+<translation id="5172841243186654432">La règle <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> vous permet de dresser la liste des formats d'URL indiquant les sites autorisés ou non à placer des cookies lors d'une session, à moins que la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> soit définie pour restaurer définitivement les URL des sessions précédentes.
 
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> est utilisée pour tous les sites (à condition qu'elle soit configurée). Sinon, le paramètre défini par l'utilisateur s'applique. Si le format d'URL concerné ne figure pas dans la liste établie, le paramètre par défaut est utilisé.
+      Si cette règle n'est pas configurée, <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> est utilisé pour tous les sites (si configuré). Sinon, le paramètre défini par l'utilisateur s'applique. Si le format d'URL concerné ne figure pas dans la liste établie, le paramètre par défaut est utilisé.
 
-      Même si aucune règle spécifique ne prévaut, consultez les règles <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> et <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. En revanche, les formats d'URL parmi ces trois règles ne doivent pas être en conflit.
+      Lorsqu'aucune règle spécifique ne prévaut, consultez <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> et <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Les formats d'URL entre ces trois règles ne doivent pas être en conflit.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur "<ph name="WILDCARD_VALUE" />" n'est pas acceptée pour cette règle.</translation>
 <translation id="5177260184597743704">Règle de configuration du connecteur Chrome Enterprise OnSecurityEvent</translation>
@@ -3181,26 +3167,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, le mode bureau unifié est désactivé, et les utilisateurs ne peuvent pas l'activer.</translation>
 <translation id="5255162913209987122">Peut être recommandée</translation>
 <translation id="5257395339965216304">Données des applications hébergées</translation>
-<translation id="5264066441613395613">Cette règle permet de configurer les paramètres de proxy pour Chrome et les applications ARC, qui ignorent toutes les options liées au proxy spécifiées à partir de la ligne de commande.
-
-       Si cette règle n'est pas configurée, les utilisateurs peuvent sélectionner les paramètres de proxy.
-
-       Si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> est configurée, les champs suivants sont proposés :
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> : vous permet de spécifier le serveur proxy que Chrome utilise et empêche les utilisateurs de modifier les paramètres de proxy
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> : URL d'un fichier .pac de proxy
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> : URL du serveur proxy
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> : liste d'hôtes proxy que <ph name="PRODUCT_NAME" /> contourne
-
-       Le champ <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> est obsolète et a été remplacé par le champ <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> (qui vous permet de définir le serveur proxy que Chrome utilise et qui empêche les utilisateurs de modifier les paramètres de proxy).
-
-        Dans la règle <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, si vous sélectionnez :
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, la connexion s'effectue directement sans aucun proxy et tous les autres champs sont ignorés ;
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, le proxy du système est utilisé et tous les autres champs sont ignorés ;
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tous les autres champs sont ignorés ;
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />, les champs <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> et <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> sont utilisés ;
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, les champs <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> et <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> sont utilisés.
-
-      Remarque : Pour consulter des exemples détaillés, accédez au site The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="5266173014392157048">Cette règle est obsolète (veuillez utiliser la règle "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />" à la place).
 
       Elle permet de spécifier les serveurs que <ph name="PRODUCT_NAME" /> est susceptible d'utiliser. Séparez les noms des serveurs par une virgule. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
@@ -4565,11 +4531,11 @@ Si vous sélectionnez les options suivantes :
       * PasswordProtectionWarningOnPhishingReuse, l'avertissement est affiché lorsque les utilisateurs réutilisent leur mot de passe protégé sur un site d'hameçonnage.
 
       Si cette règle n'est pas configurée, le service de protection par mot de passe ne protège que les mots de passe Google. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
-<translation id="6969079025604591591">Si cette règle est activée ou qu'elle n'est pas configurée, la règle d'intégrité du code du moteur de rendu est activée.
+<translation id="6969079025604591591">Si cette règle est activée ou qu'elle n'est pas configurée, l'Intégrité du code du moteur de rendu est activée.
 
-      Si elle est désactivée, cela aura une incidence sur la sécurité et la stabilité de <ph name="PRODUCT_NAME" />, car des codes inconnus et potentiellement dangereux pourront être chargés dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec le logiciel tiers qui doit s'exécuter dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />.
+      Si elle est désactivée, cela altère la sécurité et la stabilité de <ph name="PRODUCT_NAME" />, car des codes inconnus et potentiellement hostiles pourront être chargés dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec des logiciels tiers devant s'exécuter dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />.
 
-      Remarque : Consultez la page https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus sur les règles concernant la protection des processus.</translation>
+      Remarque : Consultez la page https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus sur les règles d'atténuation des risques liés aux processus.</translation>
 <translation id="6969131408525928234">Permet de désactiver l'application des exigences de divulgation stipulées dans les règles de transparence des certificats pour les noms d'hôte dans la liste d'URL spécifiées. Même si cela complique la détection des certificats qui ne sont pas émis correctement, les hôtes peuvent continuer d'utiliser des certificats qui ne seraient sinon pas jugés fiables (pour ne pas avoir été communiqués au public comme il se doit).
 
       Si cette règle n'est pas configurée, cela signifie que si les certificats ne sont pas communiqués tel que le prévoient les règles de transparence des certificats, <ph name="PRODUCT_NAME" /> considère alors qu'ils ne sont pas fiables.
@@ -5813,9 +5779,9 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si cette règle est définie sur "True", les onglets en arrière-plan depuis au moins cinq minutes peuvent être figés. En figeant ces onglets, vous sollicitez moins le processeur, la batterie et la mémoire. <ph name="PRODUCT_NAME" /> utilise des heuristiques pour ne pas figer les onglets qui exécutent une tâche utile en arrière-plan (par exemple, l'affichage de notifications, la lecture audio d'un contenu, la diffusion d'une vidéo en streaming). Notez que les développeurs Web peuvent également choisir de ne pas figer les pages de leur site (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Si cette règle est définie sur "False", aucun onglet n'est figé.</translation>
-<translation id="8619480582976056396">Si cette règle est configurée, les pages Web avec des URL interdites ne peuvent pas se charger. Cette règle fournit une liste de formats d'URL précisant les URL interdites. Si elle n'est pas configurée, aucune URL n'est interdite dans le navigateur. Les formats d'URL doivent respecter les conditions énoncées à la page https://www.chromium.org/administrators/url-blocklist-filter-format. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+<translation id="8619480582976056396">Configurer cette règle empêche les pages Web ayant des URL interdites de se charger. Cette règle fournit une liste de formats d'URL précisant les URL interdites. Si elle n'est pas configurée, aucune URL n'est interdite dans le navigateur. Les formats d'URL doivent respecter les conditions énoncées à la page https://www.chromium.org/administrators/url-blocklist-filter-format. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />.
 
-      À compter de la version 73 de <ph name="PRODUCT_NAME" />, vous pouvez bloquer les URL javascript://*. Toutefois, cela ne concerne que le code JavaScript saisi dans la barre d'adresse (ou, par exemple, les favoris intelligents). Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages si les données sont chargées dynamiquement. Par exemple, si vous bloquez "example.com/abc", la page example.com pourra quand même charger "example.com/abc" via une requête XMLHTTPRequest.
+      À compter de la version 73 de <ph name="PRODUCT_NAME" />, vous pouvez bloquer les URL javascript://*. Toutefois, cela ne concerne que le JavaScript saisi dans la barre d'adresse (ou, par exemple, les favoris intelligents). Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages si les données sont chargées dynamiquement. Par exemple, si vous bloquez "example.com/abc", la page example.com pourra quand même charger "example.com/abc" via une requête XMLHTTPRequest.
 
       À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode sans interface graphique.
 
@@ -6306,11 +6272,11 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
       Remarque : le blocage des URL internes chrome://* peut provoquer des erreurs inattendues.</translation>
 <translation id="957778406002650056">URL depuis laquelle l'image de <ph name="PLUGIN_VM_NAME" /> peut être téléchargée.</translation>
 <translation id="974349541138387272">Permet de définir le modèle URI du résolveur DNS-over-HTTPS souhaité</translation>
-<translation id="980218166381006412">Si vous activez cette règle, le mode arrière-plan est activé. Dans ce mode, un processus <ph name="PRODUCT_NAME" /> est lancé lors de la connexion du système d'exploitation. Ce processus ne se termine que lorsque la dernière fenêtre du navigateur est fermée, ce qui permet aux applications en arrière-plan et à la session de navigation de rester actives. Le processus en arrière-plan affiche une icône dans la barre d'état système, qui vous permet d'arrêter le processus.
+<translation id="980218166381006412">Activer cette règle active le mode arrière-plan. Dans ce mode, un processus <ph name="PRODUCT_NAME" /> est lancé lors de la connexion à l'OS. Il ne se termine que lorsque la dernière fenêtre du navigateur est fermée, ce qui permet aux applis en arrière-plan et à la session de navigation de rester actives. Le processus en arrière-plan affiche une icône dans la barre d'état système, d'où il est peut être arrêté à tout moment.
 
-      Si vous désactivez cette règle, le mode arrière-plan est désactivé.
+      Désactiver cette règle désactive le mode arrière-plan.
 
-      Si vous la configurez, les utilisateurs ne peuvent pas la modifier dans les paramètres du navigateur. Si vous ne la configurez pas, le mode arrière-plan est désactivé, mais les utilisateurs peuvent l'activer.</translation>
+      Si vous la configurez, les utilisateurs ne peuvent pas la modifier dans les paramètres du navigateur. Si vous ne la configurez pas, le mode arrière-plan est désactivé d'office, mais les utilisateurs peuvent l'activer.</translation>
 <translation id="981346395360763138">Services de localisation Google</translation>
 <translation id="982497069985795632">Activer la vérification orthographique</translation>
 <translation id="983256325512298435">Établir la liste des protocoles pouvant lancer une application externe à partir d'origines répertoriées sans afficher d'invite</translation>

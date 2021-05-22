@@ -186,7 +186,6 @@
 <translation id="22320125457191592">ඔබ සඳහා</translation>
 <translation id="2234876718134438132">සමමුහුව සහ Google සේවා</translation>
 <translation id="2239812875700136898">Discover සඳහා විකල්ප බොත්තමෙන් ඔබේ කතා පාලන කරන්න</translation>
-<translation id="2251971221270904886">ක්‍රියාත්මක සහ තත්ත්වය සක්‍රිය විට, ඔබ සිටින සමූහයක් හෝ “කණ්ඩායම” තීරණය කිරීම සඳහා Chrome දින 7කට වඩා වැඩි ඔබගේ ගවේෂණ ඉතිහාසය භාවිත කරයි. වෙළඳ ප්‍රචාරකයන්ට සමූහය සඳහා වෙළඳ දැන්වීම් තේරිය හැකිය. ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය ඔබගේ උපාංගයේ පුද්ගලිකව තබා ගැනේ. මෙම අත්හදා බැලීම <ph name="BEGIN_LINK" />සමහර කලාප<ph name="END_LINK" /> තුළ පමණක් සක්‍රියයි.</translation>
 <translation id="2259659629660284697">මුරපද නිර්යාත කරන්න…</translation>
 <translation id="2276696007612801991">ඔබගේ මුරපද පරීක්ෂා කිරීමට ඔබගේ Google ගිණුමට පුරන්න</translation>
 <translation id="2278052315791335171">මෙම මුරපදය මැකීම <ph name="SITE" /> හි ඔබගේ ගිණුම මකන්නේ නැත</translation>
@@ -320,7 +319,6 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> පිටුසනක්}one{පිටුසන් <ph name="BOOKMARKS_COUNT_MANY" />ක්}other{පිටුසන් <ph name="BOOKMARKS_COUNT_MANY" />ක්}}</translation>
 <translation id="3062802207422175757">Chrome හි ඔබේ රුචිකත්ව ගැන ලිපි</translation>
 <translation id="3070005020161560471">ස්වයංක්‍රියව පරිවර්තනය කරන්න</translation>
-<translation id="3083531420240576529">ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. ඔබගේ සමූහය තීරණය කිරීමට දින 7ක් ගතවේ.</translation>
 <translation id="3091010850649238832">පසුරු පුවරු අන්තර්ගතය පෙන්වන්න</translation>
 <translation id="3098745985164956033">ඔබ සඳහා විස්තර වැඩි දියුණු කිරීම සඳහා සමහර පින්තූර Google වෙත යවනු ලැබේ</translation>
 <translation id="3114507951000454849">අද දවසේ <ph name="NEWS_ICON" /> පුවත් කියවන්න</translation>
@@ -399,7 +397,6 @@
 <translation id="3568688522516854065">ඔබගේ වෙනත් උපාංගවලින් ඔබගේ පටිති ලබා ගැනීමට, පුරනය වී සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="3587482841069643663">සියළු</translation>
 <translation id="3587596251841506391">වෙබයෙහි ආරක්ෂාව දියුණුවට උදව් ව.</translation>
-<translation id="3598653140581545904">පිරීමට අප්‍රසිද්ධ භාවිත කරන්න</translation>
 <translation id="3602290021589620013">පෙරදසුන</translation>
 <translation id="3616113530831147358">ශබ්ද</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> වෙත බෙදා ගැනීම</translation>
@@ -764,7 +761,6 @@
 <translation id="5964805880140440652">මෙම පිටුව වෙනත් උපාංගයට බෙදා ගැනීමට, Chrome සැකසීම් තුළ සමමුහූර්තය සක්‍රීය කරන්න</translation>
 <translation id="5964869237734432770">රූප විස්තර නවත්වන්න</translation>
 <translation id="5979084224081478209">මුරපද පරීක්‍ෂා කරන්න</translation>
-<translation id="5982307838673692400">අප්‍රසිද්ධ ටැබයක් විවෘත කරන්න</translation>
 <translation id="6000066717592683814">Keep Google</translation>
 <translation id="6000203700195075278">නැවත අනුගමනය කරන්න</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />සෙවීම්<ph name="END_LINK1" /> හෝ වෙනත් ආකාරවල ඉතිහාසය හිස් කිරීමට, <ph name="BEGIN_LINK2" />මගේ Google ක්‍රියාකාරකම්<ph name="END_LINK2" /> වෙත පිවිසෙන්න</translation>
@@ -806,13 +802,13 @@
 <translation id="6277522088822131679">මෙම පිටුව මුද්‍රණය කිරීමේ ගැටලුවක් විය. කරුණාකර නැවත උත්සාහ කරන්න.</translation>
 <translation id="6278428485366576908">තේමාව</translation>
 <translation id="6292420053234093573">Chrome භාවිත කිරීමෙන්, ඔබ <ph name="BEGIN_LINK1" />Google සේවා නියමවලට<ph name="END_LINK1" />, සහ <ph name="BEGIN_LINK2" />Google Chrome සහ Chrome OS අතිරේක සේවා නියමවලට<ph name="END_LINK2" /> එකඟ වෙයි.</translation>
-<translation id="629730747756840877">ගිණුම</translation>
 <translation id="6297765934698848803">ඔබේ උපාංගය කළමනා කරන ආයතනය ඔබේ කැමරාව අක්‍රිය කර ඇත.</translation>
 <translation id="6301525844455696527">ඔබගේ කියවීම් ලැයිස්තුවේ අල්ලා ගන්න</translation>
 <translation id="6303969859164067831">වරනය වී සමමුහුව ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="6312687380483398334">වෙබ් යෙදුම් (නිහඬ)</translation>
 <translation id="6316139424528454185">Android අනුවාදයට සහය දක්වනු නොලැබේ</translation>
 <translation id="6324034347079777476">Android පද්ධති සම්මුහුර්තය අබලයි</translation>
+<translation id="6324916366299863871">කෙටිමඟ සංස්කරණය</translation>
 <translation id="6324977638108296054">උද්දීපනයට සබැඳිය තැනිය නොහැකිය</translation>
 <translation id="6324997754869598316">(දෝෂය <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> හරහා බෙදාගන්න</translation>
@@ -893,11 +889,6 @@
 <translation id="6699370405921460408">Google සේවාදායක ඔබ පැමිණෙන පිටු ප්‍රශස්ත කරයි.</translation>
 <translation id="670498945988402717">ඊයේ පරීක්ෂා කරන ලදි</translation>
 <translation id="6710213216561001401">පෙර</translation>
-<translation id="671333169801287922">ක්‍රියාත්මක විට, අඩවි ඒවායෙහි අන්තර්ගතය සහ සේවා සැපයීම සඳහා මෙහි පෙන්වා ඇති පෞද්ගලිකත්වය සංරක්ෂණය කිරීමේ ක්‍රම භාවිත කළ හැකිය. හරස්-අඩවි හඹා යාම සඳහා විකල්ප මේවාට ඇතුළත්ය. කාලයත් සමඟ තවත් අත්හදා බැලීම් එක් කළ හැකිය.
-
-<ph name="BEGIN_LIST_ITEM1" />වෙළඳ ප්‍රචාරකයන්ට සහ ප්‍රකාශකයින්ට FLoC තාක්ෂණය භාවිත කළ හැකිය.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />වෙළඳ ප්‍රචාරකයන්ට සහ ප්‍රකාශකයින්ට අඩවි හරහා ඔබව හඹා නොයන ආකාරයකින් වෙළඳ දැන්වීම්වල ඵලදායීතාවය අධ්‍යයනය කළ හැකිය.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">ඔබේ <ph name="FQDN" /> මුහූර්තකය ඉවර විය. එය හෙට නැවත ඇරඹෙයි.</translation>
 <translation id="6738516213925468394">ඔබේ දත්ත <ph name="TIME" /> වූ විට ඔබේ <ph name="BEGIN_LINK" />මුර වැකිකඩ<ph name="END_LINK" /> සංකේතන කරනු ලැබුවේය. සමමුහූර්තය ආරම්භ කිරීමට එය ඇතුළත් කරන්න.</translation>
 <translation id="6738867403308150051">බාගනිමින්...</translation>
@@ -922,9 +913,6 @@
 <translation id="6900532703269623216">වැඩිදියුණු කළ ආරක්ෂාව</translation>
 <translation id="6903907808598579934">සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="6929699136511445623">Android පද්ධති සමමුහුර්තය සබල කරන්න</translation>
-<translation id="6941901516114974832">අප්‍රසිද්ධ තුළ, ඔබ පිවිසෙන වෙබ් අඩවි, ඔබගේ සේවායෝජකයා හෝ පාසල සහ ඔබගේ අන්තර්ජාල සේවා සැපයුම්කරු සඳහා ඔබගේ ක්‍රියාකාරකම් <ph name="BEGIN_BOLD1" />තවම දෘශ්‍යමාන විය හැකිය<ph name="END_BOLD1" />.
-
-ඔබ <ph name="BEGIN_BOLD2" />සියලු අප්‍රසිද්ධ ටැබ වසන විට<ph name="END_BOLD2" /> පමණක් Chrome වෙතින් ඔබගේ අප්‍රසිද්ධ සැසියෙන් දත්ත හිස් කරනු ඇත.</translation>
 <translation id="6942665639005891494">සැකසීමේ මෙනු විකල්පය භාවිතයෙන් ඕනැම වේලාවක පෙරනිමි බාගැනීමේ ස්ථානය වෙනස් කරන්න</translation>
 <translation id="694267552845942083">ඔබ දැනට ඔබගේ සමමුහුර්ත සැකසීම් අභිරුචිකරණය කරමින් සිටී. සමමුහුර්තය ක්‍රියාත්මක කිරීම අවසන් කිරීමට, තිරයේ පහළම ළඟ ඇති තහවුරු කිරීමේ බොත්තම තට්ටු කරන්න. ඉහළට සංචාලනය කරන්න</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
@@ -1088,9 +1076,6 @@
 <translation id="7971136598759319605">1 දිනකට පෙර ක්‍රියාත්මකයි</translation>
 <translation id="7975379999046275268">පිටුව පෙරදකින්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">වේගවත් බ්‍රවුස් කිරීම සහ සෙවීම සඳහා පිටු පෙර පූරණය කරන්න</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස්<ph name="END_LINK" /> යනු විවෘත වෙබය සංරක්ෂණය කරන අතරතුර ඔබව හඹා යාමේ යාන්ත්‍රණවලින් ආරක්ෂා කරනු ඇති නව තාක්ෂණ සංවර්ධනය කිරීම සඳහා සිදු වන මුලපිරීමකි.
-
-පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස් අත්හදා බැලීම් තවම සක්‍රිය සංවර්ධනයක පවතින අතර තෝරා ගත් කලාපවල ලබා ගත හැකිය. දැනට, අඩවි තෙවන පාර්ශ්ව කුකී වැනි වර්තමාන වෙබ් තාක්ෂණ දිගටම භාවිත කරන අතරතුර පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස් අත්හදා බැලිය හැකිය.</translation>
 <translation id="7986497153528221272">මුරපද බැලීමට, ඔබේ උපාංගයේ තිර අගුලක් සකසන්න</translation>
 <translation id="7998918019931843664">වැසූ ටැබය යළි විවෘත කරන්න</translation>
 <translation id="8004582292198964060">බ්‍රවුසරය</translation>

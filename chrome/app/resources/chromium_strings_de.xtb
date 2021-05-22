@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">Chromium benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">Wenn Sie auf allen Ihren Geräten auf Ihre Chromium-Inhalte zugreifen möchten, melden Sie sich an, damit Sie die Synchronisierung aktivieren können.</translation>
+<translation id="2580426763510374355">Chromium OS installieren</translation>
 <translation id="2583187216237139145">Alle Chromium-Daten, die während der Nutzung dieses Profils erstellt werden, wie Lesezeichen, Verlauf, Passwörter und andere Einstellungen, können vom Administrator des Arbeitsprofils entfernt werden. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS muss neu gestartet werden, um das Update zu übernehmen.</translation>
 <translation id="2648074677641340862">Während der Installation ist ein Fehler im Betriebssystem aufgetreten. Bitte laden Sie Chromium erneut herunter.</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5479196819031988440">Chromium OS kann diese Seite nicht öffnen.</translation>
 <translation id="5480860683791598150">Chromium benötigt Zugriff auf Ihren Standort, um ihn mit dieser Website zu teilen</translation>
+<translation id="5481338274774984070">Chromium empfiehlt Ihnen, diese Datei nicht herunterzuladen oder zu öffnen.</translation>
 <translation id="549669000822060376">Bitte warten Sie, bis die aktuellen Systemupdates von Chromium installiert wurden.</translation>
 <translation id="5496810170689441661">Chromium versucht, Passwörter zu bearbeiten. Geben Sie Ihr Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="5527463683072221100">PDFs in Chromium öffnen</translation>
@@ -199,7 +201,6 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Geben Sie bitte e
 <translation id="6964305034639999644">Link in Chromium-Inkognitofenster öffnen</translation>
 <translation id="6978145336957848883">Schwache Passwörter sind einfach zu erraten. Erlauben Sie Chromium, ein <ph name="BEGIN_LINK" />sicheres Passwort für Ihre Onlinekonten zu erstellen und zu speichern<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium benötigt für diese Website die Berechtigung, auf Ihr Mikrofon zuzugreifen</translation>
-<translation id="701244094609242530">Chromium kann Ihre Erweiterungen nicht prüfen. Versuchen Sie es später noch einmal.</translation>
 <translation id="705851970750939768">Chromium aktualisieren</translation>
 <translation id="7067091210845072982">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chromium, eine für Sie zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet.</translation>
 <translation id="7196312274710523067">Chromium konnte nicht gestartet werden. Versuchen Sie es noch einmal.</translation>

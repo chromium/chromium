@@ -285,6 +285,7 @@
 <translation id="1919345977826869612">Жарнамалар</translation>
 <translation id="1919367280705858090">Арнайы қате туралы хабар арқылы көмек алу</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Жоқ}=1{1 сайт}other{# сайт}}</translation>
+<translation id="1924727005275031552">Жаңа</translation>
 <translation id="1945968466830820669">Ұйымның есептік жазбасына кіре алмай қалуыңыз мүмкін немесе жеке деректеріңіз ұрлануы ықтимал. Chromium құпия сөзіңізді қазір өзгертуге кеңес береді.</translation>
 <translation id="1947454675006758438">Жоғарғы оң жағын қапсыру</translation>
 <translation id="1958218078413065209">Ең жоғары ұпайыңыз: <ph name="SCORE" />.</translation>
@@ -395,6 +396,7 @@
 <translation id="2357481397660644965">Құрылғыңызды <ph name="DEVICE_MANAGER" />, ал есептік жазбаңызды <ph name="ACCOUNT_MANAGER" /> басқарады.</translation>
 <translation id="2359629602545592467">Бірнеше</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
+<translation id="2359961752320758691">Виртуалды карта нөмірі қолданылды.</translation>
 <translation id="2367567093518048410">Деңгей</translation>
 <translation id="2372464001869762664">Растағаннан кейін, Google есептік жазбасындағы карта мәліметтері осы сайтқа беріледі. Plex есептік жазбаңыз туралы мәліметтерден CVC кодын тауып алыңыз.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -405,6 +407,7 @@
 <translation id="239429038616798445">Бұл жөнелту әдісі қолжетімді емес. Басқа әдісті қолданып көріңіз.</translation>
 <translation id="2396249848217231973">&amp;Жоюды болдырмау</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">Ескі</translation>
 <translation id="2413528052993050574">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты қайтарып алынған болуы мүмкін. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="2414886740292270097">Күңгірт</translation>
 <translation id="2438874542388153331">Оң жағын төрт рет тесу</translation>
@@ -908,12 +911,14 @@
 <translation id="4275830172053184480">Құрылғыңызды қайта іске қосу</translation>
 <translation id="4277028893293644418">Құпия сөзді қайта орнату</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Бұл карта Google есептік жазбаңызда сақталды}other{Бұл карталар Google есептік жазбаңызда сақталды}}</translation>
+<translation id="4287885627794386150">Сынақ нұсқасы қолжетімді, бірақ іске қосылмаған.</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> бетіне арналған нобай</translation>
 <translation id="42981349822642051">Жаю</translation>
 <translation id="4300675098767811073">Оң жақтан бірнеше рет тесу</translation>
 <translation id="4302514097724775343">Ойнау үшін динозаврды басыңыз.</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">Файлға кіру мүмкін болмады</translation>
+<translation id="4306529830550717874">Мекенжайды сақтау керек пе?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Бөгеу (әдепкі)</translation>
 <translation id="4314815835985389558">Синхрондауды басқару</translation>
@@ -1401,6 +1406,7 @@
 <translation id="610911394827799129"><ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> бетінде Google есептік жазбасымен шолу тарихының басқа да үлгілері болуы мүмкін.</translation>
 <translation id="6116338172782435947">Буферге көшірілетін мәтіндер мен кескіндерді көру</translation>
 <translation id="6120179357481664955">UPI идентификаторы сақталсын ба?</translation>
+<translation id="6123290840358279103">Виртуалды картаны көру</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6146055958333702838">Барлық кабельдерді тексеріп, пайдаланып отырған кез
     келген роутерлерді, модемдерді немесе басқа желі құрылғыларын қайта жүктеңіз.</translation>
@@ -1680,6 +1686,7 @@
 <translation id="7300012071106347854">Көкпеңбек</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">Жоғары</translation>
+<translation id="7305756307268530424">Баяуырақ жылдамдықпен бастау</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Байланыс анықтамасы</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" бөлімін жасыру</translation>
@@ -1705,6 +1712,7 @@
 <translation id="7378594059915113390">Медианы басқару элементтері</translation>
 <translation id="7378627244592794276">Жоқ</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">Қатысты емес</translation>
 <translation id="7390545607259442187">Картаны растау</translation>
 <translation id="7399802613464275309">Қауіпсіздік шарасы</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1756,6 +1764,7 @@
 <translation id="7548892272833184391">Байланыс қателерін түзету</translation>
 <translation id="7549584377607005141">Бұл веб-бет дұрыс көрсетілу мақсатында бұрын енгізілген деректерді қажет етеді. Бұл деректерді қайта жібере аласыз, бірақ бұл арқылы осы бетте бұрын орындалған кез келген әрекетті қайталайсыз.</translation>
 <translation id="7550637293666041147">Құрылғыңыздың пайдаланушы аты және Chrome браузеріңіздің пайдаланушы аты</translation>
+<translation id="755279583747225797">Сынақ нұсқасы іске қосылған.</translation>
 <translation id="7552846755917812628">Келесі кеңестерді орындап көріңіз:</translation>
 <translation id="7554475479213504905">Қайта жүктеу және бәрібір көрсету</translation>
 <translation id="7554791636758816595">Жаңа қойынды</translation>
@@ -1850,6 +1859,7 @@
 <translation id="7894280532028510793">Дұрыс жазылған болса, <ph name="BEGIN_LINK" />Network Diagnostics құралын іске қосып көріңіз<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7931318309563332511">Белгісіз</translation>
+<translation id="793209273132572360">Мекенжайды жаңарту керек пе?</translation>
 <translation id="7932579305932748336">Қаптау</translation>
 <translation id="79338296614623784">Дұрыс телефон нөмірін енгізіңіз</translation>
 <translation id="7934052535022478634">Төлем жасалды.</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="hu">
 <translation id="1006017844123154345">Online megnyitás</translation>
 <translation id="1044891598689252897">A webhelyek a megszokott módon fognak működni</translation>
+<translation id="1100504063505580045">Jelenlegi ikon</translation>
 <translation id="1124090076051167250">Ezzel törli azt a(z) <ph name="DATASIZE" />-nyi adatot és cookie-t, amelyeket a webhelyek és a kezdőképernyőn lévő alkalmazások tárolnak az eszközön.</translation>
 <translation id="1124772482545689468">Felhasználó</translation>
 <translation id="1178581264944972037">Szünet</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3277252321222022663">Az érzékelőkhöz való hozzáférés engedélyezése a webhelyek számára (ajánlott)</translation>
 <translation id="3295602654194328831">Információk elrejtése…</translation>
+<translation id="3317660236277031814">Egy Ön által telepített internetes alkalmazás ikonja megváltozott.</translation>
 <translation id="3328801116991980348">Webhelyadatok</translation>
 <translation id="3333961966071413176">Összes névjegy</translation>
 <translation id="3386292677130313581">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára a tartózkodási helyhez való hozzáférést (ajánlott)</translation>
+<translation id="345699454248713913">Egy Ön által telepített internetes alkalmazás neve megváltozott.</translation>
 <translation id="3538390592868664640">Az Ön környezetéről készített 3D-s térkép létrehozásának, valamint a kamerapozíció követésének letiltása a webhelyek számára</translation>
 <translation id="3551268116566418498">Kilép az inkognitó módból?</translation>
 <translation id="3586500876634962664">Kamera- és mikrofonhasználat</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">Helybeállítások megnyitása</translation>
 <translation id="4226663524361240545">Az értesítések miatt rezeghet az eszköz</translation>
 <translation id="4259722352634471385">Le van tiltva az ide vezető navigáció: <ph name="URL" /></translation>
+<translation id="4277239631747669329">Egy Ön által telepített internetes alkalmazás neve és ikonja megváltozott.</translation>
 <translation id="4278390842282768270">Engedélyezve</translation>
 <translation id="429312253194641664">Az egyik webhely médiatartalmat játszik le</translation>
 <translation id="42981349822642051">Kibontás</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">Engedélyezze a webhelyek számára a JavaScript futtatását (ajánlott)</translation>
 <translation id="534295439873310000">NFC-eszközök</translation>
 <translation id="5354152178998424783">Ezzel <ph name="DATASIZE" />-nyi, webhelyek által tárolt adatot és cookie-t töröl.</translation>
+<translation id="536508626067510330">Frissíti az ikont a kezdőképernyőjén?</translation>
 <translation id="5391532827096253100">Kapcsolata a webhellyel nem biztonságos. Webhelyadatok</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 további)}other{(+ # további)}}</translation>
 <translation id="5403592356182871684">Nevek</translation>
 <translation id="5489227211564503167">Eltelt idő: <ph name="ELAPSED_TIME" />, ennyiből: <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Hirdetések letiltása a tolakodó és félrevezető hirdetéseket megjelenítő webhelyeken</translation>
+<translation id="549957179819296104">Új ikon</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> engedélyezve, <ph name="PERMISSION_2" /> letiltva</translation>
 <translation id="5505264765875738116">A webhelyek nem kérdezhetnek rá, hogy küldjenek-e Önnek értesítéseket</translation>
 <translation id="5516455585884385570">Értesítési beállítások megnyitása</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="5876056640971328065">Videó szüneteltetése</translation>
+<translation id="5904826301761575486">Frissíti a nevet és az ikont a kezdőképernyőjén?</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5922853908706496913">Képernyő megosztása</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="6206551242102657620">A kapcsolat biztonságos. Webhelyadatok</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – lehetőségek</translation>
+<translation id="6260852843601447737">Bezárás és a visszaélés jelentése</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" /> letiltva</translation>
 <translation id="6270391203985052864">A webhelyek rákérdezhetnek, hogy küldjenek-e Önnek értesítéseket</translation>
 <translation id="6295158916970320988">Az összes webhely</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">Teljes képernyő</translation>
 <translation id="857943718398505171">Engedélyezve (ajánlott)</translation>
 <translation id="8609465669617005112">Mozgatás felfelé</translation>
+<translation id="861748745608658996">Frissíti a kezdőképernyőn megjelenő nevet?</translation>
 <translation id="8676374126336081632">Beírt szöveg törlése</translation>
 <translation id="868929229000858085">Keresés a névjegyek között</translation>
 <translation id="8702612070107455751">Az offline adatok törlődnek.</translation>

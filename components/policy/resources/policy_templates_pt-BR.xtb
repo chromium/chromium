@@ -1099,13 +1099,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2448315169529769573">Se a política for definida como "Ativada", o <ph name="PRODUCT_OS_NAME" /> informará métricas de uso e dados de diagnóstico, incluindo relatórios de erros, para o Google. Se a política for definida como "Desativada", as informações de métrica e dados de diagnóstico serão desativados.
 
        Se a política não for definida, as informações de métrica e dados de diagnóstico ficarão desativados nos dispositivos não gerenciados e ativados nos dispositivos gerenciados.</translation>
-<translation id="2449263772062368618">Configura uma lista de tipos de dados de navegação a serem excluídos quando o navegador é fechado.
-      Os tipos de dados disponíveis são: histórico de navegação (<ph name="DATA_TYPE_BROWSING_HISTORY" />), histórico de downloads (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, preenchimento automático (<ph name="DATA_TYPE_AUTOFILL" />), senhas (<ph name="DATA_TYPE_PASSWORD" />), configurações de sites (<ph name="DATA_TYPE_SITE_SETTINGS" />) e dados de apps hospedados (<ph name="DATA_TYPE_HOSTED_APP_DATA" />).
-      Esta política não tem precedência sobre <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-      Esta política precisa da <ph name="SYNC_DISABLED_POLICY_NAME" /> para ser definida como verdadeira. Caso contrário, ela será ignorada.
-      Se esta política for definida no nível da plataforma, a sincronização será desativada em toda a plataforma.
-      Se ela for definida no nível do usuário, a sincronização será desativada para esse usuário específico para que esta política seja aplicada.
-      </translation>
 <translation id="244950822854046436">Lista de configurações que serão aplicadas ao <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, que é acionado quando um arquivo é transferido por download.
 
       Os campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> são usados para determinar se o conector precisa enviar um arquivo ao provedor de serviços ao fazer o download em uma página da Web. O URL da página precisa corresponder ao padrão associado a um padrão "enable", e não a um "disable".  O Tipo MIME do arquivo também precisa corresponder ao padrão associado a um padrão "enable", e não a um "disable".
@@ -3028,13 +3021,6 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Se a política não for definida, nenhum site será adicionado à lista.
 
       Observação: também é possível adicionar elementos à lista por meio da política <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
-<translation id="5065753964276395784">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-       Se a política for definida, o <ph name="PRODUCT_NAME" /> ignorará qualquer proxy em favor da lista de hosts apresentada aqui. Esta política só terá efeito se a <ph name="PROXY_SETTINGS_POLICY_NAME" /> não tiver sido especificada e você tiver selecionado <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> com <ph name="PROXY_MODE_POLICY_NAME" />.
-
-       Não defina esta política se você tiver selecionado qualquer outro modo para políticas de configuração de proxy.
-
-       Observação: para ver mais exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
 <translation id="5067143124345820993">Lista de permissões de login de usuário</translation>
 <translation id="5073609397321802133">Se a política for definida como falsa, a página "Nova guia" não permitirá que os usuários personalizem o plano de fundo. Qualquer plano de fundo personalizado já existente será removido permanentemente, mesmo que a política seja definida como verdadeira mais tarde.
 
@@ -3188,26 +3174,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política for definida como falsa ou não for definida, a área de trabalho unificada ficará desativada e os usuários não poderão ativá-la.</translation>
 <translation id="5255162913209987122">Pode ser recomendada</translation>
 <translation id="5257395339965216304">Dados dos apps hospedados</translation>
-<translation id="5264066441613395613">Se a política for definida, haverá configurações de proxy para o Chrome e apps ARC, ignorando todas as opções relacionadas a proxy especificadas na linha de comando.
-
-       Se a política não for definida, os usuários poderão escolher as configurações de proxy.
-
-       Se a política <ph name="PROXY_SETTINGS_POLICY_NAME" /> for definida, os seguintes campos serão aceitos:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, que permite especificar o servidor proxy usado pelo Chrome e evitar que os usuários mudem as configurações de proxy.
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, um URL de um arquivo proxy .pac.
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, um URL do servidor proxy.
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, uma lista de hosts de proxy ignorados pelo <ph name="PRODUCT_NAME" />.
-
-       O campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> foi substituído pelo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, que permite especificar o servidor proxy usado pelo Chrome e evita que os usuários mudem as configurações de proxy.
-
-        Para <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se você escolher o valor:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, um proxy nunca será usado e todos os outros campos serão ignorados;
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, o proxy do sistema será usado e todos os outros campos serão ignorados;
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, todos os outros campos serão ignorados;
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />, os campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados;
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, os campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados.
-
-      Observação: para ver mais exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
 <translation id="5266173014392157048">Esta política está obsoleta. Use a <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
 
       A definição da política atribui servidores que podem ser delegados pelo <ph name="PRODUCT_NAME" />. Separe vários nomes de servidor usando vírgulas. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.

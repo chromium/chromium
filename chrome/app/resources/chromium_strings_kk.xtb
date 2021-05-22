@@ -40,6 +40,7 @@
 <translation id="2560420686485554789">Файлдарды жүктеп алу үшін Chromium браузеріне сақтау орнын пайдалану құқығы қажет</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">Chromium функцияларын кез келген құрылғыдан пайдаланғыңыз келсе, есептік жазбаңызға кіріңіз, сонда синхрондау функциясын қоса аласыз.</translation>
+<translation id="2580426763510374355">Chromium OS-ті орнату</translation>
 <translation id="2583187216237139145">Жұмыс профилінің әкімшісі осы профильді пайдалану кезінде құрылатын Chromium браузерінің кез келген дерегін (бетбелгілер, тарих, құпия сөздер жасау және басқа параметрлер сияқты) жоя алады. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Жаңарту күшіне енуі үшін Chromium OЖ-н қайта іске қосу қажет.</translation>
 <translation id="2648074677641340862">Орнату барысында операциялық жүйе қатесі орын алды. Chromium қайта жүктеңіз.</translation>
@@ -138,6 +139,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium бета нұсқасы</translation>
 <translation id="5479196819031988440">Chromium ОЖ бұл бетті аша алмайды.</translation>
 <translation id="5480860683791598150">Бұл сайтқа көрсету үшін Chromium браузері орналасқан жеріңізді білуі керек</translation>
+<translation id="5481338274774984070">Chromium бұл файлды жүктеп алмауды немесе ашпауды ұсынады.</translation>
 <translation id="549669000822060376">Chromium ең соңғы жүйе жаңартуларын орнатуда, күте тұрыңыз.</translation>
 <translation id="5496810170689441661">Chromium құпия сөздерді өзгерткісі келеді. Бұған рұқсат беру үшін Windows құпия сөзіңізді теріңіз.</translation>
 <translation id="5527463683072221100">PDF-терді Chromium-де ашу</translation>
@@ -201,7 +203,6 @@
 <translation id="6964305034639999644">Сілтемені Chromium инкогнито терезесінде ашу</translation>
 <translation id="6978145336957848883">Құпия сөзіңіз оңай болса, оны табу да оңай. Chromium браузеріне <ph name="BEGIN_LINK" />күрделі құпия сөздер жасауға және сақтауға<ph name="END_LINK" /> мүмкіндік беріңіз.</translation>
 <translation id="6990124437352146030">Chromium браузеріне бұл сайтта микрофонды пайдалану үшін рұқсат керек</translation>
-<translation id="701244094609242530">Chromium сіздің барлық құпия сөзіңізді тексере алмайды. Кейінірек қайталап көріңіз.</translation>
 <translation id="705851970750939768">Chromium жаңарту</translation>
 <translation id="7067091210845072982">Егер суреттің пайдалы сипаттамасы болмаса, Chromium оны өзі ұсынып көреді. Сипаттамалар жасау үшін суреттер Google-ға жіберіледі.</translation>
 <translation id="7196312274710523067">Chromium браузері қосылмады. Қайталап көріңіз.</translation>

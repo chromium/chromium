@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Pentadbir anda telah menetapkan tema lalai yang tidak boleh ditukar.</translation>
 <translation id="1163931534039071049">&amp;Lihat sumber bingkai</translation>
 <translation id="1164891049599601209">Dimasukkan pada tapak penipuan</translation>
-<translation id="1164899421101904659">Masukkan Kunci Buka Kunci PIN</translation>
 <translation id="1165039591588034296">Ralat</translation>
 <translation id="1166212789817575481">Tutup Tab di sebelah Kanan</translation>
-<translation id="116624467691206283">PUK tidak sah. Anda mempunyai 1 percubaan lagi.</translation>
 <translation id="1168020859489941584">Dibuka dalam <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Nama pelayan Google</translation>
 <translation id="1170288591054440704">Tanya apabila tapak mahu menggunakan fon yang terpasang pada peranti anda</translation>
@@ -1213,7 +1211,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
     Untuk mendapatkan bantuan menyelesaikan masalah berkaitan Cast, sila rujuk
     <ph name="BEGIN_LINK" />
     pusat bantuan<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">PUK salah. Anda mempunyai <ph name="RETRIES" /> percubaan lagi sebelum anda perlu menghubungi pembawa anda untuk mendapatkan semula akses rangkaian.</translation>
 <translation id="22665427234727190">Tanya apabila tapak mahu mengakses peranti Bluetooth (disyorkan)</translation>
 <translation id="2266957463645820432">IPP melalui USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Bertukar data dengan mana-mana peranti dalam domain <ph name="DOMAIN" /></translation>
@@ -1497,7 +1494,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2553440850688409052">Sembunyikan Pemalam Ini</translation>
 <translation id="2554553592469060349">Fail yang dipilih terlalu besar (saiz maks: 3mb).</translation>
 <translation id="2558896001721082624">Sentiasa paparkan pilihan kebolehcapaian dalam menu sistem</translation>
-<translation id="2562743677925229011">Tidak log masuk ke <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Pelaksanaan JavaScript melalui AppleScript dimatikan. Untuk menghidupkannya, daripada bar menu, pergi ke Paparan &gt; Pembangun &gt; Benarkan JavaScript daripada Apple Events. Untuk mendapatkan maklumat lanjut: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Semakan ejaan dipertingkatkan</translation>
 <translation id="2568774940984945469">Bekas Bar Maklumat</translation>
@@ -2411,7 +2407,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3569407787324516067">Penyelamat skrin</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> boleh melihat fail dan folder berikut</translation>
 <translation id="3571734092741541777">Sediakan</translation>
-<translation id="3574210789297084292">log masuk</translation>
 <translation id="3575121482199441727">Benarkan untuk tapak ini</translation>
 <translation id="3576324189521867626">Berjaya dipasang</translation>
 <translation id="3578594933904494462">Kandungan tab ini sedang dikongsi.</translation>
@@ -2862,7 +2857,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4022426551683927403">&amp;Tambahkan pada Kamus</translation>
 <translation id="4023146161712577481">Menentukan konfigurasi peranti.</translation>
 <translation id="4025039777635956441">Redam Tapak yang Dipilih</translation>
-<translation id="4027804175521224372">(Anda kehilangan—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Tambah kaedah masukan</translation>
 <translation id="4029556917477724407">Kembali daripada halaman <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofon dibenarkan</translation>
@@ -3809,7 +3803,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Cakera keras anda telah penuh. Sila simpan ke lokasi lain atau sediakan lagi ruang pada cakera keras.</translation>
 <translation id="5123433949759960244">Bola Keranjang</translation>
-<translation id="5125167430897995218">PUK salah. Anda mempunyai 1 percubaan lagi sebelum anda perlu menghubungi pembawa anda untuk mendapatkan semula akses rangkaian.</translation>
 <translation id="5125751979347152379">URL tidak sah.</translation>
 <translation id="5126611267288187364">Lihat perubahan</translation>
 <translation id="5127620150973591153">ID sambungan selamat: <ph name="TOKEN" /></translation>
@@ -4057,7 +4050,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="540296380408672091">Sentiasa sekat kuki pada <ph name="HOST" /></translation>
 <translation id="540495485885201800">Tukar dengan yang sebelumnya</translation>
 <translation id="5405146885510277940">Tetapkan semula tetapan</translation>
-<translation id="5407119150486192764">Masukkan Kunci Penyahsekat PIN 8 digit yang diberikan oleh pembawa anda</translation>
 <translation id="5407167491482639988">Tidak dapat difahami</translation>
 <translation id="5408750356094797285">Zum: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Daripada Akaun Google anda</translation>
@@ -6626,7 +6618,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8206745257863499010">Sayu</translation>
 <translation id="8206859287963243715">Selular</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Pemberitahuan baharu}other{# pemberitahuan baharu}}</translation>
-<translation id="8211551284753798479">PUK tidak sah. Anda mempunyai <ph name="RETRIES" /> percubaan lagi.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Muat turun sedang berlangsung}other{Muat turun sedang berlangsung}}</translation>
 <translation id="8213449224684199188">Mod foto dimasukkan</translation>
 <translation id="8214489666383623925">Buka Fail...</translation>

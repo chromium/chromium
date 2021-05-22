@@ -186,7 +186,6 @@
 <translation id="22320125457191592">הצעות בשבילך</translation>
 <translation id="2234876718134438132">‏סנכרון ושירותי Google</translation>
 <translation id="2239812875700136898">‏בעזרת הלחצן 'אפשרויות של Discover' ניתן לקבוע אילו מאמרים יוצגו</translation>
-<translation id="2251971221270904886">‏כשההגדרה מופעלת והסטטוס פעיל, Chrome משתמש בהיסטוריית הגלישה שלך במהלך 7 ימים כדי לשייך אותך לקבוצה, או "קבוצה בעלת מאפיינים משותפים". מפרסמים יכולים לבחור מודעות לקבוצה. היסטוריית החיפושים נשמרת באופן פרטי במכשיר. תקופת הניסיון הזו פעילה רק ב<ph name="BEGIN_LINK" />אזורים מסוימים<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">ייצוא סיסמאות…</translation>
 <translation id="2276696007612801991">‏יש להיכנס לחשבון Google כדי לבדוק את הסיסמאות שלך</translation>
 <translation id="2278052315791335171">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="SITE" />.</translation>
@@ -320,7 +319,6 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{סימנייה אחת (<ph name="BOOKMARKS_COUNT_ONE" />)}two{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}many{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}other{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}}</translation>
 <translation id="3062802207422175757">‏ב-Chrome מחכים לך מאמרים בנושאים שמעניינים אותך</translation>
 <translation id="3070005020161560471">יש לתרגם אוטומטית</translation>
-<translation id="3083531420240576529">ניתן לאפס את הקבוצה בכל שלב. קביעת הקבוצה שלך תימשך 7 ימים.</translation>
 <translation id="3091010850649238832">הצגת התוכן שבלוח</translation>
 <translation id="3098745985164956033">‏חלק מהתמונות נשלחות אל Google כדי לשפר עבורך את התיאורים</translation>
 <translation id="3114507951000454849">קראת חדשות היום? <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@
 <translation id="3568688522516854065">כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="3587482841069643663">הכול</translation>
 <translation id="3587596251841506391">סיוע לשיפור האבטחה באינטרנט</translation>
-<translation id="3598653140581545904">כניסה באמצעות מצב אנונימי</translation>
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3616113530831147358">אודיו</translation>
 <translation id="3631987586758005671">השיתוף עם <ph name="DEVICE_NAME" /> מתבצע</translation>
@@ -764,7 +761,6 @@
 <translation id="5964805880140440652">‏כדי לשתף את הדף הזה עם מכשיר אחר, יש להפעיל את הסנכרון בהגדרות של Chrome</translation>
 <translation id="5964869237734432770">הפסקה של תיאורי התמונות</translation>
 <translation id="5979084224081478209">בדיקת הסיסמאות</translation>
-<translation id="5982307838673692400">פתיחה של כרטיסיית מצב אנונימי</translation>
 <translation id="6000066717592683814">‏להמשיך להשתמש ב-Google</translation>
 <translation id="6000203700195075278">מעקב מחודש</translation>
 <translation id="6002623704405939939">‏כדי לנקות את <ph name="BEGIN_LINK1" />החיפוש<ph name="END_LINK1" /> או היסטוריה מסוגים אחרים, יש לעבור אל <ph name="BEGIN_LINK2" />הפעילות שלי ב-Google<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@
 <translation id="6277522088822131679">אירעה בעיה בעת הדפסת הדף. יש לנסות שוב.</translation>
 <translation id="6278428485366576908">עיצוב</translation>
 <translation id="6292420053234093573">‏השימוש ב-Chrome מבטא הסכמה ל<ph name="BEGIN_LINK1" />תנאים ולהגבלות של Google<ph name="END_LINK1" /> ול<ph name="BEGIN_LINK2" />תנאים ולהגבלות הנוספים של Google Chrome ו-Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">חשבון</translation>
 <translation id="6297765934698848803">המצלמה הושבתה במכשיר, בהתאם להגדרות שנקבעו על ידי הארגון שמנהל את המכשיר.</translation>
 <translation id="6301525844455696527">רוצה להתקדם ברשימת הקריאה שלך?</translation>
 <translation id="6303969859164067831">יציאה וכיבוי הסנכרון</translation>
 <translation id="6312687380483398334">אפליקציות אינטרנט (שקט)</translation>
 <translation id="6316139424528454185">‏אין תמיכה בגרסת Android</translation>
 <translation id="6324034347079777476">‏סנכרון מערכת Android מושבת</translation>
+<translation id="6324916366299863871">עריכת קיצור דרך</translation>
 <translation id="6324977638108296054">אי אפשר ליצור קישור לטקסט המודגש</translation>
 <translation id="6324997754869598316">(שגיאה <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">שיתוף באמצעות <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@
 <translation id="6699370405921460408">‏כשנכנסים לדפים בזמן הגלישה, הם עוברים אופטימיזציה על ידי השרתים של Google.</translation>
 <translation id="670498945988402717">התבצעה בדיקה אתמול</translation>
 <translation id="6710213216561001401">הקודם</translation>
-<translation id="671333169801287922">‏כאשר התכונה מופעלת, אתרים יוכלו לספק את התוכן ואת השירותים שלהם בשיטות המוצגות כאן, שמאפשרות לשמור על הפרטיות. השיטות האלו כוללות חלופות למעקב בין אתרים. ייתכן שיתווספו עוד תכונות ניסיוניות בהמשך.
-
-<ph name="BEGIN_LIST_ITEM1" />מפרסמים ובעלי תוכן דיגיטלי יכולים להשתמש בשיטת FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />מפרסמים ובעלי תוכן דיגיטלי יכולים לבחון את יעילות המודעות בדרך שאינה כוללת מעקב אחריך באתרים שונים.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">זמן השימוש באפליקציה <ph name="FQDN" /> הסתיים. הטיימר יופעל מחדש מחר ואז אפשר יהיה להשתמש שוב באפליקציה.</translation>
 <translation id="6738516213925468394">הנתונים שלך הוצפנו באמצעות <ph name="BEGIN_LINK" />ביטוי סיסמה לסנכרון<ph name="END_LINK" /> בתאריך <ph name="TIME" />. צריך להזין אותו כדי להתחיל את הסנכרון.</translation>
 <translation id="6738867403308150051">ההורדה מתבצעת...</translation>
@@ -922,9 +913,6 @@
 <translation id="6900532703269623216">הגנה משופרת</translation>
 <translation id="6903907808598579934">הפעלת הסנכרון</translation>
 <translation id="6929699136511445623">‏הפעלת סנכרון של מערכת Android</translation>
-<translation id="6941901516114974832">‏ייתכן שגם במצב אנונימי הפעילות במכשיר <ph name="BEGIN_BOLD1" />תהיה גלויה <ph name="END_BOLD1" />לאתרים שנכנסת אליהם, למעסיק או למוסד הלימודים שלך ולספק האינטרנט.
-
-הנתונים מהסשן האנונימי שלך יימחקו מ-Chrome רק לאחר <ph name="BEGIN_BOLD2" />הסגירה של כל כרטיסיות המצב האנונימי<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">ניתן תמיד לשנות את מיקום ברירת המחדל להורדות דרך האפשרות 'הגדרות' בתפריט</translation>
 <translation id="694267552845942083">מתבצעת עכשיו התאמה אישית של הגדרות הסנכרון. כדי להשלים את הפעלת הסנכרון יש להקיש על הלחצן 'אישור', קרוב לתחתית המסך. ניווט למעלה</translation>
 <translation id="6945221475159498467">בחירה</translation>
@@ -1088,9 +1076,6 @@
 <translation id="7971136598759319605">פעילות אחרונה: לפני יום אחד</translation>
 <translation id="7975379999046275268">הצגת הדף בתצוגה מקדימה<ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">טעינה מראש של דפים כדי לאפשר גלישה וחיפוש מהירים יותר</translation>
-<translation id="7981546642162424360">‏<ph name="BEGIN_LINK" />ארגז חול לפרטיות<ph name="END_LINK" /> הוא פרויקט מתמשך לפיתוח טכנולוגיות חדשות שיגנו עליך ועל שאר המשתמשים מפני אמצעי מעקב תוך שמירה על האופי הפתוח של רשת האינטרנט.
-
-תקופות הניסיון של ארגז החול לפרטיות נמצאות עדיין בתהליכי פיתוח והן זמינות רק באזורים נבחרים. נכון לעכשיו, ניתן לנסות באתרים את 'ארגז חול לפרטיות' במקביל לשימוש בטכנולוגיות אינטרנט קיימות, כמו קובצי cookie של צד שלישי.</translation>
 <translation id="7986497153528221272">כדי להציג סיסמאות, תחילה יש להגדיר נעילת מסך במכשיר</translation>
 <translation id="7998918019931843664">פתיחה מחדש של כרטיסייה שנסגרה</translation>
 <translation id="8004582292198964060">דפדפן</translation>

@@ -157,10 +157,8 @@
 <translation id="116173250649946226">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຮູບແບບສີສັນເລີ່ມຕົ້ນທີ່ບໍ່ສາມາດປ່ຽນໄດ້.</translation>
 <translation id="1163931534039071049">ເບິ່ງແຫຼ່ງທີ່ມາຂອບ</translation>
 <translation id="1164891049599601209">ມີການປ້ອນໃນເວັບໄຊຫຼອກລວງ</translation>
-<translation id="1164899421101904659">ປ້ອນລະຫັດປົດລັອກ PIN</translation>
 <translation id="1165039591588034296">ຜິດພາດ</translation>
 <translation id="1166212789817575481">ປິດແຖບໄປທາງຂວາ</translation>
-<translation id="116624467691206283">PUK ທີ່ຖືກຕ້ອງ. ທ່ານລອງໄດ້ອີກ 1 ເທື່ອ.</translation>
 <translation id="1168020859489941584">ກໍາລັງເປີດຢູ່ໃນ <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">ເຊີບເວີຊື່ Google</translation>
 <translation id="1170288591054440704">ຖາມເມື່ອເວັບໄຊຕ້ອງການໃຊ້ຟອນທີ່ຕິດຕັ້ງໃນອຸປະກອນຂອງທ່ານ</translation>
@@ -1210,7 +1208,6 @@
 ສຳລັບຄວາມຊ່ວຍເຫຼືອໃນການແກ້ໄຂບັນຫາເລື່ອງການສົ່ງສັນຍານ, ກະລຸນາເບິ່ງ
 <ph name="BEGIN_LINK" />
 ສູນຊ່ວຍເຫຼືອ<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">PUK ບໍ່ຖືກຕ້ອງ. ທ່ານລອງໄດ້ອີກ <ph name="RETRIES" /> ເທື່ອກ່ອນທີ່ທ່ານຈະຕ້ອງຕິດຕໍ່ຫາຜູ້ໃຫ້ບໍລິການຂອງທ່ານເພື່ອຮັບສິດເຂົ້າເຖິງເຄືອຂ່າຍຄືນໃໝ່.</translation>
 <translation id="22665427234727190">ຖາມເມື່ອເວັບໄຊໃດໜຶ່ງຕ້ອງການເຂົ້າເຖິງອຸປະກອນ Bluetooth (ແນະນຳ)</translation>
 <translation id="2266957463645820432">IPP ຜ່ານ USB (IPPUSB)</translation>
 <translation id="2270450558902169558">ແລກ​ປ່ຽນ​ຂໍ້​ມູນ​ກັບ​ອຸ​ປະ​ກອນ​ໃດ​ຫນຶ່ງ​ຢູ່​ໃນ​ໂດ​ເມນ <ph name="DOMAIN" /></translation>
@@ -1494,7 +1491,6 @@
 <translation id="2553440850688409052">ເຊື່ອງປລັກອິນນີ້</translation>
 <translation id="2554553592469060349">ໄຟລ​໌​​ເລືອກໄວ້​ໃຫຍ່​ເກີນ​ໄປ (ຂະ​ຫນາດສູງສຸດ: 3mb​)​.</translation>
 <translation id="2558896001721082624">ສະແດງຕົວເລືອກການຊ່ວຍເຂົ້າເຖິງໃນເມນູລະບົບທຸກເທື່ອ</translation>
-<translation id="2562743677925229011">ບໍ່ໄດ້ລົງຊື່ເຂົ້າ​ໃຊ້ <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">ການດຳເນີນ JavaScript ຜ່ານ AppleScript ປິດຢູ່. ເພື່ອເປີດມັນ, ຈາກແຖບເມນູ, ກະລຸນາໄປຫາ ເບິ່ງ &gt; ຜູ້ພັດທະນາ &gt; ອະນຸຍາດ JavaScript ຈາກ Apple Events. ສຳລັບຂໍ້ມູນເພີ່ມເຕີມ: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">ການກວດການສະກົດຄຳທີ່ປັບປຸງແລ້ວ</translation>
 <translation id="2568774940984945469">ພາຊະນະບັນຈຸແຖບຂໍ້ມູນ</translation>
@@ -2408,7 +2404,6 @@
 <translation id="3569407787324516067">ພາບພັກໜ້າຈໍ</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> ສາມາດເບິ່ງໄຟລ໌ ແລະ ໂຟນເດີຕໍ່ໄປນີ້ໄດ້</translation>
 <translation id="3571734092741541777">ຕັ້ງຄ່າ</translation>
-<translation id="3574210789297084292">ລົງຊື່ເຂົ້າ​ໃຊ້</translation>
 <translation id="3575121482199441727">ອະນຸຍາດສຳລັບເວັບໄຊນີ້</translation>
 <translation id="3576324189521867626">ຕິດຕັ້ງສຳເລັດແລ້ວ</translation>
 <translation id="3578594933904494462">ແຊຣ໌ເນື້ອໃນຂອງແຖບນີ້ຢູ່.</translation>
@@ -2859,7 +2854,6 @@
 <translation id="4022426551683927403">ເພີ່ມໃສ່ພົດຈະນານຸກົມ</translation>
 <translation id="4023146161712577481">ກໍາລັງກໍານົດ​ຕັ້ງ​ອຸ​ປະ​ກອນ​.</translation>
 <translation id="4025039777635956441">ປິດສຽງເວັບໄຊທີ່ເລືອກ</translation>
-<translation id="4027804175521224372">(ທ່ານກໍາລັງພາດ—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">ເພີ່ມວິທີການປ້ອນຂໍ້ມູນ</translation>
 <translation id="4029556917477724407">ກັບມາຈາກໜ້າ <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">ອະນຸຍາດໄມໂຄຣໂຟນແລ້ວ</translation>
@@ -3806,7 +3800,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">ຮາດດິສກ໌ຂອງທ່ານເຕັມ. ກະລຸນາບັນທຶກໄປໃສ່ທີ່ຕັ້ງອື່ນ ຫຼືເຮັດໃຫ້ມີຫ້ອງເພີ່ມຂຶ້ນຢູ່ໃນຮາດດິສກ໌.</translation>
 <translation id="5123433949759960244">ບານບ້ວງ</translation>
-<translation id="5125167430897995218">PUK ບໍ່ຖືກຕ້ອງ. ທ່ານລອງໄດ້ອີກ 1 ເທື່ອກ່ອນທີ່ທ່ານຈະຕ້ອງຕິດຕໍ່ຫາຜູ້ໃຫ້ບໍລິການຂອງທ່ານເພື່ອຮັບສິດເຂົ້າເຖິງເຄືອຂ່າຍຄືນໃໝ່.</translation>
 <translation id="5125751979347152379">URL ໃຊ້ບໍ່ໄດ້.</translation>
 <translation id="5126611267288187364">ເບິ່ງການປ່ຽນແປງ</translation>
 <translation id="5127620150973591153">ໄອດີການເຊື່ອມຕໍ່ທີ່ປອດໄພ: <ph name="TOKEN" /></translation>
@@ -4054,7 +4047,6 @@
 <translation id="540296380408672091">ບລັອກຄຸກກີ້ຢູ່ເທິງ <ph name="HOST" /> ສະເໝີ</translation>
 <translation id="540495485885201800">ສະຫຼັບກັບຊັ້ນວາງກ່ອນໜ້າ</translation>
 <translation id="5405146885510277940">ຣິເຊັດການຕັ້ງຄ່າ</translation>
-<translation id="5407119150486192764">ລະບຸລະຫັດການປົດບລັອກ PIN ຈຳນວນ 8 ຕົວເລກທີ່ຜູ້ໃຫ້ບໍລິການຂອງທ່ານສະໜອງໃຫ້</translation>
 <translation id="5407167491482639988">ບໍ່ສາມາດເຂົ້າໃຈໄດ້</translation>
 <translation id="5408750356094797285">ຊູມ: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">ຈາກບັນຊີ Google ຂອງທ່ານ</translation>
@@ -6621,7 +6613,6 @@
 <translation id="8206745257863499010">ບລູຊີ</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ການແຈ້ງເຕືອນໃໝ່}other{ການແຈ້ງເຕືອນໃໝ່ # ລາຍການ}}</translation>
-<translation id="8211551284753798479">PUK ທີ່ຖືກຕ້ອງ. ທ່ານລອງໄດ້ອີກ <ph name="RETRIES" /> ເທື່ອ.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ການດາວໂຫຼດພວມດຳເນີນຢູ່}other{ການດາວໂຫຼດພວມດຳເນີນຢູ່}}</translation>
 <translation id="8213449224684199188">ເຂົ້າໂໝດຮູບພາບແລ້ວ</translation>
 <translation id="8214489666383623925">ເປີດ​ໄຟລ​໌...</translation>

@@ -186,7 +186,6 @@
 <translation id="22320125457191592">برای شما</translation>
 <translation id="2234876718134438132">‏همگام‌سازی و سرویس‌های Google</translation>
 <translation id="2239812875700136898">کنترل داستان‌ها از دکمه «گزینه‌های یافته‌ها»</translation>
-<translation id="2251971221270904886">‏وقتی روشن باشد و وضعیت آن فعال باشد، Chrome از سابقه مرور ۷ روز گذشته شما برای تشخیص گروه یا «هم‌گروهی» که عضو آن هستید استفاده می‌کند. تبلیغ‌کنندگان می‌توانند آگهی برای گروه انتخاب کنند. سابقه مرور شما به‌صورت خصوصی در دستگاهتان نگهداری می‌شود. این دوره آزمایشی فقط در <ph name="BEGIN_LINK" />برخی مناطق<ph name="END_LINK" /> فعال است.</translation>
 <translation id="2259659629660284697">درحال صادر کردن گذرواژه‌ها…</translation>
 <translation id="2276696007612801991">‏برای بررسی گذرواژه‌هایتان، به سیستم حساب Google وارد شوید</translation>
 <translation id="2278052315791335171">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="SITE" /> نخواهد شد</translation>
@@ -320,7 +319,6 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> نشانک}one{<ph name="BOOKMARKS_COUNT_MANY" /> نشانک}other{<ph name="BOOKMARKS_COUNT_MANY" /> نشانک}}</translation>
 <translation id="3062802207422175757">‏مقاله‌های مربوط با علایقتان در Chrome</translation>
 <translation id="3070005020161560471">ترجمه خودکار</translation>
-<translation id="3083531420240576529">هرزمان خواستید می‌توانید گروه را بازنشانی کنید. شناسایی گروه شما ۷ روز طول می‌کشد.</translation>
 <translation id="3091010850649238832">نمایش محتوای بریده‌دان</translation>
 <translation id="3098745985164956033">‏برخی از تصاویر به Google ارسال می‌شوند تا شرح آن‌ها برایتان بهبود یابد</translation>
 <translation id="3114507951000454849">اخبار <ph name="NEWS_ICON" /> امروز را بخوانید</translation>
@@ -399,7 +397,6 @@
 <translation id="3568688522516854065">برای اینکه به برگه‌های بازشده در سایر دستگاه‌ها دسترسی داشته باشید، به سیستم وارد شوید و همگام‌سازی را روشن کنید</translation>
 <translation id="3587482841069643663">همه</translation>
 <translation id="3587596251841506391">به بهبود امنیت وب کمک کنید</translation>
-<translation id="3598653140581545904">استفاده از حالت «ناشناس» برای ورود به سیستم</translation>
 <translation id="3602290021589620013">پیش‌نمایش</translation>
 <translation id="3616113530831147358">صوتی</translation>
 <translation id="3631987586758005671">درحال هم‌رسانی با <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@
 <translation id="5964805880140440652">‏برای هم‌رسانی این صفحه با دستگاه دیگر، همگام‌سازی را در تنظیمات Chrome روشن کنید.</translation>
 <translation id="5964869237734432770">توقف توضیحات تصویر</translation>
 <translation id="5979084224081478209">بررسی گذرواژه‌ها</translation>
-<translation id="5982307838673692400">بازکردن برگه ناشناس</translation>
 <translation id="6000066717592683814">‏حفظ Google</translation>
 <translation id="6000203700195075278">دنبال کردن مجدد</translation>
 <translation id="6002623704405939939">‏برای پاک کردن سابقه <ph name="BEGIN_LINK1" />جستجو<ph name="END_LINK1" /> یا دیگر انواع سابقه، به <ph name="BEGIN_LINK2" />فعالیت من در Google<ph name="END_LINK2" /> بروید</translation>
@@ -806,13 +802,13 @@
 <translation id="6277522088822131679">در چاپ صفحه مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="6278428485366576908">طرح زمینه</translation>
 <translation id="6292420053234093573">‏با استفاده کردن از Chrome، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و سیستم‌عامل Chrome<ph name="END_LINK2" /> موافقت می‌کنید.</translation>
-<translation id="629730747756840877">حساب</translation>
 <translation id="6297765934698848803">سازمانی که دستگاهتان را مدیریت می‌کند دوربین را خاموش کرده است.</translation>
 <translation id="6301525844455696527">به فهرست خواندن سر بزنید</translation>
 <translation id="6303969859164067831">خروج از سیستم و خاموش کردن همگام‌سازی</translation>
 <translation id="6312687380483398334">برنامه‌های وب (بی‌صدا)</translation>
 <translation id="6316139424528454185">‏نسخه Android پشتیبانی نمی‌شود</translation>
 <translation id="6324034347079777476">‏همگام‌سازی سیستم Android غیرفعال شد</translation>
+<translation id="6324916366299863871">ویرایش میان‌بر</translation>
 <translation id="6324977638108296054">نمی‌توان پیوند به مورد برجسته ایجاد کرد</translation>
 <translation id="6324997754869598316">(خطای <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">اشتراک‌گذاری از طریق <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@
 <translation id="6699370405921460408">‏سرورهای Google صفحه‌هایی را که بازدید می‌کنید بهینه می‌کنند.</translation>
 <translation id="670498945988402717">آخرین بررسی: دیروز</translation>
 <translation id="6710213216561001401">قبلی</translation>
-<translation id="671333169801287922">‏وقتی روشن باشد، سایت‌ها می‌توانند برای ارائه محتوا و سرویس‌هایشان از تکنیک‌های حفظ حریم‌خصوصی نشان داده‌شده در اینجا استفاده کنند. این تکنیک‌ها شامل روش‌های جایگزین برای ردیابی بین‌سایتی می‌شود. ممکن است در گذر زمان، دوره‌های آزمایشی بیشتری اضافه شود.
-
-<ph name="BEGIN_LIST_ITEM1" />تبلیغ‌کنندگان و ناشران می‌توانند از تکنیک FLoC استفاده کنند.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />تبلیغ‌کنندگان و ناشران می‌توانند اثربخشی آگهی‌ها را از طریقی بررسی کنند که شما را در سایت‌ها ردیابی نکند.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">تایمر <ph name="FQDN" /> شما متوقف شد. دوباره فردا شروع به کار می‌کند.</translation>
 <translation id="6738516213925468394">داده‌ها با  <ph name="BEGIN_LINK" />گذرعبارت همگام‌سازی<ph name="END_LINK" /> شما در <ph name="TIME" /> رمز می‌شود. برای شروع همگام‌سازی، آن را وارد کنید.</translation>
 <translation id="6738867403308150051">در حال بارگیری…</translation>
@@ -922,9 +913,6 @@
 <translation id="6900532703269623216">محافظت بهبودیافته</translation>
 <translation id="6903907808598579934">روشن کردن همگام‌سازی</translation>
 <translation id="6929699136511445623">‏فعال کردن همگام‌سازی سیستم Android</translation>
-<translation id="6941901516114974832">‏در «حالت ناشناس»، ممکن است فعالیت شما همچنان برای وب‌سایت‌هایی که بازدید می‌کنید، کارفرما یا محل تحصیلتان، و رساننده خدمات اینترنتی‌تان <ph name="BEGIN_BOLD1" />نمایان باشد<ph name="END_BOLD1" />.
-
-داده‌های جلسه «ناشناس» فقط زمانی از Chrome پاک خواهد شد که <ph name="BEGIN_BOLD2" />همه برگه‌های «ناشناس» را ببندید<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">هرزمان بخواهید می‌توانید با استفاده از منوی «تنظیمات»، محل پیش‌فرض بارگیری را تغییر دهید</translation>
 <translation id="694267552845942083">اکنون درحال سفارشی کردن تنظیمات «همگام‌سازی» هستید. برای تکمیل روشن کردن همگام‌سازی، روی دکمه «تأیید» در پایین صفحه ضربه بزنید. پیمایش به بالا</translation>
 <translation id="6945221475159498467">انتخاب</translation>
@@ -1088,9 +1076,6 @@
 <translation id="7971136598759319605">آخرین فعالیت: ۱ روز قبل</translation>
 <translation id="7975379999046275268">پیش‌نمایش صفحه <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">پیش‌بارگیری صفحه‌ها برای مرور و جستجوی سریع‌تر</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />جعبه ایمنی حریم‌خصوصی<ph name="END_LINK" /> نوآوری درحال پیشرفتی برای توسعه تکنیک‌هایی جدید است که ضمن حفظ وبِ باز، از شما دربرابر سازوکارهای ردیابی محافظت می‌کند.
-
-دوره آزمایشی «جعبه ایمنی حریم‌خصوصی» هنوز در مرحله توسعه فعال است و در مناطق منتخب دردسترس است. درحال‌حاضر، سایت‌ها می‌توانند «محیط امن حریم‌خصوصی» را امتحان کنند و درعین‌حال همچنان از فناوری‌های وب کنونی مثل کوکی‌های شخص ثالث استفاده کنند.</translation>
 <translation id="7986497153528221272">برای مشاهده گذرواژه‌ها، ابتدا در دستگاهتان قفل صفحه تنظیم کنید</translation>
 <translation id="7998918019931843664">بازکردن مجدد برگه‌های بسته شده</translation>
 <translation id="8004582292198964060">مرورگر</translation>

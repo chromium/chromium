@@ -40,6 +40,7 @@
 <translation id="1247372569136754018">مائیکروفون (داخلی)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> سے چارج ہو رہا ہے</translation>
 <translation id="1255033239764210633">موسم کیسا ہے؟</translation>
+<translation id="1266097335951928626">سیلفی کیمرا شروع کریں</translation>
 <translation id="1267032506238418139">شارکٹ میں تبدیلی</translation>
 <translation id="1269405891096105529">پیریفرل مہمان وضع میں تعاون یافتہ نہیں ہے</translation>
 <translation id="1270290102613614947">آن اسکرین کی بورڈ غیر فعال کر دیا گیا</translation>
@@ -84,6 +85,7 @@
 <translation id="1555130319947370107">نیلا</translation>
 <translation id="1570871743947603115">بلوٹوتھ ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">اس سیشن کی اپنی ہر سرگرمی تک رسائی حاصل کریں</translation>
+<translation id="159255010947577753">مارکر</translation>
 <translation id="1611993646327628135">آن</translation>
 <translation id="1615402009686901181">منتظم کی پالیسی کے تحت، رازدارانہ مواد کے مرئی ہونے پر اسکرین کیپچر کرنے کی سہولت غیر فعال ہو جاتی ہے</translation>
 <translation id="1632985212731562677">سوئچ رسائی کو ترتیبات &gt; ایکسیسبیلٹی میں غیر فعال کیا جا سکتا ہے۔</translation>
@@ -135,8 +137,10 @@
 <translation id="2016340657076538683">پیغام ٹائپ کریں</translation>
 <translation id="2018630726571919839">مجھے کوئی لطیفہ سنائيں</translation>
 <translation id="2021864487439853900">غیر مقفل کرنے کے لیے کلک کریں</translation>
+<translation id="2047639699071423250">اہم تصور شامل کریں</translation>
 <translation id="2049240716062114887">ڈیسک کا نام تبدیل کر کے <ph name="DESK_NAME" /> کر دیا گیا۔</translation>
 <translation id="2050339315714019657">پورٹریٹ</translation>
+<translation id="2066708475850724665">میگنیفائر بند کریں</translation>
 <translation id="2067602449040652523">کی بورڈ کی چمک</translation>
 <translation id="2078034614700056995">اگلے ڈیسک پر سوئچ کرنے کے لیے چار انگلیوں سے دائیں سوائپ کریں۔</translation>
 <translation id="2079504693865562705">شیلف میں ایپس چھپائیں</translation>
@@ -144,10 +148,12 @@
 <translation id="2083190527011054446">شب بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="209965399369889474">نیٹ ورک سے منسلک نہیں ہے</translation>
 <translation id="2108303511227308752">‏Alt + Backspace کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Delete کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + بیک اسپیس کو دبائیں۔</translation>
+<translation id="211328683600082144">مائیکروفون آن کریں</translation>
 <translation id="2126242104232412123">نیا ڈیسک</translation>
 <translation id="2127372758936585790">کم پاور والا چارجر</translation>
 <translation id="2132302418721800944">فُل اسکرین ریکارڈ کریں</translation>
 <translation id="2135456203358955318">ڈاک کردہ مکبّر</translation>
+<translation id="2146800439053023141">بار کے مقام کو ٹوگل کریں</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: پھر کوشش کریں</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">مجموعی جائزے سے باہر نکلنے کے لیے تین انگلیوں سے نیچے سوائپ کریں</translation>
@@ -282,7 +288,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> اب بھی بعد میں سائن ان کر سکتا ہے۔</translation>
 <translation id="3321628682574733415">والدین کا غلط کوڈ</translation>
 <translation id="332587331255250389">براہ کرم بیٹری تبدیل کریں</translation>
-<translation id="3333741161915951567">موڈیم ریبوٹ ہو رہا ہے۔ دوبارہ کوشش کرنے سے پہلے 30 سیکنڈ انتظار کریں۔</translation>
 <translation id="3341303451326249809">اسکرین شاٹ کیپچر ہو گیا</translation>
 <translation id="334252345105450327">ایک اسکرین شاٹ لیں</translation>
 <translation id="3351879221545518001">آپ فی الحال اسکرین کاسٹ کر رہے ہیں۔</translation>
@@ -327,6 +332,7 @@
 <translation id="3638400994746983214">رازداری کا اسکرین ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> نظم کردہ صارف</translation>
 <translation id="3665889125180354336">مائیکروفون کے ذریعے ریکارڈ کریں</translation>
+<translation id="3680908746918359504">سبھی مارکرز صاف کریں</translation>
 <translation id="36813544980941320">‏آپ کے فون اور <ph name="DEVICE_NAME" /> کے درمیان Wi-Fi نیٹ ورکس کا اشتراک کیا جائے گا</translation>
 <translation id="3702809606464356667">موجودہ ڈیسک سے ونڈوز دکھائی جا رہی ہیں تمام ڈیسکس سے ونڈوز کو دکھانے کے لیے اوپر تیر کے نشان والی کلید دبائیں</translation>
 <translation id="3702846122927433391">نائیجیریا میں آبادی</translation>
@@ -377,6 +383,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ایک ایپ کیلئے آف ہے}other{# ایپس کیلئے آف ہے}}</translation>
 <translation id="4066027111132117168"><ph name="REMAINING_TIME" />، آن</translation>
 <translation id="4072264167173457037">اوسط سگنل</translation>
+<translation id="4095366824370681039">انک قلم</translation>
 <translation id="4112140312785995938">پیچھے کریں</translation>
 <translation id="4114315158543974537">‏Phone Hub آن کریں</translation>
 <translation id="412298498316631026">ونڈو</translation>
@@ -445,12 +452,15 @@
 <translation id="4570957409596482333">سننے کیلئے منتخب کریں بٹن</translation>
 <translation id="4577274620589681794">وقت ختم ہو گیا · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">پیش مناظر دکھائیں</translation>
+<translation id="4578196883126898996">آپ کا مائیکروفون بند ہے۔ اپنے آلے کا مائیکروفون بٹن آن کریں۔</translation>
 <translation id="4578906031062871102">ترتیبات کا مینو کھولا گیا</translation>
 <translation id="4581047786858252841">مائیکروفون آن ہے</translation>
 <translation id="4585337515783392668">کسی نامعلوم موصول کنندہ پر کاسٹ کرنا بند کریں</translation>
+<translation id="4586483766170476230">سیلفی کیمرا بند کریں</translation>
 <translation id="4587299710837179226">مائیکروفون آف ہے</translation>
 <translation id="4596144739579517758">گہری تھیم آف ہے</translation>
 <translation id="4611292653554630842">لاگ ان کریں</translation>
+<translation id="4614295562446151104">مارکر ٹولز کو پھیلائیں</translation>
 <translation id="4623167406982293031">اکاؤنٹ کی توثیق کریں</translation>
 <translation id="4628757576491864469">آلات</translation>
 <translation id="4642092649622328492">جزوی اسکرین شاٹ لیں</translation>
@@ -507,6 +517,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> نئے فون سے منسلک ہو گیا</translation>
 <translation id="5035389544768382859">ڈسپلے کنفیگریشن کی تصدیق کریں</translation>
 <translation id="504465286040788597">گزشتہ پیراگراف</translation>
+<translation id="5071064518267176975">ایک ایپ مائیکروفون کا استعمال کرنا چاہتی ہے</translation>
+<translation id="5075554201838155866">سب ٹائٹلز شروع کریں</translation>
 <translation id="5078796286268621944">‏غلط PIN</translation>
 <translation id="5083553833479578423">اسسٹنٹ کی مزید خصوصیات کو غیر مقفل کریں۔</translation>
 <translation id="5136175204352732067">مختلف کی بورڈ منسلک کر دیا گیا</translation>
@@ -677,6 +689,7 @@
 <translation id="6612802754306526077">اسکرین ریکارڈنگ موڈ کا انتخاب کیا گیا</translation>
 <translation id="6614169507485700968">رازداری کی اسکرین آن ہے</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> مائیکروفون کا استعمال کرنا چاہتا ہے</translation>
 <translation id="6637729079642709226">وقت تبدیل کریں</translation>
 <translation id="6641720045729354415">لائیو کیپشن ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> اس بات کی تصدیق کرنا چاہتی ہے کہ یہ آپ ہی ہیں</translation>
@@ -730,6 +743,7 @@
 <translation id="7029814467594812963">سیشن سے خارج ہوں</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />، Google اسسٹنٹ</translation>
 <translation id="7042322267639375032">اسٹیٹس ایریا کو سکیڑیں</translation>
+<translation id="7045595904618419789">میگنیفائر شروع کریں</translation>
 <translation id="7055910611768509537">ایک ہفتہ سے اسٹائلس کا استعمال نہیں کیا گیا ہے</translation>
 <translation id="7066646422045619941">اس نیٹ ورک کو آپ کے منتظم نے غیر فعال کیا ہے۔</translation>
 <translation id="7067196344162293536">خود کار طور پر گھمائیں</translation>
@@ -750,6 +764,7 @@
 <translation id="7256634071279256947">پیچھے کا مائیکروفون</translation>
 <translation id="726276584504105859">اسپلٹ اسکرین استعمال کرنے کیلئے یہاں گھسیٹیں</translation>
 <translation id="7262906531272962081">یاد دہانی تخلیق کریں</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> رنگ کا مارکر</translation>
 <translation id="7302889331339392448">لائیو کیپشن آف ہے۔</translation>
 <translation id="7303365578352795231">ایک دوسرے آلہ پر جواب دیا جا رہا ہے۔</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -779,6 +794,7 @@
 <translation id="7466449121337984263">براہ کرم سینسر کو ٹچ کریں</translation>
 <translation id="7477793887173910789">اپنی موسیقی، ویڈیوز اور بھی بہت کچھ کنٹرول کریں</translation>
 <translation id="7483025031359818980">فُل اسکرین کو بطور سورس سیٹ کیا گیا</translation>
+<translation id="7486227320194954040">مارکر ٹولز کو سکیڑیں</translation>
 <translation id="7497767806359279797">زبان اور کی بورڈ منتخب کریں</translation>
 <translation id="7509246181739783082">اپنی شناخت کی توثیق کریں</translation>
 <translation id="7513622367902644023">اسکرین شاٹ وضع کا انتخاب کیا گیا</translation>
@@ -797,6 +813,7 @@
 <translation id="7607002721634913082">موقوف</translation>
 <translation id="7618774594543487847">نیوٹرل</translation>
 <translation id="7624117708979618027">F °<ph name="TEMPERATURE_F" /></translation>
+<translation id="7631906263969450674">مارکر قلم</translation>
 <translation id="7633755430369750696">قریبی آلات کے ساتھ اشتراک کی ترتیبات کو دکھائیں۔</translation>
 <translation id="7641938616688887143">ریکارڈ کریں</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" /> کے لیے ترتیبات کھولیں</translation>
@@ -812,6 +829,7 @@
 <translation id="7724603315864178912">کٹ کریں</translation>
 <translation id="7745560842763881396">شیلف میں ایپس دکھائیں</translation>
 <translation id="7749443890790263709">ڈیسکس کی زیادہ سے زیادہ تعداد تک پہنچ گئی۔</translation>
+<translation id="7749640678855296659">آپ کا مائیکروفون فی الحال آف ہے</translation>
 <translation id="776344839111254542">اپ ڈیٹ کی تفصیلات ملاحظہ کرنے کیلئے کلک کریں</translation>
 <translation id="7780159184141939021">اسکرین کو گھمائیں</translation>
 <translation id="7796353162336583443">‏نوٹ لینے، اسکرین شاٹ لینے، Google اسسٹنٹ، لیزر پوائنٹر یا میگنیفائنگ گلاس استعمال کرنے کے لیے شیلف پر موجود اسٹائلس بٹن کو تھپتھپائیں۔</translation>
@@ -859,6 +877,7 @@
 <translation id="8113423164597455979">آن، سبھی ایپس</translation>
 <translation id="8129620843620772246">C °<ph name="TEMPERATURE_C" /></translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
+<translation id="8132487352815776550">سب ٹائٹلز بند کریں</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> سے منسلک ہو گیا</translation>
 <translation id="813913629614996137">آغاز کیا جا رہا ہے…</translation>
 <translation id="8142441511840089262">دو بار کلک کریں</translation>

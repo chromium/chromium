@@ -186,7 +186,6 @@ Ketik mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, sentuh &
 <translation id="22320125457191592">Untuk anda</translation>
 <translation id="2234876718134438132">Segerak dan perkhidmatan Google</translation>
 <translation id="2239812875700136898">Kawal cerita anda daripada butang Pilihan untuk Discover</translation>
-<translation id="2251971221270904886">Apabila dihidupkan dan status teknologi ini aktif, Chrome akan menggunakan sejarah penyemakan imbas anda sepanjang 7 hari untuk menentukan kumpulan atau “kohort” anda. Pengiklan boleh memilih iklan untuk kumpulan itu. Sejarah penyemakan imbas anda dipastikan tertutup pada peranti anda. Percubaan ini hanya aktif di <ph name="BEGIN_LINK" />sesetengah rantau<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Eksport kata laluan…</translation>
 <translation id="2276696007612801991">Log masuk ke akaun Google anda untuk menyemak kata laluan anda</translation>
 <translation id="2278052315791335171">Pemadaman kata laluan ini tidak akan memadamkan akaun anda pada <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> penanda halaman}other{<ph name="BOOKMARKS_COUNT_MANY" /> penanda halaman}}</translation>
 <translation id="3062802207422175757">Artikel tentang minat anda di Chrome</translation>
 <translation id="3070005020161560471">Terjemah secara automatik</translation>
-<translation id="3083531420240576529">Anda boleh menetapkan semula kumpulan anda pada bila-bila masa. Teknologi ini memerlukan 7 hari untuk menentukan kumpulan anda.</translation>
 <translation id="3091010850649238832">Paparkan kandungan papan keratan</translation>
 <translation id="3098745985164956033">Sesetengah imej dihantar kepada Google untuk meningkatkan perihalan untuk anda</translation>
 <translation id="3114507951000454849">Baca berita hari ini <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Bua
 <translation id="3568688522516854065">Log masuk dan hidupkan penyegerakan untuk mendapatkan tab daripada peranti anda yang lain</translation>
 <translation id="3587482841069643663">Semua</translation>
 <translation id="3587596251841506391">Tingkatkan keselamatan pada web</translation>
-<translation id="3598653140581545904">Gunakan Inkognito untuk log masuk</translation>
 <translation id="3602290021589620013">Pratonton</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Berkongsi ke <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5964805880140440652">Untuk berkongsi halaman ini dengan peranti lain, hidupkan penyegerakan dalam tetapan Chrome</translation>
 <translation id="5964869237734432770">Hentikan perihalan imej</translation>
 <translation id="5979084224081478209">Semak kata laluan</translation>
-<translation id="5982307838673692400">Buka tab Inkognito</translation>
 <translation id="6000066717592683814">Kekalkan Google</translation>
 <translation id="6000203700195075278">Ikuti semula</translation>
 <translation id="6002623704405939939">Untuk mengosongkan <ph name="BEGIN_LINK1" />carian<ph name="END_LINK1" /> atau bentuk sejarah lain, lawati <ph name="BEGIN_LINK2" />Aktiviti Google Saya<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6277522088822131679">Terdapat masalah semasa mencetak halaman. Sila cuba sekali lagi.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Dengan menggunakan Chrome, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan OS Chrome<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Akaun</translation>
 <translation id="6297765934698848803">Organisasi yang mengurus peranti anda telah mematikan kamera anda.</translation>
 <translation id="6301525844455696527">Ikuti senarai bacaan anda</translation>
 <translation id="6303969859164067831">Log keluar dan matikan penyegerakan</translation>
 <translation id="6312687380483398334">Apl web (senyap)</translation>
 <translation id="6316139424528454185">Versi Android tidak disokong</translation>
 <translation id="6324034347079777476">Penyegerakan sistem Android dilumpuhkan</translation>
+<translation id="6324916366299863871">Edit pintasan</translation>
 <translation id="6324977638108296054">Tidak dapat membuat pautan kepada serlahan</translation>
 <translation id="6324997754869598316">(Ralat <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Kongsi melalui <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6699370405921460408">Pelayan Google akan mengoptimumkan halaman yang anda lawati.</translation>
 <translation id="670498945988402717">Disemak semalam</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
-<translation id="671333169801287922">Apabila dihidupkan, laman boleh menggunakan teknik yang menjaga privasi yang ditunjukkan di sini untuk menyediakan kandungan dan perkhidmatan laman tersebut. Teknik ini termasuklah teknik alternatif bagi penjejakan rentas laman. Lebih banyak percubaan mungkin ditambahkan dari semasa ke semasa.
-
-<ph name="BEGIN_LIST_ITEM1" />Pengiklan dan penerbit boleh menggunakan teknik FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Pengiklan dan penerbit boleh mengkaji keberkesanan iklan dengan cara yang tidak menjejak anda merentas berbilang laman.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Pemasa <ph name="FQDN" /> anda sudah tamat. Pemasa akan bermula lagi esok.</translation>
 <translation id="6738516213925468394">Data anda disulitkan dengan <ph name="BEGIN_LINK" />ungkapan laluan segerak<ph name="END_LINK" /> anda pada <ph name="TIME" />. Masukkannya untuk memulakan penyegerakan.</translation>
 <translation id="6738867403308150051">Memuat turun…</translation>
@@ -922,9 +913,6 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6900532703269623216">Perlindungan dipertingkat</translation>
 <translation id="6903907808598579934">Hidupkan penyegerakan</translation>
 <translation id="6929699136511445623">Dayakan penyegerakan sistem Android</translation>
-<translation id="6941901516114974832">Dalam Inkognito, aktiviti anda <ph name="BEGIN_BOLD1" />mungkin masih kelihatan <ph name="END_BOLD1" />kepada tapak web yang anda lawati, majikan atau institusi pengajian anda dan penyedia perkhidmatan Internet anda.
-
-Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila anda <ph name="BEGIN_BOLD2" />menutup semua tab Inkognito<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Tukar lokasi muat turun lalai pada bila-bila masa menggunakan pilihan menu Tetapan</translation>
 <translation id="694267552845942083">Anda sedang menyesuaikan tetapan Penyegerakan anda. Untuk menyelesaikan tindakan menghidupkan penyegerakan, ketik butang Sahkan berdekatan bahagian bawah skrin. Navigasi ke atas</translation>
 <translation id="6945221475159498467">Pilih</translation>
@@ -1088,9 +1076,6 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="7971136598759319605">Aktif 1 hari yang lalu</translation>
 <translation id="7975379999046275268">Pratonton halaman <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pramuat halaman untuk penyemakan imbas dan pencarian yang lebih cepat</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Kotak Pasir Privasi<ph name="END_LINK" /> ialah inisiatif berterusan untuk membangunkan teknologi baharu yang akan melindungi anda daripada mekanisme penjejakan sambil memelihara web terbuka.
-
-Percubaan Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Buat masa ini, laman boleh mencuba Kotak Pasir Privasi sambil terus menggunakan teknologi web semasa seperti kuki pihak ketiga.</translation>
 <translation id="7986497153528221272">Untuk melihat kata laluan, pertama sekali, tetapkan kunci skrin pada peranti anda</translation>
 <translation id="7998918019931843664">Buka semula tab yang ditutup</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>

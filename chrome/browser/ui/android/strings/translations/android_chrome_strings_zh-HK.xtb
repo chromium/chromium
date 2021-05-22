@@ -186,7 +186,6 @@
 <translation id="22320125457191592">為您推薦</translation>
 <translation id="2234876718134438132">同步處理和 Google 服務</translation>
 <translation id="2239812875700136898">按一下 [探索的選項] 按鈕來控制您的報導</translation>
-<translation id="2251971221270904886">如果這項功能已啟用且處於有效狀態，Chrome 就能使用你過去 7 天的瀏覽記錄來判斷你所在的群組 (或稱「同類群組」)。廣告客戶可以選擇要向該群組顯示的廣告。你的瀏覽記錄會保留在裝置上，且只供你本人存取。這項功能目前僅開放<ph name="BEGIN_LINK" />部分地區<ph name="END_LINK" />試用。</translation>
 <translation id="2259659629660284697">匯出密碼…</translation>
 <translation id="2276696007612801991">登入 Google 帳戶以檢查密碼</translation>
 <translation id="2278052315791335171">刪除此密碼不會刪除您在 <ph name="SITE" /> 的帳戶</translation>
@@ -276,7 +275,7 @@
 <translation id="2781151931089541271">尚餘 1 秒</translation>
 <translation id="2801022321632964776">更新後即可在 Chrome 最新版本中使用您的語言。</translation>
 <translation id="2805756323405976993">應用程式</translation>
-<translation id="2806840421670364300">FLoC</translation>
+<translation id="2806840421670364300">群組聯合學習 : FLoC</translation>
 <translation id="281504910091592009">查看和管理儲存在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中的密碼</translation>
 <translation id="2818669890320396765">如要將書籤同步到所有裝置，請登入並開啟同步處理功能</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -320,7 +319,6 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個書籤}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個書籤}}</translation>
 <translation id="3062802207422175757">您感興趣的文章和內容，一切盡在 Chrome</translation>
 <translation id="3070005020161560471">自動翻譯</translation>
-<translation id="3083531420240576529">你隨時可以重設群組。系統需要 7 天時間來確認你的群組。</translation>
 <translation id="3091010850649238832">顯示剪貼簿內容</translation>
 <translation id="3098745985164956033">部分圖片會傳送至 Google，以便為您提供更完善的說明</translation>
 <translation id="3114507951000454849">閱讀今天的新聞 <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="3568688522516854065">如要取得其他裝置上的分頁，請登入並開啟同步處理功能</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587596251841506391">協助改善網絡安全</translation>
-<translation id="3598653140581545904">使用無痕模式登入</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3616113530831147358">音效檔案</translation>
 <translation id="3631987586758005671">正在分享至 <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5964805880140440652">如要將此頁面分享至另一部裝置，請在 Chrome 設定中開啟同步功能</translation>
 <translation id="5964869237734432770">停止取得圖片說明</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
-<translation id="5982307838673692400">開啟無痕式分頁</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
 <translation id="6000203700195075278">重新追蹤</translation>
 <translation id="6002623704405939939">如要清除<ph name="BEGIN_LINK1" />搜尋<ph name="END_LINK1" />或其他類型的記錄，請前往<ph name="BEGIN_LINK2" />我的 Google 活動<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
 <translation id="6278428485366576908">主題背景</translation>
 <translation id="6292420053234093573">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。</translation>
-<translation id="629730747756840877">帳戶</translation>
 <translation id="6297765934698848803">管理您裝置的機構已關閉攝錄機。</translation>
 <translation id="6301525844455696527">追上您的閱讀清單</translation>
 <translation id="6303969859164067831">登出並停用同步功能</translation>
 <translation id="6312687380483398334">網絡應用程式 (安靜模式)</translation>
 <translation id="6316139424528454185">此 Android 版本不受支援</translation>
 <translation id="6324034347079777476">Android 系統同步處理功能已停用</translation>
+<translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6324977638108296054">無法建立突顯文字的連結</translation>
 <translation id="6324997754869598316">(錯誤代碼：<ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">透過 <ph name="APPLICATION" /> 分享</translation>
@@ -893,11 +889,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6699370405921460408">Google 伺服器會優化您瀏覽的網頁。</translation>
 <translation id="670498945988402717">曾在昨天檢查</translation>
 <translation id="6710213216561001401">上一個</translation>
-<translation id="671333169801287922">在啟用狀態下，網站可能會使用這裡顯示的隱私保護技術提供內容和服務，包括對於跨網站追蹤的替代性措施。本服務可能會陸續新增更多試用功能。
-
-<ph name="BEGIN_LIST_ITEM1" />廣告客戶和發布商可以使用 FLoC 技術。<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />廣告客戶和發布商不必追蹤你的網站瀏覽記錄，就能瞭解自身的廣告成效。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">「<ph name="FQDN" />」計時器已結束計時，將於明天重新開始。</translation>
 <translation id="6738516213925468394">您已於 <ph name="TIME" />使用<ph name="BEGIN_LINK" />同步密碼短語<ph name="END_LINK" />加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="6738867403308150051">下載中…</translation>
@@ -922,9 +913,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6900532703269623216">強化保護功能</translation>
 <translation id="6903907808598579934">開啟同步處理功能</translation>
 <translation id="6929699136511445623">啟用 Android 系統同步</translation>
-<translation id="6941901516114974832">在無痕模式下，您瀏覽的網站、僱主或學校，以及互聯網服務供應商<ph name="BEGIN_BOLD1" />仍可看到<ph name="END_BOLD1" />您的活動。
-
-您需要<ph name="BEGIN_BOLD2" />關閉所有無痕式分頁<ph name="END_BOLD2" />，系統才會從 Chrome 中清除您在無痕模式工作階段的資料。</translation>
 <translation id="6942665639005891494">用「設定」選單選項，隨時更改預設嘅下載位置</translation>
 <translation id="694267552845942083">你自訂緊同步設定。㩒一下畫面底部附近嘅 [確認] 掣，就可以完成打開同步處理功能嘅程序喇。向上瀏覽</translation>
 <translation id="6945221475159498467">選取</translation>
@@ -1088,9 +1076,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7971136598759319605">曾於 1 天前在線</translation>
 <translation id="7975379999046275268">預覽網頁<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">預先載入網頁，以加快瀏覽和搜尋速度</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> 是一項正在進行的新技術開發計畫，可以防止有心人士透過追蹤機制取得你的資料，同時保護開放網路。
-
-Privacy Sandbox 的試用功能仍在開發階段，目前開放地區有限。現在網站可以嘗試使用 Privacy Sandbox，也能繼續使用第三方 Cookie 等現有的網路技術。</translation>
 <translation id="7986497153528221272">如要查看密碼，請先在裝置上設定螢幕鎖定</translation>
 <translation id="7998918019931843664">重新開啟先前關閉的分頁</translation>
 <translation id="8004582292198964060">瀏覽器</translation>

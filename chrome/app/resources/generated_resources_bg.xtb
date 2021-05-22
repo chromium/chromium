@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Администраторът ви е задал стандартна тема, която не може да бъде променена.</translation>
 <translation id="1163931534039071049">&amp;Преглед на изходния код на рамката</translation>
 <translation id="1164891049599601209">Въведена в измамнически сайт</translation>
-<translation id="1164899421101904659">Въведете PUK кода</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1166212789817575481">Затваряне на разделите отдясно</translation>
-<translation id="116624467691206283">Невалиден PUK код. Остава ви 1 опит.</translation>
 <translation id="1168020859489941584">Ще се отвори след <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Сървъри на Google за имена</translation>
 <translation id="1170288591054440704">Извеждане на запитване, когато сайт иска да използва шрифтовете, инсталирани на устройството ви</translation>
@@ -1209,7 +1207,6 @@
 За съдействие при отстраняването на проблеми с предаването, моля, посетете
 <ph name="BEGIN_LINK" />
 Помощния център<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Неправилен PUK код. Остават ви <ph name="RETRIES" /> опита, преди да се наложи да се свържете с оператора си, за да възстановите достъпа си до мрежата.</translation>
 <translation id="22665427234727190">Извеждане на запитване, когато сайт иска достъп до Bluetooth устройства (препоръчително)</translation>
 <translation id="2266957463645820432">IPP през USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Обмен на данни с всяко устройство в домейна <ph name="DOMAIN" /></translation>
@@ -1493,7 +1490,6 @@
 <translation id="2553440850688409052">Скриване на тази приставка</translation>
 <translation id="2554553592469060349">Избраният файл е твърде голям (максимален размер: 3 МБ).</translation>
 <translation id="2558896001721082624">Опциите за достъпност винаги да се показват в системното меню</translation>
-<translation id="2562743677925229011">Не сте влезли в <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Функцията за изпълнение на JavaScript чрез AppleScript е изключена. За да я включите, от лентата с менюта отворете View &gt; Developer &gt; Allow JavaScript from Apple Events. За повече информация: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Подобрена проверка на правописа</translation>
 <translation id="2568774940984945469">Контейнер на инфолента</translation>
@@ -2407,7 +2403,6 @@
 <translation id="3569407787324516067">Скрийнсейвър</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> може да преглежда следните файлове и папки</translation>
 <translation id="3571734092741541777">Настройване</translation>
-<translation id="3574210789297084292">вход</translation>
 <translation id="3575121482199441727">Разрешаване за този сайт</translation>
 <translation id="3576324189521867626">Инсталирането бе успешно</translation>
 <translation id="3578594933904494462">Съдържанието на този раздел се споделя.</translation>
@@ -2859,7 +2854,6 @@
 <translation id="4022426551683927403">&amp;Добавяне в речника</translation>
 <translation id="4023146161712577481">Определяне на конфигурацията на устройството.</translation>
 <translation id="4025039777635956441">Спиране на звука на избрания сайт</translation>
-<translation id="4027804175521224372">(Изпускате – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Добавяне на методи на въвеждане</translation>
 <translation id="4029556917477724407">Връщане от страницата „<ph name="PAGE_TITLE" />“</translation>
 <translation id="4031179711345676612">Достъпът до микрофона е разрешен</translation>
@@ -3806,7 +3800,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Твърдият ви диск е пълен.  Моля, запазете на друго място или освободете още пространство на диска.</translation>
 <translation id="5123433949759960244">Баскетболна топка</translation>
-<translation id="5125167430897995218">Неправилен PUK код. Остава ви 1 опит, преди да се наложи да се свържете с оператора си, за да възстановите достъпа си до мрежата.</translation>
 <translation id="5125751979347152379">Невалиден URL адрес.</translation>
 <translation id="5126611267288187364">Преглед на промените</translation>
 <translation id="5127620150973591153">Идентификатор на защитената връзка: <ph name="TOKEN" /></translation>
@@ -4054,7 +4047,6 @@
 <translation id="540296380408672091">„Бисквитките“ от <ph name="HOST" /> да се блокират винаги</translation>
 <translation id="540495485885201800">Размяна с предишния елемент</translation>
 <translation id="5405146885510277940">Нулиране на настройките</translation>
-<translation id="5407119150486192764">Въведете 8-цифрения ключ за отблокиране на ПИН, предоставен от оператора ви</translation>
 <translation id="5407167491482639988">Неразбираемо</translation>
 <translation id="5408750356094797285">Мащаб: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">От профила ви в Google</translation>
@@ -6624,7 +6616,6 @@
 <translation id="8206745257863499010">Музикант</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново известие}other{# нови известия}}</translation>
-<translation id="8211551284753798479">Невалиден PUK код. Остават ви <ph name="RETRIES" /> опита.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Изтегля се файл}other{Изтеглят се файлове}}</translation>
 <translation id="8213449224684199188">Преминахте в режим за снимки</translation>
 <translation id="8214489666383623925">Отваряне на файл...</translation>

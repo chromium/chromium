@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Administrator tomonidan oʻzgarmas standart mavzu sozlandi.</translation>
 <translation id="1163931534039071049">&amp;Freym kodini ko‘rish</translation>
 <translation id="1164891049599601209">Soxta saytda kiritilgan</translation>
-<translation id="1164899421101904659">PUK kodni kiriting</translation>
 <translation id="1165039591588034296">Xatolik</translation>
 <translation id="1166212789817575481">O‘ng tomondagi ichki oynalarni yopish</translation>
-<translation id="116624467691206283">PUK kod xato. Sizda 1 ta urinish qoldi.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> dan so‘ng ochiladi...</translation>
 <translation id="1168100932582989117">Google nom serverlari</translation>
 <translation id="1170288591054440704">Sayt qurilmangizda oʻrnatilgan shriftlarni ishlatishdan oldin ruxsat olsin</translation>
@@ -1201,7 +1199,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
     Translatsiya muammolarni bartaraf qilishga oid yordam olish uchun
     <ph name="BEGIN_LINK" />
     yordam markaziga<ph name="END_LINK" /> tashrif buyuring.</translation>
-<translation id="2265889263013046172">PUK kod xato. Sizda <ph name="RETRIES" /> ta urinish qoldi, ruxsat olish uchun avval aloqa operatoringizga murojaat qiling.</translation>
 <translation id="22665427234727190">Sayt Bluetooth qurilmalardan foydalanishi oldidan ruxsat olsin (tavsiya etiladi)</translation>
 <translation id="2266957463645820432">USB orqali IPP (IPPUSB)</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> domenidagi har qanday qurilmalar o‘rtasida ma’lumot almashish</translation>
@@ -1485,7 +1482,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2553440850688409052">Bu plaginni yashirish</translation>
 <translation id="2554553592469060349">Tanlangan fayl juda katta (maksimal hajm: 3mb).</translation>
 <translation id="2558896001721082624">Maxsus imkoniyatlarni tizim menyusida ko‘rsatish</translation>
-<translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> hisobiga kirish bajarilmagan</translation>
 <translation id="2564520396658920462">JavaScriptni AppleScript orqali bajarish funksiyasi o‘chiq. Uni yoqish uchun menyudagi  “Ko‘rish &gt; Dasturchilar uchun” sahifasi orqali Apple Events uchun JavaScript ishlatishga ruxsat bering. Batafsil axborot: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Kengaytirilgan imlo tekshiruvi</translation>
 <translation id="2568774940984945469">Ma’lumotlar paneli konteyneri</translation>
@@ -2399,7 +2395,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3569407787324516067">Ekran lavhasi</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> quyidagi fayl va jildlarni koʻra oladi</translation>
 <translation id="3571734092741541777">Sozlash</translation>
-<translation id="3574210789297084292">kirish</translation>
 <translation id="3575121482199441727">Bu saytda chiqaversin</translation>
 <translation id="3576324189521867626">O‘rnatildi</translation>
 <translation id="3578594933904494462">Bu ichki oynadagi kontentga umumiy ruxsat ochilgan.</translation>
@@ -2850,7 +2845,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4022426551683927403">&amp;Lug‘atga qo‘shish</translation>
 <translation id="4023146161712577481">Qurilma sozlamalari aniqlanmoqda.</translation>
 <translation id="4025039777635956441">Tanlangan saytni ovozsiz qilish</translation>
-<translation id="4027804175521224372">(Bunday imkoniyatni qo‘ldan boy bermang – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Klaviatura kiritish</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> sahifasidan qaytish</translation>
 <translation id="4031179711345676612">Mikrofondan foydalanish mumkin</translation>
@@ -3797,7 +3791,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Diskda yetarli bo‘sh joy qolmadi. Boshqa jildni tanlang yoki diskda joy bo‘shating.</translation>
 <translation id="5123433949759960244">Basketbol</translation>
-<translation id="5125167430897995218">PUK kod xato. Sizda 1 ta urinish qoldi, ruxsat olish uchun avval aloqa operatoringizga murojaat qiling.</translation>
 <translation id="5125751979347152379">Yaroqsiz URL manzil.</translation>
 <translation id="5126611267288187364">Oʻzgarishlar</translation>
 <translation id="5127620150973591153">Xavfsiz ulanish identifikatori: <ph name="TOKEN" /></translation>
@@ -4045,7 +4038,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="540296380408672091"><ph name="HOST" /> saytida cookie-fayllar doim bloklansin</translation>
 <translation id="540495485885201800">Avvalgisiga almashtirish</translation>
 <translation id="5405146885510277940">Asliga qaytarish</translation>
-<translation id="5407119150486192764">Operatoringiz bergan PINni qulfdan yechadigan 8 xonali kodni kiriting</translation>
 <translation id="5407167491482639988">Noaniq</translation>
 <translation id="5408750356094797285">Masshtab: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Google hisobingizdan</translation>
@@ -6612,7 +6604,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8206745257863499010">Blyuz</translation>
 <translation id="8206859287963243715">Uyali</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Yangi bildirishnoma}other{# ta yangi bildirishnoma}}</translation>
-<translation id="8211551284753798479">PUK kod xato. Sizda <ph name="RETRIES" /> ta urinish qoldi.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Yuklab olinmoqda}other{Yuklab olinmoqda}}</translation>
 <translation id="8213449224684199188">Foto rejimi yoqildi</translation>
 <translation id="8214489666383623925">Faylni ochish...</translation>

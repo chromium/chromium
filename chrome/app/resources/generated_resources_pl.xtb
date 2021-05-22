@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Administrator ustawił domyślny motyw, którego nie można zmienić.</translation>
 <translation id="1163931534039071049">&amp;Wyświetl źródło ramki</translation>
 <translation id="1164891049599601209">Wpisano na stronie wprowadzającej w błąd</translation>
-<translation id="1164899421101904659">Wpisz klucz odblokowujący kod PIN</translation>
 <translation id="1165039591588034296">Błąd</translation>
 <translation id="1166212789817575481">Zamknij karty po prawej</translation>
-<translation id="116624467691206283">Nieprawidłowy PUK. Pozostała 1 próba.</translation>
 <translation id="1168020859489941584">Otworzę za <ph name="TIME_REMAINING" />…</translation>
 <translation id="1168100932582989117">Serwery nazw Google</translation>
 <translation id="1170288591054440704">Pytaj, gdy strona chce używać czcionek zainstalowanych na urządzeniu</translation>
@@ -1196,7 +1194,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2263189956353037928">Wyloguj się i zaloguj się ponownie</translation>
 <translation id="2263371730707937087">Częstotliwość odświeżania ekranu</translation>
 <translation id="2263679799334060788">Opinie użytkowników pomagają nam udoskonalać Google Cast, dlatego bardzo je sobie cenimy. Pomoc w zakresie rozwiązywania problemów z przesyłaniem znajdziesz w <ph name="BEGIN_LINK" />Centrum pomocy<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Nieprawidłowy PUK. Liczba pozostałych prób, zanim trzeba będzie skontaktować się z operatorem, by przywrócił Ci dostęp do sieci: <ph name="RETRIES" />.</translation>
 <translation id="22665427234727190">Pytaj, gdy strona chce uzyskać dostęp do urządzeń Bluetooth (zalecane)</translation>
 <translation id="2266957463645820432">IPP przez USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Wymiana danych z dowolnym urządzeniem w domenie <ph name="DOMAIN" /></translation>
@@ -1480,7 +1477,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2553440850688409052">Ukryj wtyczkę</translation>
 <translation id="2554553592469060349">Wybrany plik jest za duży (maksymalny rozmiar: 3 MB).</translation>
 <translation id="2558896001721082624">Zawsze pokazuj opcje ułatwień dostępu w menu systemowym</translation>
-<translation id="2562743677925229011">Nie jesteś zalogowany(a) do <ph name="SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2564520396658920462">Wykonywanie kodu JavaScript przy użyciu AppleScript jest wyłączone. Aby włączyć tę funkcję, na pasku menu kliknij Widok &gt; Deweloper &gt; Zezwól na kod JavaScript z Apple Events. Więcej informacji: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Ulepszone sprawdzanie pisowni</translation>
 <translation id="2568774940984945469">Kontener paska informacji</translation>
@@ -2393,7 +2389,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3569407787324516067">Wygaszacz ekranu</translation>
 <translation id="3569682580018832495">Strona <ph name="ORIGIN" /> może wyświetlać te pliki i foldery:</translation>
 <translation id="3571734092741541777">Konfiguruj</translation>
-<translation id="3574210789297084292">zaloguj się</translation>
 <translation id="3575121482199441727">Zezwalaj tej stronie</translation>
 <translation id="3576324189521867626">Zainstalowano</translation>
 <translation id="3578594933904494462">Treść tej karty jest udostępniana.</translation>
@@ -2844,7 +2839,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4022426551683927403">&amp;Dodaj do słownika</translation>
 <translation id="4023146161712577481">Określanie konfiguracji urządzenia.</translation>
 <translation id="4025039777635956441">Wycisz wybraną stronę</translation>
-<translation id="4027804175521224372">(Nie wykorzystujesz wszystkich możliwości – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Dodaj metody wprowadzania</translation>
 <translation id="4029556917477724407">Powrót ze strony <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Zezwolono na dostęp do mikrofonu</translation>
@@ -3790,7 +3784,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Dysk twardy jest pełny. Zapisz w innej lokalizacji lub zwolnij miejsce na dysku.</translation>
 <translation id="5123433949759960244">Piłka do koszykówki</translation>
-<translation id="5125167430897995218">Nieprawidłowy PUK. Masz jeszcze 1 próbę, zanim trzeba będzie skontaktować się z operatorem, by przywrócił Ci dostęp do sieci.</translation>
 <translation id="5125751979347152379">Nieprawidłowy adres URL.</translation>
 <translation id="5126611267288187364">Pokaż zmiany</translation>
 <translation id="5127620150973591153">Identyfikator bezpiecznego połączenia: <ph name="TOKEN" /></translation>
@@ -4038,7 +4031,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="540296380408672091">Zawsze blokuj pliki cookie na <ph name="HOST" /></translation>
 <translation id="540495485885201800">Zamień z poprzednim</translation>
 <translation id="5405146885510277940">Zresetuj ustawienia</translation>
-<translation id="5407119150486192764">Wpisz dostarczony przez operatora 8-cyfrowy klucz odblokowania kodu PIN</translation>
 <translation id="5407167491482639988">Zniekształcenia</translation>
 <translation id="5408750356094797285">Powiększenie: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Z Twojego konta Google</translation>
@@ -6604,7 +6596,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8206745257863499010">Bluesowy</translation>
 <translation id="8206859287963243715">Komórka</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nowe powiadomienie}few{# nowe powiadomienia}many{# nowych powiadomień}other{# nowego powiadomienia}}</translation>
-<translation id="8211551284753798479">Nieprawidłowy PUK. Pozostałe próby: <ph name="RETRIES" />.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Trwa pobieranie pliku}few{Trwa pobieranie plików}many{Trwa pobieranie plików}other{Trwa pobieranie plików}}</translation>
 <translation id="8213449224684199188">Włączono tryb fotografowania</translation>
 <translation id="8214489666383623925">Otwórz plik...</translation>

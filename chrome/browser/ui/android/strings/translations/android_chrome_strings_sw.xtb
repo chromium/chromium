@@ -186,7 +186,6 @@ Gusa neno lolote ili utafute. Ili uchuje utafutaji wako, gusa na ushikilie ili u
 <translation id="22320125457191592">Kwa ajili yako</translation>
 <translation id="2234876718134438132">Huduma za Google na usawazishaji</translation>
 <translation id="2239812875700136898">Dhibiti taarifa zako kutoka kwenye kitufe cha Chaguo za Dokezo</translation>
-<translation id="2251971221270904886">Wakati teknolojia hii imewashwa na inatumika, Chrome hutumia historia yako ya kuvinjari ya zaidi ya siku saba kubaini kikundi, au “kundi”, ulilopo. Watangazaji wanaweza kuchagua matangazo kwa ajili ya kikundi hicho. Historia yako ya kuvinjari huwekwa kwa faragha kwenye kifaa chako. Jaribio hili linatumika katika <ph name="BEGIN_LINK" />baadhi ya maeneo<ph name="END_LINK" /> pekee.</translation>
 <translation id="2259659629660284697">Hamisha manenosiri…</translation>
 <translation id="2276696007612801991">Ingia katika akaunti yako ya Google ili uangalie manenosiri yako</translation>
 <translation id="2278052315791335171">Hatua ya kufuta nenosiri hili haitafuta akaunti yako kwenye <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{Alamisho <ph name="BOOKMARKS_COUNT_ONE" />}other{Alamisho <ph name="BOOKMARKS_COUNT_MANY" />}}</translation>
 <translation id="3062802207422175757">Makala ya yanayokuvutia kwenye Chrome</translation>
 <translation id="3070005020161560471">Tafsiri kiotomatiki</translation>
-<translation id="3083531420240576529">Unaweza kubadilisha kikundi chako wakati wowote. Inachukua siku saba kubaini kikundi chako.</translation>
 <translation id="3091010850649238832">Onyesha yaliyomo kwenye ubao wa kunakili</translation>
 <translation id="3098745985164956033">Baadhi ya picha hutumwa kwa Google ili kuboresha maelezo unayopata</translation>
 <translation id="3114507951000454849">Soma habari za leo <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Teknolojia ya Utaratibu wa kuwekea vikwazo vya faragha bado inaendelea kutengene
 <translation id="3568688522516854065">Ingia katika akaunti na uwashe kipengele cha usawazishaji ili upate vichupo vyako kutoka vifaa vyako vingine</translation>
 <translation id="3587482841069643663">Zote</translation>
 <translation id="3587596251841506391">Tusaidie kuboresha usalama kwenye wavuti</translation>
-<translation id="3598653140581545904">Tumia Hali fiche kuingia katika akaunti</translation>
 <translation id="3602290021589620013">Hakiki</translation>
 <translation id="3616113530831147358">Sauti</translation>
 <translation id="3631987586758005671">Inashiriki kwenye <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5964805880140440652">Ili ushiriki ukurasa huu kwenye kifaa kingine, washa usawazishaji katika mipangilio ya Chrome</translation>
 <translation id="5964869237734432770">Komesha maelezo ya picha</translation>
 <translation id="5979084224081478209">Kagua manenosiri</translation>
-<translation id="5982307838673692400">Fungua kichupo Fiche</translation>
 <translation id="6000066717592683814">Endelea Kutumia Google</translation>
 <translation id="6000203700195075278">Fuatilia tena</translation>
 <translation id="6002623704405939939">Ili ufute historia ya <ph name="BEGIN_LINK1" />utafutaji<ph name="END_LINK1" /> au historia nyingine, tembelea <ph name="BEGIN_LINK2" />Shughuli Zangu Kwenye Google<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6277522088822131679">Kulikuwa na tatizo katika kuchapisha ukurasa. Tafadhali jaribu tena.</translation>
 <translation id="6278428485366576908">Mandhari</translation>
 <translation id="6292420053234093573">Kwa kutumia Chrome, unakubali <ph name="BEGIN_LINK1" />Sheria na Masharti ya Google<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />Sheria na Masharti ya Ziada ya Google Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Akaunti</translation>
 <translation id="6297765934698848803">Shirika linalosimamia kifaa chako limezima kamera yako.</translation>
 <translation id="6301525844455696527">Fuatilia orodha yako ya kusoma</translation>
 <translation id="6303969859164067831">Ondoka kwenye akaunti na uzime usawazishaji</translation>
 <translation id="6312687380483398334">Programu za wavuti (tuli)</translation>
 <translation id="6316139424528454185">Haiwezi kutumia toleo la Android</translation>
 <translation id="6324034347079777476">Kipengele cha usawazishaji wa mfumo wa Android kimezimwa</translation>
+<translation id="6324916366299863871">Badilisha njia ya mkato</translation>
 <translation id="6324977638108296054">Imeshindwa kuweka kiungo cha maandishi yaliyoangaziwa</translation>
 <translation id="6324997754869598316">(Hitilafu <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Shiriki kupitia <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6699370405921460408">Seva za Google zitaboresha kurasa unazotembelea.</translation>
 <translation id="670498945988402717">Ilikaguliwa jana</translation>
 <translation id="6710213216561001401">Iliyopita</translation>
-<translation id="671333169801287922">Ukiwa umewasha teknolojia hii, tovuti zinaweza kutumia mbinu zinazolinda faragha zilizoonyeshwa hapa kutoa maudhui na huduma. Mbinu hizi zitatumika badala ya zile za kufuatilia data kwenye tovuti nyingi. Huenda majaribio zaidi yakaongezwa baada ya muda.
-
-<ph name="BEGIN_LIST_ITEM1" />Watangazaji na wachapishaji wanaweza kutumia mbinu ya FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Watangazaji na wachapishaji wanaweza kubaini ufanisi wa matangazo kwa njia ambayo haikufuatilii kwenye tovuti mbalimbali.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Kipindi cha kipima muda cha <ph name="FQDN" /> kimeisha. Kitaanza tena kesho.</translation>
 <translation id="6738516213925468394">Data yako ilisimbwa kwa kutumia <ph name="BEGIN_LINK" />kauli ya siri ya usawazishaji<ph name="END_LINK" /> mnamo <ph name="TIME" />. Iweke ili uanze kusawazisha.</translation>
 <translation id="6738867403308150051">Inapakua...</translation>
@@ -922,9 +913,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6900532703269623216">Ulinzi ulioboreshwa</translation>
 <translation id="6903907808598579934">Washa kipengele cha kusawazisha</translation>
 <translation id="6929699136511445623">Washa usawazishaji wa mfumo wa Android</translation>
-<translation id="6941901516114974832">Katika Hali fiche, huenda shughuli zako <ph name="BEGIN_BOLD1" />bado zikaonekana <ph name="END_BOLD1" />na tovuti unazotembelea, shule au mwajiri wako na mtoa huduma zako za intaneti.
-
-Data ya kipindi chako Fiche itafutwa tu kwenye Chrome <ph name="BEGIN_BOLD2" />utakapofunga vichupo vyote Fiche<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Badilisha sehemu chaguomsingi ya kupakua wakati wowote ukitumia chaguo la menyu ya Mipangilio</translation>
 <translation id="694267552845942083">Kwa sasa unaweka mipangilio yako ya Usawazishaji iwe upendavyo. Ili ukamilishe kuwasha usawazishaji, gusa kitufe cha 'Thibitisha' kwenye sehemu ya chini ya skrini. Nenda juu</translation>
 <translation id="6945221475159498467">Chagua</translation>
@@ -1088,9 +1076,6 @@ Data ya kipindi chako Fiche itafutwa tu kwenye Chrome <ph name="BEGIN_BOLD2" />u
 <translation id="7971136598759319605">Ilitumika siku 1 iliyopita</translation>
 <translation id="7975379999046275268">Kagua ukurasa kwanza <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pakia mapema kurasa ili upate huduma ya haraka ya kuvinjari na kutafuta</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Utaratibu wa Kuwekea Vikwazo vya Faragha<ph name="END_LINK" /> ni mpango unaoendelea wa kukuza teknolojia mpya zitakazokulinda dhidi ya mbinu za ufuatiliaji huku zikitunza wavuti huria.
-
-Majaribio ya Utaratibu wa Kuwekea Vikwazo vya Faragha bado yanaendelea kutengenezwa na yanapatikana katika maeneo mahususi. Kwa sasa, tovuti zinaweza kujaribu Utaratibu wa Kuwekea Vikwazo vya Faragha huku zikiendelea kutumia teknolojia za sasa za wavuti kama vile vidakuzi vya wengine.</translation>
 <translation id="7986497153528221272">Ili uone manenosiri, weka kwanza mipangilio ya kufunga skrini kwenye kifaa chako</translation>
 <translation id="7998918019931843664">Fungua tena kichupo kilichofungwa</translation>
 <translation id="8004582292198964060">Kivinjari</translation>

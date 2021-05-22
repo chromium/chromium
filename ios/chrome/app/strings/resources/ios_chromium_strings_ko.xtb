@@ -17,7 +17,6 @@
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인해 보세요.</translation>
 <translation id="2054703085270098503">Chromium으로 안전하게 보호하기</translation>
-<translation id="2075400798887076382">여기에서 컴퓨터에서 열어 놓은 탭에 바로 액세스할 수 있습니다. 컴퓨터에서 Chromium을 열고 메뉴로 이동하여 'Chromium에 로그인...'을 선택하세요.</translation>
 <translation id="2168108852149185974">일부 부가기능이 Chromium의 비정상 종료를 유발합니다. 다음을 제거하세요.</translation>
 <translation id="2178608107313874732">지금 Chromium에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="2195025571279539885">다음에 Chromium에서 이 사이트의 <ph name="LANGUAGE_NAME" /> 페이지를 번역하시겠습니까?</translation>
@@ -42,7 +41,6 @@
 <translation id="4585809515399340748">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chromium을 사용할 수 있습니다.</translation>
 <translation id="4681781466797808448">Chromium 스캐너 사용</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" />에서 관리하는 계정이므로 이 기기에서 내 Chromium 데이터가 삭제됩니다</translation>
-<translation id="4787850887676698916">다른 기기의 Chromium에서 연 탭이 여기에 표시됩니다.</translation>
 <translation id="4806326830773390517">사용 통계 및 비정상 종료 보고서를 Google에 전송하여 Chromium 개선에 참여합니다.</translation>
 <translation id="4828317641996116749">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="4852878756222711218">Chromium을 최대한으로 활용하려면 Google 계정을 사용해 로그인하세요.</translation>

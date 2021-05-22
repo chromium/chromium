@@ -275,6 +275,7 @@
 <translation id="2781151931089541271">ഒരു സെക്കൻഡ് ശേഷിക്കുന്നു</translation>
 <translation id="2801022321632964776">Chrome-ൻ്റെ ഏറ്റവും പുതിയ പതിപ്പിൽ നിങ്ങളുടെ ഭാഷ ലഭ്യമാക്കാൻ അപ്‌ഡേറ്റ് ചെയ്യൂ</translation>
 <translation id="2805756323405976993">ആപ്സ്</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">നിങ്ങളുടെ <ph name="BEGIN_LINK" />Google അക്കൗണ്ടിൽ<ph name="END_LINK" /> സംരക്ഷിച്ച പാസ്‌വേഡുകൾ കാണുക, മാനേജ് ചെയ്യുക</translation>
 <translation id="2818669890320396765">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ ലഭിക്കാൻ, സൈൻ ഇൻ ചെയ്‌ത് സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="2827278682606527653">പകുതി ഉയരത്തിലുള്ള ഫീഡ് കാർഡ് മെനു</translation>
@@ -396,7 +397,6 @@
 <translation id="3568688522516854065">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബുകൾ ലഭിക്കാൻ, സൈൻ ഇൻ ചെയ്‌ത് സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="3587482841069643663">എല്ലാം</translation>
 <translation id="3587596251841506391">വെബിലെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
-<translation id="3598653140581545904">സൈൻ ഇൻ ചെയ്യാൻ അദൃശ്യ ടാബ് ഉപയോഗിക്കുക</translation>
 <translation id="3602290021589620013">പ്രിവ്യൂ</translation>
 <translation id="3616113530831147358">ഓഡിയോ</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് പങ്കിടുന്നു</translation>
@@ -459,6 +459,7 @@
 <translation id="4056223980640387499">സിപിയ</translation>
 <translation id="4060598801229743805">സ്‌ക്രീനിന്റെ മുകളിൽ ഓപ്‌ഷനുകൾ ലഭ്യമാണ്</translation>
 <translation id="4062305924942672200">നിയമ വിവരങ്ങൾ</translation>
+<translation id="4082818367361753283">ഗ്രൂപ്പ് ഐഡി</translation>
 <translation id="4084682180776658562">ബുക്മാര്‍ക്ക്</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" />-ൽ നിന്ന് – <ph name="BEGIN_DEEMPHASIZED" />Google നൽകുന്നത്<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ആപ്പ് ഡാറ്റ ഇല്ലാതാക്കണോ?</translation>
@@ -760,7 +761,6 @@
 <translation id="5964805880140440652">മറ്റൊരു ഉപകരണത്തിലേക്ക് ഈ പേജ് പങ്കിടാൻ, Chrome ക്രമീകരണത്തിൽ സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="5964869237734432770">ചിത്ര വിവരണങ്ങൾ നിർത്തുക</translation>
 <translation id="5979084224081478209">പാസ്‌വേഡ് പരിശോധിക്കൂ</translation>
-<translation id="5982307838673692400">അദൃശ്യ ടാബ് തുറക്കുക</translation>
 <translation id="6000066717592683814">Google ഉപയോഗിക്കുക</translation>
 <translation id="6000203700195075278">വീണ്ടും പിന്തുടരുക</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />തിരയൽ<ph name="END_LINK1" /> അല്ലെങ്കിൽ മറ്റ് തരത്തിലുള്ള ചരിത്രം മായ്ക്കാൻ <ph name="BEGIN_LINK2" />എന്റെ Google ആക്റ്റിവിറ്റി<ph name="END_LINK2" /> സന്ദർശിക്കുക</translation>
@@ -802,13 +802,13 @@
 <translation id="6277522088822131679">പേജ് പ്രിന്റുചെയ്യുന്നതിൽ ഒരു പ്രശ്‌നമുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6278428485366576908">തീം</translation>
 <translation id="6292420053234093573">Chrome ഉപയോഗിക്കുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു.</translation>
-<translation id="629730747756840877">അക്കൗണ്ട്</translation>
 <translation id="6297765934698848803">നിങ്ങളുടെ ഉപകരണം മാനേജ് ചെയ്യുന്ന ഓർഗനൈസേഷൻ നിങ്ങളുടെ ക്യാമറ ഓഫാക്കി.</translation>
 <translation id="6301525844455696527">നിങ്ങളുടെ വായനാ ലിസ്‌റ്റ് കാണൂ</translation>
 <translation id="6303969859164067831">സൈൻ ഔട്ട് ചെയ്‌ത് സമന്വയം ഓഫാക്കുക</translation>
 <translation id="6312687380483398334">വെബ്‌ ആപ്പുകൾ (നിശബ്‌ദം)</translation>
 <translation id="6316139424528454185">Android പതിപ്പ് പിന്തുണയ്‌ക്കുന്നതല്ല</translation>
 <translation id="6324034347079777476">Android സിസ്‌റ്റം സമന്വയിപ്പിക്കൽ പ്രവർത്തനരഹിതമാക്കി</translation>
+<translation id="6324916366299863871">കുറുക്കുവഴി എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6324977638108296054">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്‌ടിക്കാനാകുന്നില്ല</translation>
 <translation id="6324997754869598316">(പിശക് <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> വഴി പങ്കിടുക</translation>
@@ -913,9 +913,6 @@
 <translation id="6900532703269623216">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ</translation>
 <translation id="6903907808598579934">സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="6929699136511445623">Android സിസ്‌റ്റം സമന്വയിപ്പിക്കൽ പ്രവർത്തനക്ഷമമാക്കുക</translation>
-<translation id="6941901516114974832">അദൃശ്യ ടാബിൽ, നിങ്ങൾ സന്ദർശിക്കുന്ന വെബ്‌സൈറ്റുകൾ, തൊഴിൽ ദാതാവ് അല്ലെങ്കിൽ സ്‌കൂൾ, ഇന്റർനെറ്റ് സേവനദാതാവ് എന്നിവർക്ക് നിങ്ങളുടെ ആക്‌റ്റിവിറ്റി <ph name="BEGIN_BOLD1" />തുടർന്നും ദൃശ്യമായേക്കാം <ph name="END_BOLD1" />.
-
-<ph name="BEGIN_BOLD2" />എല്ലാ അദൃശ്യ ടാബുകളും അടയ്‌ക്കുമ്പോൾ<ph name="END_BOLD2" /> മാത്രമേ അദൃശ്യ സെഷനിൽ നിന്നുള്ള നിങ്ങളുടെ ഡാറ്റ Chrome-ൽ നിന്ന് മായ്‌ക്കൂ.</translation>
 <translation id="6942665639005891494">ക്രമീകരണ മെനു ഓപ്‌ഷൻ ഉപയോഗിച്ച്, ഏതുസമയത്തും ഡിഫോൾട്ട് ഡൗൺലോഡ് ലൊക്കേഷൻ മാറ്റുക.</translation>
 <translation id="694267552845942083">നിങ്ങൾ നിലവിൽ നിങ്ങളുടെ സമന്വയ ക്രമീകരണം ഇഷ്ടാനുസൃതമാക്കുകയാണ്. സമന്വയിപ്പിക്കൽ ഓണാക്കുന്നത് പൂർത്തിയാക്കാൻ, സ്‌ക്രീനിന്റെ ചുവടുഭാഗത്തിന് സമീപമുള്ള 'സ്ഥിരീകരിക്കുക' ബട്ടൺ ടാപ്പ് ചെയ്യുക. മുകളിലേക്ക് പോകുക</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
@@ -1188,7 +1185,9 @@
 <translation id="8662811608048051533">നിങ്ങൾ മിക്ക സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ടാകും.</translation>
 <translation id="8664979001105139458">ഫയലിന്റെ പേര് ഇതിനകം നിലവിലുണ്ട്</translation>
 <translation id="8676789164135894283">സൈൻ ഇൻ പരിശോധിച്ചുറപ്പിക്കലുകൾ</translation>
+<translation id="867767487203716855">അടുത്ത അപ്ഡേറ്റ്</translation>
 <translation id="8683039184091909753">ചിത്രം</translation>
+<translation id="8683081248374354009">ഗ്രൂപ്പ് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{സിഗ്‌നൽ സ്‌ട്രെംഗ്‌ത്ത് ലെവൽ # ബാർ}other{സിഗ്‌നൽ സ്‌ട്രെംഗ്‌ത്ത് ലെവൽ # ബാറുകൾ}}</translation>
 <translation id="869891660844655955">കാലഹരണപ്പെടല്‍‌ തീയതി</translation>
 <translation id="8699120352855309748">ഈ ഭാഷകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>

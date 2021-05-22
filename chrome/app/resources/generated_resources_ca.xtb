@@ -155,10 +155,8 @@
 <translation id="116173250649946226">L'administrador ha establert un tema predeterminat que no es pot canviar.</translation>
 <translation id="1163931534039071049">&amp;Visualitza l'origen del marc</translation>
 <translation id="1164891049599601209">S'ha introduït en un lloc web enganyós</translation>
-<translation id="1164899421101904659">Introdueix el PUK</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Tanca les pestanyes de la dreta</translation>
-<translation id="116624467691206283">El PUK no és vàlid. Et queda 1 intent.</translation>
 <translation id="1168020859489941584">Obrint a <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Servidors de noms de Google</translation>
 <translation id="1170288591054440704">Pregunta'm quan un lloc web vulgui utilitzar tipus de lletra instal·lats en aquest dispositiu</translation>
@@ -1198,7 +1196,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2263189956353037928">Tanca la sessió i torna a iniciar-la</translation>
 <translation id="2263371730707937087">Freqüència d'actualització de la pantalla</translation>
 <translation id="2263679799334060788">Els suggeriments ens ajuden a millorar Google Cast. Si vols obtenir assistència per resoldre problemes amb l'emissió de contingut, consulta el <ph name="BEGIN_LINK" />Centre d'ajuda<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">El PUK no és correcte. Et queden <ph name="RETRIES" /> intents. Si no l'encertes, contacta amb l'operador per recuperar l'accés a la xarxa.</translation>
 <translation id="22665427234727190">Pregunta'm quan un lloc web vulgui accedir a dispositius Bluetooth (opció recomanada)</translation>
 <translation id="2266957463645820432">IPP per USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Intercanviar dades amb un altre dispositiu del domini <ph name="DOMAIN" /></translation>
@@ -1482,7 +1479,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2553440850688409052">Amaga aquest connector</translation>
 <translation id="2554553592469060349">El fitxer seleccionat és massa gran (mida màxima: 3 MB).</translation>
 <translation id="2558896001721082624">Mostra sempre les opcions d'accessibilitat al menú del sistema</translation>
-<translation id="2562743677925229011">No has iniciat la sessió a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">L'execució de JavaScript amb AppleScript està desactivada. Per activar-la, ves a la barra de menú i selecciona Visualitza &gt; Desenvolupador &gt; Permet JavaScript des d'Apple Events. Per obtenir més informació, consulta: https://support.google.com/chrome/?p=applescript.</translation>
 <translation id="2564653188463346023">Corrector ortogràfic millorat</translation>
 <translation id="2568774940984945469">Contenidor de la barra d'informació</translation>
@@ -2396,7 +2392,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3569407787324516067">Estalvi de pantalla</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> pot veure els fitxers i les carpetes següents</translation>
 <translation id="3571734092741541777">Configura</translation>
-<translation id="3574210789297084292">inicia la sessió</translation>
 <translation id="3575121482199441727">Permet per a aquest lloc web</translation>
 <translation id="3576324189521867626">S'ha instal·lat correctament</translation>
 <translation id="3578594933904494462">El contingut d'aquesta pestanya es comparteix.</translation>
@@ -2846,7 +2841,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4022426551683927403">&amp;Afegeix al diccionari</translation>
 <translation id="4023146161712577481">S'està determinant la configuració del dispositiu</translation>
 <translation id="4025039777635956441">Silencia el lloc web seleccionat</translation>
-<translation id="4027804175521224372">(Us esteu perdent: <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Afegeix mètodes d'introducció de text</translation>
 <translation id="4029556917477724407">Enrere des de la pàgina <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">El micròfon es pot utilitzar</translation>
@@ -3541,7 +3535,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4838907349371614303">S'ha actualitzat la contrasenya</translation>
 <translation id="4839303808932127586">De&amp;sa el vídeo com a...</translation>
 <translation id="4840096453115567876">Vols sortir del mode d'incògnit de totes maneres?</translation>
-<translation id="4841741146571978176">Una màquina virtual necessària no existeix. Prova de configurar <ph name="VM_TYPE" /> per continuar.</translation>
+<translation id="4841741146571978176">La màquina virtual necessària no existeix. Prova de configurar <ph name="VM_TYPE" /> per continuar.</translation>
 <translation id="4842976633412754305">Aquesta pàgina està provant de carregar scripts de fonts no autenticades.</translation>
 <translation id="4844333629810439236">Altres teclats</translation>
 <translation id="4846680374085650406">Esteu seguint la recomanació de l'administració per a aquesta configuració.</translation>
@@ -3792,7 +3786,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">El vostre disc dur és ple. Deseu-ho en una altra ubicació o allibereu espai del disc dur.</translation>
 <translation id="5123433949759960244">Pilota de bàsquet</translation>
-<translation id="5125167430897995218">El PUK no és correcte. Et queda 1 intent. Si no l'encertes, contacta amb l'operador per recuperar l'accés a la xarxa.</translation>
 <translation id="5125751979347152379">URL no vàlid.</translation>
 <translation id="5126611267288187364">Mostra els canvis</translation>
 <translation id="5127620150973591153">Identificador de connexió segura: <ph name="TOKEN" /></translation>
@@ -4041,7 +4034,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="540296380408672091">Bloqueja sempre les galetes a <ph name="HOST" /></translation>
 <translation id="540495485885201800">Canvia per l'anterior</translation>
 <translation id="5405146885510277940">Restableix la configuració</translation>
-<translation id="5407119150486192764">Introdueix el PUK de vuit dígits proporcionat per l'operador</translation>
 <translation id="5407167491482639988">Inintel·ligible</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Del teu Compte de Google</translation>
@@ -6610,7 +6602,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8206745257863499010">Música</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificació nova}other{# notificacions noves}}</translation>
-<translation id="8211551284753798479">El PUK no és vàlid. Et queden <ph name="RETRIES" /> intents.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Baixada en curs}other{Baixades en curs}}</translation>
 <translation id="8213449224684199188">S'ha entrat al mode de fotos</translation>
 <translation id="8214489666383623925">Obre un fitxer...</translation>

@@ -167,6 +167,7 @@
 <translation id="5394833366792865639">Chrome-lap megosztása</translation>
 <translation id="5430073640787465221">A beállításait tartalmazó fájl hibás vagy érvénytelen. A Google Chrome nem tudja helyreállítani a beállításait.</translation>
 <translation id="5434383153637353914">Ezen az oldalon kezelheti a bejelentkezett Google-fiókjait. Ezeket a fiókokat használhatja majd a Chrome böngészőben és a Play Áruház alkalmazásaiban, valamint olyan szolgáltatásokban, mint a Gmail, a Drive és a YouTube. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
+<translation id="5486618155264784386">A Chrome OS telepítése</translation>
 <translation id="556024056938947818">A Google Chrome megpróbálja megjeleníteni a jelszavakat.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Ha valamelyik beállítás nem látható ezen az oldalon, keresse a <ph name="LINK_BEGIN" />Chrome OS beállításai<ph name="LINK_END" /> között</translation>
@@ -247,8 +248,8 @@
 <translation id="7855730255114109580">A Google Chrome naprakész</translation>
 <translation id="7890208801193284374">Ha megoszt egy számítógépet, ismerősei és családtagjai külön fiókokban internetezve a saját kívánságaik szerint állíthatják be a Chrome-ot.</translation>
 <translation id="7896673875602241923">Valaki korábban <ph name="ACCOUNT_EMAIL_LAST" /> néven bejelentkezett a Chrome-ba erről a számítógépről. Az adatai elkülönítéséhez hozzon létre új Chrome-felhasználót.</translation>
-<translation id="7905891027772979035">A Chrome nem tudja ellenőrizni a bővítményeket. Próbálkozzon később.</translation>
 <translation id="7930071585467473040">A Google Chrome megpróbálkozik a jelszavak másolásával.</translation>
+<translation id="7951988079884443914">A Chrome azt javasolja, hogy ne töltse le, illetve nyissa meg ezt a fájlt.</translation>
 <translation id="7962410387636238736">Ez a számítógép a továbbiakban már nem kapja meg a Google Chrome frissítéseit, mert már nem támogatjuk a Windows XP és Windows Vista rendszereket.</translation>
 <translation id="79947657522496226">A Chrome OS létrejöttéhez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak, ahogyan a <ph name="BEGIN_LINK_LINUX_OSS" />Linux fejlesztői környezet<ph name="END_LINK_LINUX_OSS" /> létrejöttéhez is.</translation>
 <translation id="8008534537613507642">A Chrome újratelepítése</translation>

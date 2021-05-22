@@ -202,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />সহস্ৰাধিক ব্যৱহাৰকাৰীয়ে একে ধৰণৰ আগ্ৰহ শ্বেয়াৰ কৰিলে বিজ্ঞাপনদাতাসকলে জানিব পাৰে – যেনে কোনো সংগীতানুষ্ঠানত হোৱা ভিৰ — আৰু এগৰাকী ব্যক্তিৰ সলনি সমগ্ৰ ভিৰটোৰ বাবে বিজ্ঞাপন বাছনি কৰিব পাৰে।<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />বিজ্ঞাপনদাতাসকলে আপোনাক বিভিন্ন ছাইটত ট্ৰেক নকৰাকৈ বিজ্ঞাপনৰ ফলপ্ৰসূতা অধ্যয়ন কৰিব পাৰে।<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">Chromeএ যিবোৰ পৃষ্ঠালৈ আপুনি যাব পাৰে বুলি ভাবে সেইবোৰ আগতীয়াকৈ ল’ড কৰে। এয়া কৰিবলৈ Chromeএ কুকি ব্যৱহাৰ কৰিব পাৰে যদিহে আপুনি কুকিৰ অনুমতি দিয়ে, আৰু ছাইটবোৰৰ পৰা আপোনাৰ পৰিচয় লুকুৱাবলৈ পৃষ্ঠাবোৰ এনক্ৰিপ্ট কৰিব পাৰে আৰু সেইবোৰ Googleৰ জৰিয়তে প্ৰেৰণ কৰিব পাৰে।</translation>
 <translation id="234265804618409743">আপোনাৰ কেমেৰাটো খুলিব নোৱাৰি। কিবা ভুল হ’ল।</translation>
 <translation id="2345671828921229300">সন্ধান কৰিবলৈ শব্দ এটাত স্পৰ্শ কৰি ধৰি ৰাখক</translation>
 <translation id="2349710944427398404">একাউণ্ট, বুকমার্ক আৰু ছেভ কৰি ৰখা ছেটিংসমূহকে লৈ Chromeএ ব্যৱহাৰ কৰা মুঠ ডেটা</translation>
@@ -395,7 +396,6 @@
 <translation id="3568688522516854065">আপোনাৰ অন্য ডিভাইচসমূহৰ পৰা নিজৰ টেবসমূহ পাবলৈ ছাইন ইন আৰু ছিংক কৰা সুবিধাটো অন কৰক</translation>
 <translation id="3587482841069643663">সকলো</translation>
 <translation id="3587596251841506391">ৱেবত সুৰক্ষা উন্নত কৰাত সহায় কৰক</translation>
-<translation id="3598653140581545904">ছাইন ইন কৰিবলৈ ইনক’গনিট’ ব্যৱহাৰ কৰক</translation>
 <translation id="3602290021589620013">পূৰ্বদৰ্শন</translation>
 <translation id="3616113530831147358">অডিঅ’</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />লৈ শ্বেয়াৰ কৰি থকা হৈছে</translation>
@@ -759,7 +759,6 @@
 <translation id="5964805880140440652">অন্য এটা ডিভাইচলৈ এই পৃষ্ঠাখন শ্বেয়াৰ কৰিবলৈ ডিভাইচৰ Chromeৰ ছেটিংসমূহলৈ গৈ ছিংক অন কৰক</translation>
 <translation id="5964869237734432770">প্ৰতিচ্ছবিৰ বিৱৰণ বন্ধ কৰক</translation>
 <translation id="5979084224081478209">পাছৱৰ্ডবোৰ পৰীক্ষা কৰক</translation>
-<translation id="5982307838673692400">এটা ইনক’গনিট’ টেবত খোলক</translation>
 <translation id="6000066717592683814">Google ৰাখক</translation>
 <translation id="6000203700195075278">পুনৰ ফ’ল’ কৰক</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />সন্ধান<ph name="END_LINK1" /> অথবা অন্য ধৰণৰ ইতিহাস মচিবলৈ <ph name="BEGIN_LINK2" />মই Googleত কৰা কাৰ্যকলাপ<ph name="END_LINK2" />লৈ যাওক</translation>
@@ -801,13 +800,13 @@
 <translation id="6277522088822131679">এই পৃষ্ঠাটো প্ৰিণ্ট কৰোঁতে কিবা সমস্যা হৈছিল। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6292420053234093573">Chrome ব্যৱহাৰ কৰি আপুনি <ph name="BEGIN_LINK1" />Google সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Google Chrome আৰু Chrome OSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_LINK2" />ত সন্মতি দিয়ে।</translation>
-<translation id="629730747756840877">একাউণ্ট</translation>
 <translation id="6297765934698848803">আপোনাৰ ডিভাইচ পৰিচালনা কৰা প্ৰতিষ্ঠানটোৱে আপোনাৰ কেমেৰাটো বন্ধ কৰিছে।</translation>
 <translation id="6301525844455696527">আপোনাৰ পঢ়াৰ সূচীত চাওক</translation>
 <translation id="6303969859164067831">ছাইন আউট কৰি ছিংক অফ কৰক</translation>
 <translation id="6312687380483398334">ৱেব এপ্‌সমূহ (নীৰৱ)</translation>
 <translation id="6316139424528454185">Android সংস্কৰণটো নচলে</translation>
 <translation id="6324034347079777476">Android ছিষ্টেম ছিংক কৰাটো অক্ষম কৰা হ’ল</translation>
+<translation id="6324916366299863871">শ্বৰ্টকাট সম্পাদনা কৰক</translation>
 <translation id="6324977638108296054">হাইলাইটৰ লিংক সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="6324997754869598316">(আসোঁৱাহ <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" />ৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
@@ -911,9 +910,6 @@
 <translation id="6900532703269623216">বৰ্ধিত সুৰক্ষা</translation>
 <translation id="6903907808598579934">ছিংক অন কৰক</translation>
 <translation id="6929699136511445623">Android ছিষ্টেম ছিংক অন কৰক</translation>
-<translation id="6941901516114974832">ইনক’গনিট’ত, আপোনাৰ কাৰ্যকলাপসমূহ আপুনি চোৱা ৱেবছাইটসমূহ, আপোনাৰ নিয়োগদাতা অথবা বিদ্যালয় আৰু আপোনাৰ ইণ্টাৰনেট সেৱা প্ৰদানকাৰীৰ বাবে <ph name="BEGIN_BOLD1" />তথাপিও দৃশ্যমান হৈ থাকিব পাৰে<ph name="END_BOLD1" />।
-
-আপুনি <ph name="BEGIN_BOLD2" />আটাইবোৰ ইনক’গনিট’ টেব বন্ধ কৰিলেহে<ph name="END_BOLD2" /> কেৱল আপোনাৰ ইনক’গনিট’ ছেশ্বনৰ ডেটা Chromeৰ পৰা মচা হ’ব।</translation>
 <translation id="6942665639005891494">ছেটিংসমূহ-ৰ মেনুৰ বিকল্পটো ব্যৱহাৰ কৰি ডিফ’ল্ট ডাউনল’ডৰ অৱস্থান যিকোনো সময়তে সলনি কৰক</translation>
 <translation id="694267552845942083">আপুনি বৰ্তমান আপোনাৰ ছিংক কৰাৰ ছেটিং কাষ্টমাইজ কৰি আছে। ছিংক কৰাৰ সুবিধাটো অন কৰাটো সম্পূৰ্ণ কৰিবলৈ স্ক্ৰীনখনৰ একেবাৰে তলিৰ কাষত থকা নিশ্চিত কৰক বুটামটো টিপক। ওপৰলৈ যাওক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
@@ -994,6 +990,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> ( <ph name="TIME_SINCE_UPDATE" />ত আপডে'ট কৰা হৈছিল)</translation>
 <translation id="7494974237137038751">ডেটা ৰাহি কৰা হৈছে</translation>
 <translation id="7498271377022651285">অনুগ্ৰহ কৰি অপেক্ষা কৰক…</translation>
+<translation id="750228856503700085">আপডে’ট উপলব্ধ নহয়</translation>
 <translation id="7507207699631365376">এই প্ৰদানকাৰীৰ <ph name="BEGIN_LINK" />গোপনীয়তাৰ নীতি<ph name="END_LINK" /> চাওক</translation>
 <translation id="7514365320538308">ডাউনল'ড কৰক</translation>
 <translation id="751961395872307827">ছাইটৰ লগত সংযোগ কৰিব নোৱাৰি</translation>
@@ -1096,6 +1093,7 @@
 <translation id="8076492880354921740">টেব</translation>
 <translation id="8078096376109663956">কেৱল পাঠ শ্বেয়াৰ কৰক</translation>
 <translation id="8084114998886531721">ছেভ কৰা পাছৱর্ড</translation>
+<translation id="8084285576995584326">আপোনাৰ Google একাউণ্টৰ ডেটা নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="808747664143081553">ডিভাইচৰ সৈতে সংযোগ কৰা হ’ল</translation>
 <translation id="8103578431304235997">ইনক’গনিট’ টেব</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1190,6 +1188,7 @@
 <translation id="8712637175834984815">বুজি পালোঁ</translation>
 <translation id="8725066075913043281">আকৌ চেষ্টা কৰক</translation>
 <translation id="8730621377337864115">হ’ল</translation>
+<translation id="8746155870861185046">হাইলাইট শ্বেয়াৰ কৰক</translation>
 <translation id="8748850008226585750">সমল লুকাই ৰখা হৈছে</translation>
 <translation id="8773160212632396039">অনুৰোধৰ প্ৰক্ৰিয়াকৰণ কৰি থকা হৈছে</translation>
 <translation id="8788265440806329501">নেভিগেশ্বন ইতিহাস বন্ধ কৰা আছে</translation>

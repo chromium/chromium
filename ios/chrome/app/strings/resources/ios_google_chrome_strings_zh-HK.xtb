@@ -64,7 +64,6 @@
 <translation id="6063091872902370735">允許登入 Chrome</translation>
 <translation id="6181930887571472871">切換至 Chrome</translation>
 <translation id="6238746320622508509">讓 Chrome 鎖定您的無痕式分頁。</translation>
-<translation id="6573431926118603307">您在其他裝置上開啟的 Chrome 分頁會在這裡顯示。</translation>
 <translation id="6600954340915313787">已複製至 Chrome</translation>
 <translation id="6634107063912726160">登出時，Chrome 將不會同步任何新資料至您的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
 <translation id="6648150602980899529">您即將登入由 <ph name="DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chrome 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chrome，系統將刪除此裝置上的資料，但這些資料仍會儲存在您的 Google 帳戶中。</translation>
@@ -78,7 +77,6 @@
 <translation id="7172660552945675509">提示：<ph name="BEGIN_LINK" />將 Chrome 移至工具列<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome 透過 Face ID 確保只有獲授權人士才可存取您的密碼。</translation>
 <translation id="7261678641327190792">Chrome 無法檢查密碼</translation>
-<translation id="7265369419224458312">只要在電腦上開啟 Chrome 並前往選單中選取 [登入 Chrome...]，即可直接在這裡使用您在電腦上開啟的所有分頁。</translation>
 <translation id="7272930098487145294">如要儲存圖片，請輕按 [設定] 並允許 Chrome 新增您的相片</translation>
 <translation id="7275945473750112644">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，因此您的 Chrome 資料將會從此裝置上清除</translation>
 <translation id="7400722733683201933">關於 Google Chrome</translation>

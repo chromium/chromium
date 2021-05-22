@@ -1090,12 +1090,6 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="2448315169529769573">Als je het beleid toepast, rapporteert <ph name="PRODUCT_OS_NAME" /> gebruiksstatistieken en diagnostische gegevens, waaronder crashrapporten, aan Google. Als je het beleid niet toepast, worden er geen statistieken en diagnostische gegevens gerapporteerd.
 
        Als je het beleid niet instelt, worden er geen statistieken en diagnostische gegevens gerapporteerd voor onbeheerde apparaten, maar wel voor beheerde apparaten.</translation>
-<translation id="2449263772062368618">Hiermee configureer je een lijst met typen browsegegevens die moeten worden verwijderd wanneer de browser wordt gesloten.
-      De beschikbare gegevenstypen zijn browsegeschiedenis (<ph name="DATA_TYPE_BROWSING_HISTORY" />), downloadgeschiedenis (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cachegeheugen (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), automatisch invullen (<ph name="DATA_TYPE_AUTOFILL" />), wachtwoorden (<ph name="DATA_TYPE_PASSWORD" />), site-instellingen (<ph name="DATA_TYPE_SITE_SETTINGS" />) en gegevens van gehoste apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />).
-      Dit beleid krijgt geen voorrang op <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-      Dit beleid vereist dat het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> is ingesteld op True, anders wordt dit beleid genegeerd.
-      Als je dit beleid instelt op platformniveau, moet je synchronisatie op platformniveau uitzetten.
-      Als je dit beleid instelt op gebruikersniveau, heeft dit beleid alleen effect als je synchronisatie uitzet voor die gebruiker.</translation>
 <translation id="244950822854046436">Lijst met instellingen die moeten worden toegepast op de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een bestand wordt gedownload.
 
       De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector een bestand moet sturen naar de serviceprovider als het wordt gedownload van een webpagina. De URL van de webpagina moet een 'enable'-patroon hebben, geen 'disable'-patroon.  Ook het MIME-type van het bestand moet een 'enable'-patroon hebben, geen 'disable'-patroon.
@@ -2181,7 +2175,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="3838094946886335701">Als je het beleid instelt (alleen zoals aanbevolen), kun je een lijst met protocolhandlers registreren. Deze worden samengevoegd met de protocolhandlers die de gebruiker registreert, waarna beide sets gebruikt worden. Stel de eigenschap 'protocol' in op het schema, zoals 'mailto', en stel de eigenschap 'URL' in op het URL-patroon van de app die het schema verwerkt dat in het veld 'protocol' wordt gespecificeerd. Het patroon mag de tijdelijke aanduiding '%s' bevatten die wordt vervangen door de verwerkte URL.
 
       Gebruikers kunnen een protocolhandler niet verwijderen als deze is geregistreerd door een beleid. Als ze een nieuwe standaard handler installeren, kunnen ze de protocolhandlers wijzigen die door het beleid zijn geïnstalleerd.</translation>
-<translation id="3857816702027059082">Zet <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> aan voor een lijst met URL's.
+<translation id="3857816702027059082">Stel <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> in voor een lijst met URL's.
 
 Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als onderdeel van het attestproces om de reeks signalen van de machine te ontvangen.
 
@@ -3004,13 +2998,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als je het beleid niet instelt, worden er geen websites aan de lijst toegevoegd.
 
       Opmerking: Elementen kunnen ook aan deze lijst worden toegevoegd via het beleid <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
-<translation id="5065753964276395784">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-       Als je het beleid instelt, omzeilt <ph name="PRODUCT_NAME" /> elke proxy voor de lijst met hosts die hier is opgegeven. Dit beleid is alleen van kracht als het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> niet is opgegeven en je <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> hebt geselecteerd met <ph name="PROXY_MODE_POLICY_NAME" />.
-
-       Stel dit beleid niet in als je een andere modus hebt geselecteerd om proxybeleid in te stellen.
-
-       Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="5067143124345820993">Aanmelden bij witte lijst van gebruikers</translation>
 <translation id="5073609397321802133">Als het beleid is ingesteld op 'False', kunnen gebruikers de achtergrond van de pagina 'Nieuw tabblad' niet aanpassen. Eventuele bestaande aangepaste achtergronden worden definitief verwijderd, zelfs als het beleid later weer wordt ingesteld op 'True'.
 
@@ -3167,26 +3154,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
       Als je het beleid instelt op False of niet instelt, wordt 'Geïntegreerde desktop' uitgezet. Gebruikers kunnen deze functie dan niet aanzetten.</translation>
 <translation id="5255162913209987122">Kan worden aanbevolen</translation>
 <translation id="5257395339965216304">Gegevens van gehoste apps</translation>
-<translation id="5264066441613395613">Als je het beleid instelt, bepaal je de proxyinstellingen voor Chrome en ARC-apps, die alle proxygerelateerde opties negeren die via de opdrachtregel worden opgegeven.
-
-       Als je het beleid niet instelt, kunnen gebruikers hun proxyinstellingen kiezen.
-
-       Als je het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> instelt, worden de volgende velden geaccepteerd:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Hiermee kun je de proxyserver opgeven die Chrome gebruikt en voorkomen dat gebruikers de proxyinstellingen wijzigen
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: Een URL naar een PAC-bestand van de proxy
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: Een URL van de proxyserver
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: Een lijst met proxyhosts die <ph name="PRODUCT_NAME" /> omzeilt
-
-       Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten gunste van het veld <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, waarmee je de proxyserver kunt opgeven die Chrome gebruikt en kunt voorkomen dat gebruikers de proxyinstellingen wijzigen.
-
-        Als je voor <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> de volgende waarde kiest:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />: Er wordt nooit een proxy gebruikt en alle andere velden worden genegeerd.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: De proxy van het systeem wordt gebruikt en alle andere velden worden genegeerd.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: Alle andere velden worden genegeerd.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />: De velden <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: De velden <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
-
-      Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="5266173014392157048">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
 
       Als je het beleid instelt, worden servers toegewezen waaraan <ph name="PRODUCT_NAME" /> kan delegeren. Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
@@ -5762,7 +5729,7 @@ Dit beleid wordt verwijderd in M75.</translation>
       Als het beleid is ingesteld op 'False', worden er geen tabbladen vastgezet.</translation>
 <translation id="8619480582976056396">Als je het beleid instelt, wordt voorkomen dat webpagina's met verboden URL's worden geladen. Het beleid biedt een lijst met URL-patronen die verboden URL's definiëren. Als je het beleid niet instelt, worden er geen URL's verboden in de browser. Gebruik een notatie voor het URL-patroon volgens deze indeling (https://www.chromium.org/administrators/url-blocklist-filter-format). Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />.
 
-      Vanaf <ph name="PRODUCT_NAME" /> versie 73 kun je javascript://* URL's blokkeren. Maar dit heeft alleen gevolgen voor JavaScript die wordt opgegeven in de adresbalk (of bijvoorbeeld bookmarklets). In-page JavaScript-URL's met dynamisch geladen gegevens vallen niet onder dit beleid. Als je bijvoorbeeld 'example.com/abc' blokkeert, kan de pagina 'example.com' nog steeds 'example.com/abc' laden via XMLHTTPRequest.
+      Vanaf <ph name="PRODUCT_NAME" /> versie 73 kun je javascript://* URL's blokkeren. Maar dit heeft alleen gevolgen voor JavaScript die wordt opgegeven in de adresbalk (of bijvoorbeeld bookmarklets). In-page JavaScript-URL's met dynamisch geladen gegevens vallen niet onder dit beleid. Als je bijvoorbeeld example.com/abc blokkeert, kan de pagina example.com nog steeds example.com/abc laden via XMLHTTPRequest.
 
       Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in de stand zonder interface.
 

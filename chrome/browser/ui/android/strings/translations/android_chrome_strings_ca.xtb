@@ -186,7 +186,6 @@ Toca qualsevol paraula per cercar. Per definir millor la cerca, mantén premut e
 <translation id="22320125457191592">Per a tu</translation>
 <translation id="2234876718134438132">Sincronització i serveis de Google</translation>
 <translation id="2239812875700136898">Controla les teves històries amb el botó Opcions per a Discover</translation>
-<translation id="2251971221270904886">Quan aquesta tecnologia està en funcionament i amb l'estat "actiu", Chrome utilitza el teu historial de navegació de 7 dies per determinar en quin grup o cohort ets. Els anunciants poden seleccionar anuncis per al grup. L'historial de navegació es desa en privat al teu dispositiu. Aquesta prova només està activa en <ph name="BEGIN_LINK" />algunes regions<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Exporta les contrasenyes…</translation>
 <translation id="2276696007612801991">Inicia la sessió al teu Compte de Google per comprovar les contrasenyes</translation>
 <translation id="2278052315791335171">Encara que suprimeixis aquesta contrasenya, no se suprimirà el teu compte a <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> adreça d'interès}other{<ph name="BOOKMARKS_COUNT_MANY" /> adreces d'interès}}</translation>
 <translation id="3062802207422175757">Articles relacionats amb els teus interessos a Chrome</translation>
 <translation id="3070005020161560471">Tradueix automàticament</translation>
-<translation id="3083531420240576529">Pots restablir el teu grup en qualsevol moment. Calen 7 dies per determinar el teu grup.</translation>
 <translation id="3091010850649238832">Mostra els continguts del porta-retalls</translation>
 <translation id="3098745985164956033">Algunes imatges s'envien a Google per millorar-ne les descripcions per a tu</translation>
 <translation id="3114507951000454849">Llegeix les notícies d'avui <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="3568688522516854065">Inicia la sessió i activa la sincronització per accedir a les pestanyes dels altres dispositius que tinguis</translation>
 <translation id="3587482841069643663">Tots</translation>
 <translation id="3587596251841506391">Millora la seguretat al web</translation>
-<translation id="3598653140581545904">Utilitza el mode d'incògnit per iniciar la sessió</translation>
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3616113530831147358">Àudio</translation>
 <translation id="3631987586758005671">S'està compartint amb <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5964805880140440652">Per compartir aquesta pàgina amb un altre dispositiu, activa la sincronització a la configuració de Chrome</translation>
 <translation id="5964869237734432770">Atura descripcions d'imatges</translation>
 <translation id="5979084224081478209">Comprova les contrasenyes</translation>
-<translation id="5982307838673692400">Obre una pestanya d'incògnit</translation>
 <translation id="6000066717592683814">Continua amb Google</translation>
 <translation id="6000203700195075278">Torna a seguir</translation>
 <translation id="6002623704405939939">Per esborrar la <ph name="BEGIN_LINK1" />cerca<ph name="END_LINK1" /> o altres formes de l'historial, visita <ph name="BEGIN_LINK2" />La meva activitat a Google<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6277522088822131679">S'ha produït un problema en imprimir la pàgina. Torneu-ho a provar.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">En utilitzar Chrome, acceptes les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />les condicions del servei addicionals de Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Compte</translation>
 <translation id="6297765934698848803">L'organització que gestiona el dispositiu ha desactivat la càmera.</translation>
 <translation id="6301525844455696527">Posa't al dia de la teva llista de lectura</translation>
 <translation id="6303969859164067831">Tanca la sessió i desactiva la sincronització</translation>
 <translation id="6312687380483398334">Aplicacions web (en mode silenciós)</translation>
 <translation id="6316139424528454185">Versió d'Android no admesa</translation>
 <translation id="6324034347079777476">La sincronització del sistema Android està desactivada</translation>
+<translation id="6324916366299863871">Edita la drecera</translation>
 <translation id="6324977638108296054">No es pot crear un enllaç que dirigeixi al contingut marcat</translation>
 <translation id="6324997754869598316">(Error <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Comparteix mitjançant <ph name="APPLICATION" />.</translation>
@@ -893,11 +889,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6699370405921460408">Els servidors de Google optimitzaran les pàgines que visitis.</translation>
 <translation id="670498945988402717">Es va comprovar ahir</translation>
 <translation id="6710213216561001401">Anterior</translation>
-<translation id="671333169801287922">Quan estigui activada, els llocs web podran utilitzar les tècniques de protecció de la privadesa que es mostren aquí per oferir el seu contingut i els seus serveis. Per exemple, alternatives per fer seguiments entre llocs web. Pot ser que més endavant s'hi afegeixin més proves.
-
-<ph name="BEGIN_LIST_ITEM1" />Els anunciants i els editors poden utilitzar la tècnica FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Els anunciants i els editors poden estudiar l'efectivitat dels anuncis sense fer un seguiment del que fas als llocs web.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">S'ha esgotat el temps definit al temporitzador per a <ph name="FQDN" />. Es tornarà a iniciar demà.</translation>
 <translation id="6738516213925468394">Les teves dades es van encriptar el dia <ph name="TIME" /> amb la teva <ph name="BEGIN_LINK" />frase de contrasenya de sincronització<ph name="END_LINK" />. Introdueix-la per començar la sincronització.</translation>
 <translation id="6738867403308150051">S'està baixant...</translation>
@@ -922,9 +913,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6900532703269623216">Protecció millorada</translation>
 <translation id="6903907808598579934">Activa la sincronització</translation>
 <translation id="6929699136511445623">Activa la sincronització del sistema Android</translation>
-<translation id="6941901516114974832">En mode d'incògnit, <ph name="BEGIN_BOLD1" />és possible que la teva activitat continuï sent visible<ph name="END_BOLD1" /> per a la teva empresa, el teu centre educatiu, el teu proveïdor d'Internet o els llocs web que visitis.
-
-Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph name="BEGIN_BOLD2" />tanquis totes les pestanyes d'incògnit<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Canvia la ubicació predeterminada de baixada en qualsevol moment amb l'opció del menú Configuració</translation>
 <translation id="694267552845942083">Estàs personalitzant la configuració de la sincronització. Per acabar d'activar la sincronització, toca el botó Confirma que hi ha a la part inferior de la pantalla. Navega cap amunt.</translation>
 <translation id="6945221475159498467">Selecciona</translation>
@@ -1088,9 +1076,6 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="7971136598759319605">Actiu fa 1 dia</translation>
 <translation id="7975379999046275268">Previsualitza la pàgina <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Carrega les pàgines prèviament per poder-hi navegar i fer cerques més de pressa</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> és una iniciativa en curs per desenvolupar noves tecnologies que et protegiran dels mecanismes de seguiment, alhora que preserva el web obert.
-
-Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan disponibles en determinades regions. Per ara, és possible que els llocs web provin Privacy Sandbox mentre continuen utilitzant les tecnologies web actuals, com ara les galetes de tercers.</translation>
 <translation id="7986497153528221272">Per veure les contrasenyes, primer has d'establir un bloqueig de pantalla al dispositiu</translation>
 <translation id="7998918019931843664">Torna a obrir la pestanya tancada</translation>
 <translation id="8004582292198964060">Navegador</translation>
@@ -1209,7 +1194,7 @@ Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan dispon
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8725066075913043281">Torna-ho a provar</translation>
 <translation id="8730621377337864115">Fet</translation>
-<translation id="8746155870861185046">Comparteix els moments destacats</translation>
+<translation id="8746155870861185046">Comparteix el text marcat</translation>
 <translation id="8748850008226585750">Contingut amagat</translation>
 <translation id="8773160212632396039">S'està processant la sol·licitud</translation>
 <translation id="8788265440806329501">L'historial de navegació està tancat</translation>

@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Il tuo amministratore ha impostato un tema predefinito che non può essere modificato.</translation>
 <translation id="1163931534039071049">&amp;Visualizza sorgente frame</translation>
 <translation id="1164891049599601209">Inserita in un sito ingannevole</translation>
-<translation id="1164899421101904659">Inserisci il codice di sblocco PIN</translation>
 <translation id="1165039591588034296">Errore</translation>
 <translation id="1166212789817575481">Chiudi schede a destra</translation>
-<translation id="116624467691206283">PUK non valido. Hai ancora 1 tentativo a disposizione.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> all'apertura del file...</translation>
 <translation id="1168100932582989117">Server dei nomi Google</translation>
 <translation id="1170288591054440704">Chiedi conferma quando un sito vuole utilizzare caratteri installati sul dispositivo</translation>
@@ -1198,7 +1196,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2263189956353037928">Esci e accedi nuovamente</translation>
 <translation id="2263371730707937087">Frequenza di aggiornamento dello schermo</translation>
 <translation id="2263679799334060788">Il tuo feedback è molto importante perché ci consente di migliorare Google Cast. Se serve aiuto per la risoluzione di problemi relativi a Google Cast, visita il <ph name="BEGIN_LINK" />Centro assistenza<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">PUK errato. Hai ancora <ph name="RETRIES" /> tentativi a disposizione, dopodiché dovrai contattare l'operatore per riavere accesso alla rete.</translation>
 <translation id="22665427234727190">Chiedi conferma quando un sito vuole accedere ai dispositivi Bluetooth (opzione consigliata)</translation>
 <translation id="2266957463645820432">IPP over USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Scambiare dati con qualsiasi dispositivo nel dominio <ph name="DOMAIN" /></translation>
@@ -1482,7 +1479,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2553440850688409052">Nascondi questo plug-in</translation>
 <translation id="2554553592469060349">Il file selezionato è troppo grande (dimensioni massime: 3 mb).</translation>
 <translation id="2558896001721082624">Mostra sempre le opzioni di accessibilità nel menu di sistema</translation>
-<translation id="2562743677925229011">Non connesso a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">L'esecuzione di JavaScript tramite AppleScript è disattivata. Per attivarla, vai alla barra dei menu, apri Visualizza &gt; Sviluppatore &gt; Consenti JavaScript da Apple Events. Per ulteriori informazioni, visita la pagina all'indirizzo https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Controllo ortografico avanzato</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
@@ -2396,7 +2392,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3569407787324516067">Salvaschermo</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> può visualizzare i file e le cartelle indicati di seguito</translation>
 <translation id="3571734092741541777">Configura</translation>
-<translation id="3574210789297084292">accedi</translation>
 <translation id="3575121482199441727">Consenti per questo sito</translation>
 <translation id="3576324189521867626">Installata</translation>
 <translation id="3578594933904494462">I contenuti di questa scheda vengono condivisi.</translation>
@@ -2847,7 +2842,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4022426551683927403">&amp;Aggiungi al dizionario</translation>
 <translation id="4023146161712577481">Configurazione del dispositivo in fase di determinazione.</translation>
 <translation id="4025039777635956441">Disattiva l'audio del sito selezionato</translation>
-<translation id="4027804175521224372">(Resta sincronizzato, <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Aggiungi metodi di immissione</translation>
 <translation id="4029556917477724407">Indietro dalla pagina <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Microfono consentito</translation>
@@ -3793,7 +3787,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Il disco rigido è pieno. Salva in un'altra posizione o libera spazio sul disco rigido.</translation>
 <translation id="5123433949759960244">Basket</translation>
-<translation id="5125167430897995218">PUK errato. Hai ancora 1 tentativo a disposizione, dopodiché dovrai contattare l'operatore per riavere accesso alla rete.</translation>
 <translation id="5125751979347152379">URL non valido.</translation>
 <translation id="5126611267288187364">Visualizza modifiche</translation>
 <translation id="5127620150973591153">ID connessione sicura: <ph name="TOKEN" /></translation>
@@ -4041,7 +4034,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="540296380408672091">Blocca sempre i cookie su <ph name="HOST" /></translation>
 <translation id="540495485885201800">Scambia con elemento precedente</translation>
 <translation id="5405146885510277940">Reimposta</translation>
-<translation id="5407119150486192764">Inserisci il codice di sblocco PIN di 8 cifre fornito dal tuo operatore</translation>
 <translation id="5407167491482639988">Incomprensibile</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Dal tuo Account Google</translation>
@@ -6609,7 +6601,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Cellulare</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nuova notifica}other{# nuove notifiche}}</translation>
-<translation id="8211551284753798479">PUK non valido. Hai ancora <ph name="RETRIES" /> tentativi a disposizione.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download in corso}other{Download in corso}}</translation>
 <translation id="8213449224684199188">Modalità foto attivata</translation>
 <translation id="8214489666383623925">Apri file...</translation>

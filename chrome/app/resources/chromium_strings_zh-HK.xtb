@@ -139,7 +139,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta 版本</translation>
 <translation id="5479196819031988440">Chromium 作業系統無法開啟此網頁。</translation>
 <translation id="5480860683791598150">Chromium 需要位置資訊存取權，才能與這個網站分享您的位置資訊</translation>
-<translation id="5481338274774984070">Chromium 建議你不要下載或開啟這個檔案。</translation>
+<translation id="5481338274774984070">Chromium 建議您不要下載或開啟此檔案。</translation>
 <translation id="549669000822060376">請稍候，Chromium 正在安裝最新的系統更新。</translation>
 <translation id="5496810170689441661">Chromium 正在嘗試編輯密碼。如果您同意的話，請輸入 Windows 密碼。</translation>
 <translation id="5527463683072221100">在 Chromium 中開啟 PDF</translation>
@@ -203,7 +203,6 @@
 <translation id="6964305034639999644">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="6978145336957848883">安全性弱的密碼很容易被猜到。讓 Chromium <ph name="BEGIN_LINK" />為您建立並記住安全性強的密碼<ph name="END_LINK" />。</translation>
 <translation id="6990124437352146030">Chromium 需要取得權限，才能讓這個網站存取您的麥克風</translation>
-<translation id="701244094609242530">Chromium 無法檢查擴充程式，請稍後再試。</translation>
 <translation id="705851970750939768">更新 Chromium</translation>
 <translation id="7067091210845072982">如果圖片並無有用的說明，Chromium 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。</translation>
 <translation id="7196312274710523067">無法啟動 Chromium，請再試一次。</translation>

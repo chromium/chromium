@@ -39,6 +39,7 @@
 <translation id="2560420686485554789">फाइल डाउनलोड करण्यासाठी Chromium ला स्टोरेज ॲक्सेस हवा आहे</translation>
 <translation id="2572494885440352020">Chromium मदतनीस</translation>
 <translation id="2577788541081224677">तुमच्या सर्व डिव्हाइसवर तुमचा Chromium आशय अ‍ॅक्सेस करण्यासाठी, साइन इन करा जेणेकरून तुम्ही सिंक सुरू शकता.</translation>
+<translation id="2580426763510374355">Chromium OS इंस्टॉल करा</translation>
 <translation id="2583187216237139145">या प्रोफाइलच्या वापरादरम्यान जनरेट केला गेलेला कोणताही Chromium डेटा (जसे की बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्जची निर्मिती) कार्य प्रोफाइल अ‍ॅडमिनिस्ट्रेटरला हटवता येतो. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">अपडेट लागू करण्यासाठी Chromium OS रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="2648074677641340862">स्‍थापनेदरम्‍यान ऑपरेटिंग सिस्टीम एरर आली. कृपया Chromium पुन्‍हा डाउनलोड करा.</translation>
@@ -137,6 +138,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium बीटा</translation>
 <translation id="5479196819031988440">Chromium OS हे पृष्ठ उघडू शकत नाही.</translation>
 <translation id="5480860683791598150">या साइटसोबत तुमचे स्थान शेअर करण्यासाठी Chromium ला तुमच्या स्थानाचा ॲक्सेस हवा आहे</translation>
+<translation id="5481338274774984070">Chromium अशी शिफारस करते, की तुम्ही ही फाइल डाउनलोड करू नये किंवा उघडू नये.</translation>
 <translation id="549669000822060376">कृपया Chromium नवीनतम सिस्टम अपडेट इंस्टॉल करेपर्यंत प्रतीक्षा करा.</translation>
 <translation id="5496810170689441661">Chromium पासवर्ड संपादित करण्याचा प्रयत्‍न करत आहे. हे करू देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="5527463683072221100">Chromium मध्ये PDF उघडा</translation>
@@ -201,7 +203,6 @@
 <translation id="6964305034639999644">लिंक Chromium गुप्त विंडो मध्ये उघडा</translation>
 <translation id="6978145336957848883">कमकुवत पासवर्ड ओळखणे सोपे असते. Chromium ला <ph name="BEGIN_LINK" />तुमच्यासाठी क्लिष्ट पासवर्ड तयार करून लक्षात ठेवू द्या<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">या साइटसाठी Chromium ला तुमचा मायक्रोफोन ॲक्सेस करण्याची परवानगी हवी आहे</translation>
-<translation id="701244094609242530">Chromium तुमची एक्स्टेंशन तपासू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="705851970750939768">Chromium अपडेट करा</translation>
 <translation id="7067091210845072982">इमेजचे उपयोगी वर्णन नसल्यास, Chromium तुमच्यासाठी ते देण्याचा प्रयत्न करेल. वर्णने तयार करण्यासाठी, इमेज Google ला पाठवल्या जातात.</translation>
 <translation id="7196312274710523067">Chromium लाँच करता आले नाही. पुन्हा प्रयत्न करा.</translation>

@@ -157,10 +157,8 @@
 <translation id="116173250649946226">سرپرستتان طرح زمینه‌ای پیش‌فرض تنظیم کرده است که نمی‌توان تغییر داد.</translation>
 <translation id="1163931534039071049">&amp;نمای منبع قاب</translation>
 <translation id="1164891049599601209">در سایت فریب‌دهنده وارد شده است</translation>
-<translation id="1164899421101904659">کلید باز کردن قفل پین را وارد کنید</translation>
 <translation id="1165039591588034296">خطا</translation>
 <translation id="1166212789817575481">بستن برگه‌ها به چپ</translation>
-<translation id="116624467691206283">‏PUK نامعتبر است. ۱ تلاش دیگر دارید.</translation>
 <translation id="1168020859489941584">باز کردن با <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">‏سرورهای نام Google</translation>
 <translation id="1170288591054440704">هروقت سایتی می‌خواهد از قلم‌های نصب‌شده در دستگاه استفاده کند سؤال شود</translation>
@@ -1210,7 +1208,6 @@
     برای دریافت راهنمایی درباره عیب‌یابی مشکلات ارسال محتوا، لطفاً به
     <ph name="BEGIN_LINK" />
     مرکز راهنمایی<ph name="END_LINK" /> مراجعه کنید.</translation>
-<translation id="2265889263013046172">‏PUK نادرست است. <ph name="RETRIES" /> تلاش دیگر دارید و پس‌از آن باید برای دسترسی مجدد به شبکه با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="22665427234727190">وقتی سایتی می‌خواهد به دستگاه‌های مجهز به بلوتوث دسترسی پیدا کند سؤال شود (توصیه می‌شود)</translation>
 <translation id="2266957463645820432">‏IPP ازطریق USB ‏(IPPUSB)</translation>
 <translation id="2270450558902169558">تبادل داده با هر دستگاهی در دامنه <ph name="DOMAIN" /></translation>
@@ -1494,7 +1491,6 @@
 <translation id="2553440850688409052">پنهان کردن این افزایه</translation>
 <translation id="2554553592469060349">فایل انتخابی بیش از حد بزرگ است (حداکثر اندازه: ۳ مگابایت).</translation>
 <translation id="2558896001721082624">گزینه‌های دسترس‌پذیری در منوی سیستم همیشه نمایش داده شوند</translation>
-<translation id="2562743677925229011">به سیستم <ph name="SHORT_PRODUCT_NAME" /> وارد نشدید</translation>
 <translation id="2564520396658920462">‏اجرای جاوااسکریپت ازطریق AppleScript خاموش شده است. برای روشن کردن آن، از نوار منو به View (مشاهده) &gt; Developer (برنامه‌نویس) &gt; Allow JavaScript from Apple Events (مجاز کردن JavaScript از رویدادهای Apple) بروید. برای اطلاعات بیشتر به این نشانی بروید: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">غلط‌گیر املا بهبودیافته</translation>
 <translation id="2568774940984945469">قسمت نوار اطلاعات</translation>
@@ -2408,7 +2404,6 @@
 <translation id="3569407787324516067">محافظ صفحه</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> می‌تواند فایل‌ها و پوشه‌های زیر را مشاهده کند</translation>
 <translation id="3571734092741541777">تنظیم</translation>
-<translation id="3574210789297084292">ورود به سیستم</translation>
 <translation id="3575121482199441727">مجاز برای این سایت</translation>
 <translation id="3576324189521867626">نصب موفقیت‌آمیز بود</translation>
 <translation id="3578594933904494462">محتوای این برگه اشتراک‌گذاری می‌شود.</translation>
@@ -2859,7 +2854,6 @@
 <translation id="4022426551683927403">&amp;افزودن به واژه‌نامه</translation>
 <translation id="4023146161712577481">تعیین پیکربندی دستگاه</translation>
 <translation id="4025039777635956441">بی‌صدا کردن سایت انتخاب‌شده</translation>
-<translation id="4027804175521224372">(شما موفق نشدید-<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">افزودن روش‌های ورودی</translation>
 <translation id="4029556917477724407">برگشتن از صفحه <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">میکروفون مجاز است</translation>
@@ -3806,7 +3800,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">دیسک سخت پر است. لطفاً در محل دیگری ذخیره کنید یا فضای بیشتری در دیسک سخت ایجاد کنید.</translation>
 <translation id="5123433949759960244">بسکتبال</translation>
-<translation id="5125167430897995218">‏PUK نادرست است. ۱ تلاش دیگر دارید و پس‌از آن باید برای دسترسی مجدد به شبکه با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="5125751979347152379">نشانی وب نامعتبر است.</translation>
 <translation id="5126611267288187364">مشاهده تغییرات</translation>
 <translation id="5127620150973591153">شناسه اتصال امن: <ph name="TOKEN" /></translation>
@@ -4054,7 +4047,6 @@
 <translation id="540296380408672091">همیشه کوکی‌ها در <ph name="HOST" /> مسدود شوند</translation>
 <translation id="540495485885201800">تعویض با قبلی</translation>
 <translation id="5405146885510277940">بازنشانی تنظیمات</translation>
-<translation id="5407119150486192764">کلید لغو انسداد پین ۸ رقمی ارائه‌شده توسط شرکت مخابراتی‌تان را وارد کنید</translation>
 <translation id="5407167491482639988">نامفهوم</translation>
 <translation id="5408750356094797285">بزرگ‌نمایی: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">‏از «حساب Google» شما.</translation>
@@ -6623,7 +6615,6 @@
 <translation id="8206745257863499010">بلوزی</translation>
 <translation id="8206859287963243715">سلولی</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{اعلان جدید}one{# اعلان جدید}other{# اعلان جدید}}</translation>
-<translation id="8211551284753798479">‏PUK نامعتبر است. <ph name="RETRIES" /> تلاش دیگر دارید.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{بارگیری درحال انجام است}one{بارگیری درحال انجام است}other{بارگیری درحال انجام است}}</translation>
 <translation id="8213449224684199188">به حالت عکس‌برداری وارد شد</translation>
 <translation id="8214489666383623925">باز کردن فایل...</translation>

@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Адміністратор призначив тему за умовчанням. Її не можна змінювати.</translation>
 <translation id="1163931534039071049">&amp;Переглянути джерело фрейма</translation>
 <translation id="1164891049599601209">Введено на оманливому сайті</translation>
-<translation id="1164899421101904659">Введіть ключ для розблокування PIN-коду</translation>
 <translation id="1165039591588034296">Помилка</translation>
 <translation id="1166212789817575481">Закрити вкладки праворуч</translation>
-<translation id="116624467691206283">Недійсний PUK-код. Залишилась 1 спроба.</translation>
 <translation id="1168020859489941584">Відкриття через <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Імена серверів – Google</translation>
 <translation id="1170288591054440704">Запитувати, коли сайт хоче використовувати шрифти, установлені на пристрої</translation>
@@ -1216,7 +1214,6 @@
     Щоб дізнатися, як вирішити проблеми з трансляцією, відвідайте
     <ph name="BEGIN_LINK" />
     довідковий центр<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Неправильний PUK-код. Залишилося спроб: <ph name="RETRIES" />. Після цього потрібно буде зв'язатися з оператором, щоб знову отримати доступ до мережі.</translation>
 <translation id="22665427234727190">Запитувати, коли сайт хоче отримати доступ до пристроїв Bluetooth (рекомендовано)</translation>
 <translation id="2266957463645820432">IPP через USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Обмінюватися даними з будь-яким пристроєм у домені <ph name="DOMAIN" /></translation>
@@ -1500,7 +1497,6 @@
 <translation id="2553440850688409052">Сховати цей плагін</translation>
 <translation id="2554553592469060349">Вибраний файл завеликий (максимальний розмір – 3 МБ).</translation>
 <translation id="2558896001721082624">Завжди показувати параметри спеціальних можливостей у системному меню</translation>
-<translation id="2562743677925229011">Ви не ввійшли в <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Виконання JavaScript через AppleScript вимкнено. Щоб увімкнути його, на панелі меню виберіть "Перегляд" &gt; "Для розробників" &gt; "Дозволити JavaScript від подій Apple". Щоб дізнатися більше, відвідайте сторінку https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Покращена перевірка орфографії</translation>
 <translation id="2568774940984945469">Контейнер інформаційної панелі</translation>
@@ -2414,7 +2410,6 @@
 <translation id="3569407787324516067">Заставка</translation>
 <translation id="3569682580018832495">Сайт <ph name="ORIGIN" /> може переглядати вказані нижче файли й папки</translation>
 <translation id="3571734092741541777">Налаштувати</translation>
-<translation id="3574210789297084292">увійти</translation>
 <translation id="3575121482199441727">Дозволити для цього сайту</translation>
 <translation id="3576324189521867626">Установлено</translation>
 <translation id="3578594933904494462">До вмісту цієї вкладки надано доступ.</translation>
@@ -2865,7 +2860,6 @@
 <translation id="4022426551683927403">&amp;Додати до словника</translation>
 <translation id="4023146161712577481">Визначення конфігурації пристрою.</translation>
 <translation id="4025039777635956441">Вимкнути звук на вибраному сайті</translation>
-<translation id="4027804175521224372">(Ви не ввійшли – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Додати методи введення</translation>
 <translation id="4029556917477724407">Повернутися назад зі сторінки "<ph name="PAGE_TITLE" />"</translation>
 <translation id="4031179711345676612">Дозволено використовувати мікрофон</translation>
@@ -3812,7 +3806,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Ваш жорсткий диск заповнено. Збережіть в іншому місці чи звільніть місце на цьому жорстоку диску.</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
-<translation id="5125167430897995218">Неправильний PUK-код. Залишилась 1 спроба. Після цього потрібно буде зв'язатися з оператором, щоб знову отримати доступ до мережі.</translation>
 <translation id="5125751979347152379">Недійсна URL-адреса.</translation>
 <translation id="5126611267288187364">Переглянути зміни</translation>
 <translation id="5127620150973591153">Ідентифікатор безпечного з'єднання: <ph name="TOKEN" /></translation>
@@ -4060,7 +4053,6 @@
 <translation id="540296380408672091">Завжди блокувати файли cookie на сайті <ph name="HOST" /></translation>
 <translation id="540495485885201800">Замінити попереднім</translation>
 <translation id="5405146885510277940">Скинути налаштування</translation>
-<translation id="5407119150486192764">Введіть 8-значний PUK-код, який надав оператор</translation>
 <translation id="5407167491482639988">Звуки нерозбірливі</translation>
 <translation id="5408750356094797285">Масштаб: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">З вашого облікового запису Google</translation>
@@ -6629,7 +6621,6 @@
 <translation id="8206745257863499010">Блюз</translation>
 <translation id="8206859287963243715">Мобільний</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Нове сповіщення}one{# нове сповіщення}few{# нові сповіщення}many{# нових сповіщень}other{# нового сповіщення}}</translation>
-<translation id="8211551284753798479">Недійсний PUK-код. Залишилося спроб: <ph name="RETRIES" />.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Триває завантаження}one{Тривають завантаження}few{Тривають завантаження}many{Тривають завантаження}other{Тривають завантаження}}</translation>
 <translation id="8213449224684199188">Увімкнено режим фото</translation>
 <translation id="8214489666383623925">Відкрити файл...</translation>

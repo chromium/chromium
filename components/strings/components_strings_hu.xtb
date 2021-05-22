@@ -285,6 +285,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1919345977826869612">Hirdetések</translation>
 <translation id="1919367280705858090">Segítség kérése adott hibaüzenet esetén</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nincs}=1{1 webhely}other{# webhely}}</translation>
+<translation id="1924727005275031552">Új</translation>
 <translation id="1945968466830820669">Elveszítheti a hozzáférést szervezete fiókjához, vagy visszaélhetnek személyes adataival. A Chromium azt javasolja, hogy azonnal módosítsa jelszavát.</translation>
 <translation id="1947454675006758438">Kapocs jobbra fent</translation>
 <translation id="1958218078413065209">A rekordja: <ph name="SCORE" />.</translation>
@@ -395,6 +396,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2357481397660644965">Eszközét a(z) <ph name="DEVICE_MANAGER" />, fiókját pedig a(z) <ph name="ACCOUNT_MANAGER" /> kezeli.</translation>
 <translation id="2359629602545592467">Több</translation>
 <translation id="2359808026110333948">Tovább</translation>
+<translation id="2359961752320758691">Beírtuk a virtuális kártyája számát.</translation>
 <translation id="2367567093518048410">Szint</translation>
 <translation id="2372464001869762664">A megerősítést követően a böngésző megosztja az Ön Google-fiókjából származó kártyaadatokat ezzel a webhellyel. Keresse meg a CVC-kódot Plex-fiókja adatai között.</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -405,6 +407,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="239429038616798445">Ez a szállítási mód nem áll rendelkezésre. Próbálkozzon másik móddal.</translation>
 <translation id="2396249848217231973">&amp;Törlés visszavonása</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">Régi</translation>
 <translation id="2413528052993050574">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványát visszavonhatták. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
 <translation id="2414886740292270097">Sötét</translation>
 <translation id="2438874542388153331">Négy lyuk a jobb oldalon</translation>
@@ -905,12 +908,14 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4275830172053184480">Indítsa újra az eszközt</translation>
 <translation id="4277028893293644418">Jelszó visszaállítása</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{A kártyát mentettük a Google-fiókjába.}other{Ezeket a kártyákat mentettük a Google-fiókjába.}}</translation>
+<translation id="4287885627794386150">Jogosult a próbaverzióra, de nem aktív</translation>
 <translation id="4297502707443874121">A(z) <ph name="THUMBNAIL_PAGE" /> oldal indexképe</translation>
 <translation id="42981349822642051">Kibontás</translation>
 <translation id="4300675098767811073">Több lyuk a jobb oldalon</translation>
 <translation id="4302514097724775343">A játékhoz koppintson a dinóra</translation>
 <translation id="4302965934281694568">Chou3 (boríték)</translation>
 <translation id="4305666528087210886">A fájlhoz nem sikerült hozzáférni</translation>
+<translation id="4306529830550717874">Menti a címet?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Letiltás (alapértelmezett)</translation>
 <translation id="4314815835985389558">Szinkronizálás kezelése</translation>
@@ -1398,6 +1403,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="610911394827799129">Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webhelyen</translation>
 <translation id="6116338172782435947">Megtekinteni a vágólapra másolt szövegeket és képeket</translation>
 <translation id="6120179357481664955">Emlékszik UPI-azonosítójára?</translation>
+<translation id="6123290840358279103">Virtuális kártya megtekintése</translation>
 <translation id="6124432979022149706">Chrome Enterprise csatlakozási szoftverek</translation>
 <translation id="6146055958333702838">Ellenőrizze a kábeleket, majd indítsa újra a routert, modemet vagy más
     hálózati eszközt, amelyet használ.</translation>
@@ -1677,6 +1683,7 @@ További részletek:
 <translation id="7300012071106347854">Kobaltkék</translation>
 <translation id="7302712225291570345">„<ph name="TEXT" />”</translation>
 <translation id="7304030187361489308">Magas</translation>
+<translation id="7305756307268530424">Indítás lassabban</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Segítség a kapcsolódáshoz</translation>
 <translation id="7323804146520582233">A(z) „<ph name="SECTION" />” szakasz elrejtése</translation>
@@ -1702,6 +1709,7 @@ További részletek:
 <translation id="7378594059915113390">Médiatartalmak vezérlői</translation>
 <translation id="7378627244592794276">Nem</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">–</translation>
 <translation id="7390545607259442187">Kártya igazolása</translation>
 <translation id="7399802613464275309">Biztonsági ellenőrzés</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1753,6 +1761,7 @@ További részletek:
 <translation id="7548892272833184391">A kapcsolódási hibák elhárítása</translation>
 <translation id="7549584377607005141">Ez a weboldal korábban megadott adatokat kér ahhoz, hogy megfelelően jelenjen meg. Az adatokat újra elküldheti, de ezzel meg fog ismételni minden olyan műveletet, amelyet ez az oldal korábban végrehajtott.</translation>
 <translation id="7550637293666041147">Az Ön eszközhöz és Chrome-hoz tartozó felhasználóneve</translation>
+<translation id="755279583747225797">A próba aktív</translation>
 <translation id="7552846755917812628">Próbálja ki az alábbi tippeket:</translation>
 <translation id="7554475479213504905">Újratöltés, majd megjelenítés mindenképpen</translation>
 <translation id="7554791636758816595">Új lap</translation>
@@ -1847,6 +1856,7 @@ További részletek:
 <translation id="7894280532028510793">Ha helyesen írta, <ph name="BEGIN_LINK" />próbálkozzon a hálózati diagnosztika futtatásával<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (boríték)</translation>
 <translation id="7931318309563332511">Ismeretlen</translation>
+<translation id="793209273132572360">Frissíti a címet?</translation>
 <translation id="7932579305932748336">Bevonat</translation>
 <translation id="79338296614623784">Érvényes telefonszámot adjon meg</translation>
 <translation id="7934052535022478634">A fizetés befejeződött</translation>

@@ -157,10 +157,8 @@
 <translation id="116173250649946226">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇੱਕ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਥੀਮ ਸੈੱਟ ਕੀਤਾ ਹੈ ਜਿਸਨੂੰ ਬਦਲਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ।</translation>
 <translation id="1163931534039071049">&amp;ਫ੍ਰੇਮ ਸ੍ਰੋਤ ਦੇਖੋ</translation>
 <translation id="1164891049599601209">ਧੋਖੇਬਾਜ਼ ਸਾਈਟ 'ਤੇ ਦਾਖਲ ਕੀਤਾ</translation>
-<translation id="1164899421101904659">ਪਿੰਨ ਅਣਲਾਕ ਕੁੰਜੀ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="1165039591588034296">ਗੜਬੜ</translation>
 <translation id="1166212789817575481">ਟੈਬਸ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਬੰਦ ਕਰੋ</translation>
-<translation id="116624467691206283">ਅਵੈਧ PUK ਤੁਹਾਡੇ ਕੋਲ 1 ਕੋਸ਼ਿਸ਼ ਬਾਕੀ ਹੈ।</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> ਵਿੱਚ ਖੋਲ੍ਹ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1168100932582989117">Google ਨੇਮ ਸਰਵਰ</translation>
 <translation id="1170288591054440704">ਜਦੋਂ ਕੋਈ ਸਾਈਟ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਸਥਾਪਤ ਫ਼ੌਂਟਾਂ ਨੂੰ ਵਰਤਣਾ ਚਾਹੁੰਦੀ ਹੈ ਤਾਂ ਪੁੱਛੋ</translation>
@@ -1211,7 +1209,6 @@
     ਕਾਸਟ ਵਿੱਚ ਆ ਰਹੀਆਂ ਸਮੱਸਿਆਵਾਂ ਦਾ ਨਿਪਟਾਰਾ ਕਰਨ ਵਿੱਚ ਮਦਦ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ
     <ph name="BEGIN_LINK" />
     ਮਦਦ ਕੇਂਦਰ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
-<translation id="2265889263013046172">ਗਲਤ PUK ਤੁਹਾਡੇ ਕੋਲ <ph name="RETRIES" /> ਕੋਸ਼ਿਸ਼ ਬਾਕੀ ਹੈ, ਉਸ ਤੋਂ ਬਾਅਦ ਤੁਹਾਨੂੰ ਆਪਣੀ ਨੈੱਟਵਰਕ ਪਹੁੰਚ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਆਪਣੇ ਕੈਰੀਅਰ ਨੂੰ ਸੰਪਰਕ ਕਰਨਾ ਪਵੇਗਾ।</translation>
 <translation id="22665427234727190">ਕਿਸੇ ਸਾਈਟ ਵੱਲੋਂ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵੇਲੇ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="2266957463645820432">USB 'ਤੇ IPP (IPPUSB)</translation>
 <translation id="2270450558902169558">ਡੋਮੇਨ <ph name="DOMAIN" /> ਵਿੱਚ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਨਾਲ ਡਾਟਾ ਐਕਸਚੇਂਜ ਕਰੋ</translation>
@@ -1495,7 +1492,6 @@
 <translation id="2553440850688409052">ਇਹ ਪਲੱਗਇਨ ਲੁਕਾਓ</translation>
 <translation id="2554553592469060349">ਚੁਣੀ ਗਈ ਫਾਈਲ ਬਹੁਤ ਜ਼ਿਆਦਾ ਵੱਡੀ ਹੈ (ਅਧਿਕਤਮ ਆਕਾਰ: 3mb).</translation>
 <translation id="2558896001721082624">ਸਿਸਟਮ ਮੀਨੂ ਵਿੱਚ ਹਮੇਸ਼ਾਂ ਪਹੁੰਚਯੋਗਤਾ ਵਿਕਲਪ ਦਿਖਾਓ</translation>
-<translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> ਤੇ ਸਾਈਨ ਇਨ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="2564520396658920462">AppleScript ਦੇ ਰਾਹੀਂ JavaScript ਨੂੰ ਚਲਾਉਣਾ ਬੰਦ ਹੈ। ਇਸਨੂੰ ਮੀਨੂ ਬਾਰ ਤੋਂ ਚਲਾਉਣ ਲਈ, ਦ੍ਰਿਸ਼ &gt; ਵਿਕਾਸਕਾਰ &gt; Apple ਇਵੈਂਟਾਂ ਤੋਂ JavaScript ਚੱਲਣ ਦਿਓ 'ਤੇ ਜਾਓ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">ਬਿਹਤਰ ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ</translation>
 <translation id="2568774940984945469">ਇੰਫੋਬਾਰ ਕੰਟੇਨਰ</translation>
@@ -2405,7 +2401,6 @@
 <translation id="3569407787324516067">ਸਕ੍ਰੀਨ ਸੇਵਰ</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> ਵੱਲੋਂ ਅੱਗੇ ਦਿੱਤੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਫੋਲਡਰਾਂ ਨੂੰ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="3571734092741541777">ਸਥਾਪਤ ਕਰੋ</translation>
-<translation id="3574210789297084292">ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3575121482199441727">ਇਸ ਸਾਈਟ ਨੂੰ ਦਿਖਾਉਣ ਦਿਓ</translation>
 <translation id="3576324189521867626">ਸਫਲਤਾਪੂਰਵਕ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="3578594933904494462">ਇਸ ਟੈਬ ਦੀ ਸਮੱਗਰੀ ਸ਼ੇਅਰ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।</translation>
@@ -2856,7 +2851,6 @@
 <translation id="4022426551683927403">&amp;ਸ਼ਬਦਕੋਸ਼ ਵਿੱਚ ਜੋੜੋ</translation>
 <translation id="4023146161712577481">ਡੀਵਾਈਸ ਸੰਰੂਪਣ ਨਿਰਧਾਰਿਤ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="4025039777635956441">ਚੁਣੀ ਗਈ ਸਾਈਟ ਨੂੰ ਮਿਊਟ ਕਰੋ</translation>
-<translation id="4027804175521224372">(ਤੁਸੀਂ ਇਹ ਛੱਡ ਰਹੇ ਹੋ—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> ਪੰਨੇ ਤੋਂ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="4031179711345676612">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
@@ -3799,7 +3793,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">ਤੁਹਾਡੀ ਹਾਰਡ ਡਿਸਕ ਪੂਰੀ ਭਰੀ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕਿਸੇ ਹੋਰ ਟਿਕਾਣੇ 'ਤੇ ਰੱਖਿਅਤ ਕਰੋ ਜਾਂ ਹਾਰਡ ਡਿਸਕ 'ਤੇ ਹੋਰ ਜਗ੍ਹਾ ਬਣਾਓ।</translation>
 <translation id="5123433949759960244">ਬਾਸਕਟਬਾਲ</translation>
-<translation id="5125167430897995218">ਗਲਤ PUK ਤੁਹਾਡੇ ਕੋਲ 1 ਕੋਸ਼ਿਸ਼ ਬਾਕੀ ਹੈ, ਉਸ ਤੋਂ ਬਾਅਦ ਤੁਹਾਨੂੰ ਆਪਣੀ ਨੈੱਟਵਰਕ ਪਹੁੰਚ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਆਪਣੇ ਕੈਰੀਅਰ ਨੂੰ ਸੰਪਰਕ ਕਰਨਾ ਪਵੇਗਾ।</translation>
 <translation id="5125751979347152379">ਅਵੈਧ URL.</translation>
 <translation id="5126611267288187364">ਤਬਦੀਲੀਆਂ ਦੇਖੋ</translation>
 <translation id="5127620150973591153">ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਆਈਡੀ: <ph name="TOKEN" /></translation>
@@ -4047,7 +4040,6 @@
 <translation id="540296380408672091">ਹਮੇਸ਼ਾਂ <ph name="HOST" /> ਤੇ ਕੁਕੀਜ਼ ਬਲੌਕ ਕਰੋ</translation>
 <translation id="540495485885201800">ਪਿਛਲੇ ਨਾਲ ਬਦਲੋ</translation>
 <translation id="5405146885510277940">ਸੈਟਿੰਗਾਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
-<translation id="5407119150486192764">ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕੀਤੀ 8-ਅੰਕਾਂ ਦੀ ਅਣਬਲਾਕ ਕਰਨ ਦੀ ਕੁੰਜੀ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5407167491482639988">ਅਸਪਸ਼ਟ</translation>
 <translation id="5408750356094797285">ਜ਼ੂਮ: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">ਤੁਹਾਡੇ Google ਖਾਤੇ ਤੋਂ</translation>
@@ -6608,7 +6600,6 @@
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ਨਵੀਂ ਸੂਚਨਾ}one{# ਨਵੀਂ ਸੂਚਨਾ}other{# ਨਵੀਆਂ ਸੂਚਨਾਵਾਂ}}</translation>
-<translation id="8211551284753798479">ਅਵੈਧ PUK ਤੁਹਾਡੇ ਕੋਲ <ph name="RETRIES" /> ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ ਹਨ।</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ਡਾਊਨਲੋਡ ਪ੍ਰਗਤੀ ਵਿੱਚ ਹੈ}one{ਡਾਊਨਲੋਡ ਪ੍ਰਗਤੀ ਵਿੱਚ ਹੈ}other{ਡਾਊਨਲੋਡ ਪ੍ਰਗਤੀ ਵਿੱਚ ਹਨ}}</translation>
 <translation id="8213449224684199188">ਫ਼ੋਟੋ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਏ</translation>
 <translation id="8214489666383623925">ਫਾਈਲ ਖੋਲ੍ਹੋ...</translation>

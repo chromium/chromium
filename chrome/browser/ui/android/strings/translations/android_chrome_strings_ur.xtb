@@ -275,6 +275,7 @@
 <translation id="2781151931089541271">1 سیکنڈ باقی</translation>
 <translation id="2801022321632964776">‏Chrome کے تازہ ترین ورژن میں اپنی زبان حاصل کرنے کے لیے اپ ڈیٹ کریں</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">‏اپنے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> میں محفوظ کردہ پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="2818669890320396765">اپنے سبھی آلات پر اپنے بُک مارکس حاصل کرنے کیلئے، سائن ان کریں اور سِنک کو آن کریں</translation>
 <translation id="2827278682606527653">نصف اونچائی پر فیڈ کارڈ مینو</translation>
@@ -396,7 +397,6 @@
 <translation id="3568688522516854065">اپنے دیگر آلات سے اپنے ٹیبز حاصل کرنے کیلئے، سائن ان کریں اور سِنک کو آن کریں</translation>
 <translation id="3587482841069643663">سبھی</translation>
 <translation id="3587596251841506391">ویب پر سیکیورٹی کو بہتر بنانے میں مدد کریں</translation>
-<translation id="3598653140581545904">سائن ان کرنے کے لئے پوشیدگی کا استعمال کریں</translation>
 <translation id="3602290021589620013">پیش منظر</translation>
 <translation id="3616113530831147358">آڈیو</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> کے ساتھ اشتراک کیا جا رہا ہے</translation>
@@ -459,6 +459,7 @@
 <translation id="4056223980640387499">سیپیا</translation>
 <translation id="4060598801229743805">اسکرین کے اوپری حصہ کے قریب اختیارات دستیاب ہیں</translation>
 <translation id="4062305924942672200">قانونی معلومات</translation>
+<translation id="4082818367361753283">‏گروپ ID</translation>
 <translation id="4084682180776658562">بُک مارک</translation>
 <translation id="4084712963632273211">‏بذریعہ <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google کے ذریعے ڈیلیور کردہ<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ایپ کا ڈیٹا حذف کریں؟</translation>
@@ -760,7 +761,6 @@
 <translation id="5964805880140440652">‏اس صفحہ کا کسی دوسرے آلہ پر اشتراک کرنے کے لیے Chrome کی ترتیبات میں 'سِنک کرنا' آن کریں</translation>
 <translation id="5964869237734432770">تصویری تفصیلات کو روکیں</translation>
 <translation id="5979084224081478209">پاس ورڈز چیک کریں</translation>
-<translation id="5982307838673692400">ایک پوشیدگی ٹیب کھولیں</translation>
 <translation id="6000066717592683814">‏Google کو رکھیں</translation>
 <translation id="6000203700195075278">دوبارہ پیروی کریں</translation>
 <translation id="6002623704405939939">‏<ph name="BEGIN_LINK1" />تلاش<ph name="END_LINK1" /> یا کسی اور طرح کی سرگزشت کو صاف کرنے کے لیے <ph name="BEGIN_LINK2" />Google کی میری سرگرمی<ph name="END_LINK2" /> ملاحظہ کریں</translation>
@@ -802,13 +802,13 @@
 <translation id="6277522088822131679">صفحہ کو پرنٹ کرنے میں ایک مسئلہ تھا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="6278428485366576908">تھیم</translation>
 <translation id="6292420053234093573">‏Chrome کا استعمال کر کے، آپ <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" />، اور <ph name="BEGIN_LINK2" />Chrome OS کی اضافی سروس کی شرائط<ph name="END_LINK2" />سے اتفاق کرتے ہیں۔</translation>
-<translation id="629730747756840877">اکاؤنٹ</translation>
 <translation id="6297765934698848803">آپ کے آلہ کا نظم کرنے والی تنظیم نے آپ کا کیمرا آف کر دیا ہے۔</translation>
 <translation id="6301525844455696527">اپنی پڑھنے کی فہرست دیکھیں</translation>
 <translation id="6303969859164067831">سائن آؤٹ کریں اور مطابقت پذیری آف کریں</translation>
 <translation id="6312687380483398334">ویب ایپس (خاموش)</translation>
 <translation id="6316139424528454185">‏Android ورژن تعاون یافتہ نہیں</translation>
 <translation id="6324034347079777476">‏Android سسٹم کی مطابقت پذیری کو غیر فعال کر دیا گیا</translation>
+<translation id="6324916366299863871">شارٹ کٹ میں ترمیم کریں</translation>
 <translation id="6324977638108296054">نمایاں کرنے کا لنک تخلیق نہیں کیا جا سکا</translation>
 <translation id="6324997754869598316">(خرابی <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> کے ذریعے اشتراک کریں</translation>
@@ -913,9 +913,6 @@
 <translation id="6900532703269623216">بہتر کردہ حفاظت</translation>
 <translation id="6903907808598579934">مطابقت پذیری آن کریں</translation>
 <translation id="6929699136511445623">‏Android سسٹم کی مطابقت پذیری کو فعال کریں</translation>
-<translation id="6941901516114974832">‏پوشیدگی ٹیب میں آپ کی سرگرمی، آپ کی ملاحظہ کی جانے والی ویب سائٹس، آپ کے ایمپلائر یا اسکول اور انٹرنیٹ سروس پرووائیڈر کو <ph name="BEGIN_BOLD1" /> اب بھی دکھائی دے سکتی ہے<ph name="END_BOLD1" />۔
-
-آپ کے پوشیدگی سیشن سے ڈیٹا تب ہی Chrome سے صاف کیا جائے گا جب آپ <ph name="BEGIN_BOLD2" />سبھی پوشیدگی ٹیبز بند کریں گے<ph name="END_BOLD2" />۔</translation>
 <translation id="6942665639005891494">ترتیبات کا مینو اختیار استعمال کر کے ڈاؤن لوڈ کا ڈیفالٹ مقام کسی بھی وقت تبدیل کریں</translation>
 <translation id="694267552845942083">آپ فی الحال اپنی مطابقت پذیری کی ترتیبات کو حسب ضرورت بنا رہے ہیں۔ مطابقت پذیری آن کرنے کا عمل مکمل کرنے کیلئے، اسکرین کے نچلے حصے کے پاس موجود 'تصدیق کریں' بٹن پر تھپتھپائیں۔ اوپر نیویگیٹ کریں</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
@@ -1188,7 +1185,9 @@
 <translation id="8662811608048051533">اکثر سائٹس سے آپ کو سائن آؤٹ کرتا ہے۔</translation>
 <translation id="8664979001105139458">فائل کا نام پہلے سے موجود ہے</translation>
 <translation id="8676789164135894283">سائن ان کی تصدیقیں</translation>
+<translation id="867767487203716855">اگلا اپ ڈیٹ</translation>
 <translation id="8683039184091909753">تصویر</translation>
+<translation id="8683081248374354009">گروپ ری سیٹ کریں</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{سگنل کی مضبوطی کی سطح: # بار}other{سگنل کی مضبوطی کی سطح: # بارز}}</translation>
 <translation id="869891660844655955">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="8699120352855309748">ان زبانوں کو ترجمہ کرنے کی پیشکش نہ کریں</translation>

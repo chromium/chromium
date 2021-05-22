@@ -17,7 +17,6 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium 無法檢查更新，請查看網際網路連線狀態。</translation>
 <translation id="2054703085270098503">讓 Chromium 保障你的安全</translation>
-<translation id="2075400798887076382">只要在電腦上開啟 Chromium 並前往選單中選取 [登入 Chromium...]，即可直接從這裡存取你在電腦上開啟的分頁。</translation>
 <translation id="2168108852149185974">部分外掛程式造成 Chromium 當機，請解除安裝這些外掛程式：</translation>
 <translation id="2178608107313874732">Chromium 目前無法使用你的相機</translation>
 <translation id="2195025571279539885">下次造訪這個網站時，需要 Chromium 為您翻譯其中的<ph name="LANGUAGE_NAME" />網頁嗎？</translation>
@@ -42,7 +41,6 @@
 <translation id="4585809515399340748">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chromium 開啟。</translation>
 <translation id="4681781466797808448">開啟 Chromium 掃描器</translation>
 <translation id="4736424910885271643">由於你的帳戶受到 <ph name="HOSTED_DOMAIN" /> 管理，因此系統會在你登出後，清除你在這部裝置上的 Chromium 資料</translation>
-<translation id="4787850887676698916">你在其他裝置上透過 Chromium 開啟的分頁會顯示在這裡。</translation>
 <translation id="4806326830773390517">將使用統計資料和當機報告傳送給 Google，協助我們讓 Chromium 更臻完美</translation>
 <translation id="4828317641996116749">Chromium 無法檢查所有密碼，請稍後再試。</translation>
 <translation id="4852878756222711218">如要充分運用 Chromium 的所有功能，請登入你的 Google 帳戶</translation>

@@ -186,7 +186,6 @@ Puudutage otsimiseks mis tahes sõna. Otsingu täpsustamiseks puudutage pikalt, 
 <translation id="22320125457191592">Teile</translation>
 <translation id="2234876718134438132">Sünkroonimine ja Google'i teen.</translation>
 <translation id="2239812875700136898">Hallake oma lugusid funktsiooni Discover nupuga Valikud</translation>
-<translation id="2251971221270904886">Kui see on sisse lülitatud ja olek on aktiivne, kasutab Chrome teie viimase seitsme päeva sirvimisajalugu, et tuvastada grupp või rühm, millesse kuulute. Reklaamijad saavad grupi jaoks reklaame valida. Teie sirvimisajalugu hoitakse teie seadmes privaatsena. See prooviperiood on aktiivne vaid <ph name="BEGIN_LINK" />teatud piirkondades<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Paroolide eksportimine …</translation>
 <translation id="2276696007612801991">Paroolide kontrollimiseks logige sisse oma Google'i kontole</translation>
 <translation id="2278052315791335171">Selle parooli kustutamisel ei kustutata teie kontot saidil <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> järjehoidja}other{<ph name="BOOKMARKS_COUNT_MANY" /> järjehoidjat}}</translation>
 <translation id="3062802207422175757">Teie huvidega seotud artiklid Chrome'is</translation>
 <translation id="3070005020161560471">Tõlgi automaatselt</translation>
-<translation id="3083531420240576529">Saate grupi mis tahes ajal lähtestada. Grupi määramiseks kulub seitse päeva.</translation>
 <translation id="3091010850649238832">Kuva lõikelaua sisu</translation>
 <translation id="3098745985164956033">Mõned pildid saadetakse kirjelduste täiendamiseks Google'ile</translation>
 <translation id="3114507951000454849">Lugege tänaseid uudiseid <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirko
 <translation id="3568688522516854065">Oma teistest seadmetest vahelehtede hankimiseks logige sisse ja lülitage sünkroonimine sisse</translation>
 <translation id="3587482841069643663">Kõik</translation>
 <translation id="3587596251841506391">Aidake veebi turvalisemaks muuta</translation>
-<translation id="3598653140581545904">Kasutage sisselogimiseks inkognito režiimi</translation>
 <translation id="3602290021589620013">Eelvaade</translation>
 <translation id="3616113530831147358">Heli</translation>
 <translation id="3631987586758005671">Jagamine seadmega <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5964805880140440652">Selle lehe jagamiseks teise seadmega lülitage sünkroonimine Chrome'i seadetes sisse</translation>
 <translation id="5964869237734432770">Piltide kirjelduste peatam.</translation>
 <translation id="5979084224081478209">Kontrolli paroole</translation>
-<translation id="5982307838673692400">Inkognito vahelehe avamine</translation>
 <translation id="6000066717592683814">Säilita Google</translation>
 <translation id="6000203700195075278">Jälgi uuesti</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />Otsinguajaloo<ph name="END_LINK1" /> ja muude ajalooandmete kustutamiseks avage jaotis <ph name="BEGIN_LINK2" />Minu tegevused Google’is<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6277522088822131679">Lehe printimisel ilmnes probleem. Proovige uuesti.</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6292420053234093573">Chrome'i kasutades nõustute <ph name="BEGIN_LINK1" />Google'i teenusetingimustega<ph name="END_LINK1" /> ning <ph name="BEGIN_LINK2" />Google Chrome'i ja Chrome OS-i lisateenusetingimustega<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Konto</translation>
 <translation id="6297765934698848803">Teie seadet haldav organisatsioon on kaamera välja lülitanud.</translation>
 <translation id="6301525844455696527">Võtke oma lugemisloend käsile</translation>
 <translation id="6303969859164067831">Logi välja ja lülita sünkroonimine välja</translation>
 <translation id="6312687380483398334">Veebirakendused (vaiksed)</translation>
 <translation id="6316139424528454185">Seda Androidi versiooni ei toetata</translation>
 <translation id="6324034347079777476">Androidi süsteemi sünkroonimine on keelatud</translation>
+<translation id="6324916366299863871">Otsetee muutmine</translation>
 <translation id="6324977638108296054">Esiletõstu linki ei õnnestu luua</translation>
 <translation id="6324997754869598316">(Viga <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Jagamine rakenduse <ph name="APPLICATION" /> kaudu</translation>
@@ -893,11 +889,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6699370405921460408">Google'i serverid optimeerivad teie külastatavaid lehti.</translation>
 <translation id="670498945988402717">Kontrolliti eile</translation>
 <translation id="6710213216561001401">Eelmine</translation>
-<translation id="671333169801287922">Kui see on sisse lülitatud, võivad saidid oma sisu ja teenuste pakkumiseks kasutada siin kuvatud privaatsust säilitavaid meetodeid. Need hõlmavad saitidevahelise jälgimise alternatiive. Aja jooksul võidakse lisada rohkem prooviversioone.
-
-<ph name="BEGIN_LIST_ITEM1" />Reklaamijad ja väljaandjad võivad kasutada FLoC-meetodit.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklaamijad ja väljaandjad saavad reklaamide tõhusust uurida viisil, mis teie tegevusi saitidel ei jälgi.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Teie rakenduse <ph name="FQDN" /> taimeri aeg sai otsa. See alustab uuesti homme.</translation>
 <translation id="6738516213925468394">Teie andmed krüpteeriti teie <ph name="BEGIN_LINK" />sünkroonimisparooliga<ph name="END_LINK" /> kuupäeval <ph name="TIME" />. Sisestage see sünkroonimise alustamiseks.</translation>
 <translation id="6738867403308150051">Allalaadimine ...</translation>
@@ -922,9 +913,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6900532703269623216">Parem kaitse</translation>
 <translation id="6903907808598579934">Lülita sünkroonimine sisse</translation>
 <translation id="6929699136511445623">Luba Androidi süsteemi sünkroonimine</translation>
-<translation id="6941901516114974832">Inkognito režiimis tehtud toimingud <ph name="BEGIN_BOLD1" />võivad siiski olla nähtavad<ph name="END_BOLD1" /> külastatavatele veebisaitidele, teie tööandjale, koolile ja internetiteenuse pakkujale.
-
-Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph name="BEGIN_BOLD2" />sulgete kõik inkognito vahelehed<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Allalaadimise vaikeasukohta saab menüü Seaded valikuga alati muuta</translation>
 <translation id="694267552845942083">Kohandate praegu oma sünkroonimisseadeid. Sünkroonimise sisselülitamiseks puudutage ekraani alaosas nuppu Kinnita. Navigeeri üles</translation>
 <translation id="6945221475159498467">Vali</translation>
@@ -1088,9 +1076,6 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="7971136598759319605">Aktiivne 1 päev tagasi</translation>
 <translation id="7975379999046275268">Lehe eelvaade <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Eellaaditakse lehti kiiremaks sirvimiseks ja otsimiseks</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privaatsuse liivakast<ph name="END_LINK" /> on käimasolev initsiatiiv arendada uusi tehnoloogiaid, mis kaitsevad teid jälgimismehhanismide eest, säilitades samas avatud veebi.
-
-Privaatsuse liivakasti prooviperioodid on endiselt arendusjärgus ja saadaval vaid valitud piirkondades. Praegu võivad saidid privaatsuse liivakasti proovida, kasutades jätkuvalt ka muid veebitehnoloogiaid, nagu kolmandate osapoolte küpsisefailid.</translation>
 <translation id="7986497153528221272">Paroolide vaatamiseks määrake esmalt oma seadmes ekraanilukk</translation>
 <translation id="7998918019931843664">Suletud vahelehe uuesti avamine</translation>
 <translation id="8004582292198964060">Brauser</translation>

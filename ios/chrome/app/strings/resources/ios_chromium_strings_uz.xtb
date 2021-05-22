@@ -16,8 +16,6 @@
 <translation id="1843424232666537147">Chromium brauzerida Internet ma’lumotlarini qayta ishlash va sahifalar yuklanishi tezligini boshqarish mumkin. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium yangilanishlar chiqqanini tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="2054703085270098503">Chromium bilan himoyalaning</translation>
-<translation id="2075400798887076382">Kompyuteringizdagi ochiq varaqlarni mobil qurilmangizdagilar bilan sinxronlang.
-Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium hisobiga kirish” bandini tanlang.</translation>
 <translation id="2168108852149185974">Ba’zi kengaytmalar Chromium brauzerini ishdan chiqaradi. O‘chirilishi kerak bo‘lgan kengaytmalar:</translation>
 <translation id="2178608107313874732">Chromium hozir kamerangizdan foydalana olmaydi.</translation>
 <translation id="2195025571279539885">Chromium har doim bu saytning <ph name="LANGUAGE_NAME" /> tilidagi sahifalarini tarjima qilishni taklif qilsinmi?</translation>
@@ -42,7 +40,6 @@ Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium
 <translation id="4585809515399340748">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="4681781466797808448">Chromium skanerini ochish</translation>
 <translation id="4736424910885271643">Hisobingiz <ph name="HOSTED_DOMAIN" /> domenida boshqariladi, shuning uchun bu qurilmadagi Chromium maʼlumotlari tozalanadi</translation>
-<translation id="4787850887676698916">Boshqa qurilmalaringizda ochilgan Chromium sahifalari shu yerda ko‘rsatiladi.</translation>
 <translation id="4806326830773390517">Foydalanish statistikasi va nosozlik hisobotlarini Googlega yuborish orqali Chromium brauzerini yaxshilashga yordam bering</translation>
 <translation id="4828317641996116749">Chromium barcha parollarni tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="4852878756222711218">Chromium imkoniyatlaridan maksimal foydalanish uchun Google hisobingiz bilan kiring</translation>

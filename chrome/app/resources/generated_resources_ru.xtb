@@ -155,10 +155,8 @@
 <translation id="116173250649946226">Администратор установил тему по умолчанию, и ее нельзя изменить.</translation>
 <translation id="1163931534039071049">&amp;Просмотр кода фрейма</translation>
 <translation id="1164891049599601209">Введен на поддельном сайте</translation>
-<translation id="1164899421101904659">Введите PUK-код</translation>
 <translation id="1165039591588034296">Ошибка</translation>
 <translation id="1166212789817575481">Закрыть вкладки справа</translation>
-<translation id="116624467691206283">Недействительный PUK-код. Осталась 1 попытка.</translation>
 <translation id="1168020859489941584">Открытие через <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Серверы имен Google</translation>
 <translation id="1170288591054440704">Запрашивать разрешение, когда сайту необходимо использовать шрифты, установленные на устройстве</translation>
@@ -1200,7 +1198,6 @@
 <translation id="2263189956353037928">Выйти и снова войти</translation>
 <translation id="2263371730707937087">Частота обновления экрана</translation>
 <translation id="2263679799334060788">Мы постоянно улучшаем Google Cast, поэтому ваш отзыв очень важен для нас. О том, как устранить неполадки, можно узнать в <ph name="BEGIN_LINK" />Справочном центре<ph name="END_LINK" />.</translation>
-<translation id="2265889263013046172">Неверный PUK-код. Осталось попыток: <ph name="RETRIES" />. После этого доступ к сети будет заблокирован и вам придется обратиться к оператору связи.</translation>
 <translation id="22665427234727190">Запрашивать разрешение на доступ сайтов к Bluetooth-устройствам (рекомендуется)</translation>
 <translation id="2266957463645820432">IPP через USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Обмен данными с любыми устройствами в домене <ph name="DOMAIN" /></translation>
@@ -1484,7 +1481,6 @@
 <translation id="2553440850688409052">Скрыть подключаемый модуль</translation>
 <translation id="2554553592469060349">Выбранный файл слишком большой (максимальный размер: 3 МБ).</translation>
 <translation id="2558896001721082624">Показывать специальные возможности в системном меню</translation>
-<translation id="2562743677925229011">Не выполнен вход в <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="2564520396658920462">Выполнение JavaScript через AppleScript отключено. Чтобы включить эту функцию, в строке меню выберите "Вид &gt; Разработчикам &gt; Разрешить JavaScript из событий Apple". Подробную информацию можно найти на этой странице: https://support.google.com/chrome/?p=applescript.</translation>
 <translation id="2564653188463346023">Расширенная проверка правописания</translation>
 <translation id="2568774940984945469">Контейнер панели информации</translation>
@@ -2397,7 +2393,6 @@
 <translation id="3569407787324516067">Заставка</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> может просматривать следующие файлы и папки:</translation>
 <translation id="3571734092741541777">Настроить</translation>
-<translation id="3574210789297084292">войти</translation>
 <translation id="3575121482199441727">Показывать уведомления с этого сайта</translation>
 <translation id="3576324189521867626">Установлено</translation>
 <translation id="3578594933904494462">К контенту на этой вкладке открыт общий доступ</translation>
@@ -2848,7 +2843,6 @@
 <translation id="4022426551683927403">Добавить в словарь</translation>
 <translation id="4023146161712577481">Определение конфигурации устройства.</translation>
 <translation id="4025039777635956441">Отключить звук на выбранном сайте</translation>
-<translation id="4027804175521224372">(Не упустите возможность – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Добавить способы ввода</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" />: перейти на предыдущую страницу</translation>
 <translation id="4031179711345676612">Доступ к микрофону разрешен</translation>
@@ -3263,7 +3257,7 @@
 <translation id="452039078290142656">неизвестные устройства от <ph name="VENDOR_NAME" /></translation>
 <translation id="4522570452068850558">Подробнее</translation>
 <translation id="4522600456902129422">Оставить этому сайту доступ к буферу обмена</translation>
-<translation id="4522890784888918985">Детские аккаунты не поддерживаются.</translation>
+<translation id="4522890784888918985">Дочерние аккаунты не поддерживаются.</translation>
 <translation id="4524832533047962394">Режим регистрации устройства не поддерживается этой версией операционной системы. Убедитесь, что вы используете последнюю версию, и повторите попытку.</translation>
 <translation id="452750746583162491">Проверить синхронизированные данные</translation>
 <translation id="4527929807707405172">Включить прокрутку в обратную сторону. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -3602,7 +3596,7 @@
 <translation id="4893454800196085005">Хорошее – DVD</translation>
 <translation id="4893522937062257019">Экран блокировки</translation>
 <translation id="489454699928748701">Разрешить сайтам использовать датчики движения</translation>
-<translation id="4897496410259333978">В этом случае обратитесь к системному администратору.</translation>
+<translation id="4897496410259333978">За дополнительной информацией обратитесь к системному администратору.</translation>
 <translation id="4898011734382862273">Сертификат "<ph name="CERTIFICATE_NAME" />" представляет центр сертификации</translation>
 <translation id="489985760463306091">Чтобы завершить удаление вредоносного ПО, перезагрузите компьютер</translation>
 <translation id="4900392736118574277">Стартовая страница изменена на <ph name="URL" />.</translation>
@@ -3794,7 +3788,6 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Недостаточно места на диске. Выберите другой каталог или освободите место на диске.</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
-<translation id="5125167430897995218">Неверный PUK-код. Осталась 1 попытка. После этого доступ к сети будет заблокирован и вам придется обратиться к оператору связи.</translation>
 <translation id="5125751979347152379">Недопустимый URL.</translation>
 <translation id="5126611267288187364">Посмотреть изменения</translation>
 <translation id="5127620150973591153">Код безопасного подключения: <ph name="TOKEN" />.</translation>
@@ -4042,7 +4035,6 @@
 <translation id="540296380408672091">Всегда блокировать файлы cookie на сайте <ph name="HOST" /></translation>
 <translation id="540495485885201800">Поменять местами с предыдущим</translation>
 <translation id="5405146885510277940">Сбросить настройки</translation>
-<translation id="5407119150486192764">Введите 8-значный PUK-код, предоставленный оператором.</translation>
 <translation id="5407167491482639988">Неразборчивое</translation>
 <translation id="5408750356094797285">Масштаб: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Из аккаунта Google</translation>
@@ -6610,7 +6602,6 @@
 <translation id="8206745257863499010">Блюз</translation>
 <translation id="8206859287963243715">Сотовый</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Новое уведомление}one{# новое уведомление}few{# новых уведомления}many{# новых уведомлений}other{# нового уведомления}}</translation>
-<translation id="8211551284753798479">Недействительный PUK-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Выполняется скачивание}one{Выполняется скачивание}few{Выполняется скачивание}many{Выполняется скачивание}other{Выполняется скачивание}}</translation>
 <translation id="8213449224684199188">Включён режим фотосъёмки</translation>
 <translation id="8214489666383623925">Открыть файл...</translation>

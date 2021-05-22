@@ -284,6 +284,7 @@
 <translation id="1919345977826869612">പരസ്യങ്ങള്‍</translation>
 <translation id="1919367280705858090">നിർദ്ദിഷ്ട പിശക് സന്ദേശവുമായി ബന്ധപ്പെട്ട് സഹായം നേടുക</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു സൈറ്റ്}other{# സൈറ്റുകൾ}}</translation>
+<translation id="1924727005275031552">പുതിയവ</translation>
 <translation id="1945968466830820669">നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ അക്കൗണ്ടിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകാനോ ഐഡന്‍റിറ്റി മോഷ്ടിക്കപ്പെടാനോ സാധ്യതയുണ്ട്. ഇപ്പോൾ തന്നെ പാസ്‍വേഡ് മാറ്റാൻ Chromium ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="1947454675006758438">മുകളിൽ വലതുവശത്ത് സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="1958218078413065209">നിങ്ങളുടെ ഏറ്റവും ഉയർന്ന സ്കോർ <ph name="SCORE" /> ആണ്.</translation>
@@ -394,6 +395,7 @@
 <translation id="2357481397660644965">നിങ്ങളുടെ ഉപകരണം <ph name="DEVICE_MANAGER" />-ഉം അക്കൗണ്ട് <ph name="ACCOUNT_MANAGER" />-ഉം മാനേജ് ചെയ്യുന്നു.</translation>
 <translation id="2359629602545592467">ഒന്നിലധികം</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
+<translation id="2359961752320758691">നിങ്ങളുടെ വെർച്വൽ കാർഡ് നമ്പർ ഉപയോഗിച്ചു.</translation>
 <translation id="2367567093518048410">നില</translation>
 <translation id="2372464001869762664">സ്ഥിരീകരിച്ച് കഴിഞ്ഞാൽ, നിങ്ങളുടെ Google അക്കൗണ്ടിൽ നിന്നുള്ള കാർഡ് വിശദാംശങ്ങൾ ഈ സൈറ്റുമായി പങ്കിടും. നിങ്ങളുടെ Plex അക്കൗണ്ട് വിശദാംശങ്ങളിൽ CVC കണ്ടെത്തുക.</translation>
 <translation id="2380886658946992094">നിയമപരം</translation>
@@ -404,6 +406,7 @@
 <translation id="239429038616798445">ഈ ഷിപ്പിംഗ് രീതി ലഭ്യമല്ല. മറ്റൊരു രീതി പരീക്ഷിക്കുക.</translation>
 <translation id="2396249848217231973">&amp;ഇല്ലാതാക്കൽ പഴയപടിയാക്കുക</translation>
 <translation id="2410754574180102685">സർക്കാർ-നിയമപരം</translation>
+<translation id="2413155254802890957">പഴയവ</translation>
 <translation id="2413528052993050574">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; സെർവറിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ് റദ്ദാക്കിയിരിക്കാം. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="2414886740292270097">ഇരുണ്ടത്</translation>
 <translation id="2438874542388153331">വലതുവശത്ത് നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
@@ -903,12 +906,14 @@
 <translation id="4275830172053184480">നിങ്ങളുടെ ഉപകരണം പുനരാരംഭിക്കുക</translation>
 <translation id="4277028893293644418">പാസ്‌വേഡ് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ഈ കാർഡ് നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചു}other{ഈ കാർഡുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചു}}</translation>
+<translation id="4287885627794386150">ട്രയലിന് യോഗ്യതയുണ്ട്, എന്നാൽ സജീവമല്ല</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" />-ാം പേജിനുള്ള ലഘുചിത്രം</translation>
 <translation id="42981349822642051">വികസിപ്പിക്കുക</translation>
 <translation id="4300675098767811073">വലതുവശത്ത് ഒന്നിലധികം പഞ്ചുകൾ ചെയ്യുക</translation>
 <translation id="4302514097724775343">കളിക്കാൻ ദിനോസറിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="4302965934281694568">Chou3 (എൻവലപ്പ്)</translation>
 <translation id="4305666528087210886">നിങ്ങളുടെ ഫയൽ ആക്‌സസ് ചെയ്യാനായില്ല</translation>
+<translation id="4306529830550717874">വിലാസം സംരക്ഷിക്കണോ?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ബ്ലോക്ക് ചെയ്യുക (ഡിഫോൾട്ട്)</translation>
 <translation id="4314815835985389558">സമന്വയിപ്പിക്കൽ മാനേജ് ചെയ്യുക</translation>
@@ -1396,6 +1401,7 @@
 <translation id="610911394827799129">നിങ്ങളുടെ Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="6116338172782435947">ക്ലിപ്പ്‌ബോർഡിലേക്ക് പകർത്തിയിട്ടുള്ള ടെക്‌സ്റ്റും ചിത്രങ്ങളും കാണുക</translation>
 <translation id="6120179357481664955">നിങ്ങളുടെ UPI ഐഡി ഓർമ്മയുണ്ടോ?</translation>
+<translation id="6123290840358279103">വെർച്വൽ കാർഡ് കാണുക</translation>
 <translation id="6124432979022149706">Chrome എന്റർപ്രൈസ് കണക്റ്ററുകൾ</translation>
 <translation id="6146055958333702838">എല്ലാ കേബിളുകളും പരിശോധിക്കുക ഒപ്പം ഏതെങ്കിലും റൂട്ടറുകൾ, മോഡങ്ങൾ നിങ്ങൾ ഉപയോഗിക്കാനിടയുള്ള
         മറ്റ് നെറ്റ്‌വർക്ക് ഉപകരണങ്ങൾ എന്നിവ റീബൂട്ട് ചെയ്യുക.</translation>
@@ -1675,6 +1681,7 @@
 <translation id="7300012071106347854">കൊബാൾട്ട് നീല</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">ഉയർന്നത്</translation>
+<translation id="7305756307268530424">കുറഞ്ഞ വേഗതയിൽ ആരംഭിക്കുക</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">കണക്ഷൻ സഹായം</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" വിഭാഗം മറയ്ക്കുക</translation>
@@ -1700,6 +1707,7 @@
 <translation id="7378594059915113390">മീഡിയ നിയന്ത്രണങ്ങൾ</translation>
 <translation id="7378627244592794276">വേണ്ട</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">ബാധകമല്ല</translation>
 <translation id="7390545607259442187">കാർഡ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="7399802613464275309">സുരക്ഷാ പരിശോധന</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1749,6 +1757,7 @@
 <translation id="7548892272833184391">കണക്ഷൻ പിശകുകൾ പരിഹരിക്കുക</translation>
 <translation id="7549584377607005141">ശരിയായി പ്രദർശിപ്പിക്കാൻ ഈ വെബ്‌ പേജിന് നിങ്ങൾ മുമ്പ് നൽകിയ ഡാറ്റ ആവശ്യമാണ്. നിങ്ങൾക്ക് ഈ ഡാറ്റ വീണ്ടും അയയ്‌ക്കാനാകുമെങ്കിലും, അങ്ങനെ ചെയ്യുന്നത് ഈ പേജിൽ മുമ്പ് ചെയ്‌ത ഏത് പ്രവർത്തനവും നിങ്ങൾക്ക് ആവർത്തിക്കേണ്ടതായി വരും.</translation>
 <translation id="7550637293666041147">നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഉപയോക്തൃനാമവും Chrome ഉപയോക്തൃനാമവും</translation>
+<translation id="755279583747225797">ട്രയൽ സജീവമാണ്</translation>
 <translation id="7552846755917812628">ഇനിപ്പറയുന്ന നുറുങ്ങുകൾ പരീക്ഷിക്കൂ:</translation>
 <translation id="7554475479213504905">റീലോഡ് ചെയ്‌ത്, എന്തായാലും കാണിക്കുക</translation>
 <translation id="7554791636758816595">പുതിയ ടാബ്</translation>
@@ -1843,6 +1852,7 @@
 <translation id="7894280532028510793">അക്ഷരങ്ങൾ ശരിയാണെങ്കിൽ <ph name="BEGIN_LINK" /> നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (എൻവലപ്പ്)</translation>
 <translation id="7931318309563332511">അറിഞ്ഞുകൂടാത്തത്</translation>
+<translation id="793209273132572360">വിലാസം അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="7932579305932748336">കോട്ട്</translation>
 <translation id="79338296614623784">ശരിയായ ഒരു ഫോൺ നമ്പർ നൽകുക</translation>
 <translation id="7934052535022478634">പേയ്‌മെന്റ് പൂർത്തിയായി</translation>

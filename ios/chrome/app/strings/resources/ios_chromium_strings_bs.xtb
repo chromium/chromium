@@ -17,7 +17,6 @@
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium nije mogao provjeriti ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="2054703085270098503">Ostanite sigurni uz Chromium</translation>
-<translation id="2075400798887076382">Karticama koje ste otvorili na računalu možete pristupiti i ovdje. Samo otvorite Chromium na računalu, otvorite izbornik i odaberite "Prijava na Chromium…"</translation>
 <translation id="2168108852149185974">Neki programski dodaci uzrokuju pad aplikacije Chromium. Deinstalirajte:</translation>
 <translation id="2178608107313874732">Chromium trenutno ne može koristiti kameru</translation>
 <translation id="2195025571279539885">Želite li da vam Chromium sljedeći put ponudi prijevod stranica na <ph name="LANGUAGE_NAME" /> jeziku s ove web lokacije?</translation>
@@ -42,7 +41,6 @@
 <translation id="4585809515399340748">Sada možete koristiti Chromium svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="4681781466797808448">Uključite Chromium skener</translation>
 <translation id="4736424910885271643">Računom upravlja <ph name="HOSTED_DOMAIN" />, stoga će se vaši podaci Chromiuma obrisati s ovog uređaja</translation>
-<translation id="4787850887676698916">Ovdje će se pojaviti kartice koje ste otvorili u Chromiumu na drugim uređajima.</translation>
 <translation id="4806326830773390517">Pomozite nam da poboljšamo Chromium slanjem statistike korištenja i izvještaja o padovima aplikacije Googleu</translation>
 <translation id="4828317641996116749">Chromium nije mogao provjeriti sve lozinke. Pokušajte ponovo kasnije.</translation>
 <translation id="4852878756222711218">Da iskoristite sve prednosti Chromiuma, prijavite se pomoću Google računa</translation>

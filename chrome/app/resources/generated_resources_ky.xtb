@@ -157,10 +157,8 @@
 <translation id="116173250649946226">Администраторуңуз өзгөртүүгө мүмкүн болбогон демейки теманы койгон.</translation>
 <translation id="1163931534039071049">Алкак булагын &amp;карап көрүү</translation>
 <translation id="1164891049599601209">Жалган сайтка киргизилди</translation>
-<translation id="1164899421101904659">PIN'ди бөгөттөн чыгаруу ачкычын киргизүү</translation>
 <translation id="1165039591588034296">Ката</translation>
 <translation id="1166212789817575481">Өтмөктөрдү оңго карай жабуу</translation>
-<translation id="116624467691206283">Жараксыз PUK. 1 жолу аракет кыла аласыз.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> кийин ачылат…</translation>
 <translation id="1168100932582989117">Google ысым серверлери</translation>
 <translation id="1170288591054440704">Сайт түзмөгүңүзгө орнотулган ариптерди колдонордо уруксат суралсын</translation>
@@ -1213,7 +1211,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
     Тышкы экранга чыгарууда келип чыккан бузулууларды аныктап оңдоодо жардам алуу үчүн
     <ph name="BEGIN_LINK" />
     жардам борборуна<ph name="END_LINK" /> өтүңүз.</translation>
-<translation id="2265889263013046172">PUK туура эмес. Байланыш оператору менен байланышып, тармакка кирүү мүмкүнчүлүгүн кайра берүүнү суранууга чейин <ph name="RETRIES" /> аракет калды.</translation>
 <translation id="22665427234727190">Сайт Bluetooth түзмөктөрүн колдонгону жатканда уруксат суралсын (сунушталат)</translation>
 <translation id="2266957463645820432">USB аркылуу IPP (IPPUSB)</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> домениндеги каалаган түзмөк менен дайындарды алмашуу</translation>
@@ -1497,7 +1494,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2553440850688409052">Бул плагин жашырылсын</translation>
 <translation id="2554553592469060349">Тандалган файл өтө чоң (эң чоң өлчөмү: 3 мб).</translation>
 <translation id="2558896001721082624">Тутум менюсунан атайын мүмкүнчүлүктөрдүн параметрлери дайыма көрүнсүн</translation>
-<translation id="2562743677925229011"><ph name="SHORT_PRODUCT_NAME" /> ичине кирген жок</translation>
 <translation id="2564520396658920462">AppleScript аркылуу JavaScript файлдарын иштетүү өчүрүлгөн. Аны күйгүзүү үчүн меню тилкесинен Көрүнүш &gt; Иштеп чыгуучу &gt; Apple Events'теги JavaScript'ке уруксат берүү дегенди тандаңыз. Кеңири маалымат: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Жакшыртылган орфографиялык текшерүү</translation>
 <translation id="2568774940984945469">Маалымат тилкесинин контейнери</translation>
@@ -2411,7 +2407,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3569407787324516067">Көшөгө</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> төмөнкү файлдар менен папкаларды көрө алат:</translation>
 <translation id="3571734092741541777">Орнотуу</translation>
-<translation id="3574210789297084292">кирүү</translation>
 <translation id="3575121482199441727">Ушул сайт үчүн уруксат берүү</translation>
 <translation id="3576324189521867626">Ийгиликтүү орнотулду</translation>
 <translation id="3578594933904494462">Бул өтмөктүн мазмуну жалпы колдонулууда.</translation>
@@ -2862,7 +2857,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4022426551683927403">Сөздүккө &amp;кошуу</translation>
 <translation id="4023146161712577481">Түзмөктүн конфигурациясы аныкталууда.</translation>
 <translation id="4025039777635956441">Тандалган сайттын үнүн басуу</translation>
-<translation id="4027804175521224372">(Төмөнкүдөн куру калып жатасыз—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
 <translation id="4028467762035011525">Киргизүү ыкмаларын кошуу</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> барагынан кайтуу</translation>
 <translation id="4031179711345676612">Микрофонду колдонууга уруксат берилди</translation>
@@ -3809,7 +3803,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Катуу дискиңиз толуп калды. Башка жерге сактаңыз же катуу дисктен орун бошотуңуз.</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
-<translation id="5125167430897995218">PUK туура эмес. Байланыш оператору менен байланышып, тармакка кирүү мүмкүнчүлүгүн кайра берүүнү суранууга чейин 1 аракет калды.</translation>
 <translation id="5125751979347152379">Жараксыз URL.</translation>
 <translation id="5126611267288187364">Өзгөртүүлөрдү көрүү</translation>
 <translation id="5127620150973591153">Коопсуз байланыш идентификатору: <ph name="TOKEN" /></translation>
@@ -4057,7 +4050,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="540296380408672091"><ph name="HOST" /> ичиндеги кукилер ар дайым бөгөттөлсүн</translation>
 <translation id="540495485885201800">Мурунку менен алмаштыруу</translation>
 <translation id="5405146885510277940">Жөндөөлөрдү кайра коюу</translation>
-<translation id="5407119150486192764">Байланыш оператору берген PIN кодду бөгөттөн чыгарган 8 орундуу санды киргизиңиз</translation>
 <translation id="5407167491482639988">Түшүнүксүз</translation>
 <translation id="5408750356094797285">Чен-өлчөмүн өзгөртүү: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Google аккаунтуңуздан</translation>
@@ -6625,7 +6617,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8206745257863499010">Блюз</translation>
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Жаңы билдирме}other{# жаңы билдирме}}</translation>
-<translation id="8211551284753798479">Жараксыз PUK. Сизде <ph name="RETRIES" /> аракет калды.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Жүктөп алуу аткарылууда}other{Жүктөп алуулар аткарылууда}}</translation>
 <translation id="8213449224684199188">Сүрөт режими киргизилди</translation>
 <translation id="8214489666383623925">Төмөнкү файлды ачуу…</translation>

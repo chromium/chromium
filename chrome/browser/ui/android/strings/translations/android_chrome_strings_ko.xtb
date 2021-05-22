@@ -186,7 +186,6 @@
 <translation id="22320125457191592">추천</translation>
 <translation id="2234876718134438132">동기화 및 Google 서비스</translation>
 <translation id="2239812875700136898">디스커버 버튼 옵션으로 새 탭 페이지에 표시될 뉴스를 관리하세요</translation>
-<translation id="2251971221270904886">사용 설정되어 있고 활성 상태인 경우 Chrome에서 지난 7일간의 방문 기록을 토대로 내가 속한 그룹 또는 '사용자 집단'을 결정합니다. 광고주는 그룹에 보여 줄 광고를 선택할 수 있습니다. 방문 기록은 기기에 비공개로 유지됩니다. 무료 체험은 <ph name="BEGIN_LINK" />일부 지역<ph name="END_LINK" />에서만 진행됩니다.</translation>
 <translation id="2259659629660284697">비밀번호 내보내기...</translation>
 <translation id="2276696007612801991">비밀번호를 확인하려면 Google 계정에 로그인하세요.</translation>
 <translation id="2278052315791335171">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다.</translation>
@@ -320,7 +319,6 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{북마크 <ph name="BOOKMARKS_COUNT_ONE" />개}other{북마크 <ph name="BOOKMARKS_COUNT_MANY" />개}}</translation>
 <translation id="3062802207422175757">Chrome에서 관심분야 기사를 읽어보세요.</translation>
 <translation id="3070005020161560471">자동으로 번역</translation>
-<translation id="3083531420240576529">언제든지 그룹을 재설정할 수 있습니다. 그룹을 결정하는 데는 7일이 걸립니다.</translation>
 <translation id="3091010850649238832">클립보드 내용 표시</translation>
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@
 <translation id="3568688522516854065">다른 기기에서 탭을 가져오려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="3587482841069643663">전체</translation>
 <translation id="3587596251841506391">웹 보안 개선에 참여</translation>
-<translation id="3598653140581545904">시크릿 모드로 로그인</translation>
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3616113530831147358">오디오</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />에 공유하는 중</translation>
@@ -764,7 +761,6 @@
 <translation id="5964805880140440652">이 페이지를 다른 기기로 공유하려면 Chrome 설정에서 동기화를 사용 설정하세요.</translation>
 <translation id="5964869237734432770">이미지 설명 중지</translation>
 <translation id="5979084224081478209">비밀번호 확인</translation>
-<translation id="5982307838673692400">시크릿 탭 열기</translation>
 <translation id="6000066717592683814">계속 Google 사용</translation>
 <translation id="6000203700195075278">다시 팔로우</translation>
 <translation id="6002623704405939939"><ph name="BEGIN_LINK1" />검색<ph name="END_LINK1" /> 또는 다른 형태의 기록을 삭제하려면 <ph name="BEGIN_LINK2" />내 Google 활동<ph name="END_LINK2" />으로 이동하세요.</translation>
@@ -806,13 +802,13 @@
 <translation id="6277522088822131679">페이지를 인쇄하는 중에 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="6278428485366576908">테마</translation>
 <translation id="6292420053234093573">Chrome을 사용하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다.</translation>
-<translation id="629730747756840877">계정</translation>
 <translation id="6297765934698848803">내 기기를 관리하는 조직에서 카메라를 사용 중지했습니다.</translation>
 <translation id="6301525844455696527">잊지 말고 읽기 목록을 확인하세요</translation>
 <translation id="6303969859164067831">로그아웃하고 동기화 사용 중지</translation>
 <translation id="6312687380483398334">웹 앱(무음)</translation>
 <translation id="6316139424528454185">지원되지 않는 Android 버전입니다.</translation>
 <translation id="6324034347079777476">Android 시스템 동기화 사용 안함</translation>
+<translation id="6324916366299863871">바로가기 수정</translation>
 <translation id="6324977638108296054">하이라이트 링크를 만들 수 없음</translation>
 <translation id="6324997754869598316">(오류 <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">공유 방법: <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@
 <translation id="6699370405921460408">Google 서버에서 내가 방문하는 페이지를 최적화합니다.</translation>
 <translation id="670498945988402717">어제 확인됨</translation>
 <translation id="6710213216561001401">이전</translation>
-<translation id="671333169801287922">사용 설정하면 사이트가 여기에 표시된 개인 정보 보호 기술을 이용해 콘텐츠와 서비스를 제공할 수 있습니다. 여기에는 크로스 사이트 추적의 대안이 포함됩니다. 시간이 지남에 따라 더 많은 무료 체험 기능이 포함될 수 있습니다.
-
-<ph name="BEGIN_LIST_ITEM1" />광고주와 게시자는 FLoC 기술을 사용할 수 있습니다.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />광고주와 게시자는 사이트 전반에서 사용자를 추적하지 않는 방식으로 광고의 효과를 연구할 수 있습니다.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117"><ph name="FQDN" /> 타이머가 종료되었습니다. 타이머는 내일 다시 시작됩니다.</translation>
 <translation id="6738516213925468394"><ph name="TIME" />자로 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />를 통해 데이터가 암호화되었습니다. 동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="6738867403308150051">다운로드 중...</translation>
@@ -922,9 +913,6 @@
 <translation id="6900532703269623216">향상된 보호 모드</translation>
 <translation id="6903907808598579934">동기화 사용 설정</translation>
 <translation id="6929699136511445623">Android 시스템 동기화 사용 설정</translation>
-<translation id="6941901516114974832">시크릿 모드에서도 방문한 웹사이트, 고용주 또는 학교, 인터넷 서비스 제공업체(ISP)에 내 활동이 <ph name="BEGIN_BOLD1" />공개될 수 있습니다<ph name="END_BOLD1" />.
-
-시크릿 세션의 데이터는 <ph name="BEGIN_BOLD2" />모든 시크릿 탭을 닫아야<ph name="END_BOLD2" /> Chrome에서 삭제됩니다.</translation>
 <translation id="6942665639005891494">언제든지 설정 메뉴 옵션으로 기본 다운로드 위치 변경 가능</translation>
 <translation id="694267552845942083">현재 동기화 설정을 맞춤설정 중입니다. 동기화 사용 설정을 마무리하려면 화면 하단 근처에 있는 확인 버튼을 탭하세요. 위로 이동</translation>
 <translation id="6945221475159498467">선택</translation>
@@ -1088,9 +1076,6 @@
 <translation id="7971136598759319605">1일 전 동기화됨</translation>
 <translation id="7975379999046275268">페이지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">더 빠른 인터넷 사용과 검색을 위해 페이지 미리 로드</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />개인 정보 보호 샌드박스<ph name="END_LINK" />는 열린 웹을 보호하는 동시에 추적 메커니즘으로부터 사용자를 보호하는 새로운 기술을 개발하기 위해 진행되는 이니셔티브입니다.
-
-개인 정보 보호 샌드박스 무료 체험판은 아직 개발 단계에 있으므로 일부 지역에서만 제공됩니다. 지금으로서는 사이트에서 타사 쿠키와 같은 기존 웹 기술을 계속 사용하면서 개인 정보 보호 샌드박스를 체험해 볼 수 있습니다.</translation>
 <translation id="7986497153528221272">비밀번호를 보려면 먼저 기기에 화면 잠금을 설정하세요.</translation>
 <translation id="7998918019931843664">닫은 탭 다시 열기</translation>
 <translation id="8004582292198964060">브라우저</translation>

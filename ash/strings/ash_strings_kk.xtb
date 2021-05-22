@@ -40,6 +40,7 @@
 <translation id="1247372569136754018">Микрофон (ішкі)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> арқылы зарядтау</translation>
 <translation id="1255033239764210633">Ауа райы қандай?</translation>
+<translation id="1266097335951928626">Алдыңғы камераны қосу</translation>
 <translation id="1267032506238418139">Таңбаша өзгерісі</translation>
 <translation id="1269405891096105529">Қонақ режимінде перифериялық құрылғыға қолдау көрсетілмейді.</translation>
 <translation id="1270290102613614947">Экрандағы пернетақта өшірілді</translation>
@@ -84,6 +85,7 @@
 <translation id="1555130319947370107">Көк</translation>
 <translation id="1570871743947603115">Bluetooth функциясын қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Осы сеанстағы барлық әрекеттеріңізге кіріңіз</translation>
+<translation id="159255010947577753">Maркер</translation>
 <translation id="1611993646327628135">Қосулы</translation>
 <translation id="1615402009686901181">Құпия мазмұн көрініп тұрғанда, әкімші саясаты экранды түсіру функциясын өшіреді.</translation>
 <translation id="1632985212731562677">Switch Access функциясын "Параметрлер &gt; Accessibility" бөлімінен өшіруге болады.</translation>
@@ -135,8 +137,10 @@
 <translation id="2016340657076538683">Хабар мәтінін енгізіңіз</translation>
 <translation id="2018630726571919839">Әзіл айтып бер</translation>
 <translation id="2021864487439853900">Құлыпты ашу үшін басыңыз</translation>
+<translation id="2047639699071423250">Басты идеяны енгізу</translation>
 <translation id="2049240716062114887">Жұмыс үстелінің атауы <ph name="DESK_NAME" /> деп өзгертілді.</translation>
 <translation id="2050339315714019657">Портреттік</translation>
+<translation id="2066708475850724665">Ұлғайтқышты өшіру</translation>
 <translation id="2067602449040652523">Пернетақта ашықтығы</translation>
 <translation id="2078034614700056995">Келесі жұмыс үстеліне ауысу үшін төрт саусақпен оңға сырғытыңыз.</translation>
 <translation id="2079504693865562705">Сөредегі қолданбаларды жасыру</translation>
@@ -144,10 +148,12 @@
 <translation id="2083190527011054446">Қайырлы түн, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Желіге жалғанбаған.</translation>
 <translation id="2108303511227308752">Alt + Backspace пернелер тіркесімінің функциясы өзгерді. Delete пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + Backspace пернесі тіркесімін басыңыз.</translation>
+<translation id="211328683600082144">МИКРОФОНДЫ ҚОСУ</translation>
 <translation id="2126242104232412123">Жаңа жұмыс үстелі</translation>
 <translation id="2127372758936585790">Төмен қуатты зарядтағыш</translation>
 <translation id="2132302418721800944">Толық экранды жазу</translation>
 <translation id="2135456203358955318">Бекітілген ұлғайтқыш</translation>
+<translation id="2146800439053023141">Тақтаның орналасқан жерін көрсету/жасыру</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Қайталау</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Үш саусақпен төмен сырғытып, "Шолу" бөлімінен шығыңыз.</translation>
@@ -282,7 +288,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> кейінірек те кіре алады.</translation>
 <translation id="3321628682574733415">Ата-ана коды дұрыс емес</translation>
 <translation id="332587331255250389">Батареяны ауыстырыңыз</translation>
-<translation id="3333741161915951567">Модем өшіп қосылуда. Әрекетті қайталамас бұрын 30 сек күтіңіз.</translation>
 <translation id="3341303451326249809">Скриншот түсірілді.</translation>
 <translation id="334252345105450327">Скриншот түсіру</translation>
 <translation id="3351879221545518001">Экранды трансляциялап жатырсыз.</translation>
@@ -327,6 +332,7 @@
 <translation id="3638400994746983214">Құпиялылық экранын қосу немесе өшіру. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733">Басқарылатын пайдаланушы: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Микрофон арқылы жазу</translation>
+<translation id="3680908746918359504">Барлық маркерді өшіру</translation>
 <translation id="36813544980941320">Телефоныңыз бен <ph name="DEVICE_NAME" /> құрылғысында бірдей Wi-Fi желілері пайдаланылатын болады.</translation>
 <translation id="3702809606464356667">Терезелер қазіргі жұмыс үстелінен көрсетіліп тұр. Терезелерді барлық жұмыс үстелінен көрсету үшін жоғарыға бағыттауыш пернені басыңыз.</translation>
 <translation id="3702846122927433391">Нигерия халқының саны</translation>
@@ -377,6 +383,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Өшірулі}other{# үшін өшірулі}}</translation>
 <translation id="4066027111132117168">Қосулы, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Орташа сигнал</translation>
+<translation id="4095366824370681039">Қаламұш</translation>
 <translation id="4112140312785995938">Артқа</translation>
 <translation id="4114315158543974537">Телефон хабын қосу</translation>
 <translation id="412298498316631026">терезе</translation>
@@ -445,12 +452,15 @@
 <translation id="4570957409596482333">Select-to-Speak түймесі</translation>
 <translation id="4577274620589681794">Уақыт бітті · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Алдын ала көріністерді көрсету</translation>
+<translation id="4578196883126898996">Микрофон өшірулі. Құрылғыңыздың микрофон түймесін басыңыз.</translation>
 <translation id="4578906031062871102">Параметрлер мәзірі ашық.</translation>
 <translation id="4581047786858252841">Микрофон қосулы.</translation>
 <translation id="4585337515783392668">Белгісіз қабылдағышқа трансляциялауды тоқтату</translation>
+<translation id="4586483766170476230">Алдыңғы камераны өшіру</translation>
 <translation id="4587299710837179226">Микрофон өшірулі.</translation>
 <translation id="4596144739579517758">Қараңғы тақырып өшірулі.</translation>
 <translation id="4611292653554630842">Жүйеге кіру</translation>
+<translation id="4614295562446151104">Белгілеу құралдарын жаю</translation>
 <translation id="4623167406982293031">Есептік жазбаны растау</translation>
 <translation id="4628757576491864469">Құрылғылар</translation>
 <translation id="4642092649622328492">Экранның бір бөлігін түсіру</translation>
@@ -507,6 +517,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> жаңа телефонға жалғанды</translation>
 <translation id="5035389544768382859">Дисплей конфигурациясын растау</translation>
 <translation id="504465286040788597">Алдыңғы абзац</translation>
+<translation id="5071064518267176975">Қолданба микрофонды пайдалануға рұқсат сұрайды</translation>
+<translation id="5075554201838155866">Субтитрді қосу</translation>
 <translation id="5078796286268621944">PIN коды дұрыс емес</translation>
 <translation id="5083553833479578423">Басқа да Assistant мүмкіндіктерін ашыңыз.</translation>
 <translation id="5136175204352732067">Басқа пернетақта жалғанды</translation>
@@ -677,6 +689,7 @@
 <translation id="6612802754306526077">Экранды жазу режимі таңдалды.</translation>
 <translation id="6614169507485700968">Құпиялылық экраны қосулы.</translation>
 <translation id="6627638273713273709">Іздеу+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> қолданбасы микрофонды пайдалануға рұқсат сұрайды</translation>
 <translation id="6637729079642709226">Уақытты өзгерту</translation>
 <translation id="6641720045729354415">Live Caption-ді қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> жеке басыңызды растағысы келеді.</translation>
@@ -730,6 +743,7 @@
 <translation id="7029814467594812963">Сеанстан шығу</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Күй аумағын жию</translation>
+<translation id="7045595904618419789">Ұлғайтқышты қосу</translation>
 <translation id="7055910611768509537">Стилус бір аптадан астам уақытта қолданылмады.</translation>
 <translation id="7066646422045619941">Бұл желіні әкімшіңіз өшірген.</translation>
 <translation id="7067196344162293536">Автоматты бұру</translation>
@@ -750,6 +764,7 @@
 <translation id="7256634071279256947">Артқы микрофон</translation>
 <translation id="726276584504105859">Бөлінген экранды пайдалану үшін осында сүйреңіз</translation>
 <translation id="7262906531272962081">Еске салғыш жасау</translation>
+<translation id="7279434993080105272">Маркер түсі: <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">Live Caption өшірулі.</translation>
 <translation id="7303365578352795231">Басқа құрылғыдан жауап берілуде.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -779,6 +794,7 @@
 <translation id="7466449121337984263">Саусақ ізін оқу сканерін түртіңіз.</translation>
 <translation id="7477793887173910789">Музыканы, бейнелерді және т.б. басқарыңыз.</translation>
 <translation id="7483025031359818980">Таңдау аймағы толық экранға орнатылды.</translation>
+<translation id="7486227320194954040">Белгілеу құралдарын жию</translation>
 <translation id="7497767806359279797">Тілді және пернетақтаны таңдау</translation>
 <translation id="7509246181739783082">Жеке басыңызды растаңыз</translation>
 <translation id="7513622367902644023">Скриншот режимі таңдалды.</translation>
@@ -797,6 +813,7 @@
 <translation id="7607002721634913082">Кідіртілген</translation>
 <translation id="7618774594543487847">Бейтарап</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">Фломастер</translation>
 <translation id="7633755430369750696">Nearby Share параметрлерін көрсету.</translation>
 <translation id="7641938616688887143">Жазу</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> параметрлерін ашу, күйі: <ph name="CONNECTION_STATUS" /></translation>
@@ -812,6 +829,7 @@
 <translation id="7724603315864178912">Қиып алу</translation>
 <translation id="7745560842763881396">Сөредегі қолданбаларды көрсету</translation>
 <translation id="7749443890790263709">Жұмыс үстелдерінің максималды санына жетті.</translation>
+<translation id="7749640678855296659">Микрофон өшірулі.</translation>
 <translation id="776344839111254542">Жаңарту мәліметтерін қарау үшін басыңыз</translation>
 <translation id="7780159184141939021">Экранды бұру</translation>
 <translation id="7796353162336583443">Жазба мен скриншот үшін сөредегі стилус түймесін түртіңіз. Google көмекшісін, лазер меңзерді немесе ұлғайтқыш әйнекті пайдаланыңыз.</translation>
@@ -859,6 +877,7 @@
 <translation id="8113423164597455979">Қосулы</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Растау</translation>
+<translation id="8132487352815776550">Субтитрді өшіру</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> желісіне қосылған</translation>
 <translation id="813913629614996137">Дайындауда…</translation>
 <translation id="8142441511840089262">Екі рет басу</translation>

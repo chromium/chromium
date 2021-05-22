@@ -186,7 +186,6 @@ Trokit te një fjalë për të kërkuar. Për ta përsosur kërkimin, preke dhe 
 <translation id="22320125457191592">Për ty</translation>
 <translation id="2234876718134438132">Sinkron. dhe "Shërbimet e Google"</translation>
 <translation id="2239812875700136898">Kontrollo historitë e tua nga butoni "Opsionet për Zbulo"</translation>
-<translation id="2251971221270904886">Kur është e aktivizuar dhe statusi është aktiv, Chrome përdor historikun tënd të 7 ditëve për të përcaktuar një grup apo "kohortë" së cilës i përket. Reklamuesit mund të zgjedhin reklamat për grupin. Historiku yt i shfletimit ruhet privat në pajisjen tënde. Kjo provë është aktive vetëm në <ph name="BEGIN_LINK" />disa rajone<ph name="END_LINK" />.</translation>
 <translation id="2259659629660284697">Eksporto fjalëkalimet…</translation>
 <translation id="2276696007612801991">Identifikohu në "Llogarinë tënde të Google" për të kontrolluar fjalëkalimet e tua</translation>
 <translation id="2278052315791335171">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="SITE" /></translation>
@@ -320,7 +319,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> faqeshënues}other{<ph name="BOOKMARKS_COUNT_MANY" /> faqeshënues}}</translation>
 <translation id="3062802207422175757">Artikuj rreth interesave të tua në Chrome</translation>
 <translation id="3070005020161560471">Përkthe automatikisht</translation>
-<translation id="3083531420240576529">Mund ta rivendosësh grupin tënd në çdo kohë. Duhen 7 ditë për të përcaktuar grupin tënd.</translation>
 <translation id="3091010850649238832">Shfaq përmbajtjet e kujtesës së fragmenteve</translation>
 <translation id="3098745985164956033">Disa imazhet i dërgohen Google për të përmirësuar përshkrimet për ty</translation>
 <translation id="3114507951000454849">Lexo lajmet e sotme <ph name="NEWS_ICON" /></translation>
@@ -399,7 +397,6 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="3568688522516854065">Për të marrë skedat nga pajisjet e tjera të tua, identifikohu dhe aktivizo sinkronizimin</translation>
 <translation id="3587482841069643663">Të gjitha</translation>
 <translation id="3587596251841506391">Ndihmo në përmirësimin e sigurisë në ueb</translation>
-<translation id="3598653140581545904">Përdor modalitetin "e fshehtë" për t'u identifikuar</translation>
 <translation id="3602290021589620013">Pamje paraprake</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Po ndahet te <ph name="DEVICE_NAME" /></translation>
@@ -764,7 +761,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5964805880140440652">Për ta ndarë këtë faqe në një pajisje tjetër, aktivizo sinkronizimin në cilësimet e Chrome</translation>
 <translation id="5964869237734432770">Ndalo përshkrimet e imazheve</translation>
 <translation id="5979084224081478209">Kontrollo fjalëkalimet</translation>
-<translation id="5982307838673692400">Hap në skedë "të fshehtë"</translation>
 <translation id="6000066717592683814">Mbaj Google</translation>
 <translation id="6000203700195075278">Ndiqe përsëri</translation>
 <translation id="6002623704405939939">Për të pastruar <ph name="BEGIN_LINK1" />kërkimin<ph name="END_LINK1" /> ose forma të tjera të historikut, vizito <ph name="BEGIN_LINK2" />Aktivitetin tim në Google<ph name="END_LINK2" /></translation>
@@ -806,13 +802,13 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6277522088822131679">Pati një problem me printimin e faqes. Provo përsëri.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Duke përdorur Chrome, ti pranon <ph name="BEGIN_LINK1" />Kushtet e shërbimit të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />Kushtet shtesë të shërbimit të Google Chrome dhe të sistemit operativ Chrome<ph name="END_LINK2" />.</translation>
-<translation id="629730747756840877">Llogaria</translation>
 <translation id="6297765934698848803">Organizata që menaxhon pajisjen tënde ka çaktivizuar kamerën tënde.</translation>
 <translation id="6301525844455696527">Mos e harro listën tënde të leximit</translation>
 <translation id="6303969859164067831">Dil dhe çaktivizo sinkronizimin</translation>
 <translation id="6312687380483398334">Aplikacionet e uebit (në qetësi)</translation>
 <translation id="6316139424528454185">Versioni i Android s'mbështetet</translation>
 <translation id="6324034347079777476">Sinkronizimi i sistemit Android u çaktivizua</translation>
+<translation id="6324916366299863871">Modifiko shkurtoren</translation>
 <translation id="6324977638108296054">Nuk mund të krijohet një lidhje për te teksti i theksuar</translation>
 <translation id="6324997754869598316">(Gabim <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Ndaje nëpërmjet <ph name="APPLICATION" /></translation>
@@ -893,11 +889,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6699370405921460408">Serverët e Google do të optimizojnë faqet që viziton.</translation>
 <translation id="670498945988402717">Kontrolluar dje</translation>
 <translation id="6710213216561001401">Prapa</translation>
-<translation id="671333169801287922">Kur janë aktive, sajtet mund të përdorin teknikat e ruajtjes së privatësisë që shfaqen këtu për të ofruar përmbajtjen dhe shërbimet e tyre. Këto përfshijnë alternativa për gjurmimin ndërmjet sajteve. Mund të shtohen prova të tjera me kalimin e kohës.
-
-<ph name="BEGIN_LIST_ITEM1" />Reklamuesit dhe botuesit mund të përdorin tekninën FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklamuesit dhe botuesit mund të studiojnë efikasitetin e reklamave në një mënyrë që nuk të gjurmon nëpër faqet e internetit.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="671481426037969117">Kohëmatësi <ph name="FQDN" /> përfundoi. Do të fillojë përsëri nesër.</translation>
 <translation id="6738516213925468394">Të dhënat e tua u enkriptuan me <ph name="BEGIN_LINK" />frazën e kalimit për sinkronizimin<ph name="END_LINK" /> më <ph name="TIME" />. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="6738867403308150051">Po shkarkon...</translation>
@@ -922,9 +913,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6900532703269623216">Mbrojtja e përmirësuar</translation>
 <translation id="6903907808598579934">Aktivizo sinkronizimin</translation>
 <translation id="6929699136511445623">Aktivizo sinkronizimin e sistemit Android</translation>
-<translation id="6941901516114974832">Në modalitetin "e fshehtë", aktiviteti yt <ph name="BEGIN_BOLD1" />mund të jetë përsëri i dukshëm<ph name="END_BOLD1" /> për faqet e internetit që viziton, për punëdhënësin ose shkollën dhe për ofruesin e shërbimit të internetit.
-
-Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <ph name="BEGIN_BOLD2" />mbyll të gjitha skedat "e fshehta"<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Ndrysho në çdo moment vendndodhjen e parazgjedhur të shkarkimit duke përdorur opsionin e menysë "Cilësimet"</translation>
 <translation id="694267552845942083">Aktualisht po personalizon cilësimet e "Sinkronizimit". Për të përfunduar aktivizimin e sinkronizimit, trokit butonin "Konfirmo" pranë fundit të ekranit. Ngjitu lart</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
@@ -1088,9 +1076,6 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="7971136598759319605">Aktiv 1 ditë më parë</translation>
 <translation id="7975379999046275268">Shiko paraprakisht faqen <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Ngarkoji paraprakisht faqet për shfletim dhe kërkim më të shpejtë</translation>
-<translation id="7981546642162424360"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> është një nismë në proces për të zhvilluar teknologji të reja që do të të mbrojnë nga mekanizmat gjurmues ndërsa ruajnë internetin e hapur.
-
-Provat për Privacy Sandbox janë ende në zhvillim aktiv dhe ofrohen në rajone të zgjedhura. Për momentin, sajtet mund të provojnë Privacy Sandbox ndërkohë që vazhdojnë të përdorin teknologjitë aktuale të uebit si kukit e palëve të treta.</translation>
 <translation id="7986497153528221272">Për të parë fjalëkalimet, në fillim cakto një kyçje ekrani në pajisjen tënde</translation>
 <translation id="7998918019931843664">Rihap skedën e mbyllur</translation>
 <translation id="8004582292198964060">Shfletuesi</translation>

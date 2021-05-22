@@ -40,6 +40,7 @@
 <translation id="1247372569136754018">मायक्रोफोन (अंतर्गत)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> पासून चार्ज होत आहे</translation>
 <translation id="1255033239764210633">हवामान कसे आहे?</translation>
+<translation id="1266097335951928626">सेल्फी कॅमेरा सुरू करा</translation>
 <translation id="1267032506238418139">शॉर्टकट बदल</translation>
 <translation id="1269405891096105529">अतिथी मोडमध्ये पेरिफेरलला सपोर्ट नाही</translation>
 <translation id="1270290102613614947">ऑन-स्क्रीन कीबोर्ड अक्षम</translation>
@@ -84,6 +85,7 @@
 <translation id="1555130319947370107">निळा</translation>
 <translation id="1570871743947603115">ब्लूटूथ टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">या सेशनमध्ये तुमची सर्व अ‍ॅक्टिव्हिटी अ‍ॅक्सेस करा</translation>
+<translation id="159255010947577753">मार्कर</translation>
 <translation id="1611993646327628135">सुरू करा</translation>
 <translation id="1615402009686901181">गोपनीय आशय दृश्यमान असेल तेव्हा अ‍ॅडमिनिस्ट्रेटर धोरण स्‍क्रीन कॅप्‍चर बंद करते</translation>
 <translation id="1632985212731562677">सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी मध्ये स्विच अ‍ॅक्सेस बंद केले जाऊ शकते.</translation>
@@ -135,8 +137,10 @@
 <translation id="2016340657076538683">मेसेज टाइप करा</translation>
 <translation id="2018630726571919839">मला एक विनोद सांगा</translation>
 <translation id="2021864487439853900">अनलॉक करण्यासाठी क्लिक करा</translation>
+<translation id="2047639699071423250">मुख्य कल्पना जोडा</translation>
 <translation id="2049240716062114887">डेस्कचे नाव <ph name="DESK_NAME" /> वर बदलले होते</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
+<translation id="2066708475850724665">मॅग्निफायर बंद करा</translation>
 <translation id="2067602449040652523">कीबोर्डची चमक</translation>
 <translation id="2078034614700056995">पुढील डेस्कवर स्विच करण्यासाठी चार बोटांनी उजवीकडे स्‍वाइप करा</translation>
 <translation id="2079504693865562705">शेल्फमधील अ‍ॅप्स लपवा</translation>
@@ -144,10 +148,12 @@
 <translation id="2083190527011054446">शुभ रात्री <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">नेटवर्कशी कनेक्ट केलेले नाही</translation>
 <translation id="2108303511227308752">Alt + Backspace कीबोर्ड शॉर्टकट बदलला आहे. डिलीट की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + Backspace दाबा.</translation>
+<translation id="211328683600082144">मायक्रोफोन सुरू करा</translation>
 <translation id="2126242104232412123">नवीन डेस्क</translation>
 <translation id="2127372758936585790">निम्न-उर्जेचे चार्जर</translation>
 <translation id="2132302418721800944">फुल स्क्रीन रेकॉर्ड करा</translation>
 <translation id="2135456203358955318">डॉक केलेले भिंग</translation>
+<translation id="2146800439053023141">बारचे स्थान टॉगल करा</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: पुन्हा प्रयत्न करा</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">अवलोकन मधून बाहेर पडण्यासाठी तीन बोटांनी खाली स्वाइप करा</translation>
@@ -282,7 +288,6 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> नंतरही साइन इन करू शकतो.</translation>
 <translation id="3321628682574733415">चुकीचा पालक कोड</translation>
 <translation id="332587331255250389">कृपया बॅटरी बदला</translation>
-<translation id="3333741161915951567">मोडेम रीबूट करा. पुन्हा प्रयत्न करण्यापूर्वी ३० सेकंद प्रतीक्षा करा.</translation>
 <translation id="3341303451326249809">स्क्रीनशॉट कॅप्चर केला</translation>
 <translation id="334252345105450327">स्क्रीनशॉट घ्या</translation>
 <translation id="3351879221545518001">तुम्ही सध्या स्क्रीन कास्ट करत आहात.</translation>
@@ -327,6 +332,7 @@
 <translation id="3638400994746983214">गोपनीयता स्क्रीन टॉगल करा. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापित वापरकर्ता</translation>
 <translation id="3665889125180354336">मायक्रोफोन वापरून रेकॉर्ड करा</translation>
+<translation id="3680908746918359504">सर्व मार्कर साफ करा</translation>
 <translation id="36813544980941320">तुमचा फोन आणि <ph name="DEVICE_NAME" /> यांच्या दरम्यान वाय-फाय नेटवर्क शेअर केली जातील</translation>
 <translation id="3702809606464356667">सध्याच्या डेस्कवरील विंडो दाखवत आहे, सर्व डेस्कवरील विंडो दाखवण्यासाठी अप अ‍ॅरो की दाबा</translation>
 <translation id="3702846122927433391">नायजेरियामधील लोकसंख्या</translation>
@@ -377,6 +383,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{एका ॲपसाठी बंद}other{# ॲप्ससाठी बंद}}</translation>
 <translation id="4066027111132117168">सुरू आहे, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">मध्यम सिग्नल</translation>
+<translation id="4095366824370681039">इंक पेन</translation>
 <translation id="4112140312785995938">मागे शोधा</translation>
 <translation id="4114315158543974537">फोन हब सुरू करा</translation>
 <translation id="412298498316631026">विंडो</translation>
@@ -445,12 +452,15 @@
 <translation id="4570957409596482333">बोलण्यासाठी निवडा बटण</translation>
 <translation id="4577274620589681794">वेळ संपली · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">पूर्वावलोकने दाखवा</translation>
+<translation id="4578196883126898996">तुमचा मायक्रोफोन बंद आहे. तुमच्या डिव्हाइसचे मायक्रोफोन बटण सुरू करा.</translation>
 <translation id="4578906031062871102">सेटिंग्ज मेनू उघडला आहे</translation>
 <translation id="4581047786858252841">मायक्रोफोन सुरू आहे</translation>
 <translation id="4585337515783392668">एखाद्या अज्ञात मिळवणाऱ्यावर कास्ट करणे थांबवा</translation>
+<translation id="4586483766170476230">सेल्फी कॅमेरा बंद करा</translation>
 <translation id="4587299710837179226">मायक्रोफोन बंद आहे</translation>
 <translation id="4596144739579517758">गडद थीम बंद आहे</translation>
 <translation id="4611292653554630842">लॉग इन करा</translation>
+<translation id="4614295562446151104">मार्कर टूलचा विस्तार करा</translation>
 <translation id="4623167406982293031">खात्याची पडताळणी करा</translation>
 <translation id="4628757576491864469">डिव्हाइस</translation>
 <translation id="4642092649622328492">अर्धा स्क्रीनशॉट घ्या</translation>
@@ -507,6 +517,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> नवीन फोनशी कनेक्ट केले</translation>
 <translation id="5035389544768382859">डिस्प्ले कॉंफिगरेशन निश्चित करा</translation>
 <translation id="504465286040788597">मागील परिच्छेद</translation>
+<translation id="5071064518267176975">ॲपला मायक्रोफोन वापरायचा आहे</translation>
+<translation id="5075554201838155866">सबटायटल सुरू करा</translation>
 <translation id="5078796286268621944">चुकीचा पिन</translation>
 <translation id="5083553833479578423">असिस्टंटची आणखी वैशिष्ट्ये अनलॉक करा.</translation>
 <translation id="5136175204352732067">वेगळा कीबोर्ड कनेक्ट केला आहे</translation>
@@ -677,6 +689,7 @@
 <translation id="6612802754306526077">स्क्रीन रेकॉर्डिंग मोड निवडला आहे</translation>
 <translation id="6614169507485700968">गोपनीयता स्क्रीन सुरू आहे</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> ला मायक्रोफोन वापरायचा आहे</translation>
 <translation id="6637729079642709226">वेळ बदला</translation>
 <translation id="6641720045729354415">लाइव्ह कॅप्शन टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">हे तुम्हीच असल्याची <ph name="ORIGIN_NAME" /> ला खात्री करायची आहे</translation>
@@ -730,6 +743,7 @@
 <translation id="7029814467594812963">सेशनमधून बाहेर पडा</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">स्थिती क्षेत्र कोलॅप्स करा</translation>
+<translation id="7045595904618419789">मॅग्निफायर सुरू करा</translation>
 <translation id="7055910611768509537">एका आठवड्यापेक्षा जास्त वेळापासून स्टायलस वापरले नाही</translation>
 <translation id="7066646422045619941">हे नेटवर्क तुमच्या ॲडमिनिस्ट्रेटरने अक्षम केले आहे.</translation>
 <translation id="7067196344162293536">स्वयं फिरवा</translation>
@@ -750,6 +764,7 @@
 <translation id="7256634071279256947">मागील मायक्रोफोन</translation>
 <translation id="726276584504105859">विभाजित स्क्रीन वापरण्यासाठी येथे ड्रॅग करा</translation>
 <translation id="7262906531272962081">रिमाइंडर तयार करा</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> मार्करचा रंग</translation>
 <translation id="7302889331339392448">लाइव्ह कॅप्शन बंद आहे.</translation>
 <translation id="7303365578352795231">दुसऱ्या डिव्हाइसवर उत्तर देत आहे.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -779,6 +794,7 @@
 <translation id="7466449121337984263">कृपया सेन्सरला स्पर्श करा</translation>
 <translation id="7477793887173910789">व्हिडिओ पाहा आणि बरेच काही नियंत्रित करा</translation>
 <translation id="7483025031359818980">निवड क्षेत्र फुल स्क्रीनवर सेट आहे</translation>
+<translation id="7486227320194954040">मार्कर टूल कोलॅप्स करा</translation>
 <translation id="7497767806359279797">भाषा आणि कीबोर्ड निवडा</translation>
 <translation id="7509246181739783082">तुमच्या ओळखीची पडताळणी करा</translation>
 <translation id="7513622367902644023">स्क्रीनशॉट मोड निवडला आहे</translation>
@@ -797,6 +813,7 @@
 <translation id="7607002721634913082">विराम द्या</translation>
 <translation id="7618774594543487847">न्यूट्रल</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° फॅ</translation>
+<translation id="7631906263969450674">मार्कर पेन</translation>
 <translation id="7633755430369750696">Nearby सह शेअरिंग सेटिंग्ज दाखवा.</translation>
 <translation id="7641938616688887143">रेकॉर्ड करा</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> साठी सेटिंग्ज उघडा</translation>
@@ -812,6 +829,7 @@
 <translation id="7724603315864178912">कट करा</translation>
 <translation id="7745560842763881396">शेल्फमधील अ‍ॅप्स दाखवा</translation>
 <translation id="7749443890790263709">डेस्कची कमाल मर्यादा गाठली आहे.</translation>
+<translation id="7749640678855296659">तुमचा मायक्रोफोन सध्या बंद केलेला आहे</translation>
 <translation id="776344839111254542">अपडेट तपशील पाहण्यासाठी क्लिक करा</translation>
 <translation id="7780159184141939021">स्क्रीन फिरवा</translation>
 <translation id="7796353162336583443">नोंद करून घेण्यासाठी, स्क्रीनशॉट घेण्यासाठी, Google असिस्टंट, लेझर पॉइंटर किंवा भिंग वापरण्यासाठी शेल्फवरील स्टायलस बटणावर टॅप करा.</translation>
@@ -859,6 +877,7 @@
 <translation id="8113423164597455979">सुरू, सर्व ॲप</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
+<translation id="8132487352815776550">सबटायटल थांबवा</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> शी कनेक्ट केलेले</translation>
 <translation id="813913629614996137">सुरू करत आहे…</translation>
 <translation id="8142441511840089262">डबल क्लिक करा</translation>

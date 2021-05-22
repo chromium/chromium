@@ -287,6 +287,7 @@
 <translation id="1919345977826869612">యాడ్స్</translation>
 <translation id="1919367280705858090">నిర్దిష్ట ఎర్రర్ సందేశానికి సంబంధించిన సహాయం పొందండి</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ఏమీ లేవు}=1{1 సైట్}other{# సైట్‌లు}}</translation>
+<translation id="1924727005275031552">కొత్త</translation>
 <translation id="1945968466830820669">మీరు మీ సంస్థ ఖాతాకు యాక్సెస్‌ను కోల్పోవచ్చు. లేదా గుర్తింపు స‌మాచారం చౌర్యానికి గురికావచ్చు. Chromium మీరు ఇప్పుడే మీ పాస్‌వర్డ్‌ను మార్చాల్సిందిగా సిఫార్సు చేస్తోంది.</translation>
 <translation id="1947454675006758438">కుడివైపు ఎగువ భాగంలో స్టేపుల్</translation>
 <translation id="1958218078413065209">మీ అత్యధిక స్కోర్ <ph name="SCORE" />.</translation>
@@ -397,6 +398,7 @@
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> మీ పరికరాన్ని మేనేజ్ చేస్తోంది, <ph name="ACCOUNT_MANAGER" /> మీ ఖాతాను మేనేజ్ చేస్తోంది.</translation>
 <translation id="2359629602545592467">అనేకం</translation>
 <translation id="2359808026110333948">కొనసాగించు</translation>
+<translation id="2359961752320758691">మీ వర్చువల్ కార్డ్ నంబర్ వర్తించబడింది.</translation>
 <translation id="2367567093518048410">స్థాయి</translation>
 <translation id="2372464001869762664">మీరు నిర్ధారించిన తర్వాత, మీ Google ఖాతా నుండి కార్డ్ వివరాలు ఈ సైట్‌తో షేర్ చేయబడతాయి. CVCను మీ Plex ఖాతా వివరాలలో కనుగొనండి.</translation>
 <translation id="2380886658946992094">చట్టపరం</translation>
@@ -407,6 +409,7 @@
 <translation id="239429038616798445">ఈ రవాణా పద్ధతి అందుబాటులో లేదు. వేరే పద్ధతిని ప్రయత్నించండి.</translation>
 <translation id="2396249848217231973">&amp;తొలగించడాన్ని రద్దు చేయి</translation>
 <translation id="2410754574180102685">ప్రభుత్వం-న్యాయ సంబంధిత</translation>
+<translation id="2413155254802890957">పాతది</translation>
 <translation id="2413528052993050574">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రం ఉపసంహరించబడి ఉండవచ్చు. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
 <translation id="2414886740292270097">ముదురు</translation>
 <translation id="2438874542388153331">కుడివైపు నాలుగు రంధ్రాలు</translation>
@@ -909,12 +912,14 @@
 <translation id="4275830172053184480">మీ పరికరాన్ని పునఃప్రారంభించండి</translation>
 <translation id="4277028893293644418">పాస్‌వర్డ్‌ను రీసెట్ చేయి</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ఈ కార్డ్ మీ Google ఖాతాలో సేవ్ చేయబడింది}other{ఈ కార్డ్‌లు మీ Google ఖాతాలో సేవ్ చేయబడ్డాయి}}</translation>
+<translation id="4287885627794386150">ట్రయల్‌కు అర్హత పొందారు, కానీ యాక్టివ్‌లో లేదు</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> పేజీ కోసం థంబ్‌నెయిల్</translation>
 <translation id="42981349822642051">విస్తరించు</translation>
 <translation id="4300675098767811073">కుడివైపు అనేక రంధ్రాలు</translation>
 <translation id="4302514097724775343">ఆడటానికి డైనోసార్‌ను ట్యాప్ చేయండి</translation>
 <translation id="4302965934281694568">Chou3 (ఎన్వలప్)</translation>
 <translation id="4305666528087210886">మీ ఫైల్‌ను యాక్సెస్ చేయడం సాధ్యపడలేదు</translation>
+<translation id="4306529830550717874">అడ్రస్‌ను సేవ్ చేయాలా?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">బ్లాక్ చేయి (డిఫాల్ట్)</translation>
 <translation id="4314815835985389558">సింక్‌ను నిర్వహించండి</translation>
@@ -1402,6 +1407,7 @@
 <translation id="610911394827799129">మీ Google ఖాతా <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />లో ఇతర రూపాల్లో ఉన్న బ్రౌజింగ్ చరిత్రను కలిగి ఉండవచ్చు</translation>
 <translation id="6116338172782435947">క్లిప్‌బోర్డ్‌కు కాపీ చేసిన వచనం మరియు చిత్రాలను చూడండి</translation>
 <translation id="6120179357481664955">మీ UPI ID గుర్తుందా?</translation>
+<translation id="6123290840358279103">వర్చువల్ కార్డ్‌ను చూడండి</translation>
 <translation id="6124432979022149706">Chrome Enterprise కనెక్టర్‌లు</translation>
 <translation id="6146055958333702838">ఏవైనా కేబుల్‌లను తనిఖీ చేయండి మరియు మీరు ఉపయోగించే ఏవైనా రూటర్‌లు, మోడెమ్‌లు
         లేదా ఇతర నెట్‌వర్క్ పరికరాలను రీబూట్ చేయండి.</translation>
@@ -1681,6 +1687,7 @@
 <translation id="7300012071106347854">నల్ల కావిరాయి నీలం</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">అధికం</translation>
+<translation id="7305756307268530424">నెమ్మదిగా ప్రారంభించండి</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">కనెక్షన్ సహాయం</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" విభాగాన్ని దాచు</translation>
@@ -1706,6 +1713,7 @@
 <translation id="7378594059915113390">మీడియా నియంత్రణలు</translation>
 <translation id="7378627244592794276">వద్దు</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">వర్తించదు</translation>
 <translation id="7390545607259442187">కార్డ్‌ని నిర్ధారించండి</translation>
 <translation id="7399802613464275309">భద్రతా చెక్-అప్</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1757,6 +1765,7 @@
 <translation id="7548892272833184391">కనెక్షన్ ఎర్రర్‌లను పరిష్కరించండి</translation>
 <translation id="7549584377607005141">ఈ వెబ్‌పేజీ సరిగ్గా ప్రదర్శించబడటానికి మీరు మునుపు నమోదు చేసిన డేటా అవసరం. మీరు ఈ డేటాను మళ్లీ పంపవచ్చు. కానీ అలా చేయడం వ‌ల్ల‌ ఈ పేజీ మునుపు ప్రదర్శించిన ఏదైనా చర్య పునరావృతం కావచ్చు.</translation>
 <translation id="7550637293666041147">మీ పరికరం వినియోగదారు పేరు మరియు Chrome వినియోగదారు పేరు</translation>
+<translation id="755279583747225797">ట్రయల్ యాక్టివ్‌గా ఉంది</translation>
 <translation id="7552846755917812628">క్రింది చిట్కాలను ప్రయత్నించండి:</translation>
 <translation id="7554475479213504905">ఏదేమైనా రీలోడ్ చేసి, చూపు</translation>
 <translation id="7554791636758816595">కొత్త ట్యాబ్</translation>
@@ -1851,6 +1860,7 @@
 <translation id="7894280532028510793">స్పెల్లింగ్ సరైనది అయితే, <ph name="BEGIN_LINK" />నెట్‌వర్క్ సమస్య విశ్లేషణలను రన్ చేయడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (ఎన్వలప్)</translation>
 <translation id="7931318309563332511">తెలియదు</translation>
+<translation id="793209273132572360">అడ్రస్‌ను అప్‌డేట్ చేయాలా?</translation>
 <translation id="7932579305932748336">కోటు</translation>
 <translation id="79338296614623784">చెల్లుబాటు అయ్యే ఫోన్ నంబర్‌ను నమోదు చేయండి</translation>
 <translation id="7934052535022478634">చెల్లింపు పూర్తయింది</translation>

@@ -1106,13 +1106,6 @@
 <translation id="2448315169529769573">Якщо це правило ввімкнено, <ph name="PRODUCT_OS_NAME" /> повідомлятиме компанії Google показники використання й дані діагностики, зокрема звіти про аварійне завершення роботи. Якщо це правило вимкнено, показники й дані діагностики не надсилатимуться.
 
        Якщо це правило не налаштовано, показники й дані діагностики некерованих пристроїв не надсилатимуться, а керованих – надсилатимуться</translation>
-<translation id="2449263772062368618">Налаштовує список типів даних веб-перегляду, які потрібно видаляти, коли користувач закриває веб-переглядач.
-      Доступні типи даних: історія веб-перегляду (<ph name="DATA_TYPE_BROWSING_HISTORY" />), історія завантажень (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), файли cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), кеш <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, дані автозаповнення (<ph name="DATA_TYPE_AUTOFILL" />), паролі (<ph name="DATA_TYPE_PASSWORD" />), налаштування сайтів (<ph name="DATA_TYPE_SITE_SETTINGS" />) і дані розміщених додатків (<ph name="DATA_TYPE_HOSTED_APP_DATA" />).
-      Воно не має переваги над правилом <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-      Для цього правила потрібно, щоб правило <ph name="SYNC_DISABLED_POLICY_NAME" /> мало значення true, інакше воно ігноруватиметься.
-      Якщо це правило налаштовано на рівні платформи, синхронізацію на рівні платформи має бути вимкнено.
-      Якщо це правило налаштовано на рівні користувача, потрібно вимкнути синхронізацію для цього користувача, щоб воно вступило в дію.
-      </translation>
 <translation id="244950822854046436">Список налаштувань, які застосовуються до конектора <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, що активується, коли завантажується файл.
 
       Поля <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> і <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> визначають, чи надсилатиме конектор файл постачальнику послуг під час завантаження з веб-сторінки. URL-адреса веб-сторінки має відповідати шаблону, зв'язаному із шаблоном enable (а не disable).  Тип MIME файлу має відповідати шаблону, зв'язаному із шаблоном enable (а не disable).
@@ -3045,13 +3038,6 @@
       Якщо це правило не налаштовано, у список не додається жодний веб-сайт.
 
       Примітка: елементи в цей список можна також додавати за допомогою правила <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
-<translation id="5065753964276395784">Це правило більше не підтримується. Натомість використовуйте правило <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-       Якщо це правило налаштоване, <ph name="PRODUCT_NAME" /> обходитиме всі проксі для хостів із наведеного тут списку. Це правило діє, лише якщо правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> не вказане, а для правила <ph name="PROXY_MODE_POLICY_NAME" /> вибрано значення <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />.
-
-       Якщо ви вибрали інший режим, це правило не потрібно налаштовувати.
-
-       Примітка: щоб переглянути детальніші приклади, відвідайте веб-сайт проектів Chromium (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="5067143124345820993">Список користувачів, яким дозволено вхід</translation>
 <translation id="5073609397321802133">Якщо для цього правила вибрано значення false, користувачі не зможуть змінювати фон сторінки нової вкладки. Наявні користувацькі фони буде видалено назавжди, навіть якщо пізніше змінити значення правила на true.
 
@@ -3208,26 +3194,6 @@
       Якщо для цього правила вибрано значення False або його не налаштовано, уніфікований режим робочого столу буде вимкнено, і користувачі не зможуть увімкнути його.</translation>
 <translation id="5255162913209987122">Може рекомендуватися</translation>
 <translation id="5257395339965216304">Дані розміщених додатків</translation>
-<translation id="5264066441613395613">За допомогою налаштувань цього правила можна вибрати параметри проксі для Chrome і додатків ARC, які ігнорують усі опції проксі, указані в командному рядку.
-
-       Якщо це правило не налаштовано, користувачі зможуть вибирати налаштування проксі.
-
-       Якщо правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> налаштоване, буде прийнято ці поля:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, за допомогою якого можна вказати, який проксі-сервер має використовувати Chrome, а користувачі не матимуть змоги змінити ці налаштування
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> – URL-адреса файлу .pac проксі-сервера
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> – URL-адреса проксі-сервера
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> – список хостів проксі-сервера, які <ph name="PRODUCT_NAME" /> обходить
-
-       Поле <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> застаріле. Замість нього використовується поле <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, у якому можна вказати, який проксі-сервер має використовувати Chrome, і користувачі не матимуть змоги змінити ці налаштування.
-
-        Якщо для параметра <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> вибрати значення:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, проксі ніколи не використовуватиметься, а всі поля ігноруватимуться;
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, використовуватиметься проксі системи, а всі інші поля ігноруватимуться;
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, усі інші поля ігноруватимуться;
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVER" />, використовуватимуться поля <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> і <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />;
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, використовуватимуться поля <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> і <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-
-      Примітка: щоб переглянути детальніші приклади, відвідайте веб-сайт проектів Chromium (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="5266173014392157048">Це правило більше не підтримується. Натомість використовуйте <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
 
       За допомогою цього правила призначаються сервери, яким <ph name="PRODUCT_NAME" /> може передавати облікові дані. Назви серверів потрібно розділяти комами. Дозволяються символи підстановки (<ph name="WILDCARD_VALUE" />).
