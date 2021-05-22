@@ -423,6 +423,7 @@ ui::NativeTheme::ExtraParams CocoaScrollBar::GetPainterParams() const {
   }
   params.scrollbar_extra.is_overlay =
       GetScrollerStyle() == NSScrollerStyleOverlay;
+  params.scrollbar_extra.scale_from_dip = 1.0f;
   return params;
 }
 

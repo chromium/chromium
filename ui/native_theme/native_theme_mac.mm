@@ -383,13 +383,16 @@ void NativeThemeMac::PaintScrollbarTrackInnerBorder(
   // Compute the rect for the border.
   gfx::Rect inner_border(rect);
   if (extra_params.orientation == ScrollbarOrientation::kVerticalOnLeft)
-    inner_border.set_x(rect.right() - ScrollbarTrackBorderWidth());
+    inner_border.set_x(rect.right() -
+                       ScrollbarTrackBorderWidth(extra_params.scale_from_dip));
   if (is_corner ||
       extra_params.orientation == ScrollbarOrientation::kHorizontal)
-    inner_border.set_height(ScrollbarTrackBorderWidth());
+    inner_border.set_height(
+        ScrollbarTrackBorderWidth(extra_params.scale_from_dip));
   if (is_corner ||
       extra_params.orientation != ScrollbarOrientation::kHorizontal)
-    inner_border.set_width(ScrollbarTrackBorderWidth());
+    inner_border.set_width(
+        ScrollbarTrackBorderWidth(extra_params.scale_from_dip));
 
   // And draw.
   cc::PaintFlags flags;
@@ -419,8 +422,10 @@ void NativeThemeMac::PaintScrollbarTrackOuterBorder(
   if (is_corner ||
       extra_params.orientation == ScrollbarOrientation::kHorizontal) {
     gfx::Rect outer_border(rect);
-    outer_border.set_height(ScrollbarTrackBorderWidth());
-    outer_border.set_y(rect.bottom() - ScrollbarTrackBorderWidth());
+    outer_border.set_height(
+        ScrollbarTrackBorderWidth(extra_params.scale_from_dip));
+    outer_border.set_y(rect.bottom() -
+                       ScrollbarTrackBorderWidth(extra_params.scale_from_dip));
     paint_canvas.DrawRect(outer_border, flags);
   }
 
@@ -428,9 +433,11 @@ void NativeThemeMac::PaintScrollbarTrackOuterBorder(
   if (is_corner ||
       extra_params.orientation != ScrollbarOrientation::kHorizontal) {
     gfx::Rect outer_border(rect);
-    outer_border.set_width(ScrollbarTrackBorderWidth());
+    outer_border.set_width(
+        ScrollbarTrackBorderWidth(extra_params.scale_from_dip));
     if (extra_params.orientation == ScrollbarOrientation::kVerticalOnRight)
-      outer_border.set_x(rect.right() - ScrollbarTrackBorderWidth());
+      outer_border.set_x(rect.right() - ScrollbarTrackBorderWidth(
+                                            extra_params.scale_from_dip));
     paint_canvas.DrawRect(outer_border, flags);
   }
 }
@@ -456,14 +463,19 @@ void NativeThemeMac::PaintMacScrollbarThumb(
   gfx::Rect bounds(rect);
   {
     // Shrink the thumb evenly in length and girth to fit within the track.
-    gfx::Insets thumb_insets(GetScrollbarThumbInset(scroll_thumb.is_overlay));
+    gfx::Insets thumb_insets(GetScrollbarThumbInset(
+        scroll_thumb.is_overlay, scroll_thumb.scale_from_dip));
 
     // Also shrink the thumb in girth to not touch the border.
     if (scroll_thumb.orientation == ScrollbarOrientation::kHorizontal) {
-      thumb_insets.set_top(thumb_insets.top() + ScrollbarTrackBorderWidth());
+      thumb_insets.set_top(
+          thumb_insets.top() +
+          ScrollbarTrackBorderWidth(scroll_thumb.scale_from_dip));
       ConstrainedInset(&bounds, GetThumbMinSize(false), thumb_insets);
     } else {
-      thumb_insets.set_left(thumb_insets.left() + ScrollbarTrackBorderWidth());
+      thumb_insets.set_left(
+          thumb_insets.left() +
+          ScrollbarTrackBorderWidth(scroll_thumb.scale_from_dip));
       ConstrainedInset(&bounds, GetThumbMinSize(true), thumb_insets);
     }
   }

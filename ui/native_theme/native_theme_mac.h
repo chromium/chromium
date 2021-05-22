@@ -140,12 +140,15 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
       ColorScheme color_scheme,
       const ScrollbarExtraParams& extra_params) const;
 
-  int ScrollbarTrackBorderWidth() const { return 1; }
+  int ScrollbarTrackBorderWidth(float scale_from_dip) const {
+    constexpr float border_width = 1.0f;
+    return scale_from_dip * border_width;
+  }
 
   // The amount the thumb is inset from the ends and the inside edge of track
   // border.
-  int GetScrollbarThumbInset(bool is_overlay) const {
-    return is_overlay ? 2 : 3;
+  int GetScrollbarThumbInset(bool is_overlay, float scale_from_dip) const {
+    return scale_from_dip * (is_overlay ? 2.0f : 3.0f);
   }
 
   // Returns the minimum size for the thumb. We will not inset the thumb if it

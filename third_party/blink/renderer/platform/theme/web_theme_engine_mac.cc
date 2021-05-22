@@ -51,6 +51,8 @@ void WebThemeEngineMac::PaintMacScrollBarParts(
       extra_params->scrollbar_extra.is_hovering;
   native_theme_extra_params.scrollbar_extra.is_overlay =
       extra_params->scrollbar_extra.is_overlay;
+  native_theme_extra_params.scrollbar_extra.scale_from_dip =
+      extra_params->scrollbar_extra.scale_from_dip;
   switch (extra_params->scrollbar_extra.orientation) {
     case WebThemeEngine::kVerticalOnRight:
       native_theme_extra_params.scrollbar_extra.orientation =

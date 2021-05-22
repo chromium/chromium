@@ -194,6 +194,7 @@ class WebThemeEngine {
     bool is_overlay;
     mojom::ColorScheme scrollbar_theme;
     ScrollbarOrientation orientation;
+    float scale_from_dip;
   };
 #endif
 

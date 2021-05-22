@@ -271,6 +271,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     bool is_overlay;
     ScrollbarOverlayColorTheme scrollbar_theme;
     ScrollbarOrientation orientation;  // Used on Mac for drawing gradients.
+    float scale_from_dip;
   };
 #endif
 
