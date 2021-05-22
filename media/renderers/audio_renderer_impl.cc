@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/record_replay.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -195,12 +196,14 @@ void AudioRendererImpl::SetMediaTime(base::TimeDelta time) {
 }
 
 base::TimeDelta AudioRendererImpl::CurrentMediaTime() {
+  recordreplay::Assert("AudioRendererImpl::CurrentMediaTime");
   base::AutoLock auto_lock(lock_);
 
   // Return the current time based on the known extents of the rendered audio
   // data plus an estimate based on the last time those values were calculated.
   base::TimeDelta current_media_time = audio_clock_->front_timestamp();
   if (!last_render_time_.is_null()) {
+    recordreplay::Assert("AudioRendererImpl::CurrentMediaTime #1");
     current_media_time +=
         (tick_clock_->NowTicks() - last_render_time_) * playback_rate_;
     if (current_media_time > audio_clock_->back_timestamp())
