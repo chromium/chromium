@@ -267,8 +267,8 @@ void UnifiedVolumeView::Update(bool by_user) {
   // there will be a small discrepancy between slider's value and volume level
   // on audio side. To avoid the jittering in slider UI, use the slider's
   // current value.
-  if (std::abs(level - slider()->GetValue()) <
-      kAudioSliderIgnoreUpdateThreshold) {
+  if (level != 1.0 && std::abs(level - slider()->GetValue()) <
+                          kAudioSliderIgnoreUpdateThreshold) {
     level = slider()->GetValue();
   }
   // Note: even if the value does not change, we still need to call this
