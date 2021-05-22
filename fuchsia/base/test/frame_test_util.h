@@ -20,6 +20,10 @@ bool LoadUrlAndExpectResponse(
     fuchsia::web::NavigationController* navigation_controller,
     fuchsia::web::LoadUrlParams load_url_params,
     base::StringPiece url);
+bool LoadUrlAndExpectResponse(
+    const fuchsia::web::NavigationControllerPtr& navigation_controller,
+    fuchsia::web::LoadUrlParams load_url_params,
+    base::StringPiece url);
 
 // Executes |script| in the context of |frame|'s top-level document.
 // Returns an un-set |absl::optional<>| on failure.

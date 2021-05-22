@@ -40,10 +40,18 @@ class FrameForTest {
   // Returns the fuchsia.web.FramePtr owned by this instance.
   fuchsia::web::FramePtr& ptr() { return frame_; }
 
+  // Provide member-dereference operator to improve test readability by letting
+  // Frame calls be expressed directly on |this|, rather than via |ptr()|.
+  fuchsia::web::Frame* operator->() { return frame_.get(); }
+
   // May be called only on non-default-initialized instances, i.e. those
   // returned directly, or via move-assignment, from Create().
   TestNavigationListener& navigation_listener() {
     return *navigation_listener_;
+  }
+  fidl::Binding<fuchsia::web::NavigationEventListener>&
+  navigation_listener_binding() {
+    return *navigation_listener_binding_;
   }
 
  private:

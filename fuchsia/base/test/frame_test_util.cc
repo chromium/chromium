@@ -29,6 +29,13 @@ bool LoadUrlAndExpectResponse(
   return result->is_response();
 }
 
+bool LoadUrlAndExpectResponse(
+    const fuchsia::web::NavigationControllerPtr& controller,
+    fuchsia::web::LoadUrlParams params,
+    base::StringPiece url) {
+  return LoadUrlAndExpectResponse(controller.get(), std::move(params), url);
+}
+
 absl::optional<base::Value> ExecuteJavaScript(fuchsia::web::Frame* frame,
                                               base::StringPiece script) {
   base::RunLoop run_loop;
