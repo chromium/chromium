@@ -23,7 +23,7 @@ SegmentSelectorImpl::~SegmentSelectorImpl() = default;
 
 void SegmentSelectorImpl::Initialize(base::OnceClosure callback) {
   // Read selected segment from prefs.
-  base::Optional<SelectedSegment> selected_segment =
+  absl::optional<SelectedSegment> selected_segment =
       result_prefs_->ReadSegmentationResultFromPref();
   if (selected_segment.has_value())
     selected_segment_last_session_ = selected_segment->segment_id;
@@ -49,7 +49,7 @@ void SegmentSelectorImpl::GetSegmentScore(
     SingleSegmentResultCallback callback) {
   DCHECK(initialized_);
 
-  base::Optional<float> score;
+  absl::optional<float> score;
   auto iter = segment_score_last_session_.find(segment_id);
   if (iter != segment_score_last_session_.end())
     score = iter->second;
@@ -106,7 +106,7 @@ void SegmentSelectorImpl::FindBestSegment(
 
 void SegmentSelectorImpl::UpdateSelectedSegment(
     OptimizationTarget new_selection) {
-  base::Optional<SelectedSegment> previous_selection =
+  absl::optional<SelectedSegment> previous_selection =
       result_prefs_->ReadSegmentationResultFromPref();
 
   bool skip_updating_prefs = false;
@@ -122,9 +122,9 @@ void SegmentSelectorImpl::UpdateSelectedSegment(
     return;
 
   // Write result to prefs.
-  base::Optional<SelectedSegment> updated_selection;
+  absl::optional<SelectedSegment> updated_selection;
   if (new_selection != OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
-    updated_selection = base::make_optional<SelectedSegment>(new_selection);
+    updated_selection = absl::make_optional<SelectedSegment>(new_selection);
     updated_selection->selection_time = base::Time::Now();
   }
   result_prefs_->SaveSegmentationResultToPref(updated_selection);

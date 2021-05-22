@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENTATION_RESULT_PREFS_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENTATION_RESULT_PREFS_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using optimization_guide::proto::OptimizationTarget;
 
@@ -35,10 +35,10 @@ class SegmentationResultPrefs {
   // Writes the selected segment to prefs. Deletes the previous results if
   // |selected_segment| is empty.
   virtual void SaveSegmentationResultToPref(
-      const base::Optional<SelectedSegment>& selected_segment) = 0;
+      const absl::optional<SelectedSegment>& selected_segment) = 0;
 
   // Reads the selected segment from pref, if any.
-  virtual base::Optional<SelectedSegment> ReadSegmentationResultFromPref() = 0;
+  virtual absl::optional<SelectedSegment> ReadSegmentationResultFromPref() = 0;
 };
 
 }  // namespace segmentation_platform

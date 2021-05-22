@@ -516,7 +516,6 @@ component("base") {
     "observer_list_types.h",
     "one_shot_event.cc",
     "one_shot_event.h",
-    "optional.h",
     "os_compat_nacl.cc",
     "os_compat_nacl.h",
     "parameter_pack.h",
