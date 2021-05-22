@@ -134,7 +134,6 @@ used when committed.
     Visualizing view trees during debugging
 *   [Bitmap Pipeline](bitmap_pipeline.md) - How bitmaps are moved from the
     renderer to the screen.
-*   [base::Optional](optional.md) - How to use `base::Optional` in C++ code.
 *   [Using the Origin Trials Framework](origin_trials_integration.md) - A
     framework for conditionally enabling experimental APIs for testing.
 *   [`ClientTagBasedModelTypeProcessor` in Unified Sync and Storage](sync/uss/client_tag_based_model_type_processor.md) -

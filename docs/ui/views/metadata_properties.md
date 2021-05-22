@@ -180,7 +180,7 @@ at run-time, getting or setting the value directly via the getter and setter is
 perfectly valid.
 
 The type converter for a non-serializable type may return something from the
-ToString() method, but it will typically return base::nullopt from the
+ToString() method, but it will typically return absl::nullopt from the
 FromString() method. For a non-serializable type, the ui-devtools front-end
 won’t call the setter since whatever “value” it has is presumed to be
 unconvertable to a valid value.

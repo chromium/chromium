@@ -183,7 +183,7 @@ local state.
 Here’s an example implementation of a type using `ModelTypeStore`:
 
 ```cpp
-base::Optional<ModelError> DeviceInfoSyncBridge::ApplySyncChanges(
+absl::optional<ModelError> DeviceInfoSyncBridge::ApplySyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
