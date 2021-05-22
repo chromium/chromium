@@ -4432,7 +4432,7 @@ WebContents* WebContentsImpl::OpenURL(const OpenURLParams& params) {
   RenderFrameHost* source_render_frame_host = RenderFrameHost::FromID(
       params.source_render_process_id, params.source_render_frame_id);
 
-  // Prevent frams that are not active from opening new windows, tabs, popups,
+  // Prevent frames that are not active from opening new windows, tabs, popups,
   // etc.
   if (params.disposition != WindowOpenDisposition::CURRENT_TAB &&
       source_render_frame_host && !source_render_frame_host->IsCurrent()) {
