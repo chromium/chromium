@@ -1263,7 +1263,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/mig/${{platform}}',
-              'version': '2V-uHus2XTSwiuuV13_KdzamwmCswCXfWm5PDBuhC6sC',
+              'version': 'vJgfh6ZaBQ_Re5o4LFapZr-dYRdfM-GjXEbilySNcNQC',
           },
       ],
       'condition': 'host_os == "linux" and checkout_mac',
