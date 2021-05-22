@@ -147,12 +147,14 @@ class FamilyInfoFetcherTest
 
   CoreAccountInfo SetPrimaryAccount() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    return identity_test_env_.SetUnconsentedPrimaryAccount(kAccountId);
+    return identity_test_env_.SetPrimaryAccount(kAccountId,
+                                                signin::ConsentLevel::kSignin);
 #elif defined(OS_ANDROID)
     // TODO(https://crbug.com/1046746): Change to SetUnconsentedPrimaryAccount()
     // when Android supports the concept of an unconsented primary account that
     // is different than the primary account.
-    return identity_test_env_.SetPrimaryAccount(kAccountId);
+    return identity_test_env_.SetPrimaryAccount(kAccountId,
+                                                signin::ConsentLevel::kSync);
 #else
 #error Unsupported platform.
 #endif

@@ -141,7 +141,8 @@ TEST_F(MediaRouterContextualMenuUnitTest, Basic) {
   }
 
   // Set up an authenticated account.
-  identity_test_env()->SetPrimaryAccount("foo@bar.com");
+  identity_test_env()->SetPrimaryAccount("foo@bar.com",
+                                         signin::ConsentLevel::kSync);
 
   // Run the same checks as before. All existing menu items should be now
   // enabled and visible.

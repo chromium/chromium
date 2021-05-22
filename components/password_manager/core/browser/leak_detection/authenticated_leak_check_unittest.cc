@@ -150,7 +150,7 @@ TEST_F(AuthenticatedLeakCheckTest, HasAccountForRequest_SignedIn) {
 }
 
 TEST_F(AuthenticatedLeakCheckTest, HasAccountForRequest_Syncing) {
-  identity_env().SetPrimaryAccount(kTestEmail);
+  identity_env().SetPrimaryAccount(kTestEmail, signin::ConsentLevel::kSync);
   EXPECT_TRUE(AuthenticatedLeakCheck::HasAccountForRequest(
       identity_env().identity_manager()));
 }

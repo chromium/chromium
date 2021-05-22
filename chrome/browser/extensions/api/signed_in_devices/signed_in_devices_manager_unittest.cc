@@ -29,7 +29,8 @@ TEST(SignedInDevicesManager, UpdateListener) {
       IdentityTestEnvironmentProfileAdaptor::
           CreateProfileForIdentityTestEnvironment();
   IdentityTestEnvironmentProfileAdaptor adaptor(profile.get());
-  adaptor.identity_test_env()->SetPrimaryAccount("foo@test.com");
+  adaptor.identity_test_env()->SetPrimaryAccount("foo@test.com",
+                                                 signin::ConsentLevel::kSync);
 
   ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
       profile.get(), BrowserContextKeyedServiceFactory::TestingFactory());

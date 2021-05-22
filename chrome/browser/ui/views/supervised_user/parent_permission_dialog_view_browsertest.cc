@@ -138,7 +138,7 @@ class ParentPermissionDialogViewTest
     identity_test_env_->MakeAccountAvailable(
         chromeos::FakeGaiaMixin::kFakeUserEmail);
     identity_test_env_->SetPrimaryAccount(
-        chromeos::FakeGaiaMixin::kFakeUserEmail);
+        chromeos::FakeGaiaMixin::kFakeUserEmail, signin::ConsentLevel::kSync);
     identity_test_env_->SetRefreshTokenForPrimaryAccount();
     identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
   }

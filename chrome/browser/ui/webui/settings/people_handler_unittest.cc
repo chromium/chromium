@@ -249,7 +249,10 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
         GetIdentityTestEnvironmentFactories();
   }
 
-  void SigninUser() { identity_test_env()->SetPrimaryAccount(kTestUser); }
+  void SigninUser() {
+    identity_test_env()->SetPrimaryAccount(kTestUser,
+                                           signin::ConsentLevel::kSync);
+  }
 
   void CreatePeopleHandler() {
     handler_ = std::make_unique<TestingPeopleHandler>(&web_ui_, profile());
@@ -1267,7 +1270,8 @@ TEST(PeopleHandlerDiceUnifiedConsentTest, StoredAccountsList) {
 
   auto account_1 = identity_test_env->MakeAccountAvailable("a@gmail.com");
   auto account_2 = identity_test_env->MakeAccountAvailable("b@gmail.com");
-  identity_test_env->SetPrimaryAccount(account_1.email);
+  identity_test_env->SetPrimaryAccount(account_1.email,
+                                       signin::ConsentLevel::kSync);
 
   PeopleHandler handler(profile.get());
   base::Value accounts = handler.GetStoredAccountsList();

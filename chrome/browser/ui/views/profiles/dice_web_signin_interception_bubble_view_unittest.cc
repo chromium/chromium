@@ -141,7 +141,8 @@ TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, SyncHistograms) {
   }
 
   // Syncing.
-  identity_test_env()->SetPrimaryAccount(personal_account_.email);
+  identity_test_env()->SetPrimaryAccount(personal_account_.email,
+                                         signin::ConsentLevel::kSync);
   {
     base::HistogramTester histogram_tester;
     DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
@@ -171,7 +172,8 @@ TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, EnterpriseHistograms) {
   }
 
   // Primary account is Enterprise.
-  identity_test_env()->SetPrimaryAccount(personal_account_.email);
+  identity_test_env()->SetPrimaryAccount(personal_account_.email,
+                                         signin::ConsentLevel::kSync);
   {
     base::HistogramTester histogram_tester;
     DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters = {

@@ -257,7 +257,8 @@ class AccountTrackerTest : public testing::Test {
   // exercise functionality dependent on that callback firing are not relevant
   // on ChromeOS and should simply not run on that platform.
   CoreAccountInfo SetActiveAccount(const std::string& email) {
-    return identity_test_env_.SetPrimaryAccount(email);
+    return identity_test_env_.SetPrimaryAccount(email,
+                                                signin::ConsentLevel::kSync);
   }
 
 // Helpers that go through a logout flow.

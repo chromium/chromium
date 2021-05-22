@@ -76,13 +76,13 @@ TEST_F(LeakDetectionCheckFactoryImplTest, BulkCheck_SignedIn) {
 }
 
 TEST_F(LeakDetectionCheckFactoryImplTest, SignedInAndSyncing) {
-  identity_env().SetPrimaryAccount(kTestAccount);
+  identity_env().SetPrimaryAccount(kTestAccount, signin::ConsentLevel::kSync);
   EXPECT_TRUE(request_factory().TryCreateLeakCheck(
       &delegate(), identity_env().identity_manager(), url_loader_factory()));
 }
 
 TEST_F(LeakDetectionCheckFactoryImplTest, BulkCheck_SignedInAndSyncing) {
-  identity_env().SetPrimaryAccount(kTestAccount);
+  identity_env().SetPrimaryAccount(kTestAccount, signin::ConsentLevel::kSync);
   EXPECT_TRUE(request_factory().TryCreateBulkLeakCheck(
       &bulk_delegate(), identity_env().identity_manager(),
       url_loader_factory()));

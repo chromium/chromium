@@ -108,7 +108,8 @@ TEST_F(WebSigninBridgeTest,
       CreateWebSigninBridge(account, callback.Get());
   EXPECT_CALL(callback, Run(GoogleServiceAuthError()));
 
-  identity_test_env_.SetPrimaryAccount(account.email);
+  identity_test_env_.SetPrimaryAccount(account.email,
+                                       signin::ConsentLevel::kSync);
   signin::CookieParamsForTest cookie_params{account.email, account.gaia};
   identity_test_env_.SetCookieAccounts({cookie_params});
 }
@@ -125,7 +126,8 @@ TEST_F(
   EXPECT_CALL(callback,
               Run(GoogleServiceAuthError(
                   GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS)));
-  identity_test_env_.SetPrimaryAccount(account.email);
+  identity_test_env_.SetPrimaryAccount(account.email,
+                                       signin::ConsentLevel::kSync);
   identity_test_env_.SetInvalidRefreshTokenForAccount(account.account_id);
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account.account_id,
@@ -153,7 +155,8 @@ TEST_F(WebSigninBridgeTest,
       CreateWebSigninBridge(signin_account, callback.Get());
   EXPECT_CALL(callback, Run(_)).Times(0);
 
-  identity_test_env_.SetPrimaryAccount(non_signin_account.email);
+  identity_test_env_.SetPrimaryAccount(non_signin_account.email,
+                                       signin::ConsentLevel::kSync);
   signin::CookieParamsForTest cookie_params{non_signin_account.email,
                                             non_signin_account.gaia};
   identity_test_env_.SetCookieAccounts({cookie_params});
@@ -169,7 +172,8 @@ TEST_F(WebSigninBridgeTest, ReconcilorErrorShouldTriggerOnSigninFailed) {
               Run(GoogleServiceAuthError(
                   GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS)));
 
-  identity_test_env_.SetPrimaryAccount(account.email);
+  identity_test_env_.SetPrimaryAccount(account.email,
+                                       signin::ConsentLevel::kSync);
   identity_test_env_.SetInvalidRefreshTokenForAccount(account.account_id);
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account.account_id,

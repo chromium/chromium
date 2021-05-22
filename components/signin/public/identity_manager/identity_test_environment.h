@@ -115,11 +115,8 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // in the firing of the IdentityManager and PrimaryAccountManager callbacks
   // for signin success. Blocks until the primary account is set. Returns the
   // CoreAccountInfo of the newly-set account.
-  CoreAccountInfo SetPrimaryAccount(const std::string& email);
-
-  // As above, but adds an "unconsented" primary account. See ./README.md for
-  // the distinction between primary and unconsented primary accounts.
-  CoreAccountInfo SetUnconsentedPrimaryAccount(const std::string& email);
+  CoreAccountInfo SetPrimaryAccount(const std::string& email,
+                                    ConsentLevel consent_level);
 
   // Sets a refresh token for the primary account (which must already be set).
   // Before updating the refresh token, blocks until refresh tokens are loaded.

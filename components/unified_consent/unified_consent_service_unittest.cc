@@ -91,7 +91,8 @@ TEST_F(UnifiedConsentServiceTest, DefaultValuesWhenSignedOut) {
 
 TEST_F(UnifiedConsentServiceTest, EnableUrlKeyedAnonymizedDataCollection) {
   CreateConsentService();
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com");
+  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
+                                               signin::ConsentLevel::kSync);
   EXPECT_FALSE(pref_service_.GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 
@@ -103,7 +104,8 @@ TEST_F(UnifiedConsentServiceTest, EnableUrlKeyedAnonymizedDataCollection) {
 
 TEST_F(UnifiedConsentServiceTest, Migration_UpdateSettings) {
   // Create user that syncs history and has no custom passphrase.
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com");
+  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
+                                               signin::ConsentLevel::kSync);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       false, {syncer::UserSelectableType::kHistory});
   EXPECT_TRUE(sync_service_.IsSyncFeatureActive());
@@ -123,7 +125,8 @@ TEST_F(UnifiedConsentServiceTest, ClearPrimaryAccountDisablesSomeServices) {
   base::HistogramTester histogram_tester;
 
   CreateConsentService();
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com");
+  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
+                                               signin::ConsentLevel::kSync);
 
   // Precondition: Enable unified consent.
   consent_service_->SetUrlKeyedAnonymizedDataCollectionEnabled(true);

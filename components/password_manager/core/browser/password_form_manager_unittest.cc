@@ -2398,7 +2398,7 @@ TEST_P(PasswordFormManagerTest, NotMovableToAccountStoreWhenBlocked) {
   // Even with |kEmail| is signed in, credentials should NOT be movable.
   ON_CALL(client_, GetIdentityManager())
       .WillByDefault(Return(identity_test_env_.identity_manager()));
-  identity_test_env_.SetPrimaryAccount(kEmail);
+  identity_test_env_.SetPrimaryAccount(kEmail, signin::ConsentLevel::kSync);
   EXPECT_FALSE(form_manager_->IsMovableToAccountStore());
 }
 
@@ -2423,7 +2423,8 @@ TEST_P(PasswordFormManagerTest, MovableToAccountStore) {
       form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr));
 
   // If another user is signed in, credentials should be movable.
-  identity_test_env_.SetPrimaryAccount("another-user@gmail.com");
+  identity_test_env_.SetPrimaryAccount("another-user@gmail.com",
+                                       signin::ConsentLevel::kSync);
   ON_CALL(client_, GetIdentityManager())
       .WillByDefault(Return(identity_test_env_.identity_manager()));
   EXPECT_TRUE(form_manager_->IsMovableToAccountStore());
@@ -2682,7 +2683,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   ON_CALL(client_, GetIdentityManager())
       .WillByDefault(Return(identity_test_env_.identity_manager()));
 
-  identity_test_env_.SetPrimaryAccount(kEmail);
+  identity_test_env_.SetPrimaryAccount(kEmail, signin::ConsentLevel::kSync);
 
   EXPECT_CALL(*mock_password_save_manager(),
               BlockMovingToAccountStoreFor(GaiaIdHash::FromGaiaId(kGaiaId)));

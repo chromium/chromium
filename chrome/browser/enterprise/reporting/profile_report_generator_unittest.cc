@@ -174,7 +174,7 @@ TEST_F(ProfileReportGeneratorTest, SignedInProfile) {
   IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor(profile());
   auto expected_info =
       identity_test_env_adaptor.identity_test_env()->SetPrimaryAccount(
-          "test@mail.com");
+          "test@mail.com", signin::ConsentLevel::kSync);
   auto report = GenerateReport();
   EXPECT_TRUE(report->has_chrome_signed_in_user());
   EXPECT_EQ(expected_info.email, report->chrome_signed_in_user().email());
@@ -282,7 +282,7 @@ TEST_F(ProfileReportGeneratorTest, ExtensionRequestOnlyReport) {
   IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor(profile());
   auto expected_info =
       identity_test_env_adaptor.identity_test_env()->SetPrimaryAccount(
-          "test@mail.com");
+          "test@mail.com", signin::ConsentLevel::kSync);
 
   auto report = generator_.MaybeGenerate(profile()->GetPath(),
                                          profile()->GetProfileUserName(),
@@ -317,7 +317,7 @@ TEST_F(ProfileReportGeneratorTest, ExtensionRequestOnlyReportWithoutPolicy) {
   IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor(profile());
   auto expected_info =
       identity_test_env_adaptor.identity_test_env()->SetPrimaryAccount(
-          "test@mail.com");
+          "test@mail.com", signin::ConsentLevel::kSync);
 
   auto report = generator_.MaybeGenerate(profile()->GetPath(),
                                          profile()->GetProfileUserName(),
@@ -337,7 +337,7 @@ TEST_F(ProfileReportGeneratorTest,
   IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor(profile());
   auto expected_info =
       identity_test_env_adaptor.identity_test_env()->SetPrimaryAccount(
-          "test@mail.com");
+          "test@mail.com", signin::ConsentLevel::kSync);
 
   auto report = generator_.MaybeGenerate(profile()->GetPath(),
                                          profile()->GetProfileUserName(),

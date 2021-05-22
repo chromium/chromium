@@ -78,7 +78,8 @@ class ProfileSyncServiceStartupTest : public testing::Test {
 
   void SimulateTestUserSigninWithoutRefreshToken() {
     // Set the primary account *without* providing an OAuth token.
-    profile_sync_service_bundle_.identity_test_env()->SetPrimaryAccount(kEmail);
+    profile_sync_service_bundle_.identity_test_env()->SetPrimaryAccount(
+        kEmail, signin::ConsentLevel::kSync);
   }
 
   void UpdateCredentials() {

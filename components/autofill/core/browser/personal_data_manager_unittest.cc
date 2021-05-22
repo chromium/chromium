@@ -1408,7 +1408,8 @@ TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
   // Sign in.
-  identity_test_env_.SetPrimaryAccount("test@gmail.com");
+  identity_test_env_.SetPrimaryAccount("test@gmail.com",
+                                       signin::ConsentLevel::kSync);
   sync_service_.SetIsAuthenticatedAccountPrimary(true);
   sync_service_.SetActiveDataTypes(
       syncer::ModelTypeSet(syncer::AUTOFILL_WALLET_DATA));
@@ -7350,7 +7351,8 @@ TEST_F(PersonalDataManagerTest, UpdateClientValidityStates_Disabled) {
 TEST_F(PersonalDataManagerTest, GetAccountInfoForPaymentsServer) {
   // Make the IdentityManager return a non-empty AccountInfo when
   // GetPrimaryAccountInfo() is called.
-  identity_test_env_.SetPrimaryAccount(kPrimaryAccountEmail);
+  identity_test_env_.SetPrimaryAccount(kPrimaryAccountEmail,
+                                       signin::ConsentLevel::kSync);
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   // Make the sync service return a non-empty AccountInfo when
@@ -7729,7 +7731,8 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
 TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
   // Make a non-primary account available with both a refresh token and cookie
   // for the first few tests.
-  identity_test_env_.SetPrimaryAccount("test@gmail.com");
+  identity_test_env_.SetPrimaryAccount("test@gmail.com",
+                                       signin::ConsentLevel::kSync);
   sync_service_.SetIsAuthenticatedAccountPrimary(false);
   sync_service_.SetActiveDataTypes(
       syncer::ModelTypeSet(syncer::AUTOFILL_WALLET_DATA));
@@ -7895,7 +7898,8 @@ TEST_F(PersonalDataManagerTest, OnUserAcceptedUpstreamOffer) {
   ///////////////////////////////////////////////////////////
   // kSignedInAndSyncFeature
   ///////////////////////////////////////////////////////////
-  identity_test_env_.SetPrimaryAccount(active_info.email);
+  identity_test_env_.SetPrimaryAccount(active_info.email,
+                                       signin::ConsentLevel::kSync);
   sync_service_.SetIsAuthenticatedAccountPrimary(true);
   {
     EXPECT_EQ(AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled,

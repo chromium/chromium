@@ -60,7 +60,8 @@ TEST_F(SigninMetricsUtilsTest, MetricsNotRecordedWhenPrimaryAccountSet) {
   base::HistogramTester histogram_tester;
   identity_test_env_.MakeAccountAvailableWithCookies("defaultAccount@gmail.com",
                                                      gaia_ids_[0]);
-  identity_test_env_.SetPrimaryAccount("defaultAccount@gmail.com");
+  identity_test_env_.SetPrimaryAccount("defaultAccount@gmail.com",
+                                       signin::ConsentLevel::kSync);
 
   signin_metrics_utils::LogWebSignin(identity_test_env_.identity_manager(),
                                      gaia_ids_);

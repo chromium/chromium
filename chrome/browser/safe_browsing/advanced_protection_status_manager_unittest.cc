@@ -57,7 +57,8 @@ class AdvancedProtectionStatusManagerTest : public TestWithPrefService {
     AccountInfo account_info = identity_test_env_.MakeAccountAvailable(email);
 
     account_info.is_under_advanced_protection = is_under_advanced_protection;
-    identity_test_env_.SetPrimaryAccount(account_info.email);
+    identity_test_env_.SetPrimaryAccount(account_info.email,
+                                         signin::ConsentLevel::kSync);
     identity_test_env_.UpdateAccountInfoForAccount(account_info);
 
     return account_info.account_id;

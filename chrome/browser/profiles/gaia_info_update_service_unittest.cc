@@ -155,7 +155,8 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   AccountInfo info =
       identity_test_env()->MakeAccountAvailable("pat@example.com");
   base::RunLoop().RunUntilIdle();
-  identity_test_env()->SetPrimaryAccount(info.email);
+  identity_test_env()->SetPrimaryAccount(info.email,
+                                         signin::ConsentLevel::kSync);
   info = GetValidAccountInfo(info.email, info.account_id, "Pat", "Pat Foo",
                              kNoHostedDomainFound);
   signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
@@ -201,7 +202,8 @@ TEST_F(GAIAInfoUpdateServiceDiceTest, RevokeSyncConsent) {
   AccountInfo info =
       identity_test_env()->MakeAccountAvailable("pat@example.com");
   base::RunLoop().RunUntilIdle();
-  identity_test_env()->SetPrimaryAccount(info.email);
+  identity_test_env()->SetPrimaryAccount(info.email,
+                                         signin::ConsentLevel::kSync);
   info = GetValidAccountInfo(info.email, info.account_id, "Pat", "Pat Foo",
                              kNoHostedDomainFound);
   signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),

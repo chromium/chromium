@@ -93,7 +93,7 @@ class ProcessDiceHeaderDelegateImplTest
       InitializeIdentityTestEnvironment();
     if (is_primary) {
       identity_test_environment_profile_adaptor_->identity_test_env()
-          ->SetPrimaryAccount(email_);
+          ->SetPrimaryAccount(email_, signin::ConsentLevel::kSync);
     } else {
       identity_test_environment_profile_adaptor_->identity_test_env()
           ->MakeAccountAvailable(email_);

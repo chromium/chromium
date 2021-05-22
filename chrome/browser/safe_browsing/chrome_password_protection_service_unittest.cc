@@ -363,7 +363,8 @@ class ChromePasswordProtectionServiceTest
 
   CoreAccountInfo SetPrimaryAccount(const std::string& email) {
     identity_test_env()->MakeAccountAvailable(email);
-    return identity_test_env()->SetPrimaryAccount(email);
+    return identity_test_env()->SetPrimaryAccount(email,
+                                                  signin::ConsentLevel::kSync);
   }
 
   void SetUpSyncAccount(const std::string& hosted_domain,
@@ -770,7 +771,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
 TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPasswordReuseDetectedSecurityEventRecorded) {
-  identity_test_env()->SetPrimaryAccount(kTestEmail);
+  identity_test_env()->SetPrimaryAccount(kTestEmail,
+                                         signin::ConsentLevel::kSync);
   service_->set_username_for_last_shown_warning(kTestEmail);
   EXPECT_CALL(*security_event_recorder_, RecordGaiaPasswordReuse(_))
       .WillOnce(WithArg<0>([&](const auto& message) {

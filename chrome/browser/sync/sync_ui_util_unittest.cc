@@ -245,7 +245,7 @@ TEST(SyncUIUtilTest, UnrecoverableErrorWithActionableError) {
   syncer::TestSyncService service;
   signin::IdentityTestEnvironment environment;
 
-  environment.SetPrimaryAccount(kTestUser);
+  environment.SetPrimaryAccount(kTestUser, signin::ConsentLevel::kSync);
   service.SetFirstSetupComplete(true);
   service.SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
@@ -281,7 +281,7 @@ TEST(SyncUIUtilTest, ActionableErrorWithPassiveMessage) {
   syncer::TestSyncService service;
   signin::IdentityTestEnvironment environment;
 
-  environment.SetPrimaryAccount(kTestUser);
+  environment.SetPrimaryAccount(kTestUser, signin::ConsentLevel::kSync);
   service.SetFirstSetupComplete(true);
   service.SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
@@ -304,7 +304,7 @@ TEST(SyncUIUtilTest, SyncSettingsConfirmationNeededTest) {
   syncer::TestSyncService service;
   signin::IdentityTestEnvironment environment;
 
-  environment.SetPrimaryAccount(kTestUser);
+  environment.SetPrimaryAccount(kTestUser, signin::ConsentLevel::kSync);
   service.SetFirstSetupComplete(false);
   ASSERT_TRUE(ShouldRequestSyncConfirmation(&service));
 

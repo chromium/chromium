@@ -171,7 +171,8 @@ class ChromePasswordProtectionServiceTest : public ChromeWebTest {
 
   CoreAccountInfo SetPrimaryAccount(const std::string& email) {
     identity_test_env_.MakeAccountAvailable(email);
-    return identity_test_env_.SetPrimaryAccount(email);
+    return identity_test_env_.SetPrimaryAccount(email,
+                                                signin::ConsentLevel::kSync);
   }
 
   void SetUpSyncAccount(const std::string& hosted_domain,

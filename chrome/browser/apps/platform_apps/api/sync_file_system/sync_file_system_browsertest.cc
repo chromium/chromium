@@ -129,7 +129,7 @@ class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
   }
 
   void SignIn() {
-    identity_test_env_->SetPrimaryAccount(kEmail);
+    identity_test_env_->SetPrimaryAccount(kEmail, signin::ConsentLevel::kSync);
   }
 
   void SetSyncEnabled(bool enabled) {

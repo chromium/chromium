@@ -88,8 +88,8 @@ class PasswordManagerClientHelperTest : public testing::Test {
 
     ON_CALL(*client(), GetIdentityManager)
         .WillByDefault(Return(identity_test_environment()->identity_manager()));
-    identity_test_environment()->SetUnconsentedPrimaryAccount(
-        kGaiaAccountEmail);
+    identity_test_environment()->SetPrimaryAccount(
+        kGaiaAccountEmail, signin::ConsentLevel::kSignin);
   }
   ~PasswordManagerClientHelperTest() override = default;
 

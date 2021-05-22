@@ -328,7 +328,8 @@ TEST_F(SigninManagerTest,
 
   // Set the sync primary account to the second account in cookies.
   // The unconsented primary account should be updated.
-  identity_test_env()->SetPrimaryAccount(second_account.email);
+  identity_test_env()->SetPrimaryAccount(second_account.email,
+                                         signin::ConsentLevel::kSync);
   EXPECT_EQ(second_account,
             identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSync));
   EXPECT_EQ(1U, observer().events().size());

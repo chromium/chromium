@@ -416,7 +416,8 @@ class ExtensionWebstorePrivateApiTestChild
     // OAuth refresh tokens.
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_env_->MakeAccountAvailable(kTestChildEmail);
-    identity_test_env_->SetPrimaryAccount(kTestChildEmail);
+    identity_test_env_->SetPrimaryAccount(kTestChildEmail,
+                                          signin::ConsentLevel::kSync);
     identity_test_env_->SetRefreshTokenForPrimaryAccount();
     identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
   }

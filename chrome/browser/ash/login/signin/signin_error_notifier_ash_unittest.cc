@@ -104,7 +104,8 @@ TEST_F(SigninErrorNotifierTest, NoNotification) {
 TEST_F(SigninErrorNotifierTest, NoNotificationAfterAddSupervisionEnabled) {
   CoreAccountId account_id =
       identity_test_env()->MakeAccountAvailable(kTestEmail).account_id;
-  identity_test_env()->SetPrimaryAccount(kTestEmail);
+  identity_test_env()->SetPrimaryAccount(kTestEmail,
+                                         signin::ConsentLevel::kSync);
 
   // Mark signout required.
   SupervisedUserService* service =

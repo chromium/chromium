@@ -236,7 +236,8 @@ TEST_F(DiceWebSigninInterceptorTest, NoBubbleWithSingleAccount) {
   EXPECT_FALSE(interceptor()->ShouldShowMultiUserBubble(account_info));
 
   // With UPA.
-  identity_test_env()->SetUnconsentedPrimaryAccount("bob@example.com");
+  identity_test_env()->SetPrimaryAccount("bob@example.com",
+                                         signin::ConsentLevel::kSignin);
   EXPECT_FALSE(interceptor()->ShouldShowEnterpriseBubble(account_info));
 }
 
