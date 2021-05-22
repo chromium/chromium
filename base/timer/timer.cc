@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/record_replay.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/tick_clock.h"
@@ -171,6 +172,7 @@ void TimerBase::PostNewScheduledTask(TimeDelta delay) {
   is_running_ = true;
   scheduled_task_ = new BaseTimerTaskInternal(this);
   if (delay > TimeDelta::FromMicroseconds(0)) {
+    recordreplay::Assert("TimerBase::PostNewScheduledTask #1");
     // TODO(gab): Posting BaseTimerTaskInternal::Run to another sequence makes
     // this code racy. https://crbug.com/587199
     GetTaskRunner()->PostDelayedTask(
@@ -178,6 +180,7 @@ void TimerBase::PostNewScheduledTask(TimeDelta delay) {
         BindOnce(&BaseTimerTaskInternal::Run, Owned(scheduled_task_)), delay);
     scheduled_run_time_ = desired_run_time_ = Now() + delay;
   } else {
+    recordreplay::Assert("TimerBase::PostNewScheduledTask #2");
     GetTaskRunner()->PostTask(
         posted_from_,
         BindOnce(&BaseTimerTaskInternal::Run, Owned(scheduled_task_)));
