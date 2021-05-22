@@ -70,7 +70,6 @@ no_check_targets = [
   "//chrome/test:unit_tests__library",
   "//chrome/test:usage_time_limit_unittests",
   "//chrome/test:xr_browser_tests_common",
-  "//extensions/browser/api:*",  # 7 errors
   "//extensions/browser:*",  # 20 errors
   "//extensions:*",  # 75 errors
   "//headless:*",  # 167 errors
