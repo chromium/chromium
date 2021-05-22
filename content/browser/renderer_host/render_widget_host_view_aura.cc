@@ -765,11 +765,26 @@ void RenderWidgetHostViewAura::UpdateTooltip(
     const std::u16string& tooltip_text) {
   SetTooltipText(tooltip_text);
 
-  auto* tooltip_client = wm::GetTooltipClient(window_->GetRootWindow());
+  wm::TooltipClient* tooltip_client =
+      wm::GetTooltipClient(window_->GetRootWindow());
   if (tooltip_client) {
     // Content tooltips should be visible indefinitely.
     tooltip_client->SetHideTooltipTimeout(window_, {});
     tooltip_client->UpdateTooltip(window_);
+  }
+}
+
+void RenderWidgetHostViewAura::UpdateTooltipFromKeyboard(
+    const std::u16string& tooltip_text,
+    const gfx::Rect& bounds) {
+  SetTooltipText(tooltip_text);
+
+  wm::TooltipClient* tooltip_client =
+      wm::GetTooltipClient(window_->GetRootWindow());
+  if (tooltip_client) {
+    // Content tooltips should be visible indefinitely.
+    tooltip_client->SetHideTooltipTimeout(window_, {});
+    tooltip_client->UpdateTooltipFromKeyboard(bounds, window_);
   }
 }
 

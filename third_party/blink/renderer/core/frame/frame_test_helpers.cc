@@ -854,6 +854,11 @@ void TestWebFrameWidgetHost::UpdateTooltipUnderCursor(
     const String& tooltip_text,
     base::i18n::TextDirection text_direction_hint) {}
 
+void TestWebFrameWidgetHost::UpdateTooltipFromKeyboard(
+    const String& tooltip_text,
+    base::i18n::TextDirection text_direction_hint,
+    const gfx::Rect& bounds) {}
+
 void TestWebFrameWidgetHost::TextInputStateChanged(
     ui::mojom::blink::TextInputStatePtr state) {
   if (state->show_ime_if_needed)

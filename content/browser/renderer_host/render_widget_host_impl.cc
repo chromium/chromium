@@ -121,6 +121,7 @@
 #include "third_party/blink/public/mojom/page/drag.mojom.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/screen.h"
@@ -322,6 +323,37 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
     NOTREACHED() << "Input request on unbound interface";
   }
 };
+
+std::u16string GetWrappedTooltipText(
+    const std::u16string& tooltip_text,
+    base::i18n::TextDirection text_direction_hint) {
+  // First, add directionality marks around tooltip text if necessary.
+  // A naive solution would be to simply always wrap the text. However, on
+  // windows, Unicode directional embedding characters can't be displayed on
+  // systems that lack RTL fonts and are instead displayed as empty squares.
+  //
+  // To get around this we only wrap the string when we deem it necessary i.e.
+  // when the locale direction is different than the tooltip direction hint.
+  //
+  // Currently, we use element's directionality as the tooltip direction hint.
+  // An alternate solution would be to set the overall directionality based on
+  // trying to detect the directionality from the tooltip text rather than the
+  // element direction.  One could argue that would be a preferable solution
+  // but we use the current approach to match Fx & IE's behavior.
+  std::u16string wrapped_tooltip_text = tooltip_text;
+  if (!tooltip_text.empty()) {
+    if (text_direction_hint == base::i18n::LEFT_TO_RIGHT) {
+      // Force the tooltip to have LTR directionality.
+      wrapped_tooltip_text =
+          base::i18n::GetDisplayStringInLTRDirectionality(wrapped_tooltip_text);
+    } else if (text_direction_hint == base::i18n::RIGHT_TO_LEFT &&
+               !base::i18n::IsRTL()) {
+      // Force the tooltip to have RTL directionality.
+      base::i18n::WrapStringWithRTLFormatting(&wrapped_tooltip_text);
+    }
+  }
+  return wrapped_tooltip_text;
+}
 
 base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
     LAZY_INSTANCE_INITIALIZER;
@@ -2480,32 +2512,19 @@ void RenderWidgetHostImpl::UpdateTooltipUnderCursor(
   if (!GetView())
     return;
 
-  // First, add directionality marks around tooltip text if necessary.
-  // A naive solution would be to simply always wrap the text. However, on
-  // windows, Unicode directional embedding characters can't be displayed on
-  // systems that lack RTL fonts and are instead displayed as empty squares.
-  //
-  // To get around this we only wrap the string when we deem it necessary i.e.
-  // when the locale direction is different than the tooltip direction hint.
-  //
-  // Currently, we use element's directionality as the tooltip direction hint.
-  // An alternate solution would be to set the overall directionality based on
-  // trying to detect the directionality from the tooltip text rather than the
-  // element direction.  One could argue that would be a preferable solution
-  // but we use the current approach to match Fx & IE's behavior.
-  std::u16string wrapped_tooltip_text = tooltip_text;
-  if (!tooltip_text.empty()) {
-    if (text_direction_hint == base::i18n::LEFT_TO_RIGHT) {
-      // Force the tooltip to have LTR directionality.
-      wrapped_tooltip_text =
-          base::i18n::GetDisplayStringInLTRDirectionality(wrapped_tooltip_text);
-    } else if (text_direction_hint == base::i18n::RIGHT_TO_LEFT &&
-               !base::i18n::IsRTL()) {
-      // Force the tooltip to have RTL directionality.
-      base::i18n::WrapStringWithRTLFormatting(&wrapped_tooltip_text);
-    }
-  }
-  view_->UpdateTooltipUnderCursor(wrapped_tooltip_text);
+  view_->UpdateTooltipUnderCursor(
+      GetWrappedTooltipText(tooltip_text, text_direction_hint));
+}
+
+void RenderWidgetHostImpl::UpdateTooltipFromKeyboard(
+    const std::u16string& tooltip_text,
+    base::i18n::TextDirection text_direction_hint,
+    const gfx::Rect& bounds) {
+  if (!GetView())
+    return;
+
+  view_->UpdateTooltipFromKeyboard(
+      GetWrappedTooltipText(tooltip_text, text_direction_hint), bounds);
 }
 
 void RenderWidgetHostImpl::OnUpdateScreenRectsAck() {

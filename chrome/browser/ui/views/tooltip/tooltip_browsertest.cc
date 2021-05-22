@@ -12,9 +12,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/native_widget_types.h"
@@ -24,6 +26,7 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
+using content::RenderFrameHost;
 using content::RenderWidgetHostView;
 using content::WebContents;
 using views::corewm::TooltipAura;
@@ -109,10 +112,27 @@ class TooltipBrowserTest : public InProcessBrowserTest {
   void NavigateToURL(const std::string& relative_url) {
     ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL("a.com", relative_url));
-    rwhv_ = browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetRenderWidgetHostView();
+    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
+    rwhv_ = web_contents_->GetRenderWidgetHostView();
+    content::WaitForHitTestData(web_contents_->GetMainFrame());
+  }
+
+  void LoadCrossSitePageIntoFrame(const std::string& relative_url,
+                                  const std::string& iframe_id) {
+    // This function makes the iframe in the web page point to a different
+    // origin, making it an OOPIF.
+    GURL frame_url(embedded_test_server()->GetURL("b.com", relative_url));
+    NavigateIframeToURL(web_contents_, iframe_id, frame_url);
+
+    // Verify that the child frame is an OOPIF with a different SiteInstance.
+    RenderFrameHost* child = GetChildRenderFrameHost(0);
+    EXPECT_NE(web_contents_->GetSiteInstance(), child->GetSiteInstance());
+    EXPECT_TRUE(child->IsCrossProcessSubframe());
+    content::WaitForHitTestData(child);
+  }
+
+  RenderFrameHost* GetChildRenderFrameHost(size_t index) {
+    return ChildFrameAt(web_contents_->GetMainFrame(), index);
   }
 
   bool SkipTestForOldWinVersion() const {
@@ -148,12 +168,14 @@ class TooltipBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_ = nullptr;
   RenderWidgetHostView* rwhv_ = nullptr;
+  WebContents* web_contents_ = nullptr;
 
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<TooltipWidgetMonitor> tooltip_monitor_ = nullptr;
 };  // class TooltipBrowserTest
 
-IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, ShowTooltipFromWebContent) {
+IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
+                       ShowTooltipFromWebContentWithCursor) {
   if (SkipTestForOldWinVersion())
     return;
 
@@ -170,9 +192,66 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, ShowTooltipFromWebContent) {
   EXPECT_EQ(expected_text, helper()->GetTooltipText());
 
   helper()->HideAndReset();
+}
 
-  // TODO(bebeaudr): Trigger a tooltip by setting focus with the keyboard on
-  // that web content button.
+IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
+                       ShowTooltipFromWebContentWithKeyboard) {
+  if (SkipTestForOldWinVersion())
+    return;
+
+  NavigateToURL("/tooltip.html");
+  std::u16string expected_text = u"my tooltip";
+
+  // Trigger the tooltip from the keyboard with a TAB keypress.
+  event_generator()->PressKey(ui::VKEY_TAB, ui::EF_NONE);
+  event_generator()->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  tooltip_monitor()->WaitUntilTooltipShown();
+  EXPECT_TRUE(helper()->IsTooltipVisible());
+  EXPECT_EQ(expected_text, helper()->GetTooltipText());
+
+  helper()->HideAndReset();
+}
+
+IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, ShowTooltipFromIFrameWithKeyboard) {
+  if (SkipTestForOldWinVersion())
+    return;
+
+  // There are two tooltips in this file: one above the iframe and one inside
+  // the iframe.
+  NavigateToURL("/tooltip_in_iframe.html");
+  std::u16string expected_text = u"my tooltip";
+
+  // Make the iframe cross-origin.
+  LoadCrossSitePageIntoFrame("/tooltip.html", "iframe1");
+
+  // Move the focus to the button outside of the iframe to get its position.
+  // We'll use it in the next step to validate that the tooltip associated with
+  // the button inside of the iframe is positioned, well, inside the iframe.
+  event_generator()->PressKey(ui::VKEY_TAB, ui::EF_NONE);
+  event_generator()->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  tooltip_monitor()->WaitUntilTooltipShown();
+  EXPECT_TRUE(helper()->IsTooltipVisible());
+  EXPECT_EQ(expected_text, helper()->GetTooltipText());
+  gfx::Point first_tooltip_anchor_point = helper()->GetTooltipPosition();
+
+  // Now that we have the anchor point of the first tooltip, move the focus to
+  // the tooltip inside of the iframe.
+  event_generator()->PressKey(ui::VKEY_TAB, ui::EF_NONE);
+  event_generator()->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  tooltip_monitor()->WaitUntilTooltipShown();
+  EXPECT_TRUE(helper()->IsTooltipVisible());
+  EXPECT_EQ(expected_text, helper()->GetTooltipText());
+
+  // Validate that the tooltip is correctly positioned inside the iframe.
+  // Because we explicitly removed the iframe's borders and body margins, the
+  // buttons should be positioned at the exact same x value as the button above,
+  // and at exactly twice the y value as the one outside the iframe (because the
+  // tooltip's anchor point is at the bottom-center of the button).
+  int expected_y = 2 * first_tooltip_anchor_point.y();
+  EXPECT_EQ(gfx::Point(first_tooltip_anchor_point.x(), expected_y),
+            helper()->GetTooltipPosition());
+
+  helper()->HideAndReset();
 }
 
 IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, HideTooltipOnKeyPress) {
@@ -191,9 +270,23 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, HideTooltipOnKeyPress) {
 
   // Second, send a key press event to test whether the tooltip gets hidden.
   EXPECT_TRUE(tooltip_monitor()->IsWidgetActive());
-  event_generator()->PressKey(ui::VKEY_A, 0);
+  event_generator()->PressKey(ui::VKEY_A, ui::EF_NONE);
+  event_generator()->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
   tooltip_monitor()->WaitUntilTooltipClosed();
   EXPECT_FALSE(helper()->IsTooltipVisible());
 
-  // TODO(bebeaudr): Also try it with a keyboard triggered tooltip.
+  // Try the same thing with a keyboard-triggered tooltip.
+  // Trigger the tooltip from the keyboard with a TAB keypress.
+  event_generator()->PressKey(ui::VKEY_TAB, ui::EF_NONE);
+  event_generator()->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  tooltip_monitor()->WaitUntilTooltipShown();
+  EXPECT_TRUE(helper()->IsTooltipVisible());
+  EXPECT_EQ(expected_text, helper()->GetTooltipText());
+
+  // Send a key press event to test whether the tooltip gets hidden.
+  EXPECT_TRUE(tooltip_monitor()->IsWidgetActive());
+  event_generator()->PressKey(ui::VKEY_A, ui::EF_NONE);
+  event_generator()->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  tooltip_monitor()->WaitUntilTooltipClosed();
+  EXPECT_FALSE(helper()->IsTooltipVisible());
 }

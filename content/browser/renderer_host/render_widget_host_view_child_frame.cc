@@ -417,6 +417,23 @@ void RenderWidgetHostViewChildFrame::UpdateTooltipUnderCursor(
     root_view->UpdateTooltip(tooltip_text);
 }
 
+void RenderWidgetHostViewChildFrame::UpdateTooltipFromKeyboard(
+    const std::u16string& tooltip_text,
+    const gfx::Rect& bounds) {
+  if (!frame_connector_)
+    return;
+
+  auto* root_view = frame_connector_->GetRootRenderWidgetHostView();
+  if (!root_view)
+    return;
+
+  // TODO(bebeaudr): Keyboard-triggered tooltips are not positioned correctly
+  // when set for an element in an OOPIF. See https://crbug.com/1210269.
+  gfx::Rect adjusted_bounds(TransformPointToRootCoordSpace(bounds.origin()),
+                            bounds.size());
+  root_view->UpdateTooltipFromKeyboard(tooltip_text, adjusted_bounds);
+}
+
 RenderWidgetHostViewBase* RenderWidgetHostViewChildFrame::GetParentView() {
   if (!frame_connector_)
     return nullptr;

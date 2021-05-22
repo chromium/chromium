@@ -187,6 +187,12 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   WidgetBaseClient* client() { return client_; }
 
   void UpdateTooltipUnderCursor(const String& tooltip_text, TextDirection dir);
+  // This function allows us to trigger a tooltip to show from a keypress. The
+  // tooltip will be positioned relative to the gfx::Rect. That rect corresponds
+  // to the focused element's bounds in widget-relative DIPS.
+  void UpdateTooltipFromKeyboard(const String& tooltip_text,
+                                 TextDirection dir,
+                                 const gfx::Rect& bounds);
 
   // Posts a task with the given delay, then calls ScheduleAnimation() on the
   // WidgetBaseClient.

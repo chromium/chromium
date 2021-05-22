@@ -186,6 +186,9 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
     void SetCursor(const ui::Cursor& cursor) override;
     void UpdateTooltipUnderCursor(const std::u16string& tooltip_text,
                                   base::i18n::TextDirection hint) override;
+    void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
+                                   base::i18n::TextDirection hint,
+                                   const gfx::Rect& bounds) override;
     void TextInputStateChanged(ui::mojom::TextInputStatePtr state) override {}
     void SelectionBoundsChanged(const gfx::Rect& anchor_rect,
                                 base::i18n::TextDirection anchor_dir,
@@ -202,6 +205,10 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
             render_frame_metadata_observer_client_receiver,
         mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver>
             render_frame_metadata_observer) override {}
+
+    // This function sets the "title" attribute to the text value passed by
+    // parameter on the container's element, if possible.
+    void UpdateTooltip(const std::u16string& tooltip_text);
 
    private:
     WebViewPlugin* plugin_;

@@ -3086,6 +3086,12 @@ void WebFrameWidgetImpl::UpdateTooltipUnderCursor(const String& tooltip_text,
   widget_base_->UpdateTooltipUnderCursor(tooltip_text, dir);
 }
 
+void WebFrameWidgetImpl::UpdateTooltipFromKeyboard(const String& tooltip_text,
+                                                   TextDirection dir,
+                                                   const gfx::Rect& bounds) {
+  widget_base_->UpdateTooltipFromKeyboard(tooltip_text, dir, bounds);
+}
+
 void WebFrameWidgetImpl::DidOverscroll(
     const gfx::Vector2dF& overscroll_delta,
     const gfx::Vector2dF& accumulated_overscroll,

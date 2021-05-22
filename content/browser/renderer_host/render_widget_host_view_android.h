@@ -139,6 +139,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void RenderProcessGone() override;
   void Destroy() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
+  void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
+                                 const gfx::Rect& bounds) override;
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInRootWindow() override;
   void ProcessAckedTouchEvent(

@@ -455,6 +455,13 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // An empty string will clear a visible tooltip.
   virtual void UpdateTooltip(const std::u16string& tooltip_text) {}
 
+  // Updates the tooltip text and its position and displays the requested
+  // tooltip on the screen. The |bounds| parameter corresponds to the bounds of
+  // the renderer-side element (in widget-relative DIPS) on which the tooltip
+  // should appear to be anchored.
+  virtual void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
+                                         const gfx::Rect& bounds) {}
+
   // Transforms |point| to be in the coordinate space of browser compositor's
   // surface. This is in DIP.
   virtual void TransformPointToRootSurface(gfx::PointF* point);

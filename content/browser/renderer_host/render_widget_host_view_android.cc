@@ -1083,6 +1083,12 @@ void RenderWidgetHostViewAndroid::UpdateTooltipUnderCursor(
   // Tooltips don't make sense on Android.
 }
 
+void RenderWidgetHostViewAndroid::UpdateTooltipFromKeyboard(
+    const std::u16string& tooltip_text,
+    const gfx::Rect& bounds) {
+  // Tooltips don't makes sense on Android.
+}
+
 void RenderWidgetHostViewAndroid::UpdateBackgroundColor() {
   DCHECK(RenderWidgetHostViewBase::GetBackgroundColor());
 

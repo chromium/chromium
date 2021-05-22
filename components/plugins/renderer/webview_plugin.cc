@@ -310,6 +310,18 @@ WebViewPlugin::WebViewHelper::~WebViewHelper() {
 void WebViewPlugin::WebViewHelper::UpdateTooltipUnderCursor(
     const std::u16string& tooltip_text,
     base::i18n::TextDirection hint) {
+  UpdateTooltip(tooltip_text);
+}
+
+void WebViewPlugin::WebViewHelper::UpdateTooltipFromKeyboard(
+    const std::u16string& tooltip_text,
+    base::i18n::TextDirection hint,
+    const gfx::Rect& bounds) {
+  UpdateTooltip(tooltip_text);
+}
+
+void WebViewPlugin::WebViewHelper::UpdateTooltip(
+    const std::u16string& tooltip_text) {
   if (plugin_->container_) {
     plugin_->container_->GetElement().SetAttribute(
         "title", WebString::FromUTF16(tooltip_text));

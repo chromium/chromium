@@ -567,7 +567,9 @@ void ChromeClientImpl::UpdateTooltipFromKeyboard(LocalFrame& frame,
   if (!RuntimeEnabledFeatures::KeyboardAccessibleTooltipEnabled())
     return;
 
-  // TODO(bebeaudr): Add WidgetHost function and call it here.
+  WebLocalFrameImpl::FromFrame(frame)
+      ->LocalRootFrameWidget()
+      ->UpdateTooltipFromKeyboard(tooltip_text, dir, bounds);
 }
 
 void ChromeClientImpl::DispatchViewportPropertiesDidChange(

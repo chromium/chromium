@@ -131,6 +131,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void Destroy() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
   void UpdateTooltip(const std::u16string& tooltip_text) override;
+  void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
+                                 const gfx::Rect& bounds) override;
   uint32_t GetCaptureSequenceNumber() const override;
   bool IsSurfaceAvailableForCopy() override;
   void CopyFromSurface(

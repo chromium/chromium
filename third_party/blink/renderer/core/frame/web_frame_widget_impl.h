@@ -496,6 +496,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetWindowRectSynchronouslyForTesting(const gfx::Rect& new_window_rect);
 
   void UpdateTooltipUnderCursor(const String& tooltip_text, TextDirection dir);
+  void UpdateTooltipFromKeyboard(const String& tooltip_text,
+                                 TextDirection dir,
+                                 const gfx::Rect& bounds);
 
   void ShowVirtualKeyboardOnElementFocus();
   void ProcessTouchAction(WebTouchAction touch_action);

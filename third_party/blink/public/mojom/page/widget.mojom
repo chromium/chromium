@@ -245,6 +245,13 @@ interface WidgetHost {
   UpdateTooltipUnderCursor(mojo_base.mojom.String16 tooltip_text,
                            mojo_base.mojom.TextDirection text_direction_hint);
 
+  // Sent by a widget to the browser to set the tooltip text and trigger a
+  // tooltip to show up, aligned with the bounds (in widget-relative DIPS)
+  // passed by parameter. An empty |tooltip_text| will hide the tooltip view.
+  UpdateTooltipFromKeyboard(mojo_base.mojom.String16 tooltip_text,
+                            mojo_base.mojom.TextDirection text_direction_hint,
+                            gfx.mojom.Rect bounds);
+
   // Sent when the text input state is changed. This usually happens when
   // a text input entry is focused.
   TextInputStateChanged(ui.mojom.TextInputState state);

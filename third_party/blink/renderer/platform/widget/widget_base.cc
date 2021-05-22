@@ -822,6 +822,14 @@ void WidgetBase::UpdateTooltipUnderCursor(const String& tooltip_text,
       tooltip_text.IsEmpty() ? "" : tooltip_text, ToBaseTextDirection(dir));
 }
 
+void WidgetBase::UpdateTooltipFromKeyboard(const String& tooltip_text,
+                                           TextDirection dir,
+                                           const gfx::Rect& bounds) {
+  widget_host_->UpdateTooltipFromKeyboard(
+      tooltip_text.IsEmpty() ? "" : tooltip_text, ToBaseTextDirection(dir),
+      BlinkSpaceToEnclosedDIPs(bounds));
+}
+
 void WidgetBase::ShowVirtualKeyboard() {
   UpdateTextInputStateInternal(true, false);
 }
