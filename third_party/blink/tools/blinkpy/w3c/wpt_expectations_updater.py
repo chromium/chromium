@@ -151,12 +151,6 @@ class WPTExpectationsUpdater(object):
             help='Adds Pass to tests with failure expectations. '
                  'This command line argument can be used to mark tests '
                  'as flaky.')
-        parser.add_argument(
-            '--rebaseline-blink-try-bots-only',
-            action='store_true',
-            help='When set, only rebaselines using the results from blink-rel '
-            'trybots, and ignores CQ bots. By default, both CQ and blink '
-            'bots are used.')
 
     def update_expectations(self):
         """Downloads text new baselines and adds test expectations lines.
@@ -1017,9 +1011,6 @@ class WPTExpectationsUpdater(object):
             '--no-trigger-jobs',
             '--fill-missing',
         ]
-        if self.options.rebaseline_blink_try_bots_only:
-            command.append('--use-blink-try-bots-only')
-
         if self.patchset:
             command.append('--patchset=' + str(self.patchset))
         command += tests_to_rebaseline
@@ -1076,11 +1067,5 @@ class WPTExpectationsUpdater(object):
 
     @memoized
     def _get_try_bots(self):
-        builder_set = frozenset(
-            self.host.builders.filter_builders(is_try=True,
-                                               exclude_specifiers={'android'}))
-        # Omit the CQ bots if we are only using data from blink trybots.
-        if self.options.rebaseline_blink_try_bots_only:
-            builder_set -= frozenset(
-                self.host.builders.all_cq_try_builder_names())
-        return list(builder_set)
+        return self.host.builders.filter_builders(
+            is_try=True, exclude_specifiers={'android'})
