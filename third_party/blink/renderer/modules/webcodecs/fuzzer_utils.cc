@@ -201,7 +201,7 @@ AudioData* MakeAudioData(ScriptState* script_state,
       proto.channels().size() > media::limits::kMaxChannels)
     return nullptr;
 
-  if (proto.length() > media::limits::kMaxSamplesPerPacket)
+  if (!proto.length() || proto.length() > media::limits::kMaxSamplesPerPacket)
     return nullptr;
 
   auto bus = AudioBus::Create(proto.channels().size(), proto.length());
