@@ -199,8 +199,8 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   EScrollbarWidth CSSScrollbarWidth() const;
 
   // The Element that supplies our style information. If the scrollbar is
-  // for a document, this is either the <body> or <html> element. Otherwise, it
-  // is the element that owns our PaintLayerScrollableArea.
+  // for a document, this returns nullptr. Otherwise, it is the element that
+  // owns our PaintLayerScrollableArea.
   Element* StyleSource() const { return style_source_.Get(); }
 
   mojom::blink::ColorScheme UsedColorScheme() const;
