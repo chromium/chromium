@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -173,7 +174,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
         if (success) {
             if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
-                if (mTabModelSelectorSupplier.hasValue()
+                if (TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()
+                        && mTabModelSelectorSupplier.hasValue()
                         && mTabModelSelectorSupplier.get()
                                         .getTabModelFilterProvider()
                                         .getCurrentTabModelFilter()
@@ -182,6 +184,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                                 == 2) {
                     RecordUserAction.record("TabGroup.Created.DeveloperRequestedNewTab");
                 }
+                RecordUserAction.record("LinkNavigationOpenedInForegroundTab");
             } else if (disposition == WindowOpenDisposition.NEW_POPUP) {
                 PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
                 auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),

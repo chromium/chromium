@@ -13862,6 +13862,7 @@ Called by update_net_error_codes.py.-->
   <int value="36" label="Share an highlighted text"/>
   <int value="37" label="Remove an highlighted text"/>
   <int value="38" label="Learn more about the shared highlighting feature"/>
+  <int value="39" label="Open in new tab in group"/>
 </enum>
 
 <enum name="ContextMenuOptionDesktop">
@@ -71065,6 +71066,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Secure with policy-installed certificate"/>
   <int value="5" label="Dangerous"/>
   <int value="6" label="Warning"/>
+</enum>
+
+<enum name="SelectedNewTabCreationOption">
+  <int value="0" label="Open in new tab is first, selected open in new tab"/>
+  <int value="1"
+      label="Open in new tab is first, selected open new tab in group"/>
+  <int value="2"
+      label="Open new tab in group is first, selected open in new tab"/>
+  <int value="3"
+      label="Open new tab in group is first, selected open new tab in group"/>
 </enum>
 
 <enum name="SelectFileDialogContent">
