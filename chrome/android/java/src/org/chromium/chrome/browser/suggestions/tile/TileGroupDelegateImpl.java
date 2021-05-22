@@ -65,7 +65,19 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
             recordOpenedTile(item);
         }
 
-        mNavigationDelegate.navigateToSuggestionUrl(windowDisposition, url);
+        mNavigationDelegate.navigateToSuggestionUrl(windowDisposition, url, false);
+        QueryTileUtils.onMostVisitedTileClicked();
+    }
+
+    @Override
+    public void openMostVisitedItemInGroup(int windowDisposition, Tile item) {
+        assert !mIsDestroyed;
+
+        String url = item.getUrl().getSpec();
+
+        recordOpenedTile(item);
+
+        mNavigationDelegate.navigateToSuggestionUrl(windowDisposition, url, true);
         QueryTileUtils.onMostVisitedTileClicked();
     }
 

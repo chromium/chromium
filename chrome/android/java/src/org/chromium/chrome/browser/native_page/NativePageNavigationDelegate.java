@@ -39,4 +39,11 @@ public interface NativePageNavigationDelegate {
      */
     @Nullable
     Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams);
+
+    /**
+     * Opens an URL with the desired disposition in a tab in group.
+     * @return The tab where the URL is being loaded.
+     */
+    @Nullable
+    Tab openUrlInGroup(int windowOpenDisposition, LoadUrlParams loadUrlParams);
 }

@@ -111,6 +111,12 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
         }
 
         @Override
+        public void openItemInGroup(int windowDisposition) {
+            mNavigationDelegate.openUrlInGroup(
+                    windowDisposition, new LoadUrlParams(getUrl(), PageTransition.AUTO_BOOKMARK));
+        }
+
+        @Override
         public void removeItem() {
             // Update the database on the C++ side.
             ExploreSitesBridge.blockSite(mProfile, mSiteUrl.getSpec());
