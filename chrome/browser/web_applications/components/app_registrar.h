@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -103,6 +104,8 @@ class AppRegistrar {
   virtual blink::mojom::CaptureLinks GetAppCaptureLinks(
       const AppId& app_id) const = 0;
   virtual const apps::FileHandlers* GetAppFileHandlers(
+      const AppId& app_id) const = 0;
+  virtual const apps::ProtocolHandlers* GetAppProtocolHandlers(
       const AppId& app_id) const = 0;
   virtual bool IsAppFileHandlerPermissionBlocked(const AppId& app_id) const = 0;
 

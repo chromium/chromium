@@ -146,6 +146,8 @@ class OsIntegrationManager {
                                                     const GURL& protocol_url);
   virtual std::vector<ProtocolHandler> GetHandlersForProtocol(
       const std::string& protocol);
+  virtual std::vector<ProtocolHandler> GetAppProtocolHandlers(
+      const AppId& app_id);
 
   // Getter for testing FileHandlerManager
   FileHandlerManager& file_handler_manager_for_testing();
@@ -238,7 +240,9 @@ class OsIntegrationManager {
   virtual void UnregisterFileHandlers(const AppId& app_id,
                                       std::unique_ptr<ShortcutInfo> info,
                                       base::OnceCallback<void(bool)> callback);
-  virtual void UnregisterProtocolHandlers(const AppId& app_id);
+  virtual void UnregisterProtocolHandlers(
+      const AppId& app_id,
+      base::OnceCallback<void(bool)> callback);
   virtual void UnregisterUrlHandlers(const AppId& app_id);
   virtual void UnregisterWebAppOsUninstallation(const AppId& app_id);
 
@@ -250,6 +254,7 @@ class OsIntegrationManager {
       const AppId& app_id,
       FileHandlerUpdateAction file_handlers_need_os_update,
       std::unique_ptr<ShortcutInfo> info);
+  virtual void UpdateProtocolHandlers(const AppId& app_id);
 
   // Utility methods:
   virtual std::unique_ptr<ShortcutInfo> BuildShortcutInfo(const AppId& app_id);

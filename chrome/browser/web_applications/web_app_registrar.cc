@@ -152,6 +152,12 @@ const apps::FileHandlers* WebAppRegistrar::GetAppFileHandlers(
   return web_app ? &web_app->file_handlers() : nullptr;
 }
 
+const apps::ProtocolHandlers* WebAppRegistrar::GetAppProtocolHandlers(
+    const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? &web_app->protocol_handlers() : nullptr;
+}
+
 bool WebAppRegistrar::IsAppFileHandlerPermissionBlocked(
     const web_app::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);

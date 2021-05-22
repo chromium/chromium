@@ -23,10 +23,12 @@ void RegisterProtocolHandlersWithOs(
 }
 
 // Unregisters protocol handlers for a web app with the OS.
-//
-// TODO(crbug.com/1174805): Add a callback as part of the protocol handling
-// unregistration flow.
-void UnregisterProtocolHandlersWithOs(const AppId& app_id, Profile* profile) {}
+void UnregisterProtocolHandlersWithOs(const AppId& app_id,
+                                      Profile* profile,
+                                      base::OnceCallback<void(bool)> callback) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
+}
 #endif
 
 }  // namespace web_app

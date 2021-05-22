@@ -242,10 +242,14 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
   AddAndVerifyProtocolAssociations(kApp1Id, kApp1Name, kApp1Url, profile2,
                                    " (Profile 2)");
 
-  UnregisterProtocolHandlersWithOs(kApp1Id, GetProfile());
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  base::RunLoop().RunUntilIdle();
-  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::RunLoop run_loop;
+  UnregisterProtocolHandlersWithOs(
+      kApp1Id, GetProfile(), base::BindLambdaForTesting([&](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
   EXPECT_FALSE(base::PathExists(app_specific_launcher_path));
 
   // Verify that "(Profile 2)" was removed from the web app launcher and
@@ -282,9 +286,13 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
       ShellUtil::GetApplicationPathForProgId(
           GetProgIdForApp(GetProfile()->GetPath(), kApp1Id));
 
-  UnregisterProtocolHandlersWithOs(kApp1Id, GetProfile());
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  UnregisterProtocolHandlersWithOs(
+      kApp1Id, GetProfile(), base::BindLambdaForTesting([&](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 
   EXPECT_FALSE(base::PathExists(app_specific_launcher_path));
   EXPECT_FALSE(ProgIdRegisteredForProtocol("mailto", kApp1Id, GetProfile()));

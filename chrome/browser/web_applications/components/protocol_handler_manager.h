@@ -58,7 +58,8 @@ class ProtocolHandlerManager {
       base::OnceCallback<void(bool)> callback);
 
   // Unregisters OS specific protocol handlers for an app.
-  void UnregisterOsProtocolHandlers(const AppId& app_id);
+  void UnregisterOsProtocolHandlers(const AppId& app_id,
+                                    base::OnceCallback<void(bool)> callback);
 
   AppRegistrar* app_registrar_;
 

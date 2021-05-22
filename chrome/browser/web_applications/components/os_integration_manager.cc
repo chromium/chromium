@@ -220,10 +220,10 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
         barrier->CreateBarrierCallbackForType(OsHookType::kFileHandlers));
   }
 
-  // TODO(https://crbug.com/1108109) we should return the result of protocol
-  // handler unregistration and record errors during unregistration.
-  if (os_hooks[OsHookType::kProtocolHandlers])
-    UnregisterProtocolHandlers(app_id);
+  if (os_hooks[OsHookType::kProtocolHandlers]) {
+    UnregisterProtocolHandlers(app_id, barrier->CreateBarrierCallbackForType(
+                                           OsHookType::kProtocolHandlers));
+  }
 
   if (os_hooks[OsHookType::kUrlHandlers])
     UnregisterUrlHandlers(app_id);
@@ -249,6 +249,7 @@ void OsIntegrationManager::UpdateOsHooks(
   UpdateShortcuts(app_id, old_name);
   UpdateShortcutsMenu(app_id, web_app_info);
   UpdateUrlHandlers(app_id, base::DoNothing());
+  UpdateProtocolHandlers(app_id);
 }
 
 void OsIntegrationManager::GetAppExistingShortCutLocation(
@@ -320,6 +321,14 @@ std::vector<ProtocolHandler> OsIntegrationManager::GetHandlersForProtocol(
     return std::vector<ProtocolHandler>();
 
   return protocol_handler_manager_->GetHandlersFor(protocol);
+}
+
+std::vector<ProtocolHandler> OsIntegrationManager::GetAppProtocolHandlers(
+    const AppId& app_id) {
+  if (!protocol_handler_manager_)
+    return std::vector<ProtocolHandler>();
+
+  return protocol_handler_manager_->GetAppProtocolHandlers(app_id);
 }
 
 FileHandlerManager& OsIntegrationManager::file_handler_manager_for_testing() {
@@ -508,13 +517,16 @@ void OsIntegrationManager::UnregisterFileHandlers(
       app_id, std::move(info), std::move(callback));
 }
 
-void OsIntegrationManager::UnregisterProtocolHandlers(const AppId& app_id) {
-  if (!protocol_handler_manager_)
+void OsIntegrationManager::UnregisterProtocolHandlers(
+    const AppId& app_id,
+    base::OnceCallback<void(bool)> callback) {
+  if (!protocol_handler_manager_) {
+    std::move(callback).Run(true);
     return;
+  }
 
-  // TODO(https://crbug.com/1019239) Make this take a callback, and return bool
-  // success or a single/list of enum errors.
-  protocol_handler_manager_->UnregisterOsProtocolHandlers(app_id);
+  protocol_handler_manager_->UnregisterOsProtocolHandlers(app_id,
+                                                          std::move(callback));
 }
 
 void OsIntegrationManager::UnregisterUrlHandlers(const AppId& app_id) {
@@ -609,6 +621,31 @@ void OsIntegrationManager::UpdateFileHandlersWithShortcutInfo(
       base::BindOnce(&OsIntegrationManager::UnregisterFileHandlers,
                      weak_ptr_factory_.GetWeakPtr(), app_id, std::move(info),
                      std::move(callback_after_removal)));
+}
+
+void OsIntegrationManager::UpdateProtocolHandlers(const AppId& app_id) {
+  if (!protocol_handler_manager_)
+    return;
+
+  // Update protocol handlers via complete uninstallation, then reinstallation.
+  base::OnceCallback<void(bool)> callback = base::BindOnce(
+      [](base::WeakPtr<OsIntegrationManager> os_integration_manager,
+         const AppId& app_id, bool unregister_success) {
+        // Re-register protocol handlers regardless of `unregister_success`.
+        // TODO(https://crbug.com/1019239): Report `unregister_success` in
+        // an UMA metric.
+        if (!os_integration_manager)
+          return;
+        os_integration_manager->RegisterProtocolHandlers(
+            app_id, base::DoNothing::Once<bool>());
+      },
+      weak_ptr_factory_.GetWeakPtr(), app_id);
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OsIntegrationManager::UnregisterProtocolHandlers,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(callback)));
 }
 
 std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(

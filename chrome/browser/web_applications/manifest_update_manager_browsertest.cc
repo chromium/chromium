@@ -2574,4 +2574,179 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
 }
 #endif
 
+class ManifestUpdateManagerBrowserTestWithProtocolHandling
+    : public ManifestUpdateManagerBrowserTest {
+ public:
+  ManifestUpdateManagerBrowserTestWithProtocolHandling() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppEnableProtocolHandlers);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
+                       CheckFindsAddedProtocolHandler) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "icons": $1
+    }
+  )";
+
+  constexpr char kProtocolHandlerManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "protocol_handlers": [
+        {
+          "protocol": "mailto",
+          "url": "?mailto=%s"
+        }
+      ],
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  OverrideManifest(kProtocolHandlerManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(GetAppURL(), &app_id));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+
+  const WebApp* web_app =
+      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  EXPECT_FALSE(web_app->protocol_handlers().empty());
+  const auto& protocol_handler = web_app->protocol_handlers()[0];
+  EXPECT_EQ("mailto", protocol_handler.protocol);
+  EXPECT_EQ(http_server_.GetURL("/banners/manifest.json?mailto=%s"),
+            protocol_handler.url.spec());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
+                       CheckIgnoresUnchangedProtocolHandler) {
+  constexpr char kProtocolHandlerManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "protocol_handlers": [
+        {
+          "protocol": "mailto",
+          "url": "?mailto=%s"
+        }
+      ],
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kProtocolHandlerManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  OverrideManifest(kProtocolHandlerManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpToDate,
+            GetResultAfterPageLoad(GetAppURL(), &app_id));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpToDate, 1);
+
+  const WebApp* web_app =
+      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  EXPECT_FALSE(web_app->protocol_handlers().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
+                       CheckFindsChangedProtocolHandler) {
+  constexpr char kProtocolHandlerManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "protocol_handlers": [
+        {
+          "protocol": "$1",
+          "url": "?$2=%s"
+        }
+      ],
+      "icons": $3
+    }
+  )";
+
+  OverrideManifest(kProtocolHandlerManifestTemplate,
+                   {"mailto", "mailto", kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app =
+      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  EXPECT_EQ(1u, web_app->protocol_handlers().size());
+  const auto& old_protocol_handler = web_app->protocol_handlers()[0];
+  EXPECT_EQ("mailto", old_protocol_handler.protocol);
+  EXPECT_EQ(http_server_.GetURL("/banners/manifest.json?mailto=%s"),
+            old_protocol_handler.url.spec());
+
+  OverrideManifest(kProtocolHandlerManifestTemplate,
+                   {"web+mailto", "web+mailto", kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(GetAppURL(), &app_id));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+
+  EXPECT_EQ(1u, web_app->protocol_handlers().size());
+  const auto& new_protocol_handler = web_app->protocol_handlers()[0];
+  EXPECT_EQ("web+mailto", new_protocol_handler.protocol);
+  EXPECT_EQ(http_server_.GetURL("/banners/manifest.json?web+mailto=%s"),
+            new_protocol_handler.url.spec());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
+                       CheckFindsDeletedProtocolHandler) {
+  constexpr char kProtocolHandlerManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "protocol_handlers": [
+        {
+          "protocol": "mailto",
+          "url": "?mailto=%s"
+        }
+      ],
+      "icons": $1
+    }
+  )";
+
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kProtocolHandlerManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(GetAppURL(), &app_id));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+
+  const WebApp* web_app =
+      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  EXPECT_TRUE(web_app->protocol_handlers().empty());
+}
+
 }  // namespace web_app

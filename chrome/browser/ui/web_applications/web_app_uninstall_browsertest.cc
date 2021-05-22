@@ -150,13 +150,21 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
   const GURL app_url = GetSecureAppURL();
   const AppId app_id = InstallPWA(app_url);
 
+  base::RunLoop run_loop;
+  bool quit_run_loop = false;
+
   // Trigger app uninstall without waiting for result.
   WebAppProviderBase* const provider =
       WebAppProviderBase::GetProviderBase(profile());
   EXPECT_TRUE(provider->registrar().IsInstalled(app_id));
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
-      app_id, webapps::WebappUninstallSource::kAppMenu, base::DoNothing());
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](bool uninstalled) {
+        if (quit_run_loop)
+          run_loop.Quit();
+        quit_run_loop = true;
+      }));
 
   // Validate that uninstalling flag is set
   auto* app = provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
@@ -164,10 +172,13 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
   EXPECT_TRUE(app->is_uninstalling());
 
   // Trigger second uninstall call and wait for result.
-  base::RunLoop run_loop;
   provider->install_finalizer().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu,
-      base::BindLambdaForTesting([&](bool uninstalled) { run_loop.Quit(); }));
+      base::BindLambdaForTesting([&](bool uninstalled) {
+        if (quit_run_loop)
+          run_loop.Quit();
+        quit_run_loop = true;
+      }));
   run_loop.Run();
   EXPECT_FALSE(provider->registrar().IsInstalled(app_id));
 }
