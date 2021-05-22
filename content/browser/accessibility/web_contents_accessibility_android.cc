@@ -781,11 +781,10 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
 
   // Build a vector of child ids
   std::vector<int> child_ids;
-  for (BrowserAccessibility::PlatformChildIterator it =
-           node->PlatformChildrenBegin();
-       it != node->PlatformChildrenEnd(); ++it) {
-    auto* android_node = static_cast<BrowserAccessibilityAndroid*>(it.get());
-    child_ids.push_back(android_node->unique_id());
+  for (const auto& child : node->PlatformChildren()) {
+    const auto& android_node =
+        static_cast<const BrowserAccessibilityAndroid&>(child);
+    child_ids.push_back(android_node.unique_id());
   }
   if (child_ids.size()) {
     Java_WebContentsAccessibilityImpl_addAccessibilityNodeInfoChildren(

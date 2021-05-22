@@ -420,11 +420,10 @@ BrowserAccessibilityAndroid::GetSoleInterestingNodeFromSubtree() const {
     return this;
 
   const BrowserAccessibilityAndroid* sole_interesting_node = nullptr;
-  for (PlatformChildIterator it = PlatformChildrenBegin();
-       it != PlatformChildrenEnd(); ++it) {
+  for (const auto& child : PlatformChildren()) {
     const BrowserAccessibilityAndroid* interesting_node =
-        static_cast<const BrowserAccessibilityAndroid*>(it.get())
-            ->GetSoleInterestingNodeFromSubtree();
+        static_cast<const BrowserAccessibilityAndroid&>(child)
+            .GetSoleInterestingNodeFromSubtree();
     if (interesting_node && sole_interesting_node) {
       // If there are two interesting nodes, return nullptr.
       return nullptr;
@@ -745,12 +744,11 @@ std::u16string BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
   // Count the number of children and selected children.
   int child_count = 0;
   int selected_count = 0;
-  for (PlatformChildIterator it = PlatformChildrenBegin();
-       it != PlatformChildrenEnd(); ++it) {
+  for (const auto& child : PlatformChildren()) {
     child_count++;
-    BrowserAccessibilityAndroid* child =
-        static_cast<BrowserAccessibilityAndroid*>(it.get());
-    if (child->IsSelected())
+    const BrowserAccessibilityAndroid& android_child =
+        static_cast<const BrowserAccessibilityAndroid&>(child);
+    if (android_child.IsSelected())
       selected_count++;
   }
 
@@ -869,12 +867,11 @@ std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedText() const {
   //
   // Find child input node:
   const BrowserAccessibilityAndroid* input_node = nullptr;
-  for (PlatformChildIterator it = PlatformChildrenBegin();
-       it != PlatformChildrenEnd(); ++it) {
-    const BrowserAccessibilityAndroid* child_node =
-        static_cast<BrowserAccessibilityAndroid*>(it.get());
-    if (child_node->IsTextField()) {
-      input_node = child_node;
+  for (const auto& child : PlatformChildren()) {
+    const BrowserAccessibilityAndroid& android_child =
+        static_cast<const BrowserAccessibilityAndroid&>(child);
+    if (android_child.IsTextField()) {
+      input_node = &android_child;
       break;
     }
   }
@@ -932,14 +929,13 @@ std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedTextFallback()
 
   // Check for child nodes that are collections.
   int child_collection_count = 0;
-  BrowserAccessibilityAndroid* collection_node = nullptr;
-  for (PlatformChildIterator it = PlatformChildrenBegin();
-       it != PlatformChildrenEnd(); ++it) {
-    BrowserAccessibilityAndroid* child =
-        static_cast<BrowserAccessibilityAndroid*>(it.get());
-    if (child->IsCollection()) {
+  const BrowserAccessibilityAndroid* collection_node = nullptr;
+  for (const auto& child : PlatformChildren()) {
+    const auto& android_child =
+        static_cast<const BrowserAccessibilityAndroid&>(child);
+    if (android_child.IsCollection()) {
       child_collection_count++;
-      collection_node = child;
+      collection_node = &android_child;
     }
   }
 
@@ -1666,11 +1662,10 @@ int BrowserAccessibilityAndroid::GetItemCount() const {
 int BrowserAccessibilityAndroid::GetSelectedItemCount() const {
   // Count the number of selected children.
   int selected_count = 0;
-  for (PlatformChildIterator it = PlatformChildrenBegin();
-       it != PlatformChildrenEnd(); ++it) {
-    BrowserAccessibilityAndroid* child =
-        static_cast<BrowserAccessibilityAndroid*>(it.get());
-    if (child->IsSelected())
+  for (const auto& child : PlatformChildren()) {
+    const BrowserAccessibilityAndroid& android_child =
+        static_cast<const BrowserAccessibilityAndroid&>(child);
+    if (android_child.IsSelected())
       selected_count++;
   }
 
@@ -2366,9 +2361,8 @@ void BrowserAccessibilityAndroid::OnDataChanged() {
 int BrowserAccessibilityAndroid::CountChildrenWithRole(
     ax::mojom::Role role) const {
   int count = 0;
-  for (PlatformChildIterator it = PlatformChildrenBegin();
-       it != PlatformChildrenEnd(); ++it) {
-    if (it->GetRole() == role)
+  for (const auto& child : PlatformChildren()) {
+    if (child.GetRole() == role)
       count++;
   }
   return count;

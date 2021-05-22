@@ -2325,11 +2325,8 @@ ui::TextAttributeMap BrowserAccessibility::ComputeTextAttributeMap(
   DCHECK(PlatformChildCount());
 
   int start_offset = 0;
-  for (BrowserAccessibility::PlatformChildIterator it = PlatformChildrenBegin();
-       it != PlatformChildrenEnd(); ++it) {
-    BrowserAccessibility* child = it.get();
-    DCHECK(child);
-    ui::TextAttributeList attributes(child->ComputeTextAttributes());
+  for (const auto& child : PlatformChildren()) {
+    ui::TextAttributeList attributes(child.ComputeTextAttributes());
 
     if (attributes_map.empty()) {
       attributes_map[start_offset] = attributes;
@@ -2347,12 +2344,12 @@ ui::TextAttributeMap BrowserAccessibility::ComputeTextAttributeMap(
       }
     }
 
-    if (child->IsText()) {
+    if (child.IsText()) {
       const ui::TextAttributeMap spelling_attributes =
-          child->GetSpellingAndGrammarAttributes();
+          child.GetSpellingAndGrammarAttributes();
       MergeSpellingAndGrammarIntoTextAttributes(spelling_attributes,
                                                 start_offset, &attributes_map);
-      start_offset += child->GetHypertext().length();
+      start_offset += child.GetHypertext().length();
     } else {
       start_offset += 1;
     }

@@ -124,6 +124,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   virtual BrowserAccessibility* PlatformGetNextSibling() const;
   virtual BrowserAccessibility* PlatformGetPreviousSibling() const;
 
+  // Iterator over platform children.
   class CONTENT_EXPORT PlatformChildIterator : public ChildIterator {
    public:
     PlatformChildIterator(const BrowserAccessibility* parent,
@@ -152,6 +153,26 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
         &BrowserAccessibility::PlatformGetLastChild>
         platform_iterator;
   };
+
+  // C++ range implementation for platform children, see PlatformChildren().
+  class PlatformChildrenRange {
+   public:
+    explicit PlatformChildrenRange(const BrowserAccessibility* parent)
+        : parent_(parent) {}
+    PlatformChildrenRange(const PlatformChildrenRange&) = default;
+
+    PlatformChildIterator begin() { return parent_->PlatformChildrenBegin(); }
+    PlatformChildIterator end() { return parent_->PlatformChildrenEnd(); }
+
+   private:
+    const BrowserAccessibility* const parent_;
+  };
+
+  // Returns a range for platform children which can be used in range-based for
+  // loops, for example, for (const auto& child : PlatformChildren()) {}.
+  PlatformChildrenRange PlatformChildren() const {
+    return PlatformChildrenRange(this);
+  }
 
   PlatformChildIterator PlatformChildrenBegin() const;
   PlatformChildIterator PlatformChildrenEnd() const;
