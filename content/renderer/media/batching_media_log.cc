@@ -258,6 +258,8 @@ void BatchingMediaLog::MaybeQueueEvent_Locked(
                  " messages per second. Futher entries will be dropped.";
   DLOG(WARNING) << message;
 
+  recordreplay::Assert("BatchingMediaLog::MaybeQueueEvent_Locked #1");
+
   queued_media_events_.emplace_back();
   queued_media_events_.back().id = event->id;
   queued_media_events_.back().type = media::MediaLogRecord::Type::kMessage;

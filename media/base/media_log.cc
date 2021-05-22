@@ -9,6 +9,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 
@@ -102,6 +103,7 @@ void MediaLog::AddLogRecord(std::unique_ptr<MediaLogRecord> record) {
 
 std::unique_ptr<MediaLogRecord> MediaLog::CreateRecord(
     MediaLogRecord::Type type) {
+  recordreplay::Assert("MediaLog::CreateRecord");
   auto record = std::make_unique<MediaLogRecord>();
   record->id = id();
   record->type = type;
