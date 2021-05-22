@@ -51,6 +51,7 @@ namespace autofill {
 
 class AutofillField;
 class AutofillClient;
+class AutofillSuggestionGenerator;
 class BrowserAutofillManagerTestDelegate;
 class AutofillProfile;
 class AutofillType;
@@ -704,6 +705,9 @@ class BrowserAutofillManager
   // suggestions. Initialized when BrowserAutofillManager is created.
   // |offer_manager_| is never null.
   AutofillOfferManager* offer_manager_;
+
+  // Helper class to generate Autofill suggestions.
+  std::unique_ptr<AutofillSuggestionGenerator> suggestion_generator_;
 
   // Collected information about the autofill form where a credit card will be
   // filled.

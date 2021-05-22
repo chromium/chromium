@@ -1353,45 +1353,6 @@ const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest(
   return cards_to_suggest;
 }
 
-// static
-void PersonalDataManager::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-    base::Time comparison_time,
-    base::Time min_last_used,
-    std::vector<CreditCard*>* cards) {
-  const size_t original_size = cards->size();
-  // Split the vector into [unexpired-or-expired-but-after-timestamp,
-  // expired-and-before-timestamp], then delete the latter.
-  cards->erase(std::stable_partition(
-                   cards->begin(), cards->end(),
-                   [comparison_time, min_last_used](const CreditCard* c) {
-                     return !c->IsExpired(comparison_time) ||
-                            c->use_date() > min_last_used;
-                   }),
-               cards->end());
-  const size_t num_cards_supressed = original_size - cards->size();
-  AutofillMetrics::LogNumberOfCreditCardsSuppressedForDisuse(
-      num_cards_supressed);
-}
-
-std::vector<Suggestion> PersonalDataManager::GetCreditCardSuggestions(
-    const AutofillType& type,
-    const std::u16string& field_contents,
-    bool include_server_cards) {
-  if (IsInAutofillSuggestionsDisabledExperiment())
-    return std::vector<Suggestion>();
-  std::vector<CreditCard*> cards =
-      GetCreditCardsToSuggest(include_server_cards);
-  // Suppress disused address profiles when triggered from an empty field.
-  if (field_contents.empty()) {
-    const base::Time min_last_used =
-        AutofillClock::Now() - kDisusedDataModelTimeDelta;
-    RemoveExpiredCreditCardsNotUsedSinceTimestamp(AutofillClock::Now(),
-                                                  min_last_used, &cards);
-  }
-
-  return GetSuggestionsForCards(type, field_contents, cards);
-}
-
 bool PersonalDataManager::IsAutofillEnabled() const {
   return IsAutofillProfileEnabled() || IsAutofillCreditCardEnabled();
 }
@@ -2150,97 +2111,6 @@ void PersonalDataManager::OnCreditCardSaved(bool is_local_card) {
         /*should_show_sign_in_promo_if_applicable=*/is_local_card);
 }
 
-std::vector<Suggestion> PersonalDataManager::GetSuggestionsForCards(
-    const AutofillType& type,
-    const std::u16string& field_contents,
-    const std::vector<CreditCard*>& cards_to_suggest) const {
-  std::vector<Suggestion> suggestions;
-  std::u16string field_contents_lower = base::i18n::ToLower(field_contents);
-
-  for (const CreditCard* credit_card : cards_to_suggest) {
-    // The value of the stored data for this field type in the |credit_card|.
-    std::u16string creditcard_field_value =
-        credit_card->GetInfo(type, app_locale_);
-    if (creditcard_field_value.empty())
-      continue;
-
-    bool prefix_matched_suggestion;
-    if (suggestion_selection::IsValidSuggestionForFieldContents(
-            base::i18n::ToLower(creditcard_field_value), field_contents_lower,
-            type, credit_card->record_type() == CreditCard::MASKED_SERVER_CARD,
-            &prefix_matched_suggestion)) {
-      // Make a new suggestion.
-      suggestions.push_back(Suggestion());
-      Suggestion* suggestion = &suggestions.back();
-
-      suggestion->value = credit_card->GetInfo(type, app_locale_);
-      suggestion->icon = credit_card->CardIconStringForAutofillSuggestion();
-      suggestion->backend_id = credit_card->guid();
-      suggestion->match = prefix_matched_suggestion
-                              ? Suggestion::PREFIX_MATCH
-                              : Suggestion::SUBSTRING_MATCH;
-
-      // Get the nickname for the card suggestion, which may not be the same as
-      // the card's nickname if there are duplicates of the card on file.
-      std::u16string suggestion_nickname =
-          GetDisplayNicknameForCreditCard(*credit_card);
-
-      // If the value is the card number, the label is the expiration date.
-      // Otherwise the label is the card number, or if that is empty the
-      // cardholder name. The label should never repeat the value.
-      if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
-        suggestion->value = credit_card->CardIdentifierStringForAutofillDisplay(
-            suggestion_nickname);
-
-#if defined(OS_ANDROID) || defined(OS_IOS)
-        suggestion->label = credit_card->GetInfo(
-            AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale_);
-#else
-        suggestion->label = credit_card->DescriptiveExpiration(app_locale_);
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
-
-      } else if (credit_card->number().empty()) {
-        DCHECK_EQ(credit_card->record_type(), CreditCard::LOCAL_CARD);
-        if (credit_card->HasNonEmptyValidNickname()) {
-          suggestion->label = credit_card->nickname();
-        } else if (type.GetStorableType() != CREDIT_CARD_NAME_FULL) {
-          suggestion->label = credit_card->GetInfo(
-              AutofillType(CREDIT_CARD_NAME_FULL), app_locale_);
-        }
-      } else {
-#if defined(OS_ANDROID)
-        // On Android devices, the label is formatted as
-        // "Nickname/Network  ••••1234" when the keyboard accessory experiment
-        // is disabled and as "••••1234" when it's enabled.
-        suggestion->label =
-            base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)
-                ? credit_card->ObfuscatedLastFourDigits()
-                : credit_card->CardIdentifierStringForAutofillDisplay(
-                      suggestion_nickname);
-#elif defined(OS_IOS)
-        // E.g. "••••1234"".
-        suggestion->label = credit_card->ObfuscatedLastFourDigits();
-#else
-        // E.g. "Nickname/Network  ••••1234, expires on 01/25".
-        suggestion->label =
-            credit_card->CardIdentifierStringAndDescriptiveExpiration(
-                app_locale_);
-#endif
-      }
-    }
-  }
-
-  // Prefix matches should precede other token matches.
-  if (IsFeatureSubstringMatchEnabled()) {
-    std::stable_sort(suggestions.begin(), suggestions.end(),
-                     [](const Suggestion& a, const Suggestion& b) {
-                       return a.match < b.match;
-                     });
-  }
-
-  return suggestions;
-}
-
 void PersonalDataManager::ConvertWalletAddressesAndUpdateWalletCards() {
   // If the full Sync feature isn't enabled, then do NOT convert any Wallet
   // addresses to local ones.
@@ -2467,25 +2337,6 @@ void PersonalDataManager::MigrateUserOptedInWalletSyncTransportIfNeeded() {
                                            /*opted_in=*/false);
   prefs::SetUserOptedInWalletSyncTransport(pref_service_, primary_account_id,
                                            /*opted_in=*/true);
-}
-
-std::u16string PersonalDataManager::GetDisplayNicknameForCreditCard(
-    const CreditCard& card) const {
-  // Always prefer a local nickname if available.
-  if (card.HasNonEmptyValidNickname() &&
-      card.record_type() == CreditCard::LOCAL_CARD)
-    return card.nickname();
-  // Either the card a) has no nickname or b) is a server card and we would
-  // prefer to use the nickname of a local card.
-  std::vector<CreditCard*> candidates = GetCreditCards();
-  for (CreditCard* candidate : candidates) {
-    if (candidate->guid() != card.guid() && candidate->HasSameNumberAs(card) &&
-        candidate->HasNonEmptyValidNickname()) {
-      return candidate->nickname();
-    }
-  }
-  // Fall back to nickname of |card|, which may be empty.
-  return card.nickname();
 }
 
 bool PersonalDataManager::IsSyncEnabledFor(syncer::ModelType model_type) {

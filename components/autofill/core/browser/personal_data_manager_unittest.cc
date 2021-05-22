@@ -3182,58 +3182,28 @@ TEST_F(PersonalDataManagerTest, IsServerCard_UniqueLocalCard) {
   ASSERT_FALSE(personal_data_->IsServerCard(&local_card));
 }
 
-// Test that a masked server card is not suggested if more that six numbers have
-// been typed in the field.
-TEST_F(PersonalDataManagerTest,
-       GetCreditCardSuggestions_MaskedCardWithMoreThan6Numbers) {
-  // Add a masked server card.
-  std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "b459"));
-  test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
-                          "2999", "1");
-  server_cards.back().SetNetworkForMaskedCard(kVisaCard);
-
-  SetServerCards(server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_->Refresh();
-  WaitForOnPersonalDataChanged();
-  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
-
-  std::vector<Suggestion> suggestions =
-      personal_data_->GetCreditCardSuggestions(AutofillType(CREDIT_CARD_NUMBER),
-                                               u"12345678",
-                                               /*include_server_cards=*/true);
-
-  // There should be no suggestions.
-  ASSERT_EQ(0U, suggestions.size());
-}
-
 // Test that local credit cards are ordered as expected.
-TEST_F(PersonalDataManagerTest, GetCreditCardSuggestions_LocalCardsRanking) {
+TEST_F(PersonalDataManagerTest, GetCreditCardsToSuggest_LocalCardsRanking) {
   SetUpReferenceLocalCreditCards();
 
   // Sublabel is card number when filling name (exact format depends on
   // the platform, but the last 4 digits should appear).
-  std::vector<Suggestion> suggestions =
-      personal_data_->GetCreditCardSuggestions(
-          AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/std::u16string(),
-          /*include_server_cards=*/true);
-  ASSERT_EQ(3U, suggestions.size());
+  std::vector<CreditCard*> card_to_suggest =
+      personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true);
+  ASSERT_EQ(3U, card_to_suggest.size());
 
   // Ordered as expected.
-  EXPECT_EQ(u"John Dillinger", suggestions[0].value);
-  EXPECT_TRUE(suggestions[0].label.find(u"3456") != std::u16string::npos);
-  EXPECT_EQ(u"Clyde Barrow", suggestions[1].value);
-  EXPECT_TRUE(suggestions[1].label.find(u"0005") != std::u16string::npos);
-  EXPECT_EQ(u"Bonnie Parker", suggestions[2].value);
-  EXPECT_TRUE(suggestions[2].label.find(u"5100") != std::u16string::npos);
+  EXPECT_EQ(u"John Dillinger",
+            card_to_suggest[0]->GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"Clyde Barrow",
+            card_to_suggest[1]->GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"Bonnie Parker",
+            card_to_suggest[2]->GetRawInfo(CREDIT_CARD_NAME_FULL));
 }
 
 // Test that local and server cards are ordered as expected.
 TEST_F(PersonalDataManagerTest,
-       GetCreditCardSuggestions_LocalAndServerCardsRanking) {
+       GetCreditCardsToSuggest_LocalAndServerCardsRanking) {
   SetUpReferenceLocalCreditCards();
 
   // Add some server cards.
@@ -3260,25 +3230,27 @@ TEST_F(PersonalDataManagerTest,
   WaitForOnPersonalDataChanged();
   EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
 
-  std::vector<Suggestion> suggestions =
-      personal_data_->GetCreditCardSuggestions(
-          AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/std::u16string(),
-          /*include_server_cards=*/true);
-  ASSERT_EQ(5U, suggestions.size());
+  std::vector<CreditCard*> card_to_suggest =
+      personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true);
+  ASSERT_EQ(5U, card_to_suggest.size());
 
   // All cards should be ordered as expected.
-  EXPECT_EQ(u"Jesse James", suggestions[0].value);
-  EXPECT_EQ(u"John Dillinger", suggestions[1].value);
-  EXPECT_EQ(u"Clyde Barrow", suggestions[2].value);
-  EXPECT_EQ(u"Emmet Dalton", suggestions[3].value);
-  EXPECT_EQ(u"Bonnie Parker", suggestions[4].value);
+  EXPECT_EQ(u"Jesse James",
+            card_to_suggest[0]->GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"John Dillinger",
+            card_to_suggest[1]->GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"Clyde Barrow",
+            card_to_suggest[2]->GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"Emmet Dalton",
+            card_to_suggest[3]->GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"Bonnie Parker",
+            card_to_suggest[4]->GetRawInfo(CREDIT_CARD_NAME_FULL));
 }
 
 // Test that local and server cards are not shown if
 // |kAutofillCreditCardEnabled| is set to |false|.
 TEST_F(PersonalDataManagerTest,
-       GetCreditCardSuggestions_CreditCardAutofillDisabled) {
+       GetCreditCardsToSuggest_CreditCardAutofillDisabled) {
   SetUpReferenceLocalCreditCards();
 
   // Add some server cards.
@@ -3313,18 +3285,15 @@ TEST_F(PersonalDataManagerTest,
       0U, personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true)
               .size());
 
-  std::vector<Suggestion> suggestions =
-      personal_data_->GetCreditCardSuggestions(
-          AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/std::u16string(),
-          /*include_server_cards=*/true);
-  ASSERT_EQ(0U, suggestions.size());
+  std::vector<CreditCard*> card_to_suggest =
+      personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true);
+  ASSERT_EQ(0U, card_to_suggest.size());
 }
 
 // Test that local and server cards are not loaded into memory on start-up if
 // |kAutofillCreditCardEnabled| is set to |false|.
 TEST_F(PersonalDataManagerTest,
-       GetCreditCardSuggestions_NoCardsLoadedIfDisabled) {
+       GetCreditCardsToSuggest_NoCardsLoadedIfDisabled) {
   SetUpReferenceLocalCreditCards();
 
   // Add some server cards.
@@ -3362,18 +3331,15 @@ TEST_F(PersonalDataManagerTest,
       0U, personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true)
               .size());
 
-  std::vector<Suggestion> suggestions =
-      personal_data_->GetCreditCardSuggestions(
-          AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/std::u16string(),
-          /*include_server_cards=*/true);
-  ASSERT_EQ(0U, suggestions.size());
+  std::vector<CreditCard*> card_to_suggest =
+      personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true);
+  ASSERT_EQ(0U, card_to_suggest.size());
 }
 
 // Test that local profiles are not added if |kAutofillProfileEnabled| is set to
 // |false|.
 TEST_F(PersonalDataManagerTest,
-       GetCreditCardSuggestions_NoCreditCardsAddedIfDisabled) {
+       GetCreditCardsToSuggest_NoCreditCardsAddedIfDisabled) {
   // Disable Profile autofill.
   prefs::SetAutofillCreditCardEnabled(personal_data_->pref_service_, false);
 
@@ -3389,251 +3355,8 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_EQ(0U, personal_data_->GetCreditCards().size());
 }
 
-// Test that expired cards are ordered by frecency and are always suggested
-// after non expired cards even if they have a higher frecency score.
-TEST_F(PersonalDataManagerTest, GetCreditCardSuggestions_ExpiredCards) {
-  ASSERT_EQ(0U, personal_data_->GetCreditCards().size());
-
-  // Add a never used non expired credit card.
-  CreditCard credit_card0("002149C1-EE28-4213-A3B9-DA243FFF021B",
-                          test::kEmptyOrigin);
-  test::SetCreditCardInfo(&credit_card0, "Bonnie Parker",
-                          "5105105105105100" /* Mastercard */, "04", "2999",
-                          "1");
-  personal_data_->AddCreditCard(credit_card0);
-
-  // Add an expired card with a higher frecency score.
-  CreditCard credit_card1("287151C8-6AB1-487C-9095-28E80BE5DA15",
-                          test::kEmptyOrigin);
-  test::SetCreditCardInfo(&credit_card1, "Clyde Barrow",
-                          "378282246310005" /* American Express */, "04",
-                          "1999", "1");
-  credit_card1.set_use_count(300);
-  credit_card1.set_use_date(AutofillClock::Now() -
-                            base::TimeDelta::FromDays(10));
-  personal_data_->AddCreditCard(credit_card1);
-
-  // Add an expired card with a lower frecency score.
-  CreditCard credit_card2("1141084B-72D7-4B73-90CF-3D6AC154673B",
-                          test::kEmptyOrigin);
-  credit_card2.set_use_count(3);
-  credit_card2.set_use_date(AutofillClock::Now() -
-                            base::TimeDelta::FromDays(1));
-  test::SetCreditCardInfo(&credit_card2, "John Dillinger",
-                          "4234567890123456" /* Visa */, "01", "1998", "1");
-  personal_data_->AddCreditCard(credit_card2);
-
-  // Make sure everything is set up correctly.
-  WaitForOnPersonalDataChanged();
-  ASSERT_EQ(3U, personal_data_->GetCreditCards().size());
-
-  std::vector<Suggestion> suggestions =
-      personal_data_->GetCreditCardSuggestions(
-          AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/std::u16string(),
-          /* include_server_cards= */ true);
-  ASSERT_EQ(3U, suggestions.size());
-
-  // The never used non expired card should be suggested first.
-  EXPECT_EQ(u"Bonnie Parker", suggestions[0].value);
-
-  // The expired cards should be sorted by frecency
-  EXPECT_EQ(u"Clyde Barrow", suggestions[1].value);
-  EXPECT_EQ(u"John Dillinger", suggestions[2].value);
-}
-
-// Test cards that are expired AND disused are suppressed when supression is
-// enabled and the input field is empty.
-TEST_F(PersonalDataManagerTest,
-       GetCreditCardSuggestions_SuppressDisusedCreditCardsOnEmptyField) {
-  ASSERT_EQ(0U, personal_data_->GetCreditCards().size());
-
-  // Add a never used non expired local credit card.
-  CreditCard credit_card0("002149C1-EE28-4213-A3B9-DA243FFF021B",
-                          test::kEmptyOrigin);
-  test::SetCreditCardInfo(&credit_card0, "Bonnie Parker",
-                          "5105105105105100" /* Mastercard */, "04", "2999",
-                          "1");
-  personal_data_->AddCreditCard(credit_card0);
-
-  auto now = AutofillClock::Now();
-
-  // Add an expired unmasked card last used 10 days ago
-  CreditCard credit_card1(CreditCard::FULL_SERVER_CARD, "c789");
-  test::SetCreditCardInfo(&credit_card1, "Clyde Barrow",
-                          "4234567890123456" /* Visa */, "04", "1999", "1");
-  credit_card1.set_use_date(now - base::TimeDelta::FromDays(10));
-
-  // Add an expired masked card last used 180 days ago.
-  CreditCard credit_card2(CreditCard::MASKED_SERVER_CARD, "c987");
-  test::SetCreditCardInfo(&credit_card2, "Jane Doe", "6543", "01", "1998", "1");
-  credit_card2.set_use_date(now - base::TimeDelta::FromDays(181));
-  credit_card2.SetNetworkForMaskedCard(kVisaCard);
-
-  // Save the server cards and set used_date to desired dates.
-  std::vector<CreditCard> server_cards;
-  server_cards.push_back(credit_card1);
-  server_cards.push_back(credit_card2);
-  SetServerCards(server_cards);
-  personal_data_->UpdateServerCardsMetadata({credit_card1, credit_card2});
-
-  // Add an expired local card last used 180 days ago.
-  CreditCard credit_card3("1141084B-72D7-4B73-90CF-3D6AC154673B",
-                          test::kEmptyOrigin);
-  credit_card3.set_use_date(now - base::TimeDelta::FromDays(182));
-  test::SetCreditCardInfo(&credit_card3, "John Dillinger",
-                          "378282246310005" /* American Express */, "01",
-                          "1998", "1");
-  personal_data_->AddCreditCard(credit_card3);
-
-  // Make sure everything is set up correctly.
-  personal_data_->Refresh();
-  WaitForOnPersonalDataChanged();
-  ASSERT_EQ(4U, personal_data_->GetCreditCards().size());
-
-  // Query with empty string only returns card0 and card1. Note expired
-  // masked card2 is not suggested on empty fields.
-  {
-    std::vector<Suggestion> suggestions =
-        personal_data_->GetCreditCardSuggestions(
-            AutofillType(CREDIT_CARD_NAME_FULL), std::u16string(),
-            /*include_server_cards=*/true);
-    EXPECT_EQ(2U, suggestions.size());
-    EXPECT_EQ(u"Bonnie Parker", suggestions[0].value);
-    EXPECT_EQ(u"Clyde Barrow", suggestions[1].value);
-  }
-
-  // Query with name prefix for card0 returns card0.
-  {
-    std::vector<Suggestion> suggestions =
-        personal_data_->GetCreditCardSuggestions(
-            AutofillType(CREDIT_CARD_NAME_FULL), u"B",
-            /*include_server_cards=*/true);
-
-    ASSERT_EQ(1U, suggestions.size());
-    EXPECT_EQ(u"Bonnie Parker", suggestions[0].value);
-  }
-
-  // Query with name prefix for card1 returns card1.
-  {
-    std::vector<Suggestion> suggestions =
-        personal_data_->GetCreditCardSuggestions(
-            AutofillType(CREDIT_CARD_NAME_FULL), u"Cl",
-            /*include_server_cards=*/true);
-
-    ASSERT_EQ(1U, suggestions.size());
-    EXPECT_EQ(u"Clyde Barrow", suggestions[0].value);
-  }
-
-  // Query with name prefix for card2 returns card2.
-  {
-    std::vector<Suggestion> suggestions =
-        personal_data_->GetCreditCardSuggestions(
-            AutofillType(CREDIT_CARD_NAME_FULL), u"Jo",
-            /*include_server_cards=*/true);
-
-    ASSERT_EQ(1U, suggestions.size());
-    EXPECT_EQ(u"John Dillinger", suggestions[0].value);
-  }
-
-  // Query with card number prefix for card1 returns card1 and card2.
-  // Expired masked card2 is shown when user starts to type credit card
-  // number because we are not sure if it is the masked card that they want.
-  {
-    std::vector<Suggestion> suggestions =
-        personal_data_->GetCreditCardSuggestions(
-            AutofillType(CREDIT_CARD_NUMBER), u"4234",
-            /*include_server_cards=*/true);
-
-    ASSERT_EQ(2U, suggestions.size());
-    EXPECT_EQ(base::UTF8ToUTF16(std::string("Visa  ") +
-                                test::ObfuscatedCardDigitsAsUTF8("3456")),
-              suggestions[0].value);
-    EXPECT_EQ(base::UTF8ToUTF16(std::string("Visa  ") +
-                                test::ObfuscatedCardDigitsAsUTF8("6543")),
-              suggestions[1].value);
-  }
-}
-
-// Test that a card that doesn't have a number is not shown in the suggestions
-// when querying credit cards by their number.
-TEST_F(PersonalDataManagerTest,
-       GetCreditCardSuggestions_NumberMissing_QueryNumberField) {
-  // Create one normal credit card and one credit card with the number missing.
-  ASSERT_EQ(0U, personal_data_->GetCreditCards().size());
-
-  CreditCard credit_card0("287151C8-6AB1-487C-9095-28E80BE5DA15",
-                          test::kEmptyOrigin);
-  test::SetCreditCardInfo(&credit_card0, "Clyde Barrow",
-                          "378282246310005" /* American Express */, "04",
-                          "2999", "1");
-  credit_card0.set_use_count(3);
-  credit_card0.set_use_date(AutofillClock::Now() -
-                            base::TimeDelta::FromDays(1));
-  personal_data_->AddCreditCard(credit_card0);
-
-  CreditCard credit_card1("1141084B-72D7-4B73-90CF-3D6AC154673B",
-                          test::kEmptyOrigin);
-  credit_card1.set_use_count(300);
-  credit_card1.set_use_date(AutofillClock::Now() -
-                            base::TimeDelta::FromDays(10));
-  test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2999",
-                          "1");
-  personal_data_->AddCreditCard(credit_card1);
-
-  // Make sure everything is set up correctly.
-  WaitForOnPersonalDataChanged();
-  ASSERT_EQ(2U, personal_data_->GetCreditCards().size());
-
-  // Sublabel is expiration date when filling card number. The second card
-  // doesn't have a number so it should not be included in the suggestions.
-  std::vector<Suggestion> suggestions =
-      personal_data_->GetCreditCardSuggestions(
-          AutofillType(CREDIT_CARD_NUMBER),
-          /*field_contents=*/std::u16string(),
-          /*include_server_cards=*/true);
-  ASSERT_EQ(1U, suggestions.size());
-  EXPECT_EQ(base::UTF8ToUTF16(std::string("Amex  ") +
-                              test::ObfuscatedCardDigitsAsUTF8("0005")),
-            suggestions[0].value);
-
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  EXPECT_EQ(u"04/99", suggestions[0].label);
-#else
-  EXPECT_EQ(u"Expires on 04/99", suggestions[0].label);
-#endif  // defined (OS_ANDROID) || defined(OS_IOS)
-}
-
-// Test that a card that doesn't have a number is shown in the suggestion list
-// with nickname if a non-number field is queried.
-TEST_F(PersonalDataManagerTest,
-       GetCreditCardSuggestions_NumberMissing_QueryNonNumberField) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  ASSERT_EQ(0U, personal_data_->GetCreditCards().size());
-
-  CreditCard credit_card("1141084B-72D7-4B73-90CF-3D6AC154673B",
-                         test::kEmptyOrigin);
-  test::SetCreditCardInfo(&credit_card, "John Dillinger", "", "01", "2999",
-                          "1");
-  credit_card.SetNickname(u"nickname");
-  personal_data_->AddCreditCard(credit_card);
-
-  // Make sure everything is set up correctly.
-  WaitForOnPersonalDataChanged();
-  ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
-
-  // Ensures the suggestion label is the card's nickname.
-  std::vector<Suggestion> suggestions =
-      personal_data_->GetCreditCardSuggestions(
-          AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/std::u16string(),
-          /*include_server_cards=*/true);
-  ASSERT_EQ(1U, suggestions.size());
-  EXPECT_EQ(u"nickname", suggestions[0].label);
-}
-
 // Tests the suggestions of duplicate local and server credit cards.
-TEST_F(PersonalDataManagerTest, GetCreditCardSuggestions_ServerDuplicates) {
+TEST_F(PersonalDataManagerTest, GetCreditCardsToSuggest_ServerDuplicates) {
   SetUpReferenceLocalCreditCards();
 
   // Add some server cards. If there are local dupes, the locals should be
@@ -3668,34 +3391,24 @@ TEST_F(PersonalDataManagerTest, GetCreditCardSuggestions_ServerDuplicates) {
   WaitForOnPersonalDataChanged();
   EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
 
-  std::vector<Suggestion> suggestions =
-      personal_data_->GetCreditCardSuggestions(
-          AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/std::u16string(),
+  std::vector<CreditCard*> card_to_suggest =
+      personal_data_->GetCreditCardsToSuggest(
           /*include_server_cards=*/true);
-  ASSERT_EQ(3U, suggestions.size());
-  EXPECT_EQ(u"John Dillinger", suggestions[0].value);
-  EXPECT_EQ(u"Clyde Barrow", suggestions[1].value);
-  EXPECT_EQ(u"Bonnie Parker", suggestions[2].value);
-
-  suggestions = personal_data_->GetCreditCardSuggestions(
-      AutofillType(CREDIT_CARD_NUMBER), /*field_contents=*/std::u16string(),
-      /*include_server_cards=*/true);
-  ASSERT_EQ(3U, suggestions.size());
-  EXPECT_EQ(base::UTF8ToUTF16(std::string("Visa  ") +
-                              test::ObfuscatedCardDigitsAsUTF8("3456")),
-            suggestions[0].value);
-  EXPECT_EQ(base::UTF8ToUTF16(std::string("Amex  ") +
-                              test::ObfuscatedCardDigitsAsUTF8("0005")),
-            suggestions[1].value);
-  EXPECT_EQ(base::UTF8ToUTF16(std::string("Mastercard  ") +
-                              test::ObfuscatedCardDigitsAsUTF8("5100")),
-            suggestions[2].value);
+  ASSERT_EQ(3U, card_to_suggest.size());
+  EXPECT_EQ(u"John Dillinger",
+            card_to_suggest[0]->GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"Clyde Barrow",
+            card_to_suggest[1]->GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"Bonnie Parker",
+            card_to_suggest[2]->GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(CreditCard::LOCAL_CARD, card_to_suggest[0]->record_type());
+  EXPECT_EQ(CreditCard::FULL_SERVER_CARD, card_to_suggest[1]->record_type());
+  EXPECT_EQ(CreditCard::LOCAL_CARD, card_to_suggest[2]->record_type());
 }
 
 // Tests that a full server card can be a dupe of more than one local card.
 TEST_F(PersonalDataManagerTest,
-       GetCreditCardSuggestions_ServerCardDuplicateOfMultipleLocalCards) {
+       GetCreditCardsToSuggest_ServerCardDuplicateOfMultipleLocalCards) {
   SetUpReferenceLocalCreditCards();
 
   // Add a duplicate server card.
@@ -3714,12 +3427,10 @@ TEST_F(PersonalDataManagerTest,
   WaitForOnPersonalDataChanged();
   EXPECT_EQ(4U, personal_data_->GetCreditCards().size());
 
-  std::vector<Suggestion> suggestions =
-      personal_data_->GetCreditCardSuggestions(
-          AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/std::u16string(),
+  std::vector<CreditCard*> card_to_suggest =
+      personal_data_->GetCreditCardsToSuggest(
           /*include_server_cards=*/true);
-  ASSERT_EQ(3U, suggestions.size());
+  ASSERT_EQ(3U, card_to_suggest.size());
 
   // Add a second dupe local card to make sure a full server card can be a dupe
   // of more than one local card.
@@ -3730,10 +3441,9 @@ TEST_F(PersonalDataManagerTest,
 
   WaitForOnPersonalDataChanged();
 
-  suggestions = personal_data_->GetCreditCardSuggestions(
-      AutofillType(CREDIT_CARD_NAME_FULL),
-      /*field_contents=*/std::u16string(), /*include_server_cards=*/true);
-  ASSERT_EQ(3U, suggestions.size());
+  card_to_suggest =
+      personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true);
+  ASSERT_EQ(3U, card_to_suggest.size());
 }
 
 // Tests that only the full server card is kept when deduping with a local
@@ -6298,160 +6008,6 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
       "Autofill.StoredCreditCardCount.Server.WithVirtualCardMetadata", 1);
 }
 
-TEST_F(PersonalDataManagerTest, RemoveExpiredCreditCardsNotUsedSinceTimestamp) {
-  const char kHistogramName[] = "Autofill.CreditCardsSuppressedForDisuse";
-  const base::Time kNow = AutofillClock::Now();
-  constexpr size_t kNumCards = 10;
-
-  // We construct a card vector as below, number indicate days of last used
-  // from |kNow|:
-  // [30, 90, 150, 210, 270, 0, 60, 120, 180, 240]
-  // |expires at 2999     |, |expired at 2001   |
-  std::vector<CreditCard> all_card_data;
-  std::vector<CreditCard*> all_card_ptrs;
-  all_card_data.reserve(kNumCards);
-  all_card_ptrs.reserve(kNumCards);
-  for (size_t i = 0; i < kNumCards; ++i) {
-    constexpr base::TimeDelta k30Days = base::TimeDelta::FromDays(30);
-    all_card_data.emplace_back(base::GenerateGUID(), "https://example.com");
-    if (i < 5) {
-      all_card_data.back().set_use_date(kNow - (i + i + 1) * k30Days);
-      test::SetCreditCardInfo(&all_card_data.back(), "Clyde Barrow",
-                              "378282246310005" /* American Express */, "04",
-                              "2999", "1");
-    } else {
-      all_card_data.back().set_use_date(kNow - (i + i - 10) * k30Days);
-      test::SetCreditCardInfo(&all_card_data.back(), "John Dillinger",
-                              "4234567890123456" /* Visa */, "04", "2001", "1");
-    }
-    all_card_ptrs.push_back(&all_card_data.back());
-  }
-
-  // Verify that only expired disused card are removed. Note that only the last
-  // two cards have use dates more than 175 days ago and are expired.
-  {
-    // Create a working copy of the card pointers.
-    std::vector<CreditCard*> cards(all_card_ptrs);
-
-    // The first 8 are either not expired or having use dates more recent
-    // than 175 days ago.
-    std::vector<CreditCard*> expected_cards(cards.begin(), cards.begin() + 8);
-
-    // Filter the cards while capturing histograms.
-    base::HistogramTester histogram_tester;
-    PersonalDataManager::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        kNow, kNow - base::TimeDelta::FromDays(175), &cards);
-
-    // Validate that we get the expected filtered cards and histograms.
-    EXPECT_EQ(expected_cards, cards);
-    histogram_tester.ExpectTotalCount(kHistogramName, 1);
-    histogram_tester.ExpectBucketCount(kHistogramName, 2, 1);
-  }
-
-  // Reverse the card order and verify that only expired and disused cards
-  // are removed. Note that the first three cards, post reversal,
-  // have use dates more then 115 days ago.
-  {
-    // Create a reversed working copy of the card pointers.
-    std::vector<CreditCard*> cards(all_card_ptrs.rbegin(),
-                                   all_card_ptrs.rend());
-
-    // The last 7 cards have use dates more recent than 115 days ago.
-    std::vector<CreditCard*> expected_cards(cards.begin() + 3, cards.end());
-
-    // Filter the cards while capturing histograms.
-    base::HistogramTester histogram_tester;
-    PersonalDataManager::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        kNow, kNow - base::TimeDelta::FromDays(115), &cards);
-
-    // Validate that we get the expected filtered cards and histograms.
-    EXPECT_EQ(expected_cards, cards);
-    histogram_tester.ExpectTotalCount(kHistogramName, 1);
-    histogram_tester.ExpectBucketCount(kHistogramName, 3, 1);
-  }
-  // Randomize the card order and validate that the filtered list retains
-  // that order. Note that the three cards have use dates more then 115
-  // days ago and are expired.
-  {
-    // A handy constant.
-    const base::Time k115DaysAgo = kNow - base::TimeDelta::FromDays(115);
-
-    // Created a shuffled master copy of the card pointers.
-    std::vector<CreditCard*> shuffled_cards(all_card_ptrs);
-    base::RandomShuffle(shuffled_cards.begin(), shuffled_cards.end());
-
-    // Copy the shuffled card pointer collections to use as the working
-    // set.
-    std::vector<CreditCard*> cards(shuffled_cards);
-
-    // Filter the cards while capturing histograms.
-    base::HistogramTester histogram_tester;
-    PersonalDataManager::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        kNow, k115DaysAgo, &cards);
-
-    // Validate that we have the right cards. Iterate of the the shuffled
-    // master copy and the filtered copy at the same time. making sure that
-    // the elements in the filtered copy occur in the same order as the shuffled
-    // master. Along the way, validate that the elements in and out of the
-    // filtered copy have appropriate use dates and expiration states.
-    EXPECT_EQ(7u, cards.size());
-    auto it = shuffled_cards.begin();
-    for (const CreditCard* card : cards) {
-      for (; it != shuffled_cards.end() && (*it) != card; ++it) {
-        EXPECT_LT((*it)->use_date(), k115DaysAgo);
-        ASSERT_TRUE((*it)->IsExpired(kNow));
-      }
-      ASSERT_TRUE(it != shuffled_cards.end());
-      ASSERT_TRUE(card->use_date() > k115DaysAgo || !card->IsExpired(kNow));
-      ++it;
-    }
-    for (; it != shuffled_cards.end(); ++it) {
-      EXPECT_LT((*it)->use_date(), k115DaysAgo);
-      ASSERT_TRUE((*it)->IsExpired(kNow));
-    }
-
-    // Validate the histograms.
-    histogram_tester.ExpectTotalCount(kHistogramName, 1);
-    histogram_tester.ExpectBucketCount(kHistogramName, 3, 1);
-  }
-
-  // Verify all cards are retained if they're sufficiently recently
-  // used.
-  {
-    // Create a working copy of the card pointers.
-    std::vector<CreditCard*> cards(all_card_ptrs);
-
-    // Filter the cards while capturing histograms.
-    base::HistogramTester histogram_tester;
-    PersonalDataManager::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        kNow, kNow - base::TimeDelta::FromDays(720), &cards);
-
-    // Validate that we get the expected filtered cards and histograms.
-    EXPECT_EQ(all_card_ptrs, cards);
-    histogram_tester.ExpectTotalCount(kHistogramName, 1);
-    histogram_tester.ExpectBucketCount(kHistogramName, 0, 1);
-  }
-
-  // Verify all cards are removed if they're all disused and expired.
-  {
-    // Create a working copy of the card pointers.
-    std::vector<CreditCard*> cards(all_card_ptrs);
-    for (auto it = all_card_ptrs.begin(); it < all_card_ptrs.end(); it++) {
-      (*it)->SetExpirationYear(2001);
-    }
-
-    // Filter the cards while capturing histograms.
-    base::HistogramTester histogram_tester;
-    PersonalDataManager::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        kNow, kNow + base::TimeDelta::FromDays(1), &cards);
-
-    // Validate that we get the expected filtered cards and histograms.
-    EXPECT_TRUE(cards.empty());
-    histogram_tester.ExpectTotalCount(kHistogramName, 1);
-    histogram_tester.ExpectBucketCount(kHistogramName, kNumCards, 1);
-  }
-}
-
 TEST_F(PersonalDataManagerTest, CreateDataForTest) {
   // Disable sync so the data gets created.
   sync_service_.SetPreferredDataTypes(syncer::ModelTypeSet());
@@ -7962,116 +7518,6 @@ TEST_F(PersonalDataManagerTest, AddAndGetUpiId) {
   WaitOnceForOnPersonalDataChanged();
   std::vector<std::string> all_upi_ids = personal_data_->GetUpiIds();
   EXPECT_THAT(all_upi_ids, testing::ElementsAre(upi_id));
-}
-
-struct ShareNicknameTestParam {
-  std::u16string local_nickname;
-  std::u16string server_nickname;
-  std::u16string expected_nickname;
-};
-
-const ShareNicknameTestParam kShareNicknameTestParam[] = {
-    {u"", u"", u""},
-    {u"", u"server nickname", u"server nickname"},
-    {u"local nickname", u"", u"local nickname"},
-    {u"local nickname", u"server nickname", u"local nickname"},
-};
-
-class PersonalDataManagerTestForSharingNickname
-    : public PersonalDataManagerTest,
-      public testing::WithParamInterface<ShareNicknameTestParam> {
- public:
-  PersonalDataManagerTestForSharingNickname()
-      : local_nickname_(GetParam().local_nickname),
-        server_nickname_(GetParam().server_nickname),
-        expected_nickname_(GetParam().expected_nickname) {}
-
-  CreditCard GetLocalCard() {
-    CreditCard local_card("287151C8-6AB1-487C-9095-28E80BE5DA15",
-                          test::kEmptyOrigin);
-    test::SetCreditCardInfo(&local_card, "Clyde Barrow",
-                            "378282246310005" /* American Express */, "04",
-                            "2999", "1");
-    local_card.set_use_count(3);
-    local_card.set_use_date(AutofillClock::Now() -
-                            base::TimeDelta::FromDays(1));
-    local_card.SetNickname(local_nickname_);
-    return local_card;
-  }
-
-  CreditCard GetServerCard() {
-    CreditCard full_server_card(CreditCard::FULL_SERVER_CARD, "c789");
-    test::SetCreditCardInfo(&full_server_card, "Clyde Barrow",
-                            "378282246310005" /* American Express */, "04",
-                            "2999", "1");
-    full_server_card.SetNickname(server_nickname_);
-    return full_server_card;
-  }
-
-  std::u16string local_nickname_;
-  std::u16string server_nickname_;
-  std::u16string expected_nickname_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         PersonalDataManagerTestForSharingNickname,
-                         testing::ValuesIn(kShareNicknameTestParam));
-
-TEST_P(PersonalDataManagerTestForSharingNickname,
-       VerifySuggestion_DuplicateCards) {
-  ASSERT_EQ(0U, personal_data_->GetCreditCards().size());
-  CreditCard local_card = GetLocalCard();
-  personal_data_->AddCreditCard(local_card);
-
-  SetServerCards({GetServerCard()});
-
-  personal_data_->Refresh();
-  WaitForOnPersonalDataChanged();
-  ASSERT_EQ(2U, personal_data_->GetCreditCards().size());
-
-  // Verifies the suggestion shows the right text.
-  std::vector<Suggestion> suggestions =
-      personal_data_->GetCreditCardSuggestions(
-          AutofillType(CREDIT_CARD_NUMBER),
-          /*field_contents=*/std::u16string(),
-          /*include_server_cards=*/true);
-  ASSERT_EQ(1U, suggestions.size());
-  EXPECT_EQ(suggestions[0].value,
-            (expected_nickname_.empty() ? u"Amex" : expected_nickname_) +
-                u"  " + local_card.ObfuscatedLastFourDigits());
-}
-
-TEST_P(PersonalDataManagerTestForSharingNickname,
-       VerifySuggestion_UnrelatedCards) {
-  ASSERT_EQ(0U, personal_data_->GetCreditCards().size());
-  CreditCard local_card = GetLocalCard();
-  personal_data_->AddCreditCard(local_card);
-
-  std::vector<CreditCard> server_cards;
-  CreditCard server_card = GetServerCard();
-  // Make sure the cards are different by giving a different card number.
-  server_card.SetNumber(u"371449635398431");
-  server_cards.emplace_back(server_card);
-  SetServerCards(server_cards);
-
-  personal_data_->Refresh();
-  WaitForOnPersonalDataChanged();
-  ASSERT_EQ(2U, personal_data_->GetCreditCards().size());
-
-  // Verifies the suggestion shows the right text.
-  std::vector<Suggestion> suggestions =
-      personal_data_->GetCreditCardSuggestions(
-          AutofillType(CREDIT_CARD_NUMBER),
-          /*field_contents=*/std::u16string(),
-          /*include_server_cards=*/true);
-  ASSERT_EQ(2U, suggestions.size());
-  EXPECT_THAT(
-      std::vector<std::u16string>({suggestions[0].value, suggestions[1].value}),
-      testing::UnorderedElementsAre(
-          (server_nickname_.empty() ? u"Amex" : server_nickname_) + u"  " +
-              server_card.ObfuscatedLastFourDigits(),
-          (local_nickname_.empty() ? u"Amex" : local_nickname_) + u"  " +
-              local_card.ObfuscatedLastFourDigits()));
 }
 
 }  // namespace autofill

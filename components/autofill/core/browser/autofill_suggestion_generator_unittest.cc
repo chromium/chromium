@@ -1,0 +1,213 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <vector>
+
+#include "base/guid.h"
+#include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_suggestion_generator.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/common/autofill_clock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+
+// TODO(crbug.com/1196021): Move GetSuggestionsForCreditCard tests and
+// BrowserAutofillManagerTestForSharingNickname here from
+// browser_autofill_manager_unittest.cc.
+class AutofillSuggestionGeneratorTest : public testing::Test {
+ public:
+  AutofillSuggestionGeneratorTest() = default;
+
+  void SetUp() override {
+    autofill_client_.SetPrefs(test::PrefServiceForTesting());
+    personal_data_.Init(/*profile_database=*/database_,
+                        /*account_database=*/nullptr,
+                        /*pref_service=*/autofill_client_.GetPrefs(),
+                        /*local_state=*/autofill_client_.GetPrefs(),
+                        /*identity_manager=*/nullptr,
+                        /*client_profile_validator=*/nullptr,
+                        /*history_service=*/nullptr,
+                        /*strike_database=*/nullptr,
+                        /*is_off_the_record=*/false);
+    suggestion_generator_ = std::make_unique<AutofillSuggestionGenerator>(
+        &autofill_client_, &personal_data_);
+  }
+
+  AutofillSuggestionGenerator* suggestion_generator() {
+    return suggestion_generator_.get();
+  }
+
+ private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
+  std::unique_ptr<AutofillSuggestionGenerator> suggestion_generator_;
+  TestAutofillClient autofill_client_;
+  scoped_refptr<AutofillWebDataService> database_;
+  TestPersonalDataManager personal_data_;
+};
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       RemoveExpiredCreditCardsNotUsedSinceTimestamp) {
+  const char kHistogramName[] = "Autofill.CreditCardsSuppressedForDisuse";
+  const base::Time kNow = AutofillClock::Now();
+  constexpr size_t kNumCards = 10;
+
+  // We construct a card vector as below, number indicate days of last used
+  // from |kNow|:
+  // [30, 90, 150, 210, 270, 0, 60, 120, 180, 240]
+  // |expires at 2999     |, |expired at 2001   |
+  std::vector<CreditCard> all_card_data;
+  std::vector<CreditCard*> all_card_ptrs;
+  all_card_data.reserve(kNumCards);
+  all_card_ptrs.reserve(kNumCards);
+  for (size_t i = 0; i < kNumCards; ++i) {
+    constexpr base::TimeDelta k30Days = base::TimeDelta::FromDays(30);
+    all_card_data.emplace_back(base::GenerateGUID(), "https://example.com");
+    if (i < 5) {
+      all_card_data.back().set_use_date(kNow - (i + i + 1) * k30Days);
+      test::SetCreditCardInfo(&all_card_data.back(), "Clyde Barrow",
+                              "378282246310005" /* American Express */, "04",
+                              "2999", "1");
+    } else {
+      all_card_data.back().set_use_date(kNow - (i + i - 10) * k30Days);
+      test::SetCreditCardInfo(&all_card_data.back(), "John Dillinger",
+                              "4234567890123456" /* Visa */, "04", "2001", "1");
+    }
+    all_card_ptrs.push_back(&all_card_data.back());
+  }
+
+  // Verify that only expired disused card are removed. Note that only the last
+  // two cards have use dates more than 175 days ago and are expired.
+  {
+    // Create a working copy of the card pointers.
+    std::vector<CreditCard*> cards(all_card_ptrs);
+
+    // The first 8 are either not expired or having use dates more recent
+    // than 175 days ago.
+    std::vector<CreditCard*> expected_cards(cards.begin(), cards.begin() + 8);
+
+    // Filter the cards while capturing histograms.
+    base::HistogramTester histogram_tester;
+    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
+        kNow, kNow - base::TimeDelta::FromDays(175), &cards);
+
+    // Validate that we get the expected filtered cards and histograms.
+    EXPECT_EQ(expected_cards, cards);
+    histogram_tester.ExpectTotalCount(kHistogramName, 1);
+    histogram_tester.ExpectBucketCount(kHistogramName, 2, 1);
+  }
+
+  // Reverse the card order and verify that only expired and disused cards
+  // are removed. Note that the first three cards, post reversal,
+  // have use dates more then 115 days ago.
+  {
+    // Create a reversed working copy of the card pointers.
+    std::vector<CreditCard*> cards(all_card_ptrs.rbegin(),
+                                   all_card_ptrs.rend());
+
+    // The last 7 cards have use dates more recent than 115 days ago.
+    std::vector<CreditCard*> expected_cards(cards.begin() + 3, cards.end());
+
+    // Filter the cards while capturing histograms.
+    base::HistogramTester histogram_tester;
+    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
+        kNow, kNow - base::TimeDelta::FromDays(115), &cards);
+
+    // Validate that we get the expected filtered cards and histograms.
+    EXPECT_EQ(expected_cards, cards);
+    histogram_tester.ExpectTotalCount(kHistogramName, 1);
+    histogram_tester.ExpectBucketCount(kHistogramName, 3, 1);
+  }
+  // Randomize the card order and validate that the filtered list retains
+  // that order. Note that the three cards have use dates more then 115
+  // days ago and are expired.
+  {
+    // A handy constant.
+    const base::Time k115DaysAgo = kNow - base::TimeDelta::FromDays(115);
+
+    // Created a shuffled primary copy of the card pointers.
+    std::vector<CreditCard*> shuffled_cards(all_card_ptrs);
+    base::RandomShuffle(shuffled_cards.begin(), shuffled_cards.end());
+
+    // Copy the shuffled card pointer collections to use as the working
+    // set.
+    std::vector<CreditCard*> cards(shuffled_cards);
+
+    // Filter the cards while capturing histograms.
+    base::HistogramTester histogram_tester;
+    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
+        kNow, k115DaysAgo, &cards);
+
+    // Validate that we have the right cards. Iterate of the the shuffled
+    // primary copy and the filtered copy at the same time. making sure that
+    // the elements in the filtered copy occur in the same order as the shuffled
+    // primary. Along the way, validate that the elements in and out of the
+    // filtered copy have appropriate use dates and expiration states.
+    EXPECT_EQ(7u, cards.size());
+    auto it = shuffled_cards.begin();
+    for (const CreditCard* card : cards) {
+      for (; it != shuffled_cards.end() && (*it) != card; ++it) {
+        EXPECT_LT((*it)->use_date(), k115DaysAgo);
+        ASSERT_TRUE((*it)->IsExpired(kNow));
+      }
+      ASSERT_TRUE(it != shuffled_cards.end());
+      ASSERT_TRUE(card->use_date() > k115DaysAgo || !card->IsExpired(kNow));
+      ++it;
+    }
+    for (; it != shuffled_cards.end(); ++it) {
+      EXPECT_LT((*it)->use_date(), k115DaysAgo);
+      ASSERT_TRUE((*it)->IsExpired(kNow));
+    }
+
+    // Validate the histograms.
+    histogram_tester.ExpectTotalCount(kHistogramName, 1);
+    histogram_tester.ExpectBucketCount(kHistogramName, 3, 1);
+  }
+
+  // Verify all cards are retained if they're sufficiently recently
+  // used.
+  {
+    // Create a working copy of the card pointers.
+    std::vector<CreditCard*> cards(all_card_ptrs);
+
+    // Filter the cards while capturing histograms.
+    base::HistogramTester histogram_tester;
+    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
+        kNow, kNow - base::TimeDelta::FromDays(720), &cards);
+
+    // Validate that we get the expected filtered cards and histograms.
+    EXPECT_EQ(all_card_ptrs, cards);
+    histogram_tester.ExpectTotalCount(kHistogramName, 1);
+    histogram_tester.ExpectBucketCount(kHistogramName, 0, 1);
+  }
+
+  // Verify all cards are removed if they're all disused and expired.
+  {
+    // Create a working copy of the card pointers.
+    std::vector<CreditCard*> cards(all_card_ptrs);
+    for (auto it = all_card_ptrs.begin(); it < all_card_ptrs.end(); it++) {
+      (*it)->SetExpirationYear(2001);
+    }
+
+    // Filter the cards while capturing histograms.
+    base::HistogramTester histogram_tester;
+    AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
+        kNow, kNow + base::TimeDelta::FromDays(1), &cards);
+
+    // Validate that we get the expected filtered cards and histograms.
+    EXPECT_TRUE(cards.empty());
+    histogram_tester.ExpectTotalCount(kHistogramName, 1);
+    histogram_tester.ExpectBucketCount(kHistogramName, kNumCards, 1);
+  }
+}
+
+}  // namespace autofill

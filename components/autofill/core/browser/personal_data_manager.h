@@ -305,6 +305,8 @@ class PersonalDataManager : public KeyedService,
   // true if the field has already been autofilled, and |field_types| stores the
   // types of all the form's input fields, including the field with which the
   // user is interacting.
+  // TODO(crbug.com/1210112): Move profile suggestion creation to
+  // suggestion_generator.
   std::vector<Suggestion> GetProfileSuggestions(
       const AutofillType& type,
       const std::u16string& field_contents,
@@ -317,23 +319,6 @@ class PersonalDataManager : public KeyedService,
   // be included.
   const std::vector<CreditCard*> GetCreditCardsToSuggest(
       bool include_server_cards) const;
-
-  // Remove credit cards that are expired at |comparison_time| and not used
-  // since |min_last_used| from |cards|. The relative ordering of |cards| is
-  // maintained.
-  static void RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-      base::Time comparison_time,
-      base::Time min_last_used,
-      std::vector<CreditCard*>* cards);
-
-  // Gets credit cards that can suggest data for |type|. See
-  // GetProfileSuggestions for argument descriptions. The variant in each
-  // GUID pair should be ignored. If |include_server_cards| is false, server
-  // side cards should not be included.
-  std::vector<Suggestion> GetCreditCardSuggestions(
-      const AutofillType& type,
-      const std::u16string& field_contents,
-      bool include_server_cards);
 
   // Re-loads profiles and credit cards from the WebDatabase asynchronously.
   // In the general case, this is a no-op and will re-create the same
@@ -538,12 +523,12 @@ class PersonalDataManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            GetProfileSuggestions_NoProfilesAddedIfDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           GetCreditCardSuggestions_CreditCardAutofillDisabled);
+                           GetCreditCardsToSuggest_CreditCardAutofillDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           GetCreditCardSuggestions_NoCardsLoadedIfDisabled);
+                           GetCreditCardsToSuggest_NoCardsLoadedIfDisabled);
   FRIEND_TEST_ALL_PREFIXES(
       PersonalDataManagerTest,
-      GetCreditCardSuggestions_NoCreditCardsAddedIfDisabled);
+      GetCreditCardsToSuggest_NoCreditCardsAddedIfDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            RequestProfileServerValidity);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
@@ -714,13 +699,6 @@ class PersonalDataManager : public KeyedService,
   // prefs::kAutofillProfileEnabled changes.
   void EnableAutofillPrefChanged();
 
-  // Returns credit card suggestions based on the |cards_to_suggest| and the
-  // |type| and |field_contents| of the credit card field.
-  std::vector<Suggestion> GetSuggestionsForCards(
-      const AutofillType& type,
-      const std::u16string& field_contents,
-      const std::vector<CreditCard*>& cards_to_suggest) const;
-
   // Converts the Wallet addresses to local autofill profiles. This should be
   // called after all the syncable data has been processed (local cards and
   // profiles, Wallet data and metadata). Also updates Wallet cards' billing
@@ -787,12 +765,6 @@ class PersonalDataManager : public KeyedService,
   // Migrates the user opted in to wallet sync transport. This is needed while
   // migrating from using email to Gaia ID as th account identifier.
   void MigrateUserOptedInWalletSyncTransportIfNeeded();
-
-  // Return a nickname for the |card| to display. This is generally the nickname
-  // stored in |card|, unless |card| exists as a local and a server copy. In
-  // this case, we prefer the nickname of the local if it is defined. If only
-  // one copy has a nickname, take that.
-  std::u16string GetDisplayNicknameForCreditCard(const CreditCard& card) const;
 
   // Returns true if the sync is enabled for |model_type|.
   bool IsSyncEnabledFor(syncer::ModelType model_type);
