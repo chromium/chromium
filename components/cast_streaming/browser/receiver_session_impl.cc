@@ -2,21 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/engine/browser/cast_streaming_session_client.h"
+#include "components/cast_streaming/browser/receiver_session_impl.h"
 
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/cast/message_port/message_port_fuchsia.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 
-CastStreamingSessionClient::CastStreamingSessionClient(
-    fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request)
-    : message_port_request_(std::move(message_port_request)) {}
+namespace cast_streaming {
 
-CastStreamingSessionClient::~CastStreamingSessionClient() = default;
+// static
+std::unique_ptr<ReceiverSession> ReceiverSession::Create(
+    ReceiverSession::MessagePortProvider message_port_provider) {
+  return std::make_unique<ReceiverSessionImpl>(
+      std::move(message_port_provider));
+}
 
-void CastStreamingSessionClient::StartMojoConnection(
+ReceiverSessionImpl::ReceiverSessionImpl(
+    ReceiverSession::MessagePortProvider message_port_provider)
+    : message_port_provider_(std::move(message_port_provider)) {
+  DCHECK(message_port_provider_);
+}
+
+ReceiverSessionImpl::~ReceiverSessionImpl() = default;
+
+void ReceiverSessionImpl::SetCastStreamingReceiver(
     mojo::AssociatedRemote<mojom::CastStreamingReceiver>
         cast_streaming_receiver) {
   DVLOG(1) << __func__;
@@ -26,21 +36,19 @@ void CastStreamingSessionClient::StartMojoConnection(
   // AssociatedRemote, is owned by |this| and will be torn-down at the same time
   // as |this|.
   cast_streaming_receiver_->EnableReceiver(base::BindOnce(
-      &CastStreamingSessionClient::OnReceiverEnabled, base::Unretained(this)));
+      &ReceiverSessionImpl::OnReceiverEnabled, base::Unretained(this)));
   cast_streaming_receiver_.set_disconnect_handler(base::BindOnce(
-      &CastStreamingSessionClient::OnMojoDisconnect, base::Unretained(this)));
+      &ReceiverSessionImpl::OnMojoDisconnect, base::Unretained(this)));
 }
 
-void CastStreamingSessionClient::OnReceiverEnabled() {
+void ReceiverSessionImpl::OnReceiverEnabled() {
   DVLOG(1) << __func__;
-  DCHECK(message_port_request_);
-  cast_streaming_session_.Start(this,
-                                cast_api_bindings::MessagePortFuchsia::Create(
-                                    std::move(message_port_request_)),
+  DCHECK(message_port_provider_);
+  cast_streaming_session_.Start(this, std::move(message_port_provider_).Run(),
                                 base::SequencedTaskRunnerHandle::Get());
 }
 
-void CastStreamingSessionClient::OnSessionInitialization(
+void ReceiverSessionImpl::OnSessionInitialization(
     absl::optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
         audio_stream_info,
     absl::optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
@@ -68,21 +76,21 @@ void CastStreamingSessionClient::OnSessionInitialization(
       std::move(mojo_audio_stream_info), std::move(mojo_video_stream_info));
 }
 
-void CastStreamingSessionClient::OnAudioBufferReceived(
+void ReceiverSessionImpl::OnAudioBufferReceived(
     media::mojom::DecoderBufferPtr buffer) {
   DVLOG(3) << __func__;
   DCHECK(audio_remote_);
   audio_remote_->ProvideBuffer(std::move(buffer));
 }
 
-void CastStreamingSessionClient::OnVideoBufferReceived(
+void ReceiverSessionImpl::OnVideoBufferReceived(
     media::mojom::DecoderBufferPtr buffer) {
   DVLOG(3) << __func__;
   DCHECK(video_remote_);
   video_remote_->ProvideBuffer(std::move(buffer));
 }
 
-void CastStreamingSessionClient::OnSessionReinitialization(
+void ReceiverSessionImpl::OnSessionReinitialization(
     absl::optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
         audio_stream_info,
     absl::optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
@@ -101,7 +109,7 @@ void CastStreamingSessionClient::OnSessionReinitialization(
   }
 }
 
-void CastStreamingSessionClient::OnSessionEnded() {
+void ReceiverSessionImpl::OnSessionEnded() {
   DVLOG(1) << __func__;
 
   // Tear down the Mojo connection.
@@ -115,14 +123,12 @@ void CastStreamingSessionClient::OnSessionEnded() {
     video_remote_.reset();
 }
 
-void CastStreamingSessionClient::OnMojoDisconnect() {
+void ReceiverSessionImpl::OnMojoDisconnect() {
   DVLOG(1) << __func__;
 
-  if (message_port_request_) {
-    // Close the MessagePort if the Cast Streaming Session was never started.
-    message_port_request_.Close(ZX_ERR_PEER_CLOSED);
-    cast_streaming_receiver_.reset();
-    return;
+  // Close the underlying connection.
+  if (message_port_provider_) {
+    std::move(message_port_provider_).Run().reset();
   }
 
   // Close the Cast Streaming Session. OnSessionEnded() will be called as part
@@ -133,3 +139,5 @@ void CastStreamingSessionClient::OnMojoDisconnect() {
   audio_remote_.reset();
   video_remote_.reset();
 }
+
+}  // namespace cast_streaming

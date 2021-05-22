@@ -42,7 +42,7 @@ namespace content {
 class FromRenderFrameHost;
 }  // namespace content
 
-class CastStreamingSessionClient;
+class ReceiverSessionClient;
 class ContextImpl;
 class FrameWindowTreeHost;
 class FrameLayoutManager;
@@ -103,9 +103,6 @@ class FrameImpl : public fuchsia::web::Frame,
   void set_semantics_manager_for_test(
       fuchsia::accessibility::semantics::SemanticsManager* semantics_manager) {
     semantics_manager_for_test_ = semantics_manager;
-  }
-  CastStreamingSessionClient* cast_streaming_session_client_for_test() {
-    return cast_streaming_session_client_.get();
   }
   FrameWindowTreeHost* window_tree_host_for_test() {
     return window_tree_host_.get();
@@ -326,7 +323,7 @@ class FrameImpl : public fuchsia::web::Frame,
   gfx::Size render_size_override_;
 
   std::unique_ptr<MediaPlayerImpl> media_player_;
-  std::unique_ptr<CastStreamingSessionClient> cast_streaming_session_client_;
+  std::unique_ptr<ReceiverSessionClient> receiver_session_client_;
   on_load_script_injector::OnLoadScriptInjectorHost<uint64_t> script_injector_;
 
   fidl::Binding<fuchsia::web::Frame> binding_;

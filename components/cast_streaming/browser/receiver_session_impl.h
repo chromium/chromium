@@ -2,34 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_ENGINE_BROWSER_CAST_STREAMING_SESSION_CLIENT_H_
-#define FUCHSIA_ENGINE_BROWSER_CAST_STREAMING_SESSION_CLIENT_H_
+#ifndef COMPONENTS_CAST_STREAMING_BROWSER_RECEIVER_SESSION_IMPL_H_
+#define COMPONENTS_CAST_STREAMING_BROWSER_RECEIVER_SESSION_IMPL_H_
 
-#include <fuchsia/web/cpp/fidl.h>
-
-#include "components/cast_streaming/browser/public/cast_streaming_session.h"
+#include "components/cast_streaming/browser/cast_streaming_session.h"
+#include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/mojo/cast_streaming_session.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace cast_streaming {
+
 // Owns the CastStreamingSession and sends buffers to the renderer process via
 // a Mojo service.
-//
-// TODO(crbug.com/1208194): Move this class to //components/cast_streaming,
-class CastStreamingSessionClient
-    : public cast_streaming::CastStreamingSession::Client {
+class ReceiverSessionImpl : public cast_streaming::CastStreamingSession::Client,
+                            public ReceiverSession {
  public:
-  explicit CastStreamingSessionClient(
-      fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request);
-  ~CastStreamingSessionClient() final;
+  explicit ReceiverSessionImpl(MessagePortProvider message_port_provider);
+  ~ReceiverSessionImpl() final;
 
-  CastStreamingSessionClient(const CastStreamingSessionClient&) = delete;
-  CastStreamingSessionClient& operator=(const CastStreamingSessionClient&) =
-      delete;
+  ReceiverSessionImpl(const ReceiverSessionImpl&) = delete;
+  ReceiverSessionImpl& operator=(const ReceiverSessionImpl&) = delete;
 
-  void StartMojoConnection(mojo::AssociatedRemote<mojom::CastStreamingReceiver>
-                               cast_streaming_receiver);
+  // ReceiverSession implementation.
+  void SetCastStreamingReceiver(
+      mojo::AssociatedRemote<mojom::CastStreamingReceiver>
+          cast_streaming_receiver) override;
 
  private:
   // Handler for |cast_streaming_receiver_| disconnect.
@@ -53,7 +52,10 @@ class CastStreamingSessionClient
           video_stream_info) final;
   void OnSessionEnded() final;
 
-  fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request_;
+  // Populated in the ctor, and empty following a call to either
+  // OnReceiverEnabled() or OnMojoDisconnect().
+  MessagePortProvider message_port_provider_;
+
   mojo::AssociatedRemote<mojom::CastStreamingReceiver> cast_streaming_receiver_;
   cast_streaming::CastStreamingSession cast_streaming_session_;
 
@@ -61,4 +63,6 @@ class CastStreamingSessionClient
   mojo::Remote<mojom::CastStreamingBufferReceiver> video_remote_;
 };
 
-#endif  // FUCHSIA_ENGINE_BROWSER_CAST_STREAMING_SESSION_CLIENT_H_
+}  // namespace cast_streaming
+
+#endif  // COMPONENTS_CAST_STREAMING_BROWSER_RECEIVER_SESSION_IMPL_H_

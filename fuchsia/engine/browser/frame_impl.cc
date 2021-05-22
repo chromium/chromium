@@ -40,13 +40,13 @@
 #include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/message_port.h"
 #include "fuchsia/engine/browser/accessibility_bridge.h"
-#include "fuchsia/engine/browser/cast_streaming_session_client.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/event_filter.h"
 #include "fuchsia/engine/browser/frame_layout_manager.h"
 #include "fuchsia/engine/browser/frame_window_tree_host.h"
 #include "fuchsia/engine/browser/media_player_impl.h"
 #include "fuchsia/engine/browser/navigation_policy_handler.h"
+#include "fuchsia/engine/browser/receiver_session_client.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
 #include "fuchsia/engine/common/cast_streaming.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -554,8 +554,7 @@ bool FrameImpl::MaybeHandleCastStreamingMessage(
     return false;
 
   fuchsia::web::Frame_PostMessage_Result result;
-  if (cast_streaming_session_client_ ||
-      !IsValidCastStreamingMessage(*message)) {
+  if (receiver_session_client_ || !IsValidCastStreamingMessage(*message)) {
     // The Cast Streaming MessagePort should only be set once and |message|
     // should be a valid Cast Streaming Message.
     result.set_err(fuchsia::web::FrameError::INVALID_ORIGIN);
@@ -563,7 +562,7 @@ bool FrameImpl::MaybeHandleCastStreamingMessage(
     return true;
   }
 
-  cast_streaming_session_client_ = std::make_unique<CastStreamingSessionClient>(
+  receiver_session_client_ = std::make_unique<ReceiverSessionClient>(
       std::move((*message->mutable_outgoing_transfer())[0].message_port()));
   result.set_response(fuchsia::web::Frame_PostMessage_Response());
   (*callback)(std::move(result));
@@ -572,15 +571,14 @@ bool FrameImpl::MaybeHandleCastStreamingMessage(
 
 void FrameImpl::MaybeStartCastStreaming(
     content::NavigationHandle* navigation_handle) {
-  if (!context_->has_cast_streaming_enabled() ||
-      !cast_streaming_session_client_)
+  if (!context_->has_cast_streaming_enabled() || !receiver_session_client_)
     return;
 
   mojo::AssociatedRemote<mojom::CastStreamingReceiver> cast_streaming_receiver;
   navigation_handle->GetRenderFrameHost()
       ->GetRemoteAssociatedInterfaces()
       ->GetInterface(&cast_streaming_receiver);
-  cast_streaming_session_client_->StartMojoConnection(
+  receiver_session_client_->SetCastStreamingReceiver(
       std::move(cast_streaming_receiver));
 }
 

@@ -5,7 +5,7 @@
 #include "base/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
-#include "components/cast_streaming/browser/public/cast_streaming_session.h"
+#include "components/cast_streaming/browser/cast_streaming_session.h"
 #include "mojo/core/embedder/embedder.h"
 
 int main(int argc, char** argv) {

@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "components/cast/message_port/message_port.h"
-#include "components/cast_streaming/browser/public/cast_streaming_session.h"
+#include "components/cast_streaming/browser/cast_streaming_session.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

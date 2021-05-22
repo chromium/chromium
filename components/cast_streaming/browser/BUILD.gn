@@ -32,6 +32,28 @@ source_set("core") {
 source_set("receiver_session") {
   deps = [
     ":core",
+    ":streaming_session",
+    "//base",
+    "//media",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/system",
+  ]
+  public_deps = [
+    "//components/cast_streaming/mojo:mojom",
+    "//third_party/openscreen/src/cast/common:channel",
+  ]
+  visibility = [ ":*" ]
+  public = [ "public/receiver_session.h" ]
+  sources = [
+    "receiver_session_impl.cc",
+    "receiver_session_impl.h",
+  ]
+}
+
+source_set("streaming_session") {
+  deps = [
+    ":core",
     "//base",
     "//components/openscreen_platform",
     "//media",
@@ -44,9 +66,9 @@ source_set("receiver_session") {
   ]
   public_deps = [ "//components/cast/message_port" ]
   visibility = [ ":*" ]
-  public = [ "public/cast_streaming_session.h" ]
   sources = [
     "cast_streaming_session.cc",
+    "cast_streaming_session.h",
     "stream_consumer.cc",
     "stream_consumer.h",
   ]
@@ -101,7 +123,7 @@ source_set("test_sender") {
 source_set("test_receiver") {
   testonly = true
   deps = [
-    ":receiver_session",
+    ":streaming_session",
     "//base",
     "//components/openscreen_platform",
     "//media",
@@ -123,7 +145,7 @@ source_set("test_receiver") {
 test("e2e_tests") {
   deps = [
     ":core",
-    ":receiver_session",
+    ":streaming_session",
     ":test_receiver",
     ":test_sender",
     "//base/test:test_support",

@@ -112,31 +112,6 @@ IN_PROC_BROWSER_TEST_F(CastStreamingDisabledTest, LoadFailure) {
   navigation_listener_.RunUntilTitleEquals("error");
 }
 
-// Check that the Cast Streaming MessagePort gets properly set on the Frame.
-IN_PROC_BROWSER_TEST_F(CastStreamingTest, FrameMessagePort) {
-  fuchsia::web::FramePtr frame = CreateFrame();
-
-  FrameImpl* frame_impl = context_impl()->GetFrameImplForTest(&frame);
-  ASSERT_TRUE(frame_impl);
-  EXPECT_FALSE(frame_impl->cast_streaming_session_client_for_test());
-
-  fuchsia::web::MessagePortPtr cast_streaming_message_port;
-
-  base::RunLoop run_loop;
-  cr_fuchsia::ResultReceiver<fuchsia::web::Frame_PostMessage_Result>
-      post_result(run_loop.QuitClosure());
-  frame->PostMessage(
-      "cast-streaming:receiver",
-      cr_fuchsia::CreateWebMessageWithMessagePortRequest(
-          cast_streaming_message_port.NewRequest(),
-          cr_fuchsia::MemBufferFromString("hi", "test")),
-      cr_fuchsia::CallbackToFitFunction(post_result.GetReceiveCallback()));
-  run_loop.Run();
-  ASSERT_TRUE(post_result->is_response());
-
-  EXPECT_TRUE(frame_impl->cast_streaming_session_client_for_test());
-}
-
 // Check that attempting to load the cast streaming media source URL when the
 // command line switch is set properly succeeds.
 IN_PROC_BROWSER_TEST_F(CastStreamingTest, LoadSuccess) {
