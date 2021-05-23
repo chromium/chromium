@@ -1748,6 +1748,8 @@ void XMLHttpRequest::DidFinishLoading(uint64_t identifier) {
 }
 
 void XMLHttpRequest::DidFinishLoadingInternal() {
+  recordreplay::Assert("XMLHttpRequest::DidFinishLoadingInternal Start");
+
   if (response_document_parser_) {
     // |DocumentParser::finish()| tells the parser that we have reached end of
     // the data.  When using |HTMLDocumentParser|, which works asynchronously,
@@ -1756,6 +1758,7 @@ void XMLHttpRequest::DidFinishLoadingInternal() {
     // |notifyParserStopped| to progress state.
     response_document_parser_->Finish();
     DCHECK(response_document_);
+    recordreplay::Assert("XMLHttpRequest::DidFinishLoadingInternal #1");
     return;
   }
 
@@ -1777,6 +1780,8 @@ void XMLHttpRequest::DidFinishLoadingInternal() {
 
   ClearVariablesForLoading();
   EndLoading();
+
+  recordreplay::Assert("XMLHttpRequest::DidFinishLoadingInternal Done");
 }
 
 void XMLHttpRequest::DidFinishLoadingFromBlob() {
