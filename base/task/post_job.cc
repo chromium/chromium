@@ -30,6 +30,7 @@ bool JobDelegate::ShouldYield() {
   // ShouldYield() shouldn't be called again after returning true.
   DCHECK(!last_should_yield_);
 #endif  // DCHECK_IS_ON()
+  recordreplay::Assert("JobDelegate::ShouldYield Start");
   const bool should_yield =
       task_source_->ShouldYield() ||
       (pooled_task_runner_delegate_ &&
@@ -38,6 +39,7 @@ bool JobDelegate::ShouldYield() {
 #if DCHECK_IS_ON()
   last_should_yield_ = should_yield;
 #endif  // DCHECK_IS_ON()
+  recordreplay::Assert("JobDelegate::ShouldYield Done %d", should_yield);
   return should_yield;
 }
 
