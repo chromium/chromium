@@ -1198,6 +1198,9 @@ void PCScanInternal::ClearRootsForTesting() {
   }
   scannable_roots_.ClearForTesting();     // IN-TEST
   nonscannable_roots_.ClearForTesting();  // IN-TEST
+  // Destroy write protector object, so that there is no double free on the next
+  // call to ReinitForTesting();
+  write_protector_.reset();
 }
 
 void PCScanInternal::ReinitForTesting(PCScan::WantedWriteProtectionMode mode) {
