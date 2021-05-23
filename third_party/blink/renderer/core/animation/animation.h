@@ -547,7 +547,7 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   // that the animation would have no effect. Updated in |Animation::PreCommit|.
   bool animation_has_no_effect_;
 
-  FRIEND_TEST_ALL_PREFIXES(AnimationAnimationTestCompositeAfterPaint,
+  FRIEND_TEST_ALL_PREFIXES(AnimationAnimationTestCompositing,
                            NoCompositeWithoutCompositedElementId);
   FRIEND_TEST_ALL_PREFIXES(AnimationAnimationTestNoCompositing,
                            PendingActivityWithFinishedEventListener);
