@@ -78,6 +78,25 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({ChromeFeatureList.WEB_FEED})
 public class TabbedAppMenuPropertiesDelegateUnitTest {
+    // Costants defining flags that determines multi-window menu items visibility.
+    private static final boolean TAB_M = true; // multiple tabs
+    private static final boolean TAB_S = false;
+    private static final boolean WIN_M = true; // in multi-window mode
+    private static final boolean WIN_S = false;
+    private static final boolean INST_M = true; // in multi-instance mode
+    private static final boolean INST_S = false;
+    private static final boolean TABLET = true;
+    private static final boolean PHONE = false;
+    private static final boolean API_YES = true; // multi-window API supported
+    private static final boolean API_NO = false;
+    private static final boolean PARTNER_YES = true; // partner homepage enabled
+    private static final boolean PARTNER_NO = false;
+    private static final boolean NEW_YES = true; // show 'new window'
+    private static final boolean NEW_NO = false;
+    private static final boolean MOVE_YES = true; // show 'move to other window'
+    private static final boolean MOVE_NO = false;
+    private static final Boolean X____ = null; // do not care
+
     @Rule
     public JniMocker jniMocker = new JniMocker();
     @Rule
@@ -147,6 +166,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     private boolean mIsMultiWindowApiSupported;
     private boolean mIsNewWindowMenuFeatureEnabled;
 
+    // Used to ensure all the combinations are tested.
+    private boolean[] mFlagCombinations = new boolean[1 << 6];
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -199,230 +221,61 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
-    private void setMultiWindowMenuFlags(int i) {
-        mIsMultiTab = (i & 1) == 1;
-        mIsMultiInstance = ((i >> 1) & 1) == 1;
-        mIsMultiWindow = ((i >> 2) & 1) == 1;
-        mIsPartnerHomepageEnabled = ((i >> 3) & 1) == 1;
-        mIsTabletScreen = ((i >> 4) & 1) == 1;
-        mIsMultiWindowApiSupported = ((i >> 5) & 1) == 1;
-    }
+    @Test
+    public void testPageMenuItems_multiWindowMenu_featureDisabled() {
+        setUpMocksForPageMenu();
 
-    private Menu createMenuForMultiWindow(boolean isNewWindowFeatureEnabled) {
-        doReturn(mIsMultiTab ? 2 : 1).when(mTabModelSelector).getTotalTabCount();
-        doReturn(mIsMultiWindow).when(mMultiWindowModeStateDispatcher).isInMultiWindowMode();
-        doReturn(mIsMultiWindowApiSupported)
-                .when(mMultiWindowModeStateDispatcher)
-                .canEnterMultiWindowMode();
-        doReturn(mIsMultiInstance).when(mMultiWindowModeStateDispatcher).isMultiInstanceRunning();
-        doReturn(mIsPartnerHomepageEnabled)
-                .when(mTabbedAppMenuPropertiesDelegate)
-                .isPartnerHomepageEnabled();
-        doReturn(mIsTabletScreen).when(mTabbedAppMenuPropertiesDelegate).isTabletSizeScreen();
-        doReturn(isNewWindowFeatureEnabled)
-                .when(mTabbedAppMenuPropertiesDelegate)
-                .isNewWindowMenuFeatureEnabled();
-        Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
-        return menu;
+        mIsNewWindowMenuFeatureEnabled = false;
+
+        // In general multiple tab/window/instances, show 'Move to other window'
+        testWindowMenu(TAB_M, WIN_M, INST_M, X____, X____, X____, NEW_NO, MOVE_YES);
+
+        // In multi-window, show it if partner homepage is disabled.
+        // Even though partner homepage is enabled, multiple tabs allows it as well.
+        testWindowMenu(X____, WIN_M, X____, X____, X____, PARTNER_NO, NEW_NO, MOVE_YES);
+        testWindowMenu(TAB_M, WIN_M, INST_S, X____, X____, PARTNER_YES, NEW_NO, MOVE_YES);
+
+        // Hide it for single window, or single tab + partner homepage set.
+        testWindowMenu(X____, WIN_S, INST_S, X____, X____, X____, NEW_NO, MOVE_NO);
+        testWindowMenu(TAB_S, WIN_M, X____, X____, X____, PARTNER_YES, NEW_NO, MOVE_NO);
+
+        assertTestedAllCombinations();
     }
 
     @Test
-    public void testPageMenuItems_doNotShowNewWindowForNonTablet() {
+    public void testPageMenuItems_multiWindowMenu_featureEnabled() {
         setUpMocksForPageMenu();
 
-        for (int i = 0; i < (1 << 6); ++i) {
-            setMultiWindowMenuFlags(i);
-            mIsTabletScreen = false;
-            Menu menu = createMenuForMultiWindow(true);
+        mIsNewWindowMenuFeatureEnabled = true;
 
-            // 'New Window' is never enabled on non-tablet-sized screen except multi-window,
-            // single-instance case.
-            if (mIsMultiWindow && !mIsMultiInstance) {
-                assertMenuContains(menu, R.id.new_window_menu_id);
-            } else {
-                assertMenuDoesNotContain(menu, R.id.new_window_menu_id);
-            }
-        }
-    }
+        //
+        // Single window
+        //
+        // No API support (i.e. cannot enter multi-window through menu), do not show 'New Window'
+        testWindowMenu(X____, WIN_S, X____, X____, API_NO, X____, NEW_NO, X____);
 
-    @Test
-    public void testPageMenuItems_neverShowBothNewWindowAndMoveToOtherWindow() {
-        setUpMocksForPageMenu();
+        // No 'New Window' on phone.
+        testWindowMenu(X____, WIN_S, INST_S, PHONE, X____, X____, NEW_NO, MOVE_NO);
 
-        for (int i = 0; i < (1 << 6); ++i) {
-            setMultiWindowMenuFlags(i);
-            Menu menu = createMenuForMultiWindow(true);
-            assertFalse(isMenuVisible(menu, R.id.new_window_menu_id)
-                    && isMenuVisible(menu, R.id.move_to_other_window_menu_id));
-        }
-    }
+        // Show 'New Window' only on tablet and API is supported.
+        testWindowMenu(X____, WIN_S, INST_S, TABLET, API_YES, X____, NEW_YES, MOVE_NO);
 
-    @Test
-    public void testPageMenuItems_noMoveToOtherWindowForPartnerHomepageWithSingleTab() {
-        setUpMocksForPageMenu();
+        //
+        // Multi-window
+        //
+        // In general multiple tab/window/instances, show 'Move to other window'
+        testWindowMenu(TAB_M, WIN_M, INST_M, X____, X____, X____, NEW_NO, MOVE_YES);
 
-        for (int i = 0; i < (1 << 6); ++i) {
-            setMultiWindowMenuFlags(i);
-            mIsPartnerHomepageEnabled = true;
-            mIsMultiTab = false;
-            Menu menu = createMenuForMultiWindow(true);
-            assertFalse(isMenuVisible(menu, R.id.move_to_other_window_menu_id));
-        }
-    }
+        // Single instance -> Show 'New window'
+        testWindowMenu(X____, WIN_M, INST_S, X____, X____, X____, NEW_YES, MOVE_NO);
 
-    @Test
-    public void testPageMenuItems_disabledFeature() {
-        // If the feature is disabled, show 'move to other window' as before.
-        setUpMocksForPageMenu();
-        mIsMultiTab = true;
-        mIsMultiWindow = true;
-        mIsTabletScreen = true;
-        Menu menu = createMenuForMultiWindow(false);
-        assertFalse(isMenuVisible(menu, R.id.new_window_menu_id));
-        assertTrue(isMenuVisible(menu, R.id.move_to_other_window_menu_id));
+        // Single tab can be moved when partner homepage is disabled.
+        testWindowMenu(TAB_S, WIN_M, INST_M, X____, X____, PARTNER_NO, NEW_NO, MOVE_YES);
 
-        // Hide even 'move to other window' for single tab/enabled partner homepage.
-        mIsPartnerHomepageEnabled = true;
-        mIsMultiTab = false;
-        menu = createMenuForMultiWindow(false);
-        assertFalse(isMenuVisible(menu, R.id.new_window_menu_id));
-        assertFalse(isMenuVisible(menu, R.id.move_to_other_window_menu_id));
-    }
+        // Single tab cannot be moved when partner homepage is enabled.
+        testWindowMenu(TAB_S, WIN_M, INST_M, X____, X____, PARTNER_YES, NEW_NO, MOVE_NO);
 
-    @Test
-    public void testPageMenuItems_showMoveToOtherWindowOnPhone() {
-        setUpMocksForPageMenu();
-        mIsMultiTab = true;
-        mIsMultiWindow = true;
-        mIsMultiInstance = true;
-        Menu menu = createMenuForMultiWindow(true);
-        assertFalse(isMenuVisible(menu, R.id.new_window_menu_id));
-        assertTrue(isMenuVisible(menu, R.id.move_to_other_window_menu_id));
-    }
-
-    @Test
-    public void testPageMenuItems_singleTab_singleWindow() {
-        setUpMocksForPageMenu();
-
-        doReturn(1).when(mTabModelSelector).getTotalTabCount();
-        doReturn(true).when(mMultiWindowModeStateDispatcher).canEnterMultiWindowMode();
-        Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
-
-        // Single tab in single-window mode shows 'New Window' only.
-        assertMenuContains(menu, R.id.new_window_menu_id);
-        assertMenuDoesNotContain(menu, R.id.move_to_other_window_menu_id);
-
-        doReturn(false).when(mMultiWindowModeStateDispatcher).canEnterMultiWindowMode();
-        menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
-
-        // Show neither if multi-window mode cannot be entered through menu.
-        assertMenuDoesNotContain(menu, R.id.new_window_menu_id);
-        assertMenuDoesNotContain(menu, R.id.move_to_other_window_menu_id);
-    }
-
-    @Test
-    public void testPageMenuItems_singletab_multiwindow_multiinstance() {
-        setUpMocksForPageMenu();
-
-        doReturn(1).when(mTabModelSelector).getTotalTabCount();
-        doReturn(true).when(mMultiWindowModeStateDispatcher).isInMultiWindowMode();
-        doReturn(true).when(mMultiWindowModeStateDispatcher).isMultiInstanceRunning();
-        Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
-
-        // Single tab in the current window can be moved to the other window, leaving
-        // the current instance empty-tabbed.
-        assertMenuDoesNotContain(menu, R.id.new_window_menu_id);
-        assertMenuContains(menu, R.id.move_to_other_window_menu_id);
-    }
-
-    @Test
-    public void testPageMenuItems_singletab_multiwindow_partnerhomepage() {
-        setUpMocksForPageMenu();
-
-        doReturn(1).when(mTabModelSelector).getTotalTabCount();
-        doReturn(true).when(mMultiWindowModeStateDispatcher).isInMultiWindowMode();
-        doReturn(true).when(mTabbedAppMenuPropertiesDelegate).isPartnerHomepageEnabled();
-        Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
-
-        // 'Move to other window' should be hidden when there is a single tab on the current
-        // window but partner homepage is set, since that would close the current instance,
-        // which apparently is not intended.
-        assertMenuContains(menu, R.id.new_window_menu_id);
-        assertMenuDoesNotContain(menu, R.id.move_to_other_window_menu_id);
-
-        // Should be invisible when in multi-instance mode as well.
-        doReturn(true).when(mMultiWindowModeStateDispatcher).isMultiInstanceRunning();
-        menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
-
-        assertMenuDoesNotContain(menu, R.id.new_window_menu_id);
-        assertMenuDoesNotContain(menu, R.id.move_to_other_window_menu_id);
-    }
-
-    @Test
-    public void testPageMenuItems_multipletab_singlewindow_singleinstance() {
-        setUpMocksForPageMenu();
-
-        doReturn(2).when(mTabModelSelector).getTotalTabCount();
-        doReturn(true).when(mMultiWindowModeStateDispatcher).canEnterMultiWindowMode();
-        Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
-
-        // Multiple tabs in single-window mode with single instance shows 'New Window' only
-        // if it's capable of entering multi-window mode.
-        assertMenuContains(menu, R.id.new_window_menu_id);
-        assertMenuDoesNotContain(menu, R.id.move_to_other_window_menu_id);
-    }
-
-    @Test
-    public void testPageMenuItems_multipletab_multiwindow_multiinstance() {
-        setUpMocksForPageMenu();
-
-        doReturn(2).when(mTabModelSelector).getTotalTabCount();
-        doReturn(true).when(mMultiWindowModeStateDispatcher).isInMultiWindowMode();
-        doReturn(true).when(mMultiWindowModeStateDispatcher).isMultiInstanceRunning();
-        Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
-
-        // Multiple tabs in multi-window mode shows 'move to other window' only.
-        assertMenuDoesNotContain(menu, R.id.new_window_menu_id);
-        assertMenuContains(menu, R.id.move_to_other_window_menu_id);
-
-        // Partner homepage doesn't affect when there are multiple tabs.
-        doReturn(true).when(mTabbedAppMenuPropertiesDelegate).isPartnerHomepageEnabled();
-        menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
-
-        // Multiple tabs in multi-window mode shows 'move to other window' only.
-        assertMenuDoesNotContain(menu, R.id.new_window_menu_id);
-        assertMenuContains(menu, R.id.move_to_other_window_menu_id);
-    }
-
-    @Test
-    public void testPageMenuItems_multiwindow_singleinstance() {
-        setUpMocksForPageMenu();
-
-        doReturn(2).when(mTabModelSelector).getTotalTabCount();
-        doReturn(true).when(mMultiWindowModeStateDispatcher).isInMultiWindowMode();
-        Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
-
-        // In multi-window, single instance mode we show 'new window'.
-        assertMenuContains(menu, R.id.new_window_menu_id);
-        assertMenuDoesNotContain(menu, R.id.move_to_other_window_menu_id);
-
-        doReturn(1).when(mTabModelSelector).getTotalTabCount();
-        menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
-
-        // Even with single tab, we show 'new window'.
-        assertMenuContains(menu, R.id.new_window_menu_id);
-        assertMenuDoesNotContain(menu, R.id.move_to_other_window_menu_id);
+        assertTestedAllCombinations();
     }
 
     @Test
@@ -519,6 +372,115 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         PopupMenu tempMenu = new PopupMenu(ContextUtils.getApplicationContext(), mDecorView);
         tempMenu.inflate(mTabbedAppMenuPropertiesDelegate.getAppMenuLayoutId());
         return tempMenu.getMenu();
+    }
+
+    private void setMultiWindowMenuFlags(int i) {
+        mIsMultiTab = (i & 1) == 1;
+        mIsMultiInstance = ((i >> 1) & 1) == 1;
+        mIsMultiWindow = ((i >> 2) & 1) == 1;
+        mIsPartnerHomepageEnabled = ((i >> 3) & 1) == 1;
+        mIsTabletScreen = ((i >> 4) & 1) == 1;
+        mIsMultiWindowApiSupported = ((i >> 5) & 1) == 1;
+    }
+
+    private Menu createMenuForMultiWindow() {
+        doReturn(mIsMultiTab ? 2 : 1).when(mTabModelSelector).getTotalTabCount();
+        doReturn(mIsMultiWindow).when(mMultiWindowModeStateDispatcher).isInMultiWindowMode();
+        doReturn(mIsMultiWindowApiSupported)
+                .when(mMultiWindowModeStateDispatcher)
+                .canEnterMultiWindowMode();
+        doReturn(mIsMultiInstance).when(mMultiWindowModeStateDispatcher).isMultiInstanceRunning();
+        doReturn(mIsPartnerHomepageEnabled)
+                .when(mTabbedAppMenuPropertiesDelegate)
+                .isPartnerHomepageEnabled();
+        doReturn(mIsTabletScreen).when(mTabbedAppMenuPropertiesDelegate).isTabletSizeScreen();
+        doReturn(mIsNewWindowMenuFeatureEnabled)
+                .when(mTabbedAppMenuPropertiesDelegate)
+                .isNewWindowMenuFeatureEnabled();
+        Menu menu = createTestMenu();
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        return menu;
+    }
+
+    private void testWindowMenu(Boolean multiTab, Boolean multiWindow, Boolean multiInstance,
+            Boolean tablet, Boolean apiSupported, Boolean partnerEnabled, Boolean showNewWindow,
+            Boolean showMoveWindow) {
+        for (int i = 0; i < (1 << 6); ++i) {
+            boolean bitMultiTab = (i & 1) == 1;
+            boolean bitMultiWindow = ((i >> 1) & 1) == 1;
+            boolean bitMultiInstance = ((i >> 2) & 1) == 1;
+            boolean bitTabletScreen = ((i >> 3) & 1) == 1;
+            boolean bitApiSupported = ((i >> 4) & 1) == 1;
+            boolean bitPartnerEnabled = ((i >> 5) & 1) == 1;
+
+            if ((multiTab == null || bitMultiTab == multiTab)
+                    && (multiWindow == null || bitMultiWindow == multiWindow)
+                    && (multiInstance == null || bitMultiInstance == multiInstance)
+                    && (tablet == null || bitTabletScreen == tablet)
+                    && (apiSupported == null || bitApiSupported == apiSupported)
+                    && (partnerEnabled == null || bitPartnerEnabled == partnerEnabled)) {
+                mIsMultiTab = bitMultiTab;
+                mIsMultiWindow = bitMultiWindow;
+                mIsMultiInstance = bitMultiInstance;
+                mIsTabletScreen = bitTabletScreen;
+                mIsMultiWindowApiSupported = bitApiSupported;
+                mIsPartnerHomepageEnabled = bitPartnerEnabled;
+
+                // Ignore invalid combination.
+                if (!bitMultiWindow && bitMultiInstance) continue;
+
+                mFlagCombinations[i] = true;
+                Menu menu = createMenuForMultiWindow();
+                if (showNewWindow != null) {
+                    if (showNewWindow) {
+                        assertTrue(getFlags(), isMenuVisible(menu, R.id.new_window_menu_id));
+                    } else {
+                        assertFalse(getFlags(), isMenuVisible(menu, R.id.new_window_menu_id));
+                    }
+                }
+                if (showMoveWindow != null) {
+                    if (showMoveWindow) {
+                        assertTrue(
+                                getFlags(), isMenuVisible(menu, R.id.move_to_other_window_menu_id));
+                    } else {
+                        assertFalse(
+                                getFlags(), isMenuVisible(menu, R.id.move_to_other_window_menu_id));
+                    }
+                }
+            }
+        }
+    }
+
+    private void assertTestedAllCombinations() {
+        for (int i = 0; i < (1 << 6); ++i) {
+            boolean bitMultiTab = (i & 1) == 1;
+            boolean bitMultiWindow = ((i >> 1) & 1) == 1;
+            boolean bitMultiInstance = ((i >> 2) & 1) == 1;
+            boolean bitTabletScreen = ((i >> 3) & 1) == 1;
+            boolean bitApiSupported = ((i >> 4) & 1) == 1;
+            boolean bitPartnerEnabled = ((i >> 5) & 1) == 1;
+
+            // Ignore invalid combination.
+            if (!bitMultiWindow && bitMultiInstance) continue;
+
+            assertTrue("Not tested: "
+                            + getFlags(bitMultiTab, bitMultiWindow, bitMultiInstance,
+                                    bitTabletScreen, bitApiSupported, bitPartnerEnabled),
+                    mFlagCombinations[i]);
+        }
+    }
+
+    private String getFlags(boolean multiTab, boolean multiWindow, boolean multiInstance,
+            boolean tablet, boolean apiSupported, boolean partnerEnabled) {
+        return "(" + (multiTab ? "TAB_M" : "TAB_S") + ", " + (multiWindow ? "WIN_M" : "WIN_S")
+                + ", " + (multiInstance ? "INST_M" : "INST_S") + ", "
+                + (tablet ? "TABLET" : "PHONE") + ", " + (apiSupported ? "API_YES" : "API_NO")
+                + ", " + (partnerEnabled ? "PARTNER_YES" : "PARTNER_NO") + ")";
+    }
+
+    private String getFlags() {
+        return getFlags(mIsMultiTab, mIsMultiWindow, mIsMultiInstance, mIsTabletScreen,
+                mIsMultiWindowApiSupported, mIsPartnerHomepageEnabled);
     }
 
     private void assertMenuItemsAreEqual(Menu menu, Integer... expectedItems) {
