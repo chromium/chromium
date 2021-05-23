@@ -4316,6 +4316,49 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   EXPECT_FALSE(host_observer.was_activated());
 }
 
+// Tests that saving password doesn't work in the prerendering.
+IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
+                       SavePasswordInPrerender) {
+  GURL url = embedded_test_server()->GetURL("/prerender/add_prerender.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  auto prerender_url =
+      embedded_test_server()->GetURL("/password/password_form.html");
+  // Loads a page in the prerender.
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*WebContents(), host_id);
+  content::RenderFrameHost* render_frame_host =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+  // Fills a form and submits through a <input type="submit"> button.
+  std::string fill_and_submit =
+      "document.getElementById('username_field').value = 'temp';"
+      "document.getElementById('password_field').value = 'random';"
+      "document.getElementById('input_submit_button').click()";
+  ASSERT_TRUE(content::ExecuteScript(render_frame_host, fill_and_submit));
+  // Since navigation from a prerendering page is disallowed, prerendering is
+  // canceled.
+  host_observer.WaitForDestroyed();
+  BubbleObserver bubble_observer(WebContents());
+  EXPECT_FALSE(bubble_observer.IsSavePromptShownAutomatically());
+
+  // Navigates the primary page to the URL.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  // Makes sure that the page is not from the prerendering.
+  EXPECT_FALSE(host_observer.was_activated());
+
+  // After loading the primary page, try to submit the password.
+  NavigationObserver observer(WebContents());
+  ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
+  observer.Wait();
+
+  // Saves the password and checks the store.
+  EXPECT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
+  bubble_observer.AcceptSavePrompt();
+
+  WaitForPasswordStore();
+  CheckThatCredentialsStored("temp", "random");
+}
+
 }  // namespace
 
 }  // namespace password_manager
