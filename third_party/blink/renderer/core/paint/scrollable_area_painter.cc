@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -225,6 +226,20 @@ void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,
   if (!cull_rect.Intersects(visual_rect))
     return;
 
+  const auto* properties =
+      GetScrollableArea().GetLayoutBox()->FirstFragment().PaintProperties();
+  DCHECK(properties);
+  auto type = scrollbar.Orientation() == kHorizontalScrollbar
+                  ? DisplayItem::kScrollbarHorizontal
+                  : DisplayItem::kScrollbarVertical;
+  absl::optional<ScopedPaintChunkProperties> chunk_properties;
+  if (const auto* effect = scrollbar.Orientation() == kHorizontalScrollbar
+                               ? properties->HorizontalScrollbarEffect()
+                               : properties->VerticalScrollbarEffect()) {
+    chunk_properties.emplace(context.GetPaintController(), *effect, scrollbar,
+                             type);
+  }
+
   if (scrollbar.IsCustomScrollbar()) {
     scrollbar.Paint(context, paint_offset);
 
@@ -240,19 +255,12 @@ void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,
     return;
   }
 
-  auto type = scrollbar.Orientation() == kHorizontalScrollbar
-                  ? DisplayItem::kScrollbarHorizontal
-                  : DisplayItem::kScrollbarVertical;
   if (context.GetPaintController().UseCachedItemIfPossible(scrollbar, type))
     return;
 
   const TransformPaintPropertyNode* scroll_translation = nullptr;
-  if (scrollable_area_->ShouldDirectlyCompositeScrollbar(scrollbar)) {
-    auto* properties =
-        GetScrollableArea().GetLayoutBox()->FirstFragment().PaintProperties();
-    DCHECK(properties);
+  if (scrollable_area_->ShouldDirectlyCompositeScrollbar(scrollbar))
     scroll_translation = properties->ScrollTranslation();
-  }
   auto delegate = base::MakeRefCounted<ScrollbarLayerDelegate>(
       scrollbar, context.DeviceScaleFactor());
   ScrollbarDisplayItem::Record(context, scrollbar, type, delegate, visual_rect,
