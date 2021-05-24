@@ -973,22 +973,6 @@ const char kBlockInsecurePrivateNetworkRequestsDescription[] =
     "public. This is a first step towards full enforcement of CORS-RFC1918: "
     "https://wicg.github.io/cors-rfc1918";
 
-const char kCrossOriginOpenerPolicyReportingName[] =
-    "Cross Origin Opener Policy reporting";
-const char kCrossOriginOpenerPolicyReportingDescription[] =
-    "Enables Cross Origin Opener Policy reporting.";
-
-const char kCrossOriginOpenerPolicyAccessReportingName[] =
-    "Cross Origin Opener Policy access reporting";
-const char kCrossOriginOpenerPolicyAccessReportingDescription[] =
-    "Enables Cross Origin Opener Policy access reporting.";
-
-const char kCrossOriginIsolatedName[] = "crossOriginIsolated";
-const char kCrossOriginIsolatedDescription[] =
-    "Marks some BrowsingContext groups as \"crossOriginIsolated\". They can "
-    "only host documents using a compatible set of {Origin,COOP,COEP}, "
-    "effectively isolating.";
-
 const char kDeprecateAltClickName[] =
     "Enable Alt+Click deprecation notifications";
 const char kDeprecateAltClickDescription[] =

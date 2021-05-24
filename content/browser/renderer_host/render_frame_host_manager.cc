@@ -2838,41 +2838,37 @@ bool RenderFrameHostManager::InitRenderView(
 
 WebExposedIsolationInfo RenderFrameHostManager::GetWebExposedIsolationInfo(
     NavigationRequest* navigation_request) {
-  if (base::FeatureList::IsEnabled(network::features::kCrossOriginIsolated)) {
-    if (frame_tree_node_->IsMainFrame()) {
-      bool is_cross_origin_isolated =
-          navigation_request->coop_status().current_coop().value ==
-          network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
-
-      if (is_cross_origin_isolated) {
-        url::Origin origin =
-            url::Origin::Create(navigation_request->common_params().url);
-
-        // For short-term testing, we'll treat COI as "good enough" to treat as
-        // an isolated application iff the kDirectSockets feature is also
-        // enabled.
-        //
-        // TODO(mkwst): Build a better distinction: https://crbug.com/1206150.
-        if (base::FeatureList::IsEnabled(features::kDirectSockets))
-          return WebExposedIsolationInfo::CreateIsolatedApplication(origin);
-
-        return WebExposedIsolationInfo::CreateIsolated(origin);
-      }
-    } else {
-      // If we are in an iframe, we inherit the isolation state of
-      // the top level frame. This can be inferred from the main frame
-      // SiteInstance. Note that Iframes have to pass COEP tests in
-      // |OnResponseStarted| before being loaded and inheriting this
-      // cross-origin isolated state.
-      //
-      // TODO(crbug.com/1206150): This may change as we work out the model for
-      // isolation mechanisms beyond "cross-origin isolation".
-      SiteInstanceImpl* main_frame_site_instance =
-          render_frame_host_->GetMainFrame()->GetSiteInstance();
-      return main_frame_site_instance->GetWebExposedIsolationInfo();
-    }
+  // If we are in an iframe, we inherit the isolation state of the top level
+  // frame. This can be inferred from the main frame SiteInstance. Note that
+  // Iframes have to pass COEP tests in |OnResponseStarted| before being loaded
+  // and inheriting this cross-origin isolated state.
+  //
+  // TODO(crbug.com/1206150): This may change as we work out the model for
+  // isolation mechanisms beyond "cross-origin isolation".
+  if (!frame_tree_node_->IsMainFrame()) {
+    return render_frame_host_->GetMainFrame()
+        ->GetSiteInstance()
+        ->GetWebExposedIsolationInfo();
   }
-  return WebExposedIsolationInfo::CreateNonIsolated();
+
+  // We consider navigations to be cross-origin isolated if the response
+  // asserts proper COOP and COEP headers.
+  if (navigation_request->coop_status().current_coop().value !=
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep) {
+    return WebExposedIsolationInfo::CreateNonIsolated();
+  }
+
+  url::Origin origin =
+      url::Origin::Create(navigation_request->common_params().url);
+
+  // For short-term testing, we'll treat COI as "good enough" to treat as
+  // an isolated application iff the kDirectSockets feature is also
+  // enabled.
+  //
+  // TODO(mkwst): Build a better distinction: https://crbug.com/1206150.
+  return base::FeatureList::IsEnabled(features::kDirectSockets)
+             ? WebExposedIsolationInfo::CreateIsolatedApplication(origin)
+             : WebExposedIsolationInfo::CreateIsolated(origin);
 }
 
 scoped_refptr<SiteInstance>

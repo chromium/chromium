@@ -111,11 +111,6 @@ const base::Feature kCrossOriginOpenerPolicyAccessReporting{
 const base::Feature kCrossOriginOpenerPolicyByDefault{
     "CrossOriginOpenerPolicyByDefault", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the most recent developments on the crossOriginIsolated property.
-// https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/crossOriginIsolated
-const base::Feature kCrossOriginIsolated{"CrossOriginIsolated",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or defaults splittup up server (not proxy) entries in the
 // HttpAuthCache.
 const base::Feature kSplitAuthCacheByNetworkIsolationKey{

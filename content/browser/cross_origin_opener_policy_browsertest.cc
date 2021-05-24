@@ -88,8 +88,7 @@ class CrossOriginOpenerPolicyBrowserTest
     // Enable COOP/COEP:
     feature_list_.InitWithFeatures(
         {network::features::kCrossOriginOpenerPolicy,
-         network::features::kCrossOriginOpenerPolicyReporting,
-         network::features::kCrossOriginIsolated},
+         network::features::kCrossOriginOpenerPolicyReporting},
         {});
 
     // Enable RenderDocument:

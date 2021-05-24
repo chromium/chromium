@@ -6546,7 +6546,6 @@ class ProactivelySwapBrowsingInstancesSameSiteCoopTest
         {
             network::features::kCrossOriginOpenerPolicy,
             network::features::kCrossOriginOpenerPolicyReporting,
-            network::features::kCrossOriginIsolated,
         },
         {});
     base::CommandLine::ForCurrentProcess()->AppendSwitch(

@@ -549,15 +549,6 @@ extern const char kEnableWindowsGamingInputDataFetcherDescription[];
 extern const char kBlockInsecurePrivateNetworkRequestsName[];
 extern const char kBlockInsecurePrivateNetworkRequestsDescription[];
 
-extern const char kCrossOriginOpenerPolicyReportingName[];
-extern const char kCrossOriginOpenerPolicyReportingDescription[];
-
-extern const char kCrossOriginOpenerPolicyAccessReportingName[];
-extern const char kCrossOriginOpenerPolicyAccessReportingDescription[];
-
-extern const char kCrossOriginIsolatedName[];
-extern const char kCrossOriginIsolatedDescription[];
-
 extern const char kDeprecateAltClickName[];
 extern const char kDeprecateAltClickDescription[];
 

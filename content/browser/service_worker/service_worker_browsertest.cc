@@ -346,10 +346,7 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
  protected:
   using self = ServiceWorkerBrowserTest;
 
-  ServiceWorkerBrowserTest() {
-    feature_list_.InitWithFeatures({network::features::kCrossOriginIsolated},
-                                   {});
-  }
+  ServiceWorkerBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
