@@ -16,7 +16,7 @@ import "components/reporting/util/status.proto";
 // EnqueueRecordRequest enqueues records for encryption,
 // storage, and upload.
 message EnqueueRecordRequest {
-  // Record is the record the user wants to enqueue.
+  // Record the user wants to enqueue.
   optional Record record = 1;
 
   // Priority from
@@ -31,15 +31,21 @@ message EnqueueRecordResponse {
   // Indicates success or failure of EnqueueRecordRequest.
   // Specific error codes indicate if a retry is appropriate.
   // Expected errors:
-  //   FAILED_PRECONDITION: “The daemon is unable to locate the
-  //     public key for record encryption.” - Not Retryable
-  //   FAILED_PRECONDITION: “The daemon has insufficient permissions
-  //     to read/write from/to disk” - Not Retryable
-  //   FAILED_PRECONDITION: “Policy controlling daemon is either unset
-  //     or off.” - Not Retryable
-  //   UNAVAILABLE: “The daemon is still starting.” - Retryable
-  //   RESOURCE_EXHAUSTED: “The daemon has no available threads for
-  //     processing” - Retryable
+  //   FAILED_PRECONDITION:
+  //     "The daemon is unable to locate the public key for record encryption."
+  //     - Not Retryable
+  //   FAILED_PRECONDITION:
+  //     "The daemon has insufficient permissions to read/write from/to disk"
+  //     - Not Retryable
+  //   FAILED_PRECONDITION:
+  //     "Policy controlling daemon is either unset or off."
+  //     - Not Retryable
+  //   UNAVAILABLE:
+  //     "The daemon is still starting."
+  //     - Retryable
+  //   RESOURCE_EXHAUSTED:
+  //     "The daemon has no available threads for processing"
+  //     - Retryable
   optional StatusProto status = 1;
 }
 
@@ -53,16 +59,21 @@ message FlushPriorityRequest {
 // FlushPriorityResponse indicates success or failure of
 // processing FlushPriorityRequest.
 message FlushPriorityResponse {
-  // Indicates success or failure of EnqueueRecordRequest.
+  // Indicates success or failure of FlushPriorityRequest.
   // Specific error codes indicate if a retry is appropriate.
   // Expected errors:
-  //   FAILED_PRECONDITION: “The daemon is unable to locate the
-  //     public key for record encryption.” - Not Retryable
-  //   FAILED_PRECONDITION: “The daemon has insufficient permissions
-  //     to read/write from/to disk” - Not Retryable
-  //   FAILED_PRECONDITION: “Policy controlling daemon is either unset
-  //     or off.” - Not Retryable
-  //   UNAVAILABLE: “The daemon is still starting.” - Retryable
+  //   FAILED_PRECONDITION:
+  //     "The daemon is unable to locate the public key for record encryption."
+  //     - Not Retryable
+  //   FAILED_PRECONDITION:
+  //     "The daemon has insufficient permissions to read/write from/to disk"
+  //     - Not Retryable
+  //   FAILED_PRECONDITION:
+  //     "Policy controlling daemon is either unset or off."
+  //     - Not Retryable
+  //   UNAVAILABLE:
+  //     "The daemon is still starting."
+  //     - Retryable
   optional StatusProto status = 1;
 }
 
@@ -81,10 +92,12 @@ message UploadEncryptedRecordRequest {
 message UploadEncryptedRecordResponse {
   // Status indicates if the records will be uploaded.
   // Expected Errors:
-  //    UNAVAILABLE: “No internet connection. Unable to upload records at
-  //      this time.” - Retryable
-  //    FAILED_PRECONDITION: “Policy controlling reporting upload is unset
-  //      or off.” - Not Retryable
+  //    UNAVAILABLE:
+  //      "No internet connection. Unable to upload records at this time."
+  //      - Retryable
+  //    FAILED_PRECONDITION:
+  //      "Policy controlling reporting upload is unset or off."
+  //      - Not Retryable
   optional StatusProto status = 1;
 }
 
@@ -112,13 +125,38 @@ message ConfirmRecordUploadRequest {
 // deleted from disk. Some data transmission will be repeated, but
 // data will not be lost.
 message ConfirmRecordUploadResponse {
-  // Indicates success or failure of EnqueueRecordRequest.
+  // Indicates success or failure of ConfirmRecordUploadRequest.
   // Specific error codes indicate if a retry is appropriate.
   // Expected errors:
-  //   FAILED_PRECONDITION: “The daemon has insufficient permissions
-  //     to read/write from/to disk”  - Not Retryable
-  //   FAILED_PRECONDITION: “Policy controlling daemon is either unset
-  //     or off.”  - Not Retryable
-  //   UNAVAILABLE: “The daemon is still starting.”  - Retryable
+  //   FAILED_PRECONDITION:
+  //     "The daemon has insufficient permissions to read/write from/to disk"
+  //     - Not Retryable
+  //   FAILED_PRECONDITION:
+  //     "Policy controlling daemon is either unset or off."
+  //     - Not Retryable
+  //   UNAVAILABLE:
+  //     "The daemon is still starting."
+  //     - Retryable
+  optional StatusProto status = 1;
+}
+
+// UpdateEncryptionKeyRequest sends a SignedEncryptionInfo to the daemon.
+message UpdateEncryptionKeyRequest {
+  optional SignedEncryptionInfo signed_encryption_info = 1;
+}
+
+message UpdateEncryptionKeyResponse {
+  // Indicates success or failure of UpdateEncryptionKeyRequest.
+  // Specific error codes indicate if a retry is appropriate.
+  // Expected errors:
+  //   FAILED_PRECONDITION:
+  //     "The daemon has insufficient permissions to read/write from/to disk"
+  //     - Not Retryable
+  //   FAILED_PRECONDITION:
+  //     "Policy controlling daemon is either unset or off."
+  //     - Not Retryable
+  //   UNAVAILABLE:
+  //     "The daemon is still starting."
+  //     - Retryable
   optional StatusProto status = 1;
 }
