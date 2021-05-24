@@ -55,11 +55,12 @@ std::vector<PathAndRequirement> GetCriticalPathsAndRequirements() {
       "identifier \"com.google.Chrome.beta\" or "
       "identifier \"com.google.Chrome.dev\" or "
       "identifier \"com.google.Chrome.canary\") "
-      "and certificate leaf = H\"c9a99324ca3fcb23dbcc36bd5fd4f9753305130a\")";
+      "and certificate leaf = H\"c9a99324ca3fcb23dbcc36bd5fd4f9753305130a\"";
 
   critical_binaries.push_back(
       PathAndRequirement(base::mac::OuterBundlePath(), requirement));
-  // TODO(kerrnel): eventually add Adobe Flash Player to this list.
+  critical_binaries.push_back(
+      PathAndRequirement(base::mac::FrameworkBundlePath(), requirement));
   return critical_binaries;
 }
 
