@@ -460,28 +460,13 @@
       status: "experimental",
     },
     {
-      name: "CSSAspectRatioInterpolation",
-      status: "stable",
-    },
-    {
-      name: "CSSAspectRatioProperty",
-      status: "stable",
-    },
-    {
-      // https://drafts.csswg.org/css-counter-styles-3
-      name: "CSSAtRuleCounterStyle",
-      status: "stable",
-    },
-    {
       // Whether <image> values are allowed as counter style <symbol>
       name: "CSSAtRuleCounterStyleImageSymbols",
-      depends_on: ["CSSAtRuleCounterStyle"]
     },
     {
       // https://github.com/w3c/csswg-drafts/issues/5693
       // Experimental support of @counter-style rules in shadow DOM.
       name: "CSSAtRuleCounterStyleInShadowDOM",
-      depends_on: ["CSSAtRuleCounterStyle"],
       status: "test",
     },
     {

@@ -106,7 +106,6 @@ void ListMarker::ListStyleTypeChanged(LayoutObject& marker) {
 
 // If the @counter-style in use has changed, we need to update the marker text.
 void ListMarker::CounterStyleChanged(LayoutObject& marker) {
-  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
   DCHECK_EQ(Get(&marker), this);
   if (marker_text_type_ == kNotText || marker_text_type_ == kUnresolved)
     return;
@@ -158,38 +157,25 @@ ListMarker::MarkerTextType ListMarker::MarkerText(
     case ListStyleCategory::kStaticString:
       text->Append(style.ListStyleStringValue());
       return kStatic;
-    case ListStyleCategory::kSymbol:
-      if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-        const CounterStyle& counter_style =
-            GetCounterStyle(marker.GetDocument(), style);
-        if (format == kWithPrefixSuffix)
-          text->Append(counter_style.GetPrefix());
-        text->Append(counter_style.GenerateRepresentation(0));
-        if (format == kWithPrefixSuffix)
-          text->Append(counter_style.GetSuffix());
-      } else {
-        text->Append(list_marker_text::GetText(style.ListStyleType(), 0));
-        if (format == kWithPrefixSuffix)
-          text->Append(' ');
-      }
+    case ListStyleCategory::kSymbol: {
+      const CounterStyle& counter_style =
+          GetCounterStyle(marker.GetDocument(), style);
+      if (format == kWithPrefixSuffix)
+        text->Append(counter_style.GetPrefix());
+      text->Append(counter_style.GenerateRepresentation(0));
+      if (format == kWithPrefixSuffix)
+        text->Append(counter_style.GetSuffix());
       return kSymbolValue;
+    }
     case ListStyleCategory::kLanguage: {
       int value = ListItemValue(*list_item);
-      if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-        const CounterStyle& counter_style =
-            GetCounterStyle(marker.GetDocument(), style);
-        if (format == kWithPrefixSuffix)
-          text->Append(counter_style.GetPrefix());
-        text->Append(counter_style.GenerateRepresentation(value));
-        if (format == kWithPrefixSuffix)
-          text->Append(counter_style.GetSuffix());
-      } else {
-        text->Append(list_marker_text::GetText(style.ListStyleType(), value));
-        if (format == kWithPrefixSuffix) {
-          text->Append(list_marker_text::Suffix(style.ListStyleType(), value));
-          text->Append(' ');
-        }
-      }
+      const CounterStyle& counter_style =
+          GetCounterStyle(marker.GetDocument(), style);
+      if (format == kWithPrefixSuffix)
+        text->Append(counter_style.GetPrefix());
+      text->Append(counter_style.GenerateRepresentation(value));
+      if (format == kWithPrefixSuffix)
+        text->Append(counter_style.GetSuffix());
       return kOrdinalValue;
     }
   }
@@ -417,7 +403,6 @@ LayoutRect ListMarker::RelativeSymbolMarkerRect(const ComputedStyle& style,
 
 const CounterStyle& ListMarker::GetCounterStyle(Document& document,
                                                 const ComputedStyle& style) {
-  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
   DCHECK(style.GetListStyleType());
   DCHECK(style.GetListStyleType()->IsCounterStyle());
   return style.GetListStyleType()->GetCounterStyle(document);
@@ -426,87 +411,15 @@ const CounterStyle& ListMarker::GetCounterStyle(Document& document,
 ListMarker::ListStyleCategory ListMarker::GetListStyleCategory(
     Document& document,
     const ComputedStyle& style) {
-  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-    const ListStyleTypeData* list_style = style.GetListStyleType();
-    if (!list_style)
-      return ListStyleCategory::kNone;
-    if (list_style->IsString())
-      return ListStyleCategory::kStaticString;
-    DCHECK(list_style->IsCounterStyle());
-    return GetCounterStyle(document, style).IsPredefinedSymbolMarker()
-               ? ListStyleCategory::kSymbol
-               : ListStyleCategory::kLanguage;
-  }
-
-  EListStyleType type = style.ListStyleType();
-  switch (type) {
-    case EListStyleType::kNone:
-      return ListStyleCategory::kNone;
-    case EListStyleType::kString:
-      return ListStyleCategory::kStaticString;
-    case EListStyleType::kDisc:
-    case EListStyleType::kCircle:
-    case EListStyleType::kSquare:
-    case EListStyleType::kDisclosureOpen:
-    case EListStyleType::kDisclosureClosed:
-      return ListStyleCategory::kSymbol;
-    case EListStyleType::kArabicIndic:
-    case EListStyleType::kArmenian:
-    case EListStyleType::kBengali:
-    case EListStyleType::kCambodian:
-    case EListStyleType::kCjkIdeographic:
-    case EListStyleType::kCjkEarthlyBranch:
-    case EListStyleType::kCjkHeavenlyStem:
-    case EListStyleType::kDecimalLeadingZero:
-    case EListStyleType::kDecimal:
-    case EListStyleType::kDevanagari:
-    case EListStyleType::kEthiopicHalehame:
-    case EListStyleType::kEthiopicHalehameAm:
-    case EListStyleType::kEthiopicHalehameTiEr:
-    case EListStyleType::kEthiopicHalehameTiEt:
-    case EListStyleType::kGeorgian:
-    case EListStyleType::kGujarati:
-    case EListStyleType::kGurmukhi:
-    case EListStyleType::kHangul:
-    case EListStyleType::kHangulConsonant:
-    case EListStyleType::kHebrew:
-    case EListStyleType::kHiragana:
-    case EListStyleType::kHiraganaIroha:
-    case EListStyleType::kKannada:
-    case EListStyleType::kKatakana:
-    case EListStyleType::kKatakanaIroha:
-    case EListStyleType::kKhmer:
-    case EListStyleType::kKoreanHangulFormal:
-    case EListStyleType::kKoreanHanjaFormal:
-    case EListStyleType::kKoreanHanjaInformal:
-    case EListStyleType::kLao:
-    case EListStyleType::kLowerAlpha:
-    case EListStyleType::kLowerArmenian:
-    case EListStyleType::kLowerGreek:
-    case EListStyleType::kLowerLatin:
-    case EListStyleType::kLowerRoman:
-    case EListStyleType::kMalayalam:
-    case EListStyleType::kMongolian:
-    case EListStyleType::kMyanmar:
-    case EListStyleType::kOriya:
-    case EListStyleType::kPersian:
-    case EListStyleType::kSimpChineseFormal:
-    case EListStyleType::kSimpChineseInformal:
-    case EListStyleType::kTelugu:
-    case EListStyleType::kThai:
-    case EListStyleType::kTibetan:
-    case EListStyleType::kTradChineseFormal:
-    case EListStyleType::kTradChineseInformal:
-    case EListStyleType::kUpperAlpha:
-    case EListStyleType::kUpperArmenian:
-    case EListStyleType::kUpperLatin:
-    case EListStyleType::kUpperRoman:
-    case EListStyleType::kUrdu:
-      return ListStyleCategory::kLanguage;
-    default:
-      NOTREACHED();
-      return ListStyleCategory::kLanguage;
-  }
+  const ListStyleTypeData* list_style = style.GetListStyleType();
+  if (!list_style)
+    return ListStyleCategory::kNone;
+  if (list_style->IsString())
+    return ListStyleCategory::kStaticString;
+  DCHECK(list_style->IsCounterStyle());
+  return GetCounterStyle(document, style).IsPredefinedSymbolMarker()
+             ? ListStyleCategory::kSymbol
+             : ListStyleCategory::kLanguage;
 }
 
 }  // namespace blink

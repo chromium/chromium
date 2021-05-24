@@ -516,7 +516,6 @@ void StyleEngine::UpdateActiveStyleSheets() {
 void StyleEngine::UpdateCounterStyles() {
   if (!counter_styles_need_update_)
     return;
-  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
   CounterStyleMap::MarkAllDirtyCounterStyles(GetDocument(),
                                              active_tree_scopes_);
   CounterStyleMap::ResolveAllReferences(GetDocument(), active_tree_scopes_);

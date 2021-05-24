@@ -186,19 +186,10 @@ void LayoutListMarker::UpdateContent() {
       break;
     case ListMarker::ListStyleCategory::kSymbol:
       // value is ignored for these types
-      if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-        text_ = GetCounterStyle().GenerateRepresentation(0);
-      } else {
-        text_ = list_marker_text::GetText(StyleRef().ListStyleType(), 0);
-      }
+      text_ = GetCounterStyle().GenerateRepresentation(0);
       break;
     case ListMarker::ListStyleCategory::kLanguage:
-      if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-        text_ = GetCounterStyle().GenerateRepresentation(ListItem()->Value());
-      } else {
-        text_ = list_marker_text::GetText(StyleRef().ListStyleType(),
-                                          ListItem()->Value());
-      }
+      text_ = GetCounterStyle().GenerateRepresentation(ListItem()->Value());
       break;
     case ListMarker::ListStyleCategory::kStaticString:
       text_ = StyleRef().ListStyleStringValue();
@@ -213,18 +204,11 @@ String LayoutListMarker::TextAlternative() const {
 
   // Return prefix, marker text and then suffix even in RTL, reflecting speech
   // order.
+  if (GetListStyleCategory() == ListMarker::ListStyleCategory::kNone)
+    return "";
 
-  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-    if (GetListStyleCategory() == ListMarker::ListStyleCategory::kNone)
-      return "";
-
-    const CounterStyle& counter_style = GetCounterStyle();
-    return counter_style.GetPrefix() + text_ + counter_style.GetSuffix();
-  }
-
-  UChar suffix =
-      list_marker_text::Suffix(StyleRef().ListStyleType(), ListItem()->Value());
-  return text_ + suffix + ' ';
+  const CounterStyle& counter_style = GetCounterStyle();
+  return counter_style.GetPrefix() + text_ + counter_style.GetSuffix();
 }
 
 LayoutUnit LayoutListMarker::GetWidthOfText(
@@ -240,26 +224,14 @@ LayoutUnit LayoutListMarker::GetWidthOfText(
     return item_width;
   }
 
-  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-    // This doesn't seem correct, e.g., ligatures. We don't fix it since it's
-    // legacy layout.
-    const CounterStyle& counter_style = GetCounterStyle();
-    if (counter_style.GetPrefix())
-      item_width += LayoutUnit(font.Width(TextRun(counter_style.GetPrefix())));
-    if (counter_style.GetSuffix())
-      item_width += LayoutUnit(font.Width(TextRun(counter_style.GetSuffix())));
-    return item_width;
-  }
-
-  // TODO(wkorman): Look into constructing a text run for both text and suffix
-  // and painting them together.
-  UChar suffix[2] = {
-      list_marker_text::Suffix(StyleRef().ListStyleType(), ListItem()->Value()),
-      ' '};
-  TextRun run =
-      ConstructTextRun(font, suffix, 2, StyleRef(), StyleRef().Direction());
-  LayoutUnit suffix_space_width = LayoutUnit(font.Width(run));
-  return item_width + suffix_space_width;
+  // This doesn't seem correct, e.g., ligatures. We don't fix it since it's
+  // legacy layout.
+  const CounterStyle& counter_style = GetCounterStyle();
+  if (counter_style.GetPrefix())
+    item_width += LayoutUnit(font.Width(TextRun(counter_style.GetPrefix())));
+  if (counter_style.GetSuffix())
+    item_width += LayoutUnit(font.Width(TextRun(counter_style.GetSuffix())));
+  return item_width;
 }
 
 MinMaxSizes LayoutListMarker::ComputeIntrinsicLogicalWidths() const {

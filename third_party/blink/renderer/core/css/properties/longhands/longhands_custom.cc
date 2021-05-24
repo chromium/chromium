@@ -1980,24 +1980,14 @@ CSSValue* ConsumeCounterContent(CSSParserTokenRange args,
 
   CSSCustomIdentValue* list_style = nullptr;
   if (css_parsing_utils::ConsumeCommaIncludingWhitespace(args)) {
-    if (!RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-      CSSValueID id = args.Peek().Id();
-      if ((id != CSSValueID::kNone &&
-           (id < CSSValueID::kDisc || id > CSSValueID::kKatakanaIroha)))
-        return nullptr;
-      list_style = MakeGarbageCollected<CSSCustomIdentValue>(
-          AtomicString(getValueName(id)));
+    // Note: CSS3 spec doesn't allow 'none' but CSS2.1 allows it. We currently
+    // allow it for backward compatibility.
+    // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
+    if (args.Peek().Id() == CSSValueID::kNone) {
+      list_style = MakeGarbageCollected<CSSCustomIdentValue>("none");
       args.ConsumeIncludingWhitespace();
     } else {
-      // Note: CSS3 spec doesn't allow 'none' but CSS2.1 allows it. We currently
-      // allow it for backward compatibility.
-      // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
-      if (args.Peek().Id() == CSSValueID::kNone) {
-        list_style = MakeGarbageCollected<CSSCustomIdentValue>("none");
-        args.ConsumeIncludingWhitespace();
-      } else {
-        list_style = css_parsing_utils::ConsumeCounterStyleName(args, context);
-      }
+      list_style = css_parsing_utils::ConsumeCounterStyleName(args, context);
     }
   } else {
     list_style = MakeGarbageCollected<CSSCustomIdentValue>("decimal");
@@ -4259,19 +4249,9 @@ const CSSValue* ListStyleType::ParseSingleValue(
   if (auto* none = css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(range))
     return none;
 
-  if (!RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-    if (auto* ident = css_parsing_utils::ConsumeIdent(range)) {
-      CSSValueID value_id = ident->GetValueID();
-      if (value_id < CSSValueID::kDisc || value_id > CSSValueID::kKatakanaIroha)
-        return nullptr;
-      return MakeGarbageCollected<CSSCustomIdentValue>(
-          AtomicString(getValueName(value_id)));
-    }
-  } else {
-    if (auto* counter_style_name =
-            css_parsing_utils::ConsumeCounterStyleName(range, context))
-      return counter_style_name;
-  }
+  if (auto* counter_style_name =
+          css_parsing_utils::ConsumeCounterStyleName(range, context))
+    return counter_style_name;
 
   return css_parsing_utils::ConsumeString(range);
 }

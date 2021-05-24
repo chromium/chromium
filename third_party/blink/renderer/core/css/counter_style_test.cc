@@ -12,11 +12,7 @@
 
 namespace blink {
 
-class CounterStyleTest : public PageTestBase,
-                         private ScopedCSSAtRuleCounterStyleForTest {
- public:
-  CounterStyleTest() : ScopedCSSAtRuleCounterStyleForTest(true) {}
-
+class CounterStyleTest : public PageTestBase {
  protected:
   const CounterStyle& GetCounterStyle(const AtomicString& name) {
     if (const CounterStyleMap* document_map =

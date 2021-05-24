@@ -3699,63 +3699,6 @@ TEST_F(StyleEngineTest, TargetTextUseCount) {
   ClearUseCounter(WebFeature::kCSSSelectorTargetText);
 }
 
-// https://crbug.com/1172679
-TEST_F(StyleEngineTest, CounterContentNameCase) {
-  // Reproducible only with legacy counter styles
-  ScopedCSSAtRuleCounterStyleForTest disabled_scope(false);
-
-  GetDocument().body()->setInnerHTML(R"HTML(
-    <style>
-      body { counter-reset: a; }
-      #target::before {
-        counter-increment: a;
-        content: counter(a, Hiragana);
-      }
-    </style>
-    <p id="target"></p>
-  )HTML");
-
-  // Shouldn't crash
-  UpdateAllLifecyclePhases();
-
-  PseudoElement* before =
-      GetDocument().getElementById("target")->GetPseudoElement(kPseudoIdBefore);
-  LayoutCounter* counter =
-      To<LayoutCounter>(before->GetLayoutObject()->SlowFirstChild());
-
-  // Hiragana "A"
-  EXPECT_EQ(String(u"\u3042"), counter->GetText());
-}
-
-// https://crbug.com/1182969
-TEST_F(StyleEngineTest, CountersShouldNotCauseListMarkerUpdates) {
-  // Reproducible only when @counter-style rules are disabled
-  ScopedCSSAtRuleCounterStyleForTest disabled_scope(false);
-
-  GetDocument().body()->setInnerHTML(R"HTML(
-    <style>
-      body { counter-reset: a; }
-      p::before {
-        counter-increment: a;
-        content: counter(a);
-      }
-    </style>
-    <ol><li id="target"></li></ol>
-  )HTML");
-
-  // Shouldn't crash
-  UpdateAllLifecyclePhases();
-
-  LayoutObject* list_item =
-      GetDocument().getElementById("target")->GetLayoutObject();
-  LayoutObject* marker = ListMarker::MarkerFromListItem(list_item);
-
-  GetDocument().body()->appendChild(GetDocument().CreateElementForBinding("p"));
-  GetDocument().UpdateStyleAndLayoutTree();
-
-  EXPECT_FALSE(marker->NeedsLayout());
-}
-
 TEST_F(StyleEngineTest, NonDirtyStyleRecalcRoot) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id="host">
@@ -3780,8 +3723,6 @@ TEST_F(StyleEngineTest, NonDirtyStyleRecalcRoot) {
 }
 
 TEST_F(StyleEngineTest, AtCounterStyleUseCounter) {
-  ScopedCSSAtRuleCounterStyleForTest scope(true);
-
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(IsUseCounted(WebFeature::kCSSAtRuleCounterStyle));
 
@@ -3791,7 +3732,6 @@ TEST_F(StyleEngineTest, AtCounterStyleUseCounter) {
 }
 
 TEST_F(StyleEngineTest, CounterStyleDisabledInShadowDOM) {
-  ScopedCSSAtRuleCounterStyleForTest counter_style_enabled(true);
   ScopedCSSAtRuleCounterStyleInShadowDOMForTest
       counter_style_in_shadow_dom_disabled(false);
 

@@ -32,11 +32,8 @@ CSSAtRuleID CssAtRuleID(StringView name) {
       return kCSSAtRuleContainer;
     return kCSSAtRuleInvalid;
   }
-  if (EqualIgnoringASCIICase(name, "counter-style")) {
-    if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled())
-      return kCSSAtRuleCounterStyle;
-    return kCSSAtRuleInvalid;
-  }
+  if (EqualIgnoringASCIICase(name, "counter-style"))
+    return kCSSAtRuleCounterStyle;
   if (EqualIgnoringASCIICase(name, "scroll-timeline")) {
     if (RuntimeEnabledFeatures::CSSScrollTimelineEnabled())
       return kCSSAtRuleScrollTimeline;

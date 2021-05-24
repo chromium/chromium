@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // https://drafts.csswg.org/css-counter-styles-3/#the-csscounterstylerule-interface
-[Exposed=Window, RuntimeEnabled=CSSAtRuleCounterStyle]
+[Exposed=Window]
 interface CSSCounterStyleRule : CSSRule {
   [SetterCallWith=ExecutionContext] attribute CSSOMString name;
   [SetterCallWith=ExecutionContext] attribute CSSOMString system;

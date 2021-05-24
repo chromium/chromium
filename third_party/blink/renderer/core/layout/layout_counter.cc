@@ -485,12 +485,9 @@ CounterNode* MakeCounterNodeIfNeeded(LayoutObject& object,
 String GenerateCounterText(const CounterStyle* counter_style,
                            EListStyleType deprecated_list_style_type,
                            int value) {
-  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-    if (!counter_style)
-      return g_empty_string;
-    return counter_style->GenerateRepresentation(value);
-  }
-  return list_marker_text::GetText(deprecated_list_style_type, value);
+  if (!counter_style)
+    return g_empty_string;
+  return counter_style->GenerateRepresentation(value);
 }
 
 }  // namespace
@@ -599,17 +596,13 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
   int value = ValueForText(child);
   const CounterStyle* counter_style = nullptr;
   EListStyleType list_style = EListStyleType::kNone;
-  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-    // Note: CSS3 spec doesn't allow 'none' but CSS2.1 allows it. We currently
-    // allow it for backward compatibility.
-    // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
-    if (counter_->ListStyle() != "none") {
-      counter_style =
-          &GetDocument().GetStyleEngine().FindCounterStyleAcrossScopes(
-              counter_->ListStyle(), counter_->GetTreeScope());
-    }
-  } else {
-    list_style = counter_->ToDeprecatedListStyleTypeEnum();
+  // Note: CSS3 spec doesn't allow 'none' but CSS2.1 allows it. We currently
+  // allow it for backward compatibility.
+  // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
+  if (counter_->ListStyle() != "none") {
+    counter_style =
+        &GetDocument().GetStyleEngine().FindCounterStyleAcrossScopes(
+            counter_->ListStyle(), counter_->GetTreeScope());
   }
   String text = GenerateCounterText(counter_style, list_style, value);
   // If the separator exists, we need to append all of the parent values as well,

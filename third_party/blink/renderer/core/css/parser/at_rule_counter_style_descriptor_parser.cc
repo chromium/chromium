@@ -238,8 +238,6 @@ CSSValue* AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
     AtRuleDescriptorID id,
     CSSParserTokenRange& range,
     const CSSParserContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
-
   CSSValue* parsed_value = nullptr;
   switch (id) {
     case AtRuleDescriptorID::System:

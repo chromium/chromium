@@ -13,9 +13,6 @@ namespace blink {
 // static
 std::unique_ptr<InterpolableAspectRatio> InterpolableAspectRatio::MaybeCreate(
     const StyleAspectRatio& aspect_ratio) {
-  if (!RuntimeEnabledFeatures::CSSAspectRatioInterpolationEnabled())
-    return nullptr;
-
   // Auto aspect ratio cannot be interpolated to / from.
   if (aspect_ratio.IsAuto())
     return nullptr;

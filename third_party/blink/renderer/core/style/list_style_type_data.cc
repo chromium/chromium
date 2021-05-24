@@ -39,7 +39,6 @@ EListStyleType CounterStyleNameToDeprecatedEnum(const AtomicString& name) {
   auto iterator = predefined_counter_style_name_map.find(name);
   if (iterator != predefined_counter_style_name_map.end())
     return iterator->value;
-  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
   return EListStyleType::kDecimal;
 }
 
@@ -78,8 +77,6 @@ EListStyleType CounterContentData::ToDeprecatedListStyleTypeEnum() const {
 }
 
 bool ListStyleTypeData::IsCounterStyleReferenceValid(Document& document) const {
-  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
-
   if (!IsCounterStyle()) {
     DCHECK(!counter_style_);
     return true;
@@ -98,7 +95,6 @@ bool ListStyleTypeData::IsCounterStyleReferenceValid(Document& document) const {
 
 const CounterStyle& ListStyleTypeData::GetCounterStyle(
     Document& document) const {
-  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
   DCHECK(IsCounterStyle());
   if (!IsCounterStyleReferenceValid(document)) {
     counter_style_ = document.GetStyleEngine().FindCounterStyleAcrossScopes(

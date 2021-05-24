@@ -232,17 +232,9 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
 
   String prefix_str;
   String suffix_str;
-  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-    const CounterStyle& counter_style = layout_list_marker_.GetCounterStyle();
-    prefix_str = counter_style.GetPrefix();
-    suffix_str = counter_style.GetSuffix();
-  } else {
-    UChar chars[] = {
-        list_marker_text::Suffix(layout_list_marker_.StyleRef().ListStyleType(),
-                                 layout_list_marker_.ListItem()->Value()),
-        ' '};
-    suffix_str = String(chars, 2);
-  }
+  const CounterStyle& counter_style = layout_list_marker_.GetCounterStyle();
+  prefix_str = counter_style.GetPrefix();
+  suffix_str = counter_style.GetSuffix();
   TextRun prefix_run =
       ConstructTextRun(font, prefix_str, layout_list_marker_.StyleRef(),
                        layout_list_marker_.StyleRef().Direction());

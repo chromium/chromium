@@ -187,22 +187,17 @@ static String ToHebrew(int number) {
   } else {
     if (number > 999) {
       ToHebrewUnder1000(number / 1000, letters);
-      if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled())
-        letters.push_front(kHebrewPunctuationGereshCharacter);
-      else
-        letters.push_front('\'');
+      letters.push_front(kHebrewPunctuationGereshCharacter);
       number = number % 1000;
     }
     ToHebrewUnder1000(number, letters);
   }
 
-  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-    // Since Hebrew is RTL, legacy implementation generates letters in the
-    // reversed ordering, which is actually wrong because characters in a String
-    // should always be in the logical ordering. We re-reverse it so that the
-    // output ordering is correct.
-    std::reverse(letters.begin(), letters.end());
-  }
+  // Since Hebrew is RTL, legacy implementation generates letters in the
+  // reversed ordering, which is actually wrong because characters in a String
+  // should always be in the logical ordering. We re-reverse it so that the
+  // output ordering is correct.
+  std::reverse(letters.begin(), letters.end());
 
   return String(letters);
 }

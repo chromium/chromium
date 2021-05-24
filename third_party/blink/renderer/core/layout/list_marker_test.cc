@@ -11,11 +11,7 @@ namespace blink {
 
 // We don't test legacy layout because it's deprecated, and we don't want to
 // complicate the test with the legacy LayoutListMarker here.
-class ListMarkerTest : private ScopedCSSAtRuleCounterStyleForTest,
-                       public NGLayoutTest {
- public:
-  ListMarkerTest() : ScopedCSSAtRuleCounterStyleForTest(true) {}
-
+class ListMarkerTest : public NGLayoutTest {
  protected:
   LayoutObject* GetMarker(const char* list_item_id) {
     LayoutNGListItem* list_item =

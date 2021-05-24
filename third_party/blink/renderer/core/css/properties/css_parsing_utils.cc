@@ -4902,8 +4902,6 @@ UnitlessQuirk UnitlessUnlessShorthand(
 
 bool ShouldLowerCaseCounterStyleNameOnParse(const AtomicString& name,
                                             const CSSParserContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
-
   if (context.Mode() == kUASheetMode) {
     // Names in UA sheet should be already in lower case.
     DCHECK_EQ(name, name.LowerASCII());
@@ -4915,8 +4913,6 @@ bool ShouldLowerCaseCounterStyleNameOnParse(const AtomicString& name,
 
 CSSCustomIdentValue* ConsumeCounterStyleName(CSSParserTokenRange& range,
                                              const CSSParserContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
-
   CSSParserTokenRange original_range = range;
 
   // <counter-style-name> is a <custom-ident> that is not an ASCII

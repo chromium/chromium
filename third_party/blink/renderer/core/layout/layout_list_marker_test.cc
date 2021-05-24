@@ -19,8 +19,6 @@ class LayoutListMarkerTest : public RenderingTest,
 
 // https://crbug.com/1167174
 TEST_F(LayoutListMarkerTest, ListStyleTypeNoneTextAlternative) {
-  ScopedCSSAtRuleCounterStyleForTest scope(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       li {

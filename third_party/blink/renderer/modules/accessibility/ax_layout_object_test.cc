@@ -167,25 +167,7 @@ TEST_F(AXLayoutObjectTest, AccessibilityHitTestShadowDOM) {
 }
 
 // https://crbug.com/1167596
-TEST_F(AXLayoutObjectTest, GetListStyleDecimalLeadingZero) {
-  ScopedCSSAtRuleCounterStyleForTest scope(false);
-
-  using ListStyle = ax::mojom::blink::ListStyle;
-
-  SetBodyInnerHTML(R"HTML(
-  <ul>
-    <li id="target" style="list-style-type: decimal-leading-zero"></li>
-  </ul>
-  )HTML");
-
-  EXPECT_EQ(ListStyle::kNumeric,
-            GetAXObjectByElementId("target")->GetListStyle());
-}
-
-// https://crbug.com/1167596
 TEST_F(AXLayoutObjectTest, GetListStyleDecimalLeadingZeroAsCustomCounterStyle) {
-  ScopedCSSAtRuleCounterStyleForTest scope(true);
-
   using ListStyle = ax::mojom::blink::ListStyle;
 
   SetBodyInnerHTML(R"HTML(
@@ -199,8 +181,6 @@ TEST_F(AXLayoutObjectTest, GetListStyleDecimalLeadingZeroAsCustomCounterStyle) {
 }
 // https://crbug.com/1167596
 TEST_F(AXLayoutObjectTest, GetListStyleOverriddenDecimalLeadingZero) {
-  ScopedCSSAtRuleCounterStyleForTest scope(true);
-
   using ListStyle = ax::mojom::blink::ListStyle;
 
   SetBodyInnerHTML(R"HTML(

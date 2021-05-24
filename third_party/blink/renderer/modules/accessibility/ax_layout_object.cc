@@ -656,8 +656,7 @@ ax::mojom::blink::ListStyle AXLayoutObject::GetListStyle() const {
       if (counter_style_name == "decimal-leading-zero") {
         // 'decimal-leading-zero' may be overridden by custom counter styles. We
         // return kNumeric only when we are using the predefined counter style.
-        if (!RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled() ||
-            ListMarker::GetCounterStyle(*GetDocument(), *computed_style)
+        if (ListMarker::GetCounterStyle(*GetDocument(), *computed_style)
                 .IsPredefined())
           return ax::mojom::blink::ListStyle::kNumeric;
       }
