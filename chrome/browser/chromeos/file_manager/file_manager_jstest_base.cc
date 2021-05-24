@@ -102,8 +102,8 @@ class TestFilesDataSource : public content::URLDataSource {
 
     CHECK(base::PathExists(src_file_path) || base::PathExists(gen_file_path))
         << src_file_path << " or: " << gen_file_path << " input path: " << path;
-    CHECK(base::ReadFileToString(src_file_path, &content) ||
-          base::ReadFileToString(gen_file_path, &content))
+    CHECK(base::ReadFileToString(gen_file_path, &content) ||
+          base::ReadFileToString(src_file_path, &content))
         << src_file_path << " or: " << gen_file_path;
 
     scoped_refptr<base::RefCountedString> response =
