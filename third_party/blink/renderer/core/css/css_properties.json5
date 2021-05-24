@@ -5625,25 +5625,16 @@
       name: "ascent-override",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "CSSFontMetricsOverride",
     },
     {
       name: "descent-override",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "CSSFontMetricsOverride",
-    },
-    {
-      name: "advance-override",
-      is_descriptor: true,
-      is_property: false,
-      runtime_flag: "CSSFontFaceAdvanceOverride",
     },
     {
       name: "line-gap-override",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "CSSFontMetricsOverride",
     },
     {
       name: "system",

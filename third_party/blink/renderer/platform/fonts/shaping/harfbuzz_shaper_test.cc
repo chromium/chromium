@@ -723,7 +723,7 @@ TEST_F(HarfBuzzShaperTest, NegativeLetterSpacing) {
   ShapeResultSpacing<String> spacing(string);
   FontDescription font_description;
   font_description.SetLetterSpacing(-5);
-  spacing.SetSpacing(Font(font_description));
+  spacing.SetSpacing(font_description);
   result->ApplySpacing(spacing);
 
   EXPECT_EQ(5 * 5, width - result->Width());
@@ -738,7 +738,7 @@ TEST_F(HarfBuzzShaperTest, NegativeLetterSpacingTo0) {
   ShapeResultSpacing<String> spacing(string);
   FontDescription font_description;
   font_description.SetLetterSpacing(-char_width);
-  spacing.SetSpacing(Font(font_description));
+  spacing.SetSpacing(font_description);
   result->ApplySpacing(spacing);
 
   // EXPECT_EQ(0.0f, result->Width());
@@ -753,7 +753,7 @@ TEST_F(HarfBuzzShaperTest, NegativeLetterSpacingToNegative) {
   ShapeResultSpacing<String> spacing(string);
   FontDescription font_description;
   font_description.SetLetterSpacing(-2 * char_width);
-  spacing.SetSpacing(Font(font_description));
+  spacing.SetSpacing(font_description);
   result->ApplySpacing(spacing);
 
   // CSS does not allow negative width, it should be clampled to 0.

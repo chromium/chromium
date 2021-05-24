@@ -52,7 +52,6 @@ class PLATFORM_EXPORT FontData : public RefCounted<FontData> {
   virtual bool IsLoadingFallback() const = 0;
   virtual bool IsSegmented() const = 0;
   virtual bool ShouldSkipDrawing() const = 0;
-  virtual bool HasAdvanceOverride() const = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(FontData);

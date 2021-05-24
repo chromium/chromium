@@ -157,15 +157,6 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
     return visual_overflow_inflation_for_descent_;
   }
 
-  bool HasAdvanceOverride() const override {
-    return advance_override_.has_value();
-  }
-
-  float GetAdvanceOverride() const { return advance_override_.value_or(1); }
-  float GetAdvanceOverrideVerticalUpright() const {
-    return advance_override_vertical_upright_.value_or(1);
-  }
-
  protected:
   SimpleFontData(
       const FontPlatformData&,
@@ -215,11 +206,6 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
   // overflows, we should add the inflations.
   unsigned visual_overflow_inflation_for_ascent_;
   unsigned visual_overflow_inflation_for_descent_;
-
-  // The multiplier to the advance of each letter as defined by the
-  // advance-override value in @font-face.
-  absl::optional<float> advance_override_;
-  absl::optional<float> advance_override_vertical_upright_;
 
   mutable FontHeight normalized_typo_ascent_descent_;
 

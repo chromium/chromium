@@ -534,23 +534,9 @@
       status: "experimental",
     },
     {
-      // @font-face descriptor advance-override.
-      // https://drafts.csswg.org/css-fonts-5/#descdef-font-face-advance-override
-      name: "CSSFontFaceAdvanceOverride",
-      status: "test",
-      depends_on: ["CSSFontMetricsOverride"],
-    },
-    {
       // @font-face descriptor size-adjust.
       // https://drafts.csswg.org/css-fonts-5/#descdef-font-face-size-adjust
       name: "CSSFontFaceSizeAdjust",
-      status: "stable",
-    },
-    {
-      // @font-face descriptors ascent-override, descent-override and
-      // line-gap-override.
-      // https://drafts.csswg.org/css-fonts-4/#font-metrics-override-desc
-      name: "CSSFontMetricsOverride",
       status: "stable",
     },
     {

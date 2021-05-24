@@ -11,10 +11,9 @@
 namespace blink {
 
 template <typename TextContainerType>
-bool ShapeResultSpacing<TextContainerType>::SetSpacing(const Font& font) {
-  const FontDescription& font_description = font.GetFontDescription();
-  if (!font_description.LetterSpacing() && !font_description.WordSpacing() &&
-      !font.HasAdvanceOverride()) {
+bool ShapeResultSpacing<TextContainerType>::SetSpacing(
+    const FontDescription& font_description) {
+  if (!font_description.LetterSpacing() && !font_description.WordSpacing()) {
     has_spacing_ = false;
     return false;
   }
@@ -43,19 +42,18 @@ void ShapeResultSpacing<TextContainerType>::SetExpansion(
 
 template <typename TextContainerType>
 void ShapeResultSpacing<TextContainerType>::SetSpacingAndExpansion(
-    const Font& font) {
+    const FontDescription& font_description) {
   // Available only for TextRun since it has expansion data.
   NOTREACHED();
 }
 
 template <>
-void ShapeResultSpacing<TextRun>::SetSpacingAndExpansion(const Font& font) {
-  const FontDescription& font_description = font.GetFontDescription();
+void ShapeResultSpacing<TextRun>::SetSpacingAndExpansion(
+    const FontDescription& font_description) {
   letter_spacing_ = font_description.LetterSpacing();
   word_spacing_ = font_description.WordSpacing();
   expansion_ = text_.Expansion();
-  has_spacing_ = letter_spacing_ || word_spacing_ || expansion_ ||
-                 font.HasAdvanceOverride();
+  has_spacing_ = letter_spacing_ || word_spacing_ || expansion_;
   if (!has_spacing_)
     return;
 
@@ -137,13 +135,9 @@ float ShapeResultSpacing<TextContainerType>::ComputeSpacing(
 
   float spacing = 0;
 
-  bool has_letter_spacing =
-      letter_spacing_ || (parameters.advance_override != 1.0);
-  if (has_letter_spacing && !Character::TreatAsZeroWidthSpace(character)) {
-    spacing +=
-        parameters.original_advance * (parameters.advance_override - 1.0) +
-        letter_spacing_;
-  }
+  bool has_letter_spacing = letter_spacing_;
+  if (has_letter_spacing && !Character::TreatAsZeroWidthSpace(character))
+    spacing += letter_spacing_;
 
   if (treat_as_space && (index || character == kNoBreakSpaceCharacter))
     spacing += word_spacing_;

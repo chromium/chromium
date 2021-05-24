@@ -58,9 +58,6 @@
       name: "initial-value"
     },
     {
-      name: "advance-override"
-    },
-    {
       name: "fallback",
     },
     {

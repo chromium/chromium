@@ -3,7 +3,6 @@ This test (crudely) documents Blink's web-exposed CSS properties.  All changes t
 
 accentColor
 additiveSymbols
-advanceOverride
 alignContent
 alignItems
 alignSelf

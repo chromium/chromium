@@ -1324,7 +1324,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     scoped_refptr<ShapeResult> shape_result =
         shaper.Shape(start_item, end_offset);
 
-    if (UNLIKELY(spacing.SetSpacing(font))) {
+    if (UNLIKELY(spacing.SetSpacing(font.GetFontDescription()))) {
       shape_result->ApplySpacing(spacing);
       if (spacing.LetterSpacing() &&
           ShouldReportLetterSpacingUseCounter(

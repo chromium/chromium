@@ -258,8 +258,6 @@ const FontData* FontFallbackList::FontDataAt(
       has_loading_fallback_ = true;
     if (result->IsCustomFont())
       has_custom_font_ = true;
-    if (result->HasAdvanceOverride())
-      has_advance_override_ = true;
   }
   return result.get();
 }
