@@ -193,9 +193,6 @@ class CONTENT_EXPORT RenderThreadImpl
       const std::string& name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
-  // ChildThread implementation via ChildThreadImpl:
-  scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
-
   blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler();
   cc::TaskGraphRunner* GetTaskGraphRunner();
   gfx::RenderingPipeline* GetMainThreadPipeline();

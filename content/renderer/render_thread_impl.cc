@@ -1247,11 +1247,6 @@ void RenderThreadImpl::OnAssociatedInterfaceRequest(
     ChildThreadImpl::OnAssociatedInterfaceRequest(name, std::move(handle));
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-RenderThreadImpl::GetIOTaskRunner() {
-  return ChildProcess::current()->io_task_runner();
-}
-
 bool RenderThreadImpl::IsLcdTextEnabled() {
   return is_lcd_text_enabled_;
 }
