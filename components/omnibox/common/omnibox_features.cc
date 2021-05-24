@@ -96,11 +96,6 @@ const base::Feature kDebounceDocumentProvider{
 const base::Feature kOmniboxDemoteByType{"OmniboxDemoteByType",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Feature used to reduce entity latency by sharing a decoder. Param values will
-// configure other optimizations as well.
-const base::Feature kEntitySuggestionsReduceLatency{
-    "OmniboxEntitySuggestionsReduceLatency", enabled_by_default_desktop_only};
-
 // Feature used to cap max zero suggestions shown according to the param
 // OmniboxMaxZeroSuggestMatches. If omitted,
 // OmniboxUIExperimentMaxAutocompleteMatches will be used instead. If present,

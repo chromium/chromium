@@ -257,7 +257,6 @@ void ChromeOmniboxClient::OnFocusChanged(
           OmniboxTabHelper::FromWebContents(controller_->GetWebContents())) {
     helper->OnFocusChanged(state, reason);
   }
-  WakeupDecoder();
 }
 
 void ChromeOmniboxClient::OnResultChanged(
@@ -362,7 +361,6 @@ void ChromeOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
     case AutocompleteActionPredictor::ACTION_NONE:
       break;
   }
-  WakeupDecoder();
 }
 
 void ChromeOmniboxClient::OnRevert() {
@@ -454,18 +452,6 @@ void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
   // We could prefetch the alternate nav URL, if any, but because there
   // can be many of these as a user types an initial series of characters,
   // the OS DNS cache could suffer eviction problems for minimal gain.
-}
-
-void ChromeOmniboxClient::WakeupDecoder() {
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          omnibox::kEntitySuggestionsReduceLatency,
-          OmniboxFieldTrial::kEntitySuggestionsReduceLatencyDecoderWakeupParam,
-          false)) {
-    if (auto* service =
-            BitmapFetcherServiceFactory::GetForBrowserContext(profile_)) {
-      service->WakeupDecoder();
-    }
-  }
 }
 
 void ChromeOmniboxClient::OnBitmapFetched(const BitmapFetchedCallback& callback,

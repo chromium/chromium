@@ -541,13 +541,6 @@ extern const char kShortBookmarkSuggestionsByTotalInputLengthThresholdParam[];
 // optionally subdomains) in the steady state.
 extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 
-// Parameter names used by entity variations. Enabling 'shared decoder' will
-// share a decoder for all suggestion images. Enabling 'shared decoder without
-// timeout' will prevent the decoder from resetting while idle for 5 seconds.
-// Enabling the latter will implicitly enable the former.
-extern const char kEntitySuggestionsReduceLatencyDecoderTimeoutParam[];
-extern const char kEntitySuggestionsReduceLatencyDecoderWakeupParam[];
-
 // Parameter names used for bookmark path variations that determine whether
 // bookmark suggestion texts will contain the title, URL, and/or path.
 extern const char kBookmarkPathsCounterfactual[];

@@ -79,20 +79,6 @@ constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
           }
         })");
 
-std::unique_ptr<data_decoder::DataDecoder> CreateSharedDataDecoder() {
-  if (!base::FeatureList::IsEnabled(omnibox::kEntitySuggestionsReduceLatency))
-    return nullptr;
-
-  int idle_timeout = base::GetFieldTrialParamByFeatureAsInt(
-      omnibox::kEntitySuggestionsReduceLatency,
-      OmniboxFieldTrial::kEntitySuggestionsReduceLatencyDecoderTimeoutParam,
-      405);
-
-  return idle_timeout > 0 ? std::make_unique<data_decoder::DataDecoder>(
-                                base::TimeDelta::FromSeconds(idle_timeout))
-                          : std::make_unique<data_decoder::DataDecoder>();
-}
-
 }  // namespace.
 
 class BitmapFetcherRequest {
@@ -136,7 +122,8 @@ BitmapFetcherService::CacheEntry::~CacheEntry() {
 }
 
 BitmapFetcherService::BitmapFetcherService(content::BrowserContext* context)
-    : shared_data_decoder_(CreateSharedDataDecoder()),
+    : shared_data_decoder_(std::make_unique<data_decoder::DataDecoder>(
+          base::TimeDelta::FromSeconds(405))),
       cache_(kMaxCacheEntries),
       current_request_id_(1),
       context_(context) {}
@@ -210,18 +197,6 @@ BitmapFetcherService::RequestId BitmapFetcherService::RequestImageImpl(
 void BitmapFetcherService::Prefetch(const GURL& url) {
   if (url.is_valid() && !IsCached(url))
     EnsureFetcherForUrl(url, traffic_annotation);
-}
-
-void BitmapFetcherService::WakeupDecoder() {
-  // base::Unretained() is safe here because |shared_data_decoder_| is freed
-  // only when |this| is destructured and in the same IO thread used here.
-  if (shared_data_decoder_) {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            base::IgnoreResult(&data_decoder::DataDecoder::GetService),
-            base::Unretained(shared_data_decoder_.get())));
-  }
 }
 
 bool BitmapFetcherService::IsCached(const GURL& url) {

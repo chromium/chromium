@@ -959,13 +959,6 @@ const char OmniboxFieldTrial::
 const char OmniboxFieldTrial::kOmniboxUIUnelideURLOnHoverThresholdMsParam[] =
     "OmniboxUIUnelideURLOnHoverThresholdMsdMs";
 
-const char
-    OmniboxFieldTrial::kEntitySuggestionsReduceLatencyDecoderTimeoutParam[] =
-        "EntitySuggestionsReduceLatencyDecoderTimeout";
-const char
-    OmniboxFieldTrial::kEntitySuggestionsReduceLatencyDecoderWakeupParam[] =
-        "EntitySuggestionsReduceLatencyDecoderWakeup";
-
 extern const char OmniboxFieldTrial::kBookmarkPathsCounterfactual[] =
     "OmniboxBookmarkPathsCounterfactual";
 extern const char OmniboxFieldTrial::kBookmarkPathsUiReplaceTitle[] =

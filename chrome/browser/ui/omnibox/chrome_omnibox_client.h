@@ -93,13 +93,6 @@ class ChromeOmniboxClient : public OmniboxClient {
   // Performs preconnection for |match|.
   void DoPreconnect(const AutocompleteMatch& match);
 
-  // If the omnibox is likely to display suggestions soon (e.g. the user is
-  // typing or focused the omnibox), then it's likely some of the suggestions
-  // may have images that need decoding. |WakeupDecoder| should be called on
-  // these hints so that it can ask |BitmapFetcherService| start up a decoder
-  // service if needed. This reduces latency once decoding is actually needed.
-  void WakeupDecoder();
-
   void OnBitmapFetched(const BitmapFetchedCallback& callback,
                        int result_index,
                        bool is_cached,

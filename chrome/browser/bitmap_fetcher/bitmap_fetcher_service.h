@@ -64,14 +64,6 @@ class BitmapFetcherService : public KeyedService, public BitmapFetcherDelegate {
   // Start fetching the image at the given |url|.
   void Prefetch(const GURL& url);
 
-  // Prepare the |shared_data_decoder_| for use. If it has either not been
-  // created yet, it will be created; if it is not bound (e.g. due to idle
-  // timeout), it will be bound. Calling this is optional, as invoking
-  // |RequestImage()| or |Prefetch()| will prepare the |shared_data_decoder_|.
-  // This is meant to help reduce latency if a caller knows they will need the
-  // decoder ahead of time.
-  void WakeupDecoder();
-
   // Return true if |url| is found in |cache_|. This will move the |url| to the
   // front of the recency list.
   bool IsCached(const GURL& url);
