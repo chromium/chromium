@@ -16,6 +16,7 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/native_theme/test_native_theme.h"
 #include "ui/views/test/test_views.h"
+#include "ui/views/test/views_test_base.h"
 
 namespace media_message_center {
 
@@ -87,19 +88,22 @@ gfx::ImageSkia CreateTestBackgroundImage(SkColor color) {
 
 }  // namespace
 
-class MediaNotificationBackgroundImplTest : public testing::Test {
+class MediaNotificationBackgroundImplTest : public views::ViewsTestBase {
  public:
   MediaNotificationBackgroundImplTest() = default;
   ~MediaNotificationBackgroundImplTest() override = default;
 
   void SetUp() override {
+    views::ViewsTestBase::SetUp();
     background_ =
         std::make_unique<MediaNotificationBackgroundImpl>(10, 10, 0.1);
-
     EXPECT_FALSE(GetBackgroundColor().has_value());
   }
 
-  void TearDown() override { background_.reset(); }
+  void TearDown() override {
+    background_.reset();
+    views::ViewsTestBase::TearDown();
+  }
 
   MediaNotificationBackgroundImpl* background() const {
     return background_.get();
@@ -221,10 +225,12 @@ TEST_F(MediaNotificationBackgroundImplTest,
 }
 
 TEST_F(MediaNotificationBackgroundImplTest, GetBackgroundColorRespectsTheme) {
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  auto* owner = widget->SetContentsView(std::make_unique<views::View>());
+
   TestDarkTheme dark_theme;
-  views::View owner;
-  owner.SetNativeThemeForTesting(&dark_theme);
-  EXPECT_EQ(kDarkBackgroundColor, background()->GetBackgroundColor(owner));
+  owner->SetNativeThemeForTesting(&dark_theme);
+  EXPECT_EQ(kDarkBackgroundColor, background()->GetBackgroundColor(*owner));
 }
 
 // MediaNotificationBackgroundImplBlackWhiteTest will repeat these tests with a
