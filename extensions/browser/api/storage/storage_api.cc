@@ -343,9 +343,37 @@ StorageStorageAreaGetBytesInUseFunction::RunWithStorage(ValueStore* storage) {
 
 ExtensionFunction::ResponseValue
 StorageStorageAreaGetBytesInUseFunction::RunInSession() {
-  // TODO(crbug.com/1185226): Implement RunInSession for
-  // chrome.storage.session.getBytesInUse .
-  return NoArguments();
+  base::Value* input = nullptr;
+  if (!args_->Get(0, &input))
+    return BadMessage();
+
+  size_t bytes_in_use = 0;
+  SessionStorageManager* session_manager =
+      GetOrCreateSessionStorage(browser_context());
+
+  switch (input->type()) {
+    case base::Value::Type::NONE:
+      bytes_in_use = session_manager->GetTotalBytesInUse(extension_id());
+      break;
+
+    case base::Value::Type::STRING:
+      bytes_in_use = session_manager->GetBytesInUse(
+          extension_id(), std::vector<std::string>(1, input->GetString()));
+      break;
+
+    case base::Value::Type::LIST:
+      bytes_in_use = session_manager->GetBytesInUse(extension_id(),
+                                                    GetKeysFromList(*input));
+      break;
+
+    default:
+      return BadMessage();
+  }
+
+  // Checked cast should not overflow since `bytes_in_use` is guaranteed to be a
+  // small number, due to the quota limits we have in place for in-memory
+  // storage
+  return OneArgument(base::Value(base::checked_cast<int>(bytes_in_use)));
 }
 
 ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunWithStorage(

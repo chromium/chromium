@@ -293,7 +293,7 @@ chrome.test.runTests([
     test(stage0);
   },
 
-  function quota() {
+  function quotaValueStore() {
     // Just check that the constants are defined; no need to be forced to
     // update them here as well if/when they change.
     assertTrue(chrome.storage.sync.QUOTA_BYTES > 0);
@@ -303,8 +303,6 @@ chrome.test.runTests([
     assertTrue(chrome.storage.local.QUOTA_BYTES > 0);
     assertEq('undefined', typeof chrome.storage.local.QUOTA_BYTES_PER_ITEM);
     assertEq('undefined', typeof chrome.storage.local.MAX_ITEMS);
-
-    assertTrue(chrome.storage.session.QUOTA_BYTES > 0);
 
     var area = chrome.storage.sync;
     function stage0() {
@@ -327,6 +325,34 @@ chrome.test.runTests([
     }
     function stage5(bytesInUse) {
       assertEq(6, bytesInUse);
+      succeed();
+    }
+    area.clear(stage0);
+  },
+
+  function quotaSession() {
+    // Just check that the constant is defined; no need to be forced to
+    // update them here as well if/when they change.
+    assertTrue(chrome.storage.session.QUOTA_BYTES > 0);
+
+    // This only tests that getBytesInUse returns a size bigger than zero when
+    // there is a value stored in session. More in depth testing is made in
+    // extensions/browser/api/storage/session_storage_manager_unittest.cc .
+    var area = chrome.storage.session;
+    function stage0() {
+      area.getBytesInUse(null, stage1);
+    }
+    function stage1(bytesInUse) {
+      assertEq(0, bytesInUse);
+      let val = 'a'.repeat(32);
+      area.set({a: val}, stage2);
+    }
+    function stage2() {
+      area.getBytesInUse(null, stage3);
+    }
+    function stage3(bytesInUse) {
+      // Just check that inserting a value adds to the bytes size.
+      assertTrue(bytesInUse > 0);
       succeed();
     }
     area.clear(stage0);
