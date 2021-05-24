@@ -1287,6 +1287,9 @@ try_.chromium_linux_builder(
     executable = "recipe:chromium/orchestrator",
     main_list_view = "try",
     use_clang_coverage = True,
+    properties = {
+        "compilator": "linux-rel-compilator",
+    },
     service_account = "chromium-mini-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
 )
 
@@ -1298,6 +1301,12 @@ try_.chromium_linux_builder(
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     use_clang_coverage = True,
+    properties = {
+        "orchestrator": {
+            "builder_name": "linux-rel-orchestrator",
+            "builder_group": "tryserver.chromium.linux",
+        },
+    },
 )
 
 try_.chromium_linux_builder(
