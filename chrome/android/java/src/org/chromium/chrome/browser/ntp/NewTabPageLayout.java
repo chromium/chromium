@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -48,10 +49,10 @@ import org.chromium.chrome.browser.query_tiles.QueryTileSection;
 import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
-import org.chromium.chrome.browser.suggestions.tile.SiteSection;
 import org.chromium.chrome.browser.suggestions.tile.SiteSectionViewHolder;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.chrome.browser.suggestions.tile.TileGridLayout;
+import org.chromium.chrome.browser.suggestions.tile.TileGridViewHolder;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TileRenderer;
 import org.chromium.chrome.browser.tab.Tab;
@@ -75,8 +76,15 @@ import org.chromium.ui.vr.VrModeObserver;
  */
 public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer, VrModeObserver {
     private static final String TAG = "NewTabPageLayout";
+
     // Used to signify the cached resource value is unset.
     private static final int UNSET_RESOURCE_FLAG = -1;
+
+    /**
+     * The maximum number of tiles to try and fit in a row. On smaller screens, there may not be
+     * enough space to fit all of them.
+     */
+    private static final int MAX_TILE_COLUMNS = 4;
 
     private final int mTileGridLayoutBleed;
     private int mSearchBoxEndPadding = UNSET_RESOURCE_FLAG;
@@ -250,7 +258,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         }
 
         mSiteSectionViewHolder =
-                SiteSection.createViewHolder(getSiteSectionView(), mUiConfig, maxRows);
+                getSiteSectionViewHolder(getSiteSectionView(), maxRows, MAX_TILE_COLUMNS);
         mSiteSectionViewHolder.bindDataSource(mTileGroup, tileRenderer);
 
         int variation = ExploreSitesBridge.getVariation();
@@ -427,8 +435,14 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
                 1f);
     }
 
+    @VisibleForTesting
+    public static ViewGroup inflateSiteSection(ViewGroup parent) {
+        return (ViewGroup) LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.suggestions_site_tile_grid_modern, parent, false);
+    }
+
     private void insertSiteSectionView() {
-        mSiteSectionView = SiteSection.inflateSiteSection(this);
+        mSiteSectionView = inflateSiteSection(this);
         ViewGroup.LayoutParams layoutParams = mSiteSectionView.getLayoutParams();
         layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
         mSiteSectionView.setLayoutParams(layoutParams);
@@ -470,6 +484,12 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     @VisibleForTesting
     public TileGroup getTileGroup() {
         return mTileGroup;
+    }
+
+    @VisibleForTesting
+    public static TileGridViewHolder getSiteSectionViewHolder(
+            ViewGroup contentView, int maxRows, int maxColumns) {
+        return new TileGridViewHolder(contentView, maxRows, maxColumns);
     }
 
     /**
@@ -566,8 +586,8 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         int paddingTop = getResources().getDimensionPixelSize(shouldShowLogo()
                         ? R.dimen.tile_grid_layout_padding_top
                         : R.dimen.tile_grid_layout_no_logo_padding_top);
-        mSiteSectionViewHolder.itemView.setPadding(
-                0, paddingTop, 0, mSiteSectionViewHolder.itemView.getPaddingBottom());
+        mSiteSectionViewHolder.getItemView().setPadding(
+                0, paddingTop, 0, mSiteSectionViewHolder.getItemView().getPaddingBottom());
     }
 
     /**
@@ -788,7 +808,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         mNoSearchLogoSpacer.setVisibility(
                 (mSearchProviderHasLogo || showPlaceholder) ? View.GONE : View.INVISIBLE);
 
-        mSiteSectionViewHolder.itemView.setVisibility(showPlaceholder ? GONE : VISIBLE);
+        mSiteSectionViewHolder.getItemView().setVisibility(showPlaceholder ? GONE : VISIBLE);
 
         if (showPlaceholder) {
             if (mTileGridPlaceholder == null) {

@@ -10,11 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.chromium.base.Callback;
-
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * A base {@link RecyclerView} adapter that delegates most of its logic. This allows compositing
@@ -69,28 +65,6 @@ public class RecyclerViewAdapter<VH extends ViewHolder, P>
          * @see RecyclerView.Adapter#onViewRecycled(ViewHolder)
          */
         default void onViewRecycled(VH viewHolder) {}
-
-        /**
-         * @param position The position of an item to be dismissed.
-         * @return The set of item positions that should be dismissed simultaneously when dismissing
-         *         the item at the given {@code position} (including the position itself), or an
-         *         empty set if the item can't be dismissed.
-         * @see org.chromium.chrome.browser.ntp.cards.NewTabPageAdapter#getItemDismissalGroup
-         */
-        default Set<Integer> getItemDismissalGroup(int position) {
-            return Collections.emptySet();
-        }
-
-        /**
-         * Dismiss the item at the given {@code position}.
-         * @param position The position of the item to be dismissed.
-         * @param itemRemovedCallback Should be called with the title of the dismissed item, to
-         * announce it for accessibility purposes.
-         * @see org.chromium.chrome.browser.ntp.cards.NewTabPageAdapter#dismissItem
-         */
-        default void dismissItem(int position, Callback<String> itemRemovedCallback) {
-            assert false;
-        }
 
         /**
          * Describe the item at the given {@code position}. As the description is used in tests for

@@ -31,7 +31,6 @@ import android.widget.FrameLayout;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +44,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
-import org.chromium.chrome.browser.ntp.cards.CardsVariationParameters;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -59,7 +57,6 @@ import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -98,7 +95,6 @@ public class TileGroupUnitTest {
 
     @Before
     public void setUp() {
-        CardsVariationParameters.setTestVariationParams(new HashMap<>());
         MockitoAnnotations.initMocks(this);
 
         mImageFetcher = new FakeImageFetcher();
@@ -113,11 +109,6 @@ public class TileGroupUnitTest {
         })
                 .when(mTileGroupDelegate)
                 .setMostVisitedSitesObserver(any(MostVisitedSites.Observer.class), anyInt());
-    }
-
-    @After
-    public void tearDown() {
-        CardsVariationParameters.setTestVariationParams(null);
     }
 
     @Test
@@ -309,7 +300,7 @@ public class TileGroupUnitTest {
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
 
         TileGridViewHolder tileGrid = setupView(tileGroup);
-        TileGridLayout layout = (TileGridLayout) tileGrid.itemView;
+        TileGridLayout layout = (TileGridLayout) tileGrid.getItemView();
 
         // Initialise the internal list of tiles
         mMostVisitedSites.setTileSuggestions(URLS);
@@ -353,7 +344,7 @@ public class TileGroupUnitTest {
 
         // Initialise the layout with views whose URLs don't match the ones of the new tiles.
         TileGridViewHolder tileGrid = setupView(tileGroup);
-        TileGridLayout layout = (TileGridLayout) tileGrid.itemView;
+        TileGridLayout layout = (TileGridLayout) tileGrid.getItemView();
         SuggestionsTileView view1 = mSuggestionsTileView1;
         layout.addView(view1);
 

@@ -20,7 +20,7 @@ public class TileGridViewHolder extends SiteSectionViewHolder {
     public TileGridViewHolder(ViewGroup view, int maxRows, int maxColumns) {
         super(view);
 
-        mSectionView = (TileGridLayout) itemView;
+        mSectionView = (TileGridLayout) view;
         mSectionView.setMaxRows(maxRows);
         mSectionView.setMaxColumns(maxColumns);
     }

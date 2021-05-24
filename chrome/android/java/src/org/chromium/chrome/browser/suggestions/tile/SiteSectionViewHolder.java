@@ -9,16 +9,16 @@ import android.view.View;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.ntp.cards.NewTabPageViewHolder;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 
 /**
  * Describes a portion of UI responsible for rendering a group of sites. It abstracts general tasks
  * related to initialising and updating this UI.
  */
-public abstract class SiteSectionViewHolder extends NewTabPageViewHolder {
+public abstract class SiteSectionViewHolder {
     protected TileGroup mTileGroup;
     protected TileRenderer mTileRenderer;
+    private final View mItemView;
 
     /**
      * Constructs a {@link SiteSectionViewHolder} used to display tiles in both NTP and Chrome Home.
@@ -26,7 +26,12 @@ public abstract class SiteSectionViewHolder extends NewTabPageViewHolder {
      * @param itemView The {@link View} for this item
      */
     public SiteSectionViewHolder(View itemView) {
-        super(itemView);
+        this.mItemView = itemView;
+    }
+
+    /** Returns the view held by this View Holder. */
+    public View getItemView() {
+        return mItemView;
     }
 
     /** Initialise the view, letting it know the data it will have to display. */

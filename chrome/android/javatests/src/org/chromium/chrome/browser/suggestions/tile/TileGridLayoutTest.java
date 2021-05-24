@@ -11,6 +11,8 @@ import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 
+import static org.chromium.chrome.browser.ntp.NewTabPageLayout.getSiteSectionViewHolder;
+import static org.chromium.chrome.browser.ntp.NewTabPageLayout.inflateSiteSection;
 import static org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites.createSiteSuggestion;
 
 import android.app.Activity;
@@ -20,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 
@@ -30,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -44,10 +46,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
-import org.chromium.chrome.browser.ntp.cards.NewTabPageViewHolder.PartialBindCallback;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -64,7 +66,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.url.GURL;
 
@@ -81,6 +82,9 @@ import java.util.concurrent.TimeoutException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class TileGridLayoutTest {
+    public final int TILE_GRID_ROWS = 2;
+    public final int TILE_GRID_COLUMNS = 4;
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -294,20 +298,13 @@ public class TileGridLayoutTest {
 
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             activity.setContentView(contentView);
-
-            SiteSectionViewHolder viewHolder = SiteSection.createViewHolder(
-                    SiteSection.inflateSiteSection(contentView), uiConfig, 2);
-
+            TileGridViewHolder viewHolder = getSiteSectionViewHolder(
+                    inflateSiteSection(contentView), TILE_GRID_ROWS, TILE_GRID_COLUMNS);
             uiConfig.updateDisplayStyle();
+            createSiteSection(viewHolder, uiConfig, offlineUrls);
+            contentView.addView(viewHolder.getItemView());
 
-            SiteSection siteSection = createSiteSection(viewHolder, uiConfig, offlineUrls);
-            siteSection.getTileGroupForTesting().onSwitchToForeground(false);
-            assertTrue("Tile Data should be visible.", siteSection.isVisible());
-
-            siteSection.onBindViewHolder(viewHolder, 0);
-            contentView.addView(viewHolder.itemView);
-
-            return (TileGridLayout) viewHolder.itemView;
+            return (TileGridLayout) viewHolder.getItemView();
         });
     }
 
@@ -316,7 +313,7 @@ public class TileGridLayoutTest {
         return renderTiles(siteSuggestions, Collections.emptyList());
     }
 
-    private SiteSection createSiteSection(
+    private void createSiteSection(
             final SiteSectionViewHolder viewHolder, UiConfig uiConfig, List<GURL> offlineUrls) {
         ThreadUtils.assertOnUiThread();
 
@@ -344,17 +341,33 @@ public class TileGridLayoutTest {
             }
         };
 
-        SiteSection siteSection =
-                new SiteSection(uiDelegate, null, delegate, offlinePageBridge, uiConfig, 2);
-
-        siteSection.addObserver(new ListObservable.ListObserver<PartialBindCallback>() {
+        TileGroup.Observer observer = new TileGroup.Observer() {
             @Override
-            public void onItemRangeChanged(ListObservable child, int index, int count,
-                    @Nullable PartialBindCallback payload) {
-                if (payload != null) payload.onResult(viewHolder);
+            public void onTileDataChanged() {
+                viewHolder.refreshData();
             }
-        });
 
-        return siteSection;
+            @Override
+            public void onTileCountChanged() {}
+
+            @Override
+            public void onTileIconChanged(Tile tile) {
+                viewHolder.updateIconView(tile);
+            }
+
+            @Override
+            public void onTileOfflineBadgeVisibilityChanged(Tile tile) {
+                viewHolder.updateOfflineBadge(tile);
+            }
+        };
+
+        TileRenderer tileRenderer = new TileRenderer(ContextUtils.getApplicationContext(),
+                SuggestionsConfig.getTileStyle(uiConfig), 1, uiDelegate.getImageFetcher());
+        TileGroup tileGroup = new TileGroup(
+                tileRenderer, uiDelegate, null, delegate, observer, offlinePageBridge);
+        tileGroup.onSwitchToForeground(false);
+        viewHolder.bindDataSource(tileGroup, tileRenderer);
+        tileGroup.startObserving(TILE_GRID_COLUMNS * TILE_GRID_ROWS);
+        viewHolder.refreshData();
     }
 }

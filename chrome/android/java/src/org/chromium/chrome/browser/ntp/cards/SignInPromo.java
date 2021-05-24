@@ -7,10 +7,8 @@ package org.chromium.chrome.browser.ntp.cards;
 import android.content.Context;
 import android.text.format.DateUtils;
 
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -31,10 +29,11 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
- * Shows a card prompting the user to sign in. This item is also an {@link OptionalLeaf}, and sign
- * in state changes control its visibility.
+ * Superclass tracking whether a signin card could be shown.
+ *
+ * Subclasses are notified when relevant signin status changes.
  */
-public abstract class SignInPromo extends OptionalLeaf {
+public abstract class SignInPromo {
     /**
      * Period for which promos are suppressed if signin is refused in FRE.
      */
@@ -65,6 +64,7 @@ public abstract class SignInPromo extends OptionalLeaf {
      * offer the user to sign in.
      */
     private boolean mCanShowPersonalizedSuggestions;
+    private boolean mIsVisible;
 
     private final SigninObserver mSigninObserver;
     protected final SigninPromoController mSigninPromoController;
@@ -110,7 +110,13 @@ public abstract class SignInPromo extends OptionalLeaf {
                 System.currentTimeMillis());
     }
 
-    /** @return Whether the {@link SignInPromo} should be created. */
+    /**
+     * @return Whether the {@link SignInPromo} should be created.
+     *
+     * Note: This checks the pref SIGNIN_PROMO_NTP_PROMO_DISMISSED. This is written if the
+     * promo has been dismissed before. Due to changes in NTP architecture, it is no longer
+     * possible to dismiss the promo, but we still honor the previous setting if it exists.
+     */
     public static boolean shouldCreatePromo() {
         return !sDisablePromoForTests
                 && !SharedPreferencesManager.getInstance().readBoolean(
@@ -138,22 +144,6 @@ public abstract class SignInPromo extends OptionalLeaf {
                 && identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null;
     }
 
-    @Override
-    @ItemViewType
-    protected int getItemViewType() {
-        return ItemViewType.PROMO;
-    }
-
-    @Override
-    protected void onBindViewHolder(NewTabPageViewHolder holder) {
-        // TODO(https://crbug.com/1069183): Dead code, remove in future refactor.
-    }
-
-    @Override
-    public String describeForTesting() {
-        return "SIGN_IN_PROMO";
-    }
-
     /** Notify that the content for this {@link SignInPromo} has changed. */
     protected abstract void notifyDataChanged();
 
@@ -165,24 +155,16 @@ public abstract class SignInPromo extends OptionalLeaf {
         setVisibilityInternal(canShowPersonalizedSigninPromo || canShowPersonalizedSyncPromo);
     }
 
-    @Override
-    protected boolean canBeDismissed() {
-        return true;
+    /**
+     * Updates visibility status. Overridden by subclasses that want to track visibility changes.
+     */
+    protected void setVisibilityInternal(boolean visibility) {
+        mIsVisible = visibility;
     }
 
-    /** Hides the sign in promo and sets a preference to make sure it is not shown again. */
-    @Override
-    public void dismiss(Callback<String> itemRemovedCallback) {
-        mDismissed = true;
-        updateVisibility();
-
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, true);
-
-        final @StringRes int promoHeader = mSigninPromoController.getDescriptionStringId();
-
-        mSigninObserver.unregister();
-        itemRemovedCallback.onResult(ContextUtils.getApplicationContext().getString(promoHeader));
+    /** Returns current visibility status of the underlying promo view. */
+    public boolean isVisible() {
+        return mIsVisible;
     }
 
     @VisibleForTesting

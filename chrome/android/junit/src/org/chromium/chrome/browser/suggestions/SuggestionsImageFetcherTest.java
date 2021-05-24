@@ -18,7 +18,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ntp.cards.CardsVariationParameters;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
@@ -26,8 +25,6 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-
-import java.util.HashMap;
 
 /**
  * Unit tests for {@link ImageFetcher}.
@@ -49,7 +46,6 @@ public class SuggestionsImageFetcherTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        CardsVariationParameters.setTestVariationParams(new HashMap<>());
 
         mSuggestionsDeps.getFactory().largeIconBridge = mLargeIconBridge;
         mSuggestionsDeps.getFactory().thumbnailProvider = mThumbnailProvider;
