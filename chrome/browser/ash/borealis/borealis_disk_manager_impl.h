@@ -40,10 +40,10 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
           callback) override;
   void RequestSpace(uint64_t bytes_requested,
                     base::OnceCallback<void(Expected<uint64_t, std::string>)>
-                        callback) override {}
+                        callback) override;
   void ReleaseSpace(uint64_t bytes_to_release,
                     base::OnceCallback<void(Expected<uint64_t, std::string>)>
-                        callback) override {}
+                        callback) override;
 
   void SetFreeSpaceProviderForTesting(
       std::unique_ptr<FreeSpaceProvider> provider) {
@@ -59,6 +59,12 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
   // host and VM disk. Returns an error (string) or a result (BorealisDiskInfo).
   class BuildDiskInfo;
 
+  // Transition class representing the process of resizing the disk. Returns an
+  // error (string) or a result (pair of BorealisDiskInfos, The first references
+  // the original state and the second references the updated state after the
+  // resize).
+  class ResizeDisk;
+
   // Handles the results of a GetDiskInfo request.
   void BuildGetDiskInfoResponse(
       base::OnceCallback<void(Expected<GetDiskInfoResponse, std::string>)>
@@ -66,8 +72,24 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
       Expected<std::unique_ptr<BorealisDiskInfo>, std::string>
           disk_info_or_error);
 
-  std::unique_ptr<BuildDiskInfo> build_disk_info_transition_;
+  // Handles the RequestSpace and ReleaseSpace requests. |bytes_requested| from
+  // RequestSpace becomes a positive delta that expands the disk and the
+  // |bytes_to_release| from ReleaseSpace becomes a negative delta that shrinks
+  // the disk (an error is returned if the unit64_t can't be converted to a
+  // negative int64_t).
+  void RequestSpaceDelta(
+      int64_t target_delta,
+      base::OnceCallback<void(Expected<uint64_t, std::string>)> callback);
+
+  void OnRequestSpaceDelta(
+      int64_t target_delta,
+      base::OnceCallback<void(Expected<uint64_t, std::string>)> callback,
+      Expected<std::unique_ptr<std::pair<BorealisDiskInfo, BorealisDiskInfo>>,
+               std::string> disk_info_or_error);
+
   const BorealisContext* const context_;
+  std::unique_ptr<BuildDiskInfo> build_disk_info_transition_;
+  std::unique_ptr<ResizeDisk> resize_disk_transition_;
   std::unique_ptr<FreeSpaceProvider> free_space_provider_;
   base::WeakPtrFactory<BorealisDiskManagerImpl> weak_factory_;
 };
