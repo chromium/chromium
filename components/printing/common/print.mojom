@@ -322,9 +322,6 @@ interface PrintManagerHost {
   // rendered pages according to the specified settings.
   DidGetPrintedPagesCount(int32 cookie, uint32 number_pages);
 
-  // Sends the document cookie of the current printer query to the browser.
-  DidGetDocumentCookie(int32 cookie);
-
   // Request the default print settings.
   [Sync]
   GetDefaultPrintSettings() => (PrintParams default_settings);

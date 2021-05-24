@@ -157,7 +157,22 @@ class PrintViewManagerBase : public content::NotificationObserver,
                           uint32_t page_count,
                           int cookie,
                           PrinterHandler::PrintCallback callback);
+
+  // Runs `callback` with `params` to reply to UpdatePrintSettings().
+  void UpdatePrintSettingsReply(
+      mojom::PrintManagerHost::UpdatePrintSettingsCallback callback,
+      mojom::PrintPagesParamsPtr params,
+      bool canceled);
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+  // Runs `callback` with `params` to reply to GetDefaultPrintSettings().
+  void GetDefaultPrintSettingsReply(GetDefaultPrintSettingsCallback callback,
+                                    mojom::PrintParamsPtr params);
+
+  // Runs `callback` with `params` to reply to ScriptedPrint().
+  void ScriptedPrintReply(ScriptedPrintCallback callback,
+                          int process_id,
+                          mojom::PrintPagesParamsPtr params);
 
   // Processes a NOTIFY_PRINT_JOB_EVENT notification.
   void OnNotifyPrintJobEvent(const JobEventDetails& event_details);

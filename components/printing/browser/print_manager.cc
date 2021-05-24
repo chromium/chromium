@@ -29,10 +29,6 @@ void PrintManager::DidGetPrintedPagesCount(int32_t cookie,
   number_pages_ = number_pages;
 }
 
-void PrintManager::DidGetDocumentCookie(int32_t cookie) {
-  cookie_ = cookie;
-}
-
 void PrintManager::DidShowPrintDialog() {}
 
 void PrintManager::DidPrintDocument(mojom::DidPrintDocumentParamsPtr params,
