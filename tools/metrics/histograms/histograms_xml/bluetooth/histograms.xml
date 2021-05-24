@@ -216,8 +216,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.DiscoverySession.Stop.Outcome"
     enum="BluetoothDiscoveryOutcomes" expires_after="2021-03-01">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records the outcome of calls to BluetoothDiscoverySession::Stop. Used to
     prioritize efforts to fix failures of this function.
@@ -239,8 +239,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="MacOSBluetoothOperationsResult" expires_after="2021-01-31">
 <!-- Name completed by histogram_suffixes name="WebBluetoothMacOSAPIs" -->
 
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records how many times each macOS GATT error has occured. The results will
     be used to determine how commun this errors are and if we need to provide
@@ -371,8 +371,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.ChooserInteraction" enum="BooleanInvalid"
     expires_after="2021-09-19">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Counts how many times users interact with a regular chooser vs. an invalid
     chooser. (A chooser is invalid when it's event handler becomes null.)
@@ -381,8 +381,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.ConnectGATT.Outcome"
     enum="WebBluetoothConnectGATTOutcome" expires_after="2021-09-19">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records the result of a device.gatt.connect() call. Used to understand what
     errors developers are getting so we can target efforts toward the most
@@ -392,8 +392,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.ConnectGATT.TimeFailed" units="ms"
     expires_after="2021-01-31">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records how long it takes for a connection attempt to fail. Use to let
     developers know how to better wait for and handle connection errors.
@@ -402,8 +402,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.ConnectGATT.TimeSuccess" units="ms"
     expires_after="2021-01-31">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records how long it takes for a device to successfully connect. Use to let
     developers know how long it should take to connect to a BLE device.
@@ -442,8 +442,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.GetCharacteristic.Characteristic"
     enum="GATTCharacteristicHash" expires_after="2021-01-31">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records the UUIDs used when getting a characteristic. The recorded value is
     a 31-bit hash of the UUID. Used to know what types of characteristics to
@@ -467,8 +467,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.GetCharacteristics.Characteristic"
     enum="GATTCharacteristicHash" expires_after="2021-01-31">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records the UUIDs used when getting characteristics. The recorded value is a
     31-bit hash of the UUID. Used to know what types of characteristics to
@@ -548,8 +548,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.GetPrimaryService.Outcome"
     enum="WebBluetoothGetPrimaryServiceOutcome" expires_after="2021-01-31">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records the result of a GATTServer.getPrimaryService() call. Used to
     understand what errors developers are getting so we can target efforts
@@ -559,8 +559,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.GetPrimaryService.Services"
     enum="GATTServiceHash" expires_after="2021-01-31">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records what GATT Services are used when connected. The record value is a
     31-bit hash of the Service UUID. This will help us know if we should build
@@ -570,8 +570,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.GetPrimaryServices.Outcome"
     enum="WebBluetoothGetPrimaryServiceOutcome" expires_after="2021-01-31">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records the result of a GATTServer.getPrimaryServices() call. Used to
     understand what errors developers are getting so we can target efforts
@@ -581,8 +581,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.GetPrimaryServices.Services"
     enum="GATTServiceHash" expires_after="2021-01-31">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records what GATT Services are used when connected. The record value is a
     31-bit hash of the Service UUID. This will help us know if we should build
@@ -692,8 +692,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.RequestDevice.Outcome"
     enum="WebBluetoothRequestDeviceOutcome" expires_after="2021-09-19">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records the result of a navigator.bluetooth.requestDevice() call. Used to
     understand what errors developers are getting so we can target efforts
@@ -703,8 +703,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.RequestDevice.RSSISignalStrength" units="dBm"
     expires_after="2022-04-09">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Raw RSSI values provided to chooser, before processing them for display in
     the Web Bluetooth chooser. This histogram is used to choose the 4 threshold
@@ -716,8 +716,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.RequestDevice.RSSISignalStrengthLevel"
     enum="WebBluetoothRSSISignalStrengthLevel" expires_after="2022-04-09">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Displayed RSSI levels, after processing and as displayed to users in the Web
     Bluetooth chooser.
@@ -754,8 +754,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.RequestDevice.UnionOfServices.Services"
     enum="GATTServiceHash" expires_after="2021-10-17">
-  <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records what services are used from either required or optional sets. The
     recorded value is a 31-bit hash of the Service UUID. These results will help
