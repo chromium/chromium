@@ -63,6 +63,9 @@ void SubscribeToWebFeedTask::Run() {
     }
     feedwire::webfeed::FollowWebFeedRequest request;
     request.set_web_page_uri(request_.page_info.url().spec());
+    for (const GURL& rss_url : request_.page_info.GetRssUrls()) {
+      request.add_page_rss_uris(rss_url.spec());
+    }
     stream_->GetNetwork()->SendApiRequest<FollowWebFeedDiscoverApi>(
         request, stream_->GetSyncSignedInGaia(),
         base::BindOnce(&SubscribeToWebFeedTask::RequestComplete,

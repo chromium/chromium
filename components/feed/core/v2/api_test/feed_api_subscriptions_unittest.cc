@@ -171,8 +171,11 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
   network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
 
-  subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
-                                callback.Bind());
+  WebFeedPageInformation page_info =
+      MakeWebFeedPageInformation("http://cats.com");
+  page_info.SetRssUrls({GURL("http://rss1/"), GURL("http://rss2/")});
+
+  subscriptions().FollowWebFeed(page_info, callback.Bind());
 
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             callback.RunAndGetResult().request_status);
@@ -181,6 +184,9 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
       "publisher_url=https://cats.com/ status=kSubscribed }",
       PrintToString(callback.RunAndGetResult().web_feed_metadata));
   EXPECT_TRUE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
+  ASSERT_THAT(
+      network_.GetApiRequestSent<FollowWebFeedDiscoverApi>()->page_rss_uris(),
+      testing::ElementsAre("http://rss1/", "http://rss2/"));
 }
 
 TEST_F(FeedApiSubscriptionsTest, FollowRecommendedWebFeedById) {
