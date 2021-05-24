@@ -118,6 +118,7 @@ input[type="range" i]:disabled {
 meter::-webkit-meter-inner-element:-internal-shadow-host-has-appearance {
   display: grid;
   grid-template-rows: 1fr [line1] 2fr [line2] 1fr;
+  position: relative;
 }
 
 meter::-webkit-meter-bar {
@@ -129,6 +130,8 @@ meter::-webkit-meter-bar {
   border-color: -internal-light-dark(rgba(118, 118, 118, 0.3), #858585);
   border-radius: 20px;
   box-sizing: border-box;
+  align-self: unsafe center;
+  position: absolute;
   overflow: hidden;
 }
 

@@ -2,7 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++meter valueForRange=2.00 minValueForRange=1.00 maxValueForRange=10.00
-++++++++genericContainer ignored
+++++++++genericContainer
 ++++++++++genericContainer
 ++++++++++++genericContainer ignored
 ++++++++genericContainer ignored invisible
