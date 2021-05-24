@@ -843,11 +843,6 @@ const base::Feature kWebAppEnableProtocolHandlers{
 const base::Feature kWebAppNoteTaking{"WebAppNoteTaking",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled NV12 frames on a GPU will be forwarded to libvpx encoders
-// without conversion to I420.
-const base::Feature kWebRtcLibvpxEncodeNV12{"WebRtcLibvpxEncodeNV12",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Makes network loading tasks unfreezable so that they can be processed while
 // the page is frozen.
 const base::Feature kLoadingTasksUnfreezable{"LoadingTasksUnfreezable",

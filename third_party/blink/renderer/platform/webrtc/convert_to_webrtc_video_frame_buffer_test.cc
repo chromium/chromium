@@ -5,11 +5,9 @@
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
 #include "third_party/blink/renderer/platform/webrtc/testing/mock_webrtc_video_frame_adapter_shared_resources.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
@@ -77,37 +75,6 @@ INSTANTIATE_TEST_CASE_P(
            media::VideoPixelFormatToString(std::get<1>(info.param))});
     });
 
-TEST(ConvertToWebRtcVideoFrameBufferTest, ToI420DownScaleGmb) {
-  base::test::ScopedFeatureList scoped_feautre_list;
-  scoped_feautre_list.InitAndDisableFeature(
-      blink::features::kWebRtcLibvpxEncodeNV12);
-  const gfx::Size kCodedSize(1280, 960);
-  const gfx::Rect kVisibleRect(0, 120, 1280, 720);
-  const gfx::Size kNaturalSize(640, 360);
-  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
-      new WebRtcVideoFrameAdapter::SharedResources(nullptr);
-  auto gmb_frame =
-      CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-
-  // The adapter should report width and height from the natural size for
-  // VideoFrame backed by GpuMemoryBuffer.
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> gmb_frame_buffer =
-      ConvertToWebRtcVideoFrameBuffer(std::move(gmb_frame), resources);
-  EXPECT_EQ(gmb_frame_buffer->width(), kNaturalSize.width());
-  EXPECT_EQ(gmb_frame_buffer->height(), kNaturalSize.height());
-
-  // The I420 frame should have the same size as the natural size
-  auto i420_frame = gmb_frame_buffer->ToI420();
-  ASSERT_TRUE(i420_frame);
-  EXPECT_EQ(i420_frame->width(), kNaturalSize.width());
-  EXPECT_EQ(i420_frame->height(), kNaturalSize.height());
-  auto* get_i420_frame = gmb_frame_buffer->GetI420();
-  ASSERT_TRUE(get_i420_frame);
-  EXPECT_EQ(get_i420_frame->width(), kNaturalSize.width());
-  EXPECT_EQ(get_i420_frame->height(), kNaturalSize.height());
-}
-
 TEST(ConvertToWebRtcVideoFrameBufferTest, ToI420ADownScale) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
@@ -136,9 +103,6 @@ TEST(ConvertToWebRtcVideoFrameBufferTest, ToI420ADownScale) {
 
 TEST(ConvertToWebRtcVideoFrameBufferTest,
      Nv12WrapsGmbWhenNoScalingNeeededWithFeature) {
-  base::test::ScopedFeatureList scoped_feautre_list;
-  scoped_feautre_list.InitAndEnableFeature(
-      blink::features::kWebRtcLibvpxEncodeNV12);
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   // Same size as visible rect so no scaling.
@@ -174,9 +138,6 @@ TEST(ConvertToWebRtcVideoFrameBufferTest,
 }
 
 TEST(ConvertToWebRtcVideoFrameBufferTest, Nv12ScalesGmbWithFeature) {
-  base::test::ScopedFeatureList scoped_feautre_list;
-  scoped_feautre_list.InitAndEnableFeature(
-      blink::features::kWebRtcLibvpxEncodeNV12);
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
