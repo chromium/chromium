@@ -2170,14 +2170,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   }
 }
 
-// Flaky on Linux: https://crbug.com/1054194
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_DoesNotCacheIfRecordingAudio DISABLED_DoesNotCacheIfRecordingAudio
-#else
-#define MAYBE_DoesNotCacheIfRecordingAudio DoesNotCacheIfRecordingAudio
-#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_DoesNotCacheIfRecordingAudio) {
+                       DoesNotCacheIfRecordingAudio) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   BackForwardCacheDisabledTester tester;
@@ -2192,7 +2186,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ("success", EvalJs(current_frame_host(), R"(
     new Promise(resolve => {
       navigator.mediaDevices.getUserMedia({audio: true})
-        .then(m => { resolve("success"); })
+        .then(m => { window.keepaliveMedia = m; resolve("success"); })
         .catch(() => { resolve("error"); });
     });
   )"));
