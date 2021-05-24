@@ -146,6 +146,8 @@ class WebApkInstallTaskTest : public testing::Test {
         &arc_features_getter_);
   }
 
+  void TearDown() override { arc_test_.TearDown(); }
+
   void SetWebApkResponse(WebApkResponseBuilder builder) {
     webapk_response_builder_ = builder;
   }

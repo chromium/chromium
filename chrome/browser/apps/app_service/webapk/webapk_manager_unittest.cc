@@ -68,6 +68,8 @@ class WebApkManagerTest : public testing::Test {
     provider->Start();
   }
 
+  void TearDown() override { arc_test_.TearDown(); }
+
   void StartWebApkManager() {
     app_service_test_.SetUp(&profile_);
     app_service_test_.FlushMojoCalls();
