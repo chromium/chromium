@@ -65500,6 +65500,33 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="User elected to send feedback."/>
 </enum>
 
+<enum name="ProjectorMarkerColor">
+  <int value="0" label="Black"/>
+  <int value="1" label="White"/>
+  <int value="2" label="Blue"/>
+</enum>
+
+<enum name="ProjectorToolbar">
+  <int value="0" label="Toolbar opened"/>
+  <int value="1" label="Toolbar closed"/>
+  <int value="2" label="Key idea"/>
+  <int value="3" label="Laser pointer"/>
+  <int value="4" label="Marker tool"/>
+  <int value="5" label="Expand marker tools"/>
+  <int value="6" label="Collapse marker tools"/>
+  <int value="7" label="Clear all markers"/>
+  <int value="8" label="Start magnifier"/>
+  <int value="9" label="Stop magnifier"/>
+  <int value="10" label="Start selfie camera"/>
+  <int value="11" label="Stop selfie camera"/>
+  <int value="12" label="Start closed captions"/>
+  <int value="13" label="Stop closed captions"/>
+  <int value="14" label="Toggle toolbar location to bottom left"/>
+  <int value="15" label="Toggle toolbar location to top left"/>
+  <int value="16" label="Toggle toolbar location to top right"/>
+  <int value="17" label="Toggle toolbar location to bottom right"/>
+</enum>
+
 <enum name="PromoBrowserCommandEnum">
   <int value="0" label="Unknown Command"/>
   <int value="1" label="Open Safety Check"/>

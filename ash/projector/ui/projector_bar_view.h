@@ -57,6 +57,9 @@ class ASH_EXPORT ProjectorBarView : public views::View {
   bool IsClosedCaptionEnabled() const;
 
  private:
+  friend class ProjectorUiControllerTest;
+  FRIEND_TEST_ALL_PREFIXES(ProjectorUiControllerTest, UmaMetricsTest);
+
   // The location of the bar.
   enum class BarLocation { kUpperLeft, kUpperRight, kLowerRight, kLowerLeft };
 

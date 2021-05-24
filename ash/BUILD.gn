@@ -727,6 +727,8 @@ component("ash") {
     "projector/projector_metadata_controller.h",
     "projector/projector_metadata_model.cc",
     "projector/projector_metadata_model.h",
+    "projector/projector_metrics.cc",
+    "projector/projector_metrics.h",
     "projector/projector_ui_controller.cc",
     "projector/projector_ui_controller.h",
     "projector/ui/projector_bar_view.cc",

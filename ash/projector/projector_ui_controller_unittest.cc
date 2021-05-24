@@ -11,14 +11,27 @@
 #include "ash/marker/marker_controller.h"
 #include "ash/marker/marker_controller_test_api.h"
 #include "ash/projector/projector_controller_impl.h"
+#include "ash/projector/projector_metrics.h"
+#include "ash/projector/test/mock_projector_client.h"
 #include "ash/projector/ui/projector_bar_view.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
+
+namespace {
+
+constexpr char kProjectorToolbarHistogramName[] =
+    "Ash.Projector.Toolbar.ClamshellMode";
+
+constexpr char kProjectorMarkerColorHistogramName[] =
+    "Ash.Projector.MarkerColor.ClamshellMode";
+
+}  // namespace
 
 class ProjectorUiControllerTest : public AshTestBase {
  public:
@@ -215,6 +228,123 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingMagnifierGlass) {
   EXPECT_TRUE(laser_pointer_controller_->is_enabled());
   controller_->OnMagnifierButtonPressed(true);
   EXPECT_FALSE(laser_pointer_controller_->is_enabled());
+}
+
+TEST_F(ProjectorUiControllerTest, UmaMetricsTest) {
+  base::HistogramTester histogram_tester;
+
+  MockProjectorClient mock_client;
+  ProjectorController::Get()->SetClient(&mock_client);
+  ProjectorController::Get()->OnSpeechRecognitionAvailable(/*available=*/true);
+  ProjectorController::Get()->SetProjectorToolsVisible(/*is_visible=*/true);
+  histogram_tester.ExpectUniqueSample(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kToolbarOpened, /*count=*/1);
+
+  ProjectorBarView* bar_view_ = controller_->projector_bar_view();
+
+  bar_view_->OnKeyIdeaButtonPressed();
+  histogram_tester.ExpectBucketCount(kProjectorToolbarHistogramName,
+                                     /*sample=*/ProjectorToolbar::kKeyIdea,
+                                     /*count=*/1);
+
+  bar_view_->OnLaserPointerPressed();
+  histogram_tester.ExpectBucketCount(kProjectorToolbarHistogramName,
+                                     /*sample=*/ProjectorToolbar::kLaserPointer,
+                                     /*count=*/1);
+
+  bar_view_->OnMarkerPressed();
+  histogram_tester.ExpectBucketCount(kProjectorToolbarHistogramName,
+                                     /*sample=*/ProjectorToolbar::kMarkerTool,
+                                     /*count=*/1);
+  bar_view_->OnChangeMarkerColorPressed(SK_ColorBLUE);
+  histogram_tester.ExpectUniqueSample(kProjectorMarkerColorHistogramName,
+                                      /*sample=*/ProjectorMarkerColor::kBlue,
+                                      /*count=*/1);
+  bar_view_->OnClearAllMarkersPressed();
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kClearAllMarkers,
+      /*count=*/1);
+
+  bar_view_->OnMagnifierButtonPressed(/*enabled=*/true);
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kStartMagnifier,
+      /*count=*/1);
+  // Magnifier and marker are mutually exclusive, so enabling magnifier also
+  // disables marker. Leaving marker mode also clears all markers.
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kClearAllMarkers,
+      /*count=*/2);
+  bar_view_->OnMagnifierButtonPressed(/*enabled=*/false);
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kStopMagnifier,
+      /*count=*/1);
+
+  bar_view_->OnSelfieCamPressed(/*enabled=*/true);
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kStartSelfieCamera,
+      /*count=*/1);
+  bar_view_->OnSelfieCamPressed(/*enabled=*/false);
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kStopSelfieCamera,
+      /*count=*/1);
+
+  bar_view_->SetCaptionState(/*enabled=*/true);
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kStartClosedCaptions,
+      /*count=*/1);
+  bar_view_->SetCaptionState(/*enabled=*/false);
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kStopClosedCaptions,
+      /*count=*/1);
+
+  bar_view_->OnCaretButtonPressed(/*expand=*/true);
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kExpandMarkerTools,
+      /*count=*/1);
+  bar_view_->OnCaretButtonPressed(/*expand=*/false);
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kCollapseMarkerTools,
+      /*count=*/1);
+
+  bar_view_->OnChangeBarLocationButtonPressed();
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kToolbarLocationTopLeft,
+      /*count=*/1);
+  bar_view_->OnChangeBarLocationButtonPressed();
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kToolbarLocationTopRight,
+      /*count=*/1);
+  bar_view_->OnChangeBarLocationButtonPressed();
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kToolbarLocationBottomRight,
+      /*count=*/1);
+  bar_view_->OnChangeBarLocationButtonPressed();
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kToolbarLocationBottomLeft,
+      /*count=*/1);
+
+  ProjectorController::Get()->SetProjectorToolsVisible(/*is_visible=*/false);
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kToolbarClosed,
+      /*count=*/1);
+  histogram_tester.ExpectTotalCount(kProjectorToolbarHistogramName,
+                                    /*count=*/19);
 }
 
 }  // namespace ash
