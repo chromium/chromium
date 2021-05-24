@@ -4051,6 +4051,7 @@ source_set("unit_tests") {
     "input_method/emoji_suggester_unittest.cc",
     "input_method/fake_suggestion_handler.cc",
     "input_method/fake_suggestion_handler.h",
+    "input_method/grammar_manager_unittest.cc",
     "input_method/grammar_service_client_unittest.cc",
     "input_method/input_method_configuration_unittest.cc",
     "input_method/input_method_engine_unittest.cc",

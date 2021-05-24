@@ -11,9 +11,9 @@
 #include "base/callback.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/services/machine_learning/public/mojom/grammar_checker.mojom.h"
+#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom-shared.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-struct SpellCheckResult;
+#include "ui/base/ime/grammar_fragment.h"
 
 namespace chromeos {
 
@@ -47,19 +47,22 @@ namespace chromeos {
 class GrammarServiceClient {
  public:
   GrammarServiceClient();
-  ~GrammarServiceClient();
+  virtual ~GrammarServiceClient();
 
   using TextCheckCompleteCallback = base::OnceCallback<void(
       bool /* success */,
-      const std::vector<SpellCheckResult>& /* results */)>;
+      const std::vector<ui::GrammarFragment>& /* results */)>;
 
   // Sends grammar check request to ML service, parses the reponse
   // and calls a provided callback method.
-  bool RequestTextCheck(Profile* profile,
-                        const std::u16string& text,
-                        TextCheckCompleteCallback callback) const;
+  virtual bool RequestTextCheck(Profile* profile,
+                                const std::u16string& text,
+                                TextCheckCompleteCallback callback) const;
 
  private:
+  void OnLoadGrammarCheckerDone(
+      chromeos::machine_learning::mojom::LoadModelResult result);
+
   // Parse the result returned from grammar check service.
   void ParseGrammarCheckerResult(
       const std::string& query_text,
@@ -71,9 +74,11 @@ class GrammarServiceClient {
   // service is ready to use.
   bool IsAvailable(Profile* profile) const;
 
+  base::WeakPtr<GrammarServiceClient> weak_this_;
   mojo::Remote<chromeos::machine_learning::mojom::GrammarChecker>
       grammar_checker_;
   bool grammar_checker_loaded_ = false;
+  base::WeakPtrFactory<GrammarServiceClient> weak_factory_{this};
 };
 
 }  // namespace chromeos
