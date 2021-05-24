@@ -138,12 +138,12 @@ class TestObserver : public NavigationPredictorKeyedService::Observer {
     // Ensure that |wait_loop_| is null implying there is no ongoing wait.
     ASSERT_FALSE(wait_loop_);
 
-    if (count_predictions_ >= expected_notifications_count)
-      return;
-    expected_notifications_count_ = expected_notifications_count;
-    wait_loop_ = std::make_unique<base::RunLoop>();
-    wait_loop_->Run();
-    wait_loop_.reset();
+    while (count_predictions_ < expected_notifications_count) {
+      expected_notifications_count_ = expected_notifications_count;
+      wait_loop_ = std::make_unique<base::RunLoop>();
+      wait_loop_->Run();
+      wait_loop_.reset();
+    }
   }
 
  private:
@@ -296,13 +296,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, MultipleNavigations) {
 }
 
 // Tests that anchors from iframes are reported.
-// TODO(crbug.com/1208143): Test is flaky.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
-#define MAYBE_PageWithIframe DISABLED_PageWithIframe
-#else
-#define MAYBE_PageWithIframe PageWithIframe
-#endif
-IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, MAYBE_PageWithIframe) {
+IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PageWithIframe) {
   auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   ResetUKM();
 
