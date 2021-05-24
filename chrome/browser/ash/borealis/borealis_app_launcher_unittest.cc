@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -26,14 +27,8 @@
 namespace borealis {
 namespace {
 
-class CallbackFactory
-    : public testing::StrictMock<
-          testing::MockFunction<void(BorealisAppLauncher::LaunchResult)>> {
- public:
-  base::OnceCallback<void(BorealisAppLauncher::LaunchResult)> BindOnce() {
-    return base::BindOnce(&CallbackFactory::Call, base::Unretained(this));
-  }
-};
+using CallbackFactory =
+    StrictCallbackFactory<void(BorealisAppLauncher::LaunchResult)>;
 
 class ScopedCiceroneFake {
  public:

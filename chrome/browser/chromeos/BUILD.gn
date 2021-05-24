@@ -3435,6 +3435,7 @@ static_library("test_support") {
     "../ash/borealis/borealis_window_manager_mock.h",
     "../ash/borealis/borealis_window_manager_test_helper.cc",
     "../ash/borealis/borealis_window_manager_test_helper.h",
+    "../ash/borealis/testing/callback_factory.h",
     "../ash/cert_provisioning/mock_cert_provisioning_scheduler.cc",
     "../ash/cert_provisioning/mock_cert_provisioning_scheduler.h",
     "../ash/certificate_provider/test_certificate_provider_extension.cc",
