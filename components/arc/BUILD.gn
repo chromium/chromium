@@ -22,6 +22,8 @@ static_library("arc") {
     "compat_mode/arc_resize_lock_pref_delegate.h",
     "compat_mode/arc_splash_screen_dialog_view.cc",
     "compat_mode/arc_splash_screen_dialog_view.h",
+    "compat_mode/overlay_dialog.cc",
+    "compat_mode/overlay_dialog.h",
     "compat_mode/resize_confirmation_dialog_view.cc",
     "compat_mode/resize_confirmation_dialog_view.h",
     "compat_mode/resize_toggle_menu.cc",

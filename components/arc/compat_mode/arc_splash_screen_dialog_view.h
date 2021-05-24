@@ -35,15 +35,17 @@ class ArcSplashScreenDialogView : public views::View {
       delete;
   ~ArcSplashScreenDialogView() override;
 
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override;
+
  private:
   void OnLinkClicked();
 
   views::Button* close_button_ = nullptr;
 };
 
-// Build a splash screen dialog view to advertise resize lock feature
-std::unique_ptr<ArcSplashScreenDialogView> BuildSplashScreenDialogView(
-    views::Button::PressedCallback close_callback);
+// Show a splash screen dialog to advertise resize lock feature
+void ShowSplashScreenDialog(aura::Window* parent);
 
 }  // namespace arc
 

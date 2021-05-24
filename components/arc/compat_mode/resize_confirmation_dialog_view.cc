@@ -7,42 +7,17 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "components/exo/shell_surface_base.h"
-#include "components/exo/shell_surface_util.h"
+#include "components/arc/compat_mode/overlay_dialog.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_class_properties.h"
 
 namespace arc {
-
-namespace {
-
-std::unique_ptr<views::View> MakeOverlayDialogContainerView(
-    std::unique_ptr<views::View> dialog_view) {
-  constexpr SkColor kScrimColor = SkColorSetA(gfx::kGoogleGrey900, 0x99);
-
-  auto container = views::Builder<views::FlexLayoutView>()
-                       .SetInteriorMargin(gfx::Insets(0, 32))
-                       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-                       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-                       .SetBackground(views::CreateSolidBackground(kScrimColor))
-                       .Build();
-  dialog_view->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero));
-
-  container->AddChildView(std::move(dialog_view));
-
-  return container;
-}
-
-}  // namespace
 
 ResizeConfirmationDialogView::ResizeConfirmationDialogView(
     ResizeConfirmationCallback callback)
@@ -145,22 +120,12 @@ void ResizeConfirmationDialogView::OnButtonClicked(bool accept) {
 
 void ShowResizeConfirmationDialog(aura::Window* parent,
                                   ResizeConfirmationCallback callback) {
-  auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(parent);
-  if (!shell_surface_base || shell_surface_base->HasOverlay())
-    return;
+  auto remove_overlay =
+      base::BindOnce(&CloseOverlayDialogIfAny, base::Unretained(parent));
 
-  auto remove_overlay = base::BindOnce(
-      [](aura::Window* window) {
-        auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
-        if (shell_surface_base && shell_surface_base->HasOverlay())
-          shell_surface_base->RemoveOverlay();
-      },
-      base::Unretained(parent));
-  exo::ShellSurfaceBase::OverlayParams params(MakeOverlayDialogContainerView(
-      std::make_unique<ResizeConfirmationDialogView>(
-          std::move(callback).Then(std::move(remove_overlay)))));
-  params.translucent = true;
-  shell_surface_base->AddOverlay(std::move(params));
+  ShowOverlayDialog(parent,
+                    std::make_unique<ResizeConfirmationDialogView>(
+                        std::move(callback).Then(std::move(remove_overlay))));
 }
 
 }  // namespace arc

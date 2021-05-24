@@ -11,8 +11,6 @@
 #include "base/memory/singleton.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/compat_mode/arc_splash_screen_dialog_view.h"
-#include "components/exo/shell_surface_base.h"
-#include "components/exo/shell_surface_util.h"
 
 namespace arc {
 
@@ -95,31 +93,10 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
                     mojom::ArcResizeLockState::READY) {
     pref_delegate_->SetResizeLockState(*app_id, mojom::ArcResizeLockState::ON);
 
-    // Setup splash screen.
-    auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
-    if (shell_surface_base && !shell_surface_base->HasOverlay()) {
-      // Show the splash screen in current window. The splash screen is an
-      // overlay covering the entire window. User can only remove the overlay
-      // before closing the window.
-      auto splash_screen_dialog = arc::BuildSplashScreenDialogView(
-          views::Button::PressedCallback(base::BindRepeating(
-              [](aura::Window* window, const ui::Event& event) {
-                auto* shell_surface_base =
-                    exo::GetShellSurfaceBaseForWindow(window);
-                if (!shell_surface_base)
-                  return;
-                if (shell_surface_base->HasOverlay()) {
-                  shell_surface_base->RemoveOverlay();
-                }
-                return;
-              },
-              base::Unretained(window))));
-
-      exo::ShellSurfaceBase::OverlayParams params(
-          std::move(splash_screen_dialog));
-      params.translucent = true;
-      shell_surface_base->AddOverlay(std::move(params));
-    }
+    // Show the splash screen in current window. The splash screen is an
+    // overlay covering the entire window. User can only remove the overlay
+    // before closing the window.
+    ShowSplashScreenDialog(window);
   }
 
   // Setup size button override.

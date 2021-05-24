@@ -38,7 +38,7 @@ class ArcSplashScreenDialogViewTest : public views::ViewsTestBase {
     views::ViewsTestBase::SetUp();
     widget_ = CreateTestWidget();
     widget_->SetBounds(gfx::Rect(800, 800));
-    auto dialog_view = BuildSplashScreenDialogView(
+    auto dialog_view = std::make_unique<ArcSplashScreenDialogView>(
         base::BindRepeating(&ArcSplashScreenDialogViewTest::OnCloseCallback,
                             base::Unretained(this)));
     dialog_view_ = widget_->SetContentsView(std::move(dialog_view));
