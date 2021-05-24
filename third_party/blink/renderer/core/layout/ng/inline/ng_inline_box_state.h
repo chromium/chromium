@@ -48,6 +48,10 @@ struct NGInlineBoxState {
   // InitializeFont().
   absl::optional<Font> scaled_font;
 
+  // SVG scaling factor for this box. We use a font of which size is
+  // css-specified-size * scaling_factor.
+  float scaling_factor;
+
   // The united metrics for the current box. This includes all objects in this
   // box, including descendants, and adjusted by placement properties such as
   // 'vertical-align'.
@@ -77,6 +81,14 @@ struct NGInlineBoxState {
   bool include_used_fonts = false;
   bool has_box_placeholder = false;
   bool needs_box_fragment = false;
+
+  // If you add new data members, update the move constructor.
+
+  NGInlineBoxState() = default;
+  // Needs the move constructor for Vector<NGInlineBoxState>.
+  NGInlineBoxState(const NGInlineBoxState&& state);
+  NGInlineBoxState(const NGInlineBoxState&) = delete;
+  NGInlineBoxState& operator=(const NGInlineBoxState&) = delete;
 
   // Initialize |font| and |scaled_font|. This should be called after setting
   // |style|.
