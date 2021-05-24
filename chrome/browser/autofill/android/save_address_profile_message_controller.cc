@@ -93,10 +93,16 @@ void SaveAddressProfileMessageController::OnMessageDismissed(
     case messages::DismissReason::GESTURE:
       // User explicitly dismissed the message.
       RunSaveAddressProfileCallback(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
+          AutofillClient::SaveAddressProfileOfferUserDecision::
+              kMessageDeclined);
+      break;
+    case messages::DismissReason::TIMER:
+      // The message was auto-dismissed after a timeout.
+      RunSaveAddressProfileCallback(
+          AutofillClient::SaveAddressProfileOfferUserDecision::kMessageTimeout);
       break;
     default:
-      // Dismissal without direct interaction.
+      // Dismissal for any other reason.
       RunSaveAddressProfileCallback(
           AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored);
       break;
