@@ -68,9 +68,8 @@ class EmuTarget(target.Target):
       temporary_log_file = tempfile.NamedTemporaryFile('w')
       stdout = temporary_log_file
 
-    # TODO(crbug.com/1100402): Delete when no longer needed for debug info.
-    # Log system statistics at the start of the emulator run.
-    _LogSystemStatistics('system_start_statistics_log')
+    _LogProcessStatistics('proc_stat_start_log')
+    _LogSystemStatistics('system_statistics_start_log')
 
     self._emu_process = subprocess.Popen(emu_command,
                                          stdin=open(os.devnull),
@@ -80,6 +79,7 @@ class EmuTarget(target.Target):
 
     try:
       self._WaitUntilReady()
+      _LogProcessStatistics('proc_stat_ready_log')
     except target.FuchsiaTargetException:
       if temporary_log_file:
         logging.info('Kernel logs:\n' +
@@ -109,9 +109,8 @@ class EmuTarget(target.Target):
       logging.error('%s quit unexpectedly with exit code %d' %
                     (self.EMULATOR_NAME, returncode))
 
-    # TODO(crbug.com/1100402): Delete when no longer needed for debug info.
-    # Log system statistics at the end of the emulator run.
-    _LogSystemStatistics('system_end_statistics_log')
+    _LogProcessStatistics('proc_stat_end_log')
+    _LogSystemStatistics('system_statistics_end_log')
 
 
   def _IsEmuStillRunning(self):
@@ -128,7 +127,6 @@ class EmuTarget(target.Target):
     return boot_data.GetSSHConfigPath(self._out_dir)
 
 
-# TODO(crbug.com/1100402): Delete when no longer needed for debug info.
 def _LogSystemStatistics(log_file_name):
   statistics_log = runner_logs.FileStreamFor(log_file_name)
   # Log the cpu load and process information.
@@ -137,6 +135,14 @@ def _LogSystemStatistics(log_file_name):
                   stdout=statistics_log,
                   stderr=subprocess.STDOUT)
   subprocess.call(['ps', '-ax'],
+                  stdin=open(os.devnull),
+                  stdout=statistics_log,
+                  stderr=subprocess.STDOUT)
+
+
+def _LogProcessStatistics(log_file_name):
+  statistics_log = runner_logs.FileStreamFor(log_file_name)
+  subprocess.call(['cat', '/proc/stat'],
                   stdin=open(os.devnull),
                   stdout=statistics_log,
                   stderr=subprocess.STDOUT)
