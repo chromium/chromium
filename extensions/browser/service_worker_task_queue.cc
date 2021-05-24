@@ -371,8 +371,6 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
 }
 
 void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
-  GURL script_url = extension->GetResourceURL(
-      BackgroundInfo::GetBackgroundServiceWorkerScript(extension));
   const ExtensionId extension_id = extension->id();
   RemoveRegisteredServiceWorkerInfo(extension_id);
   absl::optional<ActivationSequence> sequence =
