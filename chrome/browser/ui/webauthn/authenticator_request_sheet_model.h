@@ -60,7 +60,7 @@ class AuthenticatorRequestSheetModel {
   virtual std::u16string GetAdditionalDescription() const;
   virtual std::u16string GetError() const;
 
-  virtual ui::MenuModel* GetOtherTransportsMenuModel();
+  virtual ui::MenuModel* GetOtherMechanismsMenuModel();
 
   virtual void OnBack() = 0;
   virtual void OnAccept() = 0;

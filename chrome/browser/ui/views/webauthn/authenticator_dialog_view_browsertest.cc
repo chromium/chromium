@@ -65,7 +65,7 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
     return u"You must construct additional pylons.";
   }
 
-  ui::MenuModel* GetOtherTransportsMenuModel() override { return nullptr; }
+  ui::MenuModel* GetOtherMechanismsMenuModel() override { return nullptr; }
 
   void OnBack() override {}
   void OnAccept() override {}

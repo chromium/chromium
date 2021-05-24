@@ -13,6 +13,6 @@ std::u16string AuthenticatorRequestSheetModel::GetError() const {
   return std::u16string();
 }
 
-ui::MenuModel* AuthenticatorRequestSheetModel::GetOtherTransportsMenuModel() {
+ui::MenuModel* AuthenticatorRequestSheetModel::GetOtherMechanismsMenuModel() {
   return nullptr;
 }

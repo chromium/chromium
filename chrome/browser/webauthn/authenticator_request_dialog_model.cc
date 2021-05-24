@@ -174,7 +174,7 @@ void AuthenticatorRequestDialogModel::StartFlow(
     // instead.
     StartLocationBarBubbleRequest();
   } else {
-    StartGuidedFlowForMostLikelyTransportOrShowTransportSelection();
+    StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
   }
 }
 
@@ -189,11 +189,11 @@ void AuthenticatorRequestDialogModel::StartOver() {
     return;
   }
   current_mechanism_.reset();
-  SetCurrentStep(Step::kTransportSelection);
+  SetCurrentStep(Step::kMechanismSelection);
 }
 
 void AuthenticatorRequestDialogModel::
-    StartGuidedFlowForMostLikelyTransportOrShowTransportSelection() {
+    StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection() {
   DCHECK(current_step() == Step::kNotStarted);
 
   const auto priority_mechanism_it =
@@ -210,7 +210,7 @@ void AuthenticatorRequestDialogModel::
   } else if (priority_mechanism_it != mechanisms_.end()) {
     priority_mechanism_it->callback.Run();
   } else {
-    SetCurrentStep(Step::kTransportSelection);
+    SetCurrentStep(Step::kMechanismSelection);
   }
 }
 
@@ -247,7 +247,7 @@ void AuthenticatorRequestDialogModel::StartPhonePairing() {
 
 void AuthenticatorRequestDialogModel::
     EnsureBleAdapterIsPoweredAndContinueWithCable() {
-  DCHECK(current_step() == Step::kTransportSelection ||
+  DCHECK(current_step() == Step::kMechanismSelection ||
          current_step() == Step::kUsbInsertAndActivate ||
          current_step() == Step::kCableActivate ||
          current_step() == Step::kAndroidAccessory ||
@@ -722,7 +722,7 @@ void AuthenticatorRequestDialogModel::StartGuidedFlowForTransport(
     size_t mechanism_index) {
   current_mechanism_ = mechanism_index;
 
-  DCHECK(current_step() == Step::kTransportSelection ||
+  DCHECK(current_step() == Step::kMechanismSelection ||
          current_step() == Step::kUsbInsertAndActivate ||
          current_step() == Step::kCableActivate ||
          current_step() == Step::kAndroidAccessory ||

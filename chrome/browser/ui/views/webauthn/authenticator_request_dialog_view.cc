@@ -70,7 +70,7 @@ void AuthenticatorRequestDialogView::ReplaceCurrentSheetWith(
     std::unique_ptr<AuthenticatorRequestSheetView> new_sheet) {
   DCHECK(new_sheet);
 
-  other_transports_menu_runner_.reset();
+  other_mechanisms_menu_runner_.reset();
 
   delete sheet_;
   DCHECK(children().empty());
@@ -101,7 +101,7 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   // Whether to show the `Choose another option` button, or other dialog
   // configuration is delegated to the |sheet_|, and the new sheet likely wants
   // to provide a new configuration.
-  ToggleOtherTransportsButtonVisibility();
+  ToggleOtherMechanismsButtonVisibility();
   DialogModelChanged();
 
   // If the widget is not yet shown or already being torn down, we are done. In
@@ -141,14 +141,14 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
     GetInitiallyFocusedView()->RequestFocus();
 }
 
-void AuthenticatorRequestDialogView::ToggleOtherTransportsButtonVisibility() {
-  other_transports_button_->SetVisible(ShouldOtherTransportsButtonBeVisible());
+void AuthenticatorRequestDialogView::ToggleOtherMechanismsButtonVisibility() {
+  other_mechanisms_button_->SetVisible(ShouldOtherMechanismsButtonBeVisible());
 }
 
-bool AuthenticatorRequestDialogView::ShouldOtherTransportsButtonBeVisible()
+bool AuthenticatorRequestDialogView::ShouldOtherMechanismsButtonBeVisible()
     const {
-  return sheet_->model()->GetOtherTransportsMenuModel() &&
-         sheet_->model()->GetOtherTransportsMenuModel()->GetItemCount();
+  return sheet_->model()->GetOtherMechanismsMenuModel() &&
+         sheet_->model()->GetOtherMechanismsMenuModel()->GetItemCount();
 }
 
 bool AuthenticatorRequestDialogView::Accept() {
@@ -193,8 +193,8 @@ views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {
     return GetOkButton();
   }
 
-  if (ShouldOtherTransportsButtonBeVisible())
-    return other_transports_button_;
+  if (ShouldOtherMechanismsButtonBeVisible())
+    return other_mechanisms_button_;
 
   if (sheet()->model()->IsCancelButtonVisible())
     return GetCancelButton();
@@ -258,10 +258,10 @@ AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
     std::unique_ptr<AuthenticatorRequestDialogModel> model)
     : content::WebContentsObserver(web_contents),
       model_(std::move(model)),
-      other_transports_button_(
+      other_mechanisms_button_(
           SetExtraView(std::make_unique<views::MdTextButtonWithDownArrow>(
               base::BindRepeating(
-                  &AuthenticatorRequestDialogView::OtherTransportsButtonPressed,
+                  &AuthenticatorRequestDialogView::OtherMechanismsButtonPressed,
                   base::Unretained(this)),
               l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_POPUP_LABEL)))),
       web_contents_hidden_(web_contents->GetVisibility() ==
@@ -305,18 +305,18 @@ void AuthenticatorRequestDialogView::Show() {
   GetWidget()->Show();
 }
 
-void AuthenticatorRequestDialogView::OtherTransportsButtonPressed() {
-  auto* other_transports_menu_model =
-      sheet_->model()->GetOtherTransportsMenuModel();
-  DCHECK(other_transports_menu_model);
-  DCHECK_GE(other_transports_menu_model->GetItemCount(), 1);
+void AuthenticatorRequestDialogView::OtherMechanismsButtonPressed() {
+  auto* other_mechanisms_menu_model =
+      sheet_->model()->GetOtherMechanismsMenuModel();
+  DCHECK(other_mechanisms_menu_model);
+  DCHECK_GE(other_mechanisms_menu_model->GetItemCount(), 1);
 
-  other_transports_menu_runner_ = std::make_unique<views::MenuRunner>(
-      other_transports_menu_model, views::MenuRunner::COMBOBOX);
+  other_mechanisms_menu_runner_ = std::make_unique<views::MenuRunner>(
+      other_mechanisms_menu_model, views::MenuRunner::COMBOBOX);
 
-  gfx::Rect anchor_bounds = other_transports_button_->GetBoundsInScreen();
-  other_transports_menu_runner_->RunMenuAt(
-      other_transports_button_->GetWidget(), nullptr /* MenuButtonController */,
+  gfx::Rect anchor_bounds = other_mechanisms_button_->GetBoundsInScreen();
+  other_mechanisms_menu_runner_->RunMenuAt(
+      other_mechanisms_button_->GetWidget(), nullptr /* MenuButtonController */,
       anchor_bounds, views::MenuAnchorPosition::kTopLeft,
       ui::MENU_SOURCE_MOUSE);
 }

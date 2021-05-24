@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webauthn/other_transports_menu_model.h"
+#include "chrome/browser/ui/webauthn/other_mechanisms_menu_model.h"
 
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 
-OtherTransportsMenuModel::OtherTransportsMenuModel(
+OtherMechanismsMenuModel::OtherMechanismsMenuModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : ui::SimpleMenuModel(this), dialog_model_(dialog_model) {
   base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms =
@@ -32,16 +32,16 @@ OtherTransportsMenuModel::OtherTransportsMenuModel(
   }
 }
 
-OtherTransportsMenuModel::~OtherTransportsMenuModel() = default;
+OtherMechanismsMenuModel::~OtherMechanismsMenuModel() = default;
 
-bool OtherTransportsMenuModel::IsCommandIdChecked(int command_id) const {
+bool OtherMechanismsMenuModel::IsCommandIdChecked(int command_id) const {
   return false;
 }
 
-bool OtherTransportsMenuModel::IsCommandIdEnabled(int command_id) const {
+bool OtherMechanismsMenuModel::IsCommandIdEnabled(int command_id) const {
   return true;
 }
 
-void OtherTransportsMenuModel::ExecuteCommand(int command_id, int event_flags) {
+void OtherMechanismsMenuModel::ExecuteCommand(int command_id, int event_flags) {
   dialog_model_->mechanisms()[command_id].callback.Run();
 }

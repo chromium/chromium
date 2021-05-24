@@ -155,7 +155,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto winapi =
       AuthenticatorRequestDialogModel::Mechanism::WindowsAPI(true);
   const auto usb_ui = Step::kUsbInsertAndActivate;
-  const auto tss = Step::kTransportSelection;
+  const auto mss = Step::kMechanismSelection;
   const auto plat_ui = Step::kNotStarted;
   const auto cable_ui = Step::kCableActivate;
 
@@ -172,8 +172,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       {mc, {usb}, {}, {}, {t(usb)}, usb_ui},
       {ga, {usb}, {}, {}, {t(usb)}, usb_ui},
       // ... otherwise should the selection sheet.
-      {mc, {usb, internal}, {}, {}, {t(usb), t(internal)}, tss},
-      {ga, {usb, internal}, {}, {}, {t(usb), t(internal)}, tss},
+      {mc, {usb, internal}, {}, {}, {t(usb), t(internal)}, mss},
+      {ga, {usb, internal}, {}, {}, {t(usb), t(internal)}, mss},
 
       // If the platform authenticator has a credential it should activate.
       {ga, {usb, internal}, {has_plat}, {}, {t(usb), t(internal)}, plat_ui},
@@ -193,12 +193,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
       // If there are linked phones then AOA doesn't show up, but the phones do,
       // and sorted. The selection sheet should show.
-      {mc, {usb, aoa, cable}, {}, {"b", "a"}, {t(usb), p("a"), p("b")}, tss},
-      {ga, {usb, aoa, cable}, {}, {"b", "a"}, {t(usb), p("a"), p("b")}, tss},
+      {mc, {usb, aoa, cable}, {}, {"b", "a"}, {t(usb), p("a"), p("b")}, mss},
+      {ga, {usb, aoa, cable}, {}, {"b", "a"}, {t(usb), p("a"), p("b")}, mss},
 
       // On Windows, if there are linked phones we'll show a selection sheet.
-      {mc, {cable}, {has_winapi}, {"a"}, {winapi, p("a")}, tss},
-      {ga, {cable}, {has_winapi}, {"a"}, {winapi, p("a")}, tss},
+      {mc, {cable}, {has_winapi}, {"a"}, {winapi, p("a")}, mss},
+      {ga, {cable}, {has_winapi}, {"a"}, {winapi, p("a")}, mss},
   };
 
   unsigned test_num = 0;
@@ -269,7 +269,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     }
 
     model.StartOver();
-    EXPECT_EQ(Step::kTransportSelection, model.current_step());
+    EXPECT_EQ(Step::kMechanismSelection, model.current_step());
   }
 }
 
@@ -319,7 +319,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, AwaitingAcknowledgement) {
     EXPECT_CALL(mock_observer, OnStepTransition());
     model.StartFlow(std::move(transports_info),
                     /*use_location_bar_bubble=*/false);
-    EXPECT_EQ(Step::kTransportSelection, model.current_step());
+    EXPECT_EQ(Step::kMechanismSelection, model.current_step());
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
     EXPECT_CALL(mock_observer, OnStepTransition());
@@ -464,7 +464,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
 
   model.StartFlow(std::move(transports_info),
                   /*use_location_bar_bubble=*/false);
-  EXPECT_EQ(AuthenticatorRequestDialogModel::Step::kTransportSelection,
+  EXPECT_EQ(AuthenticatorRequestDialogModel::Step::kMechanismSelection,
             model.current_step());
   EXPECT_EQ(0, num_called);
 

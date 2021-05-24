@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBAUTHN_OTHER_TRANSPORTS_MENU_MODEL_H_
-#define CHROME_BROWSER_UI_WEBAUTHN_OTHER_TRANSPORTS_MENU_MODEL_H_
+#ifndef CHROME_BROWSER_UI_WEBAUTHN_OTHER_MECHANISMS_MENU_MODEL_H_
+#define CHROME_BROWSER_UI_WEBAUTHN_OTHER_MECHANISMS_MENU_MODEL_H_
 
 #include "ui/base/models/simple_menu_model.h"
 
@@ -14,12 +14,12 @@ class AuthenticatorRequestDialogModel;
 // This pop-up menu is available on several sheets instructing the user to
 // activate their security key over a given transport, and allows the user to
 // instead use a different transport protocol.
-class OtherTransportsMenuModel : public ui::SimpleMenuModel,
+class OtherMechanismsMenuModel : public ui::SimpleMenuModel,
                                  public ui::SimpleMenuModel::Delegate {
  public:
-  explicit OtherTransportsMenuModel(
+  explicit OtherMechanismsMenuModel(
       AuthenticatorRequestDialogModel* dialog_model);
-  ~OtherTransportsMenuModel() override;
+  ~OtherMechanismsMenuModel() override;
 
  protected:
   // ui::SimpleMenuModel::Delegate:
@@ -29,7 +29,7 @@ class OtherTransportsMenuModel : public ui::SimpleMenuModel,
 
   AuthenticatorRequestDialogModel* const dialog_model_;
 
-  DISALLOW_COPY_AND_ASSIGN(OtherTransportsMenuModel);
+  DISALLOW_COPY_AND_ASSIGN(OtherMechanismsMenuModel);
 };
 
-#endif  // CHROME_BROWSER_UI_WEBAUTHN_OTHER_TRANSPORTS_MENU_MODEL_H_
+#endif  // CHROME_BROWSER_UI_WEBAUTHN_OTHER_MECHANISMS_MENU_MODEL_H_

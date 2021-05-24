@@ -58,7 +58,7 @@ class AuthenticatorRequestDialogModel {
     // on the omnibox, prompting the user to tap their security key.
     kLocationBarBubble,
 
-    kTransportSelection,
+    kMechanismSelection,
 
     // The request errored out before completing. Error will only be sent
     // after user interaction.
@@ -273,7 +273,7 @@ class AuthenticatorRequestDialogModel {
   // identified.
   //
   // Valid action when at step: kNotStarted.
-  void StartGuidedFlowForMostLikelyTransportOrShowTransportSelection();
+  void StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
 
   // Hides the modal Chrome UI dialog and shows the native Windows WebAuthn
   // UI instead.
@@ -292,7 +292,7 @@ class AuthenticatorRequestDialogModel {
   //     then advanced to the flow to turn on Bluetooth automatically.
   //  -- Otherwise advanced to the manual Bluetooth power on flow.
   //
-  // Valid action when at step: kNotStarted, kTransportSelection, and steps
+  // Valid action when at step: kNotStarted, kMechanismSelection, and steps
   // where the other transports menu is shown, namely, kUsbInsertAndActivate,
   // kCableActivate.
   void EnsureBleAdapterIsPoweredAndContinueWithCable();
@@ -556,9 +556,9 @@ class AuthenticatorRequestDialogModel {
   // Requests that the step-by-step wizard flow commence, guiding the user
   // through using the Secutity Key with the given |transport|.
   //
-  // Valid action when at step: kNotStarted.
-  // kTransportSelection, and steps where the other transports menu is shown,
-  // namely, kUsbInsertAndActivate, kCableActivate.
+  // Valid action when at step: kNotStarted. kMechanismSelection, and steps
+  // where the other transports menu is shown, namely, kUsbInsertAndActivate,
+  // kCableActivate.
   void StartGuidedFlowForTransport(AuthenticatorTransport transport,
                                    size_t mechanism_index);
 

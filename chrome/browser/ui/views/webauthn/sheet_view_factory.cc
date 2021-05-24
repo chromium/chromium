@@ -14,8 +14,9 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_qr_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_select_account_sheet_view.h"
-#include "chrome/browser/ui/views/webauthn/authenticator_transport_selector_sheet_view.h"
+#include "chrome/browser/ui/views/webauthn/hover_list_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -38,6 +39,34 @@ class PlaceholderSheetModel : public AuthenticatorSheetModelBase {
   }
 };
 
+// Represents a sheet in the Web Authentication request dialog that allows the
+// user to pick the mechanism (i.e. USB / Windows API / phone / etc) to use.
+class AuthenticatorMechanismSelectorSheetView
+    : public AuthenticatorRequestSheetView {
+ public:
+  explicit AuthenticatorMechanismSelectorSheetView(
+      std::unique_ptr<AuthenticatorMechanismSelectorSheetModel> model)
+      : AuthenticatorRequestSheetView(std::move(model)) {}
+
+  AuthenticatorMechanismSelectorSheetView(
+      const AuthenticatorMechanismSelectorSheetView&) = delete;
+  AuthenticatorMechanismSelectorSheetView& operator=(
+      const AuthenticatorMechanismSelectorSheetView&) = delete;
+
+ private:
+  // AuthenticatorRequestSheetView:
+  std::pair<std::unique_ptr<views::View>,
+            AuthenticatorRequestSheetView::AutoFocus>
+  BuildStepSpecificContent() override {
+    auto* model = static_cast<AuthenticatorMechanismSelectorSheetModel*>(
+        AuthenticatorRequestSheetView::model());
+    return std::make_pair(std::make_unique<HoverListView>(
+                              std::make_unique<TransportHoverListModel>(
+                                  model->dialog_model()->mechanisms())),
+                          AutoFocus::kYes);
+  }
+};
+
 }  // namespace
 
 std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
@@ -46,9 +75,9 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
 
   std::unique_ptr<AuthenticatorRequestSheetView> sheet_view;
   switch (dialog_model->current_step()) {
-    case Step::kTransportSelection:
-      sheet_view = std::make_unique<AuthenticatorTransportSelectorSheetView>(
-          std::make_unique<AuthenticatorTransportSelectorSheetModel>(
+    case Step::kMechanismSelection:
+      sheet_view = std::make_unique<AuthenticatorMechanismSelectorSheetView>(
+          std::make_unique<AuthenticatorMechanismSelectorSheetModel>(
               dialog_model));
       break;
     case Step::kUsbInsertAndActivate:

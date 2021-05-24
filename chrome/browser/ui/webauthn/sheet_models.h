@@ -22,7 +22,7 @@ namespace ui {
 class MenuModel;
 }
 
-class OtherTransportsMenuModel;
+class OtherMechanismsMenuModel;
 
 // Base class for sheets, implementing the shared behavior used on most sheets,
 // as well as maintaining a weak pointer to the dialog model.
@@ -67,7 +67,7 @@ class AuthenticatorSheetModelBase
 
 // The sheet shown for selecting the transport over which the security key
 // should be accessed.
-class AuthenticatorTransportSelectorSheetModel
+class AuthenticatorMechanismSelectorSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   using AuthenticatorSheetModelBase::AuthenticatorSheetModelBase;
@@ -96,9 +96,9 @@ class AuthenticatorInsertAndActivateUsbSheetModel
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
   std::u16string GetAdditionalDescription() const override;
-  ui::MenuModel* GetOtherTransportsMenuModel() override;
+  ui::MenuModel* GetOtherMechanismsMenuModel() override;
 
-  std::unique_ptr<OtherTransportsMenuModel> other_transports_menu_model_;
+  std::unique_ptr<OtherMechanismsMenuModel> other_mechanisms_menu_model_;
 };
 
 class AuthenticatorTimeoutErrorModel : public AuthenticatorSheetModelBase {
@@ -239,14 +239,14 @@ class AuthenticatorOffTheRecordInterstitialSheetModel
       ImageColorScheme color_scheme) const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
-  ui::MenuModel* GetOtherTransportsMenuModel() override;
+  ui::MenuModel* GetOtherMechanismsMenuModel() override;
   bool IsAcceptButtonVisible() const override;
   bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
   std::u16string GetCancelButtonLabel() const override;
   void OnAccept() override;
 
-  std::unique_ptr<OtherTransportsMenuModel> other_transports_menu_model_;
+  std::unique_ptr<OtherMechanismsMenuModel> other_mechanisms_menu_model_;
 };
 
 class AuthenticatorPaaskSheetModel : public AuthenticatorSheetModelBase {
@@ -263,9 +263,9 @@ class AuthenticatorPaaskSheetModel : public AuthenticatorSheetModelBase {
       ImageColorScheme color_scheme) const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
-  ui::MenuModel* GetOtherTransportsMenuModel() override;
+  ui::MenuModel* GetOtherMechanismsMenuModel() override;
 
-  std::unique_ptr<OtherTransportsMenuModel> other_transports_menu_model_;
+  std::unique_ptr<OtherMechanismsMenuModel> other_mechanisms_menu_model_;
 };
 
 class AuthenticatorAndroidAccessorySheetModel
@@ -283,9 +283,9 @@ class AuthenticatorAndroidAccessorySheetModel
       ImageColorScheme color_scheme) const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
-  ui::MenuModel* GetOtherTransportsMenuModel() override;
+  ui::MenuModel* GetOtherMechanismsMenuModel() override;
 
-  std::unique_ptr<OtherTransportsMenuModel> other_transports_menu_model_;
+  std::unique_ptr<OtherMechanismsMenuModel> other_mechanisms_menu_model_;
 };
 
 class AuthenticatorPaaskV2SheetModel : public AuthenticatorSheetModelBase {
@@ -302,13 +302,13 @@ class AuthenticatorPaaskV2SheetModel : public AuthenticatorSheetModelBase {
       ImageColorScheme color_scheme) const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
-  ui::MenuModel* GetOtherTransportsMenuModel() override;
+  ui::MenuModel* GetOtherMechanismsMenuModel() override;
   bool IsAcceptButtonVisible() const override;
   bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
 
-  std::unique_ptr<OtherTransportsMenuModel> other_transports_menu_model_;
+  std::unique_ptr<OtherMechanismsMenuModel> other_mechanisms_menu_model_;
 };
 
 class AuthenticatorClientPinEntrySheetModel
