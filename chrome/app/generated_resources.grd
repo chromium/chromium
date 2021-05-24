@@ -7511,6 +7511,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET" desc="The label for the different context menu items for sharing this tab to the single other valid target device.">
         Send to <ph name="DEVICE_NAME">$1<ex>Ted's Pixel2</ex></ph>
       </message>
+      <message name="IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_FROM_DEVICE" desc="The label for the device a received tab was sent from. Shown in the toolbar bubble.">
+        Shared from <ph name="DEVICE_NAME">$1<ex>Ted's Pixel2</ex></ph>
+      </message>
+      <message name="IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_TITLE" desc="The title for the received tab dialog shown from the toolbar button.">
+        Page shared from another device
+      </message>
+      <message name="IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_LABEL" desc="The label for the button in the received tab dialog shown from the toolbar button.">
+        Open in New Tab
+      </message>
       <if expr="not use_titlecase">
         <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF" desc="The label of item for share this tab to other devices in different context menus.">
           Send to your devices
