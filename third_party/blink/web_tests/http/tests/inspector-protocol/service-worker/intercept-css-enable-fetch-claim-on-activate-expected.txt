@@ -1,0 +1,12 @@
+Verifies that service workers do not throw errors from devtools css enable initiated fetch.
+finished awaiting for CSS.enable
+document resource from CSS.enable:
+<!DOCTYPE html>
+<html>
+<head>
+<title>webpage for repeat-fetch-service-worker.js</title>
+</head>
+<body></body>
+</html>
+
+

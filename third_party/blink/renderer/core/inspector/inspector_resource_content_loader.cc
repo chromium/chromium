@@ -31,6 +31,22 @@ bool ShouldSkipFetchingUrl(const KURL& url) {
   return !url.IsValid() || url.IsAboutBlankURL() || url.IsAboutSrcdocURL();
 }
 
+bool IsServiceWorkerPresent(Document* document) {
+  DocumentLoader* loader = document->Loader();
+  if (!loader)
+    return false;
+
+  if (loader->GetResponse().WasFetchedViaServiceWorker())
+    return true;
+
+  WebServiceWorkerNetworkProvider* provider =
+      loader->GetServiceWorkerNetworkProvider();
+  if (!provider)
+    return false;
+
+  return provider->ControllerServiceWorkerID() >= 0;
+}
+
 }  // namespace
 
 // NOTE: While this is a RawResourceClient, it loads both raw and css stylesheet
@@ -96,8 +112,12 @@ void InspectorResourceContentLoader::Start() {
     }
     resource_request.SetRequestContext(
         mojom::blink::RequestContextType::INTERNAL);
-    if (document->Loader() &&
-        document->Loader()->GetResponse().WasFetchedViaServiceWorker()) {
+
+    if (IsServiceWorkerPresent(document)) {
+      // If the request is going to be intercepted by a service worker, then
+      // don't use only-if-cached. only-if-cached will cause the service worker
+      // to throw an exception if it repeats the request, which is a problem:
+      // crbug.com/823392 crbug.com/1098389
       resource_request.SetCacheMode(mojom::FetchCacheMode::kDefault);
     }
 
