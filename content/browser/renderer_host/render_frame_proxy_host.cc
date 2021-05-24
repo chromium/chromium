@@ -398,6 +398,7 @@ RenderFrameProxyHost::GetAssociatedRemoteFrame() {
 
 const mojo::AssociatedRemote<blink::mojom::RemoteMainFrame>&
 RenderFrameProxyHost::GetAssociatedRemoteMainFrame() {
+  DCHECK(remote_main_frame_.is_bound());
   return remote_main_frame_;
 }
 
