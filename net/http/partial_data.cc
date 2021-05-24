@@ -107,19 +107,22 @@ int PartialData::ShouldValidateCache(disk_cache::Entry* entry,
 
   if (sparse_entry_) {
     DCHECK(callback_.is_null());
-    pending_cached_start_ = std::make_unique<int64_t>(0);
-    int64_t* raw_start = pending_cached_start_.get();
-    CompletionOnceCallback cb = base::BindOnce(
-        &PartialData::GetAvailableRangeCompleted, weak_factory_.GetWeakPtr());
-    cached_min_len_ = entry->GetAvailableRange(current_range_start_, len,
-                                               raw_start, std::move(cb));
+    // |start| will be deleted later in this method if GetAvailableRange()
+    // returns synchronously, or by GetAvailableRangeCompleted() if it returns
+    // asynchronously.
+    int64_t* start = new int64_t;
+    CompletionOnceCallback cb =
+        base::BindOnce(&PartialData::GetAvailableRangeCompleted,
+                       weak_factory_.GetWeakPtr(), start);
+    cached_min_len_ = entry->GetAvailableRange(current_range_start_, len, start,
+                                               std::move(cb));
 
     if (cached_min_len_ == ERR_IO_PENDING) {
       callback_ = std::move(callback);
       return ERR_IO_PENDING;
     } else {
-      cached_start_ = *pending_cached_start_;
-      pending_cached_start_.reset();
+      cached_start_ = *start;
+      delete start;
     }
   } else if (!truncated_) {
     if (byte_range_.HasFirstBytePosition() &&
@@ -453,13 +456,12 @@ int PartialData::GetNextRangeLen() {
   return static_cast<int32_t>(range_len);
 }
 
-void PartialData::GetAvailableRangeCompleted(int result) {
+void PartialData::GetAvailableRangeCompleted(int64_t* start, int result) {
   DCHECK(!callback_.is_null());
-  DCHECK(pending_cached_start_);
   DCHECK_NE(ERR_IO_PENDING, result);
 
-  cached_start_ = *pending_cached_start_;
-  pending_cached_start_.reset();
+  cached_start_ = *start;
+  delete start;
   cached_min_len_ = result;
   if (result >= 0)
     result = 1;  // Return success, go ahead and validate the entry.
