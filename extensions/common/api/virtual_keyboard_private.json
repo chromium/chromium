@@ -90,6 +90,12 @@
         }
       },
       {
+        "id": "DisplayFormat",
+        "type": "string",
+        "enum": ["text", "png", "html", "file"],
+        "description": "The display format associated with this item."
+      },
+      {
         "id": "ClipboardItem",
         "type" : "object",
         "properties": {
@@ -106,6 +112,11 @@
             "type": "string",
             "optional": true,
             "description": "The text data associated with this item."
+          },
+          "displayFormat": {
+            "$ref": "DisplayFormat",
+            "name": "displayFormat",
+            "description": "The display format associated with this item."
           }
         }
       }
