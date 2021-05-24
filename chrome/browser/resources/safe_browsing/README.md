@@ -144,6 +144,10 @@ See `download_file_types.proto` for all fields.
       the user selected "Save link as ..." from the context menu), or if the
       navigation that resulted in the download was initiated using the Omnibox.
 
+    If the `SafeBrowsingForTrustedSourcesEnabled` policy is set and the download
+    originates from a Trusted source, no warnings will be shown even for types
+    with a `danger_level` of `DANGEROUS` or `ALLOW_ON_USER_GESTURE`.
+
   * `platform_settings.auto_open_hint`: (required).
     * `ALLOW_AUTO_OPEN`: File type can be opened automatically if the user
       selected that option from the download tray on a previous download
