@@ -4,20 +4,23 @@
 
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/base/features.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace {
 
@@ -25,15 +28,7 @@ class CookieStoreSameSiteTest : public InProcessBrowserTest,
                                 public ::testing::WithParamInterface<bool> {
  protected:
   CookieStoreSameSiteTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    if (SameSiteFeatureEnabled()) {
-      feature_list_.InitAndEnableFeature(
-          net::features::kSameSiteByDefaultCookies);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          net::features::kSameSiteByDefaultCookies);
-    }
-  }
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -43,6 +38,24 @@ class CookieStoreSameSiteTest : public InProcessBrowserTest,
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     ASSERT_TRUE(https_server_.Start());
+
+    // If SameSite access semantics is "legacy", add content settings to allow
+    // legacy access for all sites.
+    if (!HasNonLegacySameSiteAccessSemantics()) {
+      browser()
+          ->profile()
+          ->GetDefaultStoragePartition()
+          ->GetNetworkContext()
+          ->GetCookieManager(
+              cookie_manager_remote_.BindNewPipeAndPassReceiver());
+      cookie_manager_remote_->SetContentSettingsForLegacyCookieAccess(
+          {ContentSettingPatternSource(
+              ContentSettingsPattern::Wildcard(),
+              ContentSettingsPattern::Wildcard(),
+              base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+              std::string() /* source */, false /* incognito */)});
+      cookie_manager_remote_.FlushForTesting();
+    }
   }
 
   void NavigateToPageWithFrame(const std::string& host) {
@@ -68,10 +81,10 @@ class CookieStoreSameSiteTest : public InProcessBrowserTest,
   }
 
  protected:
-  bool SameSiteFeatureEnabled() { return GetParam(); }
+  bool HasNonLegacySameSiteAccessSemantics() { return GetParam(); }
 
+  mojo::Remote<network::mojom::CookieManager> cookie_manager_remote_;
   net::test_server::EmbeddedTestServer https_server_;
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CookieStoreSameSiteTest);
@@ -87,7 +100,7 @@ IN_PROC_BROWSER_TEST_P(CookieStoreSameSiteTest,
                               "document.cookie='unspecified-cookie=value'"));
 
   std::string sameSite = GetCookieSameSite("unspecified-cookie");
-  if (SameSiteFeatureEnabled()) {
+  if (HasNonLegacySameSiteAccessSemantics()) {
     EXPECT_EQ("lax", sameSite);
   } else {
     EXPECT_EQ("none", sameSite);
