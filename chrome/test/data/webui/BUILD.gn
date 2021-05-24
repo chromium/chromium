@@ -117,12 +117,7 @@ if (include_js_tests) {
           [ "settings/chromeos/a11y/os_settings_accessibility_v3_test.js" ]
     }
 
-    extra_js_files = [
-      "test_browser_proxy.js",
-      "settings/test_password_manager_proxy.js",
-      "settings/passwords_and_autofill_fake_data.js",
-      "//chrome/browser/resources/signin/sync_confirmation/sync_confirmation_browser_proxy.js",
-    ]
+    extra_js_files = [ "test_browser_proxy.js" ]
 
     if (is_chromeos_ash || is_win) {
       sources += [ "inline_login/inline_login_browsertest.js" ]
@@ -439,7 +434,6 @@ if (include_js_tests) {
     }
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     data = [ "mojo_webui_test_support.js" ]
-    extra_js_files = [ "//chrome/browser/resources/downloads/constants.js" ]
   }
 
   js2gtest("interactive_ui_tests_js_mojo_lite_webui") {
@@ -476,8 +470,6 @@ if (include_js_tests) {
       "../unit/framework_unittest.gtestjs",
     ]
     extra_js_files = [
-      "../../../browser/resources/downloads/browser_proxy.js",
-      "../../../browser/resources/downloads/search_service.js",
       "../../../renderer/resources/extensions/notifications_custom_bindings.js",
       "../../../renderer/resources/extensions/notifications_test_util.js",
       "//ui/webui/resources/js/cr.js",
