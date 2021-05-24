@@ -222,6 +222,7 @@ component("gpu") {
     ]
     public_deps += [ "//media/base/win:media_foundation_util" ]
     deps += [
+      "//gpu/ipc/common:common",
       "//media/base/win:hresult_status_helper",
       "//media/parsers",
       "//third_party/angle:includes",

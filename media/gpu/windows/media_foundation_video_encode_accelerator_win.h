@@ -48,6 +48,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void RequestEncodingParametersChange(uint32_t bitrate,
                                        uint32_t framerate) override;
   void Destroy() override;
+  bool IsGpuFrameResizeSupported() override;
 
   // Preloads dlls required for encoding. Returns true if all required dlls are
   // correctly loaded.
@@ -117,6 +118,12 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Releases resources encoder holds.
   void ReleaseEncoderResources();
 
+  // Initialize video processing (for scaling)
+  HRESULT InitializeD3DVideoProcessing(ID3D11Texture2D* input_texture);
+
+  // Perform D3D11 scaling operation
+  HRESULT PerformD3DScaling(ID3D11Texture2D* input_texture);
+
   const bool compatible_with_win7_;
 
   // Flag to enable the usage of MFTEnumEx.
@@ -155,6 +162,14 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   bool input_required_;
   Microsoft::WRL::ComPtr<IMFSample> input_sample_;
   Microsoft::WRL::ComPtr<IMFSample> output_sample_;
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor_;
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
+      video_processor_enumerator_;
+  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device_;
+  Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context_;
+  D3D11_VIDEO_PROCESSOR_CONTENT_DESC vp_desc_ = {};
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> scaled_d3d11_texture_;
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessorOutputView> vp_output_view_;
 
   // To expose client callbacks from VideoEncodeAccelerator.
   // NOTE: all calls to this object *MUST* be executed on
