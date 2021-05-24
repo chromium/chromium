@@ -57,47 +57,55 @@ namespace autofill {
 
 namespace {
 
-// Create the title label container for the migration dialogs. The title
-// text depends on the |view_state| of the dialog.
-std::unique_ptr<views::Label> CreateTitle(
-    LocalCardMigrationDialogState view_state,
-    LocalCardMigrationDialogView* dialog_view,
-    int card_list_size) {
-  int message_id;
-  switch (view_state) {
-    case LocalCardMigrationDialogState::kOffered:
-      message_id = IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_OFFER;
-      break;
-    case LocalCardMigrationDialogState::kFinished:
-      message_id = IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_DONE;
-      break;
-    case LocalCardMigrationDialogState::kActionRequired:
-      message_id = IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_FIX;
-      break;
+// The title label container for the migration dialogs. The title text depends
+// on the |view_state| of the dialog.
+class MigrationDialogTitleLabel : public views::Label {
+ public:
+  METADATA_HEADER(MigrationDialogTitleLabel);
+  MigrationDialogTitleLabel(LocalCardMigrationDialogState view_state,
+                            int card_list_size) {
+    int message_id;
+    switch (view_state) {
+      case LocalCardMigrationDialogState::kOffered:
+        message_id = IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_OFFER;
+        break;
+      case LocalCardMigrationDialogState::kFinished:
+        message_id = IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_DONE;
+        break;
+      case LocalCardMigrationDialogState::kActionRequired:
+        message_id = IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_FIX;
+        break;
+    }
+    SetText(l10n_util::GetPluralStringFUTF16(message_id, card_list_size));
+
+    constexpr int kMigrationDialogTitleFontSize = 8;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    constexpr int kMigrationDialogTitleMarginTop = 0;
+#else
+    constexpr int kMigrationDialogTitleMarginTop = 12;
+#endif
+    SetBorder(views::CreateEmptyBorder(
+        /*top=*/kMigrationDialogTitleMarginTop,
+        /*left=*/kMigrationDialogInsets.left(), /*bottom=*/0,
+        /*right=*/kMigrationDialogInsets.right()));
+    SetFontList(gfx::FontList().Derive(kMigrationDialogTitleFontSize,
+                                       gfx::Font::NORMAL,
+                                       gfx::Font::Weight::NORMAL));
+    SetMultiLine(true);
+    constexpr int kMigrationDialogTitleLineHeight = 20;
+    SetLineHeight(kMigrationDialogTitleLineHeight);
   }
 
-  auto title = std::make_unique<views::Label>(
-      l10n_util::GetPluralStringFUTF16(message_id, card_list_size));
-  constexpr int kMigrationDialogTitleFontSize = 8;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  constexpr int kMigrationDialogTitleMarginTop = 0;
-#else
-  constexpr int kMigrationDialogTitleMarginTop = 12;
-#endif
-  title->SetBorder(views::CreateEmptyBorder(
-      /*top=*/kMigrationDialogTitleMarginTop,
-      /*left=*/kMigrationDialogInsets.left(), /*bottom=*/0,
-      /*right=*/kMigrationDialogInsets.right()));
-  title->SetFontList(gfx::FontList().Derive(kMigrationDialogTitleFontSize,
-                                            gfx::Font::NORMAL,
-                                            gfx::Font::Weight::NORMAL));
-  title->SetEnabledColor(dialog_view->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_LabelEnabledColor));
-  constexpr int kMigrationDialogTitleLineHeight = 20;
-  title->SetMultiLine(true);
-  title->SetLineHeight(kMigrationDialogTitleLineHeight);
-  return title;
-}
+  // views::Label:
+  void OnThemeChanged() override {
+    Label::OnThemeChanged();
+    SetEnabledColor(GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_LabelEnabledColor));
+  }
+};
+
+BEGIN_METADATA(MigrationDialogTitleLabel, views::Label)
+END_METADATA
 
 // Create the explanation text label with |user_email| for the migration
 // dialogs. The text content depends on the |view_state| of the dialog and the
@@ -477,8 +485,8 @@ void LocalCardMigrationDialogView::ConstructView() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   LocalCardMigrationDialogState view_state = controller_->GetViewState();
-  AddChildView(CreateTitle(view_state, this, controller_->GetCardList().size())
-                   .release());
+  AddChildView(std::make_unique<MigrationDialogTitleLabel>(
+      view_state, controller_->GetCardList().size()));
 
   if (view_state == LocalCardMigrationDialogState::kOffered) {
     offer_view_ = new LocalCardMigrationOfferView(controller_, this);

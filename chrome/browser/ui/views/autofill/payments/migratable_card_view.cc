@@ -44,7 +44,8 @@ MigratableCardView::MigratableCardView(
                                                 should_show_checkbox)
                    .release());
 
-  checkbox_uncheck_text_container_ = new views::View();
+  checkbox_uncheck_text_container_ =
+      AddChildView(std::make_unique<views::View>());
   views::BoxLayout* layout = checkbox_uncheck_text_container_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
@@ -57,18 +58,11 @@ MigratableCardView::MigratableCardView(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
-  views::Label* checkbox_uncheck_text_ = new views::Label(
+  checkbox_uncheck_text_container_->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_CHECKBOX_UNCHECK_WARNING),
-      CONTEXT_DIALOG_BODY_TEXT_SMALL, ChromeTextStyle::STYLE_RED);
-
-  checkbox_uncheck_text_container_->AddChildView(checkbox_uncheck_text_);
-  checkbox_uncheck_text_container_->SetBackground(
-      views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_BubbleFooterBackground)));
+      CONTEXT_DIALOG_BODY_TEXT_SMALL, ChromeTextStyle::STYLE_RED));
   checkbox_uncheck_text_container_->SetVisible(false);
-
-  AddChildView(checkbox_uncheck_text_container_);
 }
 
 MigratableCardView::~MigratableCardView() = default;
@@ -84,6 +78,13 @@ std::string MigratableCardView::GetGuid() const {
 std::u16string MigratableCardView::GetCardIdentifierString() const {
   return migratable_credit_card_.credit_card()
       .CardIdentifierStringForAutofillDisplay();
+}
+
+void MigratableCardView::OnThemeChanged() {
+  View::OnThemeChanged();
+  checkbox_uncheck_text_container_->SetBackground(
+      views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
+          ui::NativeTheme::kColorId_BubbleFooterBackground)));
 }
 
 std::unique_ptr<views::View>
@@ -126,21 +127,22 @@ MigratableCardView::GetMigratableCardDescriptionView(
       break;
     }
     case MigratableCreditCard::MigrationStatus::SUCCESS_ON_UPLOAD: {
-      auto* migration_succeeded_image = new views::ImageView();
-      migration_succeeded_image->SetImage(gfx::CreateVectorIcon(
-          vector_icons::kCheckCircleIcon, kMigrationResultImageSize,
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_AlertSeverityLow)));
-      migratable_card_description_view->AddChildView(migration_succeeded_image);
+      auto* migration_succeeded_image =
+          migratable_card_description_view->AddChildView(
+              std::make_unique<views::ImageView>());
+      migration_succeeded_image->SetImage(ui::ImageModel::FromVectorIcon(
+          vector_icons::kCheckCircleIcon,
+          ui::NativeTheme::kColorId_AlertSeverityLow,
+          kMigrationResultImageSize));
       break;
     }
     case MigratableCreditCard::MigrationStatus::FAILURE_ON_UPLOAD: {
-      auto* migration_failed_image = new views::ImageView();
-      migration_failed_image->SetImage(gfx::CreateVectorIcon(
-          vector_icons::kErrorIcon, kMigrationResultImageSize,
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_AlertSeverityHigh)));
-      migratable_card_description_view->AddChildView(migration_failed_image);
+      auto* migration_failed_image =
+          migratable_card_description_view->AddChildView(
+              std::make_unique<views::ImageView>());
+      migration_failed_image->SetImage(ui::ImageModel::FromVectorIcon(
+          vector_icons::kErrorIcon, ui::NativeTheme::kColorId_AlertSeverityHigh,
+          kMigrationResultImageSize));
       break;
     }
   }

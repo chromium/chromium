@@ -56,12 +56,11 @@ gfx::Insets GetDialogInsets() {
 }
 
 std::unique_ptr<views::Label> CreateText(const std::u16string& message) {
-  auto text = std::make_unique<views::Label>(message);
+  auto text = std::make_unique<views::Label>(
+      message, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_PRIMARY);
   text->SetFontList(gfx::FontList().Derive(kFontSizeDelta, gfx::Font::NORMAL,
                                            gfx::Font::Weight::MEDIUM));
-  text->SetEnabledColor(
-      views::style::GetColor(*text, views::style::CONTEXT_DIALOG_BODY_TEXT,
-                             views::style::STYLE_PRIMARY));
   text->SetLineHeight(kLineHeight);
   return text;
 }

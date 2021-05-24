@@ -606,7 +606,6 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
     learn_more_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_LEARN_MORE));
     learn_more_button_ = learn_more_button.get();
-    StyleLearnMoreButton();
     extra_views.push_back(std::move(learn_more_button));
   }
   // Optionally add a "Manage" button if the view wants to use a button to
