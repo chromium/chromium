@@ -1137,12 +1137,6 @@
           ],
         },
       },
-      # https://crbug.com/1203439 components_unittests on Win10 got much slower.
-      'Win10 Tests x64': {
-        'args': [
-          '--test-launcher-print-timestamps',
-        ],
-      },
       'android-11-x86-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.components_unittests.filter',

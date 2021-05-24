@@ -2089,9 +2089,6 @@
         "test_id_prefix": "ninja://components:components_browsertests/"
       },
       {
-        "args": [
-          "--test-launcher-print-timestamps"
-        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
