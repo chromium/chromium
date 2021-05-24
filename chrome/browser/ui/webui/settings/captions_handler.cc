@@ -61,7 +61,10 @@ void CaptionsHandler::HandleOpenSystemCaptionsDialog(
 }
 
 void CaptionsHandler::OnSodaInstalled() {
-  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
+    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  }
+
   FireWebUIListener("soda-download-progress-changed",
                     base::Value(l10n_util::GetStringUTF16(
                         IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_COMPLETE)));
