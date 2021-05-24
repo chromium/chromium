@@ -127,12 +127,12 @@ TEST_F(BorealisWindowManagerTest, LifetimeObserverTracksWindows) {
 
   // But deleting them all does finish the app.
   EXPECT_CALL(observer, OnWindowFinished(_, _));
-  EXPECT_CALL(observer, OnAppFinished(_));
+  EXPECT_CALL(observer, OnAppFinished(_, _));
   second_foo.reset();
 
   // And deleting all the windows finishes the session.
   EXPECT_CALL(observer, OnWindowFinished(_, _));
-  EXPECT_CALL(observer, OnAppFinished(_));
+  EXPECT_CALL(observer, OnAppFinished(_, _));
   EXPECT_CALL(observer, OnSessionFinished());
   only_bar.reset();
 

@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
   views::Widget* widget = CreateExoWindow("org.chromium.borealis.wmclass.foo");
 
   EXPECT_CALL(observer, OnWindowFinished(app_id, widget->GetNativeWindow()));
-  EXPECT_CALL(observer, OnAppFinished(app_id));
+  EXPECT_CALL(observer, OnAppFinished(app_id, widget->GetNativeWindow()));
   EXPECT_CALL(observer, OnSessionFinished());
   widget->CloseNow();
 }

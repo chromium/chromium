@@ -40,7 +40,10 @@ class MockLifetimeObserver
 
   MOCK_METHOD(void, OnAppStarted, (const std::string& app_id), ());
 
-  MOCK_METHOD(void, OnAppFinished, (const std::string& app_id), ());
+  MOCK_METHOD(void,
+              OnAppFinished,
+              (const std::string& app_id, aura::Window*),
+              ());
 
   MOCK_METHOD(void,
               OnWindowStarted,

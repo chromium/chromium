@@ -4,16 +4,21 @@
 
 #include "chrome/browser/ash/borealis/borealis_context.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/memory/ptr_util.h"
 #include "base/scoped_observation.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager_impl.h"
 #include "chrome/browser/ash/borealis/borealis_engagement_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_game_mode_controller.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_shutdown_monitor.h"
+#include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
+#include "url/gurl.h"
 
 namespace borealis {
 
@@ -37,6 +42,20 @@ class BorealisLifetimeObserver
         ->ShutdownMonitor()
         .ShutdownWithDelay();
   }
+
+  void OnAppFinished(const std::string& app_id,
+                     aura::Window* last_window) override {
+    // Launch post-game survey.
+    // TODO(b/188745351): Remove this once it's no longer wanted.
+    GURL url = FeedbackFormUrl(
+        guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_),
+        app_id, base::UTF16ToUTF8(last_window->GetTitle()));
+    if (url.is_valid()) {
+      ash::NewWindowDelegate::GetInstance()->NewTabWithUrl(
+          url, /*from_user_interaction=*/true);
+    }
+  }
+
   void OnWindowManagerDeleted(BorealisWindowManager* window_manager) override {
     DCHECK(observation_.IsObservingSource(window_manager));
     observation_.Reset();

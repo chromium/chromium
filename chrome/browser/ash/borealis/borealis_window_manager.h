@@ -78,7 +78,8 @@ class BorealisWindowManager : public apps::InstanceRegistry::Observer {
 
     // Called when the last window for |app_id|'s app goes away, implying the
     // app has no visible windows until OnAppStarted() is called again.
-    virtual void OnAppFinished(const std::string& app_id) {}
+    virtual void OnAppFinished(const std::string& app_id,
+                               aura::Window* last_window) {}
 
     // Called when a window associated with |app_id|'s app comes into existence.
     // Note that this has nothing to do with the visible state of |window|,

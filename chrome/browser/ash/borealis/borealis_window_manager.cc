@@ -157,7 +157,7 @@ void BorealisWindowManager::HandleWindowDestruction(aura::Window* window,
       observer.OnAnonymousAppRemoved(app_id);
   }
   for (auto& observer : lifetime_observers_)
-    observer.OnAppFinished(app_id);
+    observer.OnAppFinished(app_id, window);
 
   ids_to_windows_.erase(iter);
   if (!ids_to_windows_.empty())
