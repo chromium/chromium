@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"

@@ -11,24 +11,19 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
-#include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/thread_annotations.h"
-#include "base/threading/platform_thread.h"
-#include "base/threading/thread.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/physical_socket_server.h"
 
 namespace jingle_glue {
 namespace {
-static constexpr base::TimeDelta kTaskLatencySampleDuration =
+constexpr base::TimeDelta kTaskLatencySampleDuration =
     base::TimeDelta::FromSeconds(3);
 }
 
@@ -332,19 +327,18 @@ void JingleThreadWrapper::PostTaskInternal(const rtc::Location& posted_from,
 }
 
 void JingleThreadWrapper::RunTask(int task_id) {
-  if (!latency_sampler_ && !task_latency_callback_.is_null()) {
+  if (!latency_sampler_ && task_latency_callback_) {
     latency_sampler_ = std::make_unique<PostTaskLatencySampler>(
         task_runner_, std::move(task_latency_callback_));
   }
-  absl::optional<base::TimeTicks> task_start_timestamp_;
+  absl::optional<base::TimeTicks> task_start_timestamp;
   if (!task_duration_callback_.is_null() && latency_sampler_ &&
       latency_sampler_->ShouldSampleNextTaskDuration()) {
-    task_start_timestamp_ = base::TimeTicks::Now();
+    task_start_timestamp = base::TimeTicks::Now();
   }
   RunTaskInternal(task_id);
-  if (task_start_timestamp_.has_value()) {
-    task_duration_callback_.Run(base::TimeTicks::Now() -
-                                *task_start_timestamp_);
+  if (task_start_timestamp.has_value()) {
+    task_duration_callback_.Run(base::TimeTicks::Now() - *task_start_timestamp);
   }
 }
 
