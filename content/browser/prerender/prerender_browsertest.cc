@@ -381,6 +381,52 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
 }
 
+// Tests that prerendering triggered by prerendered pages is deferred until
+// activation.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderChain) {
+  // kInitialUrl prerenders kPrerenderChain1, then kPrerenderChain1 prerenders
+  // kPrerenderChain2.
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html?1");
+  const GURL kPrerenderChain1 = GetUrl("/prerender/add_prerender.html?2");
+  const GURL kPrerenderChain2 = GetUrl("/prerender/add_prerender.html?3");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  const int host_id = AddPrerender(kPrerenderChain1);
+
+  EXPECT_EQ(GetRequestCount(kPrerenderChain1), 1);
+  EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  RenderFrameHost* prerender_host = GetPrerenderedMainFrameHost(host_id);
+
+  // Add a prerender trigger to the prerendering page.
+  ExecuteScriptAsync(prerender_host,
+                     JsReplace("add_prerender($1)", kPrerenderChain2));
+
+  // Start a navigation request that should not be deferred, and wait it to
+  // reach the server. If the prerender request for kPrerenderChain2 is not
+  // deferred, the navigation request for kPrerenderChain2 will reach the server
+  // earlier than the non-deferred one, so we can wait until the latest request
+  // reaches the sever to prove that the prerender request for kPrerenderChain2
+  // is deferred.
+  ExecuteScriptAsync(prerender_host, "add_iframe_async('/empty.html')");
+  WaitForRequest(GetUrl("/empty.html"), 1);
+
+  // The prerender requests were deferred by Mojo capability control, so
+  // prerendering pages should not trigger prerendering.
+  EXPECT_EQ(GetRequestCount(kPrerenderChain2), 0);
+  EXPECT_FALSE(HasHostForUrl(kPrerenderChain2));
+
+  // Activate the prerendering page to grant the deferred prerender requests.
+  NavigatePrimaryPage(kPrerenderChain1);
+  EXPECT_EQ(web_contents()->GetURL(), kPrerenderChain1);
+
+  // The prerendered page was activated. The prerender requests should be
+  // processed.
+  WaitForPrerenderLoadCompletion(kPrerenderChain2);
+  EXPECT_EQ(GetRequestCount(kPrerenderChain2), 1);
+  EXPECT_TRUE(HasHostForUrl(kPrerenderChain2));
+}
+
 // Regression test for https://crbug.com/1194865.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CloseOnPrerendering) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");

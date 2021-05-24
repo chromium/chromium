@@ -41,6 +41,12 @@ int PrerenderHostRegistry::CreateAndStartHost(
     blink::mojom::PrerenderAttributesPtr attributes,
     RenderFrameHostImpl& initiator_render_frame_host) {
   DCHECK(attributes);
+
+  // The prerender request from a page being prerendered should be deferred
+  // until activation by the Mojo capability control.
+  DCHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
+            initiator_render_frame_host.lifecycle_state());
+
   TRACE_EVENT2(
       "navigation", "PrerenderHostRegistry::CreateAndStartHost", "attributes",
       attributes, "initiator_origin",

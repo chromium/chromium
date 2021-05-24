@@ -20,6 +20,12 @@ PrerenderProcessor::PrerenderProcessor(
       registry_(
           initiator_render_frame_host.delegate()->GetPrerenderHostRegistry()) {
   DCHECK(blink::features::IsPrerender2Enabled());
+
+  // The prerender request from a page being prerendered should be deferred
+  // until activation by the Mojo capability control.
+  DCHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
+            initiator_render_frame_host.lifecycle_state());
+
   observation_.Observe(registry_);
 }
 
