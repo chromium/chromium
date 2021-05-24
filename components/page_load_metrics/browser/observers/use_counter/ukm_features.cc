@@ -202,6 +202,7 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kPrefixedStorageInfoThirdPartyContext,
           WebFeature::
               kCrossBrowsingContextGroupMainFrameNulledNonEmptyNameAccessed,
+          WebFeature::kControlledWorkerWillBeUncontrolled,
       }));
   return *opt_in_features;
 }
