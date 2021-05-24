@@ -23,6 +23,8 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -807,16 +809,15 @@ bool Database::Raze() {
     return false;
   }
 
-  sql::Database null_db;
+  sql::Database null_db(sql::DatabaseOptions{
+      .exclusive_locking = true,
+      .page_size = options_.page_size,
+      .cache_size = 0,
+  });
   if (!null_db.OpenInMemory()) {
     DLOG(DCHECK) << "Unable to open in-memory database.";
     return false;
   }
-
-  const std::string page_size_sql =
-      base::StringPrintf("PRAGMA page_size=%d", options_.page_size);
-  if (!null_db.Execute(page_size_sql.c_str()))
-    return false;
 
 #if defined(OS_ANDROID)
   // Android compiles with SQLITE_DEFAULT_AUTOVACUUM.  Unfortunately,
@@ -901,6 +902,8 @@ bool Database::Raze() {
     // TODO(shuagga@microsoft.com): Need a guarantee here that there is no other
     // database connection open.
     ignore_result(Execute("PRAGMA journal_mode=TRUNCATE;"));
+    const std::string page_size_sql = base::StrCat(
+        {"PRAGMA page_size=", base::NumberToString(options_.page_size)});
     if (!Execute(page_size_sql.c_str())) {
       return false;
     }
