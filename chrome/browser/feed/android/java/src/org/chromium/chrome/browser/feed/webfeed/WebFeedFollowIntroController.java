@@ -68,6 +68,7 @@ public class WebFeedFollowIntroController {
     private final Tracker mFeatureEngagementTracker;
     private final WebFeedSnackbarController mWebFeedSnackbarController;
     private final WebFeedFollowIntroView mWebFeedFollowIntroView;
+    private final ObservableSupplier<Tab> mTabSupplier;
 
     private final long mAppearanceThresholdMs;
 
@@ -97,6 +98,7 @@ public class WebFeedFollowIntroController {
             FeedLauncher feedLauncher, ModalDialogManager dialogManager,
             SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
         mActivity = activity;
+        mTabSupplier = tabSupplier;
         mFeatureEngagementTracker =
                 TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         mWebFeedSnackbarController = new WebFeedSnackbarController(
@@ -220,6 +222,7 @@ public class WebFeedFollowIntroController {
 
         mWebFeedFollowIntroView.showLoadingUI();
         WebFeedBridge bridge = new WebFeedBridge();
+        Tab currentTab = mTabSupplier.get();
         bridge.followFromId(mWebFeedId,
                 results -> mWebFeedFollowIntroView.hideLoadingUI(new LoadingView.Observer() {
                     @Override
@@ -233,7 +236,7 @@ public class WebFeedFollowIntroController {
                         }
                         byte[] followId = results.metadata != null ? results.metadata.id : null;
                         mWebFeedSnackbarController.showPostFollowHelp(
-                                results, followId, mUrl, mTitle);
+                                currentTab, results, followId, mUrl, mTitle);
                     }
                 }));
     }

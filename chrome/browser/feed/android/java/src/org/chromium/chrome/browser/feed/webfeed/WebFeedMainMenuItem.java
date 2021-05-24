@@ -160,7 +160,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
                     mWebFeedBridge.followFromUrl(mTab, mUrl, result -> {
                         byte[] followId = result.metadata != null ? result.metadata.id : null;
                         mWebFeedSnackbarController.showPostFollowHelp(
-                                result, followId, mUrl, mTitle);
+                                mTab, result, followId, mUrl, mTitle);
                     });
                     mAppMenuHandler.hideAppMenu();
                 });

@@ -35,11 +35,14 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -54,6 +57,7 @@ import org.chromium.url.JUnitTestGURLs;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {})
+@SmallTest
 public final class WebFeedSnackbarControllerTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -76,17 +80,37 @@ public final class WebFeedSnackbarControllerTest {
     @Mock
     private SnackbarManager mSnackbarManager;
     private WebFeedSnackbarController mWebFeedSnackbarController;
+    @Mock
+    private Tab mTab;
+    // The current observer of Tab.
+    private TabObserver mTabObserver;
 
     @Captor
     private ArgumentCaptor<Snackbar> mSnackbarCaptor;
 
     @Before
     public void setUp() {
+        // Print logs to stdout.
+        ShadowLog.stream = System.out;
+
         Profile.setLastUsedProfileForTesting(mProfile);
         MockitoAnnotations.initMocks(this);
         mContext = Robolectric.setupActivity(Activity.class);
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE))
                 .thenReturn(false);
+        when(mTab.getOriginalUrl()).thenReturn(sTestUrl);
+        Mockito.doAnswer(invocationOnMock -> {
+                   mTabObserver = (TabObserver) invocationOnMock.getArgument(0);
+                   return null;
+               })
+                .when(mTab)
+                .addObserver(any());
+        Mockito.doAnswer(invocationOnMock -> {
+                   mTabObserver = null;
+                   return null;
+               })
+                .when(mTab)
+                .removeObserver(any());
         TrackerFactory.setTrackerForTests(mTracker);
 
         mWebFeedSnackbarController = new WebFeedSnackbarController(RuntimeEnvironment.application,
@@ -100,10 +124,9 @@ public final class WebFeedSnackbarControllerTest {
     }
 
     @Test
-    @SmallTest
     public void showSnackbarForFollow_successful_withMetadata() {
         mWebFeedSnackbarController.showPostFollowHelp(
-                getSuccessfulFollowResult(), sFollowId, sTestUrl, sTitle);
+                mTab, getSuccessfulFollowResult(), sFollowId, sTestUrl, sTitle);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -116,12 +139,12 @@ public final class WebFeedSnackbarControllerTest {
     }
 
     @Test
-    @SmallTest
     public void showSnackbarForFollow_successful_noMetadata() {
         WebFeedBridge.FollowResults followResults = new WebFeedBridge.FollowResults(
                 WebFeedSubscriptionRequestStatus.SUCCESS, /*metadata=*/null);
 
-        mWebFeedSnackbarController.showPostFollowHelp(followResults, sFollowId, sTestUrl, sTitle);
+        mWebFeedSnackbarController.showPostFollowHelp(
+                mTab, followResults, sFollowId, sTestUrl, sTitle);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -133,12 +156,12 @@ public final class WebFeedSnackbarControllerTest {
     }
 
     @Test
-    @SmallTest
     public void showSnackbarForFollow_correctDuration() {
         WebFeedBridge.FollowResults followResults = new WebFeedBridge.FollowResults(
                 WebFeedSubscriptionRequestStatus.SUCCESS, /*metadata=*/null);
 
-        mWebFeedSnackbarController.showPostFollowHelp(followResults, sFollowId, sTestUrl, sTitle);
+        mWebFeedSnackbarController.showPostFollowHelp(
+                mTab, followResults, sFollowId, sTestUrl, sTitle);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         assertEquals("Snackbar duration for follow should be correct.",
@@ -147,17 +170,13 @@ public final class WebFeedSnackbarControllerTest {
     }
 
     @Test
-    @SmallTest
     public void showPromoDialogForFollow_successful_active() {
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE))
                 .thenReturn(true);
-        WebFeedBridge.FollowResults followResults =
-                new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS,
-                        new WebFeedBridge.WebFeedMetadata(sFollowId, sTitle, sTestUrl,
-                                WebFeedSubscriptionRequestStatus.SUCCESS, /*isActive=*/
-                                true, /*isRecommended=*/false));
+        WebFeedBridge.FollowResults followResults = getSuccessfulFollowResult();
 
-        mWebFeedSnackbarController.showPostFollowHelp(followResults, sFollowId, sTestUrl, sTitle);
+        mWebFeedSnackbarController.showPostFollowHelp(
+                mTab, followResults, sFollowId, sTestUrl, sTitle);
 
         View currentDialog =
                 mDialogManager.getCurrentDialogForTest().get(ModalDialogProperties.CUSTOM_VIEW);
@@ -173,7 +192,6 @@ public final class WebFeedSnackbarControllerTest {
     }
 
     @Test
-    @SmallTest
     public void showPromoDialogForFollow_successful_notActive() {
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE))
                 .thenReturn(true);
@@ -183,7 +201,8 @@ public final class WebFeedSnackbarControllerTest {
                                 WebFeedSubscriptionRequestStatus.SUCCESS, /*isActive=*/
                                 false, /*isRecommended=*/false));
 
-        mWebFeedSnackbarController.showPostFollowHelp(followResults, sFollowId, sTestUrl, sTitle);
+        mWebFeedSnackbarController.showPostFollowHelp(
+                mTab, followResults, sFollowId, sTestUrl, sTitle);
 
         View currentDialog =
                 mDialogManager.getCurrentDialogForTest().get(ModalDialogProperties.CUSTOM_VIEW);
@@ -199,14 +218,14 @@ public final class WebFeedSnackbarControllerTest {
     }
 
     @Test
-    @SmallTest
     public void showPromoDialogForFollow_successful_noMetadata() {
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE))
                 .thenReturn(true);
         WebFeedBridge.FollowResults followResults = new WebFeedBridge.FollowResults(
                 WebFeedSubscriptionRequestStatus.SUCCESS, /*metadata=*/null);
 
-        mWebFeedSnackbarController.showPostFollowHelp(followResults, sFollowId, sTestUrl, sTitle);
+        mWebFeedSnackbarController.showPostFollowHelp(
+                mTab, followResults, sFollowId, sTestUrl, sTitle);
 
         View currentDialog =
                 mDialogManager.getCurrentDialogForTest().get(ModalDialogProperties.CUSTOM_VIEW);
@@ -222,13 +241,32 @@ public final class WebFeedSnackbarControllerTest {
     }
 
     @Test
-    @SmallTest
     public void showSnackbarForFollow_noId_unsuccessful() {
-        WebFeedBridge.FollowResults followResults = new WebFeedBridge.FollowResults(/*success=*/
-                false);
-
         mWebFeedSnackbarController.showPostFollowHelp(
-                followResults, "".getBytes(), sTestUrl, sTitle);
+                mTab, failureFollowResults(), "".getBytes(), sTestUrl, sTitle);
+
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
+        assertEquals("Snackbar should be for unsuccessful follow.",
+                Snackbar.UMA_WEB_FEED_FOLLOW_FAILURE, snackbar.getIdentifierForTesting());
+        assertEquals("Snackbar message should be for unsuccessful follow.",
+                mContext.getString(R.string.web_feed_follow_generic_failure_snackbar_message),
+                snackbar.getTextForTesting());
+        assertEquals(mContext.getString(R.string.web_feed_generic_failure_snackbar_action),
+                snackbar.getActionText());
+
+        // Click follow try again button.
+        snackbar.getController().onAction(null);
+        verify(mWebFeedBridge,
+                description("FollowFromUrl should be called on follow try again when ID is not "
+                        + "available."))
+                .followFromUrl(eq(mTab), eq(sTestUrl), any());
+    }
+
+    @Test
+    public void showSnackbarForFollow_tryAgain_dismissedAfterNavigation() {
+        mWebFeedSnackbarController.showPostFollowHelp(
+                mTab, failureFollowResults(), "".getBytes(), sTestUrl, sTitle);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -238,21 +276,49 @@ public final class WebFeedSnackbarControllerTest {
                 mContext.getString(R.string.web_feed_follow_generic_failure_snackbar_message),
                 snackbar.getTextForTesting());
 
-        // Click follow try again button.
-        snackbar.getController().onAction(null);
-        verify(mWebFeedBridge,
-                description("FollowFromUrl should be called on follow try again when ID is not "
-                        + "available."))
-                .followFromUrl(eq(null), eq(sTestUrl), any());
+        // Simulate a navigation, the snackbar is dismissed.
+        mTabObserver.onPageLoadStarted(mTab, JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2));
+        verify(mSnackbarManager).dismissSnackbars(eq(snackbar.getController()));
     }
 
     @Test
-    @SmallTest
+    public void showSnackbarForFollow_tryAgain_dismissedAfterTabHidden() {
+        mWebFeedSnackbarController.showPostFollowHelp(
+                mTab, failureFollowResults(), "".getBytes(), sTestUrl, sTitle);
+
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
+        assertEquals("Snackbar should be for unsuccessful follow.",
+                Snackbar.UMA_WEB_FEED_FOLLOW_FAILURE, snackbar.getIdentifierForTesting());
+        assertEquals("Snackbar message should be for unsuccessful follow.",
+                mContext.getString(R.string.web_feed_follow_generic_failure_snackbar_message),
+                snackbar.getTextForTesting());
+
+        // Hide tab, the snackbar is dismissed.
+        mTabObserver.onHidden(mTab, 0);
+        verify(mSnackbarManager).dismissSnackbars(eq(snackbar.getController()));
+    }
+
+    @Test
+    public void showSnackbarForFollow_followFailureAfterNavigation_showsNoTryAgainAction() {
+        // mTab reports sTestUrl as the current page. Show a follow-failure snackbar for a different
+        // page.
+        mWebFeedSnackbarController.showPostFollowHelp(mTab, failureFollowResults(), "".getBytes(),
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), sTitle);
+
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+
+        assertEquals(
+                "Snackbar should have no action", null, mSnackbarCaptor.getValue().getActionText());
+    }
+
+    @Test
     public void showSnackbarForFollow_withId_unsuccessful() {
         WebFeedBridge.FollowResults followResults = new WebFeedBridge.FollowResults(/*success=*/
                 false);
 
-        mWebFeedSnackbarController.showPostFollowHelp(followResults, sFollowId, sTestUrl, sTitle);
+        mWebFeedSnackbarController.showPostFollowHelp(
+                mTab, followResults, sFollowId, sTestUrl, sTitle);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -271,7 +337,6 @@ public final class WebFeedSnackbarControllerTest {
     }
 
     @Test
-    @SmallTest
     public void showSnackbarForUnfollow_successful() {
         mWebFeedSnackbarController.showSnackbarForUnfollow(/*successfulUnfollow=*/
                 true, sFollowId, sTestUrl, sTitle);
@@ -288,7 +353,6 @@ public final class WebFeedSnackbarControllerTest {
     }
 
     @Test
-    @SmallTest
     public void showSnackbarForUnfollow_unsuccessful() {
         mWebFeedSnackbarController.showSnackbarForUnfollow(/*successfulUnfollow=*/
                 false, sFollowId, sTestUrl, sTitle);
@@ -305,7 +369,6 @@ public final class WebFeedSnackbarControllerTest {
     }
 
     @Test
-    @SmallTest
     public void showSnackbarForUnfollow_correctDuration() {
         mWebFeedSnackbarController.showSnackbarForUnfollow(/*successfulUnfollow=*/
                 true, sFollowId, sTestUrl, sTitle);
@@ -318,8 +381,12 @@ public final class WebFeedSnackbarControllerTest {
 
     private WebFeedBridge.FollowResults getSuccessfulFollowResult() {
         return new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS,
-                new WebFeedBridge.WebFeedMetadata("id1".getBytes(), "Title1", sTestUrl,
+                new WebFeedBridge.WebFeedMetadata(sFollowId, sTitle, sTestUrl,
                         WebFeedSubscriptionStatus.SUBSCRIBED, /*isActive=*/true,
                         /*isRecommended=*/true));
+    }
+
+    private WebFeedBridge.FollowResults failureFollowResults() {
+        return new WebFeedBridge.FollowResults(false);
     }
 }

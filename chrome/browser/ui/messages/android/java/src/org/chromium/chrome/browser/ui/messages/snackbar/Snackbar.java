@@ -252,7 +252,8 @@ public class Snackbar {
         return mTemplateText;
     }
 
-    String getActionText() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public String getActionText() {
         return mActionText;
     }
 
