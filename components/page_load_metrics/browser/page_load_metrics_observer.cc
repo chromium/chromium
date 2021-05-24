@@ -18,8 +18,6 @@ ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
     bool was_cached,
     int64_t raw_body_bytes,
     int64_t original_network_content_length,
-    std::unique_ptr<data_reduction_proxy::DataReductionProxyData>
-        data_reduction_proxy_data,
     network::mojom::RequestDestination request_destination,
     int net_error,
     std::unique_ptr<net::LoadTimingInfo> load_timing_info)
@@ -29,7 +27,6 @@ ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
       was_cached(was_cached),
       raw_body_bytes(raw_body_bytes),
       original_network_content_length(original_network_content_length),
-      data_reduction_proxy_data(std::move(data_reduction_proxy_data)),
       request_destination(request_destination),
       net_error(net_error),
       load_timing_info(std::move(load_timing_info)) {}
@@ -42,10 +39,6 @@ ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
       was_cached(other.was_cached),
       raw_body_bytes(other.raw_body_bytes),
       original_network_content_length(other.original_network_content_length),
-      data_reduction_proxy_data(
-          other.data_reduction_proxy_data == nullptr
-              ? nullptr
-              : other.data_reduction_proxy_data->DeepCopy()),
       request_destination(other.request_destination),
       net_error(other.net_error),
       load_timing_info(other.load_timing_info == nullptr

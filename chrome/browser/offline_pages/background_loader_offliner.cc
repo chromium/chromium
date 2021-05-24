@@ -22,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 #include "components/offline_pages/core/client_namespace_constants.h"

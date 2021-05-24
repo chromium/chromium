@@ -374,8 +374,6 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
     //                : data_reduction_proxy::util::EstimateOriginalBodySize(
     //                      request, lofi_decider);
     int original_content_length = 0;
-    std::unique_ptr<data_reduction_proxy::DataReductionProxyData>
-        data_reduction_proxy_data;
 
     const blink::mojom::CommonNetworkInfoPtr& network_info =
         resource_load_info.network_info;
@@ -384,7 +382,6 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
         network_info->remote_endpoint.value(),
         render_frame_host->GetFrameTreeNodeId(), resource_load_info.was_cached,
         resource_load_info.raw_body_bytes, original_content_length,
-        std::move(data_reduction_proxy_data),
         resource_load_info.request_destination, resource_load_info.net_error,
         std::make_unique<net::LoadTimingInfo>(
             resource_load_info.load_timing_info));

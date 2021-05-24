@@ -9,7 +9,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"

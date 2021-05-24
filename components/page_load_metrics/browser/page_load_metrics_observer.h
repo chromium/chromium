@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
@@ -173,8 +172,6 @@ struct ExtraRequestCompleteInfo {
       bool was_cached,
       int64_t raw_body_bytes,
       int64_t original_network_content_length,
-      std::unique_ptr<data_reduction_proxy::DataReductionProxyData>
-          data_reduction_proxy_data,
       network::mojom::RequestDestination request_destination,
       int net_error,
       std::unique_ptr<net::LoadTimingInfo> load_timing_info);
@@ -204,10 +201,6 @@ struct ExtraRequestCompleteInfo {
   // The number of body (not header) bytes that the data reduction proxy saw
   // before it compressed the requests.
   const int64_t original_network_content_length;
-
-  // Data related to data saver.
-  const std::unique_ptr<data_reduction_proxy::DataReductionProxyData>
-      data_reduction_proxy_data;
 
   // The type of the request as gleaned from the mime type.  This may
   // be more accurate than the type in the ExtraRequestStartInfo since we can

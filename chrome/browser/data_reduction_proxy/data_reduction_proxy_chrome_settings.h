@@ -20,12 +20,7 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace content {
-class NavigationHandle;
-}
-
 namespace data_reduction_proxy {
-class DataReductionProxyData;
 class DataStore;
 }  // namespace data_reduction_proxy
 
@@ -79,12 +74,6 @@ class DataReductionProxyChromeSettings
 
   // Public for testing.
   void MigrateDataReductionProxyOffProxyPrefs(PrefService* prefs);
-
-  // Builds an instance of DataReductionProxyData from the given |handle| and
-  // |headers|.
-  std::unique_ptr<data_reduction_proxy::DataReductionProxyData>
-  CreateDataFromNavigationHandle(content::NavigationHandle* handle,
-                                 const net::HttpResponseHeaders* headers);
 
   HttpsImageCompressionInfoBarDecider*
   https_image_compression_infobar_decider() {

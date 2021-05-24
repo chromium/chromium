@@ -9,8 +9,6 @@ if (is_android) {
 browser_sources = [
   "data_reduction_proxy_compression_stats.cc",
   "data_reduction_proxy_compression_stats.h",
-  "data_reduction_proxy_data.cc",
-  "data_reduction_proxy_data.h",
   "data_reduction_proxy_metrics.h",
   "data_reduction_proxy_prefs.cc",
   "data_reduction_proxy_prefs.h",
@@ -134,7 +132,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "data_reduction_proxy_compression_stats_unittest.cc",
-    "data_reduction_proxy_data_unittest.cc",
     "data_reduction_proxy_prefs_unittest.cc",
     "data_reduction_proxy_request_options_unittest.cc",
     "data_reduction_proxy_settings_unittest.cc",

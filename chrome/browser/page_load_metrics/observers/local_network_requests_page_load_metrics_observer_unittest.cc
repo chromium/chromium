@@ -108,7 +108,6 @@ class LocalNetworkRequestsPageLoadMetricsObserverTest
         !net_error /* was_cached */,
         (net_error ? 1024 * 20 : 0) /* raw_body_bytes */,
         0 /* original_network_content_length */,
-        nullptr /* data_reduction_proxy_data */,
         network::mojom::RequestDestination::kDocument, net_error,
         {} /* load_timing_info */);
 
@@ -784,7 +783,6 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
       {url::Origin::Create(GURL(internal::kDiffSubnetRequest2.url)),
        net::IPEndPoint(), -1 /* frame_tree_node_id */, true /* was_cached */,
        1024 * 20 /* raw_body_bytes */, 0 /* original_network_content_length */,
-       nullptr /* data_reduction_proxy_data */,
        network::mojom::RequestDestination::kDocument, 0,
        nullptr /* load_timing_info */},
       GetGlobalRequestID());
@@ -812,7 +810,6 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
       {url::Origin::Create(GURL(internal::kPrivatePage.url)), net::IPEndPoint(),
        -1 /* frame_tree_node_id */, false /* was_cached */,
        0 /* raw_body_bytes */, 0 /* original_network_content_length */,
-       nullptr /* data_reduction_proxy_data */,
        network::mojom::RequestDestination::kDocument, -20,
        nullptr /* load_timing_info */},
       GetGlobalRequestID());

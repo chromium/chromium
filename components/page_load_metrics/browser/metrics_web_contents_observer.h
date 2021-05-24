@@ -15,7 +15,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
