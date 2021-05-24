@@ -53,4 +53,8 @@ const char kFinchSeedMinUpdatePeriod[] = "finch-seed-min-update-period";
 const char kWebViewEnableModernCookieSameSite[] =
     "webview-enable-modern-cookie-same-site";
 
+// Enables downloading Apps Package Names Allowlist.
+const char kWebViewAppsPackageNamesAllowlist[] =
+    "webview-apps-package-names-allowlist";
+
 }  // namespace switches

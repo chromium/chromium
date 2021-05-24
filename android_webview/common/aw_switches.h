@@ -18,6 +18,7 @@ extern const char kFinchSeedIgnorePendingDownload[];
 extern const char kFinchSeedMinDownloadPeriod[];
 extern const char kFinchSeedMinUpdatePeriod[];
 extern const char kWebViewEnableModernCookieSameSite[];
+extern const char kWebViewAppsPackageNamesAllowlist[];
 
 }  // namespace switches
 
