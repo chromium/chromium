@@ -98,7 +98,8 @@ bool MediaRoute::operator==(const MediaRoute& other) const {
          controller_type_ == other.controller_type_ &&
          for_display_ == other.for_display_ &&
          is_off_the_record_ == other.is_off_the_record_ &&
-         is_local_presentation_ == other.is_local_presentation_;
+         is_local_presentation_ == other.is_local_presentation_ &&
+         is_connecting_ == other.is_connecting_;
 }
 
 std::ostream& operator<<(std::ostream& stream, const MediaRoute& route) {

@@ -440,9 +440,10 @@ function routeToMojo_(route) {
     'isLocalPresentation': route.isOffscreenPresentation,
     'controllerType': route.controllerType,
     'presentationId': route.presentationId,
+    'mediaSinkName': route.sinkName,
     // Begin newly added properties, followed by the milestone they were
     // added.  The guard should be safe to remove N+2 milestones later.
-    'mediaSinkName': route.sinkName || ''  // M81
+    'isConnecting':route.isConnecting || false  // M92
   });
 }
 

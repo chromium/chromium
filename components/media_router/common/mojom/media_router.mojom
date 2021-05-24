@@ -123,6 +123,9 @@ struct MediaRoute {
   bool is_off_the_record;
   // Set to true if this route corresponds to a local presentation.
   bool is_local_presentation;
+  // Set to true if this route has been created by the MRP but is waiting for
+  // the receiver's response.
+  bool is_connecting;
 };
 
 // Notifications or an actionable events to be shown to the user.
