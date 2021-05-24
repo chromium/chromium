@@ -19,7 +19,7 @@ BluezDBusThreadManager::BluezDBusThreadManager() {
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::IO;
   dbus_thread_ = std::make_unique<base::Thread>("Bluez D-Bus thread");
-  dbus_thread_->StartWithOptions(thread_options);
+  dbus_thread_->StartWithOptions(std::move(thread_options));
 
   // Create the connection to the system bus.
   dbus::Bus::Options system_bus_options;
