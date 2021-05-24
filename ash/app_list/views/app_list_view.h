@@ -520,7 +520,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // is snapped.
   void ResetSubpixelPositionOffset(ui::Layer* layer);
 
-  AppListViewDelegate* delegate_;    // Weak. Owned by AppListService.
+  AppListViewDelegate* const delegate_;
   AppListModel* const model_;        // Not Owned.
   SearchModel* const search_model_;  // Not Owned.
 

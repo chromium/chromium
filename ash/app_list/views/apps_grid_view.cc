@@ -166,7 +166,7 @@ class RowMoveAnimationDelegate : public views::AnimationDelegateViews {
         layer_(layer),
         layer_start_(layer ? layer->bounds() : gfx::Rect()),
         layer_target_(layer_target) {}
-  ~RowMoveAnimationDelegate() override {}
+  ~RowMoveAnimationDelegate() override = default;
 
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override {
@@ -208,7 +208,7 @@ class ItemRemoveAnimationDelegate : public views::AnimationDelegateViews {
   explicit ItemRemoveAnimationDelegate(views::View* view)
       : views::AnimationDelegateViews(view), view_(view) {}
 
-  ~ItemRemoveAnimationDelegate() override {}
+  ~ItemRemoveAnimationDelegate() override = default;
 
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override {
@@ -229,7 +229,7 @@ class CardifiedAnimationObserver : public ui::ImplicitAnimationObserver {
  public:
   explicit CardifiedAnimationObserver(base::OnceClosure callback)
       : callback_(std::move(callback)) {}
-  ~CardifiedAnimationObserver() override {}
+  ~CardifiedAnimationObserver() override = default;
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override {
@@ -398,11 +398,15 @@ class AppsGridView::FadeoutLayerDelegate : public ui::LayerDelegate {
 };
 
 AppsGridView::AppsGridView(ContentsView* contents_view,
+                           AppListViewDelegate* app_list_view_delegate,
                            AppsGridViewFolderDelegate* folder_delegate)
     : folder_delegate_(folder_delegate),
       contents_view_(contents_view),
+      app_list_view_delegate_(app_list_view_delegate),
       page_flip_delay_(kPageFlipDelay) {
   DCHECK(contents_view_);
+  DCHECK(app_list_view_delegate_);
+
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   // Clip any icons that are outside the grid view's bounds. These icons would
   // otherwise be visible to the user when the grid view is off screen.
@@ -414,7 +418,7 @@ AppsGridView::AppsGridView(ContentsView* contents_view,
   bounds_animator_ = std::make_unique<views::BoundsAnimator>(
       items_container_, /*use_transforms=*/true);
 
-  if (!folder_delegate) {
+  if (!folder_delegate_) {
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets(GetAppListConfig().grid_fadeout_mask_height(), 0)));
   }
@@ -1206,9 +1210,8 @@ void AppsGridView::OnGestureEvent(ui::GestureEvent* event) {
   // If a tap/long-press occurs within a valid tile, it is usually a mistake and
   // should not close the launcher in clamshell mode. Otherwise, we should let
   // those events pass to the ancestor views.
-  if (!contents_view_->app_list_view()->is_tablet_mode() &&
-      (event->type() == ui::ET_GESTURE_TAP ||
-       event->type() == ui::ET_GESTURE_LONG_PRESS)) {
+  if (!IsTabletMode() && (event->type() == ui::ET_GESTURE_TAP ||
+                          event->type() == ui::ET_GESTURE_LONG_PRESS)) {
     if (EventIsBetweenOccupiedTiles(event)) {
       contents_view_->app_list_view()->CloseKeyboardIfVisible();
       event->SetHandled();
@@ -1229,10 +1232,9 @@ void AppsGridView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void AppsGridView::OnMouseEvent(ui::MouseEvent* event) {
-  if (contents_view_->app_list_view()->is_tablet_mode() ||
-      !event->IsLeftMouseButton()) {
+  if (IsTabletMode() || !event->IsLeftMouseButton())
     return;
-  }
+
   gfx::PointF point_in_root = event->root_location_f();
 
   switch (event->type()) {
@@ -1402,8 +1404,7 @@ std::unique_ptr<AppListItemView> AppsGridView::CreateViewForItem(
     AppListItem* item,
     bool is_in_folder) {
   std::unique_ptr<AppListItemView> view = std::make_unique<AppListItemView>(
-      this, item, contents_view_->GetAppListMainView()->view_delegate(),
-      is_in_folder);
+      this, item, app_list_view_delegate_, is_in_folder);
   view->SetCallback(base::BindRepeating(&AppsGridView::OnAppListItemViewPressed,
                                         base::Unretained(this),
                                         base::Unretained(view.get())));
@@ -2288,7 +2289,7 @@ void AppsGridView::UpdatePagedViewStructure() {
 }
 
 bool AppsGridView::IsTabletMode() const {
-  return contents_view_->app_list_view()->is_tablet_mode();
+  return app_list_view_delegate_->IsInTabletMode();
 }
 
 void AppsGridView::OnAppListConfigUpdated() {
@@ -3809,11 +3810,14 @@ void AppsGridView::MaybeCreateFolderDroppingAccessibilityEvent() {
                      drop_view->title()->GetText(), drop_view->is_folder());
 }
 
+views::View* AppsGridView::GetAnnouncementView() {
+  return contents_view_->app_list_view()->announcement_view();
+}
+
 void AppsGridView::AnnounceItemNotificationBadge(
     const std::u16string& selected_view_title) {
   // Set a11y name to announce the notification badge for the focused item.
-  auto* announcement_view =
-      contents_view_->app_list_view()->announcement_view();
+  views::View* announcement_view = GetAnnouncementView();
   announcement_view->GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(IDS_APP_LIST_APP_FOCUS_NOTIFICATION_BADGE,
                                  selected_view_title));
@@ -3824,8 +3828,7 @@ void AppsGridView::AnnounceFolderDrop(const std::u16string& moving_view_title,
                                       const std::u16string& target_view_title,
                                       bool target_is_folder) {
   // Set a11y name to announce possible move to folder or creation of folder.
-  auto* announcement_view =
-      contents_view_->app_list_view()->announcement_view();
+  views::View* announcement_view = GetAnnouncementView();
   announcement_view->GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(
           target_is_folder
@@ -3840,8 +3843,7 @@ void AppsGridView::AnnounceKeyboardFoldering(
     const std::u16string& target_view_title,
     bool target_is_folder) {
   // Set a11y name to announce keyboard move to folder or creation of folder.
-  auto* announcement_view =
-      contents_view_->app_list_view()->announcement_view();
+  views::View* announcement_view = GetAnnouncementView();
   announcement_view->GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(
           target_is_folder
@@ -3881,8 +3883,7 @@ void AppsGridView::AnnounceReorder(const GridIndex& target_index) {
   const int page = target_index.page + 1;
 
   // Set the accessible name of the announcement view.
-  auto* announcement_view =
-      contents_view_->app_list_view()->announcement_view();
+  views::View* announcement_view = GetAnnouncementView();
   announcement_view->GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(
           IDS_APP_LIST_APP_DRAG_LOCATION_ACCESSIBILE_NAME,
@@ -3969,7 +3970,7 @@ bool AppsGridView::ShouldHandleDragEvent(const ui::LocatedEvent& event) {
   };
   if (!folder_delegate_ &&
       (event.IsMouseEvent() || event.type() == ui::ET_GESTURE_SCROLL_BEGIN) &&
-      !contents_view_->app_list_view()->is_tablet_mode() &&
+      !IsTabletMode() &&
       ((pagination_model_.selected_page() == 0 &&
         calculate_offset(event) > 0) ||
        contents_view_->app_list_view()->is_in_drag())) {

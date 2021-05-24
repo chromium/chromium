@@ -28,6 +28,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -450,11 +451,13 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
 
 AppListFolderView::AppListFolderView(AppsContainerView* container_view,
                                      AppListModel* model,
-                                     ContentsView* contents_view)
+                                     ContentsView* contents_view,
+                                     AppListViewDelegate* view_delegate)
     : container_view_(container_view),
       contents_view_(contents_view),
       view_model_(new views::ViewModel),
       model_(model) {
+  DCHECK(view_delegate);
   // The background's corner radius cannot be changed in the same layer of the
   // contents container using layer animation, so use another layer to perform
   // such changes.
@@ -469,7 +472,7 @@ AppListFolderView::AppListFolderView(AppsContainerView* container_view,
   view_model_->Add(contents_container_, kIndexContentsContainer);
 
   items_grid_view_ = contents_container_->AddChildView(
-      std::make_unique<AppsGridView>(contents_view_, this));
+      std::make_unique<AppsGridView>(contents_view_, view_delegate, this));
   items_grid_view_->SetModel(model);
   view_model_->Add(items_grid_view_, kIndexChildItems);
 

@@ -26,6 +26,7 @@ class AppsGridView;
 class AppListFolderItem;
 class AppListItemView;
 class AppListModel;
+class AppListViewDelegate;
 class FolderHeaderView;
 class PageSwitcher;
 
@@ -38,7 +39,8 @@ class ASH_EXPORT AppListFolderView : public views::View,
 
   AppListFolderView(AppsContainerView* container_view,
                     AppListModel* model,
-                    ContentsView* contents_view);
+                    ContentsView* contents_view,
+                    AppListViewDelegate* view_delegate);
   AppListFolderView(const AppListFolderView&) = delete;
   AppListFolderView& operator=(const AppListFolderView&) = delete;
   ~AppListFolderView() override;

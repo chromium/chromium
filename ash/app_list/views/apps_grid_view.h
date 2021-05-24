@@ -50,6 +50,7 @@ class ApplicationDragAndDropHost;
 class AppListConfig;
 class AppListItem;
 class AppListItemView;
+class AppListViewDelegate;
 class AppsGridViewFolderDelegate;
 class ContentsView;
 class PaginationController;
@@ -91,6 +92,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   };
 
   AppsGridView(ContentsView* contents_view,
+               AppListViewDelegate* app_list_view_delegate,
                AppsGridViewFolderDelegate* folder_delegate);
   ~AppsGridView() override;
 
@@ -280,7 +282,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Updates paged view structure and save it to meta data.
   void UpdatePagedViewStructure();
 
-  // Returns true if tablet mode is active.
+  // Returns true if tablet mode is active. This class does not use
+  // Shell::IsInTabletMode() because it has tests that are not derived from
+  // AshTestBase.
   bool IsTabletMode() const;
 
   // Should be called by AppListView if the app list config it uses changes.
@@ -720,6 +724,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // folder or creating a folder with two apps.
   void MaybeCreateFolderDroppingAccessibilityEvent();
 
+  // Returns the view used for accessibility announcements (spoken feedback).
+  views::View* GetAnnouncementView();
+
   // Modifies the announcement view to verbalize that the focused view has new
   // updates, based on the item having a notification badge.
   void AnnounceItemNotificationBadge(const std::u16string& selected_view_title);
@@ -780,6 +787,8 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Created by AppListMainView, owned by views hierarchy.
   ContentsView* contents_view_ = nullptr;
+
+  AppListViewDelegate* const app_list_view_delegate_;
 
   // Keeps the individual AppListItemView. Owned by views hierarchy.
   views::View* items_container_ = nullptr;
