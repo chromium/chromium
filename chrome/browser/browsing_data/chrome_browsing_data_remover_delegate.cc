@@ -737,7 +737,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   // DATA_TYPE_BOOKMARKS
   if (remove_mask & constants::DATA_TYPE_BOOKMARKS) {
     auto* bookmark_model = BookmarkModelFactory::GetForBrowserContext(profile_);
-    if (bookmark_model) {
+    if (bookmark_model && bookmark_model->loaded()) {
       if (delete_begin_.is_null() &&
           (delete_end_.is_null() || delete_end_.is_max())) {
         bookmark_model->RemoveAllUserBookmarks();

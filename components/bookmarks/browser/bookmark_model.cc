@@ -237,6 +237,7 @@ void BookmarkModel::Remove(const BookmarkNode* node) {
 
 void BookmarkModel::RemoveAllUserBookmarks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(loaded_);
   std::set<GURL> removed_urls;
   struct RemoveNodeData {
     const BookmarkNode* parent;

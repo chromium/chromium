@@ -1046,6 +1046,10 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
   ~ChromeBrowsingDataRemoverDelegateTest() override = default;
 
   void SetUp() override {
+    // Make sure the Network Service is started before making a NetworkContext.
+    content::GetNetworkService();
+    task_environment_.RunUntilIdle();
+
     // This needs to be done after the test constructor, so that subclasses
     // that initialize a ScopedFeatureList in their constructors can do so
     // before the code below potentially kicks off tasks on other threads that
@@ -1073,10 +1077,6 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     profile_ = profile_builder.Build();
 
     remover_ = profile_->GetBrowsingDataRemover();
-
-    // Make sure the Network Service is started before making a NetworkContext.
-    content::GetNetworkService();
-    task_environment_.RunUntilIdle();
 
     auto network_context_params = network::mojom::NetworkContextParams::New();
     network_context_params->cert_verifier_params =
@@ -1597,6 +1597,21 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteBookmarks) {
   EXPECT_EQ(0u, bookmark_model->bookmark_bar_node()->children().size());
 }
 
+// Verifies deleting does not crash if BookmarkModel has not been loaded.
+// Regression test for: https://crbug.com/1207632.
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       DeleteBookmarksDoesNothingWhenModelNotLoaded) {
+  TestingProfile* profile = GetProfile();
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  // For this test to exercise the code path that lead to the crash the
+  // model must not be loaded yet.
+  EXPECT_FALSE(bookmark_model->loaded());
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_BOOKMARKS, false);
+  // No crash means test passes.
+}
+
 // TODO(crbug.com/589586): Disabled, since history is not yet marked as
 // a filterable datatype.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
@@ -2031,6 +2046,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        RemoveContentSettingsWithPreserveFilter) {
+  // This test relies on async loading to complete. RunUntilIdle() should be
+  // removed and an explicit wait should be added.
+  task_environment()->RunUntilIdle();
+
   // Add our settings.
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
@@ -2078,6 +2097,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
+  // This test relies on async loading to complete. RunUntilIdle() should be
+  // removed and an explicit wait should be added.
+  task_environment()->RunUntilIdle();
+
   const bool has_dse_origin = !dse_origin().is_empty();
   auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
   map->SetContentSettingDefaultScope(Origin1(), Origin1(),
@@ -2157,6 +2180,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveProtocolHandler) {
+  // This test relies on async loading to complete. RunUntilIdle() should be
+  // removed and an explicit wait should be added.
+  task_environment()->RunUntilIdle();
+
   auto* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(GetProfile());
   base::Time one_hour_ago = base::Time::Now() - base::TimeDelta::FromHours(1);
@@ -2190,6 +2217,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveProtocolHandler) {
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveSelectedClientHints) {
+  // This test relies on async loading to complete. RunUntilIdle() should be
+  // removed and an explicit wait should be added.
+  task_environment()->RunUntilIdle();
+
   // Add our settings.
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
