@@ -37,4 +37,8 @@ group("closure_compile") {
     "//ash/content/shimless_rma:closure_compile",
     "//ash/content/shortcut_customization_ui:closure_compile",
   ]
+
+  if (!is_official_build) {
+    deps += [ "//ash/content/file_manager/resources:closure_compile" ]
+  }
 }

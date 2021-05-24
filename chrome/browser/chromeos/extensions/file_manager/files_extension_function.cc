@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/files_extension_function.h"
 
+#include "ash/content/file_manager/url_constants.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chromeos/components/file_manager/url_constants.h"
 
 namespace extensions {
 

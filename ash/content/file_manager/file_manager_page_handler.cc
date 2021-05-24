@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/file_manager/file_manager_page_handler.h"
+#include "ash/content/file_manager/file_manager_page_handler.h"
 
-#include "chromeos/components/file_manager/file_manager_ui.h"
+#include "ash/content/file_manager/file_manager_ui.h"
 
 namespace chromeos {
 namespace file_manager {

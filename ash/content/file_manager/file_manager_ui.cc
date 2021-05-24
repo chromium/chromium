@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/file_manager/file_manager_ui.h"
+#include "ash/content/file_manager/file_manager_ui.h"
 
+#include "ash/content/file_manager/file_manager_page_handler.h"
+#include "ash/content/file_manager/url_constants.h"
+#include "ash/grit/ash_file_manager_resources.h"
+#include "ash/grit/ash_file_manager_resources_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
-#include "chromeos/components/file_manager/file_manager_page_handler.h"
-#include "chromeos/components/file_manager/url_constants.h"
-#include "chromeos/grit/chromeos_file_manager_resources.h"
-#include "chromeos/grit/chromeos_file_manager_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -52,8 +52,8 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
   source->AddResourcePath("", IDR_FILE_MANAGER_SWA_MAIN_HTML);
 
   // Add chrome://file-manager content.
-  source->AddResourcePaths(base::make_span(kChromeosFileManagerResources,
-                                           kChromeosFileManagerResourcesSize));
+  source->AddResourcePaths(
+      base::make_span(kAshFileManagerResources, kAshFileManagerResourcesSize));
 
   AddFilesAppResources(source, kFileManagerResources,
                        kFileManagerResourcesSize);

@@ -86,31 +86,6 @@ grit("connectivity_diagnostics_resources") {
   output_dir = "$root_gen_dir/chromeos"
 }
 
-# Resources used by chrome://file-manager
-if (!is_official_build) {
-  grit("file_manager_resources") {
-    # main.html is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-
-    source = "../components/file_manager/resources/file_manager_resources.grd"
-
-    outputs = [
-      "grit/chromeos_file_manager_resources.h",
-      "grit/chromeos_file_manager_resources_map.cc",
-      "grit/chromeos_file_manager_resources_map.h",
-      "chromeos_file_manager_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chromeos"
-
-    deps = [
-      "//chromeos/components/file_manager/mojom:mojom_js",
-      "//chromeos/components/file_manager/resources:build",
-      "//chromeos/components/file_manager/resources:gen_main_html",
-      "//mojo/public/js:bindings_lite",
-    ]
-  }
-}
-
 # Resources used by chrome://help-app, and parts of the sandboxed app it hosts
 # that do not come from the app bundle (below).
 grit("help_app_resources") {

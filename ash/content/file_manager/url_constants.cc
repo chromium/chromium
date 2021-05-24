@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_FILE_MANAGER_URL_CONSTANTS_H_
-#define CHROMEOS_COMPONENTS_FILE_MANAGER_URL_CONSTANTS_H_
+#include "ash/content/file_manager/url_constants.h"
 
 namespace chromeos {
 namespace file_manager {
 
-extern const char kChromeUIFileManagerHost[];
-extern const char kChromeUIFileManagerURL[];
+constexpr char kChromeUIFileManagerHost[] = "file-manager";
+constexpr char kChromeUIFileManagerURL[] = "chrome://file-manager/";
 
 }  // namespace file_manager
 }  // namespace chromeos
-
-#endif  // CHROMEOS_COMPONENTS_FILE_MANAGER_URL_CONSTANTS_H_

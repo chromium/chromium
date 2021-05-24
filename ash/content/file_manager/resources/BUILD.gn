@@ -7,8 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 
 preprocess_folder = "$target_gen_dir/preprocessed"
-mojom_webui_folder =
-    "$root_gen_dir/mojom-webui/chromeos/components/file_manager/mojom"
+mojom_webui_folder = "$root_gen_dir/mojom-webui/ash/content/file_manager/mojom"
 
 js_library("crt0") {
 }
@@ -28,7 +27,7 @@ js_library("main_js") {
     "main.js",
     "script_loader.js",
   ]
-  deps = [ "//chromeos/components/file_manager/mojom:mojom_webui_js" ]
+  deps = [ "//ash/content/file_manager/mojom:mojom_webui_js" ]
 }
 
 js_type_check("closure_compile") {
@@ -47,7 +46,7 @@ js_type_check("closure_compile") {
 action("gen_main_html") {
   inputs = [ "//ui/file_manager/file_manager/main.html" ]
 
-  script = "//chromeos/components/file_manager/resources/gen_main_html.py"
+  script = "//ash/content/file_manager/resources/gen_main_html.py"
 
   args = [
     "--source",
@@ -85,7 +84,7 @@ preprocess_if_expr("preprocess_mojo") {
   in_folder = mojom_webui_folder
   in_files = [ "file_manager.mojom-webui.js" ]
   out_folder = preprocess_folder
-  deps = [ "//chromeos/components/file_manager/mojom:mojom_webui_js" ]
+  deps = [ "//ash/content/file_manager/mojom:mojom_webui_js" ]
 }
 
 optimize_webui("build") {

@@ -23,6 +23,31 @@ grit("os_feedback_resources") {
   output_dir = "$root_gen_dir/ash"
 }
 
+# Resources used by chrome://file-manager
+if (!is_official_build) {
+  grit("file_manager_resources") {
+    # main.html is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+
+    source = "../../content/file_manager/resources/file_manager_resources.grd"
+
+    outputs = [
+      "grit/ash_file_manager_resources.h",
+      "grit/ash_file_manager_resources_map.cc",
+      "grit/ash_file_manager_resources_map.h",
+      "ash_file_manager_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/ash"
+
+    deps = [
+      "//ash/content/file_manager/mojom:mojom_js",
+      "//ash/content/file_manager/resources:build",
+      "//ash/content/file_manager/resources:gen_main_html",
+      "//mojo/public/js:bindings_lite",
+    ]
+  }
+}
+
 grit("scanning_app_resources") {
   source = "../../content/scanning/resources/scanning_app_resources.grd"
 

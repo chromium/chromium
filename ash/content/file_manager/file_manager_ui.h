@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_FILE_MANAGER_FILE_MANAGER_UI_H_
-#define CHROMEOS_COMPONENTS_FILE_MANAGER_FILE_MANAGER_UI_H_
+#ifndef ASH_CONTENT_FILE_MANAGER_FILE_MANAGER_UI_H_
+#define ASH_CONTENT_FILE_MANAGER_FILE_MANAGER_UI_H_
 
 #include <memory>
 
-#include "chromeos/components/file_manager/file_manager_ui_delegate.h"
-#include "chromeos/components/file_manager/mojom/file_manager.mojom.h"
+#include "ash/content/file_manager/file_manager_ui_delegate.h"
+#include "ash/content/file_manager/mojom/file_manager.mojom.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -56,4 +56,4 @@ class FileManagerUI : public ui::MojoWebUIController,
 }  // namespace file_manager
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_FILE_MANAGER_FILE_MANAGER_UI_H_
+#endif  // ASH_CONTENT_FILE_MANAGER_FILE_MANAGER_UI_H_

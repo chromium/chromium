@@ -27,7 +27,7 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
   source->AddResourcePath("receiver.js", IDR_MEDIA_APP_RECEIVER_JS);
   source->AddResourcePath("piex_module.js", IDR_MEDIA_APP_PIEX_MODULE_JS);
 
-  // Add shared resources from chromeos_file_manager_resources.pak.
+  // Add shared resources from ash_file_manager_resources.pak.
   source->AddResourcePath("piex/piex.js.wasm", IDR_IMAGE_LOADER_PIEX_WASM_JS);
   source->AddResourcePath("piex/piex.out.wasm", IDR_IMAGE_LOADER_PIEX_WASM);
 

@@ -3305,12 +3305,12 @@ source_set("chromeos") {
 
   if (!is_official_build) {
     deps += [
+      "//ash/components/resources:file_manager_resources_grit",
+      "//ash/content/file_manager:file_manager_ui",
       "//chromeos/components/demo_mode_app_ui",
-      "//chromeos/components/file_manager:file_manager_ui",
       "//chromeos/components/sample_system_web_app_ui",
       "//chromeos/components/telemetry_extension_ui",
       "//chromeos/resources:demo_mode_app_resources_grit",
-      "//chromeos/resources:file_manager_resources_grit",
       "//chromeos/resources:sample_system_web_app_resources_grit",
       "//chromeos/resources:telemetry_extension_resources",
     ]

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_FILE_MANAGER_UI_DELEGATE_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_FILE_MANAGER_UI_DELEGATE_H_
 
-#include "chromeos/components/file_manager/file_manager_ui_delegate.h"
+#include "ash/content/file_manager/file_manager_ui_delegate.h"
 
 namespace content {
 class WebUI;

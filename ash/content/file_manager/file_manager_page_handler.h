@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_FILE_MANAGER_FILE_MANAGER_PAGE_HANDLER_H_
-#define CHROMEOS_COMPONENTS_FILE_MANAGER_FILE_MANAGER_PAGE_HANDLER_H_
+#ifndef ASH_CONTENT_FILE_MANAGER_FILE_MANAGER_PAGE_HANDLER_H_
+#define ASH_CONTENT_FILE_MANAGER_FILE_MANAGER_PAGE_HANDLER_H_
 
-#include "chromeos/components/file_manager/mojom/file_manager.mojom.h"
+#include "ash/content/file_manager/mojom/file_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -37,4 +37,4 @@ class FileManagerPageHandler : public mojom::PageHandler {
 }  // namespace file_manager
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_FILE_MANAGER_FILE_MANAGER_PAGE_HANDLER_H_
+#endif  // ASH_CONTENT_FILE_MANAGER_FILE_MANAGER_PAGE_HANDLER_H_

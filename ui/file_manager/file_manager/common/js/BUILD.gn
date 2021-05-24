@@ -9,7 +9,7 @@ import("//ui/webui/resources/js/cr.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 visibility = [
-  "//chromeos/components/file_manager/resources/*",
+  "//ash/content/file_manager/resources/*",
   "//ui/file_manager/*",
 ]
 

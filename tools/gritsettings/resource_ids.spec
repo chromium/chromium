@@ -372,7 +372,7 @@
   "chromeos/components/diagnostics_ui/resources/diagnostics_app_resources.grd": {
     "includes": [2517],
   },
-  "chromeos/components/file_manager/resources/file_manager_resources.grd": {
+  "ash/content/file_manager/resources/file_manager_resources.grd": {
     "includes": [2518],
   },
   "chromeos/components/help_app_ui/resources/help_app_resources.grd": {
