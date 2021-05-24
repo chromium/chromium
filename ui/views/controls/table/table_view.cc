@@ -41,6 +41,7 @@
 #include "ui/views/controls/table/table_header.h"
 #include "ui/views/controls/table/table_utils.h"
 #include "ui/views/controls/table/table_view_observer.h"
+#include "ui/views/image_model_utils.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
@@ -880,7 +881,8 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
 
       // Always paint the icon in the first visible column.
       if (j == 0 && table_type_ == ICON_AND_TEXT) {
-        gfx::ImageSkia image = model_->GetIcon(model_index);
+        gfx::ImageSkia image = views::GetImageSkiaFromImageModel(
+            model_->GetIcon(model_index), GetNativeTheme());
         if (!image.isNull()) {
           int image_x =
               GetMirroredXWithWidthInView(text_x, ui::TableModel::kIconSize);

@@ -44,7 +44,7 @@ class DeviceChooserContentView : public views::View,
   int RowCount() override;
   std::u16string GetText(int row, int column_id) override;
   void SetObserver(ui::TableModelObserver* observer) override;
-  gfx::ImageSkia GetIcon(int row) override;
+  ui::ImageModel GetIcon(int row) override;
 
   // permissions::ChooserController::View:
   void OnOptionsInitialized() override;

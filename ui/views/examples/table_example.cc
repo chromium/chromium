@@ -120,9 +120,10 @@ std::u16string TableExample::GetText(int row, int column_id) {
   return ASCIIToUTF16(cells[row % 5][column_id]);
 }
 
-gfx::ImageSkia TableExample::GetIcon(int row) {
+ui::ImageModel TableExample::GetIcon(int row) {
   SkBitmap row_icon = row % 2 ? icon1_ : icon2_;
-  return gfx::ImageSkia::CreateFrom1xBitmap(row_icon);
+  return ui::ImageModel::FromImageSkia(
+      gfx::ImageSkia::CreateFrom1xBitmap(row_icon));
 }
 
 std::u16string TableExample::GetTooltip(int row) {

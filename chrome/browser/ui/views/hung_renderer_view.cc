@@ -117,12 +117,12 @@ std::u16string HungPagesTableModel::GetText(int row, int column_id) {
                                  render_widget_host_->GetProcess());
 }
 
-gfx::ImageSkia HungPagesTableModel::GetIcon(int row) {
+ui::ImageModel HungPagesTableModel::GetIcon(int row) {
   DCHECK(row >= 0 && row < RowCount());
-  return favicon::ContentFaviconDriver::FromWebContents(
-             tab_observers_[row]->web_contents())
-      ->GetFavicon()
-      .AsImageSkia();
+  return ui::ImageModel::FromImage(
+      favicon::ContentFaviconDriver::FromWebContents(
+          tab_observers_[row]->web_contents())
+          ->GetFavicon());
 }
 
 void HungPagesTableModel::SetObserver(ui::TableModelObserver* observer) {

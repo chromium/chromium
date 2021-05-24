@@ -28,7 +28,7 @@ class TabListModel : public ui::TableModel,
   // ui::TableModel:
   int RowCount() override;
   std::u16string GetText(int row, int column) override;
-  gfx::ImageSkia GetIcon(int row) override;
+  ui::ImageModel GetIcon(int row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
   // DesktopMediaListController::SourceListListener:
@@ -57,8 +57,8 @@ std::u16string TabListModel::GetText(int row, int column) {
   return controller_->GetSource(row).name;
 }
 
-gfx::ImageSkia TabListModel::GetIcon(int row) {
-  return controller_->GetSource(row).thumbnail;
+ui::ImageModel TabListModel::GetIcon(int row) {
+  return ui::ImageModel::FromImageSkia(controller_->GetSource(row).thumbnail);
 }
 
 void TabListModel::SetObserver(ui::TableModelObserver* observer) {

@@ -71,7 +71,7 @@ class HungPagesTableModel : public ui::TableModel,
   // Overridden from ui::TableModel:
   int RowCount() override;
   std::u16string GetText(int row, int column_id) override;
-  gfx::ImageSkia GetIcon(int row) override;
+  ui::ImageModel GetIcon(int row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
   // Overridden from RenderProcessHostObserver:

@@ -38,22 +38,17 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
  private:
   class FilePathListModel : public ui::TableModel {
    public:
-    FilePathListModel(const views::View* view,
-                      std::vector<base::FilePath> files,
+    FilePathListModel(std::vector<base::FilePath> files,
                       std::vector<base::FilePath> directories);
     ~FilePathListModel() override;
     // ui::TableModel:
     int RowCount() override;
     std::u16string GetText(int row, int column_id) override;
-    gfx::ImageSkia GetIcon(int row) override;
+    ui::ImageModel GetIcon(int row) override;
     std::u16string GetTooltip(int row) override;
     void SetObserver(ui::TableModelObserver*) override;
 
    private:
-    // The model needs access to the view it is in to access the correct theme
-    // for icon colors.
-    const views::View* const owner_;
-
     const std::vector<base::FilePath> files_;
     const std::vector<base::FilePath> directories_;
     DISALLOW_COPY_AND_ASSIGN(FilePathListModel);

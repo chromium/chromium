@@ -27,6 +27,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/common/result_codes.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/table_model_observer.h"
 #include "ui/base/text/bytes_formatting.h"
 
@@ -469,8 +470,9 @@ std::u16string TaskManagerTableModel::GetText(int row, int column) {
   }
 }
 
-gfx::ImageSkia TaskManagerTableModel::GetIcon(int row) {
-  return observed_task_manager()->GetIcon(tasks_[row]);
+ui::ImageModel TaskManagerTableModel::GetIcon(int row) {
+  return ui::ImageModel::FromImageSkia(
+      observed_task_manager()->GetIcon(tasks_[row]));
 }
 
 void TaskManagerTableModel::SetObserver(

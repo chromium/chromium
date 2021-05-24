@@ -8,7 +8,7 @@
 #include "base/i18n/string_compare.h"
 #include "base/notreached.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/image/image_skia.h"
+#include "ui/base/models/image_model.h"
 
 namespace ui {
 
@@ -43,8 +43,8 @@ TableColumn::TableColumn(const TableColumn& other) = default;
 // Used for sorting.
 static icu::Collator* collator = NULL;
 
-gfx::ImageSkia TableModel::GetIcon(int row) {
-  return gfx::ImageSkia();
+ui::ImageModel TableModel::GetIcon(int row) {
+  return ui::ImageModel();
 }
 
 std::u16string TableModel::GetTooltip(int row) {
