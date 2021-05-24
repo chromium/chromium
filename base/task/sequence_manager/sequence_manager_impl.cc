@@ -109,8 +109,10 @@ void ReclaimMemoryFromQueue(internal::TaskQueueImpl* queue,
   if (time_domain_now->find(time_domain) == time_domain_now->end())
     time_domain_now->insert(std::make_pair(time_domain, time_domain->Now()));
   queue->ReclaimMemory(time_domain_now->at(time_domain));
-  queue->delayed_work_queue()->RemoveAllCanceledTasksFromFront();
-  queue->immediate_work_queue()->RemoveAllCanceledTasksFromFront();
+  if (queue->delayed_work_queue()) {
+    queue->delayed_work_queue()->RemoveAllCanceledTasksFromFront();
+    queue->immediate_work_queue()->RemoveAllCanceledTasksFromFront();
+  }
 }
 
 SequenceManager::MetricRecordingSettings InitializeMetricRecordingSettings(
@@ -1005,10 +1007,17 @@ void SequenceManagerImpl::MaybeReclaimMemory() {
 
 void SequenceManagerImpl::ReclaimMemory() {
   std::map<TimeDomain*, TimeTicks> time_domain_now;
-  for (auto* const queue : main_thread_only().active_queues)
+  for (auto it = main_thread_only().active_queues.begin();
+       it != main_thread_only().active_queues.end();) {
+    auto* const queue = *it++;
     ReclaimMemoryFromQueue(queue, &time_domain_now);
-  for (const auto& pair : main_thread_only().queues_to_gracefully_shutdown)
-    ReclaimMemoryFromQueue(pair.first, &time_domain_now);
+  }
+  for (auto it = main_thread_only().queues_to_gracefully_shutdown.begin();
+       it != main_thread_only().queues_to_gracefully_shutdown.end();) {
+    auto* const queue = it->first;
+    it++;
+    ReclaimMemoryFromQueue(queue, &time_domain_now);
+  }
 }
 
 void SequenceManagerImpl::CleanUpQueues() {

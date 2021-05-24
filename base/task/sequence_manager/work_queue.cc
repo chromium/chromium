@@ -201,7 +201,12 @@ Task WorkQueue::TakeTaskFromWorkQueue() {
 bool WorkQueue::RemoveAllCanceledTasksFromFront() {
   if (!work_queue_sets_)
     return false;
-  bool task_removed = false;
+
+  // Since task destructors could have a side-effect of deleting this task queue
+  // we move cancelled tasks into a temporary container which can be emptied
+  // without accessing |this|.
+  std::vector<Task> tasks_to_delete;
+
   while (!tasks_.empty()) {
     const auto& pending_task = tasks_.front();
 #if !defined(OS_NACL)
@@ -227,10 +232,10 @@ bool WorkQueue::RemoveAllCanceledTasksFromFront() {
 #endif  // !defined(OS_NACL)
     if (pending_task.task && !pending_task.task.IsCancelled())
       break;
+    tasks_to_delete.push_back(std::move(tasks_.front()));
     tasks_.pop_front();
-    task_removed = true;
   }
-  if (task_removed) {
+  if (!tasks_to_delete.empty()) {
     if (tasks_.empty()) {
       // NB delayed tasks are inserted via Push, no don't need to reload those.
       if (queue_type_ == QueueType::kImmediate) {
@@ -248,7 +253,7 @@ bool WorkQueue::RemoveAllCanceledTasksFromFront() {
       work_queue_sets_->OnQueuesFrontTaskChanged(this);
     task_queue_->TraceQueueSize();
   }
-  return task_removed;
+  return !tasks_to_delete.empty();
 }
 
 void WorkQueue::AssignToWorkQueueSets(WorkQueueSets* work_queue_sets) {

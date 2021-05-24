@@ -2610,6 +2610,54 @@ TEST_P(SequenceManagerTest, CancelledTaskPostAnother) {
   EXPECT_TRUE(did_post);
 }
 
+TEST_P(SequenceManagerTest, CancelledImmediateTaskShutsDownQueue) {
+  // This check ensures that an immediate task whose destruction causes the
+  // owning task queue to be shut down doesn't cause us to access freed memory.
+  auto queue = CreateTaskQueue();
+  bool did_shutdown = false;
+  auto on_destroy = BindLambdaForTesting([&] {
+    queue->ShutdownTaskQueue();
+    did_shutdown = true;
+  });
+
+  DestructionCallback destruction_observer(std::move(on_destroy));
+  CancelableTask task(mock_tick_clock());
+  queue->task_runner()->PostTask(
+      FROM_HERE, BindOnce(&CancelableTask::FailTask<DestructionCallback>,
+                          task.weak_factory_.GetWeakPtr(),
+                          std::move(destruction_observer)));
+
+  task.weak_factory_.InvalidateWeakPtrs();
+  EXPECT_FALSE(did_shutdown);
+  RunLoop().RunUntilIdle();
+  EXPECT_TRUE(did_shutdown);
+}
+
+TEST_P(SequenceManagerTest, CancelledDelayedTaskShutsDownQueue) {
+  // This check ensures that a delayed task whose destruction causes the owning
+  // task queue to be shut down doesn't cause us to access freed memory.
+  auto queue = CreateTaskQueue();
+  bool did_shutdown = false;
+  auto on_destroy = BindLambdaForTesting([&] {
+    queue->ShutdownTaskQueue();
+    did_shutdown = true;
+  });
+
+  DestructionCallback destruction_observer(std::move(on_destroy));
+  CancelableTask task(mock_tick_clock());
+  queue->task_runner()->PostDelayedTask(
+      FROM_HERE,
+      BindOnce(&CancelableTask::FailTask<DestructionCallback>,
+               task.weak_factory_.GetWeakPtr(),
+               std::move(destruction_observer)),
+      base::TimeDelta::FromSeconds(1));
+
+  task.weak_factory_.InvalidateWeakPtrs();
+  EXPECT_FALSE(did_shutdown);
+  sequence_manager()->ReclaimMemory();
+  EXPECT_TRUE(did_shutdown);
+}
+
 namespace {
 
 void ChromiumRunloopInspectionTask(

@@ -1048,6 +1048,10 @@ void TaskQueueImpl::ReclaimMemory(TimeTicks now) {
   main_thread_only().delayed_incoming_queue.SweepCancelledTasks(
       sequence_manager_);
 
+  // If deleting one of the cancelled tasks shut down this queue, bail out.
+  if (!main_thread_only().delayed_work_queue)
+    return;
+
   // Also consider shrinking the work queue if it's wasting memory.
   main_thread_only().delayed_work_queue->MaybeShrinkQueue();
   main_thread_only().immediate_work_queue->MaybeShrinkQueue();
