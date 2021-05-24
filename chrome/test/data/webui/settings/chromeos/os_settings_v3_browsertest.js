@@ -322,8 +322,7 @@ TEST_F(
  ['InputMethodOptionPage', 'input_method_options_page_test.m.js'],
  ['InputPage', 'input_page_test.m.js'],
  ['InternetConfig', 'internet_config_test.m.js'],
- // TODO(crbug.com/1211771): Reenable when flake is fixed.
- //  ['InternetDetailMenu', 'internet_detail_menu_test.m.js'],
+ ['InternetDetailMenu', 'internet_detail_menu_test.m.js'],
  ['InternetDetailPage', 'internet_detail_page_tests.m.js'],
  ['InternetKnownNetworksPage', 'internet_known_networks_page_tests.m.js'],
  ['InternetSubpage', 'internet_subpage_tests.m.js'],

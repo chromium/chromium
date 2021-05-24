@@ -35,6 +35,11 @@ suite('InternetDetailMenu', function() {
     mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
   });
 
+  teardown(function() {
+    internetDetailMenu.remove();
+    internetDetailMenu = null;
+  });
+
   function getManagedProperties(type, name) {
     const result =
         OncMojo.getDefaultManagedProperties(type, name + '_guid', name);
@@ -76,14 +81,12 @@ suite('InternetDetailMenu', function() {
    * @param {string} elementId
    */
   async function assertElementIsDeepLinked(deepLinkId, elementId) {
-    await test_util.waitAfterNextRender(internetDetailMenu);
     const params = new URLSearchParams;
     params.append('guid', 'cellular_guid');
     params.append('settingId', deepLinkId);
     settings.Router.getInstance().navigateTo(
         settings.routes.NETWORK_DETAIL, params);
 
-    await flushAsync();
     await test_util.waitAfterNextRender(internetDetailMenu);
     const actionMenu =
         internetDetailMenu.shadowRoot.querySelector('cr-action-menu');
@@ -101,6 +104,18 @@ suite('InternetDetailMenu', function() {
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
+
+  test('Deep link to remove profile', async function() {
+    addEsimCellularNetwork('100000', '11111111111111111111111111111111');
+    await init();
+    await assertElementIsDeepLinked(27, 'removeBtn');
+  });
+
+  test('Deep link to rename profile', async function() {
+    addEsimCellularNetwork('100000', '11111111111111111111111111111111');
+    await init();
+    await assertElementIsDeepLinked(28, 'renameBtn');
+  });
 
   test('Do not show triple dot when no iccid is present', async function() {
     addEsimCellularNetwork(null, '11111111111111111111111111111111');
@@ -291,18 +306,4 @@ suite('InternetDetailMenu', function() {
         const event = await renameProfilePromise;
         assertEquals(profileName, event.detail.networkState.name);
       });
-
-  test('Deep link to remove profile', async function() {
-    addEsimCellularNetwork('100000', '11111111111111111111111111111111');
-    init();
-    await flushAsync();
-    assertElementIsDeepLinked(27, 'removeBtn');
-  });
-
-  test('Deep link to rename profile', async function() {
-    addEsimCellularNetwork('100000', '11111111111111111111111111111111');
-    init();
-    await flushAsync();
-    assertElementIsDeepLinked(28, 'renameBtn');
-  });
 });
