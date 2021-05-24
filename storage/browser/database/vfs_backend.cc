@@ -157,12 +157,6 @@ uint32_t VfsBackend::GetFileAttributes(const base::FilePath& file_path) {
 }
 
 // static
-int64_t VfsBackend::GetFileSize(const base::FilePath& file_path) {
-  int64_t size = 0;
-  return (base::GetFileSize(file_path, &size) ? size : 0);
-}
-
-// static
 bool VfsBackend::SetFileSize(const base::FilePath& file_path, int64_t size) {
   int flags = 0;
   flags |= base::File::FLAG_READ;
