@@ -25,5 +25,5 @@ Both desktop & mobile:
 
 
 Instructions for how to run these benchmarks:
-*   [Running them locally](https://chromium.googlesource.com/catapult/+/master/telemetry/docs/run_benchmarks_locally.md)
-*   [Running on perf trybot](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/perf_trybots.md)
+*   [Running them locally](https://chromium.googlesource.com/catapult/+/main/telemetry/docs/run_benchmarks_locally.md)
+*   [Running on perf trybot](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/perf_trybots.md)

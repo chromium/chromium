@@ -67,7 +67,7 @@ in Gerrit.
 [file a bug]: https://bugs.chromium.org/p/chromium/issues/entry?components=Infra%3ETest%3ECodeCoverage
 [code-coverage group]: https://groups.google.com/a/chromium.org/forum/#!forum/code-coverage
 [code_coverage.md]: code_coverage.md
-[clang_code_coverage_wrapper]: https://chromium.googlesource.com/chromium/src/+/master/docs/clang_code_coverage_wrapper.md
+[clang_code_coverage_wrapper]: https://chromium.googlesource.com/chromium/src/+/main/docs/clang_code_coverage_wrapper.md
 [chromium-coverage Gerrit plugin]: https://chromium.googlesource.com/infra/gerrit-plugins/code-coverage/
-[Chromium on Chromium OS]: https://chromium.googlesource.com/chromium/src/+/master/docs/chromeos_build_instructions.md
-[Chromium on Linux]: https://chromium.googlesource.com/chromium/src/+/master/docs/linux/build_instructions.md
+[Chromium on Chromium OS]: https://chromium.googlesource.com/chromium/src/+/main/docs/chromeos_build_instructions.md
+[Chromium on Linux]: https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md

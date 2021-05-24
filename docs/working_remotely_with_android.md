@@ -60,7 +60,7 @@ Copy /tools/android/adb_remote_setup.sh to your laptop, then run it.
 adb_remote_setup.sh updates itself, so you only need to copy it once.
 
 ```shell
-laptop$ curl -sSf "https://chromium.googlesource.com/chromium/src.git/+/master/tools/android/adb_remote_setup.sh?format=TEXT" | base64 --decode > adb_remote_setup.sh
+laptop$ curl -sSf "https://chromium.googlesource.com/chromium/src.git/+/main/tools/android/adb_remote_setup.sh?format=TEXT" | base64 --decode > adb_remote_setup.sh
 laptop$ chmod +x adb_remote_setup.sh
 laptop$ ./adb_remote_setup.sh <desktop_hostname> <path_to_adb_on_desktop>
 ```

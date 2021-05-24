@@ -1,6 +1,6 @@
 # Dumping the compiled code from a chrome binary
 
-[Rendered](https://chromium.googlesource.com/chromium/src/+/master/docs/disassemble_code.md)
+[Rendered](https://chromium.googlesource.com/chromium/src/+/main/docs/disassemble_code.md)
 
 ## Background
 
@@ -193,6 +193,6 @@ NextSibling():
 
 ## Further reading
 
-https://chromium.googlesource.com/chromium/src/+/master/docs/linux/minidump_to_core.md#Source-debugging
+https://chromium.googlesource.com/chromium/src/+/main/docs/linux/minidump_to_core.md#Source-debugging
 
 https://www.chromium.org/developers/how-tos/debugging-on-windows

@@ -43,7 +43,7 @@ Here's what works well:
 Please keep this doc up-to-date. VS Code is still in active development and
 subject to changes. This doc is checked into the Chromium git repo, so if you
 make changes, read the [documentation
-guidelines](https://chromium.googlesource.com/chromium/src/+/master/docs/documentation_guidelines.md)
+guidelines](https://chromium.googlesource.com/chromium/src/+/main/docs/documentation_guidelines.md)
 and [submit a change list](https://www.chromium.org/developers/contributing-code).
 
 All file paths and commands have been tested on Linux. Windows and Mac might

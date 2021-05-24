@@ -67,7 +67,7 @@ Otherwise, file a bug (TODO: [Make this template automatic](https://github.com/c
 > [https://ci.chromium.org/p/chromium/builders/luci.chromium.try/android-binary-size/**$TRYJOB_NUMBER**](https://ci.chromium.org/p/chromium/builders/luci.chromium.try/android-binary-size/11111)
 >
 > Debugging size regressions is documented at:
-> https://chromium.googlesource.com/chromium/src/+/master/docs/speed/apk_size_regressions.md#Debugging-Apk-Size-Increase
+> https://chromium.googlesource.com/chromium/src/+/main/docs/speed/apk_size_regressions.md#Debugging-Apk-Size-Increase
 >
 > Based on the trybot result: **20kb of native code, 8kb of pngs. *(or some other explanation as to what caused the growth).***
 >

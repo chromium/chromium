@@ -19,7 +19,7 @@ To create a WebUI interface in `components/` you need to follow different steps 
 <a name="creating_webui_page"></a>
 ## Creating the WebUI page
 
-WebUI resources in `components/` will be added in your specific project folder. Create a project folder `src/components/hello_world/`. When creating WebUI resources, follow the [Web Development Style Guide](https://chromium.googlesource.com/chromium/src/+/master/styleguide/web/web.md). For a sample WebUI page you could start with the following files:
+WebUI resources in `components/` will be added in your specific project folder. Create a project folder `src/components/hello_world/`. When creating WebUI resources, follow the [Web Development Style Guide](https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md). For a sample WebUI page you could start with the following files:
 
 `src/components/hello_world/hello_world.html:`
 ```html
@@ -304,11 +304,11 @@ You'll notice that the call is asynchronous. We must wait for the C++ side to ca
 
 ## Creating a WebUI Dialog
 
-Some pages have many messages or share code that sends messages. To make possible message handling and/or to create a WebUI dialogue `c++->js` and `js->c++`, follow the guide in [WebUI Explainer](https://chromium.googlesource.com/chromium/src/+/master/docs/webui_explainer.md).
+Some pages have many messages or share code that sends messages. To make possible message handling and/or to create a WebUI dialogue `c++->js` and `js->c++`, follow the guide in [WebUI Explainer](https://chromium.googlesource.com/chromium/src/+/main/docs/webui_explainer.md).
 
 ## DevUI Pages
 
-DevUI pages are WebUI pages intended for developers, and unlikely used by most users. An example is `chrome://bluetooth-internals`. On Android Chrome, these pages are moved to a separate [Dynamic Feature Module (DFM)](https://chromium.googlesource.com/chromium/src/+/master/docs/android_dynamic_feature_modules.md) to reduce binary size. Most WebUI pages are DevUI. This is why in this doc uses `dev_ui_components_resources.{grd, h}` in its examples.
+DevUI pages are WebUI pages intended for developers, and unlikely used by most users. An example is `chrome://bluetooth-internals`. On Android Chrome, these pages are moved to a separate [Dynamic Feature Module (DFM)](https://chromium.googlesource.com/chromium/src/+/main/docs/android_dynamic_feature_modules.md) to reduce binary size. Most WebUI pages are DevUI. This is why in this doc uses `dev_ui_components_resources.{grd, h}` in its examples.
 
 `components/` resources that are intended for end users are associated with `components_resources.{grd, h}` and `components_scaled_resorces.{grd, h}`. Use these in place of or inadditional to `dev_ui_components_resources.{grd, h}` if needed.
 

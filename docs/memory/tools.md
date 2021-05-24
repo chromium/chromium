@@ -116,7 +116,7 @@ TODO(awong): Write about options to script and the flame graph.
 
 ### Instructions
   1. Get 2 or more [symbolized heap dump](#heap-dumps)
-  3. Run resulting traces through [`diff_heap_profiler.py`](https://chromium.googlesource.com/catapult/+/master/experimental/tracing/bin/diff_heap_profiler.py) to show a list of new allocations.
+  3. Run resulting traces through [`diff_heap_profiler.py`](https://chromium.googlesource.com/catapult/+/main/experimental/tracing/bin/diff_heap_profiler.py) to show a list of new allocations.
 
 -----------
 ## <a name="heap-dumps"></a>Heap Dumps

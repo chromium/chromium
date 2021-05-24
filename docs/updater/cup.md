@@ -130,5 +130,5 @@ Previous documents describing CUP can be found at:
   * [ECDSA Extension](https://github.com/google/omaha/blob/master/doc/ClientUpdateProtocolEcdsa.md)
 
 Chromium's implementation of CUP can be found in
-[components/client\_update\_protocol](https://source.chromium.org/chromium/chromium/src/+/master:components/client_update_protocol/).
+[components/client\_update\_protocol](https://source.chromium.org/chromium/chromium/src/+/main:components/client_update_protocol/).
 

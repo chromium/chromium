@@ -104,7 +104,7 @@ the code is updated.
 
 ### OWNERS file details
 
-Refer to the [source code](https://chromium.googlesource.com/chromium/tools/depot_tools/+/master/owners.py)
+Refer to the [source code](https://chromium.googlesource.com/chromium/tools/depot_tools/+/main/owners.py)
 for all details on the file format.
 
 This example indicates that two people are owners, in addition to any owners

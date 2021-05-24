@@ -125,13 +125,13 @@ to learn how to use traces to debug performance issues.
 
 ### Are there debugging tips specific to certain benchmarks?
 
-* [Memory](https://chromium.googlesource.com/chromium/src/+/master/docs/memory-infra/memory_benchmarks.md)
+* [Memory](https://chromium.googlesource.com/chromium/src/+/main/docs/memory-infra/memory_benchmarks.md)
 * [Android binary size](apk_size_regressions.md)
 * [Micro-benchmarks](microbenchmark_regressions.md)
 
 ### How do I profile?
 
-Here is the [documentation on CPU Profiling Chrome](https://chromium.googlesource.com/chromium/src/+/master/docs/profiling.md)
+Here is the [documentation on CPU Profiling Chrome](https://chromium.googlesource.com/chromium/src/+/main/docs/profiling.md)
 
 ## If you don't believe your CL could be the cause
 

@@ -162,17 +162,17 @@ test]" has instructions on how to disable a flaky test.
 [gtest]: https://github.com/google/googletest
 [Simple gtests]: https://github.com/google/googletest/blob/master/docs/primer.md#simple-tests
 [Junit]: https://developer.android.com/training/testing/junit-rules
-[Instrumentation Tests]: https://chromium.googlesource.com/chromium/src/+/master/testing/android/docs/instrumentation.md
+[Instrumentation Tests]: https://chromium.googlesource.com/chromium/src/+/main/testing/android/docs/instrumentation.md
 [EarlGrey]: https://github.com/google/EarlGrey
 [Telemetry]: https://chromium.googlesource.com/catapult/+/HEAD/telemetry/README.md
-[Fuzzer Tests]: https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/README.md
+[Fuzzer Tests]: https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/README.md
 [Tast]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/README.md
 [Web Tests]: ./web_tests.md
 [crbug/611756]: https://bugs.chromium.org/p/chromium/issues/detail?id=611756
 [Flake Portal]: https://analysis.chromium.org/p/chromium/flake-portal
-[Write Fuzz Target]: https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/getting_started.md#write-fuzz-target
+[Write Fuzz Target]: https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/getting_started.md#write-fuzz-target
 [Telemetry: Run benchmarks locally]: https://chromium.googlesource.com/catapult/+/HEAD/telemetry/docs/run_benchmarks_locally.md
-[Run fuzz target locally]: https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/getting_started.md#build-and-run-fuzz-target-locally
+[Run fuzz target locally]: https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/getting_started.md#build-and-run-fuzz-target-locally
 [Android Debugging Instructions]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_debugging_instructions.md
 [Chrome OS Debugging Tips]: ./chromeos_debugging_tips.md
 [Debugging Web Tests]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md#Debugging-Web-Tests

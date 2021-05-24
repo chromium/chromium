@@ -14,9 +14,9 @@ ChromeOS is a downstream client via the [libva] package, with packaged backends
 for e.g. both [Intel] and [AMD].
 
 [VaAPI GitHub repository]: https://github.com/intel/libva
-[libva]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/x11-libs/libva/
-[Intel]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/x11-libs/libva-intel-driver/
-[AMD]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/media-libs/libva-amdgpu-driver/
+[libva]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/x11-libs/libva/
+[Intel]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/x11-libs/libva-intel-driver/
+[AMD]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/media-libs/libva-amdgpu-driver/
 
 ## Tracing VaAPI video decoding
 
@@ -141,7 +141,7 @@ As can be seen, `pkg` ~= `pp0` + `pp1` + 1W, this extra watt is the cost of all
 the associated silicon, e.g. bridges, bus controllers, caches, and the media
 processing engine.
 
-[`dump_intel_rapl_consumption`]: https://chromium.googlesource.com/chromiumos/platform2/+/master/power_manager/tools/dump_intel_rapl_consumption.cc
+[`dump_intel_rapl_consumption`]: https://chromium.googlesource.com/chromiumos/platform2/+/main/power_manager/tools/dump_intel_rapl_consumption.cc
 [video]: https://commons.wikimedia.org/wiki/File:Big_Buck_Bunny_4K.webm
 [go/power-consumption-meas-in-intel]: http://go/power-consumption-meas-in-intel
 
@@ -160,7 +160,7 @@ and under Debian systems ([vainfo]). `vainfo` will try to load the appropriate
 backend driver for the system and/or GPUs and fail if it cannot find/load it.
 
 [libva-utils]: https://github.com/intel/libva-utils
-[media-video/libva-utils]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/media-video/libva-utils
+[media-video/libva-utils]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/media-video/libva-utils
 [vainfo]: https://packages.debian.org/sid/main/vainfo
 
 ### <a name="verify-vaapi"></a> Verify the VaAPI supports and/or uses a given codec

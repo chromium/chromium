@@ -16,7 +16,7 @@ memory for idle and backgrounded tabs.
  * [Mailing List](https://groups.google.com/a/chromium.org/forum/#!forum/memory-dev)
  * Performance-Memory [Bug
    Queue](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=Performance%3DMemory)
- * [Docs](https://chromium.googlesource.com/chromium/src/+/master/docs/memory)
+ * [Docs](https://chromium.googlesource.com/chromium/src/+/main/docs/memory)
 
 ## Power
 

@@ -57,7 +57,7 @@ Yes, but not by default and with some caveats.
 
 Any team that requires extra capabilities granted to `chrome-untrusted://` should consult with the security team to ensure they are non-dangerous. In this context, we consider non-dangerous any API that we would expose to the renderer process, e.g. UMA.
 
-We currently use `postMessage()` to expose certain APIs to `chrome-untrusted://`. For example, the Media App uses `postMessage()` to pass a read-only file handle to `chrome-untrusted://media-app` from `chrome-untrusted://`. Teams are encouraged to get a review from someone in [SECURITY_OWNERS](https://source.chromium.org/chromium/chromium/src/+/master:ipc/SECURITY_OWNERS) when exposing capabilities over postMessage.
+We currently use `postMessage()` to expose certain APIs to `chrome-untrusted://`. For example, the Media App uses `postMessage()` to pass a read-only file handle to `chrome-untrusted://media-app` from `chrome-untrusted://`. Teams are encouraged to get a review from someone in [SECURITY_OWNERS](https://source.chromium.org/chromium/chromium/src/+/main:ipc/SECURITY_OWNERS) when exposing capabilities over postMessage.
 
 We are hoping to move to Mojo to improve auditability of these APIs and to make the security review required.
 
@@ -118,7 +118,7 @@ class UntrustedExampleUI : public ui::UntrustedWebUIController {
 
 2. Register the WebUIConfig
 
-Add the `WebUIConfig` to the list of WebUIConfigs in `[ChromeUntrustedWebUIControllerFactory](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/webui/chrome_untrusted_web_ui_controller_factory.cc)`.
+Add the `WebUIConfig` to the list of WebUIConfigs in `[ChromeUntrustedWebUIControllerFactory](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/webui/chrome_untrusted_web_ui_controller_factory.cc)`.
 
 ```cpp
 register_config(std::make_unique<chromeos::UntrustedExampleUIConfig>());

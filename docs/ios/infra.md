@@ -372,14 +372,14 @@ If `artifact` is a directory, you must specify `"compress": true`.
 [gitiles]: https://gerrit.googlesource.com/gitiles
 [GN]: ../../tools/gn
 [instructions]: ./build_instructions.md
-[iOS recipes]: https://chromium.googlesource.com/chromium/tools/build/+/master/scripts/slave/recipes/ios
+[iOS recipes]: https://chromium.googlesource.com/chromium/tools/build/+/main/scripts/slave/recipes/ios
 [iOS simulator]: ../../testing/iossim
-[recipe module]: https://chromium.googlesource.com/chromium/tools/build/+/master/scripts/slave/recipe_modules/ios
+[recipe module]: https://chromium.googlesource.com/chromium/tools/build/+/main/scripts/slave/recipe_modules/ios
 [recipes]: https://chromium.googlesource.com/infra/infra/+/HEAD/doc/users/recipes.md
 [simulator]: https://developer.apple.com/library/content/documentation/IDEs/Conceptual/iOS_Simulator_Guide/Introduction/Introduction.html
 [src/ios/build/bots]: ../../ios/build/bots
 [src/ios/build/bots/scripts]: ../../ios/build/bots/scripts
-[swarming]: https://chromium.googlesource.com/infra/luci/luci-py/+/master/appengine/swarming/
+[swarming]: https://chromium.googlesource.com/infra/luci/luci-py/+/main/appengine/swarming/
 [swarming server]: https://chromium-swarm.appspot.com
 [test runner]: ../../ios/build/bots/scripts/test_runner.py
 [tools/build]: https://chromium.googlesource.com/chromium/tools/build

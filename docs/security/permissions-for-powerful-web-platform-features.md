@@ -142,7 +142,7 @@ which may include:
 
 These mechanisms must clearly disclose the origin of the request, and follow
 Chromium's
-[guidelines on displaying URLs](https://chromium.googlesource.com/chromium/src/+/master/docs/security/url_display_guidelines/url_display_guidelines.md).
+[guidelines on displaying URLs](https://chromium.googlesource.com/chromium/src/+/main/docs/security/url_display_guidelines/url_display_guidelines.md).
 Implementations may be tested using tools such as
 [Trickuri](https://github.com/chromium/trickuri).
 

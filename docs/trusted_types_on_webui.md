@@ -207,7 +207,7 @@ source->DisableTrustedTypesCSP();
 ## How to add a test for Trusted Types on a WebUI page?
 
 You can add your WebUI page to [this list]
-(https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/webui/chrome_url_data_manager_browsertest.cc;l=194;drc=de8ade0753244ff6d1ef20cb2a38fe292fe9ba0a) and it will check for
+(https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/webui/chrome_url_data_manager_browsertest.cc;l=194;drc=de8ade0753244ff6d1ef20cb2a38fe292fe9ba0a) and it will check for
 Trusted Types violations on your WebUI page.
 
 ## Sample CLs

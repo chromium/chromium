@@ -7,7 +7,7 @@ Chrome binary chrome_proxy.exe with the app id of the PWA, and the Chrome
 profile the PWA is installed in. When chrome_proxy.exe runs, it launches Chrome
 with the same command line options. The shortcut links to chrome_proxy.exe
 instead of chrome.exe because of
- [a bug in Windows 10 start menu pinning](https://source.chromium.org/chromium/chromium/src/+/master:chrome/chrome_proxy/chrome_proxy_main_win.cc;l=23).
+ [a bug in Windows 10 start menu pinning](https://source.chromium.org/chromium/chromium/src/+/main:chrome/chrome_proxy/chrome_proxy_main_win.cc;l=23).
 
 ## File handling support
 In order to make Progressive Web Apps (PWA's) more like traditional apps, PWA's
@@ -20,7 +20,7 @@ applications that can open the file. The user can also set the PWA as the
 default handler for the file extension.
 
 Because of a limitation of the Windows shell, Chrome registers a per-PWA install 
-[launcher app](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/web_applications/chrome_pwa_launcher/README.md;l=1) 
+[launcher app](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/chrome_pwa_launcher/README.md;l=1) 
  as a handler for the file extension. Chrome ships with a canonical launcher app
  called chrome_pwa_launcher.exe, which lives in the version sub-directory of the
  Chrome install dir. When a PWA is installed, we create a hard link from the
@@ -37,7 +37,7 @@ Registration starts in [web_app::RegisterFileHandlersWithOS](https://source.chro
 `<BaseAppId>.<hash(Profile + AppID)>`
 We use the hash due to 32-character limit for ProgID's. The registry work is
 done in
-[ShellUtil::AddFileAssociations](https://source.chromium.org/chromium/chromium/src/+/master:chrome/installer/util/shell_util.cc?q=%20ShellUtil::AddFileAssociations):
+[ShellUtil::AddFileAssociations](https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/util/shell_util.cc?q=%20ShellUtil::AddFileAssociations):
 
 * Register the ProgID by adding key `HKCU\Software\Classes\<progID>` to the registry.
 * Set the application name and icon for the PWA with these two keys:

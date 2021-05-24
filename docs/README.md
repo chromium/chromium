@@ -4,7 +4,7 @@ This directory contains chromium project documentation in
 [Gitiles-flavored Markdown].  It is automatically [rendered by Gitiles].
 
 [Gitiles-flavored Markdown]: https://gerrit.googlesource.com/gitiles/+/master/Documentation/markdown.md
-[rendered by Gitiles]: https://chromium.googlesource.com/chromium/src/+/master/docs/
+[rendered by Gitiles]: https://chromium.googlesource.com/chromium/src/+/main/docs/
 
 If you add new documents, please also add a link to them in the Document Index
 below.

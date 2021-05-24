@@ -321,7 +321,7 @@ resolve the conflict.
 
 To allow the importer to land CLs without human intervention, it utilizes the
 [Rubber-Stamper
-bot](https://chromium.googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/appengine/rubber-stamper/README.md)
+bot](https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/appengine/rubber-stamper/README.md)
 to approve import CLs.
 
 Adding the Rubber-Stamper as a reviewer is one of the last steps the importer

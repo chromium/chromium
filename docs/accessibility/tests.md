@@ -44,7 +44,7 @@ out/release/content_shell \
 ```
 
 For information on modifying or adding web tests, see the main
-[web tests documentation](https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_tests.md).
+[web tests documentation](https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md).
 
 ## DumpAccessibilityTree tests
 

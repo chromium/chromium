@@ -65,7 +65,7 @@ Usually you need a policy when
             traditionally, and we've seen requests from organizations to
             explicitly spell out the behavior for all possible values and for
             when the policy is unset.
-    -   See [description_guidelines.md](https://chromium.googlesource.com/chromium/src/+/refs/heads/master/docs/enterprise/description_guidelines.md)
+    -   See [description_guidelines.md](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/enterprise/description_guidelines.md)
         for additional guidelines when creating a description, including how
         various products should be referenced.
 3.  Create a preference and map the policy value to it.
@@ -85,9 +85,9 @@ Usually you need a policy when
         3.  Test the mapping by adding policy to
             [policy_test_cases.json](https://cs.chromium.org/chromium/src/chrome/test/data/policy/policy_test_cases.json?q=policy_test_case).
         4.  iOS platform has its own
-            [configuration_policy_handler_list_factory.mm](https://source.chromium.org/chromium/chromium/src/+/master:ios/chrome/browser/policy/configuration_policy_handler_list_factory.mm)
+            [configuration_policy_handler_list_factory.mm](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/policy/configuration_policy_handler_list_factory.mm)
             and
-            [policy_test_cases.json](https://source.chromium.org/chromium/chromium/src/+/master:ios/chrome/test/data/policy/policy_test_cases.json)
+            [policy_test_cases.json](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/test/data/policy/policy_test_cases.json)
             file.
 4.  Disable the user setting UI when the policy is applied.
     -   If your feature can be controlled by GUI in `chrome://settings`, the

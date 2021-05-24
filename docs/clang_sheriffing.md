@@ -198,7 +198,7 @@ work on linker bugs without having to have a Chromium build environment.
 To use `ld.lld`'s `--reproduce` flag, follow these steps:
 
 1. Locally (build Chromium with a locally-built
-   clang)[https://chromium.googlesource.com/chromium/src.git/+/master/docs/clang.md#Using-a-custom-clang-binary]
+   clang)[https://chromium.googlesource.com/chromium/src.git/+/main/docs/clang.md#Using-a-custom-clang-binary]
 
 1. After reproducing the link error, build just the failing target with
    ninja's `-v -d keeprsp` flags added:

@@ -32,7 +32,7 @@ instructions may be out of date.
 ***
 
 The runner script is
-[`testing/scripts/run_wpt_tests.py`](https://source.chromium.org/chromium/chromium/src/+/master:testing/scripts/run_wpt_tests.py).
+[`testing/scripts/run_wpt_tests.py`](https://source.chromium.org/chromium/chromium/src/+/main:testing/scripts/run_wpt_tests.py).
 Before running the script, you must have built the necessary ninja targets:
 
 ```
@@ -90,7 +90,7 @@ codifies what the output result should be.
 
 By default `wptrunner` will inherit expected statuses from `TestExpecations`.
 This can currently be overridden by adding an entry to the
-[`WPTOverrideExpectations`](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/web_tests/WPTOverrideExpectations)
+[`WPTOverrideExpectations`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/WPTOverrideExpectations)
 file when `wptrunner` has a different result than `run_web_tests.py`.
 `WPTOverrideExpectations` is however [deprecated](https://crbug.com/1035911),
 and the preferred method for specifying expected results for `wptrunner` is to

@@ -12,7 +12,7 @@
     [Source code](https://github.com/catapult-project/catapult/tree/master/experimental/trace_on_tap)
 
 ## Investigating janky scroll/animation
-See [this detailed guide](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/debug-janks.md).
+See [this detailed guide](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/debug-janks.md).
 
 <!--- TODO: ## Bug SLO for perf bugs -->
 

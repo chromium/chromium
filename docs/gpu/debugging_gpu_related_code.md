@@ -76,7 +76,7 @@ Change that `#if 0` to `#if 1`, build a debug build, then run in a debugger.
 The debugger will break when any renderer code sees a GL error, and you should
 be able to examine the call stack to find the issue.
 
-[gles2_implementation.h]: https://chromium.googlesource.com/chromium/src/+/master/gpu/command_buffer/client/gles2_implementation.h
+[gles2_implementation.h]: https://chromium.googlesource.com/chromium/src/+/main/gpu/command_buffer/client/gles2_implementation.h
 
 ### Labeling your calls
 

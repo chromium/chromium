@@ -47,10 +47,10 @@ trivially removed as of late 2020.
 ## How does it work?
 
 The bytecode rewriting happens at build time by
-[FragmentActivityReplacer](https://source.chromium.org/chromium/chromium/src/+/master:build/android/bytecode/java/org/chromium/bytecode/FragmentActivityReplacer.java),
+[FragmentActivityReplacer](https://source.chromium.org/chromium/chromium/src/+/main:build/android/bytecode/java/org/chromium/bytecode/FragmentActivityReplacer.java),
 which is specified as a bytecode rewriter via the `bytecode_rewriter_target` rule.  Compilation errors
 related to this should get detected by
-[compile_java.py](https://source.chromium.org/chromium/chromium/src/+/master:build/android/gyp/compile_java.py),
+[compile_java.py](https://source.chromium.org/chromium/chromium/src/+/main:build/android/gyp/compile_java.py),
 and print a message pointing users here, which is likely why you're reading this :)
 
 If you need to apply FragmentActivityReplacer to a given target then add …

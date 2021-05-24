@@ -400,7 +400,7 @@ will not fail if an analysis check fails. Make sure to check the terminal that
 the server is running in at regular intervals to fix outstanding issues caught
 by these analysis checks.
 
-[fast_local_dev]: https://source.chromium.org/chromium/chromium/src/+/master:build/android/fast_local_dev_server.py
+[fast_local_dev]: https://source.chromium.org/chromium/chromium/src/+/main:build/android/fast_local_dev_server.py
 
 #### Incremental Install
 [Incremental Install](/build/android/incremental_install/README.md) uses

@@ -38,7 +38,7 @@ such as how to lay out UI elements and how to customize them.
 ## Run the example
 
 The example code is in the file
-[`ui/views/examples/colored_dialog_example.cc`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/examples/colored_dialog_example.cc)
+[`ui/views/examples/colored_dialog_example.cc`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/examples/colored_dialog_example.cc)
 and its corresponding header file. You can run it on Windows or Linux via
 the `views_examples` application. Change the path accordingly based on your
 platform and building environment:

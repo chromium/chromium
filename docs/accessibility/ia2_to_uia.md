@@ -131,7 +131,7 @@ does not require the shared unique id. Consider the same example above.
 ~~~
 
 ## Docs & References:
-[Custom UIA Property and Pattern registration in Chromium](https://chromium.googlesource.com/chromium/src/+/master/ui/accessibility/platform/uia_registrar_win.h)
+[Custom UIA Property and Pattern registration in Chromium](https://chromium.googlesource.com/chromium/src/+/main/ui/accessibility/platform/uia_registrar_win.h)
 
 [UI Automation IItemContainerPattern. It is used to look up IAccessible2 element
 via a unique id](https://docs.microsoft.com/en-us/windows/win32/api/uiautomationclient/nn-uiautomationclient-iuiautomationitemcontainerpattern)

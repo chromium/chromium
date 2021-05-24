@@ -13,21 +13,21 @@ The goal of the perf bot health sheriff rotation is to ensure that the benchmark
 
 ## Quick links
 
-* [How to determine what story is failing](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/what_test_is_failing.md)
-* [How to disable a story](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_disable_a_story.md)
-* [How to launch a functional bisect](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_launch_a_functional_bisect.md)
-* [How to snooze an alert](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_snooze_an_alert.md)
-* [How to access test logs](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_access_test_logs.md)
-* [How to handle a new problem](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_handle_a_new_problem.md)
-* [How to follow up on an alert](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_follow_up_on_an_alert.md)
-* [How to address duplicate alerts](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_address_duplicate_alerts.md)
-* [Glossary](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/glossary.md)
+* [How to determine what story is failing](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/what_test_is_failing.md)
+* [How to disable a story](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_disable_a_story.md)
+* [How to launch a functional bisect](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_launch_a_functional_bisect.md)
+* [How to snooze an alert](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_snooze_an_alert.md)
+* [How to access test logs](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_access_test_logs.md)
+* [How to handle a new problem](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_handle_a_new_problem.md)
+* [How to follow up on an alert](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_follow_up_on_an_alert.md)
+* [How to address duplicate alerts](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_address_duplicate_alerts.md)
+* [Glossary](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/glossary.md)
 
 [TOC]
 
 ## Vocabulary
 
-Definitions of various bot health related vocabulary can be found in our [glossary](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/glossary.md).
+Definitions of various bot health related vocabulary can be found in our [glossary](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/glossary.md).
 
 ## High-level responsibilities
 
@@ -73,7 +73,7 @@ This category of alert should have a bug already linked with it. This link can b
 
 ![A link to a bug from a Sheriff-o-matic alert](images/som_alert_bug.png)
 
-Instructions can be found [here](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_follow_up_on_an_alert.md) on how to follow up with an existing alert.
+Instructions can be found [here](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_follow_up_on_an_alert.md) on how to follow up with an existing alert.
 
 ### Is this a new alert caused by the same root cause as an already-triaged alert?
 
@@ -89,13 +89,13 @@ are both in the list of current of alerts but represent the same failure.
 
 It can sometimes be tricky to differentiate between these alerts and ones caused by completely new problems, but sheriffs can always treat an alert as new and merge it with another later.
 
-Instructions can be found [here](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_address_duplicate_alerts.md) on how to handle a duplicate alert.
+Instructions can be found [here](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_address_duplicate_alerts.md) on how to handle a duplicate alert.
 
 ### Is this a new alert caused by a new problem?
 
 This category of alert doesn't yet have a bug associated with it. It's the most common category and requires the most expertise to handle.
 
-Instructions can be found [here](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_handle_a_new_problem.md) on how to handle an alert for a new problem.
+Instructions can be found [here](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_handle_a_new_problem.md) on how to handle an alert for a new problem.
 
 ## After your shift is over
 

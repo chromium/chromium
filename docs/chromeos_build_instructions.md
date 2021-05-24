@@ -18,7 +18,7 @@ build configurations:
 ## Common setup
 
 First, follow the [normal Linux build
-instructions](https://chromium.googlesource.com/chromium/src/+/master/docs/linux/build_instructions.md)
+instructions](https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md)
 as usual to get a Chromium checkout.
 
 You'll also need to add `'chromeos'` to the `target_os` list in your `.gclient`
@@ -98,8 +98,8 @@ Some useful flags:
      virtual screens, by display position and size.
 *    `--enable-features=Feature1,OtherFeature2`: Enable specified features.
      Features are often listed in chrome://flags, or in source files such as
-     [chrome_features.cc](https://source.chromium.org/chromium/chromium/src/+/master:chrome/common/chrome_features.cc)
-     or [ash_features.cc](https://source.chromium.org/chromium/chromium/src/+/master:ash/constants/ash_features.cc).
+     [chrome_features.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_features.cc)
+     or [ash_features.cc](https://source.chromium.org/chromium/chromium/src/+/main:ash/constants/ash_features.cc).
      Note that changing values in chrome://flags does not work for
      linux-chromeos, and this flag must be used.
 *    `--enable-ui-devtools[=9223]`: Allow debugging of the system UI through
@@ -201,4 +201,4 @@ supplied in the imported .gni file after the `import()` line.
 
 For more information (like copying the locally-built Chrome to a device, or
 running Tast tests), consult Simple Chrome's
-[full documentation](https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md).
+[full documentation](https://chromium.googlesource.com/chromiumos/docs/+/main/simple_chrome_workflow.md).

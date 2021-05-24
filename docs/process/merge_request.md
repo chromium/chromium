@@ -28,10 +28,10 @@ possible that changes may miss branch date and require a merge post branch.
 **Merge**: any change that is cherry picked from trunk to a release branch.
 
 Please read overview of [Chrome Release
-Cycle](https://chromium.googlesource.com/chromium/src.git/+/master/docs/process/release_cycle.md)
+Cycle](https://chromium.googlesource.com/chromium/src.git/+/main/docs/process/release_cycle.md)
 to understand in detail how the Chrome release cycle works and understand key
 release concepts and terminology. Please read [Defining Release
-Blockers](https://chromium.googlesource.com/chromium/src.git/+/master/docs/process/release_blockers.md)
+Blockers](https://chromium.googlesource.com/chromium/src.git/+/main/docs/process/release_blockers.md)
 to understand how issues/bugs are categorized as release blocking.
 List of schedule and release owners can be found at [Chrome
 Calendar](https://chromepmo.appspot.com/calendar) (Googlers only, opening to all in the near future).

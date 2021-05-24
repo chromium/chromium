@@ -11,7 +11,7 @@ project is integrated into Chrome on Desktop.
 ## Overview
 
 Desktop Reader Mode is hidden behind a
-[base::Feature](https://source.chromium.org/chromium/chromium/src/+/master:components/dom_distiller/core/dom_distiller_features.cc)
+[base::Feature](https://source.chromium.org/chromium/chromium/src/+/main:components/dom_distiller/core/dom_distiller_features.cc)
 flag, ‘enable-reader-mode’. To run Chrome with Reader Mode, set the “Enable
 Reader Mode” flag to “Enabled” in chrome://flags or start Chrome with
 --enable-feature=”ReaderMode”.
@@ -72,7 +72,7 @@ forwards it to all registered observers, and caches it.
 ### Toggling Reader Mode
 Users can toggle reader mode using an omnibox icon or an option, Toggle Reader
 Mode, in the “customize and control Chrome” menu, both of which execute
-BrowserCommands [ToggleDistilledView()](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/browser_commands.cc;bpv=1;bpt=1;l=1364?q=browser_commands%20dom_distiller&ss=chromium%2Fchromium%2Fsrc).
+BrowserCommands [ToggleDistilledView()](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/browser_commands.cc;bpv=1;bpt=1;l=1364?q=browser_commands%20dom_distiller&ss=chromium%2Fchromium%2Fsrc).
 
 [ReaderModeIconView](https://cs.chromium.org/chromium/src/chrome/browser/ui/views/reader_mode/reader_mode_icon_view.h)
 is a DistillabilityObserver and sets its visibility based on the latest result
@@ -144,7 +144,7 @@ considered a black box.
 
 In short, content is extracted from the fully rendered article via Javascript
 (specifically from the compiled Javascript file built from DOM Distiller,
-[domdistiller.js](https://source.chromium.org/chromium/chromium/src/+/master:third_party/dom_distiller_js/dist/js/domdistiller.js))
+[domdistiller.js](https://source.chromium.org/chromium/chromium/src/+/main:third_party/dom_distiller_js/dist/js/domdistiller.js))
 into a DistilledPageProto.
 
 The DOM Distiller retrieves the currently loaded document’s DOM and converts it
@@ -166,11 +166,11 @@ the following:
 
 ### Displaying Reader Mode Pages
 
-A [DistilledPageProto](https://source.chromium.org/chromium/chromium/src/+/master:components/dom_distiller/core/proto/distilled_page.proto)
+A [DistilledPageProto](https://source.chromium.org/chromium/chromium/src/+/main:components/dom_distiller/core/proto/distilled_page.proto)
 is created for each page distilled, and is used to generate the HTML of the
 distilled page.
 
 Pages are loaded by
-[DomDistillerViewerSource](https://source.chromium.org/chromium/chromium/src/+/master:components/dom_distiller/content/browser/dom_distiller_viewer_source.h),
+[DomDistillerViewerSource](https://source.chromium.org/chromium/chromium/src/+/main:components/dom_distiller/content/browser/dom_distiller_viewer_source.h),
 which serves the HTML and resources for viewing pages. After the DOM is
 initially loaded, the contents are populated via Javascript.

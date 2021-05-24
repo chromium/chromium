@@ -13,7 +13,7 @@ Are you a Google employee? See
 ## System requirements
 
 *   A 64-bit Intel Mac running 10.15.4+. (Building on Arm Macs is
-    [not yet supported](https://chromium.googlesource.com/chromium/src.git/+/master/docs/mac_arm64.md).)
+    [not yet supported](https://chromium.googlesource.com/chromium/src.git/+/main/docs/mac_arm64.md).)
 *   [Xcode](https://developer.apple.com/xcode/) 12.2+. This version of Xcode
     comes with ...
 *   The macOS 11.0 SDK. Run

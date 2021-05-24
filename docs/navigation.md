@@ -161,4 +161,4 @@ They are typically registered in
 `ContentBrowserClient::CreateThrottlesForNavigation`.
 
 
-[WebContentsObserver]: https://source.chromium.org/chromium/chromium/src/+/master:content/public/browser/web_contents_observer.h
+[WebContentsObserver]: https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/web_contents_observer.h

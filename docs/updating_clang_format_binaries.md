@@ -112,7 +112,7 @@ Platform specific notes:
 Copy the binaries into your chromium checkout (under
 `src/buildtools/(win|linux64|mac)/clang-format(.exe?)`). For each binary, you'll
 need to run `upload_to_google_storage.py` according to the instructions in
-[README.txt](https://chromium.googlesource.com/chromium/src/+/master/buildtools/clang_format/README.txt).
+[README.txt](https://chromium.googlesource.com/chromium/src/+/main/buildtools/clang_format/README.txt).
 This will upload the binary into a publicly accessible google storage bucket,
 and update `.sha1` file in your Chrome checkout. You'll check in the `.sha1`
 file (but NOT the clang-format binary) into source control. In order to be able
@@ -131,7 +131,7 @@ The `README.chromium` file ought to be updated with version and date info.
     Update clang-format binaries and scripts for all platforms.
 
     I followed these instructions:
-    https://chromium.googlesource.com/chromium/src/+/master/docs/updating_clang_format_binaries.md
+    https://chromium.googlesource.com/chromium/src/+/main/docs/updating_clang_format_binaries.md
 
     The binaries were built at clang revision ####### on ####DATETIME####.
 

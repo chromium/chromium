@@ -30,12 +30,12 @@ test, and ensure each test resets to that state.
 
 If a few tests within a larger batched suite cannot be batched (eg. it tests
 process initialization), you may add the
-[@RequiresRestart](https://source.chromium.org/chromium/chromium/src/+/master:base/test/android/javatests/src/org/chromium/base/test/util/RequiresRestart.java;bpv=1;bpt=1;l=19?q=RequiresRestart&ss=chromium%2Fchromium%2Fsrc&originalUrl=https:%2F%2Fcs.chromium.org%2F&gsn=RequiresRestart&gs=kythe%3A%2F%2Fchromium.googlesource.com%2Fchromium%2Fsrc%3Flang%3Djava%3Fpath%3Dorg.chromium.base.test.util.RequiresRestart%23b5e85d5c8071e18f350b7f2c5014310bd2cabd0e0d3d176949c991ea18403f55)
+[@RequiresRestart](https://source.chromium.org/chromium/chromium/src/+/main:base/test/android/javatests/src/org/chromium/base/test/util/RequiresRestart.java;bpv=1;bpt=1;l=19?q=RequiresRestart&ss=chromium%2Fchromium%2Fsrc&originalUrl=https:%2F%2Fcs.chromium.org%2F&gsn=RequiresRestart&gs=kythe%3A%2F%2Fchromium.googlesource.com%2Fchromium%2Fsrc%3Flang%3Djava%3Fpath%3Dorg.chromium.base.test.util.RequiresRestart%23b5e85d5c8071e18f350b7f2c5014310bd2cabd0e0d3d176949c991ea18403f55)
 annotation, which will exclude that test from the batch.
 
 ## Types of Batched tests
 
-### [UNIT_TESTS](https://source.chromium.org/chromium/chromium/src/+/master:base/test/android/javatests/src/org/chromium/base/test/util/Batch.java;bpv=1;bpt=1;l=51?q=Batch.java&ss=chromium%2Fchromium%2Fsrc&originalUrl=https:%2F%2Fcs.chromium.org%2F&gsn=UNIT_TESTS&gs=kythe%3A%2F%2Fchromium.googlesource.com%2Fchromium%2Fsrc%3Flang%3Djava%3Fpath%3Dorg.chromium.base.test.util.Batch%2319ebd2758adfaed0bda0e97542f70ca5b1564e7c1fa0f8c2bcb9e8170b75684d)
+### [UNIT_TESTS](https://source.chromium.org/chromium/chromium/src/+/main:base/test/android/javatests/src/org/chromium/base/test/util/Batch.java;bpv=1;bpt=1;l=51?q=Batch.java&ss=chromium%2Fchromium%2Fsrc&originalUrl=https:%2F%2Fcs.chromium.org%2F&gsn=UNIT_TESTS&gs=kythe%3A%2F%2Fchromium.googlesource.com%2Fchromium%2Fsrc%3Flang%3Djava%3Fpath%3Dorg.chromium.base.test.util.Batch%2319ebd2758adfaed0bda0e97542f70ca5b1564e7c1fa0f8c2bcb9e8170b75684d)
 
 Tests that belong in this category are tests that are effectively unit tests.
 They may be written as instrumentation tests rather than junit tests for a
@@ -54,7 +54,7 @@ to take advantage of feature annotations in your test you will have to use
 Features#JUnitProcessor instead of Features#InstrumentationProcessor.
 
 
-### [PER_CLASS](https://source.chromium.org/chromium/chromium/src/+/master:base/test/android/javatests/src/org/chromium/base/test/util/Batch.java;bpv=1;bpt=1;l=39?q=Batch.java&ss=chromium%2Fchromium%2Fsrc&originalUrl=https:%2F%2Fcs.chromium.org%2F&gsn=PER_CLASS&gs=kythe%3A%2F%2Fchromium.googlesource.com%2Fchromium%2Fsrc%3Flang%3Djava%3Fpath%3Dorg.chromium.base.test.util.Batch%23780b702db42a1901f05647fd29f75d443bc4efd2db588848b4aedf826ddf9e21)
+### [PER_CLASS](https://source.chromium.org/chromium/chromium/src/+/main:base/test/android/javatests/src/org/chromium/base/test/util/Batch.java;bpv=1;bpt=1;l=39?q=Batch.java&ss=chromium%2Fchromium%2Fsrc&originalUrl=https:%2F%2Fcs.chromium.org%2F&gsn=PER_CLASS&gs=kythe%3A%2F%2Fchromium.googlesource.com%2Fchromium%2Fsrc%3Flang%3Djava%3Fpath%3Dorg.chromium.base.test.util.Batch%23780b702db42a1901f05647fd29f75d443bc4efd2db588848b4aedf826ddf9e21)
 
 This batching type is typically for larger and more complex test suites, and
 will run the suite in its own batch. This will reduce the complexity of managing
@@ -74,7 +74,7 @@ batch instead of once per test suite. To put multiple test suites into the same
 batch, you will have to use a shared custom batch name
 ([example](https://chromium-review.googlesource.com/c/chromium/src/+/2307650)).
 When batching across suites you’ll want to use something like
-[BlankCTATabInitialStateRule](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/android/javatests/src/org/chromium/chrome/test/batch/BlankCTATabInitialStateRule.java?q=BlankCTATabInitialStateRule&ss=chromium&originalUrl=https:%2F%2Fcs.chromium.org%2F)
+[BlankCTATabInitialStateRule](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/android/javatests/src/org/chromium/chrome/test/batch/BlankCTATabInitialStateRule.java?q=BlankCTATabInitialStateRule&ss=chromium&originalUrl=https:%2F%2Fcs.chromium.org%2F)
 to persist static state (like the Activity) between test suites and perform any
 necessary state cleanup between tests.
 
@@ -99,7 +99,7 @@ that. Other common state like SharedPreferences
 any heavy work in them (and will run twice for parameterized tests). See
 [issue 1090043](https://crbug.com/1090043).
 * Sometimes it can be very difficult to figure out which test in a batch is
-causing another test to fail. A good first step is to minimize [_TEST_BATCH_MAX_GROUP_SIZE](https://source.chromium.org/chromium/chromium/src/+/master:build/android/pylib/local/device/local_device_instrumentation_test_run.py;drc=3ab9a142091516aa57f10feebc46dee649ae4589;l=109)
+causing another test to fail. A good first step is to minimize [_TEST_BATCH_MAX_GROUP_SIZE](https://source.chromium.org/chromium/chromium/src/+/main:build/android/pylib/local/device/local_device_instrumentation_test_run.py;drc=3ab9a142091516aa57f10feebc46dee649ae4589;l=109)
 to minimize the number of tests within the batch while still reproducing the
 failure. Then, you can use multiple gtest filter patterns to control which tests
 run together. Ex:

@@ -465,7 +465,7 @@ formats.
     given commit diverged from main.
 
 [//]: # (the reference link section should be alphabetically sorted)
-[checkout-and-build]: https://chromium.googlesource.com/chromium/src/+/master/docs/#checking-out-and-building
+[checkout-and-build]: https://chromium.googlesource.com/chromium/src/+/main/docs/#checking-out-and-building
 [chrome-dd-review-process]: http://go/chrome-dd-review-process
 [chromium-design-docs]: https://groups.google.com/a/chromium.org/forum/#!forum/chromium-design-docs
 [code-reviews-owners]: code_reviews.md#OWNERS-files
@@ -475,12 +475,12 @@ formats.
 [core-principles]: https://www.chromium.org/developers/core-principles
 [corporate-cla]: https://cla.developers.google.com/about/google-corporate?csw=1
 [cr-authors]: https://chromium.googlesource.com/chromium/src/+/HEAD/AUTHORS
-[cr-gitiles]: https://chromium.googlesource.com/chromium/src/+/master/
-[cr-styleguide]: https://chromium.googlesource.com/chromium/src/+/master/styleguide/styleguide.md
+[cr-gitiles]: https://chromium.googlesource.com/chromium/src/+/main/
+[cr-styleguide]: https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md
 [crbug-new]: https://bugs.chromium.org/p/chromium/issues/entry
 [crbug]: https://bugs.chromium.org/p/chromium/issues/list
-[cros-authors]: https://chromium.googlesource.com/chromium/src/+/master/AUTHORS
-[cros-dev-guide]: https://chromium.googlesource.com/chromiumos/docs/+/master/developer_guide.md
+[cros-authors]: https://chromium.googlesource.com/chromium/src/+/main/AUTHORS
+[cros-dev-guide]: https://chromium.googlesource.com/chromiumos/docs/+/main/developer_guide.md
 [crrev]: https://chromium-review.googlesource.com
 [depot-tools-setup]: https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up
 [design-doc-template]: https://docs.google.com/document/d/14YBYKgk-uSfjfwpKFlp_omgUq5hwMVazy_M965s_1KA

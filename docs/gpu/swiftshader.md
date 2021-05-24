@@ -35,5 +35,5 @@ When running the **chrome** executable from the command line, SwiftShader can be
 > **\-\-use-gl=swiftshader**
 4) As the WebGL fallback, legacy SwiftShader Open GL ES libraries
 >**\-\-use-gl=swiftshader-webgl**
-5) As the Vulkan driver (requires the [enable_swiftshader_vulkan](https://source.chromium.org/chromium/chromium/src/+/master:gpu/vulkan/features.gni;l=16) feature)
+5) As the Vulkan driver (requires the [enable_swiftshader_vulkan](https://source.chromium.org/chromium/chromium/src/+/main:gpu/vulkan/features.gni;l=16) feature)
 >**--use-vulkan=swiftshader**

@@ -24,8 +24,8 @@ Before using CBCM Takeout API you will need to do some initial setup:
 ## Running the Script
 
 You can download the scripts
-[here](https://chromium.googlesource.com/chromium/src/+/refs/heads/master/docs/enterprise/extension_query.py)
-or here [here](https://chromium.googlesource.com/chromium/src/+/refs/heads/master/docs/enterprise/extension_query_py2.py)
+[here](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/enterprise/extension_query.py)
+or here [here](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/enterprise/extension_query_py2.py)
 for a python 2.7 compatible version.
 
 With the service account keys, you can now run the script which uses Google API
@@ -40,4 +40,4 @@ You can run the script from the command-line: python extension_query.py
 argument names)
 
 Example Data output Here is an example of what that data will look like:
-![Sample Results](https://chromium.googlesource.com/chromium/src/+/refs/heads/master/docs/enterprise/extension_query_sample.png)
+![Sample Results](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/enterprise/extension_query_sample.png)

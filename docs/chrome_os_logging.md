@@ -39,5 +39,5 @@ When actively debugging issues, Chrome's `--vmodule` flag is sometimes used to
 temporarily log messages at lower severities for particular modules.
 
 [base/logging.h]: ../base/logging.h
-[session_manager]: https://chromium.googlesource.com/chromiumos/platform2/+/master/login_manager/
-[Passing Chrome flags from session_manager]: https://chromium.googlesource.com/chromiumos/platform2/+/master/login_manager/docs/flags.md
+[session_manager]: https://chromium.googlesource.com/chromiumos/platform2/+/main/login_manager/
+[Passing Chrome flags from session_manager]: https://chromium.googlesource.com/chromiumos/platform2/+/main/login_manager/docs/flags.md

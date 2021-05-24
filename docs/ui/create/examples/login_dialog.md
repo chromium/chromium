@@ -81,7 +81,7 @@ window close button. These UI elements are provided by default by the
 
 ## Creating the layout
 
-To populate the login dialog, we first create a [`LayoutManager`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/layout_manager.h) in the
+To populate the login dialog, we first create a [`LayoutManager`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/layout_manager.h) in the
 dialog’s constructor.
 
 
@@ -113,11 +113,11 @@ LoginBubbleDialogView::LoginBubbleDialogView(
 ```
 
 
-This creates a 2x2 [`GridLayout`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/grid_layout.h)
+This creates a 2x2 [`GridLayout`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/grid_layout.h)
 with horizontal padding specified by the layout constant
 `DISTANCE_RELATED_LABEL_HORIZONTAL`. The first column will hold the form’s
-[`Label`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/label.h)s and the second will hold the
-[`Textfield`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/textfield/textfield.h)s for user input.
+[`Label`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/label.h)s and the second will hold the
+[`Textfield`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/textfield/textfield.h)s for user input.
 
 To help with adding rows to the `GridLayout`, add the following scoped helper
 and relevant headers.
@@ -154,11 +154,11 @@ views::Textfield* AddFormRow(views::GridLayout* layout,
 ...
 ```
 
-This creates a new [`GridLayout`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/grid_layout.h)
+This creates a new [`GridLayout`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/grid_layout.h)
 row for a given field in our form. The call to
-[`SetAssociatedLabel()`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/textfield/textfield.h;l=250;drc=291180454e079aa5c3677dc3f3eaf619a1cf1d42)
+[`SetAssociatedLabel()`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/textfield/textfield.h;l=250;drc=291180454e079aa5c3677dc3f3eaf619a1cf1d42)
 sets the accessible label relationship between the
-[`Label`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/label.h) and the [`Textfield`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/textfield/textfield.h)
+[`Label`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/label.h) and the [`Textfield`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/textfield/textfield.h)
 and copies the `Label`’s accessible name to the `Textfield`.
 
 
@@ -302,8 +302,8 @@ Next we want to disable the bubble dialog’s login button until both the
 username and password fields have been populated.
 
 We achieve this by having the `LoginBubbleDialogView` inherit from
-[`TextfieldController`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/textfield/textfield_controller.h),
-and on each [`Textfield`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/textfield/textfield.h)
+[`TextfieldController`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/textfield/textfield_controller.h),
+and on each [`Textfield`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/textfield/textfield.h)
 update it checks to make sure that both fields are populated before enabling
 the login button.
 
@@ -546,7 +546,7 @@ The generated UI would be:
 
 The example code can be run inside Views example app. You can find the code
 inside the Views example at
-[`ui/views/examples/login_bubble_dialog_example.cc`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/examples/login_bubble_dialog_example.cc).
+[`ui/views/examples/login_bubble_dialog_example.cc`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/examples/login_bubble_dialog_example.cc).
 You can try out this example by running the following command:
 
 ``` shell

@@ -248,7 +248,7 @@ clean up your local branches. These commands will automatically delete merged
 branches. Mark the associated crbug as "fixed".
 
 [//]: # (the reference link section should be alphabetically sorted)
-[build-instructions]: https://chromium.googlesource.com/chromium/src.git/+/master/docs/#Checking-Out-and-Building
+[build-instructions]: https://chromium.googlesource.com/chromium/src.git/+/main/docs/#Checking-Out-and-Building
 [chromium-tree]: https://ci.chromium.org/p/chromium/g/main/console
 [contributing]: contributing.md
 [simple-chrome]: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md

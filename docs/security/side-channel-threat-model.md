@@ -134,7 +134,7 @@ timeframe.)
 ##### Incompleteness of CORB
 
 Site Isolation depends on [cross-origin read
-blocking](https://chromium.googlesource.com/chromium/src/+/master/content/browser/loader/cross_origin_read_blocking_explainer.md)
+blocking](https://chromium.googlesource.com/chromium/src/+/main/content/browser/loader/cross_origin_read_blocking_explainer.md)
 (CORB; formerly known as cross-site document blocking or XSDB) to prevent a
 malicious website from pulling in sensitive cross-origin data. Otherwise, an
 attacker could use markup like `<img src="http://example.com/secret.json">` to

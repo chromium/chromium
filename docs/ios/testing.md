@@ -197,7 +197,7 @@ The invocation args are logged. You can find the latest arg format at the
 beginning of stdout from an infra test shard if the above doesn't work.
 
 
-[config the bots]: https://chromium.googlesource.com/chromium/src/testing/+/refs/heads/master/buildbot/README.md#buildbot-testing-configuration-files
+[config the bots]: https://chromium.googlesource.com/chromium/src/testing/+/refs/heads/main/buildbot/README.md#buildbot-testing-configuration-files
 [Defining Test Cases and Test Methods]: https://developer.apple.com/documentation/xctest/defining_test_cases_and_test_methods?language=objc
 [EarlGrey]: https://github.com/google/EarlGrey/tree/earlgrey2
 [EarlGrey APIs]: https://github.com/google/EarlGrey/blob/master/docs/api.md
@@ -206,5 +206,5 @@ beginning of stdout from an infra test shard if the above doesn't work.
 [Example CL adding App Interface]: https://chromium-review.googlesource.com/c/chromium/src/+/1919147
 [instructions]: ./build_instructions.md
 [Running Tests and Viewing Results]: https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/05-running_tests.html
-[this AppLaunchManager API]: https://source.chromium.org/chromium/chromium/src/+/master:ios/testing/earl_grey/app_launch_manager.h;drc=d0889865de20c5b3bc59d58674eb2dcc02dd2269;l=47
+[this AppLaunchManager API]: https://source.chromium.org/chromium/chromium/src/+/main:ios/testing/earl_grey/app_launch_manager.h;drc=d0889865de20c5b3bc59d58674eb2dcc02dd2269;l=47
 [XCUITest]: https://developer.apple.com/documentation/xctest

@@ -61,7 +61,7 @@ so on. The waterfalls we’re interested in are:
 [Chromium GPU FYI]: https://ci.chromium.org/p/chromium/g/chromium.gpu.fyi/console?reload=120
 [Chromium SwANGLE]: https://ci.chromium.org/p/chromium/g/chromium.swangle/console?reload=120
 [ANGLE tryservers]: https://build.chromium.org/p/tryserver.chromium.angle/waterfall
-[ANGLE Wrangler]: https://chromium.googlesource.com/angle/angle/+/master/infra/ANGLEWrangling.md
+[ANGLE Wrangler]: https://chromium.googlesource.com/angle/angle/+/main/infra/ANGLEWrangling.md
 
 ## Test Suites
 
@@ -279,7 +279,7 @@ shift, and a calendar appointment.
     modifier][gtest-DISABLED] to suppress any failures if necessary.
 
 [Sheriff-O-Matic]: https://sheriff-o-matic.appspot.com/chromium.gpu
-[trim culprit cls]: https://source.chromium.org/chromium/chromium/src/+/master:content/test/gpu/trim_culprit_cls.py
+[trim culprit cls]: https://source.chromium.org/chromium/chromium/src/+/main:content/test/gpu/trim_culprit_cls.py
 [tree sheriffing page]: https://sites.google.com/a/chromium.org/dev/developers/tree-sheriffs
 [linux-rel]: https://ci.chromium.org/p/chromium/builders/luci.chromium.try/linux-rel
 [luci.chromium.try]: https://ci.chromium.org/p/chromium/g/luci.chromium.try/builders
@@ -293,10 +293,10 @@ https://ci.chromium.org/p/chromium/builders/luci.chromium.try/win7-rel
 [Swarming Server Stats]: https://chromium-swarm.appspot.com/stats
 [gold less common failures]: gpu_pixel_testing_with_gold.md#Triaging-Less-Common-Failures
 [Chrome Internal GPU Pixel Wrangling Instructions]: https://sites.google.com/a/google.com/client3d/documents/chrome-internal-gpu-pixel-wrangling-instructions
-[src/content/test/gpu/gpu_tests/test_expectations]: https://chromium.googlesource.com/chromium/src/+/master/content/test/gpu/gpu_tests/test_expectations
-[webgl_conformance_expectations.txt]: https://chromium.googlesource.com/chromium/src/+/master/content/test/gpu/gpu_tests/test_expectations/webgl_conformance_expectations.txt
-[gpu_process_expectations.txt]: https://chromium.googlesource.com/chromium/src/+/master/content/test/gpu/gpu_tests/test_expectations/gpu_process_expectations.txt
-[pixel_expectations.txt]: https://chromium.googlesource.com/chromium/src/+/master/content/test/gpu/gpu_tests/test_expectations/pixel_expectations.txt
+[src/content/test/gpu/gpu_tests/test_expectations]: https://chromium.googlesource.com/chromium/src/+/main/content/test/gpu/gpu_tests/test_expectations
+[webgl_conformance_expectations.txt]: https://chromium.googlesource.com/chromium/src/+/main/content/test/gpu/gpu_tests/test_expectations/webgl_conformance_expectations.txt
+[gpu_process_expectations.txt]: https://chromium.googlesource.com/chromium/src/+/main/content/test/gpu/gpu_tests/test_expectations/gpu_process_expectations.txt
+[pixel_expectations.txt]: https://chromium.googlesource.com/chromium/src/+/main/content/test/gpu/gpu_tests/test_expectations/pixel_expectations.txt
 [stamping out flakiness]: gpu_testing.md#Stamping-out-Flakiness
 [gtest-DISABLED]: https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#temporarily-disabling-tests
 [rendering_representative_perf_tests]: ../testing/rendering_representative_perf_tests.md#Updating-Expectations

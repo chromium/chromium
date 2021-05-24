@@ -31,7 +31,7 @@ Note: the concept in this section is general, but the linked specs are
 
 [Material Refresh]: https://docs.google.com/presentation/d/1EO7TOpIMJ7QHjaTVw9St-q6naKwtXX2TwzMirG5EsKY/edit#slide=id.g3232c09376_6_794
 [Harmony]: https://folio.googleplex.com/chrome-ux-specs-and-sources/Chrome%20browser%20%28MD%29/Secondary%20UI%20Previews%20and%20specs%20%28exports%29/Spec
-[`DISTANCE_UNRELATED_CONTROL_HORIZONTAL`]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/chrome_layout_provider.h;l=56;drc=ec62c9ac3ef71a7014e27c5d2cf98917a89e3524
+[`DISTANCE_UNRELATED_CONTROL_HORIZONTAL`]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/chrome_layout_provider.h;l=56;drc=ec62c9ac3ef71a7014e27c5d2cf98917a89e3524
 [dictionary]: http://go/DesktopDictionary
 
 ## Obtain layout values from provider objects
@@ -52,22 +52,22 @@ usually accessed via [global helper functions][], can provide appropriate
 directly, but use `Label` and other such controls, providing the appropriate
 [context][] and [style][].
 
-[`LayoutProvider`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/layout_provider.h;l=129;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
-[`ChromeLayoutProvider`]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/chrome_layout_provider.h;drc=ec62c9ac3ef71a7014e27c5d2cf98917a89e3524;l=76
-[`Get()`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/layout_provider.h;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38;l=135
-[distances]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/layout_provider.h;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38;l=148
-[insets]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/layout_provider.h;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38;l=144
-[corner radii]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/layout_provider.h;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38;l=168
-[shadow elevations]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/layout_provider.h;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38;l=172
-[`Label`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/label.h;l=30;drc=59135b4042aa469752899e8e4bf2a0a81d3d320c
-[`TypographyProvider`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/style/typography_provider.h;l=22;drc=b5e29e075e814ed41e6727c281b69f797d8a1e10
-[`ChromeTypographyProvider`]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/chrome_typography_provider.h;l=13;drc=a7ee000c95842e2dce6397ca36926924f4cb322b
-[global helper functions]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/style/typography.h;l=109;drc=8f7db479018a99e5906876954de93ae6d23bee58
-[fonts]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/style/typography_provider.h;l=28;drc=b5e29e075e814ed41e6727c281b69f797d8a1e10
-[colors]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/style/typography_provider.h;l=32;drc=b5e29e075e814ed41e6727c281b69f797d8a1e10
-[line heights]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/style/typography_provider.h;l=37;drc=b5e29e075e814ed41e6727c281b69f797d8a1e10
-[context]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/style/typography.h;l=23;drc=8f7db479018a99e5906876954de93ae6d23bee58
-[style]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/style/typography.h;l=67;drc=8f7db479018a99e5906876954de93ae6d23bee58
+[`LayoutProvider`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/layout_provider.h;l=129;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
+[`ChromeLayoutProvider`]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/chrome_layout_provider.h;drc=ec62c9ac3ef71a7014e27c5d2cf98917a89e3524;l=76
+[`Get()`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/layout_provider.h;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38;l=135
+[distances]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/layout_provider.h;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38;l=148
+[insets]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/layout_provider.h;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38;l=144
+[corner radii]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/layout_provider.h;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38;l=168
+[shadow elevations]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/layout_provider.h;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38;l=172
+[`Label`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/label.h;l=30;drc=59135b4042aa469752899e8e4bf2a0a81d3d320c
+[`TypographyProvider`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/style/typography_provider.h;l=22;drc=b5e29e075e814ed41e6727c281b69f797d8a1e10
+[`ChromeTypographyProvider`]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/chrome_typography_provider.h;l=13;drc=a7ee000c95842e2dce6397ca36926924f4cb322b
+[global helper functions]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/style/typography.h;l=109;drc=8f7db479018a99e5906876954de93ae6d23bee58
+[fonts]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/style/typography_provider.h;l=28;drc=b5e29e075e814ed41e6727c281b69f797d8a1e10
+[colors]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/style/typography_provider.h;l=32;drc=b5e29e075e814ed41e6727c281b69f797d8a1e10
+[line heights]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/style/typography_provider.h;l=37;drc=b5e29e075e814ed41e6727c281b69f797d8a1e10
+[context]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/style/typography.h;l=23;drc=8f7db479018a99e5906876954de93ae6d23bee58
+[style]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/style/typography.h;l=67;drc=8f7db479018a99e5906876954de93ae6d23bee58
 
 |||---|||
 
@@ -78,7 +78,7 @@ directly, but use `Label` and other such controls, providing the appropriate
 [Current code][1] uses file scoped hard-coded padding values for its layout
 constants.
 
-[1]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/subtle_notification_view.cc;l=142;drc=787d0aacc071674dc83f6059072d15f8cfffbf84
+[1]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/subtle_notification_view.cc;l=142;drc=787d0aacc071674dc83f6059072d15f8cfffbf84
 
 #####
 
@@ -172,9 +172,9 @@ layout, and do so in a declarative rather than imperative fashion. The
 resulting code is often simpler and easier to understand. Writing a [bespoke
 `LayoutManager`][] is also possible, but less common.
 
-[`Layout()`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/view.h;l=730;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
-[`LayoutManager`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/layout_manager.h;l=33;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
-[bespoke `LayoutManager`]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/try_chrome_dialog_win/button_layout.h;l=30;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
+[`Layout()`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view.h;l=730;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
+[`LayoutManager`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/layout_manager.h;l=33;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
+[bespoke `LayoutManager`]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/try_chrome_dialog_win/button_layout.h;l=30;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
 
 |||---|||
 
@@ -190,8 +190,8 @@ The following old code used Layout() to have its label text fill the dialog.
 
 [Current code][2] uses a [FillLayout][] to achieve the same result.
 
-[2]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/relaunch_notification/relaunch_required_dialog_view.cc;l=91;drc=1ec33e7c19e2d63b3f918df115c12f77f419645b
-[FillLayout]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/fill_layout.h
+[2]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/relaunch_notification/relaunch_required_dialog_view.cc;l=91;drc=1ec33e7c19e2d63b3f918df115c12f77f419645b
+[FillLayout]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/fill_layout.h
 
 |||---|||
 
@@ -244,11 +244,11 @@ Such manual computation is prone to bugs if someone changes a size, padding
 value, or child order in one place without also updating related computations
 elsewhere.
 
-[`ClassProperty`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/base/class_property.h;l=55;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
-[margins]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/view_class_properties.h;l=30;drc=1449b8c60358c4cdea1722e4c1e8079bd1b5f306
-[margin collapsing]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/flex_layout.h;l=87;drc=62bf27aca5418212ceadd8daf9188d2aa437bfcc
-[internal padding]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/view_class_properties.h;l=40;drc=1449b8c60358c4cdea1722e4c1e8079bd1b5f306
-[different padding amounts between different children]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/toolbar/toolbar_view.cc;l=974;drc=34a8c4215229379ced3586125399c7ad3c65b87f
+[`ClassProperty`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/base/class_property.h;l=55;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
+[margins]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view_class_properties.h;l=30;drc=1449b8c60358c4cdea1722e4c1e8079bd1b5f306
+[margin collapsing]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/flex_layout.h;l=87;drc=62bf27aca5418212ceadd8daf9188d2aa437bfcc
+[internal padding]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view_class_properties.h;l=40;drc=1449b8c60358c4cdea1722e4c1e8079bd1b5f306
+[different padding amounts between different children]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/toolbar/toolbar_view.cc;l=974;drc=34a8c4215229379ced3586125399c7ad3c65b87f
 
 |||---|||
 
@@ -266,7 +266,7 @@ involving the control insets.
 [Current code][3] uses a combination of margin and padding on the
 ColorPickerView to ensure proper alignment.
 
-[3]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.cc;l=89;drc=542c4c6ac89bc665807351d3fb4aca5ebddc82f8
+[3]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.cc;l=89;drc=542c4c6ac89bc665807351d3fb4aca5ebddc82f8
 
 |||---|||
 
@@ -476,9 +476,9 @@ horizontal and vertical alignment.** For simple layouts, [`BoxLayout`][] and
 sections or groups hierarchically may result in simpler inner layouts that
 can be nested within an overall layout.
 
-[`GridLayout`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/grid_layout.h;l=79;drc=8cab3382ac9b70b7ecfe29ae03b1b7ee8f4e01fa
-[`BoxLayout`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/box_layout.h;l=28;drc=5b9e43d976aca377588875fc59c5348ede02a8b5
-[`FlexLayout`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/flex_layout.h;l=73;drc=62bf27aca5418212ceadd8daf9188d2aa437bfcc
+[`GridLayout`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/grid_layout.h;l=79;drc=8cab3382ac9b70b7ecfe29ae03b1b7ee8f4e01fa
+[`BoxLayout`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/box_layout.h;l=28;drc=5b9e43d976aca377588875fc59c5348ede02a8b5
+[`FlexLayout`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/flex_layout.h;l=73;drc=62bf27aca5418212ceadd8daf9188d2aa437bfcc
 
 |||---|||
 
@@ -496,7 +496,7 @@ a stacked title and subtitle flanked on by views on both sides.
 [Current code][4] uses [`FlexLayout`][] to achieve the desired result, resulting
 in clearer code.
 
-[4]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/hover_button.cc;l=106;drc=888af74006ea1c4ee9907d18c8df2a7ca424eab9
+[4]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/hover_button.cc;l=106;drc=888af74006ea1c4ee9907d18c8df2a7ca424eab9
 
 |||---|||
 
@@ -674,9 +674,9 @@ fonts will be in a certain size, or that a given fixed area is sufficient to
 display all necessary information, can cause hard-to-find localization and
 accessibility bugs for users with verbose languages or unusually large fonts.
 
-[`DISTANCE_BUBBLE_PREFERRED_WIDTH`]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/chrome_layout_provider.h;l=68;drc=ec62c9ac3ef71a7014e27c5d2cf98917a89e3524
-[`BubbleFrameView::GetFrameWidthForClientWidth()`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/bubble/bubble_frame_view.cc;l=688;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
-[conformed to spec]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/bubble/bubble_frame_view.cc;l=698;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
+[`DISTANCE_BUBBLE_PREFERRED_WIDTH`]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/chrome_layout_provider.h;l=68;drc=ec62c9ac3ef71a7014e27c5d2cf98917a89e3524
+[`BubbleFrameView::GetFrameWidthForClientWidth()`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/bubble/bubble_frame_view.cc;l=688;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
+[conformed to spec]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/bubble/bubble_frame_view.cc;l=698;drc=f5df5da5753795298349b2dd6325e2c5e6e13e38
 
 |||---|||
 
@@ -733,8 +733,8 @@ the child out and update its properties. Modify the
 invisible `View`s to intercept events. Toggle child visibility directly in
 response to external events rather than calculating it inside `Layout()`.
 
-[`OnBoundsChanged()`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/view.h;l=1377;drc=34a8c4215229379ced3586125399c7ad3c65b87f
-[hit-testing and event-handling functions]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/view.h;l=919;drc=34a8c4215229379ced3586125399c7ad3c65b87f
+[`OnBoundsChanged()`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view.h;l=1377;drc=34a8c4215229379ced3586125399c7ad3c65b87f
+[hit-testing and event-handling functions]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view.h;l=919;drc=34a8c4215229379ced3586125399c7ad3c65b87f
 
 |||---|||
 
@@ -994,14 +994,14 @@ accordingly, changing existing code from synchronous to asynchronous layout may
 require adding `LayoutRootViewIfNecessary()` calls to (possibly many) tests,
 and this is not a sign that the change is wrong.
 
-[the preferred size changing]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/view.cc;l=1673;drc=bc9a6d40468646be476c61b6637b51729bec7b6d
-[a child needing layout]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/view.cc;l=777;drc=bc9a6d40468646be476c61b6637b51729bec7b6d
-[`InvalidateLayout()`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/view.h;l=735;drc=c06f6b339b47ce2388624aa9a89334ace38a71e4
-[`ChildPreferredSizeChanged()`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/view.h;l=1381;drc=c06f6b339b47ce2388624aa9a89334ace38a71e4
-[`ViewObserver`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/view_observer.h;l=17;drc=eb20fd77330dc4a89eecf17459263e5895e7f177
-[requests a LayerTreeHost update]: https://source.chromium.org/chromium/chromium/src/+/master:cc/trees/layer_tree_host.cc;l=304;drc=c06f6b339b47ce2388624aa9a89334ace38a71e4
-[`Widget::LayoutRootViewIfNecessary()`]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/widget/widget.h;l=946;drc=b1dcb398c454a576092d38d0d67db3709b2b2a9b
-[call LayoutRootViewIfNecessary() manually]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/widget/widget_unittest.cc;l=3110;drc=c06f6b339b47ce2388624aa9a89334ace38a71e4
+[the preferred size changing]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view.cc;l=1673;drc=bc9a6d40468646be476c61b6637b51729bec7b6d
+[a child needing layout]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view.cc;l=777;drc=bc9a6d40468646be476c61b6637b51729bec7b6d
+[`InvalidateLayout()`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view.h;l=735;drc=c06f6b339b47ce2388624aa9a89334ace38a71e4
+[`ChildPreferredSizeChanged()`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view.h;l=1381;drc=c06f6b339b47ce2388624aa9a89334ace38a71e4
+[`ViewObserver`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/view_observer.h;l=17;drc=eb20fd77330dc4a89eecf17459263e5895e7f177
+[requests a LayerTreeHost update]: https://source.chromium.org/chromium/chromium/src/+/main:cc/trees/layer_tree_host.cc;l=304;drc=c06f6b339b47ce2388624aa9a89334ace38a71e4
+[`Widget::LayoutRootViewIfNecessary()`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/widget/widget.h;l=946;drc=b1dcb398c454a576092d38d0d67db3709b2b2a9b
+[call LayoutRootViewIfNecessary() manually]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/widget/widget_unittest.cc;l=3110;drc=c06f6b339b47ce2388624aa9a89334ace38a71e4
 
 |||---|||
 
@@ -1011,7 +1011,7 @@ and this is not a sign that the change is wrong.
 
 [Current code][5] makes a direct and unnecessary call to Layout()
 
-[5]: https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/media_router/cast_dialog_view.cc;l=349;drc=18ca2de542bfa53802639dc5c85762b5e7b5bef6
+[5]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/media_router/cast_dialog_view.cc;l=349;drc=18ca2de542bfa53802639dc5c85762b5e7b5bef6
 
 #####
 
@@ -1093,7 +1093,7 @@ and children vary over time, and often more performant as well.
 [Current code][6] holds both horizontal and vertical time views and replaces
 the children and LayoutManager on orientation change.
 
-[6]: https://source.chromium.org/chromium/chromium/src/+/master:ash/system/time/time_view.h;l=35;drc=7d8bc7f807a433e6a127806e991fe780aa27ce77;bpv=1;bpt=0?originalUrl=https:%2F%2Fcs.chromium.org%2F
+[6]: https://source.chromium.org/chromium/chromium/src/+/main:ash/system/time/time_view.h;l=35;drc=7d8bc7f807a433e6a127806e991fe780aa27ce77;bpv=1;bpt=0?originalUrl=https:%2F%2Fcs.chromium.org%2F
 
 #####
 

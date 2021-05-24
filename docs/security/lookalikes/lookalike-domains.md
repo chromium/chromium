@@ -29,7 +29,7 @@ example "lookalike" patterns include:
  * Domains that embed other domain names within their own hostname, such as
    `google.com.example.com`.
  * Domains that use IDN
-   [homographs](https://chromium.googlesource.com/chromium/src/+/master/docs/idn.md),
+   [homographs](https://chromium.googlesource.com/chromium/src/+/main/docs/idn.md),
    such as `goögle.com`.
 
 This list is not exhaustive, and developers are encouraged to avoid using

@@ -56,4 +56,4 @@ See [Testing and infrastructure](https://sites.google.com/a/chromium.org/dev/dev
 |views\_unittests        | |
 |wav\_ola\_test          | |
 |webkit\_unit\_tests     | |
-|webui tests             | Special type of browser\_tests used for [WebUI features](https://chromium.googlesource.com/chromium/src/+/master/docs/webui_explainer.md), see [here](https://docs.google.com/document/d/1Z18WTNv28z5FW3smNEm_GtsfVD2IL-CmmAikwjw3ryo/edit#) for more information on known issues with WebUI test infrastructure. |
+|webui tests             | Special type of browser\_tests used for [WebUI features](https://chromium.googlesource.com/chromium/src/+/main/docs/webui_explainer.md), see [here](https://docs.google.com/document/d/1Z18WTNv28z5FW3smNEm_GtsfVD2IL-CmmAikwjw3ryo/edit#) for more information on known issues with WebUI test infrastructure. |

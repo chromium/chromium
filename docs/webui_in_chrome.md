@@ -17,7 +17,7 @@ This guide is based on [Creating WebUI Interfaces in components](webui_in_compon
 
 <a name="creating_web_ui_page"></a>
 WebUI pages live in `chrome/browser/resources`.  You should create a folder for your project `chrome/browser/resources/hello_world`.
-When creating WebUI resources, follow the [Web Development Style Guide](https://chromium.googlesource.com/chromium/src/+/master/styleguide/web/web.md). For a sample WebUI page you could start with the following files:
+When creating WebUI resources, follow the [Web Development Style Guide](https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md). For a sample WebUI page you could start with the following files:
 
 `chrome/browser/resources/hello_world/hello_world.html`
 ```html

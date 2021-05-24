@@ -53,7 +53,7 @@ For some jobs, this work is executed by the tester instead.
 
   * [Perf Sheriff Rotation](perf_regression_sheriffing.md)
   * [Perfbot Health Sheriffing Rotation](bot_health_sheriffing/main.md)
-  * [How to SSH to Bots in Lab](https://chrome-internal.googlesource.com/infra/infra_internal/+/master/doc/ssh.md)
+  * [How to SSH to Bots in Lab](https://chrome-internal.googlesource.com/infra/infra_internal/+/main/doc/ssh.md)
     (googlers only!)
   * TODO: Page on how to repro failures locally
   * TODO: Page on how to hack on buildbot/recipe code

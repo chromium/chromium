@@ -92,7 +92,7 @@ The next steps require that you have the full Chrome OS source code
 checked out and you're in your chroot. See the Chromium OS Developer Guide
 for instructions:
 
-https://chromium.googlesource.com/chromiumos/docs/+/master/developer_guide.md
+https://chromium.googlesource.com/chromiumos/docs/+/main/developer_guide.md
 
 
 espeak-ng is in this directory:

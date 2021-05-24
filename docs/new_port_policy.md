@@ -9,4 +9,4 @@ Since every new port for Chromium has a maintenance cost, here are some guidelin
 *   Chromium engineers are not expected to maintain them.
 *   As much as possible, try to use existing branches/ifdefs.
 *   While changes in src/base are unavoidable, higher level directories shouldn't have to change. i.e. existing porting APIs should be used. We would not accept new rendering pipelines as an example.
-*   Send an email to [src/OWNERS](https://chromium.googlesource.com/chromium/src/+/master/ENG_REVIEW_OWNERS) for approval.
+*   Send an email to [src/OWNERS](https://chromium.googlesource.com/chromium/src/+/main/ENG_REVIEW_OWNERS) for approval.

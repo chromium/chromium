@@ -23,6 +23,6 @@ Note, this is a community curated list. No one is sitting around trying to tabul
   * [Reduced 1.3 MB](https://codereview.chromium.org/1156003008) from browser private dirty by decoding images from ImageManager cache on demand
   * [Reduced 2-10MB](https://codereview.chromium.org/1377483003) from browser process by shrinking IPC buffers after large messages were passed
   * [Reduced < 2 MB](https://chromium-review.googlesource.com/c/chromium/src/+/945748) from background tabs of both Chrome and WebView on Android Go device. See further [information](https://bugs.chromium.org/p/chromium/issues/detail?id=833769) on the internal bots for Android.
-  * Developed [Memory-Infra](https://chromium.googlesource.com/chromium/src/+/master/components/tracing/docs/memory_infra.md), a timeline-based memory profiling system integrated into chrome:://tracing
+  * Developed [Memory-Infra](https://chromium.googlesource.com/chromium/src/+/main/components/tracing/docs/memory_infra.md), a timeline-based memory profiling system integrated into chrome:://tracing
   * Developed [System health benchmarks](https://docs.google.com/document/d/1BM_6lBrPzpMNMtcyi2NFKGIzmzIQ1oH3OlNG27kDGNU/edit?ts=57e92782), a set of benchmarks that give us consistent metrics for our reduction efforts
   * [Visualized Chrome's memory consumption in real-world website](https://docs.google.com/document/d/1JfnW6RpRDuuZITQ3xuFUIRBfC_KOG5xXUuW8U_UePJU/edit)s

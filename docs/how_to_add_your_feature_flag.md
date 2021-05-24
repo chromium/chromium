@@ -12,7 +12,7 @@ For example, if you want to use the flag in src/content, you should add a base::
 * [content/public/common/content_features.h](https://cs.chromium.org/chromium/src/content/public/common/content_features.h)
 
 If you want to use the flag in blink, you should also read
-[Runtime Enable Features](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/platform/RuntimeEnabledFeatures.md).
+[Runtime Enable Features](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/RuntimeEnabledFeatures.md).
 
 You can refer to [this CL](https://chromium-review.googlesource.com/c/554510/) and [this document](initialize_blink_features.md)
 to see
@@ -22,7 +22,7 @@ to see
 [[2](https://chromium-review.googlesource.com/c/554510/8/content/public/common/content_features.h)]
 2. how to use it
 [[1](https://chromium-review.googlesource.com/c/554510/8/content/common/service_worker/service_worker_utils.cc#153)]
-3. how to wire your new base::Feature to a blink runtime feature[[1](https://chromium.googlesource.com/chromium/src/+/master/docs/initialize_blink_features.md)]
+3. how to wire your new base::Feature to a blink runtime feature[[1](https://chromium.googlesource.com/chromium/src/+/main/docs/initialize_blink_features.md)]
 4. how to use it in blink
 [[1](https://chromium-review.googlesource.com/c/554510/8/third_party/blnk/renderere/core/workers/worker_thread.cc)]
 

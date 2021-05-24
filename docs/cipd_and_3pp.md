@@ -11,7 +11,7 @@
   specified in [DEPS] and updated via `gclient sync`.
 * You can [browse Chromium's CIPD repository][browse] online.
 
-[CIPD]: https://chromium.googlesource.com/infra/luci/luci-go/+/master/cipd/README.md
+[CIPD]: https://chromium.googlesource.com/infra/luci/luci-go/+/main/cipd/README.md
 [DEPS]: /DEPS
 [browse]: https://chrome-infra-packages.appspot.com/p/chromium
 
@@ -23,7 +23,7 @@
 * By specifying a 3pp package, you can define how to build certain artifacts and
   where to upload to CIPD. Then our packagers will do the rest for you.
 
-[support_3pp]: https://chromium.googlesource.com/infra/infra/+/master/recipes/README.recipes.md#recipe_modules-support_3pp
+[support_3pp]: https://chromium.googlesource.com/infra/infra/+/main/recipes/README.recipes.md#recipe_modules-support_3pp
 
 ## Why use CIPD & 3pp?:
 
@@ -96,9 +96,9 @@ into two main sections:
 * `upload`: contains some details on how the final result gets uploaded to CIPD.
    See [here][doc_upload] for more details.
 
-[`spec.proto`]: https://chromium.googlesource.com/infra/infra/+/master/recipes/recipe_modules/support_3pp/spec.proto
-[doc_create]: https://chromium.googlesource.com/infra/infra/+/master/recipes/README.recipes.md#creation-stages
-[doc_upload]: https://chromium.googlesource.com/infra/infra/+/master/recipes/README.recipes.md#upload
+[`spec.proto`]: https://chromium.googlesource.com/infra/infra/+/main/recipes/recipe_modules/support_3pp/spec.proto
+[doc_create]: https://chromium.googlesource.com/infra/infra/+/main/recipes/README.recipes.md#creation-stages
+[doc_upload]: https://chromium.googlesource.com/infra/infra/+/main/recipes/README.recipes.md#upload
 
 Staying with the example from above, the file `sample_cipd_dep/3pp/3pp.pb` may
 be like the following:
@@ -355,7 +355,7 @@ cipd_package_definition("my_cipd_package") {
   sources = [ "//path/to:test_binary_file" ]
 }
 ```
-[build/cipd/cipd.gni]: https://source.chromium.org/chromium/chromium/src/+/master:build/cipd/cipd.gni
+[build/cipd/cipd.gni]: https://source.chromium.org/chromium/chromium/src/+/main:build/cipd/cipd.gni
 
 ### Permissions in CIPD
 

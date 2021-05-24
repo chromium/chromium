@@ -13,7 +13,7 @@ See below for how the process differs on ChromeOS.
 
 Shutdown starts when nothing keeps Chrome alive. Typically, this happens when
 all browser windows are closed, but other things can [keep Chrome
-alive](https://source.chromium.org/chromium/chromium/src/+/master:components/keep_alive_registry/keep_alive_types.h).
+alive](https://source.chromium.org/chromium/chromium/src/+/main:components/keep_alive_registry/keep_alive_types.h).
 
 When nothing keeps Chrome alive, `BrowserProcessImpl::Unpin` asks the main
 thread's message loop to quit as soon as it no longer has tasks ready to run

@@ -90,7 +90,7 @@
 * **Largest Contentful Paint**: include removed nodes ([bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1045640))
   and ignored images occupying the full viewport ([bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1133883)).
 * **Cumulative Layout Shift**: implemented various fixes, see
-  [changelog](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/metrics_changelog/README.md).
+  [changelog](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/metrics_changelog/README.md).
 
 ## 2020 Q4 Objectives
 
@@ -156,7 +156,7 @@
   * [LargestContentfulPaint](#lcp-20203):
     * Did analysis on how LCP would change when removed content is included.
     * Ignored paints occurring with opacity 0.
-  * CumulativeLayoutShift [fixes](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/metrics_changelog/cls.md):
+  * CumulativeLayoutShift [fixes](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/metrics_changelog/cls.md):
     * Ignored shifts from video thumb sliders.
     * Fixed computations for ink overflow and transforms.
     * Updated computations when child moves alongside their parent element.

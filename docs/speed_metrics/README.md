@@ -22,7 +22,7 @@ incentives they need to improve it. We aim to:
 Chrome needs a small, consistent set of high quality user experience metrics.
 Chrome Speed Metrics is responsible for authoring reference implementations of
 these metrics implemented using Trace Based Metrics v2 (TBMv2) in
-[tracing/metrics](https://source.chromium.org/chromium/chromium/src/+/master:third_party/catapult/tracing/tracing/metrics/).
+[tracing/metrics](https://source.chromium.org/chromium/chromium/src/+/main:third_party/catapult/tracing/tracing/metrics/).
 These reference implementations will often require adding C++ instrumentation.
 Some metrics work will also be driven by more focused metrics teams, such as the
 work on Frame Throughput. Chrome Speed Metrics also owns UMA/UKM metrics, and
@@ -51,7 +51,7 @@ improve Chrome’s UX.
 
 ### Own Core Metrics
 The Chrome Speed Metrics team will gradually gain ownership of
-[tracing/metrics](https://source.chromium.org/chromium/chromium/src/+/master:third_party/catapult/tracing/tracing/metrics/),
+[tracing/metrics](https://source.chromium.org/chromium/chromium/src/+/main:third_party/catapult/tracing/tracing/metrics/),
 and will be responsible for the long term code health of this directory. We’re
 also ramping up ownership in the Web Perf API space.
 

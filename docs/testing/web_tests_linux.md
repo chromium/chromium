@@ -1,6 +1,6 @@
 # Running web tests on Linux
 
-1.  Build `blink_tests` (see [Linux-specific build instructions](https://chromium.googlesource.com/chromium/src/+/master/docs/linux/build_instructions.md))
+1.  Build `blink_tests` (see [Linux-specific build instructions](https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md))
 1.  Checkout the web tests
     *   If you have an entry in your `.gclient` file that includes
         "web_tests", you may need to comment it out and sync.
