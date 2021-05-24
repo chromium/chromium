@@ -13,6 +13,10 @@ class MockHyphenation : public Hyphenation {
  public:
   wtf_size_t LastHyphenLocation(const StringView&,
                                 wtf_size_t before_index) const override;
+
+  static scoped_refptr<MockHyphenation> Create() {
+    return base::AdoptRef(new MockHyphenation);
+  }
 };
 
 }  // namespace blink

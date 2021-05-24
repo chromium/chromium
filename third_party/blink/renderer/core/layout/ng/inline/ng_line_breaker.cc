@@ -157,6 +157,18 @@ void CollectCharIndex(void* context,
   index_list->push_back(char_index);
 }
 
+float ComputeWordWidth(const ShapeResult& shape_result,
+                       wtf_size_t start_offset,
+                       wtf_size_t end_offset) {
+  const wtf_size_t offset_adjust = shape_result.StartIndex();
+  const float start_position =
+      shape_result.CachedPositionForOffset(start_offset - offset_adjust);
+  const float end_position =
+      shape_result.CachedPositionForOffset(end_offset - offset_adjust);
+  return IsLtr(shape_result.Direction()) ? end_position - start_position
+                                         : start_position - end_position;
+}
+
 }  // namespace
 
 inline void NGLineBreaker::ClearNeedsLayout(const NGInlineItem& item) {
@@ -1079,10 +1091,6 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
   if (fast_min_content_item_ == &item)
     return false;
 
-  // Hyphenation is not supported yet.
-  if (hyphenation_)
-    return false;
-
   absl::optional<LineBreakType> saved_line_break_type;
   if (break_anywhere_if_overflow_ && !override_break_anywhere_) {
     saved_line_break_type = break_iterator_.BreakType();
@@ -1123,27 +1131,52 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
       has_hyphen = false;
     }
 
-    float start_position = shape_result.CachedPositionForOffset(
-        start_offset - shape_result.StartIndex());
-    float end_position = shape_result.CachedPositionForOffset(
-        non_hangable_run_end - shape_result.StartIndex());
-    float word_width = IsLtr(shape_result.Direction())
-                           ? end_position - start_position
-                           : start_position - end_position;
-
-    // Append hyphen-width to `word_width` if the word is hyphenated.
-    if (has_hyphen) {
-      DCHECK_EQ(item_result->item, &item);
+    if (UNLIKELY(hyphenation_)) {
+      // When 'hyphens: auto', compute all hyphenation opportunities.
       if (!hyphen_inline_size) {
         if (!item_result->hyphen_shape_result)
           item_result->ShapeHyphen();
         hyphen_inline_size = item_result->HyphenInlineSize();
       }
-      word_width = (LayoutUnit::FromFloatCeil(word_width) + *hyphen_inline_size)
-                       .ToFloat();
-    }
+      wtf_size_t word_len = non_hangable_run_end - start_offset;
+      const StringView word(text, start_offset, word_len);
+      Vector<wtf_size_t, 8> locations = hyphenation_->HyphenLocations(word);
+      // |locations| is a list of hyphenation points in the descending order.
+      // Append 0 to process all parts the same way.
+      DCHECK(std::is_sorted(locations.rbegin(), locations.rend()));
+      DCHECK(!locations.Contains(0u));
+      DCHECK(!locations.Contains(word_len));
+      locations.push_back(0);
+      LayoutUnit max_part_width;
+      for (const wtf_size_t location : locations) {
+        LayoutUnit part_width = LayoutUnit::FromFloatCeil(ComputeWordWidth(
+            shape_result, start_offset + location, start_offset + word_len));
+        if (has_hyphen)
+          part_width += *hyphen_inline_size;
+        max_part_width = std::max(part_width, max_part_width);
+        word_len = location;
+        has_hyphen = true;
+      }
+      min_width = std::max(max_part_width.ToFloat(), min_width);
+    } else {
+      float word_width =
+          ComputeWordWidth(shape_result, start_offset, non_hangable_run_end);
 
-    min_width = std::max(word_width, min_width);
+      // Append hyphen-width to `word_width` if the word is hyphenated.
+      if (has_hyphen) {
+        DCHECK_EQ(item_result->item, &item);
+        if (!hyphen_inline_size) {
+          if (!item_result->hyphen_shape_result)
+            item_result->ShapeHyphen();
+          hyphen_inline_size = item_result->HyphenInlineSize();
+        }
+        word_width =
+            (LayoutUnit::FromFloatCeil(word_width) + *hyphen_inline_size)
+                .ToFloat();
+      }
+
+      min_width = std::max(word_width, min_width);
+    }
 
     last_end_offset = non_hangable_run_end;
     // TODO (jfernandez): I think that having the non_hangable_run_end

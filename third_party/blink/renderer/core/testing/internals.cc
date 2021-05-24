@@ -2354,8 +2354,7 @@ bool Internals::canHyphenate(const AtomicString& locale) {
 }
 
 void Internals::setMockHyphenation(const AtomicString& locale) {
-  LayoutLocale::SetHyphenationForTesting(locale,
-                                         base::AdoptRef(new MockHyphenation));
+  LayoutLocale::SetHyphenationForTesting(locale, MockHyphenation::Create());
 }
 
 unsigned Internals::numberOfLiveNodes() const {
