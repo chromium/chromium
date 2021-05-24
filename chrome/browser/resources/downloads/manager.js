@@ -16,9 +16,9 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
 import {FindShortcutBehavior, FindShortcutBehaviorInterface} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
@@ -112,11 +112,8 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     /** @private {?Array<number>} */
     this.listenerIds_ = null;
 
-    /** @private {?Function} */
-    this.boundOnKeyDown_ = null;
-
-    /** @private {?Function} */
-    this.boundOnClick_ = null;
+    /** @private {!EventTracker} */
+    this.eventTracker_ = new EventTracker();
 
     // Regular expression that captures the leading slash, the content and the
     // trailing slash in three different groups.
@@ -143,11 +140,8 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
       this.mojoEventTarget_.updateItem.addListener(this.updateItem_.bind(this)),
     ];
 
-    this.boundOnKeyDown_ = e => this.onKeyDown_(e);
-    document.addEventListener('keydown', this.boundOnKeyDown_);
-
-    this.boundOnClick_ = this.onClick_.bind(this);
-    document.addEventListener('click', this.boundOnClick_);
+    this.eventTracker_.add(document, 'keydown', e => this.onKeyDown_(e));
+    this.eventTracker_.add(document, 'click', () => this.onClick_());
 
     this.loaded_.promise.then(() => {
       requestIdleCallback(function() {
@@ -173,10 +167,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.listenerIds_.forEach(
         id => assert(this.mojoEventTarget_.removeListener(id)));
 
-    document.removeEventListener('keydown', this.boundOnKeyDown_);
-    this.boundOnKeyDown_ = null;
-    document.removeEventListener('click', this.boundOnClick_);
-    this.boundOnClick_ = null;
+    this.eventTracker_.removeAll();
   }
 
   /** @private */

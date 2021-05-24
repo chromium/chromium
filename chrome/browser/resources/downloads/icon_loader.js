@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {getFileIconUrl} from 'chrome://resources/js/icon.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 export class IconLoader {
   constructor() {
-    /** @private {!Object<!PromiseResolver<boolean>>} */
-    this.iconResolvers_ = {};
+    /** @private {!Map<string, !PromiseResolver<boolean>>} */
+    this.iconResolvers_ = new Map();
 
     /** @private {!Set<!HTMLImageElement>} */
     this.listeningImages_ = new Set();
@@ -24,8 +23,8 @@ export class IconLoader {
   loadIcon(imageEl, filePath) {
     const url = getFileIconUrl(filePath);
 
-    if (!this.iconResolvers_[url]) {
-      this.iconResolvers_[url] = new PromiseResolver();
+    if (!this.iconResolvers_.has(url)) {
+      this.iconResolvers_.set(url, new PromiseResolver());
     }
 
     if (!this.listeningImages_.has(imageEl)) {
@@ -36,7 +35,7 @@ export class IconLoader {
 
     imageEl.src = url;
 
-    return assert(this.iconResolvers_[url]).promise;
+    return assert(this.iconResolvers_.get(url)).promise;
   }
 
   /**
@@ -44,11 +43,22 @@ export class IconLoader {
    * @private
    */
   finishedLoading_(e) {
-    const resolver = assert(this.iconResolvers_[e.currentTarget.src]);
+    const resolver = assert(this.iconResolvers_.get(e.currentTarget.src));
     if (!resolver.isFulfilled) {
       resolver.resolve(e.type === 'load');
     }
   }
+
+  /** @return {!IconLoader} */
+  static getInstance() {
+    return instance || (instance = new IconLoader());
+  }
+
+  /** @param {!IconLoader} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(IconLoader);
+/** @type {?IconLoader} */
+let instance = null;

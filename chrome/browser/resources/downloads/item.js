@@ -580,7 +580,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       this.$.url.href = assert(this.data.url);
       const path = this.data.filePath;
       IconLoader.getInstance()
-          .loadIcon(this.$['file-icon'], path)
+          .loadIcon(
+              /** @type {!HTMLImageElement} */ (this.$['file-icon']), path)
           .then(success => {
             if (path === this.data.filePath &&
                 this.data.state !== States.ASYNC_SCANNING) {

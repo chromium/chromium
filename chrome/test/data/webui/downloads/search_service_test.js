@@ -27,7 +27,7 @@ test('splitTerms', function() {
 });
 
 test('searchWithSimilarTerms', function() {
-  BrowserProxy.instance_ = new TestDownloadsProxy();
+  BrowserProxy.setInstance(new TestDownloadsProxy());
   class TestSearchService extends SearchService {
     loadMore() { /* Remove call to backend. */
     }

@@ -22,10 +22,10 @@ suite('item tests', function() {
     document.body.innerHTML = '';
 
     // This isn't strictly necessary, but is a probably good idea.
-    BrowserProxy.instance_ = new TestDownloadsProxy;
+    BrowserProxy.setInstance(new TestDownloadsProxy());
 
-    testIconLoader = new TestIconLoader;
-    IconLoader.instance_ = testIconLoader;
+    testIconLoader = new TestIconLoader();
+    IconLoader.setInstance(testIconLoader);
 
     item = document.createElement('downloads-item');
     document.body.appendChild(item);

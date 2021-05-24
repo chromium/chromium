@@ -22,7 +22,7 @@ suite('toolbar tests', function() {
 
     document.body.innerHTML = '';
     toolbar = document.createElement('downloads-toolbar');
-    SearchService.instance_ = new TestSearchService;
+    SearchService.setInstance(new TestSearchService());
     document.body.appendChild(toolbar);
 
     toastManager = document.createElement('cr-toast-manager');

@@ -138,10 +138,7 @@ js_type_check("closure_compile") {
 }
 
 js_library("browser_proxy") {
-  deps = [
-    "//chrome/browser/ui/webui/downloads:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:cr.m",
-  ]
+  deps = [ "//chrome/browser/ui/webui/downloads:mojo_bindings_webui_js" ]
 }
 
 js_library("constants") {
@@ -154,7 +151,6 @@ js_library("data") {
 js_library("icon_loader") {
   deps = [
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:icon.m",
     "//ui/webui/resources/js:promise_resolver.m",
   ]
@@ -186,6 +182,7 @@ js_library("manager") {
     "//ui/webui/resources/cr_elements:find_shortcut_behavior",
     "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
     "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:promise_resolver.m",
     "//ui/webui/resources/js:util.m",
@@ -196,7 +193,6 @@ js_library("manager") {
 js_library("search_service") {
   deps = [
     ":browser_proxy",
-    "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }

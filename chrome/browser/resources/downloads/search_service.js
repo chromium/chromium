@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {BrowserProxy} from './browser_proxy.js';
@@ -69,6 +68,17 @@ export class SearchService {
     this.loadMore();
     return true;
   }
+
+  /** @return {!SearchService} */
+  static getInstance() {
+    return instance || (instance = new SearchService());
+  }
+
+  /** @param {!SearchService} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(SearchService);
+/** @type {?SearchService} */
+let instance = null;

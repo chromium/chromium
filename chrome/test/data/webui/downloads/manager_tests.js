@@ -31,7 +31,7 @@ suite('manager tests', function() {
 
     testBrowserProxy = new TestDownloadsProxy();
     callbackRouterRemote = testBrowserProxy.callbackRouterRemote;
-    BrowserProxy.instance_ = testBrowserProxy;
+    BrowserProxy.setInstance(testBrowserProxy);
 
     manager = document.createElement('downloads-manager');
     document.body.appendChild(manager);
