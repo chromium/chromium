@@ -5,16 +5,12 @@
 #ifndef ASH_WM_OVERVIEW_OVERVIEW_GRID_EVENT_HANDLER_H_
 #define ASH_WM_OVERVIEW_OVERVIEW_GRID_EVENT_HANDLER_H_
 
-#include "base/macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/compositor/compositor_animation_observer.h"
+#include <memory>
+
 #include "ui/events/event_handler.h"
-#include "ui/gfx/geometry/point.h"
 
 namespace ui {
-class Compositor;
 class Event;
-class FlingCurve;
 class GestureEvent;
 class MouseEvent;
 }  // namespace ui
@@ -22,6 +18,7 @@ class MouseEvent;
 namespace ash {
 class OverviewGrid;
 class OverviewSession;
+class WmFlingHandler;
 
 // This event handler receives events in the pre-target phase and takes care of
 // the following:
@@ -29,28 +26,26 @@ class OverviewSession;
 //   - Disabling overview mode on mouse release.
 //   - Scrolling through tablet overview mode on scrolling.
 //   - Scrolling through tablet overview mode on flinging.
-class OverviewGridEventHandler : public ui::EventHandler,
-                                 public ui::CompositorAnimationObserver {
+class OverviewGridEventHandler : public ui::EventHandler {
  public:
   explicit OverviewGridEventHandler(OverviewGrid* grid);
+  OverviewGridEventHandler(const OverviewGridEventHandler&) = delete;
+  OverviewGridEventHandler& operator=(const OverviewGridEventHandler&) = delete;
   ~OverviewGridEventHandler() override;
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  bool IsFlingInProgressForTesting() const { return !!fling_curve_; }
+  bool IsFlingInProgressForTesting() const { return !!fling_handler_; }
 
  private:
-  // ui::CompositorAnimationObserver:
-  void OnAnimationStep(base::TimeTicks timestamp) override;
-  void OnCompositingShuttingDown(ui::Compositor* compositor) override;
-
   void HandleClickOrTap(ui::Event* event);
 
   void HandleFlingScroll(ui::GestureEvent* event);
 
-  void EndFling();
+  bool OnFlingStep(float offset);
+  void OnFlingEnd();
 
   // Cached value of the OverviewGrid that handles a series of gesture scroll
   // events. Guaranteed to be alive during the lifetime of |this|.
@@ -63,23 +58,9 @@ class OverviewGridEventHandler : public ui::EventHandler,
   // make minuscule shifts on the grid, but are not completely ignored.
   float scroll_offset_x_cumulative_ = 0.f;
 
-  // Gesture curve of the current active fling. nullptr while a fling is not
+  // Fling handler of the current active fling. Nullptr while a fling is not
   // active.
-  // TODO(chinsenj|sammiequon): Extract common logic between window cycle list's
-  // and overview grid's fling logic into common class.
-  std::unique_ptr<ui::FlingCurve> fling_curve_;
-
-  // Velocity of the fling that will gradually decrease during a fling.
-  gfx::Vector2dF fling_velocity_;
-
-  // Cached value of an earlier offset that determines values to scroll through
-  // overview mode by being compared to an updated offset.
-  absl::optional<gfx::Vector2dF> fling_last_offset_;
-
-  // The compositor we are observing when a fling is underway.
-  ui::Compositor* observed_compositor_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewGridEventHandler);
+  std::unique_ptr<WmFlingHandler> fling_handler_;
 };
 
 }  // namespace ash
