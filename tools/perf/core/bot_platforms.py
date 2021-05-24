@@ -485,6 +485,10 @@ _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('blink_perf.shadow_dom'),
 ])
+_ANDROID_PIXEL2_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('system_health.common_mobile'),
+    _GetBenchmarkConfig('system_health.memory_mobile'),
+])
 
 
 # Linux
@@ -648,6 +652,14 @@ LINUX_PERF_CALIBRATION = PerfPlatform(
     _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS,
     28,
     'linux',
+    is_calibration=True)
+
+ANDROID_PIXEL2_PERF_CALIBRATION = PerfPlatform(
+    'android-pixel2-perf-calibration',
+    'Android OPM1.171019.021',
+    _ANDROID_PIXEL2_PERF_CALIBRATION_BENCHMARK_CONFIGS,
+    42,
+    'android',
     is_calibration=True)
 
 ALL_PLATFORMS = {

@@ -11,6 +11,7 @@
  * [Android Nexus5 Perf](https://ci.chromium.org/p/chrome/builders/ci/Android%20Nexus5%20Perf): Android KOT49H.
  * [Android Nexus5X WebView Perf](https://ci.chromium.org/p/chrome/builders/ci/Android%20Nexus5X%20WebView%20Perf): Android AOSP MOB30K.
  * [android-pixel2-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2-perf): Android OPM1.171019.021.
+ * [android-pixel2-perf-calibration](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2-perf-calibration): Android OPM1.171019.021.
  * [android-pixel2_weblayer-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2_weblayer-perf): Android OPM1.171019.021.
  * [android-pixel2_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2_webview-perf): Android OPM1.171019.021.
  * [android-pixel4-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4-perf): Android R.
