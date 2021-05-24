@@ -1614,4 +1614,56 @@ TEST_F(CompositorFrameSinkSupportTest, ForceFullFrameToActivateSurface) {
   begin_frame_source.TestOnBeginFrame(args_animate_only);
 }
 
+TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestSize) {
+  // No surface with active frame.
+  EXPECT_EQ((gfx::Size{}),
+            support_->GetCopyOutputRequestSize(SubtreeCaptureId{}));
+
+  // Surface with active frame but no capture identifier.
+  ResourceId first_frame_ids[] = {ResourceId(1), ResourceId(2), ResourceId(3)};
+  SubmitCompositorFrameWithResources(first_frame_ids,
+                                     base::size(first_frame_ids));
+  EXPECT_EQ((gfx::Size{20, 20}),
+            support_->GetCopyOutputRequestSize(SubtreeCaptureId{}));
+
+  // Render pass with subtree size.
+  const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
+  constexpr SubtreeCaptureId kSubtreeId1(22);
+
+  auto frame = CompositorFrameBuilder()
+                   .AddDefaultRenderPass()
+                   .AddDefaultRenderPass()
+                   .SetReferencedSurfaces({SurfaceRange(surface_id)})
+                   .Build();
+  frame.render_pass_list.front()->subtree_capture_id = kSubtreeId1;
+  frame.render_pass_list.front()->subtree_size = gfx::Size{13, 37};
+  support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
+  EXPECT_EQ(surface_observer_.last_created_surface_id().local_surface_id(),
+            local_surface_id_);
+
+  EXPECT_EQ((gfx::Size{13, 37}),
+            support_->GetCopyOutputRequestSize(kSubtreeId1));
+
+  // Render pass but no subtree size.
+  constexpr SubtreeCaptureId kSubtreeId2(7);
+
+  auto frame_with_output_size =
+      CompositorFrameBuilder()
+          .AddDefaultRenderPass()
+          .AddDefaultRenderPass()
+          .SetReferencedSurfaces({SurfaceRange(surface_id)})
+          .Build();
+  frame_with_output_size.render_pass_list.front()->subtree_capture_id =
+      kSubtreeId2;
+  frame_with_output_size.render_pass_list.front()->output_rect =
+      gfx::Rect{0, 0, 640, 480};
+  support_->SubmitCompositorFrame(local_surface_id_,
+                                  std::move(frame_with_output_size));
+  EXPECT_EQ(surface_observer_.last_created_surface_id().local_surface_id(),
+            local_surface_id_);
+
+  EXPECT_EQ((gfx::Size{640, 480}),
+            support_->GetCopyOutputRequestSize(kSubtreeId2));
+}
+
 }  // namespace viz

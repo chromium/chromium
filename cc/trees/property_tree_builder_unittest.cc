@@ -1827,5 +1827,32 @@ TEST_F(PropertyTreeBuilderTest,
                   kRoundedCorner4Radius * kDeviceScale);
 }
 
+TEST_F(PropertyTreeBuilderTest, SubtreeSize) {
+  constexpr viz::SubtreeCaptureId kCaptureId{42};
+
+  auto parent = Layer::Create();
+  host()->SetRootLayer(parent);
+  auto child = Layer::Create();
+  parent->AddChild(child);
+  child->SetSubtreeCaptureId(kCaptureId);
+
+  // Layer has empty bounds.
+  Commit(1.1f);
+  EffectNode* node = GetEffectNode(child.get());
+  EXPECT_EQ((gfx::Size{}), node->subtree_size);
+  EXPECT_EQ(kCaptureId, node->subtree_capture_id);
+
+  // Layer has bounds, scaling is 1.
+  child->SetBounds(gfx::Size{1280, 720});
+  Commit(1.0f);
+  node = GetEffectNode(child.get());
+  EXPECT_EQ((gfx::Size{1280, 720}), node->subtree_size);
+
+  // Layer has bounds, scaling is 2.
+  Commit(2.0f);
+  node = GetEffectNode(child.get());
+  EXPECT_EQ((gfx::Size{2560, 1440}), node->subtree_size);
+}
+
 }  // namespace
 }  // namespace cc

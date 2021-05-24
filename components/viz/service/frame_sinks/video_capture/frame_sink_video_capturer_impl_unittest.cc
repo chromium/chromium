@@ -249,11 +249,14 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
     client_ = nullptr;
   }
 
+  gfx::Size GetCopyOutputRequestSize(
+      SubtreeCaptureId subtree_id) const override {
+    return source_size();
+  }
+
   void OnClientCaptureStarted() override { ++number_clients_capturing_; }
 
   void OnClientCaptureStopped() override { --number_clients_capturing_; }
-
-  gfx::Size GetActiveFrameSize() override { return source_size(); }
 
   void RequestCopyOfOutput(
       PendingCopyOutputRequest pending_copy_output_request) override {

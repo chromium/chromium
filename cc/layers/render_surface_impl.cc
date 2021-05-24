@@ -160,6 +160,10 @@ viz::SubtreeCaptureId RenderSurfaceImpl::SubtreeCaptureId() const {
   return OwningEffectNode()->subtree_capture_id;
 }
 
+gfx::Size RenderSurfaceImpl::SubtreeSize() const {
+  return OwningEffectNode()->subtree_size;
+}
+
 bool RenderSurfaceImpl::ShouldCacheRenderSurface() const {
   return OwningEffectNode()->cache_render_surface;
 }
@@ -391,6 +395,10 @@ RenderSurfaceImpl::CreateRenderPass() {
   pass->backdrop_filter_bounds = BackdropFilterBounds();
   pass->generate_mipmap = TrilinearFiltering();
   pass->subtree_capture_id = SubtreeCaptureId();
+  // The subtree size may be slightly larger than our content rect during
+  // some animations, so we clamp it here.
+  pass->subtree_size = SubtreeSize();
+  pass->subtree_size.SetToMin(content_rect().size());
   pass->cache_render_pass = ShouldCacheRenderSurface();
   pass->has_damage_from_contributing_content =
       HasDamageFromeContributingContent();

@@ -712,9 +712,9 @@ TEST_F(StructTraitsTest, RenderPass) {
   auto input = CompositorRenderPass::Create();
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 filters, backdrop_filters, backdrop_filter_bounds,
-                subtree_capture_id, has_transparent_background,
-                cache_render_pass, has_damage_from_contributing_content,
-                generate_mipmap);
+                subtree_capture_id, output_rect.size(),
+                has_transparent_background, cache_render_pass,
+                has_damage_from_contributing_content, generate_mipmap);
   input->copy_requests.push_back(CopyOutputRequest::CreateStubForTesting());
   const gfx::Rect copy_output_area(24, 42, 75, 57);
   input->copy_requests.back()->set_area(copy_output_area);
@@ -856,7 +856,7 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   auto input = CompositorRenderPass::Create();
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 cc::FilterOperations(), cc::FilterOperations(),
-                backdrop_filter_bounds, subtree_capture_id,
+                backdrop_filter_bounds, subtree_capture_id, output_rect.size(),
                 has_transparent_background, cache_render_pass,
                 has_damage_from_contributing_content, generate_mipmap);
 
@@ -875,6 +875,7 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   EXPECT_EQ(transform_to_root, output->transform_to_root_target);
   EXPECT_EQ(backdrop_filter_bounds, output->backdrop_filter_bounds);
   EXPECT_EQ(subtree_capture_id, output->subtree_capture_id);
+  EXPECT_EQ(output_rect.size(), output->subtree_size);
   EXPECT_FALSE(output->subtree_capture_id.is_valid());
   EXPECT_EQ(has_transparent_background, output->has_transparent_background);
 }

@@ -139,8 +139,9 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   auto pass = CompositorRenderPass::Create();
   pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
                backdrop_filters, backdrop_filter_bounds, SubtreeCaptureId{1u},
-               has_transparent_background, cache_render_pass,
-               has_damage_from_contributing_content, generate_mipmap);
+               output_rect.size(), has_transparent_background,
+               cache_render_pass, has_damage_from_contributing_content,
+               generate_mipmap);
 
   // Two quads using one shared state.
   SharedQuadState* shared_state1 = pass->CreateAndAppendSharedQuadState();
@@ -192,12 +193,13 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   bool contrib_generate_mipmap = false;
 
   auto contrib = CompositorRenderPass::Create();
-  contrib->SetAll(
-      contrib_id, contrib_output_rect, contrib_damage_rect,
-      contrib_transform_to_root, contrib_filters, contrib_backdrop_filters,
-      contrib_backdrop_filter_bounds, SubtreeCaptureId{2u},
-      contrib_has_transparent_background, contrib_cache_render_pass,
-      contrib_has_damage_from_contributing_content, contrib_generate_mipmap);
+  contrib->SetAll(contrib_id, contrib_output_rect, contrib_damage_rect,
+                  contrib_transform_to_root, contrib_filters,
+                  contrib_backdrop_filters, contrib_backdrop_filter_bounds,
+                  SubtreeCaptureId{2u}, contrib_output_rect.size(),
+                  contrib_has_transparent_background, contrib_cache_render_pass,
+                  contrib_has_damage_from_contributing_content,
+                  contrib_generate_mipmap);
 
   SharedQuadState* contrib_shared_state =
       contrib->CreateAndAppendSharedQuadState();
@@ -249,8 +251,9 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
   auto pass = CompositorRenderPass::Create();
   pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
                backdrop_filters, backdrop_filter_bounds, SubtreeCaptureId(),
-               has_transparent_background, cache_render_pass,
-               has_damage_from_contributing_content, generate_mipmap);
+               output_rect.size(), has_transparent_background,
+               cache_render_pass, has_damage_from_contributing_content,
+               generate_mipmap);
 
   // A shared state with a quad.
   SharedQuadState* shared_state1 = pass->CreateAndAppendSharedQuadState();

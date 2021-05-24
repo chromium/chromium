@@ -20,6 +20,7 @@
 #include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/service/display/display.h"
@@ -896,18 +897,36 @@ void CompositorFrameSinkSupport::OnClientCaptureStopped() {
   }
 }
 
-gfx::Size CompositorFrameSinkSupport::GetActiveFrameSize() {
-  if (last_activated_surface_id_.is_valid()) {
-    Surface* current_surface =
-        surface_manager_->GetSurfaceForId(last_activated_surface_id_);
-    DCHECK(current_surface);
-    if (current_surface->HasActiveFrame()) {
-      DCHECK(current_surface->GetActiveFrame().size_in_pixels() ==
-             current_surface->size_in_pixels());
-      return current_surface->size_in_pixels();
+gfx::Size CompositorFrameSinkSupport::GetCopyOutputRequestSize(
+    SubtreeCaptureId subtree_id) const {
+  if (!last_activated_surface_id_.is_valid()) {
+    return {};
+  }
+
+  Surface* current_surface =
+      surface_manager_->GetSurfaceForId(last_activated_surface_id_);
+  DCHECK(current_surface);
+  if (!current_surface->HasActiveFrame()) {
+    return {};
+  }
+
+  // If a subtree is not specified, use the size of the root (last)
+  // render pass instead.
+  const CompositorFrame& frame = current_surface->GetActiveFrame();
+  if (!subtree_id.is_valid()) {
+    return frame.size_in_pixels();
+  }
+
+  for (auto& render_pass : frame.render_pass_list) {
+    if (render_pass->subtree_capture_id == subtree_id) {
+      return !render_pass->subtree_size.IsEmpty()
+                 ? render_pass->subtree_size
+                 : render_pass->output_rect.size();
     }
   }
-  return gfx::Size();
+
+  // No target exists and no CopyOutputRequest will be added.
+  return {};
 }
 
 void CompositorFrameSinkSupport::RequestCopyOfOutput(

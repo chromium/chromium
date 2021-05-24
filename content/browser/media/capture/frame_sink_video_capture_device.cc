@@ -120,8 +120,8 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
                                       constraints.max_frame_size,
                                       constraints.fixed_aspect_ratio);
 
-  if (target_.is_valid()) {
-    capturer_->ChangeTarget(target_, viz::SubtreeCaptureId());
+  if (target_.frame_sink_id.is_valid()) {
+    capturer_->ChangeTarget(target_.frame_sink_id, target_.subtree_capture_id);
   }
 
 #if !defined(OS_ANDROID)
@@ -298,22 +298,22 @@ void FrameSinkVideoCaptureDevice::OnLog(const std::string& message) {
 }
 
 void FrameSinkVideoCaptureDevice::OnTargetChanged(
-    const viz::FrameSinkId& frame_sink_id) {
+    const FrameSinkVideoCaptureDevice::VideoCaptureTarget& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  target_ = frame_sink_id;
+  target_ = target;
   if (capturer_) {
-    capturer_->ChangeTarget(target_.is_valid()
-                                ? absl::make_optional<viz::FrameSinkId>(target_)
-                                : absl::nullopt,
-                            viz::SubtreeCaptureId());
+    capturer_->ChangeTarget(
+        target_.frame_sink_id.is_valid()
+            ? absl::make_optional<viz::FrameSinkId>(target_.frame_sink_id)
+            : absl::nullopt,
+        target.subtree_capture_id);
   }
 }
 
 void FrameSinkVideoCaptureDevice::OnTargetPermanentlyLost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  OnTargetChanged(viz::FrameSinkId());
+  OnTargetChanged(VideoCaptureTarget{});
   OnFatalError("Capture target has been permanently lost.");
 }
 

@@ -36,9 +36,11 @@ class CONTENT_EXPORT AuraWindowVideoCaptureDevice final
 #if BUILDFLAG(IS_CHROMEOS_ASH)
  protected:
   // Overrides FrameSinkVideoCaptureDevice::CreateCapturer() to create a
-  // LameWindowCapturerChromeOS for window capture where compositor frame sinks
-  // are not present. See class comments for LameWindowCapturerChromeOS for
-  // further details.
+  // SlowWindowCapturerChromeOS for window capture where compositor frame sinks
+  // are not present. If the new features::kAuraWindowSubtreeCapture flag is
+  // enabled, this will use the base's frame sink capture code.
+  // TODO(crbug.com/1210549): remove once we have determined the new path is
+  // stable.
   void CreateCapturer(
       mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver) final;
 #endif

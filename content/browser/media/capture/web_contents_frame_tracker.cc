@@ -234,8 +234,9 @@ void WebContentsFrameTracker::OnPossibleTargetChange() {
     target_frame_sink_id_ = frame_sink_id;
     device_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&WebContentsVideoCaptureDevice::OnTargetChanged, device_,
-                       frame_sink_id));
+        base::BindOnce(
+            &WebContentsVideoCaptureDevice::OnTargetChanged, device_,
+            FrameSinkVideoCaptureDevice::VideoCaptureTarget{frame_sink_id}));
   }
 
   SetTargetView(web_contents()->GetNativeView());

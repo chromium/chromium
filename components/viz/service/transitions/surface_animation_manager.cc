@@ -530,8 +530,8 @@ SurfaceAnimationManager::CopyPassWithoutSharedElementQuads(
       source_pass.id, source_pass.output_rect, source_pass.damage_rect,
       source_pass.transform_to_root_target, source_pass.filters,
       source_pass.backdrop_filters, source_pass.backdrop_filter_bounds,
-      source_pass.subtree_capture_id, source_pass.has_transparent_background,
-      source_pass.cache_render_pass,
+      source_pass.subtree_capture_id, source_pass.subtree_size,
+      source_pass.has_transparent_background, source_pass.cache_render_pass,
       source_pass.has_damage_from_contributing_content,
       source_pass.generate_mipmap);
 

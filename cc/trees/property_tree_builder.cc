@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "cc/base/math_util.h"
@@ -26,6 +27,7 @@
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace cc {
@@ -455,6 +457,23 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   node->opacity = layer->opacity();
   node->blend_mode = layer->blend_mode();
   node->subtree_capture_id = layer->subtree_capture_id();
+
+  // Layers marked with a valid |subtree_capture_id| represent a subsection
+  // of the tree that should be rendered and copied as a separate render pass.
+  // Using the layer bounds as the subtree size here allows us to crop out
+  // undesired sections of the render pass, such as the shadow added by the
+  // shadow layer.
+  //
+  // If it becomes desirable to capture a different sub-rectangle of the render
+  // pass, a new custom size (or potentially rect) can be plumbed through the
+  // layer to here.
+  if (node->subtree_capture_id.is_valid()) {
+    // Layer bounds are specified in layer space, which excludes device and
+    // page scale factors. While the page scale can be ignored for subtree
+    // capture purposes, the device scale must be accounted for here.
+    node->subtree_size = gfx::ScaleToFlooredSize(
+        layer->bounds(), layer_tree_host_->device_scale_factor());
+  }
   node->cache_render_surface = layer->cache_render_surface();
   node->has_copy_request = layer->HasCopyRequest();
   node->filters = layer->filters();

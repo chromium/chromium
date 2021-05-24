@@ -86,9 +86,29 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   void OnStopped() final;
   void OnLog(const std::string& message) final;
 
+  // All of the information necessary to select a target for capture.
+  struct VideoCaptureTarget {
+    // The target frame sink id.
+    viz::FrameSinkId frame_sink_id;
+
+    // The subtree capture identifier--may be default initialized to indicate
+    // that the entire frame sink (defined by |frame_sink_id|) should be
+    // captured.
+    viz::SubtreeCaptureId subtree_capture_id;
+
+    inline bool operator==(const VideoCaptureTarget& other) const {
+      return frame_sink_id == other.frame_sink_id &&
+             subtree_capture_id == other.subtree_capture_id;
+    }
+
+    inline bool operator!=(const VideoCaptureTarget& other) const {
+      return !(*this == other);
+    }
+  };
+
   // These are called to notify when the capture target has changed or was
   // permanently lost.
-  virtual void OnTargetChanged(const viz::FrameSinkId& frame_sink_id);
+  virtual void OnTargetChanged(const VideoCaptureTarget& target);
   virtual void OnTargetPermanentlyLost();
 
  protected:
@@ -138,7 +158,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   // Current capture target. This is cached to resolve a race where
   // OnTargetChanged() can be called before the |capturer_| is created in
   // OnCapturerCreated().
-  viz::FrameSinkId target_;
+  VideoCaptureTarget target_;
 
   // The requested format, rate, and other capture constraints.
   media::VideoCaptureParams capture_params_;

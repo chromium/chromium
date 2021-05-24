@@ -53,13 +53,16 @@ class CapturableFrameSink {
   virtual void AttachCaptureClient(Client* client) = 0;
   virtual void DetachCaptureClient(Client* client) = 0;
 
+  // Returns the size of a render pass, either matching the |subtree_id| if set,
+  // or the root render pass if not set. Returns an empty size if (1) there is
+  // no active frame, or (2) |subtree_id| is valid/set and no matching render
+  // pass could be found.
+  virtual gfx::Size GetCopyOutputRequestSize(
+      SubtreeCaptureId subtree_id) const = 0;
+
   // Called when a video capture client starts or stops capturing.
   virtual void OnClientCaptureStarted() = 0;
   virtual void OnClientCaptureStopped() = 0;
-
-  // Returns the currently-active frame size, or an empty size if there is no
-  // active frame.
-  virtual gfx::Size GetActiveFrameSize() = 0;
 
   // Issues a request for a copy of the next composited frame whose
   // LocalSurfaceId is at least |local_surface_id|. Note that if this id is

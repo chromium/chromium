@@ -27,6 +27,7 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
       !data.ReadBackdropFilters(&(*out)->backdrop_filters) ||
       !data.ReadBackdropFilterBounds(&(*out)->backdrop_filter_bounds) ||
       !data.ReadSubtreeCaptureId(&(*out)->subtree_capture_id) ||
+      !data.ReadSubtreeSize(&(*out)->subtree_size) ||
       !data.ReadCopyRequests(&(*out)->copy_requests) ||
       !data.ReadId(&(*out)->id)) {
     return false;
@@ -34,6 +35,10 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
   // CompositorRenderPass ids are never zero.
   if (!(*out)->id) {
     viz::SetDeserializationCrashKeyString("Invalid render pass ID");
+    return false;
+  }
+  if ((*out)->subtree_size.width() > (*out)->output_rect.size().width() ||
+      (*out)->subtree_size.height() > (*out)->output_rect.size().height()) {
     return false;
   }
   (*out)->has_transparent_background = data.has_transparent_background();

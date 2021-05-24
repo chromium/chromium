@@ -2368,6 +2368,8 @@ source_set("browser") {
       ]
       deps += [ "//ui/base/cursor" ]
     }
+
+    # TODO(crbug.com/1210549): Slow capturer should be removed once new path is stable.
     if (is_chromeos_ash) {
       sources += [
         "media/capture/slow_capture_overlay_chromeos.cc",

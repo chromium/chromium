@@ -65,7 +65,7 @@ class FrameSinkVideoCapturerManager;
 // known to it.
 //
 // Once the target is resolved, this capturer attaches to it to receive events
-// of interest regarding the frame flow, display timiming, and changes to the
+// of interest regarding the frame flow, display timing, and changes to the
 // frame sink's surface. For some subset of frames, decided by
 // media::VideoCaptureOracle, this capturer will make a CopyOutputRequest on the
 // surface. Successful CopyOutputResults are then copied into pooled shared
@@ -203,7 +203,6 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                     OracleFrameNumber oracle_frame_number,
                     int64_t content_version,
                     const gfx::Rect& content_rect,
-                    VideoCaptureOverlay::OnceRenderer overlay_renderer,
                     scoped_refptr<media::VideoFrame> frame,
                     base::TimeTicks request_time,
                     std::unique_ptr<CopyOutputResult> result);

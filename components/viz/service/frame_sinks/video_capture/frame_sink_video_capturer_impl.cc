@@ -350,7 +350,8 @@ void FrameSinkVideoCapturerImpl::RefreshSoon() {
   }
 
   // Detect whether the source size changed before attempting capture.
-  const gfx::Size& source_size = resolved_target_->GetActiveFrameSize();
+  const gfx::Size source_size =
+      resolved_target_->GetCopyOutputRequestSize(request_subtree_id_);
   if (source_size.IsEmpty()) {
     // If the target's surface size is empty, that indicates it has not yet had
     // its first frame composited. Since having content is obviously a
@@ -358,12 +359,14 @@ void FrameSinkVideoCapturerImpl::RefreshSoon() {
     ScheduleRefreshFrame();
     return;
   }
+
   if (source_size != oracle_->source_size()) {
     oracle_->SetSourceSize(source_size);
     InvalidateEntireSource();
     if (log_to_webrtc_) {
       consumer_->OnLog(
-          base::StringPrintf("VFC: RefreshSoon() changed active frame size: %s",
+          base::StringPrintf("FrameSinkVideoCapturerImpl::RefreshSoon() "
+                             "changed active frame size: %s",
                              source_size.ToString().c_str()));
     }
   }
@@ -384,15 +387,28 @@ void FrameSinkVideoCapturerImpl::OnFrameDamaged(
   DCHECK(!expected_display_time.is_null());
   DCHECK(resolved_target_);
 
-  if (frame_size == oracle_->source_size()) {
-    InvalidateRect(damage_rect);
+  const gfx::Size pass_size =
+      resolved_target_->GetCopyOutputRequestSize(request_subtree_id_);
+  if (pass_size.IsEmpty()) {
+    return;
+  }
+
+  if (pass_size == oracle_->source_size()) {
+    if (request_subtree_id_.is_valid()) {
+      // The damage_rect may not be in the same coordinate space when we have
+      // a valid request subtree identifier, so to be safe we just invalidate
+      // the entire source.
+      InvalidateEntireSource();
+    } else {
+      InvalidateRect(damage_rect);
+    }
   } else {
-    oracle_->SetSourceSize(frame_size);
+    oracle_->SetSourceSize(pass_size);
     InvalidateEntireSource();
     if (log_to_webrtc_ && consumer_) {
-      consumer_->OnLog(
-          base::StringPrintf("VFC: OnFramedamaged() changed frame size: %s",
-                             frame_size.ToString().c_str()));
+      consumer_->OnLog(base::StringPrintf(
+          "FrameSinkVideoCapturerImpl::OnFrameDamaged() changed frame size: %s",
+          pass_size.ToString().c_str()));
     }
   }
 
@@ -634,7 +650,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
           strides = "strides:???";
       }
       consumer_->OnLog(base::StringPrintf(
-          "VFC: Ressurecting frame format=%s frame_coded_size: %s "
+          "FrameSinkVideoCapturerImpl: Resurrecting frame format=%s "
+          "frame_coded_size: %s "
           "frame_visible_rect: %s frame_natural_size: %s %s",
           VideoPixelFormatToString(frame->format()).c_str(),
           frame->coded_size().ToString().c_str(),
@@ -647,16 +664,14 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   }
 
   // Request a copy of the next frame from the frame sink.
-  std::unique_ptr<CopyOutputRequest> request(new CopyOutputRequest(
+  auto request = std::make_unique<CopyOutputRequest>(
       pixel_format_ == media::PIXEL_FORMAT_I420
           ? CopyOutputRequest::ResultFormat::I420_PLANES
           : CopyOutputRequest::ResultFormat::RGBA_BITMAP,
       base::BindOnce(&FrameSinkVideoCapturerImpl::DidCopyFrame,
                      capture_weak_factory_.GetWeakPtr(), capture_frame_number,
                      oracle_frame_number, content_version_, content_rect,
-                     VideoCaptureOverlay::MakeCombinedRenderer(
-                         GetOverlaysInOrder(), content_rect, frame->format()),
-                     std::move(frame), base::TimeTicks::Now())));
+                     std::move(frame), base::TimeTicks::Now()));
   request->set_result_task_runner(base::SequencedTaskRunnerHandle::Get());
   request->set_source(copy_request_source_);
   request->set_area(gfx::Rect(source_size));
@@ -676,7 +691,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     std::string format =
         pixel_format_ == media::PIXEL_FORMAT_I420 ? "I420" : "RGBA_bitmap";
     consumer_->OnLog(base::StringPrintf(
-        "VFC: Sending CopyRequest: "
+        "FrameSinkVideoCapturerImpl: Sending CopyRequest: "
         "format=%s area:%s "
         "scale_from: %s "
         "scale_to: %s "
@@ -695,7 +710,6 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     OracleFrameNumber oracle_frame_number,
     int64_t content_version,
     const gfx::Rect& content_rect,
-    VideoCaptureOverlay::OnceRenderer overlay_renderer,
     scoped_refptr<VideoFrame> frame,
     base::TimeTicks request_time,
     std::unique_ptr<CopyOutputResult> result) {
@@ -727,8 +741,9 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
         break;
     }
     consumer_->OnLog(base::StringPrintf(
-        "VFC: got CopyOutputResult: format=%s size:%s frame_coded_size: %s "
-        "frame_visible_rect: %s frame_natural_size: %s content_rect: %s %s",
+        "FrameSinkVideoCapturerImpl: got CopyOutputResult: format=%s size:%s "
+        "frame_coded_size: %s frame_visible_rect: %s frame_natural_size: %s "
+        "content_rect: %s %s",
         format.c_str(), result->size().ToString().c_str(),
         frame->coded_size().ToString().c_str(),
         frame->visible_rect().ToString().c_str(),
@@ -788,6 +803,8 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
   }
 
   if (frame) {
+    auto overlay_renderer = VideoCaptureOverlay::MakeCombinedRenderer(
+        GetOverlaysInOrder(), content_rect, frame->format());
     if (overlay_renderer) {
       std::move(overlay_renderer).Run(frame.get());
     }
@@ -878,9 +895,7 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
                          frame->timestamp().InMicroseconds());
 
   // Clone a handle to the shared memory backing the populated video frame, to
-  // send to the consumer. The handle is READ_WRITE because the consumer is free
-  // to modify the content further (so long as it undoes its changes before the
-  // InFlightFrameDelivery::Done() call).
+  // send to the consumer.
   base::ReadOnlySharedMemoryRegion handle =
       frame_pool_.CloneHandleForDelivery(frame.get());
   DCHECK(handle.IsValid());

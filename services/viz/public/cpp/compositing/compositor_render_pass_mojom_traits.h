@@ -62,9 +62,15 @@ struct StructTraits<viz::mojom::CompositorRenderPassDataView,
 
   static viz::SubtreeCaptureId subtree_capture_id(
       const std::unique_ptr<viz::CompositorRenderPass>& input) {
+    DCHECK_LE(input->subtree_size.width(), input->output_rect.size().width());
+    DCHECK_LE(input->subtree_size.height(), input->output_rect.size().height());
     return input->subtree_capture_id;
   }
 
+  static gfx::Size subtree_size(
+      const std::unique_ptr<viz::CompositorRenderPass>& input) {
+    return input->subtree_size;
+  }
   static bool has_transparent_background(
       const std::unique_ptr<viz::CompositorRenderPass>& input) {
     return input->has_transparent_background;

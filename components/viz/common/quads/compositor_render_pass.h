@@ -26,6 +26,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/rrect_f.h"
 #include "ui/gfx/transform.h"
 
@@ -70,6 +71,7 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
               const cc::FilterOperations& backdrop_filters,
               const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
               SubtreeCaptureId subtree_capture_id,
+              gfx::Size subtree_size,
               bool has_transparent_background,
               bool cache_render_pass,
               bool has_damage_from_contributing_content,
@@ -91,6 +93,12 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
   // A unique ID that identifies a layer subtree which produces this render
   // pass, so that it can be captured by a FrameSinkVideoCapturer.
   SubtreeCaptureId subtree_capture_id;
+
+  // A clip size in pixels indicating what subsection of the |output_rect|
+  // should be copied when |subtree_capture_id| is valid. Must be smaller or
+  // equal to |output_rect|. If empty, then the full |output_rect| should be
+  // copied.
+  gfx::Size subtree_size;
 
   // For testing functions.
   // TODO(vmpstr): See if we can clean these up by moving the tests to use
