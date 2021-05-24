@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/bubble/app_list_bubble.h"
+#include "ash/app_list/app_list_bubble_presenter.h"
 
 #include <memory>
 
@@ -19,15 +19,15 @@
 
 namespace ash {
 
-AppListBubble::AppListBubble() = default;
+AppListBubblePresenter::AppListBubblePresenter() = default;
 
-AppListBubble::~AppListBubble() {
+AppListBubblePresenter::~AppListBubblePresenter() {
   if (bubble_widget_)
     bubble_widget_->CloseNow();
   CHECK(!IsInObserverList());
 }
 
-void AppListBubble::Show(int64_t display_id) {
+void AppListBubblePresenter::Show(int64_t display_id) {
   DVLOG(1) << __PRETTY_FUNCTION__;
   if (bubble_widget_)
     return;
@@ -46,10 +46,11 @@ void AppListBubble::Show(int64_t display_id) {
   HomeButton* home_button = shelf->navigation_widget()->GetHomeButton();
   bubble_event_filter_ = std::make_unique<AppListBubbleEventFilter>(
       bubble_widget_, home_button,
-      base::BindRepeating(&AppListBubble::Dismiss, base::Unretained(this)));
+      base::BindRepeating(&AppListBubblePresenter::Dismiss,
+                          base::Unretained(this)));
 }
 
-void AppListBubble::Toggle(int64_t display_id) {
+void AppListBubblePresenter::Toggle(int64_t display_id) {
   DVLOG(1) << __PRETTY_FUNCTION__;
   if (bubble_widget_) {
     Dismiss();
@@ -58,18 +59,18 @@ void AppListBubble::Toggle(int64_t display_id) {
   Show(display_id);
 }
 
-void AppListBubble::Dismiss() {
+void AppListBubblePresenter::Dismiss() {
   DVLOG(1) << __PRETTY_FUNCTION__;
   if (!bubble_widget_)
     return;
   bubble_widget_->CloseNow();
 }
 
-bool AppListBubble::IsShowing() const {
+bool AppListBubblePresenter::IsShowing() const {
   return !!bubble_widget_;
 }
 
-void AppListBubble::OnWidgetDestroying(views::Widget* widget) {
+void AppListBubblePresenter::OnWidgetDestroying(views::Widget* widget) {
   // `bubble_event_filter_` holds a pointer to the widget.
   bubble_event_filter_.reset();
   bubble_widget_->RemoveObserver(this);

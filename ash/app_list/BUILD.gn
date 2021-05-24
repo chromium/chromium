@@ -9,6 +9,8 @@ assert(is_chromeos)
 
 source_set("app_list") {
   sources = [
+    "app_list_bubble_presenter.cc",
+    "app_list_bubble_presenter.h",
     "app_list_color_provider_impl.cc",
     "app_list_color_provider_impl.h",
     "app_list_controller_impl.cc",
@@ -22,8 +24,6 @@ source_set("app_list") {
     "app_list_util.cc",
     "app_list_util.h",
     "app_list_view_delegate.h",
-    "bubble/app_list_bubble.cc",
-    "bubble/app_list_bubble.h",
     "bubble/app_list_bubble_event_filter.cc",
     "bubble/app_list_bubble_event_filter.h",
     "bubble/app_list_bubble_view.cc",
@@ -212,13 +212,13 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "app_list_bubble_presenter_unittest.cc",
     "app_list_controller_impl_unittest.cc",
     "app_list_metrics_unittest.cc",
     "app_list_presenter_impl_unittest.cc",
     "app_list_presenter_unittest.cc",
     "app_list_unittest.cc",
     "bubble/app_list_bubble_event_filter_unittest.cc",
-    "bubble/app_list_bubble_unittest.cc",
     "bubble/app_list_bubble_view_unittest.cc",
     "folder_image_unittest.cc",
     "model/app_list_item_list_unittest.cc",

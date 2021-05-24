@@ -4,8 +4,8 @@
 
 #include "ash/app_list/bubble/app_list_bubble_view.h"
 
+#include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/bubble/app_list_bubble.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -47,8 +47,8 @@ class AppListBubbleViewTest : public AshTestBase {
   }
   ~AppListBubbleViewTest() override = default;
 
-  AppListBubble* GetAppListBubble() {
-    return Shell::Get()->app_list_controller()->app_list_bubble_for_test();
+  AppListBubblePresenter* GetBubblePresenter() {
+    return Shell::Get()->app_list_controller()->bubble_presenter_for_test();
   }
 
   base::test::ScopedFeatureList scoped_features_;
@@ -57,10 +57,10 @@ class AppListBubbleViewTest : public AshTestBase {
 TEST_F(AppListBubbleViewTest, BubbleOpensInBottomLeftForBottomShelf) {
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
 
-  AppListBubble* bubble = GetAppListBubble();
-  bubble->Show(GetPrimaryDisplay().id());
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
 
-  Widget* widget = bubble->bubble_widget_for_test();
+  Widget* widget = presenter->bubble_widget_for_test();
   EXPECT_TRUE(IsNear(widget->GetWindowBoundsInScreen().bottom_left(),
                      GetPrimaryDisplay().work_area().bottom_left()));
 }
@@ -68,10 +68,10 @@ TEST_F(AppListBubbleViewTest, BubbleOpensInBottomLeftForBottomShelf) {
 TEST_F(AppListBubbleViewTest, BubbleOpensInTopLeftForLeftShelf) {
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
 
-  AppListBubble* bubble = GetAppListBubble();
-  bubble->Show(GetPrimaryDisplay().id());
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
 
-  Widget* widget = bubble->bubble_widget_for_test();
+  Widget* widget = presenter->bubble_widget_for_test();
   EXPECT_TRUE(IsNear(widget->GetWindowBoundsInScreen().origin(),
                      GetPrimaryDisplay().work_area().origin()));
 }
@@ -79,10 +79,10 @@ TEST_F(AppListBubbleViewTest, BubbleOpensInTopLeftForLeftShelf) {
 TEST_F(AppListBubbleViewTest, BubbleOpensInTopRightForRightShelf) {
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
 
-  AppListBubble* bubble = GetAppListBubble();
-  bubble->Show(GetPrimaryDisplay().id());
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
 
-  Widget* widget = bubble->bubble_widget_for_test();
+  Widget* widget = presenter->bubble_widget_for_test();
   EXPECT_TRUE(IsNear(widget->GetWindowBoundsInScreen().top_right(),
                      GetPrimaryDisplay().work_area().top_right()));
 }
@@ -91,10 +91,10 @@ TEST_F(AppListBubbleViewTest, BubbleOpensInBottomRightForBottomShelfRTL) {
   base::test::ScopedRestoreICUDefaultLocale locale("he");
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
 
-  AppListBubble* bubble = GetAppListBubble();
-  bubble->Show(GetPrimaryDisplay().id());
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
 
-  Widget* widget = bubble->bubble_widget_for_test();
+  Widget* widget = presenter->bubble_widget_for_test();
   EXPECT_TRUE(IsNear(widget->GetWindowBoundsInScreen().bottom_right(),
                      GetPrimaryDisplay().work_area().bottom_right()));
 }

@@ -7,9 +7,9 @@
 #include <set>
 #include <string>
 
+#include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_test_view_delegate.h"
-#include "ash/app_list/bubble/app_list_bubble.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -1248,7 +1248,7 @@ TEST_F(AppListControllerImplAppListBubbleTest, ShowAppListOpensBubble) {
   auto* controller = Shell::Get()->app_list_controller();
   controller->ShowAppList();
 
-  EXPECT_TRUE(controller->app_list_bubble_for_test()->IsShowing());
+  EXPECT_TRUE(controller->bubble_presenter_for_test()->IsShowing());
 }
 
 TEST_F(AppListControllerImplAppListBubbleTest, ToggleAppListOpensBubble) {
@@ -1257,7 +1257,7 @@ TEST_F(AppListControllerImplAppListBubbleTest, ToggleAppListOpensBubble) {
                             AppListShowSource::kShelfButton,
                             /*event_time_stamp=*/{});
 
-  EXPECT_TRUE(controller->app_list_bubble_for_test()->IsShowing());
+  EXPECT_TRUE(controller->bubble_presenter_for_test()->IsShowing());
 }
 
 TEST_F(AppListControllerImplAppListBubbleTest, DismissAppListClosesBubble) {
@@ -1266,7 +1266,7 @@ TEST_F(AppListControllerImplAppListBubbleTest, DismissAppListClosesBubble) {
 
   controller->DismissAppList();
 
-  EXPECT_FALSE(controller->app_list_bubble_for_test()->IsShowing());
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
 }
 
 TEST_F(AppListControllerImplAppListBubbleTest,
@@ -1276,7 +1276,7 @@ TEST_F(AppListControllerImplAppListBubbleTest,
   auto* controller = Shell::Get()->app_list_controller();
   controller->ShowAppList();
 
-  EXPECT_FALSE(controller->app_list_bubble_for_test()->IsShowing());
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
 }
 
 TEST_F(AppListControllerImplAppListBubbleTest,
@@ -1288,7 +1288,7 @@ TEST_F(AppListControllerImplAppListBubbleTest,
                             AppListShowSource::kShelfButton,
                             /*event_time_stamp=*/{});
 
-  EXPECT_FALSE(controller->app_list_bubble_for_test()->IsShowing());
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
 }
 
 TEST_F(AppListControllerImplAppListBubbleTest, EnteringTabletModeClosesBubble) {
@@ -1297,7 +1297,7 @@ TEST_F(AppListControllerImplAppListBubbleTest, EnteringTabletModeClosesBubble) {
 
   EnableTabletMode();
 
-  EXPECT_FALSE(controller->app_list_bubble_for_test()->IsShowing());
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
 }
 
 }  // namespace ash

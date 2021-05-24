@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_H_
-#define ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_H_
+#ifndef ASH_APP_LIST_APP_LIST_BUBBLE_PRESENTER_H_
+#define ASH_APP_LIST_APP_LIST_BUBBLE_PRESENTER_H_
 
 #include <stdint.h>
 
@@ -19,10 +19,12 @@ class AppListBubbleEventFilter;
 // Manages the UI for the bubble launcher used in clamshell mode. Handles
 // showing and hiding the UI. Only one bubble can be visible at a time, across
 // all displays.
-class ASH_EXPORT AppListBubble : public views::WidgetObserver {
+class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
  public:
-  AppListBubble();
-  ~AppListBubble() override;
+  AppListBubblePresenter();
+  AppListBubblePresenter(const AppListBubblePresenter&) = delete;
+  AppListBubblePresenter& operator=(const AppListBubblePresenter&) = delete;
+  ~AppListBubblePresenter() override;
 
   // Shows the bubble on the display with `display_id`.
   void Show(int64_t display_id);
@@ -51,4 +53,4 @@ class ASH_EXPORT AppListBubble : public views::WidgetObserver {
 
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_H_
+#endif  // ASH_APP_LIST_APP_LIST_BUBBLE_PRESENTER_H_
