@@ -4474,6 +4474,7 @@ crbug.com/669329 http/tests/devtools/tracing/timeline-js/timeline-runtime-stats.
 crbug.com/769347 [ Mac ] fast/dom/inert/inert-node-is-uneditable.html [ Failure ]
 
 crbug.com/769056 virtual/text-antialias/emoji-web-font.html [ Failure ]
+crbug.com/1159689 [ Mac ] virtual/text-antialias/emoticons.html [ Pass Failure ]
 
 crbug.com/770232 [ Win10 ] virtual/text-antialias/hyphenate-character.html [ Failure ]
 
