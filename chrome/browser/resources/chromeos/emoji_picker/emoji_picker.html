@@ -11,10 +11,8 @@
     /* Values set in css only. */
     --emoji-group-tabs-left: 0;
     --emoji-divider-color: var(--google-grey-200);
+    --emoji-picker-bottom-padding: 14px;
     /* Actual properties of the emoji picker */
-
-
-
     display: flex;
     flex-direction: column;
     font-family: 'Roboto', sans-serif;
@@ -82,6 +80,7 @@
     flex-grow: 1;
     flex-shrink: 1;
     overflow-y: scroll;
+    padding-bottom: var(--emoji-picker-bottom-padding);
   }
 
   .chevron {
