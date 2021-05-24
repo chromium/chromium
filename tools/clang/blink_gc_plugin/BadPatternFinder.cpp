@@ -63,11 +63,11 @@ class OptionalGarbageCollectedMatcher : public MatchFinder::MatchCallback {
       : diagnostics_(diagnostics) {}
 
   void Register(MatchFinder& match_finder) {
-    // Matches fields and new-expressions of type base::Optional where the
+    // Matches fields and new-expressions of type absl::optional where the
     // template argument is known to refer to a garbage-collected type.
     auto optional_type = hasType(
         classTemplateSpecializationDecl(
-            hasName("::base::Optional"),
+            hasName("::absl::optional"),
             hasTemplateArgument(0, refersToType(GarbageCollectedType())))
             .bind("optional"));
     auto optional_field = fieldDecl(optional_type).bind("bad_field");

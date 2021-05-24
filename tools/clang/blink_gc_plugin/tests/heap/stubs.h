@@ -169,12 +169,12 @@ std::unique_ptr<T> WrapUnique(T* ptr) {
   return std::unique_ptr<T>();
 }
 
-template <typename T>
-class Optional {};
-
 }  // namespace base
 
 namespace absl {
+
+template <typename T>
+class optional {};
 
 template <class... Ts>
 class variant {};
