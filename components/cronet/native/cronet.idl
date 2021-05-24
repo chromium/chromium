@@ -135,7 +135,7 @@ struct Error {
    * Cronet internal error code. This may provide more specific error
    * diagnosis than |error_code|, but the constant values may change over time.
    * See
-   * <a href=https://chromium.googlesource.com/chromium/src/+/master/net/base/net_error_list.h>
+   * <a href=https://chromium.googlesource.com/chromium/src/+/main/net/base/net_error_list.h>
    * here</a> for the lastest list of values.
    */
   int32 internal_error_code = 0;

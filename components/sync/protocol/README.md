@@ -10,7 +10,7 @@ General guidelines:
 
 Some specific guidelines on top of the general ones above, or just things that often come up:
 * Enum entries should be in ALL_CAPS (different from C++!), and for new code, the first entry should be a `FOO_UNSPECIFIED = 0` one.
-* Proto changes also require corresponding changes in [proto_visitors.h](https://source.chromium.org/chromium/chromium/src/+/master:components/sync/protocol/proto_visitors.h) and (where appropriate) in [proto_enum_conversions.h/cc](https://source.chromium.org/chromium/chromium/src/+/master:components/sync/protocol/proto_enum_conversions.cc).
+* Proto changes also require corresponding changes in [proto_visitors.h](https://source.chromium.org/chromium/chromium/src/+/main:components/sync/protocol/proto_visitors.h) and (where appropriate) in [proto_enum_conversions.h/cc](https://source.chromium.org/chromium/chromium/src/+/main:components/sync/protocol/proto_enum_conversions.cc).
 * Backwards compatibility: In general, all changes must be fully backwards-compatible - consider that a single user might be running different versions of the browser simultaneously! Also note that Sync supports clients up to a few years old, so deprecating/removing an existing field is typically a multi-year process.
   * As one special case, **renaming** a field **within a specifics message** is generally safe (unless there are special server-side integrations that depend on the name). However, **never** rename fields anywhere outside of specifics.
 * Deprecating fields:

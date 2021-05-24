@@ -24,7 +24,7 @@ enum NaClZygoteIPCCommand {
 // The next set of constants define global Linux file descriptors.
 // For communications between NaCl loader and browser.
 // See also content/common/zygote_main_linux.cc and
-// https://chromium.googlesource.com/chromium/src/+/master/docs/linux/zygote.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/linux/zygote.md
 
 // For communications between NaCl loader and zygote.
 #define kNaClZygoteDescriptor 3

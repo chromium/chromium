@@ -37,4 +37,4 @@ If the test has no seed corpus, omit the last parameter:
 % ./out/libfuzzer/$TEST_NAME ${TEST_NAME}_corpus
 ```
 
-For more details, refer to https://chromium.googlesource.com/chromium/src/testing/libfuzzer/+/refs/heads/master/getting_started.md
+For more details, refer to https://chromium.googlesource.com/chromium/src/testing/libfuzzer/+/refs/heads/main/getting_started.md

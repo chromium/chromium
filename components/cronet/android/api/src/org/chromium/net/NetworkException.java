@@ -88,7 +88,7 @@ public abstract class NetworkException extends CronetException {
      * Returns a Cronet internal error code. This may provide more specific error
      * diagnosis than {@link #getErrorCode}, but the constant values are not exposed to Java and
      * may change over time. See
-     * <a href=https://chromium.googlesource.com/chromium/src/+/master/net/base/net_error_list.h>
+     * <a href=https://chromium.googlesource.com/chromium/src/+/main/net/base/net_error_list.h>
      * here</a> for the lastest list of values.
      *
      * @return Cronet internal error code.

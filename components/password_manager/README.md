@@ -104,7 +104,7 @@ Here is a summary of the core responsibilities of the classes and interfaces:
 
   This is actually a collection of two interfaces named
   `*::PasswordManagerDriver`. The first one ([`mojom::PasswordManagerDriver`])
-  is a [mojo](https://chromium.googlesource.com/chromium/src/+/master/mojo/)
+  is a [mojo](https://chromium.googlesource.com/chromium/src/+/main/mojo/)
   interface that allows renderers to talk to the browser. The second one
   ([`password_manager::PasswordManagerDriver`]) allows the browser to talk to
   renderers.

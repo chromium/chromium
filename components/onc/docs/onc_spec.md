@@ -2181,7 +2181,7 @@ setting selected as the effective setting.
 ## Mojo format
 
 Chrome provides a mojo API for ONC properties:
-https://source.chromium.org/chromium/chromium/src/+/master:chromeos/services/network_config/public/mojom/cros_network_config.mojom
+https://source.chromium.org/chromium/chromium/src/+/main:chromeos/services/network_config/public/mojom/cros_network_config.mojom
 
 The mojo API uses a simplified structure for managed properties based on the
 following assumptions:
@@ -2196,7 +2196,7 @@ In this simplified format, a descriptive enum is used to describe the effective
 policy source and whether it is enforced or recommended.
 
 The conversion code can be found in cros_network_config.cc:GetManagedDictionary
-https://source.chromium.org/chromium/chromium/src/+/master:chromeos/services/network_config/cros_network_config.cc
+https://source.chromium.org/chromium/chromium/src/+/main:chromeos/services/network_config/cros_network_config.cc
 
 ```
 enum PolicySource {
