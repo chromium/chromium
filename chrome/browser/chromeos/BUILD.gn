@@ -194,6 +194,7 @@ source_set("chromeos") {
     "//chromeos/dbus/dlcservice:dlcservice_proto",
     "//chromeos/dbus/dlp",
     "//chromeos/dbus/dlp:dlp_proto",
+    "//chromeos/dbus/federated",
     "//chromeos/dbus/hermes",
     "//chromeos/dbus/ip_peripheral",
     "//chromeos/dbus/kerberos",

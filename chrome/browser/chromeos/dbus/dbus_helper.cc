@@ -28,6 +28,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
+#include "chromeos/dbus/federated/federated_client.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/initialize_dbus_client.h"
 #include "chromeos/dbus/ip_peripheral/ip_peripheral_service_client.h"
@@ -106,6 +107,7 @@ void InitializeDBus() {
   InitializeDBusClient<CupsProxyClient>(bus);
   InitializeDBusClient<DlcserviceClient>(bus);
   InitializeDBusClient<DlpClient>(bus);
+  InitializeDBusClient<FederatedClient>(bus);
   hermes_clients::Initialize(bus);
   InitializeDBusClient<InstallAttributesClient>(bus);
   InitializeDBusClient<IpPeripheralServiceClient>(bus);
@@ -184,6 +186,7 @@ void ShutdownDBus() {
   IpPeripheralServiceClient::Shutdown();
   InstallAttributesClient::Shutdown();
   hermes_clients::Shutdown();
+  FederatedClient::Shutdown();
   DlcserviceClient::Shutdown();
   DlpClient::Shutdown();
   CupsProxyClient::Shutdown();
