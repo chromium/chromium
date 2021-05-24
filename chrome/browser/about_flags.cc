@@ -1509,11 +1509,15 @@ const FeatureEntry::FeatureParam kNtpChromeCartModuleAbandonedCartDiscount[] = {
     {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"},
     {"partner-merchant-pattern",
      "(electronicexpress.com|zazzle.com|wish.com|homesquare.com)"}};
+const FeatureEntry::FeatureParam kNtpChromeCartModuleHeuristicsImprovement[] = {
+    {ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam, "true"}};
 const FeatureEntry::FeatureVariation kNtpChromeCartModuleVariations[] = {
     {"- Fake Data And Discount", kNtpChromeCartModuleFakeData,
      base::size(kNtpChromeCartModuleFakeData), nullptr},
     {"- Abandoned Cart Discount", kNtpChromeCartModuleAbandonedCartDiscount,
      base::size(kNtpChromeCartModuleAbandonedCartDiscount), nullptr},
+    {"- Heuristics Improvement", kNtpChromeCartModuleHeuristicsImprovement,
+     base::size(kNtpChromeCartModuleHeuristicsImprovement), nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleFakeData[] = {
