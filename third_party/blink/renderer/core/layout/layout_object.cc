@@ -1841,13 +1841,6 @@ void LayoutObject::InvalidateDisplayItemClients(
   ObjectPaintInvalidator(*this).InvalidateDisplayItemClient(*this, reason);
 }
 
-bool LayoutObject::CompositedScrollsWithRespectTo(
-    const LayoutBoxModelObject& paint_invalidation_container) const {
-  NOT_DESTROYED();
-  return paint_invalidation_container.UsesCompositedScrolling() &&
-         this != &paint_invalidation_container;
-}
-
 PhysicalRect LayoutObject::AbsoluteSelectionRect() const {
   NOT_DESTROYED();
   PhysicalRect selection_rect = LocalSelectionVisualRect();
