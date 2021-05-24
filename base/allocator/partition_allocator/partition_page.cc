@@ -59,16 +59,6 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
   ptr -= PartitionPageSize();
 
 #if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-  if (root->UseBRPPool()) {
-    uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
-    uintptr_t ptr_end = ptr_as_uintptr + reserved_size;
-    auto* offset_ptr = internal::ReservationOffsetPointer(ptr_as_uintptr);
-    while (ptr_as_uintptr < ptr_end) {
-      PA_DCHECK(offset_ptr < internal::EndOfReservationOffsetTable());
-      *offset_ptr++ = internal::NotInDirectMapOffsetTag();
-      ptr_as_uintptr += kSuperPageSize;
-    }
-  }
   return {ptr, reserved_size, root->UseBRPPool()};
 #else
   return {ptr, reserved_size};
@@ -228,6 +218,20 @@ void DeferredUnmap::Unmap() {
   PA_DCHECK(ptr && size > 0);
 #if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
   if (use_brp_pool) {
+    uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
+    uintptr_t ptr_end = ptr_as_uintptr + size;
+    auto* offset_ptr = internal::ReservationOffsetPointer(ptr_as_uintptr);
+    // Reset the offset table entries for the given memory before unreserving
+    // it. Since the memory is not unreserved and not available for other
+    // threads, the table entries for the memory are not modified by other
+    // threads either. So we can update the table entries without race
+    // condition.
+    while (ptr_as_uintptr < ptr_end) {
+      PA_DCHECK(offset_ptr < internal::EndOfReservationOffsetTable());
+      *offset_ptr++ = internal::NotInDirectMapOffsetTag();
+      ptr_as_uintptr += kSuperPageSize;
+    }
+    // After resetting the table entries, unreserve and decommit the memory.
     internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
         internal::GetBRPPool(), ptr, size);
     return;

@@ -40,6 +40,14 @@ bool IsAllowedSuperPagesForBRPPool(const char* super_page,
   return true;
 }
 
+// ReserveSuperPagesAllowedForBRPPool doesn't need to hold root->lock_ or
+// extra locks, because:
+// - ReserveSuperPagesAllowedForBRPPool does (1) reserves memory, (2) use
+//   IsAllowedSuperPagesForBRPPool for the memory, and (3) returns the memory if
+//   allowed or unreserves and decommits if not allowed. So no other overlapping
+//   region can be allocated while executing IsAllowedSuperPagesForBRPPool.
+// - IsAllowedSuperPageForBRPPool (used by IsAllowedSuperPagesForBRPPool) is
+//   designed not to need any extra locks.
 char* ReserveSuperPagesAllowedForBRPPool(size_t requested_size) {
   char* super_page = internal::AddressPoolManager::GetInstance()->Reserve(
       GetBRPPool(), nullptr, requested_size);
@@ -125,10 +133,6 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
   PartitionDirectMapExtent<thread_safe>* map_extent = nullptr;
   PartitionPage<thread_safe>* page = nullptr;
 
-  char* ptr = nullptr;
-  const size_t reserved_size =
-      PartitionRoot<thread_safe>::GetDirectMapReservedSize(raw_size);
-
   {
     // Getting memory for direct-mapped allocations doesn't interact with the
     // rest of the allocator, but takes a long time, as it involves several
@@ -151,11 +155,14 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
     const size_t slot_size =
         PartitionRoot<thread_safe>::GetDirectMapSlotSize(raw_size);
+    const size_t reserved_size =
+        PartitionRoot<thread_safe>::GetDirectMapReservedSize(raw_size);
     const size_t map_size =
         reserved_size -
         PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
     PA_DCHECK(slot_size <= map_size);
 
+    char* ptr = nullptr;
     pool_handle pool;
     // Allocate from GigaCage, from the non-BRP pool, because BackupRefPtr isn't
     // supported in direct maps.
@@ -232,6 +239,26 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       return nullptr;
     }
 
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+    if (root->UseBRPPool()) {
+      // No need to hold root->lock_. Now that memory is reserved, no other
+      // overlapping region can be allocated (because of how GigaCage works),
+      // so no other thread can update the same offset table entries at the
+      // same time. Furthermore, nobody will be ready these offsets until this
+      // function returns.
+      uintptr_t ptr_start = reinterpret_cast<uintptr_t>(ptr);
+      uintptr_t ptr_end = ptr_start + reserved_size;
+      auto* offset_ptr = base::internal::ReservationOffsetPointer(ptr_start);
+      int offset = 0;
+      while (ptr_start < ptr_end) {
+        PA_DCHECK(offset_ptr < internal::EndOfReservationOffsetTable());
+        PA_DCHECK(offset < internal::NotInDirectMapOffsetTag());
+        *offset_ptr++ = offset++;
+        ptr_start += kSuperPageSize;
+      }
+    }
+#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+
     auto* metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
         PartitionSuperPageToMetadataArea(ptr));
     metadata->extent.root = root;
@@ -270,23 +297,6 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
   }
 
   root->lock_.AssertAcquired();
-
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-  // TODO(tasak): If no lock is required, move the code inside
-  // ScopedUnlockGuard.
-  if (root->UseBRPPool()) {
-    uintptr_t ptr_start = reinterpret_cast<uintptr_t>(ptr);
-    uintptr_t ptr_end = ptr_start + reserved_size;
-    auto* offset_ptr = base::internal::ReservationOffsetPointer(ptr_start);
-    int offset = 0;
-    while (ptr_start < ptr_end) {
-      PA_DCHECK(offset_ptr < internal::EndOfReservationOffsetTable());
-      PA_DCHECK(offset < internal::NotInDirectMapOffsetTag());
-      *offset_ptr++ = offset++;
-      ptr_start += kSuperPageSize;
-    }
-  }
-#endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 
   // Maintain the doubly-linked list of all direct mappings.
   map_extent->next_extent = root->direct_map_list;
