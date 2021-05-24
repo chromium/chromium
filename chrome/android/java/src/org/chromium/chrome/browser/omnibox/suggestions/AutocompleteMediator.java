@@ -1048,7 +1048,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
                 mCurrentAutocompleteRequest = null;
             }
         };
-        if (!mNativeInitialized) return;
+        // In the event we got Native Ready signal but no Profile yet (or the other way around),
+        // delay execution of the Autocomplete request.
+        if (!mNativeInitialized || mAutocomplete == null) return;
         if (delayMillis == SCHEDULE_FOR_IMMEDIATE_EXECUTION) {
             // TODO(crbug.com/1174855): Replace the following with postAtFrontOfQueue() and
             // correct any tests that expect data instantly.
