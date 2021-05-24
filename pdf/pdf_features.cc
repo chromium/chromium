@@ -23,7 +23,7 @@ const base::Feature kPdfPartialLoading = {"PdfPartialLoading",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPdfViewerDocumentProperties = {
-    "PdfViewerDocumentProperties", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PdfViewerDocumentProperties", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kPdfViewerPresentationMode = {
     "PdfViewerPresentationMode", base::FEATURE_ENABLED_BY_DEFAULT};
