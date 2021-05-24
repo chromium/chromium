@@ -3613,6 +3613,8 @@ void RenderFrameHostManager::ExecuteRemoteFramesBroadcastMethod(
       continue;
     if (pair.second->GetSiteInstance() == instance_to_skip)
       continue;
+    if (!pair.second->is_render_frame_proxy_live())
+      continue;
     callback.Run(pair.second.get());
   }
 }
