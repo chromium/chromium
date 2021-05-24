@@ -68,9 +68,9 @@ bool IsModifierKey(const std::string& key_code) {
 
 }  // namespace
 
-InputEngineContext::InputEngineContext(const std::string& ime) : ime_spec(ime) {
-  // The |ime_spec|'s format for rule based imes is: "m17n:<id>".
-  std::string id = GetIdFromImeSpec(ime_spec);
+InputEngineContext::InputEngineContext(const std::string& ime) {
+  // The |ime|'s format for rule based imes is: "m17n:<id>".
+  std::string id = GetIdFromImeSpec(ime);
   if (rulebased::Engine::IsImeSupported(id)) {
     engine = std::make_unique<rulebased::Engine>();
     engine->Activate(id);

@@ -25,7 +25,6 @@ class InputEngineContext {
   InputEngineContext& operator=(const InputEngineContext&) = delete;
   ~InputEngineContext();
 
-  std::string ime_spec;
   std::unique_ptr<rulebased::Engine> engine;
 };
 
