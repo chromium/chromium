@@ -688,8 +688,9 @@ LayoutUnit GetLogicalBaseline(const NGBoxFragment& fragment,
     case WritingMode::kHorizontalTb:
       switch (child_writing_mode) {
         case WritingMode::kHorizontalTb:
-          return is_for_columns ? LayoutUnit()
-                                : fragment.BaselineOrSynthesize();
+          return is_for_columns
+                     ? LayoutUnit()
+                     : fragment.Baseline().value_or(fragment.BlockSize());
         case WritingMode::kVerticalLr:
           return is_for_columns ? fragment.Baseline().value_or(LayoutUnit())
                                 : fragment.InlineSize();
@@ -704,8 +705,9 @@ LayoutUnit GetLogicalBaseline(const NGBoxFragment& fragment,
     case WritingMode::kVerticalLr:
       switch (child_writing_mode) {
         case WritingMode::kHorizontalTb:
-          return is_for_columns ? fragment.BaselineOrSynthesize()
-                                : LayoutUnit();
+          return is_for_columns
+                     ? fragment.Baseline().value_or(fragment.BlockSize())
+                     : LayoutUnit();
         case WritingMode::kVerticalLr:
           return is_for_columns ? fragment.InlineSize()
                                 : fragment.Baseline().value_or(LayoutUnit());
@@ -720,15 +722,18 @@ LayoutUnit GetLogicalBaseline(const NGBoxFragment& fragment,
     case WritingMode::kVerticalRl:
       switch (child_writing_mode) {
         case WritingMode::kHorizontalTb:
-          return is_for_columns ? fragment.BaselineOrSynthesize()
-                                : fragment.InlineSize();
+          return is_for_columns
+                     ? fragment.Baseline().value_or(fragment.BlockSize())
+                     : fragment.InlineSize();
         case WritingMode::kVerticalLr:
           return is_for_columns
                      ? fragment.InlineSize()
-                     : (fragment.BlockSize() - fragment.BaselineOrSynthesize());
+                     : (fragment.BlockSize() -
+                        fragment.Baseline().value_or(fragment.BlockSize()));
         case WritingMode::kVerticalRl:
-          return is_for_columns ? fragment.InlineSize()
-                                : fragment.BaselineOrSynthesize();
+          return is_for_columns
+                     ? fragment.InlineSize()
+                     : fragment.Baseline().value_or(fragment.BlockSize());
         default:
           NOTREACHED();
           return LayoutUnit();
@@ -3120,7 +3125,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
       return (a.rows < b.rows) || (a.rows == b.rows && (a.columns < b.columns));
     };
 
-    LayoutUnit baseline = fragment.BaselineOrSynthesize() +
+    LayoutUnit baseline = fragment.Baseline().value_or(fragment.BlockSize()) +
                           containing_grid_area.offset.block_offset;
     if (grid_item.IsBaselineSpecifiedForDirection(kForRows)) {
       if (!alignment_baseline ||
