@@ -43,6 +43,8 @@ struct CORE_EXPORT NGInlineItemResult {
     return hyphen_shape_result->SnappedWidth().ClampNegativeToZero();
   }
 
+  // Compute/clear |hyphen_string| and |hyphen_shape_result|.
+  void ShapeHyphen();
   void ClearHyphen() {
     hyphen_string = String();
     hyphen_shape_result = nullptr;

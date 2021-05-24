@@ -360,14 +360,8 @@ LayoutUnit NGLineBreaker::AddHyphen(NGInlineItemResults* item_results,
   hyphen_index_ = index;
 
   if (!item_result->hyphen_string) {
-    DCHECK(!item_result->hyphen_shape_result);
-    DCHECK(item.Style());
-    const ComputedStyle& style = *item.Style();
-    DCHECK(!item_result->hyphen_string);
-    item_result->hyphen_string = style.HyphenString();
-    HarfBuzzShaper shaper(item_result->hyphen_string);
-    item_result->hyphen_shape_result =
-        shaper.Shape(&style.GetFont(), style.Direction());
+    DCHECK_EQ(item_result->item, &item);
+    item_result->ShapeHyphen();
     has_any_hyphens_ = true;
   }
   DCHECK(item_result->hyphen_string);
@@ -1102,9 +1096,11 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
   const String& text = Text();
   float min_width = 0;
   unsigned last_end_offset = 0;
+  unsigned end_offset = start_offset + 1;
+  absl::optional<LayoutUnit> hyphen_inline_size;
   while (start_offset < item.EndOffset()) {
-    unsigned end_offset = break_iterator_.NextBreakOpportunity(
-        start_offset + 1, item.EndOffset());
+    end_offset =
+        break_iterator_.NextBreakOpportunity(end_offset, item.EndOffset());
 
     unsigned non_hangable_run_end = end_offset;
     if (item.Style()->WhiteSpace() != EWhiteSpace::kBreakSpaces) {
@@ -1118,10 +1114,14 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
     if (end_offset >= item.EndOffset())
       break;
 
-    // Inserting a hyphenation character is not supported yet.
-    // TODO (jfernandez): Maybe we need to use 'end_offset' here ?
-    if (text[non_hangable_run_end - 1] == kSoftHyphenCharacter)
-      return false;
+    // Ignore soft-hyphen opportunities if `hyphens: none`.
+    bool has_hyphen = text[non_hangable_run_end - 1] == kSoftHyphenCharacter;
+    if (has_hyphen && !enable_soft_hyphen_) {
+      ++end_offset;
+      if (end_offset < item.EndOffset())
+        continue;
+      has_hyphen = false;
+    }
 
     float start_position = shape_result.CachedPositionForOffset(
         start_offset - shape_result.StartIndex());
@@ -1130,6 +1130,19 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
     float word_width = IsLtr(shape_result.Direction())
                            ? end_position - start_position
                            : start_position - end_position;
+
+    // Append hyphen-width to `word_width` if the word is hyphenated.
+    if (has_hyphen) {
+      DCHECK_EQ(item_result->item, &item);
+      if (!hyphen_inline_size) {
+        if (!item_result->hyphen_shape_result)
+          item_result->ShapeHyphen();
+        hyphen_inline_size = item_result->HyphenInlineSize();
+      }
+      word_width = (LayoutUnit::FromFloatCeil(word_width) + *hyphen_inline_size)
+                       .ToFloat();
+    }
+
     min_width = std::max(word_width, min_width);
 
     last_end_offset = non_hangable_run_end;
@@ -1140,6 +1153,7 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
            IsBreakableSpace(text[start_offset])) {
       ++start_offset;
     }
+    end_offset = start_offset + 1;
   }
 
   if (saved_line_break_type.has_value())

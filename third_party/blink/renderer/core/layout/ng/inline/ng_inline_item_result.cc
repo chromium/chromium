@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 namespace blink {
@@ -24,6 +25,17 @@ NGInlineItemResult::NGInlineItemResult(const NGInlineItem* item,
       break_anywhere_if_overflow(break_anywhere_if_overflow),
       should_create_line_box(should_create_line_box),
       has_unpositioned_floats(has_unpositioned_floats) {}
+
+void NGInlineItemResult::ShapeHyphen() {
+  DCHECK(!hyphen_string);
+  DCHECK(!hyphen_shape_result);
+  DCHECK(item);
+  DCHECK(item->Style());
+  const ComputedStyle& style = *item->Style();
+  hyphen_string = style.HyphenString();
+  HarfBuzzShaper shaper(hyphen_string);
+  hyphen_shape_result = shaper.Shape(&style.GetFont(), style.Direction());
+}
 
 #if DCHECK_IS_ON()
 void NGInlineItemResult::CheckConsistency(bool allow_null_shape_result) const {

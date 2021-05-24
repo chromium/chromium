@@ -587,6 +587,41 @@ TEST_F(NGLineBreakerTest, MinMaxWithTrailingSpaces) {
   EXPECT_EQ(sizes.max_size, LayoutUnit(110));
 }
 
+TEST_F(NGLineBreakerTest, MinMaxWithSoftHyphen) {
+  LoadAhem();
+  NGInlineNode node = CreateInlineNode(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #container {
+      font: 10px/1 Ahem;
+    }
+    </style>
+    <div id=container>abcd&shy;ef xx</div>
+  )HTML");
+
+  const auto sizes = ComputeMinMaxSizes(node);
+  EXPECT_EQ(sizes.min_size, LayoutUnit(50));
+  EXPECT_EQ(sizes.max_size, LayoutUnit(90));
+}
+
+TEST_F(NGLineBreakerTest, MinMaxWithHyphensDisabled) {
+  LoadAhem();
+  NGInlineNode node = CreateInlineNode(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #container {
+      font: 10px/1 Ahem;
+      hyphens: none;
+    }
+    </style>
+    <div id=container>abcd&shy;ef xx</div>
+  )HTML");
+
+  const auto sizes = ComputeMinMaxSizes(node);
+  EXPECT_EQ(sizes.min_size, LayoutUnit(60));
+  EXPECT_EQ(sizes.max_size, LayoutUnit(90));
+}
+
 // For http://crbug.com/1104534
 TEST_F(NGLineBreakerTest, SplitTextZero) {
   // Note: |V8TestingScope| is needed for |Text::splitText()|.
