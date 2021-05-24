@@ -230,22 +230,12 @@ static_assert(base::size(kAsciiLineBreakTable) ==
 static_assert(base::size(kBreakAllLineBreakClassTable) == BA_LB_COUNT,
               "breakAllLineBreakClassTable should be consistent");
 
-enum class BreakResult {
-  kNotBreakable,
-  kBreakable,
-  kUndetermined,
-};
-
-static inline BreakResult ShouldBreakAfter(UChar last_ch,
-                                           UChar ch,
-                                           UChar next_ch) {
+static inline bool ShouldBreakAfter(UChar last_ch, UChar ch, UChar next_ch) {
   // Don't allow line breaking between '-' and a digit if the '-' may mean a
   // minus sign in the context, while allow breaking in 'ABCD-1234' and
   // '1234-5678' which may be in long URLs.
-  if (ch == '-' && IsASCIIDigit(next_ch)) {
-    return IsASCIIAlphanumeric(last_ch) ? BreakResult::kBreakable
-                                        : BreakResult::kNotBreakable;
-  }
+  if (ch == '-' && IsASCIIDigit(next_ch))
+    return IsASCIIAlphanumeric(last_ch);
 
   // If both ch and nextCh are ASCII characters, use a lookup table for enhanced
   // speed and for compatibility with other browsers (see comments for
@@ -257,16 +247,10 @@ static inline BreakResult ShouldBreakAfter(UChar last_ch,
     const unsigned char* table_row =
         kAsciiLineBreakTable[ch - kAsciiLineBreakTableFirstChar];
     int next_ch_index = next_ch - kAsciiLineBreakTableFirstChar;
-    return table_row[next_ch_index / 8] & (1 << (next_ch_index % 8))
-               ? BreakResult::kBreakable
-               : BreakResult::kNotBreakable;
+    return table_row[next_ch_index / 8] & (1 << (next_ch_index % 8));
   }
-
-  if (ch == kNoBreakSpaceCharacter || next_ch == kNoBreakSpaceCharacter)
-    return BreakResult::kNotBreakable;
-
-  // Otherwise defer to the Unicode algorithm by returning |kUndetermined|.
-  return BreakResult::kUndetermined;
+  // Otherwise defer to the Unicode algorithm by returning false.
+  return false;
 }
 
 static inline ULineBreak LineBreakPropertyValue(UChar last_ch, UChar ch) {
@@ -303,6 +287,10 @@ static inline bool ShouldKeepAfterKeepAll(UChar last_ch,
          !WTF::unicode::HasLineBreakingPropertyComplexContext(pre_ch) &&
          U_MASK(u_charType(next_ch)) & (U_GC_L_MASK | U_GC_N_MASK) &&
          !WTF::unicode::HasLineBreakingPropertyComplexContext(next_ch);
+}
+
+inline bool NeedsLineBreakIterator(UChar ch) {
+  return ch > kAsciiLineBreakTableLastChar && ch != kNoBreakSpaceCharacter;
 }
 
 template <typename CharacterType,
@@ -360,8 +348,7 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
         break;
     }
 
-    const BreakResult result = ShouldBreakAfter(last_last_ch, last_ch, ch);
-    if (result == BreakResult::kBreakable)
+    if (ShouldBreakAfter(last_last_ch, last_ch, ch))
       return i;
 
     if (lineBreakType == LineBreakType::kBreakAll && !U16_IS_LEAD(ch)) {
@@ -378,28 +365,26 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
       continue;
     }
 
-    if (result == BreakResult::kNotBreakable)
-      continue;
-
-    DCHECK_EQ(result, BreakResult::kUndetermined);
-    if (next_break < i) {
-      // Don't break if positioned at start of primary context and there is no
-      // prior context.
-      if (i || prior_context.length) {
-        if (TextBreakIterator* break_iterator = GetIterator(prior_context)) {
-          // Adjust the offset by |start_offset_| because |break_iterator| has
-          // text after |start_offset_|.
-          DCHECK_GE(i + prior_context.length, start_offset_);
-          next_break = break_iterator->following(i - 1 + prior_context.length -
-                                                 start_offset_);
-          if (next_break >= 0) {
-            next_break = next_break + start_offset_ - prior_context.length;
+    if (NeedsLineBreakIterator(ch) || NeedsLineBreakIterator(last_ch)) {
+      if (next_break < i) {
+        // Don't break if positioned at start of primary context and there is no
+        // prior context.
+        if (i || prior_context.length) {
+          if (TextBreakIterator* break_iterator = GetIterator(prior_context)) {
+            // Adjust the offset by |start_offset_| because |break_iterator| has
+            // text after |start_offset_|.
+            DCHECK_GE(i + prior_context.length, start_offset_);
+            next_break = break_iterator->following(
+                i - 1 + prior_context.length - start_offset_);
+            if (next_break >= 0) {
+              next_break = next_break + start_offset_ - prior_context.length;
+            }
           }
         }
       }
+      if (i == next_break && !is_last_space)
+        return i;
     }
-    if (i == next_break && !is_last_space)
-      return i;
   }
 
   return len;
