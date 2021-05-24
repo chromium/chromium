@@ -42,18 +42,22 @@ class _Generator(object):
       .Append(cpp_util.GENERATED_FILE_MESSAGE %
               cpp_util.ToPosixPath(self._namespace.source_file))
       .Append()
-      .Append(self._util_cc_helper.GetIncludePath())
+      .Append('#include "%s/%s.h"' %
+              (cpp_util.ToPosixPath(self._namespace.source_file_dir),
+               self._namespace.short_filename))
+      .Append()
+      .Append('#include <memory>')
+      .Append('#include <string>')
+      .Append('#include <utility>')
+      .Append('#include <vector>')
+      .Append()
       .Append('#include "base/check.h"')
       .Append('#include "base/check_op.h"')
       .Append('#include "base/notreached.h"')
       .Append('#include "base/strings/string_number_conversions.h"')
       .Append('#include "base/strings/utf_string_conversions.h"')
       .Append('#include "base/values.h"')
-      .Append('#include "%s/%s.h"' %
-              (cpp_util.ToPosixPath(self._namespace.source_file_dir),
-               self._namespace.short_filename))
-      .Append('#include <set>')
-      .Append('#include <utility>')
+      .Append(self._util_cc_helper.GetIncludePath())
       .Cblock(self._GenerateManifestKeysIncludes())
       .Cblock(self._type_helper.GenerateIncludes(include_soft=True))
       .Append()
@@ -1240,7 +1244,8 @@ class _Generator(object):
     (c.Sblock('std::vector<base::Value> %(function_scope)s'
                   'Create(%(declaration_list)s) {')
       .Append('std::vector<base::Value> create_results;')
-      .Append('create_results.reserve(%d);' % len(params))
+      .Append('create_results.reserve(%d);' % len(params) if len(params)
+              else '')
     )
     declaration_list = []
     for param in params:
