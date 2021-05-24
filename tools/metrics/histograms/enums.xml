@@ -32588,6 +32588,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3919" label="ARIAVirtualcontentAttribute"/>
   <int value="3920" label="AccessibilityTouchPassthroughSet"/>
   <int value="3921" label="TextFragmentBlockedByForceLoadAtTop"/>
+  <int value="3922" label="UrnDocumentAccessedCookies"/>
+  <int value="3923" label="FontFaceAscentOverride"/>
+  <int value="3924" label="FontFaceDescentOverride"/>
+  <int value="3925" label="FontFaceLineGapOverride"/>
+  <int value="3926" label="FontFaceSizeAdjust"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
