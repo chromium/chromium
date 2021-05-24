@@ -40,6 +40,11 @@ enum class TokenType {
 
   // The end of the token stream.
   kEnd,
+
+  // A character that is not valid in a properly formed pattern; e.g. the colon
+  // in `https://`.  This is only generated when TokenizerPolicy::kLenient is
+  // used.
+  kInvalidChar,
 };
 
 const char* TokenTypeToString(TokenType type);
@@ -61,6 +66,22 @@ struct COMPONENT_EXPORT(LIBURLPATTERN) Token {
   Token() = default;
 };
 
+enum class TokenizePolicy {
+  // The strict policy causes any problems found during tokenization to be
+  // thrown as errors.
+  kStrict,
+
+  // The lenient policy converts problems detected during tokenization into
+  // kInvalidChar tokens in the returned token list.  For something like a
+  // `\` at the end of the string, this simply returns the immediate `\`
+  // character.  For validation errors that cause a group to be invalid, the
+  // first character of the group is instead returned.  For example, `https://`
+  // returns the `:` as a kInvalidChar.  For `(foo(bar))` where capture groups
+  // are illegal it causes the first `(` to be returned as a kInvalidChar.
+  // Tokenization then continues with the next character after the kInvalidChar.
+  kLenient,
+};
+
 COMPONENT_EXPORT(LIBURLPATTERN)
 inline bool operator==(const Token& lh, const Token& rh) {
   return lh.type == rh.type && lh.index == rh.index && lh.value == rh.value;
@@ -77,7 +98,9 @@ std::ostream& operator<<(std::ostream& o, Token token);
 // the generated Token objects simply reference positions within the input
 // |pattern|.  The |pattern| must be kept alive as long as the Token objects.
 COMPONENT_EXPORT(LIBURLPATTERN)
-absl::StatusOr<std::vector<Token>> Tokenize(absl::string_view pattern);
+absl::StatusOr<std::vector<Token>> Tokenize(
+    absl::string_view pattern,
+    TokenizePolicy policy = TokenizePolicy::kStrict);
 
 }  // namespace liburlpattern
 

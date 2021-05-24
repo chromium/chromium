@@ -43,12 +43,16 @@ bool IsNameCodepoint(UChar32 c, bool first_codepoint) {
 
 class Tokenizer {
  public:
-  explicit Tokenizer(absl::string_view pattern) : pattern_(pattern) {
+  Tokenizer(absl::string_view pattern, TokenizePolicy policy)
+      : pattern_(std::move(pattern)), policy_(policy) {
     token_list_.reserve(pattern_.size());
   }
 
   absl::StatusOr<std::vector<Token>> Tokenize() {
     while (index_ < pattern_.size()) {
+      if (!status_.ok())
+        return std::move(status_);
+
       NextAt(index_);
       if (codepoint_ == '*') {
         AddToken(TokenType::kAsterisk);
@@ -64,8 +68,8 @@ class Tokenizer {
       // level of the pattern.
       if (codepoint_ == '\\') {
         if (index_ == (pattern_.size() - 1)) {
-          return absl::InvalidArgumentError(
-              absl::StrFormat("Trailing escape character at %d.", index_));
+          Error(absl::StrFormat("Trailing escape character at %d.", index_));
+          continue;
         }
         size_t escaped_i = next_index_;
         Next();
@@ -96,8 +100,9 @@ class Tokenizer {
         }
 
         if (pos <= name_start) {
-          return absl::InvalidArgumentError(
-              absl::StrFormat("Missing parameter name at %d.", index_));
+          Error(absl::StrFormat("Missing parameter name at %d.", index_),
+                name_start, index_);
+          continue;
         }
 
         AddToken(TokenType::kName, pos, name_start);
@@ -108,17 +113,23 @@ class Tokenizer {
         size_t paren_nesting = 1;
         size_t j = next_index_;
         const size_t regex_start = next_index_;
+        bool error = false;
 
         while (j < pattern_.size()) {
           NextAt(j);
 
           if (!IsASCII(codepoint_)) {
-            return absl::InvalidArgumentError(absl::StrFormat(
-                "Invalid character 0x%02x at %d.", codepoint_, j));
+            Error(absl::StrFormat("Invalid character 0x%02x at %d.", codepoint_,
+                                  j),
+                  regex_start, index_);
+            error = true;
+            break;
           }
           if (j == regex_start && codepoint_ == '?') {
-            return absl::InvalidArgumentError(
-                absl::StrFormat("Regex cannot start with '?' at %d", j));
+            Error(absl::StrFormat("Regex cannot start with '?' at %d", j),
+                  regex_start, index_);
+            error = true;
+            break;
           }
 
           // This escape processing only handles single character escapes since
@@ -129,14 +140,19 @@ class Tokenizer {
           // propagated on subsequent loop iterations.
           if (codepoint_ == '\\') {
             if (j == (pattern_.size() - 1)) {
-              return absl::InvalidArgumentError(
-                  absl::StrFormat("Trailing escape character at %d.", j));
+              Error(absl::StrFormat("Trailing escape character at %d.", j),
+                    regex_start, index_);
+              error = true;
+              break;
             }
             size_t escaped_j = next_index_;
             Next();
             if (!IsASCII(codepoint_)) {
-              return absl::InvalidArgumentError(absl::StrFormat(
-                  "Invalid character 0x%02x at %d.", codepoint_, escaped_j));
+              Error(absl::StrFormat("Invalid character 0x%02x at %d.",
+                                    codepoint_, escaped_j),
+                    regex_start, index_);
+              error = true;
+              break;
             }
             j = next_index_;
             continue;
@@ -151,8 +167,10 @@ class Tokenizer {
           } else if (codepoint_ == '(') {
             paren_nesting += 1;
             if (j == (pattern_.size() - 1)) {
-              return absl::InvalidArgumentError(
-                  absl::StrFormat("Unbalanced regex at %d.", j));
+              Error(absl::StrFormat("Unbalanced regex at %d.", j), regex_start,
+                    index_);
+              error = true;
+              break;
             }
             size_t tmp_j = next_index_;
             Next();
@@ -160,8 +178,12 @@ class Tokenizer {
             // permits assertions, named capture groups, and non-capturing
             // groups. It blocks, however, unnamed capture groups.
             if (codepoint_ != '?') {
-              return absl::InvalidArgumentError(absl::StrFormat(
-                  "Unnamed capturing groups are not allowed at %d.", tmp_j));
+              Error(
+                  absl::StrFormat(
+                      "Unnamed capturing groups are not allowed at %d.", tmp_j),
+                  regex_start, index_);
+              error = true;
+              break;
             }
             next_index_ = tmp_j;
           }
@@ -169,15 +191,20 @@ class Tokenizer {
           j = next_index_;
         }
 
+        if (error)
+          continue;
+
         if (paren_nesting) {
-          return absl::InvalidArgumentError(
-              absl::StrFormat("Unbalanced regex at %d.", index_));
+          Error(absl::StrFormat("Unbalanced regex at %d.", index_), regex_start,
+                index_);
+          continue;
         }
 
         const size_t regex_length = j - regex_start - 1;
         if (regex_length == 0) {
-          return absl::InvalidArgumentError(
-              absl::StrFormat("Missing regex at %d.", index_));
+          Error(absl::StrFormat("Missing regex at %d.", index_), regex_start,
+                index_);
+          continue;
         }
 
         AddToken(TokenType::kRegex, j, regex_start, regex_length);
@@ -186,6 +213,9 @@ class Tokenizer {
 
       AddToken(TokenType::kChar);
     }
+
+    if (!status_.ok())
+      return std::move(status_);
 
     AddToken(TokenType::kEnd, index_, index_);
 
@@ -234,8 +264,19 @@ class Tokenizer {
   // `index_`. Update `index_` to `next_index_` automatically.
   void AddToken(TokenType type) { AddToken(type, next_index_, index_); }
 
+  void Error(absl::string_view message, size_t next_pos, size_t value_pos) {
+    if (policy_ == TokenizePolicy::kLenient)
+      AddToken(TokenType::kInvalidChar, next_pos, value_pos);
+    else
+      status_ = absl::InvalidArgumentError(message);
+  }
+
+  void Error(absl::string_view message) { Error(message, next_index_, index_); }
+
   const absl::string_view pattern_;
+  const TokenizePolicy policy_;
   std::vector<Token> token_list_;
+  absl::Status status_;
 
   // `index_` tracks our "current" byte index in the input string.  Typically
   // this will be updated every time we commit a token to `token_list_`.  It may
@@ -274,6 +315,8 @@ const char* TokenTypeToString(TokenType type) {
       return "ASTERISK";
     case TokenType::kEnd:
       return "END";
+    case TokenType::kInvalidChar:
+      return "INVALID_CHAR";
   }
 }
 
@@ -284,8 +327,9 @@ std::ostream& operator<<(std::ostream& o, Token token) {
 }
 
 // Split the input pattern into a list of tokens.
-absl::StatusOr<std::vector<Token>> Tokenize(absl::string_view pattern) {
-  Tokenizer tokenizer(pattern);
+absl::StatusOr<std::vector<Token>> Tokenize(absl::string_view pattern,
+                                            TokenizePolicy policy) {
+  Tokenizer tokenizer(std::move(pattern), policy);
   return tokenizer.Tokenize();
 }
 
