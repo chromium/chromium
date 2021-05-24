@@ -1102,6 +1102,12 @@ void ChromePasswordManagerClient::BindCredentialManager(
   if (web_contents->GetMainFrame() != render_frame_host)
     return;
 
+  // The ChromePasswordManagerClient will not bind the mojo interface for
+  // non-primary frames, e.g. BackForwardCache, Prerenderer, since the
+  // MojoBinderPolicy prevents this interface from being granted.
+  DCHECK_EQ(render_frame_host->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+
   ChromePasswordManagerClient* instance =
       ChromePasswordManagerClient::FromWebContents(web_contents);
 
