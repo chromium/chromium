@@ -78,6 +78,12 @@ class PresentationRequestNotificationProducer final
 
  private:
   friend class PresentationRequestNotificationProducerTest;
+  class PresentationRequestWebContentsObserver;
+
+  // An observer for the WebContents associated with |item_| that closes the
+  // dialog when the WebContents is destroyed or navigated.
+  std::unique_ptr<PresentationRequestWebContentsObserver>
+      presentation_request_observer_;
 
   // MediaNotificationServiceObserver:
   void OnNotificationListChanged() final;
