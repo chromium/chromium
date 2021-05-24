@@ -19,6 +19,12 @@
 
 namespace {
 
+// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
+// function.
+GURL TestUrl() {
+  return GURL("https://chromium.org");
+}
+
 page_load_metrics::mojom::ResourceDataUpdatePtr CreateBaseResource(
     bool was_cached,
     bool is_complete) {
@@ -145,7 +151,7 @@ class PrefetchProxyPageLoadMetricsObserverTest
   TestPrefetchProxyPageLoadMetricsObserver* plm_observer_ = nullptr;
   page_load_metrics::mojom::PageLoadTiming timing_;
 
-  GURL navigation_url_{"https://chromium.org"};
+  GURL navigation_url_ = TestUrl();
   bool in_main_frame_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchProxyPageLoadMetricsObserverTest);

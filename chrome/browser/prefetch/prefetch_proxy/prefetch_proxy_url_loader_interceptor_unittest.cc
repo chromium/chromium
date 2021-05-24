@@ -23,6 +23,12 @@ namespace {
 
 const gfx::Size kSize(640, 480);
 
+// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
+// function.
+GURL TestURL() {
+  return GURL("https://test.com/path");
+}
+
 }  // namespace
 
 // These tests leak mojo objects (like the PrefetchProxyURLLoader) because
@@ -120,11 +126,10 @@ TEST_F(PrefetchProxyURLLoaderInterceptorTest, DISABLE_ASAN(WantIntercept)) {
       std::make_unique<TestPrefetchProxyURLLoaderInterceptor>(
           web_contents()->GetMainFrame()->GetFrameTreeNodeId());
 
-  const GURL kTestUrl("https://test.com/path");
-  interceptor->SetHasPrefetchedResponse(kTestUrl, true);
+  interceptor->SetHasPrefetchedResponse(TestURL(), true);
 
   network::ResourceRequest request;
-  request.url = kTestUrl;
+  request.url = TestURL();
   request.resource_type =
       static_cast<int>(blink::mojom::ResourceType::kMainFrame);
   request.method = "GET";
@@ -145,11 +150,10 @@ TEST_F(PrefetchProxyURLLoaderInterceptorTest,
       std::make_unique<TestPrefetchProxyURLLoaderInterceptor>(
           web_contents()->GetMainFrame()->GetFrameTreeNodeId());
 
-  const GURL kTestUrl("https://test.com/path");
-  interceptor->SetHasPrefetchedResponse(kTestUrl, false);
+  interceptor->SetHasPrefetchedResponse(TestURL(), false);
 
   network::ResourceRequest request;
-  request.url = kTestUrl;
+  request.url = TestURL();
   request.resource_type =
       static_cast<int>(blink::mojom::ResourceType::kMainFrame);
   request.method = "GET";
