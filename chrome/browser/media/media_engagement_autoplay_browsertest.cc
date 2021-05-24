@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_P(MediaEngagementAutoplayBrowserTest,
 #define MAYBE_UsePreloadedData_Allowed UsePreloadedData_Allowed
 #endif
 IN_PROC_BROWSER_TEST_P(MediaEngagementAutoplayBrowserTest,
-                       UsePreloadedData_Allowed) {
+                       MAYBE_UsePreloadedData_Allowed) {
   // Autoplay should be blocked by default if we have a bad score.
   SetScores(PrimaryOrigin(), 0, 0);
   LoadTestPage("engagement_autoplay_test.html");
