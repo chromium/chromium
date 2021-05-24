@@ -253,11 +253,6 @@ class ASH_EXPORT AcceleratorControllerImpl
                                    base::OnceClosure on_accept_callback,
                                    base::OnceClosure on_cancel_callback);
 
-  // Read the side volume button location info from local file under
-  // kSideVolumeButtonLocationFilePath, parse and write it into
-  // |side_volume_button_location_|.
-  void ParseSideVolumeButtonLocationInfo();
-
   // Remove the observers.
   void Shutdown();
 
@@ -315,6 +310,11 @@ class ASH_EXPORT AcceleratorControllerImpl
   // Returns true if the side volume buttons should be swapped. See
   // SideVolumeButonLocation for the details.
   bool ShouldSwapSideVolumeButtons(int source_device_id) const;
+
+  // Read the side volume button location info from local file under
+  // kSideVolumeButtonLocationFilePath, parse and write it into
+  // |side_volume_button_location_|.
+  void ParseSideVolumeButtonLocationInfo();
 
   // The metrics recorded include accidental volume adjustments (defined as a
   // sequence of volume button events in close succession starting with a

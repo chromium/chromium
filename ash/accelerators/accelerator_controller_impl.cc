@@ -1757,6 +1757,7 @@ AcceleratorControllerImpl::TestApi::GetConfirmationDialog() {
 void AcceleratorControllerImpl::TestApi::SetSideVolumeButtonFilePath(
     base::FilePath path) {
   controller_->side_volume_button_location_file_path_ = path;
+  controller_->ParseSideVolumeButtonLocationInfo();
 }
 
 void AcceleratorControllerImpl::TestApi::SetSideVolumeButtonLocation(
@@ -2714,33 +2715,6 @@ void AcceleratorControllerImpl::MaybeShowConfirmationDialog(
   confirmation_dialog_ = dialog->GetWeakPtr();
 }
 
-void AcceleratorControllerImpl::ParseSideVolumeButtonLocationInfo() {
-  std::string location_info;
-  const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-  if (cl->HasSwitch(switches::kAshSideVolumeButtonPosition)) {
-    location_info =
-        cl->GetSwitchValueASCII(switches::kAshSideVolumeButtonPosition);
-  } else if (!base::PathExists(side_volume_button_location_file_path_) ||
-             !base::ReadFileToString(side_volume_button_location_file_path_,
-                                     &location_info) ||
-             location_info.empty()) {
-    return;
-  }
-
-  std::unique_ptr<base::DictionaryValue> info_in_dict =
-      base::DictionaryValue::From(
-          base::JSONReader::ReadDeprecated(location_info));
-  if (!info_in_dict) {
-    LOG(ERROR) << "JSONReader failed reading side volume button location info: "
-               << location_info;
-    return;
-  }
-  info_in_dict->GetString(kVolumeButtonRegion,
-                          &side_volume_button_location_.region);
-  info_in_dict->GetString(kVolumeButtonSide,
-                          &side_volume_button_location_.side);
-}
-
 void AcceleratorControllerImpl::Shutdown() {
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
     InputMethodManager::Get()->RemoveObserver(this);
@@ -2811,6 +2785,33 @@ bool AcceleratorControllerImpl::ShouldSwapSideVolumeButtons(
   if (side == kVolumeButtonSideLeft || side == kVolumeButtonSideRight)
     return !IsPrimaryOrientation(screen_orientation);
   return is_landscape_secondary_or_portrait_primary;
+}
+
+void AcceleratorControllerImpl::ParseSideVolumeButtonLocationInfo() {
+  std::string location_info;
+  const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
+  if (cl->HasSwitch(switches::kAshSideVolumeButtonPosition)) {
+    location_info =
+        cl->GetSwitchValueASCII(switches::kAshSideVolumeButtonPosition);
+  } else if (!base::PathExists(side_volume_button_location_file_path_) ||
+             !base::ReadFileToString(side_volume_button_location_file_path_,
+                                     &location_info) ||
+             location_info.empty()) {
+    return;
+  }
+
+  std::unique_ptr<base::DictionaryValue> info_in_dict =
+      base::DictionaryValue::From(
+          base::JSONReader::ReadDeprecated(location_info));
+  if (!info_in_dict) {
+    LOG(ERROR) << "JSONReader failed reading side volume button location info: "
+               << location_info;
+    return;
+  }
+  info_in_dict->GetString(kVolumeButtonRegion,
+                          &side_volume_button_location_.region);
+  info_in_dict->GetString(kVolumeButtonSide,
+                          &side_volume_button_location_.side);
 }
 
 void AcceleratorControllerImpl::UpdateTabletModeVolumeAdjustHistogram() {

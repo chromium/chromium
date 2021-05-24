@@ -1490,7 +1490,6 @@ TEST_F(AcceleratorControllerTest, SideVolumeButtonLocation) {
   ASSERT_TRUE(WriteJsonFile(file_path, json_location));
   EXPECT_TRUE(base::PathExists(file_path));
   test_api_->SetSideVolumeButtonFilePath(file_path);
-  controller_->ParseSideVolumeButtonLocationInfo();
   EXPECT_EQ(AcceleratorControllerImpl::kVolumeButtonRegionScreen,
             test_api_->side_volume_button_location().region);
   EXPECT_EQ(AcceleratorControllerImpl::kVolumeButtonSideLeft,
