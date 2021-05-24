@@ -28,6 +28,13 @@ absl::optional<std::string> GetWebApkPackageName(Profile* profile,
 // Returns the app IDs of all WebAPKs installed in the profile.
 base::flat_set<std::string> GetWebApkAppIds(Profile* profile);
 
+// Removes the entry for the WebAPK with the given |package_name|, and returns
+// the App Id for the uninstalled package. Returns absl::nullopt if no WebAPK
+// was installed with the |package_name|.
+absl::optional<std::string> RemoveWebApkByPackageName(
+    Profile* profile,
+    const std::string& package_name);
+
 }  // namespace webapk_prefs
 }  // namespace apps
 

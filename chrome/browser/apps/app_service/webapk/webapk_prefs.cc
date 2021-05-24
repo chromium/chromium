@@ -76,5 +76,24 @@ base::flat_set<std::string> GetWebApkAppIds(Profile* profile) {
   return ids;
 }
 
+absl::optional<std::string> RemoveWebApkByPackageName(
+    Profile* profile,
+    const std::string& package_name) {
+  DictionaryPrefUpdate generated_webapks(profile->GetPrefs(),
+                                         kGeneratedWebApksPref);
+
+  for (auto kv : generated_webapks->DictItems()) {
+    const std::string* item_package_name =
+        kv.second.FindStringKey(kPackageNameKey);
+    if (item_package_name && *item_package_name == package_name) {
+      std::string app_id = kv.first;
+      generated_webapks->RemoveKey(kv.first);
+      return app_id;
+    }
+  }
+
+  return absl::nullopt;
+}
+
 }  // namespace webapk_prefs
 }  // namespace apps

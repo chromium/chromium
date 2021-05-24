@@ -5,6 +5,11 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_MANAGER_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_MANAGER_H_
 
+#include <memory>
+#include <vector>
+
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -20,7 +25,8 @@ namespace apps {
 class AppServiceProxyBase;
 class WebApkInstallQueue;
 
-class WebApkManager : public apps::AppRegistryCache::Observer {
+class WebApkManager : public AppRegistryCache::Observer,
+                      public ArcAppListPrefs::Observer {
  public:
   explicit WebApkManager(Profile* profile);
   ~WebApkManager() override;
@@ -28,26 +34,37 @@ class WebApkManager : public apps::AppRegistryCache::Observer {
   WebApkManager(const WebApkManager&) = delete;
   WebApkManager& operator=(const WebApkManager&) = delete;
 
+  WebApkInstallQueue* GetInstallQueueForTest();
+
+ private:
+  bool IsAppEligibleForWebApk(const AppUpdate& app);
+  void QueueInstall(const std::string& app_id);
+  void QueueUninstall(const std::string& app_id);
+  void UninstallInternal(const std::string& app_id);
+
   // AppRegistryCache::Observer overrides:
   void OnAppUpdate(const AppUpdate& update) override;
   void OnAppTypeInitialized(apps::mojom::AppType type) override;
-  void OnAppRegistryCacheWillBeDestroyed(
-      apps::AppRegistryCache* cache) override;
+  void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override;
 
-  apps::WebApkInstallQueue* GetInstallQueueForTest();
-
- private:
-  bool IsAppEligibleForWebApk(const apps::AppUpdate& app);
-  void QueueInstall(const apps::AppUpdate& update);
+  // ArcAppListPrefs::Observer overrides:
+  void OnPackageListInitialRefreshed() override;
+  void OnPackageRemoved(const std::string& package_namei,
+                        bool uninstalled) override;
 
   Profile* profile_;
-  apps::AppServiceProxyBase* proxy_;
+  AppServiceProxyBase* proxy_;
   ash::ApkWebAppService* apk_service_;
+  ArcAppListPrefs* app_list_prefs_;
   web_app::AppRegistrar& web_app_registrar_;
 
   bool initialized_;
 
-  std::unique_ptr<apps::WebApkInstallQueue> install_queue_;
+  std::unique_ptr<WebApkInstallQueue> install_queue_;
+  std::vector<std::string> uninstall_queue_;
+
+  base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
+      arc_app_list_prefs_observer_{this};
 };
 
 }  // namespace apps
