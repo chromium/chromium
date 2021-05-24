@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
 import("//components/nacl/features.gni")
 
 assert(enable_nacl)
@@ -11,8 +10,7 @@ assert(enable_nacl)
 # toolchain and copies the latest PNaCl IRT shim library.
 # We could use 'copies', but we want to rename the files in a white-listed
 # way first.  Thus use an action.
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("pnacl_support_extension") {
+action("pnacl_support_extension") {
   script = "pnacl_component_crx_gen.py"
   inputs = [
     "//native_client/build/package_version/package_version.py",

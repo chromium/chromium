@@ -128,14 +128,14 @@ class PnaclPackaging(object):
     # by the NaCl repo, while abi_version is bumped when the NaCl sandbox
     # actually changes.
     pnacl_version = PnaclPackaging.PnaclToolsRevision()
-    with open(PnaclPackaging.pnacl_template, 'r') as pnacl_template_fd:
+    with open(PnaclPackaging.pnacl_template, 'rb') as pnacl_template_fd:
       pnacl_template = json.load(pnacl_template_fd)
-      out_name = J(target_dir, UseWhitelistedChars(PnaclPackaging.pnacl_json,
-                                                   None))
-      with open(out_name, 'w') as output_fd:
-        pnacl_template['pnacl-arch'] = arch
-        pnacl_template['pnacl-version'] = pnacl_version
-        json.dump(pnacl_template, output_fd, sort_keys=True, indent=4)
+    out_name = J(target_dir, UseWhitelistedChars(PnaclPackaging.pnacl_json,
+                                                 None))
+    with open(out_name, 'w') as output_fd:
+      pnacl_template['pnacl-arch'] = arch
+      pnacl_template['pnacl-version'] = pnacl_version.decode()
+      json.dump(pnacl_template, output_fd, sort_keys=True, indent=4)
 
 
 ######################################################################
