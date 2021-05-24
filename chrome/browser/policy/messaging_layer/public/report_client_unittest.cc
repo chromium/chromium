@@ -71,9 +71,12 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
         std::move(mock_user_manager));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    // Encryption is enabled by default.
-    ASSERT_TRUE(EncryptionModuleInterface::is_enabled());
+    // Encryption is disabled by default.
+    ASSERT_FALSE(EncryptionModuleInterface::is_enabled());
     if (is_encryption_enabled()) {
+      // Enable encryption.
+      scoped_feature_list_.InitFromCommandLine(
+          "EncryptedReportingPipeline,EncryptedReporting", "");
       // Generate signing key pair.
       test::GenerateSigningKeyPair(signing_private_key_,
                                    signature_verification_public_key_);

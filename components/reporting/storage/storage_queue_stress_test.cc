@@ -124,6 +124,10 @@ class TestUploadClient : public UploaderInterface {
 class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
  public:
   void SetUp() override {
+    // Enable encryption.
+    scoped_feature_list_.InitFromCommandLine(
+        {EncryptionModuleInterface::kEncryptedReporting}, {});
+
     ASSERT_TRUE(location_.CreateUniqueTempDir());
     options_.set_directory(base::FilePath(location_.GetPath()))
         .set_single_file_size(GetParam());

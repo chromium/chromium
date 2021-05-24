@@ -43,6 +43,10 @@ class EncryptionModuleTest : public ::testing::Test {
   EncryptionModuleTest() = default;
 
   void SetUp() override {
+    // Enable encryption.
+    scoped_feature_list_.InitFromCommandLine(
+        {EncryptionModuleInterface::kEncryptedReporting}, {});
+
     encryption_module_ = EncryptionModule::Create();
 
     auto decryptor_result = test::Decryptor::Create();

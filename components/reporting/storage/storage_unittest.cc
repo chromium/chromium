@@ -505,9 +505,12 @@ class StorageTest
         .WillRepeatedly(WithoutArgs(Invoke([]() {
           return Status(error::UNAVAILABLE, "Upload unavailable at this time");
         })));
-    // Encryption is enabled by default.
-    ASSERT_TRUE(EncryptionModuleInterface::is_enabled());
+    // Encryption is disabled by default.
+    ASSERT_FALSE(EncryptionModuleInterface::is_enabled());
     if (is_encryption_enabled()) {
+      // Enable encryption.
+      scoped_feature_list_.InitFromCommandLine(
+          {EncryptionModuleInterface::kEncryptedReporting}, {});
       // Generate signing key pair.
       test::GenerateSigningKeyPair(signing_private_key_,
                                    signature_verification_public_key_);
