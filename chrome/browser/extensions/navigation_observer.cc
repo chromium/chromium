@@ -136,17 +136,6 @@ void NavigationObserver::OnInstallPromptDone(
     // Grant permissions, re-enable the extension, and then reload the tab.
     extension_service->GrantPermissionsAndEnableExtension(extension);
     nav_controller->Reload(content::ReloadType::NORMAL, true);
-  } else {
-    // TODO(devlin): These metrics aren't very useful, since they're lumped in
-    // with the same for re-enabling/canceling when the extension first gets
-    // disabled, which is likely significantly more common (though impossible to
-    // tell). We need to separate these.
-    std::string histogram_name =
-       result == ExtensionInstallPrompt::Result::USER_CANCELED
-            ? "ReEnableCancel"
-            : "ReEnableAbort";
-    ExtensionService::RecordPermissionMessagesHistogram(extension,
-                                                        histogram_name.c_str());
   }
 
   in_progress_prompt_extension_id_.clear();

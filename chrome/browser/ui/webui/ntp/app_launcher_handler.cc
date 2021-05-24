@@ -1312,19 +1312,6 @@ void AppLauncherHandler::ExtensionEnableFlowAborted(bool user_initiated) {
     return;
   }
 
-  // We record the histograms here because ExtensionUninstallCanceled is also
-  // called when the extension uninstall dialog is canceled.
-  const Extension* extension =
-      extensions::ExtensionRegistry::Get(extension_service_->profile())
-          ->GetExtensionById(extension_id_prompting_,
-                             extensions::ExtensionRegistry::ENABLED |
-                                 extensions::ExtensionRegistry::DISABLED |
-                                 extensions::ExtensionRegistry::TERMINATED);
-  std::string histogram_name = user_initiated ? "ReEnableCancel"
-                                              : "ReEnableAbort";
-  extensions::ExtensionService::RecordPermissionMessagesHistogram(
-      extension, histogram_name.c_str());
-
   extension_enable_flow_.reset();
   CleanupAfterUninstall();
 }

@@ -836,16 +836,12 @@ void CrxInstaller::OnInstallPromptDone(ExtensionInstallPrompt::Result result) {
       break;
     case ExtensionInstallPrompt::Result::USER_CANCELED:
       if (!update_from_settings_page_) {
-        ExtensionService::RecordPermissionMessagesHistogram(extension(),
-                                                            "InstallCancel");
         NotifyCrxInstallComplete(CrxInstallError(
             CrxInstallErrorType::OTHER, CrxInstallErrorDetail::USER_CANCELED));
       }
       break;
     case ExtensionInstallPrompt::Result::ABORTED:
       if (!update_from_settings_page_) {
-        ExtensionService::RecordPermissionMessagesHistogram(extension(),
-                                                            "InstallAbort");
         NotifyCrxInstallComplete(CrxInstallError(
             CrxInstallErrorType::OTHER, CrxInstallErrorDetail::USER_ABORTED));
       }

@@ -771,12 +771,6 @@ void WebstorePrivateBeginInstallWithManifest3Function::HandleInstallProceed() {
   DCHECK(scoped_active_install_.get());
   scoped_active_install_->CancelDeregister();
 
-  // The Permissions_Install histogram is recorded from the ExtensionService
-  // for all extension installs, so we only need to record the web store
-  // specific histogram here.
-  ExtensionService::RecordPermissionMessagesHistogram(
-      dummy_extension_.get(), "WebStoreInstall");
-
   // Record when the user accepted to install a not allowlisted extension.
   if (details().esb_allowlist && !*details().esb_allowlist) {
     ReportWebStoreInstallNotAllowlistedInstalled(
@@ -787,19 +781,6 @@ void WebstorePrivateBeginInstallWithManifest3Function::HandleInstallProceed() {
 
 void WebstorePrivateBeginInstallWithManifest3Function::HandleInstallAbort(
     bool user_initiated) {
-  // The web store install histograms are a subset of the install histograms.
-  // We need to record both histograms here since CrxInstaller::InstallUIAbort
-  // is never called for web store install cancellations.
-  if (user_initiated) {
-    ExtensionService::RecordPermissionMessagesHistogram(
-        dummy_extension_.get(), "WebStoreInstallCancel");
-  }
-
-  std::string histogram_name =
-      user_initiated ? "InstallCancel" : "InstallAbort";
-  ExtensionService::RecordPermissionMessagesHistogram(dummy_extension_.get(),
-                                                      histogram_name.c_str());
-
   if (details().esb_allowlist && !*details().esb_allowlist) {
     ReportWebStoreInstallNotAllowlistedInstalled(
         /*installed=*/false, friction_dialog_shown_);

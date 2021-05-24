@@ -793,7 +793,6 @@ bool ExtensionService::UninstallExtension(
 
   UMA_HISTOGRAM_ENUMERATION("Extensions.UninstallType", extension->GetType(),
                             100);
-  RecordPermissionMessagesHistogram(extension.get(), "Uninstall");
 
   // Unload before doing more cleanup to ensure that nothing is hanging on to
   // any of these resources.
@@ -1075,7 +1074,6 @@ void ExtensionService::UnblockAllExtensions() {
 void ExtensionService::GrantPermissionsAndEnableExtension(
     const Extension* extension) {
   GrantPermissions(extension);
-  RecordPermissionMessagesHistogram(extension, "ReEnable");
   EnableExtension(extension->id());
 }
 
@@ -1572,8 +1570,6 @@ void ExtensionService::CheckPermissionsIncrease(const Extension* extension,
   if (is_privilege_increase &&
       !(disable_reasons & disable_reason::DISABLE_REMOTE_INSTALL)) {
     disable_reasons |= disable_reason::DISABLE_PERMISSIONS_INCREASE;
-    if (!extension_prefs_->DidExtensionEscalatePermissions(extension->id()))
-      RecordPermissionMessagesHistogram(extension, "AutoDisable");
   }
 
   if (disable_reasons == disable_reason::DISABLE_NONE)
