@@ -415,19 +415,6 @@ extern const char kEnableRemovingAllThirdPartyCookiesDescription[];
 extern const char kEnableBrowsingDataLifetimeManagerName[];
 extern const char kEnableBrowsingDataLifetimeManagerDescription[];
 
-extern const char kDataReductionProxyServerAlternative1[];
-extern const char kDataReductionProxyServerAlternative2[];
-extern const char kDataReductionProxyServerAlternative3[];
-extern const char kDataReductionProxyServerAlternative4[];
-extern const char kDataReductionProxyServerAlternative5[];
-extern const char kDataReductionProxyServerAlternative6[];
-extern const char kDataReductionProxyServerAlternative7[];
-extern const char kDataReductionProxyServerAlternative8[];
-extern const char kDataReductionProxyServerAlternative9[];
-extern const char kDataReductionProxyServerAlternative10[];
-extern const char kEnableDataReductionProxyServerExperimentName[];
-extern const char kEnableDataReductionProxyServerExperimentDescription[];
-
 extern const char kColorProviderRedirectionName[];
 extern const char kColorProviderRedirectionDescription[];
 

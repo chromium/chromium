@@ -1163,7 +1163,6 @@ if (!is_android) {
       "../browser/content_settings/content_settings_browsertest.cc",
       "../browser/crash_recovery_browsertest.cc",
       "../browser/custom_handlers/protocol_handler_registry_browsertest.cc",
-      "../browser/data_reduction_proxy/data_reduction_proxy_browsertest.cc",
       "../browser/data_saver/data_saver_browsertest.cc",
       "../browser/data_saver/data_saver_holdback_browsertest.cc",
       "../browser/data_saver/data_saver_webapis_browsertest.cc",

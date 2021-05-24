@@ -681,23 +681,6 @@ const char kColorProviderRedirectionName[] = "Color Provider Redirection";
 const char kColorProviderRedirectionDescription[] =
     "Redirects color requests to the color provider where possible.";
 
-const char kDataReductionProxyServerAlternative1[] = "Use alt. server config 1";
-const char kDataReductionProxyServerAlternative2[] = "Use alt. server config 2";
-const char kDataReductionProxyServerAlternative3[] = "Use alt. server config 3";
-const char kDataReductionProxyServerAlternative4[] = "Use alt. server config 4";
-const char kDataReductionProxyServerAlternative5[] = "Use alt. server config 5";
-const char kDataReductionProxyServerAlternative6[] = "Use alt. server config 6";
-const char kDataReductionProxyServerAlternative7[] = "Use alt. server config 7";
-const char kDataReductionProxyServerAlternative8[] = "Use alt. server config 8";
-const char kDataReductionProxyServerAlternative9[] = "Use alt. server config 9";
-const char kDataReductionProxyServerAlternative10[] =
-    "Use alt. server config 10";
-const char kEnableDataReductionProxyServerExperimentName[] =
-    "Use an alternative Data Saver back end configuration.";
-const char kEnableDataReductionProxyServerExperimentDescription[] =
-    "Enable a different approach to saving data by configuring the back end "
-    "server";
-
 const char kDesktopPWAsPrefixAppNameInWindowTitleName[] =
     "Desktop PWAs prefix window title with app name.";
 const char kDesktopPWAsPrefixAppNameInWindowTitleDescription[] =

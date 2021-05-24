@@ -19,8 +19,6 @@ template("common_tmpl") {
       "data_reduction_proxy_pref_names.h",
       "data_reduction_proxy_switches.cc",
       "data_reduction_proxy_switches.h",
-      "uma_util.cc",
-      "uma_util.h",
     ]
 
     public_deps = [ ":version_header" ]

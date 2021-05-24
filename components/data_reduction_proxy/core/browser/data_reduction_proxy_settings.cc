@@ -86,9 +86,6 @@ void DataReductionProxySettings::InitDataReductionProxySettings(
         ->SetDataUsageReportingEnabled(true);
   }
 #endif  // defined(OS_ANDROID)
-
-  for (auto& observer : observers_)
-    observer.OnSettingsInitialized();
 }
 
 void DataReductionProxySettings::SetCallbackToRegisterSyntheticFieldTrial(
@@ -273,20 +270,6 @@ void DataReductionProxySettings::MaybeActivateDataReductionProxy(
       RecordSettingsEnabledState(DATA_REDUCTION_SETTINGS_ACTION_ON_TO_OFF);
     }
   }
-}
-
-const net::HttpRequestHeaders&
-DataReductionProxySettings::GetProxyRequestHeaders() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return proxy_request_headers_;
-}
-
-void DataReductionProxySettings::SetProxyRequestHeaders(
-    const net::HttpRequestHeaders& headers) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  proxy_request_headers_ = headers;
-  for (auto& observer : observers_)
-    observer.OnProxyRequestHeadersChanged(headers);
 }
 
 void DataReductionProxySettings::AddDataReductionProxySettingsObserver(

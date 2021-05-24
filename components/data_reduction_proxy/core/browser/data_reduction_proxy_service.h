@@ -30,14 +30,9 @@ class SequencedTaskRunner;
 class TimeDelta;
 }  // namespace base
 
-namespace net {
-class HttpRequestHeaders;
-}  // namespace net
-
 namespace data_reduction_proxy {
 
 class DataReductionProxyCompressionStats;
-class DataReductionProxyRequestOptions;
 class DataReductionProxySettings;
 
 // Contains and initializes all Data Reduction Proxy objects that have a
@@ -58,7 +53,6 @@ class DataReductionProxyService
       data_use_measurement::DataUseMeasurement* data_use_measurement,
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       const base::TimeDelta& commit_delay,
-      Client client,
       const std::string& channel,
       const std::string& user_agent);
 
@@ -105,9 +99,6 @@ class DataReductionProxyService
     settings_ = settings;
   }
 
-  // Sends the given |headers| to |DataReductionProxySettings|.
-  void UpdateProxyRequestHeaders(const net::HttpRequestHeaders& headers);
-
   // Returns the percentage of data savings estimate provided by save-data for
   // an origin.
   double GetSaveDataSavingsPercentEstimate(const std::string& origin) const;
@@ -117,24 +108,15 @@ class DataReductionProxyService
     return compression_stats_.get();
   }
 
-  DataReductionProxyRequestOptions* request_options() const {
-    return request_options_.get();
-  }
 
   // The production channel of this build.
   std::string channel() const { return channel_; }
-
-  // The Client type of this build.
-  Client client() const { return client_; }
 
   base::WeakPtr<DataReductionProxyService> GetWeakPtr();
 
   base::SequencedTaskRunner* GetDBTaskRunnerForTesting() const {
     return db_task_runner_.get();
   }
-
-  void SetDependenciesForTesting(
-      std::unique_ptr<DataReductionProxyRequestOptions> request_options);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DataReductionProxyConfigServiceClientTest,
@@ -162,13 +144,6 @@ class DataReductionProxyService
   // Must be accessed on UI thread. Guaranteed to be non-null during the
   // lifetime of |this|.
   data_use_measurement::DataUseMeasurement* data_use_measurement_;
-
-  // The type of Data Reduction Proxy client.
-  const Client client_;
-
-
-  // Constructs credentials suitable for authenticating the client.
-  std::unique_ptr<DataReductionProxyRequestOptions> request_options_;
 
   // The production channel of this build.
   const std::string channel_;

@@ -19,7 +19,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_request_options.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_util.h"
 #include "components/data_reduction_proxy/core/browser/data_store.h"
@@ -63,7 +62,6 @@ DataReductionProxyService::DataReductionProxyService(
     data_use_measurement::DataUseMeasurement* data_use_measurement,
     const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
     const base::TimeDelta& commit_delay,
-    Client client,
     const std::string& channel,
     const std::string& user_agent)
     : settings_(settings),
@@ -71,22 +69,11 @@ DataReductionProxyService::DataReductionProxyService(
       db_data_owner_(new DBDataOwner(std::move(store))),
       db_task_runner_(db_task_runner),
       data_use_measurement_(data_use_measurement),
-      client_(client),
       channel_(channel),
       save_data_savings_estimate_dict_(
           GetSaveDataSavingsPercentEstimateFromFieldTrial()) {
   DCHECK(data_use_measurement_);
   DCHECK(settings);
-
-  request_options_ =
-      std::make_unique<DataReductionProxyRequestOptions>(client_);
-  request_options_->Init();
-  // It is safe to use base::Unretained here, since it gets executed
-  // synchronously on the UI thread, and |this| outlives the caller (since the
-  // caller is owned by |this|.
-  request_options_->SetUpdateHeaderCallback(
-      base::BindRepeating(&DataReductionProxyService::UpdateProxyRequestHeaders,
-                          base::Unretained(this)));
 
   db_task_runner_->PostTask(FROM_HERE,
                             base::BindOnce(&DBDataOwner::InitializeOnDBThread,
@@ -159,12 +146,6 @@ void DataReductionProxyService::SetStringPref(const std::string& pref_path,
     prefs_->SetString(pref_path, value);
 }
 
-
-void DataReductionProxyService::UpdateProxyRequestHeaders(
-    const net::HttpRequestHeaders& headers) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  settings_->SetProxyRequestHeaders(headers);
-}
 
 
 void DataReductionProxyService::LoadHistoricalDataUsage(
@@ -240,14 +221,6 @@ void DataReductionProxyService::OnServicesDataUse(int32_t service_hash_code,
         std::string(), false, data_use_measurement::DataUseUserData::OTHER,
         service_hash_code);
   }
-}
-
-void DataReductionProxyService::SetDependenciesForTesting(
-    std::unique_ptr<DataReductionProxyRequestOptions> request_options) {
-  request_options_ = std::move(request_options);
-  request_options_->SetUpdateHeaderCallback(
-      base::BindRepeating(&DataReductionProxyService::UpdateProxyRequestHeaders,
-                          base::Unretained(this)));
 }
 
 double DataReductionProxyService::GetSaveDataSavingsPercentEstimate(

@@ -12,8 +12,6 @@ browser_sources = [
   "data_reduction_proxy_metrics.h",
   "data_reduction_proxy_prefs.cc",
   "data_reduction_proxy_prefs.h",
-  "data_reduction_proxy_request_options.cc",
-  "data_reduction_proxy_request_options.h",
   "data_reduction_proxy_service.cc",
   "data_reduction_proxy_service.h",
   "data_reduction_proxy_settings.cc",
@@ -133,7 +131,6 @@ source_set("unit_tests") {
   sources = [
     "data_reduction_proxy_compression_stats_unittest.cc",
     "data_reduction_proxy_prefs_unittest.cc",
-    "data_reduction_proxy_request_options_unittest.cc",
     "data_reduction_proxy_settings_unittest.cc",
     "data_usage_store_unittest.cc",
   ]

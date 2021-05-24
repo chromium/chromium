@@ -58,18 +58,6 @@ enum DataReductionSettingsEnabledAction {
 // request headers change or when the DRPSettings class is initialized.
 class DataReductionProxySettingsObserver {
  public:
-  // Notifies when the proxy server request header change.
-  virtual void OnProxyRequestHeadersChanged(
-      const net::HttpRequestHeaders& headers) {}
-
-  // Notifies when the prefetch proxy hosts have changed.
-  virtual void OnPrefetchProxyHostsChanged(
-      const std::vector<GURL>& prefetch_proxies) {}
-
-  // Notifies when |DataReductionProxySettings::InitDataReductionProxySettings|
-  // is finished.
-  virtual void OnSettingsInitialized() {}
-
   // Notifies when Data Saver is enabled or disabled.
   virtual void OnDataSaverEnabledChanged(bool enabled) {}
 };
@@ -159,12 +147,6 @@ class DataReductionProxySettings {
   // Configures data reduction proxy. |at_startup| is true when this method is
   // called in response to creating or loading a new profile.
   void MaybeActivateDataReductionProxy(bool at_startup);
-
-  // Sets the headers to use for requests to the compression server.
-  void SetProxyRequestHeaders(const net::HttpRequestHeaders& headers);
-
-  // Returns headers to use for requests to the compression server.
-  const net::HttpRequestHeaders& GetProxyRequestHeaders() const;
 
   // Returns the time LiteMode was last enabled. This is reset whenever LiteMode
   // is disabled and re-enabled from settings. Null time is returned when
@@ -274,9 +256,6 @@ class DataReductionProxySettings {
   // Observers to notify when the proxy request headers change or |this| is
   // initialized.
   base::ObserverList<DataReductionProxySettingsObserver>::Unchecked observers_;
-
-  // The headers to use for requests to the proxy server.
-  net::HttpRequestHeaders proxy_request_headers_;
 
   // True if |this| was constructed for an off-the-record profile.
   const bool is_off_the_record_profile_;

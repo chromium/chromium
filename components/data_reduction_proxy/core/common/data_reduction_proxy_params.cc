@@ -30,8 +30,6 @@ namespace {
 
 const char kEnabled[] = "Enabled";
 
-const char kExperimentsOption[] = "exp";
-
 bool IsIncludedInFieldTrial(const std::string& name) {
   return base::StartsWith(base::FieldTrialList::FindFullName(name), kEnabled,
                           base::CompareCase::SENSITIVE);
@@ -64,38 +62,6 @@ bool IsIncludedInFREPromoFieldTrial() {
     return true;
 
   return CanShowAndroidLowMemoryDevicePromo();
-}
-
-std::string GetDataSaverServerExperimentsOptionName() {
-  return kExperimentsOption;
-}
-
-std::string GetDataSaverServerExperiments() {
-  const std::string cmd_line_experiment =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          data_reduction_proxy::switches::kDataReductionProxyExperiment);
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          data_reduction_proxy::switches::
-              kDataReductionProxyServerExperimentsDisabled)) {
-    // Both kDataReductionProxyExperiment and
-    // kDataReductionProxyServerExperimentsDisabled switches can't be set at the
-    // same time.
-    DCHECK(cmd_line_experiment.empty());
-    return std::string();
-  }
-
-  // Experiment set using command line overrides field trial.
-  if (!cmd_line_experiment.empty())
-    return cmd_line_experiment;
-
-  // First check if the feature is enabled.
-  if (!base::FeatureList::IsEnabled(
-          features::kDataReductionProxyServerExperiments)) {
-    return std::string();
-  }
-  return base::GetFieldTrialParamValueByFeature(
-      features::kDataReductionProxyServerExperiments, kExperimentsOption);
 }
 
 }  // namespace params

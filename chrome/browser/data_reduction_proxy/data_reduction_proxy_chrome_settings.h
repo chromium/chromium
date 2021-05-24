@@ -8,10 +8,8 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_request_options.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "net/http/http_response_headers.h"
 
 class PrefService;
 class Profile;
@@ -68,9 +66,6 @@ class DataReductionProxyChromeSettings
       Profile* profile,
       std::unique_ptr<data_reduction_proxy::DataStore> store,
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner);
-
-  // Gets the client type for the data reduction proxy.
-  static data_reduction_proxy::Client GetClient();
 
   // Public for testing.
   void MigrateDataReductionProxyOffProxyPrefs(PrefService* prefs);
