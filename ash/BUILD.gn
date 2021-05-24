@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
-import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//chromeos/assistant/ambient.gni")
 import("//chromeos/components/sensors/buildflags.gni")
@@ -1993,8 +1992,7 @@ component("ash") {
   }
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("dbus_service_files") {
+action("dbus_service_files") {
   sources = [
     "dbus/org.chromium.DisplayService.conf",
     "dbus/org.chromium.GesturePropertiesService.conf",
