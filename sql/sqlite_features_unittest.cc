@@ -297,6 +297,47 @@ TEST_F(SQLiteFeaturesTest, CachedRegexp) {
   EXPECT_EQ(7, s.ColumnInt(0));
 }
 
+TEST_F(SQLiteFeaturesTest, PrintfPrecision_WidthAboveLimit) {
+  sql::Statement statement(
+      db_.GetUniqueStatement("SELECT printf('%1001d', 1)"));
+  ASSERT_TRUE(statement.Step());
+  EXPECT_EQ(std::string(999, ' ') + "1", statement.ColumnString(0));
+}
+
+TEST_F(SQLiteFeaturesTest, PrintfPrecision_WidthAtLimit) {
+  sql::Statement statement(
+      db_.GetUniqueStatement("SELECT printf('%1000d', 1)"));
+  ASSERT_TRUE(statement.Step());
+  EXPECT_EQ(std::string(999, ' ') + "1", statement.ColumnString(0));
+}
+
+TEST_F(SQLiteFeaturesTest, PrintfPrecision_WidthBelowLimit) {
+  sql::Statement statement(db_.GetUniqueStatement("SELECT printf('%999d', 1)"));
+  ASSERT_TRUE(statement.Step());
+  EXPECT_EQ(std::string(998, ' ') + "1", statement.ColumnString(0));
+}
+
+TEST_F(SQLiteFeaturesTest, PrintfPrecision_PrecisionAboveLimit) {
+  sql::Statement statement(
+      db_.GetUniqueStatement("SELECT printf('%.1001d', 1)"));
+  ASSERT_TRUE(statement.Step());
+  EXPECT_EQ(std::string(999, '0') + "1", statement.ColumnString(0));
+}
+
+TEST_F(SQLiteFeaturesTest, PrintfPrecision_PrecisionAtLimit) {
+  sql::Statement statement(
+      db_.GetUniqueStatement("SELECT printf('%.1000d', 1)"));
+  ASSERT_TRUE(statement.Step());
+  EXPECT_EQ(std::string(999, '0') + "1", statement.ColumnString(0));
+}
+
+TEST_F(SQLiteFeaturesTest, PrintfPrecision_PrecisionBelowLimit) {
+  sql::Statement statement(
+      db_.GetUniqueStatement("SELECT printf('%.999d', 1)"));
+  ASSERT_TRUE(statement.Step());
+  EXPECT_EQ(std::string(998, '0') + "1", statement.ColumnString(0));
+}
+
 #if defined(OS_MAC)
 // If a database file is marked to be excluded from Time Machine, verify that
 // journal files are also excluded.
