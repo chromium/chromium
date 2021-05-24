@@ -363,8 +363,7 @@ void NGLineBreaker::RecalcClonedBoxDecorations() {
 // |position_|
 LayoutUnit NGLineBreaker::AddHyphen(NGInlineItemResults* item_results,
                                     wtf_size_t index,
-                                    NGInlineItemResult* item_result,
-                                    const NGInlineItem& item) {
+                                    NGInlineItemResult* item_result) {
   DCHECK(!HasHyphen());
   DCHECK_EQ(index,
             static_cast<wtf_size_t>(item_result - item_results->begin()));
@@ -372,7 +371,6 @@ LayoutUnit NGLineBreaker::AddHyphen(NGInlineItemResults* item_results,
   hyphen_index_ = index;
 
   if (!item_result->hyphen_string) {
-    DCHECK_EQ(item_result->item, &item);
     item_result->ShapeHyphen();
     has_any_hyphens_ = true;
   }
@@ -389,14 +387,13 @@ LayoutUnit NGLineBreaker::AddHyphen(NGInlineItemResults* item_results,
                                     wtf_size_t index) {
   NGInlineItemResult* item_result = &(*item_results)[index];
   DCHECK(item_result->item);
-  return AddHyphen(item_results, index, item_result, *item_result->item);
+  return AddHyphen(item_results, index, item_result);
 }
 
 LayoutUnit NGLineBreaker::AddHyphen(NGInlineItemResults* item_results,
-                                    NGInlineItemResult* item_result,
-                                    const NGInlineItem& item) {
+                                    NGInlineItemResult* item_result) {
   return AddHyphen(item_results, item_result - item_results->begin(),
-                   item_result, item);
+                   item_result);
 }
 
 // Remove the hyphen string from the |NGInlineItemResult|.
@@ -422,11 +419,11 @@ void NGLineBreaker::RestoreLastHyphen(NGInlineItemResults* item_results) {
   DCHECK(has_any_hyphens_);
   for (NGInlineItemResult& item_result : base::Reversed(*item_results)) {
     DCHECK(item_result.item);
-    const NGInlineItem& item = *item_result.item;
     if (item_result.hyphen_string) {
-      AddHyphen(item_results, &item_result, item);
+      AddHyphen(item_results, &item_result);
       return;
     }
+    const NGInlineItem& item = *item_result.item;
     if (item.Type() == NGInlineItem::kText ||
         item.Type() == NGInlineItem::kAtomicInline)
       return;
@@ -966,7 +963,7 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
     if (UNLIKELY(result.is_hyphenated)) {
       NGInlineItemResults* item_results = line_info->MutableResults();
       const LayoutUnit hyphen_inline_size =
-          AddHyphen(item_results, item_result, item);
+          AddHyphen(item_results, item_result);
       // If the hyphen overflows, retry with the reduced available width.
       if (!result.is_overflow && inline_size <= available_width) {
         const LayoutUnit space_for_hyphen =
@@ -1164,7 +1161,6 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
 
       // Append hyphen-width to `word_width` if the word is hyphenated.
       if (has_hyphen) {
-        DCHECK_EQ(item_result->item, &item);
         if (!hyphen_inline_size) {
           if (!item_result->hyphen_shape_result)
             item_result->ShapeHyphen();

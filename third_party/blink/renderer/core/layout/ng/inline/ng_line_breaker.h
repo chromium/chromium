@@ -208,12 +208,10 @@ class CORE_EXPORT NGLineBreaker {
   bool HasHyphen() const { return hyphen_index_.has_value(); }
   LayoutUnit AddHyphen(NGInlineItemResults* item_results,
                        wtf_size_t index,
-                       NGInlineItemResult* item_result,
-                       const NGInlineItem& item);
+                       NGInlineItemResult* item_result);
   LayoutUnit AddHyphen(NGInlineItemResults* item_results, wtf_size_t index);
   LayoutUnit AddHyphen(NGInlineItemResults* item_results,
-                       NGInlineItemResult* item_result,
-                       const NGInlineItem& item);
+                       NGInlineItemResult* item_result);
   LayoutUnit RemoveHyphen(NGInlineItemResults* item_results);
   void RestoreLastHyphen(NGInlineItemResults* item_results);
   void FinalizeHyphen(NGInlineItemResults* item_results);
