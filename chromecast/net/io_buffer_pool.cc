@@ -149,7 +149,7 @@ IOBufferPool::Internal::~Internal() {
 
 // static
 void* IOBufferPool::Internal::AllocateAlignedSpace(size_t buffer_size) {
-  size_t kAlignedStorageSize = base::bits::Align(sizeof(Storage), kAlignment);
+  size_t kAlignedStorageSize = base::bits::AlignUp(sizeof(Storage), kAlignment);
   return base::AlignedAlloc(kAlignedStorageSize + buffer_size, kAlignment);
 }
 
@@ -211,7 +211,7 @@ scoped_refptr<net::IOBuffer> IOBufferPool::Internal::GetBuffer() {
     ptr = static_cast<char*>(AllocateAlignedSpace(buffer_size_));
   }
 
-  size_t kAlignedStorageSize = base::bits::Align(sizeof(Storage), kAlignment);
+  size_t kAlignedStorageSize = base::bits::AlignUp(sizeof(Storage), kAlignment);
   char* data = ptr + kAlignedStorageSize;
   Wrapper* wrapper = new (ptr) Wrapper(data, this);
   return scoped_refptr<net::IOBuffer>(wrapper->buffer());

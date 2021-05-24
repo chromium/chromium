@@ -51,7 +51,7 @@ class GuardedPageAllocatorTest : public BaseGpaTest,
 
       uintptr_t addr = reinterpret_cast<uintptr_t>(alloc);
       bool is_left_aligned =
-          (base::bits::Align(addr, base::GetPageSize()) == addr);
+          (base::bits::AlignUp(addr, base::GetPageSize()) == addr);
       if (is_left_aligned == left_aligned)
         return reinterpret_cast<char*>(addr);
 

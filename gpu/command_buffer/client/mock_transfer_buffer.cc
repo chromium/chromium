@@ -146,7 +146,7 @@ uint32_t MockTransferBuffer::MaxTransferBufferSize() {
 }
 
 unsigned int MockTransferBuffer::RoundToAlignment(unsigned int size) {
-  return base::bits::Align(size, alignment_);
+  return base::bits::AlignUp(size, alignment_);
 }
 
 bool MockTransferBuffer::InSync() {

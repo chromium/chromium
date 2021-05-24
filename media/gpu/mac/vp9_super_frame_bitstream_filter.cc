@@ -157,7 +157,7 @@ bool VP9SuperFrameBitstreamFilter::BuildSuperFrame() {
   }
 
   const uint8_t bytes_per_frame_size =
-      base::bits::Align(
+      base::bits::AlignUp(
           base::bits::Log2Ceiling(base::checked_cast<uint32_t>(max_size)), 8) /
       8;
   DCHECK_GT(bytes_per_frame_size, 0);

@@ -40,7 +40,7 @@ class Serializer {
     DCHECK(base::bits::IsPowerOfTwo(alignment));
 
     size_t memory = reinterpret_cast<size_t>(memory_);
-    size_t padding = base::bits::Align(memory, alignment) - memory;
+    size_t padding = base::bits::AlignUp(memory, alignment) - memory;
     DCHECK_LE(bytes_written_ + size + padding, memory_size_);
 
     memory_ += padding;

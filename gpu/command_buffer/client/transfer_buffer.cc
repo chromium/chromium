@@ -48,9 +48,9 @@ bool TransferBuffer::Initialize(unsigned int default_buffer_size,
                                 unsigned int alignment) {
   result_size_ = result_size;
   alignment_ = alignment;
-  default_buffer_size_ = base::bits::Align(default_buffer_size, alignment);
-  min_buffer_size_ = base::bits::Align(min_buffer_size, alignment);
-  max_buffer_size_ = base::bits::Align(max_buffer_size, alignment);
+  default_buffer_size_ = base::bits::AlignUp(default_buffer_size, alignment);
+  min_buffer_size_ = base::bits::AlignUp(min_buffer_size, alignment);
+  max_buffer_size_ = base::bits::AlignUp(max_buffer_size, alignment);
   ReallocateRingBuffer(default_buffer_size_ - result_size);
   return HaveBuffer();
 }
@@ -134,7 +134,7 @@ void TransferBuffer::AllocateRingBuffer(unsigned int size) {
       return;
     }
     // we failed so don't try larger than this.
-    max_buffer_size_ = base::bits::Align(size / 2, alignment_);
+    max_buffer_size_ = base::bits::AlignUp(size / 2, alignment_);
   }
   usable_ = false;
 }

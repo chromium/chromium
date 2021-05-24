@@ -105,7 +105,7 @@ ProtectedBufferManager::ProtectedSharedMemory::Create(
       new ProtectedSharedMemory(std::move(dummy_handle)));
 
   size_t aligned_size =
-      base::bits::Align(size, base::SysInfo::VMAllocationGranularity());
+      base::bits::AlignUp(size, base::SysInfo::VMAllocationGranularity());
 
   auto shmem_region = base::UnsafeSharedMemoryRegion::Create(aligned_size);
   if (!shmem_region.IsValid()) {

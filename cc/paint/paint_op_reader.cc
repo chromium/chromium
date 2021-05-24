@@ -105,7 +105,7 @@ void PaintOpReader::ReadSimple(T* val) {
 
   // Align everything to 4 bytes, as the writer does.
   static constexpr size_t kAlign = 4;
-  size_t size = base::bits::Align(sizeof(T), kAlign);
+  size_t size = base::bits::AlignUp(sizeof(T), kAlign);
 
   if (remaining_bytes_ < size)
     SetInvalid();
@@ -725,7 +725,7 @@ void PaintOpReader::Read(scoped_refptr<SkottieWrapper>* skottie) {
 #endif  // !defined(OS_ANDROID)
 
 void PaintOpReader::AlignMemory(size_t alignment) {
-  size_t padding = base::bits::Align(memory_, alignment) - memory_;
+  size_t padding = base::bits::AlignUp(memory_, alignment) - memory_;
   if (padding > remaining_bytes_)
     SetInvalid();
 

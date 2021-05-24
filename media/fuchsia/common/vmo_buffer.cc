@@ -152,7 +152,7 @@ void VmoBuffer::FlushCache(size_t flush_offset,
 }
 
 size_t VmoBuffer::mapped_size() {
-  return base::bits::Align(offset_ + size_, base::GetPageSize());
+  return base::bits::AlignUp(offset_ + size_, base::GetPageSize());
 }
 
 zx::vmo VmoBuffer::Duplicate(bool writable) {

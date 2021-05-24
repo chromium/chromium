@@ -138,7 +138,7 @@ RemoteProcessIOResult ReadFilePathFromRemoteProcess(pid_t pid,
 
 namespace internal {
 uintptr_t NumBytesLeftInPage(uintptr_t addr) {
-  const uintptr_t page_end = base::bits::Align(addr + 1, base::GetPageSize());
+  const uintptr_t page_end = base::bits::AlignUp(addr + 1, base::GetPageSize());
   return page_end - addr;
 }
 }  // namespace internal

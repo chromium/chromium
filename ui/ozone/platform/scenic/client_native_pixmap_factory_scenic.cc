@@ -48,7 +48,7 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
 
     // Round mapping size to align with the page size.
     size_t page_size = base::SysInfo::VMAllocationGranularity();
-    mapping_size_ = base::bits::Align(mapping_size_, page_size);
+    mapping_size_ = base::bits::AlignUp(mapping_size_, page_size);
 
     zx_status_t status =
         zx::vmar::root_self()->map(ZX_VM_PERM_READ | ZX_VM_PERM_WRITE, 0,

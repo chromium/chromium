@@ -260,7 +260,7 @@ void* GuardedPageAllocator::Allocate(size_t size,
   size_t offset;
   if (free_slot & 1)
     // Return right-aligned allocation to detect overflows.
-    offset = state_.page_size - base::bits::Align(size, align);
+    offset = state_.page_size - base::bits::AlignUp(size, align);
   else
     // Return left-aligned allocation to detect underflows.
     offset = 0;

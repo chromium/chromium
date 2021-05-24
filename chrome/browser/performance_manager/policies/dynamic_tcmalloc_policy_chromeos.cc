@@ -189,7 +189,7 @@ void DynamicTcmallocPolicy::CheckAndUpdateTunables() {
 
       // Always page align the value that we determined and never let it drop
       // below the minimum.
-      node_size_mb = base::bits::Align(
+      node_size_mb = base::bits::AlignUp(
           std::max(node_size_mb, kMinOverallThreadCacheSizeMB), kPageSizeBytes);
 
       VLOG(1) << "SetMaxTotalThreadCacheBytes=" << node_size_mb;

@@ -479,7 +479,7 @@ absl::optional<VideoFrameLayout> CreateVideoFrameLayout(
         VideoFrame::RowBytes(i, pixel_format, dimension.width());
     const size_t rows = VideoFrame::Rows(i, pixel_format, dimension.height());
     const size_t plane_size = stride * rows;
-    const size_t aligned_size = base::bits::Align(plane_size, alignment);
+    const size_t aligned_size = base::bits::AlignUp(plane_size, alignment);
     planes[i].stride = stride;
     planes[i].offset = offset;
     planes[i].size = aligned_size;

@@ -83,7 +83,8 @@ void FuchsiaAudioCapturerSource::Initialize(const AudioParameters& params,
   // Allocate shared buffer.
   capture_buffer_size_ =
       params_.GetBytesPerBuffer(kSampleFormatF32) * kBufferPacketCapacity;
-  capture_buffer_size_ = base::bits::Align(capture_buffer_size_, ZX_PAGE_SIZE);
+  capture_buffer_size_ =
+      base::bits::AlignUp(capture_buffer_size_, ZX_PAGE_SIZE);
 
   zx::vmo buffer_vmo;
   zx_status_t status = zx::vmo::create(capture_buffer_size_, 0, &buffer_vmo);

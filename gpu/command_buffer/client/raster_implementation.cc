@@ -1239,13 +1239,13 @@ void RasterImplementation::WritePixels(const gpu::Mailbox& dest_mailbox,
   // Get the size of the SkColorSpace while maintaining 8-byte alignment.
   GLuint pixels_offset = 0;
   if (src_info.colorSpace()) {
-    pixels_offset = base::bits::Align(
+    pixels_offset = base::bits::AlignUp(
         src_info.colorSpace()->writeToMemory(nullptr), sizeof(uint64_t));
   }
 
   GLuint src_size = src_info.computeByteSize(row_bytes);
   GLuint total_size =
-      pixels_offset + base::bits::Align(src_size, sizeof(uint64_t));
+      pixels_offset + base::bits::AlignUp(src_size, sizeof(uint64_t));
 
   std::unique_ptr<ScopedSharedMemoryPtr> scoped_shared_memory =
       std::make_unique<ScopedSharedMemoryPtr>(total_size, transfer_buffer_,
@@ -1427,7 +1427,7 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
 
   GLuint dst_size = dst_info.computeByteSize(dst_row_bytes);
   GLuint total_size =
-      pixels_offset + base::bits::Align(dst_size, sizeof(uint64_t));
+      pixels_offset + base::bits::AlignUp(dst_size, sizeof(uint64_t));
 
   std::unique_ptr<ScopedMappedMemoryPtr> scoped_shared_memory =
       std::make_unique<ScopedMappedMemoryPtr>(total_size, helper(),

@@ -64,17 +64,6 @@ inline T* AlignUp(T* ptr, size_t alignment) {
       AlignUp(reinterpret_cast<size_t>(ptr), alignment));
 }
 
-// Deprecated. Use AlignUp() instead.
-inline size_t Align(size_t size, size_t alignment) {
-  return AlignUp(size, alignment);
-}
-
-// Deprecated. Use AlignUp() instead.
-template <typename T, typename = typename std::enable_if<sizeof(T) == 1>::type>
-inline T* Align(T* ptr, size_t alignment) {
-  return AlignUp(ptr, alignment);
-}
-
 // CountLeadingZeroBits(value) returns the number of zero bits following the
 // most significant 1 bit in |value| if |value| is non-zero, otherwise it
 // returns {sizeof(T) * 8}.

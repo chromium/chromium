@@ -42,8 +42,8 @@ static_assert(sizeof(RecordHeader) == sizeof(base::subtle::Atomic32),
 // for the record header and rounds up to the next multiple of the record-header
 // size.
 size_t CalculateRecordSize(size_t data_amount) {
-  return base::bits::Align(data_amount + sizeof(RecordHeader),
-                           sizeof(RecordHeader));
+  return base::bits::AlignUp(data_amount + sizeof(RecordHeader),
+                             sizeof(RecordHeader));
 }
 
 }  // namespace

@@ -107,7 +107,7 @@ mojom::AggregatedMetricsPtr ComputeGlobalNativeCodeResidentMemoryKb(
         base::android::kStartOfOrderedText / kPageSize -
         start_of_text_page_index;
     size_t end_of_ordered_section_page_offset =
-        base::bits::Align(base::android::kEndOfOrderedText, kPageSize) /
+        base::bits::AlignUp(base::android::kEndOfOrderedText, kPageSize) /
             kPageSize -
         start_of_text_page_index;
 

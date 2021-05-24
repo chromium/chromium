@@ -65,8 +65,8 @@ bool VP8Encoder::Initialize(const VideoEncodeAccelerator::Config& config,
   }
 
   visible_size_ = config.input_visible_size;
-  coded_size_ = gfx::Size(base::bits::Align(visible_size_.width(), 16),
-                          base::bits::Align(visible_size_.height(), 16));
+  coded_size_ = gfx::Size(base::bits::AlignUp(visible_size_.width(), 16),
+                          base::bits::AlignUp(visible_size_.height(), 16));
 
   Reset();
 

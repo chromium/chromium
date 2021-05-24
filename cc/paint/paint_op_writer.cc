@@ -103,7 +103,7 @@ void PaintOpWriter::WriteSimple(const T& val) {
   // to pre-align memory to the correct alignment.
   // TODO(enne): maybe we should do this correctly and DCHECK alignment.
   static constexpr size_t kAlign = 4;
-  size_t size = base::bits::Align(sizeof(T), kAlign);
+  size_t size = base::bits::AlignUp(sizeof(T), kAlign);
   EnsureBytes(size);
   if (!valid_)
     return;

@@ -147,7 +147,7 @@ libgav1::StatusCode GetFrameBufferImpl(void* callback_private_data,
   // proper, indicated by Y. VideoFramePool aligns the first byte of the
   // buffer, indicated by X. To make sure the byte indicated by Y is also
   // aligned, we need to pad left_border to be a multiple of stride_alignment.
-  left_border = base::bits::Align(left_border, stride_alignment);
+  left_border = base::bits::AlignUp(left_border, stride_alignment);
   gfx::Size coded_size(left_border + width + right_border,
                        top_border + height + bottom_border);
   gfx::Rect visible_rect(left_border, top_border, width, height);

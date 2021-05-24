@@ -95,8 +95,8 @@ bool H264Encoder::Initialize(
   }
   constexpr size_t kH264MacroblockSizeInPixels = 16;
   coded_size_ = gfx::Size(
-      base::bits::Align(visible_size_.width(), kH264MacroblockSizeInPixels),
-      base::bits::Align(visible_size_.height(), kH264MacroblockSizeInPixels));
+      base::bits::AlignUp(visible_size_.width(), kH264MacroblockSizeInPixels),
+      base::bits::AlignUp(visible_size_.height(), kH264MacroblockSizeInPixels));
   mb_width_ = coded_size_.width() / kH264MacroblockSizeInPixels;
   mb_height_ = coded_size_.height() / kH264MacroblockSizeInPixels;
 

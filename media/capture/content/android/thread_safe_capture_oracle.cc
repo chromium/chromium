@@ -93,8 +93,8 @@ bool ThreadSafeCaptureOracle::ObserveEventAndDecideCapture(
     // TODO(miu): Clients should request exact padding, instead of this
     // memory-wasting hack to make frames that are compatible with all HW
     // encoders.  http://crbug.com/555911
-    coded_size.SetSize(base::bits::Align(visible_size.width(), 16),
-                       base::bits::Align(visible_size.height(), 16));
+    coded_size.SetSize(base::bits::AlignUp(visible_size.width(), 16),
+                       base::bits::AlignUp(visible_size.height(), 16));
 
     const auto result_code = client_->ReserveOutputBuffer(
         coded_size, params_.requested_format.pixel_format, frame_number,

@@ -63,7 +63,7 @@ class Deserializer {
     DCHECK(base::bits::IsPowerOfTwo(alignment));
 
     size_t memory = reinterpret_cast<size_t>(memory_);
-    size_t padding = base::bits::Align(memory, alignment) - memory;
+    size_t padding = base::bits::AlignUp(memory, alignment) - memory;
 
     base::CheckedNumeric<uint32_t> checked_padded_size = bytes_read_;
     checked_padded_size += padding;
