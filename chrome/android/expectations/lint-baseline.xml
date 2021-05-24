@@ -1981,4 +1981,15 @@
             column="17"/>
     </issue>
 
+    <issue
+        id="VectorRaster"
+        message="Limit vector icons sizes to 200×200 to keep icon drawing fast; see https://developer.android.com/studio/write/vector-asset-studio#when for more"
+        errorLine1="    android:width=&quot;360dp&quot;"
+        errorLine2="                   ~~~~~">
+        <location
+            file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
+            line="7"
+            column="5"/>
+    </issue>
+
 </issues>
