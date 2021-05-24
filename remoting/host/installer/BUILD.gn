@@ -2,11 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
 import("//remoting/build/config/remoting_build.gni")
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("credits") {
+action("credits") {
   # We put this in $root_build_dir/gen/remoting instead of
   # $root_build_dir/gen/remoting/host (target_gen_dir) for
   # compatibility w/ GYP, since the installer needs the file to
