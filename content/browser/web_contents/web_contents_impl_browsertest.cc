@@ -4465,87 +4465,95 @@ class WebContentsImplBrowserTestWindowControlsOverlay
                    name)));
   }
 
+  void ValidateWindowsControlOverlayState(WebContents* web_contents,
+                                          const gfx::Rect& expected_rect,
+                                          int css_fallback_value) {
+    EXPECT_EQ(!expected_rect.IsEmpty(),
+              EvalJs(web_contents, "navigator.windowControlsOverlay.visible"));
+    EXPECT_EQ(
+        expected_rect.x(),
+        EvalJs(web_contents,
+               "navigator.windowControlsOverlay.getBoundingClientRect().x"));
+    EXPECT_EQ(
+        expected_rect.y(),
+        EvalJs(web_contents,
+               "navigator.windowControlsOverlay.getBoundingClientRect().y"));
+    EXPECT_EQ(
+        expected_rect.width(),
+        EvalJs(
+            web_contents,
+            "navigator.windowControlsOverlay.getBoundingClientRect().width"));
+    EXPECT_EQ(
+        expected_rect.height(),
+        EvalJs(
+            web_contents,
+            "navigator.windowControlsOverlay.getBoundingClientRect().height"));
+
+    // When the overlay is not visible, the environment variables should be
+    // undefined, and the the fallback value should be used.
+    gfx::Rect css_rect = expected_rect;
+    if (css_rect.IsEmpty()) {
+      css_rect.SetRect(css_fallback_value, css_fallback_value,
+                       css_fallback_value, css_fallback_value);
+    }
+
+    auto FormatPx = [](int value) { return base::StringPrintf("%dpx", value); };
+
+    ValidateTitlebarAreaCSSValue("left", FormatPx(css_rect.x()));
+    ValidateTitlebarAreaCSSValue("top", FormatPx(css_rect.y()));
+    ValidateTitlebarAreaCSSValue("width", FormatPx(css_rect.width()));
+    ValidateTitlebarAreaCSSValue("height", FormatPx(css_rect.height()));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
-                       UpdateWindowControlsOverlay) {
+                       ValidateWindowControlsOverlayToggleOn) {
   auto* web_contents = shell()->web_contents();
 
   GURL url(
-      "data:text/html,<body><div id=target style=\"position=absolute;"
-      "left: env(titlebar-area-x, 50px);"
-      "top: env(titlebar-area-y, 50px);"
-      "width: env(titlebar-area-width, 50px);"
-      "height: env(titlebar-area-height, 50px);\"></div></body>");
+      R"(data:text/html,<body><div id=target style="position=absolute;
+      left: env(titlebar-area-x, 50px);
+      top: env(titlebar-area-y, 50px);
+      width: env(titlebar-area-width, 50px);
+      height: env(titlebar-area-height, 50px);"></div></body>)");
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // In the initial state, the overlay is not visible and the bounding rect is
   // empty.
-  int empty_rect_value = 0;
-
-  EXPECT_EQ(false,
-            EvalJs(web_contents, "navigator.windowControlsOverlay.visible"));
-  EXPECT_EQ(
-      empty_rect_value,
-      EvalJs(web_contents,
-             "navigator.windowControlsOverlay.getBoundingClientRect().x"));
-  EXPECT_EQ(
-      empty_rect_value,
-      EvalJs(web_contents,
-             "navigator.windowControlsOverlay.getBoundingClientRect().y"));
-  EXPECT_EQ(
-      empty_rect_value,
-      EvalJs(web_contents,
-             "navigator.windowControlsOverlay.getBoundingClientRect().width"));
-  EXPECT_EQ(
-      empty_rect_value,
-      EvalJs(web_contents,
-             "navigator.windowControlsOverlay.getBoundingClientRect().height"));
-
-  // When the overlay is not visble, the environment variables should be
-  // undefined, and the the fallback value of 50px should be used.
-  ValidateTitlebarAreaCSSValue("left", "50px");
-  ValidateTitlebarAreaCSSValue("top", "50px");
-  ValidateTitlebarAreaCSSValue("width", "50px");
-  ValidateTitlebarAreaCSSValue("height", "50px");
+  ValidateWindowsControlOverlayState(web_contents, gfx::Rect(), 50);
 
   // Update bounds and ensure that JS APIs and CSS variables are updated.
-  const int new_x = 1;
-  const int new_y = 2;
-  const int new_width = 3;
-  const int new_height = 4;
-
-  gfx::Rect bounding_client_rect =
-      gfx::Rect(new_x, new_y, new_width, new_height);
-
+  gfx::Rect bounding_client_rect(1, 2, 3, 4);
   web_contents->UpdateWindowControlsOverlay(bounding_client_rect);
+  ValidateWindowsControlOverlayState(web_contents, bounding_client_rect, 50);
+}
 
-  EXPECT_EQ(true,
-            EvalJs(web_contents, "navigator.windowControlsOverlay.visible"));
-  EXPECT_EQ(
-      new_x,
-      EvalJs(web_contents,
-             "navigator.windowControlsOverlay.getBoundingClientRect().x"));
-  EXPECT_EQ(
-      new_y,
-      EvalJs(web_contents,
-             "navigator.windowControlsOverlay.getBoundingClientRect().y"));
-  EXPECT_EQ(
-      new_width,
-      EvalJs(web_contents,
-             "navigator.windowControlsOverlay.getBoundingClientRect().width"));
-  EXPECT_EQ(
-      new_height,
-      EvalJs(web_contents,
-             "navigator.windowControlsOverlay.getBoundingClientRect().height"));
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
+                       ValidateWindowControlsOverlayToggleOff) {
+  auto* web_contents = shell()->web_contents();
 
-  ValidateTitlebarAreaCSSValue("left", "1px");
-  ValidateTitlebarAreaCSSValue("top", "2px");
-  ValidateTitlebarAreaCSSValue("width", "3px");
-  ValidateTitlebarAreaCSSValue("height", "4px");
+  GURL url(
+      R"(data:text/html,<body><div id=target style="position=absolute;
+      left: env(titlebar-area-x, 55px);
+      top: env(titlebar-area-y, 55px);
+      width: env(titlebar-area-width, 55px);
+      height: env(titlebar-area-height, 55px);"></div></body>)");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Update bounds and ensure that JS APIs and CSS variables are updated.
+  gfx::Rect bounding_client_rect(0, 0, 100, 32);
+  web_contents->UpdateWindowControlsOverlay(bounding_client_rect);
+  ValidateWindowsControlOverlayState(web_contents, bounding_client_rect, 55);
+
+  // Now toggle Windows Controls Overlay off.
+  gfx::Rect empty_rect;
+  web_contents->UpdateWindowControlsOverlay(empty_rect);
+  ValidateWindowsControlOverlayState(web_contents, empty_rect, 55);
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
@@ -4589,4 +4597,5 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
   EXPECT_EQ(width, EvalJs(web_contents, "rect.width"));
   EXPECT_EQ(height, EvalJs(web_contents, "rect.height"));
 }
+
 }  // namespace content

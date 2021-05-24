@@ -1615,6 +1615,8 @@ bool BrowserView::IsWindowControlsOverlayEnabled() const {
 void BrowserView::ToggleWindowControlsOverlayEnabled() {
   browser()->app_controller()->ToggleWindowControlsOverlayEnabled();
   frame_->GetFrameView()->WindowControlsOverlayEnabledChanged();
+  if (!browser()->app_controller()->IsWindowControlsOverlayEnabled())
+    GetActiveWebContents()->UpdateWindowControlsOverlay(gfx::Rect());
 }
 
 void BrowserView::FocusBookmarksToolbar() {

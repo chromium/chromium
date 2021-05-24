@@ -3075,23 +3075,38 @@ void LocalFrame::UpdateBrowserControlsState(
 
 void LocalFrame::UpdateWindowControlsOverlay(
     const gfx::Rect& window_controls_overlay_rect) {
+  if (window_controls_overlay_rect == window_controls_overlay_rect_)
+    return;
+
   is_window_controls_overlay_visible_ = !window_controls_overlay_rect.IsEmpty();
   window_controls_overlay_rect_ = window_controls_overlay_rect;
 
   DocumentStyleEnvironmentVariables& vars =
       GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
-  vars.SetVariable(
-      UADefinedVariable::kTitlebarAreaX,
-      StyleEnvironmentVariables::FormatPx(window_controls_overlay_rect_.x()));
-  vars.SetVariable(
-      UADefinedVariable::kTitlebarAreaY,
-      StyleEnvironmentVariables::FormatPx(window_controls_overlay_rect_.y()));
-  vars.SetVariable(UADefinedVariable::kTitlebarAreaWidth,
-                   StyleEnvironmentVariables::FormatPx(
-                       window_controls_overlay_rect_.width()));
-  vars.SetVariable(UADefinedVariable::kTitlebarAreaHeight,
-                   StyleEnvironmentVariables::FormatPx(
-                       window_controls_overlay_rect_.height()));
+
+  if (is_window_controls_overlay_visible_) {
+    vars.SetVariable(
+        UADefinedVariable::kTitlebarAreaX,
+        StyleEnvironmentVariables::FormatPx(window_controls_overlay_rect_.x()));
+    vars.SetVariable(
+        UADefinedVariable::kTitlebarAreaY,
+        StyleEnvironmentVariables::FormatPx(window_controls_overlay_rect_.y()));
+    vars.SetVariable(UADefinedVariable::kTitlebarAreaWidth,
+                     StyleEnvironmentVariables::FormatPx(
+                         window_controls_overlay_rect_.width()));
+    vars.SetVariable(UADefinedVariable::kTitlebarAreaHeight,
+                     StyleEnvironmentVariables::FormatPx(
+                         window_controls_overlay_rect_.height()));
+  } else {
+    vars.RemoveVariable(vars.GetVariableName(UADefinedVariable::kTitlebarAreaX,
+                                             vars.GetFeatureContext()));
+    vars.RemoveVariable(vars.GetVariableName(UADefinedVariable::kTitlebarAreaY,
+                                             vars.GetFeatureContext()));
+    vars.RemoveVariable(vars.GetVariableName(
+        UADefinedVariable::kTitlebarAreaWidth, vars.GetFeatureContext()));
+    vars.RemoveVariable(vars.GetVariableName(
+        UADefinedVariable::kTitlebarAreaHeight, vars.GetFeatureContext()));
+  }
 
   auto* window_controls_overlay =
       WindowControlsOverlay::FromIfExists(*DomWindow()->navigator());
