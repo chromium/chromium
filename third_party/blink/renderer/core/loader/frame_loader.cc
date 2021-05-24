@@ -243,11 +243,11 @@ LocalFrameClient* FrameLoader::Client() const {
   return frame_->Client();
 }
 
-void FrameLoader::SetDefersLoading(WebURLLoader::DeferType defers) {
+void FrameLoader::SetDefersLoading(LoaderFreezeMode mode) {
   if (frame_->GetDocument())
-    frame_->GetDocument()->Fetcher()->SetDefersLoading(defers);
+    frame_->GetDocument()->Fetcher()->SetDefersLoading(mode);
   if (document_loader_)
-    document_loader_->SetDefersLoading(defers);
+    document_loader_->SetDefersLoading(mode);
 }
 
 void FrameLoader::SaveScrollAnchor() {

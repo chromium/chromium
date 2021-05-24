@@ -20,6 +20,7 @@ void DetachableResourceFetcherProperties::Detach() {
           properties_->GetFetchClientSettingsObject());
   is_main_frame_ = properties_->IsMainFrame();
   paused_ = properties_->IsPaused();
+  freeze_mode_ = properties_->FreezeMode();
   load_complete_ = properties_->IsLoadComplete();
   is_subframe_deprioritization_enabled_ =
       properties_->IsSubframeDeprioritizationEnabled();

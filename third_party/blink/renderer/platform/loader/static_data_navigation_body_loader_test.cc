@@ -47,9 +47,9 @@ class StaticDataNavigationBodyLoaderTest
   }
 
   void TakeActions() {
-    if (set_defers_loading_ != WebURLLoader::DeferType::kNotDeferred) {
-      set_defers_loading_ = WebURLLoader::DeferType::kNotDeferred;
-      loader_->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+    if (freeze_mode_ != LoaderFreezeMode::kNone) {
+      freeze_mode_ = LoaderFreezeMode::kNone;
+      loader_->SetDefersLoading(LoaderFreezeMode::kStrict);
     }
     if (!buffer_to_write_.IsEmpty()) {
       String buffer = buffer_to_write_;
@@ -74,8 +74,7 @@ class StaticDataNavigationBodyLoaderTest
   bool expecting_finished_ = false;
   bool did_finish_ = false;
   String buffer_to_write_;
-  WebURLLoader::DeferType set_defers_loading_ =
-      WebURLLoader::DeferType::kNotDeferred;
+  LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   bool destroy_loader_ = false;
   String data_received_;
 };
@@ -99,11 +98,11 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
        SetDefersLoadingAndWriteFromDataReceived) {
   loader_->StartLoadingBody(this, false);
   expecting_data_received_ = true;
-  set_defers_loading_ = WebURLLoader::DeferType::kDeferred;
+  freeze_mode_ = LoaderFreezeMode::kStrict;
   buffer_to_write_ = "world";
   Write("hello");
   EXPECT_EQ("hello", TakeDataReceived());
-  loader_->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  loader_->SetDefersLoading(LoaderFreezeMode::kNone);
   EXPECT_EQ("world", TakeDataReceived());
 }
 
@@ -111,11 +110,11 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
        SetDefersLoadingWithBfcacheAndWriteFromDataReceived) {
   loader_->StartLoadingBody(this, false);
   expecting_data_received_ = true;
-  set_defers_loading_ = WebURLLoader::DeferType::kDeferredWithBackForwardCache;
+  freeze_mode_ = LoaderFreezeMode::kBufferIncoming;
   buffer_to_write_ = "world";
   Write("hello");
   EXPECT_EQ("hello", TakeDataReceived());
-  loader_->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  loader_->SetDefersLoading(LoaderFreezeMode::kNone);
   EXPECT_EQ("world", TakeDataReceived());
 }
 
@@ -130,7 +129,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest, DestroyFromDataReceived) {
 TEST_F(StaticDataNavigationBodyLoaderTest, SetDefersLoadingFromDataReceived) {
   loader_->StartLoadingBody(this, false);
   expecting_data_received_ = true;
-  set_defers_loading_ = WebURLLoader::DeferType::kDeferred;
+  freeze_mode_ = LoaderFreezeMode::kStrict;
   Write("hello");
   EXPECT_EQ("hello", TakeDataReceived());
   Write("world");
@@ -141,7 +140,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
        SetDefersLoadingWithBfcacheFromDataReceived) {
   loader_->StartLoadingBody(this, false);
   expecting_data_received_ = true;
-  set_defers_loading_ = WebURLLoader::DeferType::kDeferredWithBackForwardCache;
+  freeze_mode_ = LoaderFreezeMode::kBufferIncoming;
   Write("hello");
   EXPECT_EQ("hello", TakeDataReceived());
   Write("world");
@@ -164,11 +163,11 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
   Write("hello");
   loader_->Finish();
   expecting_data_received_ = true;
-  set_defers_loading_ = WebURLLoader::DeferType::kDeferred;
+  freeze_mode_ = LoaderFreezeMode::kStrict;
   loader_->StartLoadingBody(this, false);
   EXPECT_EQ("hello", TakeDataReceived());
   expecting_finished_ = true;
-  loader_->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  loader_->SetDefersLoading(LoaderFreezeMode::kNone);
   EXPECT_EQ("", TakeDataReceived());
   EXPECT_TRUE(did_finish_);
 }
@@ -178,31 +177,30 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
   Write("hello");
   loader_->Finish();
   expecting_data_received_ = true;
-  set_defers_loading_ = WebURLLoader::DeferType::kDeferredWithBackForwardCache;
+  freeze_mode_ = LoaderFreezeMode::kBufferIncoming;
   loader_->StartLoadingBody(this, false);
   EXPECT_EQ("hello", TakeDataReceived());
   expecting_finished_ = true;
-  loader_->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  loader_->SetDefersLoading(LoaderFreezeMode::kNone);
   EXPECT_EQ("", TakeDataReceived());
   EXPECT_TRUE(did_finish_);
 }
 
 TEST_F(StaticDataNavigationBodyLoaderTest, StartDeferred) {
-  loader_->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  loader_->SetDefersLoading(LoaderFreezeMode::kStrict);
   loader_->StartLoadingBody(this, false);
   Write("hello");
   expecting_data_received_ = true;
-  loader_->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  loader_->SetDefersLoading(LoaderFreezeMode::kNone);
   EXPECT_EQ("hello", TakeDataReceived());
 }
 
 TEST_F(StaticDataNavigationBodyLoaderTest, StartDeferredWithBackForwardCache) {
-  loader_->SetDefersLoading(
-      WebURLLoader::DeferType::kDeferredWithBackForwardCache);
+  loader_->SetDefersLoading(LoaderFreezeMode::kBufferIncoming);
   loader_->StartLoadingBody(this, false);
   Write("hello");
   expecting_data_received_ = true;
-  loader_->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  loader_->SetDefersLoading(LoaderFreezeMode::kNone);
   EXPECT_EQ("hello", TakeDataReceived());
 }
 
@@ -217,7 +215,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest, DestroyFromFinished) {
 TEST_F(StaticDataNavigationBodyLoaderTest, SetDefersLoadingFromFinished) {
   loader_->StartLoadingBody(this, false);
   expecting_finished_ = true;
-  set_defers_loading_ = WebURLLoader::DeferType::kDeferred;
+  freeze_mode_ = LoaderFreezeMode::kStrict;
   loader_->Finish();
   EXPECT_TRUE(did_finish_);
 }
@@ -226,7 +224,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
        SetDefersLoadingWithBfcacheFromFinished) {
   loader_->StartLoadingBody(this, false);
   expecting_finished_ = true;
-  set_defers_loading_ = WebURLLoader::DeferType::kDeferredWithBackForwardCache;
+  freeze_mode_ = LoaderFreezeMode::kBufferIncoming;
   loader_->Finish();
   EXPECT_TRUE(did_finish_);
 }

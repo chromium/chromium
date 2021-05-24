@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -65,8 +66,8 @@ class PLATFORM_EXPORT ResourceFetcherProperties
   // https://html.spec.whatwg.org/C/webappapis.html#pause
   virtual bool IsPaused() const = 0;
 
-  // Returns the deferred status of the loading in the global context.
-  virtual WebURLLoader::DeferType DeferType() const = 0;
+  // Returns the freezing mode set to this context.
+  virtual LoaderFreezeMode FreezeMode() const = 0;
 
   // Returns whether this global context is detached. Note that in some cases
   // the loading pipeline continues working after detached (e.g., for fetch()
@@ -137,8 +138,8 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
   bool IsPaused() const override {
     return properties_ ? properties_->IsPaused() : paused_;
   }
-  WebURLLoader::DeferType DeferType() const override {
-    return properties_ ? properties_->DeferType() : defer_type_;
+  LoaderFreezeMode FreezeMode() const override {
+    return properties_ ? properties_->FreezeMode() : freeze_mode_;
   }
   bool IsDetached() const override {
     return properties_ ? properties_->IsDetached() : true;
@@ -180,7 +181,7 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
   Member<const FetchClientSettingsObject> fetch_client_settings_object_;
   bool is_main_frame_ = false;
   bool paused_ = false;
-  WebURLLoader::DeferType defer_type_;
+  LoaderFreezeMode freeze_mode_;
   bool load_complete_ = false;
   bool is_subframe_deprioritization_enabled_ = false;
   KURL web_bundle_physical_url_;

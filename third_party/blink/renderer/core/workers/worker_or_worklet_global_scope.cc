@@ -355,7 +355,7 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(
                             nullptr /* back_forward_cache_loader_helper */));
   }
   if (IsContextPaused())
-    fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+    fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   resource_fetchers_.insert(fetcher);
   return fetcher;
 }
@@ -509,9 +509,9 @@ void WorkerOrWorkletGlobalScope::FetchModuleScript(
 }
 
 void WorkerOrWorkletGlobalScope::SetDefersLoadingForResourceFetchers(
-    WebURLLoader::DeferType defers) {
+    LoaderFreezeMode mode) {
   for (ResourceFetcher* resource_fetcher : resource_fetchers_)
-    resource_fetcher->SetDefersLoading(defers);
+    resource_fetcher->SetDefersLoading(mode);
 }
 
 int WorkerOrWorkletGlobalScope::GetOutstandingThrottledLimit() const {

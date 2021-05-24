@@ -84,10 +84,10 @@ bool FrameResourceFetcherProperties::IsPaused() const {
   return frame->GetPage()->Paused();
 }
 
-WebURLLoader::DeferType FrameResourceFetcherProperties::DeferType() const {
+LoaderFreezeMode FrameResourceFetcherProperties::FreezeMode() const {
   LocalFrame* frame = document_->GetFrame();
   DCHECK(frame);
-  return frame->GetLoadDeferType();
+  return frame->GetLoaderFreezeMode();
 }
 
 bool FrameResourceFetcherProperties::IsLoadDeferred() const {

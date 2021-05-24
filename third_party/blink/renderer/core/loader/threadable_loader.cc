@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
@@ -214,9 +215,8 @@ void ThreadableLoader::Detach() {
 
 void ThreadableLoader::SetDefersLoading(bool value) {
   if (GetResource() && GetResource()->Loader()) {
-    GetResource()->Loader()->SetDefersLoading(
-        value ? WebURLLoader::DeferType::kDeferred
-              : WebURLLoader::DeferType::kNotDeferred);
+    GetResource()->Loader()->SetDefersLoading(value ? LoaderFreezeMode::kStrict
+                                                    : LoaderFreezeMode::kNone);
   }
 }
 

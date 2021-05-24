@@ -312,15 +312,15 @@ bool ExecutionContext::IsContextPaused() const {
   return lifecycle_state_ == mojom::blink::FrameLifecycleState::kPaused;
 }
 
-WebURLLoader::DeferType ExecutionContext::DeferType() const {
+LoaderFreezeMode ExecutionContext::GetLoaderFreezeMode() const {
   if (is_in_back_forward_cache_) {
     DCHECK_EQ(lifecycle_state_, mojom::blink::FrameLifecycleState::kFrozen);
-    return WebURLLoader::DeferType::kDeferredWithBackForwardCache;
+    return LoaderFreezeMode::kBufferIncoming;
   } else if (lifecycle_state_ == mojom::blink::FrameLifecycleState::kFrozen ||
              lifecycle_state_ == mojom::blink::FrameLifecycleState::kPaused) {
-    return WebURLLoader::DeferType::kDeferred;
+    return LoaderFreezeMode::kStrict;
   }
-  return WebURLLoader::DeferType::kNotDeferred;
+  return LoaderFreezeMode::kNone;
 }
 
 bool ExecutionContext::IsLoadDeferred() const {

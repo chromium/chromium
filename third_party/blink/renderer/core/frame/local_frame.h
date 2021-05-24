@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -810,7 +811,7 @@ class CORE_EXPORT LocalFrame final
 
   TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator() const;
 
-  WebURLLoader::DeferType GetLoadDeferType();
+  LoaderFreezeMode GetLoaderFreezeMode();
   bool IsLoadDeferred();
 
   bool SwapIn();

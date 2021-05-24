@@ -10,10 +10,10 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader_client.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -99,18 +99,17 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   void Abort();
 
   // Suspends loading.
-  void Suspend(WebURLLoader::DeferType suspended_state);
+  void Suspend(LoaderFreezeMode);
 
   // Resumes loading.
   void Resume();
 
   bool IsAborted() const { return aborted_; }
   bool IsSuspended() const {
-    return suspended_state_ != WebURLLoader::DeferType::kNotDeferred;
+    return suspended_state_ != LoaderFreezeMode::kNone;
   }
   bool IsSuspendedForBackForwardCache() const {
-    return suspended_state_ ==
-           WebURLLoader::DeferType::kDeferredWithBackForwardCache;
+    return suspended_state_ == LoaderFreezeMode::kBufferIncoming;
   }
   bool IsDrained() const {
     return drained_as_datapipe_ || drained_as_bytes_consumer_;
@@ -152,8 +151,7 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   const Member<ResponseBodyLoaderClient> client_;
   WeakMember<BackForwardCacheLoaderHelper> back_forward_cache_loader_helper_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  WebURLLoader::DeferType suspended_state_ =
-      WebURLLoader::DeferType::kNotDeferred;
+  LoaderFreezeMode suspended_state_ = LoaderFreezeMode::kNone;
   bool started_ = false;
   bool aborted_ = false;
   bool drained_as_datapipe_ = false;

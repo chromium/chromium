@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/link_header.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -106,7 +107,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
         std::move(resource_load_info_notifier_wrapper),
         WTF::Unretained(client)));
   }
-  void SetDefersLoading(DeferType value) override {
+  void SetDefersLoading(LoaderFreezeMode value) override {
     if (url_loader_) {
       url_loader_->SetDefersLoading(value);
       return;

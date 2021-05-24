@@ -30,7 +30,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
+#include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "url/gurl.h"
@@ -130,7 +130,7 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
   virtual void Cancel(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Toggles the is_deferred attribute for the specified request.
-  virtual void SetDefersLoading(WebURLLoader::DeferType value);
+  virtual void SetDefersLoading(WebLoaderFreezeMode mode);
 
   // Indicates the priority of the specified request changed.
   void DidChangePriority(net::RequestPriority new_priority,
@@ -181,7 +181,7 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
 
     scoped_refptr<WebRequestPeer> peer;
     network::mojom::RequestDestination request_destination;
-    WebURLLoader::DeferType is_deferred = WebURLLoader::DeferType::kNotDeferred;
+    WebLoaderFreezeMode freeze_mode = WebLoaderFreezeMode::kNone;
     // Original requested url.
     GURL url;
     // The url, method and referrer of the latest response even in case of

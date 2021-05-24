@@ -317,19 +317,18 @@ void WebResourceRequestSender::Cancel(
   DeletePendingRequest(std::move(task_runner));
 }
 
-void WebResourceRequestSender::SetDefersLoading(WebURLLoader::DeferType value) {
+void WebResourceRequestSender::SetDefersLoading(WebLoaderFreezeMode mode) {
   if (!request_info_) {
     DLOG(ERROR) << "unknown request";
     return;
   }
-  if (value != WebURLLoader::DeferType::kNotDeferred) {
-    request_info_->is_deferred = value;
-    request_info_->url_loader_client->SetDefersLoading(value);
-  } else if (request_info_->is_deferred !=
-             WebURLLoader::DeferType::kNotDeferred) {
-    request_info_->is_deferred = WebURLLoader::DeferType::kNotDeferred;
+  if (mode != WebLoaderFreezeMode::kNone) {
+    request_info_->freeze_mode = mode;
+    request_info_->url_loader_client->SetDefersLoading(mode);
+  } else if (request_info_->freeze_mode != WebLoaderFreezeMode::kNone) {
+    request_info_->freeze_mode = WebLoaderFreezeMode::kNone;
     request_info_->url_loader_client->SetDefersLoading(
-        WebURLLoader::DeferType::kNotDeferred);
+        WebLoaderFreezeMode::kNone);
 
     FollowPendingRedirect(request_info_.get());
   }
@@ -533,7 +532,7 @@ void WebResourceRequestSender::OnReceivedRedirect(
         ->NotifyResourceRedirectReceived(redirect_info,
                                          std::move(response_head));
 
-    if (request_info_->is_deferred == WebURLLoader::DeferType::kNotDeferred)
+    if (request_info_->freeze_mode == WebLoaderFreezeMode::kNone)
       FollowPendingRedirect(request_info_.get());
   } else {
     Cancel(std::move(task_runner));

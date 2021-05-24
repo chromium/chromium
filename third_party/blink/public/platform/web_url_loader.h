@@ -44,6 +44,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -133,19 +134,8 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
           resource_load_info_notifier_wrapper,
       WebURLLoaderClient* client);
 
-  // |kDeferred| is when an asynchronous load is suspended.
-  // |kDeferredWithBackForwardCache| is when an asynchronous load is suspended
-  // with BackForwardCache, and BackForwardCache entry can be evicted when
-  // redirects etc. happen.
-  // |kNotDeferred| is when an asynchronous load is resumed.
-  // SetDefersLoading can be called with any value at any point.
-  enum class DeferType {
-    kDeferred,
-    kDeferredWithBackForwardCache,
-    kNotDeferred
-  };
   // Suspends/resumes an asynchronous load.
-  virtual void SetDefersLoading(DeferType value);
+  virtual void SetDefersLoading(WebLoaderFreezeMode mode);
 
   // Notifies the loader that the priority of a WebURLRequest has changed from
   // its previous value. For example, a preload request starts with low

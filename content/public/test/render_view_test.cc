@@ -163,7 +163,7 @@ class FakeWebURLLoader : public blink::WebURLLoader {
                        base::TimeTicks::Now(), 0, 0, 0));
   }
 
-  void SetDefersLoading(DeferType) override {}
+  void SetDefersLoading(blink::WebLoaderFreezeMode) override {}
   void DidChangePriority(WebURLRequest::Priority, int) override {}
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
       override {

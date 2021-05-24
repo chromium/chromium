@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -35,7 +36,7 @@ class CORE_EXPORT FrameResourceFetcherProperties final
   ControllerServiceWorkerMode GetControllerServiceWorkerMode() const override;
   int64_t ServiceWorkerId() const override;
   bool IsPaused() const override;
-  WebURLLoader::DeferType DeferType() const override;
+  LoaderFreezeMode FreezeMode() const override;
   bool IsDetached() const override { return false; }
   bool IsLoadDeferred() const override;
   bool IsLoadComplete() const override;

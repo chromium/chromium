@@ -99,6 +99,7 @@
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -277,7 +278,7 @@ struct SameSizeAsDocumentLoader
   bool in_commit_data;
   scoped_refptr<SharedBuffer> data_buffer;
   base::UnguessableToken devtools_navigation_token;
-  WebURLLoader::DeferType defers_loading;
+  LoaderFreezeMode defers_loading;
   bool last_navigation_had_transient_user_activation;
   bool had_sticky_activation;
   bool is_browser_initiated;
@@ -1425,10 +1426,10 @@ void DocumentLoader::StopLoading() {
     LoadFailed(ResourceError::CancelledError(Url()));
 }
 
-void DocumentLoader::SetDefersLoading(WebURLLoader::DeferType defers) {
-  defers_loading_ = defers;
+void DocumentLoader::SetDefersLoading(LoaderFreezeMode mode) {
+  freeze_mode_ = mode;
   if (body_loader_)
-    body_loader_->SetDefersLoading(defers);
+    body_loader_->SetDefersLoading(mode);
 }
 
 void DocumentLoader::DetachFromFrame(bool flush_microtask_queue) {
@@ -1595,7 +1596,7 @@ void DocumentLoader::StartLoadingInternal() {
 
   InitializePrefetchedSignedExchangeManager();
 
-  body_loader_->SetDefersLoading(defers_loading_);
+  body_loader_->SetDefersLoading(freeze_mode_);
 }
 
 void DocumentLoader::StartLoadingResponse() {

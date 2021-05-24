@@ -38,8 +38,8 @@ bool WorkerResourceFetcherProperties::IsPaused() const {
   return global_scope_->IsContextPaused();
 }
 
-WebURLLoader::DeferType WorkerResourceFetcherProperties::DeferType() const {
-  return global_scope_->DeferType();
+LoaderFreezeMode WorkerResourceFetcherProperties::FreezeMode() const {
+  return global_scope_->GetLoaderFreezeMode();
 }
 
 bool WorkerResourceFetcherProperties::IsLoadDeferred() const {

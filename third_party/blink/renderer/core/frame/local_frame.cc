@@ -1086,11 +1086,9 @@ void LocalFrame::RemoveBackForwardCacheEviction() {
       ->SetAbortScriptExecution(nullptr);
 
   // The page is being restored, and from this point eviction should not happen
-  // for any reason. Change the deferring state from
-  // |kDeferredWithBackForwardCache| to |kDeferred| so that network related
-  // eviction cannot happen.
-  GetDocument()->Fetcher()->SetDefersLoading(
-      blink::WebURLLoader::DeferType::kDeferred);
+  // for any reason. Change the deferring state from |kBufferIncoming| to
+  // |kStrict| so that network related eviction cannot happen.
+  GetDocument()->Fetcher()->SetDefersLoading(LoaderFreezeMode::kStrict);
 }
 
 void LocalFrame::SetTextDirection(base::i18n::TextDirection direction) {
@@ -2660,8 +2658,8 @@ void LocalFrame::SetContextPaused(bool is_paused) {
     return;
   paused_ = is_paused;
 
-  GetDocument()->Fetcher()->SetDefersLoading(GetLoadDeferType());
-  Loader().SetDefersLoading(GetLoadDeferType());
+  GetDocument()->Fetcher()->SetDefersLoading(GetLoaderFreezeMode());
+  Loader().SetDefersLoading(GetLoaderFreezeMode());
   // TODO(altimin): Move this to PageScheduler level.
   GetFrameScheduler()->SetPaused(is_paused);
 }
@@ -2696,14 +2694,14 @@ void LocalFrame::LoadJavaScriptURL(const KURL& url) {
       &DOMWrapperWorld::MainWorld());
 }
 
-WebURLLoader::DeferType LocalFrame::GetLoadDeferType() {
+LoaderFreezeMode LocalFrame::GetLoaderFreezeMode() {
   if (GetPage()->GetPageScheduler()->IsInBackForwardCache() &&
       IsInflightNetworkRequestBackForwardCacheSupportEnabled()) {
-    return WebURLLoader::DeferType::kDeferredWithBackForwardCache;
+    return LoaderFreezeMode::kBufferIncoming;
   }
   if (paused_ || frozen_)
-    return WebURLLoader::DeferType::kDeferred;
-  return WebURLLoader::DeferType::kNotDeferred;
+    return LoaderFreezeMode::kStrict;
+  return LoaderFreezeMode::kNone;
 }
 
 void LocalFrame::DidFreeze() {
@@ -2725,9 +2723,9 @@ void LocalFrame::DidFreeze() {
     DomWindow()->SetIsInBackForwardCache(true);
   }
 
-  WebURLLoader::DeferType defer = GetLoadDeferType();
-  GetDocument()->Fetcher()->SetDefersLoading(defer);
-  Loader().SetDefersLoading(defer);
+  LoaderFreezeMode freeze_mode = GetLoaderFreezeMode();
+  GetDocument()->Fetcher()->SetDefersLoading(freeze_mode);
+  Loader().SetDefersLoading(freeze_mode);
 }
 
 void LocalFrame::DidResume() {
@@ -2746,10 +2744,9 @@ void LocalFrame::DidResume() {
         performance_manager::mojom::LifecycleState::kRunning);
   }
 
-  // TODO(yuzus): Figure out if we should call GetLoadDeferType().
-  GetDocument()->Fetcher()->SetDefersLoading(
-      WebURLLoader::DeferType::kNotDeferred);
-  Loader().SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  // TODO(yuzus): Figure out if we should call GetLoaderFreezeMode().
+  GetDocument()->Fetcher()->SetDefersLoading(LoaderFreezeMode::kNone);
+  Loader().SetDefersLoading(LoaderFreezeMode::kNone);
 
   DomWindow()->SetIsInBackForwardCache(false);
   GetBackForwardCacheBufferLimitTracker().DidRemoveFrameFromBackForwardCache(

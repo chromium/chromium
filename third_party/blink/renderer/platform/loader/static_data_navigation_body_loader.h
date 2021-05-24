@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
@@ -26,7 +27,7 @@ class PLATFORM_EXPORT StaticDataNavigationBodyLoader
   void Write(const SharedBuffer&);
   void Finish();
 
-  void SetDefersLoading(WebURLLoader::DeferType defers) override;
+  void SetDefersLoading(LoaderFreezeMode) override;
   void StartLoadingBody(WebNavigationBodyLoader::Client*,
                         bool use_isolated_code_cache) override;
 
@@ -35,8 +36,7 @@ class PLATFORM_EXPORT StaticDataNavigationBodyLoader
 
   scoped_refptr<SharedBuffer> data_;
   WebNavigationBodyLoader::Client* client_ = nullptr;
-  WebURLLoader::DeferType defers_loading_ =
-      WebURLLoader::DeferType::kNotDeferred;
+  LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   bool sent_all_data_ = false;
   bool received_all_data_ = false;
   bool is_in_continue_ = false;

@@ -108,7 +108,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
         std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
             resource_load_info_notifier_wrapper,
         WebURLLoaderClient*) override {}
-    void SetDefersLoading(WebURLLoader::DeferType) override {}
+    void SetDefersLoading(WebLoaderFreezeMode) override {}
     void DidChangePriority(WebURLRequest::Priority, int) override {
       NOTREACHED();
     }

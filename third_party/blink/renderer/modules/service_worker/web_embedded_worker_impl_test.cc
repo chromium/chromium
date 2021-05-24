@@ -83,7 +83,7 @@ class FakeWebURLLoader final : public WebURLLoader {
     // Don't handle other requests intentionally to emulate ongoing load.
   }
 
-  void SetDefersLoading(DeferType defers) override {}
+  void SetDefersLoading(WebLoaderFreezeMode) override {}
   void DidChangePriority(WebURLRequest::Priority, int) override {}
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
       override {

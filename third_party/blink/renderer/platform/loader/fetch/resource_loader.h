@@ -43,6 +43,7 @@
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/data_pipe_bytes_consumer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -97,7 +98,7 @@ class PLATFORM_EXPORT ResourceLoader final
   void ScheduleCancel();
   void Cancel();
 
-  void SetDefersLoading(WebURLLoader::DeferType);
+  void SetDefersLoading(LoaderFreezeMode);
 
   void DidChangePriority(ResourceLoadPriority, int intra_priority_value);
 
@@ -266,7 +267,7 @@ class PLATFORM_EXPORT ResourceLoader final
   absl::optional<DeferredFinishLoadingInfo> deferred_finish_loading_info_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_body_loader_;
 
-  WebURLLoader::DeferType defers_ = WebURLLoader::DeferType::kNotDeferred;
+  LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   // True if the next call of SetDefersLoading(kNotDeferred) needs to invoke
   // HandleDataURL().
   bool defers_handling_data_url_ = false;

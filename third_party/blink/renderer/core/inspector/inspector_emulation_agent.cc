@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
@@ -435,7 +436,7 @@ void InspectorEmulationAgent::ApplyVirtualTimePolicy(
         WTF::Bind(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
                   WrapWeakPersistent(this)));
     for (DocumentLoader* loader : pending_document_loaders_)
-      loader->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+      loader->SetDefersLoading(LoaderFreezeMode::kNone);
     pending_document_loaders_.clear();
   }
   if (new_policy.max_virtual_time_task_starvation_count) {
@@ -695,7 +696,7 @@ void InspectorEmulationAgent::WillCommitLoad(LocalFrame*,
       protocol::Emulation::VirtualTimePolicyEnum::Pause) {
     return;
   }
-  loader->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  loader->SetDefersLoading(LoaderFreezeMode::kStrict);
   pending_document_loaders_.push_back(loader);
 }
 

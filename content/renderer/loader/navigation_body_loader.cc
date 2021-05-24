@@ -198,11 +198,10 @@ void NavigationBodyLoader::OnComplete(
   NotifyCompletionIfAppropriate();
 }
 
-void NavigationBodyLoader::SetDefersLoading(
-    blink::WebURLLoader::DeferType defers) {
-  if (defer_type_ == defers)
+void NavigationBodyLoader::SetDefersLoading(blink::WebLoaderFreezeMode mode) {
+  if (freeze_mode_ == mode)
     return;
-  defer_type_ = defers;
+  freeze_mode_ = mode;
   if (handle_.is_valid())
     OnReadable(MOJO_RESULT_OK);
 }
@@ -268,8 +267,7 @@ void NavigationBodyLoader::OnReadable(MojoResult unused) {
   TRACE_EVENT1("loading", "NavigationBodyLoader::OnReadable", "url",
                original_url_.possibly_invalid_spec());
   if (has_seen_end_of_data_ ||
-      defer_type_ != blink::WebURLLoader::DeferType::kNotDeferred ||
-      is_in_on_readable_)
+      freeze_mode_ != blink::WebLoaderFreezeMode::kNone || is_in_on_readable_)
     return;
   // Protect against reentrancy:
   // - when the client calls SetDefersLoading;
@@ -289,7 +287,7 @@ void NavigationBodyLoader::ReadFromDataPipe() {
   TRACE_EVENT1("loading", "NavigationBodyLoader::ReadFromDataPipe", "url",
                original_url_.possibly_invalid_spec());
   uint32_t num_bytes_consumed = 0;
-  while (defer_type_ == blink::WebURLLoader::DeferType::kNotDeferred) {
+  while (freeze_mode_ == blink::WebLoaderFreezeMode::kNone) {
     const void* buffer = nullptr;
     uint32_t available = 0;
     MojoResult result =

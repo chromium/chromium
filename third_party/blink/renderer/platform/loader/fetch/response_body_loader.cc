@@ -506,13 +506,13 @@ void ResponseBodyLoader::Abort() {
   }
 }
 
-void ResponseBodyLoader::Suspend(WebURLLoader::DeferType suspended_state) {
+void ResponseBodyLoader::Suspend(LoaderFreezeMode mode) {
   if (aborted_)
     return;
 
-  bool was_suspended = (suspended_state_ == WebURLLoader::DeferType::kDeferred);
+  bool was_suspended = (suspended_state_ == LoaderFreezeMode::kStrict);
 
-  suspended_state_ = suspended_state;
+  suspended_state_ = mode;
   if (IsSuspendedForBackForwardCache()) {
     DCHECK(IsInflightNetworkRequestBackForwardCacheSupportEnabled());
     // If we're already suspended (but not for back-forward cache), we might've
@@ -538,7 +538,7 @@ void ResponseBodyLoader::Resume() {
     return;
 
   DCHECK(IsSuspended());
-  suspended_state_ = WebURLLoader::DeferType::kNotDeferred;
+  suspended_state_ = LoaderFreezeMode::kNone;
 
   if (finish_signal_is_pending_) {
     task_runner_->PostTask(

@@ -2057,11 +2057,11 @@ void ResourceFetcher::StopFetching() {
   StopFetchingInternal(StopFetchingTarget::kExcludingKeepaliveLoaders);
 }
 
-void ResourceFetcher::SetDefersLoading(WebURLLoader::DeferType defers) {
+void ResourceFetcher::SetDefersLoading(LoaderFreezeMode mode) {
   for (const auto& loader : non_blocking_loaders_)
-    loader->SetDefersLoading(defers);
+    loader->SetDefersLoading(mode);
   for (const auto& loader : loaders_)
-    loader->SetDefersLoading(defers);
+    loader->SetDefersLoading(mode);
 }
 
 void ResourceFetcher::UpdateAllImageResourcePriorities() {

@@ -863,8 +863,7 @@ void WorkerThread::PauseOrFreezeOnWorkerThread(
          state == mojom::FrameLifecycleState::kPaused);
   pause_or_freeze_count_++;
   GlobalScope()->SetLifecycleState(state);
-  GlobalScope()->SetDefersLoadingForResourceFetchers(
-      WebURLLoader::DeferType::kDeferred);
+  GlobalScope()->SetDefersLoadingForResourceFetchers(LoaderFreezeMode::kStrict);
 
   // If already paused return early.
   if (pause_or_freeze_count_ > 1)
@@ -883,8 +882,7 @@ void WorkerThread::PauseOrFreezeOnWorkerThread(
         &nested_runner_, nested_runner.get());
     nested_runner->Run();
   }
-  GlobalScope()->SetDefersLoadingForResourceFetchers(
-      WebURLLoader::DeferType::kNotDeferred);
+  GlobalScope()->SetDefersLoadingForResourceFetchers(LoaderFreezeMode::kNone);
   GlobalScope()->SetLifecycleState(mojom::FrameLifecycleState::kRunning);
 }
 

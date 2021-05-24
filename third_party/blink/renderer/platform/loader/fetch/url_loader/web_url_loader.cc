@@ -344,7 +344,7 @@ class WebURLLoader::Context : public WebRequestPeer {
   scoped_refptr<base::SingleThreadTaskRunner> GetMaybeUnfreezableTaskRunner();
 
   void Cancel();
-  void SetDefersLoading(WebURLLoader::DeferType value);
+  void SetDefersLoading(WebLoaderFreezeMode mode);
   void DidChangePriority(WebURLRequest::Priority new_priority,
                          int intra_priority_value);
   void Start(std::unique_ptr<network::ResourceRequest> request,
@@ -417,7 +417,7 @@ class WebURLLoader::Context : public WebRequestPeer {
   scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner_;
   mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle_;
-  WebURLLoader::DeferType defers_loading_;
+  WebLoaderFreezeMode freeze_mode_ = WebLoaderFreezeMode::kNone;
   const WebVector<WebString> cors_exempt_header_list_;
   base::WaitableEvent* terminate_sync_load_event_;
 
@@ -460,7 +460,6 @@ WebURLLoader::Context::Context(
       unfreezable_task_runner_(
           unfreezable_task_runner_handle_->GetTaskRunner()),
       keep_alive_handle_(std::move(keep_alive_handle)),
-      defers_loading_(WebURLLoader::DeferType::kNotDeferred),
       cors_exempt_header_list_(cors_exempt_header_list),
       terminate_sync_load_event_(terminate_sync_load_event),
       request_id_(-1),
@@ -490,10 +489,10 @@ void WebURLLoader::Context::Cancel() {
   loader_ = nullptr;
 }
 
-void WebURLLoader::Context::SetDefersLoading(WebURLLoader::DeferType value) {
+void WebURLLoader::Context::SetDefersLoading(WebLoaderFreezeMode mode) {
   if (request_id_ != -1)
-    resource_request_sender_->SetDefersLoading(value);
-  defers_loading_ = value;
+    resource_request_sender_->SetDefersLoading(mode);
+  freeze_mode_ = mode;
 }
 
 void WebURLLoader::Context::DidChangePriority(
@@ -592,7 +591,7 @@ void WebURLLoader::Context::Start(
   }
 
   if (sync_load_response) {
-    DCHECK(defers_loading_ == WebURLLoader::DeferType::kNotDeferred);
+    DCHECK(freeze_mode_ == WebLoaderFreezeMode::kNone);
 
     loader_options |= network::mojom::kURLLoadOptionSynchronous;
     request->load_flags |= net::LOAD_IGNORE_LIMITS;
@@ -623,9 +622,8 @@ void WebURLLoader::Context::Start(
       std::move(throttles), std::move(resource_load_info_notifier_wrapper),
       back_forward_cache_loader_helper_);
 
-  if (defers_loading_ != WebURLLoader::DeferType::kNotDeferred) {
-    resource_request_sender_->SetDefersLoading(
-        WebURLLoader::DeferType::kDeferred);
+  if (freeze_mode_ != WebLoaderFreezeMode::kNone) {
+    resource_request_sender_->SetDefersLoading(WebLoaderFreezeMode::kStrict);
   }
 }
 
@@ -1058,9 +1056,9 @@ void WebURLLoader::Cancel() {
     context_->Cancel();
 }
 
-void WebURLLoader::SetDefersLoading(DeferType value) {
+void WebURLLoader::SetDefersLoading(WebLoaderFreezeMode mode) {
   if (context_)
-    context_->SetDefersLoading(value);
+    context_->SetDefersLoading(mode);
 }
 
 void WebURLLoader::DidChangePriority(WebURLRequest::Priority new_priority,

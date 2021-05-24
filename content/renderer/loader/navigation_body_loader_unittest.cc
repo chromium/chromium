@@ -116,8 +116,8 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     }
     if (toggle_defers_loading_) {
       toggle_defers_loading_ = false;
-      loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kNotDeferred);
-      loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kDeferred);
+      loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kNone);
+      loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kStrict);
     }
     if (destroy_loader_) {
       destroy_loader_ = false;
@@ -176,8 +176,8 @@ class NavigationBodyLoaderTest : public ::testing::Test,
 
 TEST_F(NavigationBodyLoaderTest, SetDefersBeforeStart) {
   CreateBodyLoader();
-  loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kDeferred);
-  loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kNotDeferred);
+  loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kStrict);
+  loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kNone);
   // Should not crash.
 }
 
@@ -222,23 +222,22 @@ TEST_F(NavigationBodyLoaderTest, SetDefersLoadingFromDataReceived) {
 
 TEST_F(NavigationBodyLoaderTest, StartDeferred) {
   CreateBodyLoader();
-  loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kDeferred);
+  loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kStrict);
   StartLoading();
   Write("hello");
   ExpectDataReceived();
-  loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kNotDeferred);
+  loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kNone);
   Wait();
   EXPECT_EQ("hello", TakeDataReceived());
 }
 
 TEST_F(NavigationBodyLoaderTest, StartDeferredWithBackForwardCache) {
   CreateBodyLoader();
-  loader_->SetDefersLoading(
-      blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache);
+  loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kBufferIncoming);
   StartLoading();
   Write("hello");
   ExpectDataReceived();
-  loader_->SetDefersLoading(blink::WebURLLoader::DeferType::kNotDeferred);
+  loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kNone);
   Wait();
   EXPECT_EQ("hello", TakeDataReceived());
 }

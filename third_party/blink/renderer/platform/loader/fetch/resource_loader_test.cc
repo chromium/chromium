@@ -138,7 +138,7 @@ class ResourceLoaderTest : public testing::Test {
             resource_load_info_notifier_wrapper,
         WebURLLoaderClient*) override {}
 
-    void SetDefersLoading(WebURLLoader::DeferType) override {}
+    void SetDefersLoading(LoaderFreezeMode) override {}
     void DidChangePriority(WebURLRequest::Priority, int) override {
       NOTREACHED();
     }
@@ -393,24 +393,24 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndNonStream) {
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
 
   // The resource should still be pending since it's deferred.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
 
   // The resource should still be pending since it's deferred again.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
 
   // The resource should still be pending if it's unset and set in a single
   // task.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
 
   // The resource has a parsed body.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
@@ -437,7 +437,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {
   auto* raw_resource_client = MakeGarbageCollected<TestRawResourceClient>();
   Resource* resource = RawResource::Fetch(params, fetcher, raw_resource_client);
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   task_runner->RunUntilIdle();
 
   // It's still pending because the body should not provided yet.
@@ -446,14 +446,14 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {
 
   // The body should be provided since not deferring now, but it's still pending
   // since we haven't read the body yet.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
   EXPECT_TRUE(raw_resource_client->body());
 
   // The resource should still be pending when it's set to deferred again. No
   // body is provided when deferred.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
   const char* buffer;
@@ -464,15 +464,15 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {
 
   // The resource should still be pending if it's unset and set in a single
   // task. No body is provided when deferred.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
   result = raw_resource_client->body()->BeginRead(&buffer, &available);
   EXPECT_EQ(BytesConsumer::Result::kShouldWait, result);
 
   // Read through the bytes consumer passed back from the ResourceLoader.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
   task_runner->RunUntilIdle();
   auto* test_reader = MakeGarbageCollected<BytesConsumerTestReader>(
       raw_resource_client->body());
