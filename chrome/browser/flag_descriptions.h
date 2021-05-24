@@ -2649,6 +2649,9 @@ extern const char kImeMozcProtoDescription[];
 extern const char kImeServiceDecoderName[];
 extern const char kImeServiceDecoderDescription[];
 
+extern const char kCrosLanguageSettingsImeOptionsInSettingsName[];
+extern const char kCrosLanguageSettingsImeOptionsInSettingsDescription[];
+
 extern const char kImeSystemEmojiPickerName[];
 extern const char kImeSystemEmojiPickerDescription[];
 

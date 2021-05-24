@@ -4559,6 +4559,11 @@ const char kImeSystemEmojiPickerDescription[] =
     "Controls whether a System emoji picker, or the virtual keyboard is used "
     "for inserting emoji.";
 
+const char kCrosLanguageSettingsImeOptionsInSettingsName[] =
+    "Ime settings in settings";
+const char kCrosLanguageSettingsImeOptionsInSettingsDescription[] =
+    "Adds IME settings to the settings menu";
+
 const char kIntentHandlingSharingName[] = "Intent handling for sharing";
 const char kIntentHandlingSharingDescription[] =
     "Support sharing in Chrome OS intent handling.";

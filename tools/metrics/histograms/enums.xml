@@ -45844,6 +45844,7 @@ from previous Chrome versions.
   <int value="-1237621246" label="WebXRGamepadSupport:disabled"/>
   <int value="-1236065190" label="HardwareMediaKeyHandling:disabled"/>
   <int value="-1235586511" label="enable-datasaver-prompt"/>
+  <int value="-1235021573" label="ImeOptionsInSettings:disabled"/>
   <int value="-1234740672" label="UsePdfCompositorServiceForPrint:disabled"/>
   <int value="-1234518922" label="ChromeLabs:disabled"/>
   <int value="-1234385389" label="TextFragmentColorChange:enabled"/>
@@ -47001,6 +47002,7 @@ from previous Chrome versions.
   <int value="-222282965"
       label="disable_idle_sockets_close_on_memory_pressure:enabled"/>
   <int value="-220599034" label="UsePdfCompositorServiceForPrint:enabled"/>
+  <int value="-220298483" label="ImeOptionsInSettings:enabled"/>
   <int value="-217885320" label="CdmFactoryDaemon:disabled"/>
   <int value="-216219963" label="ash-shelf-color-scheme"/>
   <int value="-215580565"

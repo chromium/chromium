@@ -1533,8 +1533,13 @@
   },
   {
     "name": "enable-cros-ime-system-emoji-picker",
-    "owners": [ "essential-inputs-team@google.com" ],
+    "owners": [ "jopalmer", "essential-inputs-team@google.com" ],
     "expiry_milestone": 95
+  },
+  {
+    "name": "enable-cros-language-settings-ime-options-in-settings",
+    "owners": [ "jopalmer", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 97
   },
   {
     "name": "enable-cros-language-settings-update-2",
