@@ -177,6 +177,10 @@ std::unique_ptr<Response> ObjectProxy::CallMethodAndBlock(
 void ObjectProxy::CallMethod(MethodCall* method_call,
                              int timeout_ms,
                              ResponseCallback callback) {
+  // `callback` should not be null. Otherwise, it crashes later in OnCallMethod.
+  // TODO(http://crbug/1211451): Remove after fix.
+  CHECK(!callback.is_null());
+
   auto internal_callback = base::BindOnce(
       &ObjectProxy::OnCallMethod, this, method_call->GetInterface(),
       method_call->GetMember(), std::move(callback));
