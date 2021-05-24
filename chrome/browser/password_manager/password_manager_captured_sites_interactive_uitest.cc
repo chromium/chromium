@@ -12,6 +12,7 @@
 #include "chrome/browser/autofill/captured_sites_test_utils.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -19,6 +20,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
@@ -48,6 +50,11 @@ base::FilePath GetReplayFilesRootDirectory() {
   ADD_FAILURE() << "Unable to obtain the Chromium src directory!";
   src_dir.clear();
   return src_dir;
+}
+
+std::unique_ptr<KeyedService> BuildTestSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::TestSyncService>();
 }
 
 }  // namespace
@@ -163,6 +170,12 @@ class CapturedSitesPasswordManagerBrowserTest
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
                 base::BindRepeating([](content::BrowserContext* context) {
+                  // Set up a TestSyncService which will happily return
+                  // "everything is active" so that password generation is
+                  // considered enabled.
+                  ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+                      context, base::BindRepeating(&BuildTestSyncService));
+
                   PasswordStoreFactory::GetInstance()->SetTestingFactory(
                       context, base::BindRepeating(
                                    &password_manager::BuildPasswordStore<
