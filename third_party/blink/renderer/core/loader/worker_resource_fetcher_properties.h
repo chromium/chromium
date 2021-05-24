@@ -44,7 +44,6 @@ class WorkerResourceFetcherProperties final : public ResourceFetcherProperties {
   bool IsPaused() const override;
   LoaderFreezeMode FreezeMode() const override;
   bool IsDetached() const override { return false; }
-  bool IsLoadDeferred() const override;
   bool IsLoadComplete() const override { return false; }
   bool ShouldBlockLoadingSubResource() const override { return false; }
   bool IsSubframeDeprioritizationEnabled() const override { return false; }

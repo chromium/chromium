@@ -595,7 +595,7 @@ void ResourceLoader::StartWith(const ResourceRequestHead& request) {
   DCHECK(loader_);
 
   if (resource_->Options().synchronous_policy == kRequestSynchronously &&
-      fetcher_->GetProperties().IsLoadDeferred()) {
+      fetcher_->GetProperties().FreezeMode() != LoaderFreezeMode::kNone) {
     // TODO(yuzus): Evict bfcache if necessary.
     Cancel();
     return;

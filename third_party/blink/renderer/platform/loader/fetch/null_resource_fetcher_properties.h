@@ -40,7 +40,6 @@ class PLATFORM_EXPORT NullResourceFetcherProperties final
     return LoaderFreezeMode::kNone;
   }
   bool IsDetached() const override { return true; }
-  bool IsLoadDeferred() const override { return false; }
   bool IsLoadComplete() const override { return true; }
   bool ShouldBlockLoadingSubResource() const override { return true; }
   bool IsSubframeDeprioritizationEnabled() const override { return false; }

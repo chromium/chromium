@@ -38,7 +38,6 @@ class CORE_EXPORT FrameResourceFetcherProperties final
   bool IsPaused() const override;
   LoaderFreezeMode FreezeMode() const override;
   bool IsDetached() const override { return false; }
-  bool IsLoadDeferred() const override;
   bool IsLoadComplete() const override;
   bool ShouldBlockLoadingSubResource() const override;
   bool IsSubframeDeprioritizationEnabled() const override;

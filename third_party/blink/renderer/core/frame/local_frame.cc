@@ -2664,10 +2664,6 @@ void LocalFrame::SetContextPaused(bool is_paused) {
   GetFrameScheduler()->SetPaused(is_paused);
 }
 
-bool LocalFrame::IsLoadDeferred() {
-  return frozen_ || paused_;
-}
-
 bool LocalFrame::SwapIn() {
   WebLocalFrameClient* client = Client()->GetWebFrame()->Client();
   return client->SwapIn(WebFrame::FromCoreFrame(GetProvisionalOwnerFrame()));

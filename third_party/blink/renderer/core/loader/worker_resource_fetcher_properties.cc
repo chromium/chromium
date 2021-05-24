@@ -42,10 +42,6 @@ LoaderFreezeMode WorkerResourceFetcherProperties::FreezeMode() const {
   return global_scope_->GetLoaderFreezeMode();
 }
 
-bool WorkerResourceFetcherProperties::IsLoadDeferred() const {
-  return global_scope_->IsLoadDeferred();
-}
-
 const KURL& WorkerResourceFetcherProperties::WebBundlePhysicalUrl() const {
   return NullURL();
 }

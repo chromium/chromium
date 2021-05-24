@@ -812,7 +812,6 @@ class CORE_EXPORT LocalFrame final
   TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator() const;
 
   LoaderFreezeMode GetLoaderFreezeMode();
-  bool IsLoadDeferred();
 
   bool SwapIn();
 

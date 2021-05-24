@@ -90,12 +90,6 @@ LoaderFreezeMode FrameResourceFetcherProperties::FreezeMode() const {
   return frame->GetLoaderFreezeMode();
 }
 
-bool FrameResourceFetcherProperties::IsLoadDeferred() const {
-  LocalFrame* frame = document_->GetFrame();
-  DCHECK(frame);
-  return frame->IsLoadDeferred();
-}
-
 bool FrameResourceFetcherProperties::IsLoadComplete() const {
   return document_->LoadEventFinished();
 }
