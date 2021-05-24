@@ -207,6 +207,7 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
           kMinFramerate, kMaxFramerate, config->framerate()));
       return nullptr;
     }
+    result->options.framerate = config->framerate();
   }
 
   if (config->hasBitrate())
