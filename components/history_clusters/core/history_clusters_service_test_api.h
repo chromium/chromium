@@ -22,6 +22,10 @@ class HistoryClustersServiceTestApi {
     return history_clusters_service_->visits_;
   }
 
+  base::CancelableTaskTracker& GetCacheQueryTaskTracker() {
+    return history_clusters_service_->cache_query_task_tracker_;
+  }
+
   HistoryClustersService* history_clusters_service_;
 };
 

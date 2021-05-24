@@ -13,7 +13,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history_clusters/core/memories_features.h"
-#include "components/query_parser/query_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace history_clusters {
@@ -228,6 +227,48 @@ void HistoryClustersService::RemoveVisits(
     base::CancelableTaskTracker* task_tracker) {
   std::move(closure).Run();
   // TODO(crbug.com/1203789): Remove the visits from relevant history tables.
+}
+
+bool HistoryClustersService::DoesQueryMatchAnyCluster(
+    const std::string& query) {
+  if (!base::FeatureList::IsEnabled(kMemories))
+    return false;
+
+  // 2 hour threshold chosen arbitrarily for cache refresh time.
+  if ((base::Time::Now() - all_keywords_cache_timestamp_) >
+          base::TimeDelta::FromHours(2) &&
+      !cache_query_task_tracker_.HasTrackedTasks()) {
+    // TODO(tommycli): Make sure we are hitting the local database, and not the
+    //  remote model service once cluster persistence is ready.
+    QueryMemories(
+        mojom::QueryParams::New(),
+        base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
+                       weak_ptr_factory_.GetWeakPtr()),
+        &cache_query_task_tracker_);
+  }
+
+  query_parser::QueryNodeVector query_nodes;
+  query_parser::QueryParser::ParseQueryNodes(
+      base::UTF8ToUTF16(query),
+      query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH, &query_nodes);
+
+  return query_parser::QueryParser::DoesQueryMatch(all_keywords_cache_,
+                                                   query_nodes);
+}
+
+void HistoryClustersService::PopulateClusterKeywordCache(
+    QueryMemoriesResponse response) {
+  all_keywords_cache_.clear();
+
+  for (auto& cluster : response.clusters) {
+    for (auto& keyword : cluster->keywords) {
+      // Each `keyword` may itself have multiple terms that we need to extract.
+      query_parser::QueryParser::ExtractQueryWords(base::i18n::ToLower(keyword),
+                                                   &all_keywords_cache_);
+    }
+  }
+
+  all_keywords_cache_timestamp_ = base::Time::Now();
 }
 
 }  // namespace history_clusters
