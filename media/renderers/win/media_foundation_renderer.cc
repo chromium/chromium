@@ -203,7 +203,9 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
 
   // Has encrypted stream.
   RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationProtectionManager>(
-      &content_protection_manager_));
+      &content_protection_manager_, task_runner_,
+      base::BindRepeating(&MediaFoundationRenderer::OnWaiting,
+                          weak_factory_.GetWeakPtr())));
   ComPtr<IMFMediaEngineProtectedContent> protected_media_engine;
   RETURN_IF_FAILED(mf_media_engine_.As(&protected_media_engine));
   RETURN_IF_FAILED(protected_media_engine->SetContentProtectionManager(
@@ -545,6 +547,7 @@ base::TimeDelta MediaFoundationRenderer::GetMediaTime() {
 
 void MediaFoundationRenderer::OnPlaybackError(PipelineStatus status) {
   DVLOG_FUNC(1) << "status=" << status;
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   renderer_client_->OnError(status);
   StopSendingStatistics();
@@ -552,6 +555,7 @@ void MediaFoundationRenderer::OnPlaybackError(PipelineStatus status) {
 
 void MediaFoundationRenderer::OnPlaybackEnded() {
   DVLOG_FUNC(2);
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   renderer_client_->OnEnded();
   StopSendingStatistics();
@@ -561,6 +565,7 @@ void MediaFoundationRenderer::OnBufferingStateChange(
     BufferingState state,
     BufferingStateChangeReason reason) {
   DVLOG_FUNC(2);
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (state == BufferingState::BUFFERING_HAVE_ENOUGH) {
     max_buffering_state_ = state;
@@ -578,7 +583,7 @@ void MediaFoundationRenderer::OnBufferingStateChange(
 }
 
 void MediaFoundationRenderer::OnVideoNaturalSizeChange() {
-  DVLOG_FUNC(2);
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   const bool has_video = mf_media_engine_->HasVideo();
   DVLOG_FUNC(2) << "has_video=" << has_video;
@@ -625,6 +630,15 @@ void MediaFoundationRenderer::OnVideoNaturalSizeChange() {
   return;
 }
 
-void MediaFoundationRenderer::OnTimeUpdate() {}
+void MediaFoundationRenderer::OnTimeUpdate() {
+  DVLOG_FUNC(3);
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+}
+
+void MediaFoundationRenderer::OnWaiting(WaitingReason reason) {
+  DVLOG_FUNC(2);
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  renderer_client_->OnWaiting(reason);
+}
 
 }  // namespace media

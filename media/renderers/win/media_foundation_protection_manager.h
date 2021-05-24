@@ -10,7 +10,11 @@
 #include <windows.media.protection.h>
 #include <wrl.h>
 
+#include "base/cancelable_callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
+#include "media/base/waiting.h"
 #include "media/base/win/media_foundation_cdm_proxy.h"
 
 namespace media {
@@ -33,7 +37,9 @@ class MediaFoundationProtectionManager
   MediaFoundationProtectionManager();
   ~MediaFoundationProtectionManager() override;
 
-  HRESULT RuntimeClassInitialize();
+  HRESULT RuntimeClassInitialize(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      WaitingCB waiting_cb);
   HRESULT SetCdmProxy(scoped_refptr<MediaFoundationCdmProxy> cdm_proxy);
 
   // IMFContentProtectionManager.
@@ -63,14 +69,26 @@ class MediaFoundationProtectionManager
   IFACEMETHODIMP get_Properties(
       ABI::Windows::Foundation::Collections::IPropertySet** value) override;
 
- protected:
+ private:
+  HRESULT SetPMPServer(
+      ABI::Windows::Media::Protection::IMediaProtectionPMPServer* pmp_server);
+
+  // These methods are all running on `task_runner_` due to the threading
+  // requirement of `base::CancelableOnceClosure`.
+  void OnBeginEnableContent();
+  void OnEndEnableContent();
+  void OnWaitingForKeyTimeOut();
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  WaitingCB waiting_cb_;
+  base::CancelableOnceClosure waiting_for_key_time_out_cb_;
+
+  scoped_refptr<MediaFoundationCdmProxy> cdm_proxy_;
   Microsoft::WRL::ComPtr<ABI::Windows::Foundation::Collections::IPropertySet>
       property_set_;
 
-  scoped_refptr<MediaFoundationCdmProxy> cdm_proxy_;
-
-  HRESULT SetPMPServer(
-      ABI::Windows::Media::Protection::IMediaProtectionPMPServer* pmp_server);
+  // This must be the last member.
+  base::WeakPtrFactory<MediaFoundationProtectionManager> weak_factory_{this};
 };
 
 }  // namespace media

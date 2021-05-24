@@ -9,6 +9,8 @@
 
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/windows_types.h"
@@ -26,8 +28,13 @@ MediaFoundationProtectionManager::~MediaFoundationProtectionManager() {
   DVLOG_FUNC(1);
 }
 
-HRESULT MediaFoundationProtectionManager::RuntimeClassInitialize() {
+HRESULT MediaFoundationProtectionManager::RuntimeClassInitialize(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    WaitingCB waiting_cb) {
   DVLOG_FUNC(1);
+
+  task_runner_ = std::move(task_runner);
+  waiting_cb_ = std::move(waiting_cb);
 
   if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
     return E_FAIL;
@@ -115,6 +122,13 @@ HRESULT MediaFoundationProtectionManager::BeginEnableContent(
   } else {
     RETURN_IF_FAILED(cdm_proxy_->ProcessContentEnabler(unknown_object.Get(),
                                                        async_result.Get()));
+
+    // Force post task so `OnBeginEnableContent()` and `OnEndEnableContent()`
+    // are always in sequence.
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MediaFoundationProtectionManager::OnBeginEnableContent,
+                       weak_factory_.GetWeakPtr()));
   }
   return S_OK;
 }
@@ -122,6 +136,13 @@ HRESULT MediaFoundationProtectionManager::BeginEnableContent(
 HRESULT MediaFoundationProtectionManager::EndEnableContent(
     IMFAsyncResult* async_result) {
   DVLOG_FUNC(1);
+
+  // Force post task so `OnBeginEnableContent()` and `OnEndEnableContent()` are
+  // always in sequence.
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MediaFoundationProtectionManager::OnEndEnableContent,
+                     weak_factory_.GetWeakPtr()));
 
   // Get status from the given |async_result| for the purpose of logging.
   // Returns S_OK as there is no additional work being done here.
@@ -174,6 +195,35 @@ HRESULT MediaFoundationProtectionManager::get_Properties(
   if (!properties)
     return E_POINTER;
   return property_set_.CopyTo(properties);
+}
+
+void MediaFoundationProtectionManager::OnBeginEnableContent() {
+  DVLOG_FUNC(2);
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  // If EnableContent takes too long, report waiting for key status. Choose a
+  // timeout of 500ms to be on the safe side, e.g. on slower machines.
+  const auto kWaitingForKeyTimeOut = base::TimeDelta::FromMilliseconds(500);
+
+  waiting_for_key_time_out_cb_.Reset(
+      base::BindOnce(&MediaFoundationProtectionManager::OnWaitingForKeyTimeOut,
+                     weak_factory_.GetWeakPtr()));
+  task_runner_->PostDelayedTask(FROM_HERE,
+                                waiting_for_key_time_out_cb_.callback(),
+                                kWaitingForKeyTimeOut);
+}
+
+void MediaFoundationProtectionManager::OnEndEnableContent() {
+  DVLOG_FUNC(2);
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  waiting_for_key_time_out_cb_.Cancel();
+}
+
+void MediaFoundationProtectionManager::OnWaitingForKeyTimeOut() {
+  DVLOG_FUNC(2);
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  waiting_for_key_time_out_cb_.Cancel();
+  waiting_cb_.Run(WaitingReason::kNoDecryptionKey);
 }
 
 }  // namespace media

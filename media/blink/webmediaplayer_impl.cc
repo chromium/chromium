@@ -2267,6 +2267,7 @@ void WebMediaPlayerImpl::OnAddTextTrack(const TextTrackConfig& config,
 }
 
 void WebMediaPlayerImpl::OnWaiting(WaitingReason reason) {
+  DVLOG(2) << __func__ << ": reason=" << static_cast<int>(reason);
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   switch (reason) {

@@ -86,6 +86,9 @@ class MEDIA_EXPORT MediaFoundationRenderer
   void OnVideoNaturalSizeChange();
   void OnTimeUpdate();
 
+  // Callback for `content_protection_manager_`.
+  void OnWaiting(WaitingReason reason);
+
   void OnCdmProxyReceived(scoped_refptr<MediaFoundationCdmProxy> cdm_proxy);
 
   HRESULT SetDCompModeInternal(bool enabled);
