@@ -18,10 +18,6 @@ export function navigationViewPanelTestSuite() {
   let eventDetail = {};
   /** @type {number} */
   let numPageChangedCount = 0;
-  /** @type {string} */
-  let previousPage = '';
-  /** @type {string} */
-  let currentPage = '';
 
   setup(() => {
     viewElement =
@@ -36,15 +32,13 @@ export function navigationViewPanelTestSuite() {
     eventCount = 0;
     eventDetail = {};
     numPageChangedCount = 0;
-    previousPage = '';
-    currentPage = '';
   });
 
   /**
    * @param {!Object} e
    */
   function handleEvent(e) {
-    eventDetail = e.detail;
+    eventDetail = e;
     eventCount++;
   }
 
@@ -52,8 +46,6 @@ export function navigationViewPanelTestSuite() {
    * @param {!CustomEvent} e
    */
   function onNavigationPageChanged(e) {
-    previousPage = e.detail.previous;
-    currentPage = e.detail.current;
     numPageChangedCount++;
   }
 
@@ -90,8 +82,6 @@ export function navigationViewPanelTestSuite() {
     // Only one page has implemented "onNavigationPageChanged" by the second
     // navigation click, expect only one client to be notified.
     assertEquals(1, numPageChangedCount);
-    assertEquals(dummyPage1, previousPage);
-    assertEquals(dummyPage2, currentPage);
 
     // Click the first menu item. Expect that dummyPage2 is now hidden and
     // dummyPage1 is not hidden.
@@ -102,8 +92,6 @@ export function navigationViewPanelTestSuite() {
     // Now that both dummy pages have implemented "onNavigationPageChanged",
     // the navigation click will trigger both page's methods.
     assertEquals(3, numPageChangedCount);
-    assertEquals(dummyPage2, previousPage);
-    assertEquals(dummyPage1, currentPage);
   });
 
   test('notifyEvent', async () => {
