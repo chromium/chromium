@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
+#include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "printing/mojom/print.mojom.h"
@@ -77,8 +78,8 @@ void OnDidEnumeratePrinters(
     PrinterHandler::GetPrintersDoneCallback done_callback,
     mojom::PrinterListResultPtr printer_list) {
   if (printer_list->is_result_code()) {
-    LOG(WARNING) << "Failure enumerating local printers, result: "
-                 << printer_list->get_result_code();
+    PRINTER_LOG(ERROR) << "Failure enumerating local printers, result: "
+                       << printer_list->get_result_code();
   }
 
   ConvertPrinterListForCallback(
@@ -149,7 +150,11 @@ PrinterList LocalPrinterHandlerDefault::EnumeratePrintersAsync(
       PrintBackend::CreateInstance(locale));
 
   PrinterList printer_list;
-  print_backend->EnumeratePrinters(&printer_list);
+  mojom::ResultCode result = print_backend->EnumeratePrinters(&printer_list);
+  if (result != mojom::ResultCode::kSuccess) {
+    PRINTER_LOG(ERROR) << "Failure enumerating local printers, result: "
+                       << result;
+  }
   return printer_list;
 }
 
