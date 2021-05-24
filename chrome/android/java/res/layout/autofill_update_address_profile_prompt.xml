@@ -17,6 +17,7 @@
       android:paddingEnd="@dimen/dialog_padding_sides"
       android:ellipsize="end"
       android:maxLines="1"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
       tools:text="For Alex Park — 345 Spear street" />
 
   <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
@@ -90,7 +91,8 @@
           android:layout_marginTop="12dp"
           android:paddingStart="@dimen/dialog_padding_sides"
           android:paddingEnd="@dimen/dialog_padding_sides"
-          android:text="@string/autofill_update_address_prompt_old_values_section_label" />
+          android:text="@string/autofill_update_address_prompt_old_values_section_label"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
       <org.chromium.ui.widget.TextViewWithLeading
           android:id="@+id/details_old"
