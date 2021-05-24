@@ -155,6 +155,9 @@ chrome.test.runTests([
   function testSessionOnStorageChanged() {
     testOnStorageChanged(chrome.storage.session);
   },
+  function testSessionRemove() {
+    testRemoveStorage(chrome.storage.session, sessionKey);
+  },
   function testSessionClearSetup() {
     testSetStorage(chrome.storage.session, sessionKey, sessionValue);
   },

@@ -412,8 +412,28 @@ StorageStorageAreaRemoveFunction::RunWithStorage(ValueStore* storage) {
 
 ExtensionFunction::ResponseValue
 StorageStorageAreaRemoveFunction::RunInSession() {
-  // TODO(crbug.com/1185226): Implement RunInSession for
-  // chrome.storage.session.remove .
+  base::Value* input = nullptr;
+  if (!args_->Get(0, &input))
+    return BadMessage();
+
+  SessionStorageManager* session_manager =
+      GetOrCreateSessionStorage(browser_context());
+  std::vector<SessionStorageManager::ValueChange> changes;
+
+  switch (input->type()) {
+    case base::Value::Type::STRING:
+      session_manager->Remove(extension_id(), input->GetString(), changes);
+      break;
+
+    case base::Value::Type::LIST:
+      session_manager->Remove(extension_id(), GetKeysFromList(*input), changes);
+      break;
+
+    default:
+      return BadMessage();
+  }
+
+  OnSessionSettingsChanged(std::move(changes));
   return NoArguments();
 }
 

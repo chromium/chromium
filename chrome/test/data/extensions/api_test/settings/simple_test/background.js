@@ -6,11 +6,9 @@ var assertEq = chrome.test.assertEq;
 var assertTrue = chrome.test.assertTrue;
 var succeed = chrome.test.succeed;
 
-function test(stage0, sessionSuported = false) {
-  let apis = [chrome.storage.sync, chrome.storage.local];
-  if (sessionSuported) {
-    apis.push(chrome.storage.session)
-  }
+function test(stage0) {
+  let apis =
+      [chrome.storage.sync, chrome.storage.local, chrome.storage.session];
   apis.forEach(function(api) {
     api.succeed = chrome.test.callbackPass(api.clear.bind(api));
     stage0.call(api);
@@ -34,7 +32,7 @@ chrome.test.runTests([
       assertEq({}, settings);
       this.succeed();
     }
-    test(stage0, true);
+    test(stage0);
   },
 
   function getWhenNonempty() {
@@ -70,7 +68,7 @@ chrome.test.runTests([
       }, settings);
       this.succeed();
     }
-    test(stage0, true);
+    test(stage0);
   },
 
   function removeWhenEmpty() {
@@ -164,7 +162,7 @@ chrome.test.runTests([
       }, settings);
       this.succeed();
     }
-    test(stage0, true);
+    test(stage0);
   },
 
   function clearWhenEmpty() {
@@ -178,7 +176,7 @@ chrome.test.runTests([
       assertEq({}, settings);
       this.succeed();
     }
-    test(stage0, true);
+    test(stage0);
   },
 
   function clearWhenNonempty() {
@@ -199,7 +197,7 @@ chrome.test.runTests([
       assertEq({}, settings);
       this.succeed();
     }
-    test(stage0, true);
+    test(stage0);
   },
 
   function keysWithDots() {
@@ -293,36 +291,6 @@ chrome.test.runTests([
       this.succeed();
     }
     test(stage0);
-  },
-
-  // TODO(crbug.com/1185226): Temporary function for `session` to test default
-  // values until `remove` and `clear` are implemented. `getWithDefaultValues()`
-  // uses `remove`, and `clear` between test calls, and `session` only has `set`
-  // and `get` implemented.
-  function getWithDefaultValuesSession() {
-    var area = chrome.storage.session;
-    function stage0() {
-      area.get({a: 'defaultA', b: ['b', 'b', 'b']}, stage1);
-    }
-    function stage1(settings) {
-      assertEq({a: 'defaultA', b: ['b', 'b', 'b']}, settings);
-      area.set({a: 'A'}, stage2);
-    }
-    function stage2() {
-      area.get({a: 'defaultA', b: ['b', 'b', 'b']}, stage3);
-    }
-    function stage3(settings) {
-      assertEq({a: 'A', b: ['b', 'b', 'b']}, settings);
-      area.set({b: {}}, stage4);
-    }
-    function stage4() {
-      area.get({a: 'defaultA', b: ['b', 'b', 'b']}, stage5);
-    }
-    function stage5(settings) {
-      assertEq({a: 'A', b: {}}, settings);
-      succeed();
-    }
-    area.clear(stage0);
   },
 
   function quota() {

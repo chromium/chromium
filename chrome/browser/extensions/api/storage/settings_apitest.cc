@@ -330,20 +330,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest, SplitModeIncognito) {
     ReplyWhenSatisfied(storage_area, "noop", "setFoo");
     ReplyWhenSatisfied(storage_area, "assertFoo", "assertFoo");
     ReplyWhenSatisfied(storage_area, "clear", "noop");
-    // TODO(crbug.com/1185226): Move this condition accordingly as `session`
-    // SettingFunction's are implemented. Currently it skips the
-    // functions that `session` has not implemented yet. When all functions are
-    // implemented, FinalReplyWhenSatisfied() will be moved outside the loop.
-    if (storage_area == StorageAreaNamespace::kSession) {
-      FinalReplyWhenSatisfied(storage_area, "assertEmpty", "assertEmpty");
-      break;
-    }
     ReplyWhenSatisfied(storage_area, "assertEmpty", "assertEmpty");
     ReplyWhenSatisfied(storage_area, "setFoo", "noop");
     ReplyWhenSatisfied(storage_area, "assertFoo", "assertFoo");
     ReplyWhenSatisfied(storage_area, "noop", "removeFoo");
     ReplyWhenSatisfied(storage_area, "assertEmpty", "assertEmpty");
   }
+  FinalReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertEmpty",
+                          "assertEmpty");
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();
@@ -372,19 +366,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest,
     ReplyWhenSatisfied(storage_area, "noop", "setFoo");
     ReplyWhenSatisfied(storage_area, "assertAddFooNotification",
                        "assertAddFooNotification");
-    // TODO(crbug.com/1185226): Skip next parts of the test for `session` since
-    // not all SettingFunction's are implemented.
-    if (storage_area == StorageAreaNamespace::kSession) {
-      FinalReplyWhenSatisfied(storage_area, "clearNotifications",
-                              "clearNotifications");
-      break;
-    }
     ReplyWhenSatisfied(storage_area, "clearNotifications",
                        "clearNotifications");
     ReplyWhenSatisfied(storage_area, "removeFoo", "noop");
     ReplyWhenSatisfied(storage_area, "assertDeleteFooNotification",
                        "assertDeleteFooNotification");
   }
+  FinalReplyWhenSatisfied(StorageAreaNamespace::kSession,
+                          "assertDeleteFooNotification",
+                          "assertDeleteFooNotification");
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();
@@ -476,6 +466,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest,
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertNoNotifications",
                      "assertNoNotifications");
   ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertFoo", "assertFoo");
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertNoNotifications",
+                     "assertNoNotifications");
+
+  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "clearNotifications",
+                     "clearNotifications");
+
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "removeFoo", "noop");
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession, "assertEmpty",
+                     "assertEmpty");
+  ReplyWhenSatisfied(StorageAreaNamespace::kSession,
+                     "assertDeleteFooNotification",
+                     "assertDeleteFooNotification");
+  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertEmpty", "assertEmpty");
+  ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertNoNotifications",
+                     "assertNoNotifications");
+  ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertEmpty",
+                     "assertEmpty");
   FinalReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertNoNotifications",
                           "assertNoNotifications");
 
