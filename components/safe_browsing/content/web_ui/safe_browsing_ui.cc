@@ -584,46 +584,67 @@ base::Value SerializeChromeUserPopulation(
   }
   population_dict.SetKey("user_population", base::Value(user_population));
 
-  population_dict.SetKey("is_history_sync_enabled",
-                         base::Value(population.is_history_sync_enabled()));
-
-  base::ListValue finch_list;
-  for (const std::string& finch_group : population.finch_active_groups()) {
-    finch_list.Append(base::Value(finch_group));
+  if (population.has_is_history_sync_enabled()) {
+    population_dict.SetKey("is_history_sync_enabled",
+                           base::Value(population.is_history_sync_enabled()));
   }
-  population_dict.SetKey("finch_active_groups", std::move(finch_list));
 
-  std::string management_status;
-  switch (population.profile_management_status()) {
-    case ChromeUserPopulation::UNKNOWN:
-      management_status = "UNKNOWN";
-      break;
-    case ChromeUserPopulation::UNAVAILABLE:
-      management_status = "UNAVAILABLE";
-      break;
-    case ChromeUserPopulation::NOT_MANAGED:
-      management_status = "NOT_MANAGED";
-      break;
-    case ChromeUserPopulation::ENTERPRISE_MANAGED:
-      management_status = "ENTERPRISE_MANAGED";
-      break;
+  if (!population.finch_active_groups().empty()) {
+    base::ListValue finch_list;
+    for (const std::string& finch_group : population.finch_active_groups()) {
+      finch_list.Append(base::Value(finch_group));
+    }
+    population_dict.SetKey("finch_active_groups", std::move(finch_list));
   }
-  population_dict.SetKey("profile_management_status",
-                         base::Value(management_status));
-  population_dict.SetKey(
-      "is_under_advanced_protection",
-      base::Value(population.is_under_advanced_protection()));
-  population_dict.SetKey("is_incognito",
-                         base::Value(population.is_incognito()));
 
-  population_dict.SetKey("user_agent", base::Value(population.user_agent()));
+  if (population.has_profile_management_status()) {
+    std::string management_status;
+    switch (population.profile_management_status()) {
+      case ChromeUserPopulation::UNKNOWN:
+        management_status = "UNKNOWN";
+        break;
+      case ChromeUserPopulation::UNAVAILABLE:
+        management_status = "UNAVAILABLE";
+        break;
+      case ChromeUserPopulation::NOT_MANAGED:
+        management_status = "NOT_MANAGED";
+        break;
+      case ChromeUserPopulation::ENTERPRISE_MANAGED:
+        management_status = "ENTERPRISE_MANAGED";
+        break;
+    }
+    population_dict.SetKey("profile_management_status",
+                           base::Value(management_status));
+  }
+  if (population.has_is_under_advanced_protection()) {
+    population_dict.SetKey(
+        "is_under_advanced_protection",
+        base::Value(population.is_under_advanced_protection()));
+  }
 
-  population_dict.SetKey("number_of_profiles",
-                         base::Value(population.number_of_profiles()));
-  population_dict.SetKey("number_of_loaded_profiles",
-                         base::Value(population.number_of_loaded_profiles()));
-  population_dict.SetKey("number_of_open_profiles",
-                         base::Value(population.number_of_open_profiles()));
+  if (population.has_is_incognito()) {
+    population_dict.SetKey("is_incognito",
+                           base::Value(population.is_incognito()));
+  }
+
+  if (population.has_user_agent()) {
+    population_dict.SetKey("user_agent", base::Value(population.user_agent()));
+  }
+
+  if (population.has_number_of_profiles()) {
+    population_dict.SetKey("number_of_profiles",
+                           base::Value(population.number_of_profiles()));
+  }
+
+  if (population.has_number_of_loaded_profiles()) {
+    population_dict.SetKey("number_of_loaded_profiles",
+                           base::Value(population.number_of_loaded_profiles()));
+  }
+
+  if (population.has_number_of_open_profiles()) {
+    population_dict.SetKey("number_of_open_profiles",
+                           base::Value(population.number_of_open_profiles()));
+  }
 
   return std::move(population_dict);
 }
@@ -671,8 +692,10 @@ base::Value SerializeReferrer(const ReferrerChainEntry& referrer) {
   referrer_dict.SetKey("referrer_main_frame_url",
                        base::Value(referrer.referrer_main_frame_url()));
 
-  referrer_dict.SetKey("is_retargeting",
-                       base::Value(referrer.is_retargeting()));
+  if (referrer.has_is_retargeting()) {
+    referrer_dict.SetKey("is_retargeting",
+                         base::Value(referrer.is_retargeting()));
+  }
 
   referrer_dict.SetKey("navigation_time_msec",
                        base::Value(referrer.navigation_time_msec()));
@@ -702,16 +725,22 @@ base::Value SerializeReferrer(const ReferrerChainEntry& referrer) {
   referrer_dict.SetKey("navigation_initiation",
                        base::Value(navigation_initiation));
 
-  referrer_dict.SetKey(
-      "maybe_launched_by_external_application",
-      base::Value(referrer.maybe_launched_by_external_application()));
+  if (referrer.has_maybe_launched_by_external_application()) {
+    referrer_dict.SetKey(
+        "maybe_launched_by_external_application",
+        base::Value(referrer.maybe_launched_by_external_application()));
+  }
 
-  referrer_dict.SetKey("is_subframe_url_removed",
-                       base::Value(referrer.is_subframe_url_removed()));
+  if (referrer.has_is_subframe_url_removed()) {
+    referrer_dict.SetKey("is_subframe_url_removed",
+                         base::Value(referrer.is_subframe_url_removed()));
+  }
 
-  referrer_dict.SetKey(
-      "is_subframe_referrer_url_removed",
-      base::Value(referrer.is_subframe_referrer_url_removed()));
+  if (referrer.has_is_subframe_referrer_url_removed()) {
+    referrer_dict.SetKey(
+        "is_subframe_referrer_url_removed",
+        base::Value(referrer.is_subframe_referrer_url_removed()));
+  }
 
   return std::move(referrer_dict);
 }
@@ -729,27 +758,33 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
   if (cdr.has_archive_valid())
     dict.SetBoolean("archive_valid", cdr.archive_valid());
 
-  auto archived_binaries = std::make_unique<base::ListValue>();
-  for (const auto& archived_binary : cdr.archived_binary()) {
-    auto dict_archived_binary = std::make_unique<base::DictionaryValue>();
-    if (archived_binary.has_file_basename())
-      dict_archived_binary->SetString("file_basename",
-                                      archived_binary.file_basename());
-    if (archived_binary.has_download_type())
-      dict_archived_binary->SetInteger("download_type",
-                                       archived_binary.download_type());
-    if (archived_binary.has_length())
-      dict_archived_binary->SetInteger("length", archived_binary.length());
-    if (archived_binary.is_encrypted())
-      dict_archived_binary->SetBoolean("is_encrypted", true);
-    if (archived_binary.digests().has_sha256()) {
-      const std::string& sha256 = archived_binary.digests().sha256();
-      dict_archived_binary->SetString(
-          "digests.sha256", base::HexEncode(sha256.c_str(), sha256.size()));
+  if (!cdr.archived_binary().empty()) {
+    auto archived_binaries = std::make_unique<base::ListValue>();
+    for (const auto& archived_binary : cdr.archived_binary()) {
+      auto dict_archived_binary = std::make_unique<base::DictionaryValue>();
+      if (archived_binary.has_file_basename()) {
+        dict_archived_binary->SetString("file_basename",
+                                        archived_binary.file_basename());
+      }
+      if (archived_binary.has_download_type()) {
+        dict_archived_binary->SetInteger("download_type",
+                                         archived_binary.download_type());
+      }
+      if (archived_binary.has_length())
+        dict_archived_binary->SetInteger("length", archived_binary.length());
+      if (archived_binary.is_encrypted())
+        dict_archived_binary->SetBoolean("is_encrypted", true);
+      if (archived_binary.digests().has_sha256()) {
+        const std::string& sha256 = archived_binary.digests().sha256();
+        dict_archived_binary->SetString(
+            "digests.sha256", base::HexEncode(sha256.c_str(), sha256.size()));
+      }
+      archived_binaries->Append(std::move(dict_archived_binary));
     }
-    archived_binaries->Append(std::move(dict_archived_binary));
+    dict.SetList("archived_binary", std::move(archived_binaries));
   }
-  dict.SetList("archived_binary", std::move(archived_binaries));
+
+  dict.SetKey("population", SerializeChromeUserPopulation(cdr.population()));
 
   auto referrer_chain = std::make_unique<base::ListValue>();
   for (const auto& referrer_chain_entry : cdr.referrer_chain()) {
@@ -757,12 +792,14 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
   }
   dict.SetList("referrer_chain", std::move(referrer_chain));
 
-  dict.SetBoolean("request_ap_verdicts", cdr.request_ap_verdicts());
+  if (cdr.has_request_ap_verdicts())
+    dict.SetBoolean("request_ap_verdicts", cdr.request_ap_verdicts());
 
-  dict.SetInteger("archive_file_count", cdr.archive_file_count());
-  dict.SetInteger("archive_directory_count", cdr.archive_directory_count());
+  if (cdr.has_archive_file_count())
+    dict.SetInteger("archive_file_count", cdr.archive_file_count());
 
-  dict.SetBoolean("request_ap_verdicts", cdr.request_ap_verdicts());
+  if (cdr.has_archive_directory_count())
+    dict.SetInteger("archive_directory_count", cdr.archive_directory_count());
 
   if (!cdr.access_token().empty())
     dict.SetString("access_token", cdr.access_token());
