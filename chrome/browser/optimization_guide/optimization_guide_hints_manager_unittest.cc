@@ -15,7 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/test/base/testing_profile.h"
@@ -28,6 +28,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_navigation_data.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -2544,7 +2545,7 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
     // Make sure navigation data is populated correctly.
     OptimizationGuideNavigationData* navigation_data =
-        OptimizationGuideNavigationData::GetFromNavigationHandle(
+        OptimizationGuideKeyedService::GetNavigationDataFromNavigationHandle(
             navigation_handle.get());
     EXPECT_TRUE(navigation_data->hints_fetch_latency().has_value());
     EXPECT_EQ(navigation_data->hints_fetch_attempt_status(),
@@ -2580,7 +2581,7 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
     // Make sure navigation data is populated correctly.
     OptimizationGuideNavigationData* navigation_data =
-        OptimizationGuideNavigationData::GetFromNavigationHandle(
+        OptimizationGuideKeyedService::GetNavigationDataFromNavigationHandle(
             navigation_handle.get());
     EXPECT_FALSE(navigation_data->hints_fetch_latency().has_value());
     EXPECT_EQ(navigation_data->hints_fetch_attempt_status(),
@@ -2622,7 +2623,7 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
     // Make sure navigation data is populated correctly.
     OptimizationGuideNavigationData* navigation_data =
-        OptimizationGuideNavigationData::GetFromNavigationHandle(
+        OptimizationGuideKeyedService::GetNavigationDataFromNavigationHandle(
             navigation_handle.get());
     EXPECT_TRUE(navigation_data->hints_fetch_latency().has_value());
     EXPECT_EQ(navigation_data->hints_fetch_attempt_status(),
@@ -2655,7 +2656,7 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
             kRaceNavigationFetchHost,
         1);
     OptimizationGuideNavigationData* navigation_data =
-        OptimizationGuideNavigationData::GetFromNavigationHandle(
+        OptimizationGuideKeyedService::GetNavigationDataFromNavigationHandle(
             navigation_handle.get());
     EXPECT_TRUE(navigation_data->hints_fetch_latency().has_value());
     EXPECT_EQ(navigation_data->hints_fetch_attempt_status(),
@@ -2686,7 +2687,7 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
   // Make sure navigation data is populated correctly.
   OptimizationGuideNavigationData* navigation_data =
-      OptimizationGuideNavigationData::GetFromNavigationHandle(
+      OptimizationGuideKeyedService::GetNavigationDataFromNavigationHandle(
           navigation_handle.get());
   EXPECT_FALSE(navigation_data->hints_fetch_latency().has_value());
   EXPECT_FALSE(navigation_data->hints_fetch_attempt_status().has_value());
@@ -3017,7 +3018,7 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
         "OptimizationGuide.HintsManager.ConcurrentPageNavigationFetches", 0);
 
     OptimizationGuideNavigationData* navigation_data =
-        OptimizationGuideNavigationData::GetFromNavigationHandle(
+        OptimizationGuideKeyedService::GetNavigationDataFromNavigationHandle(
             navigation_handle.get());
     // Set hints fetch end.so we can figure out if hints fetch start was set.
     navigation_data->set_hints_fetch_end(base::TimeTicks::Now());

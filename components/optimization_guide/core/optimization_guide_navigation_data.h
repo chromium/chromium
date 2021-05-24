@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_NAVIGATION_DATA_H_
-#define CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_NAVIGATION_DATA_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_NAVIGATION_DATA_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_NAVIGATION_DATA_H_
 
 #include <stdint.h>
 #include <memory>
@@ -13,7 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -30,11 +29,6 @@ class OptimizationGuideNavigationData {
       const OptimizationGuideNavigationData& other) = delete;
   OptimizationGuideNavigationData& operator=(
       const OptimizationGuideNavigationData&) = delete;
-
-  // Returns the OptimizationGuideNavigationData for |navigation_handle|. Will
-  // return nullptr if one cannot be created for it for any reason.
-  static OptimizationGuideNavigationData* GetFromNavigationHandle(
-      content::NavigationHandle* navigation_handle);
 
   base::WeakPtr<OptimizationGuideNavigationData> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -137,4 +131,4 @@ class OptimizationGuideNavigationData {
   base::WeakPtrFactory<OptimizationGuideNavigationData> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_NAVIGATION_DATA_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_NAVIGATION_DATA_H_

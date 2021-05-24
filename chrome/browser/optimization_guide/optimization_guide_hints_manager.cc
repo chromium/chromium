@@ -24,7 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/google/core/common/google_util.h"
@@ -39,6 +39,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_navigation_data.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
@@ -201,8 +202,8 @@ class ScopedHintsManagerRaceNavigationHintsFetchAttemptRecorder {
       : race_attempt_status_(
             optimization_guide::RaceNavigationFetchAttemptStatus::kUnknown),
         navigation_data_(
-            OptimizationGuideNavigationData::GetFromNavigationHandle(
-                navigation_handle)) {}
+            OptimizationGuideKeyedService::
+                GetNavigationDataFromNavigationHandle(navigation_handle)) {}
 
   ~ScopedHintsManagerRaceNavigationHintsFetchAttemptRecorder() {
     DCHECK_NE(race_attempt_status_,
@@ -1299,7 +1300,7 @@ void OptimizationGuideHintsManager::MaybeFetchHintsForNavigation(
       race_navigation_recorder(navigation_handle);
 
   OptimizationGuideNavigationData* navigation_data =
-      OptimizationGuideNavigationData::GetFromNavigationHandle(
+      OptimizationGuideKeyedService::GetNavigationDataFromNavigationHandle(
           navigation_handle);
 
   // We expect that if the URL is being fetched for, we have already run through

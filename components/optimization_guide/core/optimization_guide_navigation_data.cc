@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
+#include "components/optimization_guide/core/optimization_guide_navigation_data.h"
 
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
-#include "content/public/browser/navigation_handle.h"
-#include "net/nqe/effective_connection_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -22,20 +19,6 @@ OptimizationGuideNavigationData::OptimizationGuideNavigationData(
 
 OptimizationGuideNavigationData::~OptimizationGuideNavigationData() {
   RecordMetrics();
-}
-
-// static
-OptimizationGuideNavigationData*
-OptimizationGuideNavigationData::GetFromNavigationHandle(
-    content::NavigationHandle* navigation_handle) {
-  OptimizationGuideWebContentsObserver*
-      optimization_guide_web_contents_observer =
-          OptimizationGuideWebContentsObserver::FromWebContents(
-              navigation_handle->GetWebContents());
-  if (!optimization_guide_web_contents_observer)
-    return nullptr;
-  return optimization_guide_web_contents_observer
-      ->GetOrCreateOptimizationGuideNavigationData(navigation_handle);
 }
 
 void OptimizationGuideNavigationData::RecordMetrics() const {

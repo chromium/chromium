@@ -944,8 +944,6 @@ static_library("browser") {
     "optimization_guide/optimization_guide_keyed_service.h",
     "optimization_guide/optimization_guide_keyed_service_factory.cc",
     "optimization_guide/optimization_guide_keyed_service_factory.h",
-    "optimization_guide/optimization_guide_navigation_data.cc",
-    "optimization_guide/optimization_guide_navigation_data.h",
     "optimization_guide/optimization_guide_tab_url_provider.cc",
     "optimization_guide/optimization_guide_tab_url_provider.h",
     "optimization_guide/optimization_guide_top_host_provider.cc",

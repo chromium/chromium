@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
+#include "components/optimization_guide/core/optimization_guide_navigation_data.h"
 
 #include <memory>
 
