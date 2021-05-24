@@ -66,11 +66,12 @@ public class SmsFetcherMessageHandler {
      *
      * @param oneTimeCode The one time code from SMS
      * @param origin The origin from the SMS
+     * @param remoteOs The OS name where the remote request comes from
      * @param smsFetcherMessageHandlerAndroid The native handler
      */
     @CalledByNative
-    private static void showNotification(
-            String oneTimeCode, String origin, long smsFetcherMessageHandlerAndroid) {
+    private static void showNotification(String oneTimeCode, String origin, String remoteOs,
+            long smsFetcherMessageHandlerAndroid) {
         sOrigin = origin;
         sSmsFetcherMessageHandlerAndroid = smsFetcherMessageHandlerAndroid;
         Context context = ContextUtils.getApplicationContext();
@@ -84,15 +85,18 @@ public class SmsFetcherMessageHandler {
                         .setAction(NOTIFICATION_ACTION_DISMISS),
                 PendingIntent.FLAG_UPDATE_CURRENT);
         Resources resources = context.getResources();
+        String notificationTitle = remoteOs.equals("")
+                ? resources.getString(R.string.sms_fetcher_notification_title_unknown_device)
+                : resources.getString(R.string.sms_fetcher_notification_title, remoteOs);
         String notificationText =
                 resources.getString(R.string.sms_fetcher_notification_text, oneTimeCode, origin);
         SharingNotificationUtil.showNotification(
                 NotificationUmaTracker.SystemNotificationType.SMS_FETCHER,
                 NotificationConstants.GROUP_SMS_FETCHER,
                 NotificationConstants.NOTIFICATION_ID_SMS_FETCHER_INCOMING, contentIntent,
-                deleteIntent, resources.getString(R.string.sms_fetcher_notification_title),
-                notificationText, R.drawable.ic_devices_48dp, R.drawable.infobar_chrome,
-                R.color.infobar_icon_drawable_color, /*startsActivity=*/false);
+                deleteIntent, notificationTitle, notificationText, R.drawable.ic_devices_48dp,
+                R.drawable.infobar_chrome, R.color.infobar_icon_drawable_color,
+                /*startsActivity=*/false);
     }
 
     @CalledByNative

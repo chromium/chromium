@@ -21,19 +21,23 @@ namespace content {
 class SmsFetcher;
 }
 
+class SharingDeviceSource;
+
 // Handles incoming messages for the sms fetcher feature.
 class SmsFetchRequestHandler : public SharingMessageHandler {
  public:
   using FailureType = content::SmsFetchFailureType;
 
-  explicit SmsFetchRequestHandler(content::SmsFetcher* fetcher);
+  SmsFetchRequestHandler(SharingDeviceSource* device_source,
+                         content::SmsFetcher* fetcher);
   ~SmsFetchRequestHandler() override;
 
   // SharingMessageHandler
   void OnMessage(chrome_browser_sharing::SharingMessage message,
                  SharingMessageHandler::DoneCallback done_callback) override;
   virtual void AskUserPermission(const content::OriginList&,
-                                 const std::string& one_time_code);
+                                 const std::string& one_time_code,
+                                 const std::string& remote_os);
   virtual void OnConfirm(JNIEnv*, jstring origin);
   virtual void OnDismiss(JNIEnv*, jstring origin);
 
@@ -54,6 +58,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
     Request(SmsFetchRequestHandler* handler,
             content::SmsFetcher* fetcher,
             const url::Origin& origin,
+            const std::string& remote_os,
             SharingMessageHandler::DoneCallback respond_callback);
     ~Request() override;
 
@@ -72,6 +77,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
     content::SmsFetcher* fetcher_;
     const content::OriginList origin_list_;
     std::string one_time_code_;
+    std::string remote_os_;
     SharingMessageHandler::DoneCallback respond_callback_;
 
     DISALLOW_COPY_AND_ASSIGN(Request);
@@ -80,6 +86,9 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
   void RemoveRequest(Request* Request);
   Request* GetRequest(const std::u16string& origin);
 
+  // |device_source_| is owned by |SharingService| which also transitively owns
+  // this class via |SharingHandlerRegistry|.
+  SharingDeviceSource* device_source_;
   // |fetcher_| is safe because it is owned by BrowserContext, which also
   // owns (transitively, via SharingService) this class.
   content::SmsFetcher* fetcher_;

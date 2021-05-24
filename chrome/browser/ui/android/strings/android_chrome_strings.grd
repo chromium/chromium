@@ -4200,8 +4200,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Sms Fetcher -->
+      <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE_UNKNOWN_DEVICE" translateable="false" desc="Title text shown when the browser has received an SMS on the user's behalf when the source device name is unknown.">
+        Tap to submit code on your remote device
+      </message>
       <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE" translateable="false" desc="Title text shown when the browser has received an SMS on the user's behalf.">
-        Tap to verify your phone number on desktop
+        Tap to submit code on your <ph name="OS">%1$s<ex>mac</ex></ph>
       </message>
       <message name="IDS_SMS_FETCHER_NOTIFICATION_TEXT" translateable="false" desc="Content text shown when the browser has received an SMS on the user's behalf.">
         <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> is your code for <ph name="ORIGIN">%2$s<ex>example.com</ex></ph>

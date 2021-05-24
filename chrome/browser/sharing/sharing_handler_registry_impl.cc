@@ -47,7 +47,7 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
 
   if (sharing_device_registration->IsSmsFetcherSupported()) {
     AddSharingHandler(
-        std::make_unique<SmsFetchRequestHandler>(sms_fetcher),
+        std::make_unique<SmsFetchRequestHandler>(device_source, sms_fetcher),
         {chrome_browser_sharing::SharingMessage::kSmsFetchRequest});
   }
 #endif  // defined(OS_ANDROID)
