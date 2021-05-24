@@ -678,10 +678,9 @@ void OnUrlHandlerList(int render_process_host_id,
 
   WebContents* web_contents =
       tab_util::GetWebContentsByID(render_process_host_id, routing_id);
-  auto* context = web_contents->GetBrowserContext();
+  auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
   auto* intent_helper_bridge =
-      web_contents ? ArcIntentHelperBridge::GetForBrowserContext(context)
-                   : nullptr;
+      context ? ArcIntentHelperBridge::GetForBrowserContext(context) : nullptr;
 
   // We only reach here if Chrome doesn't think it can handle the URL. If ARC is
   // not running anymore, or Chrome is the only candidate returned, show the
