@@ -9,14 +9,11 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.KeyguardManager;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
@@ -32,20 +29,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.notifications.NotificationConstants;
-import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
-import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.base.AndroidPermissionDelegate;
@@ -73,11 +64,9 @@ public class CableAuthenticatorUI
     // for before being replaced with a prompt to connect via USB cable.
     private static final int USB_PROMPT_TIMEOUT_SECS = 20;
 
-    // NOTIFICATION_TIMEOUT_SECS is the number of seconds that a notification
-    // will exist for. This stop ignored notifications hanging around.
-    private static final int NOTIFICATION_TIMEOUT_SECS = 60;
-
     private static final String FCM_EXTRA = "org.chromium.chrome.modules.cablev2_authenticator.FCM";
+    private static final String EVENT_EXTRA =
+            "org.chromium.chrome.modules.cablev2_authenticator.EVENT";
     private static final String NETWORK_CONTEXT_EXTRA =
             "org.chromium.chrome.modules.cablev2_authenticator.NetworkContext";
     private static final String REGISTRATION_EXTRA =
@@ -94,10 +83,6 @@ public class CableAuthenticatorUI
     private static final int ERROR_NONE = 0;
     private static final int ERROR_UNEXPECTED_EOF = 100;
     private static final int ERROR_NO_SCREENLOCK = 110;
-
-    // ID is used when Android APIs demand a process-wide unique ID. This number
-    // is a random int.
-    private static final int ID = 424386536;
 
     private enum Mode {
         QR, // Triggered from Settings; can scan QR code to start handshake.
@@ -143,6 +128,7 @@ public class CableAuthenticatorUI
         final UsbAccessory accessory =
                 (UsbAccessory) arguments.getParcelable(UsbManager.EXTRA_ACCESSORY);
         final byte[] serverLink = arguments.getByteArray(SERVER_LINK_EXTRA);
+        final byte[] fcmEvent = arguments.getByteArray(EVENT_EXTRA);
         if (accessory != null) {
             mMode = Mode.USB;
         } else if (arguments.getBoolean(FCM_EXTRA)) {
@@ -181,7 +167,7 @@ public class CableAuthenticatorUI
         mPermissionDelegate = new ActivityAndroidPermissionDelegate(
                 new WeakReference<Activity>((Activity) context));
         mAuthenticator = new CableAuthenticator(getContext(), this, networkContext, registration,
-                secret, mMode == Mode.FCM, accessory, serverLink);
+                secret, mMode == Mode.FCM, accessory, serverLink, fcmEvent);
 
         if (mMode == Mode.FCM) {
             BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
@@ -553,69 +539,5 @@ public class CableAuthenticatorUI
 
         TextView descriptionTextView = (TextView) mErrorView.findViewById(R.id.error_description);
         descriptionTextView.setText(desc);
-    }
-
-    /**
-     * onCloudMessage is called by {@link CableAuthenticatorModuleProvider} when a GCM message
-     * is received.
-     */
-    @SuppressLint("SetTextI18n")
-    public static void onCloudMessage(long event, long systemNetworkContext, long registration,
-            String activityClassName, byte[] secret) {
-        CableAuthenticator.RequestType requestType = CableAuthenticator.onCloudMessage(
-                event, systemNetworkContext, registration, secret);
-
-        // Show a notification to the user. If tapped then an instance of this
-        // class will be created in FCM mode.
-        Context context = ContextUtils.getApplicationContext();
-        Resources resources = context.getResources();
-
-        Intent intent;
-        try {
-            intent = new Intent(context, Class.forName(activityClassName));
-        } catch (ClassNotFoundException e) {
-            Log.e(TAG, "Failed to find class " + activityClassName);
-            return;
-        }
-
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("org.chromium.chrome.modules.cablev2_authenticator.FCM", true);
-        intent.putExtra("show_fragment_args", bundle);
-        PendingIntent pendingIntent =
-                PendingIntent.getActivity(context, ID, intent, PendingIntent.FLAG_IMMUTABLE);
-
-        String title = null;
-        String body = null;
-        switch (requestType) {
-            case MAKE_CREDENTIAL:
-                title = resources.getString(R.string.cablev2_make_credential_notification_title);
-                body = resources.getString(R.string.cablev2_make_credential_notification_body);
-                break;
-
-            case GET_ASSERTION:
-                title = resources.getString(R.string.cablev2_get_assertion_notification_title);
-                body = resources.getString(R.string.cablev2_get_assertion_notification_body);
-                break;
-        }
-
-        Notification notification = NotificationWrapperBuilderFactory
-                                            .createNotificationWrapperBuilder(
-                                                    /*preferCompat=*/true,
-                                                    ChromeChannelDefinitions.ChannelId.SECURITY_KEY)
-                                            .setAutoCancel(true)
-                                            .setCategory(Notification.CATEGORY_MESSAGE)
-                                            .setContentIntent(pendingIntent)
-                                            .setContentText(body)
-                                            .setContentTitle(title)
-                                            .setPriorityBeforeO(NotificationCompat.PRIORITY_MAX)
-                                            .setSmallIcon(org.chromium.chrome.R.drawable.ic_chrome)
-                                            .setTimeoutAfter(NOTIFICATION_TIMEOUT_SECS * 1000)
-                                            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                                            .build();
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(
-                NotificationConstants.NOTIFICATION_ID_SECURITY_KEY, notification);
     }
 }

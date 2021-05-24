@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/span.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,16 +29,16 @@ namespace authenticator {
 class Registration {
  public:
   // Type enumerates the types of registrations that are maintained.
-  enum class Type {
+  enum class Type : uint8_t {
     // LINKING is for link information shared with desktops after scanning a QR
     // code. If the user chooses to unlink devices then this registration can be
     // rotated by calling |RotateContactID|. That will cause the server to
     // inform clients that the registration is no longer valid and that they
     // should forget about it.
-    LINKING,
+    LINKING = 0,
     // SYNC is for information shared via the Sync service. This is separate so
     // that unlinking devices doesn't break sync peers.
-    SYNC,
+    SYNC = 1,
   };
 
   // An Event contains the information sent by the tunnel service when a peer is
@@ -48,12 +49,21 @@ class Registration {
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
 
+    // Serialize returns a serialized form of the |Event|. This format is
+    // not stable and is suitable only for transient storage.
+    absl::optional<std::vector<uint8_t>> Serialize();
+
+    // FromSerialized parses the bytes produced by |Serialize|. It assumes that
+    // the input is well formed. It returns |nullptr| on error.
+    static std::unique_ptr<Event> FromSerialized(base::span<const uint8_t> in);
+
     Type source;
     FidoRequestType request_type;
     std::array<uint8_t, kTunnelIdSize> tunnel_id;
     std::array<uint8_t, kRoutingIdSize> routing_id;
     std::array<uint8_t, kPairingIDSize> pairing_id;
     std::array<uint8_t, kClientNonceSize> client_nonce;
+    absl::optional<std::vector<uint8_t>> contact_id;
   };
 
   virtual ~Registration();

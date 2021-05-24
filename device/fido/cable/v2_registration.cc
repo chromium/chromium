@@ -14,6 +14,8 @@
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace device {
 namespace cablev2 {
@@ -114,6 +116,7 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
       return;
     }
 
+    event.value()->contact_id = contact_id();
     event_callback_.Run(std::move(*event));
   }
 
@@ -249,6 +252,85 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
 Registration::~Registration() = default;
 Registration::Event::Event() = default;
 Registration::Event::~Event() = default;
+
+// static
+std::unique_ptr<Registration::Event> Registration::Event::FromSerialized(
+    base::span<const uint8_t> in) {
+  auto e = std::make_unique<Event>();
+  uint8_t source, request_type;
+  CBS cbs;
+  CBS_init(&cbs, in.data(), in.size());
+
+  if (!CBS_get_u8(&cbs, &source) || !CBS_get_u8(&cbs, &request_type) ||
+      !CBS_copy_bytes(&cbs, e->tunnel_id.data(), e->tunnel_id.size()) ||
+      !CBS_copy_bytes(&cbs, e->routing_id.data(), e->routing_id.size()) ||
+      !CBS_copy_bytes(&cbs, e->pairing_id.data(), e->pairing_id.size()) ||
+      !CBS_copy_bytes(&cbs, e->client_nonce.data(), e->client_nonce.size())) {
+    return nullptr;
+  }
+
+  if ((source != static_cast<uint8_t>(Type::LINKING) &&
+       source != static_cast<uint8_t>(Type::SYNC)) ||
+      (request_type != static_cast<uint8_t>(FidoRequestType::kGetAssertion) &&
+       request_type !=
+           static_cast<uint8_t>(FidoRequestType::kMakeCredential))) {
+    return nullptr;
+  }
+  e->source = static_cast<Type>(source);
+  e->request_type = static_cast<FidoRequestType>(request_type);
+
+  switch (e->source) {
+    case Type::LINKING:
+    case Type::SYNC:
+      // This exists to catch additions to this enum as they need to be handled
+      // in the conditional, above.
+      break;
+  }
+
+  switch (e->request_type) {
+    case FidoRequestType::kMakeCredential:
+    case FidoRequestType::kGetAssertion:
+      // This exists to catch additions to this enum as they need to be handled
+      // in the conditional, above.
+      break;
+  }
+
+  if (CBS_len(&cbs) > 0) {
+    e->contact_id.emplace(CBS_data(&cbs), CBS_data(&cbs) + CBS_len(&cbs));
+  }
+
+  return e;
+}
+
+absl::optional<std::vector<uint8_t>> Registration::Event::Serialize() {
+  bssl::ScopedCBB cbb;
+  if (!CBB_init(cbb.get(), /*initial_capacity=*/512) ||
+      !CBB_add_u8(cbb.get(), static_cast<uint8_t>(this->source)) ||
+      !CBB_add_u8(cbb.get(), static_cast<uint8_t>(this->request_type)) ||
+      !CBB_add_bytes(cbb.get(), this->tunnel_id.data(),
+                     this->tunnel_id.size()) ||
+      !CBB_add_bytes(cbb.get(), this->routing_id.data(),
+                     this->routing_id.size()) ||
+      !CBB_add_bytes(cbb.get(), this->pairing_id.data(),
+                     this->pairing_id.size()) ||
+      !CBB_add_bytes(cbb.get(), this->client_nonce.data(),
+                     this->client_nonce.size()) ||
+      (this->contact_id && !CBB_add_bytes(cbb.get(), this->contact_id->data(),
+                                          this->contact_id->size()))) {
+    return absl::nullopt;
+  }
+
+  uint8_t* serialized_bytes;
+  size_t serialized_bytes_len;
+  if (!CBB_finish(cbb.get(), &serialized_bytes, &serialized_bytes_len)) {
+    return absl::nullopt;
+  }
+  const std::vector<uint8_t> ret(serialized_bytes,
+                                 serialized_bytes + serialized_bytes_len);
+  OPENSSL_free(serialized_bytes);
+
+  return ret;
+}
 
 std::unique_ptr<Registration> Register(
     instance_id::InstanceIDDriver* instance_id_driver,

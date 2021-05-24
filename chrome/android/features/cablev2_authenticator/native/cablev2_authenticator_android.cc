@@ -168,11 +168,6 @@ struct GlobalData {
   absl::optional<
       base::RepeatingCallback<void(absl::optional<base::span<const uint8_t>>)>>
       usb_callback;
-
-  // pending_event holds a cloud message while we are waiting for the user to
-  // tap on the notification.
-  std::unique_ptr<device::cablev2::authenticator::Registration::Event>
-      pending_event;
 };
 
 // GetGlobalData returns a pointer to the unique |GlobalData| for the address
@@ -188,8 +183,6 @@ void ResetGlobalData() {
   global_data.pending_make_credential_callback.reset();
   global_data.pending_get_assertion_callback.reset();
   global_data.usb_callback.reset();
-  // pending_event is not reset because a notification might still exist that
-  // depends on it.
 }
 
 // AndroidBLEAdvert wraps a Java |BLEAdvert| object so that
@@ -569,22 +562,23 @@ static jlong JNI_CableAuthenticator_StartServerLink(
 
 static jlong JNI_CableAuthenticator_StartCloudMessage(
     JNIEnv* env,
-    const JavaParamRef<jobject>& cable_authenticator) {
+    const JavaParamRef<jobject>& cable_authenticator,
+    const JavaParamRef<jbyteArray>& serialized_event) {
   RecordEvent(CableV2MobileEvent::kCloudMessage);
 
-  GlobalData& global_data = GetGlobalData();
-  DCHECK(global_data.pending_event);
-  std::unique_ptr<device::cablev2::authenticator::Registration::Event> event =
-      std::move(global_data.pending_event);
-
-  absl::optional<base::span<const uint8_t>> maybe_contact_id;
-  if (event->source ==
-      device::cablev2::authenticator::Registration::Type::LINKING) {
-    // If the event if from linking then the contact_id must be ready because
-    // the |RegistrationState| will hold the event until it is.
-    maybe_contact_id = *global_data.registration->contact_id();
+  auto event =
+      device::cablev2::authenticator::Registration::Event::FromSerialized(
+          JavaByteArrayToSpan(env, serialized_event));
+  if (!event) {
+    LOG(ERROR) << "Failed to parse event";
+    return 0;
   }
 
+  DCHECK(event->source !=
+             device::cablev2::authenticator::Registration::Type::LINKING ||
+         event->contact_id.has_value());
+
+  GlobalData& global_data = GetGlobalData();
   // There is deliberately no check for |!global_data.current_transaction|
   // because multiple Cloud messages may come in from different paired devices.
   // Only the most recent is processed.
@@ -594,7 +588,7 @@ static jlong JNI_CableAuthenticator_StartCloudMessage(
                                             /*is_usb=*/false),
           global_data.network_context, *global_data.root_secret,
           event->routing_id, event->tunnel_id, event->pairing_id,
-          event->client_nonce, maybe_contact_id);
+          event->client_nonce, event->contact_id);
 
   return ++global_data.instance_num;
 }
@@ -611,33 +605,6 @@ static void JNI_CableAuthenticator_Stop(JNIEnv* env, jlong instance_num) {
   if (global_data.instance_num == instance_num) {
     ResetGlobalData();
   }
-}
-
-static jboolean JNI_CableAuthenticator_OnCloudMessage(JNIEnv* env,
-                                                      jlong event_long) {
-  static_assert(sizeof(jlong) >= sizeof(void*), "");
-  std::unique_ptr<device::cablev2::authenticator::Registration::Event> event(
-      reinterpret_cast<device::cablev2::authenticator::Registration::Event*>(
-          event_long));
-  DCHECK(event->source ==
-             device::cablev2::authenticator::Registration::Type::SYNC ||
-         base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport));
-
-  bool ret;
-  switch (event->request_type) {
-    case device::FidoRequestType::kMakeCredential:
-      ret = true;
-      break;
-
-    case device::FidoRequestType::kGetAssertion:
-      ret = false;
-      break;
-  }
-
-  GlobalData& global_data = GetGlobalData();
-  global_data.pending_event = std::move(event);
-
-  return ret;
 }
 
 static int JNI_CableAuthenticator_ValidateServerLinkData(

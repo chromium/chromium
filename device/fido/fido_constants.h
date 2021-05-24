@@ -487,9 +487,9 @@ enum class PINUVAuthProtocol : uint8_t {
 
 // FidoRequestType enumerates the top-level, user-visable types of requests.
 // These correspond to the create() and get() calls at the Web Platform layer.
-enum class FidoRequestType {
-  kMakeCredential,
-  kGetAssertion,
+enum class FidoRequestType : uint8_t {
+  kMakeCredential = 0,
+  kGetAssertion = 1,
 };
 
 }  // namespace device

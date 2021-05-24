@@ -282,6 +282,7 @@ static_library("cablev2_registration") {
     "//components/device_event_log",
     "//components/gcm_driver",
     "//components/gcm_driver/instance_id",
+    "//third_party/boringssl",
   ]
 }
 
