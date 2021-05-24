@@ -46,7 +46,8 @@ void DOMURLUtils::setUsername(const String& value) {
   if (kurl.IsNull())
     return;
   kurl.SetUser(value);
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setPassword(const String& value) {
@@ -54,7 +55,8 @@ void DOMURLUtils::setPassword(const String& value) {
   if (kurl.IsNull())
     return;
   kurl.SetPass(value);
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setHost(const String& value) {
@@ -66,7 +68,8 @@ void DOMURLUtils::setHost(const String& value) {
     return;
 
   kurl.SetHostAndPort(value);
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setHostname(const String& value) {
@@ -76,6 +79,9 @@ void DOMURLUtils::setHostname(const String& value) {
 
   // Before setting new value:
   // Remove all leading U+002F SOLIDUS ("/") characters.
+  //
+  // TODO(crbug.com/1212318): This is legacy WebKit behavior that should be
+  // removed.
   unsigned i = 0;
   unsigned host_length = value.length();
   while (value[i] == '/')
@@ -86,7 +92,8 @@ void DOMURLUtils::setHostname(const String& value) {
 
   kurl.SetHost(value.Substring(i));
 
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setPort(const String& value) {
@@ -97,7 +104,8 @@ void DOMURLUtils::setPort(const String& value) {
     kurl.SetPort(value);
   else
     kurl.RemovePort();
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setPathname(const String& value) {
@@ -105,7 +113,8 @@ void DOMURLUtils::setPathname(const String& value) {
   if (!kurl.CanSetPathname())
     return;
   kurl.SetPath(value);
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setSearch(const String& value) {
@@ -126,7 +135,8 @@ void DOMURLUtils::SetSearchInternal(const String& value) {
   else
     kurl.SetQuery(value);
 
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 void DOMURLUtils::setHash(const String& value) {
@@ -145,7 +155,8 @@ void DOMURLUtils::setHash(const String& value) {
       kurl.SetFragmentIdentifier(value);
   }
 
-  SetURL(kurl);
+  if (kurl.IsValid())
+    SetURL(kurl);
 }
 
 }  // namespace blink

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 207 tests; 121 PASS, 86 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 207 tests; 129 PASS, 78 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS URL: Setting <a://example.net>.protocol = 'b'
@@ -97,9 +97,9 @@ FAIL URL: Setting <view-source+http://example.net/path>.host = 'example.com:8080
 PASS URL: Setting <http://example.net/path>.host = 'example.com:8080stuff2' Anything other than ASCII digit stops the port parser in a setter but is not an error
 PASS URL: Setting <http://example.net/path>.host = 'example.com:8080+2' Anything other than ASCII digit stops the port parser in a setter but is not an error
 PASS URL: Setting <http://example.net/path>.host = 'example.com:65535' Port numbers are 16 bit integers
-FAIL URL: Setting <http://example.net/path>.host = 'example.com:65536' Port numbers are 16 bit integers, overflowing is an error. Hostname is still set, though. assert_equals: expected "http://example.com/path" but got "http://example.com:65536/path"
-FAIL URL: Setting <http://example.net/>.host = '[google.com]' Broken IPv6 assert_equals: expected "http://example.net/" but got "http://[google.com]/"
-FAIL URL: Setting <http://example.net/>.host = '[::1.2.3.4x]' assert_equals: expected "http://example.net/" but got "http://[::1.2.3.4x]/"
+PASS URL: Setting <http://example.net/path>.host = 'example.com:65536' Port numbers are 16 bit integers, overflowing is an error. Hostname is still set, though.
+PASS URL: Setting <http://example.net/>.host = '[google.com]' Broken IPv6
+PASS URL: Setting <http://example.net/>.host = '[::1.2.3.4x]'
 FAIL URL: Setting <http://example.net/>.host = '[::1.2.3.]' assert_equals: expected "http://example.net/" but got "http://[::102:3]/"
 FAIL URL: Setting <http://example.net/>.host = '[::1.2.]' assert_equals: expected "http://example.net/" but got "http://[::100:2]/"
 FAIL URL: Setting <http://example.net/>.host = '[::1.]' assert_equals: expected "http://example.net/" but got "http://[::1]/"
@@ -126,19 +126,19 @@ FAIL URL: Setting <view-source+http://example.net/foo>.hostname = '' The empty h
 FAIL URL: Setting <a:/foo>.hostname = 'example.net' Path-only URLs can gain a host assert_equals: expected "a://example.net/foo" but got "a:/foo"
 PASS URL: Setting <http://example.net:8080>.hostname = '0x7F000001' IPv4 address syntax is normalized
 PASS URL: Setting <http://example.net>.hostname = '[::0:01]' IPv6 address syntax is normalized
-FAIL URL: Setting <http://example.net/path>.hostname = 'example.com:8080' : delimiter invalidates entire value assert_equals: expected "http://example.net/path" but got "http://example.com:8080/path"
-FAIL URL: Setting <http://example.net:8080/path>.hostname = 'example.com:' : delimiter invalidates entire value assert_equals: expected "http://example.net:8080/path" but got "http://example.com::8080/path"
+PASS URL: Setting <http://example.net/path>.hostname = 'example.com:8080' : delimiter invalidates entire value
+PASS URL: Setting <http://example.net:8080/path>.hostname = 'example.com:' : delimiter invalidates entire value
 PASS URL: Setting <http://example.net/path>.hostname = 'example.com/stuff' Stuff after a / delimiter is ignored
 PASS URL: Setting <http://example.net/path>.hostname = 'example.com?stuff' Stuff after a ? delimiter is ignored
 PASS URL: Setting <http://example.net/path>.hostname = 'example.com#stuff' Stuff after a # delimiter is ignored
 PASS URL: Setting <http://example.net/path>.hostname = 'example.com\stuff' Stuff after a \ delimiter is ignored for special schemes
 FAIL URL: Setting <view-source+http://example.net/path>.hostname = 'example.com\stuff' \ is not a delimiter for non-special schemes, but still forbidden in hosts assert_equals: expected "example.net" but got ""
-FAIL URL: Setting <http://example.net/>.hostname = '[google.com]' Broken IPv6 assert_equals: expected "http://example.net/" but got "http://[google.com]/"
-FAIL URL: Setting <http://example.net/>.hostname = '[::1.2.3.4x]' assert_equals: expected "http://example.net/" but got "http://[::1.2.3.4x]/"
+PASS URL: Setting <http://example.net/>.hostname = '[google.com]' Broken IPv6
+PASS URL: Setting <http://example.net/>.hostname = '[::1.2.3.4x]'
 FAIL URL: Setting <http://example.net/>.hostname = '[::1.2.3.]' assert_equals: expected "http://example.net/" but got "http://[::102:3]/"
 FAIL URL: Setting <http://example.net/>.hostname = '[::1.2.]' assert_equals: expected "http://example.net/" but got "http://[::100:2]/"
 FAIL URL: Setting <http://example.net/>.hostname = '[::1.]' assert_equals: expected "http://example.net/" but got "http://[::1]/"
-FAIL URL: Setting <file://y/>.hostname = 'x:123' assert_equals: expected "file://y/" but got "file://x:123/"
+PASS URL: Setting <file://y/>.hostname = 'x:123'
 FAIL URL: Setting <file://y/>.hostname = 'loc%41lhost' assert_equals: expected "file:///" but got "file://localhost/"
 FAIL URL: Setting <file://hi/x>.hostname = '' assert_equals: expected "file:///x" but got "file://hi/x"
 FAIL URL: Setting <sc://test@test/>.hostname = '' assert_equals: expected "test" but got ""

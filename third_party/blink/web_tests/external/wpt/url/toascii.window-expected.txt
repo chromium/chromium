@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 343 tests; 224 PASS, 119 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 343 tests; 254 PASS, 89 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS aa-- (using URL)
 PASS aa-- (using URL.host)
@@ -119,14 +119,14 @@ FAIL xn--a.xn--nxa (using <area>) assert_equals: expected "" but got "xn--a.xn--
 FAIL xn--a.xn--nxa (using <area>.host) assert_equals: expected "x" but got "xn--a.xn--nxa"
 FAIL xn--a.xn--nxa (using <area>.hostname) assert_equals: expected "x" but got "xn--a.xn--nxa"
 PASS xn--a.β (using URL)
-FAIL xn--a.β (using URL.host) assert_equals: expected "x" but got ""
-FAIL xn--a.β (using URL.hostname) assert_equals: expected "x" but got ""
+PASS xn--a.β (using URL.host)
+PASS xn--a.β (using URL.hostname)
 FAIL xn--a.β (using <a>) assert_equals: expected "https://xn--a.β/x" but got "https://xn--a.%CE%B2/x"
-FAIL xn--a.β (using <a>.host) assert_equals: expected "x" but got ""
-FAIL xn--a.β (using <a>.hostname) assert_equals: expected "x" but got ""
+PASS xn--a.β (using <a>.host)
+PASS xn--a.β (using <a>.hostname)
 FAIL xn--a.β (using <area>) assert_equals: expected "https://xn--a.β/x" but got "https://xn--a.%CE%B2/x"
-FAIL xn--a.β (using <area>.host) assert_equals: expected "x" but got ""
-FAIL xn--a.β (using <area>.hostname) assert_equals: expected "x" but got ""
+PASS xn--a.β (using <area>.host)
+PASS xn--a.β (using <area>.hostname)
 PASS xn--nxa.xn--nxa (using URL)
 PASS xn--nxa.xn--nxa (using URL.host)
 PASS xn--nxa.xn--nxa (using URL.hostname)
@@ -182,14 +182,14 @@ FAIL xn--1ug.example (using <area>) assert_equals: expected "" but got "xn--1ug.
 FAIL xn--1ug.example (using <area>.host) assert_equals: expected "x" but got "xn--1ug.example"
 FAIL xn--1ug.example (using <area>.hostname) assert_equals: expected "x" but got "xn--1ug.example"
 PASS يa (using URL)
-FAIL يa (using URL.host) assert_equals: expected "x" but got ""
-FAIL يa (using URL.hostname) assert_equals: expected "x" but got ""
+PASS يa (using URL.host)
+PASS يa (using URL.hostname)
 FAIL يa (using <a>) assert_equals: expected "https://يa/x" but got "https://%D9%8Aa/x"
-FAIL يa (using <a>.host) assert_equals: expected "x" but got ""
-FAIL يa (using <a>.hostname) assert_equals: expected "x" but got ""
+PASS يa (using <a>.host)
+PASS يa (using <a>.hostname)
 FAIL يa (using <area>) assert_equals: expected "https://يa/x" but got "https://%D9%8Aa/x"
-FAIL يa (using <area>.host) assert_equals: expected "x" but got ""
-FAIL يa (using <area>.hostname) assert_equals: expected "x" but got ""
+PASS يa (using <area>.host)
+PASS يa (using <area>.hostname)
 FAIL xn--a-yoc (using URL) assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
 FAIL xn--a-yoc (using URL.host) assert_equals: expected "x" but got "xn--a-yoc"
 FAIL xn--a-yoc (using URL.hostname) assert_equals: expected "x" but got "xn--a-yoc"
@@ -218,14 +218,14 @@ FAIL نامه‌ای (using <area>) assert_equals: expected "xn--mgba3gch31f060k
 FAIL نامه‌ای (using <area>.host) assert_equals: expected "xn--mgba3gch31f060k" but got "xn--mgba3gch31f"
 FAIL نامه‌ای (using <area>.hostname) assert_equals: expected "xn--mgba3gch31f060k" but got "xn--mgba3gch31f"
 PASS �.com (using URL)
-FAIL �.com (using URL.host) assert_equals: expected "x" but got ""
-FAIL �.com (using URL.hostname) assert_equals: expected "x" but got ""
+PASS �.com (using URL.host)
+PASS �.com (using URL.hostname)
 FAIL �.com (using <a>) assert_equals: expected "https://\ufffd.com/x" but got "https://%EF%BF%BD.com/x"
-FAIL �.com (using <a>.host) assert_equals: expected "x" but got ""
-FAIL �.com (using <a>.hostname) assert_equals: expected "x" but got ""
+PASS �.com (using <a>.host)
+PASS �.com (using <a>.hostname)
 FAIL �.com (using <area>) assert_equals: expected "https://\ufffd.com/x" but got "https://%EF%BF%BD.com/x"
-FAIL �.com (using <area>.host) assert_equals: expected "x" but got ""
-FAIL �.com (using <area>.hostname) assert_equals: expected "x" but got ""
+PASS �.com (using <area>.host)
+PASS �.com (using <area>.hostname)
 FAIL xn--zn7c.com (using URL) assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
 FAIL xn--zn7c.com (using URL.host) assert_equals: expected "x" but got "xn--zn7c.com"
 FAIL xn--zn7c.com (using URL.hostname) assert_equals: expected "x" but got "xn--zn7c.com"
@@ -317,23 +317,23 @@ PASS a%C2%ADb (using <area>)
 PASS a%C2%ADb (using <area>.host)
 PASS a%C2%ADb (using <area>.hostname)
 PASS ­ (using URL)
-FAIL ­ (using URL.host) assert_equals: expected "x" but got ""
-FAIL ­ (using URL.hostname) assert_equals: expected "x" but got ""
+PASS ­ (using URL.host)
+PASS ­ (using URL.hostname)
 FAIL ­ (using <a>) assert_equals: expected "https://­/x" but got "https://%C2%AD/x"
-FAIL ­ (using <a>.host) assert_equals: expected "x" but got ""
-FAIL ­ (using <a>.hostname) assert_equals: expected "x" but got ""
+PASS ­ (using <a>.host)
+PASS ­ (using <a>.hostname)
 FAIL ­ (using <area>) assert_equals: expected "https://­/x" but got "https://%C2%AD/x"
-FAIL ­ (using <area>.host) assert_equals: expected "x" but got ""
-FAIL ­ (using <area>.hostname) assert_equals: expected "x" but got ""
+PASS ­ (using <area>.host)
+PASS ­ (using <area>.hostname)
 PASS %C2%AD (using URL)
-FAIL %C2%AD (using URL.host) assert_equals: expected "x" but got ""
-FAIL %C2%AD (using URL.hostname) assert_equals: expected "x" but got ""
+PASS %C2%AD (using URL.host)
+PASS %C2%AD (using URL.hostname)
 PASS %C2%AD (using <a>)
-FAIL %C2%AD (using <a>.host) assert_equals: expected "x" but got ""
-FAIL %C2%AD (using <a>.hostname) assert_equals: expected "x" but got ""
+PASS %C2%AD (using <a>.host)
+PASS %C2%AD (using <a>.hostname)
 PASS %C2%AD (using <area>)
-FAIL %C2%AD (using <area>.host) assert_equals: expected "x" but got ""
-FAIL %C2%AD (using <area>.hostname) assert_equals: expected "x" but got ""
+PASS %C2%AD (using <area>.host)
+PASS %C2%AD (using <area>.hostname)
 FAIL xn-- (using URL) assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
 FAIL xn-- (using URL.host) assert_equals: expected "x" but got "xn--"
 FAIL xn-- (using URL.hostname) assert_equals: expected "x" but got "xn--"

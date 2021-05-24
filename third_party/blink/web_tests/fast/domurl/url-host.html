@@ -116,7 +116,7 @@ test(function() {
     assert_equals(url.host, 'www.domain.com');
 
     url.host = 'www.bo\udc01\ud802gus.org';
-    assert_equals(url.host, '');
+    assert_equals(url.host, 'www.domain.com');
 }, 'hostname with unmatched surrogates');
 
 </script>

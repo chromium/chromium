@@ -1093,12 +1093,17 @@ enum class PortIsValid {
   kAlways,
 
   // SetHostAndPort() truncates to the initial numerical prefix, and then does
-  // strict checking. kInSetHostAndPort is used for ports which are considered
-  // valid by SetHostAndPort() but not by the constructor. In this case, the
-  // expected value is the same as for SetPort().
+  // strict checking. However, unlike the constructor, invalid ports are
+  // ignored.
+  //
+  // kInSetHostAndPort is used for ports which are considered valid by
+  // SetHostAndPort() but not by the constructor. In this case, the expected
+  // value is the same as for SetPort().
   kInSetHostAndPort,
 
-  // SetPort() considers all input valid.
+  // SetPort() truncates to the initial numerical prefix, and then truncates
+  // the numerical port value to a uint16_t. If such a prefix is empty, then
+  // the call is ignored.
   kInSetPort
 };
 
@@ -1109,6 +1114,9 @@ struct PortTestCase {
   const PortIsValid is_valid;
 };
 
+// port used if SetHostAndPort/SetPort is a no-op
+constexpr int kNoopPort = 8888;
+
 // The tested behaviour matches the implementation. It doesn't necessarily match
 // the URL Standard.
 const PortTestCase port_test_cases[] = {
@@ -1118,18 +1126,20 @@ const PortTestCase port_test_cases[] = {
     {"0", 0, 0, PortIsValid::kAlways},
     {"1", 1, 1, PortIsValid::kAlways},
     {"00000000000000000000000000000000000443", 443, 443, PortIsValid::kAlways},
-    {"+80", 0, 8888, PortIsValid::kInSetHostAndPort},
-    {"-80", 0, 8888, PortIsValid::kInSetHostAndPort},
+    {"+80", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"-80", 0, kNoopPort, PortIsValid::kInSetPort},
     {"443e0", 0, 443, PortIsValid::kInSetHostAndPort},
     {"0x80", 0, 0, PortIsValid::kInSetHostAndPort},
     {"8%30", 0, 8, PortIsValid::kInSetHostAndPort},
-    {" 443", 0, 8888, PortIsValid::kInSetHostAndPort},
+    {" 443", 0, kNoopPort, PortIsValid::kInSetPort},
     {"443 ", 0, 443, PortIsValid::kInSetHostAndPort},
-    {":443", 0, 8888, PortIsValid::kInSetHostAndPort},
-    {"65535", 65535, 65535, PortIsValid::kAlways},
+    {":443", 0, kNoopPort, PortIsValid::kInSetPort},
     {"65534", 65534, 65534, PortIsValid::kAlways},
+    {"65535", 65535, 65535, PortIsValid::kAlways},
+    {"65535junk", 0, 65535, PortIsValid::kInSetHostAndPort},
     {"65536", 0, 0, PortIsValid::kInSetPort},
     {"65537", 0, 1, PortIsValid::kInSetPort},
+    {"65537junk", 0, 1, PortIsValid::kInSetPort},
     {"2147483647", 0, 65535, PortIsValid::kInSetPort},
     {"2147483648", 0, 0, PortIsValid::kInSetPort},
     {"2147483649", 0, 1, PortIsValid::kInSetPort},
@@ -1173,7 +1183,7 @@ TEST_P(KURLPortTest, ConstructRelative) {
 
 TEST_P(KURLPortTest, SetPort) {
   const auto& param = GetParam();
-  KURL url("http://a:8888/");
+  KURL url("http://a:" + String::Number(kNoopPort) + "/");
   url.SetPort(param.input);
   EXPECT_EQ(url.Port(), param.set_port_output);
   EXPECT_EQ(url.IsValid(), true);
@@ -1181,24 +1191,22 @@ TEST_P(KURLPortTest, SetPort) {
 
 TEST_P(KURLPortTest, SetHostAndPort) {
   const auto& param = GetParam();
-  KURL url("http://a:8888/");
+  KURL url("http://a:" + String::Number(kNoopPort) + "/");
   url.SetHostAndPort(String("a:") + param.input);
   switch (param.is_valid) {
     case PortIsValid::kAlways:
       EXPECT_EQ(url.Port(), param.constructor_output);
-      EXPECT_EQ(url.IsValid(), true);
       break;
 
     case PortIsValid::kInSetHostAndPort:
       EXPECT_EQ(url.Port(), param.set_port_output);
-      EXPECT_EQ(url.IsValid(), true);
       break;
 
     case PortIsValid::kInSetPort:
-      EXPECT_EQ(url.Port(), param.constructor_output);
-      EXPECT_EQ(url.IsValid(), false);
+      EXPECT_EQ(url.Port(), kNoopPort);
       break;
   }
+  EXPECT_EQ(url.IsValid(), true);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

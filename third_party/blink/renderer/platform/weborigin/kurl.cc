@@ -573,32 +573,39 @@ void KURL::SetHostAndPort(const String& orig_host_and_port) {
 
   wtf_size_t colon = host_and_port.find(':', ipv6_terminator);
 
+  // Legacy behavior: ignore input if host part is empty
   if (colon == 0)
     return;
 
+  String host;
+  String port;
   if (colon == kNotFound) {
-    // |host_and_port| does not include a port, so only overwrite the host.
+    host = host_and_port;
+  } else {
+    host = host_and_port.Substring(0, colon);
+    port = ParsePortFromStringPosition(host_and_port, colon + 1);
+  }
+
+  // Replace host and port separately in order to maintain the original port if
+  // a valid host and invalid port are provided together.
+
+  // Replace host first.
+  {
     url::Replacements<char> replacements;
-    StringUTF8Adaptor host_utf8(host_and_port);
+    StringUTF8Adaptor host_utf8(host);
     replacements.SetHost(CharactersOrEmpty(host_utf8),
                          url::Component(0, host_utf8.size()));
     ReplaceComponents(replacements);
-    return;
   }
 
-  String host = host_and_port.Substring(0, colon);
-  String port = ParsePortFromStringPosition(host_and_port, colon + 1);
-
-  StringUTF8Adaptor host_utf8(host);
-  StringUTF8Adaptor port_utf8(port);
-
-  url::Replacements<char> replacements;
-  replacements.SetHost(CharactersOrEmpty(host_utf8),
-                       url::Component(0, host_utf8.size()));
-  if (port_utf8.size())
+  // Replace port next.
+  if (is_valid_ && !port.IsEmpty()) {
+    url::Replacements<char> replacements;
+    StringUTF8Adaptor port_utf8(port);
     replacements.SetPort(CharactersOrEmpty(port_utf8),
                          url::Component(0, port_utf8.size()));
-  ReplaceComponents(replacements);
+    ReplaceComponents(replacements, /*preserve_validity=*/true);
+  }
 }
 
 void KURL::RemovePort() {
@@ -959,18 +966,21 @@ String KURL::ComponentString(const url::Component& component) const {
 }
 
 template <typename CHAR>
-void KURL::ReplaceComponents(const url::Replacements<CHAR>& replacements) {
+void KURL::ReplaceComponents(const url::Replacements<CHAR>& replacements,
+                             bool preserve_validity) {
   url::RawCanonOutputT<char> output;
   url::Parsed new_parsed;
 
   StringUTF8Adaptor utf8(string_);
-  is_valid_ =
+  bool replacements_valid =
       url::ReplaceComponents(utf8.data(), utf8.size(), parsed_, replacements,
                              nullptr, &output, &new_parsed);
-
-  parsed_ = new_parsed;
-  string_ = AtomicString::FromUTF8(output.data(), output.length());
-  InitProtocolMetadata();
+  if (replacements_valid || !preserve_validity) {
+    is_valid_ = replacements_valid;
+    parsed_ = new_parsed;
+    string_ = AtomicString::FromUTF8(output.data(), output.length());
+    InitProtocolMetadata();
+  }
 }
 
 bool KURL::IsSafeToSendToAnotherThread() const {
