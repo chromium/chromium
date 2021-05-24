@@ -186,12 +186,16 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
                         mContext.getString(R.string.download_location_not_enough_space));
                 builder.with(DownloadLocationDialogProperties.SUBTITLE,
                         mContext.getString(R.string.download_location_download_to_default_folder));
+                builder.with(
+                        DownloadLocationDialogProperties.DONT_SHOW_AGAIN_CHECKBOX_SHOWN, false);
                 break;
             case DownloadLocationDialogType.LOCATION_NOT_FOUND:
                 builder.with(DownloadLocationDialogProperties.TITLE,
                         mContext.getString(R.string.download_location_no_sd_card));
                 builder.with(DownloadLocationDialogProperties.SUBTITLE,
                         mContext.getString(R.string.download_location_download_to_default_folder));
+                builder.with(
+                        DownloadLocationDialogProperties.DONT_SHOW_AGAIN_CHECKBOX_SHOWN, false);
                 break;
             case DownloadLocationDialogType.NAME_CONFLICT:
                 builder.with(DownloadLocationDialogProperties.TITLE,
@@ -204,6 +208,8 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
                         mContext.getString(R.string.download_location_rename_file));
                 builder.with(DownloadLocationDialogProperties.SUBTITLE,
                         mContext.getString(R.string.download_location_name_too_long));
+                builder.with(
+                        DownloadLocationDialogProperties.DONT_SHOW_AGAIN_CHECKBOX_SHOWN, false);
                 break;
             case DownloadLocationDialogType.LOCATION_SUGGESTION:
                 builder.with(DownloadLocationDialogProperties.TITLE, getDefaultTitle());
