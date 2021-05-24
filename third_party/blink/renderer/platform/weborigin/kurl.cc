@@ -511,16 +511,9 @@ bool KURL::SetProtocol(const String& protocol) {
   return true;
 }
 
-void KURL::SetHost(const String& host) {
-  StringUTF8Adaptor host_utf8(host);
-  url::Replacements<char> replacements;
-  replacements.SetHost(CharactersOrEmpty(host_utf8),
-                       url::Component(0, host_utf8.size()));
-  ReplaceComponents(replacements);
-}
+namespace {
 
-static String ParsePortFromStringPosition(const String& value,
-                                          unsigned port_start) {
+String ParsePortFromStringPosition(const String& value, unsigned port_start) {
   // "008080junk" needs to be treated as port "8080" and "000" as "0".
   size_t length = value.length();
   unsigned port_end = port_start;
@@ -532,10 +525,41 @@ static String ParsePortFromStringPosition(const String& value,
   return value.Substring(port_start, port_end - port_start);
 }
 
-void KURL::SetHostAndPort(const String& host_and_port) {
+// Align with https://url.spec.whatwg.org/#host-state step 3, and also with the
+// IsAuthorityTerminator() function in //url/third_party/mozilla/url_parse.cc.
+bool IsEndOfHost(UChar ch) {
+  return ch == '/' || ch == '?' || ch == '#';
+}
+
+bool IsEndOfHostSpecial(UChar ch) {
+  return IsEndOfHost(ch) || ch == '\\';
+}
+
+wtf_size_t FindHostEnd(const String& host, bool is_special) {
+  wtf_size_t end = host.Find(is_special ? IsEndOfHostSpecial : IsEndOfHost);
+  if (end == kNotFound)
+    end = host.length();
+  return end;
+}
+
+}  // namespace
+
+void KURL::SetHost(const String& host) {
+  wtf_size_t value_end = FindHostEnd(host, IsHierarchical());
+  String truncated_host = host.Substring(0, value_end);
+  StringUTF8Adaptor host_utf8(truncated_host);
+  url::Replacements<char> replacements;
+  replacements.SetHost(CharactersOrEmpty(host_utf8),
+                       url::Component(0, host_utf8.size()));
+  ReplaceComponents(replacements);
+}
+
+void KURL::SetHostAndPort(const String& orig_host_and_port) {
   // This method intentionally does very sloppy parsing for backwards
   // compatibility. See https://url.spec.whatwg.org/#host-state for what we
   // theoretically should be doing.
+  wtf_size_t value_end = FindHostEnd(orig_host_and_port, IsHierarchical());
+  String host_and_port = orig_host_and_port.Substring(0, value_end);
 
   // This logic for handling IPv6 addresses is adapted from ParseServerInfo in
   // //url/third_party/mozilla/url_parse.cc. There's a slight behaviour

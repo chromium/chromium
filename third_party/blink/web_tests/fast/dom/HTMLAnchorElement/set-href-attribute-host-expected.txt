@@ -7,7 +7,7 @@ PASS a.href is 'https://www.otherdomain.com:0/path/'
 Set host without port
 PASS a.href is 'https://www.otherdomain.com:8080/path/'
 Set host with '?' in it
-FAIL a.href should be https://www.other/?domain.com:8080/path/?key=value. Was https://www.other%3Fdomain.com:8080/path/?key=value.
+PASS a.href is 'https://www.other:8080/path/?key=value'
 Set default port for another protocol
 PASS a.href is 'https://www.otherdomain.com:80/path/'
 Set default port
@@ -27,14 +27,13 @@ PASS a.href is 'https://www.mydomain.com:8080/path/'
 Set host to URL with file: protocol
 PASS a.href is 'file://mydomain.com/path/'
 Set host containing slashes in it
-PASS a.href is 'https://www.otherdom%2Fain.com:8080/path/'
+PASS a.href is 'https://www.otherdom:8080/path/'
 Set host to a malformed URL
-FAIL a.href should be https:/
-ww.my@domain.com:8080/path/. Was https://ww.my@www.other%21domain.com:15/path/.
+PASS a.href is 'https://ww.my@www.other%21domain.com:15/path/'
 Set host that starts with ':'
 PASS a.href is 'https://domain.com:8080/path/'
 Set host to URL containing username and ..
-FAIL a.href should be https://rwwmy@www.other!domain.com:25/pa..th/. Was https://rwwmy@www.other%21domain.com:25/pa..th/.
+PASS a.href is 'https://rwwmy@www.other%21domain.com:25/pa..th/'
 Set host to a URL with tel: protocol
 PASS a.href is 'tel:+1-816-555-1212'
 PASS successfullyParsed is true

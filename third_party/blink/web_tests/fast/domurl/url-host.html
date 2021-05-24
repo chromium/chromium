@@ -14,7 +14,7 @@ test(function() {
 test(function() {
     var url = new URL('https://www.mydomain.com:8080/path/?key=value');
     url.host = 'www.other?domain.com:8080';
-    assert_equals(url.href, 'https://www.other%3Fdomain.com:8080/path/?key=value');
+    assert_equals(url.href, 'https://www.other:8080/path/?key=value');
 }, 'Set host with ? in it');
 
 test(function() {
@@ -69,7 +69,7 @@ test(function() {
 test(function() {
     var url = new URL('https://www.mydomain.com:8080/path/');
     url.host = 'www.other\\dom/ain.com';
-    assert_equals(url.href, 'https://www.other%5Cdom%2Fain.com:8080/path/');
+    assert_equals(url.href, 'https://www.other:8080/path/');
 }, 'Set host containing slashes in it');
 
 test(function() {
