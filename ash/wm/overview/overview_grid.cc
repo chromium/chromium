@@ -1035,40 +1035,43 @@ void OverviewGrid::CalculateWindowListAnimationStates(
       NOTREACHED();
   }
 
-  // Create a copy of |window_list_| which has always on top windows in the
-  // front.
+  auto is_always_on_top_item = [](OverviewItem* item) -> bool {
+    DCHECK(item);
+    return item->GetWindow()->GetProperty(aura::client::kZOrderingKey) !=
+           ui::ZOrderLevel::kNormal;
+  };
+
+  // Create a copy of `window_list_` which has the selected item and
+  // always on top windows in the front.
+  std::vector<OverviewItem*> always_on_top_items;
+  std::vector<OverviewItem*> regular_items;
+  for (const std::unique_ptr<OverviewItem>& item : window_list_) {
+    OverviewItem* item_ptr = item.get();
+    DCHECK(item_ptr);
+    // Skip the selected item, it will be inserted into the front.
+    if (item_ptr == selected_item)
+      continue;
+
+    if (is_always_on_top_item(item_ptr))
+      always_on_top_items.push_back(item_ptr);
+    else
+      regular_items.push_back(item_ptr);
+  }
+
+  // Construct `items` so they are ordered like so.
+  //   1) Always on top window that is selected.
+  //   2) Always on top window.
+  //   3) Selected window which is not always on top.
+  //   4) Regular window.
+  // Windows in the same group maintain their ordering from `window_list`.
   std::vector<OverviewItem*> items;
-  std::transform(
-      window_list_.begin(), window_list_.end(), std::back_inserter(items),
-      [](const std::unique_ptr<OverviewItem>& item) -> OverviewItem* {
-        return item.get();
-      });
-  // Sort items by:
-  // 1) Selected items that are always on top windows.
-  // 2) Other always on top windows.
-  // 3) Selected items that are not always on top windows.
-  // 4) Other not always on top windows.
-  // Preserves ordering if the category is the same.
-  std::sort(items.begin(), items.end(),
-            [&selected_item](OverviewItem* a, OverviewItem* b) {
-              // NB: This treats all non-normal z-ordered windows the same. If
-              // Aura ever adopts z-order levels, this will need to be changed.
-              const bool a_on_top =
-                  a->GetWindow()->GetProperty(aura::client::kZOrderingKey) !=
-                  ui::ZOrderLevel::kNormal;
-              const bool b_on_top =
-                  b->GetWindow()->GetProperty(aura::client::kZOrderingKey) !=
-                  ui::ZOrderLevel::kNormal;
-              if (selected_item && a_on_top && b_on_top)
-                return a == selected_item;
-              if (a_on_top)
-                return true;
-              if (b_on_top)
-                return false;
-              if (selected_item)
-                return a == selected_item;
-              return false;
-            });
+  if (selected_item && is_always_on_top_item(selected_item))
+    items.insert(items.begin(), selected_item);
+  items.insert(items.end(), always_on_top_items.begin(),
+               always_on_top_items.end());
+  if (selected_item && !is_always_on_top_item(selected_item))
+    items.insert(items.end(), selected_item);
+  items.insert(items.end(), regular_items.begin(), regular_items.end());
 
   SkRegion occluded_region;
   auto* split_view_controller = SplitViewController::Get(root_window_);

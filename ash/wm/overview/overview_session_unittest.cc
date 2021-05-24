@@ -81,9 +81,11 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
+#include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"
@@ -2175,14 +2177,14 @@ TEST_F(OverviewSessionTest, HandleActiveWindowNotInOverviewGrid) {
 
 // Tests that AlwaysOnTopWindow can be handled correctly in new overview
 // animations.
-// Fails consistently; see https://crbug.com/812497.
-TEST_F(OverviewSessionTest, DISABLED_HandleAlwaysOnTopWindow) {
+TEST_F(OverviewSessionTest, HandleAlwaysOnTopWindow) {
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> window1(CreateTestWindow(bounds));
   std::unique_ptr<aura::Window> window2(CreateTestWindow(bounds));
   std::unique_ptr<aura::Window> window3(CreateTestWindow(bounds));
   std::unique_ptr<aura::Window> window4(CreateTestWindow(bounds));
-  std::unique_ptr<aura::Window> window5(CreateTestWindow(bounds));
+  std::unique_ptr<aura::Window> window5(
+      CreateTestWindow(gfx::Rect(200, 200, 400, 400)));
   std::unique_ptr<aura::Window> window6(CreateTestWindow(bounds));
   std::unique_ptr<aura::Window> window7(CreateTestWindow(bounds));
   std::unique_ptr<aura::Window> window8(CreateTestWindow(bounds));
@@ -2201,54 +2203,68 @@ TEST_F(OverviewSessionTest, DISABLED_HandleAlwaysOnTopWindow) {
   wm::ActivateWindow(window2.get());  // Will be fullscreen.
   wm::ActivateWindow(window1.get());
 
-  EXPECT_FALSE(WindowState::Get(window2.get())->IsFullscreen());
-  EXPECT_FALSE(WindowState::Get(window6.get())->IsFullscreen());
-  EXPECT_FALSE(WindowState::Get(window7.get())->IsMaximized());
-
   const WMEvent toggle_maximize_event(WM_EVENT_TOGGLE_MAXIMIZE);
   WindowState::Get(window6.get())->OnWMEvent(&toggle_maximize_event);
   const WMEvent toggle_fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
   WindowState::Get(window2.get())->OnWMEvent(&toggle_fullscreen_event);
   WindowState::Get(window7.get())->OnWMEvent(&toggle_fullscreen_event);
-  EXPECT_TRUE(WindowState::Get(window2.get())->IsFullscreen());
-  EXPECT_TRUE(WindowState::Get(window7.get())->IsFullscreen());
-  EXPECT_TRUE(WindowState::Get(window6.get())->IsMaximized());
+  ASSERT_TRUE(WindowState::Get(window2.get())->IsFullscreen());
+  ASSERT_TRUE(WindowState::Get(window7.get())->IsFullscreen());
+  ASSERT_TRUE(WindowState::Get(window6.get())->IsMaximized());
 
-  // Case 1: Click on |window1| to activate it and exit overview.
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> test_duration_mode =
-      std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-          ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  // Helper to check if `window` is visibly animating. In some overview
+  // animations, we use tween zero, so there is no visible animation though it
+  // technically is animating according to the ui::LayerAnimator API.
+  auto is_visibly_animating = [](aura::Window* window) -> bool {
+    ui::LayerAnimatorTestController controller(window->layer()->GetAnimator());
+    ui::LayerAnimationSequence* sequence =
+        controller.GetRunningSequence(ui::LayerAnimationElement::TRANSFORM);
+    if (!sequence)
+      return false;
+    // There's only one element per sequence in the overview animation so this
+    // is fine.
+    ui::LayerAnimationElement* element = sequence->FirstElement();
+    if (!element)
+      return false;
+    return element->tween_type() != gfx::Tween::ZERO;
+  };
+
+  // Case 1: Click on `window1` to activate it and exit overview.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ToggleOverview();
-  // For entering animation, only animate |window1|, |window2|, |window3| and
-  // |window5| because |window3| and |window5| are AlwaysOnTop windows and
-  // |window2| is fullscreen.
-  EXPECT_TRUE(window1->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window2->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window3->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window4->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window5->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window6->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window7->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window8->layer()->GetAnimator()->is_animating());
-  base::RunLoop().RunUntilIdle();
+  // For entering animation, only animate `window1`, `window2`, `window3` and
+  // `window5`. `window2` is fullscreen so all windows except `window1`,
+  // `window3` and `window5` are occluded.
+  EXPECT_TRUE(is_visibly_animating(window1.get()));
+  EXPECT_TRUE(is_visibly_animating(window2.get()));
+  EXPECT_TRUE(is_visibly_animating(window3.get()));
+  EXPECT_FALSE(is_visibly_animating(window4.get()));
+  EXPECT_TRUE(is_visibly_animating(window5.get()));
+  EXPECT_FALSE(is_visibly_animating(window6.get()));
+  EXPECT_FALSE(is_visibly_animating(window7.get()));
+  EXPECT_FALSE(is_visibly_animating(window8.get()));
+  WaitForOverviewEnterAnimation();
 
-  // Click on |window1| to activate it and exit overview.
-  // Should animate |window1|, |window2|, |window3| and |window5| because
-  // |window3| and |window5| are AlwaysOnTop windows and |window2| is
-  // fullscreen.
+  // Click on `window1` to activate it and exit overview. `window2` occludes
+  // everything but `window1`, `window3` and `window5`, and `window1` is
+  // occluded by `window3`. So `window2`, `window3` and `window5` should be
+  // animated.
   ClickWindow(window1.get());
-  EXPECT_TRUE(window1->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window2->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window3->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window4->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window5->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window6->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window7->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window8->layer()->GetAnimator()->is_animating());
-  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(is_visibly_animating(window1.get()));
+  EXPECT_TRUE(is_visibly_animating(window2.get()));
+  EXPECT_TRUE(is_visibly_animating(window3.get()));
+  EXPECT_FALSE(is_visibly_animating(window4.get()));
+  EXPECT_TRUE(is_visibly_animating(window5.get()));
+  EXPECT_FALSE(is_visibly_animating(window6.get()));
+  EXPECT_FALSE(is_visibly_animating(window7.get()));
+  EXPECT_FALSE(is_visibly_animating(window8.get()));
+  WaitForOverviewExitAnimation();
 
-  // Case 2: Click on |window3| to activate it and exit overview.
-  // Should animate |window1|, |window2|, |window3| and |window5|.
+  // Case 2: Click on `window3` to activate it and exit overview. Since
+  // `window2` is fullscreen, all windows after it are occluded, except
+  // `window3` and `window5`, which are always on top. `window1` is not occluded
+  // by `window2` but has the same bounds as `window3` so is occluded.
   // Reset window z-order. Need to toggle fullscreen first to workaround
   // https://crbug.com/816224.
   WindowState::Get(window2.get())->OnWMEvent(&toggle_fullscreen_event);
@@ -2263,30 +2279,27 @@ TEST_F(OverviewSessionTest, DISABLED_HandleAlwaysOnTopWindow) {
   wm::ActivateWindow(window1.get());
   WindowState::Get(window2.get())->OnWMEvent(&toggle_fullscreen_event);
   WindowState::Get(window7.get())->OnWMEvent(&toggle_fullscreen_event);
+
   // Enter overview.
-  test_duration_mode = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   ToggleOverview();
-  base::RunLoop().RunUntilIdle();
-  test_duration_mode = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  WaitForOverviewEnterAnimation();
 
   ClickWindow(window3.get());
-  EXPECT_TRUE(window1->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window2->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window3->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window4->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window5->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window6->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window7->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window8->layer()->GetAnimator()->is_animating());
-  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(is_visibly_animating(window1.get()));
+  EXPECT_TRUE(is_visibly_animating(window2.get()));
+  EXPECT_TRUE(is_visibly_animating(window3.get()));
+  EXPECT_FALSE(is_visibly_animating(window4.get()));
+  EXPECT_TRUE(is_visibly_animating(window5.get()));
+  EXPECT_FALSE(is_visibly_animating(window6.get()));
+  EXPECT_FALSE(is_visibly_animating(window7.get()));
+  EXPECT_FALSE(is_visibly_animating(window8.get()));
+  WaitForOverviewExitAnimation();
 
-  // Case 3: Click on maximized |window6| to activate it and exit overview.
-  // Should animate |window6|, |window3| and |window5| because |window3| and
-  // |window5| are AlwaysOnTop windows. |window6| is maximized.
-  // Reset window z-order. Need to toggle fullscreen first to workaround
-  // https://crbug.com/816224.
+  // Case 3: Click on maximized `window6` to activate it and exit overview.
+  // `window6` will become the topmost regular z-order window and will occlude
+  // everything except `window2` as it is fullscreen and `window3` and `window5`
+  // as they are always on top. Reset window z-order. Need to toggle fullscreen
+  // first to workaround https://crbug.com/816224.
   WindowState::Get(window2.get())->OnWMEvent(&toggle_fullscreen_event);
   WindowState::Get(window7.get())->OnWMEvent(&toggle_fullscreen_event);
   wm::ActivateWindow(window8.get());
@@ -2300,27 +2313,23 @@ TEST_F(OverviewSessionTest, DISABLED_HandleAlwaysOnTopWindow) {
   WindowState::Get(window2.get())->OnWMEvent(&toggle_fullscreen_event);
   WindowState::Get(window7.get())->OnWMEvent(&toggle_fullscreen_event);
   // Enter overview.
-  test_duration_mode = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   ToggleOverview();
-  base::RunLoop().RunUntilIdle();
-  test_duration_mode = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  WaitForOverviewEnterAnimation();
 
   ClickWindow(window6.get());
-  EXPECT_FALSE(window1->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window2->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window3->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window4->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window5->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window6->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window7->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window8->layer()->GetAnimator()->is_animating());
-  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(is_visibly_animating(window1.get()));
+  EXPECT_TRUE(is_visibly_animating(window2.get()));
+  EXPECT_TRUE(is_visibly_animating(window3.get()));
+  EXPECT_FALSE(is_visibly_animating(window4.get()));
+  EXPECT_TRUE(is_visibly_animating(window5.get()));
+  EXPECT_TRUE(is_visibly_animating(window6.get()));
+  EXPECT_FALSE(is_visibly_animating(window7.get()));
+  EXPECT_FALSE(is_visibly_animating(window8.get()));
+  WaitForOverviewExitAnimation();
 
-  // Case 4: Click on |window8| to activate it and exit overview.
-  // Should animate |window8|, |window1|, |window2|, |window3| and |window5|
-  // because |window3| and |window5| are AlwaysOnTop windows and |window2| is
+  // Case 4: Click on `window8` to activate it and exit overview.
+  // Should animate `window8`, `window1`, `window2`, `window3` and `window5`
+  // because `window3` and `window5` are AlwaysOnTop windows and `window2` is
   // fullscreen.
   // Reset window z-order. Need to toggle fullscreen first to workaround
   // https://crbug.com/816224.
@@ -2336,24 +2345,21 @@ TEST_F(OverviewSessionTest, DISABLED_HandleAlwaysOnTopWindow) {
   wm::ActivateWindow(window1.get());
   WindowState::Get(window2.get())->OnWMEvent(&toggle_fullscreen_event);
   WindowState::Get(window7.get())->OnWMEvent(&toggle_fullscreen_event);
+
   // Enter overview.
-  test_duration_mode = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   ToggleOverview();
-  base::RunLoop().RunUntilIdle();
-  test_duration_mode = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  WaitForOverviewEnterAnimation();
 
   ClickWindow(window8.get());
-  EXPECT_TRUE(window1->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window2->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window3->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window4->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window5->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window6->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(window7->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(window8->layer()->GetAnimator()->is_animating());
-  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(is_visibly_animating(window1.get()));
+  EXPECT_TRUE(is_visibly_animating(window2.get()));
+  EXPECT_TRUE(is_visibly_animating(window3.get()));
+  EXPECT_FALSE(is_visibly_animating(window4.get()));
+  EXPECT_TRUE(is_visibly_animating(window5.get()));
+  EXPECT_FALSE(is_visibly_animating(window6.get()));
+  EXPECT_FALSE(is_visibly_animating(window7.get()));
+  EXPECT_TRUE(is_visibly_animating(window8.get()));
+  WaitForOverviewExitAnimation();
 }
 
 // Verify that the selector item can animate after the item is dragged and
