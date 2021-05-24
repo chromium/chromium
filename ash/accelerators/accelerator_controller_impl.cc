@@ -1900,11 +1900,6 @@ bool AcceleratorControllerImpl::IsReserved(
   return action_ptr && base::Contains(reserved_actions_, *action_ptr);
 }
 
-AcceleratorControllerImpl::AcceleratorProcessingRestriction
-AcceleratorControllerImpl::GetCurrentAcceleratorRestriction() {
-  return GetAcceleratorProcessingRestriction(-1);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // AcceleratorControllerImpl, ui::AcceleratorTarget implementation:
 

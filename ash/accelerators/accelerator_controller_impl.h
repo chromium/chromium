@@ -168,7 +168,7 @@ class ASH_EXPORT AcceleratorControllerImpl
 
   // A list of possible ways in which an accelerator should be restricted before
   // processing. Any target registered with this controller should respect
-  // restrictions by calling |GetCurrentAcceleratorRestriction| during
+  // restrictions by calling GetAcceleratorProcessingRestriction() during
   // processing.
   enum AcceleratorProcessingRestriction {
     // Process the accelerator normally.
@@ -222,9 +222,6 @@ class ASH_EXPORT AcceleratorControllerImpl
   // Returns true if the |accelerator| is reserved. A reserved accelerator
   // is always handled and will never be passed to an window/web contents.
   bool IsReserved(const ui::Accelerator& accelerator) const;
-
-  // Returns the restriction for the current context.
-  AcceleratorProcessingRestriction GetCurrentAcceleratorRestriction();
 
   // Provides access to the ExitWarningHandler for testing.
   ExitWarningHandler* GetExitWarningHandlerForTest() {
