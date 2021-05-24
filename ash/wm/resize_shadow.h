@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "ui/aura/window_observer.h"
+#include "ui/base/hit_test.h"
 
 namespace aura {
 class Window;
@@ -20,20 +19,20 @@ class Layer;
 namespace ash {
 
 // A class to render the resize edge effect when the user moves their mouse
-// over a sizing edge.  This is just a visual effect; the actual resize is
+// over a sizing edge. This is just a visual effect; the actual resize is
 // handled by the EventFilter.
-class ResizeShadow : public aura::WindowObserver {
+class ResizeShadow {
  public:
   explicit ResizeShadow(aura::Window* window);
-  ~ResizeShadow() override;
+  ResizeShadow(const ResizeShadow&) = delete;
+  ResizeShadow& operator=(const ResizeShadow&) = delete;
+  ~ResizeShadow();
 
-  // aura::WindowObserver:
-  void OnWindowBoundsChanged(aura::Window* window,
-                             const gfx::Rect& old_bounds,
-                             const gfx::Rect& new_bounds,
-                             ui::PropertyChangeReason reason) override;
-  void OnWindowHierarchyChanged(const HierarchyChangeParams& params) override;
-  void OnWindowStackingChanged(aura::Window* window) override;
+  int GetLastHitTestForTest() const { return last_hit_test_; }
+  const ui::Layer* GetLayerForTest() const { return layer_.get(); }
+
+ private:
+  friend class ResizeShadowController;
 
   // Shows resize effects for one or more edges based on a |hit_test| code, such
   // as HTRIGHT or HTBOTTOMRIGHT.
@@ -42,16 +41,14 @@ class ResizeShadow : public aura::WindowObserver {
   // Hides all resize effects.
   void Hide();
 
-  int GetLastHitTestForTest() const { return last_hit_test_; }
-  const ui::Layer* GetLayerForTest() const { return layer_.get(); }
-
- private:
   // Reparents |layer_| so that it's behind the layer of |window_|.
   void ReparentLayer();
 
   // Updates bounds and visibility of |layer_|.
   void UpdateBoundsAndVisibility();
 
+  // The window associated with this shadow. Guaranteed to be alive for the
+  // lifetime of `this`.
   aura::Window* window_;
 
   // The layer to which the shadow is drawn. The layer is stacked beneath the
@@ -60,9 +57,7 @@ class ResizeShadow : public aura::WindowObserver {
 
   // Hit test value from last call to ShowForHitTest().  Used to prevent
   // repeatedly triggering the same animations for the same hit.
-  int last_hit_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeShadow);
+  int last_hit_test_ = HTNOWHERE;
 };
 
 }  // namespace ash

@@ -5,10 +5,8 @@
 #include "ash/wm/resize_shadow_controller.h"
 
 #include <memory>
-#include <utility>
 
 #include "ash/wm/resize_shadow.h"
-#include "ui/aura/window.h"
 
 namespace ash {
 
@@ -32,19 +30,15 @@ void ResizeShadowController::HideShadow(aura::Window* window) {
 }
 
 void ResizeShadowController::HideAllShadows() {
-  for (const auto& shadow : window_shadows_)
-    shadow.first->RemoveObserver(this);
+  windows_observation_.RemoveAllObservations();
   window_shadows_.clear();
 }
 
-ResizeShadow* ResizeShadowController::GetShadowForWindowForTest(
-    aura::Window* window) {
-  return GetShadowForWindow(window);
-}
-
-void ResizeShadowController::OnWindowDestroying(aura::Window* window) {
-  window->RemoveObserver(this);
-  window_shadows_.erase(window);
+void ResizeShadowController::OnWindowHierarchyChanged(
+    const aura::WindowObserver::HierarchyChangeParams& params) {
+  ResizeShadow* shadow = GetShadowForWindow(params.target);
+  if (shadow)
+    shadow->ReparentLayer();
 }
 
 void ResizeShadowController::OnWindowVisibilityChanging(aura::Window* window,
@@ -53,13 +47,39 @@ void ResizeShadowController::OnWindowVisibilityChanging(aura::Window* window,
     HideShadow(window);
 }
 
+void ResizeShadowController::OnWindowBoundsChanged(
+    aura::Window* window,
+    const gfx::Rect& old_bounds,
+    const gfx::Rect& new_bounds,
+    ui::PropertyChangeReason reason) {
+  ResizeShadow* shadow = GetShadowForWindow(window);
+  if (shadow)
+    shadow->UpdateBoundsAndVisibility();
+}
+
+void ResizeShadowController::OnWindowStackingChanged(aura::Window* window) {
+  ResizeShadow* shadow = GetShadowForWindow(window);
+  if (shadow)
+    shadow->ReparentLayer();
+}
+
+void ResizeShadowController::OnWindowDestroying(aura::Window* window) {
+  windows_observation_.RemoveObservation(window);
+  window_shadows_.erase(window);
+}
+
 ResizeShadow* ResizeShadowController::CreateShadow(aura::Window* window) {
   auto shadow = std::make_unique<ResizeShadow>(window);
-  window->AddObserver(this);
+  windows_observation_.AddObservation(window);
 
   ResizeShadow* raw_shadow = shadow.get();
   window_shadows_.insert(std::make_pair(window, std::move(shadow)));
   return raw_shadow;
+}
+
+ResizeShadow* ResizeShadowController::GetShadowForWindowForTest(
+    aura::Window* window) {
+  return GetShadowForWindow(window);
 }
 
 ResizeShadow* ResizeShadowController::GetShadowForWindow(aura::Window* window) {

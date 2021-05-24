@@ -4,14 +4,9 @@
 
 #include "ash/wm/resize_shadow.h"
 
-#include <memory>
-
-#include "base/lazy_instance.h"
-#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
-#include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
@@ -26,8 +21,10 @@ constexpr int kVisualThickness = 8;
 
 // The corner radius of the resize shadow, which not coincidentally matches
 // the corner radius of the actual window.
-static constexpr int kCornerRadiusOfResizeShadow = 2;
-static constexpr int kCornerRadiusOfWindow = 2;
+constexpr int kCornerRadiusOfResizeShadow = 2;
+constexpr int kCornerRadiusOfWindow = 2;
+
+constexpr gfx::Insets kApertureInsets(kVisualThickness + kCornerRadiusOfWindow);
 
 // This class simply draws a roundrect. The layout and tiling is handled by
 // ResizeShadow and NinePatchLayer.
@@ -35,7 +32,8 @@ class ResizeShadowImageSource : public gfx::CanvasImageSource {
  public:
   ResizeShadowImageSource()
       : gfx::CanvasImageSource(gfx::Size(kImageSide, kImageSide)) {}
-
+  ResizeShadowImageSource(const ResizeShadowImageSource&) = delete;
+  ResizeShadowImageSource& operator=(const ResizeShadowImageSource&) = delete;
   ~ResizeShadowImageSource() override = default;
 
   // gfx::CanvasImageSource:
@@ -53,18 +51,13 @@ class ResizeShadowImageSource : public gfx::CanvasImageSource {
   // one pixel for the center of the nine patch.
   static constexpr int kImageSide =
       2 * (kVisualThickness + kCornerRadiusOfWindow) + 1;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeShadowImageSource);
 };
 
 }  // namespace
 
 namespace ash {
 
-ResizeShadow::ResizeShadow(aura::Window* window)
-    : window_(window), last_hit_test_(HTNOWHERE) {
-  window_->AddObserver(this);
-
+ResizeShadow::ResizeShadow(aura::Window* window) : window_(window) {
   // Use a NinePatchLayer to tile the shadow image (which is simply a
   // roundrect).
   layer_ = std::make_unique<ui::Layer>(ui::LAYER_NINE_PATCH);
@@ -81,8 +74,6 @@ ResizeShadow::ResizeShadow(aura::Window* window)
   }
   layer_->UpdateNinePatchLayerImage(*shadow_image);
   gfx::Rect aperture(shadow_image->size());
-  constexpr gfx::Insets kApertureInsets(kVisualThickness +
-                                        kCornerRadiusOfWindow);
   aperture.Inset(kApertureInsets);
   layer_->UpdateNinePatchLayerAperture(aperture);
   layer_->UpdateNinePatchLayerBorder(
@@ -92,25 +83,7 @@ ResizeShadow::ResizeShadow(aura::Window* window)
   ReparentLayer();
 }
 
-ResizeShadow::~ResizeShadow() {
-  window_->RemoveObserver(this);
-}
-
-void ResizeShadow::OnWindowBoundsChanged(aura::Window* window,
-                                         const gfx::Rect& old_bounds,
-                                         const gfx::Rect& new_bounds,
-                                         ui::PropertyChangeReason reason) {
-  UpdateBoundsAndVisibility();
-}
-
-void ResizeShadow::OnWindowHierarchyChanged(
-    const aura::WindowObserver::HierarchyChangeParams& params) {
-  ReparentLayer();
-}
-
-void ResizeShadow::OnWindowStackingChanged(aura::Window* window) {
-  ReparentLayer();
-}
+ResizeShadow::~ResizeShadow() = default;
 
 void ResizeShadow::ShowForHitTest(int hit) {
   // Don't start animations unless something changed.

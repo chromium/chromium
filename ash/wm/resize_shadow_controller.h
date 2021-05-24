@@ -5,17 +5,11 @@
 #ifndef ASH_WM_RESIZE_SHADOW_CONTROLLER_H_
 #define ASH_WM_RESIZE_SHADOW_CONTROLLER_H_
 
-#include <map>
-#include <memory>
-
 #include "ash/ash_export.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
+#include "base/scoped_multi_source_observation.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-
-namespace aura {
-class Window;
-}
 
 namespace ash {
 class ResizeShadow;
@@ -25,6 +19,8 @@ class ResizeShadow;
 class ASH_EXPORT ResizeShadowController : public aura::WindowObserver {
  public:
   ResizeShadowController();
+  ResizeShadowController(const ResizeShadowController&) = delete;
+  ResizeShadowController& operator=(const ResizeShadowController&) = delete;
   ~ResizeShadowController() override;
 
   // Shows the appropriate shadow for a given |window| and |hit_test| location.
@@ -36,11 +32,17 @@ class ASH_EXPORT ResizeShadowController : public aura::WindowObserver {
   // Hides all shadows.
   void HideAllShadows();
 
-  ResizeShadow* GetShadowForWindowForTest(aura::Window* window);
-
-  // aura::WindowObserver overrides:
-  void OnWindowDestroying(aura::Window* window) override;
+  // aura::WindowObserver:
+  void OnWindowHierarchyChanged(const HierarchyChangeParams& params) override;
   void OnWindowVisibilityChanging(aura::Window* window, bool visible) override;
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
+  void OnWindowStackingChanged(aura::Window* window) override;
+  void OnWindowDestroying(aura::Window* window) override;
+
+  ResizeShadow* GetShadowForWindowForTest(aura::Window* window);
 
  private:
   // Creates a shadow for a given window and returns it.  |window_shadows_|
@@ -50,9 +52,10 @@ class ASH_EXPORT ResizeShadowController : public aura::WindowObserver {
   // Returns the resize shadow for |window| or NULL if no shadow exists.
   ResizeShadow* GetShadowForWindow(aura::Window* window);
 
-  std::map<aura::Window*, std::unique_ptr<ResizeShadow>> window_shadows_;
+  base::flat_map<aura::Window*, std::unique_ptr<ResizeShadow>> window_shadows_;
 
-  DISALLOW_COPY_AND_ASSIGN(ResizeShadowController);
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      windows_observation_{this};
 };
 
 }  // namespace ash
