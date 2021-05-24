@@ -168,6 +168,7 @@
 <translation id="1173894706177603556">ਮੁੜ-ਨਾਮਕਰਨ ਕਰੋ</translation>
 <translation id="1173916544412572294">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਫ਼ੋਨ ਦੀ ਬੈਟਰੀ <ph name="BATTERY_STATUS" />%, ਵੇਰਵੇ</translation>
 <translation id="1174073918202301297">ਸ਼ਾਰਟਕੱਟ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="1174366174291287894">ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਹਮੇਸ਼ਾਂ ਸੁਰੱਖਿਅਤ ਹੁੰਦਾ ਹੈ ਜਦੋਂ ਤੱਕ Chrome ਵੱਲੋਂ ਤੁਹਾਨੂੰ ਇਸ ਦੇ ਸੁਰੱਖਿਅਤ ਨਾ ਹੋਣ ਬਾਰੇ ਸੂਚਿਤ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ</translation>
 <translation id="117445914942805388">ਤੁਹਾਡੇ ਸਾਰੇ ਸਮਕਾਲੀਕਿਰਤ ਡੀਵਾਈਸਾਂ ਅਤੇ ਤੁਹਾਡੇ 'Google ਖਾਤੇ' ਵਿੱਚੋਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />ਸਮਕਾਲੀਕਰਨ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ<ph name="END_LINK" />।</translation>
 <translation id="1175364870820465910">&amp;ਪ੍ਰਿੰਟ...</translation>
 <translation id="1176471985365269981">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਫ਼ਾਈਲਾਂ ਜਾਂ ਫੋਲਡਰਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
@@ -759,6 +760,7 @@
 <translation id="1781398670452016618"><ph name="DOMAIN" /> ਲਈ ਤੁਹਾਨੂੰ ਹੁਣ ਵਾਈ-ਫਾਈ ਨਾਲ ਕਨੈਕਟ ਹੋ ਕੇ ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="1781502536226964113">ਨਵੀਂ ਟੈਬ ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="1781771911845953849">ਖਾਤੇ ਅਤੇ ਸਮਕਾਲੀਕਰਨ</translation>
+<translation id="1782101999402987960">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਅੱਪਡੇਟਾਂ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="1782196717298160133">ਤੁਹਾਡਾ ਫ਼ੋਨ ਲੱਭ ਰਿਹਾ ਹੈ</translation>
 <translation id="1784707308176068866">ਮੂਲ ਐਪਲੀਕੇਸ਼ਨ ਵੱਲੋਂ ਸਹਿਯੋਗ ਦੀ ਬੇਨਤੀ ਕੀਤੇ ਜਾਣ 'ਤੇ ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਚਲਾਉਣ ਦਿਓ</translation>
 <translation id="1784849162047402014">ਡੀਵਾਈਸ ਵਿੱਚ ਡਿਸਕ ਜਗ੍ਹਾ ਘੱਟ ਹੈ</translation>
@@ -1148,6 +1150,7 @@
 <translation id="2193365732679659387">ਭਰੋਸਾ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="2195331105963583686">ਤੁਸੀਂ ਹਾਲੇ ਵੀ ਉਸ ਸਮੇਂ ਤੋਂ ਬਾਅਦ ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਰਤ ਸਕੋਗੇ, ਪਰ ਇਸਨੂੰ ਸਵੈਚਲਿਤ ਸਾਫ਼ਟਵੇਅਰ ਅਤੇ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਨਹੀਂ ਮਿਲਣਗੇ</translation>
 <translation id="2195729137168608510">ਈਮੇਲ ਸੁਰੱਖਿਆ</translation>
+<translation id="2198625180564913276">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="2199298570273670671">ਗੜਬੜ</translation>
 <translation id="2199719347983604670">Chrome ਸਮਕਾਲੀਕਰਨ ਤੋਂ ਡਾਟਾ</translation>
 <translation id="2200094388063410062">ਈਮੇਲ ਭੇਜੋ</translation>
@@ -1719,6 +1722,7 @@
 <translation id="2805760958323556153">ExtensionInstallForcelist ਦਾ ਨੀਤੀ ਮੁੱਲ ਅਵੈਧ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="2805770823691782631">ਵਧੀਕ ਵੇਰਵੇ</translation>
 <translation id="2806372837663997957">ਜਿਸ ਡੀਵਾਈਸ ਨਾਲ ਤੁਸੀਂ ਸਾਂਝਾ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ, ਉਸ ਨੇ ਸਵੀਕਾਰ ਨਹੀਂ ਕੀਤਾ</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">ਸ਼ਾਰਟਕੱਟ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="2807517655263062534">ਤੁਹਾਡੇ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਇੱਥੇ ਦਿਖਾਈ ਦਿੰਦੀਆਂ ਹਨ</translation>
 <translation id="2809586584051668049">ਅਤੇ <ph name="NUMBER_ADDITIONAL_DISABLED" /> ਹੋਰ</translation>
@@ -2033,6 +2037,7 @@
 <translation id="315116470104423982">ਮੋਬਾਈਲ ਡਾਟਾ</translation>
 <translation id="3151539355209957474">ਸ਼ੁਰੂਆਤੀ ਸਮਾਂ</translation>
 <translation id="3151562827395986343">ਇਤਿਹਾਸ, ਕੁਕੀਜ਼, ਕੈਸ਼ੇ, ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰੋ</translation>
+<translation id="3151616662954589507">ਸੈਲਫ਼ੀ ਕੈਮਰਾ</translation>
 <translation id="3151786313568798007">ਦਿਸ਼ਾਮਾਨ</translation>
 <translation id="3154351730702813399">ਡੀਵਾਈਸ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਦੀ ਨਿਗਰਾਨੀ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="3154429428035006212">ਇੱਕ ਮਹੀਨੇ ਤੋਂ ਵੱਧ ਸਮੇਂ ਲਈ ਆਫ਼ਲਾਈਨ</translation>
@@ -2147,6 +2152,7 @@
 <translation id="32939749466444286">Linux ਕੰਟੇਨਰ ਸ਼ੁਰੂ ਨਹੀਂ ਹੋਇਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3294437725009624529">ਮਹਿਮਾਨ</translation>
 <translation id="3294686910656423119">ਵਰਤੋਂ ਅੰਕੜੇ ਅਤੇ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ</translation>
+<translation id="3295357220137379386">ਡੀਵਾਈਸ ਵਿਅਸਤ ਹੈ</translation>
 <translation id="329838636886466101">ਰਿਪੇਅਰ ਕਰੋ</translation>
 <translation id="3298789223962368867">ਅਵੈਧ URL ਦਾਖਲ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="32991397311664836">ਡੀਵਾਈਸ:</translation>
@@ -3057,6 +3063,7 @@
 <translation id="4285498937028063278">ਅਨਪਿਨ ਕਰੋ</translation>
 <translation id="428565720843367874">ਇਹ ਫਾਈਲ ਸਕੈਨ ਕਰਦੇ ਸਮੇਂ ਐਂਟੀ-ਵਾਇਰਸ ਸਾਫਟਵੇਅਰ ਅਚਾਨਕ ਅਸਫਲ ਹੋਇਆ।</translation>
 <translation id="4287099557599763816">ਸਕ੍ਰੀਨ ਰੀਡਰ</translation>
+<translation id="428715201724021596">ਪ੍ਰੋਫਾਈਲ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="4287157641315808225">ਹਾਂ, ChromeVox ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ਦਿਖਾਓ}one{ਦਿਖਾਓ}other{ਸਾਰੇ ਦਿਖਾਓ}}</translation>
 <translation id="4289372044984810120">ਆਪਣੇ ਖਾਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਇੱਥੇ ਕਰੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
@@ -3284,6 +3291,7 @@
 <translation id="4538792345715658285">ਐਂਟਰਪ੍ਰਾਈਜ ਨੀਤੀ ਵੱਲੋਂ ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="4541123282641193691">ਤੁਹਾਡੇ ਖਾਤੇ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਆਪਣੀ Chromebook ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="4541662893742891060">ਇਸ ਪ੍ਰੋਫਾਈਲ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਤਕਨੀਕੀ ਸਹਾਇਤਾ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਕੈਰੀਅਰ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
+<translation id="4541706525461326392">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="4541810033354695636">ਆਗਮੈਂਟਿਡ ਰਿਐਲਿਟੀ</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> ਅਤੇ <ph name="WEBSITE_2" /> ਤੇ ਆਪਣਾ ਡਾਟਾ ਪੜ੍ਹੋ</translation>
 <translation id="454331522350252598">ਵਿਗਿਆਪਨਦਾਤਾ ਇਸ ਗੱਲ ਬਾਰੇ ਜਾਣ ਸਕਦੇ ਹਨ ਕਿ ਕਦੋਂ ਹਜ਼ਾਰਾਂ ਵਰਤੋਂਕਾਰ ਇੱਕੋ ਜਿਹੀ ਦਿਲਚਸਪੀ ਰੱਖਦੇ ਹਨ – ਜਿਵੇਂ ਕਿ ਕਿਸੇ ਸਮਾਰੋਹ ਵਿਚਲੀ ਭੀੜ—ਅਤੇ ਉਹ ਕਿਸੇ ਇੱਕ ਵਿਅਕਤੀ ਦੀ ਬਜਾਏ ਭੀੜ ਲਈ ਵਿਗਿਆਪਨਾਂ ਦੀ ਚੋਣ ਕਰ ਸਕਦੇ ਹਨ।</translation>
@@ -3661,6 +3669,7 @@
 <translation id="4953808748584563296">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਸੰਤਰੀ ਅਵਤਾਰ</translation>
 <translation id="4955710816792587366">ਆਪਣਾ ਪਿੰਨ ਚੁਣੋ</translation>
 <translation id="4959262764292427323">ਪਾਸਵਰਡ ਤੁਹਾਡੇ 'Google ਖਾਤੇ' ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ ਤਾਂ ਕਿ ਤੁਸੀਂ ਉਹਨਾਂ ਨੂੰ ਕਿਸੇ ਡੀਵਾਈਸ 'ਤੇ ਵਰਤ ਸਕੋ</translation>
+<translation id="496027654926814138"><ph name="FILE_NAME" /> ਹਮਲਾਵਰਾਂ ਨੂੰ ਤੁਹਾਡੀ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਚੋਰੀ ਕਰਨ ਦੇ ਸਕਦੀ ਹੈ।</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961361269522589229">ਪਕਵਾਨ-ਵਿਧੀ ਸੰਬੰਧੀ ਸੁਝਾਅ</translation>
 <translation id="496185450405387901">ਇਹ ਐਪ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਸਥਾਪਤ ਕੀਤੀ ਹੈ।</translation>
@@ -3700,6 +3709,7 @@
 <translation id="5007392906805964215">ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="50080882645628821">ਪ੍ਰੋਫਾਈਲ ਹਟਾਓ</translation>
 <translation id="5008936837313706385">ਸਰਗਰਮੀ ਦਾ ਨਾਮ</translation>
+<translation id="5009463889040999939">ਪ੍ਰੋਫਾਈਲ ਦਾ ਨਾਮ ਬਦਲਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="5010043101506446253">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਅਧਿਕਾਰਿਤ ਕਰੋ</translation>
 <translation id="5015344424288992913">ਪ੍ਰੌਕਸੀ ਨੂੰ ਹੱਲ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="5017633213534173756">ਯਾਦ ਰੱਖੋ</translation>
@@ -4044,6 +4054,7 @@
 <translation id="5408750356094797285">ਜ਼ੂਮ: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">ਤੁਹਾਡੇ Google ਖਾਤੇ ਤੋਂ</translation>
 <translation id="5411472733320185105">ਇਹਨਾਂ ਹੋਸਟਾਂ ਅਤੇ ਡੋਮੇਨਾਂ ਲਈ ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਨਾ ਵਰਤੋ:</translation>
+<translation id="5414198321558177633">ਪ੍ਰੋਫਾਈਲ ਸੂਚੀ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="5414566801737831689">ਉਨ੍ਹਾਂ ਵੈੱਬਸਾਈਟਾਂ ਦੇ ਪ੍ਰਤੀਕਾਂ ਨੂੰ ਪੜ੍ਹੋ ਜਿਨ੍ਹਾਂ ਜਿਨ੍ਹਾਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ</translation>
 <translation id="5417312524372586921">ਬ੍ਰਾਊਜ਼ਰ ਥੀਮ</translation>
 <translation id="5419405654816502573">Voice match</translation>
@@ -4322,6 +4333,7 @@
 <translation id="5709557627224531708">Chrome ਨੂੰ ਆਪਣੇ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="5711983031544731014">ਅਣਲਾਕ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ। ਆਪਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ।</translation>
 <translation id="5712153969432126546">ਸਾਈਟਾਂ ਕਈ ਵਾਰ ਦਸਤਾਵੇਜ਼, ਇਕਰਾਰਨਾਮਿਆਂ ਅਤੇ ਫ਼ਾਰਮਾਂ ਵਰਗੇ PDF ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਦੀਆਂ ਹਨ</translation>
+<translation id="5712323955984474772">ਅਗਲਾ ਅੱਪਡੇਟ</translation>
 <translation id="5715711091495208045">ਪਲੱਗਇਨ ਬ੍ਰੋਕਰ: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਖੋਜ ਇੰਜਣ</translation>
 <translation id="5719637365829998022">QR ਕੋਡ ਸਕੈਨ ਕੀਤਾ ਗਿਆ।</translation>
@@ -4609,6 +4621,7 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /><ph name="TAB_NAME" /> ਦੇ ਨਾਲ Chrome ਟੈਬ ਅਤੇ ਆਡੀਓ ਨੂੰ ਸਾਂਝਾ ਕਰ ਰਹੀ ਹੈ।</translation>
 <translation id="6045114302329202345">ਮੁੱਖ TrackPoint ਬਟਨ</translation>
 <translation id="6047632800149092791">ਸਮਕਾਲੀਕਰਨ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ। ਸਾਈਨ ਆਊਟ ਕਰਕੇ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="6049797270917061226">ਇਹ ਫ਼ਾਈਲ ਹਮਲਾਵਰਾਂ ਨੂੰ ਤੁਹਾਡੀ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਚੋਰੀ ਕਰਨ ਦੇ ਸਕਦੀ ਹੈ।</translation>
 <translation id="6051354611314852653">ਓਹੋ! ਸਿਸਟਮ ਇਸ ਡੀਵਾਈਸ ਲਈ API ਪਹੁੰਚ ਦਾ ਅਧਿਕਾਰ ਦੇਣ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="6052976518993719690">SSL ਸਰਟੀਫਿਕੇਸ਼ਨ ਅਧਿਕਾਰ</translation>
 <translation id="6053401458108962351">&amp;ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਹਟਾਓ...</translation>
@@ -4836,6 +4849,7 @@
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਤੇ ਨਵਾਂ ਪ੍ਰਿੰਟਰ}one{ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਤੇ ਨਵੇਂ ਪ੍ਰਿੰਟਰ}other{ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਤੇ ਨਵੇਂ ਪ੍ਰਿੰਟਰ}}</translation>
 <translation id="6285770818046456882">ਤੁਹਾਡੇ ਨਾਲ ਡੀਵਾਈਸ ਸਾਂਝਾਕਰਨ ਨੇ ਟ੍ਰਾਂਸਫ਼ਰ ਰੱਦ ਕੀਤਾ</translation>
 <translation id="6290613030083731160">ਕੋਈ ਨਜ਼ਦੀਕੀ ਸਾਂਝਾਕਰਨ ਡੀਵਾਈਸ ਉਪਲਬਧ ਨਹੀਂ ਹਨ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
+<translation id="6291086328725007688">ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="6291741848715722067">ਤਸਦੀਕੀ ਕੋਡ</translation>
 <translation id="6291949900244949761">ਕਿਸੇ ਸਾਈਟ ਦੇ USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵੇਲੇ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="6291953229176937411">&amp;ਫਾਈਂਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
@@ -4966,6 +4980,7 @@
 <translation id="6438234780621650381">ਸੈਟਿੰਗਾਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ਆਡੀਓ ਚਲਾਉਣਾ</translation>
 <translation id="6442187272350399447">ਸ਼ਾਨਦਾਰ</translation>
+<translation id="6442445294758185945">ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6444070574980481588">ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - ਬਲੂਟੁੱਥ ਸਕੈਨ ਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="6445450263907939268">ਜੇਕਰ ਤੁਸੀਂ ਇਹ ਬਦਲਾਵ ਨਹੀਂ ਚਾਹੁੰਦੇ ਸੀ, ਤਾਂ ਤੁਸੀਂ ਆਪਣੀਆਂ ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਬਹਾਲ ਕਰ ਸਕਦੇ ਹੋ।</translation>
@@ -7007,6 +7022,7 @@
 <translation id="8680251145628383637">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ। ਤੁਸੀਂ ਆਪਣੀਆਂ Google ਸੇਵਾਵਾਂ 'ਤੇ ਵੀ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਇਨ ਹੋ ਜਾਵੋਗੇ।</translation>
 <translation id="8681614230122836773">Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਵਿੱਚ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਲੱਭਿਆ ਹੈ</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> ਕਨੈਕਟ ਅਤੇ ਤਿਆਰ ਹੈ</translation>
+<translation id="8683081248374354009">ਗਰੁੱਪ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="8688591111840995413">ਖਰਾਬ ਪਾਸਵਰਡ</translation>
 <translation id="8688672835843460752">ਉਪਲਬਧ</translation>
 <translation id="8690129572193755009">ਸਾਈਟਾਂ ਪ੍ਰੋਟੋਕੋਲਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>

@@ -245,6 +245,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Ilovalar, kengaytmalar va mavzularni oʻrnating</translation>
 <translation id="2977598380246111477">Keyingi raqam</translation>
+<translation id="2992327365391326550">Qurilmaning mikrofon tugmasi faolsizlantirildi.</translation>
 <translation id="2995447421581609334">Translatsiya qurilmalarini ochish.</translation>
 <translation id="2996462380875591307">Mahkamlangan lupa yoniq. Uni olib tashlash uchun Ctrl+Qidiruv+D tugmalarini bosing.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
@@ -255,6 +256,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3038571455154067151">Kirish uchun Family Link ota-ona ruxsat kodini tering</translation>
 <translation id="3039939407102840004">Stilus batareyasi <ph name="PERCENTAGE" />%.</translation>
 <translation id="3045488863354895414">Xayrli kun,</translation>
+<translation id="3051189971848907985">Profil qayta nomlanmoqda. Bir necha daqiqa kuting.</translation>
 <translation id="3055162170959710888">Bu qurilmadan bugun <ph name="USED_TIME" /> foydalandingiz</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Menyuni ochish</translation>
@@ -295,6 +297,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3368922792935385530">Ulangan</translation>
 <translation id="3371140690572404006">USB-C qurilma (o‘ng tomondagi old port)</translation>
 <translation id="3375634426936648815">Ulandi</translation>
+<translation id="3378442621503952303">Profilga ulanmoqda. Bir necha daqiqa kuting.</translation>
 <translation id="3386978599540877378">butun ekran rejimidagi lupa</translation>
 <translation id="3400357268283240774">Kengaytirilgan sozlamalar</translation>
 <translation id="3410336247007142655">Tungi mavzu sozlamalarini chiqarish</translation>
@@ -351,6 +354,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="380165613292957338">Salom, qanday yordamim tegishi mumkin?</translation>
 <translation id="3826099427150913765">Parol kiritish</translation>
 <translation id="383058930331066723">Quvvat tejash rejimi yoniq</translation>
+<translation id="3835880383832568924">Yangilanishlarni koʻrish uchun Yorliqlar ilovasini oching</translation>
 <translation id="383629559565718788">Klaviatura sozlamalarini ochish</translation>
 <translation id="3846214748874656680">To‘liq ekran rejimidan chiqish</translation>
 <translation id="3846575436967432996">Tarmoqqa oid ma’lumot mavjud emas</translation>
@@ -471,6 +475,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4705716602320768426">Fikr-mulohaza yuborish</translation>
 <translation id="4731797938093519117">Ota-ona kirishi</translation>
 <translation id="4734965478015604180">Gorizontal</translation>
+<translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Raqam tezkor tugmasi oʻzgardi. Funksiya tugmalaridan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + yuqori qatordagi kalitni bosing.</translation>
 <translation id="4744944742468440486">Tanlovga aloqador axborot</translation>
 <translation id="4759238208242260848">Yuklanmalar</translation>
 <translation id="4774338217796918551">Ertaga soat <ph name="COME_BACK_TIME" /> da qayting.</translation>
@@ -728,6 +733,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6896758677409633944">Nusxa olish</translation>
 <translation id="6910714959251846841">Ushbu yangilanish o‘rnatilishi uchun qurilmani zavod sozlamalariga qaytarish zarur. <ph name="SYSTEM_APP_NAME" /> oxirgi yangilanishi haqida batafsil axborot.</translation>
 <translation id="6919251195245069855">Smart kartangiz aniqlanmadi. Qayta urining.</translation>
+<translation id="6921188888306725546">Tezkor tugmalar yanada yaxshilandi</translation>
 <translation id="6945221475159498467">Tanlash</translation>
 <translation id="6961121602502368900">Telefon ish profilida sukut qilinmaydi</translation>
 <translation id="6961840794482373852">Alt + Tepaga strelka tezkor tugmasi oʻzgardi. Page Up tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Tepaga strelkani bosing.</translation>
@@ -934,6 +940,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8631727435199967028">Maxsus imkoniyatlar sozlamalari</translation>
 <translation id="8637598503828012618">Himoya: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> qoldi</translation>
+<translation id="8641805545866562088">Profillar roʻyxati yangilanmoqda. Bir necha daqiqa kuting.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> taymer</translation>
 <translation id="8647931990447795414">Odam kiritish uchun Family Link ota-ona ruxsat kodini tering</translation>
 <translation id="8649101189709089199">Teginib tinglash</translation>
@@ -961,6 +968,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Matn kiritish sozlamalari</translation>
+<translation id="8818320199597151042">Profil olib tashlanmoqda. Bir necha daqiqa kuting.</translation>
 <translation id="8825863694328519386">Orqaga qaytish uchun chapdan suring</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Orqaga tugmasi</translation>
@@ -1006,6 +1014,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ekrani olib tashlandi</translation>
 <translation id="9098969848082897657">Soatni sukut qilish</translation>
 <translation id="9099154003160514616">Lacros yangilanishi mavjud</translation>
+<translation id="9100887602489003640">Profil kiritilmoqda. Bir necha daqiqa kuting.</translation>
 <translation id="9105450214093926548">Lacros brauzeri ishlayotganda ikkinchi foydalanuvchining kirishi imkonsiz. Lacros brauzerida ikkinchi profildan foydalaning yoki Lacros brauzerini yopib, qaytadan urining.</translation>
 <translation id="9133335900048457298">Himoyalangan kontentni yozib olish imkonsiz</translation>
 <translation id="9151726767154816831">Tizimni yangilash uchun uni qaytadan ishga tushirib, Powerwash amalini bajaring</translation>

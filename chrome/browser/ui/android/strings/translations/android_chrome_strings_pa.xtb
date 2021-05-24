@@ -275,6 +275,7 @@
 <translation id="2781151931089541271">1 ਸਕਿੰਟ ਬਾਕੀ</translation>
 <translation id="2801022321632964776">Chrome ਦੇ ਨਵੀਨਤਮ ਵਰਜਨ ਵਿੱਚ ਆਪਣੀ ਭਾਸ਼ਾ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="2805756323405976993">ਐਪਸ</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">ਆਪਣੇ <ph name="BEGIN_LINK" />Google ਖਾਤੇ<ph name="END_LINK" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2818669890320396765">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸਾਈਨ-ਇਨ ਕਰਕੇ ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2827278682606527653">ਫ਼ੀਡ ਕਾਰਡ ਮੀਨੂ ਅੱਧਾ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
@@ -458,6 +459,7 @@
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">ਵਿਕਲਪ ਸਕ੍ਰੀਨ ਦੇ ਉੱਪਰਲੇ ਪਾਸੇ ਕੋਲ ਉਪਲਬਧ ਹਨ</translation>
 <translation id="4062305924942672200">ਕਨੂੰਨੀ ਜਾਣਕਾਰੀ</translation>
+<translation id="4082818367361753283">ਗਰੁੱਪ ਆਈਡੀ</translation>
 <translation id="4084682180776658562">ਬੁੱਕਮਾਰਕ</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> ਤੋਂ – <ph name="BEGIN_DEEMPHASIZED" />Google ਰਾਹੀਂ ਡਿਲੀਵਰ ਕੀਤਾ ਗਿਆ<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ਕੀ ਐਪ ਡਾਟਾ ਮਿਟਾਉਣਾ ਹੈ?</translation>
@@ -1183,7 +1185,9 @@
 <translation id="8662811608048051533">ਜ਼ਿਆਦਾਤਰ ਸਾਈਟਾਂ ਤੋਂ ਤੁਹਾਨੂੰ ਸਾਈਨ-ਆਊਟ ਕਰਦਾ ਹੈ।</translation>
 <translation id="8664979001105139458">ਫ਼ਾਈਲ ਨਾਮ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="8676789164135894283">ਸਾਈਨ-ਇਨ ਲਈ ਪੁਸ਼ਟੀਕਰਨ</translation>
+<translation id="867767487203716855">ਅਗਲਾ ਅੱਪਡੇਟ</translation>
 <translation id="8683039184091909753">ਚਿੱਤਰ</translation>
+<translation id="8683081248374354009">ਗਰੁੱਪ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{ਸਿਗਨਲ ਮਜ਼ਬੂਤੀ ਦਾ ਪੱਧਰ: # ਡੰਡੀ}one{ਸਿਗਨਲ ਮਜ਼ਬੂਤੀ ਦਾ ਪੱਧਰ: # ਡੰਡੀ}other{ਸਿਗਨਲ ਮਜ਼ਬੂਤੀ ਦਾ ਪੱਧਰ: # ਡੰਡੀਆਂ}}</translation>
 <translation id="869891660844655955">ਮਿਆਦ ਪੁੱਗਣ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="8699120352855309748">ਇਹਨਾਂ ਭਾਸ਼ਾਵਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਨਾ ਕਰੋ</translation>

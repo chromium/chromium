@@ -456,6 +456,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5782227691023083829">Tarjima qilinmoqda...</translation>
 <translation id="5797070761912323120">Qidiruv, rekama va boshqa xizmatlarni sizga moslashtirish uchun Google tarix maʼlumotlaringizdan foydalanishi mumkin</translation>
 <translation id="5803566855766646066">Bu yangi karta inkor etilsinmi?</translation>
+<translation id="5812974770859303494">Kiritish...</translation>
 <translation id="5816228676161003208">Ovoz orqali tezroq qidirish imkonini beradi.</translation>
 <translation id="581659025233126501">Sinxronizatsiyani yoqish</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> tomonidan boshqariladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
@@ -766,6 +767,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8654802032646794042">Bekor qilish</translation>
 <translation id="8668210798914567634">Bu sahifa mutolaa ro‘yxatingizga saqlandi.</translation>
 <translation id="8680787084697685621">Hisob haqidagi ma’lumotlar eskirgan.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Varaqni yopish}other{Varaqlarni yopish}}</translation>
 <translation id="8706588385081740091">Parollar</translation>
 <translation id="8717864919010420084">Havolani nusxalash</translation>
 <translation id="8721297211384281569">“Vositalar” menyusi</translation>

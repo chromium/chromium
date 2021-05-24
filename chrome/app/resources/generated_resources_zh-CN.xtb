@@ -5241,7 +5241,7 @@
 <translation id="6781284683813954823">涂鸦链接</translation>
 <translation id="6781978626986383437">已取消 Linux 备份</translation>
 <translation id="6782067259631821405">PIN 码无效</translation>
-<translation id="6784523122863989144">此个人资料必须受支持</translation>
+<translation id="6784523122863989144">个人资料必须受支持</translation>
 <translation id="6785518634832172390">PIN 码不得超过 12 位数</translation>
 <translation id="6786747875388722282">扩展程序</translation>
 <translation id="6787097042755590313">另一标签页</translation>
@@ -6035,7 +6035,7 @@
 <translation id="7650511557061837441">“<ph name="TRIGGERING_EXTENSION_NAME" />”想要移除“<ph name="EXTENSION_NAME" />”。</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{已设置 1 个指纹}other{已设置 {COUNT} 个指纹}}</translation>
 <translation id="7650677314924139716">当前的流量使用设置是“仅限 WLAN”</translation>
-<translation id="7650920359639954963">未启用：<ph name="REASON" /></translation>
+<translation id="7650920359639954963">未启用原因：<ph name="REASON" /></translation>
 <translation id="765293928828334535">无法从该网站添加应用、扩展程序和用户脚本</translation>
 <translation id="7652954539215530680">创建 PIN 码</translation>
 <translation id="7654941827281939388">已有人在此计算机上使用此帐号。</translation>

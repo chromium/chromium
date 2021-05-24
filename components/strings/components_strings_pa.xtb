@@ -281,6 +281,7 @@
 <translation id="1919345977826869612">ਵਿਗਿਆਪਨ</translation>
 <translation id="1919367280705858090">ਇੱਕ ਖਾਸ ਗੜਬੜ-ਸੁਨੇਹਾ ਸੰਬੰਧੀ ਮਦਦ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਸਾਈਟ}other{# ਸਾਈਟਾਂ}}</translation>
+<translation id="1924727005275031552">ਨਵਾਂ</translation>
 <translation id="1945968466830820669">ਤੁਸੀਂ ਆਪਣੀ ਸੰਸਥਾ ਦੇ ਖਾਤੇ 'ਤੇ ਪਹੁੰਚ ਗੁਆ ਸਕਦੇ ਹੋ ਜਾਂ ਤੁਹਾਡੀ ਪਛਾਣ ਚੋਰੀ ਹੋ ਸਕਦੀ ਹੈ। Chromium ਵੱਲੋਂ ਹੁਣੇ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਬਦਲਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="1947454675006758438">ਉੱਪਰ ਸੱਜੇ ਪਾਸੇ ਪਿੰਨ</translation>
 <translation id="1958218078413065209">ਤੁਹਾਡਾ ਸਭ ਤੋਂ ਵੱਧ ਸਕੋਰ <ph name="SCORE" /> ਹੈ।</translation>
@@ -391,6 +392,7 @@
 <translation id="2357481397660644965">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="DEVICE_MANAGER" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="ACCOUNT_MANAGER" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="2359629602545592467">ਇੱਕ ਤੋਂ ਵਧੇਰੇ</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="2359961752320758691">ਤੁਹਾਡਾ ਆਭਾਸੀ ਕਾਰਡ ਨੰਬਰ ਲਾਗੂ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="2367567093518048410">ਪੱਧਰ</translation>
 <translation id="2372464001869762664">ਤੁਹਾਡੇ ਵੱਲੋਂ ਤਸਦੀਕ ਕੀਤੇ ਜਾਣ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਡੇ Google ਖਾਤੇ ਤੋਂ ਕਾਰਡ ਦੇ ਵੇਰਵੇ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝੇ ਕੀਤੇ ਜਾਣਗੇ। CVC ਨੂੰ ਆਪਣੇ Plex ਖਾਤੇ ਦੇ ਵੇਰਵਿਆਂ ਵਿੱਚ ਲੱਭੋ।</translation>
 <translation id="2380886658946992094">ਕਨੂੰਨੀ</translation>
@@ -401,6 +403,7 @@
 <translation id="239429038616798445">ਇਹ ਸ਼ਿਪਿੰਗ ਵਿਧੀ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਕੋਈ ਵੱਖਰੀ ਵਿਧੀ ਅਜ਼ਮਾਓ।</translation>
 <translation id="2396249848217231973">&amp;ਮਿਟਾਏ ਗਏ ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="2410754574180102685">ਸਰਕਾਰੀ-ਕਨੂੰਨੀ</translation>
+<translation id="2413155254802890957">ਪੁਰਾਣਾ</translation>
 <translation id="2413528052993050574">ਇਹ ਸਰਵਰ ਇਹ ਸਿੱਧ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਸਰਟੀਫਿਕੇਟ ਰੱਦ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਇਸ ਦਾ ਕਾਰਨ ਗਲਤ ਸੰਰੂਪਣ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਦੇ ਰਾਹ ਨੂੰ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="2414886740292270097">ਡਾਰਕ</translation>
 <translation id="2438874542388153331">ਸੱਜੇ ਪਾਸੇ ਚਾਰ ਮੋਰੀਆਂ</translation>
@@ -896,12 +899,14 @@
 <translation id="4275830172053184480">ਆਪਣੀ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="4277028893293644418">ਪਾਸਵਰਡ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ਇਸ ਕਾਰਡ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ}one{ਇਸ ਕਾਰਡ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ}other{ਇਹਨਾਂ ਕਾਰਡਾਂ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ}}</translation>
+<translation id="4287885627794386150">ਪਰਖ ਲਈ ਯੋਗ ਹੈ, ਪਰ ਕਿਰਿਆਸ਼ੀਲ ਨਹੀਂ ਹੈ</translation>
 <translation id="4297502707443874121">ਪੰਨਾ <ph name="THUMBNAIL_PAGE" /> ਲਈ ਲਘੂ-ਚਿੱਤਰ</translation>
 <translation id="42981349822642051">ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="4300675098767811073">ਸੱਜੇ ਪਾਸੇ ਇੱਕ ਤੋਂ ਵੱਧ ਮੋਰੀਆਂ</translation>
 <translation id="4302514097724775343">ਖੇਡਣ ਲਈ ਡਾਇਨਾਸੌਰ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="4302965934281694568">Chou3 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
 <translation id="4305666528087210886">ਤੁਹਾਡੀ ਫ਼ਾਈਲ 'ਤੇ ਪਹੁੰਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ</translation>
+<translation id="4306529830550717874">ਕੀ ਤੁਸੀਂ ਪਤਾ ਰੱਖਿਅਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ਬਲਾਕ ਕਰੋ (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="4314815835985389558">ਸਮਕਾਲੀਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -1389,6 +1394,7 @@
 <translation id="610911394827799129">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="6116338172782435947">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤੀ ਲਿਖਤ ਅਤੇ ਚਿੱਤਰਾਂ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="6120179357481664955">ਕੀ ਤੁਹਾਨੂੰ ਆਪਣੀ UPI ਆਈਡੀ ਯਾਦ ਹੈ?</translation>
+<translation id="6123290840358279103">ਆਭਾਸੀ ਕਾਰਡ ਦੇਖੋ</translation>
 <translation id="6124432979022149706">Chrome ਐਂਟਰਪ੍ਰਾਈਜ਼ ਕਨੈਕਟਰ</translation>
 <translation id="6146055958333702838">ਸਾਰੀਆਂ ਕੇਬਲਾਂ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤੇ ਜਾਣ ਵਾਲੇ ਕੋਈ ਵੀ ਰੂਟਰਾਂ, ਮਾਡਮਾਂ ਅਤੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਨੂੰ ਰੀਬੂਟ ਕਰੋ।</translation>
 <translation id="614940544461990577">ਅਜ਼ਮਾਓ:</translation>
@@ -1667,6 +1673,7 @@
 <translation id="7300012071106347854">ਕੋਬਾਲਟ ਨੀਲਾ</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">ਵੱਧ</translation>
+<translation id="7305756307268530424">ਹੌਲੀ-ਹੌਲੀ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ਕਨੈਕਸ਼ਨ ਸੰਬੰਧੀ ਮਦਦ</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" ਸੈਕਸ਼ਨ ਲੁਕਾਓ</translation>
@@ -1692,6 +1699,7 @@
 <translation id="7378594059915113390">ਮੀਡੀਆ ਕੰਟਰੋਲ</translation>
 <translation id="7378627244592794276">ਨੋਪ</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">ਲਾਗੂ ਨਹੀਂ</translation>
 <translation id="7390545607259442187">ਕਾਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7399802613464275309">ਸੁਰੱਖਿਆ ਜਾਂਚ</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1743,6 +1751,7 @@
 <translation id="7548892272833184391">ਕਨੈਕਸ਼ਨ ਸੰਬੰਧੀ ਗੜਬੜੀਆਂ ਠੀਕ ਕਰੋ</translation>
 <translation id="7549584377607005141">ਇਸ ਵੈੱਬ-ਪੰਨੇ ਲਈ ਉਹ ਡਾਟਾ ਲੋੜੀਂਦਾ ਹੈ ਜੋ ਤੁਸੀਂ ਡਿਸਪਲੇ ਕਰਨ ਲਈ ਪਹਿਲਾਂ ਦਰਜ ਕੀਤਾ ਸੀ। ਤੁਸੀਂ ਇਹ ਡਾਟਾ ਦੁਬਾਰਾ ਭੇਜ ਸਕਦੇ ਹੋ, ਪਰ ਅਜਿਹਾ ਕਰਕੇ ਤੁਸੀਂ ਐਕਸ਼ਨ ਨੂੰ ਦੁਹਰਾਓਗੇ ਜੋ ਇਸ ਪੰਨੇ ਵੱਲੋਂ ਪਹਿਲਾਂ ਵੀ ਕਾਰਗੁਜ਼ਾਰੀ ਕੀਤੀ ਗਈ ਹੈ।</translation>
 <translation id="7550637293666041147">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ Chrome ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
+<translation id="755279583747225797">ਪਰਖ ਕਿਰਿਆਸ਼ੀਲ ਹੈ</translation>
 <translation id="7552846755917812628">ਅੱਗੇ ਦਿੱਤੇ ਨੁਕਤਿਆਂ ਨੂੰ ਅਜ਼ਮਾਓ:</translation>
 <translation id="7554475479213504905">ਰੀਲੋਡ ਕਰੋ ਅਤੇ ਫਿਰ ਵੀ ਦਿਖਾਓ</translation>
 <translation id="7554791636758816595">ਨਵੀਂ ਟੈਬ</translation>
@@ -1837,6 +1846,7 @@
 <translation id="7894280532028510793">ਜੇ ਸ਼ਬਦ-ਜੋੜ ਸਹੀ ਹੈ, ਤਾਂ <ph name="BEGIN_LINK" />ਨੈੱਟਵਰਕ ਤਸ਼ਖੀਸਾਂ ਨੂੰ ਚਲਾ ਕੇ ਦੇਖੋ<ph name="END_LINK" />।</translation>
 <translation id="7904208859782148177">C3 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
 <translation id="7931318309563332511">ਅਗਿਆਤ</translation>
+<translation id="793209273132572360">ਕੀ ਪਤਾ ਅੱਪਡੇਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੈ?</translation>
 <translation id="7932579305932748336">ਕੋਟ</translation>
 <translation id="79338296614623784">ਕੋਈ ਵੈਧ ਫ਼ੋਨ ਨੰਬਰ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="7934052535022478634">ਭੁਗਤਾਨ ਪੂਰਾ ਹੋਇਆ</translation>
