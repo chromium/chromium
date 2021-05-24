@@ -43,7 +43,7 @@ apps::mojom::InstallSource GetHighestPriorityInstallSource(
     case web_app::Source::kWebAppStore:
       return apps::mojom::InstallSource::kUser;
     case web_app::Source::kSync:
-      return apps::mojom::InstallSource::kUser;
+      return apps::mojom::InstallSource::kSync;
     case web_app::Source::kDefault:
       return apps::mojom::InstallSource::kDefault;
   }
