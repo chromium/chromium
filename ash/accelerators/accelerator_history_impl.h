@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
-#include "base/macros.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_handler.h"
 

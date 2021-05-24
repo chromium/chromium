@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/base/accelerators/accelerator.h"
 
@@ -48,7 +47,8 @@ class AcceleratorControllerTest;
 class ASH_EXPORT ExitWarningHandler {
  public:
   ExitWarningHandler();
-
+  ExitWarningHandler(const ExitWarningHandler&) = delete;
+  ExitWarningHandler& operator=(const ExitWarningHandler&) = delete;
   ~ExitWarningHandler();
 
   // Handles accelerator for exit (Ctrl-Shift-Q).
@@ -76,8 +76,6 @@ class ASH_EXPORT ExitWarningHandler {
   // Flag to suppress starting the timer for testing. For test we call
   // TimerAction() directly to simulate the expiration of the timer.
   bool stub_timer_for_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExitWarningHandler);
 };
 
 }  // namespace ash

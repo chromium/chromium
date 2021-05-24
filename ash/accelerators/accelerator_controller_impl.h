@@ -21,7 +21,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_map.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
@@ -156,6 +155,9 @@ class ASH_EXPORT AcceleratorControllerImpl
   static constexpr const char* kVolumeButtonSideBottom = "bottom";
 
   AcceleratorControllerImpl();
+  AcceleratorControllerImpl(const AcceleratorControllerImpl&) = delete;
+  AcceleratorControllerImpl& operator=(const AcceleratorControllerImpl&) =
+      delete;
   ~AcceleratorControllerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -388,8 +390,6 @@ class ASH_EXPORT AcceleratorControllerImpl
 
   // The initial volume percentage when volume adjust starts.
   int initial_volume_percent_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorControllerImpl);
 };
 
 }  // namespace ash
