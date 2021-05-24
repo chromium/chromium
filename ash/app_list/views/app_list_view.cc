@@ -54,6 +54,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/interpolated_transform.h"
 #include "ui/gfx/skia_util.h"
@@ -77,9 +78,6 @@ constexpr SkColor kAppListBackgroundColor = gfx::kGoogleGrey900;
 
 // The height of the half app list from the bottom of the screen.
 constexpr int kHalfAppListHeight = 545;
-
-// The scroll offset in order to transition from PEEKING to FULLSCREEN
-constexpr int kAppListMinScrollToSwitchStates = 20;
 
 // The DIP distance from the bezel in which a gesture drag end results in a
 // closed app list.
@@ -1477,7 +1475,7 @@ void AppListView::OnMouseEvent(ui::MouseEvent* event) {
         // in drag.
         gfx::Vector2dF drag_distance =
             event->root_location_f() - initial_mouse_drag_point_;
-        if (abs(drag_distance.y()) < kMouseDragThreshold)
+        if (std::abs(drag_distance.y()) < kMouseDragThreshold)
           return;
 
         StartDrag(initial_mouse_drag_point_);
@@ -1604,62 +1602,109 @@ void AppListView::OnWallpaperColorsChanged() {
   search_box_view_->OnWallpaperColorsChanged();
 }
 
+bool AppListView::ShouldScrollDismissAppList(const gfx::Point& location,
+                                             const gfx::Vector2d& offset,
+                                             ui::EventType type,
+                                             bool is_in_vertical_bounds) {
+  if (delegate_->IsInTabletMode())
+    return false;
+
+  if (GetAppsContainerView()->IsInFolderView() && is_in_vertical_bounds)
+    return false;
+
+  if (!is_side_shelf() && is_in_vertical_bounds)
+    return false;
+
+  if (is_side_shelf()) {
+    // This offset will be adjusted for scrolling preferences, as well as
+    // for shelf alignment. Positive values are toward the shelf.
+    int adjusted_offset =
+        delegate_->AdjustAppListViewScrollOffset(offset.x(), type);
+
+    // If the magnitude is big enough and the scroll is toward the shelf,
+    // dismiss the full screen AppList.
+    if (adjusted_offset > AppListView::kAppListMinScrollToSwitchStates &&
+        app_list_state_ == AppListViewState::kFullscreenAllApps) {
+      return true;
+    }
+  } else {
+    int adjusted_offset =
+        delegate_->AdjustAppListViewScrollOffset(offset.y(), type);
+
+    // If the event is a mousewheel event, the offset is always large
+    // enough, otherwise the offset must be larger than the scroll
+    // threshold to dismiss from full screen.
+    if ((type == ui::ET_MOUSEWHEEL ||
+         std::abs(adjusted_offset) >
+             AppListView::kAppListMinScrollToSwitchStates) &&
+        app_list_state_ == AppListViewState::kFullscreenAllApps &&
+        adjusted_offset < 0) {
+      return true;
+    }
+
+    // For upward touchpad or mousewheel scrolling, expand to full screen.
+    if (app_list_state_ == AppListViewState::kPeeking && adjusted_offset < 0)
+      return true;
+  }
+  return false;
+}
+
 bool AppListView::HandleScroll(const gfx::Point& location,
                                const gfx::Vector2d& offset,
                                ui::EventType type) {
   // Ignore 0-offset events to prevent spurious dismissal, see crbug.com/806338
   // The system generates 0-offset ET_SCROLL_FLING_CANCEL events during simple
   // touchpad mouse moves. Those may be passed via mojo APIs and handled here.
-  if ((offset.y() == 0 && offset.x() == 0) || is_in_drag() ||
-      ShouldIgnoreScrollEvents()) {
+  if ((offset.y() == 0 && offset.x() == 0) || ShouldIgnoreScrollEvents())
     return false;
-  }
 
-  if (app_list_state_ != AppListViewState::kPeeking &&
-      app_list_state_ != AppListViewState::kFullscreenAllApps) {
-    return false;
-  }
+  AppsGridView* apps_grid_view = GetAppsContainerView()->IsInFolderView()
+                                     ? GetFolderAppsGridView()
+                                     : GetRootAppsGridView();
+  gfx::Point apps_grid_location(location);
+  views::View::ConvertPointToTarget(this, apps_grid_view, &apps_grid_location);
 
-  // Let the Apps grid view handle the event first in FULLSCREEN_ALL_APPS.
-  if (app_list_state_ == AppListViewState::kFullscreenAllApps) {
-    AppsGridView* apps_grid_view = GetAppsContainerView()->IsInFolderView()
-                                       ? GetFolderAppsGridView()
-                                       : GetRootAppsGridView();
-    gfx::Point apps_grid_location(location);
-    views::View::ConvertPointToTarget(this, apps_grid_view,
-                                      &apps_grid_location);
+  // For the purposes of whether or not to dismiss the AppList, we treat any
+  // scroll to the left or the right of the apps grid as though it was in the
+  // apps grid, as long as it is within the vertical bounds of the apps grid.
+  bool is_in_vertical_bounds =
+      location.y() > GetRootAppsGridView()->bounds().y() &&
+      location.y() < GetRootAppsGridView()->bounds().bottom();
 
-    if (apps_grid_view->HandleScrollFromAppListView(apps_grid_location, offset,
-                                                    type)) {
-      return true;
-    }
-  }
-
-  // The AppList should not be dismissed with scroll in tablet mode.
-  if (delegate_->IsInTabletMode())
+  // First see if we need to collapse the app list from this scroll when in a
+  // side shelf alignment. We do this first because if this happens anywhere on
+  // the app list or shelf, we're going to dismiss and not scroll.
+  if (ShouldScrollDismissAppList(location, offset, type,
+                                 is_in_vertical_bounds)) {
+    Dismiss();
     return true;
+  }
 
-  // If the event is a mousewheel event, the offset is always large enough,
-  // otherwise the offset must be larger than the scroll threshold.
-  if (type == ui::ET_MOUSEWHEEL ||
-      abs(offset.y()) > kAppListMinScrollToSwitchStates) {
-    if (app_list_state_ == AppListViewState::kFullscreenAllApps) {
-      if (offset.y() > 0)
-        Dismiss();
+  // For upward touchpad or mousewheel scrolling, expand to full screen.
+  // For downward, dismiss the peeking launcher.
+  if (app_list_state_ == AppListViewState::kPeeking &&
+      delegate_->AdjustAppListViewScrollOffset(offset.y(), type) > 0) {
+    SetState(AppListViewState::kFullscreenAllApps);
+    const AppListPeekingToFullscreenSource source =
+        type == ui::ET_MOUSEWHEEL ? kMousewheelScroll : kMousepadScroll;
+    UMA_HISTOGRAM_ENUMERATION(kAppListPeekingToFullscreenHistogram, source,
+                              kMaxPeekingToFullscreen);
+    return true;
+  }
+
+  // Now if we haven't dismissed or expanded we pass the event on to
+  // `apps_grid_view`.
+  if (app_list_state_ == AppListViewState::kFullscreenAllApps) {
+    bool is_in_active_apps_grid =
+        apps_grid_view->bounds().Contains(apps_grid_location);
+    // If we are not in a folder, the event just need to be within the vertical
+    // bounds of the apps grid. If we are in a folder, it must be inside that
+    // folder's view.
+    if ((!GetAppsContainerView()->IsInFolderView() && is_in_vertical_bounds) ||
+        is_in_active_apps_grid) {
+      apps_grid_view->HandleScrollFromAppListView(apps_grid_location, offset,
+                                                  type);
       return true;
-    }
-
-    DCHECK_EQ(AppListViewState::kPeeking, app_list_state_);
-    // For upward touchpad or mousewheel scrolling, expand to full screen. For
-    // downward, dismiss the peeking launcher.
-    if (offset.y() > 0) {
-      SetState(AppListViewState::kFullscreenAllApps);
-      const AppListPeekingToFullscreenSource source =
-          type == ui::ET_MOUSEWHEEL ? kMousewheelScroll : kMousepadScroll;
-      UMA_HISTOGRAM_ENUMERATION(kAppListPeekingToFullscreenHistogram, source,
-                                kMaxPeekingToFullscreen);
-    } else {
-      Dismiss();
     }
   }
   return true;
@@ -2402,7 +2447,12 @@ void AppListView::RecordFolderMetrics() {
 bool AppListView::ShouldIgnoreScrollEvents() {
   // When the app list is doing state change animation or the apps grid view is
   // in transition, ignore the scroll events to prevent triggering extra state
-  // changes or transtions.
+  // changes or transitions.
+  if (is_in_drag())
+    return true;
+  if (app_list_state_ != AppListViewState::kPeeking &&
+      app_list_state_ != AppListViewState::kFullscreenAllApps)
+    return true;
   return GetWidget()->GetLayer()->GetAnimator()->is_animating() ||
          GetRootAppsGridView()->pagination_model()->has_transition();
 }

@@ -153,8 +153,8 @@ class ASH_EXPORT AppListControllerImpl
   void UpdateYPositionAndOpacity(int y_position_in_screen,
                                  float background_opacity);
   void EndDragFromShelf(AppListViewState app_list_state);
-  void ProcessMouseWheelEvent(const ui::MouseWheelEvent& event,
-                              bool from_touchpad = false);
+  void ProcessMouseWheelEvent(const ui::MouseWheelEvent& event);
+  void ProcessScrollEvent(const ui::ScrollEvent& event);
 
   // In tablet mode, takes the user to the home screen, either by ending
   // Overview Mode/Split View Mode or by minimizing the other windows. Returns
@@ -225,6 +225,7 @@ class ASH_EXPORT AppListControllerImpl
   void MarkSuggestedContentInfoDismissed() override;
   void OnStateTransitionAnimationCompleted(AppListViewState state) override;
   void OnViewStateChanged(AppListViewState state) override;
+  int AdjustAppListViewScrollOffset(int offset, ui::EventType type) override;
 
   void GetAppLaunchedMetricParams(
       AppLaunchedMetricParams* metric_params) override;

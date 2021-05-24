@@ -4143,8 +4143,8 @@ TEST_F(AppListPresenterHomeLauncherTest, MouseScrollToDismissFromFullscreen) {
   GetAppListTestHelper()->CheckVisibility(true);
   generator->MoveMouseTo(GetPointOutsideSearchbox());
 
-  // Scroll up with mouse wheel to close app list.
-  generator->MoveMouseWheel(0, 1);
+  // Scroll down with mouse wheel to close app list.
+  generator->MoveMouseWheel(0, -1);
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
   GetAppListTestHelper()->CheckVisibility(false);

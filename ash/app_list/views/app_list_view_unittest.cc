@@ -1776,9 +1776,15 @@ TEST_F(AppListViewTest, UpwardMouseWheelScrollTransitionsToFullscreen) {
                       gfx::Vector2d(0, 30), ui::ET_MOUSEWHEEL);
   EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
 
+  // Scrolls inside or to the side of the apps grid should not dismiss.
   view_->HandleScroll(
       gfx::ToRoundedPoint(grid_bounds.left_center()) + gfx::Vector2d(-20, 0),
-      gfx::Vector2d(0, 30), ui::ET_MOUSEWHEEL);
+      gfx::Vector2d(0, -30), ui::ET_MOUSEWHEEL);
+  ASSERT_EQ(0, delegate_->dismiss_count());
+
+  // Scroll above the app list should dismiss.
+  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, -30),
+                      ui::ET_MOUSEWHEEL);
   ASSERT_EQ(1, delegate_->dismiss_count());
 }
 

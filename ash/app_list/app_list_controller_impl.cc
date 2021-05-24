@@ -218,12 +218,10 @@ bool IsSuggestedContentEnabled() {
   return prefs->GetBoolean(chromeos::prefs::kSuggestedContentEnabled);
 }
 
-int GetOffset(int offset, bool from_touchpad) {
+int GetOffset(int offset, const char* pref_name) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (from_touchpad)
-    return prefs->GetBoolean(prefs::kNaturalScroll) ? -offset : offset;
-  return prefs->GetBoolean(prefs::kMouseReverseScroll) ? -offset : offset;
+  return prefs->GetBoolean(pref_name) ? -offset : offset;
 }
 
 // Gets the MRU window shown over the applist when in tablet mode.
@@ -735,11 +733,13 @@ void AppListControllerImpl::EndDragFromShelf(AppListViewState app_list_state) {
 }
 
 void AppListControllerImpl::ProcessMouseWheelEvent(
-    const ui::MouseWheelEvent& event,
-    bool from_touchpad) {
-  gfx::Vector2d offset(event.offset().x(),
-                       GetOffset(event.offset().y(), from_touchpad));
-  presenter_.ProcessMouseWheelOffset(event.location(), offset);
+    const ui::MouseWheelEvent& event) {
+  presenter_.ProcessMouseWheelOffset(event.location(), event.offset());
+}
+
+void AppListControllerImpl::ProcessScrollEvent(const ui::ScrollEvent& event) {
+  gfx::Vector2d offset(event.x_offset(), event.y_offset());
+  presenter_.ProcessScrollOffset(event.location(), offset);
 }
 
 ShelfAction AppListControllerImpl::ToggleAppList(
@@ -1598,6 +1598,31 @@ void AppListControllerImpl::OnViewStateChanged(AppListViewState state) {
     notifier->NotifyUIStateChanged(state);
 }
 
+int AppListControllerImpl::AdjustAppListViewScrollOffset(int offset,
+                                                         ui::EventType type) {
+  Shelf* shelf =
+      Shelf::ForWindow(presenter_.GetView()->GetWidget()->GetNativeView());
+
+  // When Natural/Reverse Scrolling is turned on, the events we receive have had
+  // their offsets inverted to make that feature work. Certain behaviors, like
+  // scrolling on the shelf to expand the app list, only make sense in their
+  // original direction, so we undo that inversion.
+  int adjusted_offset =
+      (type == ui::ET_SCROLL || type == ui::ET_SCROLL_FLING_START)
+          ? GetOffset(offset, prefs::kNaturalScroll)
+          : GetOffset(offset, prefs::kMouseReverseScroll);
+
+  // If the shelf is side mounted, we set the offset in terms of being toward
+  // the shelf to simplify the logic later.
+  if (!shelf->IsHorizontalAlignment()) {
+    adjusted_offset = shelf->alignment() == ShelfAlignment::kLeft
+                          ? adjusted_offset
+                          : -adjusted_offset;
+  }
+
+  return adjusted_offset;
+}
+
 void AppListControllerImpl::GetAppLaunchedMetricParams(
     AppLaunchedMetricParams* metric_params) {
   metric_params->app_list_view_state = GetAppListViewState();
@@ -1644,9 +1669,9 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
                                                 int64_t display_id) {
   // Focus and app visibility changes while finishing home launcher state
   // animation may cause OnVisibilityChanged() to be called before the home
-  // launcher state transition finished - delay the visibility change until the
-  // home launcher stops animating, so observers do not miss the animation state
-  // update.
+  // launcher state transition finished - delay the visibility change until
+  // the home launcher stops animating, so observers do not miss the animation
+  // state update.
   if (home_launcher_transition_state_ !=
       HomeLauncherTransitionState::kFinished) {
     OnVisibilityWillChange(visible, display_id);
@@ -1689,11 +1714,11 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
 
   // Notify chrome of visibility changes.
   if (last_visible_ != real_visibility) {
-    // When showing the launcher with the virtual keyboard enabled, one feature
-    // called "transient blur" (which means that if focus was lost but regained
-    // a few seconds later, we would show the virtual keyboard again) may show
-    // the virtual keyboard, which is not what we want. So hide the virtual
-    // keyboard explicitly when the launcher shows.
+    // When showing the launcher with the virtual keyboard enabled, one
+    // feature called "transient blur" (which means that if focus was lost but
+    // regained a few seconds later, we would show the virtual keyboard again)
+    // may show the virtual keyboard, which is not what we want. So hide the
+    // virtual keyboard explicitly when the launcher shows.
     if (real_visibility)
       keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
 
@@ -1702,8 +1727,8 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
 
     last_visible_ = real_visibility;
 
-    // We could make Assistant sub-controllers an AppListControllerObserver, but
-    // we do not want to introduce new dependency of AppListController to
+    // We could make Assistant sub-controllers an AppListControllerObserver,
+    // but we do not want to introduce new dependency of AppListController to
     // Assistant.
     GetAssistantViewDelegate()->OnHostViewVisibilityChanged(real_visibility);
     for (auto& observer : observers_)
@@ -1773,8 +1798,9 @@ void AppListControllerImpl::OnVisibilityWillChange(bool visible,
 syncer::StringOrdinal AppListControllerImpl::GetOemFolderPos() {
   // Place the OEM folder just after the web store, which should always be
   // followed by a pre-installed app (e.g. Search), so the poosition should be
-  // stable. TODO(stevenjb): consider explicitly setting the OEM folder location
-  // along with the name in ServicesCustomizationDocument::SetOemFolderName().
+  // stable. TODO(stevenjb): consider explicitly setting the OEM folder
+  // location along with the name in
+  // ServicesCustomizationDocument::SetOemFolderName().
   AppListItemList* item_list = model_->top_level_item_list();
   if (!item_list->item_count()) {
     LOG(ERROR) << "No top level item was found. "
@@ -1865,7 +1891,8 @@ void AppListControllerImpl::ShowHomeScreen() {
     return;
 
   // App list is only considered shown for metrics if there are currently no
-  // other visible windows shown over the app list after the tablet transition.
+  // other visible windows shown over the app list after the tablet
+  // transition.
   absl::optional<AppListShowSource> show_source;
   if (!GetTopVisibleWindow())
     show_source = kTabletMode;
@@ -1912,8 +1939,8 @@ bool AppListControllerImpl::ShouldShowHomeScreen() const {
 void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
                                                         bool animate) {
   // Force the home view into the expected initial state without animation,
-  // except when transitioning out from home launcher. Gesture handling for the
-  // gesture to move to overview can update the scale before triggering
+  // except when transitioning out from home launcher. Gesture handling for
+  // the gesture to move to overview can update the scale before triggering
   // transition to overview - undoing these changes here would make the UI
   // jump during the transition.
   if (animate && show_home_launcher) {
@@ -1964,8 +1991,8 @@ void AppListControllerImpl::UpdateLauncherContainer(
   if (parent_window && !parent_window->Contains(window)) {
     parent_window->AddChild(window);
     // Release focus if the launcher is moving behind apps, and there is app
-    // window showing. Note that the app list can be shown behind apps in tablet
-    // mode only.
+    // window showing. Note that the app list can be shown behind apps in
+    // tablet mode only.
     if (IsTabletMode() && !ShouldHomeLauncherBeVisible()) {
       WindowState* const window_state = WindowState::Get(window);
       if (window_state->IsActive())
@@ -2063,8 +2090,8 @@ void AppListControllerImpl::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void AppListControllerImpl::UpdateTrackedAppWindow() {
-  // Do not want to observe new windows or further update |tracked_app_window_|
-  // once Shutdown() has been called.
+  // Do not want to observe new windows or further update
+  // |tracked_app_window_| once Shutdown() has been called.
   aura::Window* top_window = !is_shutdown_ ? GetTopVisibleWindow() : nullptr;
   if (tracked_app_window_ == top_window)
     return;

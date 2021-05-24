@@ -121,7 +121,13 @@ class ASH_EXPORT AppListPresenterImpl
   // Ends the drag of app list from shelf.
   void EndDragFromShelf(AppListViewState app_list_state);
 
-  // Passes a MouseWheelEvent from the shelf to the AppListView.
+  // Passes data from a Scroll event from the shelf to the
+  // AppListView.
+  void ProcessScrollOffset(const gfx::Point& location,
+                           const gfx::Vector2d& scroll_offset_vector);
+
+  // Passes data from a MouseWheelEvent event from the shelf to the
+  // AppListView.
   void ProcessMouseWheelOffset(const gfx::Point& location,
                                const gfx::Vector2d& scroll_offset_vector);
 

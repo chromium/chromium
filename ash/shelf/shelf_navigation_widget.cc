@@ -467,7 +467,7 @@ void ShelfNavigationWidget::Initialize(aura::Window* container) {
 void ShelfNavigationWidget::OnMouseEvent(ui::MouseEvent* event) {
   if (event->IsMouseWheelEvent()) {
     ui::MouseWheelEvent* mouse_wheel_event = event->AsMouseWheelEvent();
-    shelf_->ProcessMouseWheelEvent(mouse_wheel_event, /*from_touchpad=*/false);
+    shelf_->ProcessMouseWheelEvent(mouse_wheel_event);
     return;
   }
 
