@@ -32,8 +32,8 @@ class BrowserStatusMonitor : public BrowserListObserver,
   ~BrowserStatusMonitor() override;
 
   // Do the initialization work. Note: This function should not be called in the
-  // constructor function because the virtual member function AddV1AppToShelf()
-  // is called inside this function.
+  // constructor function because the virtual member function
+  // AddAppBrowserToShelf() is called inside this function.
   void Initialize();
 
   // A function which gets called when the current user has changed.
@@ -65,17 +65,17 @@ class BrowserStatusMonitor : public BrowserListObserver,
   void WebContentsDestroyed(content::WebContents* web_contents);
 
  protected:
-  // Add a V1 application to the shelf. This can get overwritten for multi
-  // profile implementations.
-  virtual void AddV1AppToShelf(Browser* browser);
+  // Add a windowed browser-based app to the shelf. This can get overwritten for
+  // multi profile implementations.
+  virtual void AddAppBrowserToShelf(Browser* browser);
 
-  // Remove a V1 application from the shelf. This can get overwritten for multi
-  // profile implementations.
-  virtual void RemoveV1AppFromShelf(Browser* browser);
+  // Remove a windowed browser-based app from the shelf. This can get
+  // overwritten for multi profile implementations.
+  virtual void RemoveAppBrowserFromShelf(Browser* browser);
 
-  // Check if a V1 application is currently in the shelf by browser or app id.
-  bool IsV1AppInShelf(Browser* browser);
-  bool IsV1AppInShelfWithAppId(const std::string& app_id);
+  // Check if an application is currently in the shelf by browser or app id.
+  bool IsAppBrowserInShelf(Browser* browser);
+  bool IsAppBrowserInShelfWithAppId(const std::string& app_id);
 
  private:
   class LocalWebContentsObserver;

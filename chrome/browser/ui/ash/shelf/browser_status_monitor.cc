@@ -27,7 +27,9 @@
 
 namespace {
 
-bool IsV1WindowedApp(Browser* browser) {
+// Checks if a given browser is running a windowed app. It will return true for
+// web apps, hosted apps, and packaged V1 apps.
+bool IsAppBrowser(const Browser* browser) {
   return (browser->is_type_app() || browser->is_type_app_popup()) &&
          !web_app::GetAppIdFromApplicationName(browser->app_name()).empty();
 }
@@ -141,11 +143,8 @@ void BrowserStatusMonitor::OnBrowserAdded(Browser* browser) {
   DCHECK(insert_result.second);
 #endif
 
-  if (IsV1WindowedApp(browser)) {
-    // Note: A V1 application will set the tab strip observer when the app gets
-    // added to the shelf. This makes sure that in the multi user case we will
-    // only set the observer while the app item exists in the shelf.
-    AddV1AppToShelf(browser);
+  if (IsAppBrowser(browser)) {
+    AddAppBrowserToShelf(browser);
   }
 }
 
@@ -156,8 +155,9 @@ void BrowserStatusMonitor::OnBrowserRemoved(Browser* browser) {
   DCHECK_EQ(num_removed, 1U);
 #endif
 
-  if (IsV1WindowedApp(browser))
-    RemoveV1AppFromShelf(browser);
+  if (IsAppBrowser(browser)) {
+    RemoveAppBrowserFromShelf(browser);
+  }
 
   UpdateBrowserItemState();
   if (app_service_instance_helper_)
@@ -206,40 +206,41 @@ void BrowserStatusMonitor::WebContentsDestroyed(
   RemoveWebContentsObserver(contents);
 }
 
-void BrowserStatusMonitor::AddV1AppToShelf(Browser* browser) {
-  DCHECK(IsV1WindowedApp(browser));
+void BrowserStatusMonitor::AddAppBrowserToShelf(Browser* browser) {
+  DCHECK(IsAppBrowser(browser));
   DCHECK(initialized_);
 
   std::string app_id =
       web_app::GetAppIdFromApplicationName(browser->app_name());
   DCHECK(!app_id.empty());
-  if (!IsV1AppInShelfWithAppId(app_id)) {
+  if (!IsAppBrowserInShelfWithAppId(app_id)) {
     if (auto* chrome_controller = ChromeShelfController::instance()) {
       chrome_controller->GetShelfSpinnerController()->CloseSpinner(app_id);
     }
-    shelf_controller_->SetV1AppStatus(app_id, ash::STATUS_RUNNING);
+    shelf_controller_->SetAppStatus(app_id, ash::STATUS_RUNNING);
   }
   browser_to_app_id_map_[browser] = app_id;
 }
 
-void BrowserStatusMonitor::RemoveV1AppFromShelf(Browser* browser) {
-  DCHECK(IsV1WindowedApp(browser));
+void BrowserStatusMonitor::RemoveAppBrowserFromShelf(Browser* browser) {
+  DCHECK(IsAppBrowser(browser));
   DCHECK(initialized_);
 
   auto iter = browser_to_app_id_map_.find(browser);
   if (iter != browser_to_app_id_map_.end()) {
     std::string app_id = iter->second;
     browser_to_app_id_map_.erase(iter);
-    if (!IsV1AppInShelfWithAppId(app_id))
-      shelf_controller_->SetV1AppStatus(app_id, ash::STATUS_CLOSED);
+    if (!IsAppBrowserInShelfWithAppId(app_id))
+      shelf_controller_->SetAppStatus(app_id, ash::STATUS_CLOSED);
   }
 }
 
-bool BrowserStatusMonitor::IsV1AppInShelf(Browser* browser) {
+bool BrowserStatusMonitor::IsAppBrowserInShelf(Browser* browser) {
   return browser_to_app_id_map_.find(browser) != browser_to_app_id_map_.end();
 }
 
-bool BrowserStatusMonitor::IsV1AppInShelfWithAppId(const std::string& app_id) {
+bool BrowserStatusMonitor::IsAppBrowserInShelfWithAppId(
+    const std::string& app_id) {
   for (const auto& iter : browser_to_app_id_map_) {
     if (iter.second == app_id)
       return true;
@@ -286,9 +287,9 @@ void BrowserStatusMonitor::OnTabReplaced(TabStripModel* tab_strip_model,
   UpdateAppItemState(new_contents, false /*remove*/);
   UpdateBrowserItemState();
 
-  if (browser && IsV1AppInShelf(browser) &&
+  if (browser && IsAppBrowserInShelf(browser) &&
       multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-    shelf_controller_->SetV1AppStatus(
+    shelf_controller_->SetAppStatus(
         web_app::GetAppIdFromApplicationName(browser->app_name()),
         ash::STATUS_RUNNING);
   }

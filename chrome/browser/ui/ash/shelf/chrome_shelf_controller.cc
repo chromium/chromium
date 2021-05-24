@@ -388,8 +388,8 @@ bool ChromeShelfController::IsPinned(const ash::ShelfID& id) {
   return item && ItemTypeIsPinned(*item);
 }
 
-void ChromeShelfController::SetV1AppStatus(const std::string& app_id,
-                                           ash::ShelfItemStatus status) {
+void ChromeShelfController::SetAppStatus(const std::string& app_id,
+                                         ash::ShelfItemStatus status) {
   ash::ShelfID id(app_id);
   const ash::ShelfItem* item = GetItem(id);
   if (item) {

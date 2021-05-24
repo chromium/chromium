@@ -1805,7 +1805,7 @@ TEST_F(ChromeShelfControllerTest, V1AppRunActivateClose) {
             shelf_controller_->GetItem(ash::ShelfID(extension1_->id())));
 
   // Reporting that the app is running should create a new shelf item.
-  shelf_controller_->SetV1AppStatus(extension1_->id(), ash::STATUS_RUNNING);
+  shelf_controller_->SetAppStatus(extension1_->id(), ash::STATUS_RUNNING);
   EXPECT_EQ(2, model_->item_count());
   EXPECT_EQ(ash::TYPE_APP, model_->items()[1].type);
   EXPECT_EQ(ash::STATUS_RUNNING, model_->items()[1].status);
@@ -1814,19 +1814,19 @@ TEST_F(ChromeShelfControllerTest, V1AppRunActivateClose) {
             shelf_controller_->GetItem(ash::ShelfID(extension1_->id())));
 
   // Reporting that the app is running again should have no effect.
-  shelf_controller_->SetV1AppStatus(extension1_->id(), ash::STATUS_RUNNING);
+  shelf_controller_->SetAppStatus(extension1_->id(), ash::STATUS_RUNNING);
   EXPECT_EQ(2, model_->item_count());
   EXPECT_EQ(ash::STATUS_RUNNING, model_->items()[1].status);
 
   // Reporting that the app is closed should remove its shelf item.
-  shelf_controller_->SetV1AppStatus(extension1_->id(), ash::STATUS_CLOSED);
+  shelf_controller_->SetAppStatus(extension1_->id(), ash::STATUS_CLOSED);
   EXPECT_EQ(1, model_->item_count());
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension1_->id()));
   EXPECT_EQ(nullptr,
             shelf_controller_->GetItem(ash::ShelfID(extension1_->id())));
 
   // Reporting that the app is closed again should have no effect.
-  shelf_controller_->SetV1AppStatus(extension1_->id(), ash::STATUS_CLOSED);
+  shelf_controller_->SetAppStatus(extension1_->id(), ash::STATUS_CLOSED);
   EXPECT_EQ(1, model_->item_count());
 }
 
@@ -1849,7 +1849,7 @@ TEST_F(ChromeShelfControllerTest, V1AppPinRunCloseUnpin) {
             shelf_controller_->GetItem(ash::ShelfID(extension1_->id())));
 
   // Reporting that the app is running should just update the existing item.
-  shelf_controller_->SetV1AppStatus(extension1_->id(), ash::STATUS_RUNNING);
+  shelf_controller_->SetAppStatus(extension1_->id(), ash::STATUS_RUNNING);
   EXPECT_EQ(2, model_->item_count());
   EXPECT_EQ(ash::TYPE_PINNED_APP, model_->items()[1].type);
   EXPECT_EQ(ash::STATUS_RUNNING, model_->items()[1].status);
@@ -1858,7 +1858,7 @@ TEST_F(ChromeShelfControllerTest, V1AppPinRunCloseUnpin) {
             shelf_controller_->GetItem(ash::ShelfID(extension1_->id())));
 
   // Reporting that the app is closed should just update the existing item.
-  shelf_controller_->SetV1AppStatus(extension1_->id(), ash::STATUS_CLOSED);
+  shelf_controller_->SetAppStatus(extension1_->id(), ash::STATUS_CLOSED);
   EXPECT_EQ(2, model_->item_count());
   EXPECT_EQ(ash::TYPE_PINNED_APP, model_->items()[1].type);
   EXPECT_EQ(ash::STATUS_CLOSED, model_->items()[1].status);
@@ -1885,7 +1885,7 @@ TEST_F(ChromeShelfControllerTest, V1AppRunPinCloseUnpin) {
             shelf_controller_->GetItem(ash::ShelfID(extension1_->id())));
 
   // Reporting that the app is running should create a new shelf item.
-  shelf_controller_->SetV1AppStatus(extension1_->id(), ash::STATUS_RUNNING);
+  shelf_controller_->SetAppStatus(extension1_->id(), ash::STATUS_RUNNING);
   EXPECT_EQ(2, model_->item_count());
   EXPECT_EQ(ash::TYPE_APP, model_->items()[1].type);
   EXPECT_EQ(ash::STATUS_RUNNING, model_->items()[1].status);
@@ -1903,7 +1903,7 @@ TEST_F(ChromeShelfControllerTest, V1AppRunPinCloseUnpin) {
             shelf_controller_->GetItem(ash::ShelfID(extension1_->id())));
 
   // Reporting that the app is closed should just update the existing item.
-  shelf_controller_->SetV1AppStatus(extension1_->id(), ash::STATUS_CLOSED);
+  shelf_controller_->SetAppStatus(extension1_->id(), ash::STATUS_CLOSED);
   EXPECT_EQ(2, model_->item_count());
   EXPECT_EQ(ash::TYPE_PINNED_APP, model_->items()[1].type);
   EXPECT_EQ(ash::STATUS_CLOSED, model_->items()[1].status);
@@ -1939,7 +1939,7 @@ TEST_F(ChromeShelfControllerTest, V1AppPinRunUnpinClose) {
             shelf_controller_->GetItem(ash::ShelfID(extension1_->id())));
 
   // Reporting that the app is running should just update the existing item.
-  shelf_controller_->SetV1AppStatus(extension1_->id(), ash::STATUS_RUNNING);
+  shelf_controller_->SetAppStatus(extension1_->id(), ash::STATUS_RUNNING);
   EXPECT_EQ(2, model_->item_count());
   EXPECT_EQ(ash::TYPE_PINNED_APP, model_->items()[1].type);
   EXPECT_EQ(ash::STATUS_RUNNING, model_->items()[1].status);
@@ -1957,7 +1957,7 @@ TEST_F(ChromeShelfControllerTest, V1AppPinRunUnpinClose) {
             shelf_controller_->GetItem(ash::ShelfID(extension1_->id())));
 
   // Reporting that the app is closed should remove its shelf item.
-  shelf_controller_->SetV1AppStatus(extension1_->id(), ash::STATUS_CLOSED);
+  shelf_controller_->SetAppStatus(extension1_->id(), ash::STATUS_CLOSED);
   EXPECT_EQ(1, model_->item_count());
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension1_->id()));
   EXPECT_EQ(nullptr,
@@ -1972,9 +1972,9 @@ TEST_F(ChromeShelfControllerTest, CheckRunningV1AppOrder) {
   EXPECT_EQ(1, model_->item_count());
 
   // Add a few running applications.
-  shelf_controller_->SetV1AppStatus(extension1_->id(), ash::STATUS_RUNNING);
-  shelf_controller_->SetV1AppStatus(extension2_->id(), ash::STATUS_RUNNING);
-  shelf_controller_->SetV1AppStatus(web_app::kGmailAppId, ash::STATUS_RUNNING);
+  shelf_controller_->SetAppStatus(extension1_->id(), ash::STATUS_RUNNING);
+  shelf_controller_->SetAppStatus(extension2_->id(), ash::STATUS_RUNNING);
+  shelf_controller_->SetAppStatus(web_app::kGmailAppId, ash::STATUS_RUNNING);
   EXPECT_EQ(4, model_->item_count());
   // Note that this not only checks the order of applications but also the
   // running type.
@@ -2001,16 +2001,16 @@ TEST_F(ChromeShelfControllerTest, CheckRunningV1AppOrder) {
   // Switch again some items and even delete one - making sure that the missing
   // item gets properly handled.
   model_->Move(2, 3);
-  shelf_controller_->SetV1AppStatus(extension1_->id(), ash::STATUS_CLOSED);
+  shelf_controller_->SetAppStatus(extension1_->id(), ash::STATUS_CLOSED);
   EXPECT_EQ("Chrome, gmail, app2", GetPinnedAppStatus());
   RestoreUnpinnedRunningApplicationOrder(current_account_id);
   EXPECT_EQ("Chrome, app2, gmail", GetPinnedAppStatus());
 
   // Check that removing more items does not crash and changes nothing.
-  shelf_controller_->SetV1AppStatus(extension2_->id(), ash::STATUS_CLOSED);
+  shelf_controller_->SetAppStatus(extension2_->id(), ash::STATUS_CLOSED);
   RestoreUnpinnedRunningApplicationOrder(current_account_id);
   EXPECT_EQ("Chrome, gmail", GetPinnedAppStatus());
-  shelf_controller_->SetV1AppStatus(web_app::kGmailAppId, ash::STATUS_CLOSED);
+  shelf_controller_->SetAppStatus(web_app::kGmailAppId, ash::STATUS_CLOSED);
   RestoreUnpinnedRunningApplicationOrder(current_account_id);
   EXPECT_EQ("Chrome", GetPinnedAppStatus());
 }
@@ -2913,7 +2913,7 @@ TEST_F(ChromeShelfControllerTest, RestoreDefaultAndRunningV1AppsResyncOrder) {
   EXPECT_EQ("Chrome, App1", GetPinnedAppStatus());
 
   // Set the app status as running, which will add an unpinned item.
-  shelf_controller_->SetV1AppStatus(extension2_->id(), ash::STATUS_RUNNING);
+  shelf_controller_->SetAppStatus(extension2_->id(), ash::STATUS_RUNNING);
   EXPECT_EQ("Chrome, App1, app2", GetPinnedAppStatus());
   AddWebApp(web_app::kGmailAppId);
   EXPECT_EQ("Chrome, App1, Gmail, app2", GetPinnedAppStatus());
@@ -4937,7 +4937,7 @@ TEST_F(ChromeShelfControllerWebAppTest, WebAppPinRunUnpinClose) {
   EXPECT_NE(nullptr, shelf_controller_->GetItem(ash::ShelfID(app_id)));
 
   // Reporting that the app is running should just update the existing item.
-  shelf_controller_->SetV1AppStatus(app_id, ash::STATUS_RUNNING);
+  shelf_controller_->SetAppStatus(app_id, ash::STATUS_RUNNING);
   EXPECT_EQ(2, model_->item_count());
   EXPECT_EQ(ash::TYPE_PINNED_APP, model_->items()[1].type);
   EXPECT_EQ(ash::STATUS_RUNNING, model_->items()[1].status);
@@ -4953,7 +4953,7 @@ TEST_F(ChromeShelfControllerWebAppTest, WebAppPinRunUnpinClose) {
   EXPECT_NE(nullptr, shelf_controller_->GetItem(ash::ShelfID(app_id)));
 
   // Reporting that the app is closed should remove its shelf item.
-  shelf_controller_->SetV1AppStatus(app_id, ash::STATUS_CLOSED);
+  shelf_controller_->SetAppStatus(app_id, ash::STATUS_CLOSED);
   EXPECT_EQ(1, model_->item_count());
   EXPECT_FALSE(shelf_controller_->IsAppPinned(app_id));
   EXPECT_EQ(nullptr, shelf_controller_->GetItem(ash::ShelfID(app_id)));

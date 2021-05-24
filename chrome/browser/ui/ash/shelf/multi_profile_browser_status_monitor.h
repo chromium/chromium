@@ -19,18 +19,18 @@ class MultiProfileBrowserStatusMonitor : public BrowserStatusMonitor {
 
   // BrowserStatusMonitor overrides.
   void ActiveUserChanged(const std::string& user_email) override;
-  void AddV1AppToShelf(Browser* browser) override;
-  void RemoveV1AppFromShelf(Browser* browser) override;
+  void AddAppBrowserToShelf(Browser* browser) override;
+  void RemoveAppBrowserFromShelf(Browser* browser) override;
 
  private:
   typedef std::vector<Browser*> AppList;
   AppList app_list_;
 
-  // Connect a V1 app to the launcher.
-  void ConnectV1AppToLauncher(Browser* browser);
+  // Connect an app running in a browser to the shelf.
+  void ConnectAppBrowserToShelf(Browser* browser);
 
-  // Disconnect a V1 app from the launcher.
-  void DisconnectV1AppFromLauncher(Browser* browser);
+  // Disconnect an app running in a browser from the shelf.
+  void DisconnectAppBrowserFromShelf(Browser* browser);
 
   // The launcher controller which is associated with this object.
   ChromeShelfController* shelf_controller_;

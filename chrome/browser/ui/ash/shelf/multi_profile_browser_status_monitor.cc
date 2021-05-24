@@ -30,17 +30,17 @@ void MultiProfileBrowserStatusMonitor::ActiveUserChanged(
   // Handle windowed apps.
   for (AppList::iterator it = app_list_.begin(); it != app_list_.end(); ++it) {
     bool owned = multi_user_util::IsProfileFromActiveUser((*it)->profile());
-    bool shown = IsV1AppInShelf(*it);
+    bool shown = IsAppBrowserInShelf(*it);
     if (owned && !shown)
-      ConnectV1AppToLauncher(*it);
+      ConnectAppBrowserToShelf(*it);
     else if (!owned && shown)
-      DisconnectV1AppFromLauncher(*it);
+      DisconnectAppBrowserFromShelf(*it);
   }
 
   // Handle apps in browser tabs: Add the new applications.
   BrowserList* browser_list = BrowserList::GetInstance();
 
-  // Remove old (tabbed V1) applications.
+  // Remove old tabbed applications.
   for (Browser* browser : *browser_list) {
     if (browser->is_type_normal() &&
         !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
@@ -51,7 +51,7 @@ void MultiProfileBrowserStatusMonitor::ActiveUserChanged(
     }
   }
 
-  // Handle apps in browser tabs: Add new (tabbed V1) applications.
+  // Handle apps in browser tabs: Add new tabbed applications.
   for (Browser* browser : *browser_list) {
     if (browser->is_type_normal() &&
         multi_user_util::IsProfileFromActiveUser(browser->profile())) {
@@ -67,30 +67,31 @@ void MultiProfileBrowserStatusMonitor::ActiveUserChanged(
   UpdateBrowserItemState();
 }
 
-void MultiProfileBrowserStatusMonitor::AddV1AppToShelf(Browser* browser) {
+void MultiProfileBrowserStatusMonitor::AddAppBrowserToShelf(Browser* browser) {
   DCHECK(browser->deprecated_is_app());
   DCHECK(!base::Contains(app_list_, browser));
   app_list_.push_back(browser);
   if (multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-    BrowserStatusMonitor::AddV1AppToShelf(browser);
+    BrowserStatusMonitor::AddAppBrowserToShelf(browser);
   }
 }
 
-void MultiProfileBrowserStatusMonitor::RemoveV1AppFromShelf(Browser* browser) {
+void MultiProfileBrowserStatusMonitor::RemoveAppBrowserFromShelf(
+    Browser* browser) {
   DCHECK(browser->deprecated_is_app());
   AppList::iterator it = std::find(app_list_.begin(), app_list_.end(), browser);
   DCHECK(it != app_list_.end());
   app_list_.erase(it);
   if (multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-    BrowserStatusMonitor::RemoveV1AppFromShelf(browser);
+    BrowserStatusMonitor::RemoveAppBrowserFromShelf(browser);
   }
 }
 
-void MultiProfileBrowserStatusMonitor::ConnectV1AppToLauncher(
+void MultiProfileBrowserStatusMonitor::ConnectAppBrowserToShelf(
     Browser* browser) {
-  // Adding a V1 app to the launcher consists of two actions: Add the browser
-  // (launcher item) and add the content (launcher item status).
-  BrowserStatusMonitor::AddV1AppToShelf(browser);
+  // Adding an app to the shelf consists of two actions: Add the browser
+  // (shelf item) and add the content (shelf item status).
+  BrowserStatusMonitor::AddAppBrowserToShelf(browser);
 
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
@@ -98,14 +99,14 @@ void MultiProfileBrowserStatusMonitor::ConnectV1AppToLauncher(
     shelf_controller_->UpdateAppState(web_contents, false /*remove*/);
 }
 
-void MultiProfileBrowserStatusMonitor::DisconnectV1AppFromLauncher(
+void MultiProfileBrowserStatusMonitor::DisconnectAppBrowserFromShelf(
     Browser* browser) {
-  // Removing a V1 app from the launcher requires to remove the content and
-  // the launcher item.
+  // Removing an app from the shelf requires to remove the content and
+  // the shelf item.
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (web_contents)
     shelf_controller_->UpdateAppState(web_contents, true /*remove*/);
 
-  BrowserStatusMonitor::RemoveV1AppFromShelf(browser);
+  BrowserStatusMonitor::RemoveAppBrowserFromShelf(browser);
 }
