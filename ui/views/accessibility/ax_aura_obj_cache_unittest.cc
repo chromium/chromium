@@ -98,6 +98,59 @@ TEST_F(AXAuraObjCacheTest, TestViewRemoval) {
   delete parent;
 }
 
+// Helper for the ViewDestruction test.
+class ViewBlurObserver : public ViewObserver {
+ public:
+  ViewBlurObserver(AXAuraObjCache* cache, View* view) : cache_(cache) {
+    observation_.Observe(view);
+  }
+
+  // This is fired while the view is being destroyed, after the cache entry is
+  // removed by the AXWidgetObjWrapper. Re-create the cache entry so we can
+  // test that it will also be removed.
+  void OnViewBlurred(View* view) override {
+    ASSERT_FALSE(was_called());
+    observation_.Reset();
+
+    ASSERT_EQ(cache_->GetID(view), 0);
+    cache_->GetOrCreate(view);
+  }
+
+  bool was_called() { return !observation_.IsObserving(); }
+
+ private:
+  AXAuraObjCache* cache_;
+  base::ScopedObservation<View, ViewObserver> observation_{this};
+};
+
+// Test that stale cache entries are not left behind if a cache entry is
+// re-created during View destruction.
+TEST_F(AXAuraObjCacheTest, ViewDestruction) {
+  AXAuraObjCache cache;
+
+  WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
+  auto* button = new LabelButton(Button::PressedCallback(), u"button");
+  widget->GetRootView()->AddChildView(button);
+  widget->Activate();
+  button->RequestFocus();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(button->HasFocus());
+
+  cache.GetOrCreate(widget.get());
+  cache.GetOrCreate(button);
+  // Everything should have an ID, indicating it's in the cache.
+  EXPECT_GT(cache.GetID(widget.get()), 0);
+  EXPECT_GT(cache.GetID(button), 0);
+
+  ViewBlurObserver observer(&cache, button);
+  delete button;
+
+  // The button object is destroyed, so there should be no stale cache entries.
+  EXPECT_NE(button, nullptr);
+  EXPECT_EQ(ui::kInvalidAXNodeID, cache.GetID(button));
+  EXPECT_TRUE(observer.was_called());
+}
+
 TEST_F(AXAuraObjCacheTest, ValidTree) {
   // Create a parent window.
   auto parent_widget = std::make_unique<Widget>();

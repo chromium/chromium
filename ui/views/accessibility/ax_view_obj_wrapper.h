@@ -41,7 +41,8 @@ class AXViewObjWrapper : public AXAuraObjWrapper, public ViewObserver {
   void OnViewIsDeleting(View* observed_view) override;
 
  private:
-  View* view_;
+  // This is never null, as we destroy ourselves when the view is deleted.
+  View* const view_;
 
   base::ScopedObservation<View, ViewObserver> observation_{this};
 };
