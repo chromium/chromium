@@ -1,17 +1,15 @@
 #!/bin/bash
 # Download and extract Jinja2
 # Homepage:
-# http://jinja.pocoo.org/
-# Installation instructions:
-# http://jinja.pocoo.org/docs/intro/#from-the-tarball-release
+# https://jinja.palletsprojects.com/
 # Download page:
 # https://pypi.python.org/pypi/Jinja2
 PACKAGE='Jinja2'
 VERSION='2.10'
-SRC_URL='https://pypi.python.org/packages/56/e6/332789f295cf22308386cf5bbd1f4e00ed11484299c5d7383378cf48ba47/Jinja2-2.10.tar.gz'
+SRC_URL='https://files.pythonhosted.org/packages/56/e6/332789f295cf22308386cf5bbd1f4e00ed11484299c5d7383378cf48ba47/Jinja2-2.10.tar.gz'
 PACKAGE_DIR='jinja2'
 
-CHROMIUM_FILES="README.chromium OWNERS get_jinja2.sh"
+CHROMIUM_FILES="README.chromium OWNERS get_jinja2.sh DIR_METADATA"
 EXTRA_FILES='LICENSE AUTHORS'
 REMOVE_FILES='testsuite'
 
