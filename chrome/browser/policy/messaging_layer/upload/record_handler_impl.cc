@@ -232,7 +232,14 @@ void RecordHandlerImpl::ReportUploader::HandleFailedUpload() {
 }
 
 void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
-  // Decipher 'response' containing a base::Value dictionary that looks like:
+  if (!last_response_.is_dict()) {
+    LOG(ERROR) << "Server responded with a non-dictionary response: "
+               << last_response_;
+    Complete(
+        Status(error::FAILED_PRECONDITION, "Response is not a dictionary"));
+    return;
+  }
+
   //  {
   //    "lastSucceedUploadedRecord": ... // SequencingInformation proto
   //    "firstFailedUploadedRecord": {
