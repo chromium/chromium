@@ -12,18 +12,6 @@ namespace blink {
 // TODO(crbug.com/787254): Move these template definitions out of the Blink
 // exposed API when all their clients get Onion souped.
 template <typename OptionalT>
-absl::optional<typename OptionalT::value_type> ToBaseOptional(
-    const OptionalT& optional) {
-  return optional ? absl::make_optional(*optional) : absl::nullopt;
-}
-
-template <typename OptionalT>
-absl::optional<typename OptionalT::value_type> ToBaseOptional(
-    OptionalT&& optional) {
-  return optional ? absl::make_optional(*optional) : absl::nullopt;
-}
-
-template <typename OptionalT>
 absl::optional<typename OptionalT::value_type> ToAbslOptional(
     const OptionalT& optional) {
   return optional ? absl::make_optional(*optional) : absl::nullopt;

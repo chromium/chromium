@@ -129,10 +129,10 @@ void TransceiverStateSurfacer::Initialize(
     transceiver_states_.emplace_back(
         main_task_runner_, signaling_task_runner_, webrtc_transceiver.get(),
         std::move(sender_state), std::move(receiver_state),
-        blink::ToBaseOptional(webrtc_transceiver->mid()),
+        blink::ToAbslOptional(webrtc_transceiver->mid()),
         webrtc_transceiver->stopped(), webrtc_transceiver->direction(),
-        blink::ToBaseOptional(webrtc_transceiver->current_direction()),
-        blink::ToBaseOptional(webrtc_transceiver->fired_direction()),
+        blink::ToAbslOptional(webrtc_transceiver->current_direction()),
+        blink::ToAbslOptional(webrtc_transceiver->fired_direction()),
         GetHeaderExtensionsNegotiated(webrtc_transceiver));
   }
   is_initialized_ = true;
