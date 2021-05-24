@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isWindows, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {flush,Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -205,7 +205,7 @@ suite('SiteDetails', function() {
       ContentSettingsTypes.PROTOCOL_HANDLERS,
       ContentSettingsTypes.ZOOM_LEVELS,
     ];
-    if (!isChromeOS) {
+    if (!isChromeOS && !isWindows) {
       nonSiteDetailsContentSettingsTypes.push(
           ContentSettingsTypes.PROTECTED_CONTENT);
     }

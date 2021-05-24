@@ -187,7 +187,7 @@ const SiteSettingsBehaviorImpl = {
     if (this.contentTypes_.length === 0) {
       for (const typeName in ContentSettingsTypes) {
         const contentType = ContentSettingsTypes[typeName];
-        // <if expr="not chromeos">
+        // <if expr="not chromeos and not is_win">
         if (contentType === ContentSettingsTypes.PROTECTED_CONTENT) {
           continue;
         }
