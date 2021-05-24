@@ -143,6 +143,9 @@ Polymer({
   /** @override */
   created() {
     // Initialize the data array with data outside the chart boundary.
+    // Note that with side nav DOM manipulation, created() isn't guaranteed to
+    // be called only once.
+    this.data_ = [];
     for (var i = 0; i < this.numDataPoints_; ++i) {
       this.data_.push({user: -1, system: -1});
     }
