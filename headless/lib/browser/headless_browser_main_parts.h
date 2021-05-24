@@ -62,11 +62,9 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
 #endif
 
  private:
-  void MaybeStartLocalDevToolsHttpHandler();
 #if defined(HEADLESS_USE_PREFS)
   void CreatePrefService();
 #endif
-
   const content::MainFunctionParams parameters_;  // For running browser tests.
   HeadlessBrowserImpl* browser_;  // Not owned.
 
