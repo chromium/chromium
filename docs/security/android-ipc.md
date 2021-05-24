@@ -30,10 +30,19 @@ following the [Rule of 2](rule-of-2.md) is generally easy. (Though take note
 that certain Android classes are just Java wrappers around native code, which
 would not be considered safe by that rule.)
 
-It is **fundamentally impossible** to determine the sender of an Intent, so the
-security model of your feature cannot depend on authenticating the sender. Do
-not trust `Intent.EXTRA_REFERRER`. See also the discussion below about
-[capability tokens](#capability-tokens).
+It is **fundamentally impossible** to determine the sender of an Intent, unless
+the Activity was started with
+[`startActivityForResult`](https://developer.android.com/reference/android/app/Activity#startActivityForResult(android.content.Intent,%20int)).
+For Intents that are started via `startActivityForResult`, you can use
+[`getCallingActivity`](https://developer.android.com/reference/android/app/Activity#getCallingActivity())
+or
+[`getCallingPackage`](https://developer.android.com/reference/android/app/Activity#getCallingPackage())
+to retrieve the identity of the component that called
+[`setResult`](https://developer.android.com/reference/android/app/Activity#setResult(int))
+on the started Activity. For all other cases, the security model of your feature
+cannot depend on authenticating the sender of an Intent. Do not trust
+`Intent.EXTRA_REFERRER`. See also the discussion below about [capability
+tokens](#capability-tokens).
 
 One way to authorize Intents is to use the system's
 [`android:permission`](https://developer.android.com/guide/topics/permissions/overview#permission_enforcement)
