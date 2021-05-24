@@ -17,10 +17,6 @@
 #include <pthread.h>
 #endif
 
-namespace ui {
-class TLSDestructionCheckerForX11;
-}
-
 namespace base {
 
 class SamplingHeapProfiler;
@@ -162,7 +158,6 @@ class BASE_EXPORT ThreadLocalStorage {
   friend class internal::ThreadLocalStorageTestInternal;
   friend class trace_event::MallocDumpProvider;
   friend class debug::GlobalActivityTracker;
-  friend class ui::TLSDestructionCheckerForX11;
   static bool HasBeenDestroyed();
 
   DISALLOW_COPY_AND_ASSIGN(ThreadLocalStorage);

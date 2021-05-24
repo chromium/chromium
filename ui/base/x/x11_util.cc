@@ -39,7 +39,6 @@
 #include "base/sys_byteorder.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_local_storage.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -81,14 +80,6 @@
 #endif
 
 namespace ui {
-
-class TLSDestructionCheckerForX11 {
- public:
-  static bool HasBeenDestroyed() {
-    return base::ThreadLocalStorage::HasBeenDestroyed();
-  }
-};
-
 namespace {
 
 // Constants that are part of EWMH.
