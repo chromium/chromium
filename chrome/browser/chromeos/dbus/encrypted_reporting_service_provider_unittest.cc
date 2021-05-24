@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/upload/fake_upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
@@ -111,27 +112,29 @@ class TestEncryptedReportingServiceProvider
       policy::CloudPolicyClient* cloud_policy_client,
       ReportSuccessfulUploadCallback report_successful_upload_cb,
       EncryptionKeyAttachedCallback encrypted_key_cb)
-      : EncryptedReportingServiceProvider(base::BindRepeating(
-            [](policy::CloudPolicyClient* cloud_policy_client,
-               base::OnceCallback<void(
-                   reporting::StatusOr<policy::CloudPolicyClient*>)> callback) {
-              std::move(callback).Run(cloud_policy_client);
-            },
-            base::Unretained(cloud_policy_client))),
-        report_successful_upload_cb_(std::move(report_successful_upload_cb)),
-        encrypted_key_cb_(std::move(encrypted_key_cb)) {}
-
- protected:
-  void BuildUploadClient(policy::CloudPolicyClient* client,
-                         reporting::UploadClient::CreatedCallback
-                             update_upload_client_cb) override {
-    reporting::FakeUploadClient::Create(
-        client, std::move(report_successful_upload_cb_),
-        std::move(encrypted_key_cb_), std::move(update_upload_client_cb));
-  }
-
-  ReportSuccessfulUploadCallback report_successful_upload_cb_;
-  EncryptionKeyAttachedCallback encrypted_key_cb_;
+      : EncryptedReportingServiceProvider(
+            /*build_cloud_policy_client_cb=*/base::BindRepeating(
+                [](policy::CloudPolicyClient* cloud_policy_client,
+                   base::OnceCallback<void(
+                       reporting::StatusOr<policy::CloudPolicyClient*>)>
+                       callback) {
+                  std::move(callback).Run(cloud_policy_client);
+                },
+                base::Unretained(cloud_policy_client)),
+            /*upload_client_builder_cb=*/base::BindRepeating(
+                [](ReportSuccessfulUploadCallback report_successful_upload_cb,
+                   EncryptionKeyAttachedCallback encrypted_key_cb,
+                   scoped_refptr<
+                       reporting::StorageModuleInterface> /*storage_module*/,
+                   policy::CloudPolicyClient* client,
+                   reporting::UploadClient::CreatedCallback
+                       update_upload_client_cb) {
+                  reporting::FakeUploadClient::Create(
+                      client, report_successful_upload_cb, encrypted_key_cb,
+                      std::move(update_upload_client_cb));
+                },
+                report_successful_upload_cb,
+                encrypted_key_cb)) {}
 };
 
 class EncryptedReportingServiceProviderTest : public ::testing::Test {
