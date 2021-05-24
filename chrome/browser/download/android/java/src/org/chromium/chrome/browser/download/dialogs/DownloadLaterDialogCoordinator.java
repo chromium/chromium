@@ -267,7 +267,7 @@ public class DownloadLaterDialogCoordinator implements ModalDialogProperties.Con
                 && choice != DownloadLaterDialogChoice.DOWNLOAD_LATER) {
             mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                     mContext.getResources().getString(
-                            R.string.duplicate_download_infobar_download_button));
+                            R.string.download_later_dialog_positive_button_text));
             mDownloadLaterDialogModel.set(
                     DownloadLaterDialogProperties.DONT_SHOW_AGAIN_DISABLED, false);
         }

@@ -295,4 +295,25 @@ public class DownloadLaterDialogTest {
         verify(mController, times(0)).onDownloadLaterDialogComplete(anyInt(), anyLong());
         verify(mDateTimePicker).showDialog(any(), any(), any());
     }
+
+    @Test
+    @MediumTest
+    public void testSelectFromDownloadLaterToDownloadNow() {
+        showDialog();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            RadioButtonWithDescription downloadLaterButton =
+                    getDownloadLaterDialogView().findViewById(R.id.choose_date_time);
+            Assert.assertNotNull(downloadLaterButton);
+            downloadLaterButton.setChecked(true);
+            getDownloadLaterDialogView().onCheckedChanged(null, -1);
+
+            RadioButtonWithDescription onWifiButton =
+                    (RadioButtonWithDescription) getDownloadLaterDialogView().findViewById(
+                            org.chromium.chrome.browser.download.R.id.on_wifi);
+            onWifiButton.setChecked(true);
+            getDownloadLaterDialogView().onCheckedChanged(null, -1);
+        });
+
+        assertPositiveButtonText("Done");
+    }
 }
