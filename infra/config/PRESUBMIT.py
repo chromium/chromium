@@ -9,7 +9,7 @@ for more details on the presubmit API built into depot_tools.
 """
 
 PRESUBMIT_VERSION = '2.0.0'
-
+USE_PYTHON3 = True
 
 def CheckLintLuciMilo(input_api, output_api):
   if ('infra/config/generated/luci-milo.cfg' in input_api.LocalPaths() or
