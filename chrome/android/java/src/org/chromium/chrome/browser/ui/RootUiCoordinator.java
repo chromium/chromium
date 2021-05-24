@@ -189,8 +189,6 @@ public class RootUiCoordinator
     // This supplier only ever updated when feature TOOLBAR_IPH_ANDROID is enabled.
     protected OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier = new OneshotSupplierImpl<>();
     protected Supplier<Tab> mStartSurfaceParentTabSupplier;
-    private final ObservableSupplierImpl<Tab> mActivityTabSupplier = new ObservableSupplierImpl<>();
-    private final ActivityTabProvider.ActivityTabTabObserver mTabObserver;
     @Nullable
     private VoiceRecognitionHandler.Observer mMicStateObserver;
 
@@ -268,13 +266,7 @@ public class RootUiCoordinator
 
         mStartSurfaceParentTabSupplier = startSurfaceParentTabSupplier;
 
-        mTabObserver = new ActivityTabProvider.ActivityTabTabObserver(mActivityTabProvider) {
-            @Override
-            public void onObservingDifferentTab(Tab tab, boolean hint) {
-                mActivityTabSupplier.set(tab);
-            }
-        };
-        mTopUiThemeColorProvider = new TopUiThemeColorProvider(mActivity, mActivityTabSupplier,
+        mTopUiThemeColorProvider = new TopUiThemeColorProvider(mActivity, mActivityTabProvider,
                 mActivity::getActivityThemeColor, mActivity::isTablet,
                 shouldAllowThemingInNightMode());
     }
@@ -344,8 +336,6 @@ public class RootUiCoordinator
             mTopUiThemeColorProvider.destroy();
             mTopUiThemeColorProvider = null;
         }
-
-        mTabObserver.destroy();
 
         if (mFindToolbarManager != null) mFindToolbarManager.removeObserver(mFindToolbarObserver);
 

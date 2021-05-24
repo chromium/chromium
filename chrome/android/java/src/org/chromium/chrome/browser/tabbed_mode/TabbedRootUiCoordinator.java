@@ -21,7 +21,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpController;
@@ -118,8 +117,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private NavigationSheet mNavigationSheet;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private LayoutManagerImpl mLayoutManager;
-    private ObservableSupplierImpl<Tab> mTabSupplier;
-    private ActivityTabTabObserver mTabObserver;
     private ContinuousSearchContainerCoordinator mContinuousSearchContainerCoordinator;
     private HeightObserver mContinuousSearchObserver;
     private TabObscuringHandler.Observer mContinuousSearchTabObscuringHandlerObserver;
@@ -205,10 +202,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mWebFeedFollowIntroController != null) {
             mWebFeedFollowIntroController.destroy();
-        }
-
-        if (mTabObserver != null) {
-            mTabObserver.destroy();
         }
 
         if (mAppBannerInProductHelpController != null) {
@@ -345,7 +338,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     getBottomSheetController(), true));
         }
 
-        initializeTabSupplier();
         mIntentMetadataOneshotSupplier.onAvailable(mCallbackController.makeCancelable(
                 (metadata) -> initializeIPH(metadata.getIsIntentWithEffect())));
 
@@ -417,24 +409,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     // Private class methods
 
-    private void initializeTabSupplier() {
-        mTabSupplier = new ObservableSupplierImpl<>();
-        ActivityTabProvider activityTabProvider = mActivity.getActivityTabProvider();
-        mTabObserver = new ActivityTabTabObserver(activityTabProvider) {
-            @Override
-            public void onObservingDifferentTab(Tab tab, boolean hint) {
-                mTabSupplier.set(tab);
-            }
-        };
-        mTabSupplier.set(activityTabProvider.get());
-    }
-
     private void initializeIPH(boolean intentWithEffect) {
         if (mActivity == null) return;
-        mToolbarButtonInProductHelpController = new ToolbarButtonInProductHelpController(mActivity,
-                mActivity.getWindowAndroid(), mAppMenuCoordinator,
-                mActivity.getLifecycleDispatcher(), mTabSupplier, mActivity::isInOverviewMode,
-                mToolbarManager.getMenuButtonView(), mToolbarManager.getSecurityIconView());
+        mToolbarButtonInProductHelpController =
+                new ToolbarButtonInProductHelpController(mActivity, mActivity.getWindowAndroid(),
+                        mAppMenuCoordinator, mActivity.getLifecycleDispatcher(),
+                        mActivity.getActivityTabProvider(), mActivity::isInOverviewMode,
+                        mToolbarManager.getMenuButtonView(), mToolbarManager.getSecurityIconView());
         mReadLaterIPHController = new ReadLaterIPHController(mActivity,
                 getToolbarManager().getMenuButtonView(), mAppMenuCoordinator.getAppMenuHandler());
 
@@ -464,7 +445,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         -> mActivity.getToolbarManager().getMenuButtonView(),
                 MessageDispatcherProvider.from(mActivity.getWindowAndroid()));
         mAddToHomescreenMostVisitedTileObserver = new AddToHomescreenMostVisitedTileClickObserver(
-                mTabSupplier, mAddToHomescreenIPHController);
+                mActivity.getActivityTabProvider(), mAddToHomescreenIPHController);
         mAppBannerInProductHelpController =
                 AppBannerInProductHelpControllerFactory.createAppBannerInProductHelpController(
                         mActivity, mAppMenuCoordinator.getAppMenuHandler(),
@@ -476,7 +457,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (FeedFeatures.isWebFeedUIEnabled()) {
             mWebFeedFollowIntroController = new WebFeedFollowIntroController(mActivity,
-                    mAppMenuCoordinator.getAppMenuHandler(), mTabSupplier,
+                    mAppMenuCoordinator.getAppMenuHandler(), mActivity.getActivityTabProvider(),
                     mToolbarManager.getMenuButtonView(),
                     ()
                             -> mActivity.getTabCreator(/*incognito=*/false)
@@ -578,9 +559,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         final BrowserControlsSizer browserControlsSizer = mActivity.getBrowserControlsManager();
         mContinuousSearchContainerCoordinator = new ContinuousSearchContainerCoordinator(viewStub,
                 mLayoutManager, mActivity.getCompositorViewHolder().getResourceManager(),
-                mTabSupplier, browserControlsSizer, mCanAnimateBrowserControls,
-                defaultTopContainerHeightSupplier, getTopUiThemeColorProvider(),
-                mActivity.getResources(), mToolbarManager::setForceHideShadow);
+                mActivity.getActivityTabProvider(), browserControlsSizer,
+                mCanAnimateBrowserControls, defaultTopContainerHeightSupplier,
+                getTopUiThemeColorProvider(), mActivity.getResources(),
+                mToolbarManager::setForceHideShadow);
         mContinuousSearchObserver = (newHeight, animate) -> {
             mContinuousSearchHeight = newHeight;
             updateTopControlsHeight(animate);
