@@ -228,10 +228,6 @@ class ASH_EXPORT AcceleratorControllerImpl
     return &exit_warning_handler_;
   }
 
-  AcceleratorHistoryImpl* accelerator_history() {
-    return accelerator_history_.get();
-  }
-
   // Overridden from ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;

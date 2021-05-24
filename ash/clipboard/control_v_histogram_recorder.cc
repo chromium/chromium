@@ -23,7 +23,7 @@ void ControlVHistogramRecorder::OnKeyEvent(ui::KeyEvent* event) {
     case ui::VKEY_V: {
       auto& currently_pressed_keys = Shell::Get()
                                          ->accelerator_controller()
-                                         ->accelerator_history()
+                                         ->GetAcceleratorHistory()
                                          ->currently_pressed_keys();
       if (currently_pressed_keys.find(ui::VKEY_CONTROL) !=
               currently_pressed_keys.end() &&

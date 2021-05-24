@@ -266,10 +266,10 @@ class AcceleratorControllerTest : public AshTestBase {
       // simulate what happens in reality.
       ui::Accelerator pressed_accelerator = accelerator;
       pressed_accelerator.set_key_state(ui::Accelerator::KeyState::PRESSED);
-      controller->accelerator_history()->StoreCurrentAccelerator(
+      controller->GetAcceleratorHistory()->StoreCurrentAccelerator(
           pressed_accelerator);
     }
-    controller->accelerator_history()->StoreCurrentAccelerator(accelerator);
+    controller->GetAcceleratorHistory()->StoreCurrentAccelerator(accelerator);
     return controller->Process(accelerator);
   }
 
@@ -322,14 +322,14 @@ class AcceleratorControllerTest : public AshTestBase {
   static const ui::Accelerator& GetPreviousAccelerator() {
     return Shell::Get()
         ->accelerator_controller()
-        ->accelerator_history()
+        ->GetAcceleratorHistory()
         ->previous_accelerator();
   }
 
   static const ui::Accelerator& GetCurrentAccelerator() {
     return Shell::Get()
         ->accelerator_controller()
-        ->accelerator_history()
+        ->GetAcceleratorHistory()
         ->current_accelerator();
   }
 
@@ -1150,7 +1150,7 @@ TEST_F(AcceleratorControllerTest, GlobalAccelerators) {
   const ui::Accelerator volume_up(ui::VKEY_VOLUME_UP, ui::EF_NONE);
   {
     base::UserActionTester user_action_tester;
-    auto* history = controller_->accelerator_history();
+    auto* history = controller_->GetAcceleratorHistory();
 
     EXPECT_EQ(0, user_action_tester.GetActionCount("Accel_VolumeMute_F8"));
     EXPECT_TRUE(ProcessInController(volume_mute));
@@ -1310,7 +1310,7 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
   // When pressed key is interrupted by mouse, the AppList should not toggle.
   EXPECT_FALSE(
       ProcessInController(ui::Accelerator(ui::VKEY_LWIN, ui::EF_NONE)));
-  controller_->accelerator_history()->InterruptCurrentAccelerator();
+  controller_->GetAcceleratorHistory()->InterruptCurrentAccelerator();
   EXPECT_FALSE(ProcessInController(
       CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
   base::RunLoop().RunUntilIdle();
@@ -1996,7 +1996,7 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
   const ui::Accelerator volume_up(ui::VKEY_VOLUME_UP, ui::EF_NONE);
   {
     base::UserActionTester user_action_tester;
-    auto* history = controller_->accelerator_history();
+    auto* history = controller_->GetAcceleratorHistory();
 
     EXPECT_EQ(0, user_action_tester.GetActionCount("Accel_VolumeMute_F8"));
     EXPECT_TRUE(ProcessInController(volume_mute));

@@ -1872,7 +1872,7 @@ bool AcceleratorControllerImpl::PerformActionIfEnabled(
 
 bool AcceleratorControllerImpl::OnMenuAccelerator(
     const ui::Accelerator& accelerator) {
-  accelerator_history()->StoreCurrentAccelerator(accelerator);
+  accelerator_history_->StoreCurrentAccelerator(accelerator);
 
   // Menu shouldn't be closed for an invalid accelerator.
   AcceleratorAction* action_ptr = accelerators_.Find(accelerator);

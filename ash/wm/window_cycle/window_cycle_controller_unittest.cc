@@ -961,7 +961,7 @@ TEST_F(WindowCycleControllerTest, AltKeyRelease) {
   generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
   auto currently_pressed_keys = Shell::Get()
                                     ->accelerator_controller()
-                                    ->accelerator_history()
+                                    ->GetAcceleratorHistory()
                                     ->currently_pressed_keys();
   // Expect exactly one key pressed, which is Alt.
   EXPECT_EQ(1u, currently_pressed_keys.size());
@@ -979,7 +979,7 @@ TEST_F(WindowCycleControllerTest, AltKeyRelease) {
   // Expect all keys pressed to be released.
   currently_pressed_keys = Shell::Get()
                                ->accelerator_controller()
-                               ->accelerator_history()
+                               ->GetAcceleratorHistory()
                                ->currently_pressed_keys();
   EXPECT_EQ(0u, currently_pressed_keys.size());
   EXPECT_FALSE(base::Contains(currently_pressed_keys, ui::VKEY_MENU));
