@@ -94,23 +94,6 @@ bool InlineLoginDialogChromeOS::IsShown() {
   return dialog != nullptr;
 }
 
-// static
-void InlineLoginDialogChromeOS::ShowDeprecated(
-    const std::string& email,
-    const ::account_manager::AccountManagerFacade::AccountAdditionSource&
-        source) {
-  base::UmaHistogramEnumeration(
-      account_manager::AccountManagerFacade::kAccountAdditionSource, source);
-  ShowInternal(email);
-}
-
-// static
-void InlineLoginDialogChromeOS::ShowDeprecated(
-    const ::account_manager::AccountManagerFacade::AccountAdditionSource&
-        source) {
-  ShowDeprecated(/* email= */ std::string(), source);
-}
-
 void InlineLoginDialogChromeOS::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
   params->z_order = ui::ZOrderLevel::kNormal;
