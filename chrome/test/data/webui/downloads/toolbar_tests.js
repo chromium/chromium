@@ -51,7 +51,8 @@ suite('toolbar tests', function() {
   });
 
   test('clear all shown/hidden', () => {
-    const clearAll = toolbar.$$('#moreActionsMenu button');
+    const clearAll =
+        toolbar.shadowRoot.querySelector('#moreActionsMenu button');
     assertTrue(clearAll.hidden);
     toolbar.hasClearableDownloads = true;
     assertFalse(clearAll.hidden);
@@ -63,7 +64,7 @@ suite('toolbar tests', function() {
     assertFalse(toastManager.isToastOpen);
     assertFalse(toastManager.slottedHidden);
     toolbar.hasClearableDownloads = true;
-    toolbar.$$('#moreActionsMenu button').click();
+    toolbar.shadowRoot.querySelector('#moreActionsMenu button').click();
     assertTrue(toastManager.isToastOpen);
     assertTrue(toastManager.slottedHidden);
   });
@@ -76,7 +77,7 @@ suite('toolbar tests', function() {
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
     toolbar.hasClearableDownloads = true;
-    toolbar.$$('#moreActionsMenu button').click();
+    toolbar.shadowRoot.querySelector('#moreActionsMenu button').click();
     assertTrue(toastManager.isToastOpen);
     assertTrue(toastManager.slottedHidden);
   });
@@ -89,7 +90,7 @@ suite('toolbar tests', function() {
     toastManager.show('', /* hideSlotted= */ true);
     assertTrue(toastManager.slottedHidden);
     toolbar.hasClearableDownloads = true;
-    toolbar.$$('#moreActionsMenu button').click();
+    toolbar.shadowRoot.querySelector('#moreActionsMenu button').click();
     assertTrue(toastManager.isToastOpen);
     assertFalse(toastManager.slottedHidden);
   });

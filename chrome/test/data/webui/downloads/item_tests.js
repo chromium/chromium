@@ -102,7 +102,7 @@ suite('item tests', function() {
                state: States.ASYNC_SCANNING,
              }));
     flush();
-    assertNotEquals(item.$$('#openNow'), null);
+    assertNotEquals(item.shadowRoot.querySelector('#openNow'), null);
 
     loadTimeData.overrideValues({'allowOpenNow': false});
     item.set('data', createDownload({
@@ -111,7 +111,7 @@ suite('item tests', function() {
                state: States.ASYNC_SCANNING,
              }));
     flush();
-    assertEquals(item.$$('#openNow'), null);
+    assertEquals(item.shadowRoot.querySelector('#openNow'), null);
   });
 
   test('undo is shown in toast', () => {

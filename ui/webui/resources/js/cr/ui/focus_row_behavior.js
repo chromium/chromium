@@ -382,6 +382,38 @@ cr.define('cr.ui', function() {
     },
   };
 
+  /** @interface */
+  /* #export */ class FocusRowBehaviorInterface {
+    constructor() {
+      /** @type {string} */
+      this.id;
+
+      /** @type {boolean} */
+      this.isFocused;
+
+      /** @type {number} */
+      this.focusRowIndex;
+
+      /** @type {?Element} */
+      this.lastFocused;
+
+      /** @type {number} */
+      this.ironListTabIndex;
+
+      /** @type {boolean} */
+      this.listBlurred;
+    }
+
+    /**
+     * @param {number} newIndex
+     * @param {number} oldIndex
+     */
+    focusRowIndexChanged(newIndex, oldIndex) {}
+
+    /** @return {!cr.ui.FocusRow} */
+    getFocusRow() {}
+  }
+
   // #cr_define_end
   console.warn('crbug/1173575, non-JS module files deprecated.');
   return {

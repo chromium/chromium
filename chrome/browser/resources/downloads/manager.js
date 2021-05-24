@@ -14,12 +14,12 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
-import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {FindShortcutBehavior, FindShortcutBehaviorInterface} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {States} from './constants.js';
@@ -27,92 +27,96 @@ import {Data} from './data.js';
 import {PageCallbackRouter, PageHandlerInterface} from './downloads.mojom-webui.js';
 import {SearchService} from './search_service.js';
 
-Polymer({
-  is: 'downloads-manager',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {FindShortcutBehaviorInterface}
+ */
+const DownloadsManagerElementBase =
+    mixinBehaviors([FindShortcutBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class DownloadsManagerElement extends DownloadsManagerElementBase {
+  static get is() {
+    return 'downloads-manager';
+  }
 
-  behaviors: [
-    FindShortcutBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private */
-    hasDownloads_: {
-      observer: 'hasDownloadsChanged_',
-      type: Boolean,
-    },
-
-    /** @private */
-    hasShadow_: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-
-    /** @private */
-    inSearchMode_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {!Array<!Data>} */
-    items_: {
-      type: Array,
-      value() {
-        return [];
+  static get properties() {
+    return {
+      /** @private */
+      hasDownloads_: {
+        observer: 'hasDownloadsChanged_',
+        type: Boolean,
       },
-    },
 
-    /** @private */
-    spinnerActive_: {
-      type: Boolean,
-      notify: true,
-    },
+      /** @private */
+      hasShadow_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
 
-    /** @private {Element} */
-    lastFocused_: Object,
+      /** @private */
+      inSearchMode_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    listBlurred_: Boolean,
-  },
+      /** @private {!Array<!Data>} */
+      items_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
 
-  hostAttributes: {
-    // TODO(dbeam): this should use a class instead.
-    loading: true,
-  },
+      /** @private */
+      spinnerActive_: {
+        type: Boolean,
+        notify: true,
+      },
 
-  observers: [
-    'itemsChanged_(items_.*)',
-  ],
+      /** @private {Element} */
+      lastFocused_: Object,
 
-  /** @private {PageCallbackRouter} */
-  mojoEventTarget_: null,
+      /** @private */
+      listBlurred_: Boolean,
+    };
+  }
 
-  /** @private {PageHandlerInterface} */
-  mojoHandler_: null,
+  static get observers() {
+    return ['itemsChanged_(items_.*)'];
+  }
 
-  /** @private {?SearchService} */
-  searchService_: null,
+  constructor() {
+    super();
 
-  /** @private {!PromiseResolver} */
-  loaded_: new PromiseResolver,
-
-  /** @private {Array<number>} */
-  listenerIds_: null,
-
-  /** @private {?Function} */
-  boundOnKeyDown_: null,
-
-  /** @private {?Function} */
-  boundOnClick_: null,
-
-  /** @override */
-  created() {
     const browserProxy = BrowserProxy.getInstance();
+
+    /** @private {!PageCallbackRouter} */
     this.mojoEventTarget_ = browserProxy.callbackRouter;
+
+    /** @private {!PageHandlerInterface} */
     this.mojoHandler_ = browserProxy.handler;
+
+    /** @private {!SearchService} */
     this.searchService_ = SearchService.getInstance();
+
+    /** @private {!PromiseResolver} */
+    this.loaded_ = new PromiseResolver;
+
+    /** @private {?Array<number>} */
+    this.listenerIds_ = null;
+
+    /** @private {?Function} */
+    this.boundOnKeyDown_ = null;
+
+    /** @private {?Function} */
+    this.boundOnClick_ = null;
 
     // Regular expression that captures the leading slash, the content and the
     // trailing slash in three different groups.
@@ -121,11 +125,16 @@ Polymer({
     if (path !== '/') {  // There are no subpages in chrome://downloads.
       window.history.replaceState(undefined /* stateObject */, '', '/');
     }
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
+    // TODO(dbeam): this should use a class instead.
+    this.setAttribute('loading', true);
     document.documentElement.classList.remove('loading');
+
     this.listenerIds_ = [
       this.mojoEventTarget_.clearAll.addListener(this.clearAll_.bind(this)),
       this.mojoEventTarget_.insertItems.addListener(
@@ -153,11 +162,14 @@ Polymer({
 
     // Intercepts clicks on toast.
     const toastManager = getToastManager();
-    toastManager.$$('#toast').onclick = e => this.onToastClicked_(e);
-  },
+    toastManager.shadowRoot.querySelector('#toast').onclick = e =>
+        this.onToastClicked_(e);
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.listenerIds_.forEach(
         id => assert(this.mojoEventTarget_.removeListener(id)));
 
@@ -165,19 +177,19 @@ Polymer({
     this.boundOnKeyDown_ = null;
     document.removeEventListener('click', this.boundOnClick_);
     this.boundOnClick_ = null;
-  },
+  }
 
   /** @private */
   clearAll_() {
     this.set('items_', []);
-  },
+  }
 
   /** @private */
   hasDownloadsChanged_() {
     if (this.hasDownloads_) {
       this.$.downloadsList.fire('iron-resize');
     }
-  },
+  }
 
   /**
    * @param {number} index
@@ -204,7 +216,7 @@ Polymer({
     }
 
     this.spinnerActive_ = false;
-  },
+  }
 
   /** @private */
   itemsChanged_() {
@@ -217,18 +229,23 @@ Polymer({
                 state !== States.IN_PROGRESS && state !== States.PAUSED);
 
     if (this.inSearchMode_) {
-      this.fire('iron-announce', {
-        text: this.items_.length === 0 ?
-            this.noDownloadsText_() :
-            (this.items_.length === 1 ?
-                 loadTimeData.getStringF(
-                     'searchResultsSingular', this.$.toolbar.getSearchText()) :
-                 loadTimeData.getStringF(
-                     'searchResultsPlural', this.items_.length,
-                     this.$.toolbar.getSearchText()))
-      });
+      this.dispatchEvent(new CustomEvent('iron-announce', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          text: this.items_.length === 0 ?
+              this.noDownloadsText_() :
+              (this.items_.length === 1 ?
+                   loadTimeData.getStringF(
+                       'searchResultsSingular',
+                       this.$.toolbar.getSearchText()) :
+                   loadTimeData.getStringF(
+                       'searchResultsPlural', this.items_.length,
+                       this.$.toolbar.getSearchText()))
+        }
+      }));
     }
-  },
+  }
 
   /**
    * @return {string} The text to show when no download items are showing.
@@ -237,7 +254,7 @@ Polymer({
   noDownloadsText_() {
     return loadTimeData.getString(
         this.inSearchMode_ ? 'noSearchResults' : 'noDownloads');
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -266,7 +283,7 @@ Polymer({
         e.preventDefault();
       }
     }
-  },
+  }
 
   /** @private */
   onClick_() {
@@ -274,7 +291,7 @@ Polymer({
     if (toastManager.isToastOpen) {
       toastManager.hide();
     }
-  },
+  }
 
   /** @private */
   onClearAllCommand_() {
@@ -287,7 +304,7 @@ Polymer({
         this.items_.some(data => !data.isDangerous && !data.isMixedContent);
     getToastManager().show(loadTimeData.getString('toastClearedAll'),
         /* hideSlotted= */ !canUndo);
-  },
+  }
 
   /** @private */
   onUndoCommand_() {
@@ -297,13 +314,13 @@ Polymer({
 
     getToastManager().hide();
     this.mojoHandler_.undo();
-  },
+  }
 
   /** @private */
   onToastClicked_(e) {
     e.stopPropagation();
     e.preventDefault();
-  },
+  }
 
   /** @private */
   onScroll_() {
@@ -315,12 +332,12 @@ Polymer({
       this.searchService_.loadMore();
     }
     this.hasShadow_ = container.scrollTop > 0;
-  },
+  }
 
   /** @private */
   onSearchChanged_() {
     this.inSearchMode_ = this.searchService_.isSearching();
-  },
+  }
 
   /**
    * @param {number} index
@@ -337,13 +354,13 @@ Polymer({
                          removed: removed,
                        }]);
     this.onScroll_();
-  },
+  }
 
   /** @private */
   onUndoClick_() {
     getToastManager().hide();
     this.mojoHandler_.undo();
-  },
+  }
 
   /**
    * Updates whether dates should show for |this.items_[start - end]|. Note:
@@ -362,7 +379,7 @@ Polymer({
       const prev = this.items_[i - 1];
       current.hideDate = !!prev && prev.dateString === current.dateString;
     }
-  },
+  }
 
   /**
    * @param {number} index
@@ -374,11 +391,11 @@ Polymer({
     this.updateHideDates_(index, index);
 
     this.notifyPath(`items_.${index}`);
-    this.async(() => {
+    setTimeout(() => {
       const list = /** @type {!IronListElement} */ (this.$.downloadsList);
       list.updateSizeForIndex(index);
-    });
-  },
+    }, 0);
+  }
 
   // Override FindShortcutBehavior methods.
   handleFindShortcut(modalContextOpen) {
@@ -387,10 +404,12 @@ Polymer({
     }
     this.$.toolbar.focusOnSearchInput();
     return true;
-  },
+  }
 
   // Override FindShortcutBehavior methods.
   searchInputHasFocus() {
     return this.$.toolbar.isSearchFocused();
-  },
-});
+  }
+}
+
+customElements.define(DownloadsManagerElement.is, DownloadsManagerElement);

@@ -15,73 +15,85 @@ import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {Data} from './data.js';
 import {PageHandlerInterface} from './downloads.mojom-webui.js';
 import {SearchService} from './search_service.js';
 
-Polymer({
-  is: 'downloads-toolbar',
+/** @polymer */
+export class DownloadsToolbarElement extends PolymerElement {
+  static get is() {
+    return 'downloads-toolbar';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    hasClearableDownloads: {
-      type: Boolean,
-      value: false,
-      observer: 'updateClearAll_',
-    },
+  static get properties() {
+    return {
+      hasClearableDownloads: {
+        type: Boolean,
+        value: false,
+        observer: 'updateClearAll_',
+      },
 
-    /** @type {!Array<!Data>} */
-    items: {
-      type: Array,
-      value: Array,
-    },
+      /** @type {!Array<!Data>} */
+      items: {
+        type: Array,
+        value: Array,
+      },
 
-    spinnerActive: {
-      type: Boolean,
-      notify: true,
-    },
-  },
+      spinnerActive: {
+        type: Boolean,
+        notify: true,
+      },
+    };
+  }
 
-  /** @private {?PageHandlerInterface} */
-  mojoHandler_: null,
+  constructor() {
+    super();
+
+    /** @private {?PageHandlerInterface} */
+    this.mojoHandler_ = null;
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.mojoHandler_ = BrowserProxy.getInstance().handler;
-  },
+  }
 
   /** @return {boolean} Whether removal can be undone. */
   canUndo() {
     return !this.isSearchFocused();
-  },
+  }
 
   /** @return {boolean} Whether "Clear all" should be allowed. */
   canClearAll() {
     return this.getSearchText().length === 0 && this.hasClearableDownloads;
-  },
+  }
 
   /** @return {string} The full text being searched. */
   getSearchText() {
     return /** @type {!CrToolbarElement} */ (this.$.toolbar)
         .getSearchField()
         .getValue();
-  },
+  }
 
   focusOnSearchInput() {
     return /** @type {!CrToolbarElement} */ (this.$.toolbar)
         .getSearchField()
         .showAndFocus();
-  },
+  }
 
   isSearchFocused() {
     return /** @type {!CrToolbarElement} */ (this.$.toolbar)
         .getSearchField()
         .isSearchFocused();
-  },
+  }
 
   /** @private */
   onClearAllTap_(e) {
@@ -95,12 +107,12 @@ Polymer({
     // Stop propagating a click to the document to remove toast.
     e.stopPropagation();
     e.preventDefault();
-  },
+  }
 
   /** @private */
   onMoreActionsTap_() {
     this.$.moreActionsMenu.showAt(this.$.moreActions);
-  },
+  }
 
   /**
    * @param {!CustomEvent<string>} event
@@ -112,16 +124,18 @@ Polymer({
       this.spinnerActive = searchService.isSearching();
     }
     this.updateClearAll_();
-  },
+  }
 
   /** @private */
   onOpenDownloadsFolderTap_() {
     this.mojoHandler_.openDownloadsFolderRequiringGesture();
     this.$.moreActionsMenu.close();
-  },
+  }
 
   /** @private */
   updateClearAll_() {
-    this.$$('.clear-all').hidden = !this.canClearAll();
-  },
-});
+    this.shadowRoot.querySelector('.clear-all').hidden = !this.canClearAll();
+  }
+}
+
+customElements.define(DownloadsToolbarElement.is, DownloadsToolbarElement);

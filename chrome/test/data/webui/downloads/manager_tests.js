@@ -36,7 +36,7 @@ suite('manager tests', function() {
     manager = document.createElement('downloads-manager');
     document.body.appendChild(manager);
 
-    toastManager = manager.$$('cr-toast-manager');
+    toastManager = manager.shadowRoot.querySelector('cr-toast-manager');
     assertTrue(!!toastManager);
   });
 
@@ -50,16 +50,19 @@ suite('manager tests', function() {
     await callbackRouterRemote.$.flushForTesting();
     flush();
 
-    const item = manager.$$('downloads-item');
-    assertLT(item.$$('#url').offsetWidth, item.offsetWidth);
-    assertEquals(300, item.$$('#url').textContent.length);
+    const item = manager.shadowRoot.querySelector('downloads-item');
+    assertLT(
+        item.shadowRoot.querySelector('#url').offsetWidth, item.offsetWidth);
+    assertEquals(300, item.shadowRoot.querySelector('#url').textContent.length);
   });
 
   test('inserting items at beginning render dates correctly', async () => {
     const countDates = () => {
       const items = manager.shadowRoot.querySelectorAll('downloads-item');
       return Array.from(items).reduce((soFar, item) => {
-        return item.$$('div[id=date]:not(:empty)') ? soFar + 1 : soFar;
+        return item.shadowRoot.querySelector('div[id=date]:not(:empty)') ?
+            soFar + 1 :
+            soFar;
       }, 0);
     };
 
@@ -90,7 +93,8 @@ suite('manager tests', function() {
     callbackRouterRemote.insertItems(0, [dangerousDownload]);
     await callbackRouterRemote.$.flushForTesting();
     flush();
-    assertTrue(!!manager.$$('downloads-item').$$('.dangerous'));
+    assertTrue(!!manager.shadowRoot.querySelector('downloads-item')
+                     .shadowRoot.querySelector('.dangerous'));
 
     const safeDownload = Object.assign({}, dangerousDownload, {
       dangerType: DangerType.NOT_DANGEROUS,
@@ -99,7 +103,8 @@ suite('manager tests', function() {
     callbackRouterRemote.updateItem(0, safeDownload);
     await callbackRouterRemote.$.flushForTesting();
     flush();
-    assertFalse(!!manager.$$('downloads-item').$$('.dangerous'));
+    assertFalse(!!manager.shadowRoot.querySelector('downloads-item')
+                      .shadowRoot.querySelector('.dangerous'));
   });
 
   test('remove', async () => {
@@ -111,12 +116,12 @@ suite('manager tests', function() {
                                      })]);
     await callbackRouterRemote.$.flushForTesting();
     flush();
-    const item = manager.$$('downloads-item');
+    const item = manager.shadowRoot.querySelector('downloads-item');
 
     item.$.remove.click();
     await testBrowserProxy.handler.whenCalled('remove');
     flush();
-    const list = manager.$$('iron-list');
+    const list = manager.shadowRoot.querySelector('iron-list');
     assertTrue(list.hidden);
     assertTrue(toastManager.isToastOpen);
   });
@@ -182,14 +187,14 @@ suite('manager tests', function() {
   test('toast is hidden when undo is clicked', () => {
     toastManager.show('');
     assertTrue(toastManager.isToastOpen);
-    manager.$$('cr-toast-manager cr-button').click();
+    manager.shadowRoot.querySelector('cr-toast-manager cr-button').click();
     assertFalse(toastManager.isToastOpen);
   });
 
   test('toast is not hidden when itself is clicked', () => {
     toastManager.show('');
     assertTrue(toastManager.isToastOpen);
-    toastManager.$$('#toast').click();
+    toastManager.shadowRoot.querySelector('#toast').click();
     assertTrue(toastManager.isToastOpen);
   });
 

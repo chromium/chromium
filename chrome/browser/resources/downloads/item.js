@@ -18,11 +18,11 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {HTMLEscape} from 'chrome://resources/js/util.m.js';
-import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {DangerType, States} from './constants.js';
@@ -30,146 +30,164 @@ import {Data} from './data.js';
 import {PageHandlerInterface} from './downloads.mojom-webui.js';
 import {IconLoader} from './icon_loader.js';
 
-Polymer({
-  is: 'downloads-item',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {FocusRowBehaviorInterface}
+ */
+const DownloadsItemElementBase =
+    mixinBehaviors([FocusRowBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class DownloadsItemElement extends DownloadsItemElementBase {
+  static get is() {
+    return 'downloads-item';
+  }
 
-  behaviors: [
-    FocusRowBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** Used by FocusRowBehavior. */
-  overrideCustomEquivalent: true,
+  static get properties() {
+    return {
+      /** @type {!Data} */
+      data: Object,
 
-  properties: {
-    /** @type {!Data} */
-    data: Object,
+      /** @private */
+      completelyOnDisk_: {
+        computed: 'computeCompletelyOnDisk_(' +
+            'data.state, data.fileExternallyRemoved)',
+        type: Boolean,
+        value: true,
+      },
 
-    /** @private */
-    completelyOnDisk_: {
-      computed: 'computeCompletelyOnDisk_(' +
-          'data.state, data.fileExternallyRemoved)',
-      type: Boolean,
-      value: true,
-    },
+      /** @private */
+      controlledBy_: {
+        computed: 'computeControlledBy_(data.byExtId, data.byExtName)',
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    controlledBy_: {
-      computed: 'computeControlledBy_(data.byExtId, data.byExtName)',
-      type: String,
-      value: '',
-    },
+      /** @private */
+      controlRemoveFromListAriaLabel_: {
+        type: String,
+        computed: 'computeControlRemoveFromListAriaLabel_(data.fileName)',
+      },
 
-    /** @private */
-    controlRemoveFromListAriaLabel_: {
-      type: String,
-      computed: 'computeControlRemoveFromListAriaLabel_(data.fileName)',
-    },
+      /** @private */
+      isActive_: {
+        computed: 'computeIsActive_(' +
+            'data.state, data.fileExternallyRemoved)',
+        type: Boolean,
+        value: true,
+      },
 
-    /** @private */
-    isActive_: {
-      computed: 'computeIsActive_(' +
-          'data.state, data.fileExternallyRemoved)',
-      type: Boolean,
-      value: true,
-    },
+      /** @private */
+      isDangerous_: {
+        computed: 'computeIsDangerous_(data.state)',
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    isDangerous_: {
-      computed: 'computeIsDangerous_(data.state)',
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      isMalware_: {
+        computed: 'computeIsMalware_(isDangerous_, data.dangerType)',
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    isMalware_: {
-      computed: 'computeIsMalware_(isDangerous_, data.dangerType)',
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      isInProgress_: {
+        computed: 'computeIsInProgress_(data.state)',
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    isInProgress_: {
-      computed: 'computeIsInProgress_(data.state)',
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      pauseOrResumeText_: {
+        computed: 'computePauseOrResumeText_(isInProgress_, data.resume)',
+        type: String,
+        observer: 'updatePauseOrResumeClass_',
+      },
 
-    /** @private */
-    pauseOrResumeText_: {
-      computed: 'computePauseOrResumeText_(isInProgress_, data.resume)',
-      type: String,
-      observer: 'updatePauseOrResumeClass_',
-    },
+      /** @private */
+      showCancel_: {
+        computed: 'computeShowCancel_(data.state)',
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    showCancel_: {
-      computed: 'computeShowCancel_(data.state)',
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      showProgress_: {
+        computed: 'computeShowProgress_(showCancel_, data.percent)',
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    showProgress_: {
-      computed: 'computeShowProgress_(showCancel_, data.percent)',
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      showOpenNow_: {
+        computed: 'computeShowOpenNow_(data.state)',
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    showOpenNow_: {
-      computed: 'computeShowOpenNow_(data.state)',
-      type: Boolean,
-      value: false,
-    },
+      useFileIcon_: Boolean,
+    };
+  }
 
-    useFileIcon_: Boolean,
-  },
+  static get observers() {
+    return [
+      // TODO(dbeam): this gets called way more when I observe data.byExtId
+      // and data.byExtName directly. Why?
+      'observeControlledBy_(controlledBy_)',
+      'observeIsDangerous_(isDangerous_, data)',
+      'restoreFocusAfterCancelIfNeeded_(data)',
+    ];
+  }
 
-  hostAttributes: {
-    role: 'row',
-  },
+  constructor() {
+    super();
 
-  observers: [
-    // TODO(dbeam): this gets called way more when I observe data.byExtId
-    // and data.byExtName directly. Why?
-    'observeControlledBy_(controlledBy_)',
-    'observeIsDangerous_(isDangerous_, data)',
-    'restoreFocusAfterCancelIfNeeded_(data)',
-  ],
+    /**
+     * Used by FocusRowBehavior.
+     * @type {boolean}
+     */
+    this.overrideCustomEquivalent = true;
 
-  /** @private {PageHandlerInterface} */
-  mojoHandler_: null,
+    /** @private {?PageHandlerInterface} */
+    this.mojoHandler_ = null;
 
-  /** @private {boolean} */
-  restoreFocusAfterCancel_: false,
+    /** @private {boolean} */
+    this.restoreFocusAfterCancel_ = false;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
+    this.setAttribute('role', 'row');
     this.mojoHandler_ = BrowserProxy.getInstance().handler;
-    this.content = this.$.content;
-  },
+  }
 
   focusOnRemoveButton() {
     focusWithoutInk(this.$.remove);
-  },
+  }
 
   /** Overrides FocusRowBehavior. */
   getCustomEquivalent(sampleElement) {
     if (sampleElement.getAttribute('focus-type') === 'cancel') {
-      return this.$$('[focus-type="retry"]');
+      return this.shadowRoot.querySelector('[focus-type="retry"]');
     }
     if (sampleElement.getAttribute('focus-type') === 'retry') {
-      return this.$$('[focus-type="pauseOrResume"]');
+      return this.shadowRoot.querySelector('[focus-type="pauseOrResume"]');
     }
     return null;
-  },
+  }
 
   /** @return {!HTMLElement} */
   getFileIcon() {
     return /** @type {!HTMLElement} */ (this.$['file-icon']);
-  },
+  }
 
   /**
    * @param {string} url
@@ -178,7 +196,7 @@ Polymer({
    */
   chopUrl_(url) {
     return url.slice(0, 300);
-  },
+  }
 
   /** @private */
   computeClass_() {
@@ -197,7 +215,7 @@ Polymer({
     }
 
     return classes.join(' ');
-  },
+  }
 
   /**
    * @return {boolean}
@@ -206,7 +224,7 @@ Polymer({
   computeCompletelyOnDisk_() {
     return this.data.state === States.COMPLETE &&
         !this.data.fileExternallyRemoved;
-  },
+  }
 
   /**
    * @return {string}
@@ -220,7 +238,7 @@ Polymer({
     const url = `chrome://extensions/?id=${this.data.byExtId}`;
     const name = this.data.byExtName;
     return loadTimeData.getStringF('controlledByUrl', url, HTMLEscape(name));
-  },
+  }
 
   /**
    * @return {string}
@@ -229,7 +247,7 @@ Polymer({
   computeControlRemoveFromListAriaLabel_() {
     return loadTimeData.getStringF(
         'controlRemoveFromListAriaLabel', this.data.fileName);
-  },
+  }
 
   /**
    * @return {string}
@@ -241,12 +259,12 @@ Polymer({
       return '';
     }
     return assert(this.data.sinceString || this.data.dateString);
-  },
+  }
 
   /** @private @return {boolean} */
   computeDescriptionVisible_() {
     return this.computeDescription_() !== '';
-  },
+  }
 
   /**
    * @return {string}
@@ -312,7 +330,7 @@ Polymer({
     }
 
     return '';
-  },
+  }
 
   /**
    * @return {string}
@@ -347,7 +365,7 @@ Polymer({
       return 'cr:insert-drive-file';
     }
     return '';
-  },
+  }
 
   /**
    * @return {string}
@@ -382,7 +400,7 @@ Polymer({
       return 'paper-grey';
     }
     return '';
-  },
+  }
 
   /**
    * @return {boolean}
@@ -392,7 +410,7 @@ Polymer({
     return this.data.state !== States.CANCELLED &&
         this.data.state !== States.INTERRUPTED &&
         !this.data.fileExternallyRemoved;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -401,7 +419,7 @@ Polymer({
   computeIsDangerous_() {
     return this.data.state === States.DANGEROUS ||
         this.data.state === States.MIXED_CONTENT;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -409,7 +427,7 @@ Polymer({
    */
   computeIsInProgress_() {
     return this.data.state === States.IN_PROGRESS;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -422,16 +440,16 @@ Polymer({
          this.data.dangerType === DangerType.DANGEROUS_URL ||
          this.data.dangerType === DangerType.POTENTIALLY_UNWANTED || 
          this.data.dangerType === DangerType.DANGEROUS_ACCOUNT_COMPROMISE);
-  },
+  }
 
   /** @private */
   toggleButtonClass_() {
-    this.$$('#pauseOrResume')
+    this.shadowRoot.querySelector('#pauseOrResume')
         .classList.toggle(
             'action-button',
             this.pauseOrResumeText_ ===
                 loadTimeData.getString('controlResume'));
-  },
+  }
 
   /** @private */
   updatePauseOrResumeClass_() {
@@ -442,7 +460,7 @@ Polymer({
     // Wait for dom-if to switch to true, in case the text has just changed
     // from empty.
     beforeNextRender(this, () => this.toggleButtonClass_());
-  },
+  }
 
   /**
    * @return {string}
@@ -460,7 +478,7 @@ Polymer({
       return loadTimeData.getString('controlResume');
     }
     return '';
-  },
+  }
 
   /**
    * @return {string}
@@ -470,7 +488,7 @@ Polymer({
     const canDelete = loadTimeData.getBoolean('allowDeletingHistory');
     const hideRemove = this.isDangerous_ || this.showCancel_ || !canDelete;
     return hideRemove ? 'visibility: hidden' : '';
-  },
+  }
 
   /**
    * @return {boolean}
@@ -480,7 +498,7 @@ Polymer({
     return this.data.state === States.IN_PROGRESS ||
         this.data.state === States.PAUSED ||
         this.data.state === States.ASYNC_SCANNING;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -489,7 +507,7 @@ Polymer({
   computeShowProgress_() {
     return this.showCancel_ && this.data.percent >= -1 &&
         this.data.state !== States.ASYNC_SCANNING;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -498,7 +516,7 @@ Polymer({
   computeShowOpenNow_() {
     const allowOpenNow = loadTimeData.getBoolean('allowOpenNow');
     return this.data.state === States.ASYNC_SCANNING && allowOpenNow;
-  },
+  }
 
   /**
    * @return {string}
@@ -519,7 +537,7 @@ Polymer({
     }
 
     return '';
-  },
+  }
 
   /**
    * @return {boolean}
@@ -527,17 +545,17 @@ Polymer({
    */
   isIndeterminate_() {
     return this.data.percent === -1;
-  },
+  }
 
   /** @private */
   observeControlledBy_() {
     this.$['controlled-by'].innerHTML = this.controlledBy_;
     if (this.controlledBy_) {
-      const link = this.$$('#controlled-by a');
+      const link = this.shadowRoot.querySelector('#controlled-by a');
       link.setAttribute('focus-row-control', '');
       link.setAttribute('focus-type', 'controlledBy');
     }
-  },
+  }
 
   /** @private */
   observeIsDangerous_() {
@@ -570,23 +588,23 @@ Polymer({
             }
           });
     }
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.restoreFocusAfterCancel_ = true;
     this.mojoHandler_.cancel(this.data.id);
-  },
+  }
 
   /** @private */
   onDiscardDangerousTap_() {
     this.mojoHandler_.discardDangerous(this.data.id);
-  },
+  }
 
   /** @private */
   onOpenNowTap_() {
     this.mojoHandler_.openDuringScanningRequiringGesture(this.data.id);
-  },
+  }
 
   /**
    * @private
@@ -595,7 +613,7 @@ Polymer({
   onDragStart_(e) {
     e.preventDefault();
     this.mojoHandler_.drag(this.data.id);
-  },
+  }
 
   /**
    * @param {Event} e
@@ -604,13 +622,13 @@ Polymer({
   onFileLinkTap_(e) {
     e.preventDefault();
     this.mojoHandler_.openFileRequiringGesture(this.data.id);
-  },
+  }
 
   /** @private */
   onUrlTap_() {
     chrome.send(
         'metricsHandler:recordAction', ['Downloads_OpenUrlOfDownloadedItem']);
-  },
+  }
 
   /** @private */
   onPauseOrResumeTap_() {
@@ -619,7 +637,7 @@ Polymer({
     } else {
       this.mojoHandler_.resume(this.data.id);
     }
-  },
+  }
 
   /**
    * @private
@@ -645,22 +663,22 @@ Polymer({
     // Stop propagating a click to the document to remove toast.
     e.stopPropagation();
     e.preventDefault();
-  },
+  }
 
   /** @private */
   onRetryTap_() {
     this.mojoHandler_.retryDownload(this.data.id);
-  },
+  }
 
   /** @private */
   onSaveDangerousTap_() {
     this.mojoHandler_.saveDangerousRequiringGesture(this.data.id);
-  },
+  }
 
   /** @private */
   onShowTap_() {
     this.mojoHandler_.show(this.data.id);
-  },
+  }
 
   /** @private */
   restoreFocusAfterCancelIfNeeded_() {
@@ -674,5 +692,7 @@ Polymer({
         element.focus();
       }
     });
-  },
-});
+  }
+}
+
+customElements.define(DownloadsItemElement.is, DownloadsItemElement);
