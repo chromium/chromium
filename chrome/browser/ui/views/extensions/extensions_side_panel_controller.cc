@@ -47,6 +47,9 @@ ExtensionsSidePanelController::ExtensionsSidePanelController(
       web_view_(side_panel_->AddChildView(
           std::make_unique<views::WebView>(browser_view_->GetProfile()))) {
   DCHECK(base::FeatureList::IsEnabled(features::kExtensionsSidePanel));
+  // Allow the embedder to handle accelerators not handled by the WebContents.
+  web_view_->set_allow_accelerators(true);
+
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser_view->GetProfile());
   registry_observation_.Observe(registry);
@@ -119,6 +122,13 @@ content::WebContents* ExtensionsSidePanelController::OpenURLFromTab(
     content::WebContents* source,
     const content::OpenURLParams& params) {
   return browser_view_->browser()->OpenURL(params);
+}
+
+bool ExtensionsSidePanelController::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, web_view_->GetFocusManager());
 }
 
 void ExtensionsSidePanelController::OnExtensionLoaded(

@@ -13,6 +13,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 
 namespace extensions {
 class Extension;
@@ -49,6 +50,9 @@ class ExtensionsSidePanelController
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params) override;
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override;
 
   // extensions::ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -73,6 +77,10 @@ class ExtensionsSidePanelController
   BrowserView* browser_view_;
   views::WebView* web_view_;
   std::unique_ptr<content::WebContents> web_contents_;
+
+  // A handler to handle unhandled keyboard messages coming back from the
+  // renderer process.
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
