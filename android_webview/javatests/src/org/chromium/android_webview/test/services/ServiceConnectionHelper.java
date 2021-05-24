@@ -44,8 +44,11 @@ public class ServiceConnectionHelper implements AutoCloseable {
             public void onServiceDisconnected(ComponentName name) {}
         };
 
-        Assert.assertTrue("Failed to bind to service",
-                ContextUtils.getApplicationContext().bindService(intent, mConnection, flags));
+        boolean success =
+                ContextUtils.getApplicationContext().bindService(intent, mConnection, flags);
+        Assert.assertTrue("Failed to bind to service with " + intent + ". "
+                        + "Did you expose it in android_webview/test/shell/AndroidManifest.xml?",
+                success);
     }
 
     /**
