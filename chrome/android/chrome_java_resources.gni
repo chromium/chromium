@@ -566,6 +566,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_add_to_home_screen.xml",
   "java/res/drawable/ic_arrow_back_24dp.xml",
   "java/res/drawable/ic_arrow_forward_blue_24dp.xml",
+  "java/res/drawable/ic_auto_awesome.xml",
   "java/res/drawable/ic_block_red.xml",
   "java/res/drawable/ic_bluetooth_connected.xml",
   "java/res/drawable/ic_book_round.xml",

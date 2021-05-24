@@ -31,7 +31,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/VoiceToolbarButtonController.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarButtonController.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarFeatures.java",
+    "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarPrefs.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonController.java",
+    "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/AdaptiveToolbarPreferenceFragment.java",
+    "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/RadioButtonGroupAdaptiveToolbarPreference.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsContentDelegate.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsMediator.java",
@@ -69,6 +72,7 @@ android_library("java") {
     "//chrome/browser/device:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_group:java",
@@ -77,6 +81,7 @@ android_library("java") {
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/user_education:java",
+    "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:java_resources",
     "//components/embedder_support/android:util_java",
@@ -85,6 +90,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
@@ -129,10 +135,12 @@ android_resources("java_resources") {
     "java/res/drawable/new_tab_icon.xml",
     "java/res/layout/bottom_control_container.xml",
     "java/res/layout/control_container.xml",
+    "java/res/layout/radio_button_group_adaptive_toolbar_preference.xml",
     "java/res/layout/tab_switcher_toolbar.xml",
     "java/res/values-sw600dp/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
+    "java/res/xml/adaptive_toolbar_preference.xml",
   ]
 
   deps = [
@@ -178,6 +186,7 @@ java_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
@@ -187,6 +196,7 @@ android_library("javatests") {
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/AdaptiveToolbarPreferenceFragmentTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/load_progress/LoadProgressMediatorTest.java",
   ]
 
@@ -195,8 +205,11 @@ android_library("javatests") {
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/settings:test_support_java",
     "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
