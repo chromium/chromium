@@ -5,6 +5,7 @@
 #ifndef CONTENT_RENDERER_ACCESSIBILITY_RENDER_ACCESSIBILITY_IMPL_H_
 #define CONTENT_RENDERER_ACCESSIBILITY_RENDER_ACCESSIBILITY_IMPL_H_
 
+#include <list>
 #include <memory>
 #include <vector>
 
@@ -204,6 +205,12 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   bool ShouldSerializeNodeForEvent(const blink::WebAXObject& obj,
                                    const ui::AXEvent& event) const;
 
+  // Add a DirtyObject to the dirty_objects_ queue.
+  void EnqueueDirtyObject(const blink::WebAXObject& obj,
+                          ax::mojom::EventFrom event_from,
+                          ax::mojom::Action event_from_action,
+                          std::vector<ui::AXEventIntent> event_intents);
+
   // If we are calling this from a task, scheduling is allowed even if there is
   // a running task
   void ScheduleSendPendingAccessibilityEvents(
@@ -254,7 +261,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Objects that need to be re-serialized, the next time
   // we send an event bundle to the browser - but don't specifically need
   // an event fired.
-  std::vector<DirtyObject> dirty_objects_;
+  std::list<std::unique_ptr<DirtyObject>> dirty_objects_;
 
   // The adapter that exposes Blink's accessibility tree to AXTreeSerializer.
   std::unique_ptr<BlinkAXTreeSource> tree_source_;

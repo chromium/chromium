@@ -457,12 +457,8 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
     bool subtree,
     ax::mojom::Action event_from_action,
     std::vector<ui::AXEventIntent> event_intents) {
-  DirtyObject dirty_object;
-  dirty_object.obj = obj;
-  dirty_object.event_from = ax::mojom::EventFrom::kAction;
-  dirty_object.event_from_action = event_from_action;
-  dirty_object.event_intents = event_intents;
-  dirty_objects_.push_back(dirty_object);
+  EnqueueDirtyObject(obj, ax::mojom::EventFrom::kAction, event_from_action,
+                     event_intents);
 
   if (subtree)
     serializer_->InvalidateSubtree(obj);
@@ -632,6 +628,19 @@ bool RenderAccessibilityImpl::ShouldSerializeNodeForEvent(
   }
 
   return true;
+}
+
+void RenderAccessibilityImpl::EnqueueDirtyObject(
+    const blink::WebAXObject& obj,
+    ax::mojom::EventFrom event_from,
+    ax::mojom::Action event_from_action,
+    std::vector<ui::AXEventIntent> event_intents) {
+  DirtyObject* dirty_object = new DirtyObject();
+  dirty_object->obj = obj;
+  dirty_object->event_from = event_from;
+  dirty_object->event_from_action = event_from_action;
+  dirty_object->event_intents = event_intents;
+  dirty_objects_.push_back(base::WrapUnique<DirtyObject>(dirty_object));
 }
 
 int RenderAccessibilityImpl::GetDeferredEventsDelay() {
@@ -826,10 +835,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   std::vector<ui::AXTreeUpdate> updates;
   std::vector<ui::AXEvent> events;
 
-  // Keep track of nodes in the tree that need to be updated.
-  std::vector<DirtyObject> dirty_objects = dirty_objects_;
-  dirty_objects_.clear();
-
   // If there's a layout complete or a scroll changed message, we need to send
   // location changes.
   bool need_to_send_location_changes = false;
@@ -906,10 +911,12 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   // Now serialize all dirty objects. Keep track of IDs serialized
   // so we don't have to serialize the same node twice.
   std::set<int32_t> already_serialized_ids;
-  for (size_t i = 0; i < dirty_objects.size(); ++i) {
-    DirtyObject current_dirty_object = dirty_objects[i];
+  while (!dirty_objects_.empty()) {
+    std::unique_ptr<DirtyObject> current_dirty_object =
+        std::move(dirty_objects_.front());
+    dirty_objects_.pop_front();
+    auto obj = current_dirty_object->obj;
 
-    auto obj = current_dirty_object.obj;
     // Dirty objects can be added using MarkWebAXObjectDirty(obj) from other
     // parts of the code as well, so we need to ensure the object still exists.
     // TODO(accessibility) Change this to CheckValidity() if there aren't crash
@@ -961,25 +968,19 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
         // Similarly, during Event::kTextChanged, if any Ignored,
         // but included in tree ancestor uses NameFrom::kContents,
         // they must also be re-serialized in case the name changed.
-        DirtyObject dirty_object;
-        dirty_object.obj = ancestor;
-        dirty_object.event_from = current_dirty_object.event_from;
-        dirty_object.event_from_action = current_dirty_object.event_from_action;
-        dirty_object.event_intents = current_dirty_object.event_intents;
-        dirty_objects.push_back(dirty_object);
+        EnqueueDirtyObject(ancestor, current_dirty_object->event_from,
+                           current_dirty_object->event_from_action,
+                           current_dirty_object->event_intents);
       }
-      DirtyObject dirty_object;
-      dirty_object.obj = ancestor;
-      dirty_object.event_from = current_dirty_object.event_from;
-      dirty_object.event_from_action = current_dirty_object.event_from_action;
-      dirty_object.event_intents = current_dirty_object.event_intents;
-      dirty_objects.push_back(dirty_object);
+      EnqueueDirtyObject(ancestor, current_dirty_object->event_from,
+                         current_dirty_object->event_from_action,
+                         current_dirty_object->event_intents);
     }
 
     ui::AXTreeUpdate update;
-    update.event_from = current_dirty_object.event_from;
-    update.event_from_action = current_dirty_object.event_from_action;
-    update.event_intents = current_dirty_object.event_intents;
+    update.event_from = current_dirty_object->event_from;
+    update.event_from_action = current_dirty_object->event_from_action;
+    update.event_intents = current_dirty_object->event_intents;
     // If there's a plugin, force the tree data to be generated in every
     // message so the plugin can merge its own tree data changes.
     if (plugin_tree_source_)
