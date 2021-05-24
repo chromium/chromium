@@ -369,14 +369,14 @@ void RunTest(int thread_count,
              min_laps_per_second);
 }
 
-class MemoryAllocationPerfTest
+class PartitionAllocMemoryAllocationPerfTest
     : public testing::TestWithParam<std::tuple<int, AllocatorType>> {};
 
 // Only one partition with a thread cache: cannot use the thread cache when
 // PartitionAlloc is malloc().
 INSTANTIATE_TEST_SUITE_P(
     ,
-    MemoryAllocationPerfTest,
+    PartitionAllocMemoryAllocationPerfTest,
     ::testing::Combine(
         ::testing::Values(1, 2, 3, 4),
         ::testing::Values(AllocatorType::kSystem,
@@ -390,41 +390,42 @@ INSTANTIATE_TEST_SUITE_P(
 // This test (and the other one below) allocates a large amount of memory, which
 // can cause issues on Android.
 #if !defined(MEMORY_CONSTRAINED)
-TEST_P(MemoryAllocationPerfTest, SingleBucket) {
+TEST_P(PartitionAllocMemoryAllocationPerfTest, SingleBucket) {
   auto params = GetParam();
   RunTest(std::get<0>(params), std::get<1>(params), SingleBucket, nullptr,
           "SingleBucket");
 }
 #endif  // defined(MEMORY_CONSTRAINED)
 
-TEST_P(MemoryAllocationPerfTest, SingleBucketWithFree) {
+TEST_P(PartitionAllocMemoryAllocationPerfTest, SingleBucketWithFree) {
   auto params = GetParam();
   RunTest(std::get<0>(params), std::get<1>(params), SingleBucketWithFree,
           nullptr, "SingleBucketWithFree");
 }
 
 #if !defined(MEMORY_CONSTRAINED)
-TEST_P(MemoryAllocationPerfTest, MultiBucket) {
+TEST_P(PartitionAllocMemoryAllocationPerfTest, MultiBucket) {
   auto params = GetParam();
   RunTest(std::get<0>(params), std::get<1>(params), MultiBucket, nullptr,
           "MultiBucket");
 }
 #endif  // defined(MEMORY_CONSTRAINED)
 
-TEST_P(MemoryAllocationPerfTest, MultiBucketWithFree) {
+TEST_P(PartitionAllocMemoryAllocationPerfTest, MultiBucketWithFree) {
   auto params = GetParam();
   RunTest(std::get<0>(params), std::get<1>(params), MultiBucketWithFree,
           nullptr, "MultiBucketWithFree");
 }
 
-TEST_P(MemoryAllocationPerfTest, DirectMapped) {
+TEST_P(PartitionAllocMemoryAllocationPerfTest, DirectMapped) {
   auto params = GetParam();
   RunTest(std::get<0>(params), std::get<1>(params), DirectMapped, nullptr,
           "DirectMapped");
 }
 
 #if !defined(MEMORY_CONSTRAINED)
-TEST_P(MemoryAllocationPerfTest, DISABLED_MultiBucketWithNoisyNeighbor) {
+TEST_P(PartitionAllocMemoryAllocationPerfTest,
+       DISABLED_MultiBucketWithNoisyNeighbor) {
   auto params = GetParam();
   RunTest(std::get<0>(params), std::get<1>(params), MultiBucket, DirectMapped,
           "MultiBucketWithNoisyNeighbor");

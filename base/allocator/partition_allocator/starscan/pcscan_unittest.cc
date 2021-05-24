@@ -38,9 +38,9 @@ struct DisableStackScanningScope final {
 };
 }  // namespace
 
-class PCScanTest : public testing::Test {
+class PartitionAllocPCScanTest : public testing::Test {
  public:
-  PCScanTest() {
+  PartitionAllocPCScanTest() {
     PartitionAllocGlobalInit([](size_t) { LOG(FATAL) << "Out of memory"; });
     // Previous test runs within the same process decommit GigaCage, therefore
     // we need to make sure that the card table is recommitted for each run.
@@ -52,7 +52,7 @@ class PCScanTest : public testing::Test {
                      PartitionOptions::RefCount::kDisallowed});
     PCScan::RegisterScannableRoot(allocator_.root());
   }
-  ~PCScanTest() override {
+  ~PartitionAllocPCScanTest() override {
     allocator_.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                                    PartitionPurgeDiscardUnusedSystemPages);
     PartitionAllocGlobalUninitForTesting();
@@ -172,7 +172,7 @@ struct List final : ListBase {
 
 }  // namespace
 
-TEST_F(PCScanTest, ArbitraryObjectInQuarantine) {
+TEST_F(PartitionAllocPCScanTest, ArbitraryObjectInQuarantine) {
   using ListType = List<8>;
 
   auto* obj1 = ListType::Create(root());
@@ -185,7 +185,7 @@ TEST_F(PCScanTest, ArbitraryObjectInQuarantine) {
   EXPECT_TRUE(IsInQuarantine(obj2));
 }
 
-TEST_F(PCScanTest, FirstObjectInQuarantine) {
+TEST_F(PartitionAllocPCScanTest, FirstObjectInQuarantine) {
   static constexpr size_t kAllocationSize = 16;
 
   FullSlotSpanAllocation full_slot_span =
@@ -196,7 +196,7 @@ TEST_F(PCScanTest, FirstObjectInQuarantine) {
   EXPECT_TRUE(IsInQuarantine(full_slot_span.first));
 }
 
-TEST_F(PCScanTest, LastObjectInQuarantine) {
+TEST_F(PartitionAllocPCScanTest, LastObjectInQuarantine) {
   static constexpr size_t kAllocationSize = 16;
 
   FullSlotSpanAllocation full_slot_span =
@@ -210,7 +210,7 @@ TEST_F(PCScanTest, LastObjectInQuarantine) {
 namespace {
 
 template <typename SourceList, typename ValueList>
-void TestDanglingReference(PCScanTest& test,
+void TestDanglingReference(PartitionAllocPCScanTest& test,
                            SourceList* source,
                            ValueList* value) {
   auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBuckets(
@@ -240,7 +240,7 @@ void TestDanglingReference(PCScanTest& test,
 }
 }  // namespace
 
-TEST_F(PCScanTest, DanglingReferenceSameBucket) {
+TEST_F(PartitionAllocPCScanTest, DanglingReferenceSameBucket) {
   using SourceList = List<8>;
   using ValueList = SourceList;
 
@@ -251,7 +251,7 @@ TEST_F(PCScanTest, DanglingReferenceSameBucket) {
   TestDanglingReference(*this, source, value);
 }
 
-TEST_F(PCScanTest, DanglingReferenceDifferentBuckets) {
+TEST_F(PartitionAllocPCScanTest, DanglingReferenceDifferentBuckets) {
   using SourceList = List<8>;
   using ValueList = List<128>;
 
@@ -262,7 +262,7 @@ TEST_F(PCScanTest, DanglingReferenceDifferentBuckets) {
   TestDanglingReference(*this, source, value);
 }
 
-TEST_F(PCScanTest, DanglingReferenceDifferentBucketsAligned) {
+TEST_F(PartitionAllocPCScanTest, DanglingReferenceDifferentBucketsAligned) {
   // Choose a high alignment that almost certainly will cause a gap between slot
   // spans. But make it less than kMaxSupportedAlignment, or else two
   // allocations will end up on different super pages.
@@ -308,7 +308,8 @@ TEST_F(PCScanTest, DanglingReferenceDifferentBucketsAligned) {
   TestDanglingReference(*this, source, value);
 }
 
-TEST_F(PCScanTest, DanglingReferenceSameSlotSpanButDifferentPages) {
+TEST_F(PartitionAllocPCScanTest,
+       DanglingReferenceSameSlotSpanButDifferentPages) {
   using SourceList = List<8>;
   using ValueList = SourceList;
 
@@ -335,7 +336,7 @@ TEST_F(PCScanTest, DanglingReferenceSameSlotSpanButDifferentPages) {
   TestDanglingReference(*this, source, value);
 }
 
-TEST_F(PCScanTest, DanglingReferenceFromFullPage) {
+TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromFullPage) {
   using SourceList = List<64>;
   using ValueList = SourceList;
 
@@ -386,7 +387,7 @@ struct ListWithInnerReference {
 
 }  // namespace
 
-TEST_F(PCScanTest, DanglingInnerReference) {
+TEST_F(PartitionAllocPCScanTest, DanglingInnerReference) {
   using SourceList = ListWithInnerReference<64>;
   using ValueList = SourceList;
 
@@ -397,7 +398,7 @@ TEST_F(PCScanTest, DanglingInnerReference) {
   TestDanglingReference(*this, source, value);
 }
 
-TEST_F(PCScanTest, DanglingInterPartitionReference) {
+TEST_F(PartitionAllocPCScanTest, DanglingInterPartitionReference) {
   using SourceList = List<64>;
   using ValueList = SourceList;
 
@@ -424,7 +425,7 @@ TEST_F(PCScanTest, DanglingInterPartitionReference) {
   TestDanglingReference(*this, source, value);
 }
 
-TEST_F(PCScanTest, DanglingReferenceToNonScannablePartition) {
+TEST_F(PartitionAllocPCScanTest, DanglingReferenceToNonScannablePartition) {
   using SourceList = List<64>;
   using ValueList = SourceList;
 
@@ -451,7 +452,7 @@ TEST_F(PCScanTest, DanglingReferenceToNonScannablePartition) {
   TestDanglingReference(*this, source, value);
 }
 
-TEST_F(PCScanTest, DanglingReferenceFromNonScannablePartition) {
+TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
   using SourceList = List<64>;
   using ValueList = SourceList;
 
@@ -490,7 +491,7 @@ TEST_F(PCScanTest, DanglingReferenceFromNonScannablePartition) {
 
 // Death tests misbehave on Android, http://crbug.com/643760.
 #if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
-TEST_F(PCScanTest, DoubleFree) {
+TEST_F(PartitionAllocPCScanTest, DoubleFree) {
   auto* list = List<1>::Create(root());
   List<1>::Destroy(root(), list);
   EXPECT_DEATH(List<1>::Destroy(root(), list), "");
@@ -500,7 +501,7 @@ TEST_F(PCScanTest, DoubleFree) {
 #if !PCSCAN_DISABLE_SAFEPOINTS
 namespace {
 template <typename SourceList, typename ValueList>
-void TestDanglingReferenceWithSafepoint(PCScanTest& test,
+void TestDanglingReferenceWithSafepoint(PartitionAllocPCScanTest& test,
                                         SourceList* source,
                                         ValueList* value) {
   auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBuckets(
@@ -546,7 +547,7 @@ void TestDanglingReferenceWithSafepoint(PCScanTest& test,
 }
 }  // namespace
 
-TEST_F(PCScanTest, Safepoint) {
+TEST_F(PartitionAllocPCScanTest, Safepoint) {
   using SourceList = List<64>;
   using ValueList = SourceList;
 
@@ -560,7 +561,7 @@ TEST_F(PCScanTest, Safepoint) {
 }
 #endif  // PCSCAN_DISABLE_SAFEPOINTS
 
-TEST_F(PCScanTest, StackScanning) {
+TEST_F(PartitionAllocPCScanTest, StackScanning) {
   using ValueList = List<8>;
 
   PCScan::EnableStackScanning();

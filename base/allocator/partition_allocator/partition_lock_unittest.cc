@@ -26,19 +26,19 @@ class LambdaThreadDelegate : public PlatformThread::Delegate {
   RepeatingClosure f_;
 };
 
-TEST(SpinLockTest, Simple) {
+TEST(PartitionAllocSpinLockTest, Simple) {
   MaybeSpinLock<true> lock;
   lock.Lock();
   lock.Unlock();
 }
 
 MaybeSpinLock<true> g_lock;
-TEST(SpinLockTest, StaticLockStartsUnlocked) {
+TEST(PartitionAllocSpinLockTest, StaticLockStartsUnlocked) {
   g_lock.Lock();
   g_lock.Unlock();
 }
 
-TEST(SpinLockTest, Contended) {
+TEST(PartitionAllocSpinLockTest, Contended) {
   int counter = 0;  // *Not* atomic.
   std::vector<PlatformThreadHandle> thread_handles;
   constexpr int iterations_per_thread = 1000000;
@@ -74,7 +74,7 @@ TEST(SpinLockTest, Contended) {
   EXPECT_EQ(iterations_per_thread * num_threads, counter);
 }
 
-TEST(SpinLockTest, SlowThreads) {
+TEST(PartitionAllocSpinLockTest, SlowThreads) {
   int counter = 0;  // *Not* atomic.
   std::vector<PlatformThreadHandle> thread_handles;
   constexpr int iterations_per_thread = 100;
@@ -112,7 +112,7 @@ TEST(SpinLockTest, SlowThreads) {
   EXPECT_EQ(iterations_per_thread * num_threads, counter);
 }
 
-TEST(SpinLockTest, AssertAcquired) {
+TEST(PartitionAllocSpinLockTest, AssertAcquired) {
   MaybeSpinLock<true> lock;
   lock.Lock();
   lock.AssertAcquired();
@@ -122,12 +122,12 @@ TEST(SpinLockTest, AssertAcquired) {
 // AssertAcquired() is only enforced with DCHECK()s.
 #if defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
 
-TEST(SpinLockTest, AssertAcquiredDeathTest) {
+TEST(PartitionAllocSpinLockTest, AssertAcquiredDeathTest) {
   MaybeSpinLock<true> lock;
   EXPECT_DEATH(lock.AssertAcquired(), "");
 }
 
-TEST(SpinLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
+TEST(PartitionAllocSpinLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
   MaybeSpinLock<true> lock;
   // NO_THREAD_SAFETY_ANALYSIS: The checker rightfully points out that the lock
   // is still held at the end of the function, which is what we want here.

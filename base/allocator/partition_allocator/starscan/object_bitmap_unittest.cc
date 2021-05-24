@@ -53,7 +53,7 @@ struct NonAtomicAccess {
 };
 
 template <typename Access>
-class ObjectBitmapTest : public ::testing::Test {
+class PartitionAllocObjectBitmapTest : public ::testing::Test {
  protected:
   static constexpr AccessType kAccessType = Access::value;
 
@@ -93,40 +93,40 @@ class ObjectBitmapTest : public ::testing::Test {
 }  // namespace
 
 using AccessTypes = ::testing::Types<AtomicAccess, NonAtomicAccess>;
-TYPED_TEST_SUITE(ObjectBitmapTest, AccessTypes);
+TYPED_TEST_SUITE(PartitionAllocObjectBitmapTest, AccessTypes);
 
-TYPED_TEST(ObjectBitmapTest, MoreThanZeroEntriesPossible) {
+TYPED_TEST(PartitionAllocObjectBitmapTest, MoreThanZeroEntriesPossible) {
   const size_t max_entries = TestBitmap::kMaxEntries;
   EXPECT_LT(0u, max_entries);
 }
 
-TYPED_TEST(ObjectBitmapTest, InitialEmpty) {
+TYPED_TEST(PartitionAllocObjectBitmapTest, InitialEmpty) {
   EXPECT_TRUE(this->IsEmpty());
 }
 
-TYPED_TEST(ObjectBitmapTest, SetBitImpliesNonEmpty) {
+TYPED_TEST(PartitionAllocObjectBitmapTest, SetBitImpliesNonEmpty) {
   this->SetBitForObject(0);
   EXPECT_FALSE(this->IsEmpty());
 }
 
-TYPED_TEST(ObjectBitmapTest, SetBitCheckBit) {
+TYPED_TEST(PartitionAllocObjectBitmapTest, SetBitCheckBit) {
   this->SetBitForObject(0);
   EXPECT_TRUE(this->CheckBitForObject(0));
 }
 
-TYPED_TEST(ObjectBitmapTest, SetBitClearbitCheckBit) {
+TYPED_TEST(PartitionAllocObjectBitmapTest, SetBitClearbitCheckBit) {
   this->SetBitForObject(0);
   this->ClearBitForObject(0);
   EXPECT_FALSE(this->CheckBitForObject(0));
 }
 
-TYPED_TEST(ObjectBitmapTest, SetBitClearBitImpliesEmpty) {
+TYPED_TEST(PartitionAllocObjectBitmapTest, SetBitClearBitImpliesEmpty) {
   this->SetBitForObject(this->LastIndex());
   this->ClearBitForObject(this->LastIndex());
   EXPECT_TRUE(this->IsEmpty());
 }
 
-TYPED_TEST(ObjectBitmapTest, AdjacentObjectsAtBegin) {
+TYPED_TEST(PartitionAllocObjectBitmapTest, AdjacentObjectsAtBegin) {
   static constexpr AccessType kAccessType = TestFixture::kAccessType;
 
   this->SetBitForObject(0);
@@ -145,7 +145,7 @@ TYPED_TEST(ObjectBitmapTest, AdjacentObjectsAtBegin) {
   EXPECT_EQ(2u, count);
 }
 
-TYPED_TEST(ObjectBitmapTest, AdjacentObjectsAtEnd) {
+TYPED_TEST(PartitionAllocObjectBitmapTest, AdjacentObjectsAtEnd) {
   static constexpr AccessType kAccessType = TestFixture::kAccessType;
   static const size_t last_entry_index = this->LastIndex();
 
@@ -165,7 +165,7 @@ TYPED_TEST(ObjectBitmapTest, AdjacentObjectsAtEnd) {
   EXPECT_EQ(2u, count);
 }
 
-TYPED_TEST(ObjectBitmapTest, IterateAndClearBitmap) {
+TYPED_TEST(PartitionAllocObjectBitmapTest, IterateAndClearBitmap) {
   static constexpr AccessType kAccessType = TestFixture::kAccessType;
 
   size_t expected_count = 0;

@@ -17,7 +17,8 @@ namespace {
 constexpr size_t kMB = 1024 * 1024;
 }  // namespace
 
-TEST(PCScanSchedulerLimitBackendTest, NoScanBelowMinimumScanningThreshold) {
+TEST(PartitionAllocPCScanSchedulerLimitBackendTest,
+     NoScanBelowMinimumScanningThreshold) {
   PCScanScheduler scheduler;
   LimitBackend limit_backend(scheduler);
   scheduler.SetNewSchedulingBackend(limit_backend);
@@ -29,7 +30,8 @@ TEST(PCScanSchedulerLimitBackendTest, NoScanBelowMinimumScanningThreshold) {
   EXPECT_TRUE(scheduler.AccountFreed(1));
 }
 
-TEST(PCScanSchedulerLimitBackendTest, ScanAtQuarantineSizeFraction) {
+TEST(PartitionAllocPCScanSchedulerLimitBackendTest,
+     ScanAtQuarantineSizeFraction) {
   PCScanScheduler scheduler;
   LimitBackend limit_backend(scheduler);
   scheduler.SetNewSchedulingBackend(limit_backend);
@@ -45,7 +47,7 @@ TEST(PCScanSchedulerLimitBackendTest, ScanAtQuarantineSizeFraction) {
   EXPECT_TRUE(scheduler.AccountFreed(1));
 }
 
-class PCScanMUAwareTaskBasedBackendTest : public ::testing::Test {
+class PartitionAllocPCScanMUAwareTaskBasedBackendTest : public ::testing::Test {
  public:
   static constexpr size_t kHeapSize = 100 * kMB;
 
@@ -63,7 +65,7 @@ class PCScanMUAwareTaskBasedBackendTest : public ::testing::Test {
            1;
   }
 
-  PCScanMUAwareTaskBasedBackendTest()
+  PartitionAllocPCScanMUAwareTaskBasedBackendTest()
       : backend_(scheduler_,
                  base::BindLambdaForTesting([this](TimeDelta delay) {
                    delayed_scan_scheduled_count_++;
@@ -117,7 +119,7 @@ TimeTicks ScopedTimeTicksOverride::now_ticks_;
 
 }  // namespace
 
-TEST_F(PCScanMUAwareTaskBasedBackendTest,
+TEST_F(PartitionAllocPCScanMUAwareTaskBasedBackendTest,
        SoftLimitSchedulesScanIfMUNotSatisfied) {
   // Stop the time.
   ScopedTimeTicksOverride now_ticks_override;
@@ -130,7 +132,8 @@ TEST_F(PCScanMUAwareTaskBasedBackendTest,
   EXPECT_EQ(1u, delayed_scan_scheduled_count());
 }
 
-TEST_F(PCScanMUAwareTaskBasedBackendTest, SoftLimitInvokesScanIfMUSatisfied) {
+TEST_F(PartitionAllocPCScanMUAwareTaskBasedBackendTest,
+       SoftLimitInvokesScanIfMUSatisfied) {
   // Stop the time.
   ScopedTimeTicksOverride now_ticks_override;
   // Simulate PCScan that processed kHeapSize in 0s. The next scan should thus
@@ -142,7 +145,8 @@ TEST_F(PCScanMUAwareTaskBasedBackendTest, SoftLimitInvokesScanIfMUSatisfied) {
   EXPECT_EQ(0u, delayed_scan_scheduled_count());
 }
 
-TEST_F(PCScanMUAwareTaskBasedBackendTest, HardLimitSchedulesScanImmediately) {
+TEST_F(PartitionAllocPCScanMUAwareTaskBasedBackendTest,
+       HardLimitSchedulesScanImmediately) {
   // Stop the time.
   ScopedTimeTicksOverride now_ticks_override;
   // Simulate PCScan that processed kHeapSize in 1s. Since time is stopped that

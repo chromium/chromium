@@ -312,21 +312,27 @@ class BASE_EXPORT ThreadCache {
   ThreadCache* prev_ GUARDED_BY(ThreadCacheRegistry::GetLock());
 
   friend class ThreadCacheRegistry;
-  friend class ThreadCacheTest;
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, Simple);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, MultipleObjectsCachedPerBucket);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, LargeAllocationsAreNotCached);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, MultipleThreadCaches);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, RecordStats);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, ThreadCacheRegistry);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, MultipleThreadCachesAccounting);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicCountPerBucket);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicCountPerBucketClamping);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest,
+  friend class PartitionAllocThreadCacheTest;
+  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, Simple);
+  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                           MultipleObjectsCachedPerBucket);
+  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                           LargeAllocationsAreNotCached);
+  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, MultipleThreadCaches);
+  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, RecordStats);
+  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, ThreadCacheRegistry);
+  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                           MultipleThreadCachesAccounting);
+  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                           DynamicCountPerBucket);
+  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                           DynamicCountPerBucketClamping);
+  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
                            DynamicCountPerBucketMultipleThreads);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicSizeThreshold);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicSizeThresholdPurge);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, ClearFromTail);
+  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, DynamicSizeThreshold);
+  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                           DynamicSizeThresholdPurge);
+  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, ClearFromTail);
 };
 
 ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* slot_start,

@@ -116,7 +116,7 @@ class BASE_EXPORT MUAwareTaskBasedBackend final
   size_t hard_limit_ GUARDED_BY(scheduler_lock_){0};
   base::TimeTicks earliest_next_scan_time_ GUARDED_BY(scheduler_lock_);
 
-  friend class PCScanMUAwareTaskBasedBackendTest;
+  friend class PartitionAllocPCScanMUAwareTaskBasedBackendTest;
 };
 
 // The scheduler that is embedded in the PCSCan frontend which requires a fast

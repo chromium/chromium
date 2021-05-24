@@ -14,7 +14,7 @@ namespace internal {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 
-TEST(PartitionAllocAddressSpace, CalculateGigaCageProperties) {
+TEST(PartitionAllocAddressSpaceTest, CalculateGigaCageProperties) {
   GigaCageProperties props;
 
   props = CalculateGigaCageProperties(std::array<size_t, 1>{1});
@@ -71,7 +71,7 @@ TEST(PartitionAllocAddressSpace, CalculateGigaCageProperties) {
   EXPECT_EQ(0u, props.alignment_offset);
 }
 
-TEST(PartitionAllocAddressSpace, CalculateGigaCagePropertiesImpossible) {
+TEST(PartitionAllocAddressSpaceTest, CalculateGigaCagePropertiesImpossible) {
   EXPECT_DEATH_IF_SUPPORTED(
       CalculateGigaCageProperties(std::array<size_t, 1>{0}), "");
   EXPECT_DEATH_IF_SUPPORTED(

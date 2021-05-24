@@ -109,7 +109,7 @@ class BASE_EXPORT PCScan final {
  private:
   class PCScanThread;
   friend class PCScanTask;
-  friend class PCScanTest;
+  friend class PartitionAllocPCScanTest;
   friend class PCScanInternal;
 
   enum class State : uint8_t {

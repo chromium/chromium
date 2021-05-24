@@ -22,9 +22,9 @@ namespace internal {
 
 namespace {
 
-class StackTest : public ::testing::Test {
+class PartitionAllocStackTest : public ::testing::Test {
  protected:
-  StackTest() : stack_(std::make_unique<Stack>(GetStackTop())) {}
+  PartitionAllocStackTest() : stack_(std::make_unique<Stack>(GetStackTop())) {}
 
   Stack* GetStack() const { return stack_.get(); }
 
@@ -60,7 +60,7 @@ class StackScanner final : public StackVisitor {
 
 }  // namespace
 
-TEST_F(StackTest, IteratePointersFindsOnStackValue) {
+TEST_F(PartitionAllocStackTest, IteratePointersFindsOnStackValue) {
   auto scanner = std::make_unique<StackScanner>();
 
   // No check that the needle is initially not found as on some platforms it
@@ -73,7 +73,8 @@ TEST_F(StackTest, IteratePointersFindsOnStackValue) {
   }
 }
 
-TEST_F(StackTest, IteratePointersFindsOnStackValuePotentiallyUnaligned) {
+TEST_F(PartitionAllocStackTest,
+       IteratePointersFindsOnStackValuePotentiallyUnaligned) {
   auto scanner = std::make_unique<StackScanner>();
 
   // No check that the needle is initially not found as on some platforms it
@@ -187,7 +188,7 @@ NOINLINE void* RecursivelyPassOnParameter(size_t num,
 
 }  // namespace
 
-TEST_F(StackTest, IteratePointersFindsParameterNesting0) {
+TEST_F(PartitionAllocStackTest, IteratePointersFindsParameterNesting0) {
   auto scanner = std::make_unique<StackScanner>();
   void* needle = RecursivelyPassOnParameter(0, scanner->needle(), GetStack(),
                                             scanner.get());
@@ -195,7 +196,7 @@ TEST_F(StackTest, IteratePointersFindsParameterNesting0) {
   EXPECT_TRUE(scanner->found());
 }
 
-TEST_F(StackTest, IteratePointersFindsParameterNesting1) {
+TEST_F(PartitionAllocStackTest, IteratePointersFindsParameterNesting1) {
   auto scanner = std::make_unique<StackScanner>();
   void* needle = RecursivelyPassOnParameter(1, scanner->needle(), GetStack(),
                                             scanner.get());
@@ -203,7 +204,7 @@ TEST_F(StackTest, IteratePointersFindsParameterNesting1) {
   EXPECT_TRUE(scanner->found());
 }
 
-TEST_F(StackTest, IteratePointersFindsParameterNesting2) {
+TEST_F(PartitionAllocStackTest, IteratePointersFindsParameterNesting2) {
   auto scanner = std::make_unique<StackScanner>();
   void* needle = RecursivelyPassOnParameter(2, scanner->needle(), GetStack(),
                                             scanner.get());
@@ -211,7 +212,7 @@ TEST_F(StackTest, IteratePointersFindsParameterNesting2) {
   EXPECT_TRUE(scanner->found());
 }
 
-TEST_F(StackTest, IteratePointersFindsParameterNesting3) {
+TEST_F(PartitionAllocStackTest, IteratePointersFindsParameterNesting3) {
   auto scanner = std::make_unique<StackScanner>();
   void* needle = RecursivelyPassOnParameter(3, scanner->needle(), GetStack(),
                                             scanner.get());
@@ -219,7 +220,7 @@ TEST_F(StackTest, IteratePointersFindsParameterNesting3) {
   EXPECT_TRUE(scanner->found());
 }
 
-TEST_F(StackTest, IteratePointersFindsParameterNesting4) {
+TEST_F(PartitionAllocStackTest, IteratePointersFindsParameterNesting4) {
   auto scanner = std::make_unique<StackScanner>();
   void* needle = RecursivelyPassOnParameter(4, scanner->needle(), GetStack(),
                                             scanner.get());
@@ -227,7 +228,7 @@ TEST_F(StackTest, IteratePointersFindsParameterNesting4) {
   EXPECT_TRUE(scanner->found());
 }
 
-TEST_F(StackTest, IteratePointersFindsParameterNesting5) {
+TEST_F(PartitionAllocStackTest, IteratePointersFindsParameterNesting5) {
   auto scanner = std::make_unique<StackScanner>();
   void* needle = RecursivelyPassOnParameter(5, scanner->needle(), GetStack(),
                                             scanner.get());
@@ -235,7 +236,7 @@ TEST_F(StackTest, IteratePointersFindsParameterNesting5) {
   EXPECT_TRUE(scanner->found());
 }
 
-TEST_F(StackTest, IteratePointersFindsParameterNesting6) {
+TEST_F(PartitionAllocStackTest, IteratePointersFindsParameterNesting6) {
   auto scanner = std::make_unique<StackScanner>();
   void* needle = RecursivelyPassOnParameter(6, scanner->needle(), GetStack(),
                                             scanner.get());
@@ -243,7 +244,7 @@ TEST_F(StackTest, IteratePointersFindsParameterNesting6) {
   EXPECT_TRUE(scanner->found());
 }
 
-TEST_F(StackTest, IteratePointersFindsParameterNesting7) {
+TEST_F(PartitionAllocStackTest, IteratePointersFindsParameterNesting7) {
   auto scanner = std::make_unique<StackScanner>();
   void* needle = RecursivelyPassOnParameter(7, scanner->needle(), GetStack(),
                                             scanner.get());
@@ -251,7 +252,7 @@ TEST_F(StackTest, IteratePointersFindsParameterNesting7) {
   EXPECT_TRUE(scanner->found());
 }
 
-TEST_F(StackTest, IteratePointersFindsParameterNesting8) {
+TEST_F(PartitionAllocStackTest, IteratePointersFindsParameterNesting8) {
   auto scanner = std::make_unique<StackScanner>();
   void* needle = RecursivelyPassOnParameter(8, scanner->needle(), GetStack(),
                                             scanner.get());
@@ -279,7 +280,7 @@ extern "C" void IteratePointersNoMangling(Stack* stack, StackVisitor* visitor) {
 }
 }  // namespace
 
-TEST_F(StackTest, IteratePointersFindsCalleeSavedRegisters) {
+TEST_F(PartitionAllocStackTest, IteratePointersFindsCalleeSavedRegisters) {
   auto scanner = std::make_unique<StackScanner>();
 
   // No check that the needle is initially not found as on some platforms it
@@ -333,7 +334,7 @@ class CheckStackAlignmentVisitor final : public StackVisitor {
   }
 };
 
-TEST_F(StackTest, StackAlignment) {
+TEST_F(PartitionAllocStackTest, StackAlignment) {
   auto checker = std::make_unique<CheckStackAlignmentVisitor>();
   GetStack()->IteratePointers(checker.get());
 }

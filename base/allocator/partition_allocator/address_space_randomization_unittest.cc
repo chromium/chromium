@@ -58,7 +58,7 @@ uintptr_t GetRandomBits() {
 }  // namespace
 
 // Configurations without ASLR are tested here.
-TEST(AddressSpaceRandomizationTest, DisabledASLR) {
+TEST(PartitionAllocAddressSpaceRandomizationTest, DisabledASLR) {
   uintptr_t mask = GetMask();
   if (!mask) {
 #if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
@@ -71,7 +71,7 @@ TEST(AddressSpaceRandomizationTest, DisabledASLR) {
   }
 }
 
-TEST(AddressSpaceRandomizationTest, Alignment) {
+TEST(PartitionAllocAddressSpaceRandomizationTest, Alignment) {
   uintptr_t mask = GetMask();
   if (!mask)
     return;
@@ -82,7 +82,7 @@ TEST(AddressSpaceRandomizationTest, Alignment) {
   }
 }
 
-TEST(AddressSpaceRandomizationTest, Range) {
+TEST(PartitionAllocAddressSpaceRandomizationTest, Range) {
   uintptr_t mask = GetMask();
   if (!mask)
     return;
@@ -96,7 +96,7 @@ TEST(AddressSpaceRandomizationTest, Range) {
   }
 }
 
-TEST(AddressSpaceRandomizationTest, Predictable) {
+TEST(PartitionAllocAddressSpaceRandomizationTest, Predictable) {
   uintptr_t mask = GetMask();
   if (!mask)
     return;
@@ -194,9 +194,10 @@ void RandomBitCorrelation(int random_bit) {
 }
 
 // Tests are fairly slow, so give each random bit its own test.
-#define TEST_RANDOM_BIT(BIT)                                        \
-  TEST(AddressSpaceRandomizationTest, RandomBitCorrelations##BIT) { \
-    RandomBitCorrelation(BIT);                                      \
+#define TEST_RANDOM_BIT(BIT)                        \
+  TEST(PartitionAllocAddressSpaceRandomizationTest, \
+       RandomBitCorrelations##BIT) {                \
+    RandomBitCorrelation(BIT);                      \
   }
 
 // The first 12 bits on all platforms are always 0.

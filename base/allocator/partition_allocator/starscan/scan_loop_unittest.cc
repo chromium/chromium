@@ -59,7 +59,7 @@ void TestOnRangeWithAlignment(TestScanLoop& sl,
 
 }  // namespace
 
-TEST(ScanLoopTest, UnvectorizedWithCage) {
+TEST(PartitionAllocScanLoopTest, UnvectorizedWithCage) {
   {
     TestScanLoop sl(SimdSupport::kUnvectorized);
     TestOnRangeWithAlignment<8>(sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr);
@@ -80,7 +80,7 @@ TEST(ScanLoopTest, UnvectorizedWithCage) {
 }
 
 #if defined(ARCH_CPU_X86_64)
-TEST(ScanLoopTest, VectorizedSSE4) {
+TEST(PartitionAllocScanLoopTest, VectorizedSSE4) {
   base::CPU cpu;
   if (!cpu.has_sse41())
     return;
@@ -102,7 +102,7 @@ TEST(ScanLoopTest, VectorizedSSE4) {
   }
 }
 
-TEST(ScanLoopTest, VectorizedAVX2) {
+TEST(PartitionAllocScanLoopTest, VectorizedAVX2) {
   base::CPU cpu;
   if (!cpu.has_avx2())
     return;
@@ -141,7 +141,7 @@ TEST(ScanLoopTest, VectorizedAVX2) {
 #endif  // defined(ARCH_CPU_X86_64)
 
 #if defined(PA_STARSCAN_NEON_SUPPORTED)
-TEST(ScanLoopTest, VectorizedNEON) {
+TEST(PartitionAllocScanLoopTest, VectorizedNEON) {
   {
     TestScanLoop sl(SimdSupport::kNEON);
     TestOnRangeWithAlignment<16>(sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr);
