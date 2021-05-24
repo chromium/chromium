@@ -760,7 +760,7 @@ std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(
     std::string impression_data = statement.ColumnString(0);
     url::Origin impression_origin =
         DeserializeOrigin(statement.ColumnString(1));
-    url::Origin conversion_destination =
+    url::Origin conversion_origin =
         DeserializeOrigin(statement.ColumnString(2));
     url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(3));
     base::Time impression_time = statement.ColumnTime(4);
@@ -771,7 +771,7 @@ std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(
     int64_t attribution_source_priority = statement.ColumnInt64(8);
 
     StorableImpression impression(impression_data, impression_origin,
-                                  conversion_destination, reporting_origin,
+                                  conversion_origin, reporting_origin,
                                   impression_time, expiry_time, source_type,
                                   attribution_source_priority, impression_id);
     impressions.push_back(std::move(impression));
