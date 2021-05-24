@@ -9,13 +9,16 @@ import("//tools/polymer/html_to_js.gni")
 polymer_element_files = [
   "wallpaper_collections_element.js",
   "wallpaper_images_element.js",
+  "wallpaper_selected_element.js",
   "personalization_router_element.js",
 ]
 
 static_files = [
   "index.html",
   "mojo_interface_provider.js",
+  "personalization_actions.js",
   "personalization_app.js",
+  "personalization_store.js",
   "styles.js",
 ]
 
@@ -26,12 +29,17 @@ js_library("mojo_interface_provider") {
   ]
 }
 
+js_library("personalization_actions") {
+  deps = [ "//ui/webui/resources/js/cr/ui:store.m" ]
+}
+
 js_library("personalization_app") {
   deps = [
     ":personalization_router_element",
     ":styles",
     ":wallpaper_collections_element",
     ":wallpaper_images_element",
+    ":wallpaper_selected_element",
   ]
 }
 
@@ -43,14 +51,23 @@ js_library("personalization_router_element") {
   ]
 }
 
+js_library("personalization_store") {
+  deps = [
+    ":personalization_actions",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js/cr/ui:store.m",
+    "//ui/webui/resources/js/cr/ui:store_client.m",
+  ]
+}
+
 js_library("styles") {
 }
 
 js_library("wallpaper_collections_element") {
   deps = [
     ":mojo_interface_provider",
+    ":styles",
     "../common:constants",
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -59,8 +76,18 @@ js_library("wallpaper_collections_element") {
 js_library("wallpaper_images_element") {
   deps = [
     ":mojo_interface_provider",
+    ":styles",
     "../common:constants",
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("wallpaper_selected_element") {
+  deps = [
+    ":mojo_interface_provider",
+    ":personalization_store",
+    ":styles",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -70,11 +97,14 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
     ":mojo_interface_provider",
+    ":personalization_actions",
     ":personalization_app",
     ":personalization_router_element",
+    ":personalization_store",
     ":styles",
     ":wallpaper_collections_element",
     ":wallpaper_images_element",
+    ":wallpaper_selected_element",
   ]
 }
 

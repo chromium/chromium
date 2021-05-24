@@ -11,8 +11,10 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper_types.h"
 #include "base/bind.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper.pb.h"
 #include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
@@ -61,8 +63,12 @@ struct TypeConverter<chromeos::personalization_app::mojom::WallpaperImagePtr,
     if (!image_url.is_valid())
       return nullptr;
 
+    std::vector<std::string> attribution;
+    for (const auto& attr : image.attribution())
+      attribution.push_back(attr.text());
+
     return chromeos::personalization_app::mojom::WallpaperImage::New(
-        image_url, image.asset_id());
+        GURL(image.image_url()), std::move(attribution), image.asset_id());
   }
 };
 
@@ -110,6 +116,41 @@ void ChromePersonalizationAppUiDelegate::FetchImagesForCollection(
   wallpaper_images_info_fetcher_->Start(base::BindOnce(
       &ChromePersonalizationAppUiDelegate::OnFetchCollectionImages,
       base::Unretained(this), std::move(callback)));
+}
+
+void ChromePersonalizationAppUiDelegate::GetCurrentWallpaper(
+    GetCurrentWallpaperCallback callback) {
+  auto* client = WallpaperControllerClientImpl::Get();
+  ash::WallpaperInfo info = client->GetActiveUserWallpaperInfo();
+
+  switch (info.type) {
+    case ash::WallpaperType::ONLINE: {
+      GURL url(info.location);
+      DCHECK(url.is_valid());
+
+      // TODO(b/186575680) fill in actual image attribution details and
+      // asset_id.
+      std::move(callback).Run(
+          chromeos::personalization_app::mojom::WallpaperImage::New(
+              url, /*attribution=*/std::vector<std::string>(), /*asset_id=*/0));
+
+      return;
+    }
+    case ash::WallpaperType::CUSTOMIZED:
+    case ash::WallpaperType::DAILY:
+    case ash::WallpaperType::DEFAULT:
+    case ash::WallpaperType::DEVICE:
+    case ash::WallpaperType::ONE_SHOT:
+    case ash::WallpaperType::POLICY:
+    case ash::WallpaperType::THIRDPARTY:
+      NOTIMPLEMENTED();
+      std::move(callback).Run(nullptr);
+      return;
+    case ash::WallpaperType::WALLPAPER_TYPE_COUNT:
+      NOTREACHED() << "Impossible WallpaperType";
+      std::move(callback).Run(nullptr);
+      return;
+  }
 }
 
 void ChromePersonalizationAppUiDelegate::SelectWallpaper(

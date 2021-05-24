@@ -57,6 +57,8 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
       const std::string& collection_id,
       FetchImagesForCollectionCallback callback) override;
 
+  void GetCurrentWallpaper(GetCurrentWallpaperCallback callback) override;
+
   void SelectWallpaper(uint64_t image_asset_id,
                        SelectWallpaperCallback callback) override;
 

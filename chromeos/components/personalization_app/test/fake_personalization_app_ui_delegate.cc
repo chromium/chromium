@@ -43,9 +43,17 @@ void FakePersonalizationAppUiDelegate::FetchImagesForCollection(
     FetchImagesForCollectionCallback callback) {
   DCHECK_EQ(collection_id, kFakeCollectionId);
   std::vector<chromeos::personalization_app::mojom::WallpaperImagePtr> images;
-  images.push_back(
-      chromeos::personalization_app::mojom::WallpaperImage::New(GURL(), 0));
+  images.push_back(chromeos::personalization_app::mojom::WallpaperImage::New(
+      GURL(), std::vector<std::string>(), 0));
   std::move(callback).Run(std::move(images));
+}
+
+void FakePersonalizationAppUiDelegate::GetCurrentWallpaper(
+    GetCurrentWallpaperCallback callback) {
+  std::move(callback).Run(
+      chromeos::personalization_app::mojom::WallpaperImage::New(
+          GURL("https://test.googleusercontent.com/0"),
+          std::vector<std::string>({"this is a test"}), 0));
 }
 
 void FakePersonalizationAppUiDelegate::SelectWallpaper(

@@ -18,7 +18,7 @@ export function WallpaperCollectionsTest() {
   let wallpaperProvider = null;
 
   setup(function() {
-    wallpaperProvider = baseSetup();
+    wallpaperProvider = baseSetup().wallpaperProvider;
   });
 
   teardown(async () => {

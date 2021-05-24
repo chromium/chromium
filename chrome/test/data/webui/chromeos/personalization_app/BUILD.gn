@@ -15,16 +15,20 @@ js_type_check("closure_compile") {
     ":personalization_app_test_utils",
     ":personalization_app_unified_test",
     ":test_mojo_interface_provider",
+    ":test_personalization_store",
     ":wallpaper_collections_element_test",
     ":wallpaper_images_element_test",
+    ":wallpaper_selected_element_test",
   ]
 }
 
 js_library("personalization_app_test_utils") {
   deps = [
     ":test_mojo_interface_provider",
+    ":test_personalization_store",
     "../..:chai_assert",
     "//chromeos/components/personalization_app/resources/trusted:mojo_interface_provider",
+    "//chromeos/components/personalization_app/resources/trusted:personalization_actions",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -33,8 +37,24 @@ js_library("personalization_app_unified_test") {
   deps = [
     ":wallpaper_collections_element_test",
     ":wallpaper_images_element_test",
+    ":wallpaper_selected_element_test",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("test_personalization_store") {
+  deps = [
+    "//chromeos/components/personalization_app/resources/trusted:personalization_actions",
+    "//chromeos/components/personalization_app/resources/trusted:personalization_store",
+  ]
+}
+
+js_library("test_mojo_interface_provider") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_browser_proxy.m",
+    "//chromeos/components/personalization_app/mojom:mojom_js_library_for_compile",
+  ]
 }
 
 js_library("wallpaper_collections_element_test") {
@@ -63,10 +83,14 @@ js_library("wallpaper_images_element_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-js_library("test_mojo_interface_provider") {
+js_library("wallpaper_selected_element_test") {
   deps = [
+    ":personalization_app_test_utils",
+    ":test_mojo_interface_provider",
+    ":test_personalization_store",
     "../..:chai_assert",
-    "../..:test_browser_proxy.m",
-    "//chromeos/components/personalization_app/mojom:mojom_js_library_for_compile",
+    "../..:test_util.m",
+    "//chromeos/components/personalization_app/resources/trusted:wallpaper_selected_element",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

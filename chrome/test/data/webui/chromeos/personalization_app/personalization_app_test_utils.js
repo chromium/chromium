@@ -8,13 +8,17 @@
  */
 
 import {setWallpaperProviderForTesting} from 'chrome://personalization/trusted/mojo_interface_provider.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PersonalizationState} from 'chrome://personalization/trusted/personalization_actions.js';
+import {emptyState} from 'chrome://personalization/trusted/personalization_actions.js';
+import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
+import {TestPersonalizationStore} from './test_personalization_store.js';
 
 /**
  * Constructs the given element with properties and appends it to body.
+ * TODO(cowmoo) make generic and cast to specific polymer types.
  * @param {!string} tag
  * @param {!Object} properties
  * @returns {!HTMLElement}
@@ -49,14 +53,19 @@ export async function teardownElement(element) {
 }
 
 /**
- * Sets up the test wallpaper provider and clears the page.
- * @return {!TestWallpaperProvider}
+ * Sets up the test wallpaper provider, test personalization store, and clears
+ * the page.
+ * @param {!PersonalizationState} initialState
+ * @return {{wallpaperProvider: !TestWallpaperProvider, personalizationStore:
+ *     !TestPersonalizationStore}}
  */
-export function baseSetup() {
+export function baseSetup(initialState = emptyState()) {
   const wallpaperProvider = new TestWallpaperProvider();
   setWallpaperProviderForTesting(wallpaperProvider);
+  const personalizationStore = new TestPersonalizationStore(initialState);
+  personalizationStore.replaceSingleton();
   document.body.innerHTML = '';
-  return wallpaperProvider;
+  return {wallpaperProvider, personalizationStore};
 }
 
 function getDebugString(w) {

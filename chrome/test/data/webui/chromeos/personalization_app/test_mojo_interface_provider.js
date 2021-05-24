@@ -14,6 +14,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     super([
       'fetchCollections',
       'fetchImagesForCollection',
+      'getCurrentWallpaper',
       'selectWallpaper',
     ]);
 
@@ -42,14 +43,22 @@ export class TestWallpaperProvider extends TestBrowserProxy {
      */
     this.images_ = [
       {
-        url: {url: 'https://images.googleusercontent.com/0'},
         assetId: BigInt(0),
+        attribution: ['Image 0'],
+        url: {url: 'https://images.googleusercontent.com/0'},
       },
       {
-        url: {url: 'https://images.googleusercontent.com/1'},
         assetId: BigInt(1),
+        attribution: ['Image 1'],
+        url: {url: 'https://images.googleusercontent.com/1'},
       },
     ];
+
+    /**
+     * @public
+     * @type {!chromeos.personalizationApp.mojom.WallpaperImage}
+     */
+    this.currentWallpaper = this.images_[1];
 
     /** @public */
     this.selectWallpaperResponse = true;
@@ -83,6 +92,11 @@ export class TestWallpaperProvider extends TestBrowserProxy {
         'Must request images for existing wallpaper collection',
     );
     return Promise.resolve({images: this.images_});
+  }
+
+  getCurrentWallpaper() {
+    this.methodCalled('getCurrentWallpaper');
+    return Promise.resolve({image: this.currentWallpaper});
   }
 
   /** @override */

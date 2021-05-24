@@ -1,0 +1,30 @@
+<style>
+  #container {
+    display: flex;
+    flex-flow: row nowrap;
+    height: 20vh;
+  }
+
+  #textContainer {
+    display: flex;
+    flex-flow: column nowrap;
+  }
+
+</style>
+<div id="container">
+  <template is="dom-if" if="[[showImage_]]">
+    <img src="[[getImageSrc_(image_)]]">
+    <div id="textContainer">
+      <dom-repeat items="[[image_.attribution]]">
+        <template>
+          <p>[[item]]</p>
+        </template>
+      </dom-repeat>
+    </div>
+  </template>
+  <template is="dom-if" if="[[hasError_]]">
+    <!-- TODO(b/186668250) real error state -->
+    <p id="error">There was an error</p>
+  </template>
+  <paper-spinner-lite active="[[isLoading_]]"></paper-spinner-lite>
+</div>
