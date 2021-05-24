@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
@@ -79,6 +80,8 @@ public class TabbedAppMenuTest {
         // We need list selection; ensure we are not in touch mode.
         InstrumentationRegistry.getInstrumentation().setInTouchMode(false);
 
+        CompositorAnimationHandler.setTestingMode(true);
+
         mActivityTestRule.startMainActivityWithURL(TEST_URL);
 
         AppMenuTestSupport.overrideOnOptionItemSelectedListener(
@@ -96,6 +99,8 @@ public class TabbedAppMenuTest {
     @After
     public void tearDown() {
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
+
+        CompositorAnimationHandler.setTestingMode(false);
     }
 
     /**
