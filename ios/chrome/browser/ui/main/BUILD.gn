@@ -246,7 +246,6 @@ source_set("main") {
     "//ios/chrome/browser/ui/thumb_strip",
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/browser/ui/thumb_strip:public",
-    "//ios/chrome/browser/ui/translate:legacy_translate",
     "//ios/chrome/browser/url_loading:url_loading_params_header",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:tab_helper_delegates",
