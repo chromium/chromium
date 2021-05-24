@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_conversion_helper.h"
@@ -33,6 +34,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_utils.h"
 #include "net/base/net_errors.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -162,6 +164,8 @@ void ContentSubresourceFilterThrottleManager::FrameDeleted(
 // it for later filtering of subframe navigations.
 void ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
+  ready_to_commit_navigations_.insert(navigation_handle->GetNavigationId());
+
   content::RenderFrameHost* frame_host =
       navigation_handle->GetRenderFrameHost();
 
@@ -239,6 +243,9 @@ void ContentSubresourceFilterThrottleManager::DidFinishNavigation(
     ongoing_activation_throttles_.erase(throttle_it);
   }
 
+  bool passed_through_ready_to_commit =
+      ready_to_commit_navigations_.erase(navigation_handle->GetNavigationId());
+
   // Do nothing if the navigation finished in the same document.
   if (navigation_handle->IsSameDocument()) {
     return;
@@ -256,6 +263,9 @@ void ContentSubresourceFilterThrottleManager::DidFinishNavigation(
     DCHECK(!navigation_handle->HasCommitted());
     return;
   }
+
+  RecordExperimentalUmaHistogramsForNavigation(navigation_handle, frame_host,
+                                               passed_through_ready_to_commit);
 
   // Do nothing if the navigation was uncommitted and this frame has had a
   // previous navigation. We will keep using the existing activation.
@@ -317,6 +327,48 @@ void ContentSubresourceFilterThrottleManager::DidFinishNavigation(
   }
 
   DestroyRulesetHandleIfNoLongerUsed();
+}
+
+void ContentSubresourceFilterThrottleManager::
+    RecordExperimentalUmaHistogramsForNavigation(
+        content::NavigationHandle* navigation_handle,
+        content::RenderFrameHost* frame_host,
+        bool passed_through_ready_to_commit) {
+  // For subframe navigations that pass through ready to commit, we record
+  // whether they eventually committed. We also break this out by whether the
+  // navigation matches the restricted navigation heuristic and by ad status.
+  // The observed frequency will reveal the scope of current mishandling of such
+  // navigations by Ad Tagging. Navigations to URLs that inherit activation
+  // (e.g. about:srcdoc) are excluded as no load policy would be calculated.
+  // TODO(alexmt): Remove once frequency is determined.
+  if (!passed_through_ready_to_commit || navigation_handle->IsInMainFrame() ||
+      ShouldInheritActivation(navigation_handle->GetURL())) {
+    return;
+  }
+
+  base::UmaHistogramBoolean(
+      "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit",
+      navigation_handle->HasCommitted());
+  blink::mojom::FilterListResult latest_filter_list_result =
+      EnsureFrameAdEvidence(frame_host).latest_filter_list_result();
+  bool is_same_domain_to_main_frame =
+      net::registry_controlled_domains::SameDomainOrHost(
+          navigation_handle->GetURL(),
+          navigation_handle->GetWebContents()->GetLastCommittedURL(),
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  bool is_restricted_navigation =
+      latest_filter_list_result ==
+          blink::mojom::FilterListResult::kMatchedAllowingRule ||
+      (latest_filter_list_result ==
+           blink::mojom::FilterListResult::kMatchedNoRules &&
+       is_same_domain_to_main_frame);
+  if (is_restricted_navigation &&
+      base::Contains(ad_frames_, navigation_handle->GetFrameTreeNodeId())) {
+    base::UmaHistogramBoolean(
+        "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit."
+        "RestrictedAdFrameNavigation",
+        navigation_handle->HasCommitted());
+  }
 }
 
 AsyncDocumentSubresourceFilter*
