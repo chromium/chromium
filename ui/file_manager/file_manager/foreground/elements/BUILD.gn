@@ -14,16 +14,10 @@ visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 group("elements") {
   visibility += [ "//ui/file_manager/*" ]
   public_deps = [
-    "//ui/file_manager/file_manager/foreground/elements:files_icon_button_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_metadata_box_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_metadata_entry_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_quick_view_module",
     "//ui/file_manager/file_manager/foreground/elements:files_ripple_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_safe_media_module",
     "//ui/file_manager/file_manager/foreground/elements:files_spinner",
     "//ui/file_manager/file_manager/foreground/elements:files_toast_module",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip_module",
     "//ui/file_manager/file_manager/foreground/elements:icons_module",
   ]
 }
@@ -45,18 +39,18 @@ js_type_check("closure_compile_jsmodules") {
                   ]
   deps = [
     ":files_format_dialog",
-    ":files_icon_button.m",
+    ":files_icon_button",
     ":files_message.m",
-    ":files_metadata_box.m",
-    ":files_metadata_entry.m",
+    ":files_metadata_box",
+    ":files_metadata_entry",
     ":files_password_dialog.m",
-    ":files_quick_view.m",
+    ":files_quick_view",
     ":files_ripple.m",
-    ":files_safe_media.m",
+    ":files_safe_media",
     ":files_spinner.m",
     ":files_toast.m",
     ":files_toggle_ripple.m",
-    ":files_tooltip.m",
+    ":files_tooltip",
     ":xf_button.m",
     ":xf_circular_progress.m",
     ":xf_display_panel.m",
@@ -65,7 +59,15 @@ js_type_check("closure_compile_jsmodules") {
 }
 
 html_to_js("web_components") {
-  js_files = [ "files_format_dialog.js" ]
+  js_files = [
+    "files_format_dialog.js",
+    "files_icon_button.js",
+    "files_quick_view.js",
+    "files_metadata_box.js",
+    "files_metadata_entry.js",
+    "files_safe_media.js",
+    "files_tooltip.js",
+  ]
 }
 
 js_library("files_format_dialog") {
@@ -85,39 +87,13 @@ js_library("files_format_dialog") {
 }
 
 js_library("files_icon_button") {
-  deps = [
-    "//third_party/polymer/v1_0/components-chromium/iron-behaviors:iron-button-state-extracted",
-    "//third_party/polymer/v1_0/components-chromium/iron-behaviors:iron-control-state-extracted",
-  ]
-}
-
-polymer_modulizer("files_icon_button") {
-  js_file = "files_icon_button.js"
-  html_file = "files_icon_button.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-
-  namespace_rewrites = [
-    "Polymer.IronButtonState|IronButtonState",
-    "Polymer.IronControlState|IronControlState",
-  ]
-
-  auto_imports = [
-    "third_party/polymer/v1_0/components-chromium/iron-behaviors/iron-button-state.html|IronButtonState",
-    "third_party/polymer/v1_0/components-chromium/iron-behaviors/iron-control-state.html|IronControlState",
-  ]
-}
-
-js_library("files_icon_button.m") {
   visibility += [ "//ui/file_manager/audio_player/*" ]
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_icon_button.m.js" ]
   deps = [
     ":files_toggle_ripple.m",
     "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-button-state",
     "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-control-state",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":files_icon_button_module" ]
 }
 
 js_library("files_message") {
@@ -148,40 +124,15 @@ js_library("files_message.m") {
 }
 
 js_library("files_metadata_box") {
-  externs_list = [ "$externs_path/pending_polymer.js" ]
-}
-
-polymer_modulizer("files_metadata_box") {
-  js_file = "files_metadata_box.js"
-  html_file = "files_metadata_box.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-}
-
-js_library("files_metadata_box.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_metadata_box.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":files_metadata_box_module" ]
 }
 
 js_library("files_metadata_entry") {
-}
-
-polymer_modulizer("files_metadata_entry") {
-  js_file = "files_metadata_entry.js"
-  html_file = "files_metadata_entry.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-}
-
-js_library("files_metadata_entry.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_metadata_entry.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":files_metadata_entry_module" ]
 }
 
 js_library("files_password_dialog") {
@@ -217,26 +168,11 @@ js_library("files_password_dialog.m") {
 }
 
 js_library("files_quick_view") {
-  deps = [ ":files_metadata_box" ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-    "$externs_path/pending_polymer.js",
-  ]
-}
-
-polymer_modulizer("files_quick_view") {
-  js_file = "files_quick_view.js"
-  html_file = "files_quick_view.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-
-  auto_imports = [ "ui/webui/resources/html/assert.html|assert" ]
-}
-
-js_library("files_quick_view.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_quick_view.m.js" ]
   deps = [
+    ":files_icon_button",
+    ":files_metadata_box",
+    ":files_safe_media",
+    ":files_tooltip",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -244,7 +180,6 @@ js_library("files_quick_view.m") {
     "$externs_path/chrome_extensions.js",
     "$externs_path/webview_tag.js",
   ]
-  extra_deps = [ ":files_quick_view_module" ]
 }
 
 js_library("files_ripple") {
@@ -271,25 +206,10 @@ js_library("files_ripple.m") {
 }
 
 js_library("files_safe_media") {
-}
-
-polymer_modulizer("files_safe_media") {
-  js_file = "files_safe_media.js"
-  html_file = "files_safe_media.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-
-  auto_imports =
-      [ "ui/webui/resources/html/assert.html|assert,assertInstanceof" ]
-}
-
-js_library("files_safe_media.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_safe_media.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]
-  extra_deps = [ ":files_safe_media_module" ]
 }
 
 js_library("files_safe_media_webview_content") {
@@ -352,32 +272,18 @@ js_library("files_toggle_ripple.m") {
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.
-js_library("files_tooltip") {
-  visibility += [ "//ui/file_manager/gallery/*" ]
-  deps = [ "//ui/file_manager/file_manager/common/js:util" ]
-}
-
 js_unittest("files_tooltip_unittest.m") {
   deps = [
-    ":files_tooltip.m",
+    ":files_tooltip",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
   ]
 }
 
-polymer_modulizer("files_tooltip") {
-  js_file = "files_tooltip.js"
-  html_file = "files_tooltip.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-}
-
-js_library("files_tooltip.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_tooltip.m.js" ]
+js_library("files_tooltip") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":files_tooltip_module" ]
 }
 
 js_unittest("files_toast_unittest.m") {

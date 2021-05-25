@@ -7,7 +7,8 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://t
 
 import {reportPromise} from '../../common/js/test_error_reporting.m.js';
 
-import {FilesTooltip} from './files_tooltip.m.js';
+import {FilesTooltip} from './files_tooltip.js';
+
 // clang-format on
 
 /** @type {Element} */

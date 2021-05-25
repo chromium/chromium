@@ -2,89 +2,81 @@
   -- Use of this source code is governed by a BSD-style license that can be
   -- found in the LICENSE file.
   -->
+<style>
+  :host {
+    opacity: 0;
+    padding: 4px 6px 0;
+    pointer-events: none;
+    position: absolute;
+    transition: opacity 300ms;
+    z-index: 1000;
+  }
 
-<link rel="import" href="chrome://resources/html/polymer.html">
+  :host([files-ng]) {
+    display: flex;
+    height: 24px;
+    /* Remove: only here to override non-files-ng :host padding: rule. */
+    padding: unset;
+  }
 
-<dom-module id="files-tooltip">
-  <template>
-    <style>
-      :host {
-        opacity: 0;
-        padding: 4px 6px 0;
-        pointer-events: none;
-        position: absolute;
-        transition: opacity 300ms;
-        z-index: 1000;
-      }
+  :host([visible]) {
+    opacity: .9;
+  }
 
-      :host([files-ng]) {
-        display: flex;
-        height: 24px;
-        /* Remove: only here to override non-files-ng :host padding: rule. */
-        padding: unset;
-      }
+  :host([files-ng][visible]) {
+    opacity: 80%;
+  }
 
-      :host([visible]) {
-        opacity: .9;
-      }
+  :host > #label {
+    background-color: #323232;
+    border-radius: 2px;
+    color: white;
+    font-size: 12px;
+    line-height: 28px;
+    padding: 0 14px;
+    white-space: nowrap;
+  }
 
-      :host([files-ng][visible]) {
-        opacity: 80%;
-      }
+  :host([files-ng]) > #label {
+    align-items: center;
+    background-color: var(--google-grey-900);
+    border-radius: 2px;
+    color: var(--google-grey-100);
+    display: inline-flex;
+    font-size: 12px;
+    /* Remove: only here to override non-files-ng line-height: 28px. */
+    line-height: unset;
+    padding: 0 8px;
+    white-space: nowrap;
+  }
 
-      :host > #label {
-        background-color: #323232;
-        border-radius: 2px;
-        color: white;
-        font-size: 12px;
-        line-height: 28px;
-        padding: 0 14px;
-        white-space: nowrap;
-      }
+  :host([files-ng]) > #label[invert] {
+    background-color: white;
+    color: var(--google-grey-900);
+  }
 
-      :host([files-ng]) > #label {
-        align-items: center;
-        background-color: var(--google-grey-900);
-        border-radius: 2px;
-        color: var(--google-grey-100);
-        display: inline-flex;
-        font-size: 12px;
-        /* Remove: only here to override non-files-ng line-height: 28px. */
-        line-height: unset;
-        padding: 0 8px;
-        white-space: nowrap;
-      }
+  :host([files-ng].card-tooltip) {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px 0 rgba(var(--google-grey-800-rgb), 30%),
+        0 1px 3px 1px rgba(var(--google-grey-800-rgb), 15%);
+    height: auto;
+    margin-top: 4px;
+    padding: 12px 16px;
+  }
 
-      :host([files-ng]) > #label[invert] {
-        background-color: white;
-        color: var(--google-grey-900);
-      }
+  :host([files-ng]) > #label.card-label {
+    background-color: white;
+    color: var(--google-grey-900);
+    line-height: 18px;
+    margin: 0;
+    max-width: 192px;
+    padding: 0;
+    white-space: normal;
+  }
 
-      :host([files-ng].card-tooltip) {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 1px 2px 0 rgba(var(--google-grey-800-rgb), 30%),
-            0 1px 3px 1px rgba(var(--google-grey-800-rgb), 15%);
-        height: auto;
-        margin-top: 4px;
-        padding: 12px 16px;
-      }
-
-      :host([files-ng]) > #label.card-label {
-        background-color: white;
-        color: var(--google-grey-900);
-        line-height: 18px;
-        margin: 0;
-        max-width: 192px;
-        padding: 0;
-        white-space: normal;
-      }
-
-      :host([files-ng]) > #label.card-label a {
-        color: var(--google-blue-600);
-      }
-    </style>
-    <div id="label"></div>
-  </template>
-  <script src="files_tooltip.js"></script>
-</dom-module>
+  :host([files-ng]) > #label.card-label a {
+    color: var(--google-blue-600);
+  }
+</style>
+<div id="label"></div>

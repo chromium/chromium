@@ -1468,7 +1468,6 @@ class SlideMode extends cr.EventTarget {
     // becomes fullscreen and cursor gets out of the element
     // TODO(yawano): Find better implementation.
     this.dimmableUIController_.setCursorOutOfTools();
-    document.querySelector('files-tooltip').hideTooltip();
 
     this.resumeSlideshow_(opt_interval);
 

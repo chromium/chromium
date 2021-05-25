@@ -2,92 +2,84 @@
   -- Use of this source code is governed by a BSD-style license that can be
   -- found in the LICENSE file.
 -->
+<style>
+  div {
+    margin: 0;
+  }
 
-<link rel="import" href="chrome://resources/html/polymer.html">
+  #box {
+    display: flex;
+    margin: 12px 0;
+    min-height: 14px;
+    width: 320px;
+  }
 
-<dom-module id="files-metadata-entry">
-  <template>
-    <style>
-      div {
-        margin: 0;
-      }
+  :host([files-ng]) #box {
+    line-height: 20px;
+    margin: 10px 0;
+  }
 
-      #box {
-        display: flex;
-        margin: 12px 0;
-        min-height: 14px;
-        width: 320px;
-      }
+  #box[hidden] {
+    display: none;
+  }
 
-      :host([files-ng]) #box {
-        line-height: 20px;
-        margin: 10px 0;
-      }
+  #key {
+    color: white;
+    font-weight: 500;
+    margin-inline-end: 16px;
+    margin-inline-start: 32px;
+    overflow-wrap: break-word;
+    vertical-align: bottom;
+    width: 96px;
+  }
 
-      #box[hidden] {
-        display: none;
-      }
+  #value {
+    color: white;
+    opacity: 0.8;
+    overflow-wrap: break-word;
+    vertical-align: bottom;
+    width: 160px;
+  }
 
-      #key {
-        color: white;
-        font-weight: 500;
-        margin-inline-end: 16px;
-        margin-inline-start: 32px;
-        overflow-wrap: break-word;
-        vertical-align: bottom;
-        width: 96px;
-      }
+  #value[loading]::after {
+    animation: ellipsis 1s steps(4,end) 100ms infinite;
+    content: '…';
+    display: inline-block;
+    overflow: hidden;
+    transform: scale(2.5) translate(0, 1px);
+    transform-origin: left bottom;
+    vertical-align: bottom;
+    width: 0;
+  }
 
-      #value {
-        color: white;
-        opacity: 0.8;
-        overflow-wrap: break-word;
-        vertical-align: bottom;
-        width: 160px;
-      }
+  #value span {
+    display: inline-block;
+    overflow-wrap: anywhere;
+  }
 
-      #value[loading]::after {
-        animation: ellipsis 1s steps(4,end) 100ms infinite;
-        content: '…';
-        display: inline-block;
-        overflow: hidden;
-        transform: scale(2.5) translate(0, 1px);
-        transform-origin: left bottom;
-        vertical-align: bottom;
-        width: 0;
-      }
+  @keyframes ellipsis {
+    to {
+      width: 0.93em;
+    }
+  }
 
-      #value span {
-        display: inline-block;
-        overflow-wrap: anywhere;
-      }
-
-      @keyframes ellipsis {
-        to {
-          width: 0.93em;
-        }
-      }
-
-      @media only screen and (max-width: 720px) {
-        #box {
-          width: 240px;
-        }
-        #key {
-          margin-inline-end: 8px;
-          margin-inline-start: 12px;
-          width: 80px;
-        }
-        #value {
-          width: 140px;
-        }
-      }
-    </style>
-    <div id="box" hidden="[[!value]]">
-      <div id="key">[[key]]</div>
-      <div id="value" loading$="{{loading}}">
-        <div id="valueContainer" hidden="[[loading]]"></div>
-      </div>
-    </div>
-  </template>
-  <script src="files_metadata_entry.js"></script>
-</dom-module>
+  @media only screen and (max-width: 720px) {
+    #box {
+      width: 240px;
+    }
+    #key {
+      margin-inline-end: 8px;
+      margin-inline-start: 12px;
+      width: 80px;
+    }
+    #value {
+      width: 140px;
+    }
+  }
+</style>
+<div id="box" hidden="[[!value]]">
+  <div id="key">[[key]]</div>
+  <div id="value" loading$="{{loading}}">
+    <div id="valueContainer" hidden="[[loading]]"></div>
+  </div>
+</div>

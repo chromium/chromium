@@ -3,97 +3,89 @@
   -- found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="files_metadata_entry.html">
+<style>
+  div {
+    margin: 0;
+    padding: 0;
+  }
 
-<dom-module id="files-metadata-box">
-  <template>
-    <style>
-      div {
-        margin: 0;
-        padding: 0;
-      }
+  div[hidden] {
+    display: none;
+  }
 
-      div[hidden] {
-        display: none;
-      }
+  #box {
+    display: block;
+    margin: 0;
+    overflow: auto;
+    padding: 0;
+    width: 320px;
+  }
 
-      #box {
-        display: block;
-        margin: 0;
-        overflow: auto;
-        padding: 0;
-        width: 320px;
-      }
+  :host([files-ng]) #box {
+    padding-top: 16px;
+  }
 
-      :host([files-ng]) #box {
-        padding-top: 16px;
-      }
+  :host(:not([files-ng])) .category {
+    color: #E6E6E6;
+    font-size: 108%;
+    font-weight: 500;
+    margin: 12px 32px;
+    vertical-align: bottom;
+  }
 
-      :host(:not([files-ng])) .category {
-        color: #E6E6E6;
-        font-size: 108%;
-        font-weight: 500;
-        margin: 12px 32px;
-        vertical-align: bottom;
-      }
+  :host([files-ng]) .category {
+    color: var(--google-grey-200);
+    font-family: 'Roboto Medium';
+    font-size: 14px;
+    line-height: 56px;
+    margin-inline-start: 32px;
+  }
 
-      :host([files-ng]) .category {
-        color: var(--google-grey-200);
-        font-family: 'Roboto Medium';
-        font-size: 14px;
-        line-height: 56px;
-        margin-inline-start: 32px;
-      }
+  hr {
+    border-color: white;
+    margin-top: 31px;
+    opacity: 0.24;
+  }
 
-      hr {
-        border-color: white;
-        margin-top: 31px;
-        opacity: 0.24;
-      }
+  :host([files-ng]) hr {
+    border-color: rgba(255, 255, 255, 0.2);
+    border-top-width: 1px !important;
+    border-width: 0;
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
 
-      :host([files-ng]) hr {
-        border-color: rgba(255, 255, 255, 0.2);
-        border-top-width: 1px !important;
-        border-width: 0;
-        margin-bottom: 8px;
-        margin-top: 16px;
-      }
+  @media only screen and (max-width: 720px) {
+    #box {
+      width: 240px;
+    }
+    .category {
+      margin: 12px 12px;
+    }
+  }
+</style>
+<div id="box">
+  <div class="category">$i18n{METADATA_BOX_GENERAL_INFO}</div>
+  <files-metadata-entry key="$i18n{METADATA_BOX_FILE_SIZE}" value="[[size]]" loading="[[isSizeLoading]]"></files-metadata-entry>
+  <files-metadata-entry key="$i18n{METADATA_BOX_MODIFICATION_TIME}" value="[[modificationTime]]"></files-metadata-entry>
+  <files-metadata-entry key="$i18n{METADATA_BOX_MEDIA_MIME_TYPE}" value="[[mediaMimeType]]"></files-metadata-entry>
+  <files-metadata-entry key="$i18n{METADATA_BOX_FILE_LOCATION}" value="[[fileLocation]]"></files-metadata-entry>
 
-      @media only screen and (max-width: 720px) {
-        #box {
-          width: 240px;
-        }
-        .category {
-          margin: 12px 12px;
-        }
-      }
-    </style>
-    <div id="box">
-      <div class="category">$i18n{METADATA_BOX_GENERAL_INFO}</div>
-      <files-metadata-entry key="$i18n{METADATA_BOX_FILE_SIZE}" value="[[size]]" loading="[[isSizeLoading]]"></files-metadata-entry>
-      <files-metadata-entry key="$i18n{METADATA_BOX_MODIFICATION_TIME}" value="[[modificationTime]]"></files-metadata-entry>
-      <files-metadata-entry key="$i18n{METADATA_BOX_MEDIA_MIME_TYPE}" value="[[mediaMimeType]]"></files-metadata-entry>
-      <files-metadata-entry key="$i18n{METADATA_BOX_FILE_LOCATION}" value="[[fileLocation]]"></files-metadata-entry>
-
-      <div hidden="[[!hasFileSpecificMetadata_]]">
-        <hr>
-        <div class="category" hidden="[[!isImage_(type)]]">$i18n{METADATA_BOX_IMAGE_INFO}</div>
-        <div class="category" hidden="[[!isAudio_(type)]]">$i18n{METADATA_BOX_AUDIO_INFO}</div>
-        <div class="category" hidden="[[!isVideo_(type)]]">$i18n{METADATA_BOX_VIDEO_INFO}</div>
-        <files-metadata-entry key="$i18n{METADATA_BOX_DIMENSION}" value="[[dimension_(imageWidth, imageHeight)]]"></files-metadata-entry>
-        <files-metadata-entry key="$i18n{METADATA_BOX_ALBUM_TITLE}" value="[[mediaAlbum]]"></files-metadata-entry>
-        <files-metadata-entry key="$i18n{METADATA_BOX_MEDIA_TITLE}" value="[[mediaTitle]]"></files-metadata-entry>
-        <files-metadata-entry key="$i18n{METADATA_BOX_MEDIA_ARTIST}" value="[[mediaArtist]]"></files-metadata-entry>
-        <files-metadata-entry key="$i18n{METADATA_BOX_DURATION}" value="[[time2string_(mediaDuration)]]"></files-metadata-entry>
-        <files-metadata-entry key="$i18n{METADATA_BOX_GENRE}" value="[[mediaGenre]]"></files-metadata-entry>
-        <files-metadata-entry key="$i18n{METADATA_BOX_TRACK}" value="[[mediaTrack]]"></files-metadata-entry>
-        <files-metadata-entry key="$i18n{METADATA_BOX_EXIF_DEVICE_MODEL}" value="[[deviceModel_(ifd)]]"></files-metadata-entry>
-        <files-metadata-entry key="$i18n{METADATA_BOX_EXIF_DEVICE_SETTINGS}" value="[[deviceSettings_(ifd)]]"></files-metadata-entry>
-        <files-metadata-entry key="$i18n{METADATA_BOX_EXIF_GEOGRAPHY}" value="[[geography_(ifd)]]"></files-metadata-entry>
-        <files-metadata-entry key="$i18n{METADATA_BOX_YEAR_RECORDED}" value="[[mediaYearRecorded]]"></files-metadata-entry>
-      </div>
-    </div>
-  </template>
-  <script src="files_metadata_box.js"></script>
-</dom-module>
+  <div hidden="[[!hasFileSpecificMetadata_]]">
+    <hr>
+    <div class="category" hidden="[[!isImage_(type)]]">$i18n{METADATA_BOX_IMAGE_INFO}</div>
+    <div class="category" hidden="[[!isAudio_(type)]]">$i18n{METADATA_BOX_AUDIO_INFO}</div>
+    <div class="category" hidden="[[!isVideo_(type)]]">$i18n{METADATA_BOX_VIDEO_INFO}</div>
+    <files-metadata-entry key="$i18n{METADATA_BOX_DIMENSION}" value="[[dimension_(imageWidth, imageHeight)]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_ALBUM_TITLE}" value="[[mediaAlbum]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_MEDIA_TITLE}" value="[[mediaTitle]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_MEDIA_ARTIST}" value="[[mediaArtist]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_DURATION}" value="[[time2string_(mediaDuration)]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_GENRE}" value="[[mediaGenre]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_TRACK}" value="[[mediaTrack]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_EXIF_DEVICE_MODEL}" value="[[deviceModel_(ifd)]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_EXIF_DEVICE_SETTINGS}" value="[[deviceSettings_(ifd)]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_EXIF_GEOGRAPHY}" value="[[geography_(ifd)]]"></files-metadata-entry>
+    <files-metadata-entry key="$i18n{METADATA_BOX_YEAR_RECORDED}" value="[[mediaYearRecorded]]"></files-metadata-entry>
+  </div>
+</div>

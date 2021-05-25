@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/* eslint-disable no-var */
+
 /**
  * A toolbar for the ImageEditor.
  */
@@ -127,10 +129,6 @@ class ImageEditorToolbar extends cr.EventTarget {
         type === ImageEditorToolbar.ButtonType.ICON_TOGGLEABLE) {
       var icon = document.createElement('div');
       icon.classList.add('icon');
-
-      // Show tooltip for icon button.
-      assertInstanceof(document.querySelector('files-tooltip'), FilesTooltip)
-          .addTarget(button);
 
       button.appendChild(icon);
 

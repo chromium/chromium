@@ -2,7 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* #export */ const FilesQuickView = Polymer({
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './files_icon_button.js';
+import './files_metadata_box.js';
+import './files_safe_media.js';
+import './files_tooltip.js';
+import './icons.m.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+export const FilesQuickView = Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'files-quick-view',
 
   properties: {

@@ -6,7 +6,7 @@
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {MetadataItem} from './metadata/metadata_item.m.js';
 // #import {FileTasks} from './file_tasks.m.js';
-// #import {FilesQuickView} from '../elements/files_quick_view.m.js';
+// #import {FilesQuickView} from '../elements/files_quick_view.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {MetadataBoxController} from './metadata_box_controller.m.js';
 // #import {FileListSelectionModel} from './ui/file_list_selection_model.m.js';

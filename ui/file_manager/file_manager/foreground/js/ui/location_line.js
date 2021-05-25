@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import {FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-// #import {FilesTooltip} from '../../elements/files_tooltip.m.js';
+// #import {FilesTooltip} from '../../elements/files_tooltip.js';
 // #import {ListContainer} from './list_container.m.js';
 // #import {VolumeManager} from '../../../externs/volume_manager.m.js';
 // #import {util} from '../../../common/js/util.m.js';

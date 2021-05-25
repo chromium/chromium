@@ -636,7 +636,7 @@ js_library("deferred_elements.m") {
     "//ui/file_manager/file_manager/foreground/elements:files_spinner.m",
     "//ui/file_manager/file_manager/foreground/elements:files_toast.m",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/elements:xf_button.m",
     "//ui/file_manager/file_manager/foreground/elements:xf_circular_progress.m",
     "//ui/file_manager/file_manager/foreground/elements:xf_display_panel.m",
@@ -1427,8 +1427,6 @@ js_library("metadata_box_controller") {
     "metadata:metadata_model",
     "ui:file_metadata_formatter",
     "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/foreground/elements:files_metadata_box",
-    "//ui/file_manager/file_manager/foreground/elements:files_quick_view",
   ]
 }
 
@@ -1443,8 +1441,8 @@ js_library("metadata_box_controller.m") {
     "//ui/file_manager/file_manager/common/js:file_type.m",
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_metadata_box.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_quick_view.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_metadata_box",
+    "//ui/file_manager/file_manager/foreground/elements:files_quick_view",
     "//ui/webui/resources/js:assert.m",
   ]
 
@@ -1643,7 +1641,7 @@ js_library("quick_view_controller.m") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
     "//ui/file_manager/file_manager/externs:command_handler_deps.m",
     "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_quick_view.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_quick_view",
     "//ui/file_manager/image_loader:image_loader_client.m",
     "//ui/file_manager/image_loader:load_image_request.m",
     "//ui/webui/resources/js:assert.m",
@@ -1754,7 +1752,7 @@ js_library("selection_menu_controller.m") {
   deps = [
     "ui:multi_menu_button.m",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr/ui:menu.m",
   ]
@@ -1990,7 +1988,6 @@ js_test_gen_html("js_test_gen_html_modules") {
                     "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
-                    "hide_warnings_for=third_party/",
                     "hide_warnings_for=third_party/",
                   ]
 }

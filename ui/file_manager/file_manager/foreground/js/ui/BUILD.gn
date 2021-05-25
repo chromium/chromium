@@ -22,6 +22,7 @@ group("closure_compile") {
 js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
+                    "js_module_root=../../ui/file_manager/",
                     "js_module_root=gen/ui/file_manager/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
@@ -498,7 +499,6 @@ js_library("file_manager_ui") {
     "//ui/file_manager/file_manager/foreground/elements:files_spinner",
     "//ui/file_manager/file_manager/foreground/elements:files_toast",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/elements:xf_button",
     "//ui/file_manager/file_manager/foreground/elements:xf_circular_progress",
     "//ui/file_manager/file_manager/foreground/elements:xf_display_panel",
@@ -543,7 +543,7 @@ js_library("file_manager_ui.m") {
     "//ui/file_manager/file_manager/externs:volume_manager.m",
     "//ui/file_manager/file_manager/foreground/elements:files_password_dialog.m",
     "//ui/file_manager/file_manager/foreground/elements:files_toast.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/js:dialog_type.m",
     "//ui/file_manager/file_manager/foreground/js:launch_param.m",
     "//ui/file_manager/file_manager/foreground/js:providers_model.m",
@@ -873,7 +873,7 @@ js_library("location_line.m") {
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
     "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/js:path_component.m",
     "//ui/webui/resources/js/cr:event_target.m",
   ]

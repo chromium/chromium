@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 const FILES_APP_ORIGIN = 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj';
 
 /**
@@ -11,6 +13,8 @@ const FILES_APP_ORIGIN = 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj';
  * of the tap.
  */
 const FilesSafeMedia = Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'files-safe-media',
 
   properties: {
@@ -18,7 +22,7 @@ const FilesSafeMedia = Polymer({
     src: {
       type: String,
       observer: 'onSrcChange_',
-      reflectToAttribute: true
+      reflectToAttribute: true,
     },
     type: {
       type: String,
@@ -26,7 +30,9 @@ const FilesSafeMedia = Polymer({
     }
   },
 
-  listeners: {'src-changed': 'onSrcChange_'},
+  listeners: {
+    'src-changed': 'onSrcChange_',
+  },
 
   /**
    * @return {string}
@@ -34,11 +40,11 @@ const FilesSafeMedia = Polymer({
   sourceFile_: function() {
     switch (this.type) {
       case 'image':
-         return 'foreground/elements/files_safe_img_webview_content.html';
+        return 'foreground/elements/files_safe_img_webview_content.html';
       case 'audio':
-         return 'foreground/elements/files_safe_audio_webview_content.html';
+        return 'foreground/elements/files_safe_audio_webview_content.html';
       case 'video':
-         return 'foreground/elements/files_safe_video_webview_content.html';
+        return 'foreground/elements/files_safe_video_webview_content.html';
       case 'html':
         return 'foreground/elements/files_safe_text_webview_content.html';
       default:

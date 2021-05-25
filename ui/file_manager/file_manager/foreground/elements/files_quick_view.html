@@ -3,105 +3,90 @@
   -- found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="files_icon_button.html">
-<link rel="import" href="files_metadata_box.html">
-<link rel="import" href="files_safe_media.html">
-<link rel="import" href="files_tooltip.html">
-<link rel="import" href="icons.html">
-<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+<link rel="stylesheet" href="foreground/css/common.css">
+<link rel="stylesheet" href="foreground/elements/files_quick_view.css">
 
-<dom-module id="files-quick-view">
-  <template>
-    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
-    <link rel="stylesheet" href="foreground/css/common.css">
-    <link rel="stylesheet" href="foreground/elements/files_quick_view.css">
-
-    <dialog id="dialog" on-close="onDialogClose_">
-      <div id="toolbar">
-        <div class="buttons-group">
-          <cr-button id="back-button" on-click="close" aria-label="$i18n{QUICK_VIEW_CLOSE_BUTTON_LABEL}" has-tooltip invert-tooltip>
-            <iron-icon icon="files:arrow-back"></iron-icon>
-            <span class="icon"></span>
-          </cr-button>
-        </div>
-        <div id="file-path">[[filePath]]</div>
-        <div class="buttons-group">
-          <cr-button id="open-button" on-click="onOpenInNewButtonTap" hidden$="[[!shouldShowOpenButton_(hasTask, isModal)]]" aria-label="$i18n{QUICK_VIEW_OPEN_IN_NEW_BUTTON_LABEL}" has-tooltip invert-tooltip>
-            <span class="icon">$i18n{QUICK_VIEW_OPEN_IN_NEW_BUTTON_LABEL}</span>
-          </cr-button>
-          <cr-button id="delete-button" on-click="onDeleteButtonTap" hidden$="[[!shouldShowDeleteButton_(canDelete, isModal)]]" aria-label="$i18n{QUICK_VIEW_DELETE_BUTTON_LABEL}" has-tooltip invert-tooltip>
-            <span class="icon"></span>
-          </cr-button>
-          <!-- TODO(files-ng): this fancy Polymer icon toggle button is not used in files-ng. Remove it. -->
-          <files-icon-button toggles id="metadata-button" on-tap="onMetadataButtonTap_" active="{{metadataBoxActive}}" aria-label="$i18n{QUICK_VIEW_TOGGLE_METADATA_BOX_BUTTON_LABEL}" tabindex="0" has-tooltip invert-tooltip>
-          </files-icon-button>
-          <cr-button id="info-button" on-click="onMetadataButtonTap_" aria-pressed="{{metadataBoxActive}}" aria-label="$i18n{QUICK_VIEW_TOGGLE_METADATA_BOX_BUTTON_LABEL}" has-tooltip invert-tooltip>
-            <span class="icon"></span>
-          </cr-button>
-        </div>
-      </div>
-      <div id="mainPanel">
-        <div id="contentPanel" metadata-box-active$="[[metadataBoxActive]]" on-tap="onContentPanelTap_">
-          <div id="innerContentPanel" type$="[[type]]">
-            <!-- PDF, Text -->
-            <template is="dom-if" if="[[browsable]]">
-              <webview style="color: transparent; background: transparent;" on-contentload='applyTextCss' class="content text-content" src="[[contentUrl]]"></webview>
-            </template>
-            <!-- document/HTML -->
-            <template is="dom-if" if="[[isHtml_(type, subtype)]]">
-              <files-safe-media hidden="[[!contentUrl]]" type="html" class="content text-content" src="[[contentUrl]]"></files-safe-media>
-              <template is="dom-if" if="[[!contentUrl]]">
-                <div generic-thumbnail="[[type]]"></div>
-                <div class="no-preview">[[noPreviewText]]</div>
-              </template>
-            </template>
-            <!-- Image -->
-            <template is="dom-if" if="[[isImage_(type)]]">
-              <files-safe-media hidden="[[!contentUrl]]" type="image" class="content no-close-on-click" src="[[contentUrl]]"></files-safe-media>
-              <template is="dom-if" if="[[!contentUrl]]">
-                <div generic-thumbnail="image"></div>
-                <div class="no-preview">[[noPreviewText]]</div>
-              </template>
-            </template>
-            <!-- Video -->
-            <template is="dom-if" if="[[isVideo_(type)]]">
-              <template is="dom-if" if="[[!contentUrl]]">
-                <div class="thumbnail" hidden="[[!videoPoster]]">
-                  <files-safe-media type="image" id="video-poster" src="[[videoPoster]]"></files-safe-media>
-                </div>
-                <div hidden="[[videoPoster]]" generic-thumbnail="video"></div>
-                <div class="no-preview">[[noPlaybackText]]</div>
-              </template>
-              <template is="dom-if" if="[[contentUrl]]">
-                <files-safe-media id="videoSafeMedia" tabindex="0" type="video" class="content no-close-on-click" controls autoplay="[[autoplay]]" src="[[contentUrl]]" poster="[[videoPoster]]"></files-safe-media>
-              </template>
-            </template>
-            <!-- Audio -->
-            <template is="dom-if" if="[[isAudio_(type)]]">
-              <files-safe-media type="image" id="audio-artwork" class="no-close-on-click" src="[[audioArtwork]]" hidden="[[!audioArtwork]]"></files-safe-media>
-            </template>
-            <div>
-              <files-safe-media tabindex="0" type="audio" class="no-close-on-click" controls autoplay="[[autoplay]]" src="[[audioUrl_(contentUrl, type)]]" hidden="[[!isAudio_(type)]]"></files-safe-media>
+<dialog id="dialog" on-close="onDialogClose_">
+  <div id="toolbar">
+    <div class="buttons-group">
+      <cr-button id="back-button" on-click="close" aria-label="$i18n{QUICK_VIEW_CLOSE_BUTTON_LABEL}" has-tooltip invert-tooltip>
+        <iron-icon icon="files:arrow-back"></iron-icon>
+        <span class="icon"></span>
+      </cr-button>
+    </div>
+    <div id="file-path">[[filePath]]</div>
+    <div class="buttons-group">
+      <cr-button id="open-button" on-click="onOpenInNewButtonTap" hidden$="[[!shouldShowOpenButton_(hasTask, isModal)]]" aria-label="$i18n{QUICK_VIEW_OPEN_IN_NEW_BUTTON_LABEL}" has-tooltip invert-tooltip>
+        <span class="icon">$i18n{QUICK_VIEW_OPEN_IN_NEW_BUTTON_LABEL}</span>
+      </cr-button>
+      <cr-button id="delete-button" on-click="onDeleteButtonTap" hidden$="[[!shouldShowDeleteButton_(canDelete, isModal)]]" aria-label="$i18n{QUICK_VIEW_DELETE_BUTTON_LABEL}" has-tooltip invert-tooltip>
+        <span class="icon"></span>
+      </cr-button>
+      <!-- TODO(files-ng): this fancy Polymer icon toggle button is not used in files-ng. Remove it. -->
+      <files-icon-button toggles id="metadata-button" on-tap="onMetadataButtonTap_" active="{{metadataBoxActive}}" aria-label="$i18n{QUICK_VIEW_TOGGLE_METADATA_BOX_BUTTON_LABEL}" tabindex="0" has-tooltip invert-tooltip>
+      </files-icon-button>
+      <cr-button id="info-button" on-click="onMetadataButtonTap_" aria-pressed="{{metadataBoxActive}}" aria-label="$i18n{QUICK_VIEW_TOGGLE_METADATA_BOX_BUTTON_LABEL}" has-tooltip invert-tooltip>
+        <span class="icon"></span>
+      </cr-button>
+    </div>
+  </div>
+  <div id="mainPanel">
+    <div id="contentPanel" metadata-box-active$="[[metadataBoxActive]]" on-tap="onContentPanelTap_">
+      <div id="innerContentPanel" type$="[[type]]">
+        <!-- PDF, Text -->
+        <template is="dom-if" if="[[browsable]]">
+          <webview style="color: transparent; background: transparent;" on-contentload='applyTextCss' class="content text-content" src="[[contentUrl]]"></webview>
+        </template>
+        <!-- document/HTML -->
+        <template is="dom-if" if="[[isHtml_(type, subtype)]]">
+          <files-safe-media hidden="[[!contentUrl]]" type="html" class="content text-content" src="[[contentUrl]]"></files-safe-media>
+          <template is="dom-if" if="[[!contentUrl]]">
+            <div generic-thumbnail="[[type]]"></div>
+            <div class="no-preview">[[noPreviewText]]</div>
+          </template>
+        </template>
+        <!-- Image -->
+        <template is="dom-if" if="[[isImage_(type)]]">
+          <files-safe-media hidden="[[!contentUrl]]" type="image" class="content no-close-on-click" src="[[contentUrl]]"></files-safe-media>
+          <template is="dom-if" if="[[!contentUrl]]">
+            <div generic-thumbnail="image"></div>
+            <div class="no-preview">[[noPreviewText]]</div>
+          </template>
+        </template>
+        <!-- Video -->
+        <template is="dom-if" if="[[isVideo_(type)]]">
+          <template is="dom-if" if="[[!contentUrl]]">
+            <div class="thumbnail" hidden="[[!videoPoster]]">
+              <files-safe-media type="image" id="video-poster" src="[[videoPoster]]"></files-safe-media>
             </div>
-            <template is="dom-if" if="[[isAudio_(type)]]">
-              <template is="dom-if" if="[[!contentUrl]]">
-                <div generic-thumbnail="audio"></div>
-                <div class="no-preview">[[noPlaybackText]]</div>
-              </template>
-            </template>
-            <div hidden="[[!isUnsupported_(type, subtype, browsable)]]">
-              <div generic-thumbnail$="[[type]]"></div>
-              <div class="no-preview">[[noPreviewText]]</div>
-            </div>
-            </div> <!-- innerContentPanel -->
-          </div> <!-- contentPanel -->
-        <files-metadata-box id="metadata-box" hidden$="[[!metadataBoxActive]]"></files-metadata-box>
-      </div> <!-- mainPanel -->
-      <files-tooltip></files-tooltip>
-    </dialog>
-  </template>
-  <script src="files_quick_view.js"></script>
-</dom-module>
+            <div hidden="[[videoPoster]]" generic-thumbnail="video"></div>
+            <div class="no-preview">[[noPlaybackText]]</div>
+          </template>
+          <template is="dom-if" if="[[contentUrl]]">
+            <files-safe-media id="videoSafeMedia" tabindex="0" type="video" class="content no-close-on-click" controls autoplay="[[autoplay]]" src="[[contentUrl]]" poster="[[videoPoster]]"></files-safe-media>
+          </template>
+        </template>
+        <!-- Audio -->
+        <template is="dom-if" if="[[isAudio_(type)]]">
+          <files-safe-media type="image" id="audio-artwork" class="no-close-on-click" src="[[audioArtwork]]" hidden="[[!audioArtwork]]"></files-safe-media>
+        </template>
+        <div>
+          <files-safe-media tabindex="0" type="audio" class="no-close-on-click" controls autoplay="[[autoplay]]" src="[[audioUrl_(contentUrl, type)]]" hidden="[[!isAudio_(type)]]"></files-safe-media>
+        </div>
+        <template is="dom-if" if="[[isAudio_(type)]]">
+          <template is="dom-if" if="[[!contentUrl]]">
+            <div generic-thumbnail="audio"></div>
+            <div class="no-preview">[[noPlaybackText]]</div>
+          </template>
+        </template>
+        <div hidden="[[!isUnsupported_(type, subtype, browsable)]]">
+          <div generic-thumbnail$="[[type]]"></div>
+          <div class="no-preview">[[noPreviewText]]</div>
+        </div>
+        </div> <!-- innerContentPanel -->
+      </div> <!-- contentPanel -->
+    <files-metadata-box id="metadata-box" hidden$="[[!metadataBoxActive]]"></files-metadata-box>
+  </div> <!-- mainPanel -->
+  <files-tooltip></files-tooltip>
+</dialog>

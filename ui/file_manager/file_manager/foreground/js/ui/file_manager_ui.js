@@ -21,7 +21,7 @@
 // #import {FilesMenuItem} from './files_menu.m.js';
 // #import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
 // #import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
-// #import {FilesTooltip} from '../../elements/files_tooltip.m.js';
+// #import {FilesTooltip} from '../../elements/files_tooltip.js';
 // #import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 // #import {DialogType} from '../dialog_type.m.js';
 // #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';

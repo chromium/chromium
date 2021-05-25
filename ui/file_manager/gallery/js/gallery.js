@@ -192,9 +192,6 @@ function Gallery(volumeManager) {
 
   window.addEventListener('resize', this.resizeRenameField_.bind(this));
 
-  assertInstanceof(document.querySelector('files-tooltip'), FilesTooltip)
-      .addTargets(document.querySelectorAll('[has-tooltip]'));
-
   // We must call this method after elements of all tools have been attached to
   // the DOM.
   this.dimmableUIController_.setTools(document.querySelectorAll('.tool'));

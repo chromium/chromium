@@ -25,19 +25,11 @@
 
       <!-- Polymer elements -->
       <include name="IDR_FILE_MANAGER_ELEMENTS_ELEMENTS_BUNDLE_HTML" file="file_manager/foreground/elements/elements_bundle.html" type="BINDATA"/>
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_ICON_BUTTON_HTML" file="file_manager/foreground/elements/files_icon_button.html" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_ICON_BUTTON_JS" file="file_manager/foreground/elements/files_icon_button.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_MESSAGE_HTML" file="file_manager/foreground/elements/files_message.html" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_MESSAGE_JS" file="file_manager/foreground/elements/files_message.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_METADATA_BOX_HTML" file="file_manager/foreground/elements/files_metadata_box.html" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_METADATA_BOX_JS" file="file_manager/foreground/elements/files_metadata_box.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_METADATA_ENTRY_HTML" file="file_manager/foreground/elements/files_metadata_entry.html" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_METADATA_ENTRY_JS" file="file_manager/foreground/elements/files_metadata_entry.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_PASSWORD_DIALOG_HTML" file="file_manager/foreground/elements/files_password_dialog.html" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_PASSWORD_DIALOG_JS" file="file_manager/foreground/elements/files_password_dialog.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_QUICK_PREVIEW_CSS" file="file_manager/foreground/elements/files_quick_view.css"  type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_QUICK_PREVIEW_HTML" file="file_manager/foreground/elements/files_quick_view.html" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_QUICK_PREVIEW_JS" file="file_manager/foreground/elements/files_quick_view.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_RIPPLE_HTML" file="file_manager/foreground/elements/files_ripple.html" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_RIPPLE_JS" file="file_manager/foreground/elements/files_ripple.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_AUDIO_WEBVIEW_CONTENT_CSS" file="file_manager/foreground/elements/files_safe_audio_webview_content.css" type="BINDATA" />
@@ -46,8 +38,6 @@
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_TEXT_WEBVIEW_CONTENT_HTML" file="file_manager/foreground/elements/files_safe_text_webview_content.html" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_IMG_WEBVIEW_CONTENT_CSS" file="file_manager/foreground/elements/files_safe_img_webview_content.css" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_IMG_WEBVIEW_CONTENT_HTML" file="file_manager/foreground/elements/files_safe_img_webview_content.html" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_MEDIA_HTML" file="file_manager/foreground/elements/files_safe_media.html" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_MEDIA_JS" file="file_manager/foreground/elements/files_safe_media.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_MEDIA_WEBVIEW_CONTENT_JS" file="file_manager/foreground/elements/files_safe_media_webview_content.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_VIDEO_WEBVIEW_CONTENT_CSS" file="file_manager/foreground/elements/files_safe_video_webview_content.css" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_VIDEO_WEBVIEW_CONTENT_HTML" file="file_manager/foreground/elements/files_safe_video_webview_content.html" type="BINDATA" />
@@ -57,8 +47,6 @@
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_TOAST_JS" file="file_manager/foreground/elements/files_toast.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_TOGGLE_RIPPLE_HTML" file="file_manager/foreground/elements/files_toggle_ripple.html" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_TOGGLE_RIPPLE_JS" file="file_manager/foreground/elements/files_toggle_ripple.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_TOOLTIP_HTML" file="file_manager/foreground/elements/files_tooltip.html" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_TOOLTIP_JS" file="file_manager/foreground/elements/files_tooltip.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_ICONS_HTML" file="file_manager/foreground/elements/icons.html" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_XF_BUTTON_JS" file="file_manager/foreground/elements/xf_button.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_XF_CIRCULAR_PROGRESS_JS" file="file_manager/foreground/elements/xf_circular_progress.js" type="BINDATA" />

@@ -4,7 +4,7 @@
   -->
 
 <!--
-  `files-icon-button` implements common behaviors among icon buttons in file
+  files-icon-button implements common behaviors among icon buttons in file
   manager, video player, and audio player.
   If the button has |toggles| attributes, this element uses files-toggle-ripple
   to indicate the active state. Otherwise, this element uses files-ripple to
@@ -13,44 +13,33 @@
   operation.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-behaviors/iron-button-state.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-behaviors/iron-control-state.html">
-<link rel="import" href="files_ripple.html">
-<link rel="import" href="files_toggle_ripple.html">
+<style>
+  :host {
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 2px;
+    cursor: pointer;
+    display: inline-block;
+    height: 32px;
+    outline: none;  /* We use original outline for focused state. */
+    position: relative;
+    width: 32px;
+  }
 
-<dom-module id="files-icon-button">
-  <template>
-    <style>
-      :host {
-        background-position: center;
-        background-repeat: no-repeat;
-        border-radius: 2px;
-        cursor: pointer;
-        display: inline-block;
-        height: 32px;
-        outline: none;  /* We use original outline for focused state. */
-        position: relative;
-        width: 32px;
-      }
+  :host(.keyboard-focus) {
+    /* We use box-shadow rather than outline to make it rounded. */
+    box-shadow: 0 0 0 1px rgba(66, 133, 244, 0.5);
+  }
 
-      :host(.keyboard-focus) {
-        /* We use box-shadow rather than outline to make it rounded. */
-        box-shadow: 0 0 0 1px rgba(66, 133, 244, 0.5);
-      }
+  files-toggle-ripple {
+    height: 28px;
+    left: 2px;
+    pointer-events: none;
+    position: absolute;
+    top: 2px;
+    width: 28px;
+  }
+</style>
 
-      files-toggle-ripple {
-        height: 28px;
-        left: 2px;
-        pointer-events: none;
-        position: absolute;
-        top: 2px;
-        width: 28px;
-      }
-    </style>
-
-    <files-ripple hidden="[[toggles]]"></files-ripple>
-    <files-toggle-ripple activated="[[active]]"></files-toggle-ripple>
-  </template>
-  <script src="files_icon_button.js"></script>
-</dom-module>
+<files-ripple hidden="[[toggles]]"></files-ripple>
+<files-toggle-ripple activated="[[active]]"></files-toggle-ripple>

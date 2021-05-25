@@ -3,25 +3,18 @@
   -- found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<dom-module id="files-safe-media">
-  <template>
-    <style>
-      #content {
-        height: 100%;
-        width: 100%;
-      }
-      #content.audio {
-        height: 54px;
-      }
-      webview {
-        display: inline-block;
-        height: 100%;
-        width: 100%;
-      }
-    </style>
-    <div id="content" class$="[[type]]"></div>
-  </template>
-  <script src="files_safe_media.js"></script>
-</dom-module>
+<style>
+  #content {
+    height: 100%;
+    width: 100%;
+  }
+  #content.audio {
+    height: 54px;
+  }
+  webview {
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+  }
+</style>
+<div id="content" class$="[[type]]"></div>
