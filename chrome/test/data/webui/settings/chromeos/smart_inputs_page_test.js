@@ -74,4 +74,40 @@ suite('SmartInputsPage', function() {
         deepLinkElement, getDeepActiveElement(),
         'Emoji suggestion toggle should be focused for settingId=1203.');
   });
+
+  test('predictiveWritingNotNullWhenAllowPredictiveWritingIsTrue', function() {
+    loadTimeData.overrideValues({allowPredictiveWriting: true});
+    createSmartInputsPage();
+    assertTrue(!!smartInputsPage.$$('#predictiveWriting'));
+  });
+
+  test('predictiveWritingNullWhenAllowPredictiveWritingIsFalse', function() {
+    loadTimeData.overrideValues({allowPredictiveWriting: false});
+    createSmartInputsPage();
+    assertFalse(!!smartInputsPage.$$('#predictiveWriting'));
+  });
+
+  test('deep link to predictive writing toggle', async () => {
+    const PREDICTIVE_WRITING_SETTING_ID = '1208';
+
+    loadTimeData.overrideValues({
+      isDeepLinkingEnabled: true,
+      allowPredictiveWriting: true,
+    });
+    createSmartInputsPage();
+
+    const params = new URLSearchParams;
+    params.append('settingId', PREDICTIVE_WRITING_SETTING_ID);
+    settings.Router.getInstance().navigateTo(
+        settings.routes.OS_LANGUAGES_SMART_INPUTS, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement =
+        smartInputsPage.$$('#predictiveWriting').$$('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Predictive writing toggle should be focused for settingId=1208.');
+  });
 });

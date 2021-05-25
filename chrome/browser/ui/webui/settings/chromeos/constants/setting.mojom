@@ -199,6 +199,7 @@ enum Setting {
   kOfferTranslation = 1205,
   kAddInputMethod = 1206,
   kSpellCheck = 1207,
+  kShowPredictiveWriting = 1208,
 
   // Files section.
   kGoogleDriveConnection = 1300,

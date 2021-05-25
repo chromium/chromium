@@ -73,6 +73,15 @@
             deep-link-focus-id$="[[Setting.kShowEmojiSuggestions]]">
         </settings-toggle-button>
       </template>
+      <template is="dom-if" if="[[allowPredictiveWriting_]]">
+        <settings-toggle-button id="predictiveWriting" class="hr"
+            pref="{{prefs.assistive_input.predictive_writing_enabled}}"
+            label="$i18n{predictiveWritingTitle}"
+            sub-label="$i18n{predictiveWritingDescription}"
+            aria-label="$i18n{predictiveWritingTitle}"
+            deep-link-focus-id$="[[Setting.kShowPredictiveWriting]]">
+        </settings-toggle-button>
+      </template>
     </div>
   </template>
   <script src="smart_inputs_page.js"></script>

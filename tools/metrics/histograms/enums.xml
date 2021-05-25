@@ -59289,6 +59289,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1205" label="Offer Translation"/>
   <int value="1206" label="Add Input Method"/>
   <int value="1207" label="Spell Check"/>
+  <int value="1208" label="Show Predictive Writing"/>
   <int value="1300" label="Google Drive Connection"/>
   <int value="1400" label="Add Printer"/>
   <int value="1401" label="Saved Printers"/>

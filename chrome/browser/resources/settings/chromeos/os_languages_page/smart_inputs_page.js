@@ -40,6 +40,14 @@ Polymer({
       },
     },
 
+    /** @private */
+    allowPredictiveWriting_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('allowPredictiveWriting');
+      },
+    },
+
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -49,6 +57,7 @@ Polymer({
       value: () => new Set([
         chromeos.settings.mojom.Setting.kShowPersonalInformationSuggestions,
         chromeos.settings.mojom.Setting.kShowEmojiSuggestions,
+        chromeos.settings.mojom.Setting.kShowPredictiveWriting,
       ]),
     },
   },
