@@ -7,10 +7,12 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 #include "content/public/browser/web_ui.h"
@@ -272,4 +274,39 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestTestDoneEarlyPassesAsync) {
 // waiting for async result.
 IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestTestDoneEarlyPasses) {
   ASSERT_TRUE(RunJavascriptTest("testDone"));
+}
+
+class WebUICoverageTest : public WebUIBrowserTest {
+ protected:
+  base::ScopedTempDir tmp_dir_;
+
+ private:
+  void SetUpOnMainThread() override {
+    WebUIBrowserTest::SetUpOnMainThread();
+    AddLibrary(base::FilePath(FILE_PATH_LITERAL("async.js")));
+    ui_test_utils::NavigateToURL(browser(), DummyUrl());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    CHECK(tmp_dir_.CreateUniqueTempDir());
+    command_line->AppendSwitchPath(switches::kDevtoolsCodeCoverage,
+                                   tmp_dir_.GetPath());
+    WebUIBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebUICoverageTest, TestCoverageEmits) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(base::IsDirectoryEmpty(tmp_dir_.GetPath()));
+  ASSERT_TRUE(RunJavascriptTest("testDone"));
+
+  CollectCoverage("foo");
+  ASSERT_FALSE(base::IsDirectoryEmpty(tmp_dir_.GetPath()));
+
+  // Scripts and tests are special directories under the WebUI specific
+  // directory, ensure they have been created and are not empty.
+  base::FilePath coverage_dir =
+      tmp_dir_.GetPath().AppendASCII("webui_javascript_code_coverage");
+  ASSERT_FALSE(base::IsDirectoryEmpty(coverage_dir.AppendASCII("scripts")));
+  ASSERT_FALSE(base::IsDirectoryEmpty(coverage_dir.AppendASCII("tests")));
 }

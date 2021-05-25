@@ -139,77 +139,71 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
   content::WebUI* GetWebUI() override { return web_ui(); }
 };
 
-class WebUICoverageObserver : public content::DevToolsAgentHostObserver {
- public:
-  explicit WebUICoverageObserver(base::FilePath devtools_code_coverage_dir)
-      : devtools_code_coverage_dir_(devtools_code_coverage_dir) {
-    content::DevToolsAgentHost::AddObserver(this);
+WebUICoverageObserver::WebUICoverageObserver(
+    base::FilePath devtools_code_coverage_dir)
+    : devtools_code_coverage_dir_(devtools_code_coverage_dir) {
+  content::DevToolsAgentHost::AddObserver(this);
+}
+
+WebUICoverageObserver::~WebUICoverageObserver() = default;
+
+bool WebUICoverageObserver::CoverageEnabled() {
+  return !devtools_code_coverage_dir_.empty();
+}
+
+void WebUICoverageObserver::CollectCoverage(const std::string& test_name) {
+  ASSERT_TRUE(CoverageEnabled());
+
+  content::DevToolsAgentHost::RemoveObserver(this);
+  content::RunAllTasksUntilIdle();
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath store =
+      devtools_code_coverage_dir_.AppendASCII("webui_javascript_code_coverage");
+  coverage::DevToolsListener::SetupCoverageStore(store);
+
+  for (auto& agent : devtools_agent_) {
+    auto* host = agent.first;
+    if (agent.second->HasCoverage(host))
+      agent.second->GetCoverage(host, store, test_name);
+    agent.second->Detach(host);
   }
 
-  ~WebUICoverageObserver() override = default;
+  content::DevToolsAgentHost::DetachAllClients();
+}
 
-  bool CoverageEnabled() { return !devtools_code_coverage_dir_.empty(); }
+bool WebUICoverageObserver::ShouldForceDevToolsAgentHostCreation() {
+  return CoverageEnabled();
+}
 
-  void CollectCoverage(const std::string& test_name) {
-    ASSERT_TRUE(CoverageEnabled());
+void WebUICoverageObserver::DevToolsAgentHostCreated(
+    content::DevToolsAgentHost* host) {
+  CHECK(devtools_agent_.find(host) == devtools_agent_.end());
 
-    content::DevToolsAgentHost::RemoveObserver(this);
-    content::RunAllTasksUntilIdle();
+  uint32_t process_id = base::GetUniqueIdForProcess().GetUnsafeValue();
+  devtools_agent_[host] =
+      std::make_unique<coverage::DevToolsListener>(host, process_id);
+}
 
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::FilePath store = devtools_code_coverage_dir_.AppendASCII(
-        "webui_javascript_code_coverage");
-    coverage::DevToolsListener::SetupCoverageStore(store);
+void WebUICoverageObserver::DevToolsAgentHostAttached(
+    content::DevToolsAgentHost* host) {}
 
-    for (auto& agent : devtools_agent_) {
-      auto* host = agent.first;
-      if (agent.second->HasCoverage(host))
-        agent.second->GetCoverage(host, store, test_name);
-      agent.second->Detach(host);
-    }
+void WebUICoverageObserver::DevToolsAgentHostNavigated(
+    content::DevToolsAgentHost* host) {
+  if (devtools_agent_.find(host) == devtools_agent_.end())
+    return;
 
-    content::DevToolsAgentHost::DetachAllClients();
-  }
+  devtools_agent_.find(host)->second->Navigated(host);
+}
 
- protected:
-  // content::DevToolsAgentHostObserver
-  bool ShouldForceDevToolsAgentHostCreation() override {
-    return CoverageEnabled();
-  }
+void WebUICoverageObserver::DevToolsAgentHostDetached(
+    content::DevToolsAgentHost* host) {}
 
-  void DevToolsAgentHostCreated(content::DevToolsAgentHost* host) override {
-    CHECK(devtools_agent_.find(host) == devtools_agent_.end());
-
-    uint32_t process_id = base::GetUniqueIdForProcess().GetUnsafeValue();
-    devtools_agent_[host] =
-        std::make_unique<coverage::DevToolsListener>(host, process_id);
-  }
-
-  void DevToolsAgentHostAttached(content::DevToolsAgentHost* host) override {}
-
-  void DevToolsAgentHostNavigated(content::DevToolsAgentHost* host) override {
-    if (devtools_agent_.find(host) == devtools_agent_.end())
-      return;
-
-    devtools_agent_.find(host)->second->Navigated(host);
-  }
-
-  void DevToolsAgentHostDetached(content::DevToolsAgentHost* host) override {}
-
-  void DevToolsAgentHostCrashed(content::DevToolsAgentHost* host,
-                                base::TerminationStatus status) override {
-    ASSERT_TRUE(devtools_agent_.find(host) == devtools_agent_.end());
-  }
-
- private:
-  using DevToolsAgentMap =  // agent hosts: have a unique devtools listener
-      std::map<content::DevToolsAgentHost*,
-               std::unique_ptr<coverage::DevToolsListener>>;
-  base::FilePath devtools_code_coverage_dir_;
-  DevToolsAgentMap devtools_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUICoverageObserver);
-};
+void WebUICoverageObserver::DevToolsAgentHostCrashed(
+    content::DevToolsAgentHost* host,
+    base::TerminationStatus status) {
+  ASSERT_TRUE(devtools_agent_.find(host) == devtools_agent_.end());
+}
 
 }  // namespace
 
@@ -532,17 +526,18 @@ void BaseWebUIBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   // Enables the MojoJSTest bindings which are used for WebUI tests.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "MojoJSTest");
+}
 
+void BaseWebUIBrowserTest::SetUpOnMainThread() {
+  JavaScriptBrowserTest::SetUpOnMainThread();
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage)) {
     base::FilePath devtools_code_coverage_dir =
         command_line->GetSwitchValuePath(switches::kDevtoolsCodeCoverage);
     coverage_handler_ =
         std::make_unique<WebUICoverageObserver>(devtools_code_coverage_dir);
   }
-}
-
-void BaseWebUIBrowserTest::SetUpOnMainThread() {
-  JavaScriptBrowserTest::SetUpOnMainThread();
 
   logging::SetLogMessageHandler(&LogHandler);
 
@@ -675,4 +670,8 @@ void WebUIBrowserTest::SetupHandlers() {
     GetMockMessageHandler()->set_web_ui(web_ui_instance);
     GetMockMessageHandler()->RegisterMessages();
   }
+}
+
+void WebUIBrowserTest::CollectCoverage(const std::string& test_name) {
+  return coverage_handler_->CollectCoverage(test_name);
 }
