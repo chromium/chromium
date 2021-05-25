@@ -19,7 +19,7 @@ message WebFeedMatcher {
     }
     oneof match {
       string text = 2;
-      string regex = 3;
+      string partial_match_regex = 3;
     }
     CriteriaType criteria_type = 1;
   }

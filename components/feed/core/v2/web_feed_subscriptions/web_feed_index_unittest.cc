@@ -33,7 +33,7 @@ feedwire::webfeed::WebFeedMatcher::Criteria RegexCriteria(
     const std::string& regex) {
   feedwire::webfeed::WebFeedMatcher::Criteria criteria;
   criteria.set_criteria_type(criteria_type);
-  criteria.set_regex(regex);
+  criteria.set_partial_match_regex(regex);
   return criteria;
 }
 

@@ -14,6 +14,7 @@ feedstore::Image ConvertToStore(feedwire::webfeed::Image value) {
 
 feedstore::WebFeedInfo::State ConvertToStore(
     feedwire::webfeed::WebFeed::State value) {
+  // TODO(harringtond): Add SUSPENDED state.
   switch (value) {
     case feedwire::webfeed::WebFeed::State::WebFeed_State_ACTIVE:
       return feedstore::WebFeedInfo::State::WebFeedInfo_State_ACTIVE;

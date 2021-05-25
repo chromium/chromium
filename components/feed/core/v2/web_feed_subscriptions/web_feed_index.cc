@@ -226,8 +226,9 @@ class EntrySetBuilder {
       const std::string* text = nullptr;
       const std::string* regex = nullptr;
       switch (criteria.match_case()) {
-        case feedwire::webfeed::WebFeedMatcher::Criteria::MatchCase::kRegex:
-          regex = &criteria.regex();
+        case feedwire::webfeed::WebFeedMatcher::Criteria::MatchCase::
+            kPartialMatchRegex:
+          regex = &criteria.partial_match_regex();
           if (regex->empty())
             return false;
           break;
@@ -266,8 +267,9 @@ class EntrySetBuilder {
       const std::string* text = nullptr;
       const std::string* regex = nullptr;
       switch (criteria.match_case()) {
-        case feedwire::webfeed::WebFeedMatcher::Criteria::MatchCase::kRegex:
-          regex = &criteria.regex();
+        case feedwire::webfeed::WebFeedMatcher::Criteria::MatchCase::
+            kPartialMatchRegex:
+          regex = &criteria.partial_match_regex();
           break;
         case feedwire::webfeed::WebFeedMatcher::Criteria::MatchCase::kText:
           text = &criteria.text();

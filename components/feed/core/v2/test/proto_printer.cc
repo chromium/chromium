@@ -279,7 +279,7 @@ class TextProtoPrinter {
       const feedwire::webfeed::WebFeedMatcher::Criteria& v) {
     BeginMessage();
     PRINT_FIELD(text);
-    PRINT_FIELD(regex);
+    PRINT_FIELD(partial_match_regex);
     PRINT_FIELD(criteria_type);
     EndMessage();
     return *this;
