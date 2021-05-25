@@ -5249,13 +5249,6 @@ crbug.com/833100 [ Mac ] external/wpt/battery-status/battery-full-manual.https.h
 
 crbug.com/1031345 media/controls/overlay-play-button-tap-to-hide.html [ Timeout Pass ]
 
-# TODO(michaelludwig): Suppressed for Skia roll requiring a rebaseline
-crbug.com/1210861 svg/W3C-SVG-1.1/filters-image-01-b.svg [ Pass Failure ]
-crbug.com/1210861 svg/W3C-SVG-1.1-SE/filters-image-03-f.svg [ Pass Failure ]
-crbug.com/1210861 svg/W3C-SVG-1.1-SE/filters-image-05-f.svg [ Pass Failure ]
-crbug.com/1210861 [ Mac ] svg/as-background-image/svg-as-tiled-background.html [ Pass Failure ]
-crbug.com/1210861 svg/filters/feImage-preserveAspectRatio-all.svg [ Pass Failure ]
-
 # Temporary SkiaRenderer regressions
 crbug.com/1029941 [ Linux ] external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
 crbug.com/1029941 [ Linux ] transforms/3d/point-mapping/3d-point-mapping-deep.html [ Failure ]
