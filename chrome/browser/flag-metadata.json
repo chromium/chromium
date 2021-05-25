@@ -3727,22 +3727,22 @@
   {
     "name": "ntp-chrome-cart-module",
     "owners": [ "wychen", "tiborg", "yuezhanggg" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 96
   },
   {
     "name": "ntp-drive-module",
-    "owners": [ "aee", "andrevincent", "mahmadi", "tiborg" ],
-    "expiry_milestone": 92
+    "owners": [ "mahmadi", "tiborg" ],
+    "expiry_milestone": 96
   },
   {
     "name": "ntp-modules",
-    "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 92
+    "owners": [ "mahmadi", "tiborg" ],
+    "expiry_milestone": 96
   },
   {
     "name": "ntp-recipe-tasks-module",
-    "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 92
+    "owners": [ "mahmadi", "tiborg" ],
+    "expiry_milestone": 96
   },
   {
     "name": "ntp-repeatable-queries",
@@ -3751,8 +3751,8 @@
   },
   {
     "name": "ntp-shopping-tasks-module",
-    "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 92
+    "owners": [ "mahmadi", "tiborg" ],
+    "expiry_milestone": 96
   },
   {
     "name": "offline-indicator-choice",
