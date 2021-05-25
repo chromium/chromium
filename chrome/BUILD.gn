@@ -67,8 +67,7 @@ if (enable_resource_allowlist_generation) {
 }
 
 if (is_win) {
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action("reorder_imports") {
+  action("reorder_imports") {
     script = "//build/win/reorder-imports.py"
 
     # See comment in chrome_dll.gypi in the hardlink_to_output
