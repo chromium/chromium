@@ -294,7 +294,9 @@ void SpeechRecognizerImpl::Capture(const AudioBus* data,
   CHECK(audio_converter_->data_was_converted());
 }
 
-void SpeechRecognizerImpl::OnCaptureError(const std::string& message) {
+void SpeechRecognizerImpl::OnCaptureError(
+    media::AudioCapturerSource::ErrorCode code,
+    const std::string& message) {
   FSMEventArgs event_args(EVENT_AUDIO_ERROR);
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,

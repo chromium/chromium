@@ -23,6 +23,8 @@ using ::testing::InvokeWithoutArgs;
 
 namespace mirroring {
 
+using AudioSourceErrorCode = media::AudioCapturerSource::ErrorCode;
+
 namespace {
 
 class MockStream final : public media::mojom::AudioInputStream {
@@ -37,7 +39,7 @@ class MockDelegate final : public media::AudioInputIPCDelegate {
   ~MockDelegate() override {}
 
   MOCK_METHOD0(StreamCreated, void());
-  MOCK_METHOD0(OnError, void());
+  MOCK_METHOD1(OnError, void(AudioSourceErrorCode code));
   MOCK_METHOD1(OnMuted, void(bool muted));
   MOCK_METHOD0(OnIPCClosed, void());
 
@@ -103,7 +105,7 @@ class CapturedAudioInputTest : public ::testing::Test {
   void SignalStreamError() {
     EXPECT_TRUE(stream_client_.is_bound());
     base::RunLoop run_loop;
-    EXPECT_CALL(delegate_, OnError())
+    EXPECT_CALL(delegate_, OnError(AudioSourceErrorCode::kUnknown))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
     stream_client_->OnError(media::mojom::InputStreamErrorCode::kUnknown);
     run_loop.Run();
@@ -112,7 +114,7 @@ class CapturedAudioInputTest : public ::testing::Test {
   void SignalStreamPermissionsError() {
     EXPECT_TRUE(stream_client_.is_bound());
     base::RunLoop run_loop;
-    EXPECT_CALL(delegate_, OnError())
+    EXPECT_CALL(delegate_, OnError(AudioSourceErrorCode::kSystemPermissions))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
     stream_client_->OnError(
         media::mojom::InputStreamErrorCode::kSystemPermissions);

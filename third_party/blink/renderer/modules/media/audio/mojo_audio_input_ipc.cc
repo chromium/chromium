@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "media/audio/audio_device_description.h"
+#include "media/mojo/common/input_error_code_converter.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom-blink.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -117,7 +118,7 @@ void MojoAudioInputIPC::OnError(media::mojom::InputStreamErrorCode code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
 
-  delegate_->OnError();
+  delegate_->OnError(media::ConvertToCaptureCallbackCode(code));
 }
 
 void MojoAudioInputIPC::OnMutedStateChanged(bool is_muted) {

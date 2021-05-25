@@ -57,7 +57,9 @@ class MockCaptureCallback : public AudioCapturerSource::CaptureCallback {
                     double volume,
                     bool key_pressed));
 
-  MOCK_METHOD1(OnCaptureError, void(const std::string& message));
+  MOCK_METHOD2(OnCaptureError,
+               void(AudioCapturerSource::ErrorCode code,
+                    const std::string& message));
   MOCK_METHOD1(OnCaptureMuted, void(bool is_muted));
 };
 
@@ -77,7 +79,8 @@ TEST_P(AudioInputDeviceTest, Noop) {
 }
 
 ACTION_P(ReportStateChange, device) {
-  static_cast<AudioInputIPCDelegate*>(device)->OnError();
+  static_cast<AudioInputIPCDelegate*>(device)->OnError(
+      media::AudioCapturerSource::ErrorCode::kUnknown);
 }
 
 // Verify that we get an OnCaptureError() callback if CreateStream fails.
@@ -93,7 +96,8 @@ TEST_P(AudioInputDeviceTest, FailToCreateStream) {
   device->Initialize(params, &callback);
   EXPECT_CALL(*input_ipc, CreateStream(_, _, _, _))
       .WillOnce(ReportStateChange(device.get()));
-  EXPECT_CALL(callback, OnCaptureError(_));
+  EXPECT_CALL(callback,
+              OnCaptureError(AudioCapturerSource::ErrorCode::kUnknown, _));
   EXPECT_CALL(*input_ipc, CloseStream());
   device->Start();
   device->Stop();

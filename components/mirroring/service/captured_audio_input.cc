@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "media/mojo/common/input_error_code_converter.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -85,7 +86,7 @@ void CapturedAudioInput::OnError(media::mojom::InputStreamErrorCode code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
 
-  delegate_->OnError();
+  delegate_->OnError(media::ConvertToCaptureCallbackCode(code));
 }
 
 void CapturedAudioInput::OnMutedStateChanged(bool is_muted) {

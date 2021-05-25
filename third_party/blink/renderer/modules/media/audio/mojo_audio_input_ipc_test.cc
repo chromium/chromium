@@ -68,7 +68,7 @@ class MockDelegate : public media::AudioInputIPCDelegate {
   }
 
   MOCK_METHOD1(GotOnStreamCreated, void(bool initially_muted));
-  MOCK_METHOD0(OnError, void());
+  MOCK_METHOD1(OnError, void(media::AudioCapturerSource::ErrorCode));
   MOCK_METHOD1(OnMuted, void(bool));
   MOCK_METHOD0(OnIPCClosed, void());
 };
@@ -173,7 +173,8 @@ TEST(MojoAudioInputIPC, FactoryDisconnected_SendsError) {
                  bool automatic_gain_control, uint32_t total_segments) {}),
           base::BindRepeating(&AssociateOutputForAec));
 
-  EXPECT_CALL(delegate, OnError());
+  EXPECT_CALL(delegate,
+              OnError(media::AudioCapturerSource::ErrorCode::kUnknown));
 
   ipc->CreateStream(&delegate, Params(), false, kTotalSegments);
   base::RunLoop().RunUntilIdle();
@@ -244,7 +245,8 @@ TEST(MojoAudioInputIPC, IsReusableAfterError) {
     base::RunLoop().RunUntilIdle();
     Mock::VerifyAndClearExpectations(&delegate);
 
-    EXPECT_CALL(delegate, OnError());
+    EXPECT_CALL(delegate,
+                OnError(media::AudioCapturerSource::ErrorCode::kUnknown));
     creator.SignalError();
     base::RunLoop().RunUntilIdle();
     Mock::VerifyAndClearExpectations(&delegate);

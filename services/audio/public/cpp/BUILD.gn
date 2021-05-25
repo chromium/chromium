@@ -29,6 +29,7 @@ source_set("cpp") {
   public_deps = [
     "//base",
     "//media",
+    "//media/mojo/common",
     "//services/audio/public/mojom",
   ]
 }

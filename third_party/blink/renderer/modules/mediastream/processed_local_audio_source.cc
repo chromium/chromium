@@ -483,9 +483,11 @@ void ProcessedLocalAudioSource::Capture(const media::AudioBus* audio_bus,
   }
 }
 
-void ProcessedLocalAudioSource::OnCaptureError(const std::string& message) {
-  SendLogMessageWithSessionId(
-      base::StringPrintf("OnCaptureError({message=%s})", message.c_str()));
+void ProcessedLocalAudioSource::OnCaptureError(
+    media::AudioCapturerSource::ErrorCode code,
+    const std::string& message) {
+  SendLogMessageWithSessionId(base::StringPrintf(
+      "OnCaptureError({code=%d, message=%s})", code, message.c_str()));
   StopSourceOnError(message);
 }
 

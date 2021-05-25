@@ -354,7 +354,8 @@ class Session::AudioCapturingCallback final
     audio_data_callback_.Run(std::move(captured_audio), audio_capture_time);
   }
 
-  void OnCaptureError(const std::string& message) override {
+  void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
+                      const std::string& message) override {
     if (!error_callback_.is_null())
       std::move(error_callback_).Run();
   }

@@ -290,14 +290,13 @@ void AudioInputDevice::OnStreamCreated(
     alive_checker_->Start();
 }
 
-void AudioInputDevice::OnError() {
+void AudioInputDevice::OnError(AudioCapturerSource::ErrorCode code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "AudioInputDevice::OnError");
 
   // Do nothing if the stream has been closed.
   if (state_ < CREATING_STREAM)
     return;
-
 
   if (state_ == CREATING_STREAM) {
     // At this point, we haven't attempted to start the audio thread.
@@ -308,7 +307,10 @@ void AudioInputDevice::OnError() {
     // a local audio source).
     had_error_ = kErrorDuringCreation;
     callback_->OnCaptureError(
-        "Maximum allowed input device limit reached or OS failure.");
+        code, code == AudioCapturerSource::ErrorCode::kSystemPermissions
+                  ? "Unable to open due to failing an OS Permissions check."
+                  : "Maximum allowed input device limit reached or an OS "
+                    "failure occured.");
   } else {
     // Don't dereference the callback object if the audio thread
     // is stopped or stopping.  That could mean that the callback
@@ -318,7 +320,7 @@ void AudioInputDevice::OnError() {
     // a callback object via Start() and clear it in Stop().
     had_error_ = kErrorDuringCapture;
     if (audio_thread_)
-      callback_->OnCaptureError("IPC delegate state error.");
+      callback_->OnCaptureError(code, "IPC delegate state error.");
   }
 }
 
@@ -351,7 +353,8 @@ AudioInputDevice::~AudioInputDevice() {
 }
 
 void AudioInputDevice::DetectedDeadInputStream() {
-  callback_->OnCaptureError("No audio received from audio capture device.");
+  callback_->OnCaptureError(media::AudioCapturerSource::ErrorCode::kUnknown,
+                            "No audio received from audio capture device.");
 }
 
 // AudioInputDevice::AudioThreadCallback
@@ -431,14 +434,16 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
         "Incorrect buffer sequence. Expected = %u. Actual = %u.",
         last_buffer_id_ + 1, buffer->params.id);
     LOG(ERROR) << message;
-    capture_callback_->OnCaptureError(message);
+    capture_callback_->OnCaptureError(
+        media::AudioCapturerSource::ErrorCode::kUnknown, message);
   }
   if (current_segment_id_ != pending_data) {
     std::string message = base::StringPrintf(
         "Segment id not matching. Remote = %u. Local = %" PRIuS ".",
         pending_data, current_segment_id_);
     LOG(ERROR) << message;
-    capture_callback_->OnCaptureError(message);
+    capture_callback_->OnCaptureError(
+        media::AudioCapturerSource::ErrorCode::kUnknown, message);
   }
   last_buffer_id_ = buffer->params.id;
 
