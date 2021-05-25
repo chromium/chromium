@@ -563,8 +563,8 @@ class ProtoDBPerfTest : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
-// Flakily times out on Windows, see http://crbug.com/918874.
-#if defined(OS_WIN)
+// Flakily times out on Windows and Mac, see http://crbug.com/918874.
+#if defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_InsertMultipleDBsAlternating_Individual_100b \
   DISABLED_InsertMultipleDBsAlternating_Individual_100b
 #else
@@ -578,8 +578,8 @@ TEST_F(ProtoDBPerfTest, MAYBE_InsertMultipleDBsAlternating_Individual_100b) {
                             5);
 }
 
-// Flakily times out on Windows, see http://crbug.com/918874.
-#if defined(OS_WIN)
+// Flakily times out on Windows and Mac, see http://crbug.com/918874.
+#if defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_InsertMultipleDBsAlternating_Individual_1000b \
   DISABLED_InsertMultipleDBsAlternating_Individual_1000b
 #else
@@ -593,8 +593,8 @@ TEST_F(ProtoDBPerfTest, MAYBE_InsertMultipleDBsAlternating_Individual_1000b) {
                             5);
 }
 
-// Flakily times out on Windows, see http://crbug.com/918874.
-#if defined(OS_WIN)
+// Flakily times out on Windows and Mac, see http://crbug.com/918874.
+#if defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_InsertSingleDBAlternating_Individual_100b \
   DISABLED_InsertSingleDBAlternating_Individual_100b
 #else
@@ -608,8 +608,8 @@ TEST_F(ProtoDBPerfTest, MAYBE_InsertSingleDBAlternating_Individual_100b) {
                             5);
 }
 
-// Flakily times out on Windows, see http://crbug.com/918874.
-#if defined(OS_WIN)
+// Flakily times out on Windows and Mac, see http://crbug.com/918874.
+#if defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_InsertSingleDBAlternating_Individual_1000b \
   DISABLED_InsertSingleDBAlternating_Individual_1000b
 #else
@@ -661,22 +661,54 @@ TEST_F(ProtoDBPerfTest, DistributionTestSmall_FewEntries_Multi) {
                                 kFewEntriesDistributionTestParams, false);
 }
 
-TEST_F(ProtoDBPerfTest, DistributionTestSmall_ManyEntries_Single) {
+// Flakily times out on Mac, see http://crbug.com/918874.
+#if defined(OS_MAC)
+#define MAYBE_DistributionTestSmall_ManyEntries_Single \
+  DISABLED_DistributionTestSmall_ManyEntries_Single
+#else
+#define MAYBE_DistributionTestSmall_ManyEntries_Single \
+  DistributionTestSmall_ManyEntries_Single
+#endif
+TEST_F(ProtoDBPerfTest, MAYBE_DistributionTestSmall_ManyEntries_Single) {
   RunDistributionTestAndCleanup("Small_ManyEntries_Single",
                                 kManyEntriesDistributionTestParams, true);
 }
 
-TEST_F(ProtoDBPerfTest, DistributionTestSmall_ManyEntries_Multi) {
+// Flakily times out on Mac, see http://crbug.com/918874.
+#if defined(OS_MAC)
+#define MAYBE_DistributionTestSmall_ManyEntries_Multi \
+  DISABLED_DistributionTestSmall_ManyEntries_Multi
+#else
+#define MAYBE_DistributionTestSmall_ManyEntries_Multi \
+  DistributionTestSmall_ManyEntries_Multi
+#endif
+TEST_F(ProtoDBPerfTest, MAYBE_DistributionTestSmall_ManyEntries_Multi) {
   RunDistributionTestAndCleanup("Small_ManyEntries_Multi",
                                 kManyEntriesDistributionTestParams, false);
 }
 
-TEST_F(ProtoDBPerfTest, DistributionTestSmall_ManyEntries_Batch_Single) {
+// Flakily times out on Mac, see http://crbug.com/918874.
+#if defined(OS_MAC)
+#define MAYBE_DistributionTestSmall_ManyEntries_Batch_Single \
+  DISABLED_DistributionTestSmall_ManyEntries_Batch_Single
+#else
+#define MAYBE_DistributionTestSmall_ManyEntries_Batch_Single \
+  DistributionTestSmall_ManyEntries_Batch_Single
+#endif
+TEST_F(ProtoDBPerfTest, MAYBE_DistributionTestSmall_ManyEntries_Batch_Single) {
   RunDistributionTestAndCleanup("Small_ManyEntries_Batch_Single",
                                 kManyEntriesDistributionTestParams, true);
 }
 
-TEST_F(ProtoDBPerfTest, DistributionTestSmall_ManyEntries_Batch_Multi) {
+// Flakily times out on Mac, see http://crbug.com/918874.
+#if defined(OS_MAC)
+#define MAYBE_DistributionTestSmall_ManyEntries_Batch_Multi \
+  DISABLED_DistributionTestSmall_ManyEntries_Batch_Multi
+#else
+#define MAYBE_DistributionTestSmall_ManyEntries_Batch_Multi \
+  DistributionTestSmall_ManyEntries_Batch_Multi
+#endif
+TEST_F(ProtoDBPerfTest, MAYBE_DistributionTestSmall_ManyEntries_Batch_Multi) {
   RunDistributionTestAndCleanup("Small_ManyEntries_Batch_Multi",
                                 kManyEntriesDistributionTestParams, false);
 }
