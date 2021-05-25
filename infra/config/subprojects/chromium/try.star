@@ -1492,8 +1492,7 @@ try_.chromium_linux_builder(
             ".+/[+]/third_party/blink/renderer/core/svg/.+",
             ".+/[+]/third_party/blink/renderer/platform/fonts/shaping/.+",
             ".+/[+]/third_party/blink/renderer/platform/graphics/.+",
-            ".+/[+]/third_party/blink/web_tests/FlagExpectations/disable-layout-ng",
-            ".+/[+]/third_party/blink/web_tests/flag-specific/disable-layout-ng/.+",
+            ".+/[+]/third_party/blink/web_tests/.+",
         ],
     ),
 )
