@@ -8794,21 +8794,6 @@
             ]
         }
     ],
-    "WebRtcThermalResource-ChromeOS": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebRtcThermalResource"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebUIFeedback": [
         {
             "platforms": [
