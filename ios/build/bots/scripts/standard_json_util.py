@@ -16,7 +16,7 @@ class StdJson():
   def __init__(self, **kwargs):
     """Module for storing the results in standard JSON format.
 
-    https://chromium.googlesource.com/chromium/src/+/master/docs/testing/json_test_results_format.md
+    https://chromium.googlesource.com/chromium/src/+/main/docs/testing/json_test_results_format.md
     """
 
     self.tests = OrderedDict()
