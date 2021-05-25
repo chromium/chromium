@@ -17,7 +17,7 @@ const int kReportIntervalSeconds = 10;
 
 const base::Feature kWebRtcThermalResource {
   "WebRtcThermalResource",
-#if defined(OS_MAC)
+#if defined(OS_MAC) || defined(OS_CHROMEOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
