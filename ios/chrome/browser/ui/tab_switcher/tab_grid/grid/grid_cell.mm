@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -58,10 +59,13 @@ void PositionView(UIView* view, CGPoint point) {
 @property(nonatomic, weak) TopAlignedImageView* snapshotView;
 @property(nonatomic, weak) UILabel* titleLabel;
 @property(nonatomic, weak) UIImageView* closeIconView;
+@property(nonatomic, weak) UIImageView* selectIconView;
 // Since the close icon dimensions are smaller than the recommended tap target
 // size, use an overlaid tap target button.
 @property(nonatomic, weak) UIButton* closeTapTargetButton;
 @property(nonatomic, weak) UIView* border;
+// Whether or not the cell is currently displaying an editing state.
+@property(nonatomic, readonly) BOOL isInSelectionMode;
 @end
 
 @implementation GridCell
@@ -71,6 +75,8 @@ void PositionView(UIView* view, CGPoint point) {
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    _state = GridCellStateNotEditing;
+
     // The background color must be set to avoid the corners behind the rounded
     // layer from showing when dragging and dropping. Unfortunately, using
     // |UIColor.clearColor| here will not remain transparent, so a solid color
@@ -294,12 +300,27 @@ void PositionView(UIView* view, CGPoint point) {
   UIImageView* closeIconView = [[UIImageView alloc] init];
   closeIconView.translatesAutoresizingMaskIntoConstraints = NO;
   closeIconView.contentMode = UIViewContentModeCenter;
+  closeIconView.hidden = self.isInSelectionMode;
   closeIconView.image = [[UIImage imageNamed:@"grid_cell_close_button"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+  if (IsTabsBulkActionsEnabled()) {
+    UIImageView* selectIconView = [[UIImageView alloc] init];
+    selectIconView.translatesAutoresizingMaskIntoConstraints = NO;
+    selectIconView.contentMode = UIViewContentModeCenter;
+    selectIconView.hidden = !self.isInSelectionMode;
+
+    selectIconView.image = [[self selectIconImageForCurrentState]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+    [topBar addSubview:selectIconView];
+    _selectIconView = selectIconView;
+  }
 
   [topBar addSubview:iconView];
   [topBar addSubview:titleLabel];
   [topBar addSubview:closeIconView];
+
   _iconView = iconView;
   _titleLabel = titleLabel;
   _closeIconView = closeIconView;
@@ -342,6 +363,20 @@ void PositionView(UIView* view, CGPoint point) {
         constraintEqualToAnchor:topBar.trailingAnchor
                        constant:-kGridCellCloseButtonContentInset],
   ];
+
+  if (_selectIconView) {
+    constraints = [constraints arrayByAddingObjectsFromArray:@[
+      [closeIconView.leadingAnchor
+          constraintEqualToAnchor:_selectIconView.leadingAnchor],
+      [closeIconView.trailingAnchor
+          constraintEqualToAnchor:_selectIconView.trailingAnchor],
+      [closeIconView.topAnchor
+          constraintEqualToAnchor:_selectIconView.topAnchor],
+      [closeIconView.bottomAnchor
+          constraintEqualToAnchor:_selectIconView.bottomAnchor],
+    ]];
+  }
+
   [NSLayoutConstraint activateConstraints:constraints];
   [titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
@@ -352,6 +387,17 @@ void PositionView(UIView* view, CGPoint point) {
   [closeIconView setContentHuggingPriority:UILayoutPriorityRequired
                                    forAxis:UILayoutConstraintAxisHorizontal];
   return topBar;
+}
+
+- (UIImage*)selectIconImageForCurrentState {
+  if (@available(iOS 13, *)) {
+    if (_state == GridCellStateEditingUnselected) {
+      return [UIImage systemImageNamed:@"circle"];
+    }
+    return [UIImage systemImageNamed:@"checkmark.circle.fill"];
+  }
+  NOTREACHED();
+  return nil;
 }
 
 // Update constraints of top bar when system font size changes. If accessibility
@@ -371,6 +417,48 @@ void PositionView(UIView* view, CGPoint point) {
   }
 }
 
+- (BOOL)isInSelectionMode {
+  return self.state != GridCellStateNotEditing;
+}
+
+- (void)setState:(GridCellState)state {
+  if (state == _state) {
+    return;
+  }
+
+  _state = state;
+
+  _closeTapTargetButton.enabled = !self.isInSelectionMode;
+  self.selectIconView.image = [[self selectIconImageForCurrentState]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+  __weak GridCell* weakSelf = self;
+  [UIView animateWithDuration:0.02f
+      animations:^{
+        GridCell* strongSelf = weakSelf;
+        if (strongSelf) {
+          if (strongSelf.isInSelectionMode) {
+            strongSelf.border.alpha = 0.0;
+            strongSelf.closeIconView.alpha = 0.0;
+            strongSelf.selectIconView.alpha = 1.0;
+          } else {
+            strongSelf.border.alpha = 1.0;
+            strongSelf.closeIconView.alpha = 1.0;
+            strongSelf.selectIconView.alpha = 0.0;
+          }
+        }
+      }
+      completion:^(BOOL finished) {
+        GridCell* strongSelf = weakSelf;
+        if (strongSelf) {
+          BOOL isInSelectionMode = strongSelf.isInSelectionMode;
+          strongSelf.border.hidden = isInSelectionMode;
+          strongSelf.closeIconView.hidden = isInSelectionMode;
+          strongSelf.selectIconView.hidden = !isInSelectionMode;
+        }
+      }];
+}
+
 // Sets up the selection border. The tint color is set when the theme is
 // selected.
 - (void)setupSelectedBackgroundView {
@@ -378,6 +466,7 @@ void PositionView(UIView* view, CGPoint point) {
   self.selectedBackgroundView.backgroundColor =
       [UIColor colorNamed:kGridBackgroundColor];
   UIView* border = [[UIView alloc] init];
+  border.hidden = self.isInSelectionMode;
   border.translatesAutoresizingMaskIntoConstraints = NO;
   border.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
   border.layer.cornerRadius = kGridCellCornerRadius +

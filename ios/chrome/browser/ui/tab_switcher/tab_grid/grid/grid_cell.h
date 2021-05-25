@@ -17,6 +17,13 @@
 - (void)closeButtonTappedForCell:(GridCell*)cell;
 @end
 
+// Values describing the editing state of the cell.
+typedef NS_ENUM(NSUInteger, GridCellState) {
+  GridCellStateNotEditing = 1,
+  GridCellStateEditingUnselected,
+  GridCellStateEditingSelected,
+};
+
 // A square-ish cell in a grid. Contains an icon, title, snapshot, and close
 // button.
 @interface GridCell : UICollectionViewCell
@@ -33,6 +40,8 @@
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, assign) BOOL titleHidden;
 @property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
+// The current state which the cell should display.
+@property(nonatomic, assign) GridCellState state;
 @end
 
 // A GridCell for use in animated transitions that only shows selection state
