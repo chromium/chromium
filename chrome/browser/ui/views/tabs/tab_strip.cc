@@ -1114,6 +1114,9 @@ TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
           base::BindRepeating(&TabStrip::tabs_view_model,
                               base::Unretained(this)))),
       drag_context_(std::make_unique<TabDragContextImpl>(this)) {
+  views::FocusRing::SetColorContextForSubtree(
+      this, ThemeProperties::COLOR_TOOLBAR,
+      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
   Init();
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 }

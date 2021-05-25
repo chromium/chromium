@@ -147,9 +147,6 @@ class ToolbarButton : public views::LabelButton,
       const ui::ThemeProvider* theme_provider);
   static SkColor GetDefaultBorderColor(views::View* host_view);
 
-  static void UpdateFocusRingColor(views::View* host,
-                                   views::FocusRing* focus_ring);
-
  protected:
   // Returns if menu should be shown. Override this to change default behavior.
   virtual bool ShouldShowMenu();

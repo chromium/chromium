@@ -160,8 +160,6 @@ void ReadLaterButton::OnThemeChanged() {
           ui::NativeTheme::kColorId_AlertSeverityHigh),
       /*border_color=*/theme_provider->GetColor(
           ThemeProperties::COLOR_TOOLBAR));
-
-  ToolbarButton::UpdateFocusRingColor(this, focus_ring());
 }
 
 void ReadLaterButton::Layout() {

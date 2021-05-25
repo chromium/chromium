@@ -230,35 +230,6 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
 
 ToolbarButton::~ToolbarButton() = default;
 
-void ToolbarButton::UpdateFocusRingColor(views::View* host,
-                                         views::FocusRing* focus_ring) {
-  DCHECK(host->GetWidget());
-  DCHECK_EQ(host, focus_ring->parent());
-  const SkColor default_focus_ring_color =
-      host->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_FocusedBorderColor);
-  const SkColor background =
-      host->GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR);
-  const float default_contrast =
-      color_utils::GetContrastRatio(default_focus_ring_color, background);
-  if (default_contrast > color_utils::kMinimumVisibleContrastRatio) {
-    focus_ring->SetColor(absl::nullopt);
-    return;
-  }
-  const SkColor fallback_focus_ring_color = host->GetThemeProvider()->GetColor(
-      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
-  // TODO(pbos): Should this fallback_contrast_ratio be a DCHECK of >
-  // color_utils::kMinimumVisibleContrastRatio? Hopefully these are already
-  // contrasty.
-  const float fallback_contrast_ratio =
-      color_utils::GetContrastRatio(fallback_focus_ring_color, background);
-  if (fallback_contrast_ratio > default_contrast) {
-    focus_ring->SetColor(fallback_focus_ring_color);
-    return;
-  }
-  focus_ring->SetColor(absl::nullopt);
-}
-
 void ToolbarButton::SetHighlight(const std::u16string& highlight_text,
                                  absl::optional<SkColor> highlight_color) {
   if (highlight_text.empty() && !highlight_color.has_value()) {
@@ -495,12 +466,6 @@ void ToolbarButton::OnThemeChanged() {
   if (installable_ink_drop_)
     installable_ink_drop_->SetConfig(GetToolbarInstallableInkDropConfig(this));
   UpdateIcon();
-
-  // TODO(pbos): Remove calls to OnThemeChanged() where there's no widget.
-  // Afaik this is only done in ToolbarButtonViewsTest.NoDefaultLayoutInsets,
-  // but the test setup should instead add the ToolbarButton to a Widget.
-  if (GetWidget())
-    UpdateFocusRingColor(this, focus_ring());
 
   // Call this after UpdateIcon() to properly reset images.
   LabelButton::OnThemeChanged();

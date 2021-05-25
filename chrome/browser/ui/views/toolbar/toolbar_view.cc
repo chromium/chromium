@@ -176,6 +176,9 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
     for (const auto& view_and_command : GetViewCommandMap())
       chrome::AddCommandObserver(browser_, view_and_command.second, this);
   }
+  views::FocusRing::SetColorContextForSubtree(
+      this, ThemeProperties::COLOR_TOOLBAR,
+      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
 }
 
 ToolbarView::~ToolbarView() {

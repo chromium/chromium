@@ -93,12 +93,6 @@ gfx::Rect ToolbarActionView::GetAnchorBoundsInScreen() const {
   return bounds;
 }
 
-void ToolbarActionView::OnThemeChanged() {
-  MenuButton::OnThemeChanged();
-
-  ToolbarButton::UpdateFocusRingColor(this, focus_ring());
-}
-
 std::unique_ptr<LabelButtonBorder> ToolbarActionView::CreateDefaultBorder()
     const {
   std::unique_ptr<LabelButtonBorder> border =
@@ -219,8 +213,6 @@ void ToolbarActionView::OnDragDone() {
 
 void ToolbarActionView::AddedToWidget() {
   MenuButton::AddedToWidget();
-
-  ToolbarButton::UpdateFocusRingColor(this, focus_ring());
 
   // This cannot happen until there's a focus controller, which lives on the
   // widget.

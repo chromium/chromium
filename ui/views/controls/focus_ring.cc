@@ -13,8 +13,10 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/theme_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/style/platform_style.h"
@@ -25,6 +27,9 @@ namespace views {
 
 namespace {
 
+DEFINE_UI_CLASS_PROPERTY_KEY(int, kFocusRingBackgroundColorId, -1)
+DEFINE_UI_CLASS_PROPERTY_KEY(int, kFocusRingFallbackColorId, -1)
+
 bool IsPathUsable(const SkPath& path) {
   return !path.isEmpty() && (path.isRect(nullptr) || path.isOval(nullptr) ||
                              path.isRRect(nullptr));
@@ -33,6 +38,51 @@ bool IsPathUsable(const SkPath& path) {
 ui::NativeTheme::ColorId ColorIdForValidity(bool valid) {
   return valid ? ui::NativeTheme::kColorId_FocusedBorderColor
                : ui::NativeTheme::kColorId_AlertSeverityHigh;
+}
+
+View* GetViewForSubtreeColors(View* view) {
+  int color_id_property = view->GetProperty(kFocusRingBackgroundColorId);
+  if (color_id_property != -1)
+    return view;
+  if (!view->parent())
+    return nullptr;
+  return GetViewForSubtreeColors(view->parent());
+}
+
+SkColor GetColor(View* focus_ring, bool valid) {
+  const SkColor default_color =
+      focus_ring->GetNativeTheme()->GetSystemColor(ColorIdForValidity(valid));
+  if (!valid)
+    return default_color;
+
+  View* const fallback_color_view = GetViewForSubtreeColors(focus_ring);
+  if (!fallback_color_view)
+    return default_color;
+
+  const SkColor background_color = focus_ring->GetThemeProvider()->GetColor(
+      fallback_color_view->GetProperty(kFocusRingBackgroundColorId));
+
+  // This blends towards the fully-opaque version of the focus-ring color until
+  // the minimum contrast is reached (if possible). If `default_color` is
+  // already contrasty enough it will be used directly.
+  const color_utils::BlendResult contrasty_color =
+      color_utils::BlendForMinContrast(
+          default_color, background_color, SkColorSetA(default_color, 0xFF),
+          color_utils::kMinimumVisibleContrastRatio);
+
+  const float boosted_contrast = color_utils::GetContrastRatio(
+      color_utils::GetResultingPaintColor(contrasty_color.color,
+                                          background_color),
+      background_color);
+
+  // If the contrast of the boosted color is enough, use it. If not, increasing
+  // opacity was insufficient to meet contrast minimums. This happens when
+  // painting a blue focus ring on a blue theme for instance.
+  if (boosted_contrast > color_utils::kMinimumVisibleContrastRatio)
+    return contrasty_color.color;
+
+  return focus_ring->GetThemeProvider()->GetColor(
+      fallback_color_view->GetProperty(kFocusRingFallbackColorId));
 }
 
 double GetCornerRadius() {
@@ -71,6 +121,13 @@ FocusRing* FocusRing::Install(View* parent) {
   ring->InvalidateLayout();
   ring->SchedulePaint();
   return parent->AddChildView(std::move(ring));
+}
+
+void FocusRing::SetColorContextForSubtree(View* view,
+                                          int background_color_id,
+                                          int fallback_color_id) {
+  view->SetProperty(kFocusRingBackgroundColorId, background_color_id);
+  view->SetProperty(kFocusRingFallbackColorId, fallback_color_id);
 }
 
 FocusRing::~FocusRing() = default;
@@ -142,8 +199,7 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
 
   cc::PaintFlags paint;
   paint.setAntiAlias(true);
-  paint.setColor(color_.value_or(
-      GetNativeTheme()->GetSystemColor(ColorIdForValidity(!invalid_))));
+  paint.setColor(color_.value_or(GetColor(this, !invalid_)));
   paint.setStyle(cc::PaintFlags::kStroke_Style);
   paint.setStrokeWidth(PlatformStyle::kFocusHaloThickness);
 

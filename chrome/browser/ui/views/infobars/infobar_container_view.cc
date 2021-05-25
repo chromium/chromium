@@ -8,6 +8,7 @@
 
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -20,6 +21,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/controls/focus_ring.h"
 
 namespace {
 
@@ -64,6 +66,9 @@ InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
       content_shadow_(new ContentShadow()) {
   SetID(VIEW_ID_INFO_BAR_CONTAINER);
   AddChildView(content_shadow_);
+  views::FocusRing::SetColorContextForSubtree(
+      this, ThemeProperties::COLOR_TOOLBAR,
+      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
 }
 
 InfoBarContainerView::~InfoBarContainerView() {

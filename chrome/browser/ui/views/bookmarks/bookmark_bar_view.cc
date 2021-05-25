@@ -187,11 +187,6 @@ class BookmarkButtonBase : public views::LabelButton {
   }
 
   // LabelButton:
-  void OnThemeChanged() override {
-    LabelButton::OnThemeChanged();
-    ToolbarButton::UpdateFocusRingColor(this, focus_ring());
-  }
-
   std::unique_ptr<LabelButtonBorder> CreateDefaultBorder() const override {
     return CreateBookmarkButtonBorder();
   }
@@ -292,11 +287,6 @@ class BookmarkMenuButtonBase : public MenuButton {
   BookmarkMenuButtonBase& operator=(const BookmarkMenuButtonBase&) = delete;
 
   // MenuButton:
-  void OnThemeChanged() override {
-    MenuButton::OnThemeChanged();
-    ToolbarButton::UpdateFocusRingColor(this, focus_ring());
-  }
-
   std::unique_ptr<LabelButtonBorder> CreateDefaultBorder() const override {
     return CreateBookmarkButtonBorder();
   }
@@ -499,6 +489,10 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
   // May be null for tests.
   if (browser_view)
     SetBackground(std::make_unique<TopContainerBackground>(browser_view));
+
+  views::FocusRing::SetColorContextForSubtree(
+      this, ThemeProperties::COLOR_TOOLBAR,
+      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
 }
 
 BookmarkBarView::~BookmarkBarView() {

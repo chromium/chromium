@@ -77,8 +77,7 @@ NewTabButton::NewTabButton(TabStrip* tab_strip, PressedCallback callback)
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
-NewTabButton::~NewTabButton() {
-}
+NewTabButton::~NewTabButton() = default;
 
 void NewTabButton::FrameColorsChanged() {
   UpdateInkDropBaseColor();
