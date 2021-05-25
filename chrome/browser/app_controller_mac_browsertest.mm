@@ -50,7 +50,13 @@
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/components/url_handler_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -61,11 +67,13 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -82,6 +90,8 @@ using base::SysUTF16ToNSString;
 namespace {
 
 GURL g_open_shortcut_url = GURL::EmptyGURL();
+const char16_t kAppName[] = u"Test App";
+const char kStartUrl[] = "https://test.com";
 
 // Returns an Apple Event that instructs the application to open |url|.
 NSAppleEventDescriptor* AppleEventToOpenUrl(const GURL& url) {
@@ -863,6 +873,125 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_TRUE(new_browser->profile()->IsPrimaryOTRProfile());
   EXPECT_EQ(profile, new_browser->profile()->GetOriginalProfile());
+}
+
+class StartupWebAppUrlHandlingBrowserTest : public InProcessBrowserTest {
+ protected:
+  StartupWebAppUrlHandlingBrowserTest() = default;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    OverrideAssociationManager();
+  }
+
+  web_app::WebAppProviderBase* provider() {
+    return web_app::WebAppProviderBase::GetProviderBase(browser()->profile());
+  }
+
+  web_app::AppId InstallWebAppWithUrlHandlers(
+      const std::vector<apps::UrlHandlerInfo>& url_handlers) {
+    return web_app::test::InstallWebAppWithUrlHandlers(
+        browser()->profile(), GURL(kStartUrl), kAppName, url_handlers);
+  }
+
+  void OverrideAssociationManager() {
+    auto association_manager =
+        std::make_unique<web_app::FakeWebAppOriginAssociationManager>();
+    association_manager->set_pass_through(true);
+
+    auto& url_handler_manager =
+        provider()->os_integration_manager().url_handler_manager_for_testing();
+    url_handler_manager.SetAssociationManagerForTesting(
+        std::move(association_manager));
+  }
+
+  // Check that there are two browsers. Find the one that is not |browser|.
+  Browser* FindOneOtherBrowser(Browser* browser) {
+    // There should only be one other browser.
+    EXPECT_EQ(2u, chrome::GetBrowserCount(browser->profile()));
+
+    // Find the new browser.
+    Browser* other_browser = nullptr;
+    for (auto* b : *BrowserList::GetInstance()) {
+      if (b != browser)
+        other_browser = b;
+    }
+    return other_browser;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
+                       WebAppLaunch_InScopeUrl) {
+  apps::UrlHandlerInfo url_handler;
+  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+
+  web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
+
+  // Start URL is in app scope.
+  SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
+
+  // Wait for app launch task to complete.
+  content::RunAllTasksUntilIdle();
+
+  // Check for new app window.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  Browser* app_browser;
+  app_browser = FindOneOtherBrowser(browser());
+  ASSERT_TRUE(app_browser);
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  // Verify the launched URL of the app window.
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
+  EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
+                       WebAppLaunch_DifferentOriginUrl) {
+  apps::UrlHandlerInfo url_handler;
+  url_handler.origin = url::Origin::Create(GURL("https://example.com"));
+  web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
+
+  // URL is not in app scope but matches url_handlers of installed app.
+  SendAppleEventToOpenUrlToAppController(GURL("https://example.com/abc/def"));
+
+  // Wait for app launch task to complete.
+  content::RunAllTasksUntilIdle();
+
+  // Check for new app window.
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  Browser* app_browser;
+  app_browser = FindOneOtherBrowser(browser());
+  ASSERT_TRUE(app_browser);
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  // Out-of-scope URL launch results in app launch with default launch URL.
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
+  EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest, UrlNotCaptured) {
+  apps::UrlHandlerInfo url_handler;
+  url_handler.origin = url::Origin::Create(GURL("https://example.com"));
+  web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
+
+  // This URL is not in scope of installed app and does not match url_handlers.
+  SendAppleEventToOpenUrlToAppController(
+      GURL("https://en.example.com/abc/def"));
+
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_FALSE(web_app::AppBrowserController::IsForWebApp(browser(), app_id));
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(2, tab_strip->count());
+  // Check the link of the new tab that was opened.
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(1);
+  EXPECT_EQ(GURL("https://en.example.com/abc/def"),
+            web_contents->GetVisibleURL());
 }
 
 }  // namespace

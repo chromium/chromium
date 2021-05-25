@@ -47,6 +47,12 @@ std::vector<UrlHandlerLaunchParams> UrlHandlerManagerImpl::GetUrlHandlerMatches(
   GURL url(command_line.GetArgs()[0]);
 #endif
 
+  return GetUrlHandlerMatches(url);
+}
+
+// static
+std::vector<UrlHandlerLaunchParams> UrlHandlerManagerImpl::GetUrlHandlerMatches(
+    const GURL& url) {
   if (!url.is_valid() || !url.IsStandard() || !url.SchemeIs(url::kHttpsScheme))
     return {};
 

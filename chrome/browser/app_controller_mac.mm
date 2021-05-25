@@ -1548,6 +1548,10 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     _startupUrls.insert(_startupUrls.end(), urls.begin(), urls.end());
     return;
   }
+
+  if (StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(urls))
+    return;
+
   // Pick the last used browser from a regular profile to open the urls.
   Profile* profile =
       g_browser_process->profile_manager()->GetLastUsedProfileAllowedByPolicy();

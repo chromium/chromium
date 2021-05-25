@@ -1437,31 +1437,10 @@ class StartupBrowserWebAppUrlHandlingTest : public InProcessBrowserTest {
     return web_app::WebAppProviderBase::GetProviderBase(browser()->profile());
   }
 
-  // Install a web app with url_handlers then register it with the
-  // UrlHandlerManager. This is sufficient for testing URL matching and launch
-  // at startup.
   web_app::AppId InstallWebAppWithUrlHandlers(
       const std::vector<apps::UrlHandlerInfo>& url_handlers) {
-    std::unique_ptr<WebApplicationInfo> info =
-        std::make_unique<WebApplicationInfo>();
-    info->start_url = GURL(kStartUrl);
-    info->title = kAppName;
-    info->open_as_window = true;
-    info->url_handlers = url_handlers;
-    web_app::AppId app_id =
-        web_app::test::InstallWebApp(browser()->profile(), std::move(info));
-
-    auto& url_handler_manager =
-        provider()->os_integration_manager().url_handler_manager_for_testing();
-
-    base::RunLoop run_loop;
-    url_handler_manager.RegisterUrlHandlers(
-        app_id, base::BindLambdaForTesting([&](bool success) {
-          EXPECT_TRUE(success);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return app_id;
+    return web_app::test::InstallWebAppWithUrlHandlers(
+        browser()->profile(), GURL(kStartUrl), kAppName, url_handlers);
   }
 
   void SetUpCommandlineAndStart(const std::string& url) {

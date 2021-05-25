@@ -3508,6 +3508,13 @@ static_library("ui") {
     }
   }
 
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    sources += [
+      "startup/web_app_url_handling_startup_utils.cc",
+      "startup/web_app_url_handling_startup_utils.h",
+    ]
+  }
+
   if (is_linux || is_chromeos) {  # Both desktop Linux and ChromeOS.
     sources += [
       "certificate_dialogs.cc",

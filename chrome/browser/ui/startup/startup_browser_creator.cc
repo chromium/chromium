@@ -136,8 +136,7 @@
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-#include "chrome/browser/web_applications/components/url_handler_launch_params.h"
-#include "chrome/browser/web_applications/components/url_handler_manager_impl.h"
+#include "chrome/browser/ui/startup/web_app_url_handling_startup_utils.h"
 #endif
 
 using content::BrowserThread;
@@ -376,27 +375,29 @@ void FinalizeWebAppLaunch(
   if (!browser)
     return;
 
-  LaunchMode mode;
-  switch (container) {
-    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
-      DCHECK(browser->is_type_app());
-      mode = LaunchMode::kAsWebAppInWindow;
-      break;
-    case apps::mojom::LaunchContainer::kLaunchContainerTab:
-      DCHECK(!browser->is_type_app());
-      mode = LaunchMode::kAsWebAppInTab;
-      break;
-    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
-      NOTREACHED();
-      FALLTHROUGH;
-    case apps::mojom::LaunchContainer::kLaunchContainerNone:
-      DCHECK(!browser->is_type_app());
-      mode = LaunchMode::kUnknownWebApp;
-      break;
+  if (launch_mode_recorder) {
+    LaunchMode mode;
+    switch (container) {
+      case apps::mojom::LaunchContainer::kLaunchContainerWindow:
+        DCHECK(browser->is_type_app());
+        mode = LaunchMode::kAsWebAppInWindow;
+        break;
+      case apps::mojom::LaunchContainer::kLaunchContainerTab:
+        DCHECK(!browser->is_type_app());
+        mode = LaunchMode::kAsWebAppInTab;
+        break;
+      case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
+        NOTREACHED();
+        FALLTHROUGH;
+      case apps::mojom::LaunchContainer::kLaunchContainerNone:
+        DCHECK(!browser->is_type_app());
+        mode = LaunchMode::kUnknownWebApp;
+        break;
+    }
+
+    launch_mode_recorder->SetLaunchMode(mode);
   }
 
-  if (launch_mode_recorder)
-    launch_mode_recorder->SetLaunchMode(mode);
   StartupBrowserCreatorImpl::MaybeToggleFullscreen(browser);
 }
 
@@ -553,47 +554,6 @@ bool MaybeLaunchApplication(
   }
   return false;
 }
-
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-// If |command_line| contains a single URL argument and that URL matches URL
-// handling registration from installed web apps, show app options to user and
-// launch one if accepted.
-// Returns true if launching an app, false otherwise.
-bool MaybeLaunchUrlHandlerWebApp(
-    const base::CommandLine& command_line,
-    const base::FilePath& cur_dir,
-    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
-  const std::vector<web_app::UrlHandlerLaunchParams> url_handler_matches =
-      web_app::UrlHandlerManagerImpl::GetUrlHandlerMatches(command_line);
-
-  // Launch the first match for which a Profile can be loaded.
-  // TODO(crbug/1072058): Use WebAppUiManagerImpl and WebAppDialogManager
-  // to display the intent picker dialog. Use the first match here for testing.
-  // TODO(crbug/1072058): Check user preferences before showing intent picker.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  for (const auto& match : url_handler_matches) {
-    // Do not load profile if profile path is not valid.
-    if (!profile_manager->GetProfileAttributesStorage()
-             .GetProfileAttributesWithPath(match.profile_path)) {
-      continue;
-    }
-    Profile* const profile = profile_manager->GetProfile(match.profile_path);
-    if (profile == nullptr)
-      continue;
-
-    apps::AppServiceProxyFactory::GetForProfile(profile)
-        ->BrowserAppLauncher()
-        ->LaunchAppWithCallback(
-            match.app_id, command_line, cur_dir, match.url,
-            /*protocol_handler_launch_url=*/absl::nullopt,
-            base::BindOnce(&FinalizeWebAppLaunch,
-                           std::move(launch_mode_recorder)));
-    return true;
-  }
-  return false;
-}
-#endif
 
 }  // namespace
 
@@ -828,6 +788,19 @@ void StartupBrowserCreator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // users went through onboarding with the current experiment group.
   registry->RegisterStringPref(prefs::kNaviOnboardGroup, "");
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+// static
+bool StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(
+    const std::vector<GURL>& urls) {
+  // Web app URL handling.
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+  return web_app::startup::MaybeLaunchUrlHandlerWebAppFromUrls(
+      urls, base::BindOnce(&FinalizeWebAppLaunch,
+                           std::make_unique<LaunchModeRecorder>()));
+#endif
+  return false;
 }
 
 bool StartupBrowserCreator::ProcessCmdLineImpl(
@@ -1114,8 +1087,10 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   // Web app URL handling.
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-  if (MaybeLaunchUrlHandlerWebApp(command_line, cur_dir,
-                                  std::make_unique<LaunchModeRecorder>())) {
+  if (web_app::startup::MaybeLaunchUrlHandlerWebAppFromCmd(
+          command_line, cur_dir,
+          base::BindOnce(&FinalizeWebAppLaunch,
+                         std::make_unique<LaunchModeRecorder>()))) {
     return true;
   }
 #endif

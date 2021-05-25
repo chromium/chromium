@@ -113,6 +113,9 @@ class StartupBrowserCreator {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Return true if |urls| are handled, false otherwise.
+  static bool MaybeHandleProfileAgnosticUrls(const std::vector<GURL>& urls);
+
  private:
   friend class CloudPrintProxyPolicyTest;
   friend class CloudPrintProxyPolicyStartupTest;

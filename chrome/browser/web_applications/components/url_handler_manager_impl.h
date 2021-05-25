@@ -37,6 +37,10 @@ class UrlHandlerManagerImpl : public UrlHandlerManager {
   static std::vector<UrlHandlerLaunchParams> GetUrlHandlerMatches(
       const base::CommandLine& command_line);
 
+  // Get matching URL handlers that can handle |url|.
+  static std::vector<UrlHandlerLaunchParams> GetUrlHandlerMatches(
+      const GURL& url);
+
   void RegisterUrlHandlers(
       const AppId& app_id,
       base::OnceCallback<void(bool success)> callback) override;
