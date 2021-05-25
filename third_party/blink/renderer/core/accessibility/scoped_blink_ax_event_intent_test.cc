@@ -12,13 +12,14 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
+#include "ui/accessibility/ax_mode.h"
 
 namespace blink {
 
 using ScopedBlinkAXEventIntentTest = RenderingTest;
 
 TEST_F(ScopedBlinkAXEventIntentTest, SingleIntent) {
-  AXContext ax_context(GetDocument());
+  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   ASSERT_NE(nullptr, cache);
 
@@ -38,7 +39,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, SingleIntent) {
 }
 
 TEST_F(ScopedBlinkAXEventIntentTest, MultipleIdenticalIntents) {
-  AXContext ax_context(GetDocument());
+  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   ASSERT_NE(nullptr, cache);
 
@@ -63,7 +64,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, MultipleIdenticalIntents) {
 }
 
 TEST_F(ScopedBlinkAXEventIntentTest, NestedIndividualIntents) {
-  AXContext ax_context(GetDocument());
+  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   ASSERT_NE(nullptr, cache);
 
@@ -101,7 +102,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, NestedIndividualIntents) {
 }
 
 TEST_F(ScopedBlinkAXEventIntentTest, NestedMultipleIntents) {
-  AXContext ax_context(GetDocument());
+  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   ASSERT_NE(nullptr, cache);
 
@@ -155,7 +156,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, NestedMultipleIntents) {
 }
 
 TEST_F(ScopedBlinkAXEventIntentTest, NestedIdenticalIntents) {
-  AXContext ax_context(GetDocument());
+  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   ASSERT_NE(nullptr, cache);
 

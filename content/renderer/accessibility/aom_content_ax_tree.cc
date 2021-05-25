@@ -128,9 +128,8 @@ AomContentAxTree::AomContentAxTree(RenderFrameImpl* render_frame)
 
 bool AomContentAxTree::ComputeAccessibilityTree() {
   ui::AXTreeUpdate tree_update;
-  AXTreeSnapshotterImpl snapshotter(render_frame_);
-  snapshotter.Snapshot(ui::kAXModeComplete,
-                       /* exclude_offscreen= */ false,
+  AXTreeSnapshotterImpl snapshotter(render_frame_, ui::kAXModeComplete);
+  snapshotter.Snapshot(/* exclude_offscreen= */ false,
                        /* max_node_count= */ 0,
                        /* timeout= */ {}, &tree_update);
   CHECK(tree_.Unserialize(tree_update)) << tree_.error();

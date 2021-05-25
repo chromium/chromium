@@ -83,6 +83,7 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
+#include "ui/accessibility/ax_mode.h"
 #include "v8/include/v8.h"
 
 using crdtp::SpanFrom;
@@ -436,7 +437,7 @@ Response InspectorOverlayAgent::enable() {
 void InspectorOverlayAgent::EnsureAXContext(Node* node) {
   Document& document = node->GetDocument();
   if (!document_to_ax_context_.Contains(&document)) {
-    auto context = std::make_unique<AXContext>(document);
+    auto context = std::make_unique<AXContext>(document, ui::kAXModeComplete);
     document_to_ax_context_.Set(&document, std::move(context));
   }
 }

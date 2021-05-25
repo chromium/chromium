@@ -19,12 +19,11 @@ class RenderFrameImpl;
 
 class AXTreeSnapshotterImpl : public AXTreeSnapshotter {
  public:
-  explicit AXTreeSnapshotterImpl(RenderFrameImpl* render_frame);
+  AXTreeSnapshotterImpl(RenderFrameImpl* render_frame, ui::AXMode ax_mode);
   ~AXTreeSnapshotterImpl() override;
 
   // AXTreeSnapshotter implementation.
-  void Snapshot(ui::AXMode ax_mode,
-                bool exclude_offscreen,
+  void Snapshot(bool exclude_offscreen,
                 size_t max_node_count,
                 base::TimeDelta timeout,
                 ui::AXTreeUpdate* accessibility_tree) override;

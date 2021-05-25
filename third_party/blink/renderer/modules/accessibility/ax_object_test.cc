@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "ui/accessibility/ax_mode.h"
 
 namespace blink {
 namespace test {
@@ -954,7 +955,7 @@ TEST_F(AccessibilityTest, InitRelationCacheLabelFor) {
 
   // Now recreate an AXContext, simulating what happens if accessibility
   // is enabled after the document is loaded.
-  ax_context_ = std::make_unique<AXContext>(GetDocument());
+  ax_context_ = std::make_unique<AXContext>(GetDocument(), ui::kAXModeComplete);
 
   const AXObject* root = GetAXRootObject();
   ASSERT_NE(nullptr, root);
@@ -980,7 +981,7 @@ TEST_F(AccessibilityTest, InitRelationCacheAriaOwns) {
 
   // Now recreate an AXContext, simulating what happens if accessibility
   // is enabled after the document is loaded.
-  ax_context_ = std::make_unique<AXContext>(GetDocument());
+  ax_context_ = std::make_unique<AXContext>(GetDocument(), ui::kAXModeComplete);
 
   const AXObject* root = GetAXRootObject();
   ASSERT_NE(nullptr, root);

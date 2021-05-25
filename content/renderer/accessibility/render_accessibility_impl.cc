@@ -157,7 +157,7 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
 
   const WebDocument& document = GetMainDocument();
   if (!document.IsNull()) {
-    ax_context_ = std::make_unique<WebAXContext>(document);
+    ax_context_ = std::make_unique<WebAXContext>(document, mode);
     StartOrStopLabelingImages(ui::AXMode(), mode);
 
     // It's possible that the webview has already loaded a webpage without
@@ -177,7 +177,8 @@ RenderAccessibilityImpl::~RenderAccessibilityImpl() = default;
 void RenderAccessibilityImpl::DidCreateNewDocument() {
   const WebDocument& document = GetMainDocument();
   if (!document.IsNull())
-    ax_context_ = std::make_unique<WebAXContext>(document);
+    ax_context_ =
+        std::make_unique<WebAXContext>(document, GetAccessibilityMode());
 }
 
 void RenderAccessibilityImpl::DidCommitProvisionalLoad(

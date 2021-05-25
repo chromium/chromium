@@ -334,7 +334,8 @@ class CONTENT_EXPORT RenderFrameImpl
   // RenderFrame implementation:
   RenderView* GetRenderView() override;
   RenderAccessibility* GetRenderAccessibility() override;
-  std::unique_ptr<AXTreeSnapshotter> CreateAXTreeSnapshotter() override;
+  std::unique_ptr<AXTreeSnapshotter> CreateAXTreeSnapshotter(
+      ui::AXMode ax_mode) override;
   int GetRoutingID() override;
   blink::WebLocalFrame* GetWebFrame() override;
   const blink::WebLocalFrame* GetWebFrame() const override;

@@ -2212,9 +2212,9 @@ void RenderFrameImpl::SnapshotAccessibilityTree(
     mojom::SnapshotAccessibilityTreeParamsPtr params,
     SnapshotAccessibilityTreeCallback callback) {
   ui::AXTreeUpdate response;
-  AXTreeSnapshotterImpl snapshotter(this);
-  snapshotter.Snapshot(ui::AXMode(params->ax_mode), params->exclude_offscreen,
-                       params->max_nodes, params->timeout, &response);
+  AXTreeSnapshotterImpl snapshotter(this, ui::AXMode(params->ax_mode));
+  snapshotter.Snapshot(params->exclude_offscreen, params->max_nodes,
+                       params->timeout, &response);
   std::move(callback).Run(response);
 }
 
@@ -2269,8 +2269,9 @@ RenderAccessibility* RenderFrameImpl::GetRenderAccessibility() {
   return render_accessibility_manager_->GetRenderAccessibilityImpl();
 }
 
-std::unique_ptr<AXTreeSnapshotter> RenderFrameImpl::CreateAXTreeSnapshotter() {
-  return std::make_unique<AXTreeSnapshotterImpl>(this);
+std::unique_ptr<AXTreeSnapshotter> RenderFrameImpl::CreateAXTreeSnapshotter(
+    ui::AXMode ax_mode) {
+  return std::make_unique<AXTreeSnapshotterImpl>(this, ax_mode);
 }
 
 int RenderFrameImpl::GetRoutingID() {

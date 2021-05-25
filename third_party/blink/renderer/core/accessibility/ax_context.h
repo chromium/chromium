@@ -22,8 +22,7 @@ class CORE_EXPORT AXContext {
   USING_FAST_MALLOC(AXContext);
 
  public:
-  explicit AXContext(Document& document,
-                     const ui::AXMode& mode = ui::kAXModeComplete);
+  AXContext(Document& document, const ui::AXMode& mode);
   AXContext(const AXContext&) = delete;
   AXContext& operator=(const AXContext&) = delete;
   virtual ~AXContext();
@@ -38,7 +37,7 @@ class CORE_EXPORT AXContext {
 
   Document* GetDocument();
 
-  ui::AXMode GetAXMode() { return ax_mode_; }
+  const ui::AXMode& GetAXMode() { return ax_mode_; }
 
  protected:
   WeakPersistent<Document> document_;

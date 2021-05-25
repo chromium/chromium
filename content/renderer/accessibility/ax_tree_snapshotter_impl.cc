@@ -20,17 +20,17 @@ using BlinkAXTreeSerializer = ui::AXTreeSerializer<blink::WebAXObject>;
 
 namespace content {
 
-AXTreeSnapshotterImpl::AXTreeSnapshotterImpl(RenderFrameImpl* render_frame)
+AXTreeSnapshotterImpl::AXTreeSnapshotterImpl(RenderFrameImpl* render_frame,
+                                             ui::AXMode ax_mode)
     : render_frame_(render_frame) {
   DCHECK(render_frame->GetWebFrame());
   blink::WebDocument document_ = render_frame->GetWebFrame()->GetDocument();
-  context_ = std::make_unique<WebAXContext>(document_);
+  context_ = std::make_unique<WebAXContext>(document_, ax_mode);
 }
 
 AXTreeSnapshotterImpl::~AXTreeSnapshotterImpl() = default;
 
-void AXTreeSnapshotterImpl::Snapshot(ui::AXMode ax_mode,
-                                     bool exclude_offscreen,
+void AXTreeSnapshotterImpl::Snapshot(bool exclude_offscreen,
                                      size_t max_node_count,
                                      base::TimeDelta timeout,
                                      ui::AXTreeUpdate* response) {
@@ -41,7 +41,7 @@ void AXTreeSnapshotterImpl::Snapshot(ui::AXMode ax_mode,
     return;
   WebAXObject root = context_->Root();
 
-  BlinkAXTreeSource tree_source(render_frame_, ax_mode);
+  BlinkAXTreeSource tree_source(render_frame_, context_->GetAXMode());
   tree_source.SetRoot(root);
   tree_source.set_exclude_offscreen(exclude_offscreen);
   ScopedFreezeBlinkAXTreeSource freeze(&tree_source);

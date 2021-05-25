@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
+#include "ui/accessibility/ax_mode.h"
 
 using testing::Mock;
 
@@ -344,7 +345,7 @@ void ResetCanvasForAccessibilityRectTest(Document& document) {
 
 TEST_F(CanvasRenderingContext2DAPITest, AccessibilityRectTestForAddHitRegion) {
   ResetCanvasForAccessibilityRectTest(GetDocument());
-  AXContext ax_context(GetDocument());
+  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
 
   Element* button_element = GetDocument().getElementById("button");
   auto* canvas = To<HTMLCanvasElement>(GetDocument().getElementById("canvas"));
@@ -373,7 +374,7 @@ TEST_F(CanvasRenderingContext2DAPITest, AccessibilityRectTestForAddHitRegion) {
 TEST_F(CanvasRenderingContext2DAPITest,
        AccessibilityRectTestForDrawFocusIfNeeded) {
   ResetCanvasForAccessibilityRectTest(GetDocument());
-  AXContext ax_context(GetDocument());
+  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
 
   Element* button_element = GetDocument().getElementById("button");
   auto* canvas = To<HTMLCanvasElement>(GetDocument().getElementById("canvas"));

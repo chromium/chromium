@@ -512,6 +512,8 @@ _CONFIG = [
             'ui::AXMode',
             'ui::AXNodeData',
             'ui::AXTreeID',
+            'ui::kAXModeBasic',
+            'ui::kAXModeComplete',
             'ax::mojom::BoolAttribute',
             'ax::mojom::HasPopup',
             'ax::mojom::State',

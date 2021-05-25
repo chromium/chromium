@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/inspector_type_builder_helper.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "ui/accessibility/ax_mode.h"
 
 namespace blink {
 
@@ -547,7 +548,7 @@ Response InspectorAccessibilityAgent::getPartialAXTree(
   LocalFrame* local_frame = document.GetFrame();
   if (!local_frame)
     return Response::ServerError("Frame is detached.");
-  AXContext ax_context(document);
+  AXContext ax_context(document, ui::kAXModeComplete);
   auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
 
   AXObject* inspected_ax_object = cache.GetOrCreate(dom_node);
@@ -757,7 +758,7 @@ InspectorAccessibilityAgent::WalkAXNodesToDepth(Document* document,
   std::unique_ptr<protocol::Array<AXNode>> nodes =
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
 
-  AXContext ax_context(*document);
+  AXContext ax_context(*document, ui::kAXModeComplete);
   auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
 
   Deque<std::pair<AXID, int>> id_depths;
@@ -961,7 +962,7 @@ Response InspectorAccessibilityAgent::queryAXTree(
   document.UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       document.Lifecycle());
-  AXContext ax_context(document);
+  AXContext ax_context(document, ui::kAXModeComplete);
 
   *nodes = std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
   auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
@@ -1051,7 +1052,7 @@ void InspectorAccessibilityAgent::ProvideTo(LocalFrame* frame) {
 void InspectorAccessibilityAgent::CreateAXContext() {
   Document* document = inspected_frames_->Root()->GetDocument();
   if (document)
-    context_ = std::make_unique<AXContext>(*document);
+    context_ = std::make_unique<AXContext>(*document, ui::kAXModeComplete);
 }
 
 void InspectorAccessibilityAgent::Trace(Visitor* visitor) const {

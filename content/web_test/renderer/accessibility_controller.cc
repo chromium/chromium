@@ -17,6 +17,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "ui/accessibility/ax_mode.h"
 
 namespace content {
 
@@ -167,7 +168,8 @@ void AccessibilityController::Reset() {
 }
 
 void AccessibilityController::Install(blink::WebLocalFrame* frame) {
-  ax_context_ = std::make_unique<blink::WebAXContext>(frame->GetDocument());
+  ax_context_ = std::make_unique<blink::WebAXContext>(frame->GetDocument(),
+                                                      ui::kAXModeComplete);
   frame->View()->GetSettings()->SetInlineTextBoxAccessibilityEnabled(true);
 
   AccessibilityControllerBindings::Install(weak_factory_.GetWeakPtr(), frame);
