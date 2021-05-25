@@ -1021,12 +1021,7 @@ TEST_F(PartitionAllocTest, GetSlotStartMultiplePages) {
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 // Test the realloc() contract.
-#if defined(OS_ANDROID)
-#define MAYBE_Realloc DISABLED_Realloc
-#else
-#define MAYBE_Realloc Realloc
-#endif
-TEST_F(PartitionAllocTest, MAYBE_Realloc) {
+TEST_F(PartitionAllocTest, Realloc) {
   // realloc(0, size) should be equivalent to malloc().
   void* ptr = allocator.root()->Realloc(nullptr, kTestAllocSize, type_name);
   memset(ptr, 'A', kTestAllocSize);
@@ -1385,12 +1380,7 @@ TEST_F(PartitionAllocTest, SlotSpanRefilling) {
 }
 
 // Basic tests to ensure that allocations work for partial page buckets.
-#if defined(OS_ANDROID)
-#define MAYBE_PartialPages DISABLED_PartialPages
-#else
-#define MAYBE_PartialPages PartialPages
-#endif
-TEST_F(PartitionAllocTest, MAYBE_PartialPages) {
+TEST_F(PartitionAllocTest, PartialPages) {
   // Find a size that is backed by a partial partition page.
   size_t size = sizeof(void*);
   size_t bucket_index;
@@ -2099,12 +2089,7 @@ TEST_F(PartitionAllocTest, DumpMemoryStats) {
 }
 
 // Tests the API to purge freeable memory.
-#if defined(OS_ANDROID)
-#define MAYBE_Purge DISABLED_Purge
-#else
-#define MAYBE_Purge Purge
-#endif
-TEST_F(PartitionAllocTest, MAYBE_Purge) {
+TEST_F(PartitionAllocTest, Purge) {
   char* ptr = reinterpret_cast<char*>(
       allocator.root()->Alloc(2048 - kExtraAllocSize, type_name));
   allocator.root()->Free(ptr);
@@ -2708,12 +2693,7 @@ void VerifyAlignment(PartitionRoot<ThreadSafe>* root,
     PartitionRoot<ThreadSafe>::Free(ptr);
 }
 
-#if defined(OS_ANDROID)
-#define MAYBE_AlignedAllocations DISABLED_AlignedAllocations
-#else
-#define MAYBE_AlignedAllocations AlignedAllocations
-#endif
-TEST_F(PartitionAllocTest, MAYBE_AlignedAllocations) {
+TEST_F(PartitionAllocTest, AlignedAllocations) {
   size_t alloc_sizes[] = {1,     10,    100,    1000,   10000,
                           60000, 70000, 130000, 500000, 900000};
   size_t max_alignment = 1048576;
@@ -3079,12 +3059,7 @@ TEST_F(PartitionAllocTest, GetReservationStart) {
 #endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 
 // Test for crash http://crbug.com/1169003.
-#if defined(OS_ANDROID)
-#define MAYBE_CrossPartitionRootRealloc DISABLED_CrossPartitionRootRealloc
-#else
-#define MAYBE_CrossPartitionRootRealloc CrossPartitionRootRealloc
-#endif
-TEST_F(PartitionAllocTest, MAYBE_CrossPartitionRootRealloc) {
+TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
   // Size is large enough to satisfy it from a single-slot slot span
   size_t test_size =
       SystemPageSize() * MaxSystemPagesPerSlotSpan() - kExtraAllocSize;
