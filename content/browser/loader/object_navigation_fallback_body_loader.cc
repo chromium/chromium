@@ -188,21 +188,21 @@ std::string ExtractServerTimingValueIfNeeded(
 
 }  // namespace
 
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(ObjectNavigationFallbackBodyLoader)
+
 // static
 void ObjectNavigationFallbackBodyLoader::CreateAndStart(
+    NavigationRequest& navigation_request,
     const mojom::CommonNavigationParams& common_params,
     const mojom::CommitNavigationParams& commit_params,
     const network::mojom::URLResponseHead& response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-    base::WeakPtr<NavigationRequest> navigation_request,
     base::OnceClosure completion_closure) {
   // This should only be called for HTTP errors.
   DCHECK(response_head.headers);
-  // And `navigation_request` should certainly be live at this point.
-  DCHECK(navigation_request);
   RenderFrameHostImpl* render_frame_host =
-      navigation_request->frame_tree_node()->current_frame_host();
+      navigation_request.frame_tree_node()->current_frame_host();
   // A frame owned by <object> should always have a parent.
   DCHECK(render_frame_host->GetParent());
   // It's safe to snapshot the parent origin in the calculation here; if the
@@ -214,22 +214,23 @@ void ObjectNavigationFallbackBodyLoader::CreateAndStart(
   std::string server_timing_value =
       ExtractServerTimingValueIfNeeded(response_head);
 
-  new ObjectNavigationFallbackBodyLoader(
-      std::move(timing_info), std::move(server_timing_value),
-      std::move(response_body), std::move(url_loader_client_endpoints),
-      std::move(navigation_request), std::move(completion_closure));
+  CreateForNavigationHandle(
+      navigation_request, std::move(timing_info),
+      std::move(server_timing_value), std::move(response_body),
+      std::move(url_loader_client_endpoints), std::move(completion_closure));
 }
 
 ObjectNavigationFallbackBodyLoader::~ObjectNavigationFallbackBodyLoader() {}
 
 ObjectNavigationFallbackBodyLoader::ObjectNavigationFallbackBodyLoader(
+    NavigationHandle& navigation_handle,
     blink::mojom::ResourceTimingInfoPtr timing_info,
     std::string server_timing_value,
     mojo::ScopedDataPipeConsumerHandle response_body,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-    base::WeakPtr<NavigationRequest> navigation_request,
     base::OnceClosure completion_closure)
-    : url_loader_(std::move(url_loader_client_endpoints->url_loader)),
+    : navigation_request_(static_cast<NavigationRequest&>(navigation_handle)),
+      url_loader_(std::move(url_loader_client_endpoints->url_loader)),
       url_loader_client_receiver_(
           this,
           std::move(url_loader_client_endpoints->url_loader_client)),
@@ -238,12 +239,12 @@ ObjectNavigationFallbackBodyLoader::ObjectNavigationFallbackBodyLoader(
                                                   std::move(response_body))),
       timing_info_(std::move(timing_info)),
       server_timing_value_(std::move(server_timing_value)),
-      navigation_request_(std::move(navigation_request)),
       completion_closure_(std::move(completion_closure)) {
   // Unretained is safe; `url_loader_` is owned by `this` and will not dispatch
   // callbacks after it is destroyed.
-  url_loader_client_receiver_.set_disconnect_handler(base::BindOnce(
-      &ObjectNavigationFallbackBodyLoader::DeleteThis, base::Unretained(this)));
+  url_loader_client_receiver_.set_disconnect_handler(
+      base::BindOnce(&ObjectNavigationFallbackBodyLoader::BodyLoadFailed,
+                     base::Unretained(this)));
 }
 
 void ObjectNavigationFallbackBodyLoader::MaybeComplete() {
@@ -252,24 +253,18 @@ void ObjectNavigationFallbackBodyLoader::MaybeComplete() {
   if (!status_ || response_body_drainer_)
     return;
 
-  // At this point, `this` is done and should be deleted no matter what. Ensure
-  // that this happens, even with early returns.
-  base::ScopedClosureRunner cleanup(base::BindOnce(
-      &ObjectNavigationFallbackBodyLoader::DeleteThis, base::Unretained(this)));
-
-  // If the navigation request is gone, the navigation was replaced with a new
-  // navigation, and there's no point in reporting the performance entry
-  // anymore.
-  if (!navigation_request_) {
-    return;
-  }
+  // At this point, `this` is done and the associated NavigationRequest and
+  // `this` must be cleaned up, no matter what else happens. Running
+  // `completion_closure_` will delete the NavigationRequest, which will delete
+  // `this`.
+  base::ScopedClosureRunner cleanup(std::move(completion_closure_));
 
   timing_info_->response_end = status_->completion_time;
   timing_info_->encoded_body_size = status_->encoded_body_length;
   timing_info_->decoded_body_size = status_->decoded_body_length;
 
   RenderFrameHostManager* render_manager =
-      navigation_request_->frame_tree_node()->render_manager();
+      navigation_request_.frame_tree_node()->render_manager();
   if (RenderFrameProxyHost* proxy = render_manager->GetProxyToParent()) {
     proxy->GetAssociatedRemoteFrame()->RenderFallbackContentWithResourceTiming(
         std::move(timing_info_), server_timing_value_);
@@ -279,13 +274,19 @@ void ObjectNavigationFallbackBodyLoader::MaybeComplete() {
         ->RenderFallbackContentWithResourceTiming(std::move(timing_info_),
                                                   server_timing_value_);
   }
-
-  // Clean up the NavigationRequest that `this` was bound to.
-  std::move(completion_closure_).Run();
 }
 
-void ObjectNavigationFallbackBodyLoader::DeleteThis() {
-  delete this;
+void ObjectNavigationFallbackBodyLoader::BodyLoadFailed() {
+  // At this point, `this` is done and the associated NavigationRequest and
+  // `this` must be cleaned up, no matter what else happens. Running
+  // `completion_closure_` will delete the NavigationRequest, which will delete
+  // `this`.
+  base::ScopedClosureRunner cleanup(std::move(completion_closure_));
+
+  // The endpoint for the URL loader client was closed before the body load
+  // completed. This is considered failure, so trigger the fallback content, but
+  // without any timing info, since it can't be calculated.
+  navigation_request_.RenderFallbackContentForObjectTag();
 }
 
 void ObjectNavigationFallbackBodyLoader::OnReceiveEarlyHints(

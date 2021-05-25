@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "content/public/browser/navigation_handle_user_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -57,7 +58,8 @@ class CommonNavigationParams;
 // duplicating significant amounts of the resource timing code in the browser.
 // It would be nice to do better somehow in the future...
 class ObjectNavigationFallbackBodyLoader
-    : public network::mojom::URLLoaderClient,
+    : public NavigationHandleUserData<ObjectNavigationFallbackBodyLoader>,
+      public network::mojom::URLLoaderClient,
       public mojo::DataPipeDrainer::Client {
  public:
   // `common_params, `commit_params`, and `response_head`  are used to
@@ -75,27 +77,30 @@ class ObjectNavigationFallbackBodyLoader
   // `completion_closure` is used to clean up the navigation request if the
   // response body is successfully loaded.
   static void CreateAndStart(
+      NavigationRequest& navigation_request,
       const mojom::CommonNavigationParams& common_params,
       const mojom::CommitNavigationParams& commit_params,
       const network::mojom::URLResponseHead& response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      base::WeakPtr<NavigationRequest> navigation_request,
       base::OnceClosure completion_closure);
 
   ~ObjectNavigationFallbackBodyLoader() override;
 
  private:
+  friend NavigationHandleUserData<ObjectNavigationFallbackBodyLoader>;
+  NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+
   ObjectNavigationFallbackBodyLoader(
+      NavigationHandle& navigation_handle,
       blink::mojom::ResourceTimingInfoPtr timing_info,
       std::string server_timing_value,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      base::WeakPtr<NavigationRequest> navigation_request,
       base::OnceClosure completion_closure);
 
   void MaybeComplete();
-  void DeleteThis();
+  void BodyLoadFailed();
 
   // URLLoaderClient overrides:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr) override;
@@ -115,6 +120,7 @@ class ObjectNavigationFallbackBodyLoader
   void OnDataAvailable(const void* data, size_t num_bytes) override;
   void OnDataComplete() override;
 
+  NavigationRequest& navigation_request_;
   // `url_loader_` must be kept alive while reading the response body.
   mojo::Remote<network::mojom::URLLoader> url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient> url_loader_client_receiver_;
@@ -124,7 +130,6 @@ class ObjectNavigationFallbackBodyLoader
   absl::optional<network::URLLoaderCompletionStatus> status_;
   blink::mojom::ResourceTimingInfoPtr timing_info_;
   std::string server_timing_value_;
-  base::WeakPtr<NavigationRequest> navigation_request_;
   base::OnceClosure completion_closure_;
 };
 

@@ -614,6 +614,11 @@ class CONTENT_EXPORT NavigationRequest
     complete_callback_for_testing_ = std::move(callback);
   }
 
+  network::mojom::URLLoaderClientEndpointsPtr&
+  mutable_url_loader_client_endpoints_for_testing() {
+    return url_loader_client_endpoints_;
+  }
+
   void set_ready_to_commit_callback_for_testing(base::OnceClosure callback) {
     ready_to_commit_callback_for_testing_ = std::move(callback);
   }
@@ -880,6 +885,8 @@ class CONTENT_EXPORT NavigationRequest
   int prerender_frame_tree_node_id() const {
     return prerender_frame_tree_node_id_;
   }
+
+  void RenderFallbackContentForObjectTag();
 
  private:
   friend class NavigationRequestTest;
@@ -1320,7 +1327,6 @@ class CONTENT_EXPORT NavigationRequest
 
   bool ShouldRenderFallbackContentForResponse(
       const net::HttpResponseHeaders& response_head) const;
-  void RenderFallbackContentForObjectTag();
 
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
