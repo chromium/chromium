@@ -266,7 +266,13 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
 
 // Tests that the command to show the UI isn't sent if the authentication
 // service is still signing out the user.
-TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
+// TODO(crbug.com/1211546): The test is flaky on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_UINotShownWhileSignOut UINotShownWhileSignOut
+#else
+#define MAYBE_UINotShownWhileSignOut FLAKY_UINotShownWhileSignOut
+#endif  // TARGET_IPHONE_SIMULATOR
+TEST_F(PolicyWatcherBrowserAgentTest, MAYBE_UINotShownWhileSignOut) {
   chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
 
   AuthenticationService* authentication_service =
