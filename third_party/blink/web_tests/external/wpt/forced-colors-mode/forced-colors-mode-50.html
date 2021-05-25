@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Forced colors mode - accent-color.</title>
+<link rel="help" href="https://www.w3.org/TR/css-color-adjust-1/#forced-colors-properties">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  input {
+    accent-color: green;
+  }
+  #a {
+    forced-color-adjust: none;
+  }
+</style>
+<input type="checkbox" id="a" checked>
+<input type="checkbox" id="b" checked>
+
+<script>
+  test(function(){
+    assert_equals(getComputedStyle(a).accentColor, "rgb(0, 128, 0)");
+    assert_equals(getComputedStyle(b).accentColor, "auto");
+  }, "Accent-color computes to auto in forced colors mode, unless forced-color-adjust is none.");
+</script>

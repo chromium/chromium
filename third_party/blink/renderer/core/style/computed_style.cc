@@ -2426,7 +2426,7 @@ const AtomicString& ComputedStyle::ListStyleStringValue() const {
 
 absl::optional<Color> ComputedStyle::AccentColorResolved() const {
   const StyleAutoColor& auto_color = AccentColor();
-  if (auto_color.IsAutoColor() || ShouldForceColor(auto_color))
+  if (auto_color.IsAutoColor())
     return absl::nullopt;
   return auto_color.Resolve(GetCurrentColor(), UsedColorScheme());
 }
