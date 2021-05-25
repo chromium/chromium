@@ -1047,8 +1047,14 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   // works in app but the tests aren't working.
 }
 
+// TODO(https://crbug.com/1207312): Flaky test.
+#if defined(USE_OZONE)
+#define MAYBE_ClearsTextAfterInactivity DISABLED_ClearsTextAfterInactivity
+#else
+#define MAYBE_ClearsTextAfterInactivity ClearsTextAfterInactivity
+#endif
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       ClearsTextAfterInactivity) {
+                       MAYBE_ClearsTextAfterInactivity) {
   // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer with
   // a mock tick clock that replaces the default tick clock with mock time.
   base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
