@@ -332,6 +332,13 @@ if (is_win || is_mac) {
         "//chrome/updater/app/server/mac/service_protocol.mm",
         "//chrome/updater/app/server/mac/update_service_wrappers.h",
         "//chrome/updater/app/server/mac/update_service_wrappers.mm",
+        "//chrome/updater/mac/xpc_service_names.h",
+        "//chrome/updater/mac/xpc_service_names.mm",
+      ]
+
+      deps += [
+        ":updater_version_cc",
+        ":version_header",
       ]
     }
 

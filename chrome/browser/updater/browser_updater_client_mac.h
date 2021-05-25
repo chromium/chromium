@@ -13,7 +13,7 @@
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #include "chrome/updater/update_service.h"
 
-@interface CRUUpdateClientOnDemandImpl : NSObject <CRUUpdateChecking>
+@interface CRUUpdateClientOnDemandImpl : NSObject <CRUUpdateServicing>
 @end
 
 class BrowserUpdaterClientMac : public BrowserUpdaterClient {

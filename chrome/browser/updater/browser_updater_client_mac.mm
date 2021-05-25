@@ -19,6 +19,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
+#import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/update_service.h"
 
 @interface CRUUpdateClientOnDemandImpl () {
@@ -27,13 +28,6 @@
 @end
 
 namespace {
-
-NSString* const kLaunchdServiceName = @"org.chromium.ChromiumUpdater.service";
-
-NSString* GetMachServiceName() {
-  return [kLaunchdServiceName
-      stringByAppendingFormat:@".%lu", [kLaunchdServiceName hash]];
-}
 
 NSString* GetAppIdForUpdaterAsNSString() {
   return base::SysUTF8ToNSString(base::mac::BaseBundleID());
@@ -46,11 +40,12 @@ NSString* GetAppIdForUpdaterAsNSString() {
 - (instancetype)init {
   if (self = [super init]) {
     _xpcConnection.reset([[NSXPCConnection alloc]
-        initWithMachServiceName:GetMachServiceName()
+        initWithMachServiceName:base::SysUTF8ToNSString(
+                                    updater::GetUpdateServiceLaunchdName())
                         options:0]);
 
     _xpcConnection.get().remoteObjectInterface =
-        updater::GetXPCUpdateCheckingInterface();
+        updater::GetXPCUpdateServicingInterface();
 
     _xpcConnection.get().interruptionHandler = ^{
       LOG(WARNING)
@@ -131,6 +126,14 @@ NSString* GetAppIdForUpdaterAsNSString() {
                      priority:priority
                   updateState:updateState
                         reply:reply];
+}
+
+// Runs periodic updater tasks like checking for uninstalls and background
+// update checks.
+- (void)runPeriodicTasksWithReply:(void (^_Nullable)(void))reply {
+  // This method does not need to be implemented in the RPC on-demand update
+  // call from the browser to the updater.
+  NOTIMPLEMENTED();
 }
 
 @end
