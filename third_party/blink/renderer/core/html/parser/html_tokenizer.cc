@@ -61,12 +61,20 @@ enum class ScanFlags : uint8_t {
   kNullCharacter = 1 << 0,
   kNewlineOrCarriageReturn = 1 << 1,
   kWhitespaceNotNewline = 1 << 2,
-  kAmpersandAndOpenTag = 1 << 3,
+  kAmpersand = 1 << 3,
+  kOpenTag = 1 << 4,
+  kSlashAndCloseTag = 1 << 5,
+  kEqual = 1 << 6,
+  kQuotes = 1 << 7,
   // Compound flags
   kWhitespace = kWhitespaceNotNewline | kNewlineOrCarriageReturn,
   kCharacterTokenSpecial =
-      kNullCharacter | kNewlineOrCarriageReturn | kAmpersandAndOpenTag,
+      kNullCharacter | kNewlineOrCarriageReturn | kAmpersand | kOpenTag,
   kNullOrNewline = kNullCharacter | kNewlineOrCarriageReturn,
+  kRCDATASpecial = kNullCharacter | kAmpersand | kOpenTag,
+  kTagNameSpecial = kWhitespace | kSlashAndCloseTag | kNullCharacter,
+  kAttributeNameSpecial = kWhitespace | kSlashAndCloseTag | kNullCharacter |
+                          kEqual | kOpenTag | kQuotes,
 };
 
 static constexpr uint8_t CreateScanFlags(UChar cc) {
@@ -79,8 +87,16 @@ static constexpr uint8_t CreateScanFlags(UChar cc) {
     scan_flag = SCAN_FLAG(kNewlineOrCarriageReturn);
   else if (cc == ' ' || cc == '\x09' || cc == '\x0C')
     scan_flag = SCAN_FLAG(kWhitespaceNotNewline);
-  else if (cc == '&' || cc == '<')
-    scan_flag = SCAN_FLAG(kAmpersandAndOpenTag);
+  else if (cc == '&')
+    scan_flag = SCAN_FLAG(kAmpersand);
+  else if (cc == '<')
+    scan_flag = SCAN_FLAG(kOpenTag);
+  else if (cc == '/' || cc == '>')
+    scan_flag = SCAN_FLAG(kSlashAndCloseTag);
+  else if (cc == '=')
+    scan_flag = SCAN_FLAG(kEqual);
+  else if (cc == '"' || cc == '\'')
+    scan_flag = SCAN_FLAG(kQuotes);
   return scan_flag;
 #undef SCAN_FLAG
 }
@@ -240,16 +256,19 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     END_STATE()
 
     HTML_BEGIN_STATE(kRCDATAState) {
+      while (!CheckScanFlag(cc, ScanFlags::kRCDATASpecial)) {
+        BufferCharacter(cc);
+        if (!input_stream_preprocessor_.Advance(source, cc))
+          return HaveBufferedCharacterToken();
+      }
       if (cc == '&')
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kCharacterReferenceInRCDATAState);
       else if (cc == '<')
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kRCDATALessThanSignState);
       else if (cc == kEndOfFileMarker)
         return EmitEndOfFile(source);
-      else {
-        BufferCharacter(cc);
-        HTML_CONSUME(kRCDATAState);
-      }
+      else
+        NOTREACHED();
     }
     END_STATE()
 
@@ -334,9 +353,12 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     END_STATE()
 
     HTML_BEGIN_STATE(kTagNameState) {
-      if (IsTokenizerWhitespace(cc)) {
-        HTML_ADVANCE_TO(kBeforeAttributeNameState);
-      } else if (cc == '/') {
+      while (!CheckScanFlag(cc, ScanFlags::kTagNameSpecial)) {
+        token_->AppendToName(ToLowerCaseIfAlpha(cc));
+        if (!input_stream_preprocessor_.AdvancePastNonNewline(source, cc))
+          return HaveBufferedCharacterToken();
+      }
+      if (cc == '/') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kSelfClosingStartTagState);
       } else if (cc == '>') {
         return EmitAndResumeIn(source, HTMLTokenizer::kDataState);
@@ -344,8 +366,8 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
         ParseError();
         HTML_RECONSUME_IN(kDataState);
       } else {
-        token_->AppendToName(ToLowerCaseIfAlpha(cc));
-        HTML_CONSUME_NON_NEWLINE(kTagNameState);
+        DCHECK(IsTokenizerWhitespace(cc));
+        HTML_ADVANCE_TO(kBeforeAttributeNameState);
       }
     }
     END_STATE()
@@ -778,6 +800,11 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     END_STATE()
 
     HTML_BEGIN_STATE(kAttributeNameState) {
+      while (!CheckScanFlag(cc, ScanFlags::kAttributeNameSpecial)) {
+        token_->AppendToAttributeName(ToLowerCaseIfAlpha(cc));
+        if (!input_stream_preprocessor_.AdvancePastNonNewline(source, cc))
+          return HaveBufferedCharacterToken();
+      }
       if (IsTokenizerWhitespace(cc)) {
         token_->EndAttributeName(source.NumberOfCharactersConsumed());
         HTML_ADVANCE_TO(kAfterAttributeNameState);
@@ -795,8 +822,8 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
         token_->EndAttributeName(source.NumberOfCharactersConsumed());
         HTML_RECONSUME_IN(kDataState);
       } else {
-        if (cc == '"' || cc == '\'' || cc == '<' || cc == '=')
-          ParseError();
+        DCHECK(cc == '"' || cc == '\'' || cc == '<' || cc == '=');
+        ParseError();
         token_->AppendToAttributeName(ToLowerCaseIfAlpha(cc));
         HTML_CONSUME_NON_NEWLINE(kAttributeNameState);
       }
