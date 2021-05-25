@@ -3740,6 +3740,27 @@
             ]
         }
     ],
+    "HatsOnboardingExperience": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.05",
+                        "survey_cycle_length": "2147483647",
+                        "survey_start_date_ms": "1617260400000",
+                        "trigger_id": "NAgJpJZhz0jBnuKU19R0UuVK5EA7"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingOnboardingExperience"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeapProfiling": [
         {
             "platforms": [
