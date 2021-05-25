@@ -739,26 +739,6 @@ struct FuzzTraits<ContentSettingsPattern> {
 };
 
 template <>
-struct FuzzTraits<ExtensionMsg_PermissionSetStruct> {
-  static bool Fuzz(ExtensionMsg_PermissionSetStruct* p,
-                       Fuzzer* fuzzer) {
-    // TODO(mbarbella): This should actually do something.
-    return true;
-  }
-};
-
-template <>
-struct FuzzTraits<extensions::URLPatternSet> {
-  static bool Fuzz(extensions::URLPatternSet* p, Fuzzer* fuzzer) {
-    std::set<URLPattern> patterns = p->patterns();
-    if (!FuzzParam(&patterns, fuzzer))
-      return false;
-    *p = extensions::URLPatternSet(patterns);
-    return true;
-  }
-};
-
-template <>
 struct FuzzTraits<gfx::BufferFormat> {
   static bool Fuzz(gfx::BufferFormat* p, Fuzzer* fuzzer) {
     int format = RandInRange(static_cast<int>(gfx::BufferFormat::LAST) + 1);
@@ -1698,29 +1678,6 @@ struct FuzzTraits<url::Origin> {
     }
 
     *p = std::move(origin).value();
-    return true;
-  }
-};
-
-template <>
-struct FuzzTraits<URLPattern> {
-  static bool Fuzz(URLPattern* p, Fuzzer* fuzzer) {
-    int valid_schemes = p->valid_schemes();
-    std::string host = p->host();
-    std::string port = p->port();
-    std::string path = p->path();
-    if (!FuzzParam(&valid_schemes, fuzzer))
-      return false;
-    if (!FuzzParam(&host, fuzzer))
-      return false;
-    if (!FuzzParam(&port, fuzzer))
-      return false;
-    if (!FuzzParam(&path, fuzzer))
-      return false;
-    *p = URLPattern(valid_schemes);
-    p->SetHost(host);
-    p->SetPort(port);
-    p->SetPath(path);
     return true;
   }
 };

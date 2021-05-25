@@ -82,15 +82,4 @@ std::unique_ptr<APIPermission> SettingsOverrideAPIPermission::Intersect(
                                                          setting_value_);
 }
 
-void SettingsOverrideAPIPermission::Write(base::Pickle* m) const {}
-
-bool SettingsOverrideAPIPermission::Read(const base::Pickle* m,
-                                         base::PickleIterator* iter) {
-  return true;
-}
-
-void SettingsOverrideAPIPermission::Log(std::string* log) const {
-  *log = setting_value_;
-}
-
 }  // namespace extensions

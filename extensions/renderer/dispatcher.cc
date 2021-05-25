@@ -936,7 +936,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnConnect, OnDispatchOnConnect)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnDisconnect, OnDispatchOnDisconnect)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchEvent, OnDispatchEvent)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_UpdatePermissions, OnUpdatePermissions)
   IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -1313,28 +1312,31 @@ void Dispatcher::TransferBlobs(TransferBlobsCallback callback) {
   std::move(callback).Run();
 }
 
-void Dispatcher::OnUpdatePermissions(
-    const ExtensionMsg_UpdatePermissions_Params& params) {
+void Dispatcher::UpdatePermissions(const std::string& extension_id,
+                                   PermissionSet active_permissions,
+                                   PermissionSet withheld_permissions,
+                                   URLPatternSet policy_blocked_hosts,
+                                   URLPatternSet policy_allowed_hosts,
+                                   bool uses_default_policy_host_restrictions) {
   const Extension* extension =
-      RendererExtensionRegistry::Get()->GetByID(params.extension_id);
+      RendererExtensionRegistry::Get()->GetByID(extension_id);
   if (!extension)
     return;
 
-  if (params.uses_default_policy_host_restrictions) {
+  if (uses_default_policy_host_restrictions) {
     extension->permissions_data()->SetUsesDefaultHostRestrictions(
         kRendererProfileId);
   } else {
     extension->permissions_data()->SetPolicyHostRestrictions(
-        params.policy_blocked_hosts, params.policy_allowed_hosts);
+        policy_blocked_hosts, policy_allowed_hosts);
   }
 
-  std::unique_ptr<const PermissionSet> active =
-      params.active_permissions.ToPermissionSet();
-  std::unique_ptr<const PermissionSet> withheld =
-      params.withheld_permissions.ToPermissionSet();
+  extension->permissions_data()->SetPermissions(
+      std::make_unique<const extensions::PermissionSet>(
+          std::move(active_permissions)),
+      std::make_unique<const extensions::PermissionSet>(
+          std::move(withheld_permissions)));
 
-  extension->permissions_data()->SetPermissions(std::move(active),
-                                                std::move(withheld));
   UpdateOriginPermissions(*extension);
 
   UpdateBindingsForExtension(*extension);

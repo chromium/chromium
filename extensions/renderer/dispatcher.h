@@ -43,7 +43,6 @@ class ModuleSystem;
 struct ExtensionMsg_DispatchEvent_Params;
 struct ExtensionMsg_ExternalConnectionInfo;
 struct ExtensionMsg_TabConnectionInfo;
-struct ExtensionMsg_UpdatePermissions_Params;
 
 namespace blink {
 class WebLocalFrame;
@@ -239,6 +238,12 @@ class Dispatcher : public content::RenderThreadObserver,
       const std::vector<std::string>& extension_ids) override;
   void ShouldSuspend(ShouldSuspendCallback callback) override;
   void TransferBlobs(TransferBlobsCallback callback) override;
+  void UpdatePermissions(const std::string& extension_id,
+                         PermissionSet active_permissions,
+                         PermissionSet withheld_permissions,
+                         URLPatternSet policy_blocked_hosts,
+                         URLPatternSet policy_allowed_hosts,
+                         bool uses_default_policy_host_restrictions) override;
   void UpdateDefaultPolicyHostRestrictions(
       extensions::URLPatternSet default_policy_blocked_hosts,
       extensions::URLPatternSet default_policy_allowed_hosts) override;
@@ -269,7 +274,6 @@ class Dispatcher : public content::RenderThreadObserver,
                               const std::string& error_message);
   void OnDispatchEvent(const ExtensionMsg_DispatchEvent_Params& params,
                        const base::ListValue& event_args);
-  void OnUpdatePermissions(const ExtensionMsg_UpdatePermissions_Params& params);
 
   // UserScriptSetManager::Observer implementation.
   void OnUserScriptsUpdated(const mojom::HostID& changed_host) override;

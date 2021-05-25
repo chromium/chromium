@@ -121,6 +121,13 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
     std::move(callback).Run();
   }
 
+  void UpdatePermissions(const std::string& extension_id,
+                         PermissionSet active_permissions,
+                         PermissionSet withheld_permissions,
+                         URLPatternSet policy_blocked_hosts,
+                         URLPatternSet policy_allowed_hosts,
+                         bool uses_default_policy_host_restrictions) override {}
+
   void UpdateDefaultPolicyHostRestrictions(
       URLPatternSet default_policy_blocked_hosts,
       URLPatternSet default_policy_allowed_hosts) override {

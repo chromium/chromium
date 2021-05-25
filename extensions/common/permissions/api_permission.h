@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/pickle.h"
 #include "base/values.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 
@@ -100,16 +99,6 @@ class APIPermission {
   // Returns a new API permission which equals the intersect of this and |rhs|.
   virtual std::unique_ptr<APIPermission> Intersect(
       const APIPermission* rhs) const = 0;
-
-  // IPC functions
-  // Writes this into the given IPC message |m|.
-  virtual void Write(base::Pickle* m) const = 0;
-
-  // Reads from the given IPC message |m|.
-  virtual bool Read(const base::Pickle* m, base::PickleIterator* iter) = 0;
-
-  // Logs this permission.
-  virtual void Log(std::string* log) const = 0;
 
  private:
   const APIPermissionInfo* const info_;

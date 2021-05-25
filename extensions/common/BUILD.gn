@@ -224,7 +224,6 @@ if (enable_extensions) {
       "extension_l10n_util.h",
       "extension_message_generator.cc",
       "extension_message_generator.h",
-      "extension_messages.cc",
       "extension_messages.h",
       "extension_paths.cc",
       "extension_paths.h",

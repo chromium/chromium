@@ -7,7 +7,6 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/permissions/permissions_info.h"
-#include "ipc/ipc_message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::mojom::APIPermissionID;
@@ -252,35 +251,6 @@ TEST(APIPermissionSetTest, CreateDifference) {
   APIPermissionSet result2;
   APIPermissionSet::Intersection(result, apis2, &result2);
   EXPECT_TRUE(result2.empty());
-}
-
-TEST(APIPermissionSetTest, IPC) {
-  APIPermissionSet apis;
-  APIPermissionSet expected_apis;
-
-  const APIPermissionInfo* permission_info =
-      PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kSocket);
-
-  apis.insert(APIPermissionID::kAudioCapture);
-  apis.insert(APIPermissionID::kDns);
-  std::unique_ptr<APIPermission> permission =
-      permission_info->CreateAPIPermission();
-  {
-    std::unique_ptr<base::ListValue> value(new base::ListValue());
-    value->AppendString("tcp-connect:*.example.com:80");
-    value->AppendString("udp-bind::8080");
-    value->AppendString("udp-send-to::8888");
-    ASSERT_TRUE(permission->FromValue(value.get(), NULL, NULL));
-  }
-  apis.insert(std::move(permission));
-
-  EXPECT_NE(apis, expected_apis);
-
-  IPC::Message m;
-  WriteParam(&m, apis);
-  base::PickleIterator iter(m);
-  CHECK(ReadParam(&m, &iter, &expected_apis));
-  EXPECT_EQ(apis, expected_apis);
 }
 
 }  // namespace extensions

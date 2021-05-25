@@ -637,28 +637,28 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
       content::Source<Profile>(profile),
       content::Details<UpdatedExtensionPermissionsInfo>(&info));
 
-  ExtensionMsg_UpdatePermissions_Params params;
-  params.extension_id = extension->id();
-  params.active_permissions = ExtensionMsg_PermissionSetStruct(
-      extension->permissions_data()->active_permissions());
-  params.withheld_permissions = ExtensionMsg_PermissionSetStruct(
-      extension->permissions_data()->withheld_permissions());
-  params.uses_default_policy_host_restrictions =
-      extension->permissions_data()->UsesDefaultPolicyHostRestrictions();
-  if (!params.uses_default_policy_host_restrictions) {
-    params.policy_blocked_hosts =
-        extension->permissions_data()->policy_blocked_hosts().Clone();
-    params.policy_allowed_hosts =
-        extension->permissions_data()->policy_allowed_hosts().Clone();
-  }
-
   // Send the new permissions to the renderers.
-  for (RenderProcessHost::iterator i(RenderProcessHost::AllHostsIterator());
-       !i.IsAtEnd(); i.Advance()) {
-    RenderProcessHost* host = i.GetCurrentValue();
-    if (profile->IsSameOrParent(
+  for (RenderProcessHost::iterator host_iterator(
+           RenderProcessHost::AllHostsIterator());
+       !host_iterator.IsAtEnd(); host_iterator.Advance()) {
+    RenderProcessHost* host = host_iterator.GetCurrentValue();
+    if (host->IsInitializedAndNotDead() &&
+        profile->IsSameOrParent(
             Profile::FromBrowserContext(host->GetBrowserContext()))) {
-      host->Send(new ExtensionMsg_UpdatePermissions(params));
+      mojom::Renderer* renderer =
+          RendererStartupHelperFactory::GetForBrowserContext(
+              host->GetBrowserContext())
+              ->GetRenderer(host);
+      if (renderer) {
+        const PermissionsData* permissions_data = extension->permissions_data();
+        renderer->UpdatePermissions(
+            extension->id(),
+            std::move(*permissions_data->active_permissions().Clone()),
+            std::move(*permissions_data->withheld_permissions().Clone()),
+            permissions_data->policy_blocked_hosts(),
+            permissions_data->policy_allowed_hosts(),
+            permissions_data->UsesDefaultPolicyHostRestrictions());
+      }
     }
   }
 

@@ -69,7 +69,7 @@ class PermissionSet {
   bool operator!=(const PermissionSet& rhs) const;
 
   // Returns a copy of this PermissionSet.
-  std::unique_ptr<const PermissionSet> Clone() const;
+  std::unique_ptr<PermissionSet> Clone() const;
 
   // Returns true if every API or host permission available to |set| is also
   // available to this. In other words, if the API permissions of |set| are a

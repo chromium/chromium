@@ -111,6 +111,14 @@ interface Renderer {
   // sequential nature of IPCs so that the blob has already been caught.
   TransferBlobs() => ();
 
+  // Tells the renderer to update an extension's permission set.
+  UpdatePermissions(string extension_id,
+                    PermissionSet active_permissions,
+                    PermissionSet withheld_permissions,
+                    URLPatternSet policy_blocked_hosts,
+                    URLPatternSet policy_allowed_hosts,
+                    bool uses_default_policy_host_restrictions);
+
   // Tells the renderer to update an extension's policy_blocked_hosts set.
   UpdateDefaultPolicyHostRestrictions(
         URLPatternSet default_policy_blocked_hosts,

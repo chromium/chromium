@@ -10,7 +10,6 @@
 #include "extensions/common/permissions/permissions_info.h"
 #include "extensions/common/permissions/socket_permission.h"
 #include "extensions/common/permissions/socket_permission_data.h"
-#include "ipc/ipc_message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -261,48 +260,6 @@ TEST(SocketPermissionTest, Match) {
   param = std::make_unique<SocketPermission::CheckParam>(
       SocketPermissionRequest::TCP_CONNECT, "127.0.0.1", 8800);
   EXPECT_FALSE(data.Check(param.get()));
-}
-
-TEST(SocketPermissionTest, IPC) {
-  const APIPermissionInfo* permission_info =
-      PermissionsInfo::GetInstance()->GetByID(mojom::APIPermissionID::kSocket);
-
-  {
-    IPC::Message m;
-
-    std::unique_ptr<APIPermission> permission1(
-        permission_info->CreateAPIPermission());
-    std::unique_ptr<APIPermission> permission2(
-        permission_info->CreateAPIPermission());
-
-    permission1->Write(&m);
-    base::PickleIterator iter(m);
-    permission2->Read(&m, &iter);
-
-    EXPECT_TRUE(permission1->Equal(permission2.get()));
-  }
-
-  {
-    IPC::Message m;
-
-    std::unique_ptr<APIPermission> permission1(
-        permission_info->CreateAPIPermission());
-    std::unique_ptr<APIPermission> permission2(
-        permission_info->CreateAPIPermission());
-
-    std::unique_ptr<base::ListValue> value(new base::ListValue());
-    value->AppendString("tcp-connect:*.example.com:80");
-    value->AppendString("udp-bind::8080");
-    value->AppendString("udp-send-to::8888");
-    ASSERT_TRUE(permission1->FromValue(value.get(), NULL, NULL));
-
-    EXPECT_FALSE(permission1->Equal(permission2.get()));
-
-    permission1->Write(&m);
-    base::PickleIterator iter(m);
-    permission2->Read(&m, &iter);
-    EXPECT_TRUE(permission1->Equal(permission2.get()));
-  }
 }
 
 TEST(SocketPermissionTest, Value) {

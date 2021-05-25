@@ -141,7 +141,7 @@ bool PermissionSet::operator!=(const PermissionSet& rhs) const {
   return !(*this == rhs);
 }
 
-std::unique_ptr<const PermissionSet> PermissionSet::Clone() const {
+std::unique_ptr<PermissionSet> PermissionSet::Clone() const {
   return base::WrapUnique(new PermissionSet(*this));
 }
 

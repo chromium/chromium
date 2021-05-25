@@ -70,13 +70,6 @@ class SimpleAPIPermission : public APIPermission {
     return std::make_unique<SimpleAPIPermission>(info());
   }
 
-  void Write(base::Pickle* m) const override {}
-
-  bool Read(const base::Pickle* m, base::PickleIterator* iter) override {
-    return true;
-  }
-
-  void Log(std::string* log) const override {}
 };
 
 }  // namespace

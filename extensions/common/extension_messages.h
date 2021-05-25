@@ -34,7 +34,6 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
-#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
@@ -42,12 +41,9 @@
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
-#include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/socket_permission_data.h"
 #include "extensions/common/permissions/usb_device_permission_data.h"
 #include "extensions/common/stack_frame.h"
-#include "extensions/common/url_pattern.h"
-#include "extensions/common/url_pattern_set.h"
 #include "extensions/common/user_script.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_message_start.h"
@@ -294,26 +290,6 @@ IPC_STRUCT_END()
 // Map of extensions IDs to the executing script paths.
 typedef std::map<std::string, std::set<std::string> > ExecutingScriptsMap;
 
-struct ExtensionMsg_PermissionSetStruct {
-  ExtensionMsg_PermissionSetStruct();
-  explicit ExtensionMsg_PermissionSetStruct(
-      const extensions::PermissionSet& permissions);
-  ~ExtensionMsg_PermissionSetStruct();
-
-  ExtensionMsg_PermissionSetStruct(ExtensionMsg_PermissionSetStruct&& other);
-  ExtensionMsg_PermissionSetStruct& operator=(
-      ExtensionMsg_PermissionSetStruct&& other);
-
-  std::unique_ptr<const extensions::PermissionSet> ToPermissionSet() const;
-
-  extensions::APIPermissionSet apis;
-  extensions::ManifestPermissionSet manifest_permissions;
-  extensions::URLPatternSet explicit_hosts;
-  extensions::URLPatternSet scriptable_hosts;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMsg_PermissionSetStruct);
-};
-
 struct ExtensionHostMsg_AutomationQuerySelector_Error {
   enum Value { kNone, kNoDocument, kNodeDestroyed };
 
@@ -321,69 +297,6 @@ struct ExtensionHostMsg_AutomationQuerySelector_Error {
 
   Value value;
 };
-
-namespace IPC {
-
-template <>
-struct ParamTraits<URLPattern> {
-  typedef URLPattern param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* p);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct ParamTraits<extensions::URLPatternSet> {
-  typedef extensions::URLPatternSet param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* p);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct ParamTraits<extensions::mojom::APIPermissionID> {
-  typedef extensions::mojom::APIPermissionID param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* p);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct ParamTraits<extensions::APIPermissionSet> {
-  typedef extensions::APIPermissionSet param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct ParamTraits<extensions::ManifestPermissionSet> {
-  typedef extensions::ManifestPermissionSet param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct ParamTraits<ExtensionMsg_PermissionSetStruct> {
-  typedef ExtensionMsg_PermissionSetStruct param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* p);
-  static void Log(const param_type& p, std::string* l);
-};
-}  // namespace IPC
 
 #endif  // INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
 
@@ -394,16 +307,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(
 IPC_STRUCT_TRAITS_BEGIN(ExtensionHostMsg_AutomationQuerySelector_Error)
 IPC_STRUCT_TRAITS_MEMBER(value)
 IPC_STRUCT_TRAITS_END()
-
-// Parameters structure for ExtensionMsg_UpdatePermissions.
-IPC_STRUCT_BEGIN(ExtensionMsg_UpdatePermissions_Params)
-  IPC_STRUCT_MEMBER(std::string, extension_id)
-  IPC_STRUCT_MEMBER(ExtensionMsg_PermissionSetStruct, active_permissions)
-  IPC_STRUCT_MEMBER(ExtensionMsg_PermissionSetStruct, withheld_permissions)
-  IPC_STRUCT_MEMBER(extensions::URLPatternSet, policy_blocked_hosts)
-  IPC_STRUCT_MEMBER(extensions::URLPatternSet, policy_allowed_hosts)
-  IPC_STRUCT_MEMBER(bool, uses_default_policy_host_restrictions)
-IPC_STRUCT_END()
 
 // Messages sent from the browser to the renderer:
 
@@ -417,10 +320,6 @@ IPC_MESSAGE_CONTROL2(ExtensionMsg_DispatchEvent,
 // Tell the render view which browser window it's being attached to.
 IPC_MESSAGE_ROUTED1(ExtensionMsg_UpdateBrowserWindowId,
                     int /* id of browser window */)
-
-// Tell the renderer to update an extension's permission set.
-IPC_MESSAGE_CONTROL1(ExtensionMsg_UpdatePermissions,
-                     ExtensionMsg_UpdatePermissions_Params)
 
 // The browser's response to the ExtensionMsg_WakeEventPage IPC.
 IPC_MESSAGE_CONTROL2(ExtensionMsg_WakeEventPageResponse,
