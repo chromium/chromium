@@ -5,7 +5,8 @@
         box-sizing: border-box;
         display: block;
         left: 0;
-        min-height: calc(100vh - var(--cr-toolbar-height));
+        min-height: calc(100vh - var(--cr-toolbar-height) -
+            var(--cr-toolbar-padding-top, 0px));
         padding-bottom: 60px;
         position: absolute;
         right: 0;
