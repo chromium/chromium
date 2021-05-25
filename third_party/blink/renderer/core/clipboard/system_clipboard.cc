@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/system/platform_handle.h"

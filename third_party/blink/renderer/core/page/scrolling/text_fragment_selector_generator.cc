@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector_generator.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/default_tick_clock.h"

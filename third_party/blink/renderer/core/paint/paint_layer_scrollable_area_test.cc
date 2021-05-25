@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 
 #include "build/build_config.h"
+#include "cc/layers/picture_layer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"

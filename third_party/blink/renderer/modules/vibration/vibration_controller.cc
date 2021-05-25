@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/modules/vibration/vibration_controller.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"

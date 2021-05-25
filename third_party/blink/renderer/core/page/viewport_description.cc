@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
