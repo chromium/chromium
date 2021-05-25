@@ -9,6 +9,8 @@
 
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/input_method/grammar_service_client.h"
+#include "chrome/browser/chromeos/input_method/suggestion_handler_interface.h"
+#include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/events/event.h"
 
@@ -19,8 +21,9 @@ namespace chromeos {
 // accept or dismiss the suggestions.
 class GrammarManager {
  public:
-  explicit GrammarManager(Profile* profile,
-                          std::unique_ptr<GrammarServiceClient> grammar_client);
+  GrammarManager(Profile* profile,
+                 std::unique_ptr<GrammarServiceClient> grammar_client,
+                 SuggestionHandlerInterface* suggestion_handler);
   GrammarManager(const GrammarManager&) = delete;
   GrammarManager& operator=(const GrammarManager&) = delete;
   ~GrammarManager();
@@ -49,11 +52,22 @@ class GrammarManager {
       bool success,
       const std::vector<ui::GrammarFragment>& results) const;
 
+  void DismissSuggestion();
+
+  void AcceptSuggestion();
+
+  void SetButtonHighlighted(const ui::ime::AssistiveWindowButton& button);
+
   Profile* profile_;
   std::unique_ptr<GrammarServiceClient> grammar_client_;
+  SuggestionHandlerInterface* suggestion_handler_;
   int context_id_ = 0;
   std::u16string last_text_;
   base::OneShotTimer delay_timer_;
+  ui::GrammarFragment current_fragment_;
+  const ui::ime::AssistiveWindowButton suggestion_button_;
+  bool suggestion_shown_ = false;
+  bool suggestion_highlighted_ = false;
 };
 
 }  // namespace chromeos

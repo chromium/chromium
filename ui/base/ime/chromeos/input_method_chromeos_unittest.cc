@@ -1339,4 +1339,16 @@ TEST_F(InputMethodChromeOSTest, AddsAndClearsGrammarFragments) {
   EXPECT_EQ(get_grammar_fragments().size(), 0u);
 }
 
+TEST_F(InputMethodChromeOSTest, GetsGrammarFragments) {
+  input_type_ = TEXT_INPUT_TYPE_TEXT;
+  GrammarFragment fragment(gfx::Range(0, 5), "fake");
+  ime_->AddGrammarFragments({fragment});
+
+  EXPECT_EQ(ime_->GetGrammarFragment(gfx::Range(3, 3)), fragment);
+  EXPECT_EQ(ime_->GetGrammarFragment(gfx::Range(2, 4)), fragment);
+
+  EXPECT_EQ(ime_->GetGrammarFragment(gfx::Range(7, 7)), absl::nullopt);
+  EXPECT_EQ(ime_->GetGrammarFragment(gfx::Range(4, 7)), absl::nullopt);
+}
+
 }  // namespace ui

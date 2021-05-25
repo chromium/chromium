@@ -47,6 +47,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEInputContextHandlerInterface {
   virtual gfx::Rect GetAutocorrectCharacterBounds() = 0;
   // Sets the autocorrect range to be `range`.
   virtual bool SetAutocorrectRange(const gfx::Range& range) = 0;
+  virtual absl::optional<GrammarFragment> GetGrammarFragment(
+      const gfx::Range& range) = 0;
   virtual bool ClearGrammarFragments(const gfx::Range& range) = 0;
   virtual bool AddGrammarFragments(
       const std::vector<GrammarFragment>& fragements) = 0;

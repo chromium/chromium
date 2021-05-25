@@ -177,6 +177,16 @@ bool DummyTextInputClient::SetAutocorrectRange(
   return true;
 }
 
+absl::optional<GrammarFragment> DummyTextInputClient::GetGrammarFragment(
+    const gfx::Range& range) {
+  for (const auto& fragment : grammar_fragments_) {
+    if (fragment.range.Contains(range)) {
+      return fragment;
+    }
+  }
+  return absl::nullopt;
+}
+
 bool DummyTextInputClient::ClearGrammarFragments(const gfx::Range& range) {
   grammar_fragments_.clear();
   return true;

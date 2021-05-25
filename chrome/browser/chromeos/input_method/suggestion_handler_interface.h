@@ -16,6 +16,8 @@ struct SuggestionDetails;
 
 namespace chromeos {
 
+struct AssistiveWindowProperties;
+
 // An interface to handler suggestion related calls from assistive suggester.
 class SuggestionHandlerInterface {
  public:

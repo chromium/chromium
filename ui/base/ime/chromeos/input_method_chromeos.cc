@@ -430,6 +430,13 @@ bool InputMethodChromeOS::SetAutocorrectRange(const gfx::Range& range) {
   }
 }
 
+absl::optional<GrammarFragment> InputMethodChromeOS::GetGrammarFragment(
+    const gfx::Range& range) {
+  if (IsTextInputTypeNone())
+    return absl::nullopt;
+  return GetTextInputClient()->GetGrammarFragment(range);
+}
+
 bool InputMethodChromeOS::ClearGrammarFragments(const gfx::Range& range) {
   if (IsTextInputTypeNone())
     return false;

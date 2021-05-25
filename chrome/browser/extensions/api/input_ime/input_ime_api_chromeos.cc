@@ -147,6 +147,7 @@ input_ime::AssistiveWindowType ConvertAssistiveWindowType(
     case ui::ime::AssistiveWindowType::kNone:
     case ui::ime::AssistiveWindowType::kEmojiSuggestion:
     case ui::ime::AssistiveWindowType::kPersonalInfoSuggestion:
+    case ui::ime::AssistiveWindowType::kGrammarSuggestion:
       return input_ime::AssistiveWindowType::ASSISTIVE_WINDOW_TYPE_NONE;
     case ui::ime::AssistiveWindowType::kUndoWindow:
       return input_ime::AssistiveWindowType::ASSISTIVE_WINDOW_TYPE_UNDO;

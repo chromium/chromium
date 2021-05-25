@@ -69,6 +69,16 @@ bool MockIMEInputContextHandler::SetAutocorrectRange(const gfx::Range& range) {
   return true;
 }
 
+absl::optional<GrammarFragment> MockIMEInputContextHandler::GetGrammarFragment(
+    const gfx::Range& range) {
+  for (const auto& fragment : grammar_fragments_) {
+    if (fragment.range.Contains(range)) {
+      return fragment;
+    }
+  }
+  return absl::nullopt;
+}
+
 bool MockIMEInputContextHandler::ClearGrammarFragments(
     const gfx::Range& range) {
   grammar_fragments_.clear();

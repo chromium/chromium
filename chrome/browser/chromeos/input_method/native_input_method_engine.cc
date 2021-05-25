@@ -191,7 +191,7 @@ void NativeInputMethodEngine::Initialize(
           std::move(assistive_suggester), std::move(autocorrect_manager),
           std::move(suggestions_collector),
           std::make_unique<GrammarManager>(
-              profile, std::make_unique<GrammarServiceClient>()));
+              profile, std::make_unique<GrammarServiceClient>(), this));
   InputMethodEngine::Initialize(std::move(native_observer), extension_id,
                                 profile);
 }

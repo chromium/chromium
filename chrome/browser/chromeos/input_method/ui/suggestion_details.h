@@ -16,6 +16,12 @@ struct SuggestionDetails {
   size_t confirmed_length = 0;
   bool show_annotation = false;
   bool show_setting_link = false;
+
+  bool operator==(const SuggestionDetails& other) const {
+    return text == other.text && confirmed_length == other.confirmed_length &&
+           show_annotation == other.show_annotation &&
+           show_setting_link == other.show_setting_link;
+  }
 };
 
 }  // namespace ime
