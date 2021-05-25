@@ -462,6 +462,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @FlakyTest(message = "https://crbug.com/1169673")
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_FromResumeShowStart() throws Exception {
