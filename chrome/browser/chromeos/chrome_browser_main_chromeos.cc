@@ -88,6 +88,7 @@
 #include "chrome/browser/chromeos/dbus/component_updater_service_provider.h"
 #include "chrome/browser/chromeos/dbus/cryptohome_key_delegate_service_provider.h"
 #include "chrome/browser/chromeos/dbus/dbus_helper.h"
+#include "chrome/browser/chromeos/dbus/dlp_files_policy_service_provider.h"
 #include "chrome/browser/chromeos/dbus/drive_file_stream_service_provider.h"
 #include "chrome/browser/chromeos/dbus/encrypted_reporting_service_provider.h"
 #include "chrome/browser/chromeos/dbus/kiosk_info_service_provider.h"
@@ -402,6 +403,12 @@ class DBusServices {
         CrosDBusService::CreateServiceProviderList(
             std::make_unique<MojoConnectionServiceProvider>()));
 
+    dlp_files_policy_service_ = CrosDBusService::Create(
+        system_bus, dlp::kDlpFilesPolicyServiceName,
+        dbus::ObjectPath(dlp::kDlpFilesPolicyServicePath),
+        CrosDBusService::CreateServiceProviderList(
+            std::make_unique<DlpFilesPolicyServiceProvider>()));
+
     if (arc::IsArcVmEnabled()) {
       libvda_service_ = CrosDBusService::Create(
           system_bus, libvda::kLibvdaServiceName,
@@ -497,6 +504,7 @@ class DBusServices {
   std::unique_ptr<CrosDBusService> smb_fs_service_;
   std::unique_ptr<CrosDBusService> lock_to_single_user_service_;
   std::unique_ptr<CrosDBusService> mojo_connection_service_;
+  std::unique_ptr<CrosDBusService> dlp_files_policy_service_;
 
   DISALLOW_COPY_AND_ASSIGN(DBusServices);
 };
