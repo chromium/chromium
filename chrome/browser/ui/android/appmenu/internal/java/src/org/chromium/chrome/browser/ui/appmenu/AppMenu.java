@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewStub;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -64,6 +65,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     private final int mVerticalFadeDistance;
     private final int mNegativeSoftwareVerticalOffset;
     private final int mNegativeVerticalOffsetNotTopAnchored;
+    private final int mChipHighlightExtension;
     private final int[] mTempLocation;
     private final boolean mIconBeforeItem;
 
@@ -101,6 +103,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         mVerticalFadeDistance = res.getDimensionPixelSize(R.dimen.menu_vertical_fade_distance);
         mNegativeVerticalOffsetNotTopAnchored =
                 res.getDimensionPixelSize(R.dimen.menu_negative_vertical_offset_not_top_anchored);
+        mChipHighlightExtension =
+                res.getDimensionPixelOffset(R.dimen.menu_chip_highlight_extension);
 
         mTempLocation = new int[2];
 
@@ -269,11 +273,18 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         if (highlightedItemId != null) {
             View viewToHighlight = contentView.findViewById(highlightedItemId);
             HighlightParams highlightParams = new HighlightParams(HighlightShape.RECTANGLE);
-            // TODO(crbug.com/1152592): ChipView highlighting should be larger than the actual chip.
-            // Currently, the highlighting is constrained to within the chip.
             if (viewToHighlight instanceof ChipView) {
                 ChipView chipViewToHighlight = (ChipView) viewToHighlight;
                 highlightParams.setCornerRadius(chipViewToHighlight.getCornerRadius());
+                highlightParams.setHighlightExtension(mChipHighlightExtension);
+                // Set clip children and padding should be false to prevent the highlight from
+                // getting clipped.
+                ViewParent chipViewParent = chipViewToHighlight.getParent();
+                if (chipViewParent instanceof ViewGroup) {
+                    ViewGroup parentViewGroup = (ViewGroup) chipViewParent;
+                    parentViewGroup.setClipToPadding(false);
+                    parentViewGroup.setClipChildren(false);
+                }
             }
             ViewHighlighter.turnOnHighlight(viewToHighlight, highlightParams);
         }

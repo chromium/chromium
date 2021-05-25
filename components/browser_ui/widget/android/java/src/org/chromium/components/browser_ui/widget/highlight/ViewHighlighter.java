@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.widget.highlight;
 
-import static org.chromium.components.browser_ui.widget.highlight.PulseDrawable.createCircle;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -76,6 +74,9 @@ public class ViewHighlighter {
         // The corner radius od rectangle in pixels. Used to created a rounded rectangle.
         @Px
         private int mCornerRadius;
+        // How far the highlight should extend past the bounds of the view.
+        @Px
+        private int mHighlightExtension;
 
         public HighlightParams(HighlightShape shape) {
             mShape = shape;
@@ -87,7 +88,7 @@ public class ViewHighlighter {
         }
 
         /**
-         * @@param respectPadding whether the highlight should respect the view's padding or be
+         * @param respectPadding whether the highlight should respect the view's padding or be
          * centered in its bounding box
          */
         public void setBoundsRespectPadding(boolean respectPadding) {
@@ -129,6 +130,22 @@ public class ViewHighlighter {
         /** @return value in pixels of a corner radius of a rounded rectangle highlight */
         public @Px int getCornerRadius() {
             return mCornerRadius;
+        }
+
+        /**
+         * @param highlightExtension How far the highlight should be extended past the bounds of the
+         *        view.
+         */
+        public void setHighlightExtension(@Px int highlightExtension) {
+            mHighlightExtension = highlightExtension;
+        }
+
+        /**
+         * @return Value in pixels of how far the highlight should extend past the bounds of the
+         *         view.
+         */
+        public @Px int getHighlightExtension() {
+            return mHighlightExtension;
         }
 
         /** @param num set if drawable should pulse only a certain number of times */
@@ -187,8 +204,9 @@ public class ViewHighlighter {
             drawable = createCircle(view, params.getNumPulses(), params.getBoundsRespectPadding(),
                     params.getCircleRadius());
         } else {
-            drawable = createRectangle(view, params.getNumPulses(),
-                    params.getBoundsRespectPadding(), params.getCornerRadius());
+            drawable =
+                    createRectangle(view, params.getNumPulses(), params.getBoundsRespectPadding(),
+                            params.getCornerRadius(), params.getHighlightExtension());
         }
         attachViewAsHighlight(view, drawable);
     }
@@ -241,16 +259,17 @@ public class ViewHighlighter {
     /**
      * Helper method to create a rectangular drawable from the values of {@code HighlightParams}.
      */
-    private static PulseDrawable createRectangle(
-            View view, int numPulses, boolean boundsRespectPadding, @Px int cornerRadius) {
+    private static PulseDrawable createRectangle(View view, int numPulses,
+            boolean boundsRespectPadding, @Px int cornerRadius, @Px int highlightExtension) {
         PulseDrawable drawable = null;
         Context context = view.getContext();
 
         if (numPulses != 0) {
             drawable = PulseDrawable.createRoundedRectangle(
-                    context, cornerRadius, new NumberPulser(view, numPulses));
+                    context, cornerRadius, highlightExtension, new NumberPulser(view, numPulses));
         } else {
-            drawable = PulseDrawable.createRoundedRectangle(context, cornerRadius);
+            drawable =
+                    PulseDrawable.createRoundedRectangle(context, cornerRadius, highlightExtension);
         }
 
         if (boundsRespectPadding) {
