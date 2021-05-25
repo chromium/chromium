@@ -58,6 +58,10 @@ public class MessageWrapperTest {
         Assert.assertEquals("Description doesn't match provided value", "Description",
                 messageProperties.get(MessageBannerProperties.DESCRIPTION));
 
+        message.setDescriptionMaxLines(2);
+        Assert.assertEquals("Description max lines doesn't match provided value", 2,
+                messageProperties.get(MessageBannerProperties.DESCRIPTION_MAX_LINES));
+
         message.setPrimaryButtonText("Primary button");
         Assert.assertEquals("Button text doesn't match provided value", "Primary button",
                 messageProperties.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));

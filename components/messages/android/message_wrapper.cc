@@ -56,6 +56,17 @@ void MessageWrapper::SetDescription(const std::u16string& description) {
   Java_MessageWrapper_setDescription(env, java_message_wrapper_, jdescription);
 }
 
+int MessageWrapper::GetDescriptionMaxLines() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_MessageWrapper_getDescriptionMaxLines(env, java_message_wrapper_);
+}
+
+void MessageWrapper::SetDescriptionMaxLines(int max_lines) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessageWrapper_setDescriptionMaxLines(env, java_message_wrapper_,
+                                             max_lines);
+}
+
 std::u16string MessageWrapper::GetPrimaryButtonText() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jprimary_button_text =

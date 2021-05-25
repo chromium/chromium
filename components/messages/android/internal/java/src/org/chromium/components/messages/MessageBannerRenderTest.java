@@ -129,4 +129,28 @@ public class MessageBannerRenderTest extends DummyUiActivityTestCase {
                 () -> { getActivity().setContentView(view, params); });
         mRenderTestRule.render(view, "message_banner_basic_with_spannable_description");
     }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "Messages"})
+    public void testBasic_multilineDescriptionMaxLines() throws Exception {
+        Activity activity = getActivity();
+        final String multilineDescription = "Line 1\nLine 2\nLine 3\nLine 4";
+        PropertyModel model =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.TITLE, "Primary Title")
+                        .with(MessageBannerProperties.DESCRIPTION, multilineDescription)
+                        .with(MessageBannerProperties.DESCRIPTION_MAX_LINES, 2)
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
+                        .build();
+        MessageBannerView view = (MessageBannerView) LayoutInflater.from(activity).inflate(
+                R.layout.message_banner_view, null, false);
+        PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
+        LayoutParams params =
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { getActivity().setContentView(view, params); });
+        mRenderTestRule.render(view, "message_banner_basic_with_multiline_description");
+    }
 }
