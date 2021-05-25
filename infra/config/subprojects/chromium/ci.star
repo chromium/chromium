@@ -1995,6 +1995,7 @@ ci.cipd_builder(
     executable = "recipe:android/avd_packager",
     schedule = "0 7 * * 0 *",
     triggered_by = [],
+    os = os.LINUX_BIONIC_REMOVE,
     properties = {
         "avd_configs": [
             "tools/android/avd/proto/creation/generic_android23.textpb",
