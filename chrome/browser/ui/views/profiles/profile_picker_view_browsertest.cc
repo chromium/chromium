@@ -356,6 +356,9 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
         path, base::BindLambdaForTesting(
                   [&run_loop](Profile* profile, Profile::CreateStatus status) {
                     if (status == Profile::CREATE_STATUS_INITIALIZED) {
+                      // Avoid showing the welcome page.
+                      profile->GetPrefs()->SetBoolean(
+                          prefs::kHasSeenWelcomePage, true);
                       run_loop.Quit();
                     }
                   }));
