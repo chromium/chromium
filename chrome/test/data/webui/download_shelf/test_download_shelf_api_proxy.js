@@ -12,6 +12,7 @@ export class TestDownloadShelfApiProxy extends TestBrowserProxy {
       'doClose',
       'getDownloads',
       'getFileIcon',
+      'openDownload',
       'showContextMenu',
     ]);
 
@@ -46,6 +47,11 @@ export class TestDownloadShelfApiProxy extends TestBrowserProxy {
   /** @override */
   showContextMenu(downloadId, clientX, clientY) {
     this.methodCalled('showContextMenu', [downloadId, clientX, clientY]);
+  }
+
+  /** @override */
+  openDownload(downloadId) {
+    this.methodCalled('openDownload', [downloadId]);
   }
 
   /** @override */

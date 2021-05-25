@@ -31,6 +31,7 @@ class TestDownloadShelfHandler : public DownloadShelfHandler {
                     int32_t client_y,
                     double timestamp));
   MOCK_METHOD1(DoShowDownload, void(DownloadUIModel*));
+  MOCK_METHOD1(OnDownloadOpened, void(uint32_t download_id));
   MOCK_METHOD1(OnDownloadUpdated, void(DownloadUIModel*));
   MOCK_METHOD1(OnDownloadErased, void(uint32_t download_id));
 };

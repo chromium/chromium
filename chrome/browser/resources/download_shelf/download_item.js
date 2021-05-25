@@ -38,9 +38,17 @@ export class DownloadItemElement extends CustomElement {
     /** @private {DownloadItem} */
     this.item_;
 
+    /** @private {boolean} */
+    this.opening_ = false;
+
+    /** @property {boolean} */
+    this.opened = false;
+
     /** @private {!DownloadShelfApiProxy} */
     this.apiProxy_ = DownloadShelfApiProxyImpl.getInstance();
 
+    this.$('#shadow-mask')
+        .addEventListener('click', e => this.onOpenButtonClick_(e));
     this.$('#dropdown-button')
         .addEventListener('click', e => this.onDropdownButtonClick_(e));
     this.$('#discard-button')
@@ -84,6 +92,14 @@ export class DownloadItemElement extends CustomElement {
         filename, this.elideFilename_(filename, maxFilenameLength));
   }
 
+  /** @param {boolean} value */
+  set opening(value) {
+    if (this.opening_ !== value) {
+      this.opening_ = value;
+      this.update_();
+    }
+  }
+
   /** @private */
   update_() {
     const item = this.item_;
@@ -92,8 +108,11 @@ export class DownloadItemElement extends CustomElement {
     }
     const downloadElement = this.$('.download-item');
     const filePath = item.fileNameDisplayString;
-    this.$('#filename').innerText =
-        filePath.substring(filePath.lastIndexOf('/') + 1);
+    let fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+    if (this.opening_) {
+      fileName = loadTimeData.getStringF('downloadStatusOpeningText', fileName);
+    }
+    this.$('#filename').innerText = fileName;
 
     const statusTextElement = this.$('#status-text');
     const statusText = (!item.shouldPromoteOrigin || !item.originalUrl.url) ?
@@ -188,6 +207,18 @@ export class DownloadItemElement extends CustomElement {
     } else {
       const subfix = '...' + s.substr(extIndex);
       return s.substr(0, maxlen - subfix.length) + subfix;
+    }
+  }
+
+  /** @param {!Event} e */
+  onOpenButtonClick_(e) {
+    if (this.opening_) {
+      return;
+    }
+    if (this.item_.mode === DownloadMode.kNormal) {
+      this.apiProxy_.openDownload(this.item.id);
+    } else {
+      // TODO(crbug.com/1182529): Handle the scanning case.
     }
   }
 }

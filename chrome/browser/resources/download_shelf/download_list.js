@@ -10,6 +10,7 @@ import './download_item.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
+import {listenOnce} from 'chrome://resources/js/util.m.js';
 
 import {DownloadItem} from './download_shelf.mojom-webui.js';
 import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from './download_shelf_api_proxy.js';
@@ -69,9 +70,7 @@ export class DownloadListElement extends CustomElement {
           this.updateElements_();
           this.recordDownloadPaintTime_(
               downloadItem.showDownloadStartTime, false);
-        }));
-
-    this.listenerIds_.push(
+        }),
         callbackRouter.onDownloadUpdated.addListener((downloadItem) => {
           const index =
               this.items_.findIndex(item => item.id === downloadItem.id);
@@ -79,14 +78,24 @@ export class DownloadListElement extends CustomElement {
             this.items_[index] = downloadItem;
             this.updateElements_();
           }
-        }));
-
-    this.listenerIds_.push(
+        }),
         callbackRouter.onDownloadErased.addListener((downloadId) => {
           const index = this.items_.findIndex(item => item.id === downloadId);
           if (index >= 0) {
             this.items_.splice(index, 1);
             this.updateElements_();
+          }
+        }),
+        callbackRouter.onDownloadOpened.addListener((downloadId) => {
+          const element =
+              this.elements_.find(element => element.item.id === downloadId);
+          if (element) {
+            element.opening = true;
+            element.opened = true;
+            setTimeout(() => {
+              element.opening = false;
+            }, 3000);
+            this.autoClose_();
           }
         }));
   }
@@ -187,6 +196,23 @@ export class DownloadListElement extends CustomElement {
         this.listElement_.removeChild(downloadElement);
       }
       this.elements_.splice(itemCount, elementCount - itemCount);
+    }
+  }
+
+  /**
+   * If all items are opened, automatically close the download shelf
+   * when the mouse leaves the download shelf after some delay.
+   * @private
+   */
+  autoClose_() {
+    if (this.elements_.every(element => element.opened)) {
+      listenOnce(this, 'mouseleave', () => {
+        setTimeout(() => {
+          if (this.elements_.every(element => element.opened)) {
+            this.apiProxy_.doClose();
+          }
+        }, 5000);
+      });
     }
   }
 }

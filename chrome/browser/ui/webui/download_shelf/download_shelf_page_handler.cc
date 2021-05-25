@@ -64,8 +64,16 @@ void DownloadShelfPageHandler::ShowContextMenu(uint32_t download_id,
           start_time));
 }
 
+void DownloadShelfPageHandler::OpenDownload(uint32_t download_id) {
+  download_shelf_ui_->OpenDownload(download_id);
+}
+
 void DownloadShelfPageHandler::DoShowDownload(DownloadUIModel* download_model) {
   page_->OnNewDownload(GetDownloadItemFromUIModel(download_model));
+}
+
+void DownloadShelfPageHandler::OnDownloadOpened(uint32_t download_id) {
+  page_->OnDownloadOpened(download_id);
 }
 
 void DownloadShelfPageHandler::OnDownloadUpdated(

@@ -27,6 +27,8 @@ class DownloadShelfHandler {
   // Notify the WebUI to show a new download.
   virtual void DoShowDownload(DownloadUIModel* download_model) = 0;
 
+  virtual void OnDownloadOpened(uint32_t download_id) = 0;
+
   virtual void OnDownloadUpdated(DownloadUIModel* download_model) = 0;
 
   virtual void OnDownloadErased(uint32_t download_id) = 0;
