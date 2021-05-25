@@ -122,11 +122,17 @@ constexpr char kExpiredDownloadDeleteTimeFinchKey[] =
 constexpr char kOverwrittenDownloadDeleteTimeFinchKey[] =
     "overwritten_download_delete_days";
 
+// Finch parameter key value for the buffer size to write to the download file.
+constexpr char kDownloadFileBufferSizeFinchKey[] = "download_file_buffer_size";
+
 // Returns the time to delete expired downloads.
 COMPONENTS_DOWNLOAD_EXPORT base::TimeDelta GetExpiredDownloadDeleteTime();
 
 // Returns the time in days to delete download that is overwritten by others.
 COMPONENTS_DOWNLOAD_EXPORT base::TimeDelta GetOverwrittenDownloadDeleteTime();
+
+// Returns the size of the file buffer that reads data from the data pipe.
+COMPONENTS_DOWNLOAD_EXPORT int GetDownloadFileBufferSize();
 }  // namespace download
 
 #endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_UTILS_H_

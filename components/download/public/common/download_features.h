@@ -72,6 +72,10 @@ COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature kDeleteExpiredDownloads;
 COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
     kDeleteOverwrittenDownloads;
 
+// Whether to allow changing the size of file buffer.
+COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
+    kAllowFileBufferSizeControl;
+
 }  // namespace features
 
 namespace switches {
