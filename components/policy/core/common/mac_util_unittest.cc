@@ -42,7 +42,7 @@ TEST(PolicyMacUtilTest, PropertyToValue) {
   base::ListValue list;
   for (base::DictionaryValue::Iterator it(root); !it.IsAtEnd(); it.Advance())
     list.Append(std::make_unique<base::Value>(it.value().Clone()));
-  EXPECT_EQ(root.size(), list.GetSize());
+  EXPECT_EQ(root.DictSize(), list.GetSize());
   list.Append(std::make_unique<base::Value>(root.Clone()));
   root.SetKey("list", list.Clone());
 

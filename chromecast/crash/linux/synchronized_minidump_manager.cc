@@ -126,7 +126,7 @@ bool ValidateMetadata(base::Value* metadata) {
   base::DictionaryValue* ratelimit_params = GetRatelimitParams(metadata);
 
   return ratelimit_params &&
-         ratelimit_params->size() == kLockfileNumRatelimitParams &&
+         ratelimit_params->DictSize() == kLockfileNumRatelimitParams &&
          !GetRatelimitPeriodStart(metadata).is_null() &&
          GetRatelimitPeriodDumps(metadata) >= 0;
 }

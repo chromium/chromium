@@ -157,7 +157,7 @@ bool DumpInfo::ParseEntry(const base::Value* entry) {
     ++num_params;
 
   // Disallow extraneous params
-  if (dict->size() != num_params)
+  if (dict->DictSize() != num_params)
     return false;
 
   valid_ = true;
