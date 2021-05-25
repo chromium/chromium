@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/components/diagnostics_ui/backend/log_test_helpers.h"
 #include "chromeos/components/diagnostics_ui/backend/routine_log.h"
@@ -211,7 +212,7 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   base::ListValue args;
   args.Append(kHandlerFunctionName);
   web_ui_.HandleReceivedMessage("saveSessionLog", &args);
-
+  task_environment_.RunUntilIdle();
   const std::string expected_telemetry_log_header = "=== Telemetry Log ===";
   const std::string expected_system_info_section_name = "--- System Info ---";
   const std::string expected_snapshot_time_prefix = "Snapshot Time: ";
@@ -258,6 +259,7 @@ TEST_F(SessionLogHandlerTest, SelectDirectory) {
   base::ListValue args;
   args.Append(kHandlerFunctionName);
   web_ui_.HandleReceivedMessage("saveSessionLog", &args);
+  task_environment_.RunUntilIdle();
 
   EXPECT_EQ(call_data_count_before_call + 1u, web_ui_.call_data().size());
   const content::TestWebUI::CallData& call_data =

@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chromeos/components/diagnostics_ui/backend/routine_log.h"
 #include "chromeos/components/diagnostics_ui/backend/telemetry_log.h"
@@ -58,7 +59,15 @@ void SessionLogHandler::RegisterMessages() {
 void SessionLogHandler::FileSelected(const base::FilePath& path,
                                      int index,
                                      void* params) {
-  const bool success = CreateSessionLog(path);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&SessionLogHandler::CreateSessionLog,
+                     base::Unretained(this), std::move(path)),
+      base::BindOnce(&SessionLogHandler::OnSessionLogCreated,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void SessionLogHandler::OnSessionLogCreated(const bool success) {
   ResolveJavascriptCallback(base::Value(save_session_log_callback_id_),
                             base::Value(success));
   save_session_log_callback_id_ = "";

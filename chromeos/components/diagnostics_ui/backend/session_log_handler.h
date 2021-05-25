@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -52,6 +53,8 @@ class SessionLogHandler : public content::WebUIMessageHandler,
                     int index,
                     void* params) override;
 
+  void OnSessionLogCreated(const bool success);
+
   void FileSelectionCanceled(void* params) override;
 
   SessionLogHandler(const SessionLogHandler&) = delete;
@@ -79,6 +82,8 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   std::unique_ptr<RoutineLog> routine_log_;
   std::string save_session_log_callback_id_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+
+  base::WeakPtrFactory<SessionLogHandler> weak_factory_{this};
 };
 
 }  // namespace diagnostics
