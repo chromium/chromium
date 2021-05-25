@@ -164,28 +164,31 @@ suite('NetworkSiminfoTest', function() {
     const getSimLockButton = () => simInfo.$$('#simLockButton');
     const getSimLockButtonTooltip = () => simInfo.$$('#inActiveSimLockTooltip');
 
-    // Lock enabled and primary slot; change button should be visible and
-    // enabled.
+    // Lock enabled and primary slot; change button should be visible,
+    // enabled, and checked.
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ true, /*isLocked=*/ false);
     assertTrue(!!getChangePinButton());
     assertFalse(getSimLockButton().disabled);
+    assertTrue(getSimLockButton().checked);
     assertFalse(!!getSimLockButtonTooltip());
 
-    // Lock enabled and non-primary slot; change button should be visible and
-    // disabled.
+    // Lock enabled and non-primary slot; change button should be visible,
+    // disabled, and unchecked.
     updateDeviceState(
         /*isPrimary=*/ false, /*lockEnabled=*/ true, /*isLocked=*/ false);
     assertTrue(!!getChangePinButton());
     assertTrue(getSimLockButton().disabled);
+    assertFalse(getSimLockButton().checked);
     assertTrue(!!getSimLockButtonTooltip());
 
-    // SIM locked and non-primary slot; change button should be visible and
-    // disabled.
+    // SIM locked and non-primary slot; change button should be visible,
+    // disabled, and unchecked.
     updateDeviceState(
         /*isPrimary=*/ false, /*lockEnabled=*/ true, /*isLocked=*/ true);
     assertTrue(!!getChangePinButton());
     assertTrue(getSimLockButton().disabled);
+    assertFalse(getSimLockButton().checked);
     assertTrue(!!getSimLockButtonTooltip());
   });
 });
