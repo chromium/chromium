@@ -1956,9 +1956,6 @@ ci.cipd_3pp_builder(
     schedule = "with 6h interval",
     triggered_by = [],
     properties = {
-        # TODO(hypan): Remove this property after chromium_3pp is
-        # migrated to a recipe module (crrev.com/c/2870555)
-        "platform": "linux-amd64",
         "$build/chromium_3pp": {
             "platform": "linux-amd64",
             "preprocess": [{
