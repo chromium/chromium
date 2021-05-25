@@ -104,8 +104,8 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    render_thread_->Send(new ExtensionHostMsg_RemoveLazyListener(
-        context->GetExtensionID(), event_name));
+    GetEventRouter()->RemoveLazyListenerForMainThread(context->GetExtensionID(),
+                                                      event_name);
   }
 
   void SendAddFilteredEventListenerIPC(ScriptContext* context,

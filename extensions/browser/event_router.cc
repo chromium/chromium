@@ -317,6 +317,13 @@ void EventRouter::RemoveListenerForServiceWorker(
   }
 }
 
+void EventRouter::RemoveLazyListenerForMainThread(
+    const std::string& extension_id,
+    const std::string& event_name) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RemoveLazyEventListener(event_name, extension_id);
+}
+
 void EventRouter::AddEventListener(const std::string& event_name,
                                    RenderProcessHost* process,
                                    const std::string& extension_id) {

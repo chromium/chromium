@@ -166,6 +166,9 @@ class EventRouter : public KeyedService,
                                       int64_t service_worker_version_id,
                                       int32_t worker_thread_id) override;
 
+  void RemoveLazyListenerForMainThread(const std::string& extension_id,
+                                       const std::string& name) override;
+
   // Removes an extension as an event listener for |event_name|.
   //
   // Note that multiple extensions can share a process due to process
