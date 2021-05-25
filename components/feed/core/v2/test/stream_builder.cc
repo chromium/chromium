@@ -278,4 +278,42 @@ feedstore::WebFeedInfo MakeWebFeedInfo(const std::string& name) {
   return result;
 }
 
+feedwire::webfeed::WebFeed MakeWireWebFeed(const std::string& name) {
+  feedwire::webfeed::WebFeed result;
+  result.set_name("id_" + name);
+  result.set_title("Title " + name);
+  result.set_subtitle("Subtitle " + name);
+  result.set_detail_text("details...");
+  result.set_visit_uri("https://" + name + ".com");
+  result.set_follower_count(kFollowerCount);
+  *result.add_web_feed_matchers() = MakeDomainMatcher(name + ".com");
+  return result;
+}
+
+feedwire::webfeed::FollowWebFeedResponse SuccessfulFollowResponse(
+    const std::string& follow_name) {
+  feedwire::webfeed::FollowWebFeedResponse response;
+  *response.mutable_web_feed() = MakeWireWebFeed(follow_name);
+  return response;
+}
+
+feedwire::webfeed::UnfollowWebFeedResponse SuccessfulUnfollowResponse() {
+  return {};
+}
+
+WebFeedPageInformation MakeWebFeedPageInformation(const std::string& url) {
+  WebFeedPageInformation info;
+  info.SetUrl(GURL(url));
+  return info;
+}
+
+feedwire::webfeed::WebFeedMatcher MakeDomainMatcher(const std::string& domain) {
+  feedwire::webfeed::WebFeedMatcher result;
+  feedwire::webfeed::WebFeedMatcher::Criteria* criteria = result.add_criteria();
+  criteria->set_criteria_type(
+      feedwire::webfeed::WebFeedMatcher::Criteria::PAGE_URL_HOST_SUFFIX);
+  criteria->set_text(domain);
+  return result;
+}
+
 }  // namespace feed

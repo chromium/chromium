@@ -194,6 +194,10 @@ std::string TestSurfaceBase::DescribeUpdates() {
   return result;
 }
 
+std::string TestSurfaceBase::DescribeState() {
+  return described_updates_.empty() ? "" : described_updates_.back();
+}
+
 std::map<std::string, std::string> TestSurfaceBase::GetDataStoreEntries()
     const {
   return data_store_entries_;
@@ -613,9 +617,6 @@ void FeedApiTest::SetUp() {
   // `use_feed_query_requests_for_web_feeds` is a temporary option for
   // debugging, setting it to false tests the preferred endpoint.
   config.use_feed_query_requests_for_web_feeds = false;
-  // Disable refreshing the Web Feed stream after the for-you stream is loaded,
-  // to simplify tests unrelated to this feature.
-  config.refresh_web_feed_after_for_you_feed_loads = false;
   SetFeedConfigForTesting(config);
 
   feed::prefs::RegisterFeedSharedProfilePrefs(profile_prefs_.registry());
@@ -730,6 +731,15 @@ std::string FeedApiTest::DumpStoreState(bool print_keys) {
     ss << item.second << '\n';
   }
   return ss.str();
+}
+
+void FeedApiTest::FollowWebFeed(const WebFeedPageInformation page_info) {
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
+  network_.InjectResponse(SuccessfulFollowResponse(page_info.url().host()));
+  stream_->subscriptions().FollowWebFeed(page_info, callback.Bind());
+
+  EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
+            callback.RunAndGetResult().request_status);
 }
 
 void FeedApiTest::UploadActions(std::vector<feedwire::FeedAction> actions) {

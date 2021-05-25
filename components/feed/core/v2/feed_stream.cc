@@ -245,10 +245,10 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
 
   // When done loading the for-you feed, try to refresh the web-feed if there's
   // no unread content.
-  if (base::FeatureList::IsEnabled(kWebFeed) &&
-      GetFeedConfig().refresh_web_feed_after_for_you_feed_loads) {
+  if (base::FeatureList::IsEnabled(kWebFeed)) {
     if (result.stream_type.IsForYou()) {
-      if (!HasUnreadContent(kWebFeedStream)) {
+      if (!HasUnreadContent(kWebFeedStream) &&
+          subscriptions().IsWebFeedSubscriber()) {
         LoadStreamTask::Options options;
         options.load_type = LoadStreamTask::LoadType::kBackgroundRefresh;
         options.stream_type = kWebFeedStream;
@@ -582,7 +582,7 @@ void FeedStream::ForceRefreshForDebuggingTask() {
   if (base::FeatureList::IsEnabled(kWebFeed)) {
     UnloadModel(kWebFeedStream);
     store_->ClearStreamData(kWebFeedStream, base::DoNothing());
-    TriggerStreamLoad(kWebFeedStream);
+    // WebFeed is refreshed automatically after for-you.
   }
 }
 

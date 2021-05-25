@@ -11,6 +11,7 @@
 
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/types.h"
@@ -20,6 +21,7 @@ namespace feed {
 struct StreamModelUpdateRequest;
 
 extern base::Time kTestTimeEpoch;
+constexpr int64_t kFollowerCount = 123;
 
 ContentId MakeContentId(ContentId::Type type,
                         std::string content_domain,
@@ -92,7 +94,13 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
     StreamModelUpdateRequest::Source source =
         StreamModelUpdateRequest::Source::kNetworkLoadMore);
 
+feedwire::webfeed::WebFeed MakeWireWebFeed(const std::string& name);
 feedstore::WebFeedInfo MakeWebFeedInfo(const std::string& name);
+WebFeedPageInformation MakeWebFeedPageInformation(const std::string& url);
+feedwire::webfeed::FollowWebFeedResponse SuccessfulFollowResponse(
+    const std::string& follow_name);
+feedwire::webfeed::UnfollowWebFeedResponse SuccessfulUnfollowResponse();
+feedwire::webfeed::WebFeedMatcher MakeDomainMatcher(const std::string& domain);
 
 }  // namespace feed
 

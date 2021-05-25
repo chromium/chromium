@@ -80,9 +80,6 @@ struct Config {
   // Number of days of history to query when determining whether to show the
   // follow accelerator.
   int webfeed_accelerator_recent_visit_history_days = 14;
-  // After loading the for-you feed, should the web-feed be refreshed as well?
-  // This is true except for testing.
-  bool refresh_web_feed_after_for_you_feed_loads = true;
 
   // Configuration for `PersistentKeyValueStore`.
 
