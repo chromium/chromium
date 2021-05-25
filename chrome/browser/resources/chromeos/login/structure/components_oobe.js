@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+
 // <include src="../components/oobe_i18n_dropdown.js">
 
 // <include src="../screens/oobe/hid_detection.js">
