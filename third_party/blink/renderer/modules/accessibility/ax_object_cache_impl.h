@@ -289,6 +289,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   void GetAriaOwnedChildren(const AXObject* owner,
                             HeapVector<Member<AXObject>>& owned_children);
 
+  // Given a <map> element, get the image currently associated with it, if any.
+  AXObject* GetAXImageForMap(HTMLMapElement& map);
+
   // Adds |object| to |fixed_or_sticky_node_ids_| if it has a fixed or sticky
   // position.
   void AddToFixedOrStickyNodeList(const AXObject* object);
@@ -375,9 +378,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* CreateFromNode(Node*);
   AXObject* CreateFromInlineTextBox(AbstractInlineTextBox*);
   void Remove(AXID);
-
-  // Given a <map> element, get the image currently associated with it, if any.
-  AXObject* GetAXImageForMap(HTMLMapElement& map);
 
  private:
   struct AXEventParams final : public GarbageCollected<AXEventParams> {

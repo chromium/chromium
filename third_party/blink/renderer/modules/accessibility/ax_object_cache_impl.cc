@@ -290,6 +290,12 @@ bool IsTextRelevantForAccessibility(const LayoutText& layout_text) {
 bool IsShadowContentRelevantForAccessibility(const Node* node) {
   DCHECK(node->ContainingShadowRoot());
 
+  // Native <img> create extra child nodes to hold alt text.
+  if (node->IsInUserAgentShadowRoot() &&
+      IsA<HTMLImageElement>(node->OwnerShadowHost())) {
+    return false;
+  }
+
   // Don't use non-<option> descendants of an AXMenuList.
   // If the UseAXMenuList flag is on, we use a specialized class AXMenuList
   // for handling the user-agent shadow DOM exposed by a <select> element.
@@ -809,11 +815,23 @@ AXObject* AXObjectCacheImpl::Get(AccessibleNode* accessible_node) {
 }
 
 AXObject* AXObjectCacheImpl::GetAXImageForMap(HTMLMapElement& map) {
-  HTMLElement* first_area = Traversal<HTMLAreaElement>::FirstWithin(map);
-  AXObject* ax_child_area = Get(first_area);
-  if (!ax_child_area)
-    return nullptr;
-  return ax_child_area->CachedParentObject();
+  // Find first child node of <map> that has an AXObject and return it's
+  // parent, which should be a native image.
+  Node* child = LayoutTreeBuilderTraversal::FirstChild(map);
+  while (child) {
+    if (AXObject* ax_child = Get(child)) {
+      if (AXObject* ax_image = ax_child->CachedParentObject()) {
+        DCHECK(!ax_image->IsDetached());
+        DCHECK(IsA<HTMLImageElement>(ax_image->GetNode()))
+            << "Expected image AX parent of <map>'s DOM child, got: "
+            << ax_image->GetNode() << "\n* Map's DOM child was: " << child
+            << "\n* ax_image: " << ax_image->ToString(true, true);
+        return ax_image;
+      }
+    }
+    child = LayoutTreeBuilderTraversal::NextSibling(*child);
+  }
+  return nullptr;
 }
 
 AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
@@ -925,8 +943,12 @@ bool AXObjectCacheImpl::IsRelevantPseudoElementDescendant(
     ancestor = ancestor->Parent();
     if (!ancestor)
       return false;
-    if (ancestor->IsPseudoElement())
+    if (ancestor->IsPseudoElement()) {
+      // When an ancestor is exposed using CSS alt text, descendants are pruned.
+      if (AXNodeObject::GetCSSAltText(ancestor->GetNode()))
+        return false;
       return IsRelevantPseudoElement(*ancestor->GetNode());
+    }
     if (!ancestor->IsAnonymous())
       return false;
   }
@@ -1767,41 +1789,6 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttached(Node* node) {
       &AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout, node);
 }
 
-bool AXObjectCacheImpl::IsStillInTree(AXObject* obj) {
-  // Return an AXObject for the node if the AXObject is still in the tree.
-  // If there is a viable included parent, that means it's still in the tree.
-  // Otherwise, repair missing parent, or prune the object if no viable parent
-  // can be found. For example, through CSS changes, an ancestor became an
-  // image, which is always a leaf; therefore, no descendants are "in the tree".
-
-  if (!obj)
-    return false;
-
-  if (obj->IsMissingParent()) {
-    // Parent is missing. Attempt to repair it with a viable recomputed parent.
-    AXObject* ax_parent = obj->ComputeParent();
-    if (!IsStillInTree(ax_parent)) {
-      // Parent is unrepairable, meaning that this AXObject can no longer be
-      // attached to the tree and is no longer viable. Prune it now.
-      Remove(obj);
-      return false;
-    }
-    obj->SetParent(ax_parent);
-    return true;
-  }
-
-  if (!obj->LastKnownIsIncludedInTreeValue()) {
-    // Current object was not included in the tree, therefore, recursively
-    // keep checking up a level until a viable included parent is found.
-    if (!IsStillInTree(obj->CachedParentObject())) {
-      Remove(obj);
-      return false;
-    }
-  }
-
-  return true;
-}
-
 void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
     Node* node) {
   if (!node || !node->isConnected())
@@ -1979,11 +1966,8 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  if (obj) {
-    if (!IsStillInTree(obj))
-      return;  // Object is no longer in tree, and therefore not viable.
+  if (obj)
     obj->ChildrenChanged();
-  }
 
   if (optional_node)
     relation_cache_->UpdateRelatedTree(optional_node, obj);

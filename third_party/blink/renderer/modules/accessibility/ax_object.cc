@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
@@ -203,8 +204,13 @@ Node* GetParentNodeForComputeParent(Node* node) {
   // Whenever null is returned from this function, then a parent cannot be
   // computed, and when a parent is not provided or computed, the accessible
   // object will not be created.
-  // TODO(aleventhal) Remove this method / inline, if proven to be this simple.
-  return LayoutTreeBuilderTraversal::Parent(*node);
+  Node* parent = LayoutTreeBuilderTraversal::Parent(*node);
+  HTMLMapElement* map_element = DynamicTo<HTMLMapElement>(parent);
+  if (!map_element)
+    return parent;
+
+  // Special case, for a <map>, return the <img> associated with it.
+  return map_element->ImageElement();
 }
 
 #if DCHECK_IS_ON()
@@ -707,12 +713,13 @@ bool AXObject::CanComputeAsNaturalParent(Node* node) {
   if (IsA<HTMLBRElement>(node))
     return false;
 
-  // Image map parent-child relationships (from image to area) must be retrieved
-  // manually via AXImageMapLink::GetAXObjectForImageMap().
-  if (IsA<HTMLMapElement>(node) || IsA<HTMLAreaElement>(node) ||
-      IsA<HTMLImageElement>(node)) {
+  // Image map parent-child relationships work as follows:
+  // - The image is the parent
+  // - The DOM children of the ssociated <map> are the children
+  // This is accomplished by having GetParentNodeForComputeParent() return the
+  // <img> instead of the <map> for the map's children.
+  if (IsA<HTMLMapElement>(node))
     return false;
-  }
 
   return true;
 }
@@ -767,14 +774,6 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
               AXMenuListOption::ComputeParentAXMenuPopupFor(cache, option)) {
         return ax_select;
       }
-    }
-  }
-
-  // For <area>, return the image it is a child link of.
-  if (IsA<HTMLAreaElement>(current_node)) {
-    if (AXObject* ax_image =
-            AXImageMapLink::GetAXObjectForImageMap(cache, current_node)) {
-      return ax_image;
     }
   }
 
@@ -4260,7 +4259,8 @@ void AXObject::ClearChildren() const {
 
   children_.clear();
 
-  if (!GetNode())
+  Node* node = GetNode();
+  if (!node)
     return;
 
   if (GetDocument()->IsFlatTreeTraversalForbidden()) {
@@ -4286,14 +4286,21 @@ void AXObject::ClearChildren() const {
 
   // TODO(crbug.com/1209216): Figure out why removing this causes a
   // use-after-poison and possibly replace it with a better check.
-  HTMLSlotElement* slot = DynamicTo<HTMLSlotElement>(GetNode());
+  HTMLSlotElement* slot = DynamicTo<HTMLSlotElement>(node);
   if (slot && slot->SupportsAssignment())
     return;
+
+  if (auto* image = DynamicTo<HTMLImageElement>(node)) {
+    node = GetDocument()->GetImageMap(
+        image->FastGetAttribute(html_names::kUsemapAttr));
+    if (!node)
+      return;
+  }
 
   // Detach children that were not cleared from first loop.
   // These must have been an unincluded node who's parent is this,
   // although it may now be included since the children were last updated.
-  for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*GetNode());
+  for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*node);
        child_node;
        child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
     // Get the child object that should be detached from this parent.
