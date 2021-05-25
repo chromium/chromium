@@ -37,6 +37,10 @@ interface GPUSupportedFeatures {
     readonly setlike<DOMString>;
 };
 
+enum GPUPredefinedColorSpace {
+    "srgb",
+};
+
 interface mixin NavigatorGPU {
     [SameObject] readonly attribute GPU gpu;
 };
@@ -92,6 +96,7 @@ interface GPUDevice : EventTarget {
     GPUBuffer createBuffer(GPUBufferDescriptor descriptor);
     GPUTexture createTexture(GPUTextureDescriptor descriptor);
     GPUSampler createSampler(optional GPUSamplerDescriptor descriptor = {});
+    GPUExternalTexture importExternalTexture(GPUExternalTextureDescriptor descriptor);
 
     GPUBindGroupLayout createBindGroupLayout(GPUBindGroupLayoutDescriptor descriptor);
     GPUPipelineLayout createPipelineLayout(GPUPipelineLayoutDescriptor descriptor);
@@ -291,6 +296,16 @@ enum GPUTextureFormat {
 };
 
 [Exposed=Window]
+interface GPUExternalTexture {
+};
+GPUExternalTexture includes GPUObjectBase;
+
+dictionary GPUExternalTextureDescriptor : GPUObjectDescriptorBase {
+    required HTMLVideoElement source;
+    GPUPredefinedColorSpace colorSpace = "srgb";
+};
+
+[Exposed=Window]
 interface GPUSampler {
 };
 GPUSampler includes GPUObjectBase;
@@ -355,6 +370,7 @@ dictionary GPUBindGroupLayoutEntry {
     GPUSamplerBindingLayout sampler;
     GPUTextureBindingLayout texture;
     GPUStorageTextureBindingLayout storageTexture;
+    GPUExternalTextureBindingLayout externalTexture;
 };
 
 enum GPUBufferBindingType {
@@ -404,6 +420,9 @@ dictionary GPUStorageTextureBindingLayout {
     GPUTextureViewDimension viewDimension = "2d";
 };
 
+dictionary GPUExternalTextureBindingLayout {
+};
+
 [Exposed=Window]
 interface GPUBindGroup {
 };
@@ -414,7 +433,7 @@ dictionary GPUBindGroupDescriptor : GPUObjectDescriptorBase {
     required sequence<GPUBindGroupEntry> entries;
 };
 
-typedef (GPUSampler or GPUTextureView or GPUBufferBinding) GPUBindingResource;
+typedef (GPUSampler or GPUTextureView or GPUBufferBinding or GPUExternalTexture) GPUBindingResource;
 
 dictionary GPUBindGroupEntry {
     required GPUIndex32 binding;

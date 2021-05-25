@@ -77,7 +77,7 @@
   <input type="color" name="submit-me-15" value="#123456">
 
   <textarea name="submit-me-16">textarea value
-with linebreaks set to CRLF</textarea>
+with linebreaks set to LF</textarea>
 
   <!-- this generates two form data entries! -->
   <input type="text" name="dirname-is-special" dirname="submit-me-17" value="dirname-value">
@@ -123,11 +123,11 @@ test(() => {
     ["submit-me-13", "11"],
     ["submit-me-14", "11"],
     ["submit-me-15", "#123456"],
-    ["submit-me-16", "textarea value\r\nwith linebreaks set to CRLF"],
+    ["submit-me-16", "textarea value\nwith linebreaks set to LF"],
     ["dirname-is-special", "dirname-value"],
     ["submit-me-17", "ltr"],
     ["submit-me-18-\uFFFD", "value-\uFFFD"],
-    ["submit-me-\r\n19\r\n", "value"],
+    ["submit-me-\r19\n", "value"],
     ["submit-me-21", ""]
   ];
 

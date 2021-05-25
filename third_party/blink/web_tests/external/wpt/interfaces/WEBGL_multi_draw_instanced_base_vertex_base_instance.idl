@@ -7,20 +7,20 @@
 interface WEBGL_multi_draw_instanced_base_vertex_base_instance {
   undefined multiDrawArraysInstancedBaseInstanceWEBGL(
       GLenum mode,
-      (Int32Array or sequence<GLint>) firstsList, GLuint firstsOffset,
-      (Int32Array or sequence<GLsizei>) countsList, GLuint countsOffset,
-      (Int32Array or sequence<GLsizei>) instanceCountsList, GLuint instanceCountsOffset,
-      (Uint32Array or sequence<GLuint>) baseInstancesList, GLuint baseInstancesOffset,
+      ([AllowShared] Int32Array or sequence<GLint>) firstsList, GLuint firstsOffset,
+      ([AllowShared] Int32Array or sequence<GLsizei>) countsList, GLuint countsOffset,
+      ([AllowShared] Int32Array or sequence<GLsizei>) instanceCountsList, GLuint instanceCountsOffset,
+      ([AllowShared] Uint32Array or sequence<GLuint>) baseInstancesList, GLuint baseInstancesOffset,
       GLsizei drawCount
   );
   undefined multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
       GLenum mode,
-      (Int32Array or sequence<GLsizei>) countsList, GLuint countsOffset,
+      ([AllowShared] Int32Array or sequence<GLsizei>) countsList, GLuint countsOffset,
       GLenum type,
-      (Int32Array or sequence<GLsizei>) offsetsList, GLuint offsetsOffset,
-      (Int32Array or sequence<GLsizei>) instanceCountsList, GLuint instanceCountsOffset,
-      (Int32Array or sequence<GLint>) baseVerticesList, GLuint baseVerticesOffset,
-      (Uint32Array or sequence<GLuint>) baseInstancesList, GLuint baseInstancesOffset,
+      ([AllowShared] Int32Array or sequence<GLsizei>) offsetsList, GLuint offsetsOffset,
+      ([AllowShared] Int32Array or sequence<GLsizei>) instanceCountsList, GLuint instanceCountsOffset,
+      ([AllowShared] Int32Array or sequence<GLint>) baseVerticesList, GLuint baseVerticesOffset,
+      ([AllowShared] Uint32Array or sequence<GLuint>) baseInstancesList, GLuint baseInstancesOffset,
       GLsizei drawCount
   );
 };

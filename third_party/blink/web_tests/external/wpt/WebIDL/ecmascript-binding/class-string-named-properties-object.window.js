@@ -16,17 +16,6 @@ test(() => {
   assert_equals(Object.prototype.toString.call(namedPropertiesObject), "[object WindowProperties]");
 }, "Object.prototype.toString");
 
-test(t => {
-  assert_own_property(namedPropertiesObject, Symbol.toStringTag, "Precondition for this test: @@toStringTag exists");
-
-  t.add_cleanup(() => {
-    Object.defineProperty(namedPropertiesObject, Symbol.toStringTag, { value: "WindowProperties" });
-  });
-
-  Object.defineProperty(namedPropertiesObject, Symbol.toStringTag, { value: "NotWindowProperties" });
-  assert_equals(Object.prototype.toString.call(namedPropertiesObject), "[object NotWindowProperties]");
-}, "Object.prototype.toString applied after modifying @@toStringTag");
-
 // Chrome had a bug (https://bugs.chromium.org/p/chromium/issues/detail?id=793406) where if there
 // was no @@toStringTag, it would fall back to a magic class string. Tests for this are present in
 // the sibling class-string*.any.js tests. However, the named properties object always fails calls

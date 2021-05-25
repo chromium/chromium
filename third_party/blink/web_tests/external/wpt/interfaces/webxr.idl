@@ -202,6 +202,7 @@ interface XRWebGLLayer: XRLayer {
   // Attributes
   readonly attribute boolean antialias;
   readonly attribute boolean ignoreDepthValues;
+  attribute float? fixedFoveation;
 
   [SameObject] readonly attribute WebGLFramebuffer? framebuffer;
   readonly attribute unsigned long framebufferWidth;
