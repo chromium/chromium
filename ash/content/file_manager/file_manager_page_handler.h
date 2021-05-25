@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_manager {
 
 class FileManagerUI;
@@ -35,6 +35,6 @@ class FileManagerPageHandler : public mojom::PageHandler {
 };
 
 }  // namespace file_manager
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_CONTENT_FILE_MANAGER_FILE_MANAGER_PAGE_HANDLER_H_

@@ -18,7 +18,7 @@
 #include "ui/file_manager/grit/file_manager_resources.h"
 #include "ui/file_manager/grit/file_manager_resources_map.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_manager {
 
 void AddFilesAppResources(content::WebUIDataSource* source,
@@ -45,8 +45,8 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
 }
 
 content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
-      chromeos::file_manager::kChromeUIFileManagerHost);
+  content::WebUIDataSource* source =
+      content::WebUIDataSource::Create(kChromeUIFileManagerHost);
 
   // Setup chrome://file-manager main and default page.
   source->AddResourcePath("", IDR_FILE_MANAGER_SWA_MAIN_HTML);
@@ -105,4 +105,4 @@ void FileManagerUI::CreatePageHandler(
 WEB_UI_CONTROLLER_TYPE_IMPL(FileManagerUI)
 
 }  // namespace file_manager
-}  // namespace chromeos
+}  // namespace ash

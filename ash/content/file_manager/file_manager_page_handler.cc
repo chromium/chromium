@@ -6,7 +6,7 @@
 
 #include "ash/content/file_manager/file_manager_ui.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_manager {
 
 FileManagerPageHandler::FileManagerPageHandler(
@@ -22,4 +22,4 @@ FileManagerPageHandler::FileManagerPageHandler(
 FileManagerPageHandler::~FileManagerPageHandler() = default;
 
 }  // namespace file_manager
-}  // namespace chromeos
+}  // namespace ash

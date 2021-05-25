@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.file_manager.mojom;
+module ash.file_manager.mojom;
 
 // Lives in the browser process. A renderer uses this to link itself with
 // a page handler.

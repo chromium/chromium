@@ -894,8 +894,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return &NewWebUI<chromeos::DemoModeAppUI>;
     }
   }
-  if (url.host_piece() == chromeos::file_manager::kChromeUIFileManagerHost) {
-    return &NewComponentUI<chromeos::file_manager::FileManagerUI,
+  if (url.host_piece() == ash::file_manager::kChromeUIFileManagerHost) {
+    return &NewComponentUI<ash::file_manager::FileManagerUI,
                            ChromeFileManagerUIDelegate>;
   }
   if (url.host_piece() == chromeos::kChromeUISampleSystemWebAppHost)

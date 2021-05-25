@@ -16,8 +16,8 @@
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
   auto info = std::make_unique<WebApplicationInfo>();
-  info->start_url = GURL(chromeos::file_manager::kChromeUIFileManagerURL);
-  info->scope = GURL(chromeos::file_manager::kChromeUIFileManagerURL);
+  info->start_url = GURL(ash::file_manager::kChromeUIFileManagerURL);
+  info->scope = GURL(ash::file_manager::kChromeUIFileManagerURL);
   // TODO(majewski): Fetch from a resource.
   info->title = u"File Manager";
   web_app::CreateIconInfoForSystemWebApp(

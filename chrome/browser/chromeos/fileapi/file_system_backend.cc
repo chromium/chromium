@@ -244,8 +244,7 @@ bool FileSystemBackend::IsAccessAllowed(
 
 #if !defined(OFFICIAL_BUILD)
   // The chrome://file-manager can access its filesystem origin.
-  if (url.origin().GetURL() ==
-      chromeos::file_manager::kChromeUIFileManagerURL) {
+  if (url.origin().GetURL() == ash::file_manager::kChromeUIFileManagerURL) {
     return true;
   }
 #endif

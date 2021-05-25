@@ -4,11 +4,11 @@
 
 #include "ash/content/file_manager/url_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_manager {
 
 constexpr char kChromeUIFileManagerHost[] = "file-manager";
 constexpr char kChromeUIFileManagerURL[] = "chrome://file-manager/";
 
 }  // namespace file_manager
-}  // namespace chromeos
+}  // namespace ash

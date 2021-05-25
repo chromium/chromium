@@ -5,13 +5,13 @@
 #ifndef ASH_CONTENT_FILE_MANAGER_URL_CONSTANTS_H_
 #define ASH_CONTENT_FILE_MANAGER_URL_CONSTANTS_H_
 
-namespace chromeos {
+namespace ash {
 namespace file_manager {
 
 extern const char kChromeUIFileManagerHost[];
 extern const char kChromeUIFileManagerURL[];
 
 }  // namespace file_manager
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_CONTENT_FILE_MANAGER_URL_CONSTANTS_H_

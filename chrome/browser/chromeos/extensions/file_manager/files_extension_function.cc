@@ -15,7 +15,7 @@ FilesExtensionFunction::FilesExtensionFunction()
 }
 #else
     : file_app_id_(file_manager::kFileManagerAppId),
-      swa_url_(chromeos::file_manager::kChromeUIFileManagerURL) {
+      swa_url_(ash::file_manager::kChromeUIFileManagerURL) {
 }
 #endif
 

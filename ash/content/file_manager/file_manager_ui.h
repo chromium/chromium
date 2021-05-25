@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace file_manager {
 
 class FileManagerPageHandler;
@@ -54,6 +54,6 @@ class FileManagerUI : public ui::MojoWebUIController,
 };
 
 }  // namespace file_manager
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_CONTENT_FILE_MANAGER_FILE_MANAGER_UI_H_
