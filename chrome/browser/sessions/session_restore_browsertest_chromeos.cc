@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
 
 // Assigns a browser window to all desks.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
-                       PRE_RestoreAllDesksBrowserWindow) {
+                       DISABLED_PRE_RestoreAllDesksBrowserWindow) {
   // Create two desks so we have three in total.
   ash::AutotestDesksApi().CreateNewDesk();
   ash::AutotestDesksApi().CreateNewDesk();
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
 
 // Verifies that the visible on all desks browser window is restore properly.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
-                       RestoreAllDesksBrowserWindow) {
+                       DISABLED_RestoreAllDesksBrowserWindow) {
   // There should be two browsers restored, the default browser and the all
   // desks browser.
   auto* browser_list = BrowserList::GetInstance();
