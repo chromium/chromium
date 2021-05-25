@@ -74,9 +74,31 @@ std::string ChromeCustomTempDir() {
     return "/sdcard/";
   // Generic POSIX fallback.
   return "/tmp/";
+#elif GTEST_OS_IOS
+  char name_template[PATH_MAX + 1];
+
+  // Documented alternative to NSTemporaryDirectory() (for obtaining creating
+  // a temporary directory) at
+  // https://developer.apple.com/library/archive/documentation/Security/Conceptual/SecureCodingGuide/Articles/RaceConditions.html#//apple_ref/doc/uid/TP40002585-SW10
+  //
+  // _CS_DARWIN_USER_TEMP_DIR (as well as _CS_DARWIN_USER_CACHE_DIR) is not
+  // documented in the confstr() man page at
+  // https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/confstr.3.html#//apple_ref/doc/man/3/confstr
+  // but are still available, according to the WebKit patches at
+  // https://trac.webkit.org/changeset/262004/webkit
+  // https://trac.webkit.org/changeset/263705/webkit
+  //
+  // The confstr() implementation falls back to getenv("TMPDIR"). See
+  // https://opensource.apple.com/source/Libc/Libc-1439.100.3/gen/confstr.c.auto.html
+  ::confstr(_CS_DARWIN_USER_TEMP_DIR, name_template, sizeof(name_template));
+
+  temp_dir = name_template;
+  if (temp_dir.back() != GTEST_PATH_SEP_[0])
+    temp_dir.push_back(GTEST_PATH_SEP_[0]);
+  return temp_dir;
 #else
   return "/tmp/";
-#endif  // GTEST_OS_WINDOWS_MOBILE
+#endif  // GTEST_OS_WINDOWS_MOBILE || GTEST_OS_WINDOWS
 }
 
 }  // namespace testing
