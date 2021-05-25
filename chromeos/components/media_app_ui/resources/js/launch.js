@@ -404,7 +404,7 @@ function generateToken(handle) {
  */
 function getMimeTypeFromFilename(filename) {
   // This file extension to mime type map is adapted from
-  // https://source.chromium.org/chromium/chromium/src/+/master:net/base/mime_util.cc;l=147;drc=51373c4ea13372d7711c59d9929b0be5d468633e
+  // https://source.chromium.org/chromium/chromium/src/+/main:net/base/mime_util.cc;l=147;drc=51373c4ea13372d7711c59d9929b0be5d468633e
   const mapping = {
     'avif': 'image/avif',
     'crx': 'application/x-chrome-extension',

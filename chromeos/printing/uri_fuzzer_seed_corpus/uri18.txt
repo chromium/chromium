@@ -1,1 +1,1 @@
-https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md
+https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md

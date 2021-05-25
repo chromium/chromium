@@ -1,6 +1,6 @@
 # NOTE: When references to other files are edited here, keep that in sync with
 # the list of needed files for uprevs in chromite;
-# https://chromium.googlesource.com/chromiumos/chromite/+/master/scripts/chrome_chromeos_lkgm.py#38
+# https://chromium.googlesource.com/chromiumos/chromite/+/main/scripts/chrome_chromeos_lkgm.py#38
 # see also https://crbug.com/917623 and https://crbug.com/919552.
 
 set noparent
