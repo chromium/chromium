@@ -8,9 +8,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/common/trace_event_common.h"

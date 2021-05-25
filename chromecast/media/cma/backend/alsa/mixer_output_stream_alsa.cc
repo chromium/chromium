@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chromecast/base/chromecast_switches.h"

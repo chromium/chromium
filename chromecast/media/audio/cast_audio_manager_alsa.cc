@@ -6,9 +6,9 @@
 
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/audio/audio_buildflags.h"
