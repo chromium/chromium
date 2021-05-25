@@ -11,6 +11,10 @@
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
+#include "chrome/browser/ash/borealis/borealis_disk_manager_dispatcher.h"
+#include "chrome/browser/ash/borealis/borealis_features.h"
+#include "chrome/browser/ash/borealis/borealis_service_fake.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -41,6 +45,43 @@ using DiskInfoCallbackFactory = StrictCallbackFactory<void(
 using RequestDeltaCallbackFactory =
     StrictCallbackFactory<void(Expected<uint64_t, std::string>)>;
 
+class BorealisDiskDispatcherMock : public BorealisDiskManagerDispatcher {
+ public:
+  BorealisDiskDispatcherMock() = default;
+  ~BorealisDiskDispatcherMock() = default;
+
+  MOCK_METHOD(
+      void,
+      GetDiskInfo,
+      (const std::string&,
+       const std::string&,
+       base::OnceCallback<void(
+           Expected<BorealisDiskManager::GetDiskInfoResponse, std::string>)>),
+      ());
+  MOCK_METHOD(void,
+              RequestSpace,
+              (const std::string&,
+               const std::string&,
+               uint64_t,
+               base::OnceCallback<void(Expected<uint64_t, std::string>)>),
+              ());
+  MOCK_METHOD(void,
+              ReleaseSpace,
+              (const std::string&,
+               const std::string&,
+               uint64_t,
+               base::OnceCallback<void(Expected<uint64_t, std::string>)>),
+              ());
+  MOCK_METHOD(void,
+              SetDiskManagerDelegate,
+              (BorealisDiskManager * disk_manager),
+              ());
+  MOCK_METHOD(void,
+              RemoveDiskManagerDelegate,
+              (BorealisDiskManager * disk_manager),
+              ());
+};
+
 class BorealisDiskManagerTest : public testing::Test {
  public:
   BorealisDiskManagerTest() = default;
@@ -56,6 +97,17 @@ class BorealisDiskManagerTest : public testing::Test {
     chromeos::SeneschalClient::InitializeFake();
     fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
     CreateProfile();
+    mock_dispatcher_ =
+        std::make_unique<testing::NiceMock<BorealisDiskDispatcherMock>>();
+    borealis_window_manager_ =
+        std::make_unique<BorealisWindowManager>(profile_.get());
+    borealis_features_ = std::make_unique<BorealisFeatures>(profile_.get());
+
+    service_fake_ = BorealisServiceFake::UseFakeForTesting(profile_.get());
+    service_fake_->SetDiskManagerDispatcherForTesting(mock_dispatcher_.get());
+    service_fake_->SetWindowManagerForTesting(borealis_window_manager_.get());
+    service_fake_->SetFeaturesForTesting(borealis_features_.get());
+
     context_ = BorealisContext::CreateBorealisContextForTesting(profile_.get());
     context_->set_vm_name("vm_name1");
     disk_manager_ = std::make_unique<BorealisDiskManagerImpl>(context_.get());
@@ -107,6 +159,11 @@ class BorealisDiskManagerTest : public testing::Test {
   std::unique_ptr<BorealisContext> context_;
   std::unique_ptr<BorealisDiskManagerImpl> disk_manager_;
   FreeSpaceProviderMock* free_space_provider_;
+  BorealisServiceFake* service_fake_;
+  std::unique_ptr<testing::NiceMock<BorealisDiskDispatcherMock>>
+      mock_dispatcher_;
+  std::unique_ptr<BorealisFeatures> borealis_features_;
+  std::unique_ptr<BorealisWindowManager> borealis_window_manager_;
   std::unique_ptr<base::RunLoop> run_loop_;
   content::BrowserTaskEnvironment task_environment_;
   // Owned by chromeos::DBusThreadManager

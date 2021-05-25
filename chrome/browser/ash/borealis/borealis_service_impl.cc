@@ -11,6 +11,7 @@ BorealisServiceImpl::BorealisServiceImpl(Profile* profile)
       app_launcher_(profile_),
       app_uninstaller_(profile_),
       context_manager_(profile),
+      disk_manager_dispatcher_(),
       features_(profile_),
       installer_(profile_),
       shutdown_monitor_(profile_),
@@ -28,6 +29,10 @@ BorealisAppUninstaller& BorealisServiceImpl::AppUninstaller() {
 
 BorealisContextManager& BorealisServiceImpl::ContextManager() {
   return context_manager_;
+}
+
+BorealisDiskManagerDispatcher& BorealisServiceImpl::DiskManagerDispatcher() {
+  return disk_manager_dispatcher_;
 }
 
 BorealisFeatures& BorealisServiceImpl::Features() {

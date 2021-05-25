@@ -37,6 +37,11 @@ BorealisContextManager& BorealisServiceFake::ContextManager() {
   return *context_manager_;
 }
 
+BorealisDiskManagerDispatcher& BorealisServiceFake::DiskManagerDispatcher() {
+  CHECK(borealis_disk_manager_dispatcher_);
+  return *borealis_disk_manager_dispatcher_;
+}
+
 BorealisFeatures& BorealisServiceFake::Features() {
   CHECK(features_);
   return *features_;
@@ -70,6 +75,11 @@ void BorealisServiceFake::SetAppUninstallerForTesting(
 void BorealisServiceFake::SetContextManagerForTesting(
     BorealisContextManager* context_manager) {
   context_manager_ = context_manager;
+}
+
+void BorealisServiceFake::SetDiskManagerDispatcherForTesting(
+    BorealisDiskManagerDispatcher* borealis_disk_manager_dispatcher) {
+  borealis_disk_manager_dispatcher_ = borealis_disk_manager_dispatcher;
 }
 
 void BorealisServiceFake::SetFeaturesForTesting(BorealisFeatures* features) {

@@ -15,6 +15,8 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
+#include "chrome/browser/ash/borealis/borealis_disk_manager_dispatcher.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/infra/transition.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -55,9 +57,17 @@ struct BorealisDiskManagerImpl::BorealisDiskInfo {
 BorealisDiskManagerImpl::BorealisDiskManagerImpl(const BorealisContext* context)
     : context_(context),
       free_space_provider_(std::make_unique<FreeSpaceProvider>()),
-      weak_factory_(this) {}
+      weak_factory_(this) {
+  borealis::BorealisService::GetForProfile(context_->profile())
+      ->DiskManagerDispatcher()
+      .SetDiskManagerDelegate(this);
+}
 
-BorealisDiskManagerImpl::~BorealisDiskManagerImpl() {}
+BorealisDiskManagerImpl::~BorealisDiskManagerImpl() {
+  borealis::BorealisService::GetForProfile(context_->profile())
+      ->DiskManagerDispatcher()
+      .RemoveDiskManagerDelegate(this);
+}
 
 class BorealisDiskManagerImpl::BuildDiskInfo
     : public Transition<BorealisDiskInfo, BorealisDiskInfo, std::string> {

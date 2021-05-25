@@ -25,6 +25,7 @@ class BorealisServiceFake : public BorealisService {
   BorealisAppLauncher& AppLauncher() override;
   BorealisAppUninstaller& AppUninstaller() override;
   BorealisContextManager& ContextManager() override;
+  BorealisDiskManagerDispatcher& DiskManagerDispatcher() override;
   BorealisFeatures& Features() override;
   BorealisInstaller& Installer() override;
   BorealisShutdownMonitor& ShutdownMonitor() override;
@@ -33,6 +34,8 @@ class BorealisServiceFake : public BorealisService {
   void SetAppLauncherForTesting(BorealisAppLauncher* app_launcher);
   void SetAppUninstallerForTesting(BorealisAppUninstaller* app_uninstaller);
   void SetContextManagerForTesting(BorealisContextManager* context_manager);
+  void SetDiskManagerDispatcherForTesting(
+      BorealisDiskManagerDispatcher* borealis_disk_manager_dispatcher);
   void SetFeaturesForTesting(BorealisFeatures* features);
   void SetInstallerForTesting(BorealisInstaller* installer);
   void SetShutdownMonitorForTesting(BorealisShutdownMonitor* shutdown_monitor);
@@ -42,6 +45,7 @@ class BorealisServiceFake : public BorealisService {
   BorealisAppLauncher* app_launcher_ = nullptr;
   BorealisAppUninstaller* app_uninstaller_ = nullptr;
   BorealisContextManager* context_manager_ = nullptr;
+  BorealisDiskManagerDispatcher* borealis_disk_manager_dispatcher_ = nullptr;
   BorealisFeatures* features_ = nullptr;
   BorealisInstaller* installer_ = nullptr;
   BorealisShutdownMonitor* shutdown_monitor_ = nullptr;
