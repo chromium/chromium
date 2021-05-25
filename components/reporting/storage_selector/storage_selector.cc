@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
@@ -83,12 +84,14 @@ void StorageSelector::CreateStorageModule(
                  "Missive Client has not returned Storage Module"));
       return;
     }
+    LOG(WARNING) << "Store reporting data by a Missive daemon";
     std::move(cb).Run(missive_module);
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Use Storage in a local file system.
+  LOG(WARNING) << "Store reporting data locally";
   StorageModule::Create(
       StorageOptions()
           .set_directory(local_reporting_path)

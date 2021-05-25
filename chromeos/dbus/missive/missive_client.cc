@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/missive/fake_missive_client.h"
 #include "components/reporting/proto/interface.pb.h"
@@ -48,17 +50,28 @@ class MissiveClientImpl : public MissiveClient {
   MissiveClientImpl(const MissiveClientImpl& other) = delete;
   MissiveClientImpl& operator=(const MissiveClientImpl& other) = delete;
   void Init(dbus::Bus* const bus) {
+    origin_task_runner_ = bus->GetOriginTaskRunner();
+
     DCHECK(!missive_service_proxy_);
+
     auto missive_storage_module_delegate =
         std::make_unique<MissiveStorageModuleDelegateImpl>(
-            base::BindRepeating(&MissiveClientImpl::AddRecord,
-                                weak_ptr_factory_.GetWeakPtr()),
-            base::BindRepeating(&MissiveClientImpl::Flush,
-                                weak_ptr_factory_.GetWeakPtr()),
-            base::BindRepeating(&MissiveClientImpl::ReportSuccess,
-                                weak_ptr_factory_.GetWeakPtr()),
-            base::BindRepeating(&MissiveClientImpl::UpdateEncryptionKey,
-                                weak_ptr_factory_.GetWeakPtr()));
+            base::BindPostTask(
+                origin_task_runner_,
+                base::BindRepeating(&MissiveClientImpl::EnqueueRecord,
+                                    weak_ptr_factory_.GetWeakPtr())),
+            base::BindPostTask(
+                origin_task_runner_,
+                base::BindRepeating(&MissiveClientImpl::Flush,
+                                    weak_ptr_factory_.GetWeakPtr())),
+            base::BindPostTask(
+                origin_task_runner_,
+                base::BindRepeating(&MissiveClientImpl::ReportSuccess,
+                                    weak_ptr_factory_.GetWeakPtr())),
+            base::BindPostTask(
+                origin_task_runner_,
+                base::BindRepeating(&MissiveClientImpl::UpdateEncryptionKey,
+                                    weak_ptr_factory_.GetWeakPtr())));
     missive_storage_module_ = MissiveStorageModule::Create(
         std::move(missive_storage_module_delegate));
 
@@ -68,10 +81,10 @@ class MissiveClientImpl : public MissiveClient {
   }
 
  private:
-  void AddRecord(const reporting::Priority priority,
-                 reporting::Record record,
-                 base::OnceCallback<void(reporting::Status)>
-                     completion_callback) override {
+  void EnqueueRecord(const reporting::Priority priority,
+                     reporting::Record record,
+                     base::OnceCallback<void(reporting::Status)>
+                         completion_callback) override {
     reporting::EnqueueRecordRequest request;
     *request.mutable_record() = std::move(record);
     request.set_priority(priority);
@@ -83,14 +96,20 @@ class MissiveClientImpl : public MissiveClient {
 
     missive_service_proxy_->CallMethod(
         &method_call, kTimeoutMs,
-        base::BindOnce(&MissiveClientImpl::HandleAddRecordResponse,
+        base::BindOnce(&MissiveClientImpl::HandleEnqueueRecordResponse,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(completion_callback)));
   }
 
-  void HandleAddRecordResponse(
+  void HandleEnqueueRecordResponse(
       base::OnceCallback<void(reporting::Status)> completion_callback,
       dbus::Response* response) {
+    if (!response) {
+      std::move(completion_callback)
+          .Run(Status(reporting::error::UNAVAILABLE,
+                      "EnqueueRecord is not exported by missived"));
+      return;
+    }
     dbus::MessageReader reader(response);
     reporting::EnqueueRecordResponse response_body;
     reader.PopArrayOfBytesAsProto(&response_body);
@@ -120,6 +139,12 @@ class MissiveClientImpl : public MissiveClient {
   void HandleFlushResponse(
       base::OnceCallback<void(reporting::Status)> completion_callback,
       dbus::Response* response) {
+    if (!response) {
+      std::move(completion_callback)
+          .Run(Status(reporting::error::UNAVAILABLE,
+                      "HandleFlushResponse is not exported by missived"));
+      return;
+    }
     dbus::MessageReader reader(response);
     reporting::FlushPriorityResponse response_body;
     reader.PopArrayOfBytesAsProto(&response_body);
@@ -147,21 +172,21 @@ class MissiveClientImpl : public MissiveClient {
 
   void UpdateEncryptionKey(
       const reporting::SignedEncryptionInfo& encryption_info) override {
-    // TODO(1174889): Uncomment the following code once system_api has been
-    // updated with kUpdateEncryptionKey.
-    // reporting::UpdateEncryptKeyRequest request;
-    // *request.mutable_signed_encryption_info() = std::move(encryption_info);
-    // dbus::MethodCall method_call(missive::MissiveServiceInterface,
-    //                              missive::kUpdateEncryptionKey);
-    // dbus::MessageWriter writer(&method_call);
-    // writer.AppendProtoAsArrayOfBytes(request);
+    reporting::UpdateEncryptionKeyRequest request;
+    *request.mutable_signed_encryption_info() = std::move(encryption_info);
+    dbus::MethodCall method_call(missive::kMissiveServiceInterface,
+                                 missive::kUpdateEncryptionKey);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendProtoAsArrayOfBytes(request);
 
-    // missive_service_proxy_->CallMethod(
-    //     &method_call, kTimeoutMs, base::DoNothing());
+    missive_service_proxy_->CallMethod(&method_call, kTimeoutMs,
+                                       base::DoNothing());
     return;
   }
 
-  dbus::ObjectProxy* missive_service_proxy_ = nullptr;
+  scoped_refptr<dbus::ObjectProxy> missive_service_proxy_;
+
+  scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
 
   // Must be last class member.
   base::WeakPtrFactory<MissiveClientImpl> weak_ptr_factory_{this};

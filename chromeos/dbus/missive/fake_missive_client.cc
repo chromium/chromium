@@ -24,7 +24,7 @@ FakeMissiveClient::~FakeMissiveClient() = default;
 void FakeMissiveClient::Init() {
   auto missive_storage_module_delegate =
       std::make_unique<MissiveStorageModuleDelegateImpl>(
-          base::BindRepeating(&FakeMissiveClient::AddRecord,
+          base::BindRepeating(&FakeMissiveClient::EnqueueRecord,
                               weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&FakeMissiveClient::Flush,
                               weak_ptr_factory_.GetWeakPtr()),
@@ -36,7 +36,7 @@ void FakeMissiveClient::Init() {
       MissiveStorageModule::Create(std::move(missive_storage_module_delegate));
 }
 
-void FakeMissiveClient::AddRecord(
+void FakeMissiveClient::EnqueueRecord(
     const reporting::Priority priority,
     reporting::Record record,
     base::OnceCallback<void(reporting::Status)> completion_callback) {

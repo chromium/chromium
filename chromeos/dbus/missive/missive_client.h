@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(MISSIVE) MissiveClient {
   scoped_refptr<reporting::MissiveStorageModule> missive_storage_module_;
 
  private:
-  virtual void AddRecord(
+  virtual void EnqueueRecord(
       const reporting::Priority priority,
       reporting::Record record,
       base::OnceCallback<void(reporting::Status)> completion_callback) = 0;

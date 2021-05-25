@@ -378,7 +378,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
           .WillOnce(
               // Provision the storage with a key.
               // Key delivery must have been requested above.
-              Invoke(client_, &MockUploadClient::KeyGeneration));
+              WithoutArgs(Invoke(client_, &MockUploadClient::KeyGeneration)));
     }
 
    private:

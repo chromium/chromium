@@ -24,7 +24,7 @@ class FakeMissiveClient : public MissiveClient {
   void Init();
 
  private:
-  void AddRecord(
+  void EnqueueRecord(
       const reporting::Priority priority,
       reporting::Record record,
       base::OnceCallback<void(reporting::Status)> completion_callback) override;
