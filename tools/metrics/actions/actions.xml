@@ -9388,6 +9388,41 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.DefaultBrowserPromo.NonModal.Accepted">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <description>
+    The user accepted a non modal promo. This will either take them to the
+    settings instructions for default browser ot directly into settings. To
+    track the former watch for &quot;Settings.DefaultBrowser&quot; action. iOS
+    only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserPromo.NonModal.Appear">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <description>
+    The user triggered a non modal default promo, and it appeared. iOS only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserPromo.NonModal.Dismiss">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <description>
+    The user dismissed explicitly a non modal promo. iOS only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserPromo.NonModal.Timeout">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <description>
+    A non modal promo timed out and was dismissed. iOS only.
+  </description>
+</action>
+
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted">
   <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@google.com</owner>

@@ -341,6 +341,44 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserPromo.NonModal.OnScreenTime" units="ms"
+    expires_after="2022-04-20">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
+  <summary>
+    Logs the time on screen for an impression of a non modal promo. iOS only.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserPromo.NonModal.{Impression}"
+    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2022-04-20">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
+  <summary>
+    Logged when an action happens on the {Impression} impression of a non modal
+    promo. Records the action of the promo. iOS only.
+  </summary>
+  <token key="Impression">
+    <variant name="FirstImpression" summary="first"/>
+    <variant name="SecondImpression" summary="second"/>
+  </token>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserPromo.NonModal.{PromoType}"
+    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2022-04-20">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
+  <summary>
+    Logged when an action happens on a non modal promo triggered by {PromoType}.
+    Records the action of the promo. iOS only.
+  </summary>
+  <token key="PromoType">
+    <variant name="GrowthKit" summary="GrowthKit opening Chrome"/>
+    <variant name="Share" summary="sharing a website"/>
+    <variant name="VisitPastedLink" summary="visiting a pasted link"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserPromo.TailoredFullscreen.{Action}"
     enum="IOSDefaultBrowserTailoredPromoType" expires_after="2022-04-20">
   <owner>javierrobles@chromium.org</owner>
@@ -1126,7 +1164,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>muradyan@google.com</owner>
   <summary>
     Measures UI interactions in WidgetKit extension. Recorded after a user taps
-    in a widget and Chrome is openned.
+    in a widget and Chrome is opened.
   </summary>
 </histogram>
 
