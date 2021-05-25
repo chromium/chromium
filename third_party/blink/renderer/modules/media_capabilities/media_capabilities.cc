@@ -421,7 +421,7 @@ bool CheckMseSupport(const String& mime_type, const String& codec) {
                                 mime_type.Ascii(), codec_vector)) {
     DVLOG(2) << __func__
              << " MSE does not support the content type: " << mime_type.Ascii()
-             << " " << (codec_vector.empty() ? "" : codec_vector[1]);
+             << " " << (codec_vector.empty() ? "" : codec_vector[0]);
     return false;
   }
 
