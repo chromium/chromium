@@ -1316,11 +1316,14 @@ void AutofillAgent::ReplaceElementIfNowInvalid(const FormData& original_form) {
 
 const mojo::AssociatedRemote<mojom::AutofillDriver>&
 AutofillAgent::GetAutofillDriver() {
+  recordreplay::Assert("AutofillAgent::GetAutofillDriver Start %d", !!autofill_driver_);
+
   if (!autofill_driver_) {
     render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
         &autofill_driver_);
   }
 
+  recordreplay::Assert("AutofillAgent::GetAutofillDriver Done");
   return autofill_driver_;
 }
 

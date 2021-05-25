@@ -1822,6 +1822,7 @@ void XMLHttpRequest::NotifyParserStopped() {
 }
 
 void XMLHttpRequest::EndLoading() {
+  recordreplay::Assert("XMLHttpRequest::EndLoading Start");
   probe::DidFinishXHR(GetExecutionContext(), this);
 
   if (loader_) {
@@ -1836,9 +1837,13 @@ void XMLHttpRequest::EndLoading() {
 
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
     LocalFrame* frame = window->GetFrame();
-    if (frame && cors::IsOkStatus(status()))
+    if (frame && cors::IsOkStatus(status())) {
+      recordreplay::Assert("XMLHttpRequest::EndLoading #1");
       frame->GetPage()->GetChromeClient().AjaxSucceeded(frame);
+    }
   }
+
+  recordreplay::Assert("XMLHttpRequest::EndLoading Done");
 }
 
 void XMLHttpRequest::DidSendData(uint64_t bytes_sent,
