@@ -420,7 +420,6 @@ void AppServiceAppWindowShelfController::AddWindowToShelf(
   if (arc::GetWindowTaskId(window) != arc::kNoTaskId) {
     std::unique_ptr<ArcAppWindow> app_window_ptr =
         std::make_unique<ArcAppWindow>(
-            arc::GetWindowTaskId(window),
             arc::ArcAppShelfId::FromString(shelf_id.app_id),
             views::Widget::GetWidgetForNativeWindow(window), this,
             owner()->profile());

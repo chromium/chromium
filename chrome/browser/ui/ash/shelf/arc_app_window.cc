@@ -29,13 +29,11 @@ constexpr base::TimeDelta kSetDefaultIconDelayMs =
 constexpr int kArcAppWindowIconSize = extension_misc::EXTENSION_ICON_MEDIUM;
 }  // namespace
 
-ArcAppWindow::ArcAppWindow(int task_id,
-                           const arc::ArcAppShelfId& app_shelf_id,
+ArcAppWindow::ArcAppWindow(const arc::ArcAppShelfId& app_shelf_id,
                            views::Widget* widget,
                            ArcAppWindowDelegate* owner,
                            Profile* profile)
     : AppWindowBase(ash::ShelfID(app_shelf_id.app_id()), widget),
-      task_id_(task_id),
       app_shelf_id_(app_shelf_id),
       owner_(owner),
       profile_(profile) {
@@ -76,11 +74,12 @@ void ArcAppWindow::SetDescription(const std::string& title,
 }
 
 bool ArcAppWindow::IsActive() const {
-  return widget()->IsActive() && owner_->GetActiveTaskId() == task_id_;
+  return widget()->IsActive() &&
+         owner_->GetActiveTaskId() == arc::GetWindowTaskId(GetNativeWindow());
 }
 
 void ArcAppWindow::Close() {
-  arc::CloseTask(task_id_);
+  arc::CloseTask(arc::GetWindowTaskId(GetNativeWindow()));
 }
 
 void ArcAppWindow::OnAppImageUpdated(const std::string& app_id,
