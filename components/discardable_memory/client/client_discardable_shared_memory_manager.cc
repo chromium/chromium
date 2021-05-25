@@ -29,13 +29,6 @@
 
 namespace discardable_memory {
 
-// This controls whether unlocked memory is released when |ReleaseFreeMemory| is
-// called. Enabling this causes |ReleaseFreeMemory| to release all
-// unlocked memory instances, as well as release all free memory (as opposed to
-// merely releasing all free memory).
-const base::Feature kPurgeUnlockedMemory{"PurgeUnlockedMemory",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 // This controls whether unlocked memory is periodically purged from the
 // foreground process. Enabling this causes a task to be scheduled at regular
 // intervals to purge unlocked memory that hasn't been touched in a while. This
@@ -483,17 +476,10 @@ void ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory(
     }
   }
 
-  ReleaseFreeMemoryImpl();
+  ReleaseFreeMemory();
 }
 
 void ClientDiscardableSharedMemoryManager::ReleaseFreeMemory() {
-  if (base::FeatureList::IsEnabled(kPurgeUnlockedMemory))
-    BackgroundPurge();
-  else
-    ReleaseFreeMemoryImpl();
-}
-
-void ClientDiscardableSharedMemoryManager::ReleaseFreeMemoryImpl() {
   TRACE_EVENT0("blink",
                "ClientDiscardableSharedMemoryManager::ReleaseFreeMemory()");
   base::AutoLock lock(lock_);

@@ -66,7 +66,7 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   void OnBackgrounded();
 
   // Release memory and associated resources that have been purged.
-  void ReleaseFreeMemory() override;
+  void ReleaseFreeMemory() override LOCKS_EXCLUDED(lock_);
 
   bool LockSpan(DiscardableSharedMemoryHeap::Span* span)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -177,7 +177,6 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
 
   // Releases all unlocked memory that was last locked at least |min_age| ago.
   void PurgeUnlockedMemory(base::TimeDelta min_age) LOCKS_EXCLUDED(lock_);
-  void ReleaseFreeMemoryImpl() LOCKS_EXCLUDED(lock_);
   void UnlockAndReleaseMemory(
       DiscardableMemoryImpl* memory,
       std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
