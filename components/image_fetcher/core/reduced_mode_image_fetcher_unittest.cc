@@ -49,12 +49,6 @@ constexpr char kImageData[] = "data";
 
 const char kImageFetcherEventHistogramName[] = "ImageFetcher.Events";
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL ImageUrl() {
-  return GURL("http://gstatic.img.com/foo.jpg");
-}
-
 }  // namespace
 
 class ReducedModeImageFetcherTest : public testing::Test {
@@ -89,12 +83,12 @@ class ReducedModeImageFetcherTest : public testing::Test {
         base::SequencedTaskRunnerHandle::Get());
 
     // Use an initial request to start the cache up.
-    image_cache_->SaveImage(ImageUrl().spec(), kImageData,
+    image_cache_->SaveImage(kImageUrl.spec(), kImageData,
                             /* needs_transcoding */ false,
                             /* expiration_interval */ absl::nullopt);
     RunUntilIdle();
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
-    image_cache_->DeleteImage(ImageUrl().spec());
+    image_cache_->DeleteImage(kImageUrl.spec());
     RunUntilIdle();
 
     shared_factory_ =
@@ -120,7 +114,7 @@ class ReducedModeImageFetcherTest : public testing::Test {
 
     EXPECT_CALL(data_callback, Run(kImageData, _));
     reduced_mode_image_fetcher()->FetchImageAndData(
-        ImageUrl(), data_callback.Get(), ImageFetcherCallback(),
+        kImageUrl, data_callback.Get(), ImageFetcherCallback(),
         ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
     db()->LoadCallback(true);
     RunUntilIdle();
@@ -142,6 +136,9 @@ class ReducedModeImageFetcherTest : public testing::Test {
   FakeDB<CachedImageMetadataProto>* db() { return db_; }
 
   MOCK_METHOD2(OnImageLoaded, void(bool, std::string));
+
+ protected:
+  GURL kImageUrl{"http://gstatic.img.com/foo.jpg"};
 
  private:
   std::unique_ptr<ImageFetcher> image_fetcher_;
@@ -165,7 +162,7 @@ class ReducedModeImageFetcherTest : public testing::Test {
 
 TEST_F(ReducedModeImageFetcherTest, FetchNeedsTranscodingImageFromCache) {
   // Save the image that needs transcoding in the database.
-  image_cache()->SaveImage(ImageUrl().spec(), kImageData,
+  image_cache()->SaveImage(kImageUrl.spec(), kImageData,
                            /* needs_transcoding */ true,
                            /* expiration_interval */ absl::nullopt);
   VerifyCacheHit();
@@ -173,7 +170,7 @@ TEST_F(ReducedModeImageFetcherTest, FetchNeedsTranscodingImageFromCache) {
 
 TEST_F(ReducedModeImageFetcherTest, FetchImageFromCache) {
   // Save the image that doesn't need transcoding in the database.
-  image_cache()->SaveImage(ImageUrl().spec(), kImageData,
+  image_cache()->SaveImage(kImageUrl.spec(), kImageData,
                            /* needs_transcoding */ false,
                            /* expiration_interval */ absl::nullopt);
   VerifyCacheHit();

@@ -23,23 +23,6 @@
 
 namespace {
 
-// URL with url_rank 0 in golden files.
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL Url0() {
-  return GURL("http://www.google.com/");
-}
-
-// URL with url_rank 1 in golden files.
-GURL Url1() {
-  return GURL("http://www.google.com/chrome/intl/en/welcome.html");
-}
-
-// URL with url_rank 2 in golden files.
-GURL Url2() {
-  return GURL("https://chrome.google.com/webstore?hl=en");
-}
-
 // Verify that the up-to-date database has the expected tables and
 // columns.  Functional tests only check whether the things which
 // should be there are, but do not check if extraneous items are
@@ -84,6 +67,11 @@ class TopSitesDatabaseTest : public testing::Test {
     file_name_ = temp_dir_.GetPath().AppendASCII("TestTopSites.db");
   }
 
+  // URLs by rank in golden files.
+  const GURL kUrl0{"http://www.google.com/"};
+  const GURL kUrl1{"http://www.google.com/chrome/intl/en/welcome.html"};
+  const GURL kUrl2{"https://chrome.google.com/webstore?hl=en"};
+
   base::ScopedTempDir temp_dir_;
   base::FilePath file_name_;
 };
@@ -122,7 +110,7 @@ TEST_F(TopSitesDatabaseTest, Version3) {
   MostVisitedURLList urls;
   db.GetSites(&urls);
   ASSERT_EQ(3u, urls.size());
-  EXPECT_EQ(Url0(), urls[0].url);  // [0] because of url_rank.
+  EXPECT_EQ(kUrl0, urls[0].url);  // [0] because of url_rank.
 
   sql::Transaction transaction(db.db_.get());
   transaction.Begin();
@@ -145,7 +133,7 @@ TEST_F(TopSitesDatabaseTest, Version4) {
   MostVisitedURLList urls;
   db.GetSites(&urls);
   ASSERT_EQ(3u, urls.size());
-  EXPECT_EQ(Url0(), urls[0].url);  // [0] because of url_rank.
+  EXPECT_EQ(kUrl0, urls[0].url);  // [0] because of url_rank.
 
   sql::Transaction transaction(db.db_.get());
   transaction.Begin();
@@ -250,7 +238,7 @@ TEST_F(TopSitesDatabaseTest, Recovery3) {
     MostVisitedURLList urls;
     db.GetSites(&urls);
     ASSERT_EQ(3u, urls.size());
-    EXPECT_EQ(Url0(), urls[0].url);  // [0] because of url_rank.
+    EXPECT_EQ(kUrl0, urls[0].url);  // [0] because of url_rank.
 
     ASSERT_TRUE(expecter.SawExpectedErrors());
   }
@@ -290,11 +278,11 @@ TEST_F(TopSitesDatabaseTest, Recovery3) {
       sql::test::ScopedErrorExpecter expecter;
       expecter.ExpectError(SQLITE_CORRUPT);
 
-      // Data for Url1() was deleted, but the index entry remains, this will
+      // Data for kUrl1 was deleted, but the index entry remains, this will
       // throw SQLITE_CORRUPT.  The corruption handler will recover the database
       // and poison the handle, so the outer call fails.
       EXPECT_EQ(TopSitesDatabase::kRankOfNonExistingURL,
-                db.GetURLRank(MostVisitedURL(Url1(), std::u16string())));
+                db.GetURLRank(MostVisitedURL(kUrl1, std::u16string())));
 
       ASSERT_TRUE(expecter.SawExpectedErrors());
     }
@@ -315,13 +303,13 @@ TEST_F(TopSitesDatabaseTest, Recovery3) {
     VerifyTablesAndColumns(db.db_.get());
 
     EXPECT_EQ(TopSitesDatabase::kRankOfNonExistingURL,
-              db.GetURLRank(MostVisitedURL(Url1(), std::u16string())));
+              db.GetURLRank(MostVisitedURL(kUrl1, std::u16string())));
 
     MostVisitedURLList urls;
     db.GetSites(&urls);
     ASSERT_EQ(2u, urls.size());
-    EXPECT_EQ(Url0(), urls[0].url);  // [0] because of url_rank.
-    EXPECT_EQ(Url2(), urls[1].url);  // [1] because of url_rank.
+    EXPECT_EQ(kUrl0, urls[0].url);  // [0] because of url_rank.
+    EXPECT_EQ(kUrl2, urls[1].url);  // [1] because of url_rank.
   }
 }
 
@@ -353,7 +341,7 @@ TEST_F(TopSitesDatabaseTest, Recovery4) {
     MostVisitedURLList urls;
     db.GetSites(&urls);
     ASSERT_EQ(3u, urls.size());
-    EXPECT_EQ(Url0(), urls[0].url);  // [0] because of url_rank.
+    EXPECT_EQ(kUrl0, urls[0].url);  // [0] because of url_rank.
 
     ASSERT_TRUE(expecter.SawExpectedErrors());
   }
@@ -393,11 +381,11 @@ TEST_F(TopSitesDatabaseTest, Recovery4) {
       sql::test::ScopedErrorExpecter expecter;
       expecter.ExpectError(SQLITE_CORRUPT);
 
-      // Data for Url1() was deleted, but the index entry remains, this will
+      // Data for kUrl1 was deleted, but the index entry remains, this will
       // throw SQLITE_CORRUPT.  The corruption handler will recover the database
       // and poison the handle, so the outer call fails.
       EXPECT_EQ(TopSitesDatabase::kRankOfNonExistingURL,
-                db.GetURLRank(MostVisitedURL(Url1(), std::u16string())));
+                db.GetURLRank(MostVisitedURL(kUrl1, std::u16string())));
 
       ASSERT_TRUE(expecter.SawExpectedErrors());
     }
@@ -418,13 +406,13 @@ TEST_F(TopSitesDatabaseTest, Recovery4) {
     VerifyTablesAndColumns(db.db_.get());
 
     EXPECT_EQ(TopSitesDatabase::kRankOfNonExistingURL,
-              db.GetURLRank(MostVisitedURL(Url1(), std::u16string())));
+              db.GetURLRank(MostVisitedURL(kUrl1, std::u16string())));
 
     MostVisitedURLList urls;
     db.GetSites(&urls);
     ASSERT_EQ(2u, urls.size());
-    EXPECT_EQ(Url0(), urls[0].url);  // [0] because of url_rank.
-    EXPECT_EQ(Url2(), urls[1].url);  // [1] because of url_rank.
+    EXPECT_EQ(kUrl0, urls[0].url);  // [0] because of url_rank.
+    EXPECT_EQ(kUrl2, urls[1].url);  // [1] because of url_rank.
   }
 }
 
@@ -435,8 +423,8 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_Delete) {
   ASSERT_TRUE(db.Init(file_name_));
 
   TopSitesDelta delta;
-  // Delete Url0(). Now db has Url1() and Url2().
-  MostVisitedURL url_to_delete(Url0(), u"Google");
+  // Delete kUrl0. Now db has kUrl1 and kUrl2.
+  MostVisitedURL url_to_delete(kUrl0, u"Google");
   delta.deleted.push_back(url_to_delete);
 
   // Update db.
@@ -445,7 +433,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_Delete) {
   // Read db and verify.
   MostVisitedURLList urls;
   db.GetSites(&urls);
-  VerifyURLsEqual(std::vector<GURL>({Url1(), Url2()}), urls);
+  VerifyURLsEqual(std::vector<GURL>({kUrl1, kUrl2}), urls);
 }
 
 TEST_F(TopSitesDatabaseTest, ApplyDelta_Add) {
@@ -456,7 +444,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_Add) {
 
   GURL mapsUrl = GURL("http://maps.google.com/");
 
-  // Add a new URL, rank = 0. Now db has mapsUrl, Url0(), Url1(), and Url2().
+  // Add a new URL, rank = 0. Now db has mapsUrl, kUrl0, kUrl1, and kUrl2.
   TopSitesDelta delta;
   MostVisitedURLWithRank url_to_add;
   url_to_add.url = MostVisitedURL(mapsUrl, u"Google Maps");
@@ -469,7 +457,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_Add) {
   // Read db and verify.
   MostVisitedURLList urls;
   db.GetSites(&urls);
-  VerifyURLsEqual(std::vector<GURL>({mapsUrl, Url0(), Url1(), Url2()}), urls);
+  VerifyURLsEqual(std::vector<GURL>({mapsUrl, kUrl0, kUrl1, kUrl2}), urls);
 }
 
 TEST_F(TopSitesDatabaseTest, ApplyDelta_Move) {
@@ -478,11 +466,11 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_Move) {
   TopSitesDatabase db;
   ASSERT_TRUE(db.Init(file_name_));
 
-  // Move Url1() by updating its rank to 2. Now db has Url0(), Url2(), and
-  // Url1().
+  // Move kUrl1 by updating its rank to 2. Now db has kUrl0, kUrl2, and
+  // kUrl1.
   TopSitesDelta delta;
   MostVisitedURLWithRank url_to_move;
-  url_to_move.url = MostVisitedURL(Url1(), u"Google Chrome");
+  url_to_move.url = MostVisitedURL(kUrl1, u"Google Chrome");
   url_to_move.rank = 2;
   delta.moved.push_back(url_to_move);
 
@@ -492,7 +480,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_Move) {
   // Read db and verify.
   MostVisitedURLList urls;
   db.GetSites(&urls);
-  VerifyURLsEqual(std::vector<GURL>({Url0(), Url2(), Url1()}), urls);
+  VerifyURLsEqual(std::vector<GURL>({kUrl0, kUrl2, kUrl1}), urls);
 }
 
 TEST_F(TopSitesDatabaseTest, ApplyDelta_All) {
@@ -504,20 +492,20 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_All) {
   GURL mapsUrl = GURL("http://maps.google.com/");
 
   TopSitesDelta delta;
-  // Delete Url0(). Now db has Url1() and Url2().
-  MostVisitedURL url_to_delete(Url0(), u"Google");
+  // Delete kUrl0. Now db has kUrl1 and kUrl2.
+  MostVisitedURL url_to_delete(kUrl0, u"Google");
   delta.deleted.push_back(url_to_delete);
 
-  // Add a new URL, not forced, rank = 0. Now db has mapsUrl, Url1() and Url2().
+  // Add a new URL, not forced, rank = 0. Now db has mapsUrl, kUrl1 and kUrl2.
   MostVisitedURLWithRank url_to_add;
   url_to_add.url = MostVisitedURL(mapsUrl, u"Google Maps");
   url_to_add.rank = 0;
   delta.added.push_back(url_to_add);
 
-  // Move Url1() by updating its rank to 2. Now db has mapsUrl, Url2() and
-  // Url1().
+  // Move kUrl1 by updating its rank to 2. Now db has mapsUrl, kUrl2 and
+  // kUrl1.
   MostVisitedURLWithRank url_to_move;
-  url_to_move.url = MostVisitedURL(Url1(), u"Google Chrome");
+  url_to_move.url = MostVisitedURL(kUrl1, u"Google Chrome");
   url_to_move.rank = 2;
   delta.moved.push_back(url_to_move);
 
@@ -527,7 +515,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_All) {
   // Read db and verify.
   MostVisitedURLList urls;
   db.GetSites(&urls);
-  VerifyURLsEqual(std::vector<GURL>({mapsUrl, Url2(), Url1()}), urls);
+  VerifyURLsEqual(std::vector<GURL>({mapsUrl, kUrl2, kUrl1}), urls);
 }
 
 }  // namespace history

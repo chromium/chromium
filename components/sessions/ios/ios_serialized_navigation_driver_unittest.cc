@@ -35,25 +35,30 @@ TEST(IOSSerializedNavigationDriverTest, SanitizeWithReferrerPolicyAlways) {
       SerializedNavigationEntryTestHelper::CreateNavigationForTest();
   SerializedNavigationEntryTestHelper::SetReferrerPolicy(
       web::ReferrerPolicyAlways, &navigation);
-
   driver->Sanitize(&navigation);
-  EXPECT_EQ(test_data::kIndex, navigation.index());
-  EXPECT_EQ(test_data::kUniqueID, navigation.unique_id());
-  EXPECT_EQ(test_data::ReferrerUrl(), navigation.referrer_url());
+
+  SerializedNavigationEntry reference_navigation =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  EXPECT_EQ(reference_navigation.index(), navigation.index());
+  EXPECT_EQ(reference_navigation.unique_id(), navigation.unique_id());
+  EXPECT_EQ(reference_navigation.referrer_url(), navigation.referrer_url());
   EXPECT_EQ(web::ReferrerPolicyAlways, navigation.referrer_policy());
-  EXPECT_EQ(test_data::VirtualUrl(), navigation.virtual_url());
-  EXPECT_EQ(test_data::kTitle, navigation.title());
-  EXPECT_EQ(test_data::kEncodedPageState, navigation.encoded_page_state());
+  EXPECT_EQ(reference_navigation.virtual_url(), navigation.virtual_url());
+  EXPECT_EQ(reference_navigation.title(), navigation.title());
+  EXPECT_EQ(reference_navigation.encoded_page_state(),
+            navigation.encoded_page_state());
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
-      navigation.transition_type(), test_data::kTransitionType));
-  EXPECT_EQ(test_data::kHasPostData, navigation.has_post_data());
-  EXPECT_EQ(test_data::kPostID, navigation.post_id());
-  EXPECT_EQ(test_data::OriginalRequestUrl(), navigation.original_request_url());
-  EXPECT_EQ(test_data::kIsOverridingUserAgent,
+      navigation.transition_type(), reference_navigation.transition_type()));
+  EXPECT_EQ(reference_navigation.has_post_data(), navigation.has_post_data());
+  EXPECT_EQ(reference_navigation.post_id(), navigation.post_id());
+  EXPECT_EQ(reference_navigation.original_request_url(),
+            navigation.original_request_url());
+  EXPECT_EQ(reference_navigation.is_overriding_user_agent(),
             navigation.is_overriding_user_agent());
-  EXPECT_EQ(test_data::kTimestamp, navigation.timestamp());
-  EXPECT_EQ(test_data::FaviconUrl(), navigation.favicon_url());
-  EXPECT_EQ(test_data::kHttpStatusCode, navigation.http_status_code());
+  EXPECT_EQ(reference_navigation.timestamp(), navigation.timestamp());
+  EXPECT_EQ(reference_navigation.favicon_url(), navigation.favicon_url());
+  EXPECT_EQ(reference_navigation.http_status_code(),
+            navigation.http_status_code());
 }
 
 // Tests that the input data is properly sanitized when the referrer policy is
@@ -69,21 +74,26 @@ TEST(IOSSerializedNavigationDriverTest, SanitizeWithReferrerPolicyNever) {
   driver->Sanitize(&navigation);
 
   // Fields that should remain untouched.
-  EXPECT_EQ(test_data::kIndex, navigation.index());
-  EXPECT_EQ(test_data::kUniqueID, navigation.unique_id());
-  EXPECT_EQ(test_data::VirtualUrl(), navigation.virtual_url());
-  EXPECT_EQ(test_data::kTitle, navigation.title());
-  EXPECT_EQ(test_data::kEncodedPageState, navigation.encoded_page_state());
+  SerializedNavigationEntry reference_navigation =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  EXPECT_EQ(reference_navigation.index(), navigation.index());
+  EXPECT_EQ(reference_navigation.unique_id(), navigation.unique_id());
+  EXPECT_EQ(reference_navigation.virtual_url(), navigation.virtual_url());
+  EXPECT_EQ(reference_navigation.title(), navigation.title());
+  EXPECT_EQ(reference_navigation.encoded_page_state(),
+            navigation.encoded_page_state());
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
-      navigation.transition_type(), test_data::kTransitionType));
-  EXPECT_EQ(test_data::kHasPostData, navigation.has_post_data());
-  EXPECT_EQ(test_data::kPostID, navigation.post_id());
-  EXPECT_EQ(test_data::OriginalRequestUrl(), navigation.original_request_url());
-  EXPECT_EQ(test_data::kIsOverridingUserAgent,
+      navigation.transition_type(), reference_navigation.transition_type()));
+  EXPECT_EQ(reference_navigation.has_post_data(), navigation.has_post_data());
+  EXPECT_EQ(reference_navigation.post_id(), navigation.post_id());
+  EXPECT_EQ(reference_navigation.original_request_url(),
+            navigation.original_request_url());
+  EXPECT_EQ(reference_navigation.is_overriding_user_agent(),
             navigation.is_overriding_user_agent());
-  EXPECT_EQ(test_data::kTimestamp, navigation.timestamp());
-  EXPECT_EQ(test_data::FaviconUrl(), navigation.favicon_url());
-  EXPECT_EQ(test_data::kHttpStatusCode, navigation.http_status_code());
+  EXPECT_EQ(reference_navigation.timestamp(), navigation.timestamp());
+  EXPECT_EQ(reference_navigation.favicon_url(), navigation.favicon_url());
+  EXPECT_EQ(reference_navigation.http_status_code(),
+            navigation.http_status_code());
 
   // Fields that were sanitized.
   EXPECT_EQ(GURL(), navigation.referrer_url());

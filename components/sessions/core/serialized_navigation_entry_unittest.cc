@@ -63,36 +63,26 @@ TEST(SerializedNavigationEntryTest, Pickle) {
   EXPECT_TRUE(new_navigation.ReadFromPickle(&pickle_iterator));
 
   // Fields that are written to the pickle.
-  EXPECT_EQ(test_data::kIndex, new_navigation.index());
-  EXPECT_EQ(test_data::ReferrerUrl(), new_navigation.referrer_url());
-  EXPECT_EQ(test_data::kReferrerPolicy, new_navigation.referrer_policy());
-  EXPECT_EQ(test_data::VirtualUrl(), new_navigation.virtual_url());
-  EXPECT_EQ(test_data::kTitle, new_navigation.title());
+  EXPECT_EQ(old_navigation.index(), new_navigation.index());
+  EXPECT_EQ(old_navigation.referrer_url(), new_navigation.referrer_url());
+  EXPECT_EQ(old_navigation.referrer_policy(), new_navigation.referrer_policy());
+  EXPECT_EQ(old_navigation.virtual_url(), new_navigation.virtual_url());
+  EXPECT_EQ(old_navigation.title(), new_navigation.title());
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
-      new_navigation.transition_type(), test_data::kTransitionType));
-  EXPECT_EQ(test_data::kHasPostData, new_navigation.has_post_data());
-  EXPECT_EQ(test_data::OriginalRequestUrl(),
+      new_navigation.transition_type(), old_navigation.transition_type()));
+  EXPECT_EQ(old_navigation.has_post_data(), new_navigation.has_post_data());
+  EXPECT_EQ(old_navigation.original_request_url(),
             new_navigation.original_request_url());
-  EXPECT_EQ(test_data::kIsOverridingUserAgent,
+  EXPECT_EQ(old_navigation.is_overriding_user_agent(),
             new_navigation.is_overriding_user_agent());
-  EXPECT_EQ(test_data::kTimestamp, new_navigation.timestamp());
-  EXPECT_EQ(test_data::kHttpStatusCode, new_navigation.http_status_code());
-
-  ASSERT_EQ(2U, new_navigation.extended_info_map().size());
-  ASSERT_EQ(1U, new_navigation.extended_info_map().count(
-                    test_data::kExtendedInfoKey1));
-  EXPECT_EQ(
-      test_data::kExtendedInfoValue1,
-      new_navigation.extended_info_map().at(test_data::kExtendedInfoKey1));
-  ASSERT_EQ(1U, new_navigation.extended_info_map().count(
-                    test_data::kExtendedInfoKey2));
-  EXPECT_EQ(
-      test_data::kExtendedInfoValue2,
-      new_navigation.extended_info_map().at(test_data::kExtendedInfoKey2));
-
-  EXPECT_EQ(test_data::kTaskId, new_navigation.task_id());
-  EXPECT_EQ(test_data::kParentTaskId, new_navigation.parent_task_id());
-  EXPECT_EQ(test_data::kRootTaskId, new_navigation.root_task_id());
+  EXPECT_EQ(old_navigation.timestamp(), new_navigation.timestamp());
+  EXPECT_EQ(old_navigation.http_status_code(),
+            new_navigation.http_status_code());
+  EXPECT_EQ(old_navigation.extended_info_map(),
+            new_navigation.extended_info_map());
+  EXPECT_EQ(old_navigation.task_id(), new_navigation.task_id());
+  EXPECT_EQ(old_navigation.parent_task_id(), new_navigation.parent_task_id());
+  EXPECT_EQ(old_navigation.root_task_id(), new_navigation.root_task_id());
 
   // Fields that are not written to the pickle.
   EXPECT_EQ(0, new_navigation.unique_id());

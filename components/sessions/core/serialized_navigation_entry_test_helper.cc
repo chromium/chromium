@@ -40,33 +40,6 @@ const int64_t kTaskId = 2;
 const int64_t kParentTaskId = 1;
 const int64_t kRootTaskId = 0;
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL ReferrerUrl() {
-  return GURL("http://www.referrer.com");
-}
-GURL Url() {
-  return GURL("http://www.url.com");
-}
-GURL VirtualUrl() {
-  return GURL("http://www.virtual-url.com");
-}
-GURL OriginalRequestUrl() {
-  return GURL("http://www.original-request.com");
-}
-GURL FaviconUrl() {
-  return GURL("http://virtual-url.com/favicon.ico");
-}
-GURL RedirectUrl0() {
-  return GURL("http://go/redirect0");
-}
-GURL RedirectUrl1() {
-  return GURL("http://go/redirect1");
-}
-GURL OtherUrl() {
-  return GURL("http://other.com");
-}
-
 }  // namespace test_data
 
 // static
@@ -92,18 +65,18 @@ SerializedNavigationEntryTestHelper::CreateNavigationForTest() {
   SerializedNavigationEntry navigation;
   navigation.index_ = test_data::kIndex;
   navigation.unique_id_ = test_data::kUniqueID;
-  navigation.referrer_url_ = test_data::ReferrerUrl();
+  navigation.referrer_url_ = GURL("http://www.referrer.com");
   navigation.referrer_policy_ = test_data::kReferrerPolicy;
-  navigation.virtual_url_ = test_data::VirtualUrl();
+  navigation.virtual_url_ = GURL("http://www.virtual-url.com");
   navigation.title_ = test_data::kTitle;
   navigation.encoded_page_state_ = test_data::kEncodedPageState;
   navigation.transition_type_ = test_data::kTransitionType;
   navigation.has_post_data_ = test_data::kHasPostData;
   navigation.post_id_ = test_data::kPostID;
-  navigation.original_request_url_ = test_data::OriginalRequestUrl();
+  navigation.original_request_url_ = GURL("http://www.original-request.com");
   navigation.is_overriding_user_agent_ = test_data::kIsOverridingUserAgent;
   navigation.timestamp_ = test_data::kTimestamp;
-  navigation.favicon_url_ = test_data::FaviconUrl();
+  navigation.favicon_url_ = GURL("http://virtual-url.com/favicon.ico");
   navigation.http_status_code_ = test_data::kHttpStatusCode;
   navigation.password_state_ = test_data::kPasswordState;
 
@@ -112,9 +85,9 @@ SerializedNavigationEntryTestHelper::CreateNavigationForTest() {
   navigation.extended_info_map_[test_data::kExtendedInfoKey2] =
       test_data::kExtendedInfoValue2;
 
-  navigation.redirect_chain_.push_back(test_data::RedirectUrl0());
-  navigation.redirect_chain_.push_back(test_data::RedirectUrl1());
-  navigation.redirect_chain_.push_back(test_data::VirtualUrl());
+  navigation.redirect_chain_.emplace_back("http://go/redirect0");
+  navigation.redirect_chain_.emplace_back("http://go/redirect1");
+  navigation.redirect_chain_.push_back(navigation.virtual_url_);
   navigation.task_id_ = test_data::kTaskId;
   navigation.parent_task_id_ = test_data::kParentTaskId;
   navigation.root_task_id_ = test_data::kRootTaskId;
