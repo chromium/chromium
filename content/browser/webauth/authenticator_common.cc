@@ -520,6 +520,15 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
   return response;
 }
 
+bool UsesDiscoverableCreds(
+    const device::MakeCredentialRequestHandler::Options& options) {
+  return options.resident_key == device::ResidentKeyRequirement::kRequired;
+}
+
+bool UsesDiscoverableCreds(const device::CtapGetAssertionRequest& request) {
+  return request.allow_list.empty();
+}
+
 // GetAvailableTransports returns the set of transports that should be passed to
 // a FidoRequestHandler for the current request. This determines for which
 // transports the request handler will attempt to obtain FidoDiscovery
@@ -527,7 +536,8 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
 base::flat_set<device::FidoTransportProtocol> GetAvailableTransports(
     RenderFrameHost* render_frame_host,
     device::FidoDiscoveryFactory* discovery_factory,
-    const url::Origin& caller_origin) {
+    const url::Origin& caller_origin,
+    bool uses_discoverable_creds) {
   // U2F requests proxied from the cryptotoken extension are limited to USB
   // devices.
   if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
@@ -561,8 +571,12 @@ base::flat_set<device::FidoTransportProtocol> GetAvailableTransports(
     transports.insert(device::FidoTransportProtocol::kInternal);
   }
 
-  if (base::FeatureList::IsEnabled(features::kWebAuthCable) ||
-      base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
+  // caBLE devices don't yet support discoverable credentials and so we
+  // shouldn't offer them for such requests. kWebAuthPhoneSupport is the feature
+  // flag to enable everything for development, and thus overrides this.
+  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
+      (!uses_discoverable_creds &&
+       base::FeatureList::IsEnabled(features::kWebAuthCable))) {
     transports.insert(
         device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
   }
@@ -574,8 +588,9 @@ base::flat_set<device::FidoTransportProtocol> GetAvailableTransports(
   // non-kCloudAssistedBluetoothLowEnergy transports in that case.
 
   if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
-      base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor) ||
-      base::FeatureList::IsEnabled(device::kWebAuthCableServerLink)) {
+      (!uses_discoverable_creds &&
+       (base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor) ||
+        base::FeatureList::IsEnabled(device::kWebAuthCableServerLink)))) {
     // In order for AOA to be active the |AuthenticatorRequestClientDelegate|
     // must configure a |UsbDeviceManager|, which it'll only do if
     // |kWebAuthPhoneSupport| is enabled, or if a V2 caBLE extension is seen.
@@ -770,7 +785,8 @@ void AuthenticatorCommon::StartMakeCredentialRequest(
   request_ = std::make_unique<device::MakeCredentialRequestHandler>(
       discovery_factory(),
       GetAvailableTransports(GetRenderFrameHost(), discovery_factory(),
-                             caller_origin_),
+                             caller_origin_,
+                             UsesDiscoverableCreds(*make_credential_options_)),
       *ctap_make_credential_request_, *make_credential_options_,
       base::BindOnce(&AuthenticatorCommon::OnRegisterResponse,
                      weak_factory_.GetWeakPtr()));
@@ -809,8 +825,9 @@ void AuthenticatorCommon::StartGetAssertionRequest(
 
   request_ = std::make_unique<device::GetAssertionRequestHandler>(
       discovery_factory(),
-      GetAvailableTransports(GetRenderFrameHost(), discovery_factory(),
-                             caller_origin_),
+      GetAvailableTransports(
+          GetRenderFrameHost(), discovery_factory(), caller_origin_,
+          UsesDiscoverableCreds(*ctap_get_assertion_request_)),
       *ctap_get_assertion_request_, *ctap_get_assertion_options_,
       allow_skipping_pin_touch,
       base::BindOnce(&AuthenticatorCommon::OnSignResponse,
