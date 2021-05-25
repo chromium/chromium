@@ -3775,11 +3775,6 @@
     "expiry_milestone": 76
   },
   {
-    "name": "offline-pages-ct-suppress-completed-notification",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "offline-pages-ct-v2",
     "owners": [ "sclittle", "srsudar", "offline-dev" ],
     "expiry_milestone": 76

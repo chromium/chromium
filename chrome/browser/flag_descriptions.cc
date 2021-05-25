@@ -3102,13 +3102,6 @@ const char kOfflinePagesCtV2Description[] =
     "V2 features include attributing pages to the app that initiated the "
     "custom tabs, and being able to query for pages by page attribution.";
 
-const char kOfflinePagesCTSuppressNotificationsName[] =
-    "Disable download complete notification for whitelisted CCT apps.";
-const char kOfflinePagesCTSuppressNotificationsDescription[] =
-    "Disable download complete notification for page downloads originating "
-    "from a CCT app whitelisted to show their own download complete "
-    "notification.";
-
 const char kOfflinePagesDescriptiveFailStatusName[] =
     "Enables descriptive failed download status text.";
 const char kOfflinePagesDescriptiveFailStatusDescription[] =

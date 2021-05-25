@@ -18,7 +18,6 @@ extern const base::Feature kOfflinePagesCTV2Feature;
 extern const base::Feature kOfflinePagesDescriptivePendingStatusFeature;
 extern const base::Feature kOfflinePagesInDownloadHomeOpenInCctFeature;
 extern const base::Feature kOfflinePagesDescriptiveFailStatusFeature;
-extern const base::Feature kOfflinePagesCTSuppressNotificationsFeature;
 extern const base::Feature kOfflineIndicatorFeature;
 extern const base::Feature kOnTheFlyMhtmlHashComputationFeature;
 extern const base::Feature kOfflinePagesNetworkStateLikelyUnknown;
@@ -54,10 +53,6 @@ bool IsOfflinePagesDescriptivePendingStatusEnabled();
 // Controls whether offline pages opened from the Downloads Home should be
 // opened in CCTs instead of new tabs.
 bool ShouldOfflinePagesInDownloadHomeOpenInCct();
-
-// Returns true if we should suppress completed notifications for certain custom
-// tabs downloads.
-bool IsOfflinePagesSuppressNotificationsEnabled();
 
 // Controls whether we should show a dinosaur page with alternate UI.
 bool ShouldShowAlternateDinoPage();

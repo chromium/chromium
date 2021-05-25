@@ -90,15 +90,10 @@ class DownloadUIAdapterDelegate : public DownloadUIAdapter::Delegate {
   void OpenItem(const OfflineItem& item,
                 int64_t offline_id,
                 const OpenParams& open_params) override {}
-  bool MaybeSuppressNotification(const std::string& origin,
-                                 const ClientId& item) override {
-    return maybe_suppress_notification_;
-  }
   MOCK_METHOD2(GetShareInfoForItem,
                void(const ContentId&, OfflineContentProvider::ShareCallback));
 
   bool is_visible = true;
-  bool maybe_suppress_notification_ = false;
 };
 
 class MockVisualsDecoder : public VisualsDecoder {

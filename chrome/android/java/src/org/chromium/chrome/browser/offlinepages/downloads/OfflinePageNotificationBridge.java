@@ -7,16 +7,11 @@ package org.chromium.chrome.browser.offlinepages.downloads;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.download.DownloadInfo;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadNotifier;
-import org.chromium.chrome.browser.download.DownloadSharedPreferenceEntry;
-import org.chromium.chrome.browser.download.DownloadSharedPreferenceHelper;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.offlinepages.OfflinePageOrigin;
-import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -152,54 +147,6 @@ public class OfflinePageNotificationBridge {
         if (notifier == null) return;
 
         notifier.notifyDownloadCanceled(LegacyHelpers.buildLegacyContentId(true, guid));
-    }
-
-    /**
-     * Aborts the notification.
-     *
-     * @param guid GUID of a request to download a page related to the notification.
-     */
-    private static void suppressNotification(String guid) {
-        DownloadNotifier notifier = getDownloadNotifier();
-        if (notifier == null) return;
-
-        ContentId id = LegacyHelpers.buildLegacyContentId(true, guid);
-
-        DownloadSharedPreferenceEntry entry =
-                DownloadSharedPreferenceHelper.getInstance().getDownloadSharedPreferenceEntry(id);
-
-        if (entry == null) return;
-
-        DownloadInfo downloadInfo = new DownloadInfo.Builder().setContentId(id).build();
-
-        notifier.removeDownloadNotification(entry.notificationId, downloadInfo);
-    }
-
-    /**
-     * Returns whether we should suppress download complete notification based
-     * on the origin app of the download.
-     * @param originString the qualified string form of an OfflinePageOrigin
-     */
-    private static boolean shouldSuppressCompletedNotification(String originString) {
-        OfflinePageOrigin origin = new OfflinePageOrigin(originString);
-        return AppHooks.get().getOfflinePagesSuppressNotificationPackages().contains(
-                origin.getAppName());
-    }
-
-    /**
-     * Returns whether the notification is suppressed. Suppression is determined
-     * based on the origin app of the download.
-     *
-     * @param originString the qualified string form of an OfflinePageOrigin
-     * @param guid GUID of a request to download a page related to the notification.
-     */
-    @CalledByNative
-    private static boolean maybeSuppressNotification(String originString, String guid) {
-        if (shouldSuppressCompletedNotification(originString)) {
-            suppressNotification(guid);
-            return true;
-        }
-        return false;
     }
 
     /**

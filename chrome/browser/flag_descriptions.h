@@ -1801,9 +1801,6 @@ extern const char kOfflinePagesCtDescription[];
 extern const char kOfflinePagesCtV2Name[];
 extern const char kOfflinePagesCtV2Description[];
 
-extern const char kOfflinePagesCTSuppressNotificationsName[];
-extern const char kOfflinePagesCTSuppressNotificationsDescription[];
-
 extern const char kOfflinePagesDescriptiveFailStatusName[];
 extern const char kOfflinePagesDescriptiveFailStatusDescription[];
 

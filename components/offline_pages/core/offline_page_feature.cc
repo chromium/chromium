@@ -41,9 +41,6 @@ const base::Feature kOfflinePagesDescriptivePendingStatusFeature{
 const base::Feature kOfflinePagesInDownloadHomeOpenInCctFeature{
     "OfflinePagesInDownloadHomeOpenInCct", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kOfflinePagesCTSuppressNotificationsFeature{
-    "OfflinePagesCTSuppressNotifications", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kOfflineIndicatorFeature{"OfflineIndicator",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -86,11 +83,6 @@ bool IsOfflinePagesDescriptivePendingStatusEnabled() {
 bool ShouldOfflinePagesInDownloadHomeOpenInCct() {
   return base::FeatureList::IsEnabled(
       kOfflinePagesInDownloadHomeOpenInCctFeature);
-}
-
-bool IsOfflinePagesSuppressNotificationsEnabled() {
-  return base::FeatureList::IsEnabled(
-      kOfflinePagesCTSuppressNotificationsFeature);
 }
 
 std::string GetPrefetchingOfflinePagesExperimentTag() {

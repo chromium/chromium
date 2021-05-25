@@ -161,11 +161,6 @@ void DownloadUIAdapter::OnCompleted(
   if (!delegate_->IsVisibleInUI(request.client_id()))
     return;
 
-  if (delegate_->MaybeSuppressNotification(request.request_origin(),
-                                           request.client_id())) {
-    return;
-  }
-
   OfflineItem item = OfflineItemConversions::CreateOfflineItem(request);
   if (status == RequestNotifier::BackgroundSavePageResult::SUCCESS) {
     // If the request is completed successfully, it means there should already

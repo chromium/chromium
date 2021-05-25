@@ -65,11 +65,6 @@ class DownloadUIAdapter : public OfflineContentProvider,
                           int64_t offline_id,
                           const OpenParams& open_params) = 0;
 
-    // Suppresses the download complete notification
-    // depending on flags and origin.
-    virtual bool MaybeSuppressNotification(const std::string& origin,
-                                           const ClientId& id) = 0;
-
     // Share item to other apps.
     virtual void GetShareInfoForItem(const ContentId& id,
                                      ShareCallback share_callback) = 0;

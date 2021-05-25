@@ -98,8 +98,6 @@ class DownloadUIAdapterDelegate : public DownloadUIAdapter::Delegate {
       const OfflineItem& item,
       int64_t offline_id,
       const offline_items_collection::OpenParams& open_params) override;
-  bool MaybeSuppressNotification(const std::string& origin,
-                                 const ClientId& id) override;
   void GetShareInfoForItem(const ContentId& id,
                            ShareCallback share_callback) override;
 
@@ -129,18 +127,6 @@ void DownloadUIAdapterDelegate::OpenItem(
       static_cast<int>(open_params.launch_location),
       open_params.open_in_incognito,
       offline_pages::ShouldOfflinePagesInDownloadHomeOpenInCct());
-}
-
-bool DownloadUIAdapterDelegate::MaybeSuppressNotification(
-    const std::string& origin,
-    const ClientId& id) {
-  // Do not suppress notification if chrome.
-  if (origin == "" || !IsOfflinePagesSuppressNotificationsEnabled())
-    return false;
-  JNIEnv* env = AttachCurrentThread();
-  return Java_OfflinePageDownloadBridge_maybeSuppressNotification(
-      env, ConvertUTF8ToJavaString(env, origin),
-      ConvertUTF8ToJavaString(env, id.id));
 }
 
 void DownloadUIAdapterDelegate::GetShareInfoForItem(
