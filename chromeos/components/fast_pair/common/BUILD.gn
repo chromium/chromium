@@ -1,0 +1,16 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Fast Pair is CrOS only")
+
+source_set("common") {
+  sources = [
+    "fast_pair_features.cc",
+    "fast_pair_features.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = []
+}
