@@ -42,8 +42,6 @@
 #endif
 
 namespace {
-// The image to use in the placeholder view while the table is empty.
-NSString* const kEmptyStateImage = @"reading_list_empty_state_new";
 // Types of ListItems used by the reading list UI.
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeHeader = kItemTypeEnumZero,
@@ -1000,23 +998,14 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   // elements may be outdated and the layout triggered by this function will
   // generate access non-existing items.
   [self.tableView reloadData];
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
-    UIImage* emptyImage = [UIImage imageNamed:@"reading_list_empty"];
-    NSString* title =
-        l10n_util::GetNSString(IDS_IOS_READING_LIST_NO_ENTRIES_TITLE);
-    NSString* subtitle =
-        l10n_util::GetNSString(IDS_IOS_READING_LIST_NO_ENTRIES_MESSAGE);
-    [self addEmptyTableViewWithImage:emptyImage title:title subtitle:subtitle];
-    self.navigationItem.largeTitleDisplayMode =
-        UINavigationItemLargeTitleDisplayModeNever;
-  } else {
-    UIImage* emptyImage = [[UIImage imageNamed:kEmptyStateImage]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    [self addEmptyTableViewWithAttributedMessage:GetReadingListEmptyMessage()
-                                           image:emptyImage];
-    [self updateEmptyTableViewAccessibilityLabel:
-              GetReadingListEmptyMessageA11yLabel()];
-  }
+  UIImage* emptyImage = [UIImage imageNamed:@"reading_list_empty"];
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_READING_LIST_NO_ENTRIES_TITLE);
+  NSString* subtitle =
+      l10n_util::GetNSString(IDS_IOS_READING_LIST_NO_ENTRIES_MESSAGE);
+  [self addEmptyTableViewWithImage:emptyImage title:title subtitle:subtitle];
+  self.navigationItem.largeTitleDisplayMode =
+      UINavigationItemLargeTitleDisplayModeNever;
   self.tableView.alwaysBounceVertical = NO;
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
   [self.audience readingListHasItems:NO];

@@ -122,7 +122,6 @@ source_set("reading_list_ui") {
     ":reading_list_constants",
     "resources:reading_list_empty",
     "resources:reading_list_empty_state",
-    "resources:reading_list_empty_state_new",
     "resources:reading_list_tools_icon",
     "//base",
     "//base:i18n",
