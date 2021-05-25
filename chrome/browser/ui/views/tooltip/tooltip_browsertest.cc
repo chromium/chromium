@@ -194,8 +194,9 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   helper()->HideAndReset();
 }
 
+// Disabled http://crbug.com/1212403
 IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
-                       ShowTooltipFromWebContentWithKeyboard) {
+                       DISABLED_ShowTooltipFromWebContentWithKeyboard) {
   if (SkipTestForOldWinVersion())
     return;
 
@@ -212,7 +213,9 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   helper()->HideAndReset();
 }
 
-IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, ShowTooltipFromIFrameWithKeyboard) {
+// Disabled http://crbug.com/1212403
+IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
+                       DISABLED_ShowTooltipFromIFrameWithKeyboard) {
   if (SkipTestForOldWinVersion())
     return;
 
@@ -254,7 +257,8 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, ShowTooltipFromIFrameWithKeyboard) {
   helper()->HideAndReset();
 }
 
-IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, HideTooltipOnKeyPress) {
+// Disabled http://crbug.com/1212403
+IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, DISABLED_HideTooltipOnKeyPress) {
   if (SkipTestForOldWinVersion())
     return;
 
