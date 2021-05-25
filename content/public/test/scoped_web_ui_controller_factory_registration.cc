@@ -29,4 +29,21 @@ ScopedWebUIControllerFactoryRegistration::
     content::WebUIControllerFactory::RegisterFactory(factory_to_replace_);
 }
 
+void CheckForLeakedWebUIControllerFactoryRegistrations::OnTestStart(
+    const testing::TestInfo& test_info) {
+  initial_num_registered_ =
+      content::WebUIControllerFactory::GetNumRegisteredFactoriesForTesting();
+}
+
+void CheckForLeakedWebUIControllerFactoryRegistrations::OnTestEnd(
+    const testing::TestInfo& test_info) {
+  EXPECT_EQ(
+      initial_num_registered_,
+      content::WebUIControllerFactory::GetNumRegisteredFactoriesForTesting())
+      << "A WebUIControllerFactory was registered by a test but never "
+         "unregistered. This can cause flakiness in later tests. Please use "
+         "ScopedWebUIControllerFactoryRegistration to ensure that registered "
+         "factories are unregistered.";
+}
+
 }  // namespace content

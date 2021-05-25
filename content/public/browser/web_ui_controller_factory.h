@@ -21,10 +21,13 @@ class WebUIController;
 // and creates WebUIController instances for given URLs.
 class CONTENT_EXPORT WebUIControllerFactory {
  public:
-  virtual ~WebUIControllerFactory() {}
+  virtual ~WebUIControllerFactory() = default;
 
   // Call to register a factory.
   static void RegisterFactory(WebUIControllerFactory* factory);
+
+  // Returns the number of registered factories.
+  static int GetNumRegisteredFactoriesForTesting();
 
   // Returns a WebUIController instance for the given URL, or nullptr if the URL
   // doesn't correspond to a WebUI.

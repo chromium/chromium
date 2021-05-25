@@ -26,6 +26,7 @@
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/update_client/update_query_params.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "extensions/buildflags/buildflags.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -128,6 +129,8 @@ void ChromeUnitTestSuite::Initialize() {
   testing::TestEventListeners& listeners =
       testing::UnitTest::GetInstance()->listeners();
   listeners.Append(new ChromeUnitTestSuiteInitializer);
+  listeners.Append(
+      new content::CheckForLeakedWebUIControllerFactoryRegistrations);
 
   {
     ChromeContentClient content_client;

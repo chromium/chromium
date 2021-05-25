@@ -25,6 +25,12 @@ void WebUIControllerFactory::RegisterFactory(WebUIControllerFactory* factory) {
   g_web_ui_controller_factories.Pointer()->push_back(factory);
 }
 
+int WebUIControllerFactory::GetNumRegisteredFactoriesForTesting() {
+  if (!g_web_ui_controller_factories.IsCreated())
+    return 0;
+  return g_web_ui_controller_factories.Get().size();
+}
+
 WebUIControllerFactoryRegistry* WebUIControllerFactoryRegistry::GetInstance() {
   return base::Singleton<WebUIControllerFactoryRegistry>::get();
 }
