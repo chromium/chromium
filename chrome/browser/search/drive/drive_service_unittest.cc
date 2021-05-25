@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/search/drive/drive_service.h"
+#include "base/hash/hash.h"
 #include "base/json/json_reader.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
@@ -45,6 +47,7 @@ class DriveServiceTest : public testing::Test {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   signin::IdentityTestEnvironment identity_test_env;
   TestingPrefServiceSimple prefs_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(DriveServiceTest, PassesDataOnSuccess) {
@@ -139,6 +142,9 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
             actual_documents.at(1)->mime_type);
   EXPECT_EQ("Foo bar foo bar", actual_documents.at(1)->justification_text);
   EXPECT_EQ("https://google.com/bar", actual_documents.at(1)->item_url.spec());
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("drive")));
 }
 
 TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
@@ -235,6 +241,9 @@ TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
             response4.at(0)->mime_type);
   EXPECT_EQ("Foo foo", response4.at(0)->justification_text);
   EXPECT_EQ("234", response4.at(0)->id);
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("drive")));
 }
 
 TEST_F(DriveServiceTest, PassesNoDataIfDismissed) {
@@ -271,6 +280,9 @@ TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
       GoogleServiceAuthError(GoogleServiceAuthError::State::CONNECTION_FAILED));
 
   EXPECT_FALSE(token_is_valid);
+  ASSERT_EQ(0,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("drive")));
 }
 
 TEST_F(DriveServiceTest, PassesNoDataOnNetError) {
@@ -302,6 +314,9 @@ TEST_F(DriveServiceTest, PassesNoDataOnNetError) {
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
   EXPECT_TRUE(empty_response);
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("drive")));
 }
 
 TEST_F(DriveServiceTest, PassesNoDataOnEmptyResponse) {
@@ -326,6 +341,9 @@ TEST_F(DriveServiceTest, PassesNoDataOnEmptyResponse) {
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
   EXPECT_TRUE(empty_response);
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("drive")));
 }
 
 TEST_F(DriveServiceTest, PassesNoDataOnMissingItemKey) {
@@ -353,6 +371,9 @@ TEST_F(DriveServiceTest, PassesNoDataOnMissingItemKey) {
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
   EXPECT_TRUE(actual_documents.empty());
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("drive")));
 }
 
 TEST_F(DriveServiceTest, DismissModule) {

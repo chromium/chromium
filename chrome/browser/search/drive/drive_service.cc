@@ -8,7 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "base/hash/hash.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -231,6 +233,8 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
       url_loader_factory_.get(),
       base::BindOnce(&DriveService::OnJsonReceived, weak_factory_.GetWeakPtr()),
       kMaxResponseSize);
+  base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
+                           base::PersistentHash("drive"));
 }
 
 void DriveService::OnJsonReceived(

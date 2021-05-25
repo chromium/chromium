@@ -4,8 +4,10 @@
 
 #include <memory>
 
+#include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/search/task_module/task_module_service.h"
 #include "chrome/test/base/testing_profile.h"
@@ -43,6 +45,7 @@ class TaskModuleServiceTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<TaskModuleService> service_;
 };
 
@@ -119,6 +122,9 @@ TEST_F(TaskModuleServiceTest, GoodShoppingResponse) {
   EXPECT_EQ("blub", result->related_searches[1]->text);
   EXPECT_EQ("https://google.com/blub",
             result->related_searches[1]->target_url.spec());
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash("shopping_tasks")));
 }
 
 // Verifies service can handle multiple in flight requests.
@@ -176,6 +182,9 @@ TEST_F(TaskModuleServiceTest, MultiRequest) {
 
   EXPECT_TRUE(result1);
   EXPECT_TRUE(result2);
+  ASSERT_EQ(2, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash("shopping_tasks")));
 }
 
 // Verifies error if JSON is malformed.
@@ -197,6 +206,9 @@ TEST_F(TaskModuleServiceTest, BadShoppingResponse) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(result);
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash("shopping_tasks")));
 }
 
 // Verifies error if no products.
@@ -235,6 +247,9 @@ TEST_F(TaskModuleServiceTest, NoTaskItems) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(result);
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash("shopping_tasks")));
 }
 
 // Verifies error if download fails.
@@ -257,6 +272,9 @@ TEST_F(TaskModuleServiceTest, ErrorResponse) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(result);
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash("shopping_tasks")));
 }
 
 // Verifies shopping tasks can be dismissed and restored and that the service
@@ -385,4 +403,8 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(result5);
   EXPECT_EQ("task 1 name", result5->name);
+
+  ASSERT_EQ(5, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash("shopping_tasks")));
 }
