@@ -151,6 +151,7 @@ void RenderViewImpl::Initialize(
         agent_scheduling_group_, params->main_frame->get_remote_params()->token,
         params->main_frame->get_remote_params()->routing_id,
         params->opener_frame_token, GetRoutingID(), MSG_ROUTING_NONE,
+        blink::mojom::TreeScopeType::kDocument /* ignored for main frames */,
         std::move(params->replication_state), params->devtools_main_frame_token,
         std::move(
             params->main_frame->get_remote_params()->main_frame_interfaces));

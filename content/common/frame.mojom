@@ -231,6 +231,8 @@ struct CreateFrameParams {
 
   pending_remote<blink.mojom.BrowserInterfaceBroker> interface_broker;
 
+  blink.mojom.TreeScopeType tree_scope_type;
+
   // When the new frame has a parent, |replication_state| holds the new frame's
   // properties replicated from the process rendering the parent frame, such as
   // the new frame's sandbox flags.

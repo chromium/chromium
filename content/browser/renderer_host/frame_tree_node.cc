@@ -108,7 +108,7 @@ FrameTreeNode* FrameTreeNode::From(RenderFrameHost* rfh) {
 FrameTreeNode::FrameTreeNode(
     FrameTree* frame_tree,
     RenderFrameHostImpl* parent,
-    blink::mojom::TreeScopeType scope,
+    blink::mojom::TreeScopeType tree_scope_type,
     const std::string& name,
     const std::string& unique_name,
     bool is_created_by_script,
@@ -120,6 +120,7 @@ FrameTreeNode::FrameTreeNode(
       parent_(parent),
       depth_(parent ? parent->frame_tree_node()->depth_ + 1 : 0u),
       frame_owner_element_type_(owner_type),
+      tree_scope_type_(tree_scope_type),
       replication_state_(blink::mojom::FrameReplicationState::New(
           url::Origin(),
           name,
@@ -127,7 +128,6 @@ FrameTreeNode::FrameTreeNode(
           blink::ParsedPermissionsPolicy(),
           network::mojom::WebSandboxFlags::kNone,
           blink::FramePolicy(),
-          scope,
           // should enforce strict mixed content checking
           blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
           // hashes of hosts for insecure request upgrades

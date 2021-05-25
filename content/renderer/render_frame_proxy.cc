@@ -61,7 +61,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyToReplaceFrame(
     AgentSchedulingGroup& agent_scheduling_group,
     RenderFrameImpl* frame_to_replace,
     int routing_id,
-    blink::mojom::TreeScopeType scope,
+    blink::mojom::TreeScopeType tree_scope_type,
     const blink::RemoteFrameToken& proxy_frame_token) {
   CHECK_NE(routing_id, MSG_ROUTING_NONE);
 
@@ -72,7 +72,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyToReplaceFrame(
   // always come from WebRemoteFrame::create and a call to WebFrame::swap must
   // follow later.
   blink::WebRemoteFrame* web_frame = blink::WebRemoteFrame::Create(
-      scope, proxy.get(), proxy->blink_interface_registry_.get(),
+      tree_scope_type, proxy.get(), proxy->blink_interface_registry_.get(),
       proxy->GetRemoteAssociatedInterfaces(), proxy_frame_token);
 
   proxy->Init(web_frame, frame_to_replace->render_view());
@@ -87,6 +87,7 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     const absl::optional<blink::FrameToken>& opener_frame_token,
     int render_view_routing_id,
     int parent_routing_id,
+    blink::mojom::TreeScopeType tree_scope_type,
     blink::mojom::FrameReplicationStatePtr replicated_state,
     const base::UnguessableToken& devtools_frame_token,
     mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
@@ -128,8 +129,7 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     // to be a RenderFrameProxy, because navigations initiated by local frames
     // should not wind up here.
     web_frame = parent->web_frame()->CreateRemoteChild(
-        replicated_state->scope,
-        blink::WebString::FromUTF8(replicated_state->name),
+        tree_scope_type, blink::WebString::FromUTF8(replicated_state->name),
         replicated_state->frame_policy, proxy.get(),
         proxy->blink_interface_registry_.get(),
         proxy->GetRemoteAssociatedInterfaces(), frame_token,

@@ -80,14 +80,6 @@ struct FrameReplicationState {
   // frame.
   blink.mojom.FramePolicy frame_policy;
 
-  // Whether the frame is in a document tree or a shadow tree, per the Shadow
-  // DOM spec: https://w3c.github.io/webcomponents/spec/shadow/
-  // Note: This should really be const, as it can never change once a frame is
-  // created. However, making it const makes it a pain to embed into IPC message
-  // params: having a const member implicitly deletes the copy assignment
-  // operator.
-  blink.mojom.TreeScopeType scope = blink.mojom.TreeScopeType.kDocument;
-
   // The insecure request policy that a frame's current document is enforcing.
   // Updates are immediately sent to all frame proxies when frames live in
   // different processes.

@@ -27,6 +27,7 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
 
@@ -79,7 +80,7 @@ class CONTENT_EXPORT FrameTreeNode {
   FrameTreeNode(
       FrameTree* frame_tree,
       RenderFrameHostImpl* parent,
-      blink::mojom::TreeScopeType scope,
+      blink::mojom::TreeScopeType tree_scope_type,
       const std::string& name,
       const std::string& unique_name,
       bool is_created_by_script,
@@ -423,6 +424,10 @@ class CONTENT_EXPORT FrameTreeNode {
     return frame_owner_element_type_;
   }
 
+  blink::mojom::TreeScopeType tree_scope_type() const {
+    return tree_scope_type_;
+  }
+
   void SetAdFrameType(blink::mojom::AdFrameType ad_frame_type);
 
   // The initial popup URL for new window opened using:
@@ -538,9 +543,17 @@ class CONTENT_EXPORT FrameTreeNode {
   // Whether the frame's owner element in the parent document is collapsed.
   bool is_collapsed_ = false;
 
-  // The type of frame owner for this frame, if any.
+  // The type of frame owner for this frame. This is only relevant for non-main
+  // frames.
   const blink::mojom::FrameOwnerElementType frame_owner_element_type_ =
       blink::mojom::FrameOwnerElementType::kNone;
+
+  // The tree scope type of frame owner element, i.e. whether the element is in
+  // the document tree (https://dom.spec.whatwg.org/#document-trees) or the
+  // shadow tree (https://dom.spec.whatwg.org/#shadow-trees). This is only
+  // relevant for non-main frames.
+  const blink::mojom::TreeScopeType tree_scope_type_ =
+      blink::mojom::TreeScopeType::kDocument;
 
   // Track information that needs to be replicated to processes that have
   // proxies for this frame.

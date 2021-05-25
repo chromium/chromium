@@ -70,7 +70,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       AgentSchedulingGroup& agent_scheduling_group,
       RenderFrameImpl* frame_to_replace,
       int routing_id,
-      blink::mojom::TreeScopeType scope,
+      blink::mojom::TreeScopeType tree_scope_type,
       const blink::RemoteFrameToken& proxy_frame_token);
 
   // This method should be used to create a RenderFrameProxy, when there isn't
@@ -93,6 +93,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       const absl::optional<blink::FrameToken>& opener_frame_token,
       int render_view_routing_id,
       int parent_routing_id,
+      blink::mojom::TreeScopeType tree_scope_type,
       blink::mojom::FrameReplicationStatePtr replicated_state,
       const base::UnguessableToken& devtools_frame_token,
       mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces);

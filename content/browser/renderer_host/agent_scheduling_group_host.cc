@@ -342,13 +342,14 @@ void AgentSchedulingGroupHost::CreateFrameProxy(
     const absl::optional<blink::FrameToken>& opener_frame_token,
     int32_t view_routing_id,
     int32_t parent_routing_id,
+    blink::mojom::TreeScopeType tree_scope_type,
     blink::mojom::FrameReplicationStatePtr replicated_state,
     const base::UnguessableToken& devtools_frame_token,
     mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
   DCHECK_EQ(state_, LifecycleState::kBound);
   mojo_remote_.get()->CreateFrameProxy(
       token, routing_id, opener_frame_token, view_routing_id, parent_routing_id,
-      std::move(replicated_state), devtools_frame_token,
+      tree_scope_type, std::move(replicated_state), devtools_frame_token,
       std::move(remote_main_frame_interfaces));
 }
 

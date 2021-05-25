@@ -1503,6 +1503,7 @@ void RenderFrameImpl::CreateFrame(
     int parent_routing_id,
     int previous_sibling_routing_id,
     const base::UnguessableToken& devtools_frame_token,
+    blink::mojom::TreeScopeType tree_scope_type,
     blink::mojom::FrameReplicationStatePtr replicated_state,
     mojom::CreateFrameWidgetParamsPtr widget_params,
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
@@ -1549,7 +1550,7 @@ void RenderFrameImpl::CreateFrame(
     if (opener_frame_token)
       opener = WebFrame::FromFrameToken(opener_frame_token.value());
     web_frame = parent_web_frame->CreateLocalChild(
-        replicated_state->scope, WebString::FromUTF8(replicated_state->name),
+        tree_scope_type, WebString::FromUTF8(replicated_state->name),
         replicated_state->frame_policy, render_frame,
         render_frame->blink_interface_registry_.get(),
         previous_sibling_web_frame,
@@ -2075,7 +2076,7 @@ void RenderFrameImpl::Unload(
   CHECK_NE(proxy_routing_id, MSG_ROUTING_NONE);
   RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyToReplaceFrame(
       agent_scheduling_group_, this, proxy_routing_id,
-      replicated_frame_state->scope, proxy_frame_token);
+      frame_->GetTreeScopeType(), proxy_frame_token);
 
   RenderViewImpl* render_view = render_view_;
   bool is_main_frame = is_main_frame_;

@@ -2807,6 +2807,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   params->opener_frame_token = opener_frame_token;
   params->parent_routing_id = parent_routing_id;
   params->previous_sibling_routing_id = previous_sibling_routing_id;
+  params->tree_scope_type = frame_tree_node()->tree_scope_type();
   params->replication_state =
       frame_tree_node()->current_replication_state().Clone();
   params->token = frame_token_;

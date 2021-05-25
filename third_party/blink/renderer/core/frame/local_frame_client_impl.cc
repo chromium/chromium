@@ -308,7 +308,7 @@ bool LocalFrameClientImpl::HasWebView() const {
 }
 
 bool LocalFrameClientImpl::InShadowTree() const {
-  return web_frame_->InShadowTree();
+  return web_frame_->GetTreeScopeType() == mojom::blink::TreeScopeType::kShadow;
 }
 
 void LocalFrameClientImpl::WillBeDetached() {

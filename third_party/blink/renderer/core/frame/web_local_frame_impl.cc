@@ -1930,10 +1930,8 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
   DCHECK(name.IsEmpty() || name.Equals(previous_frame->Tree().GetName()));
   auto* web_frame = MakeGarbageCollected<WebLocalFrameImpl>(
       base::PassKey<WebLocalFrameImpl>(),
-      previous_web_frame->InShadowTree()
-          ? mojom::blink::TreeScopeType::kShadow
-          : mojom::blink::TreeScopeType::kDocument,
-      client, interface_registry, frame_token);
+      previous_web_frame->GetTreeScopeType(), client, interface_registry,
+      frame_token);
   network::mojom::blink::WebSandboxFlags sandbox_flags =
       network::mojom::blink::WebSandboxFlags::kNone;
   PermissionsPolicyFeatureState feature_state;

@@ -6223,7 +6223,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // anymore.
   agent_scheduling_group_a->CreateFrameProxy(
       blink::RemoteFrameToken(), new_routing_id, absl::nullopt, view_routing_id,
-      parent_routing_id, blink::mojom::FrameReplicationState::New(),
+      parent_routing_id, blink::mojom::TreeScopeType::kDocument,
+      blink::mojom::FrameReplicationState::New(),
       base::UnguessableToken::Create(),
       std::move(remote_main_frame_interfaces));
 

@@ -50,6 +50,7 @@
 #include "third_party/blink/public/common/widget/screen_infos.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
+#include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
@@ -149,8 +150,10 @@ class RenderFrameImplTest : public RenderViewTest {
         TestRenderFrame::CreateStubFrameReceiver(),
         TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
         MSG_ROUTING_NONE, absl::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
-        base::UnguessableToken::Create(), std::move(frame_replication_state),
-        std::move(widget_params), blink::mojom::FrameOwnerProperties::New(),
+        base::UnguessableToken::Create(),
+        blink::mojom::TreeScopeType::kDocument,
+        std::move(frame_replication_state), std::move(widget_params),
+        blink::mojom::FrameOwnerProperties::New(),
         /*has_committed_real_load=*/true,
         blink::mojom::PolicyContainer::New(
             blink::mojom::PolicyContainerPolicies::New(),

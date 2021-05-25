@@ -34,7 +34,7 @@ void RemoteFrameClientImpl::Trace(Visitor* visitor) const {
 }
 
 bool RemoteFrameClientImpl::InShadowTree() const {
-  return web_frame_->InShadowTree();
+  return web_frame_->GetTreeScopeType() == mojom::blink::TreeScopeType::kShadow;
 }
 
 void RemoteFrameClientImpl::Detached(FrameDetachType type) {
