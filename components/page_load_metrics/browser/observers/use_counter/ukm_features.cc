@@ -203,6 +203,12 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::
               kCrossBrowsingContextGroupMainFrameNulledNonEmptyNameAccessed,
           WebFeature::kControlledWorkerWillBeUncontrolled,
+          WebFeature::kUsbDeviceOpen,
+          WebFeature::kWebBluetoothRemoteServerConnect,
+          WebFeature::kSerialRequestPort,
+          WebFeature::kSerialPortOpen,
+          WebFeature::kHidRequestDevice,
+          WebFeature::kHidDeviceOpen,
       }));
   return *opt_in_features;
 }
