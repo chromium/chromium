@@ -42,19 +42,22 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginBottom="12dp"
-          app:leading="@dimen/text_size_medium_leading"
+          android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
+          app:leading="@dimen/text_size_large_leading"
           tools:text="Alex Park\n345 High Street\nSan Francisco, CA, 94105\nUnited States" />
 
       <TextView
           android:id="@+id/email"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
           tools:text="alex.park@gmail.com" />
 
       <TextView
           android:id="@+id/phone"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
           tools:text="+1 858 230 4000" />
     </LinearLayout>
   </RelativeLayout>
