@@ -1652,6 +1652,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @FlakyTest(message = "https://crbug.com/1213173")
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testDismissTileWithContextMenuAndUndo() throws Exception {
         if (!mImmediateReturn) {
@@ -1684,6 +1685,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @FlakyTest(message = "https://crbug.com/1213173")
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testOpenTileInNewTabWithContextMenu() throws ExecutionException {
         if (!mImmediateReturn) {
@@ -1709,6 +1711,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @FlakyTest(message = "https://crbug.com/1213173")
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testOpenTileInIncognitoTabWithContextMenu() throws ExecutionException {
         Assume.assumeFalse("https://crbug.com/1210554", mUseInstantStart && mImmediateReturn);
