@@ -111,7 +111,7 @@ source_set("media_remoting_tests") {
     "//url",
   ]
 
-  if (!is_android) {
+  if (enable_media_remoting_rpc) {
     sources += [
       "courier_renderer_unittest.cc",
       "demuxer_stream_adapter_unittest.cc",
