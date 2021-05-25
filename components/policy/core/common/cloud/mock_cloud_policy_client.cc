@@ -39,8 +39,7 @@ void MockCloudPolicyClient::SetDMToken(const std::string& token) {
 void MockCloudPolicyClient::SetPolicy(const std::string& policy_type,
                                       const std::string& settings_entity_id,
                                       const em::PolicyFetchResponse& policy) {
-  responses_[std::make_pair(policy_type, settings_entity_id)] =
-      std::make_unique<enterprise_management::PolicyFetchResponse>(policy);
+  responses_[std::make_pair(policy_type, settings_entity_id)] = policy;
 }
 
 void MockCloudPolicyClient::SetFetchedInvalidationVersion(

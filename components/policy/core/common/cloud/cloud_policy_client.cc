@@ -980,7 +980,7 @@ const em::PolicyFetchResponse* CloudPolicyClient::GetPolicyFor(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = responses_.find(std::make_pair(policy_type, settings_entity_id));
-  return it == responses_.end() ? nullptr : it->second.get();
+  return it == responses_.end() ? nullptr : &it->second;
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -1159,7 +1159,7 @@ void CloudPolicyClient::OnPolicyFetchCompleted(
                      << ", entity: " << entity_id << ", ignoring";
         continue;
       }
-      responses_[key] = std::make_unique<em::PolicyFetchResponse>(response);
+      responses_[key] = response;
     }
     state_keys_to_upload_.clear();
     NotifyPolicyFetched();

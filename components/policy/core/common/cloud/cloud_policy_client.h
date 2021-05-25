@@ -54,9 +54,8 @@ class POLICY_EXPORT CloudPolicyClient {
  public:
   // Maps a (policy type, settings entity ID) pair to its corresponding
   // PolicyFetchResponse.
-  using ResponseMap =
-      std::map<std::pair<std::string, std::string>,
-               std::unique_ptr<enterprise_management::PolicyFetchResponse>>;
+  using ResponseMap = std::map<std::pair<std::string, std::string>,
+                               enterprise_management::PolicyFetchResponse>;
 
   // A callback which receives boolean status of an operation.  If the operation
   // succeeded, |status| is true.

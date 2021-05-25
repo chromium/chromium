@@ -33,10 +33,9 @@
 
 namespace em = enterprise_management;
 
-using ScopedResponseMap =
-    std::unordered_map<policy::PolicyNamespace,
-                       std::unique_ptr<em::PolicyFetchResponse>,
-                       policy::PolicyNamespaceHash>;
+using ScopedResponseMap = std::unordered_map<policy::PolicyNamespace,
+                                             em::PolicyFetchResponse,
+                                             policy::PolicyNamespaceHash>;
 
 namespace policy {
 
@@ -262,7 +261,7 @@ void ComponentCloudPolicyService::Backend::UpdateWithLastFetchedPolicy() {
   for (auto it = last_fetched_policy_->begin();
        it != last_fetched_policy_->end(); ++it) {
     updater_->UpdateExternalPolicy(
-        it->first, std::make_unique<em::PolicyFetchResponse>(*it->second));
+        it->first, std::make_unique<em::PolicyFetchResponse>(it->second));
   }
 }
 
@@ -454,8 +453,7 @@ void ComponentCloudPolicyService::UpdateFromClient() {
       DVLOG(1) << "Ignored policy with type = " << response.first.first;
       continue;
     }
-    (*valid_responses)[ns] =
-        std::make_unique<em::PolicyFetchResponse>(*response.second);
+    (*valid_responses)[ns] = response.second;
   }
 
   backend_task_runner_->PostTask(
