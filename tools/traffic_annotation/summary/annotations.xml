@@ -285,8 +285,6 @@ Refer to README.md for content description and update process.
  <item id="remoting_telemetry_log_writer" added_in_milestone="86" hash_code="107268760" type="0" content_hash_code="81741595" os_list="linux,windows" file_path="remoting/base/telemetry_log_writer.cc"/>
  <item id="render_view_context_menu" added_in_milestone="62" hash_code="25844439" type="0" content_hash_code="69471170" os_list="linux,windows" file_path="chrome/browser/renderer_context_menu/render_view_context_menu.cc"/>
  <item id="renderer_initiated_download" added_in_milestone="62" hash_code="116443055" type="0" content_hash_code="37846436" os_list="linux,windows" file_path="content/browser/renderer_host/render_frame_host_impl.cc"/>
- <item id="repeatable_queries_deletion" added_in_milestone="88" hash_code="59980744" type="0" content_hash_code="9022058" os_list="linux,windows" file_path="components/search/repeatable_queries/repeatable_queries_service.cc"/>
- <item id="repeatable_queries_service" added_in_milestone="88" hash_code="5394442" type="0" content_hash_code="115294794" os_list="linux,windows" file_path="components/search/repeatable_queries/repeatable_queries_service.cc"/>
  <item id="reporting" added_in_milestone="62" hash_code="109891200" type="0" content_hash_code="125758928" os_list="linux,windows" file_path="net/reporting/reporting_uploader.cc"/>
  <item id="resource_dispatcher_host" added_in_milestone="62" hash_code="81157007" type="0" deprecated="2019-07-30" content_hash_code="35725167" file_path=""/>
  <item id="resource_prefetch" added_in_milestone="62" hash_code="110815970" type="0" deprecated="2018-02-28" content_hash_code="39251261" file_path=""/>

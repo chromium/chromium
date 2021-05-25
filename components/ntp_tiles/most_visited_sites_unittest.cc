@@ -472,9 +472,9 @@ class MostVisitedSitesTest
     EXPECT_CALL(*icon_cacher, StartFetchMostLikely(_, _)).Times(AtLeast(0));
 
     most_visited_sites_ = std::make_unique<MostVisitedSites>(
-        &pref_service_, mock_top_sites_, /*repeatable_queries=*/nullptr,
-        &mock_suggestions_service_, popular_sites_factory_.New(),
-        std::move(mock_custom_links), std::move(icon_cacher),
+        &pref_service_, mock_top_sites_, &mock_suggestions_service_,
+        popular_sites_factory_.New(), std::move(mock_custom_links),
+        std::move(icon_cacher),
         /*supervisor=*/nullptr);
   }
 

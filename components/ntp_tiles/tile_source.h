@@ -28,10 +28,8 @@ enum class TileSource {
   HOMEPAGE,
   // Tile comes from explore sites list.
   EXPLORE,
-  // Tile comes from the repeatable queries service, based on search history.
-  REPEATABLE_QUERIES_SERVICE,
 
-  LAST = REPEATABLE_QUERIES_SERVICE
+  LAST = EXPLORE
 };
 
 }  // namespace ntp_tiles

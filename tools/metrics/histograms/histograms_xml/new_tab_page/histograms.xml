@@ -1325,6 +1325,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.RepeatableQueries.ExtractedCount" units="count"
     expires_after="2021-10-25">
+  <obsolete>
+    Removed in 05 2021.
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -1337,6 +1340,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.RepeatableQueries.ExtractionDuration" units="ms"
     expires_after="2021-10-25">
+  <obsolete>
+    Removed in 05 2021.
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>

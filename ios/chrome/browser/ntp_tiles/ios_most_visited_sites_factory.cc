@@ -25,7 +25,6 @@ IOSMostVisitedSitesFactory::NewForBrowserState(
   return std::make_unique<ntp_tiles::MostVisitedSites>(
       browser_state->GetPrefs(),
       ios::TopSitesFactory::GetForBrowserState(browser_state),
-      /*repeatable_queries=*/nullptr,
       suggestions::SuggestionsServiceFactory::GetForBrowserState(browser_state),
       IOSPopularSitesFactory::NewForBrowserState(browser_state),
       /*custom_links=*/nullptr,

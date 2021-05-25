@@ -1512,19 +1512,6 @@ const FeatureEntry::FeatureVariation kNtpDriveModuleVariations[] = {
     {"- Managed Users Only", kNtpDriveModuleManagedUsersOnly,
      base::size(kNtpDriveModuleManagedUsersOnly), nullptr},
 };
-
-const FeatureEntry::FeatureParam kNtpRepeatableQueriesInsertPositionStart[] = {
-    {ntp_features::kNtpRepeatableQueriesInsertPositionParam, "start"}};
-const FeatureEntry::FeatureParam kNtpRepeatableQueriesInsertPositionEnd[] = {
-    {ntp_features::kNtpRepeatableQueriesInsertPositionParam, "end"}};
-const FeatureEntry::FeatureVariation kNtpRepeatableQueriesVariations[] = {
-    {"- Start", kNtpRepeatableQueriesInsertPositionStart,
-     base::size(kNtpRepeatableQueriesInsertPositionStart),
-     "t3317864" /* variation_id */},
-    {"- End", kNtpRepeatableQueriesInsertPositionEnd,
-     base::size(kNtpRepeatableQueriesInsertPositionEnd),
-     "t3317864" /* variation_id */},
-};
 #endif  // !defined(OS_ANDROID)
 
 #if !defined(OS_ANDROID)
@@ -4618,9 +4605,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ntp-repeatable-queries", flag_descriptions::kNtpRepeatableQueriesName,
      flag_descriptions::kNtpRepeatableQueriesDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpRepeatableQueries,
-                                    kNtpRepeatableQueriesVariations,
-                                    "NtpRepeatableQueries")},
+     FEATURE_VALUE_TYPE(ntp_features::kNtpRepeatableQueries)},
 
     {"ntp-modules", flag_descriptions::kNtpModulesName,
      flag_descriptions::kNtpModulesDescription, kOsDesktop,

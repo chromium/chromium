@@ -6,9 +6,6 @@ static_library("search") {
   sources = [
     "ntp_features.cc",
     "ntp_features.h",
-    "repeatable_queries/repeatable_queries_service.cc",
-    "repeatable_queries/repeatable_queries_service.h",
-    "repeatable_queries/repeatable_queries_service_observer.h",
     "search.cc",
     "search.h",
     "search_provider_observer.cc",
@@ -34,10 +31,7 @@ static_library("search") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "repeatable_queries/repeatable_queries_service_unittest.cc",
-    "search_unittest.cc",
-  ]
+  sources = [ "search_unittest.cc" ]
   if (is_android) {
     sources += [ "search_android_unittest.cc" ]
   }

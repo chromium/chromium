@@ -409,8 +409,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="popular_sites_fetch"/>
       <traffic_annotation unique_id="search_suggest_service"/>
       <traffic_annotation unique_id="remote_suggestions_provider"/>
-      <traffic_annotation unique_id="repeatable_queries_deletion"/>
-      <traffic_annotation unique_id="repeatable_queries_service"/>
       <traffic_annotation unique_id="promo_service"/>
       <traffic_annotation unique_id="task_module_service"/>
     </sender>

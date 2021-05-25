@@ -92,7 +92,6 @@ bool ChromeNTPTilesInternalsMessageHandlerClient::DoesSourceExist(
       return false;
 #endif
     case ntp_tiles::TileSource::CUSTOM_LINKS:
-    case ntp_tiles::TileSource::REPEATABLE_QUERIES_SERVICE:
 #if defined(OS_ANDROID)
       return false;
 #else

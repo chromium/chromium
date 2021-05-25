@@ -95,15 +95,6 @@ const base::Feature kNtpChromeCartModule{"NtpChromeCartModule",
 const base::Feature kNtpDriveModule{"NtpDriveModule",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const char kNtpRepeatableQueriesAgeThresholdDaysParam[] =
-    "NtpRepeatableQueriesAgeThresholdDays";
-const char kNtpRepeatableQueriesRecencyHalfLifeSecondsParam[] =
-    "NtpRepeatableQueriesRecencyHalfLifeSeconds";
-const char kNtpRepeatableQueriesFrequencyExponentParam[] =
-    "NtpRepeatableQueriesFrequencyExponent";
-const char kNtpRepeatableQueriesInsertPositionParam[] =
-    "NtpRepeatableQueriesInsertPosition";
-
 const char kNtpModulesLoadTimeoutMillisecondsParam[] =
     "NtpModulesLoadTimeoutMillisecondsParam";
 const char kNtpStatefulTasksModuleDataParam[] =
@@ -116,60 +107,6 @@ const char kNtpChromeCartModuleHeuristicsImprovementParam[] =
 const char kNtpDriveModuleDataParam[] = "NtpDriveModuleDataParam";
 const char kNtpDriveModuleManagedUsersOnlyParam[] =
     "NtpDriveModuleManagedUsersOnlyParam";
-
-base::Time GetLocalHistoryRepeatableQueriesAgeThreshold() {
-  const base::TimeDelta kLocalHistoryRepeatableQueriesAgeThreshold =
-      base::TimeDelta::FromDays(180);  // Six months.
-  std::string param_value = base::GetFieldTrialParamValueByFeature(
-      kNtpRepeatableQueries, kNtpRepeatableQueriesAgeThresholdDaysParam);
-
-  // If the field trial param is not found or cannot be parsed to an unsigned
-  // integer, return the default value.
-  unsigned int param_value_as_int = 0;
-  if (!base::StringToUint(param_value, &param_value_as_int)) {
-    return base::Time::Now() - kLocalHistoryRepeatableQueriesAgeThreshold;
-  }
-
-  return (base::Time::Now() - base::TimeDelta::FromDays(param_value_as_int));
-}
-
-int GetLocalHistoryRepeatableQueriesRecencyHalfLifeSeconds() {
-  const base::TimeDelta kLocalHistoryRepeatableQueriesRecencyHalfLife =
-      base::TimeDelta::FromDays(7);  // One week.
-  std::string param_value = base::GetFieldTrialParamValueByFeature(
-      kNtpRepeatableQueries, kNtpRepeatableQueriesRecencyHalfLifeSecondsParam);
-
-  // If the field trial param is not found or cannot be parsed to an unsigned
-  // integer, return the default value.
-  unsigned int param_value_as_int = 0;
-  if (!base::StringToUint(param_value, &param_value_as_int)) {
-    return kLocalHistoryRepeatableQueriesRecencyHalfLife.InSeconds();
-  }
-
-  return param_value_as_int;
-}
-
-double GetLocalHistoryRepeatableQueriesFrequencyExponent() {
-  const double kLocalHistoryRepeatableQueriesFrequencyExponent = 2.0;
-  std::string param_value = base::GetFieldTrialParamValueByFeature(
-      kNtpRepeatableQueries, kNtpRepeatableQueriesFrequencyExponentParam);
-
-  // If the field trial param is not found or cannot be parsed to an unsigned
-  // integer, return the default value.
-  double param_value_as_double = 0;
-  if (!base::StringToDouble(param_value, &param_value_as_double)) {
-    return kLocalHistoryRepeatableQueriesFrequencyExponent;
-  }
-
-  return param_value_as_double;
-}
-
-RepeatableQueriesInsertPosition GetRepeatableQueriesInsertPosition() {
-  std::string param_value = base::GetFieldTrialParamValueByFeature(
-      kNtpRepeatableQueries, kNtpRepeatableQueriesInsertPositionParam);
-  return param_value == "end" ? RepeatableQueriesInsertPosition::kEnd
-                              : RepeatableQueriesInsertPosition::kStart;
-}
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
