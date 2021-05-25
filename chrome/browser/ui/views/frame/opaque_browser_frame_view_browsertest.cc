@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/test/test_views.h"
@@ -179,4 +180,141 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, StaticTitleBarHeight) {
   // affected.
   EXPECT_EQ(container_height, web_app_frame_toolbar_->height());
   EXPECT_EQ(title_bar_height, GetRestoredTitleBarHeight());
+}
+
+class WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest
+    : public InProcessBrowserTest {
+ public:
+  WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest() {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitAndEnableFeature(
+        features::kWebAppWindowControlsOverlay);
+  }
+  WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest(
+      const WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest&) = delete;
+  WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest& operator=(
+      const WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest&) = delete;
+  ~WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest() override = default;
+
+  bool InstallAndLaunchWebAppWithWindowControlsOverlay() {
+    GURL start_url("https://test.org");
+    std::vector<blink::mojom::DisplayMode> display_overrides;
+    display_overrides.emplace_back(
+        blink::mojom::DisplayMode::kWindowControlsOverlay);
+    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    web_app_info->start_url = start_url;
+    web_app_info->scope = start_url.GetWithoutFilename();
+    web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
+    web_app_info->open_as_window = true;
+    web_app_info->title = u"A Web App";
+    web_app_info->display_override = display_overrides;
+
+    web_app::AppId app_id = web_app::test::InstallWebApp(
+        browser()->profile(), std::move(web_app_info));
+
+    Browser* app_browser =
+        web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+
+    web_app::NavigateToURLAndWait(app_browser, start_url);
+
+    browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser);
+    views::NonClientFrameView* frame_view =
+        browser_view_->GetWidget()->non_client_view()->frame_view();
+
+    // Not all platform configurations use OpaqueBrowserFrameView for their
+    // browser windows, see |CreateBrowserNonClientFrameView()|.
+    bool is_opaque_browser_frame_view =
+        views::IsViewClass<OpaqueBrowserFrameView>(frame_view);
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS)
+    DCHECK(is_opaque_browser_frame_view);
+#else
+    if (!is_opaque_browser_frame_view)
+      return false;
+#endif
+
+    opaque_browser_frame_view_ =
+        static_cast<OpaqueBrowserFrameView*>(frame_view);
+    auto* web_app_frame_toolbar =
+        opaque_browser_frame_view_->web_app_frame_toolbar_for_testing();
+    DCHECK(web_app_frame_toolbar);
+    DCHECK(web_app_frame_toolbar->GetVisible());
+
+    return true;
+  }
+
+  BrowserView* browser_view_ = nullptr;
+  OpaqueBrowserFrameView* opaque_browser_frame_view_ = nullptr;
+
+ private:
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest,
+                       UpdateBoundingRect) {
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
+  static_cast<views::View*>(opaque_browser_frame_view_)->Layout();
+
+  auto* web_contents =
+      opaque_browser_frame_view_->browser_view()->GetActiveWebContents();
+
+  // window controls overlay should be not be an empty rect and visible as this
+  // a web app.
+  int empty_rect_value = 0;
+
+  EXPECT_EQ(true, EvalJs(web_contents,
+                         "window.navigator.windowControlsOverlay.visible"));
+
+  EXPECT_EQ(
+      0, EvalJs(web_contents,
+                "navigator.windowControlsOverlay.getBoundingClientRect().x"));
+  EXPECT_EQ(
+      0, EvalJs(web_contents,
+                "navigator.windowControlsOverlay.getBoundingClientRect().y"));
+  EXPECT_NE(
+      empty_rect_value,
+      EvalJs(web_contents,
+             "navigator.windowControlsOverlay.getBoundingClientRect().width"));
+  EXPECT_NE(
+      empty_rect_value,
+      EvalJs(web_contents,
+             "navigator.windowControlsOverlay.getBoundingClientRect().height"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOvelayTest,
+                       GeometryChangeEvent) {
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
+  auto* web_contents =
+      opaque_browser_frame_view_->browser_view()->GetActiveWebContents();
+
+  EXPECT_TRUE(ExecuteScript(
+      web_contents->GetMainFrame(),
+      "geometrychangeCount = 0;"
+      "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
+      "  geometrychangeCount++;"
+      "  rect = e.boundingRect;"
+      "  visible = e.visible;"
+      "}"));
+
+  // Change size of widget to trigger a "geometrychange" event.
+  gfx::Rect bounds =
+      opaque_browser_frame_view_->browser_view()->GetLocalBounds();
+  bounds.set_width(bounds.width() - 1);
+  opaque_browser_frame_view_->browser_view()->GetWidget()->SetBounds(bounds);
+
+  // Window controls overlay should be not be an empty rect and visible as this
+  // a web app.
+  int empty_rect_value = 0;
+
+  // expect the "geometrychange" event to have fired.
+  EXPECT_NE(0, EvalJs(web_contents, "geometrychangeCount"));
+
+  // Validate event payload.
+  EXPECT_EQ(true, EvalJs(web_contents, "visible"));
+  EXPECT_NE(empty_rect_value, EvalJs(web_contents, "rect.width"));
+  EXPECT_NE(empty_rect_value, EvalJs(web_contents, "rect.height"));
 }

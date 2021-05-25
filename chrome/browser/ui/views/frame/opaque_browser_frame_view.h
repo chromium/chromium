@@ -20,6 +20,7 @@
 #include "ui/views/window/non_client_view.h"
 
 class BrowserView;
+class CaptionButtonPlaceholderContainer;
 class OpaqueBrowserFrameViewLayout;
 class OpaqueBrowserFrameViewPlatformSpecific;
 class TabIconView;
@@ -63,6 +64,8 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   int GetThemeBackgroundXInset() const override;
   void UpdateThrobber(bool running) override;
   gfx::Size GetMinimumSize() const override;
+  void PaintAsActiveChanged() override;
+  void UpdateFrameColor() override;
 
   // views::NonClientFrameView:
   gfx::Rect GetBoundsForClientView() const override;
@@ -102,6 +105,8 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   bool IsFrameCondensed() const override;
   bool EverHasVisibleBackgroundTabShapes() const override;
   FrameButtonStyle GetFrameButtonStyle() const override;
+  void UpdateWindowControlsOverlay(
+      const gfx::Rect& bounding_rect) const override;
 
  protected:
   views::Button* minimize_button() const { return minimize_button_; }
@@ -183,6 +188,8 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   void PaintMaximizedFrameBorder(gfx::Canvas* canvas) const;
   void PaintClientEdge(gfx::Canvas* canvas) const;
 
+  void UpdateCaptionButtonPlaceholderContainerBackground();
+
   // Our layout manager also calculates various bounds.
   OpaqueBrowserFrameViewLayout* layout_;
 
@@ -201,6 +208,11 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
 
   // Observer that handles platform dependent configuration.
   std::unique_ptr<OpaqueBrowserFrameViewPlatformSpecific> platform_observer_;
+
+  // PlaceholderContainer beneath the controls button for PWAs with window
+  // controls overlay display override.
+  CaptionButtonPlaceholderContainer* caption_button_placeholder_container_ =
+      nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_OPAQUE_BROWSER_FRAME_VIEW_H_

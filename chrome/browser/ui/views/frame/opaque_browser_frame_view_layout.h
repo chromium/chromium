@@ -12,6 +12,7 @@
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/window/frame_buttons.h"
 
+class CaptionButtonPlaceholderContainer;
 class WebAppFrameToolbarView;
 class OpaqueBrowserFrameViewLayoutDelegate;
 
@@ -124,6 +125,11 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // the other overrides.
   gfx::Size GetMinimumSize(const views::View* host) const override;
 
+  void set_window_controls_overlay_enabled(
+      bool is_window_controls_overlay_enabled) {
+    is_window_controls_overlay_enabled_ = is_window_controls_overlay_enabled;
+  }
+
  protected:
   // Whether a specific button should be inserted on the leading or trailing
   // side.
@@ -178,6 +184,8 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // frame buttons.
   TopAreaPadding GetTopAreaPadding() const;
 
+  void LayoutTitleBarForWindowControlsOverlay(const views::View* host);
+
   // Returns true if a 3D edge should be drawn around the window frame.  If
   // |restored| is true, acts as if the window is restored regardless of the
   // real mode.
@@ -218,6 +226,9 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   std::vector<views::FrameButton> trailing_buttons_;
 
   views::ClientView* client_view_ = nullptr;
+
+  bool is_window_controls_overlay_enabled_ = false;
+  CaptionButtonPlaceholderContainer* caption_button_placeholder_container_;
 
   DISALLOW_COPY_AND_ASSIGN(OpaqueBrowserFrameViewLayout);
 };

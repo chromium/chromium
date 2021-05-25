@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
-#include "chrome/browser/ui/views/frame/caption_button_placeholder_container_mac.h"
+#include "chrome/browser/ui/views/frame/caption_button_placeholder_container.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/window_controls_overlay_input_routing_mac.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -80,8 +80,8 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
           std::make_unique<WebAppFrameToolbarView>(frame, browser_view)));
 
       if (browser_view->IsWindowControlsOverlayEnabled()) {
-        caption_button_placeholder_container_ = AddChildView(
-            std::make_unique<CaptionButtonPlaceholderContainerMac>(this));
+        caption_button_placeholder_container_ =
+            AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
         caption_buttons_overlay_input_routing_view_ =
             std::make_unique<WindowControlsOverlayInputRoutingMac>(
                 this, caption_button_placeholder_container_,
@@ -112,9 +112,6 @@ BrowserNonClientFrameViewMac::~BrowserNonClientFrameViewMac() {
     [fullscreen_toolbar_controller_ exitFullscreenMode];
 }
 
-SkColor BrowserNonClientFrameViewMac::GetTitlebarColor() const {
-  return GetFrameColor();
-}
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, BrowserNonClientFrameView implementation:
 
@@ -259,6 +256,15 @@ bool BrowserNonClientFrameViewMac::ShouldHideTopUIForFullscreen() const {
 void BrowserNonClientFrameViewMac::UpdateThrobber(bool running) {
 }
 
+void BrowserNonClientFrameViewMac::PaintAsActiveChanged() {
+  UpdateCaptionButtonPlaceholderContainerBackground();
+  BrowserNonClientFrameView::PaintAsActiveChanged();
+}
+
+void BrowserNonClientFrameViewMac::UpdateFrameColor() {
+  UpdateCaptionButtonPlaceholderContainerBackground();
+  BrowserNonClientFrameView::UpdateFrameColor();
+}
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, views::NonClientFrameView implementation:
 
@@ -505,8 +511,9 @@ void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
       GetWebAppFrameToolbarAvailableBounds(
           is_rtl, frame, 0, caption_button_container_bounds.width());
 
-  // Layout CaptionButtonDummyContainerMac which would have the traffic lights.
-  caption_button_placeholder_container_->LayoutForWindowControlsOverlay(
+  // Layout CaptionButtonPlaceholderContainer which would have the traffic
+  // lights.
+  caption_button_placeholder_container_->SetBoundsRect(
       caption_button_container_bounds);
 
   // Layout WebAppFrameToolbarView.
@@ -532,5 +539,13 @@ void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
                     overlay_width, GetTopInset(false)));
     }
     web_contents->UpdateWindowControlsOverlay(bounding_rect);
+  }
+}
+
+void BrowserNonClientFrameViewMac::
+    UpdateCaptionButtonPlaceholderContainerBackground() {
+  if (caption_button_placeholder_container_) {
+    caption_button_placeholder_container_->SetBackground(
+        views::CreateSolidBackground(GetFrameColor()));
   }
 }

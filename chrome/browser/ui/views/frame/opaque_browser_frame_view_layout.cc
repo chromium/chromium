@@ -14,8 +14,10 @@
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/views/frame/caption_button_placeholder_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/common/chrome_switches.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/font.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
@@ -194,7 +196,8 @@ gfx::Rect OpaqueBrowserFrameViewLayout::IconBounds() const {
 gfx::Rect OpaqueBrowserFrameViewLayout::CalculateClientAreaBounds(
     int width,
     int height) const {
-  int top_height = NonClientTopHeight(false);
+  int top_height =
+      is_window_controls_overlay_enabled_ ? 0 : NonClientTopHeight(false);
   int border_thickness = FrameBorderThickness(false);
   return gfx::Rect(border_thickness, top_height,
                    std::max(0, width - (2 * border_thickness)),
@@ -551,9 +554,18 @@ void OpaqueBrowserFrameViewLayout::SetView(int id, views::View* view) {
       }
       web_app_frame_toolbar_ = static_cast<WebAppFrameToolbarView*>(view);
       break;
-    default:
-      NOTREACHED() << "Unknown view id " << id;
-      break;
+  }
+
+  if (view && views::IsViewClass<CaptionButtonPlaceholderContainer>(view)) {
+    caption_button_placeholder_container_ =
+        static_cast<CaptionButtonPlaceholderContainer*>(view);
+  }
+
+  if (is_window_controls_overlay_enabled_ &&
+      (id == VIEW_ID_MINIMIZE_BUTTON || id == VIEW_ID_MAXIMIZE_BUTTON ||
+       id == VIEW_ID_RESTORE_BUTTON || id == VIEW_ID_CLOSE_BUTTON)) {
+    view->SetPaintToLayer();
+    view->layer()->SetFillsBoundsOpaquely(false);
   }
 }
 
@@ -561,6 +573,36 @@ OpaqueBrowserFrameViewLayout::TopAreaPadding
 OpaqueBrowserFrameViewLayout::GetTopAreaPadding() const {
   return GetTopAreaPadding(!leading_buttons_.empty(),
                            !trailing_buttons_.empty());
+}
+
+void OpaqueBrowserFrameViewLayout::LayoutTitleBarForWindowControlsOverlay(
+    const views::View* host) {
+  int y = 0;
+  int height = NonClientTopHeight(false);
+  int container_x = 0;
+  int x = available_space_leading_x_;
+  int web_app_frame_toolbar_view_width = host->width() - x;
+
+  if (placed_trailing_button_) {
+    container_x = available_space_trailing_x_;
+    x = 0;
+
+    web_app_frame_toolbar_view_width = available_space_trailing_x_;
+
+    available_space_trailing_x_ -=
+        web_app_frame_toolbar_->GetPreferredSize().width();
+  }
+
+  caption_button_placeholder_container_->SetBounds(
+      container_x, y, minimum_size_for_buttons_, height);
+
+  web_app_frame_toolbar_->LayoutForWindowControlsOverlay(
+      gfx::Rect(x, y, web_app_frame_toolbar_view_width, height));
+
+  int bounding_rect_width =
+      web_app_frame_toolbar_->bounds().x() - available_space_leading_x_;
+  delegate_->UpdateWindowControlsOverlay(
+      gfx::Rect(x, y, bounding_rect_width, height));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -578,7 +620,10 @@ void OpaqueBrowserFrameViewLayout::Layout(views::View* host) {
   placed_trailing_button_ = false;
 
   LayoutWindowControls();
-  LayoutTitleBar();
+  if (is_window_controls_overlay_enabled_)
+    LayoutTitleBarForWindowControlsOverlay(host);
+  else
+    LayoutTitleBar();
 
   // Any buttons/icon/title were laid out based on the frame border thickness,
   // but the tabstrip bounds need to be based on the non-client border thickness

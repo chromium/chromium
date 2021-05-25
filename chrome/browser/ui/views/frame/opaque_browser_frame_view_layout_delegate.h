@@ -10,6 +10,7 @@
 
 namespace gfx {
 class Size;
+class Rect;
 }
 
 // Delegate interface to control layout decisions without having to depend on
@@ -76,6 +77,9 @@ class OpaqueBrowserFrameViewLayoutDelegate {
 
   // Indicates the type of the frame buttons.
   virtual FrameButtonStyle GetFrameButtonStyle() const;
+
+  virtual void UpdateWindowControlsOverlay(
+      const gfx::Rect& bounding_rect) const = 0;
 
  protected:
   virtual ~OpaqueBrowserFrameViewLayoutDelegate() {}

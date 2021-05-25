@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/caption_button_placeholder_container.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_platform_specific.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -122,6 +123,16 @@ OpaqueBrowserFrameView::OpaqueBrowserFrameView(
       window_title_(nullptr),
       frame_background_(new views::FrameBackground()) {
   layout_->set_delegate(this);
+
+  // TODO(crbug.com/937121): Remove the call to toggle WCO on by default once
+  // the toggle button functionality is implemented for OpaqueBrowserFrameView.
+  web_app::AppBrowserController* controller =
+      browser_view->browser()->app_controller();
+  if (controller) {
+    controller->ToggleWindowControlsOverlayEnabled();
+    layout_->set_window_controls_overlay_enabled(
+        browser_view->IsWindowControlsOverlayEnabled());
+  }
   SetLayoutManager(std::unique_ptr<views::LayoutManager>(layout_));
 
   platform_observer_ =
@@ -131,6 +142,14 @@ OpaqueBrowserFrameView::OpaqueBrowserFrameView(
 OpaqueBrowserFrameView::~OpaqueBrowserFrameView() {}
 
 void OpaqueBrowserFrameView::InitViews() {
+  web_app::AppBrowserController* controller =
+      browser_view()->browser()->app_controller();
+
+  if (controller && controller->IsWindowControlsOverlayEnabled()) {
+    caption_button_placeholder_container_ =
+        AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
+  }
+
   if (GetFrameButtonStyle() == FrameButtonStyle::kMdButton) {
     minimize_button_ = CreateFrameCaptionButton(
         views::CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON,
@@ -189,8 +208,6 @@ void OpaqueBrowserFrameView::InitViews() {
                      .Build());
   }
 
-  web_app::AppBrowserController* controller =
-      browser_view()->browser()->app_controller();
   if (controller) {
     set_web_app_frame_toolbar(AddChildView(
         std::make_unique<WebAppFrameToolbarView>(frame(), browser_view())));
@@ -234,6 +251,15 @@ gfx::Size OpaqueBrowserFrameView::GetMinimumSize() const {
   return layout_->GetMinimumSize(this);
 }
 
+void OpaqueBrowserFrameView::PaintAsActiveChanged() {
+  UpdateCaptionButtonPlaceholderContainerBackground();
+  BrowserNonClientFrameView::PaintAsActiveChanged();
+}
+
+void OpaqueBrowserFrameView::UpdateFrameColor() {
+  UpdateCaptionButtonPlaceholderContainerBackground();
+  BrowserNonClientFrameView::PaintAsActiveChanged();
+}
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameView, views::NonClientFrameView implementation:
 
@@ -470,6 +496,13 @@ OpaqueBrowserFrameView::GetFrameButtonStyle() const {
 #endif
 }
 
+void OpaqueBrowserFrameView::UpdateWindowControlsOverlay(
+    const gfx::Rect& bounding_rect) const {
+  content::WebContents* web_contents = browser_view()->GetActiveWebContents();
+  if (web_contents) {
+    web_contents->UpdateWindowControlsOverlay(bounding_rect);
+  }
+}
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameView, protected:
 
@@ -733,6 +766,14 @@ void OpaqueBrowserFrameView::PaintClientEdge(gfx::Canvas* canvas) const {
     canvas->FillRect(side, location_bar_border_color);
     side.Offset(client_bounds.width() + kClientEdgeThickness, 0);
     canvas->FillRect(side, location_bar_border_color);
+  }
+}
+
+void OpaqueBrowserFrameView::
+    UpdateCaptionButtonPlaceholderContainerBackground() {
+  if (caption_button_placeholder_container_) {
+    caption_button_placeholder_container_->SetBackground(
+        views::CreateSolidBackground(GetFrameColor()));
   }
 }
 

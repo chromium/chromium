@@ -65,6 +65,8 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool UseCustomFrame() const override { return true; }
   bool IsFrameCondensed() const override { return false; }
   bool EverHasVisibleBackgroundTabShapes() const override { return false; }
+  void UpdateWindowControlsOverlay(
+      const gfx::Rect& bounding_rect) const override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestLayoutDelegate);

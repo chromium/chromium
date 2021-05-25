@@ -77,6 +77,8 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
     return !show_caption_buttons_ || maximized_;
   }
   bool EverHasVisibleBackgroundTabShapes() const override { return false; }
+  void UpdateWindowControlsOverlay(
+      const gfx::Rect& bounding_rect) const override {}
 
  private:
   std::u16string window_title_;

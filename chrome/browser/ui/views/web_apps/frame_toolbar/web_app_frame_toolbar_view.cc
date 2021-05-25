@@ -79,6 +79,10 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
       << "This should be the first ToolbarButtorProvider or a replacement for "
          "an existing instance of this class during a window frame refresh.";
   browser_view_->SetToolbarButtonProvider(this);
+
+  if (browser_view_->IsWindowControlsOverlayEnabled()) {
+    OnWindowControlsOverlayEnabledChanged();
+  }
 }
 
 WebAppFrameToolbarView::~WebAppFrameToolbarView() = default;
