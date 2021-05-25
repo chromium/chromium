@@ -835,7 +835,7 @@ Privacy Sandbox trials are still in active development and are available in sele
         Status
       </message>
       <message name="IDS_PRIVACY_SANDBOX_FLOC_GROUP_TITLE" desc="Title for FLoC group.">
-        Group ID
+        Group number
       </message>
       <message name="IDS_PRIVACY_SANDBOX_FLOC_UPDATE_TITLE" desc="Title for FLoC update.">
         Next update
