@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/gfx/codec/png_codec.h"
 
 namespace headless {
 
@@ -63,7 +64,7 @@ void HeadlessClipboard::ReadAvailableTypes(
   if (IsFormatAvailable(ui::ClipboardFormatType::GetRtfType(), buffer,
                         data_dst))
     types->push_back(base::UTF8ToUTF16(ui::kMimeTypeRTF));
-  if (IsFormatAvailable(ui::ClipboardFormatType::GetBitmapType(), buffer,
+  if (IsFormatAvailable(ui::ClipboardFormatType::GetPngType(), buffer,
                         data_dst))
     types->push_back(base::UTF8ToUTF16(ui::kMimeTypePNG));
 }
@@ -155,8 +156,7 @@ void HeadlessClipboard::ReadRTF(ui::ClipboardBuffer buffer,
 void HeadlessClipboard::ReadPng(ui::ClipboardBuffer buffer,
                                 const ui::DataTransferEndpoint* data_dst,
                                 ReadPngCallback callback) const {
-  // TODO(crbug.com/1201018): Implement this.
-  NOTIMPLEMENTED();
+  std::move(callback).Run(GetStore(buffer).png);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -164,7 +164,10 @@ void HeadlessClipboard::ReadPng(ui::ClipboardBuffer buffer,
 void HeadlessClipboard::ReadImage(ui::ClipboardBuffer buffer,
                                   const ui::DataTransferEndpoint* data_dst,
                                   ReadImageCallback callback) const {
-  std::move(callback).Run(GetStore(buffer).image);
+  const std::vector<uint8_t>& png_data = GetStore(buffer).png;
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  std::move(callback).Run(bitmap);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -287,11 +290,9 @@ void HeadlessClipboard::WriteWebSmartPaste() {
 
 void HeadlessClipboard::WriteBitmap(const SkBitmap& bitmap) {
   // Create a dummy entry.
-  GetDefaultStore().data[ui::ClipboardFormatType::GetBitmapType()];
-  SkBitmap& dst = GetDefaultStore().image;
-  if (dst.tryAllocPixels(bitmap.info())) {
-    bitmap.readPixels(dst.info(), dst.getPixels(), dst.rowBytes(), 0, 0);
-  }
+  GetDefaultStore().data[ui::ClipboardFormatType::GetPngType()];
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
+                                    &GetDefaultStore().png);
 }
 
 void HeadlessClipboard::WriteData(const ui::ClipboardFormatType& format,
@@ -310,7 +311,7 @@ void HeadlessClipboard::DataStore::Clear() {
   data.clear();
   url_title.clear();
   html_src_url.clear();
-  image = SkBitmap();
+  png.clear();
 }
 
 const HeadlessClipboard::DataStore& HeadlessClipboard::GetStore(

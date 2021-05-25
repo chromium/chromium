@@ -114,7 +114,7 @@ class HeadlessClipboard : public ui::Clipboard {
     std::map<ui::ClipboardFormatType, std::string> data;
     std::string url_title;
     std::string html_src_url;
-    SkBitmap image;
+    std::vector<uint8_t> png;
     std::vector<ui::FileInfo> filenames;
   };
 
