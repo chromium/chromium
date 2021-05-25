@@ -7674,8 +7674,6 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
 // set if the cookie would have been rejected for other reasons.
 // Regression test for https://crbug.com/1027318.
 TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kSameSiteByDefaultCookies);
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
