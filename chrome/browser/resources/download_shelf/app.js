@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
@@ -23,14 +24,18 @@ export class DownloadShelfAppElement extends CustomElement {
     /** @private {!DownloadShelfApiProxy} */
     this.apiProxy_ = DownloadShelfApiProxyImpl.getInstance();
 
-    this.$('#close-button').addEventListener('click', e => this.onClose_(e));
+    this.$('#show-all-button')
+        .addEventListener('click', e => this.onShowAll_());
+    this.$('#close-button').addEventListener('click', e => this.onClose_());
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onClose_(e) {
+  /** @private */
+  onShowAll_() {
+    this.apiProxy_.doShowAll();
+  }
+
+  /** @private */
+  onClose_() {
     this.apiProxy_.doClose();
   }
 }

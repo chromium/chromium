@@ -41,6 +41,8 @@ class DownloadShelfUI : public ui::MojoWebUIController,
 
   void DoClose();
 
+  void DoShowAll();
+
   void ShowContextMenu(uint32_t download_id,
                        int32_t client_x,
                        int32_t client_y,

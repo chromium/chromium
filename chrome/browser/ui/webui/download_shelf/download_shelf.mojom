@@ -195,6 +195,9 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
+  // Open chrome://downloads.
+  DoShowAll();
+
   // Notify the Views component to hide itself.
   DoClose();
 

@@ -45,7 +45,7 @@ DownloadShelfUI::DownloadShelfUI(content::WebUI* web_ui)
       {"close", IDS_ACCNAME_CLOSE},
       {"discardButtonText", IDS_DISCARD_DOWNLOAD},
       {"downloadStatusOpeningText", IDS_DOWNLOAD_STATUS_OPENING},
-  };
+      {"showAll", IDS_SHOW_ALL_DOWNLOADS}};
   source->AddLocalizedStrings(kStrings);
 
   webui::SetupWebUIDataSource(
@@ -81,6 +81,11 @@ void DownloadShelfUI::CreatePageHandler(
 void DownloadShelfUI::DoClose() {
   if (embedder())
     embedder()->DoClose();
+}
+
+void DownloadShelfUI::DoShowAll() {
+  if (embedder())
+    embedder()->DoShowAll();
 }
 
 void DownloadShelfUI::ShowContextMenu(

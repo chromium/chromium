@@ -29,6 +29,7 @@ class DownloadShelfPageHandler : public download_shelf::mojom::PageHandler,
   ~DownloadShelfPageHandler() override;
 
   // download_shelf::mojom::PageHandler:
+  void DoShowAll() override;
   void DoClose() override;
   void GetDownloads(GetDownloadsCallback callback) override;
   void ShowContextMenu(uint32_t download_id,

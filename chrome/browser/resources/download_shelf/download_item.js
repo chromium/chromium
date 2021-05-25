@@ -6,8 +6,8 @@
  * @fileoverview UI element of a download item.
  */
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import './download_button.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -54,9 +54,6 @@ export class DownloadItemElement extends CustomElement {
     this.$('#discard-button')
         .addEventListener('click', e => this.onDiscardButtonClick_(e));
     this.addEventListener('contextmenu', e => this.onContextMenu_(e));
-
-    this.$('#discard-button').innerText =
-        loadTimeData.getString('discardButtonText');
   }
 
   /** @param {DownloadItem} value */

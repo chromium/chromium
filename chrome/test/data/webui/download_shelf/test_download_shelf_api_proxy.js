@@ -10,6 +10,7 @@ export class TestDownloadShelfApiProxy extends TestBrowserProxy {
   constructor() {
     super([
       'doClose',
+      'doShowAll',
       'getDownloads',
       'getFileIcon',
       'openDownload',
@@ -30,6 +31,11 @@ export class TestDownloadShelfApiProxy extends TestBrowserProxy {
   /** @override */
   doClose() {
     this.methodCalled('doClose');
+  }
+
+  /** @override */
+  doShowAll() {
+    this.methodCalled('doShowAll');
   }
 
   /** @override */

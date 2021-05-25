@@ -234,8 +234,10 @@
     <div id="status-text"></div>
     <div id="warning-text"></div>
   </div>
-  <download-button id="save-button"></download-button>
-  <download-button id="discard-button"></download-button>
+  <cr-button id="save-button">
+    <!-- Text depends on file type so fill it in programmatically. -->
+  </cr-button>
+  <cr-button id="discard-button">$i18n{discardButtonText}</cr-button>
   <button id="dropdown-button">
     <svg id="dropdown-icon" viewBox="0 0 16 16">
       <g>

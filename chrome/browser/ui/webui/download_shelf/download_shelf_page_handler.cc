@@ -32,6 +32,10 @@ DownloadShelfPageHandler::DownloadShelfPageHandler(
 
 DownloadShelfPageHandler::~DownloadShelfPageHandler() = default;
 
+void DownloadShelfPageHandler::DoShowAll() {
+  download_shelf_ui_->DoShowAll();
+}
+
 void DownloadShelfPageHandler::DoClose() {
   download_shelf_ui_->DoClose();
 }

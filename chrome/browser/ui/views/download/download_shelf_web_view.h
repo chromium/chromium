@@ -41,6 +41,7 @@ class DownloadShelfWebView : public DownloadShelf,
   views::View* GetView() override;
 
   // DownloadShelfUIEmbedder:
+  void DoShowAll() override;
   void ShowDownloadContextMenu(
       DownloadUIModel* download,
       const gfx::Point& position,
