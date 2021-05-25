@@ -339,6 +339,18 @@ int32_t FullRestoreSaveHandler::GetArcSessionId() {
   return arc_save_handler_->GetArcSessionId();
 }
 
+void FullRestoreSaveHandler::ClearForTesting() {
+  profile_path_to_file_handler_.clear();
+  profile_path_to_restore_data_.clear();
+  app_id_to_app_launch_infos_.clear();
+  active_profile_path_.clear();
+  primary_profile_path_.clear();
+  save_running_.clear();
+  pending_save_profile_paths_.clear();
+  window_id_to_app_restore_info_.clear();
+  app_id_to_app_launch_infos_.clear();
+}
+
 void FullRestoreSaveHandler::MaybeStartSaveTimer() {
   if (!save_timer_.IsRunning() && save_running_.empty()) {
     save_timer_.Start(FROM_HERE, kSaveDelay,

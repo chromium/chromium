@@ -127,6 +127,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
 
   base::OneShotTimer* GetTimerForTesting() { return &save_timer_; }
 
+  // Since this is a singleton, tests may need to clear it between tests.
+  void ClearForTesting();
+
  private:
   friend class FullRestoreSaveHandlerTestApi;
 

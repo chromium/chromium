@@ -154,6 +154,10 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
   }
 
+  void TearDown() override {
+    FullRestoreSaveHandler::GetInstance()->ClearForTesting();
+  }
+
   const base::FilePath& GetPath() { return tmp_dir_.GetPath(); }
 
   void ReadFromFile(const base::FilePath& file_path) {
