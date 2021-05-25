@@ -9,9 +9,14 @@
 #include "ash/public/cpp/notifier_metadata.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_chromeos.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
+#include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
+#include "chrome/common/chrome_features.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "ui/base/layout.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -20,91 +25,78 @@
 namespace arc {
 
 namespace {
+
 constexpr int kArcAppIconSizeInDp = 48;
 
-class ArcAppNotifierShutdownNotifierFactory
-    : public BrowserContextKeyedServiceShutdownNotifierFactory {
- public:
-  ArcAppNotifierShutdownNotifierFactory(
-      const ArcAppNotifierShutdownNotifierFactory&) = delete;
-  ArcAppNotifierShutdownNotifierFactory& operator=(
-      const ArcAppNotifierShutdownNotifierFactory&) = delete;
-  static ArcAppNotifierShutdownNotifierFactory* GetInstance() {
-    return base::Singleton<ArcAppNotifierShutdownNotifierFactory>::get();
-  }
-
- private:
-  friend struct base::DefaultSingletonTraits<
-      ArcAppNotifierShutdownNotifierFactory>;
-
-  ArcAppNotifierShutdownNotifierFactory()
-      : BrowserContextKeyedServiceShutdownNotifierFactory("ArcAppNotifier") {
-    DependsOn(ArcAppListPrefsFactory::GetInstance());
-  }
-
-  ~ArcAppNotifierShutdownNotifierFactory() override {}
+struct NotifierDataset {
+  std::string app_id;
+  std::string app_name;
+  std::string package_name;
+  bool enabled;
+  bool is_system_app;
 };
 
 }  // namespace
 
 ArcApplicationNotifierController::ArcApplicationNotifierController(
     NotifierController::Observer* observer)
-    : observer_(observer), last_profile_(nullptr) {}
+    : observer_(observer) {}
 
-ArcApplicationNotifierController::~ArcApplicationNotifierController() {
-  StopObserving();
-}
+ArcApplicationNotifierController::~ArcApplicationNotifierController() = default;
 
 std::vector<ash::NotifierMetadata>
 ArcApplicationNotifierController::GetNotifierList(Profile* profile) {
+  DCHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+
   // In Guest mode, it can be called but there's no ARC apps to return.
   if (profile->IsOffTheRecord())
     return std::vector<ash::NotifierMetadata>();
 
+  last_used_profile_ = profile;
+  apps::AppServiceProxy* service =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  Observe(&(service->AppRegistryCache()));
+
   package_to_app_ids_.clear();
-  icons_.clear();
-  StopObserving();
+  std::vector<NotifierDataset> notifier_dataset;
 
-  ArcAppListPrefs* const app_list = ArcAppListPrefs::Get(profile);
+  service->AppRegistryCache().ForEachApp([&notifier_dataset](
+                                             const apps::AppUpdate& update) {
+    if (update.AppType() != apps::mojom::AppType::kArc)
+      return;
+    for (const auto& permission : update.Permissions()) {
+      if (static_cast<app_management::mojom::ArcPermissionType>(
+              permission->permission_id) !=
+          app_management::mojom::ArcPermissionType::NOTIFICATIONS) {
+        continue;
+      }
+      DCHECK(permission->value_type == apps::mojom::PermissionValueType::kBool);
+      notifier_dataset.push_back(
+          {update.AppId() /*app_id*/, update.Name() /*app_name*/,
+           update.PublisherId() /*package name*/, permission->value /*enabled*/,
+           update.InstallSource() ==
+               apps::mojom::InstallSource::kSystem /*is_system_app*/});
+    }
+  });
+
   std::vector<ash::NotifierMetadata> notifiers;
-  // The app list can be null in unit tests.
-  if (!app_list)
-    return notifiers;
-  const std::vector<std::string>& app_ids = app_list->GetAppIds();
-
-  last_profile_ = profile;
-  StartObserving();
-
-  for (const std::string& app_id : app_ids) {
-    const auto app = app_list->GetApp(app_id);
-    // Handle packages having multiple launcher activities.
-    if (!app || package_to_app_ids_.count(app->package_name))
+  for (auto& app_data : notifier_dataset) {
+    // Handle packages having multiple launcher activities. Do not include
+    // notifier metadata for system apps.
+    if (package_to_app_ids_.count(app_data.package_name) ||
+        app_data.is_system_app)
       continue;
 
-    const auto package = app_list->GetPackage(app->package_name);
-    if (!package || package->system)
-      continue;
-
-    // Load icons for notifier.
-    std::unique_ptr<ArcAppIcon> icon =
-        std::make_unique<ArcAppIcon>(profile, app_id,
-                       // ARC icon is available only for 48x48 dips.
-                       kArcAppIconSizeInDp,
-                       // The life time of icon must shorter than |this|.
-                       this);
-    // Apply icon now to set the default image.
-    OnIconUpdated(icon.get());
-
-    // Add notifiers.
-    package_to_app_ids_.insert(std::make_pair(app->package_name, app_id));
     message_center::NotifierId notifier_id(
-        message_center::NotifierType::ARC_APPLICATION, app_id);
-    notifiers.emplace_back(notifier_id, base::UTF8ToUTF16(app->name),
-                           app->notifications_enabled, false /* enforced */,
-                           icon->image_skia());
-    icons_.push_back(std::move(icon));
+        message_center::NotifierType::ARC_APPLICATION, app_data.app_id);
+    notifiers.emplace_back(notifier_id, base::UTF8ToUTF16(app_data.app_name),
+                           app_data.enabled, false /* enforced */,
+                           gfx::ImageSkia());
+    package_to_app_ids_.insert(
+        std::make_pair(app_data.package_name, app_data.app_id));
+    CallLoadIcon(/*allow_placeholder_icon*/ true, app_data.app_id);
   }
-
   return notifiers;
 }
 
@@ -112,46 +104,86 @@ void ArcApplicationNotifierController::SetNotifierEnabled(
     Profile* profile,
     const message_center::NotifierId& notifier_id,
     bool enabled) {
-  ArcAppListPrefs::Get(profile)->SetNotificationsEnabled(notifier_id.id,
-                                                         enabled);
-  // OnNotifierEnabledChanged will be invoked via ArcAppListPrefs::Observer.
+  DCHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+
+  last_used_profile_ = profile;
+  auto permission = apps::mojom::Permission::New();
+  permission->permission_id =
+      static_cast<int>(app_management::mojom::ArcPermissionType::NOTIFICATIONS);
+  permission->value_type = apps::mojom::PermissionValueType::kBool;
+  permission->value = enabled;
+  permission->is_managed = false;
+  apps::AppServiceProxy* service =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  service->SetPermission(notifier_id.id, std::move(permission));
 }
 
-void ArcApplicationNotifierController::OnIconUpdated(ArcAppIcon* icon) {
+void ArcApplicationNotifierController::CallLoadIcon(bool allow_placeholder_icon,
+                                                    std::string app_id) {
+  DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+      last_used_profile_));
+
+  auto icon_type =
+      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
+          ? apps::mojom::IconType::kStandard
+          : apps::mojom::IconType::kUncompressed;
+
+  apps::AppServiceProxyFactory::GetForProfile(last_used_profile_)
+      ->LoadIcon(apps::mojom::AppType::kArc, app_id, icon_type,
+                 kArcAppIconSizeInDp, allow_placeholder_icon,
+                 base::BindOnce(&ArcApplicationNotifierController::OnLoadIcon,
+                                weak_ptr_factory_.GetWeakPtr(), app_id));
+}
+
+void ArcApplicationNotifierController::OnLoadIcon(
+    std::string app_id,
+    apps::mojom::IconValuePtr icon_value) {
+  auto icon_type =
+      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
+          ? apps::mojom::IconType::kStandard
+          : apps::mojom::IconType::kUncompressed;
+  if (icon_value->icon_type != icon_type)
+    return;
+
+  SetIcon(app_id, icon_value->uncompressed);
+  if (icon_value->is_placeholder_icon)
+    CallLoadIcon(/*allow_placeholder_icon*/ false, app_id);
+}
+
+void ArcApplicationNotifierController::SetIcon(std::string app_id,
+                                               gfx::ImageSkia image) {
   observer_->OnIconImageUpdated(
       message_center::NotifierId(message_center::NotifierType::ARC_APPLICATION,
-                                 icon->app_id()),
-      icon->image_skia());
+                                 app_id),
+      image);
 }
 
-void ArcApplicationNotifierController::OnNotificationsEnabledChanged(
-    const std::string& package_name,
-    bool enabled) {
-  auto it = package_to_app_ids_.find(package_name);
-  if (it == package_to_app_ids_.end())
+void ArcApplicationNotifierController::OnAppUpdate(
+    const apps::AppUpdate& update) {
+  if (!base::Contains(package_to_app_ids_, update.PublisherId()))
     return;
-  observer_->OnNotifierEnabledChanged(
-      message_center::NotifierId(message_center::NotifierType::ARC_APPLICATION,
-                                 it->second),
-      enabled);
+
+  if (update.PermissionsChanged()) {
+    for (const auto& permission : update.Permissions()) {
+      if (static_cast<app_management::mojom::ArcPermissionType>(
+              permission->permission_id) ==
+          app_management::mojom::ArcPermissionType::NOTIFICATIONS) {
+        message_center::NotifierId notifier_id(
+            message_center::NotifierType::ARC_APPLICATION, update.AppId());
+        observer_->OnNotifierEnabledChanged(notifier_id, permission->value);
+      }
+    }
+  }
+
+  if (update.IconKeyChanged()) {
+    CallLoadIcon(/*allow_placeholder_icon*/ true, update.AppId());
+  }
 }
 
-void ArcApplicationNotifierController::StartObserving() {
-  ArcAppListPrefs::Get(last_profile_)->AddObserver(this);
-  shutdown_subscription_ =
-      ArcAppNotifierShutdownNotifierFactory::GetInstance()
-          ->Get(last_profile_)
-          ->Subscribe(base::BindRepeating(
-              &ArcApplicationNotifierController::StopObserving,
-              base::Unretained(this)));
-}
-
-void ArcApplicationNotifierController::StopObserving() {
-  if (!last_profile_)
-    return;
-  shutdown_subscription_ = {};
-  ArcAppListPrefs::Get(last_profile_)->RemoveObserver(this);
-  last_profile_ = nullptr;
+void ArcApplicationNotifierController::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  Observe(nullptr);
 }
 
 }  // namespace arc
