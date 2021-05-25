@@ -372,10 +372,8 @@ void AppCacheSubresourceURLFactory::CreateLoaderAndStart(
   if (request.request_initiator.has_value() && appcache_host_ &&
       !appcache_host_->security_policy_handle()->CanAccessDataForOrigin(
           request.request_initiator.value())) {
-    static auto* initiator_origin_key = base::debug::AllocateCrashKeyString(
-        "initiator_origin", base::debug::CrashKeySize::Size64);
-    base::debug::SetCrashKeyString(
-        initiator_origin_key, request.request_initiator.value().Serialize());
+    SCOPED_CRASH_KEY_STRING64("AppCacheURLLoader", "initiator_origin",
+                              request.request_initiator.value().Serialize());
 
     mojo::ReportBadMessage(
         "APPCACHE_SUBRESOURCE_URL_FACTORY_INVALID_INITIATOR");

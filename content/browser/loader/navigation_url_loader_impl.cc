@@ -948,10 +948,8 @@ void NavigationURLLoaderImpl::OnComplete(
   // URLLoaderClient has already been transferred to the renderer process and
   // OnComplete is not expected to be called here.
   if (status.error_code == net::OK) {
-    base::debug::SetCrashKeyString(
-        base::debug::AllocateCrashKeyString("navigate_url",
-                                            base::debug::CrashKeySize::Size256),
-        url_.spec());
+    SCOPED_CRASH_KEY_STRING256("NavigationURLLoader::Complete", "url",
+                               url_.spec());
     base::debug::DumpWithoutCrashing();
     return;
   }

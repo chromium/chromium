@@ -21,7 +21,7 @@ namespace bad_message {
 namespace {
 
 void LogBadMessage(BadMessageReason reason) {
-  static auto* bad_message_reason = base::debug::AllocateCrashKeyString(
+  static auto* const bad_message_reason = base::debug::AllocateCrashKeyString(
       "bad_message_reason", base::debug::CrashKeySize::Size64);
 
   TRACE_EVENT_INSTANT1("ipc,security", "content::ReceivedBadMessage",
@@ -73,7 +73,7 @@ void ReceivedBadMessage(BrowserMessageFilter* filter, BadMessageReason reason) {
 }
 
 base::debug::CrashKeyString* GetRequestedSiteInfoKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
+  static auto* const crash_key = base::debug::AllocateCrashKeyString(
       "requested_site_info", base::debug::CrashKeySize::Size256);
   return crash_key;
 }

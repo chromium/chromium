@@ -232,7 +232,9 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
                                const ppapi::PpapiPermissions& permissions) {
   // In case of crashes, the crash dump doesn't indicate which plugin
   // it came from.
-  static auto* ppapi_path_key = base::debug::AllocateCrashKeyString(
+  // TODO(dcheng): Would a scoped crash key be sufficient here? It's probably a
+  // moot point, as this code is going to go away.
+  static auto* const ppapi_path_key = base::debug::AllocateCrashKeyString(
       "ppapi_path", base::debug::CrashKeySize::Size64);
   base::debug::SetCrashKeyString(ppapi_path_key, path.MaybeAsASCII());
 

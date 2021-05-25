@@ -73,8 +73,9 @@ bool CanAccessDocumentURL(ChildProcessSecurityPolicyImpl::Handle* handle,
 }
 
 base::debug::CrashKeyString* GetDocumentUrlCrashKey() {
-  static auto* appcache_document_url_key = base::debug::AllocateCrashKeyString(
-      "appcache_document_url", base::debug::CrashKeySize::Size256);
+  static auto* const appcache_document_url_key =
+      base::debug::AllocateCrashKeyString("appcache_document_url",
+                                          base::debug::CrashKeySize::Size256);
   return appcache_document_url_key;
 }
 

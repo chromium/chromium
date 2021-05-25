@@ -832,13 +832,9 @@ void RenderWidgetHostInputEventRouter::DispatchTouchEvent(
     if (RenderWidgetHostViewBase::IsValidRWHVBPointer(target) != 1 &&
         !has_dumped_) {
       has_dumped_ = true;
-      auto* invalid_rwhvb_ptr_string = base::debug::AllocateCrashKeyString(
-          "invalid_rwhvb_pointer_status", base::debug::CrashKeySize::Size32);
-      base::debug::ScopedCrashKeyString key(
-          invalid_rwhvb_ptr_string,
-          base::StringPrintf(
-              "Invalid RWHVB ptr: status = %d",
-              RenderWidgetHostViewBase::IsValidRWHVBPointer(target)));
+      SCOPED_CRASH_KEY_NUMBER(
+          "DispatchTouchEvent", "ptr_status",
+          RenderWidgetHostViewBase::IsValidRWHVBPointer(target));
       base::debug::DumpWithoutCrashing();
     }
     touch_target_ = target;

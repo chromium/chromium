@@ -167,10 +167,9 @@ bool ServiceWorkerScriptLoaderFactory::CheckIfScriptRequestIsValid(
           network::mojom::RequestDestination::kServiceWorker &&
       resource_request.destination !=
           network::mojom::RequestDestination::kScript) {
-    static auto* key = base::debug::AllocateCrashKeyString(
-        "swslf_bad_type", base::debug::CrashKeySize::Size32);
-    base::debug::SetCrashKeyString(
-        key, network::RequestDestinationToString(resource_request.destination));
+    SCOPED_CRASH_KEY_STRING32(
+        "ServiceWorkerSLF", "bad_type",
+        network::RequestDestinationToString(resource_request.destination));
     mojo::ReportBadMessage("SWSLF_BAD_REQUEST_DESTINATION");
     return false;
   }
