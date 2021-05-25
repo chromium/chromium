@@ -300,7 +300,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
 
     remote_manager_->ConnectToImeEngine(
         engine_id, remote_to_engine_.BindNewPipeAndPassReceiver(),
-        receiver_from_engine_.BindNewPipeAndPassRemote(), {},
+        receiver_from_engine_.BindNewPipeAndPassRemote(), /*extra=*/{0},
         base::BindOnce(&ImeObserver::OnConnected, base::Unretained(this),
                        base::Time::Now(), engine_id));
 
