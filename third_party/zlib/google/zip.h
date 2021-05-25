@@ -25,29 +25,35 @@ namespace zip {
 
 class WriterDelegate;
 
+// Paths passed as span to avoid copying them.
+using Paths = base::span<const base::FilePath>;
+
 // Abstraction for file access operation required by Zip().
+//
 // Can be passed to the ZipParams for providing custom access to the files,
 // for example over IPC.
-// If none is provided, the files are accessed directly.
-// All parameters paths are expected to be absolute.
+//
+// All parameters paths are expected to be relative to the source directory.
 class FileAccessor {
  public:
   virtual ~FileAccessor() = default;
 
-  struct DirectoryContentEntry {
-    base::FilePath path;
+  struct Info {
     bool is_directory = false;
+    base::Time last_modified;
   };
 
   // Opens files specified in |paths|.
   // Directories should be mapped to invalid files.
-  virtual std::vector<base::File> OpenFilesForReading(
-      const std::vector<base::FilePath>& paths) = 0;
+  virtual bool Open(Paths paths, std::vector<base::File>* files) = 0;
 
-  virtual bool DirectoryExists(const base::FilePath& path) = 0;
-  virtual std::vector<DirectoryContentEntry> ListDirectoryContent(
-      const base::FilePath& dir_path) = 0;
-  virtual base::Time GetLastModifiedTime(const base::FilePath& path) = 0;
+  // Lists contents of a directory at |path|.
+  virtual bool List(const base::FilePath& path,
+                    std::vector<base::FilePath>* files,
+                    std::vector<base::FilePath>* subdirs) = 0;
+
+  // Gets info about a file or directory.
+  virtual bool GetInfo(const base::FilePath& path, Info* info) = 0;
 };
 
 // Progress of a ZIP creation operation.
@@ -75,8 +81,6 @@ std::ostream& operator<<(std::ostream& out, const Progress& progress);
 using ProgressCallback = base::RepeatingCallback<bool(const Progress&)>;
 
 using FilterCallback = base::RepeatingCallback<bool(const base::FilePath&)>;
-
-using Paths = base::span<const base::FilePath>;
 
 // ZIP creation parameters and options.
 struct ZipParams {

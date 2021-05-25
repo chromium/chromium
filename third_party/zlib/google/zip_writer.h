@@ -29,19 +29,21 @@ namespace internal {
 // performance reasons as these calls may be expensive when IPC based).
 // This class is so far internal and only used by zip.cc, but could be made
 // public if needed.
+//
+// All methods returning a bool return true on success and false on error.
 class ZipWriter {
  public:
-// Creates a writer that will write a ZIP file to |zip_file_fd|/|zip_file|
-// and which entries (specified with WriteEntries) are relative to |root_dir|.
+// Creates a writer that will write a ZIP file to |zip_file_fd| or |zip_file|
+// and which entries are relative to |file_accessor|'s source directory.
 // All file reads are performed using |file_accessor|.
 #if defined(OS_POSIX)
   static std::unique_ptr<ZipWriter> CreateWithFd(int zip_file_fd,
-                                                 const base::FilePath& root_dir,
                                                  FileAccessor* file_accessor);
 #endif
+
   static std::unique_ptr<ZipWriter> Create(const base::FilePath& zip_file,
-                                           const base::FilePath& root_dir,
                                            FileAccessor* file_accessor);
+
   ~ZipWriter();
 
   // Sets the optional progress callback. The callback is called once for each
@@ -60,9 +62,7 @@ class ZipWriter {
 
  private:
   // Takes ownership of |zip_file|.
-  ZipWriter(zipFile zip_file,
-            const base::FilePath& root_dir,
-            FileAccessor* file_accessor);
+  ZipWriter(zipFile zip_file, FileAccessor* file_accessor);
 
   // Regularly called during processing to check whether zipping should continue
   // or should be cancelled.
@@ -79,7 +79,7 @@ class ZipWriter {
   bool AddFileEntry(const base::FilePath& path, base::File file);
 
   // Adds a directory entry.
-  bool AddDirectoryEntry(const base::FilePath& path, base::Time last_modified);
+  bool AddDirectoryEntry(const base::FilePath& path);
 
   // Opens a file or directory entry.
   bool OpenNewFileEntry(const base::FilePath& path,
@@ -97,11 +97,8 @@ class ZipWriter {
   // The actual zip file.
   zipFile zip_file_;
 
-  // Path to the directory entry paths are relative to.
-  base::FilePath root_dir_;
-
   // Abstraction over file access methods used to read files.
-  FileAccessor* file_accessor_;
+  FileAccessor* const file_accessor_;
 
   // Progress stats.
   Progress progress_;
