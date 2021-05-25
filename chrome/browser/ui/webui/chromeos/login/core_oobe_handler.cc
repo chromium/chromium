@@ -120,8 +120,6 @@ void CoreOobeHandler::RegisterMessages() {
               &CoreOobeHandler::HandleUpdateCurrentScreen);
   AddCallback("skipToLoginForTesting",
               &CoreOobeHandler::HandleSkipToLoginForTesting);
-  AddCallback("skipToUpdateForTesting",
-              &CoreOobeHandler::HandleSkipToUpdateForTesting);
   AddCallback("launchHelpApp", &CoreOobeHandler::HandleLaunchHelpApp);
   AddCallback("toggleResetScreen", &CoreOobeHandler::HandleToggleResetScreen);
   AddCallback("raiseTabKeyEvent", &CoreOobeHandler::HandleRaiseTabKeyEvent);
@@ -218,12 +216,6 @@ void CoreOobeHandler::HandleSkipToLoginForTesting() {
   WizardController* controller = WizardController::default_controller();
   if (controller && controller->is_initialized())
     WizardController::default_controller()->SkipToLoginForTesting();
-}
-
-void CoreOobeHandler::HandleSkipToUpdateForTesting() {
-  WizardController* controller = WizardController::default_controller();
-  if (controller && controller->is_initialized())
-    controller->SkipToUpdateForTesting();
 }
 
 void CoreOobeHandler::HandleToggleResetScreen() {

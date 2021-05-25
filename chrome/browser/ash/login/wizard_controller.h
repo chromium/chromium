@@ -174,7 +174,6 @@ class WizardController {
 
   // Advances to login/update screen. Should be used in for testing only.
   void SkipToLoginForTesting();
-  void SkipToUpdateForTesting();
 
   // Skip update, go straight to enrollment after EULA is accepted.
   void SkipUpdateEnrollAfterEula();

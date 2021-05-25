@@ -264,27 +264,6 @@ class HIDDetectionScreenDisabledAfterRestartTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenDisabledAfterRestartTest,
-                       PRE_SkipToUpdate) {
-  // Pref should be false by default.
-  EXPECT_FALSE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
-
-  WizardController::default_controller()->SkipToUpdateForTesting();
-  // SkipToUpdateForTesting should set the pref when
-  // switches::kDisableHIDDetectionOnOOBEForTesting is passed.
-  EXPECT_TRUE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
-
-  EXPECT_EQ(GetExitResult(), HIDDetectionScreen::Result::SKIPPED_FOR_TESTS);
-}
-
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenDisabledAfterRestartTest,
-                       SkipToUpdate) {
-  // The pref should persist restart.
-  EXPECT_TRUE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
-
-  EXPECT_EQ(GetExitResult(), HIDDetectionScreen::Result::SKIPPED_FOR_TESTS);
-}
-
 class HIDDetectionScreenChromebookTest : public OobeBaseTest {
  public:
   HIDDetectionScreenChromebookTest() {

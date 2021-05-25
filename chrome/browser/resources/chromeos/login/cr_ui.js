@@ -194,13 +194,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Skip to update screen for telemetry.
-     */
-    static skipToUpdateForTesting() {
-      chrome.send('skipToUpdateForTesting');
-    }
-
-    /**
      * Login for telemetry.
      * @param {string} username Login username.
      * @param {string} password Login password.

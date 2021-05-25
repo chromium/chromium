@@ -143,7 +143,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void HandleInitialized();
   void HandleUpdateCurrentScreen(const std::string& screen);
   void HandleSkipToLoginForTesting();
-  void HandleSkipToUpdateForTesting();
   void HandleLaunchHelpApp(double help_topic_id);
   void HandleToggleResetScreen();
   void HandleGetPrimaryDisplayNameForTesting(const base::ListValue* args);
