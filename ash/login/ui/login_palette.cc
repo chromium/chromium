@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/login_palette.h"
-#include "ash/public/cpp/login_constants.h"
 #include "ash/style/ash_color_provider.h"
 #include "ui/gfx/color_palette.h"
 

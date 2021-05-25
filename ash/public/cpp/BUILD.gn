@@ -169,7 +169,6 @@ component("cpp") {
     "lock_screen_widget_factory.h",
     "login_accelerators.cc",
     "login_accelerators.h",
-    "login_constants.h",
     "login_screen.cc",
     "login_screen.h",
     "login_screen_client.h",

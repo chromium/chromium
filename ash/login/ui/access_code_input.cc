@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/public/cpp/login_constants.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/strings/strcat.h"

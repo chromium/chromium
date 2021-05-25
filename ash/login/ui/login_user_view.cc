@@ -10,11 +10,11 @@
 #include "ash/login/ui/hover_notifier.h"
 #include "ash/login/ui/image_parser.h"
 #include "ash/login/ui/login_button.h"
+#include "ash/login/ui/login_constants.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/user_switch_flip_animation.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/ash_constants.h"
-#include "ash/public/cpp/login_constants.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -499,7 +499,7 @@ void LoginUserView::UpdateForUser(const LoginUserInfo& user, bool animate) {
         user_image_->width(), 0 /*start_degrees*/, 90 /*midpoint_degrees*/,
         180 /*end_degrees*/,
         base::TimeDelta::FromMilliseconds(
-            login_constants::kChangeUserAnimationDurationMs),
+            login::kChangeUserAnimationDurationMs),
         gfx::Tween::Type::EASE_OUT,
         base::BindOnce(&LoginUserView::UpdateCurrentUserState,
                        base::Unretained(this)));
@@ -512,9 +512,8 @@ void LoginUserView::UpdateForUser(const LoginUserInfo& user, bool animate) {
     auto make_opacity_sequence = [is_opaque]() {
       auto make_opacity_element = [](float target_opacity) {
         auto element = ui::LayerAnimationElement::CreateOpacityElement(
-            target_opacity,
-            base::TimeDelta::FromMilliseconds(
-                login_constants::kChangeUserAnimationDurationMs / 2.0f));
+            target_opacity, base::TimeDelta::FromMilliseconds(
+                                login::kChangeUserAnimationDurationMs / 2.0f));
         element->set_tween_type(gfx::Tween::Type::EASE_OUT);
         return element;
       };

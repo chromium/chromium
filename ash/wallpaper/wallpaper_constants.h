@@ -5,7 +5,7 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_CONSTANTS_H_
 #define ASH_WALLPAPER_WALLPAPER_CONSTANTS_H_
 
-#include "ash/public/cpp/login_constants.h"
+#include "ash/login/ui/login_constants.h"
 #include "ash/style/ash_color_provider.h"
 
 namespace ash {
@@ -18,7 +18,7 @@ constexpr float kClear = 0.f;
 constexpr float kOverviewBlur =
     static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault);
 // Blur sigma in lock/login screen.
-constexpr float kLockLoginBlur = login_constants::kBlurSigma;
+constexpr float kLockLoginBlur = 30.0f;
 
 }  // namespace wallpaper_constants
 

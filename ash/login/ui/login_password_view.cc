@@ -10,7 +10,6 @@
 #include "ash/login/ui/hover_notifier.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/non_accessible_view.h"
-#include "ash/public/cpp/login_constants.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"

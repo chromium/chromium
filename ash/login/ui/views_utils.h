@@ -6,7 +6,6 @@
 #define ASH_LOGIN_UI_VIEWS_UTILS_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/login_constants.h"
 #include "ash/style/ash_color_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/label.h"
@@ -22,15 +21,21 @@ namespace ash {
 namespace login_views_utils {
 
 namespace {
+
+// The most used font size on login/lock screen.
+constexpr int kLoginDefaultFontSize = 13;
+
+// The most used font on login/lock screen.
+constexpr char kLoginDefaultFontName[] = "Roboto";
+
 constexpr int kDefaultLineHeight = 20;
 
 // Helper function to get default font list for login/lock screen text label.
 // It is slightly different from views::Label::GetDefaultFontList since the
 // font size returned is 13 pt instead of 12 pt.
 const gfx::FontList GetLoginDefaultFontList() {
-  return gfx::FontList(
-      {login_constants::kDefaultFontName}, gfx::Font::FontStyle::NORMAL,
-      login_constants::kDefaultFontSize, gfx::Font::Weight::NORMAL);
+  return gfx::FontList({kLoginDefaultFontName}, gfx::Font::FontStyle::NORMAL,
+                       kLoginDefaultFontSize, gfx::Font::Weight::NORMAL);
 }
 
 }  // namespace

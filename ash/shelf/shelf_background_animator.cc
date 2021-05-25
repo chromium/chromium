@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/animation/animation_change_type.h"
-#include "ash/public/cpp/login_constants.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/wallpaper_types.h"

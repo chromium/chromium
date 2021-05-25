@@ -16,7 +16,6 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/login_accelerators.h"
-#include "ash/public/cpp/login_constants.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"

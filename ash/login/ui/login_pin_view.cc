@@ -9,7 +9,6 @@
 #include "ash/login/ui/login_button.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/ash_constants.h"
-#include "ash/public/cpp/login_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"

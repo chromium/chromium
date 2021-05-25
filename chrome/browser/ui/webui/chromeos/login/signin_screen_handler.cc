@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/login_constants.h"
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"

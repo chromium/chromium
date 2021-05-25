@@ -7,11 +7,11 @@
 #include <limits>
 #include <memory>
 
+#include "ash/login/ui/login_constants.h"
 #include "ash/login/ui/login_display_style.h"
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/views_utils.h"
-#include "ash/public/cpp/login_constants.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_color_constants.h"
@@ -430,9 +430,8 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setColor(AshColorProvider::Get()->GetShieldLayerColor(
         AshColorProvider::ShieldLayerType::kShield80));
-    canvas->DrawRoundRect(
-        render_bounds, login_constants::kNonBlurredWallpaperBackgroundRadiusDp,
-        flags);
+    canvas->DrawRoundRect(render_bounds,
+                          login::kNonBlurredWallpaperBackgroundRadiusDp, flags);
   }
 }
 
