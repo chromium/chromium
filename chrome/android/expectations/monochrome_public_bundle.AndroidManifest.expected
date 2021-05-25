@@ -988,7 +988,7 @@
     </receiver>  # DIFF-ANCHOR: df76237f
     <receiver  # DIFF-ANCHOR: a9b53579
         android:name="org.chromium.chrome.browser.notifications.channels.LocaleChangedBroadcastReceiver"
-        android:exported="false">
+        android:exported="true">
       <intent-filter>  # DIFF-ANCHOR: 5458f2a2
         <action android:name="android.intent.action.LOCALE_CHANGED"/>
       </intent-filter>  # DIFF-ANCHOR: 5458f2a2
