@@ -16,6 +16,8 @@ class IPAddress;
 
 namespace blink {
 
+class MojoBindingContext;
+
 // This class is created on the main thread but is used only on the WebRTC
 // worker threads. The MdnsResponderAdapter implements the WebRTC mDNS responder
 // interface via the MdnsResponder service in Chromium, and is used to register
@@ -25,7 +27,7 @@ class PLATFORM_EXPORT MdnsResponderAdapter
  public:
   // The adapter should be created on the main thread to have access to the
   // connector to the service manager.
-  MdnsResponderAdapter();
+  explicit MdnsResponderAdapter(MojoBindingContext& context);
   ~MdnsResponderAdapter() override;
 
   // webrtc::MdnsResponderInterface implementation.

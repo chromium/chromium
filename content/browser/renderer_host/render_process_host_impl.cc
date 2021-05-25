@@ -2539,13 +2539,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       base::BindRepeating(&RenderProcessHostImpl::CreateMediaLogRecordHost,
                           weak_factory_.GetWeakPtr()));
 
-#if BUILDFLAG(ENABLE_MDNS)
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::CreateMdnsResponder,
-                          weak_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(ENABLE_MDNS)
-
   AddUIThreadInterface(registry.get(),
                        base::BindRepeating(&FieldTrialRecorder::Create));
 
@@ -5118,14 +5111,6 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
 
   return nullptr;
 }
-
-#if BUILDFLAG(ENABLE_MDNS)
-void RenderProcessHostImpl::CreateMdnsResponder(
-    mojo::PendingReceiver<network::mojom::MdnsResponder> receiver) {
-  GetStoragePartition()->GetNetworkContext()->CreateMdnsResponder(
-      std::move(receiver));
-}
-#endif  // BUILDFLAG(ENABLE_MDNS)
 
 // static
 void RenderProcessHostImpl::OnMojoError(int render_process_id,

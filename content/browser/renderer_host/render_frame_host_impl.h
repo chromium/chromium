@@ -82,6 +82,7 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
+#include "services/network/public/mojom/mdns_responder.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
@@ -2083,6 +2084,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsDocumentOnLoadCompletedInMainFrame() override;
   const GURL& ManifestURL() override;
   const std::vector<blink::mojom::FaviconURLPtr>& FaviconURLs() override;
+
+#if BUILDFLAG(ENABLE_MDNS)
+  void CreateMdnsResponder(
+      mojo::PendingReceiver<network::mojom::MdnsResponder> receiver);
+#endif  // BUILDFLAG(ENABLE_MDNS)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   void PepperInstanceClosed(int32_t instance_id);

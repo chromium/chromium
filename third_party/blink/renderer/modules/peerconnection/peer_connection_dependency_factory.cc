@@ -417,8 +417,8 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
           blink::features::kWebRtcHideLocalIpsWithMdns)) {
     // Note that MdnsResponderAdapter is created on the main thread to have
     // access to the connector to the service manager.
-    // TODO(crbug.com/1178670): Pass MojoBindingContext and use its BIB to bind.
-    mdns_responder = std::make_unique<MdnsResponderAdapter>();
+    mdns_responder =
+        std::make_unique<MdnsResponderAdapter>(*GetSupplementable());
   }
 #endif  // BUILDFLAG(ENABLE_MDNS)
   PostCrossThreadTask(

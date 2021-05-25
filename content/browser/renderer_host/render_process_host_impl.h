@@ -62,7 +62,6 @@
 #include "net/base/network_isolation_key.h"
 #include "net/net_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "services/network/public/mojom/mdns_responder.mojom-forward.h"
 #include "services/network/public/mojom/p2p.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
@@ -865,11 +864,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // that SiteInstance.
   static RenderProcessHost* FindReusableProcessHostForSiteInstance(
       SiteInstanceImpl* site_instance);
-
-#if BUILDFLAG(ENABLE_MDNS)
-  void CreateMdnsResponder(
-      mojo::PendingReceiver<network::mojom::MdnsResponder> receiver);
-#endif  // BUILDFLAG(ENABLE_MDNS)
 
   void NotifyRendererOfLockedStateUpdate();
   void PopulateTerminationInfoRendererFields(ChildProcessTerminationInfo* info);

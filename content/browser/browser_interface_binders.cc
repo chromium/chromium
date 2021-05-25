@@ -605,6 +605,11 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::IdleManager>(base::BindRepeating(
       &RenderFrameHostImpl::BindIdleManager, base::Unretained(host)));
 
+#if BUILDFLAG(ENABLE_MDNS)
+  map->Add<network::mojom::MdnsResponder>(base::BindRepeating(
+      &RenderFrameHostImpl::CreateMdnsResponder, base::Unretained(host)));
+#endif  // BUILDFLAG(ENABLE_MDNS)
+
   // BrowserMainLoop::GetInstance() may be null on unit tests.
   if (BrowserMainLoop::GetInstance()) {
     map->Add<midi::mojom::MidiSessionProvider>(

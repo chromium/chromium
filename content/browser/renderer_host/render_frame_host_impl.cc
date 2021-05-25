@@ -222,6 +222,7 @@
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
+#include "services/network/public/mojom/mdns_responder.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
@@ -11271,6 +11272,14 @@ RenderFrameHostImpl::CreateCookieAccessObserver() {
   cookie_observers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
   return remote;
 }
+
+#if BUILDFLAG(ENABLE_MDNS)
+void RenderFrameHostImpl::CreateMdnsResponder(
+    mojo::PendingReceiver<network::mojom::MdnsResponder> receiver) {
+  GetStoragePartition()->GetNetworkContext()->CreateMdnsResponder(
+      std::move(receiver));
+}
+#endif  // BUILDFLAG(ENABLE_MDNS)
 
 void RenderFrameHostImpl::Clone(
     mojo::PendingReceiver<network::mojom::CookieAccessObserver> observer) {
