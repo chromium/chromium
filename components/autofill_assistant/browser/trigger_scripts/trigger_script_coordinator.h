@@ -67,7 +67,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
       std::unique_ptr<StaticTriggerConditions> static_trigger_conditions,
       std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions,
       ukm::UkmRecorder* ukm_recorder,
-      ukm::SourceId ukm_source_id);
+      ukm::SourceId deeplink_ukm_source_id);
   ~TriggerScriptCoordinator() override;
   TriggerScriptCoordinator(const TriggerScriptCoordinator&) = delete;
   TriggerScriptCoordinator& operator=(const TriggerScriptCoordinator&) = delete;
@@ -229,9 +229,14 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // |remaining_trigger_condition_evaluations_|.
   int64_t initial_trigger_condition_evaluations_ = -1;
 
-  // The UKM recorder and source id to use for metrics.
+  // The UKM recorder to use for metrics.
   ukm::UkmRecorder* const ukm_recorder_;
-  const ukm::SourceId ukm_source_id_;
+
+  // The UKM source id to record. This can change over time as the user
+  // navigates around, but will always point to a source-id on a supported
+  // domain. If the user leaves the supported domain, this will instead point to
+  // the last URL still on the supported domain.
+  ukm::SourceId ukm_source_id_;
 
   // Flag to ensure that we only get one TriggerScriptFinished event per run.
   bool finished_state_recorded_ = false;
