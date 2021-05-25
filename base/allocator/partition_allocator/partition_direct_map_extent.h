@@ -32,6 +32,7 @@ struct PartitionDirectMapMetadata {
     PartitionPage<thread_safe> first_invalid_page;
   };
   PartitionPage<thread_safe> page;
+  PartitionPage<thread_safe> subsequent_page;
   PartitionBucket<thread_safe> bucket;
   PartitionDirectMapExtent<thread_safe> direct_map_extent;
 };

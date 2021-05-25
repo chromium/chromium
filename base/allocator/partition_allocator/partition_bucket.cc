@@ -279,6 +279,10 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     PA_DCHECK(!page->slot_span_metadata.num_unprovisioned_slots);
     PA_DCHECK(!page->slot_span_metadata.empty_cache_index);
 
+    PA_DCHECK(!metadata->subsequent_page.subsequent_page_metadata.raw_size);
+    // Raw size is set later, by the caller.
+    metadata->subsequent_page.slot_span_metadata_offset = 1;
+
     PA_DCHECK(!metadata->bucket.active_slot_spans_head);
     PA_DCHECK(!metadata->bucket.empty_slot_spans_head);
     PA_DCHECK(!metadata->bucket.decommitted_slot_spans_head);
