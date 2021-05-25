@@ -2349,6 +2349,8 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
 bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
   if (!window)
     return false;
+  if (window == GetAttachedBrowserWidget()->GetNativeWindow())
+    return true;
 
   BrowserView* other_browser_view =
       BrowserView::GetBrowserViewForNativeWindow(window);
