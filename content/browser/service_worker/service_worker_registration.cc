@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -50,7 +49,9 @@ ServiceWorkerRegistration::ServiceWorkerRegistration(
     : scope_(options.scope),
       // Safe to convert GURL to Origin because service workers are restricted
       // to secure contexts.
-      origin_(url::Origin::Create(options.scope)),
+      // TODO(crbug.com/1199077): Update this when
+      // ServiceWorkerRegistrationOptions implements StorageKey.
+      key_(storage::StorageKey(url::Origin::Create(options.scope))),
       update_via_cache_(options.update_via_cache),
       registration_id_(registration_id),
       status_(Status::kIntact),
@@ -290,9 +291,7 @@ void ServiceWorkerRegistration::ClaimClients() {
   const bool include_back_forward_cached_clients = true;
   for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
            context_->GetClientContainerHostIterator(
-               // TODO(crbug.com/1199077): Update this when
-               // ServiceWorkerRegistration implements StorageKey.
-               storage::StorageKey(origin_), include_reserved_clients,
+               key_, include_reserved_clients,
                include_back_forward_cached_clients);
        !it->IsAtEnd(); it->Advance()) {
     ServiceWorkerContainerHost* container_host = it->GetContainerHost();
@@ -337,7 +336,7 @@ void ServiceWorkerRegistration::DeleteAndClearWhenReady() {
   }
 
   context_->registry()->DeleteRegistration(
-      this, storage::StorageKey(origin()),
+      this, key_,
       base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this));
 
   if (!active_version() || !active_version()->HasControllee())
@@ -348,7 +347,7 @@ void ServiceWorkerRegistration::DeleteAndClearImmediately() {
   DCHECK(context_);
   if (!is_deleted()) {
     context_->registry()->DeleteRegistration(
-        this, storage::StorageKey(origin()),
+        this, key_,
         base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this));
   }
 
@@ -589,7 +588,7 @@ void ServiceWorkerRegistration::ForceDelete() {
   // Delete the registration and its state from storage.
   if (status() == Status::kIntact) {
     context_->registry()->DeleteRegistration(
-        this, storage::StorageKey(origin()),
+        this, key_,
         base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, protect));
   }
   DCHECK(is_uninstalling());
@@ -682,8 +681,7 @@ void ServiceWorkerRegistration::OnActivateEventFinished(
   // "Run the Update State algorithm passing registration's active worker and
   // 'activated' as the arguments."
   activating_version->SetStatus(ServiceWorkerVersion::ACTIVATED);
-  context_->registry()->UpdateToActiveState(id(), storage::StorageKey(origin()),
-                                            base::DoNothing());
+  context_->registry()->UpdateToActiveState(id(), key_, base::DoNothing());
 }
 
 void ServiceWorkerRegistration::OnDeleteFinished(

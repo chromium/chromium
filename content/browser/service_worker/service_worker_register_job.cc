@@ -783,8 +783,7 @@ void ServiceWorkerRegisterJob::CompleteInternal(
         registration()->NotifyRegistrationFailed();
         if (!registration()->is_deleted()) {
           context_->registry()->DeleteRegistration(
-              registration(), storage::StorageKey(registration()->origin()),
-              base::DoNothing());
+              registration(), registration()->key(), base::DoNothing());
           context_->registry()->NotifyDoneUninstallingRegistration(
               registration(), ServiceWorkerRegistration::Status::kUninstalled);
         }
@@ -843,10 +842,7 @@ void ServiceWorkerRegisterJob::AddRegistrationToMatchingContainerHosts(
   // while they are in bfcache or after they are restored from bfcache.
   for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
            context_->GetClientContainerHostIterator(
-               // TODO(crbug.com/1199077): Update this when
-               // ServiceWorkerRegistration implements StorageKey.
-               storage::StorageKey(registration->origin()),
-               true /* include_reserved_clients */,
+               registration->key(), true /* include_reserved_clients */,
                true /* include_back_forward_cached_clients */);
        !it->IsAtEnd(); it->Advance()) {
     ServiceWorkerContainerHost* container_host = it->GetContainerHost();
@@ -889,7 +885,7 @@ void ServiceWorkerRegisterJob::BumpLastUpdateCheckTimeIfNeeded() {
 
     if (registration()->newest_installed_version()) {
       context_->registry()->UpdateLastUpdateCheckTime(
-          registration()->id(), storage::StorageKey(registration()->origin()),
+          registration()->id(), registration()->key(),
           registration()->last_update_check(),
           base::BindOnce([](blink::ServiceWorkerStatusCode status) {
             // Ignore errors; bumping the update check time is just best-effort.

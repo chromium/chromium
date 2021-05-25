@@ -435,7 +435,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
     base::RunLoop loop;
     blink::ServiceWorkerStatusCode result;
     registry()->UpdateToActiveState(
-        registration->id(), storage::StorageKey(registration->origin()),
+        registration->id(), registration->key(),
         base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
           result = status;
           loop.Quit();
@@ -449,7 +449,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
     base::RunLoop loop;
     blink::ServiceWorkerStatusCode result;
     registry()->UpdateLastUpdateCheckTime(
-        registration->id(), storage::StorageKey(registration->origin()),
+        registration->id(), registration->key(),
         registration->last_update_check(),
         base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
           result = status;
@@ -2424,8 +2424,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, UpdateRegistration) {
   // Promote the worker to active worker and add a controllee.
   registration_->SetActiveVersion(registration_->waiting_version());
   registration_->active_version()->SetStatus(ServiceWorkerVersion::ACTIVATED);
-  registry()->UpdateToActiveState(registration_->id(),
-                                  storage::StorageKey(registration_->origin()),
+  registry()->UpdateToActiveState(registration_->id(), registration_->key(),
                                   base::DoNothing());
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
@@ -2477,8 +2476,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, UpdateRegistration) {
 TEST_F(ServiceWorkerRegistryResourceTest, UpdateRegistration_NoLiveVersion) {
   // Promote the worker to active worker and add a controllee.
   registration_->SetActiveVersion(registration_->waiting_version());
-  registry()->UpdateToActiveState(registration_->id(),
-                                  storage::StorageKey(registration_->origin()),
+  registry()->UpdateToActiveState(registration_->id(), registration_->key(),
                                   base::DoNothing());
 
   // Make an updated registration.
@@ -2517,8 +2515,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, CleanupOnRestart) {
   registration_->SetActiveVersion(registration_->waiting_version());
   registration_->active_version()->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration_->SetWaitingVersion(nullptr);
-  registry()->UpdateToActiveState(registration_->id(),
-                                  storage::StorageKey(registration_->origin()),
+  registry()->UpdateToActiveState(registration_->id(), registration_->key(),
                                   base::DoNothing());
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
@@ -2541,9 +2538,8 @@ TEST_F(ServiceWorkerRegistryResourceTest, CleanupOnRestart) {
 
   // Also add an uncommitted resource.
   int64_t kStaleUncommittedResourceId = GetNewResourceIdSync(storage_control());
-  registry()->StoreUncommittedResourceId(
-      kStaleUncommittedResourceId,
-      storage::StorageKey(registration_->origin()));
+  registry()->StoreUncommittedResourceId(kStaleUncommittedResourceId,
+                                         registration_->key());
   EnsureRemoteCallsAreExecuted();
   verify_ids = GetUncommittedResourceIds();
   EXPECT_EQ(1u, verify_ids.size());
@@ -2560,8 +2556,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, CleanupOnRestart) {
   storage_control()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
   int64_t kNewResourceId = GetNewResourceIdSync(storage_control());
   WriteBasicResponse(storage_control(), kNewResourceId);
-  registry()->StoreUncommittedResourceId(
-      kNewResourceId, storage::StorageKey(registration_->origin()));
+  registry()->StoreUncommittedResourceId(kNewResourceId, registration_->key());
   loop.Run();
 
   // The stale resources should be purged, but the new resource should persist.
@@ -2629,8 +2624,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, Restart_LiveVersion) {
 TEST_F(ServiceWorkerRegistryResourceTest, RetryInflightCalls_Resources) {
   const int64_t kResourceId = GetNewResourceIdSync(storage_control());
 
-  registry()->StoreUncommittedResourceId(
-      kResourceId, storage::StorageKey(registration_->origin()));
+  registry()->StoreUncommittedResourceId(kResourceId, registration_->key());
   EXPECT_EQ(inflight_call_count(), 1U);
 
   helper()->SimulateStorageRestartForTesting();

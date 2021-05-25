@@ -364,10 +364,8 @@ void PaymentAppDatabase::DidGetPaymentAppInfoToUpdatePaymentAppInfo(
   bool success = payment_app_proto.SerializeToString(&serialized_payment_app);
   DCHECK(success);
 
-  // TODO(crbug.com/1199077): Update this when ServiceWorkerRegistration
-  // implements StorageKey.
   service_worker_context_->StoreRegistrationUserData(
-      registration->id(), storage::StorageKey(registration->origin()),
+      registration->id(), registration->key(),
       {{CreatePaymentAppKey(registration->scope().spec()),
         serialized_payment_app}},
       base::BindOnce(&PaymentAppDatabase::DidUpdatePaymentApp,
@@ -444,21 +442,23 @@ void PaymentAppDatabase::DidFindRegistrationToEnablePaymentAppDelegations(
     return;
   }
 
-  // TODO(crbug.com/1199077): Update this when ServiceWorkerRegistration
-  // implements StorageKey.
+  // Constructing registration_id and payment_app_key before
+  // moving registration.
+  int64_t registration_id = registration->id();
+  std::string payment_app_key =
+      CreatePaymentAppKey(registration->scope().spec());
   service_worker_context_->GetRegistrationUserDataByKeyPrefix(
-      registration->id(), CreatePaymentAppKey(registration->scope().spec()),
+      registration_id, payment_app_key,
       base::BindOnce(
           &PaymentAppDatabase::DidGetPaymentAppInfoToEnableDelegations,
           weak_ptr_factory_.GetWeakPtr(), delegations, std::move(callback),
-          registration->id(), registration->scope()));
+          std::move(registration)));
 }
 
 void PaymentAppDatabase::DidGetPaymentAppInfoToEnableDelegations(
     const std::vector<PaymentDelegation>& delegations,
     EnableDelegationsCallback callback,
-    int64_t registration_id,
-    const GURL& pattern,
+    scoped_refptr<ServiceWorkerRegistration> registration,
     const std::vector<std::string>& data,
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
@@ -499,8 +499,9 @@ void PaymentAppDatabase::DidGetPaymentAppInfoToEnableDelegations(
   DCHECK(success);
 
   service_worker_context_->StoreRegistrationUserData(
-      registration_id, storage::StorageKey(url::Origin::Create(pattern)),
-      {{CreatePaymentAppKey(pattern.spec()), serialized_payment_app}},
+      registration->id(), registration->key(),
+      {{CreatePaymentAppKey(registration->scope().spec()),
+        serialized_payment_app}},
       base::BindOnce(&PaymentAppDatabase::DidEnablePaymentAppDelegations,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -523,19 +524,21 @@ void PaymentAppDatabase::DidFindRegistrationToSetPaymentAppUserHint(
   if (status != blink::ServiceWorkerStatusCode::kOk)
     return;
 
-  // TODO(crbug.com/1199077): Update this when ServiceWorkerRegistration
-  // implements StorageKey.
+  // Constructing registration_id and payment_app_key before
+  // moving registration.
+  int64_t registration_id = registration->id();
+  std::string payment_app_key =
+      CreatePaymentAppKey(registration->scope().spec());
   service_worker_context_->GetRegistrationUserDataByKeyPrefix(
-      registration->id(), CreatePaymentAppKey(registration->scope().spec()),
+      registration_id, payment_app_key,
       base::BindOnce(&PaymentAppDatabase::DidGetPaymentAppInfoToSetUserHint,
                      weak_ptr_factory_.GetWeakPtr(), user_hint,
-                     registration->id(), registration->scope()));
+                     std::move(registration)));
 }
 
 void PaymentAppDatabase::DidGetPaymentAppInfoToSetUserHint(
     const std::string& user_hint,
-    int64_t registration_id,
-    const GURL& pattern,
+    scoped_refptr<ServiceWorkerRegistration> registration,
     const std::vector<std::string>& data,
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
@@ -554,8 +557,9 @@ void PaymentAppDatabase::DidGetPaymentAppInfoToSetUserHint(
   DCHECK(success);
 
   service_worker_context_->StoreRegistrationUserData(
-      registration_id, storage::StorageKey(url::Origin::Create(pattern)),
-      {{CreatePaymentAppKey(pattern.spec()), serialized_payment_app}},
+      registration->id(), registration->key(),
+      {{CreatePaymentAppKey(registration->scope().spec()),
+        serialized_payment_app}},
       base::BindOnce(&PaymentAppDatabase::DidSetPaymentAppUserHint,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -622,15 +626,13 @@ void PaymentAppDatabase::DidFindRegistrationToSetPaymentApp(
   bool success = payment_app_proto.SerializeToString(&serialized_payment_app);
   DCHECK(success);
 
-  // Constructing registration_id, registration_origin and storage_key before
+  // Constructing registration_id, registration_key and storage_key before
   // moving registration.
   int64_t registration_id = registration->id();
-  url::Origin registration_origin = registration->origin();
+  storage::StorageKey registration_key = registration->key();
   std::string storage_key = CreatePaymentAppKey(registration->scope().spec());
-  // TODO(crbug.com/1199077): Update this when ServiceWorkerRegistration
-  // implements StorageKey.
   service_worker_context_->StoreRegistrationUserData(
-      registration_id, storage::StorageKey(registration_origin),
+      registration_id, registration_key,
       {{storage_key, serialized_payment_app}},
       base::BindOnce(&PaymentAppDatabase::DidWritePaymentAppForSetPaymentApp,
                      weak_ptr_factory_.GetWeakPtr(), instrument_key, method,
@@ -669,10 +671,8 @@ void PaymentAppDatabase::DidWritePaymentAppForSetPaymentApp(
   success = key_info_proto.SerializeToString(&serialized_key_info);
   DCHECK(success);
 
-  // TODO(crbug.com/1199077): Update this when ServiceWorkerRegistration
-  // implements StorageKey.
   service_worker_context_->StoreRegistrationUserData(
-      registration->id(), storage::StorageKey(registration->origin()),
+      registration->id(), registration->key(),
       {{CreatePaymentInstrumentKey(instrument_key), serialized_instrument},
        {CreatePaymentInstrumentKeyInfoKey(instrument_key),
         serialized_key_info}},
@@ -952,10 +952,8 @@ void PaymentAppDatabase::DidFindRegistrationToWritePaymentInstrument(
   success = key_info_proto.SerializeToString(&serialized_key_info);
   DCHECK(success);
 
-  // TODO(crbug.com/1199077): Update this when ServiceWorkerRegistration
-  // implements StorageKey.
   service_worker_context_->StoreRegistrationUserData(
-      registration->id(), storage::StorageKey(registration->origin()),
+      registration->id(), registration->key(),
       {{CreatePaymentInstrumentKey(instrument_key), serialized_instrument},
        {CreatePaymentInstrumentKeyInfoKey(instrument_key),
         serialized_key_info}},

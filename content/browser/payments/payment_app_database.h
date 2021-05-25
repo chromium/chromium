@@ -204,11 +204,11 @@ class CONTENT_EXPORT PaymentAppDatabase {
       const std::string& user_hint,
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration);
-  void DidGetPaymentAppInfoToSetUserHint(const std::string& user_hint,
-                                         int64_t registration_id,
-                                         const GURL& pattern,
-                                         const std::vector<std::string>& data,
-                                         blink::ServiceWorkerStatusCode status);
+  void DidGetPaymentAppInfoToSetUserHint(
+      const std::string& user_hint,
+      scoped_refptr<ServiceWorkerRegistration> registration,
+      const std::vector<std::string>& data,
+      blink::ServiceWorkerStatusCode status);
   void DidSetPaymentAppUserHint(blink::ServiceWorkerStatusCode status);
 
   // EnablePaymentAppDelegations callbacks.
@@ -220,8 +220,7 @@ class CONTENT_EXPORT PaymentAppDatabase {
   void DidGetPaymentAppInfoToEnableDelegations(
       const std::vector<payments::mojom::PaymentDelegation>& delegations,
       EnableDelegationsCallback callback,
-      int64_t registration_id,
-      const GURL& pattern,
+      scoped_refptr<ServiceWorkerRegistration> registration,
       const std::vector<std::string>& data,
       blink::ServiceWorkerStatusCode status);
   void DidEnablePaymentAppDelegations(EnableDelegationsCallback callback,

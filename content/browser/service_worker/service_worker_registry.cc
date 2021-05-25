@@ -287,15 +287,14 @@ void ServiceWorkerRegistry::GetAllRegistrationsInfos(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-// TODO(crbug.com/1199077): Use `key` once ServiceWorkerRegistration
-// implements StorageKey.
 ServiceWorkerRegistration* ServiceWorkerRegistry::GetUninstallingRegistration(
     const GURL& scope,
     const storage::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(bashi): Should we check state of ServiceWorkerStorage?
   for (const auto& registration : uninstalling_registrations_) {
-    if (registration.second->scope() == scope) {
+    if (registration.second->key() == key &&
+        registration.second->scope() == scope) {
       DCHECK(registration.second->is_uninstalling());
       return registration.second.get();
     }
@@ -309,9 +308,7 @@ ServiceWorkerRegistry::GetUninstallingRegistrationsForStorageKey(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<scoped_refptr<ServiceWorkerRegistration>> results;
   for (const auto& registration : uninstalling_registrations_) {
-    // TODO(crbug/1199077): Use full `key` once ServiceWorkerRegistration
-    // implements StorageKey.
-    if (url::Origin::Create(registration.second->scope()) == key.origin()) {
+    if (registration.second->key() == key) {
       results.push_back(registration.second);
     }
   }
@@ -383,16 +380,12 @@ void ServiceWorkerRegistry::StoreRegistration(
   }
   data->resources_total_size_bytes = resources_total_size_bytes;
 
-  // TODO(crbug/1199077): Use `key` once ServiceWorkerRegistration implements
-  // StorageKey.
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::StoreRegistration,
-      base::BindOnce(
-          &ServiceWorkerRegistry::DidStoreRegistration,
-          weak_factory_.GetWeakPtr(), registration->id(),
-          resources_total_size_bytes, registration->scope(),
-          storage::StorageKey(url::Origin::Create(registration->scope())),
-          std::move(callback)),
+      base::BindOnce(&ServiceWorkerRegistry::DidStoreRegistration,
+                     weak_factory_.GetWeakPtr(), registration->id(),
+                     resources_total_size_bytes, registration->scope(),
+                     registration->key(), std::move(callback)),
       std::move(data), std::move(resources));
 }
 
@@ -749,8 +742,8 @@ void ServiceWorkerRegistry::FindRegistrationForIdInternal(
       if (quota_manager_proxy_) {
         // Can be nullptr in tests.
         quota_manager_proxy_->NotifyStorageAccessed(
-            (*registration)->origin(), blink::mojom::StorageType::kTemporary,
-            base::Time::Now());
+            (*registration)->key().origin(),
+            blink::mojom::StorageType::kTemporary, base::Time::Now());
       }
     }
 
@@ -767,8 +760,6 @@ void ServiceWorkerRegistry::FindRegistrationForIdInternal(
       static_cast<const int64_t>(registration_id), key);
 }
 
-// TODO(crbug.com/1199077): Use `key` once ServiceWorkerRegistration
-// implements StorageKey.
 ServiceWorkerRegistration*
 ServiceWorkerRegistry::FindInstallingRegistrationForClientUrl(
     const GURL& client_url,
@@ -782,20 +773,20 @@ ServiceWorkerRegistry::FindInstallingRegistrationForClientUrl(
   // TODO(nhiroki): This searches over installing registrations linearly and it
   // couldn't be scalable. Maybe the regs should be partitioned by origin.
   for (const auto& registration : installing_registrations_)
-    if (matcher.MatchLongest(registration.second->scope()))
+    if (registration.second->key() == key &&
+        matcher.MatchLongest(registration.second->scope()))
       match = registration.second.get();
   return match;
 }
 
-// TODO(crbug.com/1199077): Use `key` once ServiceWorkerRegistration
-// implements StorageKey.
 ServiceWorkerRegistration*
 ServiceWorkerRegistry::FindInstallingRegistrationForScope(
     const GURL& scope,
     const storage::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& registration : installing_registrations_)
-    if (registration.second->scope() == scope)
+    if (registration.second->key() == key &&
+        registration.second->scope() == scope)
       return registration.second.get();
   return nullptr;
 }
@@ -951,7 +942,7 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
     if (quota_manager_proxy_) {
       // Can be nullptr in tests.
       quota_manager_proxy_->NotifyStorageAccessed(
-          registration->origin(), blink::mojom::StorageType::kTemporary,
+          registration->key().origin(), blink::mojom::StorageType::kTemporary,
           base::Time::Now());
     }
   }
@@ -988,7 +979,7 @@ void ServiceWorkerRegistry::DidFindRegistrationForScope(
     if (quota_manager_proxy_) {
       // Can be nullptr in tests.
       quota_manager_proxy_->NotifyStorageAccessed(
-          registration->origin(), blink::mojom::StorageType::kTemporary,
+          registration->key().origin(), blink::mojom::StorageType::kTemporary,
           base::Time::Now());
     }
   }
@@ -1033,7 +1024,7 @@ void ServiceWorkerRegistry::DidFindRegistrationForId(
     if (quota_manager_proxy_) {
       // Can be nullptr in tests.
       quota_manager_proxy_->NotifyStorageAccessed(
-          registration->origin(), blink::mojom::StorageType::kTemporary,
+          registration->key().origin(), blink::mojom::StorageType::kTemporary,
           base::Time::Now());
     }
   }

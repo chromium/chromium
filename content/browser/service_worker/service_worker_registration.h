@@ -16,6 +16,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -77,7 +78,7 @@ class CONTENT_EXPORT ServiceWorkerRegistration
 
   int64_t id() const { return registration_id_; }
   const GURL& scope() const { return scope_; }
-  const url::Origin& origin() const { return origin_; }
+  const storage::StorageKey& key() const { return key_; }
   blink::mojom::ServiceWorkerUpdateViaCache update_via_cache() const {
     return update_via_cache_;
   }
@@ -257,7 +258,7 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   };
 
   const GURL scope_;
-  const url::Origin origin_;
+  const storage::StorageKey key_;
   blink::mojom::ServiceWorkerUpdateViaCache update_via_cache_;
   const int64_t registration_id_;
   Status status_;
