@@ -1592,6 +1592,7 @@
 <translation id="2691440343905273290">Փոխել ներածման կարգավորումները</translation>
 <translation id="2693176596243495071">Անհայտ սխալ առաջացավ։ Փորձեք ավելի ուշ: Եթե սխալը կրկնվի, կապվեք ձեր ադմինիստրատորի հետ։</translation>
 <translation id="2699911226086014512">Չհաջողվեց PIN կոդ սահմանել: Սխալի կոդը՝ <ph name="RETRIES" />:</translation>
+<translation id="2701330563083355633">Ուղարկվել է <ph name="DEVICE_NAME" />-ի միջոցով</translation>
 <translation id="2701737434167469065">Մուտք գործել, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Ընթերցանության ցանկ</translation>
 <translation id="270358213449696159">Google Chrome OS-ի օգտագործման պայմանների ամբողջական տեքստը</translation>
@@ -1872,6 +1873,7 @@
 <translation id="2989123969927553766">Մկնիկով ոլորման արագացում</translation>
 <translation id="2989474696604907455">կցված չէ</translation>
 <translation id="2989786307324390836">Բինարային մեկ վկայագիր՝ DER-գաղտնագրումով</translation>
+<translation id="2989805286512600854">Բացել նոր ներդիրում</translation>
 <translation id="2990313168615879645">Ավելացնել Google հաշիվ</translation>
 <translation id="2990583317361835189">Թույլ չտալ կայքերին օգտագործել շարժման տվիչները</translation>
 <translation id="2992931425024192067">Ծանուցումները ցույց տալ ամբողջությամբ</translation>

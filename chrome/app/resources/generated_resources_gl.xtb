@@ -1589,6 +1589,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2691440343905273290">Cambiar configuración da introdución de texto</translation>
 <translation id="2693176596243495071">Produciuse un erro descoñecido. Téntao de novo máis tarde ou contacta co teu administrador se o problema persiste.</translation>
 <translation id="2699911226086014512">Produciuse un erro ao definir o PIN. Código do erro: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Contido compartido desde <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Iniciar sesión, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
 <translation id="270358213449696159">Contido das condicións de Google Chrome OS</translation>
@@ -1869,6 +1870,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2989123969927553766">Aceleración de desprazamento do rato</translation>
 <translation id="2989474696604907455">non anexado</translation>
 <translation id="2989786307324390836">Binario con codificación DER, un só certificado</translation>
+<translation id="2989805286512600854">Abrir nunha pestana nova</translation>
 <translation id="2990313168615879645">Engadir Conta de Google</translation>
 <translation id="2990583317361835189">Non permitir que os sitios utilicen sensores de movemento</translation>
 <translation id="2992931425024192067">Mostrar todo o contido das notificacións</translation>

@@ -1606,6 +1606,7 @@
 <translation id="2691440343905273290">Изменете ги поставките за внесување</translation>
 <translation id="2693176596243495071">Упс!  Настана непозната грешка. Обидете се повторно подоцна. Ако и понатаму се соочувате со истиот проблем, контактирајте со вашиот администратор.</translation>
 <translation id="2699911226086014512">Операцијата за PIN не успеа со код <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Споделено од <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Најавете се, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Список за читање</translation>
 <translation id="270358213449696159">Содржина на Условите за користење на Google Chrome OS</translation>
@@ -1887,6 +1888,7 @@
 <translation id="2989123969927553766">Забрзување на лизгањето на глувчето</translation>
 <translation id="2989474696604907455">не е прикачен</translation>
 <translation id="2989786307324390836">Бинарни податоци шифрирани со ДЕР, еден сертификат</translation>
+<translation id="2989805286512600854">Отвори во нова картичка</translation>
 <translation id="2990313168615879645">Додајте сметка на Google</translation>
 <translation id="2990583317361835189">Не им дозволувај на сајтовите да користат сензори за движење</translation>
 <translation id="2992931425024192067">Прикажувај ја целата содржина на известувањата</translation>

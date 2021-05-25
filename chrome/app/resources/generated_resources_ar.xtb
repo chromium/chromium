@@ -1591,6 +1591,7 @@
 <translation id="2691440343905273290">تغيير إعدادات الإدخال</translation>
 <translation id="2693176596243495071">عفوًا،  حدث خطأ غير معروف. يُرجى إعادة المحاولة فيما بعد أو الاتصال بالمشرف في حال استمرار المشكلة.</translation>
 <translation id="2699911226086014512">تعذَّر إتمام عملية رقم التعريف الشخصي باستخدام الرمز <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">تمت المشاركة من <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">تسجيل الدخول، <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">قائمة القراءة</translation>
 <translation id="270358213449696159">‏محتوى بنود نظام التشغيل Google Chrome</translation>
@@ -1872,6 +1873,7 @@
 <translation id="2989123969927553766">تسريع التمرير عبر الماوس</translation>
 <translation id="2989474696604907455">غير متصل</translation>
 <translation id="2989786307324390836">‏حفظ شهادة واحدة بتشفير DER ثنائي</translation>
+<translation id="2989805286512600854">فتح في علامة تبويب جديدة</translation>
 <translation id="2990313168615879645">‏إضافة حساب Google</translation>
 <translation id="2990583317361835189">عدم السماح للمواقع الإلكترونية باستخدام أجهزة استشعار الحركة</translation>
 <translation id="2992931425024192067">عرض كل محتوى الإشعارات</translation>

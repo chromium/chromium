@@ -1587,6 +1587,7 @@
 <translation id="2691440343905273290">更改输入设置</translation>
 <translation id="2693176596243495071">糟糕！发生了未知错误。请稍后重试；如果问题依然存在，请与您的管理员联系。</translation>
 <translation id="2699911226086014512">PIN 码操作失败，错误代码为 <ph name="RETRIES" />。</translation>
+<translation id="2701330563083355633">共享自 <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">登录，<ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">阅读清单</translation>
 <translation id="270358213449696159">Google Chrome 操作系统条款内容</translation>
@@ -1867,6 +1868,7 @@
 <translation id="2989123969927553766">鼠标滚屏加速</translation>
 <translation id="2989474696604907455">未连接</translation>
 <translation id="2989786307324390836">DER 编码二进制，单一证书</translation>
+<translation id="2989805286512600854">在新标签页中打开</translation>
 <translation id="2990313168615879645">添加 Google 帐号</translation>
 <translation id="2990583317361835189">不允许网站使用移动传感器</translation>
 <translation id="2992931425024192067">显示所有通知内容</translation>

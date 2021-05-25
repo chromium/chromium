@@ -1604,6 +1604,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2691440343905273290">Muuta syöttöasetuksia</translation>
 <translation id="2693176596243495071">Hups, tapahtui tuntematon virhe. Yritä myöhemmin uudelleen tai ota yhteyttä järjestelmänvalvojaan, jos ongelma ei ratkea.</translation>
 <translation id="2699911226086014512">PIN-toiminto epäonnistui (koodi: <ph name="RETRIES" />).</translation>
+<translation id="2701330563083355633">Jaettu: <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Kirjaudu sisään, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Lukulista</translation>
 <translation id="270358213449696159">Google Chrome ‑käyttöjärjestelmän käyttöehtojen sisältö</translation>
@@ -1885,6 +1886,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="2989123969927553766">Hiiren vierityksen nopeuttaminen</translation>
 <translation id="2989474696604907455">ei yhdistetty</translation>
 <translation id="2989786307324390836">DER-koodattu binääri, yksittäinen varmenne</translation>
+<translation id="2989805286512600854">Avaa uudessa välilehdessä</translation>
 <translation id="2990313168615879645">Lisää Google-tili</translation>
 <translation id="2990583317361835189">Älä salli sivustojen käyttää liiketunnistimia</translation>
 <translation id="2992931425024192067">Näytä ilmoitusten koko sisältö</translation>

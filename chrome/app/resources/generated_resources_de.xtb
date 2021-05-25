@@ -1587,6 +1587,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2691440343905273290">Eingabeeinstellungen ändern</translation>
 <translation id="2693176596243495071">Hoppla! Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es später noch einmal oder wenden Sie sich an Ihren Administrator, wenn das Problem weiterhin besteht.</translation>
 <translation id="2699911226086014512">Fehler beim Festlegen der PIN. Fehlercode: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Geteilt von <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Anmelden, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Leseliste</translation>
 <translation id="270358213449696159">Inhalt der Google Chrome OS-Nutzungsbedingungen</translation>
@@ -1868,6 +1869,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2989123969927553766">Scroll-Beschleunigung für Maus</translation>
 <translation id="2989474696604907455">Nicht angeschlossen</translation>
 <translation id="2989786307324390836">DER-verschlüsselte Binärdatei, Einzelzertifikat</translation>
+<translation id="2989805286512600854">In neuem Tab öffnen</translation>
 <translation id="2990313168615879645">Google-Konto hinzufügen</translation>
 <translation id="2990583317361835189">Websites dürfen keine Bewegungssensoren verwenden</translation>
 <translation id="2992931425024192067">Gesamten Benachrichtigungsinhalt anzeigen</translation>

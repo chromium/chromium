@@ -1605,6 +1605,7 @@
 <translation id="2691440343905273290">입력 설정 변경</translation>
 <translation id="2693176596243495071">죄송합니다. 알 수 없는 오류가 발생했습니다. 나중에 다시 시도하거나 문제가 계속되는 경우 관리자에게 문의하세요.</translation>
 <translation id="2699911226086014512">PIN 작업에 실패했습니다. 오류 코드는 <ph name="RETRIES" />입니다.</translation>
+<translation id="2701330563083355633"><ph name="DEVICE_NAME" />에서 공유함</translation>
 <translation id="2701737434167469065">로그인, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">읽기 목록</translation>
 <translation id="270358213449696159">Google Chrome OS 이용약관 내용</translation>
@@ -1886,6 +1887,7 @@
 <translation id="2989123969927553766">마우스 스크롤 가속</translation>
 <translation id="2989474696604907455">첨부되지 않음</translation>
 <translation id="2989786307324390836">DER-인코딩 바이너리, 단일 인증서</translation>
+<translation id="2989805286512600854">새 탭에서 열기</translation>
 <translation id="2990313168615879645">Google 계정 추가</translation>
 <translation id="2990583317361835189">사이트에서 움직임 감지 센서를 사용하도록 허용하지 않음</translation>
 <translation id="2992931425024192067">모든 알림 내용 표시</translation>

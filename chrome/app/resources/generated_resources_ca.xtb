@@ -1590,6 +1590,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2691440343905273290">Canvia la configuració de la introducció</translation>
 <translation id="2693176596243495071">S'ha produït un error desconegut. Torna-ho a provar més tard o contacta amb l'administrador si el problema no es resol.</translation>
 <translation id="2699911226086014512">Ha fallat l'operació del PIN; codi: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">S'ha compartit des del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Inicia la sessió, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Llista de lectura</translation>
 <translation id="270358213449696159">Contingut de les Condicions de Google Chrome OS</translation>
@@ -1871,6 +1872,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2989123969927553766">Acceleració de desplaçament del ratolí</translation>
 <translation id="2989474696604907455">no connectat</translation>
 <translation id="2989786307324390836">Binari codificat amb DER, certificat únic</translation>
+<translation id="2989805286512600854">Obre en una pestanya nova</translation>
 <translation id="2990313168615879645">Afegeix un Compte de Google</translation>
 <translation id="2990583317361835189">No permetis que els llocs web utilitzin sensors de moviment</translation>
 <translation id="2992931425024192067">Mostra tot el contingut de les notificacions</translation>

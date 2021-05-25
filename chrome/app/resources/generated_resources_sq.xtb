@@ -1588,6 +1588,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2691440343905273290">Ndrysho cilësimet e hyrjes</translation>
 <translation id="2693176596243495071">Mos! Ndodhi një gabim i panjohur. Provo sërish më vonë ose kontakto me administratorin tënd nëse problemi vazhdon.</translation>
 <translation id="2699911226086014512">Veprimi i kodit PIN dështoi me kodin <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Ndarë nga <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Identifikohu, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Lista e leximit</translation>
 <translation id="270358213449696159">Përmbajtja e kushteve të Google Chrome OS</translation>
@@ -1868,6 +1869,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2989123969927553766">Përshpejtimi i lëvizjes së miut</translation>
 <translation id="2989474696604907455">nuk është i lidhur</translation>
 <translation id="2989786307324390836">Binar i koduar DER, një çertifikatë</translation>
+<translation id="2989805286512600854">Hape në skedë të re</translation>
 <translation id="2990313168615879645">Shto "Llogari të Google"</translation>
 <translation id="2990583317361835189">Mos lejo që sajtet të përdorin sensorët e lëvizjes</translation>
 <translation id="2992931425024192067">Shfaq të gjithë përmbajtjen e njoftimit</translation>

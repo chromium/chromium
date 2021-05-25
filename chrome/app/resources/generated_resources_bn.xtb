@@ -1596,6 +1596,7 @@
 <translation id="2691440343905273290">ইনপুট সেটিংস পরিবর্তন করুন</translation>
 <translation id="2693176596243495071">একটি অজানা সমস্যা হয়েছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন বা সমস্যাটি হতে থাকলে আপনার প্রশাসককে জানান।</translation>
 <translation id="2699911226086014512">পিন ভিত্তিক কাজটি সঠিকভাবে করা যায়নি, সমস্যার কোড <ph name="RETRIES" />।</translation>
+<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> থেকে শেয়ার করা হয়েছে</translation>
 <translation id="2701737434167469065">সাইন-ইন করুন, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">পড়ার তালিকা</translation>
 <translation id="270358213449696159">Google Chrome OS শর্তাদির সামগ্রী</translation>
@@ -1874,6 +1875,7 @@
 <translation id="2989123969927553766">মাউস স্ক্রল করার অ্যাক্সিলারেশন</translation>
 <translation id="2989474696604907455">সংযুক্ত নয়</translation>
 <translation id="2989786307324390836">DER-এনকোডেড বাইনারি, একক সার্টিফিকেট</translation>
+<translation id="2989805286512600854">নতুন ট্যাবে খুলুন</translation>
 <translation id="2990313168615879645">Google অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="2990583317361835189">সাইটগুলিকে মোশন সেন্সর ব্যবহার করতে দেয় না</translation>
 <translation id="2992931425024192067">সব বিজ্ঞপ্তি দেখতে চাই</translation>

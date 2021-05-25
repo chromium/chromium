@@ -1592,6 +1592,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2691440343905273290">Promjena postavki unosa</translation>
 <translation id="2693176596243495071">Ups! Dogodila se nepoznata pogreška. Pokušajte ponovo kasnije ili se obratite administratoru ako se i dalje javlja problem.</translation>
 <translation id="2699911226086014512">Postavljanje PIN-a nije uspjelo, kôd pogreške je <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Podijeljeno s uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Prijavite se, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Popis za čitanje</translation>
 <translation id="270358213449696159">Sadržaj uvjeta za OS Google Chrome</translation>
@@ -1873,6 +1874,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="2989123969927553766">Ubrzanje pomicanja mišem</translation>
 <translation id="2989474696604907455">nije povezano</translation>
 <translation id="2989786307324390836">DER-binarno kodirano, jedan certifikat</translation>
+<translation id="2989805286512600854">Otvori u novoj kartici</translation>
 <translation id="2990313168615879645">Dodavanje Google računa</translation>
 <translation id="2990583317361835189">Ne dopuštaj web-lokacijama korištenje senzora kretanja</translation>
 <translation id="2992931425024192067">Prikazuje se cijeli sadržaj obavijesti </translation>

@@ -1606,6 +1606,7 @@
 <translation id="2691440343905273290">इनपुट सेटिंग बदलें</translation>
 <translation id="2693176596243495071">ओह हो!  कोई अज्ञात गड़बड़ी हुई. कृपया बाद में फिर से कोशिश करें या अगर समस्या फिर भी बनी रहती है, तो अपने एडमिन से संपर्क करें.</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> कोड के चलते पिन को सेट नहीं किया जा सका.</translation>
+<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> से शेयर किया</translation>
 <translation id="2701737434167469065">साइन इन करें, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">पठन सूची</translation>
 <translation id="270358213449696159">Google Chrome OS की शर्तों संबंधी सामग्री</translation>
@@ -1886,6 +1887,7 @@
 <translation id="2989123969927553766">माउस से स्क्रोल करने की रफ़्तार</translation>
 <translation id="2989474696604907455">अटैचमेंट नहीं</translation>
 <translation id="2989786307324390836">DER-एन्कोड की गई बाइनरी, एकल प्रमाणपत्र</translation>
+<translation id="2989805286512600854">नए टैब में खोलें</translation>
 <translation id="2990313168615879645">Google खाता जोड़ें</translation>
 <translation id="2990583317361835189">साइटों को मोशन सेंसर इस्तेमाल करने की अनुमति न दें</translation>
 <translation id="2992931425024192067">सभी सूचना सामग्री दिखाएं</translation>

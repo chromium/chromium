@@ -1592,6 +1592,7 @@
 <translation id="2691440343905273290">Изменить настройки ввода</translation>
 <translation id="2693176596243495071">Произошла неизвестная ошибка. Повторите попытку позже. Если ситуация не изменится, обратитесь к администратору.</translation>
 <translation id="2699911226086014512">Не удалось установить PIN-код (ошибка <ph name="RETRIES" />).</translation>
+<translation id="2701330563083355633">С устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2701737434167469065">Войти в аккаунт <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Список для чтения</translation>
 <translation id="270358213449696159">Полный текст Условий использования Google Chrome OS</translation>
@@ -1872,6 +1873,7 @@
 <translation id="2989123969927553766">Ускорение прокрутки мыши</translation>
 <translation id="2989474696604907455">не подключено</translation>
 <translation id="2989786307324390836">Двоичный единый сертификат с расшифровкой DER</translation>
+<translation id="2989805286512600854">Открыть в новой вкладке</translation>
 <translation id="2990313168615879645">Добавить аккаунт Google</translation>
 <translation id="2990583317361835189">Запретить сайтам использовать датчики движения</translation>
 <translation id="2992931425024192067">Показывать уведомления полностью</translation>

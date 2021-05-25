@@ -1588,6 +1588,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2691440343905273290">Zmień ustawienia wprowadzania</translation>
 <translation id="2693176596243495071">Ups, wystąpił nieznany błąd. Spróbuj ponownie później, a jeśli błąd nie ustąpi, skontaktuj się z administratorem.</translation>
 <translation id="2699911226086014512">Operacja z kodem PIN nie powiodła się, kod błędu: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Tę kartę udostępnia <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Zaloguj się, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Do przeczytania</translation>
 <translation id="270358213449696159">Treść Warunków korzystania z systemu operacyjnego Google Chrome</translation>
@@ -1868,6 +1869,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2989123969927553766">Przyspieszenie przewijania myszą</translation>
 <translation id="2989474696604907455">niepodłączone</translation>
 <translation id="2989786307324390836">Plik binarny z kodowaniem DER, jeden certyfikat</translation>
+<translation id="2989805286512600854">Otwórz w nowej karcie</translation>
 <translation id="2990313168615879645">Dodaj konto Google</translation>
 <translation id="2990583317361835189">Nie zezwalaj witrynom na używanie czujników ruchu</translation>
 <translation id="2992931425024192067">Pokazuj wszystkie powiadomienia</translation>

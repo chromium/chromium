@@ -1599,6 +1599,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2691440343905273290">Endre inndatainnstillinger</translation>
 <translation id="2693176596243495071">Beklager. En ukjent feil oppsto. Prøv på nytt senere, eller kontakt administratoren hvis problemet fortsetter.</translation>
 <translation id="2699911226086014512">PIN-kodehandlingen mislyktes med koden <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Logg på, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Leseliste</translation>
 <translation id="270358213449696159">Innholdet i vilkårene for Google Chrome OS</translation>
@@ -1880,6 +1881,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2989123969927553766">Rulleakselerasjon for musen</translation>
 <translation id="2989474696604907455">ikke tilkoblet</translation>
 <translation id="2989786307324390836">DER-kodet binært, enkelt sertifikat</translation>
+<translation id="2989805286512600854">Åpne i ny fane</translation>
 <translation id="2990313168615879645">Legg til Google-konto</translation>
 <translation id="2990583317361835189">Ikke la nettsteder bruke bevegelsessensorer</translation>
 <translation id="2992931425024192067">Vis alt innhold i varsler</translation>

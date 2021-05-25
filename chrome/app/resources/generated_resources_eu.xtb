@@ -1590,6 +1590,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2691440343905273290">Aldatu idazketa-metodoaren ezarpenak</translation>
 <translation id="2693176596243495071">Errore ezezagun bat gertatu da. Saiatu berriro geroago edo, arazoa konpontzen ez bada, jarri administratzailearekin harremanetan.</translation>
 <translation id="2699911226086014512">Huts egin du PINaren eragiketak. <ph name="RETRIES" /> kodea jaso da.</translation>
+<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> gailutik partekatu da</translation>
 <translation id="2701737434167469065">Hasi saioa, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Zerrenda</translation>
 <translation id="270358213449696159">Google Chrome OS baldintzen edukia</translation>
@@ -1870,6 +1871,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="2989123969927553766">Saguarekin gora eta behera bizkorrago egiteko aukera</translation>
 <translation id="2989474696604907455">konektatu gabe</translation>
 <translation id="2989786307324390836">DER kodetze bitarra, ziurtagiri bakarra</translation>
+<translation id="2989805286512600854">Ireki fitxa berri batean</translation>
 <translation id="2990313168615879645">Gehitu Google-ko kontu bat</translation>
 <translation id="2990583317361835189">Ez eman mugimendu-sentsoreak erabiltzeko baimena webguneei</translation>
 <translation id="2992931425024192067">Erakutsi jakinarazpenen eduki guztia</translation>

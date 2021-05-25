@@ -1604,6 +1604,7 @@
 <translation id="2691440343905273290">שינוי הגדרות הקלט</translation>
 <translation id="2693176596243495071">אופס. אירעה שגיאה לא ידועה. כדאי לנסות שוב מאוחר יותר, או לפנות אל מנהל המערכת אם הבעיה ממשיכה.</translation>
 <translation id="2699911226086014512">פעולת קוד האימות נכשלה עם הקוד <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">שותפה מהמכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">כניסה, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">רשימת קריאה</translation>
 <translation id="270358213449696159">‏תוכן התנאים של Google Chrome OS</translation>
@@ -1886,6 +1887,7 @@
 <translation id="2989123969927553766">האצת גלילת עכבר</translation>
 <translation id="2989474696604907455">לא מחובר</translation>
 <translation id="2989786307324390836">‏בינארי בקידוד DER, אישור יחיד</translation>
+<translation id="2989805286512600854">פתיחה בכרטיסייה חדשה</translation>
 <translation id="2990313168615879645">‏הוספת חשבון Google</translation>
 <translation id="2990583317361835189">לא לאפשר לאתרים להשתמש בחיישני תנועה</translation>
 <translation id="2992931425024192067">הצגת כל תוכן ההודעות</translation>

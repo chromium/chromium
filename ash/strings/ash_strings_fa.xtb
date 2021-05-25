@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">نصب برنامه‌ها، افزونه‌ها و طرح‌های زمینه</translation>
 <translation id="2977598380246111477">عدد بعدی</translation>
+<translation id="2992327365391326550">دکمه میکروفون دستگاه خاموش است.</translation>
 <translation id="2995447421581609334">نمایش دستگاه‌های ارسال محتوا.</translation>
 <translation id="2996462380875591307">‏«ذره‌بین متصل» فعال شد. برای خاموش کردن آن، Ctrl+Search+D را دوباره فشار دهید.</translation>
 <translation id="3000461861112256445">صدای مونو</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">‏برای ورود به سیستم، کد دسترسی والدین Family Link خود را وارد کنید</translation>
 <translation id="3039939407102840004">شارژ باتری قلم <ph name="PERCENTAGE" /> درصد است.</translation>
 <translation id="3045488863354895414">بعدازظهر به‌خیر،</translation>
+<translation id="3051189971848907985">درحال تغییر نام نمایه. چند دقیقه صبر کنید.</translation>
 <translation id="3055162170959710888">امروز از این دستگاه به‌مدت <ph name="USED_TIME" /> استفاده کردید</translation>
 <translation id="3077734595579995578">تبدیل</translation>
 <translation id="3081696990447829002">بزرگ کردن منو</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3371140690572404006">‏دستگاه USB-C (درگاه جلوی سمت راست)</translation>
 <translation id="3375634426936648815">متصل است</translation>
+<translation id="3378442621503952303">درحال اتصال به نمایه. چند دقیقه صبر کنید.</translation>
 <translation id="3386978599540877378">ذره‌بین تمام‌صفحه</translation>
 <translation id="3400357268283240774">تنظیمات بیشتر</translation>
 <translation id="3410336247007142655">نمایش تنظیمات طرح زمینه تیره</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">سلام، چه کمکی می‌توانم بکنم؟</translation>
 <translation id="3826099427150913765">رفتن به گذرواژه</translation>
 <translation id="383058930331066723">حالت «بهینه‌سازی باتری» روشن است</translation>
+<translation id="3835880383832568924">برای دیدن به‌روزرسانی‌ها، برنامه «میان‌برها» را باز کنید</translation>
 <translation id="383629559565718788">نمایش تنظیمات صفحه‌کلید</translation>
 <translation id="3846214748874656680">خروج از حالت تمام صفحه</translation>
 <translation id="3846575436967432996">اطلاعات شبکه در دسترس نیست</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">ثبت بازخورد</translation>
 <translation id="4731797938093519117">دسترسی والدین</translation>
 <translation id="4734965478015604180">افقی</translation>
+<translation id="4735498845456076464">میان‌بر صفحه‌کلید «<ph name="LAUNCHER_KEY_NAME" /> + عدد» تغییر کرده است. برای استفاده از کلیدهای عملکرد، کلید <ph name="LAUNCHER_KEY_NAME" /> + یکی از کلیدهای ردیف بالا را فشار دهید.</translation>
 <translation id="4744944742468440486">اطلاعات مرتبط با انتخاب شما</translation>
 <translation id="4759238208242260848">بارگیری‌ها</translation>
 <translation id="4774338217796918551">فردا ساعت <ph name="COME_BACK_TIME" /> برگردید.</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">کپی</translation>
 <translation id="6910714959251846841">‏این به‌روزرسانی نیاز به انجام powerwash دستگاهتان دارد. درباره جدیدترین به‌روزرسانی <ph name="SYSTEM_APP_NAME" /> بیشتر بدانید.</translation>
 <translation id="6919251195245069855">کارت هوشمندتان تشخیص داده نشد. دوباره امتحان کنید.</translation>
+<translation id="6921188888306725546">میان‌برهای صفحه‌کلید بهبود یافته‌اند</translation>
 <translation id="6945221475159498467">انتخاب</translation>
 <translation id="6961121602502368900">«بی‌صدا کردن تلفن» در نمایه کاری دردسترس نیست</translation>
 <translation id="6961840794482373852">میان‌بر صفحه‌کلید «دگرساز + جهت‌نمای بالا» تغییر کرده است. برای استفاده از کلید «صفحه قبلی»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای بالا» را فشار دهید.</translation>
@@ -934,6 +940,7 @@
 <translation id="8631727435199967028">تنظیمات دسترس‌پذیری</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> باقی‌مانده</translation>
+<translation id="8641805545866562088">درحال بازخوانی فهرست نمایه. چند دقیقه صبر کنید.</translation>
 <translation id="8646417893960517480">زمان‌سنج <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">‏برای افزودن فرد، کد دسترسی والدین Family Link خود را وارد کنید</translation>
 <translation id="8649101189709089199">انتخاب برای شنیدن</translation>
@@ -961,6 +968,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">تنظیمات روش‌های ورودی</translation>
+<translation id="8818320199597151042">درحال برداشتن نمایه. چند دقیقه صبر کنید.</translation>
 <translation id="8825863694328519386">برای برگشتن به عقب از سمت راست تند بکشید</translation>
 <translation id="8828714802988429505">۹۰°</translation>
 <translation id="8841375032071747811">دکمه برگشت</translation>
@@ -1006,6 +1014,7 @@
 <translation id="9091626656156419976">نمایشگر <ph name="DISPLAY_NAME" /> برداشته شد</translation>
 <translation id="9098969848082897657">بی‌صدا کردن تلفن</translation>
 <translation id="9099154003160514616">‏به‌روزرسانی Lacros موجود است</translation>
+<translation id="9100887602489003640">درحال افزودن نمایه. چند دقیقه صبر کنید.</translation>
 <translation id="9105450214093926548">‏درحین اجرای مرورگر Lacros، از ورود به سیستم کاربر دوم پشتیبانی نمی‌شود. لطفاً درعوض از نمایه مرورگر دیگری در Lacros استفاده کنید یا Lacros را ببندید و دوباره امتحان کنید.</translation>
 <translation id="9133335900048457298">نمی‌توان محتوای محافظت‌شده را ضبط کرد</translation>
 <translation id="9151726767154816831">‏راه‌اندازی مجدد و Powerwash برای به‌روزرسانی</translation>

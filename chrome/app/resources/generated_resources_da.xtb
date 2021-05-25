@@ -1609,6 +1609,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2691440343905273290">Skift indstillinger for indtastning</translation>
 <translation id="2693176596243495071">Ups! Der opstod en ukendt fejl. Prøv igen senere, eller kontakt din administrator, hvis problemet fortsætter.</translation>
 <translation id="2699911226086014512">Pinkodehandlingen mislykkedes med koden <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Log ind, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Læseliste</translation>
 <translation id="270358213449696159">Indholdet i vilkårene for Google Chrome OS</translation>
@@ -1891,6 +1892,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2989123969927553766">Acceleration af rulning med mus</translation>
 <translation id="2989474696604907455">ikke tilknyttet</translation>
 <translation id="2989786307324390836">DER-kodet binær, enkeltcertifikat</translation>
+<translation id="2989805286512600854">Åbn på ny fane</translation>
 <translation id="2990313168615879645">Tilføj Google-konto</translation>
 <translation id="2990583317361835189">Tillad ikke, at websites anvender bevægelsessensorer</translation>
 <translation id="2992931425024192067">Vis alt indhold i notifikationer</translation>

@@ -1605,6 +1605,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2691440343905273290">Change input settings</translation>
 <translation id="2693176596243495071">Oops!  An unknown error occurred. Please try again later or contact your administrator if the issue persists.</translation>
 <translation id="2699911226086014512">PIN operation failed with code <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Sign in, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Reading List</translation>
 <translation id="270358213449696159">Google Chrome OS Terms contents</translation>
@@ -1886,6 +1887,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2989123969927553766">Mouse scroll acceleration</translation>
 <translation id="2989474696604907455">not attached</translation>
 <translation id="2989786307324390836">DER-encoded binary, single certificate</translation>
+<translation id="2989805286512600854">Open in New Tab</translation>
 <translation id="2990313168615879645">Add Google Account</translation>
 <translation id="2990583317361835189">Don't allow sites to use motion sensors</translation>
 <translation id="2992931425024192067">Show all notification content</translation>

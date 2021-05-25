@@ -1601,6 +1601,7 @@
 <translation id="2691440343905273290">Промяна на настройките за въвеждане</translation>
 <translation id="2693176596243495071">Ами сега! Възникна неизвестна грешка. Моля, опитайте отново по-късно или се свържете с администратора си, ако проблемът продължи.</translation>
 <translation id="2699911226086014512">Операцията с ПИН кода не бе успешна: код <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Споделено от <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Влизане в профила <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Списък за четене</translation>
 <translation id="270358213449696159">Съдържание на Общите условия на Google Chrome OS</translation>
@@ -1882,6 +1883,7 @@
 <translation id="2989123969927553766">Ускоряване на превъртането с мишката</translation>
 <translation id="2989474696604907455">не е свързано</translation>
 <translation id="2989786307324390836">DER кодирано двоично, единичен сертификат</translation>
+<translation id="2989805286512600854">Отваряне в нов раздел</translation>
 <translation id="2990313168615879645">Добавяне на профил в Google</translation>
 <translation id="2990583317361835189">Да не се разрешава на сайтовете да използват сензорите за движение</translation>
 <translation id="2992931425024192067">Показване на цялото съдържание от известията</translation>

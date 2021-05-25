@@ -1590,6 +1590,7 @@
 <translation id="2691440343905273290">შეყვანის პარამეტრების შეცვლა</translation>
 <translation id="2693176596243495071">სამწუხაროდ, მოხდა უცნობი შეცდომა. გთხოვთ, ცადოთ მოგვიანებით ან დაუკავშირდეთ თქვენს ადმინისტრატორს, თუ პრობლემა არ მოგვარდება.</translation>
 <translation id="2699911226086014512">PIN-კოდთან დაკავშირებული ოპერაცია ვერ შესრულდა. კოდი: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">გაზიარებულია <ph name="DEVICE_NAME" />-დან</translation>
 <translation id="2701737434167469065">შესვლა, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">საკითხავი სია</translation>
 <translation id="270358213449696159">Google Chrome OS-ის პირობების შიგთავსი</translation>
@@ -1871,6 +1872,7 @@
 <translation id="2989123969927553766">მაუსით გადაადგილების აჩქარება</translation>
 <translation id="2989474696604907455">არ არის მიმაგრებული</translation>
 <translation id="2989786307324390836">DER-დაშიფრული ბინარული, ერთი სერტიფიკატი</translation>
+<translation id="2989805286512600854">ახალ ჩანართზე გახსნა</translation>
 <translation id="2990313168615879645">Google ანგარიშის დამატება</translation>
 <translation id="2990583317361835189">საიტებისთვის მოძრაობის სენსორების გამოყენების აკრძალვა</translation>
 <translation id="2992931425024192067">შეტყობინებების მთელი კონტენტის ჩვენება</translation>

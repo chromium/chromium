@@ -1605,6 +1605,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2691440343905273290">Thay đổi tùy chọn cài đặt phương thức nhập</translation>
 <translation id="2693176596243495071">Rất tiếc! Đã xảy ra lỗi không xác định. Vui lòng thử lại sau hoặc liên hệ với quản trị viên của bạn nếu sự cố vẫn tiếp diễn.</translation>
 <translation id="2699911226086014512">Thao tác mã PIN không thành công với mã <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Chia sẻ từ <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Đăng nhập, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Danh sách đọc</translation>
 <translation id="270358213449696159">Nội dung Điều khoản của Google Chrome OS</translation>
@@ -1886,6 +1887,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2989123969927553766">Tăng tốc độ cuộn chuột</translation>
 <translation id="2989474696604907455">chưa được đính kèm</translation>
 <translation id="2989786307324390836">DER-mã hóa nhị phân, chứng chỉ đơn</translation>
+<translation id="2989805286512600854">Mở bằng Thẻ Mới</translation>
 <translation id="2990313168615879645">Thêm Tài khoản Google</translation>
 <translation id="2990583317361835189">Không cho phép trang web sử dụng cảm biến chuyển động</translation>
 <translation id="2992931425024192067">Hiện mọi nội dung thông báo</translation>

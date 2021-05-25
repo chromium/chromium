@@ -1590,6 +1590,7 @@
 <translation id="2691440343905273290">เปลี่ยนการตั้งค่าการป้อนข้อมูล</translation>
 <translation id="2693176596243495071">อ๊ะ! เกิดข้อผิดพลาดที่ไม่รู้จัก โปรดลองอีกครั้งภายหลังหรือติดต่อผู้ดูแลระบบหากยังมีปัญหานี้อยู่</translation>
 <translation id="2699911226086014512">กำหนด PIN ไม่สำเร็จและรหัสข้อผิดพลาดคือ <ph name="RETRIES" /></translation>
+<translation id="2701330563083355633">แชร์จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">ลงชื่อเข้าใช้ <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">รายการที่จะอ่าน</translation>
 <translation id="270358213449696159">เนื้อหาข้อกำหนดของ Google Chrome OS</translation>
@@ -1871,6 +1872,7 @@
 <translation id="2989123969927553766">การเร่งความเร็วในการเลื่อนเมาส์</translation>
 <translation id="2989474696604907455">ไม่ได้แนบ</translation>
 <translation id="2989786307324390836">DER-encoded binary, ใบรับรองแบบเดี่ยว</translation>
+<translation id="2989805286512600854">เปิดในแท็บใหม่</translation>
 <translation id="2990313168615879645">เพิ่มบัญชี Google</translation>
 <translation id="2990583317361835189">ไม่อนุญาตให้เว็บไซต์ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
 <translation id="2992931425024192067">แสดงเนื้อหาการแจ้งเตือนทั้งหมด</translation>

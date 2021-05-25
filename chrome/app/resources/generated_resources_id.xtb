@@ -1605,6 +1605,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2691440343905273290">Ubah setelan input</translation>
 <translation id="2693176596243495071">Maaf, terjadi error yang tidak diketahui. Harap coba lagi nanti atau hubungi administrator jika masalah masih berlanjut.</translation>
 <translation id="2699911226086014512">Operasi PIN gagal dengan kode <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Dibagikan dari <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Login, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Daftar Bacaan</translation>
 <translation id="270358213449696159">Konten Persyaratan Google Chrome OS</translation>
@@ -1886,6 +1887,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="2989123969927553766">Akselerasi scroll mouse</translation>
 <translation id="2989474696604907455">tidak terlampir</translation>
 <translation id="2989786307324390836">Biner bersandiaksara DER, satu sertifikat</translation>
+<translation id="2989805286512600854">Buka di Tab Baru</translation>
 <translation id="2990313168615879645">Tambahkan Akun Google</translation>
 <translation id="2990583317361835189">Jangan izinkan situs menggunakan sensor gerakan</translation>
 <translation id="2992931425024192067">Tampilkan semua konten notifikasi</translation>

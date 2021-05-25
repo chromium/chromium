@@ -1609,6 +1609,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2691440343905273290">Breyta innsláttarstillingum</translation>
 <translation id="2693176596243495071">Úbbs! Óþekkt villa kom upp. Reyndu aftur síðar eða hafðu samband við kerfisstjórann þinn ef vandamálið er viðvarandi.</translation>
 <translation id="2699911226086014512">PIN-aðgerð með kóðanum <ph name="RETRIES" /> mistókst.</translation>
+<translation id="2701330563083355633">Deilt úr <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Skrá inn, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Leslisti</translation>
 <translation id="270358213449696159">Innihald skilmála Google Chrome OS</translation>
@@ -1890,6 +1891,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2989123969927553766">Flettihröðun músar</translation>
 <translation id="2989474696604907455">ekki tengt</translation>
 <translation id="2989786307324390836">DER-kóðuð tvíundakerfisskrá, stakt vottorð</translation>
+<translation id="2989805286512600854">Opna í nýjum flipa</translation>
 <translation id="2990313168615879645">Bæta við Google reikningi</translation>
 <translation id="2990583317361835189">Ekki leyfa vefsvæðum að nota hreyfiskynjara</translation>
 <translation id="2992931425024192067">Sýna allt innihald tilkynninga</translation>
@@ -3678,7 +3680,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4953808748584563296">Sjálfgefin appelsínugul notandamynd</translation>
 <translation id="4955710816792587366">Veldu þér PIN-númer</translation>
 <translation id="4959262764292427323">Aðgangsorð eru vistuð á Google reikningnum þínum til að þú getir notað þau í hvaða tæki sem er</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> gæti gert tölvuþrjótum kleift að stela persónuupplýsingum þínum.</translation>
+<translation id="496027654926814138"><ph name="FILE_NAME" /> gæti gert tölvuþrjótum kleift að stela persónuupplýsingunum þínum.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961361269522589229">uppskriftahugmyndir</translation>
 <translation id="496185450405387901">Kerfisstjórinn þinn setti þetta forrit upp.</translation>
@@ -4632,7 +4634,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6044805581023976844"><ph name="APP_NAME" /> deilir flipa og hljóði í Chrome með <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Aðal TrackPoint-hnappur</translation>
 <translation id="6047632800149092791">Samstilling virkar ekki. Prófaðu að skrá þig út og inn aftur.</translation>
-<translation id="6049797270917061226">Þessi skrá gæti gert tölvuþrjótum kleift að stela persónuupplýsingum þínum.</translation>
+<translation id="6049797270917061226">Þessi skrá gæti gert tölvuþrjótum kleift að stela persónuupplýsingunum þínum.</translation>
 <translation id="6051354611314852653">Úbbs! Kerfinu tókst ekki að heimila forritaskilaaðgang fyrir þetta tæki.</translation>
 <translation id="6052976518993719690">SSL-vottunarstöð</translation>
 <translation id="6053401458108962351">Hreinsa vafragögn...</translation>

@@ -1591,6 +1591,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2691440343905273290">Změnit nastavení vstupu</translation>
 <translation id="2693176596243495071">Jejda! Došlo k neznámé chybě. Zkuste to znovu později, a pokud problém bude přetrvávat, kontaktujte administrátora.</translation>
 <translation id="2699911226086014512">Operace s kódem PIN selhala. Kód chyby: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Sdíleno ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Přihlásit se, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Seznam četby</translation>
 <translation id="270358213449696159">Obsah smluvních podmínek systému Google Chrome OS</translation>
@@ -1871,6 +1872,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2989123969927553766">Zrychlení posouvání myší</translation>
 <translation id="2989474696604907455">nepřipojeno</translation>
 <translation id="2989786307324390836">Binární soubor kódovaný DER, jeden certifikát</translation>
+<translation id="2989805286512600854">Otevřít v nové kartě</translation>
 <translation id="2990313168615879645">Přidat účet Google</translation>
 <translation id="2990583317361835189">Nepovolovat webům používat senzory pohybu</translation>
 <translation id="2992931425024192067">Zobrazovat veškerý obsah oznámení</translation>

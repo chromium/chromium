@@ -245,6 +245,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Installeer programme, uitbreidings en temas</translation>
 <translation id="2977598380246111477">Volgende syfer</translation>
+<translation id="2992327365391326550">Toestel se mikrofoonknoppie is afgeskakel.</translation>
 <translation id="2995447421581609334">Wys uitsaaitoestelle.</translation>
 <translation id="2996462380875591307">Gedokte vergrootglas is geaktiveer. Druk weer Ctrl+Search+D om dit af te skakel.</translation>
 <translation id="3000461861112256445">Mono-oudio</translation>
@@ -255,6 +256,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3038571455154067151">Voer jou Family Link-ouertoegangskode in om aan te meld</translation>
 <translation id="3039939407102840004">Stilusbattery is op <ph name="PERCENTAGE" /> persent.</translation>
 <translation id="3045488863354895414">Goeiemiddag</translation>
+<translation id="3051189971848907985">Hernoem tans profiel. Wag 'n paar minute.</translation>
 <translation id="3055162170959710888">Jy het hierdie toestel vandag <ph name="USED_TIME" /> lank gebruik</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Vou kieslys uit</translation>
@@ -295,6 +297,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3368922792935385530">Gekoppel</translation>
 <translation id="3371140690572404006">USB C-toestel (voorste poort aan regterkant)</translation>
 <translation id="3375634426936648815">Gekoppel</translation>
+<translation id="3378442621503952303">Koppel tans aan profiel. Wag 'n paar minute.</translation>
 <translation id="3386978599540877378">die volskermvergrootglas</translation>
 <translation id="3400357268283240774">Bykomende instellings</translation>
 <translation id="3410336247007142655">Wys Donkertema-instellings</translation>
@@ -352,6 +355,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="380165613292957338">Hallo, hoe kan ek help?</translation>
 <translation id="3826099427150913765">Skakel oor na wagwoord</translation>
 <translation id="383058930331066723">Batterybespaardermodus is aan</translation>
+<translation id="3835880383832568924">Maak die Kortpaaie-program oop om die opdaterings te sien</translation>
 <translation id="383629559565718788">Wys sleutelbordinstellings</translation>
 <translation id="3846214748874656680">Verlaat volskerm</translation>
 <translation id="3846575436967432996">Geen netwerkinligting beskikbaar nie</translation>
@@ -472,6 +476,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4705716602320768426">Dien terugvoer in</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
 <translation id="4734965478015604180">Horisontaal</translation>
+<translation id="4735498845456076464">Die kortpadsleutel <ph name="LAUNCHER_KEY_NAME" /> + syfer het verander. Om funksiesleutels te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + 'n sleutel in die boonste ry druk.</translation>
 <translation id="4744944742468440486">Inligting wat met jou keuse verband hou</translation>
 <translation id="4759238208242260848">Aflaaie</translation>
 <translation id="4774338217796918551">Kom môre om <ph name="COME_BACK_TIME" /> terug.</translation>
@@ -729,6 +734,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6896758677409633944">Kopieer</translation>
 <translation id="6910714959251846841">Hierdie opdatering vereis dat jou toestel 'n kragwas kry. Kom meer te wete oor die jongste <ph name="SYSTEM_APP_NAME" />-opdatering.</translation>
 <translation id="6919251195245069855">Kon nie jou slimkaart herken nie. Probeer weer.</translation>
+<translation id="6921188888306725546">Sleutelbordkortpaaie is verbeter</translation>
 <translation id="6945221475159498467">Kies</translation>
 <translation id="6961121602502368900">Maak Foon Stil is nie op werkprofiel beskikbaar nie</translation>
 <translation id="6961840794482373852">Die kortpadsleutel Alt + oppyl het verander. Om die Page Up-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + oppyl druk.</translation>
@@ -935,6 +941,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8631727435199967028">Toeganklikheidinstellings</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> oor</translation>
+<translation id="8641805545866562088">Herlaai tans profiellys. Wag 'n paar minute.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" />-afteller</translation>
 <translation id="8647931990447795414">Voer jou Family Link-ouertoegangskode in om 'n persoon by te voeg</translation>
 <translation id="8649101189709089199">Hardoplees</translation>
@@ -962,6 +969,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Invoermetodesinstellings</translation>
+<translation id="8818320199597151042">Verwyder tans profiel. Wag 'n paar minute.</translation>
 <translation id="8825863694328519386">Swiep van links af om terug te gaan</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Terugknoppie</translation>
@@ -1007,6 +1015,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="9091626656156419976">Het skerm <ph name="DISPLAY_NAME" /> verwyder</translation>
 <translation id="9098969848082897657">Maak foon stil</translation>
 <translation id="9099154003160514616">Lacros-opdatering is beskikbaar</translation>
+<translation id="9100887602489003640">Voeg tans profiel by. Wag 'n paar minute.</translation>
 <translation id="9105450214093926548">'n Tweede gebruiker kan nie aangemeld word terwyl die Lacros-blaaier gebruik word nie. Gebruik asseblief eerder 'n tweede blaaierprofiel in Lacros, of maak Lacros toe en probeer weer.</translation>
 <translation id="9133335900048457298">Kan nie beskermde inhoud opneem nie</translation>
 <translation id="9151726767154816831">Herbegin en powerwash om te opdateer</translation>

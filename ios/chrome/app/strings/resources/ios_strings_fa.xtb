@@ -456,6 +456,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5782227691023083829">در حال ترجمه...</translation>
 <translation id="5797070761912323120">‏Google ممکن است از سابقه مرور شما برای شخصی کردن جستجو، آگهی‌ها و سایر سرویس‌های Google استفاده کند</translation>
 <translation id="5803566855766646066">مطمئنید می‌خواهید از این کارت جدید صرف‌نظر کنید؟</translation>
+<translation id="5812974770859303494">افزودن به…</translation>
 <translation id="5816228676161003208">این کار به شما اجازه می‌دهد با استفاده از صدایتان سریع‌تر جستجو کنید.</translation>
 <translation id="581659025233126501">روشن کردن همگام‌سازی</translation>
 <translation id="5819208479324046259">توسط <ph name="MANAGER" /> مدیریت می‌شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8654802032646794042">لغو</translation>
 <translation id="8668210798914567634">این صفحه در «فهرست خواندن» شما ذخیره شده است.</translation>
 <translation id="8680787084697685621">جزئیات ورود به سیستم حساب قدیمی است.</translation>
+<translation id="8693663554456874301">{count,plural, =1{بستن برگه}one{بستن برگه}other{بستن برگه‌ها}}</translation>
 <translation id="8706588385081740091">گذرواژه‌ها</translation>
 <translation id="8717864919010420084">کپی پیوند</translation>
 <translation id="8721297211384281569">منوی ابزارها</translation>

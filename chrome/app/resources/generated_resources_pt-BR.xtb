@@ -1606,6 +1606,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2691440343905273290">Mudar configurações de entrada</translation>
 <translation id="2693176596243495071">Ops! Ocorreu um erro desconhecido. Tente novamente mais tarde ou entre em contato com seu administrador se o problema persistir.</translation>
 <translation id="2699911226086014512">Falha na operação do PIN, código de erro: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Compartilhada por <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Faça login, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Lista de leitura</translation>
 <translation id="270358213449696159">Conteúdo dos Termos do Google Chrome OS</translation>
@@ -1887,6 +1888,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="2989123969927553766">Aceleração de rolagem do mouse</translation>
 <translation id="2989474696604907455">não conectado</translation>
 <translation id="2989786307324390836">binário codificado por DER, certificado único</translation>
+<translation id="2989805286512600854">Abrir em uma nova guia</translation>
 <translation id="2990313168615879645">Adicionar Conta do Google</translation>
 <translation id="2990583317361835189">Não permitir que os sites usem os sensores de movimento</translation>
 <translation id="2992931425024192067">Mostrar todo o conteúdo de notificações</translation>

@@ -1596,6 +1596,7 @@
 <translation id="2691440343905273290">Змяніць налады ўводу</translation>
 <translation id="2693176596243495071">Памылка!  Адбылася невядомая памылка. Паўтарыце спробу пазней або звярніцеся да адміністратара, калі праблема не знікла.</translation>
 <translation id="2699911226086014512">Не ўдалося выканаць аперацыю з PIN-кодам. Код памылкі: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Абагулена з прылады <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Увайсці, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Спіс чытання</translation>
 <translation id="270358213449696159">Змест умоў выкарыстання АС Google Chrome</translation>
@@ -1877,6 +1878,7 @@
 <translation id="2989123969927553766">Паскарэнне прагорткі мышшу</translation>
 <translation id="2989474696604907455">не далучана</translation>
 <translation id="2989786307324390836">Адзін двайковы сертыфікат з DER-шыфраваннем</translation>
+<translation id="2989805286512600854">Адкрыць у новай укладцы</translation>
 <translation id="2990313168615879645">Дадаць Уліковы запіс Google</translation>
 <translation id="2990583317361835189">Не дазваляць сайтам выкарыстоўваць датчыкі руху</translation>
 <translation id="2992931425024192067">Паказваць усе апавяшчэнні</translation>

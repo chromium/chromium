@@ -1596,6 +1596,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2691440343905273290">Sisestusmeetodi seadete muutmine</translation>
 <translation id="2693176596243495071">Vabandust!  Ilmnes tundmatu viga. Proovige hiljem uuesti või võtke probleemi püsimisel ühendust administraatoriga.</translation>
 <translation id="2699911226086014512">PIN-koodi toiming ebaõnnestus koodiga <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Jagas <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Kontole <ph name="EMAIL" /> sisselogimine</translation>
 <translation id="2702801445560668637">Lugemisloend</translation>
 <translation id="270358213449696159">Google Chrome OS-i tingimuste sisu</translation>
@@ -1877,6 +1878,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="2989123969927553766">Hiirega kerimise kiirendus</translation>
 <translation id="2989474696604907455">pole ühendatud</translation>
 <translation id="2989786307324390836">DER-i kodeeritud kahendsüsteem, üks sertifikaat</translation>
+<translation id="2989805286512600854">Ava uuel vahelehel</translation>
 <translation id="2990313168615879645">Lisa Google'i konto</translation>
 <translation id="2990583317361835189">Ära luba saitidel kasutada liikumisandureid</translation>
 <translation id="2992931425024192067">Kuva kogu märguande sisu</translation>

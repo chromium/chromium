@@ -1604,6 +1604,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2691440343905273290">Beviteli beállítások módosítása</translation>
 <translation id="2693176596243495071">Hoppá! Ismeretlen hiba történt. Próbálja újra később, vagy forduljon a rendszergazdához, ha a probléma továbbra is fennáll.</translation>
 <translation id="2699911226086014512">A PIN-kóddal végzett művelet sikertelen – hibakód: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Megosztva a következő eszközről: <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Bejelentkezés, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Olvasási lista</translation>
 <translation id="270358213449696159">Google Chrome OS – A Szerződési Feltételek tartalma</translation>
@@ -1884,6 +1885,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="2989123969927553766">Egérgörgetés gyorsítása</translation>
 <translation id="2989474696604907455">nincs csatlakoztatva</translation>
 <translation id="2989786307324390836">DER kódolású bináris, egyedüli tanúsítvány</translation>
+<translation id="2989805286512600854">Megnyitás új lapon</translation>
 <translation id="2990313168615879645">Google-fiók felvétele</translation>
 <translation id="2990583317361835189">A webhelyek nem használhatnak mozgásérzékelőket</translation>
 <translation id="2992931425024192067">Az értesítések teljes tartalma jelenjen meg</translation>

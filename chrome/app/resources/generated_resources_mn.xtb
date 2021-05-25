@@ -1601,6 +1601,7 @@
 <translation id="2691440343905273290">Оруулгын тохиргоог өөрчлөх</translation>
 <translation id="2693176596243495071">Уучлаарай! Тодорхойгүй алдаа гарлаа. Дараа дахин оролдох эсвэл асуудал үргэлжилсээр байвал админтайгаа холбогдоно уу.</translation>
 <translation id="2699911226086014512">ПИН-г тохируулж чадсангүй. Алдааны код <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633"><ph name="DEVICE_NAME" />-с хуваалцсан</translation>
 <translation id="2701737434167469065">Нэвтрэх, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Унших жагсаалт</translation>
 <translation id="270358213449696159">Google Chrome үйлдлийн системийн нөхцөлийн агуулга</translation>
@@ -1882,6 +1883,7 @@
 <translation id="2989123969927553766">Хулганын гүйлгэлтийн хурдасгуур</translation>
 <translation id="2989474696604907455">Хавсаргаагүй</translation>
 <translation id="2989786307324390836">DER шифрлэлттэй бинар дан гэрчилгээ</translation>
+<translation id="2989805286512600854">Шинэ цонхонд нээ</translation>
 <translation id="2990313168615879645">Google Бүртгэл нэмэх</translation>
 <translation id="2990583317361835189">Сайтуудад хөдөлгөөн мэдрэгчдийг ашиглахыг бүү зөвшөөр</translation>
 <translation id="2992931425024192067">Бүх мэдэгдлийн агуулгыг харуулах</translation>
@@ -2544,7 +2546,7 @@
 <translation id="371300529209814631">Буцах/Урагшлах</translation>
 <translation id="3713047097299026954">Энэ аюулгүй байдлын түлхүүрт ямар нэгэн нэвтрэх өгөгдөл алга байна</translation>
 <translation id="3714195043138862580">Энэ демо төхөөрөмжийн нэвтрэх эрхийг хүчингүй болгосон байна.</translation>
-<translation id="3714633008798122362">веб хуанли</translation>
+<translation id="3714633008798122362">веб календарь</translation>
 <translation id="3719826155360621982">Нүүр хуудас</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Та болон Google</translation>

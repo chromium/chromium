@@ -1591,6 +1591,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2691440343905273290">Modifier les paramètres d'entrée</translation>
 <translation id="2693176596243495071">Oups. Une erreur inconnue s'est produite. Veuillez réessayer plus tard ou communiquer avec votre administrateur si le problème persiste.</translation>
 <translation id="2699911226086014512">Échec du déverrouillage par NIP. Code <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Partagé à partir de l'appareil suivant : <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Connexion : <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Liste de lecture</translation>
 <translation id="270358213449696159">Contenu des conditions d'utilisation de Google Chrome OS</translation>
@@ -1872,6 +1873,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2989123969927553766">Accélération du défilement de la souris</translation>
 <translation id="2989474696604907455">non connecté</translation>
 <translation id="2989786307324390836">Certificat unique binaire codé DER</translation>
+<translation id="2989805286512600854">Ouvrir dans un nouvel onglet</translation>
 <translation id="2990313168615879645">Ajouter un compte Google</translation>
 <translation id="2990583317361835189">Ne pas autoriser les sites à utiliser les capteurs de mouvement</translation>
 <translation id="2992931425024192067">Afficher l'intégralité du contenu des notifications</translation>

@@ -536,6 +536,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2941952326391522266">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; mula sa <ph name="DOMAIN2" /> ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="2943895734390379394">Oras ng Pag-upload:</translation>
 <translation id="2948083400971632585">Maaari mong i-disable ang anumang mga proxy na naka-configure para sa isang koneksyon mula sa pahina ng mga setting.</translation>
+<translation id="2949183777371959169">Binalewala dahil hindi naka-enroll ang machine sa Chrome Browser Cloud Management.</translation>
 <translation id="2951588413176968965">Aking mailbox</translation>
 <translation id="295526156371527179">Babala: Hindi na-merge ang patakarang ito bilang isang diksyunaryo gaya ng tinukoy ng patakaran dahil hindi ito isang diksyunaryo.</translation>
 <translation id="2955913368246107853">Isara ang bar sa paghahanap</translation>

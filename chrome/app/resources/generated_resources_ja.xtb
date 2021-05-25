@@ -1590,6 +1590,7 @@
 <translation id="2691440343905273290">入力設定を変更する</translation>
 <translation id="2693176596243495071">不明なエラーが発生しました。後でもう一度お試しになるか、問題が解決しない場合は管理者にお問い合わせください。</translation>
 <translation id="2699911226086014512">PIN の操作に失敗しました。コード: <ph name="RETRIES" /></translation>
+<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> から共有しました</translation>
 <translation id="2701737434167469065">ログイン（<ph name="EMAIL" />）</translation>
 <translation id="2702801445560668637">リーディング リスト</translation>
 <translation id="270358213449696159">Google Chrome OS 利用規約コンテンツ</translation>
@@ -1871,6 +1872,7 @@
 <translation id="2989123969927553766">マウスのスクロール アクセラレーション</translation>
 <translation id="2989474696604907455">接続されていません</translation>
 <translation id="2989786307324390836">DER エンコード バイナリ形式の単一の証明書</translation>
+<translation id="2989805286512600854">新しいタブで開く</translation>
 <translation id="2990313168615879645">Google アカウントを追加</translation>
 <translation id="2990583317361835189">サイトにモーション センサーの使用を許可しない</translation>
 <translation id="2992931425024192067">すべての通知内容を表示する</translation>

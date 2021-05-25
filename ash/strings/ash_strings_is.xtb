@@ -40,7 +40,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1247372569136754018">Hljóðnemi (innbyggður)</translation>
 <translation id="1252999807265626933">Verið er að hlaða með <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvernig er veðrið?</translation>
-<translation id="1266097335951928626">Kveikja ásjálfsmyndarmyndavél</translation>
+<translation id="1266097335951928626">Kveikja á sjálfsmyndarmyndavél</translation>
 <translation id="1267032506238418139">Breyting á flýtileið</translation>
 <translation id="1269405891096105529">Jaðartæki ekki stutt í gestastillingu</translation>
 <translation id="1270290102613614947">Skjályklaborð óvirkt</translation>
@@ -335,7 +335,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3638400994746983214">Kveikja/slökkva á persónuverndarskjá. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Stýrður notandi</translation>
 <translation id="3665889125180354336">Upptaka hljóðnema</translation>
-<translation id="3680908746918359504">Hreinsa öll merki</translation>
+<translation id="3680908746918359504">Hreinsa alla penna</translation>
 <translation id="36813544980941320">Wi-Fi netum verður deilt á milli símans og <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">Sýnir glugga núverandi skrifborðs, ýttu á ör upp til að sýna glugga allra skrifborða</translation>
 <translation id="3702846122927433391">Íbúafjöldi í Nígeríu</translation>
@@ -464,7 +464,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4587299710837179226">Slökkt er á hljóðnemanum</translation>
 <translation id="4596144739579517758">Slökkt er á dökku þema</translation>
 <translation id="4611292653554630842">Skrá inn</translation>
-<translation id="4614295562446151104">Stækka merkjaverkfæri</translation>
+<translation id="4614295562446151104">Stækka merkiverkfæri</translation>
 <translation id="4623167406982293031">Staðfesta reikning</translation>
 <translation id="4628757576491864469">Tæki</translation>
 <translation id="4642092649622328492">Taka mynd af hluta skjás</translation>
@@ -770,7 +770,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7256634071279256947">Aftari hljóðnemi</translation>
 <translation id="726276584504105859">Dragðu hingað til að skipta skjánum</translation>
 <translation id="7262906531272962081">Búa til áminningu</translation>
-<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> tússlitur</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> litur</translation>
 <translation id="7302889331339392448">Slökkt er á skjátextum í rauntíma.</translation>
 <translation id="7303365578352795231">Svarar á öðru tæki.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -800,7 +800,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7466449121337984263">Snertu fingrafaralesarann</translation>
 <translation id="7477793887173910789">Stjórnaðu tónlistinni, myndskeiðunum og fleiru</translation>
 <translation id="7483025031359818980">Valsvæði stillt á allan skjáinn</translation>
-<translation id="7486227320194954040">Minnka merkjaverkfæri</translation>
+<translation id="7486227320194954040">Draga saman merkiverkfæri</translation>
 <translation id="7497767806359279797">Velja tungumál og lyklaborð</translation>
 <translation id="7509246181739783082">Staðfestu hver þú ert</translation>
 <translation id="7513622367902644023">Skjámyndastilling valin</translation>

@@ -1134,6 +1134,7 @@
 <translation id="2178614541317717477">ຜ່ອນຜັນ CA</translation>
 <translation id="2182058453334755893">ອັດສຳເນົາໃສ່ຄລິບບອດຂອງທ່ານແລ້ວ</translation>
 <translation id="2184515124301515068">ໃຫ້ Chrome ເລືອກວ່າເວັບໄຊສາມາດຫຼິ້ນສຽງໄດ້ເວລາໃດ (ແນະນຳ)</translation>
+<translation id="2186711480981247270">ໜ້າທີ່ແບ່ງປັນມາຈາກອຸປະກອນອື່ນ</translation>
 <translation id="2187675480456493911">ຊິ້ງຂໍ້ມູນກັບອຸປະກອນອື່ນໃນບັນຊີຂອງທ່ານແລ້ວ. ລະບົບຈະບໍ່ຊິ້ງຂໍ້ມູນການຕັ້ງຄ່າທີ່ຜູ້ໃຊ້ອື່ນແກ້ໄຂ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">ການນໍາໃບຢັ້ງຢືນເຊີບເວີເຂົ້າຜິດພາດ</translation>
 <translation id="2187906491731510095">ອັບເດດສ່ວນຂະຫຍາຍແລ້ວ</translation>
@@ -1602,6 +1603,7 @@
 <translation id="2691440343905273290">ປ່ຽນການຕັ້ງຄ່າການປ້ອນຂໍ້ມູນ</translation>
 <translation id="2693176596243495071">ອຸ້ຍ!  ເກີດຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກຂຶ້ນ. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ ຫຼື ຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຖ້າບັນຫາຍັງຄົງຢູ່.</translation>
 <translation id="2699911226086014512">ການດຳເນີນ PIN ບໍ່ສຳເລັດໂດຍມີລະຫັດ <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">ແບ່ງປັນຈາກ <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">ເຂົ້າສູ່ລະບົບ, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">ລາຍການທີ່ຈະອ່ານ</translation>
 <translation id="270358213449696159">ເນື້ອຫາຂໍ້ກຳນົດຂອງ Google Chrome OS</translation>
@@ -1883,6 +1885,7 @@
 <translation id="2989123969927553766">ການເລັ່ງຄວາມໄວການເລື່ອນເມົ້າ</translation>
 <translation id="2989474696604907455">ບໍ່ໄດ້ຄັດຕິດ</translation>
 <translation id="2989786307324390836">DER-ສອງດ້ານໃສ່ລະຫັດແລ້ວ, ໃບຢັ້ງຢືນດ່ຽວ</translation>
+<translation id="2989805286512600854">ເປີດຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="2990313168615879645">ເພີ່ມບັນຊີ Google</translation>
 <translation id="2990583317361835189">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ</translation>
 <translation id="2992931425024192067">ສະແດງເນື້ອຫາການແຈ້ງເຕືອນທັງໝົດ</translation>

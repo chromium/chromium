@@ -1605,6 +1605,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2691440343905273290">Ändra inmatningsinställningar</translation>
 <translation id="2693176596243495071">Hoppsan! Ett okänt fel har uppstått. Försök igen senare eller kontakta administratören om felet kvarstår.</translation>
 <translation id="2699911226086014512">Pinkodsåtgärden misslyckades med felkod <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Delades från <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Logga in, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Läslista</translation>
 <translation id="270358213449696159">Innehåll i villkor för Google Chrome OS</translation>
@@ -1886,6 +1887,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2989123969927553766">Scrollningsacceleration för musen</translation>
 <translation id="2989474696604907455">inte ansluten</translation>
 <translation id="2989786307324390836">DER-kodat binärt enstaka certifikat</translation>
+<translation id="2989805286512600854">Öppna i ny flik</translation>
 <translation id="2990313168615879645">Lägg till Google-konto</translation>
 <translation id="2990583317361835189">Tillåt inte att webbplatser använder rörelsesensorer</translation>
 <translation id="2992931425024192067">Visa allt aviseringsinnehåll</translation>

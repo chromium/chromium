@@ -1590,6 +1590,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2691440343905273290">Modifica impostazioni di immissione</translation>
 <translation id="2693176596243495071">Spiacenti. Si è verificato un errore sconosciuto. Riprova più tardi o contatta il tuo amministratore se il problema persiste.</translation>
 <translation id="2699911226086014512">Operazione con PIN non riuscita. Codice <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Condivisione da <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Accedi, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Elenco di lettura</translation>
 <translation id="270358213449696159">Contenuti dei Termini di Google Chrome OS</translation>
@@ -1871,6 +1872,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2989123969927553766">Accelerazione di scorrimento del mouse</translation>
 <translation id="2989474696604907455">non collegato</translation>
 <translation id="2989786307324390836">Binario codificato DER, singolo certificato</translation>
+<translation id="2989805286512600854">Apri in un'altra scheda</translation>
 <translation id="2990313168615879645">Aggiungi Account Google</translation>
 <translation id="2990583317361835189">Non consentire ai siti di usare i sensori di movimento</translation>
 <translation id="2992931425024192067">Mostra tutti i contenuti delle notifiche</translation>

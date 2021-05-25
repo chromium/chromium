@@ -1587,6 +1587,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2691440343905273290">Cambiar la configuración de entrada</translation>
 <translation id="2693176596243495071">Se produjo un error desconocido. Vuelve a intentarlo más tarde o comunícate con tu administrador si el problema persiste.</translation>
 <translation id="2699911226086014512">No se pudo realizar la operación del PIN con el código <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Se compartió de <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Acceder, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
 <translation id="270358213449696159">Contenido de las Condiciones del Sistema operativo Google Chrome</translation>
@@ -1868,6 +1869,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2989123969927553766">Aceleración de desplazamiento del mouse</translation>
 <translation id="2989474696604907455">no conectado</translation>
 <translation id="2989786307324390836">Certificado binario único con codificación DER</translation>
+<translation id="2989805286512600854">Abrir en una nueva pestaña</translation>
 <translation id="2990313168615879645">Agregar Cuenta de Google</translation>
 <translation id="2990583317361835189">No permitir que los sitios utilicen sensores de movimiento</translation>
 <translation id="2992931425024192067">Mostrar todo el contenido de notificaciones</translation>

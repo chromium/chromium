@@ -1592,6 +1592,7 @@
 <translation id="2691440343905273290">உள்ளீட்டு அமைப்புகளை மாற்றுக</translation>
 <translation id="2693176596243495071">அச்சச்சோ! எதிர்பாராத பிழை ஏற்பட்டது. பிறகு முயலவும் அல்லது சிக்கல் தொடர்ந்தால், உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="2699911226086014512">பின்னை அமைக்க இயலவில்லை, பிழைக் குறியீடு: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> சாதனத்தில் இருந்து பகிரப்பட்டுள்ளது</translation>
 <translation id="2701737434167469065">உள்நுழை, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">வாசிப்புப் பட்டியல்</translation>
 <translation id="270358213449696159">Google Chrome OS விதிமுறைகளின் உள்ளடக்கம்</translation>
@@ -1870,6 +1871,7 @@
 <translation id="2989123969927553766">மவுஸ் ஸ்க்ரோல் ஆக்ஸிலரேஷன்</translation>
 <translation id="2989474696604907455">இணைக்கப்படவில்லை</translation>
 <translation id="2989786307324390836">DER-குறியேற்றப்பட்ட பைனரி, ஒற்றைச் சான்றிதழ்</translation>
+<translation id="2989805286512600854">புதிய தாவலில் திற</translation>
 <translation id="2990313168615879645">Google கணக்கைச் சேர்</translation>
 <translation id="2990583317361835189">மோஷன் சென்சார்களைப் பயன்படுத்த தளங்களை அனுமதிக்காதே</translation>
 <translation id="2992931425024192067">எல்லா அறிவிப்பு விவரத்தையும் காட்டு</translation>

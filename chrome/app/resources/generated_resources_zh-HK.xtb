@@ -1604,6 +1604,7 @@
 <translation id="2691440343905273290">變更輸入法設定</translation>
 <translation id="2693176596243495071">抱歉！出現不明的錯誤。請稍後再試一次，如果問題持續，請與您的管理員聯絡。</translation>
 <translation id="2699911226086014512">PIN 操作失敗，錯誤代碼為 <ph name="RETRIES" />。</translation>
+<translation id="2701330563083355633">透過 <ph name="DEVICE_NAME" /> 分享</translation>
 <translation id="2701737434167469065">登入，<ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">閱讀清單</translation>
 <translation id="270358213449696159">Google Chrome 作業系統條款內容</translation>
@@ -1885,6 +1886,7 @@
 <translation id="2989123969927553766">滑鼠捲動加速</translation>
 <translation id="2989474696604907455">不附加</translation>
 <translation id="2989786307324390836">DER 編碼 Binary，單一憑證</translation>
+<translation id="2989805286512600854">在新分頁中開啟</translation>
 <translation id="2990313168615879645">新增 Google 帳戶</translation>
 <translation id="2990583317361835189">不允許網站使用動作感應器</translation>
 <translation id="2992931425024192067">顯示所有通知內容</translation>

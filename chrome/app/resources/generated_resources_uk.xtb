@@ -1608,6 +1608,7 @@
 <translation id="2691440343905273290">Змінити налаштування методів введення</translation>
 <translation id="2693176596243495071">На жаль, сталася невідома помилка. Спробуйте пізніше або зв’яжіться з адміністратором, якщо проблема не зникне.</translation>
 <translation id="2699911226086014512">Не вдалося провести операцію з PIN-кодом: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Надіслано з пристрою "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2701737434167469065">Увійти в обліковий запис <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Список читання</translation>
 <translation id="270358213449696159">Умови ОС Google Chrome</translation>
@@ -1889,6 +1890,7 @@
 <translation id="2989123969927553766">Прискорення прокрутки мишею</translation>
 <translation id="2989474696604907455">не підключено</translation>
 <translation id="2989786307324390836">DER-кодування у двійковій формі, єдиний сертифікат</translation>
+<translation id="2989805286512600854">Відкрити в новій вкладці</translation>
 <translation id="2990313168615879645">Додати обліковий запис Google</translation>
 <translation id="2990583317361835189">Заборонити сайтам використовувати датчики руху</translation>
 <translation id="2992931425024192067">Показувати весь вміст сповіщень</translation>

@@ -1584,6 +1584,7 @@
 <translation id="2691440343905273290">इनपुटसम्बन्धी सेटिङ परिवर्तन गर्नुहोस्</translation>
 <translation id="2693176596243495071">हत्तेरिका! कुनै अज्ञात त्रुटि भयो। कृपया पछि फेरि प्रयास गर्नुहोस्‌ वा यो समस्या रहिरहेमा आफ्नो प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="2699911226086014512">कोडको त्रुटिका कारण PIN सेट गर्न सकिएन <ph name="RETRIES" />।</translation>
+<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> ले आदान प्रदान गरेको</translation>
 <translation id="2701737434167469065">साइन इन गर्नुहोस्, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">पाठ्य सूची</translation>
 <translation id="270358213449696159">Google Chrome OS का सामग्रीहरूका सर्तहरू</translation>
@@ -1865,6 +1866,7 @@
 <translation id="2989123969927553766">माउस स्क्रोल हुने गति बढाउने कार्य</translation>
 <translation id="2989474696604907455">संलग्न छैन</translation>
 <translation id="2989786307324390836">DER-इनकोडेड बाइनरी, एउटा प्रमाणपत्र</translation>
+<translation id="2989805286512600854">नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="2990313168615879645">Google खाता थप्नुहोस्</translation>
 <translation id="2990583317361835189">साइटहरूलाई मोसन सेन्सर प्रयोग गर्ने अनुमति नदिइयोस्</translation>
 <translation id="2992931425024192067">सूचनाका सबै सामग्री देखाउनुहोस्</translation>

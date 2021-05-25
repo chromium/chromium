@@ -1596,6 +1596,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2691440343905273290">Kiritish sozlamalarini oʻzgartirish</translation>
 <translation id="2693176596243495071">Ana xolos! Kutilmagan xatolik yuz berdi. Qayta urinib ko‘ring, agar muammo qaytarilsa administrator bilan bog‘laning.</translation>
 <translation id="2699911226086014512">PIN kod oʻrnatilmadi: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> orqali ulashilgan</translation>
 <translation id="2701737434167469065">Kirish, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Mutolaa ro‘yxati</translation>
 <translation id="270358213449696159">Google Chrome OS shartlari</translation>
@@ -1878,6 +1879,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="2989123969927553766">Sichqonchada varaqlashni tezlashtirish</translation>
 <translation id="2989474696604907455">biriktirilmagan</translation>
 <translation id="2989786307324390836">DER shifrida kodlangan ikkilik sanoq tizimi yagona sertifikati</translation>
+<translation id="2989805286512600854">Yangi varaqda ochish</translation>
 <translation id="2990313168615879645">Google hisobini kiritish</translation>
 <translation id="2990583317361835189">Saytlarga harakat sensorlaridan foydalanishni taqiqlash</translation>
 <translation id="2992931425024192067">Bildirishnoma to‘liq ko‘rsatilsin</translation>

@@ -1590,6 +1590,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2691440343905273290">Altere as definições de introdução</translation>
 <translation id="2693176596243495071">Ups! Ocorreu um erro desconhecido. Tente novamente mais tarde ou contacte o gestor se o problema persistir.</translation>
 <translation id="2699911226086014512">Falha na definição do PIN com o código <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Partilhado a partir do <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Inicie sessão, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Lista de leitura</translation>
 <translation id="270358213449696159">Conteúdo dos Termos de Utilização do Google Chrome OS</translation>
@@ -1872,6 +1873,7 @@ Pretende pará-lo?</translation>
 <translation id="2989123969927553766">Aceleração da deslocação do rato</translation>
 <translation id="2989474696604907455">não ligado</translation>
 <translation id="2989786307324390836">Certificado único de binário codificado DER</translation>
+<translation id="2989805286512600854">Abrir num Novo Separador</translation>
 <translation id="2990313168615879645">Adicionar Conta Google</translation>
 <translation id="2990583317361835189">Não permitir que os sites utilizem sensores de movimentos</translation>
 <translation id="2992931425024192067">Mostrar todo o conteúdo das notificações</translation>

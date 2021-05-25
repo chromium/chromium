@@ -1603,6 +1603,7 @@
 <translation id="2691440343905273290">ইনপুট ছেটিং সলনি কৰক</translation>
 <translation id="2693176596243495071">আমি দুঃখিত!  কোনো অজ্ঞাত আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি পিছত আকৌ চেষ্টা কৰক বা সমস্যাটো যদি হৈয়েই থাকে, নিজৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> ক'ডৰ সৈতে পিনৰ কাৰ্য বিফল হ'ল।</translation>
+<translation id="2701330563083355633"><ph name="DEVICE_NAME" />ৰ পৰা শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="2701737434167469065">ছাইন ইন কৰক, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">পঢ়াৰ সূচী</translation>
 <translation id="270358213449696159">Google Chrome OSৰ চৰ্তাৱলীৰ সমল</translation>
@@ -1883,6 +1884,7 @@
 <translation id="2989123969927553766">মাউছ স্ক্ৰ’লৰ এক্সিলাৰেশ্বন</translation>
 <translation id="2989474696604907455">সংলগ্ন কৰা হোৱা নাই</translation>
 <translation id="2989786307324390836">DER-এনক’ড কৰা বাইনেৰী, একক প্ৰমাণপত্ৰ</translation>
+<translation id="2989805286512600854">নতুন টেবত খোলক</translation>
 <translation id="2990313168615879645">Google একাউণ্ট যোগ দিয়ক</translation>
 <translation id="2990583317361835189">ছাইটক ম’শ্বন ছেন্সৰ ব্যৱহাৰ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="2992931425024192067">সকলো জাননীৰ সমল দেখুৱাওক</translation>

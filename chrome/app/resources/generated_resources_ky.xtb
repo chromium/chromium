@@ -1605,6 +1605,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2691440343905273290">Киргизүү жөндөөлөрүн өзгөртүү</translation>
 <translation id="2693176596243495071">Ой!  Белгисиз ката кетти. Кайталап көрүңүз же маселе чечилбесе, администраторуңузга кайрылыңыз.</translation>
 <translation id="2699911226086014512">PIN код <ph name="RETRIES" /> жолу ката киргизилди.</translation>
+<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> аркылуу бөлүшүлдү</translation>
 <translation id="2701737434167469065">Кирүү, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Окуу тизмеси</translation>
 <translation id="270358213449696159">Google Chrome OS шарттарынын мазмуну</translation>
@@ -1886,6 +1887,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2989123969927553766">Чычканды ылдамдаткыч</translation>
 <translation id="2989474696604907455">тиркелген жок</translation>
 <translation id="2989786307324390836">DER-коддолгон бинардык жалгыз тастыктама</translation>
+<translation id="2989805286512600854">Жаңы өтмөктө ачуу</translation>
 <translation id="2990313168615879645">Google аккаунтун кошуу</translation>
 <translation id="2990583317361835189">Сайттар кыймыл сенсорлорун колдоно албасын</translation>
 <translation id="2992931425024192067">Билдирме толугу менен көрүнсүн</translation>

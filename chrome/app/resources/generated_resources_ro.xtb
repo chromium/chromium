@@ -1591,6 +1591,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2691440343905273290">Modifică setările de introducere a textului</translation>
 <translation id="2693176596243495071">Hopa! A apărut o eroare necunoscută. Încearcă din nou mai târziu sau contactează administratorul dacă problema persistă.</translation>
 <translation id="2699911226086014512">Operațiunea cu PIN a eșuat cu codul <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Trimis de <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Conectează-te, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Listă de lectură</translation>
 <translation id="270358213449696159">Conținutul Termenilor Google Chrome OS</translation>
@@ -1872,6 +1873,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2989123969927553766">Accelerarea derulării cu mouse-ul</translation>
 <translation id="2989474696604907455">neconectat</translation>
 <translation id="2989786307324390836">Certificat unic, sub formă de fișier binar cu codificarea DER</translation>
+<translation id="2989805286512600854">Deschideți într-o filă nouă</translation>
 <translation id="2990313168615879645">Adaugă Contul Google</translation>
 <translation id="2990583317361835189">Nu permite site-urilor să folosească senzori de mișcare</translation>
 <translation id="2992931425024192067">Afișează integral conținutul notificărilor</translation>

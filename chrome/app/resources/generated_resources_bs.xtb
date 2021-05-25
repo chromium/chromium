@@ -1604,6 +1604,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2691440343905273290">Promijenite postavke unosa</translation>
 <translation id="2693176596243495071">Ups!  Došlo je do nepoznate greške. Pokušajte ponovo kasnije ili se obratite administratoru ako se problem nastavi.</translation>
 <translation id="2699911226086014512">Korištenje PIN-a s kodom <ph name="RETRIES" /> nije uspjelo.</translation>
+<translation id="2701330563083355633">Dijeljeno s uređaja: <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Prijavite se, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Lista za čitanje</translation>
 <translation id="270358213449696159">Sadržaj uslova Google Chrome OS-a</translation>
@@ -1884,6 +1885,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="2989123969927553766">Ubrzanje klizanja miša</translation>
 <translation id="2989474696604907455">nije priključeno</translation>
 <translation id="2989786307324390836">DER šifrirani binarni sistem, pojedinačni certifikat</translation>
+<translation id="2989805286512600854">Otvori u novoj kartici</translation>
 <translation id="2990313168615879645">Dodaj Google račun</translation>
 <translation id="2990583317361835189">Nemoj dozvoliti web lokacijama korištenje senzora kretanja</translation>
 <translation id="2992931425024192067">Prikaži sav sadržaj obavještenja</translation>

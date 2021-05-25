@@ -1592,6 +1592,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2691440343905273290">Mainīt ievades iestatījumus</translation>
 <translation id="2693176596243495071">Diemžēl radās nezināma kļūda. Vēlāk mēģiniet vēlreiz, vai sazinieties ar administratoru, ja problēma joprojām pastāv.</translation>
 <translation id="2699911226086014512">PIN darbība neizdevās, kods: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Kopīgota no: <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Pierakstīties (<ph name="EMAIL" />)</translation>
 <translation id="2702801445560668637">Atvērt sarakstu</translation>
 <translation id="270358213449696159">Google Chrome OS noteikumu saturs</translation>
@@ -1873,6 +1874,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="2989123969927553766">Peles ritināšanas paātrināšana</translation>
 <translation id="2989474696604907455">nav pievienota</translation>
 <translation id="2989786307324390836">DER kodēts binārais fails, viens sertifikāts</translation>
+<translation id="2989805286512600854">Atvērt jaunā cilnē</translation>
 <translation id="2990313168615879645">Pievienot Google kontu</translation>
 <translation id="2990583317361835189">Neļaut vietnēm izmantot kustību sensorus</translation>
 <translation id="2992931425024192067">Rādīt visu paziņojumu saturu</translation>

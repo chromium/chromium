@@ -1587,6 +1587,7 @@
 <translation id="2691440343905273290">Енгізу параметрлерін өзгерту</translation>
 <translation id="2693176596243495071">Қап! Белгісіз қате шықты. Әрекетті кейінірек қайталаңыз немесе мәселе жойылмаса, әкімшіге хабарласыңыз.</translation>
 <translation id="2699911226086014512">PIN коды орнатылмады. Қате коды: <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> құрылғысынан бөлісілді.</translation>
 <translation id="2701737434167469065"><ph name="EMAIL" /> есептік жазбасына кіру</translation>
 <translation id="2702801445560668637">Оқу тізімі</translation>
 <translation id="270358213449696159">Google Chrome ОЖ шарттары мазмұндары</translation>
@@ -1867,6 +1868,7 @@
 <translation id="2989123969927553766">Тінтуірдің айналдыруын жылдамдату</translation>
 <translation id="2989474696604907455">тіркелмеген</translation>
 <translation id="2989786307324390836">DER кодталған бинарлы, бір сертификат</translation>
+<translation id="2989805286512600854">Жаңа қойындыда ашу</translation>
 <translation id="2990313168615879645">Есептік жазба қосу</translation>
 <translation id="2990583317361835189">Сайттардың қозғалыс датчиктерін пайдалануына рұқсат бермеу</translation>
 <translation id="2992931425024192067">Хабарландыруды толық көрсету</translation>

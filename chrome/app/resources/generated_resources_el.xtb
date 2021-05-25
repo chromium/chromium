@@ -1608,6 +1608,7 @@
 <translation id="2691440343905273290">Αλλαγή ρυθμίσεων εισόδου</translation>
 <translation id="2693176596243495071">Ωχ! Παρουσιάστηκε ένα άγνωστο σφάλμα. Δοκιμάστε ξανά αργότερα ή επικοινωνήστε με τον διαχειριστή σας εάν το πρόβλημα δεν επιλυθεί.</translation>
 <translation id="2699911226086014512">Η λειτουργία του PIN απέτυχε με τον κωδικό <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Κοινοποιήθηκε από <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Σύνδεση, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Λίστα ανάγνωσης</translation>
 <translation id="270358213449696159">Περιεχόμενα όρων Google Chrome OS</translation>
@@ -1890,6 +1891,7 @@
 <translation id="2989123969927553766">Επιτάχυνση κύλισης ποντικιού</translation>
 <translation id="2989474696604907455">αποσυνδεδεμένη</translation>
 <translation id="2989786307324390836">Κωδικοποιημένο δυαδικό DER, πιστοποιητικό</translation>
+<translation id="2989805286512600854">Άνοιγμα σε Νέα Καρτέλα</translation>
 <translation id="2990313168615879645">Προσθήκη Λογαριασμού Google</translation>
 <translation id="2990583317361835189">Να μην επιτρέπεται στους ιστοτόπους να χρησιμοποιούν τους αισθητήρες κίνησης</translation>
 <translation id="2992931425024192067">Εμφάνιση όλου του περιεχομένου ειδοποιήσεων</translation>

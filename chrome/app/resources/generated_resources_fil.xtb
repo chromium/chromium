@@ -1138,6 +1138,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2178614541317717477">CA Compromise</translation>
 <translation id="2182058453334755893">Kinopya sa Iyong Clipboard</translation>
 <translation id="2184515124301515068">Hayaan ang Chrome na pumili kung kailan makakapag-play ng tunog ang mga site (inirerekomenda)</translation>
+<translation id="2186711480981247270">Ibinahaging page mula sa ibang device</translation>
 <translation id="2187675480456493911">Naka-sync sa iba pang device sa iyong account. Hindi masi-sync ang mga setting na binago ng iba pang user. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Error sa Pag-import ng Certificate ng Server</translation>
 <translation id="2187906491731510095">Na-update ang mga extension</translation>
@@ -1606,6 +1607,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2691440343905273290">Baguhin ang mga setting ng pag-input</translation>
 <translation id="2693176596243495071">Oops!  Nagkaroon ng hindi matukoy na error. Pakisubukang muli sa ibang pagkakataon o makipag-ugnayan sa iyong administrator kung magpapatuloy ang isyu.</translation>
 <translation id="2699911226086014512">Hindi nagamit ang PIN na may code <ph name="RETRIES" />.</translation>
+<translation id="2701330563083355633">Ibinahagi mula kay <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Mag-sign in, <ph name="EMAIL" /></translation>
 <translation id="2702801445560668637">Listahan ng Babasahin</translation>
 <translation id="270358213449696159">Mga content ng Mga Tuntunin ng Google Chrome OS</translation>
@@ -1887,6 +1889,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2989123969927553766">Pag-accelerate ng pag-scroll gamit ang mouse</translation>
 <translation id="2989474696604907455">hindi naka-attach</translation>
 <translation id="2989786307324390836">DER-encoded binary, single certificate</translation>
+<translation id="2989805286512600854">Buksan sa Bagong Tab</translation>
 <translation id="2990313168615879645">Mag-add ng Google Account</translation>
 <translation id="2990583317361835189">Huwag payagan ang mga site na gumamit ng mga sensor ng paggalaw</translation>
 <translation id="2992931425024192067">Ipakita ang lahat ng content ng notification</translation>
