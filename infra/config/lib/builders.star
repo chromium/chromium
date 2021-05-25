@@ -381,7 +381,7 @@ def builder(
     attribute with a `lucicfg.var` for all of the fields defined here as well as
     all of the parameters of `luci.builder` that support module-level defaults.
 
-    See https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/master/lucicfg/doc/README.md#luci.builder
+    See https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/main/lucicfg/doc/README.md#luci.builder
     for more information.
 
     Arguments:
