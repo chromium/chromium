@@ -23,7 +23,7 @@ class ClassMetaData;
 // MetaDataCache is implemented as a singleton. This also implies that each
 // instance of ClassMetaData registered into the cache represents one and only
 // one class type.
-class COMPONENT_EXPORT(UI_BASE) MetaDataCache {
+class COMPONENT_EXPORT(UI_BASE_METADATA) MetaDataCache {
  public:
   MetaDataCache();
 
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(UI_BASE) MetaDataCache {
 //
 // Registers the class metadata into the global cache. Will DCHECK if the
 // metadata for a class is already registered.
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_METADATA)
 void RegisterClassInfo(std::unique_ptr<ClassMetaData> meta_data);
 
 // Help function for creating and registering the metadata container into the

@@ -11,7 +11,6 @@
 #include "testing/platform_test.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-//#include "ui/views/controls/button/button.h"
 
 using TypeConversionTest = PlatformTest;
 

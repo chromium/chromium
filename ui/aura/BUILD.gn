@@ -138,6 +138,7 @@ component("aura") {
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom:mojom_headers",
     "//ui/base/ime",
+    "//ui/base/metadata",
     "//ui/compositor",
   ]
 

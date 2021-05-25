@@ -35,13 +35,13 @@ enum class PropertyFlags : uint32_t {
   kSerializable = 0x100,
 };
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_METADATA)
 extern PropertyFlags operator|(PropertyFlags op1, PropertyFlags op2);
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_METADATA)
 extern PropertyFlags operator&(PropertyFlags op1, PropertyFlags op2);
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_METADATA)
 extern PropertyFlags operator^(PropertyFlags op1, PropertyFlags op2);
-COMPONENT_EXPORT(UI_BASE) extern bool operator!(PropertyFlags op);
+COMPONENT_EXPORT(UI_BASE_METADATA) extern bool operator!(PropertyFlags op);
 
 // Used to identify the CallbackList<> within the PropertyChangedVectors map.
 using PropertyKey = const void*;
@@ -53,7 +53,7 @@ using PropertyChangedCallback = PropertyChangedCallbacks::CallbackType;
 // metadata_header_macros.h). GetClassMetaData() is automatically overridden and
 // implemented in the relevant macros, so a class must merely have
 // MetaDataProvider somewhere in its ancestry.
-class COMPONENT_EXPORT(UI_BASE) MetaDataProvider {
+class COMPONENT_EXPORT(UI_BASE_METADATA) MetaDataProvider {
  public:
   MetaDataProvider();
   virtual ~MetaDataProvider();
@@ -79,7 +79,7 @@ class MemberMetaDataBase;
 // macros in ui/base/metadata/metadata_impl_macros.h, a descendant of this
 // class is declared within the scope of the containing class. See information
 // about using the macros in the comment for the views::View class.
-class COMPONENT_EXPORT(UI_BASE) ClassMetaData {
+class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
  public:
   ClassMetaData();
   ClassMetaData(std::string file, int line);
@@ -111,7 +111,7 @@ class COMPONENT_EXPORT(UI_BASE) ClassMetaData {
   //    for(views::MemberMetaDataBase* member : class_meta_data) {
   //      OperateOn(member);
   //    }
-  class COMPONENT_EXPORT(UI_BASE) ClassMemberIterator
+  class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMemberIterator
       : public std::iterator<std::forward_iterator_tag, MemberMetaDataBase*> {
    public:
     ClassMemberIterator(const ClassMemberIterator& other);
@@ -165,7 +165,7 @@ class COMPONENT_EXPORT(UI_BASE) ClassMetaData {
 // Abstract base class to represent meta data about class members.
 // Provides basic information (such as the name of the member), and templated
 // accessors to get/set the value of the member on an object.
-class COMPONENT_EXPORT(UI_BASE) MemberMetaDataBase {
+class COMPONENT_EXPORT(UI_BASE_METADATA) MemberMetaDataBase {
  public:
   using ValueStrings = std::vector<std::u16string>;
   MemberMetaDataBase(const std::string& member_name,

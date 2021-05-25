@@ -527,6 +527,7 @@ component("views") {
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom:mojom_headers",
     "//ui/base/ime/init",
+    "//ui/base/metadata",
     "//ui/compositor",
     "//ui/display",
     "//ui/events",
@@ -1393,8 +1394,8 @@ test("views_unittests") {
 
   if (use_ozone) {
     deps += [
-      "//ui/ozone",
       "//ui/events/ozone/layout:test_support",
+      "//ui/ozone",
     ]
   }
 

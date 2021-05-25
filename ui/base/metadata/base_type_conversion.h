@@ -62,8 +62,8 @@ using ArgType =
                               T,
                               const T&>::type;
 
-COMPONENT_EXPORT(UI_BASE) extern const char kNoPrefix[];
-COMPONENT_EXPORT(UI_BASE) extern const char kSkColorPrefix[];
+COMPONENT_EXPORT(UI_BASE_METADATA) extern const char kNoPrefix[];
+COMPONENT_EXPORT(UI_BASE_METADATA) extern const char kSkColorPrefix[];
 
 // General Type Conversion Template Functions ---------------------------------
 template <bool serializable,
@@ -184,12 +184,12 @@ struct EnumStringsMap;
 
 // String Conversions ---------------------------------------------------------
 
-COMPONENT_EXPORT(UI_BASE)
+COMPONENT_EXPORT(UI_BASE_METADATA)
 std::u16string PointerToString(const void* pointer_val);
 
 #define DECLARE_CONVERSIONS(T)                                               \
   template <>                                                                \
-  struct COMPONENT_EXPORT(UI_BASE)                                           \
+  struct COMPONENT_EXPORT(UI_BASE_METADATA)                                  \
       TypeConverter<T> : BaseTypeConverter<true> {                           \
     static std::u16string ToString(ArgType<T> source_value);                 \
     static absl::optional<T> FromString(const std::u16string& source_value); \
@@ -225,7 +225,8 @@ DECLARE_CONVERSIONS(url::Component)
 #undef DECLARE_CONVERSIONS
 
 template <>
-struct COMPONENT_EXPORT(UI_BASE) TypeConverter<bool> : BaseTypeConverter<true> {
+struct COMPONENT_EXPORT(UI_BASE_METADATA) TypeConverter<bool>
+    : BaseTypeConverter<true> {
   static std::u16string ToString(bool source_value);
   static absl::optional<bool> FromString(const std::u16string& source_value);
   static ValidStrings GetValidStrings();
@@ -233,7 +234,7 @@ struct COMPONENT_EXPORT(UI_BASE) TypeConverter<bool> : BaseTypeConverter<true> {
 
 // Special conversions for wrapper types --------------------------------------
 
-COMPONENT_EXPORT(UI_BASE) const std::u16string& GetNullOptStr();
+COMPONENT_EXPORT(UI_BASE_METADATA) const std::u16string& GetNullOptStr();
 
 template <typename T>
 struct TypeConverter<absl::optional<T>>
@@ -316,7 +317,8 @@ struct TypeConverter<std::vector<T>>
 MAKE_TYPE_UNIQUE(SkColor);
 
 template <>
-struct COMPONENT_EXPORT(UI_BASE) TypeConverter<UNIQUE_TYPE_NAME(SkColor)>
+struct COMPONENT_EXPORT(UI_BASE_METADATA)
+    TypeConverter<UNIQUE_TYPE_NAME(SkColor)>
     : BaseTypeConverter<true, false, kSkColorPrefix> {
   static std::u16string ToString(SkColor source_value);
   static absl::optional<SkColor> FromString(const std::u16string& source_value);
@@ -370,9 +372,12 @@ using SkColorConverter = TypeConverter<UNIQUE_TYPE_NAME(SkColor)>;
 }  // namespace metadata
 }  // namespace ui
 
-EXPORT_ENUM_CONVERTERS(gfx::HorizontalAlignment, COMPONENT_EXPORT(UI_BASE))
-EXPORT_ENUM_CONVERTERS(gfx::VerticalAlignment, COMPONENT_EXPORT(UI_BASE))
-EXPORT_ENUM_CONVERTERS(gfx::ElideBehavior, COMPONENT_EXPORT(UI_BASE))
-EXPORT_ENUM_CONVERTERS(ui::MenuSeparatorType, COMPONENT_EXPORT(UI_BASE))
+EXPORT_ENUM_CONVERTERS(gfx::HorizontalAlignment,
+                       COMPONENT_EXPORT(UI_BASE_METADATA))
+EXPORT_ENUM_CONVERTERS(gfx::VerticalAlignment,
+                       COMPONENT_EXPORT(UI_BASE_METADATA))
+EXPORT_ENUM_CONVERTERS(gfx::ElideBehavior, COMPONENT_EXPORT(UI_BASE_METADATA))
+EXPORT_ENUM_CONVERTERS(ui::MenuSeparatorType,
+                       COMPONENT_EXPORT(UI_BASE_METADATA))
 
 #endif  // UI_BASE_METDATA_BASE_TYPE_CONVERSION_H_
