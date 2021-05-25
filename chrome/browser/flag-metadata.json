@@ -3009,11 +3009,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "freeze-user-agent",
-    "owners": [ "yoavweiss", "aarontag" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "full-restore",
     "owners": [ "dominickn", "nancylingwang", "sammiequon", "xdai" ],
     "expiry_milestone": 95
@@ -4450,6 +4445,11 @@
     "name": "reduce-horizontal-fling-velocity",
     "owners": [ "flackr", "input-dev" ],
     "expiry_milestone": 95
+  },
+  {
+    "name": "reduce-user-agent",
+    "owners": [ "aarontag", "miketaylr"],
+    "expiry_milestone": 100
   },
   {
     "name": "reengagement-notification",

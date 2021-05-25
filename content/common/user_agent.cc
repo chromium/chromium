@@ -48,6 +48,19 @@ std::string GetUserAgentPlatform() {
 
 }  // namespace
 
+std::string GetUnifiedPlatform() {
+#if defined(OS_ANDROID)
+  return frozen_user_agent_strings::kUnifiedPlatformAndroid;
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  return frozen_user_agent_strings::kUnifiedPlatformCrOS;
+#elif defined(OS_MAC)
+  return frozen_user_agent_strings::kUnifiedPlatformMacOS;
+#elif defined(OS_WIN)
+  return frozen_user_agent_strings::kUnifiedPlatformWindows;
+#endif
+  return frozen_user_agent_strings::kUnifiedPlatformLinux;
+}
+
 std::string GetWebKitVersion() {
   return base::StringPrintf("%d.%d (%s)",
                             WEBKIT_VERSION_MAJOR,
@@ -228,16 +241,23 @@ std::string BuildOSCpuInfoFromOSVersionAndCpuType(const std::string& os_version,
   return os_cpu;
 }
 
-std::string GetFrozenUserAgent(bool mobile, std::string major_version) {
+std::string GetReducedUserAgent(bool mobile, std::string major_version) {
   std::string user_agent;
 #if defined(OS_ANDROID)
-  user_agent = mobile ? frozen_user_agent_strings::kAndroidMobile
-                      : frozen_user_agent_strings::kAndroid;
+  std::string device_compat;
+  // Note: The extra space after Mobile is meaningful here, to avoid
+  // "MobileSafari", but unneeded for non-mobile Android devices.
+  device_compat = mobile ? "Mobile " : "";
+  user_agent = base::StringPrintf(frozen_user_agent_strings::kAndroid,
+                                  GetUnifiedPlatform().c_str(),
+                                  major_version.c_str(), device_compat.c_str());
 #else
-  user_agent = frozen_user_agent_strings::kDesktop;
+  user_agent =
+      base::StringPrintf(frozen_user_agent_strings::kDesktop,
+                         GetUnifiedPlatform().c_str(), major_version.c_str());
 #endif
 
-  return base::StringPrintf(user_agent.c_str(), major_version.c_str());
+  return user_agent;
 }
 
 std::string BuildUserAgentFromProduct(const std::string& product) {

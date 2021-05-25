@@ -227,9 +227,12 @@ TEST(UserAgentUtilsTest, UserAgentStringFrozen) {
   ASSERT_FALSE(command_line->HasSwitch(switches::kUseMobileUserAgent));
   {
     std::string buffer = GetUserAgent();
-    EXPECT_EQ(buffer, base::StringPrintf(
-                          content::frozen_user_agent_strings::kAndroid,
-                          version_info::GetMajorVersionNumber().c_str()));
+    std::string device_compat = "";
+    EXPECT_EQ(buffer,
+              base::StringPrintf(content::frozen_user_agent_strings::kAndroid,
+                                 content::GetUnifiedPlatform().c_str(),
+                                 version_info::GetMajorVersionNumber().c_str(),
+                                 device_compat.c_str()));
   }
 
   // Verify the mobile user agent string is returned when using a mobile user
@@ -238,15 +241,19 @@ TEST(UserAgentUtilsTest, UserAgentStringFrozen) {
   ASSERT_TRUE(command_line->HasSwitch(switches::kUseMobileUserAgent));
   {
     std::string buffer = GetUserAgent();
-    EXPECT_EQ(buffer, base::StringPrintf(
-                          content::frozen_user_agent_strings::kAndroidMobile,
-                          version_info::GetMajorVersionNumber().c_str()));
+    std::string device_compat = "Mobile ";
+    EXPECT_EQ(buffer,
+              base::StringPrintf(content::frozen_user_agent_strings::kAndroid,
+                                 content::GetUnifiedPlatform().c_str(),
+                                 version_info::GetMajorVersionNumber().c_str(),
+                                 device_compat.c_str()));
   }
 #else
   {
     std::string buffer = GetUserAgent();
     EXPECT_EQ(buffer, base::StringPrintf(
                           content::frozen_user_agent_strings::kDesktop,
+                          content::GetUnifiedPlatform().c_str(),
                           version_info::GetMajorVersionNumber().c_str()));
   }
 #endif

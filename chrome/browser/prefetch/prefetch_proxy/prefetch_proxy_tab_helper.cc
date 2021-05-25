@@ -1581,7 +1581,7 @@ void PrefetchProxyTabHelper::CreateIsolatedURLLoaderFactory() {
 
   auto context_params = network::mojom::NetworkContextParams::New();
   context_params->context_name = "PrefetchProxy";
-  context_params->user_agent = content::GetFrozenUserAgent(
+  context_params->user_agent = content::GetReducedUserAgent(
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseMobileUserAgent),
       version_info::GetMajorVersionNumber());

@@ -16,16 +16,17 @@ namespace content {
 namespace frozen_user_agent_strings {
 
 const char kDesktop[] =
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, "
+    "Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, "
     "like Gecko) Chrome/%s.0.0.0 Safari/537.36";
 const char kAndroid[] =
-    "Mozilla/5.0 (Linux; Android 9; Unspecified Device) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s.0.0.0 "
+    "Mozilla/5.0 (%s) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s.0.0.0 %s"
     "Safari/537.36";
-const char kAndroidMobile[] =
-    "Mozilla/5.0 (Linux; Android 9; Unspecified Device) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s.0.0.0 Mobile "
-    "Safari/537.36";
+const char kUnifiedPlatformAndroid[] = "Linux; Android 10; K";
+const char kUnifiedPlatformCrOS[] = "X11; CrOS x86_64";
+const char kUnifiedPlatformLinux[] = "X11; Linux x86_64";
+const char kUnifiedPlatformMacOS[] = "Macintosh; Intel Mac OS X 10_15_7";
+const char kUnifiedPlatformWindows[] = "Windows NT 10.0; Win64; x64";
 
 }  // namespace frozen_user_agent_strings
 
@@ -65,10 +66,14 @@ CONTENT_EXPORT std::string GetOSVersion(
     IncludeAndroidBuildNumber include_android_build_number,
     IncludeAndroidModel include_android_model);
 
-// Returns the frozen User-agent string for
+// Returns the reduced User-agent string for
 // https://github.com/WICG/ua-client-hints.
-CONTENT_EXPORT std::string GetFrozenUserAgent(bool mobile,
-                                              std::string major_version);
+CONTENT_EXPORT std::string GetReducedUserAgent(bool mobile,
+                                               std::string major_version);
+
+// Helper function to return the <unifiedPlatform> token of a reduced
+// User-Agent header
+CONTENT_EXPORT std::string GetUnifiedPlatform();
 
 // Helper function to generate a full user agent string from a short
 // product name.

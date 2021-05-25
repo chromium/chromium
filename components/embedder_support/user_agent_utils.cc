@@ -34,7 +34,7 @@ std::string GetUserAgent() {
   }
 
   if (base::FeatureList::IsEnabled(blink::features::kFreezeUserAgent)) {
-    return content::GetFrozenUserAgent(
+    return content::GetReducedUserAgent(
         command_line->HasSwitch(switches::kUseMobileUserAgent),
         version_info::GetMajorVersionNumber());
   }

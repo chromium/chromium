@@ -6177,8 +6177,8 @@ const FeatureEntry kFeatureEntries[] = {
          "PhotoPickerVideoSupportFeatureVariations")},
 #endif  // defined(OS_ANDROID)
 
-    {"freeze-user-agent", flag_descriptions::kFreezeUserAgentName,
-     flag_descriptions::kFreezeUserAgentDescription, kOsDesktop | kOsAndroid,
+    {"reduce-user-agent", flag_descriptions::kReduceUserAgentName,
+     flag_descriptions::kReduceUserAgentDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kFreezeUserAgent)},
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -1196,12 +1196,6 @@ const char kFractionalScrollOffsetsDescription[] =
     "Enables fractional scroll offsets inside Blink, exposing non-integer "
     "offsets to web APIs.";
 
-const char kFreezeUserAgentName[] = "Freeze User-Agent request header";
-const char kFreezeUserAgentDescription[] =
-    "Set the User-Agent request header to a static string that conforms to the "
-    "current User-Agent string format but only reveals desktop vs Android and "
-    "if the 'mobile' flag is set";
-
 const char kForceEffectiveConnectionTypeName[] =
     "Override effective connection type";
 const char kForceEffectiveConnectionTypeDescription[] =
@@ -2085,6 +2079,12 @@ const char kRecordWebAppDebugInfoName[] = "Record web app debug info";
 const char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "
     "displayed in: chrome://internals/web-app";
+
+const char kReduceUserAgentName[] = "Reduce User-Agent request header";
+const char kReduceUserAgentDescription[] =
+    "Reduce (formerly, \"freeze\") the amount of information available in "
+    "the User-Agent request header. "
+    "See https://www.chromium.org/updates/ua-reduction for more info.";
 
 const char kRestrictGamepadAccessName[] = "Restrict gamepad access";
 const char kRestrictGamepadAccessDescription[] =

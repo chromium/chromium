@@ -754,7 +754,7 @@ class PrefetchProxyBrowserTest
 
       SCOPED_TRACE(request.GetURL().spec());
       EXPECT_EQ(request.headers.find("user-agent")->second,
-                content::GetFrozenUserAgent(
+                content::GetReducedUserAgent(
                     base::CommandLine::ForCurrentProcess()->HasSwitch(
                         switches::kUseMobileUserAgent),
                     version_info::GetMajorVersionNumber()));
