@@ -526,13 +526,8 @@ suite('InternetPage', function() {
     loadTimeData.overrideValues({
       updatedCellularActivationUi: true,
     });
-    const mojom = chromeos.networkConfig.mojom;
-    mojoApi_.setDeviceStateForTest({
-      type: mojom.NetworkType.kCellular,
-      deviceState: mojom.DeviceStateType.kEnabled,
-      inhibitReason: mojom.InhibitReason.kNotInhibited
-    });
 
+    const mojom = chromeos.networkConfig.mojom;
     const params = new URLSearchParams;
     params.append(
         'type', OncMojo.getNetworkTypeString(mojom.NetworkType.kCellular));
@@ -545,6 +540,15 @@ suite('InternetPage', function() {
     internetPage.currentRouteChanged(
         settings.routes.INTERNET_NETWORKS, undefined);
 
+    // Update the device state here to trigger an onDeviceStatesChanged_() call.
+    mojoApi_.setDeviceStateForTest({
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited,
+      simLockStatus: {
+        lockEnabled: true,
+      },
+    });
     await flushAsync();
 
     const simLockDialogs = internetPage.$$('sim-lock-dialogs');

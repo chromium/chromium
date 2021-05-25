@@ -168,6 +168,16 @@ Polymer({
       value: false,
     },
 
+    /**
+     * Flag, if true, indicating that the next deviceStates update
+     * should set showSimLockDialog_ to true.
+     * @private
+     */
+    pendingShowSimLockDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @private */
     showSimLockDialog_: {
       type: Boolean,
@@ -305,7 +315,11 @@ Polymer({
         this.pendingShowCellularSetupDialogAttemptPageName_ = pageName;
       }
 
-      this.showSimLockDialog_ = !oldRoute &&
+      // If the page just loaded, deviceStates will not be fully initialized
+      // yet. Set pendingShowSimLockDialog_ to indicate
+      // showSimLockDialog_ should be set next deviceStates
+      // update.
+      this.pendingShowSimLockDialog_ = !oldRoute &&
           !!queryParams.get('showSimLockDialog') &&
           this.subpageType_ === mojom.NetworkType.kCellular &&
           loadTimeData.getBoolean('updatedCellularActivationUi');
@@ -659,6 +673,11 @@ Polymer({
       this.attemptShowCellularSetupDialog_(
           this.pendingShowCellularSetupDialogAttemptPageName_);
       this.pendingShowCellularSetupDialogAttemptPageName_ = null;
+    }
+
+    if (this.pendingShowSimLockDialog_) {
+      this.showSimLockDialog_ = true;
+      this.pendingShowSimLockDialog_ = false;
     }
   },
 
