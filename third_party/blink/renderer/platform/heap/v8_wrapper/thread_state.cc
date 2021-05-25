@@ -82,13 +82,16 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
 
 }  // namespace
 
-// static
-base::LazyInstance<WTF::ThreadSpecific<ThreadState*>>::Leaky
-    ThreadState::thread_specific_ = LAZY_INSTANCE_INITIALIZER;
+thread_local ThreadState* g_thread_specific_ CONSTINIT
+    __attribute__((tls_model(BLINK_HEAP_THREAD_LOCAL_MODEL))) = nullptr;
 
 // static
 alignas(ThreadState) uint8_t
     ThreadState::main_thread_state_storage_[sizeof(ThreadState)];
+
+BLINK_HEAP_DEFINE_THREAD_LOCAL_GETTER(ThreadState::Current,
+                                      ThreadState*,
+                                      g_thread_specific_)
 
 // static
 ThreadState* ThreadState::AttachMainThread() {
@@ -149,7 +152,7 @@ ThreadState::ThreadState(v8::Platform* platform)
       allocation_handle_(cpp_heap_->GetAllocationHandle()),
       heap_handle_(cpp_heap_->GetHeapHandle()),
       thread_id_(CurrentThread()) {
-  *(thread_specific_.Get()) = this;
+  g_thread_specific_ = this;
 }
 
 ThreadState::~ThreadState() {

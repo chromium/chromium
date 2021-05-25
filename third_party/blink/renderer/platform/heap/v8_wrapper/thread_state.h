@@ -6,11 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_THREAD_STATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/lazy_instance.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc.h"
+#include "third_party/blink/renderer/platform/heap/v8_wrapper/thread_local.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "v8-profiler.h"
 #include "v8/include/cppgc/heap-consistency.h"
@@ -61,13 +61,19 @@ using V8BuildEmbedderGraphCallback = void (*)(v8::Isolate*,
                                               v8::EmbedderGraph*,
                                               void*);
 
+// Storage for all ThreadState objects. This includes the main-thread
+// ThreadState as well. Keep it outside the class so that PLATFORM_EXPORT
+// doesn't apply to it (otherwise, clang-cl complains).
+extern thread_local ThreadState* g_thread_specific_ CONSTINIT
+    __attribute__((tls_model(BLINK_HEAP_THREAD_LOCAL_MODEL)));
+
 class PLATFORM_EXPORT ThreadState final {
  public:
   class NoAllocationScope;
 
-  static ALWAYS_INLINE ThreadState* Current() {
-    return *(thread_specific_.Get());
-  }
+  BLINK_HEAP_DECLARE_THREAD_LOCAL_GETTER(Current,
+                                         ThreadState*,
+                                         g_thread_specific_)
 
   static ALWAYS_INLINE ThreadState* MainThreadState() {
     return reinterpret_cast<ThreadState*>(main_thread_state_storage_);
@@ -132,10 +138,6 @@ class PLATFORM_EXPORT ThreadState final {
   // Main-thread ThreadState avoids TLS completely by using a regular global.
   // The object is manually managed and should not rely on global ctor/dtor.
   static uint8_t main_thread_state_storage_[];
-  // Storage for all ThreadState objects. This includes the main-thread
-  // ThreadState as well.
-  static base::LazyInstance<WTF::ThreadSpecific<ThreadState*>>::Leaky
-      thread_specific_;
 
   explicit ThreadState(v8::Platform*);
   ~ThreadState();

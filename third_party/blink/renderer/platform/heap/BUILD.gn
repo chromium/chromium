@@ -114,6 +114,7 @@ blink_platform_sources("heap") {
       "v8_wrapper/member.h",
       "v8_wrapper/persistent.h",
       "v8_wrapper/process_heap.h",
+      "v8_wrapper/thread_local.h",
       "v8_wrapper/thread_state.cc",
       "v8_wrapper/thread_state.h",
       "v8_wrapper/thread_state_scopes.h",

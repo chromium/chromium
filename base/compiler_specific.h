@@ -388,9 +388,10 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #if defined(__has_attribute)
 #if __has_attribute(require_constant_initialization)
 #define CONSTINIT __attribute__((require_constant_initialization))
-#else
-#define CONSTINIT
 #endif
+#endif
+#if !defined(CONSTINIT)
+#define CONSTINIT
 #endif
 
 #endif  // BASE_COMPILER_SPECIFIC_H_
