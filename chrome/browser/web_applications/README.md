@@ -34,6 +34,8 @@ See developer guides for in depth overviews:
 
 This refers to the the document described by the [appmanifest](https://www.w3.org/TR/appmanifest/) spec, with some extra features described by [manifest-incubations](https://wicg.github.io/manifest-incubations/index.html). This document describes metadata and developer configuration of an installable webapp.
 
+For code representations of the manifest see [the list](docs/manifest_representations.md).
+
 ### Manifest Link
 
 A manifest link is something that looks like this in a html document:
