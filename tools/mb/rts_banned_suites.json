@@ -9,7 +9,8 @@
     "grit_python_unittests",
     "telemetry_perf_unittests",
     "maps_tests",
-    "telemetry_gpu_unittests"
+    "telemetry_gpu_unittests",
+    "telemetry_gpu_integration_test"
   ],
   "fuchsia_x64_rts": [
     "blink_web_tests"
