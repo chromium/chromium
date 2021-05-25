@@ -105,6 +105,7 @@ class ShellExtensionSystem : public ExtensionSystem {
   std::unique_ptr<RuntimeData> runtime_data_;
   std::unique_ptr<QuotaService> quota_service_;
   std::unique_ptr<AppSorting> app_sorting_;
+  std::unique_ptr<UserScriptManager> user_script_manager_;
 
   std::unique_ptr<ShellExtensionLoader> extension_loader_;
 
