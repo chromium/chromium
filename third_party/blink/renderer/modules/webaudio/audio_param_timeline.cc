@@ -699,6 +699,9 @@ void AudioParamTimeline::CancelScheduledValues(
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
+  if (!IsNonNegativeAudioParamTime(cancel_time, exception_state))
+    return;
+
   MutexLocker locker(events_lock_);
 
   // Remove all events starting at startTime.
