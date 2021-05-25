@@ -275,6 +275,7 @@
 <translation id="2781151931089541271">Остана 1 секунда</translation>
 <translation id="2801022321632964776">Ажурирајте за да го добиете вашиот јазик во најновата верзија на Chrome</translation>
 <translation id="2805756323405976993">Апликации</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Прегледајте ги и управувајте со зачуваните лозинки во вашата <ph name="BEGIN_LINK" />сметка на Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">За да ги добиете обележувачите на сите ваши уреди, најавете се и вклучете ја синхронизацијата</translation>
 <translation id="2827278682606527653">Менито на картичката за активност е отворено на половина екран</translation>
@@ -293,6 +294,7 @@
 <translation id="2901411048554510387">Се прикажуваат предлози за <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Списокот со уреди за споделување картичка е отворен на цел екран.</translation>
 <translation id="2905036901251765993">За да споделувате со луѓе во близина, дозволете им да го скенираат QR-кодов</translation>
+<translation id="2908243544703713905">Непрочитаните стории се спремни</translation>
 <translation id="2909615210195135082">Платформа за известувања на Google</translation>
 <translation id="2912296070571964914">Управувајте со темите што ве интересираат</translation>
 <translation id="2923908459366352541">Името е неважечко</translation>
@@ -395,7 +397,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="3568688522516854065">За да ги добиете вашите картички од другите уреди, најавете се и вклучете ја синхронизацијата</translation>
 <translation id="3587482841069643663">Сите</translation>
 <translation id="3587596251841506391">Подобра безбедноста на интернет</translation>
-<translation id="3598653140581545904">Користете режим „Инкогнито“ за да се најавите</translation>
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3631987586758005671">Се споделува на <ph name="DEVICE_NAME" /></translation>
@@ -458,6 +459,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Достапни се опции речиси на врвот на екранот</translation>
 <translation id="4062305924942672200">Правни информации</translation>
+<translation id="4082818367361753283">ID на група</translation>
 <translation id="4084682180776658562">Обележувач</translation>
 <translation id="4084712963632273211">Од <ph name="PUBLISHER_ORIGIN" /> - <ph name="BEGIN_DEEMPHASIZED" />испорачано од Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Избриши ги податоците на апликацијата?</translation>
@@ -533,7 +535,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4583164079174244168">{MINUTES,plural, =1{Пред # минута}one{Пред # минута}other{Пред # минути}}</translation>
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4594952190837476234">Офлајн страницава е од <ph name="CREATION_TIME" /> и може да се разликува од онлајн верзијата.</translation>
-<translation id="4615382002648696011">Се следи, непрочитаните стории се спремни</translation>
 <translation id="4616150815774728855">Отвори <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Потврдете дека сте вие</translation>
 <translation id="4634124774493850572">Употреби ја лозинката</translation>
@@ -760,7 +761,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5964805880140440652">За да ја споделите страницава со друг уред, вклучете ја синхронизацијата во поставките за Chrome</translation>
 <translation id="5964869237734432770">Сопри описи на слики</translation>
 <translation id="5979084224081478209">Провери ги лозинките</translation>
-<translation id="5982307838673692400">Отвори картичка „Инкогнито“</translation>
 <translation id="6000066717592683814">Задржи го Google</translation>
 <translation id="6000203700195075278">Следете пак</translation>
 <translation id="6002623704405939939">За да избришете <ph name="BEGIN_LINK1" />пребарување<ph name="END_LINK1" /> или друг тип историја, одете на <ph name="BEGIN_LINK2" />Моја активност на Google<ph name="END_LINK2" /></translation>
@@ -809,6 +809,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6312687380483398334">Веб-апликации (тивки)</translation>
 <translation id="6316139424528454185">Верзијата на Android не е поддржана</translation>
 <translation id="6324034347079777476">Синхронизацијата на системот Android е оневозможена</translation>
+<translation id="6324916366299863871">Изменете ја кратенката</translation>
 <translation id="6324977638108296054">Не може да се создаде линк до нагласената ставка</translation>
 <translation id="6324997754869598316">(Грешка <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Сподели преку <ph name="APPLICATION" /></translation>
@@ -913,9 +914,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6900532703269623216">Подобрена заштита</translation>
 <translation id="6903907808598579934">Вклучи синхронизирање</translation>
 <translation id="6929699136511445623">Овозможете синхронизација на системот Android</translation>
-<translation id="6941901516114974832">Во режим „Инкогнито“, вашата активност <ph name="BEGIN_BOLD1" />сепак може да биде видлива<ph name="END_BOLD1" /> за веб-сајтовите што ги посетувате, работодавачот или училиштето, како и за интернет-операторот.
-
-Податоците од сесиите „Инкогнито“ ќе се избришат од Chrome само кога ќе ги <ph name="BEGIN_BOLD2" />затворите сите картички „Инкогнито“<ph name="END_BOLD2" />.</translation>
 <translation id="6942665639005891494">Променете ја стандардната локација за преземање во секое време со помош на опцијата „Поставки“ од менито</translation>
 <translation id="694267552845942083">Во моментов ги приспособувате „Поставките за синхронизација“. За да го завршите вклучувањето на синхронизацијата, допрете на копчето „Потврди“ на долниот дел од екранот. Движете се нагоре</translation>
 <translation id="6945221475159498467">Избери</translation>
@@ -1188,7 +1186,9 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8662811608048051533">Ќе ве одјави од повеќето сајтови.</translation>
 <translation id="8664979001105139458">Името на датотеката веќе постои</translation>
 <translation id="8676789164135894283">Потврди за најавување</translation>
+<translation id="867767487203716855">Следно ажурирање</translation>
 <translation id="8683039184091909753">слика</translation>
+<translation id="8683081248374354009">Ресетирај група</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Ниво на јачина на сигналот: # бар}one{Ниво на јачина на сигналот: # бар}other{Ниво на јачина на сигналот: # бари}}</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699120352855309748">Не нуди превод за овие јазици</translation>

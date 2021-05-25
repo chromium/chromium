@@ -48,6 +48,7 @@
 <translation id="4852878756222711218">‏للاستفادة إلى أقصى حدّ من Chromium، سجِّل الدخول إلى حسابك على Google.</translation>
 <translation id="4985291216379576555">‏بلا اتصال بالإنترنت، يتعذّر على Chromium البحث عن تحديثات.</translation>
 <translation id="4999538639245140991">‏نظرًا لتسجيل خروجك من حساب يديره <ph name="SIGNOUT_MANAGED_DOMAIN" />، ستُحذَف بيانات Chromium من هذا الجهاز، ولكن ستظل البيانات محفوظة في حسابك على Google.</translation>
+<translation id="5171868502429358653">‏تسجيل الدخول إلى Chromium</translation>
 <translation id="5224391634244552924">‏ما مِن كلمات مرور محفوظة. لا يستطيع Chromium التحقُّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="5308226104666789935">‏يتعذّر على Chromium البحث عن تحديثات.</translation>
 <translation id="5396916991083608703">‏هل تريد ضبط Chromium كمتصفّح تلقائي؟</translation>
@@ -63,6 +64,7 @@
 1. افتح Settings (الإعدادات).
 2. انقر على Default Browser App (تطبيق المتصفِّح التلقائي).
 3. اختَر Chromium.</translation>
+<translation id="6155422572367400359">‏يُرجى تسجيل الدخول إلى هذا الموقع الإلكتروني وحسابك على Google وChromium. يمكنك تفعيل المزامنة لاحقًا.</translation>
 <translation id="6268381023930128611">‏هل تريد الخروج من Chromium؟</translation>
 <translation id="632825460376924298">‏السماح بتسجيل الدخول إلى Chromium</translation>
 <translation id="6337530241089703714">‏اختيار ما إذا كنت تريد محو بيانات Chromium المخزَّنة على هذا الجهاز أو الاحتفاظ بها</translation>

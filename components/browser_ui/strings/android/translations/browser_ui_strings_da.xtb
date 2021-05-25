@@ -3,6 +3,7 @@
 <translationbundle lang="da">
 <translation id="1006017844123154345">Åbn på nettet</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
+<translation id="1100504063505580045">Aktuelt ikon</translation>
 <translation id="1124090076051167250">Dette rydder <ph name="DATASIZE" /> data og cookies, som er gemt af websites eller apps på din startskærm.</translation>
 <translation id="1124772482545689468">Bruger</translation>
 <translation id="1178581264944972037">Pause</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3277252321222022663">Tillad, at websites kan få adgang til sensorer (anbefales)</translation>
 <translation id="3295602654194328831">Skjul oplysninger</translation>
+<translation id="3317660236277031814">En webapp, du har installeret, har ændret sit ikon.</translation>
 <translation id="3328801116991980348">Webstedoplysninger</translation>
 <translation id="3333961966071413176">Alle kontakter</translation>
 <translation id="3386292677130313581">Spørg, om websites må få adgang til din placering (anbefales)</translation>
+<translation id="345699454248713913">En webapp, du har installeret, har ændret sit navn.</translation>
 <translation id="3538390592868664640">Bloker oprettelsen af 3D-kort over dine omgivelser eller registrering af kamerapositionen for websites</translation>
 <translation id="3551268116566418498">Forlad inkognitotilstand?</translation>
 <translation id="3586500876634962664">Brug af kamera og mikrofon</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">Åbn placeringsindstillinger</translation>
 <translation id="4226663524361240545">Notifikationer kan få enheden til at vibrere</translation>
 <translation id="4259722352634471385">Navigationen er blokeret: <ph name="URL" /></translation>
+<translation id="4277239631747669329">En webapp, du har installeret, har ændret sit navn og ikon.</translation>
 <translation id="4278390842282768270">Tilladt</translation>
 <translation id="429312253194641664">Et website afspiller medier</translation>
 <translation id="42981349822642051">Udvid</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">Tillad, at websites kører JavaScript (anbefales)</translation>
 <translation id="534295439873310000">NFC-enheder</translation>
 <translation id="5354152178998424783">Dette rydder <ph name="DATASIZE" /> data og cookies, som er gemt af websites.</translation>
+<translation id="536508626067510330">Vil du opdatere ikonet på din startskærm?</translation>
 <translation id="5391532827096253100">Din forbindelse til dette website er ikke sikker. Websiteoplysninger</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 anden)}one{(+ # anden)}other{(+ # andre)}}</translation>
 <translation id="5403592356182871684">Navne</translation>
 <translation id="5489227211564503167">Forløbet tid: <ph name="ELAPSED_TIME" /> af <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloker annoncer på websites, der viser påtrængende eller vildledende annoncer</translation>
+<translation id="549957179819296104">Nyt ikon</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> blev tilladt, <ph name="PERMISSION_2" /> blev blokeret</translation>
 <translation id="5505264765875738116">Websites kan ikke spørge dig, om de må sende dig notifikationer</translation>
 <translation id="5516455585884385570">Åbn indstillinger for notifikationer</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5876056640971328065">Sæt video på pause</translation>
+<translation id="5904826301761575486">Vil du opdatere navnet og ikonet på din startskærm?</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5922853908706496913">Deling af din skærm</translation>
 <translation id="5939518447894949180">Nulstil</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
 <translation id="6206551242102657620">Forbindelsen er sikker. Websiteoplysninger</translation>
 <translation id="6216432067784365534">Valgmuligheder for <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6260852843601447737">Luk, og rapportér misbrug</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev blokeret</translation>
 <translation id="6270391203985052864">Websites kan spørge dig, om de må sende dig notifikationer</translation>
 <translation id="6295158916970320988">Alle websites</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">Fuld skærm</translation>
 <translation id="857943718398505171">Tilladt (anbefales)</translation>
 <translation id="8609465669617005112">Flyt op</translation>
+<translation id="861748745608658996">Vil du opdatere navnet på din startskærm?</translation>
 <translation id="8676374126336081632">Ryd indtastning</translation>
 <translation id="868929229000858085">Søg blandt dine kontakter</translation>
 <translation id="8702612070107455751">Alle offlinedata ryddes.</translation>

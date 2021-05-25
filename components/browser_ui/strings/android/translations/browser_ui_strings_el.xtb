@@ -3,6 +3,7 @@
 <translationbundle lang="el">
 <translation id="1006017844123154345">Άνοιγμα στο διαδίκτυο</translation>
 <translation id="1044891598689252897">Οι ιστότοποι θα λειτουργούν κανονικά</translation>
+<translation id="1100504063505580045">Τρέχον εικονίδιο</translation>
 <translation id="1124090076051167250">Αυτή η ενέργεια θα διαγράψει <ph name="DATASIZE" /> δεδομένων και cookie που έχουν αποθηκευτεί από ιστοτόπους ή εφαρμογές στην αρχική σας οθόνη.</translation>
 <translation id="1124772482545689468">Χρήστης</translation>
 <translation id="1178581264944972037">Παύση</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">Μικρόφωνο</translation>
 <translation id="3277252321222022663">Να επιτρέπεται στους ιστοτόπους η πρόσβαση στους αισθητήρες (συνιστάται)</translation>
 <translation id="3295602654194328831">Απόκρυψη πληροφοριών</translation>
+<translation id="3317660236277031814">Έγινε αλλαγή του εικονιδίου μιας εφαρμογής ιστού που έχετε εγκαταστήσει.</translation>
 <translation id="3328801116991980348">Πληροφορίες ιστοτόπου</translation>
 <translation id="3333961966071413176">Όλες οι επαφές</translation>
 <translation id="3386292677130313581">Να γίνεται ερώτηση προτού επιτραπεί η κοινοποίηση της τοποθεσίας σας σε ιστότοπους (συνιστάται)</translation>
+<translation id="345699454248713913">Έγινε αλλαγή του ονόματος μιας εφαρμογής ιστού που έχετε εγκαταστήσει.</translation>
 <translation id="3538390592868664640">Αποκλείστε ιστοτόπους από τη δημιουργία ενός τρισδιάστατου χάρτη του περιβάλλοντα χώρου σας ή την παρακολούθηση της θέσης της κάμερας.</translation>
 <translation id="3551268116566418498">Έξοδος από ανώνυμη περιήγηση;</translation>
 <translation id="3586500876634962664">Χρήση κάμερας και μικροφώνου</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">Άνοιγμα ρυθμίσεων τοποθεσίας</translation>
 <translation id="4226663524361240545">Κατά τη λήψη ειδοποιήσεων ενδέχεται να δονείται η συσκευή</translation>
 <translation id="4259722352634471385">Αποκλείστηκε η μετάβαση στη διεύθυνση: <ph name="URL" /></translation>
+<translation id="4277239631747669329">Έγινε αλλαγή του ονόματος και του εικονιδίου μιας εφαρμογής ιστού που έχετε εγκαταστήσει.</translation>
 <translation id="4278390842282768270">Επιτρέπεται</translation>
 <translation id="429312253194641664">Ένας ιστότοπος κάνει αναπαραγωγή μέσων</translation>
 <translation id="42981349822642051">Επέκταση</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">Να επιτρέπεται στους ιστότοπους να εκτελούν JavaScript (συνιστάται)</translation>
 <translation id="534295439873310000">Συσκευές NFC</translation>
 <translation id="5354152178998424783">Αυτή η ενέργεια θα διαγράψει <ph name="DATASIZE" /> δεδομένων και cookie που έχουν αποθηκευτεί από ιστοτόπους.</translation>
+<translation id="536508626067510330">Ενημέρωση εικονιδίου στην αρχική σας οθόνη;</translation>
 <translation id="5391532827096253100">Η σύνδεσή σας σε αυτόν τον ιστότοπο δεν είναι ασφαλής. Πληροφορίες ιστοτόπου</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ακόμη)}other{(+ # ακόμη)}}</translation>
 <translation id="5403592356182871684">Ονόματα</translation>
 <translation id="5489227211564503167">Έχουν περάσει <ph name="ELAPSED_TIME" /> από <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Αποκλεισμός διαφημίσεων σε ιστοτόπους που εμφανίζουν παρεμβατικές ή παραπλανητικές διαφημίσεις</translation>
+<translation id="549957179819296104">Νέο εικονίδιο</translation>
 <translation id="5502860503640766021">Αποδοχή <ph name="PERMISSION_1" />, αποκλεισμός <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Οι ιστότοποι δεν μπορούν να ζητούν να στέλνουν ειδοποιήσεις.</translation>
 <translation id="5516455585884385570">Άνοιγμα ρυθμίσεων ειδοποιήσεων</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">Άδειες</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
 <translation id="5876056640971328065">Παύση βίντεο</translation>
+<translation id="5904826301761575486">Ενημέρωση ονόματος και εικονιδίου στην αρχική σας οθόνη;</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="5922853908706496913">Κοινή χρήση της οθόνης σας</translation>
 <translation id="5939518447894949180">Επαναφορά</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">Αποκλεισμός cookie τρίτων</translation>
 <translation id="6206551242102657620">Η σύνδεση είναι ασφαλής. Πληροφορίες ιστοτόπου</translation>
 <translation id="6216432067784365534">Επιλογές <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6260852843601447737">Κλείσιμο και αναφορά κατάχρησης</translation>
 <translation id="6262279340360821358">Οι άδειες <ph name="PERMISSION_1" /> και <ph name="PERMISSION_2" /> αποκλείστηκαν.</translation>
 <translation id="6270391203985052864">Οι ιστότοποι μπορούν να ζητούν να στέλνουν ειδοποιήσεις.</translation>
 <translation id="6295158916970320988">Όλοι οι ιστότοποι</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">Πλήρης οθόνη</translation>
 <translation id="857943718398505171">Επιτρέπεται (συνιστάται)</translation>
 <translation id="8609465669617005112">Μετακίνηση προς τα επάνω</translation>
+<translation id="861748745608658996">Ενημέρωση ονόματος στην αρχική σας οθόνη;</translation>
 <translation id="8676374126336081632">Διαγραφή καταχώρισης</translation>
 <translation id="868929229000858085">Αναζήτηση στις επαφές σας</translation>
 <translation id="8702612070107455751">Όλα τα δεδομένα εκτός σύνδεσης θα διαγραφούν.</translation>

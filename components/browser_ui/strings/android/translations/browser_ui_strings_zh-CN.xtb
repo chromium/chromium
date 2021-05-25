@@ -3,6 +3,7 @@
 <translationbundle lang="zh-CN">
 <translation id="1006017844123154345">在线打开</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
+<translation id="1100504063505580045">当前图标</translation>
 <translation id="1124090076051167250">此操作会清除网站或其在主屏幕中安装的应用所存储的 <ph name="DATASIZE" /> 数据和 Cookie。</translation>
 <translation id="1124772482545689468">用户</translation>
 <translation id="1178581264944972037">暂停</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">麦克风</translation>
 <translation id="3277252321222022663">允许网站使用传感器（推荐）</translation>
 <translation id="3295602654194328831">隐藏信息</translation>
+<translation id="3317660236277031814">您安装的某个 Web 应用更改了图标。</translation>
 <translation id="3328801116991980348">网站信息</translation>
 <translation id="3333961966071413176">所有联系人</translation>
 <translation id="3386292677130313581">需先询问，得到许可后才允许网站获取您的位置信息（推荐）</translation>
+<translation id="345699454248713913">您安装的某个 Web 应用更改了名称。</translation>
 <translation id="3538390592868664640">禁止网站为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
 <translation id="3551268116566418498">退出无痕模式？</translation>
 <translation id="3586500876634962664">正在使用摄像头和麦克风</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">打开位置信息设置</translation>
 <translation id="4226663524361240545">收到通知时设备会振动</translation>
 <translation id="4259722352634471385">已屏蔽 <ph name="URL" /></translation>
+<translation id="4277239631747669329">您安装的某个 Web 应用更改了名称和图标。</translation>
 <translation id="4278390842282768270">允许</translation>
 <translation id="429312253194641664">某个网站正在播放媒体内容</translation>
 <translation id="42981349822642051">展开</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">允许网站运行 JavaScript（推荐）</translation>
 <translation id="534295439873310000">NFC 设备</translation>
 <translation id="5354152178998424783">此操作会清除网站存储的 <ph name="DATASIZE" /> 数据和 Cookie。</translation>
+<translation id="536508626067510330">更新您的主屏幕上的图标？</translation>
 <translation id="5391532827096253100">您与此网站之间建立的连接不安全。网站信息</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（以及另外 1 个）}other{（以及另外 # 个）}}</translation>
 <translation id="5403592356182871684">名称</translation>
 <translation id="5489227211564503167">已播时长为 <ph name="ELAPSED_TIME" />，总时长为 <ph name="TOTAL_TIME" />。</translation>
 <translation id="5494752089476963479">禁止会展示侵扰性或误导性广告的网站显示广告</translation>
+<translation id="549957179819296104">新图标</translation>
 <translation id="5502860503640766021">已授予“<ph name="PERMISSION_1" />”权限，已禁用“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="5505264765875738116">网站无法询问能否向您发送通知</translation>
 <translation id="5516455585884385570">打开通知设置</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">权限</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5876056640971328065">暂停视频</translation>
+<translation id="5904826301761575486">更新您的主屏幕上的名称和图标？</translation>
 <translation id="5916664084637901428">启用</translation>
 <translation id="5922853908706496913">正在共享您的屏幕</translation>
 <translation id="5939518447894949180">重置</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6206551242102657620">连接是安全的。网站信息</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />选项</translation>
+<translation id="6260852843601447737">关闭此应用并举报它的滥用行为</translation>
 <translation id="6262279340360821358">已禁用“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="6270391203985052864">网站可以询问能否向您发送通知</translation>
 <translation id="6295158916970320988">所有网站</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">全屏</translation>
 <translation id="857943718398505171">允许（推荐）</translation>
 <translation id="8609465669617005112">上移</translation>
+<translation id="861748745608658996">更新您的主屏幕上的名称？</translation>
 <translation id="8676374126336081632">清除输入的内容</translation>
 <translation id="868929229000858085">搜索联系人</translation>
 <translation id="8702612070107455751">所有离线数据都会被清除。</translation>

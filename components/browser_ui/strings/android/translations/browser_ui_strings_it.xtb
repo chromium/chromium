@@ -3,6 +3,7 @@
 <translationbundle lang="it">
 <translation id="1006017844123154345">Apri online</translation>
 <translation id="1044891598689252897">I siti funzioneranno normalmente</translation>
+<translation id="1100504063505580045">Icona attuale</translation>
 <translation id="1124090076051167250">Verranno cancellati <ph name="DATASIZE" /> di dati e cookie memorizzati da siti e app nella schermata Home.</translation>
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1178581264944972037">Pausa</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">Microfono</translation>
 <translation id="3277252321222022663">Consenti ai siti di accedere ai sensori (opzione consigliata)</translation>
 <translation id="3295602654194328831">Nascondi informazioni</translation>
+<translation id="3317660236277031814">È cambiata l'icona di un'app web che hai installato.</translation>
 <translation id="3328801116991980348">Informazioni sito</translation>
 <translation id="3333961966071413176">Tutti i contatti</translation>
 <translation id="3386292677130313581">Chiedi conferma prima di consentire ai siti di conoscere la tua posizione (opzione consigliata)</translation>
+<translation id="345699454248713913">È cambiato il nome di un'app web che hai installato.</translation>
 <translation id="3538390592868664640">Impedisci ai siti di creare una mappa 3D dell'ambiente circostante o di monitorare la posizione della fotocamera</translation>
 <translation id="3551268116566418498">Uscire da modalità in incognito?</translation>
 <translation id="3586500876634962664">Uso di videocamera e microfono</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">Apri Impostazioni di geolocalizzazione</translation>
 <translation id="4226663524361240545">Le notifiche possono far vibrare il dispositivo</translation>
 <translation id="4259722352634471385">Navigazione bloccata: <ph name="URL" /></translation>
+<translation id="4277239631747669329">Sono cambiati nome e icona di un'app web che hai installato.</translation>
 <translation id="4278390842282768270">Consenti</translation>
 <translation id="429312253194641664">Un sito sta riproducendo contenuti multimediali</translation>
 <translation id="42981349822642051">Espandi</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">Consenti l'esecuzione di JavaScript nei siti (opzione consigliata)</translation>
 <translation id="534295439873310000">Dispositivi NFC</translation>
 <translation id="5354152178998424783">Verranno cancellati <ph name="DATASIZE" /> di dati e cookie memorizzati dai siti.</translation>
+<translation id="536508626067510330">Vuoi aggiornare l'icona nella schermata Home?</translation>
 <translation id="5391532827096253100">La tua connessione al sito non è sicura. Informazioni sul sito</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 altro)}other{(+ altri #)}}</translation>
 <translation id="5403592356182871684">Nomi</translation>
 <translation id="5489227211564503167">Tempo trascorso: <ph name="ELAPSED_TIME" /> di <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blocca gli annunci su siti che mostrano annunci invasivi o fuorvianti</translation>
+<translation id="549957179819296104">Nuova icona</translation>
 <translation id="5502860503640766021">Autorizzazione <ph name="PERMISSION_1" /> consentita, autorizzazione <ph name="PERMISSION_2" /> bloccata</translation>
 <translation id="5505264765875738116">I siti non possono chiedere di inviare notifiche</translation>
 <translation id="5516455585884385570">Apri le impostazioni di notifica</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5876056640971328065">Metti in pausa il video</translation>
+<translation id="5904826301761575486">Vuoi aggiornare il nome e l'icona nella schermata Home?</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5922853908706496913">Condivisione dello schermo</translation>
 <translation id="5939518447894949180">Reimposta</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
 <translation id="6206551242102657620">La connessione è sicura. Informazioni sul sito</translation>
 <translation id="6216432067784365534">Opzioni <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6260852843601447737">Chiudi e segnala illecito</translation>
 <translation id="6262279340360821358">Autorizzazioni <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> bloccate</translation>
 <translation id="6270391203985052864">I siti possono chiedere di inviare notifiche</translation>
 <translation id="6295158916970320988">Tutti i siti</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">Schermo intero</translation>
 <translation id="857943718398505171">Consentita (opzione consigliata)</translation>
 <translation id="8609465669617005112">Sposta su</translation>
+<translation id="861748745608658996">Vuoi aggiornare il nome nella schermata Home?</translation>
 <translation id="8676374126336081632">Cancella testo inserito</translation>
 <translation id="868929229000858085">Cerca nei contatti</translation>
 <translation id="8702612070107455751">I dati offline verranno cancellati.</translation>

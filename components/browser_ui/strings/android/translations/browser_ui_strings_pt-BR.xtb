@@ -3,6 +3,7 @@
 <translationbundle lang="pt-BR">
 <translation id="1006017844123154345">Abrir on-line</translation>
 <translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
+<translation id="1100504063505580045">Ícone atual</translation>
 <translation id="1124090076051167250">Essa ação apagará <ph name="DATASIZE" /> de dados e cookies armazenados por sites ou apps na sua tela inicial.</translation>
 <translation id="1124772482545689468">Usuário</translation>
 <translation id="1178581264944972037">Pausar</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3277252321222022663">Permitir que sites acessem os sensores (recomendado)</translation>
 <translation id="3295602654194328831">Ocultar informações</translation>
+<translation id="3317660236277031814">Um app da Web que você instalou mudou de ícone.</translation>
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="3333961966071413176">Todos os contatos</translation>
 <translation id="3386292677130313581">Perguntar antes de permitir que sites saibam seu local (recomendado)</translation>
+<translation id="345699454248713913">Um app da Web que você instalou mudou de nome.</translation>
 <translation id="3538390592868664640">Impedir sites de criar um mapa 3D do ambiente a sua volta ou acompanhar a posição da câmera</translation>
 <translation id="3551268116566418498">Sair do modo de navegação anônima?</translation>
 <translation id="3586500876634962664">Uso de câmera e microfone</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">Abrir as configurações de localização</translation>
 <translation id="4226663524361240545">É possível que as notificações façam o dispositivo vibrar</translation>
 <translation id="4259722352634471385">A Navegação GPS está bloqueada: <ph name="URL" /></translation>
+<translation id="4277239631747669329">Um app da Web que você instalou mudou de nome e ícone.</translation>
 <translation id="4278390842282768270">Permitido</translation>
 <translation id="429312253194641664">Um site está com mídia aberta</translation>
 <translation id="42981349822642051">Expandir</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">Permitir que sites executem o JavaScript (recomendado)</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5354152178998424783">Essa ação apagará <ph name="DATASIZE" /> de dados e cookies armazenados por sites.</translation>
+<translation id="536508626067510330">Atualizar o ícone na tela inicial?</translation>
 <translation id="5391532827096253100">Sua conexão com este site não é segura. Informações do site</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}one{(mais #)}other{(mais #)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
 <translation id="5489227211564503167">Tempo decorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloquear anúncios em sites com publicidade invasiva ou enganosa</translation>
+<translation id="549957179819296104">Novo ícone</translation>
 <translation id="5502860503640766021">Permissão autorizada: <ph name="PERMISSION_1" />. Permissão bloqueada: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Os sites não podem pedir para enviar notificações</translation>
 <translation id="5516455585884385570">Abrir configurações de notificação</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5860033963881614850">Desativado</translation>
 <translation id="5876056640971328065">Pausar vídeo</translation>
+<translation id="5904826301761575486">Atualizar nome e ícone na tela inicial?</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5922853908706496913">Compartilhando a tela</translation>
 <translation id="5939518447894949180">Redefinir</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6206551242102657620">A conexão é segura. Informações do site</translation>
 <translation id="6216432067784365534">Opções de <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6260852843601447737">Fechar e denunciar abuso</translation>
 <translation id="6262279340360821358">Bloqueadas: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">Tela cheia</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover para cima</translation>
+<translation id="861748745608658996">Atualizar o nome na tela inicial?</translation>
 <translation id="8676374126336081632">Limpar entrada</translation>
 <translation id="868929229000858085">Pesquisar seus contatos</translation>
 <translation id="8702612070107455751">Todos os dados off-line serão removidos.</translation>

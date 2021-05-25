@@ -3,6 +3,7 @@
 <translationbundle lang="mk">
 <translation id="1006017844123154345">Отвори онлајн</translation>
 <translation id="1044891598689252897">Сајтовите ќе работат нормално</translation>
+<translation id="1100504063505580045">Моментална икона</translation>
 <translation id="1124090076051167250">Овa ќе ги избрише податоците и колачињата (<ph name="DATASIZE" />) складирани од сајтови или апликации на почетниот екран.</translation>
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3277252321222022663">Дозволете сајтовите да пристапуваат до сензорите (препорачано)</translation>
 <translation id="3295602654194328831">Сокриј ги информациите</translation>
+<translation id="3317660236277031814">Веб-апликацијата што сте ја инсталирале ја променила својата икона.</translation>
 <translation id="3328801116991980348">Информации за веб-локација</translation>
 <translation id="3333961966071413176">Сите контакти</translation>
 <translation id="3386292677130313581">Прашај пред да дозволиш сајтовите да ја дознаат локацијата (се препорачува)</translation>
+<translation id="345699454248713913">Веб-апликацијата што сте ја инсталирале го променила своето име.</translation>
 <translation id="3538390592868664640">Не дозволувај им на сајтовите да создаваат 3D-карта на опкружувањето или да ја следат позицијата на камерата</translation>
 <translation id="3551268116566418498">Да се излезе од „Инкогнито“?</translation>
 <translation id="3586500876634962664">Користење камера и микрофон</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">Отворете ги поставките за локација</translation>
 <translation id="4226663524361240545">Известувањата може да предизвикаат вибрации на уредот</translation>
 <translation id="4259722352634471385">Навигацијата е блокирана: <ph name="URL" /></translation>
+<translation id="4277239631747669329">Веб-апликацијата што сте ја инсталирале го променила своето име и икона.</translation>
 <translation id="4278390842282768270">Дозволено</translation>
 <translation id="429312253194641664">Сајтот репродуцира аудиовизуелни содржини</translation>
 <translation id="42981349822642051">Прошири</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">Дозволи сајтовите да извршуваат JavaScript (се препорачува)</translation>
 <translation id="534295439873310000">NFC-уреди</translation>
 <translation id="5354152178998424783">Ова ќе избрише <ph name="DATASIZE" /> податоци и колачиња складирани од сајтовите.</translation>
+<translation id="536508626067510330">Да се ажурира иконата на почетниот екран?</translation>
 <translation id="5391532827096253100">Врската со сајтов не е безбедна. Информации за сајтот</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и уште 1)}one{(и уште #)}other{(и уште #)}}</translation>
 <translation id="5403592356182871684">Имиња</translation>
 <translation id="5489227211564503167">Изминато време: <ph name="ELAPSED_TIME" /> од <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокирај ги рекламите на сајтови што прикажуваат нападни или лажни реклами</translation>
+<translation id="549957179819296104">Нова икона</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> е одобрена, <ph name="PERMISSION_2" /> е блокирана</translation>
 <translation id="5505264765875738116">Сајтовите не можат да прашуваат дали да испраќаат известувања</translation>
 <translation id="5516455585884385570">Отвори ги поставките за известувања</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">Дозволи</translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5876056640971328065">Паузирајте го видеото</translation>
+<translation id="5904826301761575486">Да се ажурираат името и иконата на почетниот екран?</translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5922853908706496913">Се споделува екранот</translation>
 <translation id="5939518447894949180">Ресетирај</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">Блокирај колачиња од трети лица</translation>
 <translation id="6206551242102657620">Врската е безбедна. Информации за сајтот</translation>
 <translation id="6216432067784365534">Опции за <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6260852843601447737">Затворете и пријавете злоупотреба</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> се блокирани</translation>
 <translation id="6270391203985052864">Сајтовите можат да прашуваат дали да испраќаат известувања</translation>
 <translation id="6295158916970320988">Сите локации</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">Цел екран</translation>
 <translation id="857943718398505171">Дозволено (препорачано)</translation>
 <translation id="8609465669617005112">Премести нагоре</translation>
+<translation id="861748745608658996">Да се ажурира името на почетниот екран?</translation>
 <translation id="8676374126336081632">Јасно внесување</translation>
 <translation id="868929229000858085">Пребарајте ги контактите</translation>
 <translation id="8702612070107455751">Сите офлајн податоци ќе се избришат.</translation>

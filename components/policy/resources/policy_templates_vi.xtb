@@ -1106,13 +1106,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 <translation id="2448315169529769573">Nếu bạn đặt chính sách này thành Bật, <ph name="PRODUCT_OS_NAME" /> sẽ báo cáo lại cho Google số liệu sử dụng và dữ liệu chẩn đoán, bao gồm cả báo cáo sự cố. Nếu bạn đặt chính sách này thành Tắt, báo cáo số liệu sử dụng và dữ liệu chẩn đoán sẽ tắt.
 
        Nếu bạn không đặt chính sách này, báo cáo số liệu sử dụng và dữ liệu chẩn đoán sẽ tắt trên các thiết bị không được quản lý và sẽ bật trên các thiết bị được quản lý.</translation>
-<translation id="2449263772062368618">Định cấu hình danh sách các loại dữ liệu duyệt web cần xóa khi đóng trình duyệt.
-      Dữ liệu duyệt web gồm có các loại sau đây: lịch sử duyệt web (<ph name="DATA_TYPE_BROWSING_HISTORY" />), dữ liệu về các tệp đã tải xuống (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), bộ nhớ đệm (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), dữ liệu tự động điền (<ph name="DATA_TYPE_AUTOFILL" />), mật khẩu (<ph name="DATA_TYPE_PASSWORD" />), các tùy chọn cài đặt trang web (<ph name="DATA_TYPE_SITE_SETTINGS" />) và dữ liệu ứng dụng đã lưu trữ (<ph name="DATA_TYPE_HOSTED_APP_DATA" />).
-      Chính sách này không được ưu tiên hơn <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-      Chính sách này yêu cầu bạn phải đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> thành bật. Nếu không, chính sách này sẽ bị bỏ qua.
-      Nếu đặt chính sách này ở cấp độ nền tảng, bạn nên tắt tính năng Đồng bộ hóa ở cấp độ này.
-      Nếu đặt chính sách này ở cấp độ người dùng, bạn nên tắt tính năng Đồng bộ hóa cho người dùng đó để chính sách này có hiệu lực.
-      </translation>
 <translation id="244950822854046436">Danh sách các chế độ cài đặt sẽ áp dụng cho <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />. Trình kết nối này sẽ chạy khi tệp được tải xuống.
 
       Các trường <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> dùng để xác định xem trình kết nối có gửi tệp cho nhà cung cấp dịch vụ hay không khi tải xuống từ một trang web. URL của trang web này phải khớp với mẫu liên kết với một mẫu "enable'' và không liên kết với một mẫu ''disable''.  Loại MIME của tệp cũng phải khớp với mẫu liên kết với một mẫu "enable'' và không liên kết với một mẫu ''disable''.

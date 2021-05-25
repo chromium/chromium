@@ -40,6 +40,7 @@
 <translation id="2560420686485554789">‏Chromium کو فائلیں ڈاؤن لوڈ کرنے کیلئے اسٹوریج تک رسائی درکار ہے</translation>
 <translation id="2572494885440352020">‏Chromium ہیلپر</translation>
 <translation id="2577788541081224677">‏اپنے تمام آلات پر اپنی Chromium کی چیزوں تک رسائی حاصل کرنے کیلئے، سائن ان کریں تاکہ آپ مطابقت پذیری کو آن کر سکیں۔</translation>
+<translation id="2580426763510374355">‏Chromium OS انسٹال کریں</translation>
 <translation id="2583187216237139145">‏دفتری پروفائل کا منتظم اس پروفائل کے استعمال کے دوران جنریٹ ہونے والے کسی بھی Chromium ڈیٹا (جیسے، بُک مارکس کی تخلیق، سرگزشت، پاس ورڈز اور دیگر ترتیبات) کو ہٹا سکتا ہے۔ <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">‏اپ ڈیٹ لاگو کرنے کیلئے Chromium OS کو دوبارہ شروع کرنے کی ضرورت ہے۔</translation>
 <translation id="2648074677641340862">‏انسٹالیشن کے دوران آپریٹنگ سسٹم کی ایک خرابی پیش آ گئی۔ براہ کرم Chromium دوبارہ ڈاؤن لوڈ کریں۔</translation>
@@ -138,6 +139,7 @@
 <translation id="5438241569118040789">‏<ph name="PAGE_TITLE" /> - Chromium بی ٹا</translation>
 <translation id="5479196819031988440">‏Chromium OS یہ صفحہ نہیں کھول سکتا ہے۔</translation>
 <translation id="5480860683791598150">‏Chromium کو اس سائٹ کے ساتھ آپ کے مقام کا اشتراک کرنے کیلئے آپ کے مقام تک رسائی درکار ہے</translation>
+<translation id="5481338274774984070">‏Chromium تجویز کرتا ہے کہ آپ اس فائل کو ڈاؤن لوڈ نہ کریں یا نہ کھولیں۔</translation>
 <translation id="549669000822060376">‏براہ کرم انتظار کریں یہاں تک کہ Chromium تازہ ترین سسٹم اپ ڈیٹس انسٹال کر دے۔</translation>
 <translation id="5496810170689441661">‏Chromium پاس ورڈز میں ترمیم کرنے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="5527463683072221100">‏Chromium میں PDFs کھولیں</translation>
@@ -201,7 +203,6 @@
 <translation id="6964305034639999644">‏لنک کو Chromium &amp;پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="6978145336957848883">‏کمزور پاس ورڈز کا اندازہ لگانا آسان ہوتا ہے۔ Chromium کو <ph name="BEGIN_LINK" />آپ کے لیے مضبوط پاس ورڈز تخلیق کرنے اور یاد رکھنے دیں<ph name="END_LINK" />۔</translation>
 <translation id="6990124437352146030">‏Chromium کو اس سائٹ کیلئے آپ کے مائیکروفون تک رسائی کی اجازت درکار ہے</translation>
-<translation id="701244094609242530">‏Chromium آپ کی ایکسٹینشنز چیک نہیں کر سکتا ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="705851970750939768">‏Chromium کو اپ ڈیٹ کریں</translation>
 <translation id="7067091210845072982">‏اگر کسی تصویر میں مفید تفصیل موجود نہیں ہے تو Chromium آپ کے لیے تفصیل فراہم کرنے کی کوشش کرے گا۔ تفصیلات تخلیق کرنے کے لیے، تصاویر Google کو بھیجی جاتی ہیں۔</translation>
 <translation id="7196312274710523067">‏Chromium شروع نہیں ہو سکا۔ دوبارہ کوشش کریں۔</translation>

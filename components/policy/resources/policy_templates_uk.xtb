@@ -1106,13 +1106,6 @@
 <translation id="2448315169529769573">Якщо це правило ввімкнено, <ph name="PRODUCT_OS_NAME" /> повідомлятиме компанії Google показники використання й дані діагностики, зокрема звіти про аварійне завершення роботи. Якщо це правило вимкнено, показники й дані діагностики не надсилатимуться.
 
        Якщо це правило не налаштовано, показники й дані діагностики некерованих пристроїв не надсилатимуться, а керованих – надсилатимуться</translation>
-<translation id="2449263772062368618">Налаштовує список типів даних веб-перегляду, які потрібно видаляти, коли користувач закриває веб-переглядач.
-      Доступні типи даних: історія веб-перегляду (<ph name="DATA_TYPE_BROWSING_HISTORY" />), історія завантажень (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), файли cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), кеш <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, дані автозаповнення (<ph name="DATA_TYPE_AUTOFILL" />), паролі (<ph name="DATA_TYPE_PASSWORD" />), налаштування сайтів (<ph name="DATA_TYPE_SITE_SETTINGS" />) і дані розміщених додатків (<ph name="DATA_TYPE_HOSTED_APP_DATA" />).
-      Воно не має переваги над правилом <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-      Для цього правила потрібно, щоб правило <ph name="SYNC_DISABLED_POLICY_NAME" /> мало значення true, інакше воно ігноруватиметься.
-      Якщо це правило налаштовано на рівні платформи, синхронізацію на рівні платформи має бути вимкнено.
-      Якщо це правило налаштовано на рівні користувача, потрібно вимкнути синхронізацію для цього користувача, щоб воно вступило в дію.
-      </translation>
 <translation id="244950822854046436">Список налаштувань, які застосовуються до конектора <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, що активується, коли завантажується файл.
 
       Поля <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> і <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> визначають, чи надсилатиме конектор файл постачальнику послуг під час завантаження з веб-сторінки. URL-адреса веб-сторінки має відповідати шаблону, зв'язаному із шаблоном enable (а не disable).  Тип MIME файлу має відповідати шаблону, зв'язаному із шаблоном enable (а не disable).

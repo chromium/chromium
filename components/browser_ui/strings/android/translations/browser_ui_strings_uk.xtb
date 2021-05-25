@@ -3,6 +3,7 @@
 <translationbundle lang="uk">
 <translation id="1006017844123154345">Відкрити в режимі онлайн</translation>
 <translation id="1044891598689252897">Сайти працюватимуть у звичному режимі</translation>
+<translation id="1100504063505580045">Поточний значок</translation>
 <translation id="1124090076051167250">Буде видалено <ph name="DATASIZE" /> даних і файлів cookie сайтів або додатків на головному екрані.</translation>
 <translation id="1124772482545689468">Користувач</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">Мікрофон</translation>
 <translation id="3277252321222022663">Надати сайтам доступ до датчиків (рекомендовано)</translation>
 <translation id="3295602654194328831">Сховати інформацію</translation>
+<translation id="3317660236277031814">У веб-додатка, який ви встановили, змінився значок.</translation>
 <translation id="3328801116991980348">Інформація про сайт</translation>
 <translation id="3333961966071413176">Усі контакти</translation>
 <translation id="3386292677130313581">Запитувати, перш ніж дозволити сайтам визначати ваше місцезнаходження (рекомендується)</translation>
+<translation id="345699454248713913">У веб-додатка, який ви встановили, змінилася назва.</translation>
 <translation id="3538390592868664640">Заборонити сайтам створювати 3D-карту вашого оточення або відстежувати положення камери</translation>
 <translation id="3551268116566418498">Вимкнути анонімний режим?</translation>
 <translation id="3586500876634962664">Використання камери й мікрофона</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">Відкрити налаштування доступу до моїх геоданих</translation>
 <translation id="4226663524361240545">Коли надходитимуть сповіщення, пристрій може вібрувати</translation>
 <translation id="4259722352634471385">Веб-сторінку <ph name="URL" /> заблоковано</translation>
+<translation id="4277239631747669329">У веб-додатка, який ви встановили, змінилися назва й значок.</translation>
 <translation id="4278390842282768270">Дозволено</translation>
 <translation id="429312253194641664">Сайт відтворює медіа-вміст</translation>
 <translation id="42981349822642051">Розгорнути</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">Дозволити сайтам запускати JavaScript (рекомендується)</translation>
 <translation id="534295439873310000">Пристрої NFC</translation>
 <translation id="5354152178998424783">Буде видалено <ph name="DATASIZE" /> даних і файлів cookie сайтів.</translation>
+<translation id="536508626067510330">Оновити значок на головному екрані?</translation>
 <translation id="5391532827096253100">Ваше з’єднання з цим сайтом незахищене. Інформація про сайт</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ще 1)}one{(+ ще #)}few{(+ ще #)}many{(+ ще #)}other{(+ ще #)}}</translation>
 <translation id="5403592356182871684">Імена</translation>
 <translation id="5489227211564503167">Минуло часу: <ph name="ELAPSED_TIME" /> з <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Блокувати рекламу на сайтах, які показують нав’язливі чи оманливі оголошення</translation>
+<translation id="549957179819296104">Новий значок</translation>
 <translation id="5502860503640766021">Дозволено: "<ph name="PERMISSION_1" />". Заблоковано: "<ph name="PERMISSION_2" />".</translation>
 <translation id="5505264765875738116">Сайти не можуть просити дозвіл надсилати сповіщення</translation>
 <translation id="5516455585884385570">Відкрити налаштування сповіщень</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">Дозволи</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5876056640971328065">Призупинити відео</translation>
+<translation id="5904826301761575486">Оновити назву й значок на головному екрані?</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5922853908706496913">Доступ до вашого екрана</translation>
 <translation id="5939518447894949180">Скинути</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">Блокувати сторонні файли cookie</translation>
 <translation id="6206551242102657620">З’єднання безпечне. Інформація про сайт</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />: опції</translation>
+<translation id="6260852843601447737">Закрити й повідомити про порушення</translation>
 <translation id="6262279340360821358">Заблоковано: "<ph name="PERMISSION_1" />" і "<ph name="PERMISSION_2" />"</translation>
 <translation id="6270391203985052864">Сайти можуть просити дозвіл надсилати сповіщення</translation>
 <translation id="6295158916970320988">Усі сайти</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">На весь екран</translation>
 <translation id="857943718398505171">Дозволено (рекомендується)</translation>
 <translation id="8609465669617005112">Угору</translation>
+<translation id="861748745608658996">Оновити назву на головному екрані?</translation>
 <translation id="8676374126336081632">Видалити введений текст</translation>
 <translation id="868929229000858085">Пошук у контактах</translation>
 <translation id="8702612070107455751">Усі дані, збережені офлайн, буде видалено.</translation>

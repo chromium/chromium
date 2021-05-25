@@ -3,6 +3,7 @@
 <translationbundle lang="te">
 <translation id="1006017844123154345">ఆన్‌లైన్‌లో తెరువు</translation>
 <translation id="1044891598689252897">సైట్‌లు సాధారణ రీతిలో పని చేస్తాయి</translation>
+<translation id="1100504063505580045">ప్రస్తుత చిహ్నం</translation>
 <translation id="1124090076051167250">ఇది మీ హోమ్ స్క్రీన్‌పై ఉన్న, సైట్‌లు లేదా యాప్‌ల ద్వారా స్టోర్ చేయబడిన <ph name="DATASIZE" /> డేటా, కుక్కీలను క్లియర్ చేస్తుంది.</translation>
 <translation id="1124772482545689468">వినియోగదారు</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
@@ -88,9 +89,11 @@
 <translation id="3227137524299004712">మైక్రోఫోన్</translation>
 <translation id="3277252321222022663">సెన్సార్‌లను యాక్సెస్ చేయడానికి సైట్‌లను అనుమతిస్తుంది (సిఫార్సు చేస్తున్నాము)</translation>
 <translation id="3295602654194328831">సమాచారాన్ని దాచు</translation>
+<translation id="3317660236277031814">మీరు ఇన్‌స్టాల్ చేసిన వెబ్ యాప్ దాని చిహ్నాన్ని మార్చుకుంది.</translation>
 <translation id="3328801116991980348">సైట్ సమాచారం</translation>
 <translation id="3333961966071413176">మొత్తం పరిచయాలు</translation>
 <translation id="3386292677130313581">మీ స్థానాన్ని సైట్‌లు తెలుసుకునేలా వాటిని అనుమతించే ముందు, మిమ్మల్ని అడుగుతుంది (సిఫార్సు చేయబడింది)</translation>
+<translation id="345699454248713913">మీరు ఇన్‌స్టాల్ చేసిన వెబ్ యాప్ దాని పేరును మార్చుకుంది.</translation>
 <translation id="3538390592868664640">మీ పరిసరాల 3D మ్యాప్‌ను సృష్టించకుండా లేదా కెమెరా పొజిషన్‌ను ట్రాక్ చేయకుండా సైట్‌లను బ్లాక్ చేయండి</translation>
 <translation id="3551268116566418498">అజ్ఞాత మోడ్‌ను నిష్క్రమించాలా?</translation>
 <translation id="3586500876634962664">కెమెరా, మైక్రోఫోన్‌ల ఉపయోగం</translation>
@@ -115,6 +118,7 @@
 <translation id="4200726100658658164">లొకేషన్ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="4226663524361240545">నోటిఫికేషన్‌లు పరికరాన్ని వైబ్రేట్ చేయవచ్చు</translation>
 <translation id="4259722352634471385">నావిగేషన్ బ్లాక్ చేయబడింది: <ph name="URL" /></translation>
+<translation id="4277239631747669329">మీరు ఇన్‌స్టాల్ చేసిన వెబ్ యాప్ దాని పేరు, చిహ్నాన్ని మార్చుకుంది.</translation>
 <translation id="4278390842282768270">అనుమతించబడింది</translation>
 <translation id="429312253194641664">ఒక సైట్‌లో మీడియా ప్లే చేయబడుతోంది</translation>
 <translation id="42981349822642051">విస్తరించు</translation>
@@ -155,11 +159,13 @@
 <translation id="5335288049665977812">సైట్‌లను జావాస్క్రిప్ట్ అమలు చేయడానికి అనుమతిస్తుంది (సిఫార్సు చేయబడింది)</translation>
 <translation id="534295439873310000">NFC పరికరాలు</translation>
 <translation id="5354152178998424783">ఇది సైట్‌ల ద్వారా స్టోర్ చేయబడిన <ph name="DATASIZE" /> డేటాను, కుక్కీలను క్లియర్ చేస్తుంది.</translation>
+<translation id="536508626067510330">మీ హోమ్‌స్క్రీన్‌లో చిహ్నాన్ని అప్‌డేట్ చేయాలా?</translation>
 <translation id="5391532827096253100">ఈ సైట్‌కి మీ కనెక్షన్ సురక్షితంగా లేదు. సైట్ సమాచారం</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ మరో 1)}other{(+ మరో #)}}</translation>
 <translation id="5403592356182871684">పేర్లు</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" />లో <ph name="ELAPSED_TIME" /> సమయం గడిచిపోయింది.</translation>
 <translation id="5494752089476963479">అనుచితమైన లేదా తప్పుదారి పట్టించే ప్రకటనలను చూపించే సైట్‌లలో ప్రకటనలను బ్లాక్ చేస్తుంది</translation>
+<translation id="549957179819296104">కొత్త చిహ్నం</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> అనుమతించబడింది, <ph name="PERMISSION_2" /> బ్లాక్ చేయబడింది</translation>
 <translation id="5505264765875738116">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడగవు</translation>
 <translation id="5516455585884385570">నోటిఫికేషన్ సెట్టింగ్‌లను తెరువు</translation>
@@ -176,6 +182,7 @@
 <translation id="5804241973901381774">అనుమతులు</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
 <translation id="5876056640971328065">వీడియోను పాజ్ చేయి</translation>
+<translation id="5904826301761575486">మీ హోమ్‌స్క్రీన్‌లో పేరు, చిహ్నాన్ని అప్‌డేట్ చేయాలా?</translation>
 <translation id="5916664084637901428">ఆన్ చేయి</translation>
 <translation id="5922853908706496913">మీ స్క్రీన్‌ను షేర్ చేయడం</translation>
 <translation id="5939518447894949180">రీసెట్ చేయి</translation>
@@ -192,6 +199,7 @@
 <translation id="6196640612572343990">థర్డ్ పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="6206551242102657620">కనెక్షన్ సురక్షితం. సైట్ సమాచారం</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> ఎంపికలు</translation>
+<translation id="6260852843601447737">మూసివేసి, దుర్వినియోగాన్ని రిపోర్ట్ చేయి</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="6270391203985052864">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడుగగలవు</translation>
 <translation id="6295158916970320988">అన్ని సైట్‌లు</translation>
@@ -288,6 +296,7 @@
 <translation id="8525306231823319788">పూర్తి స్క్రీన్</translation>
 <translation id="857943718398505171">అనుమతించబడింది (సిఫార్సు చేయబడింది)</translation>
 <translation id="8609465669617005112">పైకి తరలించు</translation>
+<translation id="861748745608658996">మీ హోమ్‌స్క్రీన్‌లో పేరును అప్‌డేట్ చేయాలా?</translation>
 <translation id="8676374126336081632">ఇన్‌పుట్‌ను తీసివేయండి</translation>
 <translation id="868929229000858085">మీ పరిచయాలను వెతకండి</translation>
 <translation id="8702612070107455751">ఏదైనా ఆఫ్‌లైన్ డేటా ఉంటే తీసివేయబడుతుంది.</translation>
