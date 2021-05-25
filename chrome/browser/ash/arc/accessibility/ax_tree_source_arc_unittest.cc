@@ -730,7 +730,7 @@ TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
 
   // Focus will be on the first accessible node (node2).
   event->event_type = AXEventType::WINDOW_STATE_CHANGED;
-  event->source_id = root->id;
+  event->source_id = node1->id;
   CallNotifyAccessibilityEvent(event.get());
   ui::AXTreeData data;
 

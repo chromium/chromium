@@ -406,14 +406,15 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     // We do it for WINDOW_STATE_CHANGED event from a window or a root node.
     bool from_root_or_window = (source_node && !source_node->IsNode()) ||
                                IsRootOfNodeTree(event_data.source_id);
-    auto itr = window_id_to_last_focus_node_id_.find(event_data.window_id);
-    if (from_root_or_window && itr != window_id_to_last_focus_node_id_.end())
-      new_focus = GetFromId(itr->second);
-
-    // Otherwise, try focus on the first focusable node.
-    if (!IsValid(new_focus) && UseFullFocusMode())
+    if (from_root_or_window) {
+      auto itr = window_id_to_last_focus_node_id_.find(event_data.window_id);
+      if (itr != window_id_to_last_focus_node_id_.end())
+        new_focus = GetFromId(itr->second);
+    } else if (UseFullFocusMode()) {
+      // Otherwise, try focus on the first focusable node.
       new_focus = FindFirstFocusableNodeInFullFocusMode(
           GetFromId(event_data.source_id));
+    }
 
     if (IsValid(new_focus))
       android_focused_id_ = new_focus->GetId();
