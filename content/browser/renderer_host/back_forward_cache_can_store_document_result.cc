@@ -28,6 +28,11 @@ std::string DescribeFeatures(uint64_t blocklisted_features) {
 
 }  // namespace
 
+bool BackForwardCacheCanStoreDocumentResult::HasNotStoredReason(
+    BackForwardCacheMetrics::NotRestoredReason reason) const {
+  return not_stored_reasons_.test(static_cast<size_t>(reason));
+}
+
 bool BackForwardCacheCanStoreDocumentResult::CanStore() const {
   return not_stored_reasons_.none();
 }
@@ -193,7 +198,7 @@ void BackForwardCacheCanStoreDocumentResult::
 
 void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
     const BackForwardCacheCanStoreDocumentResult& other) {
-  not_stored_reasons_ |= other.not_stored_reasons();
+  not_stored_reasons_ |= other.not_stored_reasons_;
   blocklisted_features_ |= other.blocklisted_features();
   for (const BackForwardCache::DisabledReason& reason :
        other.disabled_reasons()) {

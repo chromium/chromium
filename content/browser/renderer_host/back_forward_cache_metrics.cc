@@ -258,9 +258,7 @@ void BackForwardCacheMetrics::MarkNotRestoredWithReason(
     const BackForwardCacheCanStoreDocumentResult& can_store) {
   page_store_result_->AddReasonsFrom(can_store);
 
-  if (can_store.not_stored_reasons().test(
-          static_cast<size_t>(BackForwardCacheMetrics::NotRestoredReason::
-                                  kRendererProcessKilled))) {
+  if (can_store.HasNotStoredReason(NotRestoredReason::kRendererProcessKilled)) {
     renderer_killed_timestamp_ = Now();
   }
 }
@@ -303,12 +301,11 @@ void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(
     if (back_forward_cache_allowed) {
       UMA_HISTOGRAM_ENUMERATION(
           "BackForwardCache.EvictedAfterDocumentRestoredReason",
-          BackForwardCacheMetrics::EvictedAfterDocumentRestoredReason::
-              kRestored);
+          EvictedAfterDocumentRestoredReason::kRestored);
     }
     UMA_HISTOGRAM_ENUMERATION(
         "BackForwardCache.AllSites.EvictedAfterDocumentRestoredReason",
-        BackForwardCacheMetrics::EvictedAfterDocumentRestoredReason::kRestored);
+        EvictedAfterDocumentRestoredReason::kRestored);
   }
 
   if (back_forward_cache_allowed) {
@@ -324,8 +321,8 @@ void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(
   UMA_HISTOGRAM_ENUMERATION(
       "BackForwardCache.AllSites.HistoryNavigationOutcome", outcome);
 
-  for (int i = 0; i <= static_cast<int>(NotRestoredReason::kMaxValue); i++) {
-    if (!page_store_result_->not_stored_reasons().test(static_cast<size_t>(i)))
+  for (size_t i = 0; i <= static_cast<int>(NotRestoredReason::kMaxValue); i++) {
+    if (!page_store_result_->not_stored_reasons().test(i))
       continue;
     DCHECK(!navigation->IsServedFromBackForwardCache());
     NotRestoredReason reason = static_cast<NotRestoredReason>(i);
@@ -337,8 +334,7 @@ void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(
     UMA_HISTOGRAM_ENUMERATION(
         "BackForwardCache.AllSites.HistoryNavigationOutcome.NotRestoredReason",
         reason);
-    if (reason ==
-        BackForwardCacheMetrics::NotRestoredReason::kRendererProcessKilled) {
+    if (reason == NotRestoredReason::kRendererProcessKilled) {
       DCHECK(renderer_killed_timestamp_);
       DCHECK(navigated_away_from_main_document_timestamp_);
       base::TimeDelta time =
