@@ -132,6 +132,7 @@ DownloadsSection::DownloadsSection(HoldingSpaceItemViewDelegate* delegate)
                                    {HoldingSpaceItem::Type::kArcDownload,
                                     HoldingSpaceItem::Type::kDiagnosticsLog,
                                     HoldingSpaceItem::Type::kDownload,
+                                    HoldingSpaceItem::Type::kLacrosDownload,
                                     HoldingSpaceItem::Type::kNearbyShare,
                                     HoldingSpaceItem::Type::kPrintedPdf},
                                    /*max_count=*/kMaxDownloads) {}
