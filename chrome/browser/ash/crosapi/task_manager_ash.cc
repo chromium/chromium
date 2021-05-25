@@ -50,7 +50,7 @@ void TaskManagerAsh::OnProviderVersionReady(
     const base::UnguessableToken& token,
     std::unique_ptr<mojo::Remote<mojom::TaskManagerProvider>> provider,
     uint32_t interface_version) {
-  if (interface_version < 1) {
+  if (interface_version < 1U) {
     LOG(ERROR) << "Unsupported lacros version";
     return;
   }
@@ -73,7 +73,7 @@ void TaskManagerAsh::GetTaskManagerTasks(GetTaskManagerTasksCallback callback) {
   // running. The task manager logic supports only one provider. We will add
   // support to handle multiple providers in the future when multiple lacros
   // instances case becomes true.
-  DCHECK_EQ(task_manager_providers_.size(), 1);
+  DCHECK_EQ(task_manager_providers_.size(), 1U);
   if (refresh_flags_ != task_manager::REFRESH_TYPE_NONE) {
     task_manager_providers_.begin()->second->GetTaskManagerTasks(
         std::move(callback));
@@ -86,7 +86,7 @@ void TaskManagerAsh::OnTaskManagerClosed() {
 }
 
 void TaskManagerAsh::ActivateTask(const std::string& task_uuid) {
-  if (provider_version_ < 2) {
+  if (provider_version_ < 2U) {
     LOG(WARNING) << "Unsupported lacros task manager provider version: "
                  << provider_version_;
     return;

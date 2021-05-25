@@ -1007,7 +1007,11 @@ static_library("extensions") {
       deps += [ "//chromeos/lacros" ]
     } else {
       sources += [ "api/messaging/native_message_host_chromeos.cc" ]
-      deps += [ "//remoting/host" ]
+      deps += [
+        "//chrome/browser/ash/crosapi",
+        "//remoting/host",
+      ]
+      allow_circular_includes_from += [ "//chrome/browser/ash/crosapi" ]
     }
   } else {
     sources += [

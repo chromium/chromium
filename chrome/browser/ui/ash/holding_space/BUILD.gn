@@ -19,6 +19,7 @@ source_set("browser_tests") {
     "//ash/public/cpp",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/ash/crosapi",
     "//chrome/browser/chromeos",
     "//chrome/browser/chromeos:test_support",
     "//chrome/browser/extensions",

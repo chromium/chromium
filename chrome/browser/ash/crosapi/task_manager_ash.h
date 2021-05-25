@@ -89,7 +89,7 @@ class TaskManagerAsh : public mojom::TaskManager {
   // Version of the registered remote task manager providers.
   // Note: We assume all registered remote task manager providers are in
   // the same version.
-  uint32_t provider_version_ = -1;
+  uint32_t provider_version_ = 0U;
 
   base::WeakPtrFactory<TaskManagerAsh> weak_factory_{this};
 };

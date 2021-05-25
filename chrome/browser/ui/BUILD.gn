@@ -2688,6 +2688,7 @@ static_library("ui") {
       "//ash/shortcut_viewer",
       "//build:chromeos_buildflags",
       "//chrome/app:generated_resources",
+      "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:backdrop_wallpaper_proto",
@@ -2829,7 +2830,10 @@ static_library("ui") {
       "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings",
       "//chromeos/services/multidevice_setup/public/mojom",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/chromeos" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/chromeos",
+    ]
 
     if (!is_official_build) {
       if (!use_real_dbus_clients) {

@@ -4615,6 +4615,7 @@ static_library("browser") {
       "//ash/public/cpp",
       "//ash/public/cpp/external_arc",
       "//build:chromeos_buildflags",
+      "//chrome/browser/ash/crosapi",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/power/ml/smart_dim",
       "//chrome/browser/nearby_sharing:share_target",
@@ -4685,7 +4686,10 @@ static_library("browser") {
       "//ui/ozone",
       "//ui/wm/public",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/chromeos" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/chromeos",
+    ]
 
     if (use_allocator == "tcmalloc") {
       deps += [ "//chrome/common/performance_manager/mojom" ]
