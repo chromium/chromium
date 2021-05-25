@@ -28,7 +28,6 @@
   self.imageHasFixedSize = YES;
   self.showDismissBarButton = NO;
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemCancel;
-  self.capitalizeTitle = NO;
   if (@available(iOS 13.4, *)) {
     self.pointerInteractionEnabled = YES;
   }

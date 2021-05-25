@@ -80,7 +80,6 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
     _showDismissBarButton = YES;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
-    _capitalizeTitle = YES;
   }
   return self;
 }
@@ -484,11 +483,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
       [UIFontMetrics metricsForTextStyle:self.titleTextStyle];
   title.font = [fontMetrics scaledFontForFont:font];
   title.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  if (self.capitalizeTitle) {
-    title.text = self.titleString.capitalizedString;
-  } else {
-    title.text = self.titleString;
-  }
+  title.text = self.titleString;
   title.textAlignment = NSTextAlignmentCenter;
   title.translatesAutoresizingMaskIntoConstraints = NO;
   title.adjustsFontForContentSizeCategory = YES;
@@ -552,7 +547,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   [primaryActionButton addTarget:self
                           action:@selector(didTapPrimaryActionButton)
                 forControlEvents:UIControlEventTouchUpInside];
-  [primaryActionButton setTitle:self.primaryActionString.capitalizedString
+  [primaryActionButton setTitle:self.primaryActionString
                        forState:UIControlStateNormal];
   primaryActionButton.accessibilityIdentifier =
       kConfirmationAlertPrimaryActionAccessibilityIdentifier;
@@ -569,7 +564,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   [secondaryActionButton addTarget:self
                             action:@selector(didTapSecondaryActionButton)
                   forControlEvents:UIControlEventTouchUpInside];
-  [secondaryActionButton setTitle:self.secondaryActionString.capitalizedString
+  [secondaryActionButton setTitle:self.secondaryActionString
                          forState:UIControlStateNormal];
   secondaryActionButton.contentEdgeInsets =
       UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
