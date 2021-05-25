@@ -260,8 +260,10 @@ void NearbyShareLocalDeviceDataManagerImpl::OnDownloadDeviceDataFinished(
 void NearbyShareLocalDeviceDataManagerImpl::OnUploadContactsFinished(
     UploadCompleteCallback callback,
     const base::Optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
-  if (response)
-    HandleUpdateDeviceResponse(response);
+  // TODO(http://crbug.com/1211189): Only process the UpdateDevice response for
+  // DownloadDeviceData() calls. We want avoid infinite loops if the full name
+  // or icon URL unexpectedly change. When the bug is resolved, handle the
+  // response sent from uploading contacts or certificates as well.
 
   std::move(callback).Run(/*success=*/response.has_value());
 }
@@ -269,8 +271,10 @@ void NearbyShareLocalDeviceDataManagerImpl::OnUploadContactsFinished(
 void NearbyShareLocalDeviceDataManagerImpl::OnUploadCertificatesFinished(
     UploadCompleteCallback callback,
     const base::Optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
-  if (response)
-    HandleUpdateDeviceResponse(response);
+  // TODO(http://crbug.com/1211189): Only process the UpdateDevice response for
+  // DownloadDeviceData() calls. We want avoid infinite loops if the full name
+  // or icon URL unexpectedly change. When the bug is resolved, handle the
+  // response sent from uploading contacts or certificates as well.
 
   std::move(callback).Run(/*success=*/response.has_value());
 }
