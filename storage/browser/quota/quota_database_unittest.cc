@@ -134,7 +134,7 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
           quota_database->db_->GetCachedStatement(SQL_FROM_HERE, kSql));
       ASSERT_TRUE(statement.is_valid());
 
-      statement.BindInt64(0, entry.bucket_id);
+      statement.BindInt64(0, entry.bucket_id.value());
       statement.BindString(1, entry.origin.GetURL().spec());
       statement.BindInt(2, static_cast<int>(entry.type));
       statement.BindString(3, entry.name);
@@ -317,17 +317,21 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   EXPECT_TRUE(LazyOpen(&db, /*create_if_needed=*/true));
 
   std::set<url::Origin> exceptions;
-  absl::optional<int64_t> bucket_id;
+  absl::optional<BucketId> bucket_id;
   EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
   EXPECT_FALSE(bucket_id.has_value());
 
   // Insert bucket entries into BucketTable.
-  base::Time now(base::Time::Now());
+  base::Time now = base::Time::Now();
   using Entry = QuotaDatabase::BucketTableEntry;
-  Entry bucket1 = Entry(0, ToOrigin("http://a/"), kTemp, "A", 99, now, now);
-  Entry bucket2 = Entry(1, ToOrigin("http://b/"), kTemp, "B", 0, now, now);
-  Entry bucket3 = Entry(2, ToOrigin("http://c/"), kTemp, "C", 1, now, now);
-  Entry bucket4 = Entry(3, ToOrigin("http://d/"), kPerm, "D", 5, now, now);
+  Entry bucket1 = Entry(BucketId(1), ToOrigin("http://example-a/"), kTemp,
+                        "bucket_a", 99, now, now);
+  Entry bucket2 = Entry(BucketId(2), ToOrigin("http://example-b/"), kTemp,
+                        "bucket_b", 0, now, now);
+  Entry bucket3 = Entry(BucketId(3), ToOrigin("http://example-c/"), kTemp,
+                        "bucket_c", 1, now, now);
+  Entry bucket4 = Entry(BucketId(4), ToOrigin("http://example-d/"), kPerm,
+                        "bucket_d", 5, now, now);
   Entry kTableEntries[] = {bucket1, bucket2, bucket3, bucket4};
   AssignBucketTable(&db, kTableEntries);
 
@@ -484,18 +488,22 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, /*create_if_needed=*/true));
 
-  std::set<int64_t> bucket_ids;
+  std::set<BucketId> bucket_ids;
   EXPECT_TRUE(db.GetBucketsModifiedBetween(kTemp, &bucket_ids, base::Time(),
                                            base::Time::Max()));
   EXPECT_TRUE(bucket_ids.empty());
 
   // Insert bucket entries into BucketTable.
-  base::Time now(base::Time::Now());
+  base::Time now = base::Time::Now();
   using Entry = QuotaDatabase::BucketTableEntry;
-  Entry bucket1 = Entry(0, ToOrigin("http://a/"), kTemp, "A", 0, now, now);
-  Entry bucket2 = Entry(1, ToOrigin("http://b/"), kTemp, "B", 0, now, now);
-  Entry bucket3 = Entry(2, ToOrigin("http://c/"), kTemp, "C", 0, now, now);
-  Entry bucket4 = Entry(3, ToOrigin("http://d/"), kPerm, "D", 0, now, now);
+  Entry bucket1 = Entry(BucketId(1), ToOrigin("http://example-a/"), kTemp,
+                        "bucket_a", 0, now, now);
+  Entry bucket2 = Entry(BucketId(2), ToOrigin("http://example-b/"), kTemp,
+                        "bucket_b", 0, now, now);
+  Entry bucket3 = Entry(BucketId(3), ToOrigin("http://example-c/"), kTemp,
+                        "bucket_c", 0, now, now);
+  Entry bucket4 = Entry(BucketId(4), ToOrigin("http://example-d/"), kPerm,
+                        "bucket_d", 0, now, now);
   Entry kTableEntries[] = {bucket1, bucket2, bucket3, bucket4};
   AssignBucketTable(&db, kTableEntries);
 
@@ -662,13 +670,15 @@ TEST_P(QuotaDatabaseTest, DumpQuotaTable) {
 }
 
 TEST_P(QuotaDatabaseTest, DumpBucketTable) {
-  base::Time now(base::Time::Now());
+  base::Time now = base::Time::Now();
   using Entry = QuotaDatabase::BucketTableEntry;
   Entry kTableEntries[] = {
-      Entry(0, ToOrigin("http://go/"), kTemp, kDefaultBucket, 2147483647, now,
+      Entry(BucketId(1), ToOrigin("http://go/"), kTemp, kDefaultBucket,
+            2147483647, now, now),
+      Entry(BucketId(2), ToOrigin("http://oo/"), kTemp, kDefaultBucket, 0, now,
             now),
-      Entry(1, ToOrigin("http://oo/"), kTemp, kDefaultBucket, 0, now, now),
-      Entry(2, ToOrigin("http://gle/"), kTemp, kDefaultBucket, 1, now, now),
+      Entry(BucketId(3), ToOrigin("http://gle/"), kTemp, kDefaultBucket, 1, now,
+            now),
   };
 
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
@@ -685,8 +695,8 @@ TEST_P(QuotaDatabaseTest, DumpBucketTable) {
 TEST_P(QuotaDatabaseTest, GetOriginInfo) {
   const url::Origin kOrigin = ToOrigin("http://go/");
   using Entry = QuotaDatabase::BucketTableEntry;
-  Entry kTableEntries[] = {Entry(0, kOrigin, kTemp, kDefaultBucket, 100,
-                                 base::Time(), base::Time())};
+  Entry kTableEntries[] = {Entry(BucketId(1), kOrigin, kTemp, kDefaultBucket,
+                                 100, base::Time(), base::Time())};
 
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, /*create_if_needed=*/true));
@@ -712,8 +722,8 @@ TEST_P(QuotaDatabaseTest, GetOriginInfo) {
 
 TEST_P(QuotaDatabaseTest, GetBucketInfo) {
   using Entry = QuotaDatabase::BucketTableEntry;
-  Entry kTableEntries[] = {Entry(123, ToOrigin("http://go/"), kTemp,
-                                 "TestBucket", 100, base::Time(),
+  Entry kTableEntries[] = {Entry(BucketId(123), ToOrigin("http://go/"), kTemp,
+                                 "test_bucket", 100, base::Time(),
                                  base::Time())};
 
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
@@ -734,7 +744,7 @@ TEST_P(QuotaDatabaseTest, GetBucketInfo) {
 
   {
     Entry entry;
-    EXPECT_FALSE(db.GetBucketInfo(456, &entry));
+    EXPECT_FALSE(db.GetBucketInfo(BucketId(456), &entry));
   }
 }
 

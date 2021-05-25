@@ -46,18 +46,19 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
  public:
   struct COMPONENT_EXPORT(STORAGE_BROWSER) BucketTableEntry {
     BucketTableEntry();
-    BucketTableEntry(int64_t bucket_id,
+    BucketTableEntry(BucketId bucket_id,
                      url::Origin origin,
                      blink::mojom::StorageType type,
                      std::string name,
                      int use_count,
                      const base::Time& last_accessed,
                      const base::Time& last_modified);
+    ~BucketTableEntry();
 
     BucketTableEntry(const BucketTableEntry&);
     BucketTableEntry& operator=(const BucketTableEntry&);
 
-    int64_t bucket_id = -1;
+    BucketId bucket_id;
     url::Origin origin;
     blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
     std::string name;
@@ -102,7 +103,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   // Called by QuotaClient implementers to update when the bucket was last
   // accessed.
-  bool SetBucketLastAccessTime(int64_t bucket_id, base::Time last_accessed);
+  bool SetBucketLastAccessTime(BucketId bucket_id, base::Time last_accessed);
 
   // TODO(crbug.com/1202167): Remove once all usages have updated to use
   // SetBucketLastModifiedTime.
@@ -112,7 +113,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   // Called by QuotaClient implementers to update when the bucket was last
   // modified.
-  bool SetBucketLastModifiedTime(int64_t bucket_id, base::Time last_modified);
+  bool SetBucketLastModifiedTime(BucketId bucket_id, base::Time last_modified);
 
   bool GetOriginLastEvictionTime(const url::Origin& origin,
                                  blink::mojom::StorageType type,
@@ -141,7 +142,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   // Gets the table entry for `bucket`. Returns whether the record for an
   // origin bucket can be found.
-  bool GetBucketInfo(int64_t bucket_id, BucketTableEntry* entry);
+  bool GetBucketInfo(BucketId bucket_id, BucketTableEntry* entry);
 
   // TODO(crbug.com/1202167): Remove once all usages have been updated to use
   // DeleteBucketInfo. Deletes the default bucket for `origin`.
@@ -149,7 +150,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
                         blink::mojom::StorageType type);
 
   // Deletes the specified bucket.
-  bool DeleteBucketInfo(int64_t bucket_id);
+  bool DeleteBucketInfo(BucketId bucket_id);
 
   // TODO(crbug.com/1202167): Remove once all usages have been updated to use
   // GetLRUBucket. Sets `origin` to the least recently used origin of origins
@@ -169,7 +170,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool GetLRUBucket(blink::mojom::StorageType type,
                     const std::set<url::Origin>& exceptions,
                     SpecialStoragePolicy* special_storage_policy,
-                    absl::optional<int64_t>* bucket_id);
+                    absl::optional<BucketId>* bucket_id);
 
   // TODO(crbug.com/1202167): Remove once all usages have been updated to use
   // GetBucketsModifiedBetween. Populates `origins` with the ones that have had
@@ -183,7 +184,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // Populates `bucket_ids` with the buckets that have been modified since the
   // `begin` and until the `end`. Returns whether the operation succeeded.
   bool GetBucketsModifiedBetween(blink::mojom::StorageType type,
-                                 std::set<int64_t>* bucket_ids,
+                                 std::set<BucketId>* bucket_ids,
                                  base::Time begin,
                                  base::Time end);
 
