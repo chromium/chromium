@@ -2629,7 +2629,6 @@ xmlCharEncOutFunc(xmlCharEncodingHandler *handler, xmlBufferPtr out,
     int written;
     int writtentot = 0;
     int toconv;
-    int output = 0;
 
     if (handler == NULL) return(-1);
     if (out == NULL) return(-1);
@@ -2681,8 +2680,6 @@ retry:
         }
         ret = -3;
     }
-
-    if (ret >= 0) output += ret;
 
     /*
      * Attempt to handle error cases

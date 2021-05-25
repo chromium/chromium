@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(libxml2 VERSION 2.9.10 LANGUAGES C)
+project(libxml2 VERSION 2.9.12 LANGUAGES C)
 
 include(CheckCSourceCompiles)
 include(CheckFunctionExists)
@@ -414,6 +414,7 @@ if(LIBXML2_WITH_TRIO)
 endif()
 
 add_library(LibXml2 ${LIBXML2_HDRS} ${LIBXML2_SRCS})
+add_library(LibXml2::LibXml2 ALIAS LibXml2)
 
 if(NOT BUILD_SHARED_LIBS)
 	target_compile_definitions(LibXml2 INTERFACE LIBXML_STATIC)
@@ -537,6 +538,7 @@ if(LIBXML2_WITH_PROGRAMS)
 	)
 	foreach(PROGRAM ${PROGRAMS})
 		add_executable(${PROGRAM} ${PROGRAM}.c)
+		add_executable(LibXml2::${PROGRAM} ALIAS ${PROGRAM})
 		target_link_libraries(${PROGRAM} LibXml2)
 		if(HAVE_LIBHISTORY)
 			target_link_libraries(${PROGRAM} history)

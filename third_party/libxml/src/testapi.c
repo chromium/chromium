@@ -2843,7 +2843,7 @@ test_htmlDocContentDumpFormatOutput(void) {
     int n_buf;
     xmlDocPtr cur; /* the document */
     int n_cur;
-    char * encoding; /* the encoding string */
+    char * encoding; /* the encoding string (unused) */
     int n_encoding;
     int format; /* should formatting spaces been added */
     int n_format;
@@ -2896,7 +2896,7 @@ test_htmlDocContentDumpOutput(void) {
     int n_buf;
     xmlDocPtr cur; /* the document */
     int n_cur;
-    char * encoding; /* the encoding string */
+    char * encoding; /* the encoding string (unused) */
     int n_encoding;
 
     for (n_buf = 0;n_buf < gen_nb_xmlOutputBufferPtr;n_buf++) {
@@ -3397,7 +3397,7 @@ test_htmlNodeDumpFormatOutput(void) {
     int n_doc;
     xmlNodePtr cur; /* the current node */
     int n_cur;
-    char * encoding; /* the encoding string */
+    char * encoding; /* the encoding string (unused) */
     int n_encoding;
     int format; /* should formatting spaces been added */
     int n_format;
@@ -3457,7 +3457,7 @@ test_htmlNodeDumpOutput(void) {
     int n_doc;
     xmlNodePtr cur; /* the current node */
     int n_cur;
-    char * encoding; /* the encoding string */
+    char * encoding; /* the encoding string (unused) */
     int n_encoding;
 
     for (n_buf = 0;n_buf < gen_nb_xmlOutputBufferPtr;n_buf++) {
@@ -13611,7 +13611,7 @@ test_xmlParseBalancedChunkMemory(void) {
 #ifdef LIBXML_SAX1_ENABLED
     int mem_base;
     int ret_val;
-    xmlDocPtr doc; /* the document the chunk pertains to */
+    xmlDocPtr doc; /* the document the chunk pertains to (must not be NULL) */
     int n_doc;
     xmlSAXHandlerPtr sax; /* the SAX handler block (possibly NULL) */
     int n_sax;
@@ -13687,7 +13687,7 @@ test_xmlParseBalancedChunkMemoryRecover(void) {
 #ifdef LIBXML_SAX1_ENABLED
     int mem_base;
     int ret_val;
-    xmlDocPtr doc; /* the document the chunk pertains to */
+    xmlDocPtr doc; /* the document the chunk pertains to (must not be NULL) */
     int n_doc;
     xmlSAXHandlerPtr sax; /* the SAX handler block (possibly NULL) */
     int n_sax;
@@ -29238,6 +29238,33 @@ test_xmlPopInputCallbacks(void) {
 
 
 static int
+test_xmlPopOutputCallbacks(void) {
+    int test_ret = 0;
+
+#if defined(LIBXML_OUTPUT_ENABLED)
+    int mem_base;
+    int ret_val;
+
+        mem_base = xmlMemBlocks();
+
+        ret_val = xmlPopOutputCallbacks();
+        desret_int(ret_val);
+        call_tests++;
+        xmlResetLastError();
+        if (mem_base != xmlMemBlocks()) {
+            printf("Leak of %d blocks found in xmlPopOutputCallbacks",
+	           xmlMemBlocks() - mem_base);
+	    test_ret++;
+            printf("\n");
+        }
+    function_tests++;
+#endif
+
+    return(test_ret);
+}
+
+
+static int
 test_xmlRegisterDefaultInputCallbacks(void) {
     int test_ret = 0;
 
@@ -29313,7 +29340,7 @@ static int
 test_xmlIO(void) {
     int test_ret = 0;
 
-    if (quiet == 0) printf("Testing xmlIO : 40 of 50 functions ...\n");
+    if (quiet == 0) printf("Testing xmlIO : 41 of 51 functions ...\n");
     test_ret += test_xmlAllocOutputBuffer();
     test_ret += test_xmlAllocParserInputBuffer();
     test_ret += test_xmlCheckFilename();
@@ -29354,6 +29381,7 @@ test_xmlIO(void) {
     test_ret += test_xmlParserInputBufferPush();
     test_ret += test_xmlParserInputBufferRead();
     test_ret += test_xmlPopInputCallbacks();
+    test_ret += test_xmlPopOutputCallbacks();
     test_ret += test_xmlRegisterDefaultInputCallbacks();
     test_ret += test_xmlRegisterDefaultOutputCallbacks();
     test_ret += test_xmlRegisterHTTPPostCallbacks();
@@ -34240,27 +34268,27 @@ test_xmlSaveTree(void) {
     long ret_val;
     xmlSaveCtxtPtr ctxt; /* a document saving context */
     int n_ctxt;
-    xmlNodePtr node; /* the top node of the subtree to save */
-    int n_node;
+    xmlNodePtr cur; /*  */
+    int n_cur;
 
     for (n_ctxt = 0;n_ctxt < gen_nb_xmlSaveCtxtPtr;n_ctxt++) {
-    for (n_node = 0;n_node < gen_nb_xmlNodePtr;n_node++) {
+    for (n_cur = 0;n_cur < gen_nb_xmlNodePtr;n_cur++) {
         mem_base = xmlMemBlocks();
         ctxt = gen_xmlSaveCtxtPtr(n_ctxt, 0);
-        node = gen_xmlNodePtr(n_node, 1);
+        cur = gen_xmlNodePtr(n_cur, 1);
 
-        ret_val = xmlSaveTree(ctxt, node);
+        ret_val = xmlSaveTree(ctxt, cur);
         desret_long(ret_val);
         call_tests++;
         des_xmlSaveCtxtPtr(n_ctxt, ctxt, 0);
-        des_xmlNodePtr(n_node, node, 1);
+        des_xmlNodePtr(n_cur, cur, 1);
         xmlResetLastError();
         if (mem_base != xmlMemBlocks()) {
             printf("Leak of %d blocks found in xmlSaveTree",
 	           xmlMemBlocks() - mem_base);
 	    test_ret++;
             printf(" %d", n_ctxt);
-            printf(" %d", n_node);
+            printf(" %d", n_cur);
             printf("\n");
         }
     }

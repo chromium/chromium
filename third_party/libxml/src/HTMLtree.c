@@ -744,7 +744,7 @@ void
 htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
 	                 xmlNodePtr cur, const char *encoding ATTRIBUTE_UNUSED,
                          int format) {
-    xmlNodePtr root;
+    xmlNodePtr root, parent;
     xmlAttrPtr attr;
     const htmlElemDesc * info;
 
@@ -755,6 +755,7 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
     }
 
     root = cur;
+    parent = cur->parent;
     while (1) {
         switch (cur->type) {
         case XML_HTML_DOCUMENT_NODE:
@@ -762,13 +763,25 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
             if (((xmlDocPtr) cur)->intSubset != NULL) {
                 htmlDtdDumpOutput(buf, (xmlDocPtr) cur, NULL);
             }
-            if (cur->children != NULL) {
+            /* Always validate cur->parent when descending. */
+            if ((cur->parent == parent) && (cur->children != NULL)) {
+                parent = cur;
                 cur = cur->children;
                 continue;
             }
             break;
 
         case XML_ELEMENT_NODE:
+            /*
+             * Some users like lxml are known to pass nodes with a corrupted
+             * tree structure. Fall back to a recursive call to handle this
+             * case.
+             */
+            if ((cur->parent != parent) && (cur->children != NULL)) {
+                htmlNodeDumpFormatOutput(buf, doc, cur, encoding, format);
+                break;
+            }
+
             /*
              * Get specific HTML info for that node.
              */
@@ -817,6 +830,7 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
                     (cur->name != NULL) &&
                     (cur->name[0] != 'p')) /* p, pre, param */
                     xmlOutputBufferWriteString(buf, "\n");
+                parent = cur;
                 cur = cur->children;
                 continue;
             }
@@ -825,9 +839,9 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
                 (info != NULL) && (!info->isinline)) {
                 if ((cur->next->type != HTML_TEXT_NODE) &&
                     (cur->next->type != HTML_ENTITY_REF_NODE) &&
-                    (cur->parent != NULL) &&
-                    (cur->parent->name != NULL) &&
-                    (cur->parent->name[0] != 'p')) /* p, pre, param */
+                    (parent != NULL) &&
+                    (parent->name != NULL) &&
+                    (parent->name[0] != 'p')) /* p, pre, param */
                     xmlOutputBufferWriteString(buf, "\n");
             }
 
@@ -842,9 +856,9 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
                 break;
             if (((cur->name == (const xmlChar *)xmlStringText) ||
                  (cur->name != (const xmlChar *)xmlStringTextNoenc)) &&
-                ((cur->parent == NULL) ||
-                 ((xmlStrcasecmp(cur->parent->name, BAD_CAST "script")) &&
-                  (xmlStrcasecmp(cur->parent->name, BAD_CAST "style"))))) {
+                ((parent == NULL) ||
+                 ((xmlStrcasecmp(parent->name, BAD_CAST "script")) &&
+                  (xmlStrcasecmp(parent->name, BAD_CAST "style"))))) {
                 xmlChar *buffer;
 
                 buffer = xmlEncodeEntitiesReentrant(doc, cur->content);
@@ -902,13 +916,9 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
                 break;
             }
 
-            /*
-             * The parent should never be NULL here but we want to handle
-             * corrupted documents gracefully.
-             */
-            if (cur->parent == NULL)
-                return;
-            cur = cur->parent;
+            cur = parent;
+            /* cur->parent was validated when descending. */
+            parent = cur->parent;
 
             if ((cur->type == XML_HTML_DOCUMENT_NODE) ||
                 (cur->type == XML_DOCUMENT_NODE)) {
@@ -939,9 +949,9 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
                     (cur->next != NULL)) {
                     if ((cur->next->type != HTML_TEXT_NODE) &&
                         (cur->next->type != HTML_ENTITY_REF_NODE) &&
-                        (cur->parent != NULL) &&
-                        (cur->parent->name != NULL) &&
-                        (cur->parent->name[0] != 'p')) /* p, pre, param */
+                        (parent != NULL) &&
+                        (parent->name != NULL) &&
+                        (parent->name[0] != 'p')) /* p, pre, param */
                         xmlOutputBufferWriteString(buf, "\n");
                 }
             }

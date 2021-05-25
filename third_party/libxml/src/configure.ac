@@ -3,7 +3,7 @@ AC_PREREQ([2.63])
 
 m4_define([MAJOR_VERSION], 2)
 m4_define([MINOR_VERSION], 9)
-m4_define([MICRO_VERSION], 10)
+m4_define([MICRO_VERSION], 12)
 
 AC_INIT([libxml2],[MAJOR_VERSION.MINOR_VERSION.MICRO_VERSION])
 AC_CONFIG_SRCDIR([entities.c])
