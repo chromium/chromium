@@ -58,11 +58,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
         std::vector<DomStorageDatabase::KeyValuePair>* extra_entries_to_add,
         std::vector<DomStorageDatabase::Key>* extra_keys_to_delete);
     virtual void DidCommit(leveldb::Status error) = 0;
-    // Called during loading if no data was found. Needs to call |callback|.
-    virtual void MigrateData(ValueMapCallback callback);
-    // Called during loading to give delegate a chance to modify the data as
-    // stored in the database.
-    virtual std::vector<Change> FixUpData(const ValueMap& data);
     virtual void OnMapLoaded(leveldb::Status status);
   };
 
@@ -286,7 +281,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   void LoadMap(base::OnceClosure completion_callback);
   void OnMapLoaded(leveldb::Status status,
                    std::vector<DomStorageDatabase::KeyValuePair> data);
-  void OnGotMigrationData(std::unique_ptr<ValueMap> data);
   void CalculateStorageAndMemoryUsed();
   void OnLoadComplete();
 

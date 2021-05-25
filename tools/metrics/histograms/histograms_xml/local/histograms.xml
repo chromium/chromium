@@ -362,6 +362,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="LocalStorageContext.MigrationFixUpNeeded" enum="Boolean"
     expires_after="M87">
+  <obsolete>
+    Removed May 2021 as part of legacy migration code cleanup.
+  </obsolete>
   <owner>mek@chromium.org</owner>
   <summary>
     Whether or not any fixes needed to be made to localstorage data, as a result

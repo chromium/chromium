@@ -17,7 +17,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/services/storage/dom_storage/legacy_dom_storage_database.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
@@ -123,7 +122,7 @@ class LocalStorageImplTest : public testing::Test {
   void InitializeStorage(const base::FilePath& path) {
     DCHECK(!storage_);
     storage_ = std::make_unique<LocalStorageImpl>(
-        path, base::ThreadTaskRunnerHandle::Get(), task_runner_,
+        path, base::ThreadTaskRunnerHandle::Get(),
         /*receiver=*/mojo::NullReceiver());
   }
 
@@ -288,9 +287,6 @@ class LocalStorageImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_path_;
-
-  scoped_refptr<base::SequencedTaskRunner> task_runner_{
-      base::ThreadTaskRunnerHandle::Get()};
 
   std::unique_ptr<LocalStorageImpl> storage_;
 
@@ -672,138 +668,6 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
     EXPECT_EQ(std::string::npos, entry.first.find(origin1.Serialize()));
     EXPECT_NE(std::string::npos, entry.first.find(origin2.Serialize()));
   }
-}
-
-TEST_F(LocalStorageImplTest, Migration) {
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
-  url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
-  std::u16string key = u"key";
-  std::u16string value = u"value";
-  std::u16string key2 = u"key2";
-  key2.push_back(0xd83d);
-  key2.push_back(0xde00);
-
-  // We want to populate the Local Storage directory before the implementation
-  // has created it, so we have to create it ourselves here.
-  const base::FilePath local_storage_path =
-      storage_path().Append(kLocalStoragePath);
-  ASSERT_TRUE(base::CreateDirectory(local_storage_path));
-
-  const base::FilePath old_db_path = local_storage_path.Append(
-      LocalStorageImpl::LegacyDatabaseFileNameFromOrigin(origin1));
-  {
-    LegacyDomStorageDatabase db(
-        old_db_path, std::make_unique<FilesystemProxy>(
-                         FilesystemProxy::UNRESTRICTED, local_storage_path));
-    LegacyDomStorageValuesMap data;
-    data[key] = value;
-    data[key2] = value;
-    db.CommitChanges(false, data);
-  }
-  EXPECT_TRUE(base::PathExists(old_db_path));
-
-  // Opening origin2 and accessing its data should not migrate anything.
-  ResetStorage(storage_path());
-  mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(origin2, area.BindNewPipeAndPassReceiver());
-
-  // To make sure values are cached.
-  mojo::Remote<blink::mojom::StorageArea> dummy_area;
-  context()->BindStorageArea(origin2, dummy_area.BindNewPipeAndPassReceiver());
-
-  area->Get(std::vector<uint8_t>(), base::DoNothing());
-  area.reset();
-  dummy_area.reset();
-  RunUntilIdle();
-
-  EXPECT_TRUE(GetDatabaseContents().empty());
-
-  // Opening origin1 and accessing its data should migrate its storage.
-  context()->BindStorageArea(origin1, area.BindNewPipeAndPassReceiver());
-  context()->BindStorageArea(origin1, dummy_area.BindNewPipeAndPassReceiver());
-
-  base::RunLoop loop;
-  area->Get(std::vector<uint8_t>(),
-            base::BindLambdaForTesting(
-                [&](bool, const std::vector<uint8_t>&) { loop.Quit(); }));
-  loop.Run();
-
-  EXPECT_FALSE(GetDatabaseContents().empty());
-
-  {
-    std::vector<uint8_t> result;
-    bool success = test::GetSync(area.get(),
-                                 LocalStorageImpl::MigrateString(key), &result);
-    EXPECT_TRUE(success);
-    EXPECT_EQ(LocalStorageImpl::MigrateString(value), result);
-  }
-
-  {
-    std::vector<uint8_t> result;
-    bool success = test::GetSync(
-        area.get(), LocalStorageImpl::MigrateString(key2), &result);
-    EXPECT_TRUE(success);
-    EXPECT_EQ(LocalStorageImpl::MigrateString(value), result);
-  }
-
-  // Origin1 should no longer exist in old storage.
-  EXPECT_FALSE(base::PathExists(old_db_path));
-}
-
-static std::string EncodeKeyAsUTF16(const std::string& origin,
-                                    const std::u16string& key) {
-  std::string result = '_' + origin + '\x00' + '\x00';
-  std::copy(
-      reinterpret_cast<const char*>(key.data()),
-      reinterpret_cast<const char*>(key.data()) + key.size() * sizeof(char16_t),
-      std::back_inserter(result));
-  return result;
-}
-
-TEST_F(LocalStorageImplTest, FixUp) {
-  SetDatabaseEntry("VERSION", "1");
-  // Add mock data for the "key" key, with both possible encodings for key.
-  // We expect the value of the correctly encoded key to take precedence over
-  // the incorrectly encoded key (and expect the incorrectly encoded key to be
-  // deleted.
-  SetDatabaseEntry(std::string("_http://foobar.com") + '\x00' + "\x01key",
-                   "value1");
-  SetDatabaseEntry(EncodeKeyAsUTF16("http://foobar.com", u"key"), "value2");
-  // Also add mock data for the "foo" key, this time only with the incorrec
-  // encoding. This should be updated to the correct encoding.
-  SetDatabaseEntry(EncodeKeyAsUTF16("http://foobar.com", u"foo"), "value3");
-
-  mojo::Remote<blink::mojom::StorageArea> area;
-  mojo::Remote<blink::mojom::StorageArea>
-      dummy_area;  // To make sure values are cached.
-  context()->BindStorageArea(url::Origin::Create(GURL("http://foobar.com")),
-                             area.BindNewPipeAndPassReceiver());
-  context()->BindStorageArea(url::Origin::Create(GURL("http://foobar.com")),
-                             dummy_area.BindNewPipeAndPassReceiver());
-
-  {
-    std::vector<uint8_t> result;
-    bool success =
-        test::GetSync(area.get(), StdStringToUint8Vector("\x01key"), &result);
-    EXPECT_TRUE(success);
-    EXPECT_EQ(StdStringToUint8Vector("value1"), result);
-  }
-  {
-    std::vector<uint8_t> result;
-    bool success = test::GetSync(area.get(),
-                                 StdStringToUint8Vector("\x01"
-                                                        "foo"),
-                                 &result);
-    EXPECT_TRUE(success);
-    EXPECT_EQ(StdStringToUint8Vector("value3"), result);
-  }
-
-  // Expect 4 rows in the database: VERSION, meta-data for the origin, and two
-  // rows of actual data.
-  auto contents = GetDatabaseContents();
-  EXPECT_EQ(4u, contents.size());
-  EXPECT_EQ("value1", contents.rbegin()->second);
-  EXPECT_EQ("value3", std::next(contents.rbegin())->second);
 }
 
 TEST_F(LocalStorageImplTest, ShutdownClearsData) {

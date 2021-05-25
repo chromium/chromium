@@ -85,15 +85,8 @@ class MockDelegate : public StorageAreaImpl::Delegate {
       std::move(committed_).Run();
   }
   void OnMapLoaded(leveldb::Status) override { map_load_count_++; }
-  std::vector<StorageAreaImpl::Change> FixUpData(
-      const StorageAreaImpl::ValueMap& data) override {
-    return std::move(mock_changes_);
-  }
 
   int map_load_count() const { return map_load_count_; }
-  void set_mock_changes(std::vector<StorageAreaImpl::Change> changes) {
-    mock_changes_ = std::move(changes);
-  }
 
   void SetDidCommitCallback(base::OnceClosure committed) {
     committed_ = std::move(committed);
@@ -101,7 +94,6 @@ class MockDelegate : public StorageAreaImpl::Delegate {
 
  private:
   int map_load_count_ = 0;
-  std::vector<StorageAreaImpl::Change> mock_changes_;
   base::OnceClosure committed_;
 };
 
@@ -774,28 +766,6 @@ TEST_P(StorageAreaImplParamTest, PurgeMemoryWithPendingChanges) {
 
   EXPECT_TRUE(PutSync(key, value, value));
   EXPECT_EQ(delegate()->map_load_count(), 1);
-}
-
-TEST_P(StorageAreaImplParamTest, FixUpData) {
-  storage_area_impl()->SetCacheModeForTesting(GetParam());
-  std::vector<StorageAreaImpl::Change> changes;
-  changes.push_back(std::make_pair(test_key1_bytes_, ToBytes("foo")));
-  changes.push_back(std::make_pair(test_key2_bytes_, absl::nullopt));
-  changes.push_back(std::make_pair(test_prefix_bytes_, ToBytes("bla")));
-  delegate()->set_mock_changes(std::move(changes));
-
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(storage_area(), &data));
-
-  ASSERT_EQ(2u, data.size());
-  EXPECT_EQ(test_prefix_, ToString(data[0]->key));
-  EXPECT_EQ("bla", ToString(data[0]->value));
-  EXPECT_EQ(test_key1_, ToString(data[1]->key));
-  EXPECT_EQ("foo", ToString(data[1]->value));
-
-  EXPECT_FALSE(HasDatabaseEntry(test_prefix_ + test_key2_));
-  EXPECT_EQ("foo", GetDatabaseEntry(test_prefix_ + test_key1_));
-  EXPECT_EQ("bla", GetDatabaseEntry(test_prefix_ + test_prefix_));
 }
 
 TEST_F(StorageAreaImplTest, SetOnlyKeysWithoutDatabase) {

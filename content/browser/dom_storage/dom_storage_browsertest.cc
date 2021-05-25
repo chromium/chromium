@@ -9,7 +9,6 @@
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "components/services/storage/dom_storage/legacy_dom_storage_database.h"
 #include "components/services/storage/dom_storage/local_storage_impl.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
@@ -162,37 +161,5 @@ IN_PROC_BROWSER_TEST_F(DOMStorageBrowserTest, FileUrlWithHost) {
   EXPECT_EQ("bar", EvalJs(shell(), script));
 }
 #endif
-
-IN_PROC_BROWSER_TEST_F(DOMStorageBrowserTest, DataMigrates) {
-  const base::FilePath legacy_local_storage_path =
-      partition()->GetPath().Append(storage::kLocalStoragePath);
-  base::FilePath db_path = legacy_local_storage_path.Append(
-      storage::LocalStorageImpl::LegacyDatabaseFileNameFromOrigin(
-          url::Origin::Create(GetTestUrl("dom_storage", "store_data.html"))));
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(base::CreateDirectory(legacy_local_storage_path));
-    storage::LegacyDomStorageDatabase db(
-        db_path,
-        std::make_unique<storage::FilesystemProxy>(
-            storage::FilesystemProxy::UNRESTRICTED, legacy_local_storage_path));
-    storage::LegacyDomStorageValuesMap data;
-    data[u"foo"] = u"bar";
-    db.CommitChanges(false, data);
-    EXPECT_TRUE(base::PathExists(db_path));
-  }
-  std::vector<StorageUsageInfo> usage = GetUsage();
-  ASSERT_EQ(1U, usage.size());
-  EXPECT_GT(usage[0].total_size_bytes, 6u);
-
-  SimpleTest(GetTestUrl("dom_storage", "verify_data.html"), kNotIncognito);
-  usage = GetUsage();
-  ASSERT_EQ(1U, usage.size());
-  EXPECT_GT(usage[0].total_size_bytes, 6u);
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_FALSE(base::PathExists(db_path));
-  }
-}
 
 }  // namespace content

@@ -104,9 +104,6 @@ void PartitionImpl::BindLocalStorageControl(
     mojo::PendingReceiver<mojom::LocalStorageControl> receiver) {
   local_storage_ = std::make_unique<LocalStorageImpl>(
       path_.value_or(base::FilePath()), base::SequencedTaskRunnerHandle::Get(),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::WithBaseSyncPrimitives(),
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
       std::move(receiver));
 }
 

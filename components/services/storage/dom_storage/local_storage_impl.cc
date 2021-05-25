@@ -34,13 +34,11 @@
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "components/services/storage/dom_storage/legacy_dom_storage_database.h"
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "sql/database.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -85,9 +83,6 @@ const unsigned kMaxLocalStorageAreaCount = 50;
 const size_t kMaxLocalStorageCacheSize = 20 * 1024 * 1024;
 #endif
 
-static const uint8_t kUTF16Format = 0;
-static const uint8_t kLatin1Format = 1;
-
 DomStorageDatabase::Key CreateMetaDataKey(const url::Origin& origin) {
   auto origin_str = origin.Serialize();
   std::vector<uint8_t> serialized_origin(origin_str.begin(), origin_str.end());
@@ -115,29 +110,6 @@ void SuccessResponse(base::OnceClosure callback, bool success) {
 
 void IgnoreStatus(base::OnceClosure callback, leveldb::Status status) {
   std::move(callback).Run();
-}
-
-void MigrateStorageHelper(
-    base::FilePath db_path,
-    const scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner,
-    base::OnceCallback<void(std::unique_ptr<StorageAreaImpl::ValueMap>)>
-        callback) {
-  LegacyDomStorageDatabase db(db_path, CreateFilesystemProxy());
-  LegacyDomStorageValuesMap map;
-  db.ReadAllValues(&map);
-  auto values = std::make_unique<StorageAreaImpl::ValueMap>();
-  for (const auto& it : map) {
-    (*values)[LocalStorageImpl::MigrateString(it.first)] =
-        LocalStorageImpl::MigrateString(it.second.value());
-  }
-  reply_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(values)));
-}
-
-// Helper to convert from OnceCallback to Callback.
-void CallMigrationCalback(StorageAreaImpl::ValueMapCallback callback,
-                          std::unique_ptr<StorageAreaImpl::ValueMap> data) {
-  std::move(callback).Run(std::move(data));
 }
 
 DomStorageDatabase::Key MakeOriginPrefix(const url::Origin& origin) {
@@ -208,46 +180,6 @@ void RecordCachePurgedHistogram(CachePurgeReason reason,
       NOTREACHED();
       break;
   }
-}
-
-const base::FilePath::CharType kLegacyDatabaseFileExtension[] =
-    FILE_PATH_LITERAL(".localstorage");
-
-std::vector<mojom::StorageUsageInfoPtr> GetLegacyLocalStorageUsage(
-    const base::FilePath& directory) {
-  std::unique_ptr<FilesystemProxy> fs = CreateFilesystemProxy();
-  FileErrorOr<std::vector<base::FilePath>> result = fs->GetDirectoryEntries(
-      directory, FilesystemProxy::DirectoryEntryType::kFilesOnly);
-  if (result.is_error())
-    return {};
-
-  std::vector<mojom::StorageUsageInfoPtr> infos;
-  for (const auto& path : result.value()) {
-    if (!path.MatchesExtension(kLegacyDatabaseFileExtension))
-      continue;
-    absl::optional<base::File::Info> info = fs->GetFileInfo(path);
-    if (!info)
-      continue;
-    infos.emplace_back(mojom::StorageUsageInfo::New(
-        LocalStorageImpl::OriginFromLegacyDatabaseFileName(path), info->size,
-        info->last_modified));
-  }
-  return infos;
-}
-
-void InvokeLocalStorageUsageCallbackHelper(
-    LocalStorageImpl::GetUsageCallback callback,
-    std::unique_ptr<std::vector<mojom::StorageUsageInfoPtr>> infos) {
-  std::move(callback).Run(std::move(*infos));
-}
-
-void CollectLocalStorageUsage(std::vector<mojom::StorageUsageInfoPtr>* out_info,
-                              base::OnceClosure done_callback,
-                              std::vector<mojom::StorageUsageInfoPtr> in_info) {
-  out_info->reserve(out_info->size() + in_info.size());
-  for (auto& info : in_info)
-    out_info->push_back(std::move(info));
-  std::move(done_callback).Run();
 }
 
 }  // namespace
@@ -328,81 +260,7 @@ class LocalStorageImpl::StorageAreaHolder final
                               leveldb_env::GetLevelDBStatusUMAValue(status),
                               leveldb_env::LEVELDB_STATUS_MAX);
 
-    // Delete any old database that might still exist if we successfully wrote
-    // data to LevelDB, and our LevelDB is actually disk backed.
-    if (status.ok() && !deleted_old_data_ && !context_->directory_.empty() &&
-        context_->legacy_task_runner_) {
-      deleted_old_data_ = true;
-      context_->legacy_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(base::IgnoreResult(&sql::Database::Delete),
-                                    sql_db_path()));
-    }
-
     context_->OnCommitResult(status);
-  }
-
-  void MigrateData(StorageAreaImpl::ValueMapCallback callback) override {
-    if (context_->legacy_task_runner_ && !context_->directory_.empty()) {
-      context_->legacy_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&MigrateStorageHelper, sql_db_path(),
-                                    base::ThreadTaskRunnerHandle::Get(),
-                                    base::BindOnce(&CallMigrationCalback,
-                                                   std::move(callback))));
-      return;
-    }
-    std::move(callback).Run(nullptr);
-  }
-
-  std::vector<StorageAreaImpl::Change> FixUpData(
-      const StorageAreaImpl::ValueMap& data) override {
-    std::vector<StorageAreaImpl::Change> changes;
-    // Chrome M61/M62 had a bug where keys that should have been encoded as
-    // Latin1 were instead encoded as UTF16. Fix this by finding any 8-bit only
-    // keys, and re-encode those. If two encodings of the key exist, the Latin1
-    // encoded value should take precedence.
-    size_t fix_count = 0;
-    for (const auto& it : data) {
-      // Skip over any Latin1 encoded keys, or unknown encodings/corrupted data.
-      if (it.first.empty() || it.first[0] != kUTF16Format)
-        continue;
-      // Check if key is actually 8-bit safe.
-      bool is_8bit = true;
-      for (size_t i = 1; i < it.first.size(); i += sizeof(char16_t)) {
-        // Don't just cast to char16* as that could be undefined behavior.
-        // Instead use memcpy for the conversion, which compilers will generally
-        // optimize away anyway.
-        char16_t char_val;
-        memcpy(&char_val, it.first.data() + i, sizeof(char16_t));
-        if (char_val & 0xff00) {
-          is_8bit = false;
-          break;
-        }
-      }
-      if (!is_8bit)
-        continue;
-      // Found a key that should have been encoded differently. Decode and
-      // re-encode.
-      std::vector<uint8_t> key(1 + (it.first.size() - 1) / 2);
-      key[0] = kLatin1Format;
-      for (size_t in = 1, out = 1; in < it.first.size();
-           in += sizeof(char16_t), out++) {
-        char16_t char_val;
-        memcpy(&char_val, it.first.data() + in, sizeof(char16_t));
-        key[out] = char_val;
-      }
-      // Delete incorrect key.
-      changes.push_back(std::make_pair(it.first, absl::nullopt));
-      fix_count++;
-      // Check if correct key already exists in data.
-      auto new_it = data.find(key);
-      if (new_it != data.end())
-        continue;
-      // Update value for correct key.
-      changes.push_back(std::make_pair(key, it.second));
-    }
-    UMA_HISTOGRAM_BOOLEAN("LocalStorageContext.MigrationFixUpNeeded",
-                          fix_count != 0);
-    return changes;
   }
 
   void OnMapLoaded(leveldb::Status status) override {
@@ -421,13 +279,6 @@ class LocalStorageImpl::StorageAreaHolder final
   bool has_bindings() const { return has_bindings_; }
 
  private:
-  base::FilePath sql_db_path() const {
-    if (context_->directory_.empty())
-      return base::FilePath();
-    return context_->directory_.Append(
-        LocalStorageImpl::LegacyDatabaseFileNameFromOrigin(origin_));
-  }
-
   LocalStorageImpl* context_;
   url::Origin origin_;
   // Holds the same value as |area_|. The reason for this is that
@@ -436,34 +287,12 @@ class LocalStorageImpl::StorageAreaHolder final
   // could already be null, but this field should still be valid.
   StorageAreaImpl* area_ptr_;
   std::unique_ptr<StorageAreaImpl> area_;
-  bool deleted_old_data_ = false;
   bool has_bindings_ = false;
 };
-
-// static
-base::FilePath LocalStorageImpl::LegacyDatabaseFileNameFromOrigin(
-    const url::Origin& origin) {
-  std::string filename = GetIdentifierFromOrigin(origin);
-  // There is no base::FilePath.AppendExtension() method, so start with just the
-  // extension as the filename, and then InsertBeforeExtension the desired
-  // name.
-  return base::FilePath()
-      .Append(kLegacyDatabaseFileExtension)
-      .InsertBeforeExtensionASCII(filename);
-}
-
-// static
-url::Origin LocalStorageImpl::OriginFromLegacyDatabaseFileName(
-    const base::FilePath& name) {
-  DCHECK(name.MatchesExtension(kLegacyDatabaseFileExtension));
-  std::string origin_id = name.BaseName().RemoveExtension().MaybeAsASCII();
-  return GetOriginFromIdentifier(origin_id);
-}
 
 LocalStorageImpl::LocalStorageImpl(
     const base::FilePath& storage_root,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    scoped_refptr<base::SequencedTaskRunner> legacy_task_runner,
     mojo::PendingReceiver<mojom::LocalStorageControl> receiver)
     : directory_(storage_root.empty() ? storage_root
                                       : storage_root.Append(kLocalStoragePath)),
@@ -472,7 +301,6 @@ LocalStorageImpl::LocalStorageImpl(
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       memory_dump_id_(base::StringPrintf("LocalStorage/0x%" PRIXPTR,
                                          reinterpret_cast<uintptr_t>(this))),
-      legacy_task_runner_(std::move(legacy_task_runner)),
       is_low_end_device_(base::SysInfo::IsLowEndDevice()) {
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
@@ -528,14 +356,6 @@ void LocalStorageImpl::DeleteStorage(const url::Origin& origin,
                        std::move(callback)));
   } else {
     std::move(callback).Run();
-  }
-
-  if (!directory_.empty()) {
-    legacy_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            base::IgnoreResult(&sql::Database::Delete),
-            directory_.Append(LegacyDatabaseFileNameFromOrigin(origin))));
   }
 }
 
@@ -738,32 +558,6 @@ bool LocalStorageImpl::OnMemoryDump(
     it.second->storage_area()->OnMemoryDump(area_dump_name, pmd);
   }
   return true;
-}
-
-// static
-std::vector<uint8_t> LocalStorageImpl::MigrateString(
-    const std::u16string& input) {
-  // TODO(mek): Deduplicate this somehow with the code in
-  // LocalStorageCachedArea::String16ToUint8Vector.
-  bool is_8bit = true;
-  for (const auto& c : input) {
-    if (c & 0xff00) {
-      is_8bit = false;
-      break;
-    }
-  }
-  if (is_8bit) {
-    std::vector<uint8_t> result(input.size() + 1);
-    result[0] = kLatin1Format;
-    std::copy(input.begin(), input.end(), result.begin() + 1);
-    return result;
-  }
-  const uint8_t* data = reinterpret_cast<const uint8_t*>(input.data());
-  std::vector<uint8_t> result;
-  result.reserve(input.size() * sizeof(char16_t) + 1);
-  result.push_back(kUTF16Format);
-  result.insert(result.end(), data, data + input.size() * sizeof(char16_t));
-  return result;
 }
 
 void LocalStorageImpl::SetDatabaseOpenCallbackForTesting(
@@ -997,25 +791,6 @@ LocalStorageImpl::StorageAreaHolder* LocalStorageImpl::GetOrCreateStorageArea(
 }
 
 void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
-  auto infos = std::make_unique<std::vector<mojom::StorageUsageInfoPtr>>();
-  auto* infos_ptr = infos.get();
-  base::RepeatingClosure got_local_storage_usage = base::BarrierClosure(
-      2, base::BindOnce(&InvokeLocalStorageUsageCallbackHelper,
-                        std::move(callback), std::move(infos)));
-  auto collect_callback = base::BindRepeating(
-      CollectLocalStorageUsage, infos_ptr, std::move(got_local_storage_usage));
-
-  // Grab metadata about pre-migration Local Storage data in the background
-  // while we query |database_| below.
-  if (directory_.empty()) {
-    collect_callback.Run({});
-  } else {
-    base::PostTaskAndReplyWithResult(
-        legacy_task_runner_.get(), FROM_HERE,
-        base::BindOnce(&GetLegacyLocalStorageUsage, directory_),
-        base::BindOnce(collect_callback));
-  }
-
   if (!database_) {
     // If for whatever reason no leveldb database is available, no storage is
     // used, so return an array only containing the current areas.
@@ -1024,7 +799,7 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
     for (const auto& it : areas_) {
       result.emplace_back(mojom::StorageUsageInfo::New(it.first, 0, now));
     }
-    collect_callback.Run(std::move(result));
+    std::move(callback).Run(std::move(result));
   } else {
     database_->RunDatabaseTask(
         base::BindOnce([](const DomStorageDatabase& db) {
@@ -1033,8 +808,7 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
           return data;
         }),
         base::BindOnce(&LocalStorageImpl::OnGotMetaData,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::BindOnce(collect_callback)));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
 
