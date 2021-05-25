@@ -769,6 +769,7 @@
   },
   "linux-blink-v8-oilpan": {
     "gn_args": {
+      "cppgc_enable_check_assignments_in_prefinalizers": true,
       "cppgc_enable_verify_live_bytes": true,
       "dcheck_always_on": true,
       "enable_blink_heap_use_v8_oilpan": true,

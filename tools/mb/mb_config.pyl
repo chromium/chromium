@@ -2615,6 +2615,8 @@
       'release_bot_blink',
       'enable_v8_oilpan',
       'dcheck_always_on',
+      # Assignment checks during prefinalizers is currently only enabled in DCHECK builds.
+      'enable_v8_oilpan_check_assignments_in_prefinalizers',
       # Live byte verification is currently only enabled in DCHECK builds.
       'enable_v8_oilpan_live_byte_verification',
     ],
@@ -3120,6 +3122,10 @@
 
     'enable_v8_oilpan': {
       'gn_args': 'enable_blink_heap_use_v8_oilpan=true',
+    },
+
+    'enable_v8_oilpan_check_assignments_in_prefinalizers': {
+      'gn_args': 'cppgc_enable_check_assignments_in_prefinalizers=true',
     },
 
     'enable_v8_oilpan_live_byte_verification': {
