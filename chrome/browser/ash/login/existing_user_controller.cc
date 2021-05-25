@@ -932,17 +932,6 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 
   StopAutoLoginTimer();
 
-  // Before continuing with post login setups such as starting a session,
-  // check if browser data needs to be migrated from ash to lacros.
-  ash::BrowserDataMigrator::MaybeMigrate(
-      user_context.GetAccountId(), user_context.GetUserIDHash(),
-      true /* async */,
-      base::BindOnce(&ExistingUserController::ContinueOnAuthSuccess,
-                     weak_factory_.GetWeakPtr(), user_context));
-}
-
-void ExistingUserController::ContinueOnAuthSuccess(
-    const UserContext& user_context) {
   // Truth table of `has_auth_cookies`:
   //                          Regular        SAML
   //  /ServiceLogin              T            T

@@ -176,9 +176,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   void AllowlistCheckFailed(const std::string& email) override;
   void PolicyLoadFailed() override;
 
-  // Passed to BrowserDataMigrator::Migrate as a callback in OnAuthSuccess.
-  void ContinueOnAuthSuccess(const UserContext& user_context);
-
   // UserSessionManagerDelegate implementation:
   void OnProfilePrepared(Profile* profile, bool browser_launched) override;
 

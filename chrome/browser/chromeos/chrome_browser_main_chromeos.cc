@@ -870,15 +870,6 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
     std::string user_id_hash =
         parsed_command_line().GetSwitchValueASCII(switches::kLoginProfile);
 
-    // Before creating a session, migrate user data if required. The migration
-    // will happen at this timing only if lacros chrome was enabled via
-    // chrome://flags. In other cases, migration will happen upon login
-    // asynchronously. This migration has to complete before profile is created
-    // and chrome starts accessing those user data files, thus we pass
-    // async=false.
-    ash::BrowserDataMigrator::MaybeMigrate(
-        account_id, user_id_hash, false /* async */, base::DoNothing());
-
     session_manager::SessionManager::Get()->CreateSessionForRestart(
         account_id, user_id_hash);
 
