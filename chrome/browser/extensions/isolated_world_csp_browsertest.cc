@@ -32,7 +32,7 @@ class IsolatedWorldCspBrowserTest : public ExtensionApiTest {
 IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, Eval_ManifestV2) {
   GURL url = embedded_test_server()->GetURL("eval.com",
                                             "/page_with_script_src_csp.html");
-  ASSERT_TRUE(RunExtensionTest({.name = "mv2", .page_url = url.spec().c_str()}))
+  ASSERT_TRUE(RunExtensionTest("mv2", {.page_url = url.spec().c_str()}))
       << message_;
 }
 
@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, Eval_ManifestV2) {
 IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, Eval_ManifestV3) {
   GURL url = embedded_test_server()->GetURL("eval.com",
                                             "/page_with_script_src_csp.html");
-  ASSERT_TRUE(RunExtensionTest({.name = "mv3", .page_url = url.spec().c_str()}))
+  ASSERT_TRUE(RunExtensionTest("mv3", {.page_url = url.spec().c_str()}))
       << message_;
 }
 
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, Eval_ManifestV3) {
 IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, JavascriptUrl_ManifestV2) {
   GURL url = embedded_test_server()->GetURL("js-url.com",
                                             "/page_with_script_src_csp.html");
-  ASSERT_TRUE(RunExtensionTest({.name = "mv2", .page_url = url.spec().c_str()}))
+  ASSERT_TRUE(RunExtensionTest("mv2", {.page_url = url.spec().c_str()}))
       << message_;
 }
 
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, JavascriptUrl_ManifestV3) {
 
   GURL url = embedded_test_server()->GetURL("js-url.com",
                                             "/page_with_script_src_csp.html");
-  ASSERT_TRUE(RunExtensionTest({.name = "mv3", .page_url = url.spec().c_str()}))
+  ASSERT_TRUE(RunExtensionTest("mv3", {.page_url = url.spec().c_str()}))
       << message_;
   console_observer.Wait();
 
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest,
                        RemoteScriptSrc_ManifestV2) {
   GURL url = embedded_test_server()->GetURL("remote-script.com",
                                             "/page_with_script_src_csp.html");
-  ASSERT_TRUE(RunExtensionTest({.name = "mv2", .page_url = url.spec().c_str()}))
+  ASSERT_TRUE(RunExtensionTest("mv2", {.page_url = url.spec().c_str()}))
       << message_;
 }
 
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest,
                        RemoteScriptSrc_ManifestV3) {
   GURL url = embedded_test_server()->GetURL("remote-script.com",
                                             "/page_with_script_src_csp.html");
-  ASSERT_TRUE(RunExtensionTest({.name = "mv3", .page_url = url.spec().c_str()}))
+  ASSERT_TRUE(RunExtensionTest("mv3", {.page_url = url.spec().c_str()}))
       << message_;
 }
 
