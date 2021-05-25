@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/i18n/string_search.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
@@ -400,7 +401,14 @@ std::vector<PDFEngine::Client::SearchStringResult>
 PdfViewWebPlugin::SearchString(const char16_t* string,
                                const char16_t* term,
                                bool case_sensitive) {
-  return {};
+  base::i18n::RepeatingStringSearch searcher(
+      /*find_this=*/term, /*in_this=*/string, case_sensitive);
+  std::vector<SearchStringResult> results;
+  int match_index;
+  int match_length;
+  while (searcher.NextMatchResult(match_index, match_length))
+    results.push_back({.start_index = match_index, .length = match_length});
+  return results;
 }
 
 pp::Instance* PdfViewWebPlugin::GetPluginInstance() {

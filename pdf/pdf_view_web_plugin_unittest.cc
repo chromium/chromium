@@ -12,6 +12,7 @@
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -24,6 +25,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_util.h"
+
+using testing::Pointwise;
 
 namespace chrome_pdf {
 
@@ -50,6 +53,12 @@ struct PaintParams {
   // The target painting area on the canvas.
   gfx::Rect paint_rect;
 };
+
+MATCHER(SearchStringResultEq, "") {
+  PDFEngine::Client::SearchStringResult l = std::get<0>(arg);
+  PDFEngine::Client::SearchStringResult r = std::get<1>(arg);
+  return l.start_index == r.start_index && l.length == r.length;
+}
 
 // Generates the expected `SkBitmap` with `paint_color` filled in the expected
 // clipped area and `kDefaultColor` as the background color.
@@ -319,6 +328,27 @@ TEST_F(PdfViewWebPluginTest, FormTextFieldFocusChangeUpdatesTextInputType) {
   plugin_->FormTextFieldFocusChange(false);
   EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
             wrapper_ptr_->widget_text_input_type());
+}
+
+TEST_F(PdfViewWebPluginTest, SearchString) {
+  static constexpr char16_t kPattern[] = u"fox";
+  static constexpr char16_t kTarget[] =
+      u"The quick brown fox jumped over the lazy Fox";
+
+  {
+    static constexpr PDFEngine::Client::SearchStringResult kExpectation[] = {
+        {16, 3}};
+    EXPECT_THAT(
+        plugin_->SearchString(kTarget, kPattern, /*case_sensitive=*/true),
+        Pointwise(SearchStringResultEq(), kExpectation));
+  }
+  {
+    static constexpr PDFEngine::Client::SearchStringResult kExpectation[] = {
+        {16, 3}, {41, 3}};
+    EXPECT_THAT(
+        plugin_->SearchString(kTarget, kPattern, /*case_sensitive=*/false),
+        Pointwise(SearchStringResultEq(), kExpectation));
+  }
 }
 
 }  // namespace chrome_pdf

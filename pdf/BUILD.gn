@@ -331,6 +331,7 @@ if (enable_pdf) {
       ":internal",
       ":ppapi_migration",
       "//base",
+      "//base:i18n",
       "//cc/paint",
       "//content/public/renderer",
       "//gin",
