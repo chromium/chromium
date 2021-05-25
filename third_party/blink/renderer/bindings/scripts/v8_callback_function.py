@@ -15,7 +15,7 @@ CALLBACK_FUNCTION_H_INCLUDES = frozenset([
     'platform/wtf/forward.h',
 ])
 CALLBACK_FUNCTION_CPP_INCLUDES = frozenset([
-    'base/stl_util.h',
+    'base/cxx17_backports.h',
     'bindings/core/v8/generated_code_helper.h',
     'bindings/core/v8/native_value_traits_impl.h',
     'bindings/core/v8/to_v8_for_core.h',
