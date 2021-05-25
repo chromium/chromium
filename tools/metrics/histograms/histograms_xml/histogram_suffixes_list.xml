@@ -14689,15 +14689,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Power.CpuTimeSecondsPerCoreTypeAndFrequency"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Power_CpuTimeProcessTypes" separator=".">
-  <suffix name="Browser" label=""/>
-  <suffix name="GPU" label=""/>
-  <suffix name="Other" label=""/>
-  <suffix name="Renderer" label=""/>
-  <affected-histogram name="Power.CpuTimeSecondsPerPowerMode"/>
-  <affected-histogram name="Power.CpuTimeSecondsPerThreadType"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PowerConsumptionSources" separator=".">
   <suffix name="CPU" label="Instantaneous power used by the CPU."/>
   <suffix name="GPU0"

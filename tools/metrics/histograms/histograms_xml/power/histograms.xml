@@ -291,22 +291,28 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   </summary>
 </histogram>
 
-<histogram name="Power.CpuTimeSecondsPerPowerMode" enum="PowerMode"
-    expires_after="2021-12-31">
+<histogram name="Power.CpuTimeSecondsPerPowerMode.{ProcessType}"
+    enum="PowerMode" expires_after="2021-12-31">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
-    Total seconds of CPU time consumed by Chrome, split by process type and
-    power mode. Currently only implemented on Android. For every second of CPU
-    time consumed by a process of the chosen type, while a specific PowerMode
-    was active, a sample is recorded into the bucket for the PowerMode. Samples
-    are recorded periodically depending on the task load of each process's main
-    thread. The histogram thus shows the total sum of CPU time seconds spent per
-    PowerMode within all processes of the chosen type across all users.
+    Total seconds of CPU time consumed by Chrome's {ProcessType} process, split
+    by power mode. Currently only implemented on Android. For every second of
+    CPU time consumed by the process, while a specific PowerMode was active, a
+    sample is recorded into the bucket for the PowerMode. Samples are recorded
+    periodically depending on the task load of each process's main thread. The
+    histogram thus shows the total sum of CPU time seconds spent per PowerMode
+    within all {ProcessType} processes across all users.
 
     For a histogram of daily per-user values, select &quot;Per-Client
     Aggregation Mode&quot;.
   </summary>
+  <token key="ProcessType">
+    <variant name="Browser" summary="browser"/>
+    <variant name="GPU" summary="GPU"/>
+    <variant name="Other" summary="other type of"/>
+    <variant name="Renderer" summary="renderer"/>
+  </token>
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
@@ -349,24 +355,30 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   </token>
 </histogram>
 
-<histogram name="Power.CpuTimeSecondsPerThreadType"
+<histogram name="Power.CpuTimeSecondsPerThreadType.{ProcessType}"
     enum="CpuTimeMetricsThreadType" expires_after="2021-10-10">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
-    Total seconds of CPU time consumed by Chrome, split by process type and
-    thread type. Currently only implemented on Android. For every second of CPU
-    time consumed by one thread, a sample is recorded into the bucket for the
-    thread's type. CPU time consumed by a process that cannot be attributed to a
-    specific thread is recorded into the &quot;UnattributedThread&quot; bucket.
-    Samples are recorded periodically depending on the task load of each
+    Total seconds of CPU time consumed by Chrome's {ProcessType} process, split
+    by thread type. Currently only implemented on Android. For every second of
+    CPU time consumed by one thread, a sample is recorded into the bucket for
+    the thread's type. CPU time consumed by a process that cannot be attributed
+    to a specific thread is recorded into the &quot;UnattributedThread&quot;
+    bucket. Samples are recorded periodically depending on the task load of each
     process's main thread. The histogram thus shows the total sum of CPU time
-    seconds spent per thread type (within processes of a specific type) across
-    all users.
+    seconds spent per thread type (within {ProcessType} processes) across all
+    users.
 
     For a histogram of daily per-user values, select &quot;Per-Client
     Aggregation Mode&quot;.
   </summary>
+  <token key="ProcessType">
+    <variant name="Browser" summary="browser"/>
+    <variant name="GPU" summary="GPU"/>
+    <variant name="Other" summary="other type of"/>
+    <variant name="Renderer" summary="renderer"/>
+  </token>
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs" units="ms" expires_after="M85">
