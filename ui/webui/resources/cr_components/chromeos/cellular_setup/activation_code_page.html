@@ -208,7 +208,7 @@
     <base-page>
       <div slot="page-body" id="pageBody" class="animate">
         <span aria-live="polite">
-          [[getDescription_(cameraCount_)]]
+          [[getDescription_(cameraCount_, qrCodeDetector_)]]
         </span>
         <template is="dom-if"
             if="[[isScanningAvailable_(cameraCount_, qrCodeDetector_.*)]]" restamp>
