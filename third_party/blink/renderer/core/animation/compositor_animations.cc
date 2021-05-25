@@ -455,8 +455,8 @@ bool CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
   bool any_compositor_properties_present = false;
 
   const auto& keyframe_effect = To<KeyframeEffectModelBase>(effect);
-  PropertyHandleSet properties = keyframe_effect.Properties();
-  for (const auto& property : properties) {
+  const auto& groups = keyframe_effect.GetPropertySpecificKeyframeGroups();
+  for (const PropertyHandle& property : groups.Keys()) {
     if (!CompositedAnimationRequiresProperties(property))
       continue;
 
