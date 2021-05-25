@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -433,6 +434,16 @@ void V8SetReturnValue(const CallbackInfo& info,
   v8::Local<v8::Value> v8_value = dictionary->CreateV8Object(
       info.GetIsolate(), V8ReturnValue::CreationContext(info));
   V8SetReturnValue(info, v8_value);
+}
+
+// EnumerationBase
+template <typename CallbackInfo, typename... ExtraArgs>
+void V8SetReturnValue(const CallbackInfo& info,
+                      const bindings::EnumerationBase& enumeration,
+                      v8::Isolate* isolate,
+                      ExtraArgs... extra_args) {
+  V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
+      info.GetReturnValue(), enumeration.AsString().Impl());
 }
 
 // Exposed objects
