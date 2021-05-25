@@ -218,34 +218,40 @@ class PeerConnectionStaticDeps {
 
  private:
   static void LogTaskLatencyWorker(base::TimeDelta sample) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("WebRTC.PeerConnection.Latency.Worker", sample,
-                               base::TimeDelta::FromMicroseconds(1),
-                               base::TimeDelta::FromSeconds(10), 50);
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "WebRTC.PeerConnection.Latency.Worker", sample,
+        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
+        50);
   }
   static void LogTaskDurationWorker(base::TimeDelta sample) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("WebRTC.PeerConnection.Duration.Worker", sample,
-                               base::TimeDelta::FromMicroseconds(1),
-                               base::TimeDelta::FromSeconds(10), 50);
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "WebRTC.PeerConnection.Duration.Worker", sample,
+        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
+        50);
   }
   static void LogTaskLatencyNetwork(base::TimeDelta sample) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("WebRTC.PeerConnection.Latency.Network", sample,
-                               base::TimeDelta::FromMicroseconds(1),
-                               base::TimeDelta::FromSeconds(10), 50);
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "WebRTC.PeerConnection.Latency.Network", sample,
+        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
+        50);
   }
   static void LogTaskDurationNetwork(base::TimeDelta sample) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("WebRTC.PeerConnection.Duration.Network", sample,
-                               base::TimeDelta::FromMicroseconds(1),
-                               base::TimeDelta::FromSeconds(10), 50);
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "WebRTC.PeerConnection.Duration.Network", sample,
+        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
+        50);
   }
   static void LogTaskLatencySignaling(base::TimeDelta sample) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("WebRTC.PeerConnection.Latency.Signaling",
-                               sample, base::TimeDelta::FromMicroseconds(1),
-                               base::TimeDelta::FromSeconds(10), 50);
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "WebRTC.PeerConnection.Latency.Signaling", sample,
+        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
+        50);
   }
   static void LogTaskDurationSignaling(base::TimeDelta sample) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("WebRTC.PeerConnection.Duration.Signaling",
-                               sample, base::TimeDelta::FromMicroseconds(1),
-                               base::TimeDelta::FromSeconds(10), 50);
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "WebRTC.PeerConnection.Duration.Signaling", sample,
+        base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
+        50);
   }
 
   static void InitializeOnThread(

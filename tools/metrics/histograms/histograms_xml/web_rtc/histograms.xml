@@ -1334,6 +1334,54 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.Duration.Network" units="microseconds"
+    expires_after="2022-05-24">
+  <owner>handellm@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Duration between the moment the WebRTC network thread's JingleThreadWrapper
+    begins running a task and the moment it ends executing it. It only measures
+    durations of tasks posted to rtc::Thread. Samples are acquired periodically
+    every several seconds by JingleThreadWrapper.
+
+    Warning: This metric does not include reports from clients with
+    low-resolution clocks (i.e. on Windows, ref.
+    |TimeTicks::IsHighResolution()|).
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.Duration.Signaling" units="microseconds"
+    expires_after="2022-05-24">
+  <owner>handellm@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Duration between the moment the WebRTC signaling thread's
+    JingleThreadWrapper begins running a task and the moment it ends executing
+    it. It only measures durations of tasks posted to rtc::Thread. Samples are
+    acquired periodically every several seconds by JingleThreadWrapper.
+
+    Warning: This metric does not include reports from clients with
+    low-resolution clocks (i.e. on Windows, ref.
+    |TimeTicks::IsHighResolution()|). solution.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.Duration.Worker" units="microseconds"
+    expires_after="2022-05-24">
+  <owner>handellm@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Duration between the moment the WebRTC worker thread's JingleThreadWrapper
+    begins running a task and the moment it ends executing it. It only measures
+    durations of tasks posted to rtc::Thread. Samples are acquired periodically
+    every several seconds by JingleThreadWrapper.
+
+    Warning: This metric does not include reports from clients with
+    low-resolution clocks (i.e. on Windows, ref.
+    |TimeTicks::IsHighResolution()|).
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.IceRegatheringReason"
     enum="IceRegatheringReason" expires_after="M77">
   <owner>honghaiz@chromium.org</owner>
@@ -1429,6 +1477,54 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     What key exchange protocol (DTLS or SDES) is used to establish the crypto
     keys for a PeerConnection's RTP transport, specified per media type. Note:
     This histogram was expired after M82, and resurrected in M89.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.Latency.Network" units="microseconds"
+    expires_after="2022-05-24">
+  <owner>handellm@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Latency defined as the duration between the moment a task is scheduled from
+    the WebRTC network thread's JingleThreadWrapper's task runner, and the
+    moment it begins running. Samples are acquired periodically every several
+    seconds by JingleThreadWrapper.
+
+    Warning: This metric does not include reports from clients with
+    low-resolution clocks (i.e. on Windows, ref.
+    |TimeTicks::IsHighResolution()|).
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.Latency.Signaling" units="microseconds"
+    expires_after="2022-05-24">
+  <owner>handellm@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Latency defined as the duration between the moment a task is scheduled from
+    the WebRTC signaling thread's JingleThreadWrapper's task runner, and the
+    moment it begins running. Samples are acquired periodically every several
+    seconds by JingleThreadWrapper.
+
+    Warning: This metric does not include reports from clients with
+    low-resolution clocks (i.e. on Windows, ref.
+    |TimeTicks::IsHighResolution()|).
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.Latency.Worker" units="microseconds"
+    expires_after="2022-05-24">
+  <owner>handellm@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Latency defined as the duration between the moment a task is scheduled from
+    the WebRTC worker thread's JingleThreadWrapper's task runner, and the moment
+    it begins running. Samples are acquired periodically every several seconds
+    by JingleThreadWrapper.
+
+    Warning: This metric does not include reports from clients with
+    low-resolution clocks (i.e. on Windows, ref.
+    |TimeTicks::IsHighResolution()|).
   </summary>
 </histogram>
 
