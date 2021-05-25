@@ -1,11 +1,5 @@
-<!doctype html>
-<title>Scheduling API: Setting TaskController.priority</title>
-<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
+// META: title=Scheduling API: Setting TaskController.priority
+// META: global=window
 'use strict';
 
 async_test(t => {
@@ -28,5 +22,3 @@ async_test(t => {
   }), { priority: 'background' });
 
 }, 'Test modifying TaskController priority');
-
-</script>

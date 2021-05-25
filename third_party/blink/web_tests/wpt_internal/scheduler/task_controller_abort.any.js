@@ -1,11 +1,5 @@
-<!doctype html>
-<title>Scheduling API: Task Cancellation</title>
-<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
+// META: title=Scheduling API: Task Cancellation
+// META: global=window
 'use strict';
 
 async_test(t => {
@@ -43,5 +37,3 @@ async_test(t => {
   }), { signal: final_task_tc.signal });
 
 }, 'Test canceling a task');
-
-</script>

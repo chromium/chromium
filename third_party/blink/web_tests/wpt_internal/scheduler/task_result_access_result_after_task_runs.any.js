@@ -1,11 +1,5 @@
-<!doctype html>
-<title>Scheduling API: Task.result Accessed After Task Runs</title>
-<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
+// META: title=Scheduling API: Task.result Accessed After Task Runs
+// META: global=window
 'use strict';
 
 async_test(t => {
@@ -22,5 +16,3 @@ async_test(t => {
   })();
 
 }, 'Test task result is resolved properly when accessed after the task runs');
-
-</script>

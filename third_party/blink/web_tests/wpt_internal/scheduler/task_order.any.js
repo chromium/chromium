@@ -1,12 +1,5 @@
-<!doctype html>
-<title>Scheduling API: Tasks Run in Priority Order</title>
-<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
-'use strict';
+// META: title=Scheduling API: Tasks Run in Priority Order
+// META: global=window
 
 async_test(t => {
   let result = '';
@@ -34,5 +27,3 @@ async_test(t => {
     assert_equals(result, 'UB1 UB2 UV1 UV2 B1 B2');
   }), { priority: 'background' });
 }, 'Test scheduler.postTask task run in priority order');
-
-</script>

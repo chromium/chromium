@@ -1,11 +1,5 @@
-<!doctype html>
-<title>Scheduling API: Global Task Queues</title>
-<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
+// META: title=Scheduling API: Global Task Queues
+// META: global=window
 'use strict';
 
 async_test(t => {
@@ -19,5 +13,3 @@ async_test(t => {
     assert_equals(result, "pass");
   }));
 }, 'Test when scheduler.postTask() is passed both a signal and a priority');
-
-</script>

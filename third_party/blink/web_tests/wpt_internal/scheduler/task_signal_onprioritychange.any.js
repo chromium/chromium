@@ -1,11 +1,5 @@
-<!doctype html>
-<title>Scheduling API: TaskController.setPriority()</title>
-<link rel="author" title="Nate Chapin" href="mailto:japhet@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
+// META: title=Scheduling API: TaskController.setPriority()
+// META: global=window
 'use strict';
 
 async_test(t => {
@@ -18,5 +12,3 @@ async_test(t => {
   });
   tc.setPriority("background");
 }, 'Test that TaskController.setPriority() triggers an onprioritychange event on the signal');
-
-</script>

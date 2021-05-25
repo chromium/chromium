@@ -1,11 +1,5 @@
-<!doctype html>
-<title>Scheduling API: Task.result When a Task Throws an Error</title>
-<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
+// META: title=Scheduling API: Task.result When a Task Throws an Error
+// META: global=window
 'use strict';
 
 async_test(t => {
@@ -20,5 +14,3 @@ async_test(t => {
     }));
   })();
 }, 'Test task promise is rejected properly when the task throws an error');
-
-</script>

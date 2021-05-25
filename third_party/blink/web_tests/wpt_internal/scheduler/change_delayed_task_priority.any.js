@@ -1,11 +1,6 @@
-<!doctype html>
-<title>Scheduling API: Move Delayed Tasks</title>
-<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
+// META: title=Scheduling API: Move Delayed Tasks
+// META: global=window
 
-<script>
 'use strict';
 
 let taskCount = 0;
@@ -29,5 +24,3 @@ async_test(t => {
   }), { signal: tc.signal, delay: 20 });
 
 }, "Tests delay when changing a delayed task's priority");
-
-</script>

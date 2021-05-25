@@ -1,11 +1,5 @@
-<!doctype html>
-<title>Scheduling API: TaskController.abort()</title>
-<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
+// META: title=Scheduling API: TaskController.abort()
+// META: global=window
 'use strict';
 
 async_test(t => {
@@ -25,5 +19,3 @@ async_test(t => {
   }), { priority: "background" });
 
 }, 'Test that when scheduler.postTask() is given both a signal and priority. the signal abort is honored');
-
-</script>

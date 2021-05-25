@@ -1,11 +1,5 @@
-<!doctype html>
-<title>Scheduling API: Canceling Task Rejects Task.result (Beforre Accessing Result)</title>
-<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
+// META: title=Scheduling API: Canceling Task Rejects Task.result (Beforre Accessing Result)
+// META: global=window
 'use strict';
 
 async_test(t => {
@@ -21,5 +15,3 @@ async_test(t => {
     }));
   })();
 }, 'Test task result is rejected properly when the task is canceled before accessing the result');
-
-</script>

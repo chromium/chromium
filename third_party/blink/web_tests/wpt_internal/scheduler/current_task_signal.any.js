@@ -1,11 +1,5 @@
-<!doctype html>
-<title>Scheduling API: Signal inheritance</title>
-<link rel="author" title="Nate Chapin" href="mailto:japhet@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
+// META: title=Scheduling API: Signal inheritance
+// META: global=window
 'use strict';
 
 async_test(t => {
@@ -13,7 +7,7 @@ async_test(t => {
   let tc = new TaskController("user-blocking");
   scheduler.postTask(() => {
     scheduler.postTask(() => {
-      assert_equals(scheduler.currentTaskSignal.priority, "user-blocking"); 
+      assert_equals(scheduler.currentTaskSignal.priority, "user-blocking");
       result = "pass";
     }, { signal: scheduler.currentTaskSignal });
   }, { signal: tc.signal });
@@ -24,5 +18,3 @@ async_test(t => {
     assert_equals(result, "pass");
   }));
 }, 'Test that currentTaskSignal uses the incumbent priority');
-
-</script>

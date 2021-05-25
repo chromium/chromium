@@ -1,11 +1,5 @@
-<!doctype html>
-<title>Scheduling API: postTask and AbortSignal</title>
-<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
+// META: title=Scheduling API: postTask and AbortSignal
+// META: global=window
 'use strict';
 
 async_test(t => {
@@ -21,5 +15,3 @@ async_test(t => {
     assert_equals(result, "pass");
   }));
 }, 'Test that scheduler.postTask() accepts an AbortSignal that is not also a TaskSignal');
-
-</script>
