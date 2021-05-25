@@ -3026,7 +3026,6 @@ public class AutofillAssistantGenericUiTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1102828")
     public void testCreditCardUi() throws Exception {
         // When the toggle button becomes checked, we write the current card to
         // |selected_credit_card|.
@@ -3113,12 +3112,6 @@ public class AutofillAssistantGenericUiTest {
                                                         .addChunk(
                                                                 Chunk.newBuilder().setText("•••• "))
                                                         .addChunk(Chunk.newBuilder().setKey(-4))))
-                                        .addCallbacks(CallbackProto.newBuilder().setCreateNestedUi(
-                                                CreateNestedGenericUiProto.newBuilder()
-                                                        .setGenericUiIdentifier("nested_ui_${i}")
-                                                        .setGenericUi(singleCardUi)
-                                                        .setParentViewIdentifier(
-                                                                "credit_card_container_view")))
                                         .addCallbacks(CallbackProto.newBuilder().setComputeValue(
                                                 ComputeValueProto.newBuilder()
                                                         .setResultModelIdentifier(
@@ -3129,8 +3122,19 @@ public class AutofillAssistantGenericUiTest {
                                                                 createValueReference(
                                                                         "previously_selected_card"),
                                                                 ValueComparisonProto.Mode.EQUAL))))
-
-                                        ))
+                                        // The nested view is created as the last step since
+                                        // creating views can trigger OnValueChanged events for
+                                        // model values. In this case OnValueChanged for
+                                        // credit_card_selected_${i} will trigger in the creation of
+                                        // the radio button, so we need to make sure it has already
+                                        // been updated to the correct value before creating the
+                                        // view.
+                                        .addCallbacks(CallbackProto.newBuilder().setCreateNestedUi(
+                                                CreateNestedGenericUiProto.newBuilder()
+                                                        .setGenericUiIdentifier("nested_ui_${i}")
+                                                        .setGenericUi(singleCardUi)
+                                                        .setParentViewIdentifier(
+                                                                "credit_card_container_view")))))
                         .build());
 
         // Every time |selected_credit_card| changes:
