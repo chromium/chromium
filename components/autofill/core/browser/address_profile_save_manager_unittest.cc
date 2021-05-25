@@ -332,13 +332,10 @@ void AddressProfileSaveManagerTest::TestImportScenario(
 
   // Check that the strike count was incremented if the import of a new profile
   // was declined.
-  if (is_new_profile &&
-      last_import->user_decision() == UserDecision::kDeclined) {
+  if (is_new_profile && last_import->UserDeclined()) {
     EXPECT_EQ(2, mock_personal_data_manager_.GetProfileSaveStrikeDatabase()
                      ->GetStrikes(url.host()));
-  } else if (is_new_profile &&
-             (last_import->user_decision() == UserDecision::kAccepted ||
-              last_import->user_decision() == UserDecision::kEditAccepted)) {
+  } else if (is_new_profile && last_import->UserAccepted()) {
     // If the import of a new profile was accepted, the count should have been
     // reset.
     EXPECT_EQ(0, mock_personal_data_manager_.GetProfileSaveStrikeDatabase()
@@ -359,7 +356,8 @@ void AddressProfileSaveManagerTest::TestImportScenario(
     EXPECT_EQ(0, mock_personal_data_manager_.GetProfileUpdateStrikeDatabase()
                      ->GetStrikes(test_scenario.merge_candidate->guid()));
   } else if (is_confirmable_merge &&
-             test_scenario.user_decision == UserDecision::kDeclined) {
+             (test_scenario.user_decision == UserDecision::kDeclined ||
+              test_scenario.user_decision == UserDecision::kMessageDeclined)) {
     // Or that it is incremented if the update was declined.
     EXPECT_EQ(2, mock_personal_data_manager_.GetProfileUpdateStrikeDatabase()
                      ->GetStrikes(test_scenario.merge_candidate->guid()));
@@ -489,6 +487,25 @@ TEST_F(AddressProfileSaveManagerTest, SaveNewProfile_Declined) {
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
       .user_decision = UserDecision::kDeclined,
+      .expected_import_type = AutofillProfileImportType::kNewProfile,
+      .is_profile_change_expected = false,
+      .merge_candidate = absl::nullopt,
+      .import_candidate = observed_profile,
+      .expected_final_profiles = {}};
+
+  TestImportScenario(test_scenario);
+}
+
+// Test that a decline to import a new profile in the message UI is handled
+// correctly.
+TEST_F(AddressProfileSaveManagerTest, SaveNewProfile_MessageDeclined) {
+  AutofillProfile observed_profile = test::StandardProfile();
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kMessageDeclined,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = false,
       .merge_candidate = absl::nullopt,

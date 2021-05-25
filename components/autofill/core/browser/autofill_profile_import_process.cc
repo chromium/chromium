@@ -48,6 +48,18 @@ bool ProfileImportProcess::prompt_shown() const {
   return prompt_shown_;
 }
 
+bool ProfileImportProcess::UserDeclined() const {
+  return user_decision_ == UserDecision::kDeclined ||
+         user_decision_ == UserDecision::kEditDeclined ||
+         user_decision_ == UserDecision::kMessageDeclined;
+  ;
+}
+
+bool ProfileImportProcess::UserAccepted() const {
+  return user_decision_ == UserDecision::kAccepted ||
+         user_decision_ == UserDecision::kEditAccepted;
+}
+
 void ProfileImportProcess::DetermineProfileImportType() {
   AutofillProfileComparator comparator(app_locale_);
   bool is_mergeable_with_existing_profile = false;
