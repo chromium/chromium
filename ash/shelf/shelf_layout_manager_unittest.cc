@@ -73,6 +73,7 @@
 #include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -3910,69 +3911,6 @@ TEST_F(ShelfLayoutManagerTest, VerifyAutoHideBehaviorOnMultipleDisplays) {
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 }
 
-TEST_F(ShelfLayoutManagerTest, VerifyHomeButtonBounds) {
-  Shell::Get()
-      ->accessibility_controller()
-      ->SetTabletModeShelfNavigationButtonsEnabled(true);
-  TabletModeControllerTestApi().EnterTabletMode();
-
-  ASSERT_EQ(HotseatState::kShownHomeLauncher,
-            GetShelfLayoutManager()->hotseat_state());
-
-  const gfx::Rect display_bounds = GetPrimaryDisplay().bounds();
-  Shelf* shelf = GetPrimaryShelf();
-  ShelfNavigationWidget* navigation_widget = shelf->navigation_widget();
-  const gfx::Size widget_size_in_home_launcher =
-      navigation_widget->GetWindowBoundsInScreen().size();
-
-  auto fetch_home_button_screen_bounds =
-      [](const ShelfNavigationWidget* navigation_widget) -> gfx::Rect {
-    gfx::Rect home_button_bounds_in_screen =
-        navigation_widget->bounds_animator_for_test()->GetTargetBounds(
-            navigation_widget->GetHomeButton());
-    const gfx::Rect navigation_widget_bounds_in_screen =
-        navigation_widget->GetWindowBoundsInScreen();
-    home_button_bounds_in_screen.Offset(
-        navigation_widget_bounds_in_screen.OffsetFromOrigin());
-    return home_button_bounds_in_screen;
-  };
-
-  // Verify home button bounds in home launcher.
-  {
-    const gfx::Rect home_button_bounds_in_screen =
-        fetch_home_button_screen_bounds(navigation_widget);
-    const int horizontal_edge_spacing =
-        ShelfConfig::Get()->control_button_edge_spacing(
-            /*is_primary_axis_edge=*/true);
-    EXPECT_EQ(horizontal_edge_spacing, home_button_bounds_in_screen.x());
-    const int vertical_edge_spacing =
-        ShelfConfig::Get()->control_button_edge_spacing(
-            /*is_primary_axis_edge=*/false);
-    EXPECT_EQ(display_bounds.bottom(),
-              home_button_bounds_in_screen.bottom() + vertical_edge_spacing);
-  }
-
-  // Activate a window and wait for the navigation widget animation to finish.
-  views::WidgetAnimationWaiter waiter(shelf->navigation_widget());
-  std::unique_ptr<aura::Window> window =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
-  wm::ActivateWindow(window.get());
-  waiter.WaitForAnimation();
-
-  ASSERT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
-
-  const gfx::Size widget_size_in_hidden_state =
-      navigation_widget->GetWindowBoundsInScreen().size();
-  EXPECT_EQ(widget_size_in_home_launcher, widget_size_in_hidden_state);
-
-  // Verify home button bounds in the hidden state.
-  {
-    const gfx::Rect home_button_bounds_in_screen =
-        fetch_home_button_screen_bounds(navigation_widget);
-    EXPECT_EQ(display_bounds.bottom(), home_button_bounds_in_screen.bottom());
-  }
-}
-
 // Tests that pinned app icons are visible on non-primary displays.
 TEST_F(ShelfLayoutManagerTest, ShelfShowsPinnedAppsOnOtherDisplays) {
   // Create three displays.
@@ -4492,6 +4430,116 @@ TEST_P(DimShelfLayoutManagerTest, AutoHiddenShelfUndimOnDisable) {
   // Disabling auto hidden shelf should undim the shelf.
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
   ASSERT_FALSE(ShelfDimmed());
+}
+
+class NavigationWidgetRTLTest
+    : public ShelfLayoutManagerTest,
+      public testing::WithParamInterface<
+          std::tuple</*in_tablet=*/bool, /*in_rtl=*/bool>> {
+ public:
+  NavigationWidgetRTLTest()
+      : in_tablet_(std::get<0>(GetParam())),
+        in_rtl_(std::get<1>(GetParam())),
+        scoped_locale_(in_rtl_ ? "ar" : "") {}
+  ~NavigationWidgetRTLTest() override = default;
+
+  // Indicates whether the test should run in the tablet mode.
+  const bool in_tablet_;
+
+  // Indicates whether the test should run under RTL.
+  const bool in_rtl_;
+
+  base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ALL,
+                         NavigationWidgetRTLTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+TEST_P(NavigationWidgetRTLTest, VerifyHomeButtonBounds) {
+  if (in_tablet_) {
+    Shell::Get()
+        ->accessibility_controller()
+        ->SetTabletModeShelfNavigationButtonsEnabled(true);
+    TabletModeControllerTestApi().EnterTabletMode();
+    ASSERT_EQ(HotseatState::kShownHomeLauncher,
+              GetShelfLayoutManager()->hotseat_state());
+  } else {
+    ASSERT_EQ(HotseatState::kShownClamshell,
+              GetShelfLayoutManager()->hotseat_state());
+  }
+
+  const gfx::Rect display_bounds = GetPrimaryDisplay().bounds();
+  Shelf* shelf = GetPrimaryShelf();
+  ShelfNavigationWidget* navigation_widget = shelf->navigation_widget();
+  const gfx::Size widget_size_in_home_launcher =
+      navigation_widget->GetWindowBoundsInScreen().size();
+
+  auto fetch_home_button_screen_bounds =
+      [](const ShelfNavigationWidget* navigation_widget,
+         bool in_rtl) -> gfx::Rect {
+    gfx::Rect home_button_bounds_in_widget =
+        navigation_widget->bounds_animator_for_test()->GetTargetBounds(
+            navigation_widget->GetHomeButton());
+    if (in_rtl) {
+      home_button_bounds_in_widget =
+          navigation_widget->GetRootView()->GetMirroredRect(
+              home_button_bounds_in_widget);
+    }
+    gfx::Rect home_button_bounds_in_screen = home_button_bounds_in_widget;
+    home_button_bounds_in_screen.Offset(
+        navigation_widget->GetWindowBoundsInScreen().OffsetFromOrigin());
+    return home_button_bounds_in_screen;
+  };
+
+  // Verify home button bounds in home launcher.
+  {
+    const gfx::Rect home_button_bounds_in_screen =
+        fetch_home_button_screen_bounds(navigation_widget, in_rtl_);
+    const int horizontal_edge_spacing =
+        ShelfConfig::Get()->control_button_edge_spacing(
+            /*is_primary_axis_edge=*/true);
+    EXPECT_EQ(
+        horizontal_edge_spacing,
+        in_rtl_ ? display_bounds.right() - home_button_bounds_in_screen.right()
+                : home_button_bounds_in_screen.x());
+    const int vertical_edge_spacing =
+        ShelfConfig::Get()->control_button_edge_spacing(
+            /*is_primary_axis_edge=*/false);
+    EXPECT_EQ(display_bounds.bottom(),
+              home_button_bounds_in_screen.bottom() + vertical_edge_spacing);
+
+    auto* home_button = navigation_widget->GetHomeButton();
+    ASSERT_EQ(views::Button::STATE_NORMAL, home_button->GetState());
+    GetEventGenerator()->MoveMouseTo(
+        home_button_bounds_in_screen.CenterPoint());
+    EXPECT_EQ(views::Button::STATE_HOVERED, home_button->GetState());
+  }
+
+  if (!in_tablet_)
+    return;
+
+  // The test code below is only for the tablet mode.
+
+  // Activate a window and wait for the navigation widget animation to finish.
+  views::WidgetAnimationWaiter waiter(shelf->navigation_widget());
+  std::unique_ptr<aura::Window> window =
+      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+  waiter.WaitForAnimation();
+
+  ASSERT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
+
+  const gfx::Size widget_size_in_hidden_state =
+      navigation_widget->GetWindowBoundsInScreen().size();
+  EXPECT_EQ(widget_size_in_home_launcher, widget_size_in_hidden_state);
+
+  // Verify home button bounds in the hidden state.
+  {
+    const gfx::Rect home_button_bounds_in_screen =
+        fetch_home_button_screen_bounds(navigation_widget, in_rtl_);
+    EXPECT_EQ(display_bounds.bottom(), home_button_bounds_in_screen.bottom());
+  }
 }
 
 }  // namespace ash

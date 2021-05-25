@@ -105,8 +105,9 @@ class ASH_EXPORT ShelfNavigationWidget : public ShelfComponent,
       NavigationButtonAnimationMetricsReporter* metrics_reporter,
       HotseatState target_hotseat_state);
 
-  // Returns the clip rectangle.
-  gfx::Rect CalculateClipRect() const;
+  // Returns the clip rectangle in the shelf navigation widget's coordinates.
+  // The returned rectangle is mirrored under RTL.
+  gfx::Rect CalculateClipRectAfterRTL() const;
 
   // Returns the ideal size of the whole widget or the visible area only when
   // |only_visible_area| is true.
@@ -118,9 +119,11 @@ class ASH_EXPORT ShelfNavigationWidget : public ShelfComponent,
   Shelf* shelf_ = nullptr;
   Delegate* delegate_ = nullptr;
 
-  // In tablet mode with hotseat enabled, |clip_rect_| is used to hide the
-  // invisible widget part.
-  gfx::Rect clip_rect_;
+  // In tablet mode with hotseat enabled, `clip_rect_after_rtl_` is used to hide
+  // the invisible widget part. We try best to avoid changing the widget's
+  // bounds and use layer clip instead. `clip_rect_after_rtl_` is mirrored under
+  // RTL.
+  gfx::Rect clip_rect_after_rtl_;
 
   // The target widget bounds in screen coordinates.
   gfx::Rect target_bounds_;

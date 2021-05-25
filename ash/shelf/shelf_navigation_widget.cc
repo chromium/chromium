@@ -531,7 +531,7 @@ void ShelfNavigationWidget::CalculateTargetBounds() {
                      nav_size.width());
   }
   target_bounds_ = gfx::Rect(nav_origin, nav_size);
-  clip_rect_ = CalculateClipRect();
+  clip_rect_after_rtl_ = CalculateClipRectAfterRTL();
 }
 
 gfx::Rect ShelfNavigationWidget::GetTargetBounds() const {
@@ -599,7 +599,7 @@ void ShelfNavigationWidget::UpdateLayout(bool animate) {
   }
 
   if (update_bounds)
-    GetLayer()->SetClipRect(clip_rect_);
+    GetLayer()->SetClipRect(clip_rect_after_rtl_);
 
   views::View* const back_button = delegate_->back_button();
   UpdateButtonVisibility(back_button, back_button_shown, animate,
@@ -657,7 +657,7 @@ void ShelfNavigationWidget::UpdateTargetBoundsForGesture(int shelf_position) {
 }
 
 gfx::Rect ShelfNavigationWidget::GetVisibleBounds() const {
-  return gfx::Rect(target_bounds_.origin(), clip_rect_.size());
+  return gfx::Rect(target_bounds_.origin(), clip_rect_after_rtl_.size());
 }
 
 void ShelfNavigationWidget::PrepareForGettingFocus(bool last_element) {
@@ -716,11 +716,16 @@ void ShelfNavigationWidget::UpdateButtonVisibility(
   button->layer()->SetOpacity(visible ? 1.0f : 0.0f);
 }
 
-gfx::Rect ShelfNavigationWidget::CalculateClipRect() const {
-  if (Shell::Get()->IsInTabletMode())
-    return gfx::Rect(CalculateIdealSize(/*only_visible_area=*/true));
+gfx::Rect ShelfNavigationWidget::CalculateClipRectAfterRTL() const {
+  gfx::Rect bounds_before_rtl;
+  if (Shell::Get()->IsInTabletMode()) {
+    bounds_before_rtl =
+        gfx::Rect(CalculateIdealSize(/*only_visible_area=*/true));
+  } else {
+    bounds_before_rtl = gfx::Rect(target_bounds_.size());
+  }
 
-  return gfx::Rect(target_bounds_.size());
+  return GetRootView()->GetMirroredRect(bounds_before_rtl);
 }
 
 gfx::Size ShelfNavigationWidget::CalculateIdealSize(
