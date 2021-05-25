@@ -864,8 +864,18 @@ void NGLineBreaker::SplitTextByGlyphs(const NGInlineItem& item,
     result->should_create_line_box = true;
     auto shape_result_view =
         ShapeResultView::Create(&shape, offset_, glyph_end);
-    result->inline_size =
-        shape_result_view->SnappedWidth().ClampNegativeToZero();
+    // For general CSS text, we apply SnappedWidth().ClampNegativeToZero().
+    // However we need to remove ClampNegativeToZero() for SVG <text> in order
+    // to get similar character positioning.
+    //
+    // For general CSS text, a negative word-spacing value decreases
+    // inline_size of an NGInlineItemResult consisting of multiple characters,
+    // and the inline_size rarely becomes negative.  However, for SVG <text>,
+    // it decreases inline_size of an NGInlineItemResult consisting of only a
+    // space character, and the inline_size becomes negative easily.
+    //
+    // See svg/W3C-SVG-1.1/text-spacing-01-b.svg.
+    result->inline_size = shape_result_view->SnappedWidth();
     result->shape_result = std::move(shape_result_view);
     offset_ = glyph_end;
     position_ += result->inline_size;

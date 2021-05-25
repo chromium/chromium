@@ -461,6 +461,10 @@ void LayoutSVGInlineText::ComputeNewScaledFontForStyle(
 
   FontDescription font_description = unscaled_font_description;
   font_description.SetComputedSize(scaled_font_size);
+  font_description.SetLetterSpacing(font_description.LetterSpacing() *
+                                    scaling_factor);
+  font_description.SetWordSpacing(font_description.WordSpacing() *
+                                  scaling_factor);
 
   scaled_font =
       Font(font_description, document.GetStyleEngine().GetFontSelector());
