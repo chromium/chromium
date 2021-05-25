@@ -37,9 +37,14 @@ GbmPixmapWayland::~GbmPixmapWayland() {
     buffer_manager_->DestroyBuffer(widget_, buffer_id_);
 }
 
-bool GbmPixmapWayland::InitializeBuffer(gfx::Size size,
-                                        gfx::BufferFormat format,
-                                        gfx::BufferUsage usage) {
+bool GbmPixmapWayland::InitializeBuffer(
+    gfx::Size size,
+    gfx::BufferFormat format,
+    gfx::BufferUsage usage,
+    absl::optional<gfx::Size> visible_area_size) {
+  DCHECK(!visible_area_size ||
+         ((visible_area_size.value().width() <= size.width()) &&
+          (visible_area_size.value().height() <= size.height())));
   TRACE_EVENT0("wayland", "GbmPixmapWayland::InitializeBuffer");
 
   if (!buffer_manager_->gbm_device())
@@ -73,6 +78,8 @@ bool GbmPixmapWayland::InitializeBuffer(gfx::Size size,
 
   DVLOG(3) << "Created gbm bo. format= " << gfx::BufferFormatToString(format)
            << " usage=" << gfx::BufferUsageToString(usage);
+
+  visible_area_size_ = visible_area_size ? visible_area_size.value() : size;
   CreateDmabufBasedBuffer();
   return true;
 }
@@ -213,7 +220,7 @@ void GbmPixmapWayland::CreateDmabufBasedBuffer() {
   }
   // Asks Wayland to create a wl_buffer based on the |file| fd.
   buffer_manager_->CreateDmabufBasedBuffer(
-      std::move(fd), GetBufferSize(), strides, offsets, modifiers,
+      std::move(fd), visible_area_size_, strides, offsets, modifiers,
       gbm_bo_->GetFormat(), plane_count, buffer_id_);
 }
 
