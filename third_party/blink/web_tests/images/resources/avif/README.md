@@ -88,4 +88,9 @@ avifenc -r f -d  8 -y 420 -s 0 --irot 3 --imir 1 red.png red-full-range-angle-3-
 This image uses a 'clap' (clean aperture) image property to crop the image to
 contain the blue rectangle only (with a magenta rectangle inside).
 
+### blue-and-magenta-crop-invalid.avif
+This image is the same as blue-and-magenta-crop.avif except that the fractions
+horizOff and vertOff have positive numerators and negative denominators (30/-1
+and 10/-1 instead of -30/1 and -10/1). Changed with a hex editor.
+
 ### TODO(crbug.com/960620): Figure out how the rest of files were generated.

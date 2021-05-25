@@ -120,6 +120,9 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   avifPixelFormat avif_yuv_format_ = AVIF_PIXEL_FORMAT_NONE;
   size_t decoded_frame_count_ = 0;
   SkYUVColorSpace yuv_color_space_ = SkYUVColorSpace::kIdentity_SkYUVColorSpace;
+  // Whether the 'clap' (clean aperture) property should be ignored, e.g.
+  // because the 'clap' property is invalid or unsupported.
+  bool ignore_clap_ = false;
   // The leftmost pixel and topmost line of the clean aperture. Used only when
   // the image has a 'clap' (clean aperture) property.
   int clap_leftmost_ = 0;

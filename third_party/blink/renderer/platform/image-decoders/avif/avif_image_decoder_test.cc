@@ -897,6 +897,54 @@ TEST(StaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
   EXPECT_TRUE(decoder->IsSizeAvailable());
 }
 
+// Verifies that an invalid 'clap' (clean aperture) image property is handled by
+// ignoring the 'clap' property and showing the full image.
+TEST(StaticAVIFTests, InvalidClapPropertyHandling) {
+  // The first image has a valid 'clap' property. The full image has size
+  // 320x280. The clean aperture has size 180x100, located at (40, 80) of the
+  // full image.
+  constexpr int kClapX = 40;
+  constexpr int kClapY = 80;
+  constexpr int kClapWidth = 180;
+  constexpr int kClapHeight = 100;
+  std::unique_ptr<ImageDecoder> decoder1 = CreateAVIFDecoder();
+  decoder1->SetData(
+      ReadFile("/images/resources/avif/blue-and-magenta-crop.avif"), true);
+  ASSERT_TRUE(decoder1->IsSizeAvailable());
+  IntSize size1 = decoder1->Size();
+  ASSERT_EQ(size1.Width(), kClapWidth);
+  ASSERT_EQ(size1.Height(), kClapHeight);
+  ImageFrame* frame1 = decoder1->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame1);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame1->GetStatus());
+  EXPECT_FALSE(decoder1->Failed());
+  const SkBitmap& bitmap1 = frame1->Bitmap();
+
+  // The second image is the same as the first image except that the 'clap'
+  // property is invalid. In this case the full image is shown.
+  std::unique_ptr<ImageDecoder> decoder2 = CreateAVIFDecoder();
+  decoder2->SetData(
+      ReadFile("/images/resources/avif/blue-and-magenta-crop-invalid.avif"),
+      true);
+  ASSERT_TRUE(decoder2->IsSizeAvailable());
+  IntSize size2 = decoder2->Size();
+  ASSERT_EQ(size2.Width(), 320);
+  ASSERT_EQ(size2.Height(), 280);
+  ImageFrame* frame2 = decoder2->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame2);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame2->GetStatus());
+  EXPECT_FALSE(decoder2->Failed());
+  const SkBitmap& bitmap2 = frame2->Bitmap();
+
+  // Compare pixel data.
+  for (int row = 0; row < kClapHeight; ++row) {
+    for (int col = 0; col < kClapWidth; ++col) {
+      EXPECT_EQ(bitmap1.getColor(/*x=*/col, /*y=*/row),
+                bitmap2.getColor(/*x=*/kClapX + col, /*y=*/kClapY + row));
+    }
+  }
+}
+
 using StaticAVIFColorTests = ::testing::TestWithParam<StaticColorCheckParam>;
 
 INSTANTIATE_TEST_CASE_P(Parameterized,

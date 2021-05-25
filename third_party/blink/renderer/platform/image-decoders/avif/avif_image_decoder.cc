@@ -1006,10 +1006,12 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     int clap_height;
     if (!ValidateClapProperty(container, clap_width, clap_height,
                               clap_leftmost_, clap_topmost_)) {
-      return false;
+      DVLOG(1) << "Ignore the 'clap' property and show the full image";
+      ignore_clap_ = true;
+    } else {
+      width = clap_width;
+      height = clap_height;
     }
-    width = clap_width;
-    height = clap_height;
   }
   return SetSize(width, height);
 }
@@ -1042,7 +1044,7 @@ avifResult AVIFImageDecoder::DecodeImage(size_t index) {
   }
 
   decoded_image_ = image;
-  if (image->transformFlags & AVIF_TRANSFORM_CLAP)
+  if ((image->transformFlags & AVIF_TRANSFORM_CLAP) && !ignore_clap_)
     CropDecodedImage();
   return AVIF_RESULT_OK;
 }
