@@ -610,7 +610,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITestWhenTooLongUrl) {
   }
 
   AutofillDownloadManagerWithCustomPayloadSize download_manager(
-      &driver_, this, "dummykey", kMaxAPIQueryGetSize + 1);
+      &driver_, this, "dummykey", kMaxQueryGetSize + 1);
 
   // Start the query request and look if it is successful. No response was
   // received yet.

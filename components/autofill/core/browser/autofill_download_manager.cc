@@ -65,7 +65,6 @@ constexpr std::pair<int, int> kAutofillExperimentRanges[] = {
     {3314445, 3314448}, {3314854, 3314883},
 };
 
-const size_t kMaxQueryGetSize = 1400;  // 1.25 KiB
 const size_t kAutofillDownloadManagerMaxFormCacheSize = 16;
 const size_t kMaxFieldsPerQueryRequest = 100;
 
@@ -774,40 +773,13 @@ size_t AutofillDownloadManager::GetPayloadLength(
 
 std::tuple<GURL, std::string> AutofillDownloadManager::GetRequestURLAndMethod(
     const FormRequestData& request_data) const {
-  std::string method("POST");
-  std::string query_str;
-
-  if (request_data.request_type == AutofillDownloadManager::REQUEST_QUERY) {
-    if (request_data.payload.length() <= kMaxQueryGetSize) {
-      method = "GET";
-      std::string base64_payload;
-      base::Base64UrlEncode(request_data.payload,
-                            base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                            &base64_payload);
-      base::StrAppend(&query_str, {"q=", base64_payload});
-    }
-    UMA_HISTOGRAM_BOOLEAN("Autofill.Query.Method", (method == "GET") ? 0 : 1);
-  }
-
-  GURL::Replacements replacements;
-  replacements.SetQueryStr(query_str);
-
-  GURL url = autofill_server_url_
-                 .Resolve(RequestTypeToString(request_data.request_type))
-                 .ReplaceComponents(replacements);
-  return std::make_tuple(std::move(url), std::move(method));
-}
-
-std::tuple<GURL, std::string>
-AutofillDownloadManager::GetRequestURLAndMethodForApi(
-    const FormRequestData& request_data) const {
   // ID of the resource to add to the API request URL. Nothing will be added if
   // |resource_id| is empty.
   std::string resource_id;
   std::string method = "POST";
 
   if (request_data.request_type == AutofillDownloadManager::REQUEST_QUERY) {
-    if (GetPayloadLength(request_data.payload) <= kMaxAPIQueryGetSize) {
+    if (GetPayloadLength(request_data.payload) <= kMaxQueryGetSize) {
       resource_id = request_data.payload;
       method = "GET";
       UMA_HISTOGRAM_BOOLEAN("Autofill.Query.ApiUrlIsTooLong", false);
@@ -836,7 +808,7 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
   // Get the URL and method to use for this request.
   std::string method;
   GURL request_url;
-  std::tie(request_url, method) = GetRequestURLAndMethodForApi(request_data);
+  std::tie(request_url, method) = GetRequestURLAndMethod(request_data);
 
   // Track the URL length for GET queries because the URL length can be in the
   // thousands when rich metadata is enabled.

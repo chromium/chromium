@@ -35,7 +35,7 @@ namespace autofill {
 class AutofillDriver;
 class LogManager;
 
-const size_t kMaxAPIQueryGetSize = 10240;  // 10 KiB
+const size_t kMaxQueryGetSize = 10240;  // 10 KiB
 
 // A helper to make sure that tests which modify the set of active autofill
 // experiments do not interfere with one another.
@@ -152,10 +152,6 @@ class AutofillDownloadManager {
   // fully encompasses the request, do not include request_data.payload when
   // transmitting the request.
   std::tuple<GURL, std::string> GetRequestURLAndMethod(
-      const FormRequestData& request_data) const;
-
-  // Same as GetRequestURLAndMethod, but for the API.
-  std::tuple<GURL, std::string> GetRequestURLAndMethodForApi(
       const FormRequestData& request_data) const;
 
   // Initiates request to Autofill servers to download/upload type predictions.
