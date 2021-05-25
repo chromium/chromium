@@ -269,6 +269,12 @@ void EventRouter::AddListenerForServiceWorker(const std::string& extension_id,
   }
 }
 
+void EventRouter::AddLazyListenerForMainThread(const std::string& extension_id,
+                                               const std::string& event_name) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  AddLazyEventListener(event_name, extension_id);
+}
+
 void EventRouter::RemoveListenerForMainThread(
     mojom::EventListenerParamPtr param,
     const std::string& event_name) {

@@ -461,12 +461,6 @@ IPC_MESSAGE_ROUTED3(ExtensionMsg_DispatchOnDisconnect,
 
 // Messages sent from the renderer to the browser:
 
-// Notify the browser that the given extension added a listener to an event from
-// a lazy background page.
-IPC_MESSAGE_CONTROL2(ExtensionHostMsg_AddLazyListener,
-                     std::string /* extension_id */,
-                     std::string /* name */)
-
 // Notify the browser that the given extension is no longer interested in
 // receiving the given event from a lazy background page.
 IPC_MESSAGE_CONTROL2(ExtensionHostMsg_RemoveLazyListener,

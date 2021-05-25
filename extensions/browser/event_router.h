@@ -154,6 +154,9 @@ class EventRouter : public KeyedService,
                                    int64_t service_worker_version_id,
                                    int32_t worker_thread_id) override;
 
+  void AddLazyListenerForMainThread(const std::string& extension_id,
+                                    const std::string& name) override;
+
   void RemoveListenerForMainThread(mojom::EventListenerParamPtr param,
                                    const std::string& name) override;
 
