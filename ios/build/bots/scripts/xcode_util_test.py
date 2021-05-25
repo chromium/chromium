@@ -5,6 +5,7 @@
 
 import logging
 import mock
+import os
 import unittest
 
 import test_runner_errors
@@ -146,6 +147,10 @@ class HelperFunctionTests(XcodeUtilTest):
 
   def setUp(self):
     super(HelperFunctionTests, self).setUp()
+    self.xcode_runtime_dir_rel_path = (
+        'Contents/Developer/'
+        'Platforms/iPhoneOS.platform/Library/Developer/'
+        'CoreSimulator/Profiles/Runtimes')
     self.xcode_runtime_rel_path = (
         'Contents/Developer/'
         'Platforms/iPhoneOS.platform/Library/Developer/'
@@ -186,17 +191,51 @@ Commands:
 Use "mac_toolchain help [command]" for more information about a command."""
     self.assertFalse(xcode_util._using_new_mac_toolchain('mac_toolchain'))
 
-  @mock.patch('os.path.exists', autospec=True, return_value=True)
-  def test_is_legacy_xcode_package_legacy(self, mock_exists):
-    self.assertTrue(xcode_util._is_legacy_xcode_package('test/path/Xcode.app'))
-    mock_exists.assert_called_with('test/path/Xcode.app/' +
-                                   self.xcode_runtime_rel_path)
+  @mock.patch('shutil.rmtree', autospec=True)
+  @mock.patch('glob.glob', autospec=True)
+  def test_is_legacy_xcode_package_legacy(self, mock_glob, mock_rmtree):
+    test_xcode_path = 'test/path/Xcode.app/'
+    runtime_names = ['iOS.simruntime', 'iOS 12.4.simruntime']
+    xcode_runtime_paths = [
+        os.path.join(test_xcode_path, self.xcode_runtime_dir_rel_path,
+                     runtime_name) for runtime_name in runtime_names
+    ]
+    mock_glob.return_value = xcode_runtime_paths
+    self.assertTrue(xcode_util._is_legacy_xcode_package(test_xcode_path))
+    mock_glob.assert_called_with(
+        os.path.join(test_xcode_path, self.xcode_runtime_dir_rel_path,
+                     '*.simruntime'))
+    self.assertFalse(mock_rmtree.called)
 
-  @mock.patch('os.path.exists', autospec=True, return_value=False)
-  def test_is_legacy_xcode_package_not_legacy(self, mock_exists):
-    self.assertFalse(xcode_util._is_legacy_xcode_package('test/path/Xcode.app'))
-    mock_exists.assert_called_with('test/path/Xcode.app/' +
-                                   self.xcode_runtime_rel_path)
+  @mock.patch('shutil.rmtree', autospec=True)
+  @mock.patch('glob.glob', autospec=True)
+  def test_is_legacy_xcode_package_no_runtime(self, mock_glob, mock_rmtree):
+    test_xcode_path = 'test/path/Xcode.app/'
+    xcode_runtime_paths = []
+    mock_glob.return_value = xcode_runtime_paths
+    self.assertFalse(xcode_util._is_legacy_xcode_package(test_xcode_path))
+    mock_glob.assert_called_with(
+        os.path.join(test_xcode_path, self.xcode_runtime_dir_rel_path,
+                     '*.simruntime'))
+    self.assertFalse(mock_rmtree.called)
+
+  @mock.patch('shutil.rmtree', autospec=True)
+  @mock.patch('glob.glob', autospec=True)
+  def test_is_legacy_xcode_package_single_runtime(self, mock_glob, mock_rmtree):
+    test_xcode_path = 'test/path/Xcode.app/'
+    runtime_names = ['iOS.simruntime']
+    xcode_runtime_paths = [
+        os.path.join(test_xcode_path, self.xcode_runtime_dir_rel_path,
+                     runtime_name) for runtime_name in runtime_names
+    ]
+    mock_glob.return_value = xcode_runtime_paths
+    self.assertFalse(xcode_util._is_legacy_xcode_package(test_xcode_path))
+    mock_glob.assert_called_with(
+        os.path.join(test_xcode_path, self.xcode_runtime_dir_rel_path,
+                     '*.simruntime'))
+    mock_rmtree.assert_called_with(
+        os.path.join(test_xcode_path, self.xcode_runtime_dir_rel_path,
+                     'iOS.simruntime'))
 
 
 class MoveRuntimeTests(XcodeUtilTest):
@@ -209,12 +248,10 @@ class MoveRuntimeTests(XcodeUtilTest):
 
   @mock.patch('shutil.move', autospec=True)
   @mock.patch('shutil.rmtree', autospec=True)
-  @mock.patch('os.path.exists', autospec=True)
   @mock.patch('glob.glob', autospec=True)
-  def test_move_runtime_into_xcode(self, mock_glob, mock_exists, mock_rmtree,
-                                   mock_move):
-    mock_glob.return_value = ['test/path/Runtime/iOS.simruntime']
-    mock_exists.return_value = False
+  def test_move_runtime_into_xcode(self, mock_glob, mock_rmtree, mock_move):
+
+    mock_glob.side_effect = [['test/path/Runtime/iOS.simruntime'], []]
 
     xcode_util.move_runtime(self.runtime_cache_folder, self.xcode_app_path,
                             True)
@@ -222,60 +259,68 @@ class MoveRuntimeTests(XcodeUtilTest):
     xcode_runtime_path = ('test/path/Xcode.app/Contents/Developer/'
                           'Platforms/iPhoneOS.platform/Library/Developer/'
                           'CoreSimulator/Profiles/Runtimes/iOS.simruntime')
-    mock_glob.assert_called_with('test/path/Runtime/*.simruntime')
-    mock_exists.assert_called_with(xcode_runtime_path)
+    calls = [
+        mock.call('test/path/Runtime/*.simruntime'),
+        mock.call(('test/path/Xcode.app/Contents/Developer/'
+                   'Platforms/iPhoneOS.platform/Library/Developer/'
+                   'CoreSimulator/Profiles/Runtimes/*.simruntime'))
+    ]
+    mock_glob.assert_has_calls(calls)
     self.assertFalse(mock_rmtree.called)
     mock_move.assert_called_with('test/path/Runtime/iOS.simruntime',
                                  xcode_runtime_path)
 
   @mock.patch('shutil.move', autospec=True)
   @mock.patch('shutil.rmtree', autospec=True)
-  @mock.patch('os.path.exists', autospec=True)
   @mock.patch('glob.glob', autospec=True)
-  def test_move_runtime_outside_xcode(self, mock_glob, mock_exists, mock_rmtree,
-                                      mock_move):
+  def test_move_runtime_outside_xcode(self, mock_glob, mock_rmtree, mock_move):
     xcode_runtime_folder = ('test/path/Xcode.app/Contents/Developer/'
                             'Platforms/iPhoneOS.platform/Library/Developer/'
                             'CoreSimulator/Profiles/Runtimes')
-    mock_glob.return_value = [xcode_runtime_folder + '/iOS.simruntime']
-    mock_exists.return_value = False
+    mock_glob.side_effect = [[xcode_runtime_folder + '/iOS.simruntime'], []]
 
     xcode_util.move_runtime(self.runtime_cache_folder, self.xcode_app_path,
                             False)
 
-    mock_glob.assert_called_with(xcode_runtime_folder + '/*.simruntime')
-    mock_exists.assert_called_with('test/path/Runtime/iOS.simruntime')
+    calls = [
+        mock.call(('test/path/Xcode.app/Contents/Developer/'
+                   'Platforms/iPhoneOS.platform/Library/Developer/'
+                   'CoreSimulator/Profiles/Runtimes/*.simruntime')),
+        mock.call('test/path/Runtime/*.simruntime')
+    ]
+    mock_glob.assert_has_calls(calls)
     self.assertFalse(mock_rmtree.called)
     mock_move.assert_called_with(xcode_runtime_folder + '/iOS.simruntime',
                                  'test/path/Runtime/iOS.simruntime')
 
   @mock.patch('shutil.move', autospec=True)
   @mock.patch('shutil.rmtree', autospec=True)
-  @mock.patch('os.path.exists', autospec=True)
   @mock.patch('glob.glob', autospec=True)
-  def test_move_runtime_multiple_in_src(self, mock_glob, mock_exists,
-                                        mock_rmtree, mock_move):
-    mock_glob.return_value = [
+  def test_move_runtime_multiple_in_src(self, mock_glob, mock_rmtree,
+                                        mock_move):
+    mock_glob.side_effect = [[
         'test/path/Runtime/iOS.simruntime',
         'test/path/Runtime/iOS 13.4.simruntime'
-    ]
+    ], []]
 
     with self.assertRaises(test_runner_errors.IOSRuntimeHandlingError):
       xcode_util.move_runtime(self.runtime_cache_folder, self.xcode_app_path,
                               True)
     mock_glob.assert_called_with('test/path/Runtime/*.simruntime')
-    self.assertFalse(mock_exists.called)
     self.assertFalse(mock_rmtree.called)
     self.assertFalse(mock_move.called)
 
   @mock.patch('shutil.move', autospec=True)
   @mock.patch('shutil.rmtree', autospec=True)
-  @mock.patch('os.path.exists', autospec=True)
   @mock.patch('glob.glob', autospec=True)
-  def test_move_runtime_remove_from_dst(self, mock_glob, mock_exists,
-                                        mock_rmtree, mock_move):
-    mock_glob.return_value = ['test/path/Runtime/iOS.simruntime']
-    mock_exists.return_value = True
+  def test_move_runtime_remove_from_dst(self, mock_glob, mock_rmtree,
+                                        mock_move):
+
+    mock_glob.side_effect = [['test/path/Runtime/iOS.simruntime'],
+                             [('test/path/Xcode.app/Contents/Developer/'
+                               'Platforms/iPhoneOS.platform/Library/Developer/'
+                               'CoreSimulator/Profiles/Runtimes/iOS.simruntime')
+                             ]]
 
     xcode_util.move_runtime(self.runtime_cache_folder, self.xcode_app_path,
                             True)
@@ -283,8 +328,13 @@ class MoveRuntimeTests(XcodeUtilTest):
     xcode_runtime_path = ('test/path/Xcode.app/Contents/Developer/'
                           'Platforms/iPhoneOS.platform/Library/Developer/'
                           'CoreSimulator/Profiles/Runtimes/iOS.simruntime')
-    mock_glob.assert_called_with('test/path/Runtime/*.simruntime')
-    mock_exists.assert_called_with(xcode_runtime_path)
+    calls = [
+        mock.call('test/path/Runtime/*.simruntime'),
+        mock.call(('test/path/Xcode.app/Contents/Developer/'
+                   'Platforms/iPhoneOS.platform/Library/Developer/'
+                   'CoreSimulator/Profiles/Runtimes/*.simruntime'))
+    ]
+    mock_glob.assert_has_calls(calls)
     mock_rmtree.assert_called_with(xcode_runtime_path)
     mock_move.assert_called_with('test/path/Runtime/iOS.simruntime',
                                  xcode_runtime_path)

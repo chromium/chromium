@@ -43,8 +43,9 @@ def _using_new_mac_toolchain(mac_toolchain):
 def _is_legacy_xcode_package(xcode_app_path):
   """Checks and returns if the installed Xcode package is legacy version.
 
-  Legacy Xcode package are uploaded with legacy version of mac_toolchain. iOS
-  runtimes are packaged into legacy Xcode packages but not into new packages.
+  Legacy Xcode package are uploaded with legacy version of mac_toolchain.
+  Typically, multiple iOS runtimes are bundled into legacy Xcode packages. No
+  runtime is bundled into new format Xcode packages.
 
   Args:
     xcode_app_path: (string) Path to install the contents of Xcode.app.
@@ -52,11 +53,20 @@ def _is_legacy_xcode_package(xcode_app_path):
   Returns:
     (bool) True if the package is legacy(with runtime bundled). False otherwise.
   """
-  # Existence of default iOS runtime indicates the downloaded Xcode is a legacy
-  # one (with runtime bundled).
-  return os.path.exists(
+  # More than one iOS runtimes indicate the downloaded Xcode is a legacy one.
+  # If no runtimes are found in the package, it's a new format package. If only
+  # one runtime is found in package, it typically means it's an incorrectly
+  # cached new format Xcode package. (The single runtime wasn't moved out from
+  # Xcode in the end of last task, because last task was killed before moving.)
+  runtimes_in_xcode = glob.glob(
       os.path.join(xcode_app_path, XcodeIOSSimulatorRuntimeRelPath,
-                   XcodeIOSSimulatorDefaultRuntimeFilename))
+                   '*.simruntime'))
+  is_legacy = len(runtimes_in_xcode) >= 2
+  if not is_legacy:
+    for runtime in runtimes_in_xcode:
+      LOGGER.warning('Removing %s from incorrectly cached Xcode.', runtime)
+      shutil.rmtree(runtime)
+  return is_legacy
 
 
 def _install_runtime(mac_toolchain, install_path, xcode_build_version,
@@ -104,8 +114,12 @@ def construct_runtime_cache_folder(runtime_cache_prefix, ios_version):
 def move_runtime(runtime_cache_folder, xcode_app_path, into_xcode):
   """Moves runtime from runtime cache into xcode or vice versa.
 
+  The function is intended to only work with new Xcode packages.
+
   The function assumes that there's exactly one *.simruntime file in the source
-  folder. It's intended to only work with new Xcode packages.
+  folder. It also removes existing runtimes in the destination folder. The above
+  assumption & handling can ensure no incorrect Xcode package is cached from
+  corner cases.
 
   Args:
     runtime_cache_folder: (string) Path to the runtime cache directory.
@@ -128,14 +142,14 @@ def move_runtime(runtime_cache_folder, xcode_app_path, into_xcode):
         'Not exactly one runtime files (files: %s) to move from %s!' %
         (runtimes_in_src, src_folder))
 
+  runtimes_in_dst = glob.glob(os.path.join(dst_folder, '*.simruntime'))
+  for runtime in runtimes_in_dst:
+    LOGGER.warning('Removing existing %s in destination folder.', runtime)
+    shutil.rmtree(runtime)
+
   # Get the runtime package filename. It might not be the default name.
   runtime_name = os.path.basename(runtimes_in_src[0])
   dst_runtime = os.path.join(dst_folder, runtime_name)
-
-  # Remove if the runtime package already exists in dst.
-  if os.path.exists(dst_runtime):
-    shutil.rmtree(dst_runtime)
-
   LOGGER.debug('Moving %s from %s to %s.' %
                (runtime_name, src_folder, dst_folder))
   shutil.move(os.path.join(src_folder, runtime_name), dst_runtime)
