@@ -9,7 +9,6 @@
 #import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/browser/ui/blocking_overlay/blocking_overlay_view_controller.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,10 +16,7 @@
 
 @interface UIBlockerSceneAgent ()
 
-// TODO(crbug.com/1107873): Create a coordinator to own this view controller.
-// The view controller that blocks all interactions with the scene.
-@property(nonatomic, strong)
-    BlockingOverlayViewController* blockingOverlayViewController;
+@property(nonatomic, strong) UIWindow* overlayWindow;
 
 @end
 
@@ -33,12 +29,11 @@
 }
 
 - (void)sceneStateWillHideModalOverlay:(SceneState*)sceneState {
-  if (!self.blockingOverlayViewController) {
+  if (!self.overlayWindow) {
     return;
   }
 
-  [self.blockingOverlayViewController.view removeFromSuperview];
-  self.blockingOverlayViewController = nil;
+  self.overlayWindow = nil;
 
   // When the scene has displayed the blocking overlay and isn't in foreground
   // when it exits it, the cached app switcher snapshot will have the overlay on
@@ -57,25 +52,34 @@
 #pragma mark - private
 
 - (void)displayBlockingOverlay {
-  if (self.blockingOverlayViewController) {
+  if (self.overlayWindow) {
     // The overlay is already displayed, nothing to do.
     return;
   }
 
-  // Make the window visible. This is because in safe mode it's not visible yet.
-  if (self.sceneState.window.hidden) {
-    [self.sceneState.window makeKeyAndVisible];
+  if (@available(iOS 13, *)) {
+    // No multiwindow before iOS 13 => no blocker necessary.
+    self.overlayWindow =
+        [[UIWindow alloc] initWithWindowScene:self.sceneState.scene];
   }
+  // The blocker is above everything, including the alerts, but below the status
+  // bar.
+  self.overlayWindow.windowLevel = UIWindowLevelStatusBar - 1;
+  NSString* a11yIdentifier = [@"blocker-"
+      stringByAppendingString:self.sceneState.window.accessibilityIdentifier];
+  self.overlayWindow.accessibilityIdentifier = a11yIdentifier;
 
-  self.blockingOverlayViewController =
+  // TODO(crbug.com/1107873): Create a coordinator to own this view controller.
+  // The view controller that blocks all interactions with the scene.
+  BlockingOverlayViewController* blockingOverlayViewController =
+
       [[BlockingOverlayViewController alloc] init];
-  self.blockingOverlayViewController.blockingSceneCommandHandler =
+  blockingOverlayViewController.blockingSceneCommandHandler =
       HandlerForProtocol(self.sceneState.appState.appCommandDispatcher,
                          BlockingSceneCommands);
-  UIView* overlayView = self.blockingOverlayViewController.view;
-  [self.sceneState.window addSubview:overlayView];
-  overlayView.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(self.sceneState.window, overlayView);
+
+  self.overlayWindow.rootViewController = blockingOverlayViewController;
+  [self.overlayWindow makeKeyAndVisible];
 }
 
 @end

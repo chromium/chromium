@@ -23,6 +23,10 @@
 // test will have consecutive numbers.
 + (id<GREYMatcher>)windowWithNumber:(int)windowNumber;
 
+// Same as above, but for the blocking window which only appears when a blocking
+// UI is shown in another window.
++ (id<GREYMatcher>)blockerWindowWithNumber:(int)windowNumber;
+
 // Matcher for element with accessibility label corresponding to |label| and
 // accessibility trait UIAccessibilityTraitButton.
 + (id<GREYMatcher>)buttonWithAccessibilityLabel:(NSString*)label;

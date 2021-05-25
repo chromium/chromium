@@ -25,6 +25,7 @@
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::SyncSettingsConfirmButton;
 using chrome_test_util::MatchInWindowWithNumber;
+using chrome_test_util::MatchInBlockerWindowWithNumber;
 using chrome_test_util::FakeOmnibox;
 
 namespace {
@@ -177,12 +178,12 @@ id<GREYMatcher> SkipSigninButton() {
   [[EarlGrey selectElementWithMatcher:MatchInWindowWithNumber(
                                           0, grey_accessibilityLabel(
                                                  @"Terms of Service"))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_notNil()];
 
   // Check UI Blocked in second window and that message is a button.
   [[EarlGrey
       selectElementWithMatcher:
-          MatchInWindowWithNumber(
+          MatchInBlockerWindowWithNumber(
               1,
               grey_text(l10n_util::GetNSString(
                   IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_SWITCH_WINDOW_ACTION)))]

@@ -143,6 +143,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_kindOfClass([UIWindow class]), nil);
 }
 
++ (id<GREYMatcher>)blockerWindowWithNumber:(int)windowNumber {
+  return grey_allOf(grey_accessibilityID([NSString
+                        stringWithFormat:@"blocker-%d", windowNumber]),
+                    grey_kindOfClass([UIWindow class]), nil);
+}
+
 + (id<GREYMatcher>)buttonWithAccessibilityLabel:(NSString*)label {
   return grey_allOf(grey_accessibilityLabel(label),
                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
