@@ -54,7 +54,6 @@
 #include "content/public/common/content_features.h"
 #include "device/fido/features.h"
 #include "media/base/media_switches.h"
-#include "net/base/features.h"
 #include "services/device/public/cpp/device_features.h"
 #include "ui/base/ui_base_features.h"
 
@@ -269,8 +268,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPrefetchNotificationSchedulingIntegration,
     &kWebNotesStylize,
     &features::kDnsOverHttps,
-    &net::features::kSameSiteByDefaultCookies,
-    &net::features::kCookiesWithoutSameSiteMustBeSecure,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
     &paint_preview::kPaintPreviewShowOnStartup,

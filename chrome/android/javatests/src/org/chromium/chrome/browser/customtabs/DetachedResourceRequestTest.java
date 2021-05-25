@@ -393,14 +393,12 @@ public class DetachedResourceRequestTest {
     }
 
     /**
-     * Demonstrates upcoming restrictions on cookies in third party contexts
+     * Demonstrates that cookies are SameSite=Lax by default, and cookies in third-party contexts
+     * require both SameSite=None and Secure.
      */
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.SAME_SITE_BY_DEFAULT_COOKIES,
-            ChromeFeatureList.COOKIES_WITHOUT_SAME_SITE_MUST_BE_SECURE})
-    public void
-    testUpcomingThirdPartyCookiePolicies() throws Exception {
+    public void testSameSiteLaxByDefaultCookies() throws Exception {
         CustomTabsSessionToken session = prepareSession();
         CustomTabsTestUtils.warmUpAndWait();
         mServer = EmbeddedTestServer.createAndStartHTTPSServer(mContext, ServerCertificate.CERT_OK);
