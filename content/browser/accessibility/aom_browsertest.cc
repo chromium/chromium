@@ -67,8 +67,9 @@ class AccessibilityObjectModelBrowserTest : public ContentBrowserTest {
 
 }  // namespace
 
+// TODO(http://crbug.com/1212324): Flaky on various builders.
 IN_PROC_BROWSER_TEST_F(AccessibilityObjectModelBrowserTest,
-                       EventListenerOnVirtualNode) {
+                       DISABLED_EventListenerOnVirtualNode) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
