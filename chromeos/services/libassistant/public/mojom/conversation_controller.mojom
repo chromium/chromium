@@ -26,7 +26,7 @@ interface ConversationController {
   // Starts a screen context interaction.
   // |screenshot| contains JPEG data.
   StartScreenContextInteraction(
-      ax.mojom.AssistantStructure assistant_structure,
+      ax.mojom.AssistantStructure? assistant_structure,
       array<uint8> screenshot);
 
   // Stops the ongoing interaction with a delay to give buffer time to
