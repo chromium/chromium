@@ -72,11 +72,11 @@ const char kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupParam[] =
     "show_switch_description";
 
 // Time threshold before activity timestamps should be removed. Currently set to
-// seven days.
-const NSTimeInterval kUserActivityTimestampExpiration = 7 * 24 * 60 * 60;
+// 21 days.
+const NSTimeInterval kUserActivityTimestampExpiration = 21 * 24 * 60 * 60;
 // Time threshold for the last URL open before no URL opens likely indicates
 // Chrome is no longer the default browser.
-const NSTimeInterval kLatestURLOpenForDefaultBrowser = 7 * 24 * 60 * 60;
+const NSTimeInterval kLatestURLOpenForDefaultBrowser = 21 * 24 * 60 * 60;
 // Delay for the user to be reshown the fullscreen promo when the user taps on
 // the "Remind Me Later" button. 50 hours.
 const NSTimeInterval kRemindMeLaterPresentationDelay = 50 * 60 * 60;
@@ -84,7 +84,7 @@ const NSTimeInterval kRemindMeLaterPresentationDelay = 50 * 60 * 60;
 // Cool down between fullscreen promos. Currently set to 14 days.
 const NSTimeInterval kFullscreenPromoCoolDown = 14 * 24 * 60 * 60;
 
-// Helper function to clear all timestamps that occur later than 7 days ago and
+// Helper function to clear all timestamps that occur later than 21 days ago and
 // keep it only to 10 timestamps.
 NSMutableArray<NSDate*>* SanitizePastUserEvents(
     NSMutableArray<NSDate*>* pastUserEvents) {
