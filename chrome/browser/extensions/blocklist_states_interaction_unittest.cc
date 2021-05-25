@@ -376,6 +376,7 @@ TEST_F(
       kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
       extension_prefs()));
 }
-#endif
 
 }  // namespace extensions
+
+#endif
