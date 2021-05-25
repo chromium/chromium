@@ -48,6 +48,18 @@ interface TestViewStructureInterface {
      */
     public String getClassName();
 
+    /** Get the text size. */
+    public float getTextSize();
+
+    /** Get the foreground color. */
+    public int getFgColor();
+
+    /** Get the background color. */
+    public int getBgColor();
+
+    /** Get the style, @see android.view.ViewStructure#setTestStyle */
+    public int getStyle();
+
     /** @see android.view.ViewStructure#getText */
     public CharSequence getText();
 }

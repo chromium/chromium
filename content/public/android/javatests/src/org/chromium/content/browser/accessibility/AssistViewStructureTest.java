@@ -5,6 +5,7 @@
 package org.chromium.content.browser.accessibility;
 
 import android.annotation.TargetApi;
+import android.app.assist.AssistStructure.ViewNode;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -19,8 +20,12 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.UseZoomForDSFPolicy;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * Tests for the implementation of onProvideVirtualStructure in
@@ -50,6 +55,22 @@ public class AssistViewStructureTest {
                                             -> testViewStructure.isDone(),
                 "Timed out waiting for onProvideVirtualStructure");
         return testViewStructure;
+    }
+
+    private double cssToPixel(double css) {
+        boolean use_zoom_for_dsf = UseZoomForDSFPolicy.isUseZoomForDSFEnabled();
+        try {
+            return TestThreadUtils.runOnUiThreadBlocking(() -> {
+                Coordinates coord = Coordinates.createFor(mActivityTestRule.getWebContents());
+                double result = css;
+                if (use_zoom_for_dsf) result *= coord.getDeviceScaleFactor();
+                result = coord.fromLocalCssToPix((float) result);
+                return result;
+            });
+        } catch (ExecutionException ex) {
+            Assert.fail("Unexpected ExecutionException");
+            return 0.0;
+        }
     }
 
     /**
@@ -226,5 +247,138 @@ public class AssistViewStructureTest {
         Assert.assertEquals("android.widget.Button", button.getClassName());
         TestViewStructureInterface buttonText = button.getChild(0);
         Assert.assertEquals("Click", buttonText.getText());
+    }
+
+    /**
+     * Verifies colors are propagated correctly.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testColors() throws Throwable {
+        final String data = "<p style=\"color:#123456;background:#abcdef\">color</p>";
+        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+
+        Assert.assertEquals(1, root.getChildCount());
+        Assert.assertEquals("", root.getText());
+        TestViewStructureInterface para = root.getChild(0);
+        Assert.assertEquals("ff123456", Integer.toHexString(para.getFgColor()));
+        Assert.assertEquals("ffabcdef", Integer.toHexString(para.getBgColor()));
+        TestViewStructureInterface paraText = para.getChild(0);
+        Assert.assertEquals("color", paraText.getText());
+    }
+
+    /**
+     * Verifies font sizes are propagated correctly.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testFontSize() throws Throwable {
+        final String data = "<html><head><style> "
+                + "    p { font-size:16px; transform: scale(2); }"
+                + "    </style></head><body><p>foo</p></body></html>";
+        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+
+        Assert.assertEquals(1, root.getChildCount());
+        Assert.assertEquals("", root.getText());
+        TestViewStructureInterface para = root.getChild(0);
+        TestViewStructureInterface paraText = para.getChild(0);
+        Assert.assertEquals("foo", paraText.getText());
+
+        // The font size should take the scale into account.
+        double expected = cssToPixel(32.0);
+        Assert.assertEquals(expected, para.getTextSize(), 1.0);
+    }
+
+    /**
+     * Verifies text styles are propagated correctly.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testTextStyles() throws Throwable {
+        final String data = "<html><head><style> "
+                + "    body { font: italic bold 12px Courier; }"
+                + "    </style></head><body><p>foo</p></body></html>";
+        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+
+        Assert.assertEquals(1, root.getChildCount());
+        Assert.assertEquals("", root.getText());
+        TestViewStructureInterface para = root.getChild(0);
+        int style = para.getStyle();
+        Assert.assertTrue(0 != (style & ViewNode.TEXT_STYLE_BOLD));
+        Assert.assertTrue(0 != (style & ViewNode.TEXT_STYLE_ITALIC));
+        Assert.assertFalse(0 != (style & ViewNode.TEXT_STYLE_UNDERLINE));
+        Assert.assertFalse(0 != (style & ViewNode.TEXT_STYLE_STRIKE_THRU));
+
+        TestViewStructureInterface paraText = para.getChild(0);
+        Assert.assertEquals("foo", paraText.getText());
+    }
+
+    /**
+     * Verifies the strong style is propagated correctly.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testStrongStyle() throws Throwable {
+        final String data = "<html><body><p>foo</p><p><strong>bar</strong></p></body></html>";
+        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+
+        Assert.assertEquals(2, root.getChildCount());
+        Assert.assertEquals("", root.getText());
+        TestViewStructureInterface child1 = root.getChild(0);
+        Assert.assertEquals("foo", child1.getChild(0).getText());
+        int child1style = child1.getStyle();
+        Assert.assertFalse(0 != (child1style & ViewNode.TEXT_STYLE_BOLD));
+        TestViewStructureInterface child2 = root.getChild(1);
+        TestViewStructureInterface child2child = child2.getChild(0);
+        Assert.assertEquals("bar", child2child.getText());
+        Assert.assertEquals(child1.getTextSize(), child2child.getTextSize(), 0);
+        int child2childstyle = child2child.getStyle();
+        Assert.assertTrue(0 != (child2childstyle & ViewNode.TEXT_STYLE_BOLD));
+    }
+
+    /**
+     * Verifies the italic style is propagated correctly.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testItalicStyle() throws Throwable {
+        final String data = "<html><body><i>foo</i></body></html>";
+        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+
+        Assert.assertEquals(1, root.getChildCount());
+        Assert.assertEquals("", root.getText());
+        TestViewStructureInterface child = root.getChild(0);
+        TestViewStructureInterface grandchild = child.getChild(0);
+        int style = grandchild.getStyle();
+        Assert.assertTrue(0 != (style & ViewNode.TEXT_STYLE_ITALIC));
+    }
+
+    /**
+     * Verifies the bold style is propagated correctly.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testBoldStyle() throws Throwable {
+        final String data = "<html><body><b>foo</b></body></html>";
+        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+
+        Assert.assertEquals(1, root.getChildCount());
+        Assert.assertEquals("", root.getText());
+        TestViewStructureInterface child = root.getChild(0);
+        TestViewStructureInterface grandchild = child.getChild(0);
+        int style = grandchild.getStyle();
+        Assert.assertTrue(0 != (style & ViewNode.TEXT_STYLE_BOLD));
     }
 }

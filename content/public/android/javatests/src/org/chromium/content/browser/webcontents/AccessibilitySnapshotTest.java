@@ -16,13 +16,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.AccessibilitySnapshotCallback;
 import org.chromium.content_public.browser.AccessibilitySnapshotNode;
-import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.common.UseZoomForDSFPolicy;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
-
-import java.util.concurrent.ExecutionException;
 
 /**
  * Accessibility snapshot tests for Assist feature.
@@ -74,119 +69,6 @@ public class AccessibilitySnapshotTest {
         });
         callbackHelper.waitForCallback(callbackCount);
         return callbackHelper.getValue();
-    }
-
-    private double cssToPixel(double css) {
-        double zoomFactor = 0;
-        try {
-            zoomFactor = TestThreadUtils.runOnUiThreadBlocking(() -> {
-                Coordinates coord = Coordinates.createFor(mActivityTestRule.getWebContents());
-                return coord.getDeviceScaleFactor();
-            });
-        } catch (ExecutionException ex) {
-            Assert.fail("Unexpected ExecutionException");
-        }
-        return Math.ceil(zoomFactor * css);
-    }
-
-    @Test
-    @SmallTest
-    public void testRequestAccessibilitySnapshotColors() throws Throwable {
-        final String data = "<p style=\"color:#123456;background:#abcdef\">color</p>";
-        AccessibilitySnapshotNode root = receiveAccessibilitySnapshot(data, null);
-        Assert.assertEquals(1, root.children.size());
-        Assert.assertEquals("", root.text);
-        AccessibilitySnapshotNode para = root.children.get(0);
-        Assert.assertTrue(para.hasStyle);
-        Assert.assertEquals("ff123456", Integer.toHexString(para.color));
-        Assert.assertEquals("ffabcdef", Integer.toHexString(para.bgcolor));
-        AccessibilitySnapshotNode paraText = para.children.get(0);
-        Assert.assertEquals("color", paraText.text);
-    }
-
-    @Test
-    @SmallTest
-    public void testRequestAccessibilitySnapshotFontSize() throws Throwable {
-        final String data = "<html><head><style> "
-                + "    p { font-size:16px; transform: scale(2); }"
-                + "    </style></head><body><p>foo</p></body></html>";
-        AccessibilitySnapshotNode root = receiveAccessibilitySnapshot(data, null);
-        Assert.assertEquals(1, root.children.size());
-        Assert.assertEquals("", root.text);
-        AccessibilitySnapshotNode para = root.children.get(0);
-        Assert.assertTrue(para.hasStyle);
-        AccessibilitySnapshotNode paraText = para.children.get(0);
-        Assert.assertEquals("foo", paraText.text);
-
-        // The font size should take the scale into account.
-        double expected = UseZoomForDSFPolicy.isUseZoomForDSFEnabled() ? cssToPixel(32.0) : 32.0;
-        Assert.assertEquals(expected, para.textSize, 1.0);
-    }
-
-    @Test
-    @SmallTest
-    public void testRequestAccessibilitySnapshotStyles() throws Throwable {
-        final String data = "<html><head><style> "
-                + "    body { font: italic bold 12px Courier; }"
-                + "    </style></head><body><p>foo</p></body></html>";
-        AccessibilitySnapshotNode root = receiveAccessibilitySnapshot(data, null);
-        Assert.assertEquals(1, root.children.size());
-        Assert.assertEquals("", root.text);
-        AccessibilitySnapshotNode para = root.children.get(0);
-        Assert.assertTrue(para.hasStyle);
-        Assert.assertTrue(para.bold);
-        Assert.assertTrue(para.italic);
-        Assert.assertFalse(para.lineThrough);
-        Assert.assertFalse(para.underline);
-
-        AccessibilitySnapshotNode paraText = para.children.get(0);
-        Assert.assertEquals("foo", paraText.text);
-    }
-
-    @Test
-    @SmallTest
-    public void testRequestAccessibilitySnapshotStrongStyle() throws Throwable {
-        final String data = "<html><body><p>foo</p><p><strong>bar</strong></p></body></html>";
-        AccessibilitySnapshotNode root = receiveAccessibilitySnapshot(data, null);
-        Assert.assertEquals(2, root.children.size());
-        Assert.assertEquals("", root.text);
-        AccessibilitySnapshotNode child1 = root.children.get(0);
-        Assert.assertEquals("foo", child1.children.get(0).text);
-        Assert.assertTrue(child1.hasStyle);
-        Assert.assertFalse(child1.bold);
-        AccessibilitySnapshotNode child2 = root.children.get(1);
-        AccessibilitySnapshotNode child2child = child2.children.get(0);
-        Assert.assertEquals("bar", child2child.text);
-        Assert.assertEquals(child1.textSize, child2child.textSize, ASSERTION_DELTA);
-        Assert.assertTrue(child2child.bold);
-    }
-
-    @Test
-    @SmallTest
-    public void testRequestAccessibilitySnapshotItalicStyle() throws Throwable {
-        final String data = "<html><body><i>foo</i></body></html>";
-        AccessibilitySnapshotNode root = receiveAccessibilitySnapshot(data, null);
-        Assert.assertEquals(1, root.children.size());
-        Assert.assertEquals("", root.text);
-        AccessibilitySnapshotNode child = root.children.get(0);
-        AccessibilitySnapshotNode grandchild = child.children.get(0);
-        Assert.assertEquals("foo", grandchild.text);
-        Assert.assertTrue(grandchild.hasStyle);
-        Assert.assertTrue(grandchild.italic);
-    }
-
-    @Test
-    @SmallTest
-    public void testRequestAccessibilitySnapshotBoldStyle() throws Throwable {
-        final String data = "<html><body><b>foo</b></body></html>";
-        AccessibilitySnapshotNode root = receiveAccessibilitySnapshot(data, null);
-        Assert.assertEquals(1, root.children.size());
-        Assert.assertEquals("", root.text);
-        AccessibilitySnapshotNode child = root.children.get(0);
-        AccessibilitySnapshotNode grandchild = child.children.get(0);
-        Assert.assertEquals("foo", grandchild.text);
-        Assert.assertTrue(grandchild.hasStyle);
-        Assert.assertTrue(grandchild.bold);
     }
 
     private String getSelectionScript(String node1, int start, String node2, int end) {

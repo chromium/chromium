@@ -26,6 +26,10 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
     private ArrayList<TestViewStructure> mChildren = new ArrayList<TestViewStructure>();
     private boolean mDone = true;
     private boolean mDumpHtmlTags;
+    private float mTextSize;
+    private int mFgColor;
+    private int mBgColor;
+    private int mStyle;
 
     public TestViewStructure() {}
 
@@ -50,6 +54,26 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
     @Override
     public String getClassName() {
         return mClassName;
+    }
+
+    @Override
+    public float getTextSize() {
+        return mTextSize;
+    }
+
+    @Override
+    public int getFgColor() {
+        return mFgColor;
+    }
+
+    @Override
+    public int getBgColor() {
+        return mBgColor;
+    }
+
+    @Override
+    public int getStyle() {
+        return mStyle;
     }
 
     private void recursiveDumpToString(StringBuilder builder, int indent, boolean dumpHtmlTags) {
@@ -280,7 +304,12 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
     public void setText(CharSequence text, int selectionStart, int selectionEnd) {}
 
     @Override
-    public void setTextStyle(float size, int fgColor, int bgColor, int style) {}
+    public void setTextStyle(float size, int fgColor, int bgColor, int style) {
+        mTextSize = size;
+        mFgColor = fgColor;
+        mBgColor = bgColor;
+        mStyle = style;
+    }
 
     @Override
     public void setTextLines(int[] charOffsets, int[] baselines) {}
