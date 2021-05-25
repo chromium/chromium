@@ -24,6 +24,9 @@ namespace {
 const char kNsUserDefaultKeyLastSessionInfo[] =
     "MainThreadDetectionLastThreadWasFrozenInfo";
 
+// Clean exit beacon.
+NSString* const kLastSessionExitedCleanly = @"LastSessionExitedCleanly";
+
 const NSTimeInterval kFreezeDetectionDelay = 9;
 
 void LogRecoveryTime(base::TimeDelta time) {
@@ -96,6 +99,18 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
   if (self) {
     _lastSessionFreezeInfo = [[NSUserDefaults standardUserDefaults]
         dictionaryForKey:@(kNsUserDefaultKeyLastSessionInfo)];
+
+    if (_lastSessionFreezeInfo != nil) {
+      NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+      bool clean = [defaults objectForKey:kLastSessionExitedCleanly] != nil &&
+                   [defaults boolForKey:kLastSessionExitedCleanly];
+      // Last session exited cleanly, ignore _lastSessionFreezeInfo.
+      UMA_HISTOGRAM_BOOLEAN("IOS.MainThreadFreezeDetection.HangWithCleanExit",
+                            clean);
+      if (clean)
+        _lastSessionFreezeInfo = nil;
+    }
+
     _lastSessionEndedFrozen = _lastSessionFreezeInfo != nil;
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:@(kNsUserDefaultKeyLastSessionInfo)];

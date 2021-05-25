@@ -573,6 +573,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="IOS.MainThreadFreezeDetection.HangWithCleanExit"
+    enum="Boolean" expires_after="2021-12-11">
+  <owner>justincohen@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    Recorded when the MainThreadFreezeDetector initializes. If a hang was
+    detected on a previous run, it's expected the app will be killed and not
+    exit cleanly. Set to `true` if the app exited cleanly and a hang was
+    detected, indicating no watchdog kill and an error in freeze detection.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MainThreadFreezeDetection.NotRunningAfterReport"
     enum="IOSMainThreadFreezeDetectionNotRunningAfterReportBlock"
     expires_after="2021-09-12">
