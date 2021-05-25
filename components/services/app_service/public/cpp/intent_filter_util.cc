@@ -170,18 +170,19 @@ bool IsBrowserFilter(const apps::mojom::IntentFilterPtr& filter) {
 // accept, to be used in listing all of the supported links for a given app.
 std::set<std::string> AppManagementGetSupportedLinks(
     const apps::mojom::IntentFilterPtr& intent_filter) {
-  std::set<std::string> supported_links;
-  std::set<std::string> schemes;
   std::set<std::string> hosts;
+  bool is_http_or_https = false;
 
   for (auto& condition : intent_filter->conditions) {
-    // For scheme conditions we add each value to the the |schemes| set.
+    // For scheme conditions we check if it's http or https and set a Boolean
+    // if this intent filter is for one of those schemes.
     if (condition->condition_type == apps::mojom::ConditionType::kScheme) {
       for (auto& condition_value : condition->condition_values) {
         // We only care about http and https schemes.
         if (condition_value->value == url::kHttpScheme ||
             condition_value->value == url::kHttpsScheme) {
-          schemes.insert(condition_value->value);
+          is_http_or_https = true;
+          break;
         }
       }
 
@@ -189,28 +190,20 @@ std::set<std::string> AppManagementGetSupportedLinks(
       // aren't any http or https scheme values this indicates that no http or
       // https scheme exists in the intent filter and thus we will have to
       // return an empty list.
-      if (schemes.empty()) {
+      if (!is_http_or_https) {
         break;
       }
     }
 
     // For host conditions we add each value to the the |hosts| set.
-    if (condition->condition_type != apps::mojom::ConditionType::kHost) {
+    if (condition->condition_type == apps::mojom::ConditionType::kHost) {
       for (auto& condition_value : condition->condition_values) {
         hosts.insert(condition_value->value);
       }
     }
   }
 
-  // Loop through all combinations of scheme and host and add to
-  // supported links.
-  for (auto& scheme : schemes) {
-    for (auto& host : hosts) {
-      supported_links.insert(scheme + url::kStandardSchemeSeparator + host);
-    }
-  }
-
-  return supported_links;
+  return is_http_or_https ? hosts : std::set<std::string>();
 }
 
 }  // namespace apps_util
