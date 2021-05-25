@@ -121,9 +121,7 @@ class MockResourceRequestSender : public WebResourceRequestSender {
 
   bool canceled() { return canceled_; }
 
-  void SetDefersLoading(WebLoaderFreezeMode mode) override {
-    freeze_mode_ = mode;
-  }
+  void Freeze(WebLoaderFreezeMode mode) override { freeze_mode_ = mode; }
   WebLoaderFreezeMode freeze_mode() const { return freeze_mode_; }
 
   void set_sync_load_response(SyncLoadResponse&& sync_load_response) {
@@ -471,7 +469,7 @@ TEST_F(WebURLLoaderTest, DeleteOnFail) {
 }
 
 TEST_F(WebURLLoaderTest, DefersLoadingBeforeStart) {
-  client()->loader()->SetDefersLoading(WebLoaderFreezeMode::kStrict);
+  client()->loader()->Freeze(WebLoaderFreezeMode::kStrict);
   EXPECT_EQ(sender()->freeze_mode(), WebLoaderFreezeMode::kNone);
   DoStartAsyncRequest();
   EXPECT_EQ(sender()->freeze_mode(), WebLoaderFreezeMode::kStrict);

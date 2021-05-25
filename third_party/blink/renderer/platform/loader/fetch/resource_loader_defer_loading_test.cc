@@ -86,9 +86,7 @@ class TestWebURLLoader final : public WebURLLoader {
           resource_load_info_notifier_wrapper,
       WebURLLoaderClient*) override {}
 
-  void SetDefersLoading(WebLoaderFreezeMode mode) override {
-    *freeze_mode_ptr_ = mode;
-  }
+  void Freeze(WebLoaderFreezeMode mode) override { *freeze_mode_ptr_ = mode; }
   void DidChangePriority(WebURLRequest::Priority, int) override {
     NOTREACHED();
   }
@@ -169,7 +167,7 @@ class ResourceLoaderDefersLoadingTest : public testing::Test {
   ProcessCodeCacheRequestCallback process_code_cache_request_callback_;
   WebCodeCacheLoader::FetchCodeCacheCallback code_cache_response_callback_;
   // Passed to TestWebURLLoader (via |platform_|) and updated when its
-  // SetDefersLoading method is called.
+  // Freeze method is called.
   WebLoaderFreezeMode freeze_mode_ = WebLoaderFreezeMode::kNone;
   const KURL test_url_ = KURL("http://example.com/");
 

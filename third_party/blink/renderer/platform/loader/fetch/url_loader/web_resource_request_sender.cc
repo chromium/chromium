@@ -317,18 +317,17 @@ void WebResourceRequestSender::Cancel(
   DeletePendingRequest(std::move(task_runner));
 }
 
-void WebResourceRequestSender::SetDefersLoading(WebLoaderFreezeMode mode) {
+void WebResourceRequestSender::Freeze(WebLoaderFreezeMode mode) {
   if (!request_info_) {
     DLOG(ERROR) << "unknown request";
     return;
   }
   if (mode != WebLoaderFreezeMode::kNone) {
     request_info_->freeze_mode = mode;
-    request_info_->url_loader_client->SetDefersLoading(mode);
+    request_info_->url_loader_client->Freeze(mode);
   } else if (request_info_->freeze_mode != WebLoaderFreezeMode::kNone) {
     request_info_->freeze_mode = WebLoaderFreezeMode::kNone;
-    request_info_->url_loader_client->SetDefersLoading(
-        WebLoaderFreezeMode::kNone);
+    request_info_->url_loader_client->Freeze(WebLoaderFreezeMode::kNone);
 
     FollowPendingRedirect(request_info_.get());
   }

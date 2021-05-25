@@ -194,7 +194,7 @@ class MojoURLLoaderClient::BodyBuffer final
                  "total_bytes_drained", static_cast<int>(total_bytes_drained_),
                  "added_bytes", static_cast<int>(num_bytes));
 
-    if (owner_->IsDeferredWithBackForwardCache()) {
+    if (owner_->freeze_mode() == WebLoaderFreezeMode::kBufferIncoming) {
       owner_->DidBufferLoadWhileInBackForwardCache(num_bytes);
       if (total_bytes_drained_ > max_bytes_drained_ ||
           !owner_->CanContinueBufferingWhileInBackForwardCache()) {
@@ -302,14 +302,15 @@ MojoURLLoaderClient::MojoURLLoaderClient(
 
 MojoURLLoaderClient::~MojoURLLoaderClient() = default;
 
-void MojoURLLoaderClient::SetDefersLoading(WebLoaderFreezeMode value) {
-  freeze_mode_ = value;
-  if (value == WebLoaderFreezeMode::kNone) {
+void MojoURLLoaderClient::Freeze(WebLoaderFreezeMode mode) {
+  freeze_mode_ = mode;
+  if (mode == WebLoaderFreezeMode::kNone) {
     StopBackForwardCacheEvictionTimer();
     task_runner_->PostTask(
         FROM_HERE, WTF::Bind(&MojoURLLoaderClient::FlushDeferredMessages,
                              weak_factory_.GetWeakPtr()));
-  } else if (IsDeferredWithBackForwardCache() && !has_received_complete_ &&
+  } else if (mode == WebLoaderFreezeMode::kBufferIncoming &&
+             !has_received_complete_ &&
              !back_forward_cache_eviction_timer_.IsRunning()) {
     // We should evict the page associated with this load if the connection
     // takes too long until it either finished or failed.

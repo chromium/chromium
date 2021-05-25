@@ -138,7 +138,7 @@ class ResourceLoaderTest : public testing::Test {
             resource_load_info_notifier_wrapper,
         WebURLLoaderClient*) override {}
 
-    void SetDefersLoading(LoaderFreezeMode) override {}
+    void Freeze(LoaderFreezeMode) override {}
     void DidChangePriority(WebURLRequest::Priority, int) override {
       NOTREACHED();
     }

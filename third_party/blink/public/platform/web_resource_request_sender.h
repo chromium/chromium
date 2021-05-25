@@ -129,8 +129,10 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
   // Cancels the current request and `request_info_` will be released.
   virtual void Cancel(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  // Toggles the is_deferred attribute for the specified request.
-  virtual void SetDefersLoading(WebLoaderFreezeMode mode);
+  // Freezes the loader. See blink/renderer/platform/loader/README.md for the
+  // general concept of "freezing" in the loading module. See
+  // blink/public/platform/web_loader_freezing_mode.h for `mode`.
+  virtual void Freeze(WebLoaderFreezeMode mode);
 
   // Indicates the priority of the specified request changed.
   void DidChangePriority(net::RequestPriority new_priority,

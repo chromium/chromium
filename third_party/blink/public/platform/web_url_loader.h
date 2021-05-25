@@ -134,8 +134,10 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
           resource_load_info_notifier_wrapper,
       WebURLLoaderClient* client);
 
-  // Suspends/resumes an asynchronous load.
-  virtual void SetDefersLoading(WebLoaderFreezeMode mode);
+  // Freezes the loader. See blink/renderer/platform/loader/README.md for the
+  // general concept of "freezing" in the loading module. See
+  // blink/public/platform/web_loader_freezing_mode.h for `mode`.
+  virtual void Freeze(WebLoaderFreezeMode mode);
 
   // Notifies the loader that the priority of a WebURLRequest has changed from
   // its previous value. For example, a preload request starts with low

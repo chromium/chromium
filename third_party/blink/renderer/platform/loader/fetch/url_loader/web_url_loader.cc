@@ -344,7 +344,7 @@ class WebURLLoader::Context : public WebRequestPeer {
   scoped_refptr<base::SingleThreadTaskRunner> GetMaybeUnfreezableTaskRunner();
 
   void Cancel();
-  void SetDefersLoading(WebLoaderFreezeMode mode);
+  void Freeze(WebLoaderFreezeMode mode);
   void DidChangePriority(WebURLRequest::Priority new_priority,
                          int intra_priority_value);
   void Start(std::unique_ptr<network::ResourceRequest> request,
@@ -489,9 +489,9 @@ void WebURLLoader::Context::Cancel() {
   loader_ = nullptr;
 }
 
-void WebURLLoader::Context::SetDefersLoading(WebLoaderFreezeMode mode) {
+void WebURLLoader::Context::Freeze(WebLoaderFreezeMode mode) {
   if (request_id_ != -1)
-    resource_request_sender_->SetDefersLoading(mode);
+    resource_request_sender_->Freeze(mode);
   freeze_mode_ = mode;
 }
 
@@ -623,7 +623,7 @@ void WebURLLoader::Context::Start(
       back_forward_cache_loader_helper_);
 
   if (freeze_mode_ != WebLoaderFreezeMode::kNone) {
-    resource_request_sender_->SetDefersLoading(WebLoaderFreezeMode::kStrict);
+    resource_request_sender_->Freeze(WebLoaderFreezeMode::kStrict);
   }
 }
 
@@ -1056,9 +1056,9 @@ void WebURLLoader::Cancel() {
     context_->Cancel();
 }
 
-void WebURLLoader::SetDefersLoading(WebLoaderFreezeMode mode) {
+void WebURLLoader::Freeze(WebLoaderFreezeMode mode) {
   if (context_)
-    context_->SetDefersLoading(mode);
+    context_->Freeze(mode);
 }
 
 void WebURLLoader::DidChangePriority(WebURLRequest::Priority new_priority,

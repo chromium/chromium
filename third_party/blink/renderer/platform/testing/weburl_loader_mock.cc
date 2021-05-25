@@ -133,7 +133,7 @@ void WebURLLoaderMock::Cancel() {
   factory_->CancelLoad(this);
 }
 
-void WebURLLoaderMock::SetDefersLoading(WebLoaderFreezeMode mode) {
+void WebURLLoaderMock::Freeze(WebLoaderFreezeMode mode) {
   is_deferred_ = (mode != WebLoaderFreezeMode::kNone);
   // Ignores setDefersLoading(false) safely.
   if (!is_deferred_)

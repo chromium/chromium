@@ -52,9 +52,10 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
   ~MojoURLLoaderClient() override;
 
-  // Set the defer status. If loading is deferred, received messages are not
-  // dispatched to clients until it is set not deferred.
-  void SetDefersLoading(WebLoaderFreezeMode value);
+  // Freezes the loader. See blink/renderer/platform/loader/README.md for the
+  // general concept of "freezing" in the loading module. See
+  // blink/public/platform/web_loader_freezing_mode.h for `mode`.
+  void Freeze(WebLoaderFreezeMode mode);
 
   // network::mojom::URLLoaderClient implementation
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -75,9 +76,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason reason);
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
   bool CanContinueBufferingWhileInBackForwardCache();
-  bool IsDeferredWithBackForwardCache() {
-    return freeze_mode_ == WebLoaderFreezeMode::kBufferIncoming;
-  }
+  WebLoaderFreezeMode freeze_mode() const { return freeze_mode_; }
 
  private:
   class BodyBuffer;

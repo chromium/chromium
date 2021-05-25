@@ -119,7 +119,7 @@ class FailingLoader final : public WebURLLoader {
       WebURLLoaderClient* client) override {
     NOTREACHED();
   }
-  void SetDefersLoading(LoaderFreezeMode) override {}
+  void Freeze(LoaderFreezeMode) override {}
   void DidChangePriority(WebURLRequest::Priority, int) override {}
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
       override {
