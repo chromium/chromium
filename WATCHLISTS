@@ -2008,8 +2008,10 @@
       'filepath': 'chrome/browser/content_settings/'\
                   '|chrome/browser/ui/views/website_settings/'\
                   '|chrome/browser/ui/website_settings/'\
+                  '|chrome/browser/privacy_sandbox/privacy_sandbox_settings'\
                   '|chrome/common/content_settings'\
-                  '|components/content_settings/',
+                  '|components/content_settings/'\
+                  '|services/network/cookie_settings',
     },
     'windows_sandboxing': {
       'filepath': 'sandbox/win/',
