@@ -489,7 +489,9 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   if (!fetch_context_) {
     fetch_context_ = std::make_unique<FrameFetchContext>(web_frame);
     DCHECK(!url_index_);
-    url_index_ = std::make_unique<media::UrlIndex>(fetch_context_.get());
+    url_index_ = std::make_unique<media::UrlIndex>(
+        fetch_context_.get(),
+        render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia));
   }
   DCHECK_EQ(static_cast<FrameFetchContext*>(fetch_context_.get())->frame(),
             web_frame);

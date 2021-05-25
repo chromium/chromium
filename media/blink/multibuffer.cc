@@ -52,11 +52,11 @@ static MultiBuffer::BlockId ClosestNextEntry(
 // MultiBuffer::GlobalLRU
 //
 MultiBuffer::GlobalLRU::GlobalLRU(
-    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : max_size_(0),
       data_size_(0),
       background_pruning_pending_(false),
-      task_runner_(task_runner) {}
+      task_runner_(std::move(task_runner)) {}
 
 MultiBuffer::GlobalLRU::~GlobalLRU() {
   // By the time we're freed, all blocks should have been removed,

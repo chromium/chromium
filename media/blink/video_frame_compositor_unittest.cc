@@ -5,14 +5,17 @@
 #include "media/blink/video_frame_compositor.h"
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/test/task_environment.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "media/base/video_frame.h"
+#include "media/blink/blink_platform_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
@@ -61,8 +64,8 @@ class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
     submitter_ = client_.get();
 
     EXPECT_CALL(*submitter_, Initialize(_, _));
-    compositor_ = std::make_unique<VideoFrameCompositor>(
-        base::ThreadTaskRunnerHandle::Get(), std::move(client_));
+    compositor_ = std::make_unique<VideoFrameCompositor>(task_runner_,
+                                                         std::move(client_));
     base::RunLoop().RunUntilIdle();
     EXPECT_CALL(*submitter_,
                 SetRotation(Eq(media::VideoRotation::VIDEO_ROTATION_90)));
@@ -139,6 +142,9 @@ class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
   StrictMock<MockWebVideoFrameSubmitter>* submitter_;
   std::unique_ptr<StrictMock<MockWebVideoFrameSubmitter>> client_;
   std::unique_ptr<VideoFrameCompositor> compositor_;
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =
+      BlinkPlatformWithTaskEnvironment::GetTaskEnvironment()
+          ->GetMainThreadTaskRunner();
 
  private:
   DISALLOW_COPY_AND_ASSIGN(VideoFrameCompositorTest);
@@ -155,8 +161,7 @@ TEST_F(VideoFrameCompositorTest, SetIsSurfaceVisible) {
     base::RunLoop run_loop;
     EXPECT_CALL(*submitter_, SetIsSurfaceVisible(true));
     cb.Run(true, nullptr);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop.QuitClosure());
+    task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -164,8 +169,7 @@ TEST_F(VideoFrameCompositorTest, SetIsSurfaceVisible) {
     base::RunLoop run_loop;
     EXPECT_CALL(*submitter_, SetIsSurfaceVisible(false));
     cb.Run(false, nullptr);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop.QuitClosure());
+    task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -174,8 +178,7 @@ TEST_F(VideoFrameCompositorTest, SetIsSurfaceVisible) {
     base::WaitableEvent true_event;
     EXPECT_CALL(*submitter_, SetIsSurfaceVisible(true));
     cb.Run(true, &true_event);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop.QuitClosure());
+    task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
     EXPECT_TRUE(true_event.IsSignaled());
   }
@@ -186,8 +189,7 @@ TEST_F(VideoFrameCompositorTest, SetIsSurfaceVisible) {
     EXPECT_CALL(*submitter_, SetIsSurfaceVisible(false));
     cb.Run(false, &false_event);
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop.QuitClosure());
+    task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
     EXPECT_TRUE(false_event.IsSignaled());
   }

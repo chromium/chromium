@@ -7,15 +7,15 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
-#include "base/task/current_thread.h"
-#include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "media/base/cdm_config.h"
 #include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_types.h"
+#include "media/blink/blink_platform_with_task_environment.h"
 #include "media/blink/video_decode_stats_reporter.h"
 #include "media/capabilities/bucket_utility.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -108,12 +108,6 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
   ~VideoDecodeStatsReporterTest() override = default;
 
   void SetUp() override {
-    // Do this first. Lots of pieces depend on the task runner.
-    auto message_loop = base::CurrentThread::Get();
-    original_task_runner_ = base::ThreadTaskRunnerHandle::Get();
-    task_runner_ = new base::TestMockTimeTaskRunner();
-    message_loop.SetTaskRunner(task_runner_);
-
     // Make reporter with default configuration. Connects RecordInterceptor as
     // remote mojo VideoDecodeStatsRecorder.
     MakeReporter();
@@ -130,8 +124,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
     reporter_.reset();
 
     // Run task runner to have Mojo cleanup interceptor_.
-    task_runner_->RunUntilIdle();
-    base::CurrentThread::Get().SetTaskRunner(original_task_runner_);
+    task_environment_->RunUntilIdle();
   }
 
   PipelineStatistics MakeAdvancingDecodeStats() {
@@ -191,13 +184,14 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
         SetupRecordInterceptor(&interceptor_),
         base::BindRepeating(&VideoDecodeStatsReporterTest::GetPipelineStatsCB,
                             base::Unretained(this)),
-        profile, natural_size, key_system, cdm_config, task_runner_,
-        task_runner_->GetMockTickClock());
+        profile, natural_size, key_system, cdm_config,
+        task_environment_->GetMainThreadTaskRunner(),
+        task_environment_->GetMockTickClock());
   }
 
   // Fast forward the task runner (and associated tick clock) by |milliseconds|.
   void FastForward(base::TimeDelta delta) {
-    task_runner_->FastForwardBy(delta);
+    task_environment_->FastForwardBy(delta);
   }
 
   bool ShouldBeReporting() const { return reporter_->ShouldBeReporting(); }
@@ -351,6 +345,9 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
   // expectations and return behavior.
   MOCK_METHOD0(GetPipelineStatsCB, PipelineStatistics());
 
+  base::test::TaskEnvironment* task_environment_ =
+      BlinkPlatformWithTaskEnvironment::GetTaskEnvironment();
+
   // These track the last values returned by MakeAdvancingDecodeStats(). See
   // SetUp() for initialization.
   uint32_t pipeline_decoded_frames_;
@@ -360,12 +357,6 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
 
   // Placed as a class member to avoid static initialization costs.
   const gfx::Size kDefaultSize_;
-
-  // Task runner that allows for manual advancing of time. Instantiated during
-  // Setup(). |original_task_runner_| is a copy of the TaskRunner in place prior
-  // to the start of this test. It's restored after the test completes.
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> original_task_runner_;
 
   // Points to the interceptor that acts as a VideoDecodeStatsRecorder. The
   // object is owned by mojo::Remote<VideoDecodeStatsRecorder>, which is itself

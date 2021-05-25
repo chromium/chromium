@@ -4,11 +4,12 @@
 
 #include <stddef.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/blink/multibuffer_reader.h"
 #include "net/base/net_errors.h"
 
@@ -18,7 +19,8 @@ MultiBufferReader::MultiBufferReader(
     MultiBuffer* multibuffer,
     int64_t start,
     int64_t end,
-    base::RepeatingCallback<void(int64_t, int64_t)> progress_callback)
+    base::RepeatingCallback<void(int64_t, int64_t)> progress_callback,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : multibuffer_(multibuffer),
       // If end is -1, we use a very large (but still supported) value instead.
       end_(end == -1LL ? (1LL << (multibuffer->block_size_shift() + 30)) : end),
@@ -32,7 +34,8 @@ MultiBufferReader::MultiBufferReader(
       preload_pos_(-1),
       loading_(true),
       current_wait_size_(0),
-      progress_callback_(std::move(progress_callback)) {
+      progress_callback_(std::move(progress_callback)),
+      task_runner_(std::move(task_runner)) {
   DCHECK_GE(start, 0);
   DCHECK_GE(end_, 0);
 }
@@ -149,7 +152,7 @@ void MultiBufferReader::CheckWait() {
     // We redirect the call through a weak pointer to ourselves to guarantee
     // there are no callbacks from us after we've been destroyed.
     current_wait_size_ = 0;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&MultiBufferReader::Call,
                                   weak_factory_.GetWeakPtr(), std::move(cb_)));
   }
@@ -178,7 +181,7 @@ void MultiBufferReader::NotifyAvailableRange(
   }
   UpdateInternalState();
   if (!progress_callback_.is_null()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(progress_callback_,
                        static_cast<int64_t>(range.begin)

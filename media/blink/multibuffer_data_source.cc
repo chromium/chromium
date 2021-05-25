@@ -168,8 +168,8 @@ void MultibufferDataSource::CreateResourceLoader(int64_t first_byte_position,
 
   SetReader(new MultiBufferReader(
       url_data_->multibuffer(), first_byte_position, last_byte_position,
-      base::BindRepeating(&MultibufferDataSource::ProgressCallback,
-                          weak_ptr_)));
+      base::BindRepeating(&MultibufferDataSource::ProgressCallback, weak_ptr_),
+      render_task_runner_));
   reader_->SetIsClientAudioElement(is_client_audio_element_);
   UpdateBufferSizes();
 }
@@ -182,7 +182,8 @@ void MultibufferDataSource::CreateResourceLoader_Locked(
 
   reader_ = std::make_unique<MultiBufferReader>(
       url_data_->multibuffer(), first_byte_position, last_byte_position,
-      base::BindRepeating(&MultibufferDataSource::ProgressCallback, weak_ptr_));
+      base::BindRepeating(&MultibufferDataSource::ProgressCallback, weak_ptr_),
+      render_task_runner_);
   UpdateBufferSizes();
 }
 

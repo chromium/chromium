@@ -8,9 +8,14 @@
 #include <stdint.h>
 
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/blink/media_blink_export.h"
 #include "media/blink/multibuffer.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace media {
 
@@ -34,7 +39,8 @@ class MEDIA_BLINK_EXPORT MultiBufferReader : public MultiBuffer::Reader {
       MultiBuffer* multibuffer,
       int64_t start,
       int64_t end,
-      base::RepeatingCallback<void(int64_t, int64_t)> progress_callback);
+      base::RepeatingCallback<void(int64_t, int64_t)> progress_callback,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   ~MultiBufferReader() override;
 
@@ -179,6 +185,8 @@ class MEDIA_BLINK_EXPORT MultiBufferReader : public MultiBuffer::Reader {
 
   // Progress callback.
   base::RepeatingCallback<void(int64_t, int64_t)> progress_callback_;
+
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<MultiBufferReader> weak_factory_{this};
 };

@@ -12,8 +12,10 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,7 +26,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "cc/layers/layer.h"
@@ -424,12 +425,13 @@ class WebMediaPlayerImplTest
 
     audio_sink_ = base::WrapRefCounted(new NiceMock<MockAudioRendererSink>());
 
-    url_index_ = std::make_unique<UrlIndex>(&mock_resource_fetch_context_);
+    url_index_ = std::make_unique<UrlIndex>(&mock_resource_fetch_context_,
+                                            media_thread_.task_runner());
 
     auto params = std::make_unique<WebMediaPlayerParams>(
         std::move(media_log), WebMediaPlayerParams::DeferLoadCB(), audio_sink_,
-        media_thread_.task_runner(), base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get(), media_thread_.task_runner(),
+        media_thread_.task_runner(), media_thread_.task_runner(),
+        media_thread_.task_runner(), media_thread_.task_runner(),
         base::BindRepeating(&WebMediaPlayerImplTest::OnAdjustAllocatedMemory,
                             base::Unretained(this)),
         nullptr, RequestRoutingTokenCallback(), nullptr, false, false,

@@ -12,10 +12,14 @@
 #include "base/bind.h"
 #include "base/format_macros.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/task_environment.h"
 #include "media/base/media_log.h"
 #include "media/base/seekable_buffer.h"
+#include "media/blink/blink_platform_with_task_environment.h"
 #include "media/blink/mock_resource_fetch_context.h"
 #include "media/blink/mock_webassociatedurlloader.h"
 #include "media/blink/url_index.h"
@@ -76,8 +80,7 @@ static bool CorrectAcceptEncodingAndPreviewsState(
 
 class ResourceMultiBufferDataProviderTest : public testing::Test {
  public:
-  ResourceMultiBufferDataProviderTest()
-      : url_index_(std::make_unique<UrlIndex>(&fetch_context_, 0)) {
+  ResourceMultiBufferDataProviderTest() {
     for (int i = 0; i < kDataSize; ++i) {
       data_[i] = i;
     }
@@ -89,8 +92,8 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   void Initialize(const char* url, int first_position) {
     want_frfr = false;
     gurl_ = GURL(url);
-    url_data_ = url_index_->GetByUrl(gurl_, UrlData::CORS_UNSPECIFIED,
-                                     UrlIndex::kNormal);
+    url_data_ = url_index_.GetByUrl(gurl_, UrlData::CORS_UNSPECIFIED,
+                                    UrlIndex::kNormal);
     url_data_->set_etag(kEtag);
     DCHECK(url_data_);
     url_data_->OnRedirect(
@@ -102,7 +105,9 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
     std::unique_ptr<ResourceMultiBufferDataProvider> loader(
         new ResourceMultiBufferDataProvider(
             url_data_.get(), first_position_,
-            false /* is_client_audio_element */));
+            false /* is_client_audio_element */,
+            BlinkPlatformWithTaskEnvironment::GetTaskEnvironment()
+                ->GetMainThreadTaskRunner()));
     loader_ = loader.get();
     url_data_->multibuffer()->AddProvider(std::move(loader));
   }
@@ -222,7 +227,9 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   int64_t first_position_;
 
   NiceMock<MockResourceFetchContext> fetch_context_;
-  std::unique_ptr<UrlIndex> url_index_;
+  UrlIndex url_index_{&fetch_context_, 0,
+                      BlinkPlatformWithTaskEnvironment::GetTaskEnvironment()
+                          ->GetMainThreadTaskRunner()};
   scoped_refptr<UrlData> url_data_;
   scoped_refptr<UrlData> redirected_to_;
   // The loader is owned by the UrlData above.

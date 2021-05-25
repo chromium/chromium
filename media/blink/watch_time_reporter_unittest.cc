@@ -6,15 +6,15 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/task/current_thread.h"
-#include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/watch_time_keys.h"
+#include "media/blink/blink_platform_with_task_environment.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "media/mojo/mojom/watch_time_recorder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -290,18 +290,10 @@ class WatchTimeReporterTest
   WatchTimeReporterTest()
       : has_video_(std::get<0>(GetParam())),
         has_audio_(std::get<1>(GetParam())),
-        fake_metrics_provider_(this) {
-    // Do this first. Lots of pieces depend on the task runner.
-    auto message_loop = base::CurrentThread::Get();
-    original_task_runner_ = base::ThreadTaskRunnerHandle::Get();
-    task_runner_ = new base::TestMockTimeTaskRunner();
-    message_loop.SetTaskRunner(task_runner_);
-  }
+        fake_metrics_provider_(this) {}
 
   ~WatchTimeReporterTest() override {
     CycleReportingTimer();
-    task_runner_->RunUntilIdle();
-    base::CurrentThread::Get().SetTaskRunner(original_task_runner_);
   }
 
  protected:
@@ -322,7 +314,7 @@ class WatchTimeReporterTest
                             base::Unretained(this)),
         &fake_metrics_provider_,
         blink::scheduler::GetSequencedTaskRunnerForTesting(),
-        task_runner_->GetMockTickClock());
+        task_environment_->GetMockTickClock());
     reporting_interval_ = wtr_->reporting_interval_;
 
     // Most tests don't care about this.
@@ -333,7 +325,7 @@ class WatchTimeReporterTest
   }
 
   void CycleReportingTimer() {
-    task_runner_->FastForwardBy(reporting_interval_);
+    task_environment_->FastForwardBy(reporting_interval_);
   }
 
   bool IsMonitoring() const { return wtr_->reporting_timer_.IsRunning(); }
@@ -638,14 +630,10 @@ class WatchTimeReporterTest
   MOCK_METHOD2(OnUpdateVideoDecodeStats, void(uint32_t, uint32_t));
   MOCK_METHOD1(OnCurrentTimestampChanged, void(base::TimeDelta));
 
+  base::test::TaskEnvironment* task_environment_ =
+      BlinkPlatformWithTaskEnvironment::GetTaskEnvironment();
   const bool has_video_;
   const bool has_audio_;
-
-  // Task runner that allows for manual advancing of time. Instantiated during
-  // construction. |original_task_runner_| is a copy of the TaskRunner in place
-  // prior to the start of this test. It's restored after the test completes.
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> original_task_runner_;
 
   FakeMediaMetricsProvider fake_metrics_provider_;
   std::unique_ptr<blink::WatchTimeReporter> wtr_;

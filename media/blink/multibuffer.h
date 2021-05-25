@@ -138,8 +138,7 @@ class MEDIA_BLINK_EXPORT MultiBuffer {
   class MEDIA_BLINK_EXPORT GlobalLRU : public base::RefCounted<GlobalLRU> {
    public:
     typedef MultiBufferGlobalBlockId GlobalBlockId;
-    explicit GlobalLRU(
-        const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
+    explicit GlobalLRU(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
     // Free elements from cache if possible.
     // Don't free more than |max_to_free| blocks.

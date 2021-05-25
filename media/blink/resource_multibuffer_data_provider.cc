@@ -15,7 +15,6 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/blink/cache_util.h"
 #include "media/blink/resource_fetch_context.h"
 #include "media/blink/url_index.h"
@@ -58,13 +57,15 @@ const int kHttpRangeNotSatisfiable = 416;
 ResourceMultiBufferDataProvider::ResourceMultiBufferDataProvider(
     UrlData* url_data,
     MultiBufferBlockId pos,
-    bool is_client_audio_element)
+    bool is_client_audio_element,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : pos_(pos),
       url_data_(url_data),
       retries_(0),
       cors_mode_(url_data->cors_mode()),
       origin_(url_data->url().GetOrigin()),
-      is_client_audio_element_(is_client_audio_element) {
+      is_client_audio_element_(is_client_audio_element),
+      task_runner_(std::move(task_runner)) {
   DCHECK(url_data_) << " pos = " << pos;
   DCHECK_GE(pos, 0);
 }
@@ -74,7 +75,7 @@ ResourceMultiBufferDataProvider::~ResourceMultiBufferDataProvider() = default;
 void ResourceMultiBufferDataProvider::Start() {
   DVLOG(1) << __func__ << " @ " << byte_pos();
   if (url_data_->length() > 0 && byte_pos() >= url_data_->length()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ResourceMultiBufferDataProvider::Terminate,
                                   weak_factory_.GetWeakPtr()));
     return;
@@ -444,7 +445,7 @@ void ResourceMultiBufferDataProvider::DidFinishLoading() {
     if (retries_ < kMaxRetries) {
       DVLOG(1) << " Partial data received.... @ pos = " << size;
       retries_++;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      task_runner_->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&ResourceMultiBufferDataProvider::Start,
                          weak_factory_.GetWeakPtr()),
@@ -476,7 +477,7 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
 
   if (retries_ < kMaxRetries && pos_ != 0) {
     retries_++;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ResourceMultiBufferDataProvider::Start,
                        weak_factory_.GetWeakPtr()),

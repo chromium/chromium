@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "media/base/media_switches.h"
 #include "media/blink/resource_multibuffer_data_provider.h"
@@ -21,9 +20,13 @@ namespace media {
 const int kBlockSizeShift = 15;  // 1<<15 == 32kb
 const int kUrlMappingTimeoutSeconds = 300;
 
-ResourceMultiBuffer::ResourceMultiBuffer(UrlData* url_data, int block_shift)
+ResourceMultiBuffer::ResourceMultiBuffer(
+    UrlData* url_data,
+    int block_shift,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : MultiBuffer(block_shift, url_data->url_index_->lru_),
-      url_data_(url_data) {}
+      url_data_(url_data),
+      task_runner_(std::move(task_runner)) {}
 
 ResourceMultiBuffer::~ResourceMultiBuffer() = default;
 
@@ -31,7 +34,7 @@ std::unique_ptr<MultiBuffer::DataProvider> ResourceMultiBuffer::CreateWriter(
     const MultiBufferBlockId& pos,
     bool is_client_audio_element) {
   auto writer = std::make_unique<ResourceMultiBufferDataProvider>(
-      url_data_, pos, is_client_audio_element);
+      url_data_, pos, is_client_audio_element, task_runner_);
   writer->Start();
   return writer;
 }
@@ -44,7 +47,10 @@ void ResourceMultiBuffer::OnEmpty() {
   url_data_->OnEmpty();
 }
 
-UrlData::UrlData(const GURL& url, CorsMode cors_mode, UrlIndex* url_index)
+UrlData::UrlData(const GURL& url,
+                 CorsMode cors_mode,
+                 UrlIndex* url_index,
+                 scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : url_(url),
       have_data_origin_(false),
       cors_mode_(cors_mode),
@@ -53,8 +59,7 @@ UrlData::UrlData(const GURL& url, CorsMode cors_mode, UrlIndex* url_index)
       length_(kPositionNotSpecified),
       range_supported_(false),
       cacheable_(false),
-      last_used_(),
-      multibuffer_(this, url_index_->block_shift_) {}
+      multibuffer_(this, url_index_->block_shift_, std::move(task_runner)) {}
 
 UrlData::~UrlData() = default;
 
@@ -210,16 +215,20 @@ size_t UrlData::CachedSize() {
   return multibuffer()->map().size();
 }
 
-UrlIndex::UrlIndex(ResourceFetchContext* fetch_context)
-    : UrlIndex(fetch_context, kBlockSizeShift) {}
+UrlIndex::UrlIndex(ResourceFetchContext* fetch_context,
+                   scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : UrlIndex(fetch_context, kBlockSizeShift, std::move(task_runner)) {}
 
-UrlIndex::UrlIndex(ResourceFetchContext* fetch_context, int block_shift)
+UrlIndex::UrlIndex(ResourceFetchContext* fetch_context,
+                   int block_shift,
+                   scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : fetch_context_(fetch_context),
-      lru_(new MultiBuffer::GlobalLRU(base::ThreadTaskRunnerHandle::Get())),
+      lru_(new MultiBuffer::GlobalLRU(task_runner)),
       block_shift_(block_shift),
       memory_pressure_listener_(FROM_HERE,
                                 base::BindRepeating(&UrlIndex::OnMemoryPressure,
-                                                    base::Unretained(this))) {}
+                                                    base::Unretained(this))),
+      task_runner_(std::move(task_runner)) {}
 
 UrlIndex::~UrlIndex() {
 #if DCHECK_IS_ON()
@@ -254,7 +263,7 @@ scoped_refptr<UrlData> UrlIndex::GetByUrl(const GURL& gurl,
 
 scoped_refptr<UrlData> UrlIndex::NewUrlData(const GURL& url,
                                             UrlData::CorsMode cors_mode) {
-  return new UrlData(url, cors_mode, this);
+  return new UrlData(url, cors_mode, this, task_runner_);
 }
 
 void UrlIndex::OnMemoryPressure(

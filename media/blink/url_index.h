@@ -14,11 +14,16 @@
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/blink/media_blink_export.h"
 #include "media/blink/multibuffer.h"
 #include "url/gurl.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace media {
 
@@ -33,7 +38,9 @@ class UrlIndexTest;
 // into the cache.
 class MEDIA_BLINK_EXPORT ResourceMultiBuffer : public MultiBuffer {
  public:
-  ResourceMultiBuffer(UrlData* url_data_, int block_shift);
+  ResourceMultiBuffer(UrlData* url_data_,
+                      int block_shift,
+                      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~ResourceMultiBuffer() override;
 
   // MultiBuffer implementation.
@@ -47,6 +54,7 @@ class MEDIA_BLINK_EXPORT ResourceMultiBuffer : public MultiBuffer {
   // Do not access from destructor, it is a pointer to the
   // object that contains us.
   UrlData* url_data_;
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 class UrlIndex;
@@ -151,7 +159,10 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
   int64_t BytesReadFromCache() const { return bytes_read_from_cache_; }
 
  protected:
-  UrlData(const GURL& url, CorsMode cors_mode, UrlIndex* url_index);
+  UrlData(const GURL& url,
+          CorsMode cors_mode,
+          UrlIndex* url_index,
+          scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   virtual ~UrlData();
 
  private:
@@ -222,8 +233,11 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
 // The UrlIndex lets you look up UrlData instances by url.
 class MEDIA_BLINK_EXPORT UrlIndex {
  public:
-  explicit UrlIndex(ResourceFetchContext* fetch_context);
-  UrlIndex(ResourceFetchContext* fetch_context, int block_shift);
+  UrlIndex(ResourceFetchContext* fetch_context,
+           scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  UrlIndex(ResourceFetchContext* fetch_context,
+           int block_shift,
+           scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   virtual ~UrlIndex();
 
   enum CacheMode { kNormal, kCacheDisabled };
@@ -288,6 +302,7 @@ class MEDIA_BLINK_EXPORT UrlIndex {
   std::deque<scoped_refptr<UrlData>> loading_queue_;
 
   base::MemoryPressureListener memory_pressure_listener_;
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 }  // namespace media

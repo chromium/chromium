@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/blink/media_blink_export.h"
 #include "media/blink/multibuffer.h"
@@ -19,6 +20,10 @@
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "url/gurl.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace blink {
 class WebAssociatedURLLoader;
@@ -33,9 +38,11 @@ class MEDIA_BLINK_EXPORT ResourceMultiBufferDataProvider
   // NUmber of times we'll retry if the connection fails.
   enum { kMaxRetries = 30 };
 
-  ResourceMultiBufferDataProvider(UrlData* url_data,
-                                  MultiBufferBlockId pos,
-                                  bool is_client_audio_element);
+  ResourceMultiBufferDataProvider(
+      UrlData* url_data,
+      MultiBufferBlockId pos,
+      bool is_client_audio_element,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~ResourceMultiBufferDataProvider() override;
 
   // Virtual for testing purposes.
@@ -122,6 +129,8 @@ class MEDIA_BLINK_EXPORT ResourceMultiBufferDataProvider
 
   // Is the client an audio element?
   bool is_client_audio_element_ = false;
+
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<ResourceMultiBufferDataProvider> weak_factory_{this};
 };

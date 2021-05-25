@@ -6,15 +6,20 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
+#include "media/blink/blink_platform_with_task_environment.h"
 #include "media/blink/buffered_data_source_host_impl.h"
 #include "media/blink/mock_resource_fetch_context.h"
 #include "media/blink/mock_webassociatedurlloader.h"
@@ -48,10 +53,14 @@ std::set<TestMultiBufferDataProvider*> test_data_providers;
 
 class TestMultiBufferDataProvider : public ResourceMultiBufferDataProvider {
  public:
-  TestMultiBufferDataProvider(UrlData* url_data, MultiBuffer::BlockId pos)
+  TestMultiBufferDataProvider(
+      UrlData* url_data,
+      MultiBuffer::BlockId pos,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : ResourceMultiBufferDataProvider(url_data,
                                         pos,
-                                        false /* is_client_audio_element */) {
+                                        false /* is_client_audio_element */,
+                                        std::move(task_runner)) {
     CHECK(test_data_providers.insert(this).second);
   }
   ~TestMultiBufferDataProvider() override {
@@ -82,12 +91,17 @@ class TestUrlData;
 
 class TestResourceMultiBuffer : public ResourceMultiBuffer {
  public:
-  explicit TestResourceMultiBuffer(UrlData* url_data, int shift)
-      : ResourceMultiBuffer(url_data, shift) {}
+  TestResourceMultiBuffer(
+      UrlData* url_data,
+      int shift,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      : ResourceMultiBuffer(url_data, shift, task_runner),
+        task_runner_(std::move(task_runner)) {}
 
   std::unique_ptr<MultiBuffer::DataProvider> CreateWriter(const BlockId& pos,
                                                           bool) override {
-    auto writer = std::make_unique<TestMultiBufferDataProvider>(url_data_, pos);
+    auto writer = std::make_unique<TestMultiBufferDataProvider>(url_data_, pos,
+                                                                task_runner_);
     writer->Start();
     return writer;
   }
@@ -112,45 +126,55 @@ class TestResourceMultiBuffer : public ResourceMultiBuffer {
       return false;
     return GetProvider()->loading();
   }
+
+ private:
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 class TestUrlData : public UrlData {
  public:
-  TestUrlData(const GURL& url, CorsMode cors_mode, UrlIndex* url_index)
-      : UrlData(url, cors_mode, url_index),
-        block_shift_(url_index->block_shift()) {}
+  TestUrlData(const GURL& url,
+              CorsMode cors_mode,
+              UrlIndex* url_index,
+              scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      : UrlData(url, cors_mode, url_index, task_runner),
+        block_shift_(url_index->block_shift()),
+        task_runner_(std::move(task_runner)) {}
 
   ResourceMultiBuffer* multibuffer() override {
     if (!test_multibuffer_.get()) {
-      test_multibuffer_ =
-          std::make_unique<TestResourceMultiBuffer>(this, block_shift_);
+      test_multibuffer_ = std::make_unique<TestResourceMultiBuffer>(
+          this, block_shift_, task_runner_);
     }
     return test_multibuffer_.get();
   }
 
   TestResourceMultiBuffer* test_multibuffer() {
     if (!test_multibuffer_.get()) {
-      test_multibuffer_ =
-          std::make_unique<TestResourceMultiBuffer>(this, block_shift_);
+      test_multibuffer_ = std::make_unique<TestResourceMultiBuffer>(
+          this, block_shift_, task_runner_);
     }
     return test_multibuffer_.get();
   }
 
- protected:
+ private:
   ~TestUrlData() override = default;
-  const int block_shift_;
 
+  const int block_shift_;
   std::unique_ptr<TestResourceMultiBuffer> test_multibuffer_;
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 class TestUrlIndex : public UrlIndex {
  public:
-  explicit TestUrlIndex(ResourceFetchContext* fetch_context)
-      : UrlIndex(fetch_context) {}
+  TestUrlIndex(ResourceFetchContext* fetch_context,
+               scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      : UrlIndex(fetch_context, task_runner),
+        task_runner_(std::move(task_runner)) {}
 
   scoped_refptr<UrlData> NewUrlData(const GURL& url,
                                     UrlData::CorsMode cors_mode) override {
-    last_url_data_ = new TestUrlData(url, cors_mode, this);
+    last_url_data_ = new TestUrlData(url, cors_mode, this, task_runner_);
     return last_url_data_;
   }
 
@@ -163,6 +187,7 @@ class TestUrlIndex : public UrlIndex {
 
  private:
   scoped_refptr<TestUrlData> last_url_data_;
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 class MockBufferedDataSourceHost : public BufferedDataSourceHost {
@@ -221,8 +246,6 @@ class MultibufferDataSourceTest : public testing::Test {
         .WillByDefault(Invoke([](const blink::WebAssociatedURLLoaderOptions&) {
           return std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
         }));
-
-    url_index_ = std::make_unique<TestUrlIndex>(&fetch_context_);
   }
 
   MOCK_METHOD1(OnInitialize, void(bool));
@@ -233,8 +256,8 @@ class MultibufferDataSourceTest : public testing::Test {
                           size_t file_size = kFileSize) {
     GURL gurl(url);
     data_source_ = std::make_unique<MockMultibufferDataSource>(
-        base::ThreadTaskRunnerHandle::Get(),
-        url_index_->GetByUrl(gurl, cors_mode, UrlIndex::kNormal), &host_);
+        task_runner_, url_index_.GetByUrl(gurl, cors_mode, UrlIndex::kNormal),
+        &host_);
     data_source_->SetPreload(preload_);
 
     response_generator_ =
@@ -410,7 +433,7 @@ class MultibufferDataSourceTest : public testing::Test {
   MultiBufferReader* loader() { return data_source_->reader_.get(); }
 
   TestResourceMultiBuffer* multibuffer() {
-    return url_index_->last_url_data()->test_multibuffer();
+    return url_index_.last_url_data()->test_multibuffer();
   }
 
   TestMultiBufferDataProvider* data_provider() {
@@ -459,7 +482,10 @@ class MultibufferDataSourceTest : public testing::Test {
  protected:
   MultibufferDataSource::Preload preload_;
   NiceMock<MockResourceFetchContext> fetch_context_;
-  std::unique_ptr<TestUrlIndex> url_index_;
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =
+      BlinkPlatformWithTaskEnvironment::GetTaskEnvironment()
+          ->GetMainThreadTaskRunner();
+  TestUrlIndex url_index_{&fetch_context_, task_runner_};
 
   std::unique_ptr<MockMultibufferDataSource> data_source_;
 
@@ -996,9 +1022,9 @@ TEST_F(MultibufferDataSourceTest, Http_ShareData) {
 
   StrictMock<MockBufferedDataSourceHost> host2;
   MockMultibufferDataSource source2(
-      base::ThreadTaskRunnerHandle::Get(),
-      url_index_->GetByUrl(GURL(kHttpUrl), UrlData::CORS_UNSPECIFIED,
-                           UrlIndex::kNormal),
+      task_runner_,
+      url_index_.GetByUrl(GURL(kHttpUrl), UrlData::CORS_UNSPECIFIED,
+                          UrlIndex::kNormal),
       &host2);
   source2.SetPreload(preload_);
 
@@ -1363,8 +1389,8 @@ TEST_F(MultibufferDataSourceTest,
 TEST_F(MultibufferDataSourceTest, SeekPastEOF) {
   GURL gurl(kHttpUrl);
   data_source_ = std::make_unique<MockMultibufferDataSource>(
-      base::ThreadTaskRunnerHandle::Get(),
-      url_index_->GetByUrl(gurl, UrlData::CORS_UNSPECIFIED, UrlIndex::kNormal),
+      task_runner_,
+      url_index_.GetByUrl(gurl, UrlData::CORS_UNSPECIFIED, UrlIndex::kNormal),
       &host_);
   data_source_->SetPreload(preload_);
 
@@ -1742,8 +1768,8 @@ TEST_F(MultibufferDataSourceTest, CheckBufferSizeAfterReadingALot) {
 TEST_F(MultibufferDataSourceTest, Http_CheckLoadingTransition) {
   GURL gurl(kHttpUrl);
   data_source_ = std::make_unique<MockMultibufferDataSource>(
-      base::ThreadTaskRunnerHandle::Get(),
-      url_index_->GetByUrl(gurl, UrlData::CORS_UNSPECIFIED, UrlIndex::kNormal),
+      task_runner_,
+      url_index_.GetByUrl(gurl, UrlData::CORS_UNSPECIFIED, UrlIndex::kNormal),
       &host_);
   data_source_->SetPreload(preload_);
 

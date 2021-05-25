@@ -7,9 +7,13 @@
 #include <list>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
+#include "media/blink/blink_platform_with_task_environment.h"
 #include "media/blink/url_index.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,7 +21,7 @@ namespace media {
 
 class UrlIndexTest : public testing::Test {
  public:
-  UrlIndexTest() : url_index_(nullptr) {}
+  UrlIndexTest() = default;
 
   scoped_refptr<UrlData> GetByUrl(const GURL& gurl,
                                   UrlData::CorsMode cors_mode) {
@@ -28,7 +32,10 @@ class UrlIndexTest : public testing::Test {
     return ret;
   }
 
-  UrlIndex url_index_;
+ protected:
+  UrlIndex url_index_{nullptr,
+                      BlinkPlatformWithTaskEnvironment::GetTaskEnvironment()
+                          ->GetMainThreadTaskRunner()};
 };
 
 TEST_F(UrlIndexTest, SimpleTest) {
