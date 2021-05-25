@@ -338,6 +338,7 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   config_msg.set_enable_lang_id(false);
   config_msg.set_recognition_mode(
       GetSodaSpeechRecognitionMode(options_->recognition_mode));
+  config_msg.set_enable_formatting(options_->enable_formatting);
   auto serialized = config_msg.SerializeAsString();
 
   SerializedSodaConfig config;

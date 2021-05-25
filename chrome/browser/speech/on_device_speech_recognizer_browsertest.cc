@@ -133,7 +133,7 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
         .RetiresOnSaturation();
     recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
         mock_speech_delegate_->GetWeakPtr(), browser()->profile(), "en-US",
-        true /* is IME */);
+        /*recognition_mode_ime=*/true, /*enable_formatting=*/false);
     loop.Run();
   }
 

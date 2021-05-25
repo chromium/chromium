@@ -107,7 +107,7 @@ bool Dictation::OnToggleDictation() {
     // SODA is installed on-device.
     speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
         weak_ptr_factory_.GetWeakPtr(), profile_, language,
-        /*recognition_mode_ime=*/true);
+        /*recognition_mode_ime=*/true, /*enable_formatting=*/false);
     base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
                               true);
     no_speech_timeout_ = kDeviceNoSpeechTimeout;

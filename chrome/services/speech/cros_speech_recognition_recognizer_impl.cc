@@ -92,6 +92,8 @@ void CrosSpeechRecognitionRecognizerImpl::
     config->api_key = google_apis::GetSodaAPIKey();
     config->language_dlc_path = languagepack_path_.value();
     config->library_dlc_path = binary_path_.value();
+    // TODO(crbug.com/1173135): Set options_->recognition_mode and
+    // options_->enable_formatting in the SodaConfig when available.
     cros_soda_client_->Reset(std::move(config), recognition_event_callback_);
   }
   cros_soda_client_->AddAudio(reinterpret_cast<char*>(buffer->data.data()),
