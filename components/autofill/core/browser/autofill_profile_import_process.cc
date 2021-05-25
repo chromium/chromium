@@ -224,6 +224,20 @@ void ProfileImportProcess::SetUserDecision(
       // If the import candidate is supplied, the 'edited_profile' must be
       // supplied.
       DCHECK(edited_profile.has_value());
+
+      // Make sure the verification status of all settings-visible non-empty
+      // fields in the edited profile are set to kUserVerified.
+      for (auto type : GetUserVisibleTypes()) {
+        std::u16string value = edited_profile->GetRawInfo(type);
+        if (!value.empty() &&
+            edited_profile->GetVerificationStatus(type) ==
+                structured_address::VerificationStatus::kNoStatus) {
+          edited_profile->SetRawInfoWithVerificationStatus(
+              type, value,
+              structured_address::VerificationStatus::kUserVerified);
+        };
+      }
+
       edited_profile->FinalizeAfterImport();
       // The `edited_profile` has to have the same `guid` as the original import
       // candidate.
