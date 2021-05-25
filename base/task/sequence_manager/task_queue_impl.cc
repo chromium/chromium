@@ -1048,7 +1048,9 @@ void TaskQueueImpl::ReclaimMemory(TimeTicks now) {
   main_thread_only().delayed_incoming_queue.SweepCancelledTasks(
       sequence_manager_);
 
-  // If deleting one of the cancelled tasks shut down this queue, bail out.
+  // If deleting one of the cancelled tasks shut down this queue, bail out. Note
+  // that in this scenario |this| is still valid, but some fields of the queue
+  // have been cleared out by |UnregisterTaskQueue|.
   if (!main_thread_only().delayed_work_queue)
     return;
 

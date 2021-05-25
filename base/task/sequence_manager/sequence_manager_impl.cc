@@ -109,6 +109,9 @@ void ReclaimMemoryFromQueue(internal::TaskQueueImpl* queue,
   if (time_domain_now->find(time_domain) == time_domain_now->end())
     time_domain_now->insert(std::make_pair(time_domain, time_domain->Now()));
   queue->ReclaimMemory(time_domain_now->at(time_domain));
+  // If the queue was shut down as a side-effect of reclaiming memory, |queue|
+  // will still be valid but the work queues will have been removed by
+  // TaskQueueImpl::UnregisterTaskQueue.
   if (queue->delayed_work_queue()) {
     queue->delayed_work_queue()->RemoveAllCanceledTasksFromFront();
     queue->immediate_work_queue()->RemoveAllCanceledTasksFromFront();
