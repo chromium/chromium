@@ -190,7 +190,9 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_device_gtests',
-          'isolated_scripts': 'chromeos_remote_device_isolated_tests',
+          # TODO(crbug.com/1208281): Restore after additional DUT capacity is
+          # deployed.
+          #'isolated_scripts': 'chromeos_remote_device_isolated_tests',
         },
         'swarming': {
           'dimension_sets': [
