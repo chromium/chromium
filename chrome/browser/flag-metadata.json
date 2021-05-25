@@ -3086,11 +3086,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "happiness-tracking-surveys-for-desktop",
-    "owners": [ "//chrome/browser/ui/hats/OWNERS" ],
-    "expiry_milestone": 84
-  },
-  {
     "name": "happiness-tracking-surveys-for-desktop-demo",
     "owners": [ "//chrome/browser/ui/hats/OWNERS" ],
     // A debugging and demo flag to allow UI/dev/testing team to always show the UI
