@@ -36,7 +36,6 @@ CommandStorageManager::CommandStorageManager(
     SessionType type,
     const base::FilePath& path,
     CommandStorageManagerDelegate* delegate,
-    bool use_marker,
     bool enable_crypto,
     const std::vector<uint8_t>& decryption_key,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
@@ -45,10 +44,8 @@ CommandStorageManager::CommandStorageManager(
                               : CreateDefaultBackendTaskRunner(),
           path,
           type,
-          use_marker,
           decryption_key)),
       use_crypto_(enable_crypto),
-      pending_reset_(use_marker),
       delegate_(delegate),
       backend_task_runner_(backend_->owning_task_runner()) {}
 

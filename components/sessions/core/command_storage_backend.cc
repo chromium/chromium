@@ -30,6 +30,8 @@ using SessionType = CommandStorageManager::SessionType;
 namespace {
 
 // File version number.
+// TODO(sky): remove these in ~1 year. They are no longer written as of
+// ~5/2021.
 constexpr int32_t kFileVersion1 = 1;
 constexpr int32_t kEncryptedFileVersion = 2;
 // The versions that are used if `use_marker` is true.
@@ -430,12 +432,10 @@ CommandStorageBackend::CommandStorageBackend(
     scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
     const base::FilePath& path,
     SessionType type,
-    bool use_marker,
     const std::vector<uint8_t>& decryption_key)
     : RefCountedDeleteOnSequence(owning_task_runner),
       type_(type),
       supplied_path_(path),
-      use_marker_(use_marker),
       initial_decryption_key_(decryption_key),
       callback_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   // This is invoked on the main thread, don't do file access here.
@@ -459,22 +459,16 @@ void CommandStorageBackend::AppendCommands(
     DCHECK_NE(kInitialStateMarkerCommandId, command->id());
 #endif
 
-  // If `use_marker` is true, the consumer must call this with `truncate` set
-  // to true to indicate the initial state has been supplied. To do otherwise
-  // would mean the file never contains the marker, and would not be considered
+  // The consumer must call this with `truncate` set to true to indicate the
+  // initial state has been supplied. To do otherwise would mean the file never
+  // contains the marker, and would not be considered
   // valid. This includes first time through.
-  if (use_marker_ && !truncate && (!file_ || !file_->IsValid()))
+  if (!truncate && (!file_ || !file_->IsValid()))
     return;
 
   if (truncate) {
-    const bool was_encrypted = IsEncrypted();
+    CloseFile();
     const bool encrypt = !crypto_key.empty();
-
-    // The header is different when encrypting, so the file needs to be
-    // recreated.
-    if (use_marker_ || (was_encrypted != encrypt))
-      CloseFile();
-
     if (encrypt) {
       aead_ = std::make_unique<crypto::Aead>(crypto::Aead::AES_256_GCM);
       crypto_key_ = crypto_key;
@@ -482,10 +476,8 @@ void CommandStorageBackend::AppendCommands(
     } else {
       aead_.reset();
     }
-    if (use_marker_) {
-      commands.push_back(
-          std::make_unique<SessionCommand>(kInitialStateMarkerCommandId, 0));
-    }
+    commands.push_back(
+        std::make_unique<SessionCommand>(kInitialStateMarkerCommandId, 0));
   } else {
     // |crypto_key| is only used when |truncate| is true.
     DCHECK(crypto_key.empty());
@@ -502,7 +494,7 @@ void CommandStorageBackend::AppendCommands(
     CloseFile();
   }
 
-  if (use_marker_ && truncate && file_ && file_->IsValid()) {
+  if (truncate && file_ && file_->IsValid()) {
     did_write_marker_ = true;
     if (last_file_with_valid_marker_) {
       DCHECK_NE(*last_file_with_valid_marker_, current_path_);
@@ -573,14 +565,10 @@ void CommandStorageBackend::MoveCurrentSessionToLastSession() {
 
   // Move current session to last.
   absl::optional<SessionInfo> new_last_session_info;
-  if (use_marker_) {
-    if (last_file_with_valid_marker_) {
-      new_last_session_info =
-          SessionInfo{*last_file_with_valid_marker_, timestamp_};
-      last_file_with_valid_marker_.reset();
-    }
-  } else if (base::PathExists(current_path_)) {
-    new_last_session_info = SessionInfo{current_path_, timestamp_};
+  if (last_file_with_valid_marker_) {
+    new_last_session_info =
+        SessionInfo{*last_file_with_valid_marker_, timestamp_};
+    last_file_with_valid_marker_.reset();
   }
   last_session_info_ = new_last_session_info;
 
@@ -624,7 +612,7 @@ void CommandStorageBackend::InitIfNecessary() {
   inited_ = true;
   base::CreateDirectory(GetSessionDirName(type_, supplied_path_));
 
-  // TODO(sky): with `use_marker_` this is expensive. See if it can be delayed.
+  // TODO(sky): this is expensive. See if it can be delayed.
   last_session_info_ = FindLastSessionFile();
 
   // Best effort delete all sessions except the current & last.
@@ -652,47 +640,30 @@ void CommandStorageBackend::CloseFile() {
   file_.reset();
 
   // If a marker wasn't written, no need to keep the current file.
-  if (use_marker_ && !did_write_marker_ && !current_path_.empty())
+  if (!did_write_marker_ && !current_path_.empty())
     base::DeleteFile(current_path_);
 }
 
 void CommandStorageBackend::TruncateOrOpenFile() {
   DCHECK(inited_);
-  if (use_marker_)
-    CloseFile();
-  if (use_marker_ || current_path_.empty()) {
-    DCHECK(!file_);
-    base::Time new_timestamp = base::Time::Now();
-    // Ensure we don't reuse the current file (this is extremely unlikely to
-    // ever be true).
-    if (new_timestamp == timestamp_)
-      new_timestamp += base::TimeDelta::FromMicroseconds(1);
-    if (last_session_info_) {
-      // Ensure that the last session's timestamp is before the current file's.
-      // This might not be true if the system clock has changed.
-      if (last_session_info_->timestamp > new_timestamp) {
-        new_timestamp = last_session_info_->timestamp +
-                        base::TimeDelta::FromMicroseconds(1);
-      }
+  CloseFile();
+  DCHECK(!file_);
+  base::Time new_timestamp = base::Time::Now();
+  // Ensure we don't reuse the current file (this is extremely unlikely to
+  // ever be true).
+  if (new_timestamp == timestamp_)
+    new_timestamp += base::TimeDelta::FromMicroseconds(1);
+  if (last_session_info_) {
+    // Ensure that the last session's timestamp is before the current file's.
+    // This might not be true if the system clock has changed.
+    if (last_session_info_->timestamp > new_timestamp) {
+      new_timestamp =
+          last_session_info_->timestamp + base::TimeDelta::FromMicroseconds(1);
     }
-    timestamp_ = new_timestamp;
-    current_path_ = FilePathFromTime(type_, supplied_path_, timestamp_);
   }
-  if (file_) {
-    // If `use_marker_` is true, the file is always closed before being
-    // truncated.
-    DCHECK(!use_marker_);
-    // File is already open, truncate it. We truncate instead of closing and
-    // reopening to avoid the possibility of scanners locking the file out
-    // from under us once we close it. If truncation fails, we'll try to
-    // recreate.
-    const int header_size = static_cast<int>(sizeof(FileHeader));
-    if (file_->Seek(base::File::FROM_BEGIN, header_size) != header_size ||
-        !file_->SetLength(header_size))
-      file_.reset();
-  }
-  if (!file_)
-    file_ = OpenAndWriteHeader(current_path_);
+  timestamp_ = new_timestamp;
+  current_path_ = FilePathFromTime(type_, supplied_path_, timestamp_);
+  file_ = OpenAndWriteHeader(current_path_);
   commands_written_ = 0;
   did_write_marker_ = false;
 }
@@ -708,12 +679,8 @@ std::unique_ptr<base::File> CommandStorageBackend::OpenAndWriteHeader(
     return nullptr;
   FileHeader header;
   header.signature = kFileSignature;
-  if (use_marker_) {
-    header.version = IsEncrypted() ? kEncryptedFileVersionWithMarker
-                                   : kFileVersionWithMarker;
-  } else {
-    header.version = IsEncrypted() ? kEncryptedFileVersion : kFileVersion1;
-  }
+  header.version =
+      IsEncrypted() ? kEncryptedFileVersionWithMarker : kFileVersionWithMarker;
   if (file->WriteAtCurrentPos(reinterpret_cast<char*>(&header),
                               sizeof(header)) != sizeof(header)) {
     return nullptr;
@@ -866,9 +833,6 @@ CommandStorageBackend::GetSessionFilesSortedByReverseTimestamp(
 
 bool CommandStorageBackend::CanUseFileForLastSession(
     const base::FilePath& path) const {
-  if (!use_marker_)
-    return true;
-
   const SessionFileReader::MarkerStatus status =
       SessionFileReader::GetMarkerStatus(path, initial_decryption_key_);
   return !status.supports_marker || status.has_marker;

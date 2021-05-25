@@ -144,7 +144,6 @@ SessionServiceBase::SessionServiceBase(Profile* profile,
 
   command_storage_manager_ = std::make_unique<sessions::CommandStorageManager>(
       backend_type, profile->GetPath(), this,
-      /* use_marker */ true,
       /* enable_crypto */ false, std::vector<uint8_t>(),
       TaskRunnerData::GetBackendTaskRunnerForProfile(profile, type));
 

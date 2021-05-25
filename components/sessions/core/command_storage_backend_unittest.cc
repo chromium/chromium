@@ -50,7 +50,7 @@ std::unique_ptr<SessionCommand> CreateCommandFromData(const TestData& data) {
 
 }  // namespace
 
-class CommandStorageBackendTest : public testing::TestWithParam<bool> {
+class CommandStorageBackendTest : public testing::Test {
  protected:
   // testing::TestWithParam:
   void SetUp() override {
@@ -83,16 +83,14 @@ class CommandStorageBackendTest : public testing::TestWithParam<bool> {
       const std::vector<uint8_t>& decryption_key = {}) {
     return MakeRefCounted<CommandStorageBackend>(
         task_environment_.GetMainThreadTaskRunner(), file_path_,
-        CommandStorageManager::SessionType::kOther, IsUsingMarker(),
-        decryption_key);
+        CommandStorageManager::SessionType::kOther, decryption_key);
   }
 
   scoped_refptr<CommandStorageBackend> CreateBackendWithRestoreType() {
     const CommandStorageManager::SessionType type =
         CommandStorageManager::SessionType::kSessionRestore;
     return MakeRefCounted<CommandStorageBackend>(
-        task_environment_.GetMainThreadTaskRunner(), restore_path_, type,
-        IsUsingMarker());
+        task_environment_.GetMainThreadTaskRunner(), restore_path_, type);
   }
 
   // Functions that call into private members of CommandStorageBackend.
@@ -111,8 +109,6 @@ class CommandStorageBackendTest : public testing::TestWithParam<bool> {
       result.push_back(info.path);
     return result;
   }
-
-  bool IsUsingMarker() const { return GetParam(); }
 
   static base::FilePath FilePathFromTime(
       CommandStorageManager::SessionType type,
@@ -134,7 +130,7 @@ class CommandStorageBackendTest : public testing::TestWithParam<bool> {
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_P(CommandStorageBackendTest, MigrateOther) {
+TEST_F(CommandStorageBackendTest, MigrateOther) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   struct TestData data = {1, "a"};
   SessionCommands commands;
@@ -173,7 +169,7 @@ TEST_P(CommandStorageBackendTest, MigrateOther) {
   AssertCommandEqualsData(data2, commands[0].get());
 }
 
-TEST_P(CommandStorageBackendTest, SimpleReadWriteEncrypted) {
+TEST_F(CommandStorageBackendTest, SimpleReadWriteEncrypted) {
   std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   struct TestData data = {1, "a"};
@@ -197,7 +193,7 @@ TEST_P(CommandStorageBackendTest, SimpleReadWriteEncrypted) {
   EXPECT_TRUE(commands.empty());
 }
 
-TEST_P(CommandStorageBackendTest, RandomDataEncrypted) {
+TEST_F(CommandStorageBackendTest, RandomDataEncrypted) {
   struct TestData data[] = {
       {1, "a"},
       {2, "ab"},
@@ -235,7 +231,7 @@ TEST_P(CommandStorageBackendTest, RandomDataEncrypted) {
   }
 }
 
-TEST_P(CommandStorageBackendTest, BigDataEncrypted) {
+TEST_F(CommandStorageBackendTest, BigDataEncrypted) {
   struct TestData data[] = {
       {1, "a"},
       {2, "ab"},
@@ -272,7 +268,7 @@ TEST_P(CommandStorageBackendTest, BigDataEncrypted) {
             reinterpret_cast<char*>(commands[1]->contents())[big_size - 1]);
 }
 
-TEST_P(CommandStorageBackendTest, MarkerOnlyEncrypted) {
+TEST_F(CommandStorageBackendTest, MarkerOnlyEncrypted) {
   std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   SessionCommands commands;
@@ -288,7 +284,7 @@ TEST_P(CommandStorageBackendTest, MarkerOnlyEncrypted) {
 
 // Writes a command, appends another command with reset to true, then reads
 // making sure we only get back the second command.
-TEST_P(CommandStorageBackendTest, TruncateEncrypted) {
+TEST_F(CommandStorageBackendTest, TruncateEncrypted) {
   std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   struct TestData first_data = {1, "a"};
@@ -323,7 +319,7 @@ std::unique_ptr<SessionCommand> CreateCommandWithMaxSize() {
   return command;
 }
 
-TEST_P(CommandStorageBackendTest, MaxSizeTypeEncrypted) {
+TEST_F(CommandStorageBackendTest, MaxSizeTypeEncrypted) {
   std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
 
@@ -349,7 +345,7 @@ TEST_P(CommandStorageBackendTest, MaxSizeTypeEncrypted) {
                      expected_size) == 0);
 }
 
-TEST_P(CommandStorageBackendTest, MaxSizeType) {
+TEST_F(CommandStorageBackendTest, MaxSizeType) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
 
   SessionCommands commands;
@@ -371,7 +367,7 @@ TEST_P(CommandStorageBackendTest, MaxSizeType) {
                      expected_size) == 0);
 }
 
-TEST_P(CommandStorageBackendTest, IsValidFileWithInvalidFiles) {
+TEST_F(CommandStorageBackendTest, IsValidFileWithInvalidFiles) {
   base::WriteFile(file_path(), "z");
   EXPECT_FALSE(CommandStorageBackend::IsValidFile(file_path()));
 
@@ -379,11 +375,7 @@ TEST_P(CommandStorageBackendTest, IsValidFileWithInvalidFiles) {
   EXPECT_FALSE(CommandStorageBackend::IsValidFile(file_path()));
 }
 
-TEST_P(CommandStorageBackendTest, IsNotValidFileWithoutMarker) {
-  // This test is only applicable when the marker is used.
-  if (!IsUsingMarker())
-    return;
-
+TEST_F(CommandStorageBackendTest, IsNotValidFileWithoutMarker) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   const auto path = backend->current_path();
   backend->AppendCommands({}, true, base::DoNothing());
@@ -392,20 +384,7 @@ TEST_P(CommandStorageBackendTest, IsNotValidFileWithoutMarker) {
   EXPECT_FALSE(CommandStorageBackend::IsValidFile(path));
 }
 
-TEST_P(CommandStorageBackendTest, IsValidFileWithValidFile) {
-  // This test is only applicable when the marker is not used.
-  if (IsUsingMarker())
-    return;
-
-  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
-  backend->AppendCommands({}, true, base::DoNothing());
-  const auto path = backend->current_path();
-  backend = nullptr;
-
-  EXPECT_TRUE(CommandStorageBackend::IsValidFile(path));
-}
-
-TEST_P(CommandStorageBackendTest, SimpleReadWriteWithRestoreType) {
+TEST_F(CommandStorageBackendTest, SimpleReadWriteWithRestoreType) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackendWithRestoreType();
   struct TestData data = {1, "a"};
   SessionCommands commands;
@@ -434,7 +413,7 @@ TEST_P(CommandStorageBackendTest, SimpleReadWriteWithRestoreType) {
   ASSERT_EQ(0U, commands.size());
 }
 
-TEST_P(CommandStorageBackendTest, RandomDataWithRestoreType) {
+TEST_F(CommandStorageBackendTest, RandomDataWithRestoreType) {
   struct TestData data[] = {
       {1, "a"},
       {2, "ab"},
@@ -471,7 +450,7 @@ TEST_P(CommandStorageBackendTest, RandomDataWithRestoreType) {
   }
 }
 
-TEST_P(CommandStorageBackendTest, BigDataWithRestoreType) {
+TEST_F(CommandStorageBackendTest, BigDataWithRestoreType) {
   struct TestData data[] = {
       {1, "a"},
       {2, "ab"},
@@ -507,7 +486,7 @@ TEST_P(CommandStorageBackendTest, BigDataWithRestoreType) {
             reinterpret_cast<char*>(commands[1]->contents())[big_size - 1]);
 }
 
-TEST_P(CommandStorageBackendTest, CommandWithRestoreType) {
+TEST_F(CommandStorageBackendTest, CommandWithRestoreType) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackendWithRestoreType();
   SessionCommands commands;
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
@@ -519,7 +498,7 @@ TEST_P(CommandStorageBackendTest, CommandWithRestoreType) {
 
 // Writes a command, appends another command with reset to true, then reads
 // making sure we only get back the second command.
-TEST_P(CommandStorageBackendTest, TruncateWithRestoreType) {
+TEST_F(CommandStorageBackendTest, TruncateWithRestoreType) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackendWithRestoreType();
   struct TestData first_data = {1, "a"};
   SessionCommands commands;
@@ -543,7 +522,7 @@ TEST_P(CommandStorageBackendTest, TruncateWithRestoreType) {
 }
 
 // Test parsing the timestamp of a session from the path.
-TEST_P(CommandStorageBackendTest, TimestampFromPathWithRestoreType) {
+TEST_F(CommandStorageBackendTest, TimestampFromPathWithRestoreType) {
   const auto base_dir = base::FilePath(kSessionsDirectory);
 
   // Test parsing the timestamp from a valid session.
@@ -576,7 +555,7 @@ TEST_P(CommandStorageBackendTest, TimestampFromPathWithRestoreType) {
 }
 
 // Test serializing a timestamp to string.
-TEST_P(CommandStorageBackendTest, FilePathFromTimeWithRestoreType) {
+TEST_F(CommandStorageBackendTest, FilePathFromTimeWithRestoreType) {
   const auto base_dir = base::FilePath(kSessionsDirectory);
   const auto test_time_1 = base::Time();
   const auto result_path_1 =
@@ -594,14 +573,14 @@ TEST_P(CommandStorageBackendTest, FilePathFromTimeWithRestoreType) {
 }
 
 // Test that the previous session is empty if no session files exist.
-TEST_P(CommandStorageBackendTest,
+TEST_F(CommandStorageBackendTest,
        DeterminePreviousSessionEmptyWithRestoreType) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackendWithRestoreType();
   ASSERT_FALSE(GetLastSessionInfo(backend.get()));
 }
 
 // Test that the previous session is selected correctly when a file is present.
-TEST_P(CommandStorageBackendTest,
+TEST_F(CommandStorageBackendTest,
        DeterminePreviousSessionSingleWithRestoreType) {
   const auto prev_path = restore_path().Append(
       base::FilePath(kSessionsDirectory)
@@ -617,7 +596,7 @@ TEST_P(CommandStorageBackendTest,
 
 // Test that the previous session is selected correctly when multiple session
 // files are present.
-TEST_P(CommandStorageBackendTest,
+TEST_F(CommandStorageBackendTest,
        DeterminePreviousSessionMultipleWithRestoreType) {
   const auto sessions_dir =
       restore_path().Append(base::FilePath(kSessionsDirectory));
@@ -638,7 +617,7 @@ TEST_P(CommandStorageBackendTest,
 }
 
 // Test that the a file with an invalid name won't be used.
-TEST_P(CommandStorageBackendTest,
+TEST_F(CommandStorageBackendTest,
        DeterminePreviousSessionInvalidWithRestoreType) {
   const auto prev_path =
       restore_path().Append(base::FilePath(kSessionsDirectory)
@@ -652,7 +631,7 @@ TEST_P(CommandStorageBackendTest,
 }
 
 // Tests that MoveCurrentSessionToLastSession deletes the last session file.
-TEST_P(CommandStorageBackendTest,
+TEST_F(CommandStorageBackendTest,
        MoveCurrentSessionToLastDeletesLastSessionWithRestoreType) {
   const auto sessions_dir =
       restore_path().Append(base::FilePath(kSessionsDirectory));
@@ -668,7 +647,7 @@ TEST_P(CommandStorageBackendTest,
   ASSERT_EQ(-1, base::ReadFile(last_session, buffer, 0));
 }
 
-TEST_P(CommandStorageBackendTest, GetSessionFiles) {
+TEST_F(CommandStorageBackendTest, GetSessionFiles) {
   EXPECT_TRUE(CommandStorageBackend::GetSessionFilePaths(
                   file_path(), CommandStorageManager::kOther)
                   .empty());
@@ -688,12 +667,12 @@ TEST_P(CommandStorageBackendTest, GetSessionFiles) {
   EXPECT_EQ("Session_124", paths.begin()->BaseName().MaybeAsASCII());
 }
 
-TEST_P(CommandStorageBackendTest, TimestampSeparatorIsAscii) {
+TEST_F(CommandStorageBackendTest, TimestampSeparatorIsAscii) {
   // Code in WebLayer relies on the timestamp separator being ascii.
   ASSERT_TRUE(!base::FilePath(kTimestampSeparator).MaybeAsASCII().empty());
 }
 
-TEST_P(CommandStorageBackendTest, GetSessionFilesAreSortedByReverseTimestamp) {
+TEST_F(CommandStorageBackendTest, GetSessionFilesAreSortedByReverseTimestamp) {
   ASSERT_EQ(0, base::WriteFile(file_path().DirName().AppendASCII("Session_130"),
                                "", 0));
   ASSERT_EQ(0, base::WriteFile(file_path().DirName().AppendASCII("Session_120"),
@@ -710,11 +689,7 @@ TEST_P(CommandStorageBackendTest, GetSessionFilesAreSortedByReverseTimestamp) {
   EXPECT_EQ("Session_120", paths[3].BaseName().MaybeAsASCII());
 }
 
-TEST_P(CommandStorageBackendTest, UseMarkerWithoutValidMarker) {
-  // This test is only interesting when the marker is used.
-  if (!IsUsingMarker())
-    return;
-
+TEST_F(CommandStorageBackendTest, UseMarkerWithoutValidMarker) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   struct TestData data = {1, "a"};
   SessionCommands commands;
@@ -735,7 +710,7 @@ TEST_P(CommandStorageBackendTest, UseMarkerWithoutValidMarker) {
 // This test moves a previously written file into the expected location and
 // ensures it's read. This is to verify reading hasn't changed in an
 // incompatible manner.
-TEST_P(CommandStorageBackendTest, ReadPreviouslyWrittenData) {
+TEST_F(CommandStorageBackendTest, ReadPreviouslyWrittenData) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_path));
   test_data_path = test_data_path.AppendASCII("components")
@@ -766,11 +741,7 @@ TEST_P(CommandStorageBackendTest, ReadPreviouslyWrittenData) {
                            backend->ReadLastSessionCommands().commands);
 }
 
-TEST_P(CommandStorageBackendTest, NewFileOnTruncate) {
-  // This test is only applicable with marker.
-  if (!IsUsingMarker())
-    return;
-
+TEST_F(CommandStorageBackendTest, NewFileOnTruncate) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackendWithRestoreType();
   struct TestData data = {1, "a"};
   SessionCommands commands;
@@ -793,7 +764,7 @@ TEST_P(CommandStorageBackendTest, NewFileOnTruncate) {
   EXPECT_FALSE(base::PathExists(path1));
 }
 
-TEST_P(CommandStorageBackendTest, AppendCommandsCallbackRunOnError) {
+TEST_F(CommandStorageBackendTest, AppendCommandsCallbackRunOnError) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   backend->ForceAppendCommandsToFailForTesting();
   base::RunLoop run_loop;
@@ -801,11 +772,7 @@ TEST_P(CommandStorageBackendTest, AppendCommandsCallbackRunOnError) {
   run_loop.Run();
 }
 
-TEST_P(CommandStorageBackendTest, RestoresFileWithMarkerAfterFailure) {
-  // This test is only applicable with marker.
-  if (!IsUsingMarker())
-    return;
-
+TEST_F(CommandStorageBackendTest, RestoresFileWithMarkerAfterFailure) {
   // Write `data` and a marker.
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   struct TestData data = {11, "X"};
@@ -834,9 +801,5 @@ TEST_P(CommandStorageBackendTest, RestoresFileWithMarkerAfterFailure) {
   ASSERT_EQ(1u, commands.size());
   AssertCommandEqualsData(data, commands[0].get());
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         CommandStorageBackendTest,
-                         testing::Values(false, true));
 
 }  // namespace sessions

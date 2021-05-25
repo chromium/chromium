@@ -34,8 +34,6 @@ namespace sessions {
 // CommandStorageBackend (mostly) does not interpret the commands in any way, it
 // simply reads/writes them.
 //
-// The following comment applies when `use_marker` is true, which will
-// eventually be the default (and there will not be an option to disable it).
 // CommandStorageBackend writes to a file with a suffix that indicates the
 // time the file was opened. The time stamp allows this code to determine the
 // most recently written file. When AppendCommands() is supplied a value of true
@@ -89,7 +87,6 @@ class SESSIONS_EXPORT CommandStorageBackend
       scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
       const base::FilePath& path,
       CommandStorageManager::SessionType type,
-      bool use_marker,
       const std::vector<uint8_t>& decryption_key = {});
   CommandStorageBackend(const CommandStorageBackend&) = delete;
   CommandStorageBackend& operator=(const CommandStorageBackend&) = delete;
@@ -234,8 +231,6 @@ class SESSIONS_EXPORT CommandStorageBackend
   // This is the path supplied to the constructor. See CommandStorageManager
   // constructor for details.
   const base::FilePath supplied_path_;
-
-  const bool use_marker_;
 
   // Used to decode the initial last session file.
   // TODO(sky): this is currently required because InitIfNecessary() determines

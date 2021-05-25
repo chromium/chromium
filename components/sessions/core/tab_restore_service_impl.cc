@@ -512,8 +512,7 @@ TabRestoreServiceImpl::PersistenceDelegate::PersistenceDelegate(
       command_storage_manager_(std::make_unique<CommandStorageManager>(
           CommandStorageManager::kTabRestore,
           client_->GetPathToSaveTo(),
-          this,
-          /* use_marker */ true)),
+          this)),
       tab_restore_service_helper_(nullptr),
       entries_to_write_(0),
       entries_written_(0),
