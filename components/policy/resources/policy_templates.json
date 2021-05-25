@@ -9429,7 +9429,7 @@
     },
     {
       'name': 'ReportDeviceVersionInfo',
-      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:18-'],
@@ -9449,7 +9449,7 @@
     },
     {
       'name': 'ReportDeviceActivityTimes',
-      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:18-'],
@@ -9469,7 +9469,7 @@
     },
     {
       'name': 'ReportDeviceBootMode',
-      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:18-'],
@@ -9489,7 +9489,7 @@
     },
     {
       'name': 'ReportDeviceLocation',
-      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'future_on': ['chrome_os'],
@@ -9509,7 +9509,7 @@
     },
     {
       'name': 'ReportDeviceNetworkInterfaces',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:29-'],
@@ -9529,7 +9529,7 @@
     },
     {
       'name': 'ReportDeviceUsers',
-      'owners': ['stepco@chromium.org', 'poromov@chromium.org'],
+      'owners': ['stepco@chromium.org', 'cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:32-'],
@@ -9549,7 +9549,7 @@
     },
     {
       'name': 'ReportDeviceHardwareStatus',
-      'owners': ['antrim@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'antrim@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:42-'],
@@ -9569,7 +9569,7 @@
     },
     {
       'name': 'ReportDeviceSessionStatus',
-      'owners': ['antrim@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'antrim@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:42-'],
@@ -9589,7 +9589,7 @@
     },
     {
       'name': 'ReportDeviceGraphicsStatus',
-      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:81-'],
@@ -9612,7 +9612,7 @@
     },
     {
       'name': 'ReportDeviceCrashReportInfo',
-      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:83-'],
@@ -9635,7 +9635,7 @@
     },
     {
       'name': 'ReportDeviceOsUpdateStatus',
-      'owners': ['anqing@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'anqing@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:79-'],
@@ -9657,7 +9657,7 @@
     },
     {
       'name': 'ReportDevicePowerStatus',
-      'owners': ['antrim@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'antrim@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:73-'],
@@ -9677,7 +9677,7 @@
     },
     {
       'name': 'ReportDeviceStorageStatus',
-      'owners': ['antrim@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'antrim@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:73-'],
@@ -9697,7 +9697,7 @@
     },
     {
       'name': 'ReportDeviceBoardStatus',
-      'owners': ['antrim@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'antrim@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:73-'],
@@ -9717,7 +9717,7 @@
     },
     {
       'name': 'ReportDeviceCpuInfo',
-      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:81-'],
@@ -9739,7 +9739,7 @@
     },
     {
       'name': 'ReportDeviceTimezoneInfo',
-      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:83-'],
@@ -9760,7 +9760,7 @@
     },
     {
       'name': 'ReportDeviceMemoryInfo',
-      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:83-'],
@@ -9781,7 +9781,7 @@
     },
     {
       'name': 'ReportDeviceBacklightInfo',
-      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:83-'],
@@ -9802,7 +9802,7 @@
     },
     {
       'name': 'ReportDeviceAppInfo',
-      'owners': ['mattme@google.com', 'file://components/policy/resources/OWNERS'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'mattme@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:85-'],
@@ -9823,7 +9823,7 @@
     },
     {
       'name': 'ReportDeviceBluetoothInfo',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:85-'],
@@ -9844,7 +9844,7 @@
     },
     {
       'name': 'ReportDeviceFanInfo',
-      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:85-'],
@@ -9865,7 +9865,7 @@
     },
     {
       'name': 'ReportDeviceVpdInfo',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:85-'],
@@ -9887,7 +9887,7 @@
     },
     {
       'name': 'ReportDeviceSystemInfo',
-      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:86-'],
@@ -9908,7 +9908,7 @@
     },
     {
       'name': 'ReportDevicePrintJobs',
-      'owners': ['mattme@google.com', 'file://components/policy/resources/OWNERS'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'mattme@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'future_on': ['chrome_os'],
@@ -9940,7 +9940,7 @@
     },
     {
       'name': 'ReportUploadFrequency',
-      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 60000 },
       'supported_on': ['chrome_os:42-'],
@@ -9960,7 +9960,7 @@
     },
     {
       'name': 'ReportArcStatusEnabled',
-      'owners': ['phweiss@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'phweiss@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:55-'],
@@ -9979,7 +9979,7 @@
     },
     {
       'name': 'ReportCrostiniUsageEnabled',
-      'owners': ['aoldemeier@chromium.org', 'okalitova@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'aoldemeier@chromium.org', 'okalitova@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:70-'],
@@ -9998,7 +9998,7 @@
     },
     {
       'name': 'HeartbeatEnabled',
-      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:43-'],
@@ -10018,7 +10018,7 @@
     },
     {
       'name': 'HeartbeatFrequency',
-      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 30000 },
       'supported_on': ['chrome_os:43-'],
@@ -10038,7 +10038,7 @@
     },
     {
       'name': 'LogUploadEnabled',
-      'owners': ['poromov@chromium.org', 'pbond@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'pbond@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:46-'],
@@ -10185,7 +10185,7 @@
     },
     {
       'name': 'DeviceMetricsReportingEnabled',
-      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
+      'owners': ['cros-reporting-team@google.com', 'lbaraz@chromium.org', 'zmin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:14-'],
