@@ -70,6 +70,9 @@ constexpr base::TimeDelta kMinCapturePeriod = base::TimeDelta::FromMicroseconds(
     base::Time::kMicrosecondsPerSecond / kMaxFrameRate);
 constexpr media::VideoPixelFormat kFormat = media::PIXEL_FORMAT_I420;
 
+// Video buffer parameters.
+constexpr bool kNotPremapped = false;
+
 // Helper to return the capture parameters packaged in a VideoCaptureParams.
 media::VideoCaptureParams GetCaptureParams() {
   media::VideoCaptureParams params;
@@ -388,7 +391,7 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
               std::move(data),
               media::mojom::VideoFrameInfo::New(
                   kMinCapturePeriod * frame_number, media::VideoFrameMetadata(),
-                  kFormat, kResolution, gfx::Rect(kResolution),
+                  kFormat, kResolution, gfx::Rect(kResolution), kNotPremapped,
                   gfx::ColorSpace::CreateREC709(), nullptr),
               gfx::Rect(kResolution), std::move(callbacks_remote));
         },

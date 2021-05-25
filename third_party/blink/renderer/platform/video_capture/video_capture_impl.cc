@@ -382,15 +382,26 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
                     video_capture_impl_.gpu_factories_
                         ->GpuMemoryBufferManager(),
                     video_capture_impl_.pool_);
+        // Keep one GpuMemoryBuffer for current GpuMemoryHandle alive,
+        // so that any associated structures are kept alive while this buffer id
+        // is still used (e.g. DMA buf handles for linux/CrOS).
         buffer_context_->SetGpuMemoryBuffer(std::move(gmb));
       }
       CHECK(buffer_context_->GetGpuMemoryBuffer());
 
+      auto buffer_handle = buffer_context_->GetGpuMemoryBuffer()->CloneHandle();
+      if (!frame_info_->is_premapped) {
+        // The buffer may have a region associated with it, which is passed
+        // together with the buffer handle when a new buffer is allocated by the
+        // capturer. However, it will contain actual frame data only if the
+        // |is_premapped| flag is signalled for this frame.
+        buffer_handle.region = base::UnsafeSharedMemoryRegion();
+      }
       // Clone the GpuMemoryBuffer and wrap it in a VideoFrame.
       gpu_memory_buffer_ =
           video_capture_impl_.gpu_memory_buffer_support_
               ->CreateGpuMemoryBufferImplFromHandle(
-                  buffer_context_->GetGpuMemoryBuffer()->CloneHandle(),
+                  std::move(buffer_handle),
                   buffer_context_->GetGpuMemoryBuffer()->GetSize(),
                   buffer_context_->GetGpuMemoryBuffer()->GetFormat(),
                   gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing(),

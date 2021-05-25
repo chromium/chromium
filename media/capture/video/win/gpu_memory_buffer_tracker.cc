@@ -101,6 +101,9 @@ bool GpuMemoryBufferTracker::CreateBufferInternal() {
     NOTREACHED() << "Failed to create GPU memory buffer";
     return false;
   }
+
+  region_ = base::UnsafeSharedMemoryRegion::Create(GetMemorySizeInBytes());
+
   return true;
 }
 
@@ -137,10 +140,8 @@ GpuMemoryBufferTracker::DuplicateAsUnsafeRegion() {
   if (!buffer_) {
     return base::UnsafeSharedMemoryRegion();
   }
-  const auto data_size = GetMemorySizeInBytes();
-  if (!region_.IsValid() || region_.GetSize() < data_size) {
-    region_ = base::UnsafeSharedMemoryRegion::Create(data_size);
-  }
+
+  CHECK(region_.IsValid());
 
   if (!gpu::CopyDXGIBufferToShMem(buffer_->GetHandle(), region_.Duplicate(),
                                   d3d_device_.Get(), &staging_texture_)) {
@@ -160,7 +161,9 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferTracker::GetGpuMemoryBufferHandle() {
   if (!EnsureD3DDevice()) {
     return gfx::GpuMemoryBufferHandle();
   }
-  return buffer_->CloneHandle();
+  auto handle = buffer_->CloneHandle();
+  handle.region = region_.Duplicate();
+  return handle;
 }
 
 uint32_t GpuMemoryBufferTracker::GetMemorySizeInBytes() {

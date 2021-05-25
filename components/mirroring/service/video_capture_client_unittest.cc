@@ -26,13 +26,15 @@ namespace {
 
 const media::VideoCaptureFeedback kFeedback(0.6, 30.0, 1000);
 
+constexpr bool kNotPremapped = false;
+
 media::mojom::VideoFrameInfoPtr GetVideoFrameInfo(const gfx::Size& size) {
   media::VideoFrameMetadata metadata;
   metadata.frame_rate = 30;
   metadata.reference_time = base::TimeTicks();
   return media::mojom::VideoFrameInfo::New(
       base::TimeDelta(), metadata, media::PIXEL_FORMAT_I420, size,
-      gfx::Rect(size), gfx::ColorSpace::CreateREC709(), nullptr);
+      gfx::Rect(size), kNotPremapped, gfx::ColorSpace::CreateREC709(), nullptr);
 }
 
 }  // namespace

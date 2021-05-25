@@ -629,6 +629,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
   info->coded_size = format.frame_size;
   info->visible_rect = visible_rect;
   info->metadata = metadata;
+  info->is_premapped = buffer.is_premapped;
 
   buffer_pool_->HoldForConsumers(buffer.id, 1);
   receiver_->OnFrameReadyInBuffer(
