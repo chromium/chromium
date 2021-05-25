@@ -55,9 +55,13 @@ void PaymentRequestRowView::HideBottomSeparator() {
 }
 
 void PaymentRequestRowView::UpdateBottomSeparator() {
-  if (!GetWidget())
-    return;
-  SetBorder(bottom_separator_visible_
+  // Create an empty border even when not present in a Widget hierarchy as the
+  // border is needed to correctly compute the bounds of the ScrollView in the
+  // PaymentRequestSheetController which is done before this is added to its
+  // Widget.
+  // TODO(crbug.com/1213247): Update PaymentRequestSheetController to recompute
+  // the bounds of its ScrollView in response to changes in preferred size.
+  SetBorder(bottom_separator_visible_ && GetWidget()
                 ? payments::CreatePaymentRequestRowBorder(
                       GetNativeTheme()->GetSystemColor(
                           ui::NativeTheme::kColorId_SeparatorColor),
