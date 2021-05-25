@@ -126,7 +126,6 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
     target_window_->RemoveObserver(this);
     target_window_ = nullptr;
 
-    capture_request_ = aura::ScopedWindowCaptureRequest();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     force_visible_.reset();
 #endif

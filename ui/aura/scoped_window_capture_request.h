@@ -7,6 +7,7 @@
 
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "ui/aura/aura_export.h"
+#include "ui/aura/window_observer.h"
 
 namespace aura {
 
@@ -21,23 +22,39 @@ class Window;
 // Note that making a window capturable forces the layer tree root at its layer
 // to be promoted to a render surface that draw into a render pass.
 // See https://crbug.com/1143930 for more details.
-class AURA_EXPORT ScopedWindowCaptureRequest {
+class AURA_EXPORT ScopedWindowCaptureRequest : public WindowObserver {
  public:
   // Creates an empty request that doesn't affect any window.
   ScopedWindowCaptureRequest() = default;
   ScopedWindowCaptureRequest(ScopedWindowCaptureRequest&& other);
   ScopedWindowCaptureRequest& operator=(ScopedWindowCaptureRequest&& rhs);
-  ~ScopedWindowCaptureRequest();
+  ~ScopedWindowCaptureRequest() override;
 
   Window* window() const { return window_; }
 
   viz::SubtreeCaptureId GetCaptureId() const;
+
+  // WindowObserver:
+  void OnWindowDestroying(Window* window) override;
 
  private:
   friend class Window;
 
   // Private so it can only be called through Window::MakeWindowCapturable().
   explicit ScopedWindowCaptureRequest(Window* window);
+
+  // Attaches to the current |window_| by observing it. If |increment_requests|
+  // is true (meaning this is a new request, rather than an existing one being
+  // moved into |this|), OnScopedWindowCaptureRequestAdded() will be called on
+  // |window_|. |window_| must be valid.
+  void AttachToCurrentWindow(bool increment_requests);
+
+  // Detaches from the current |window_| (if any) by ending observing it. If
+  // |decrement_requests| is true (meaning this request is actually ending
+  // rather than being moved from |this|), OnScopedWindowCaptureRequestRemoved()
+  // will be called on |window_|.
+  // |window_| will be reset to |nullptr|, and its old value will be returned.
+  Window* DetachFromCurrentWindow(bool decrement_requests);
 
   // The window on which this request has been made. Can be |nullptr| if this is
   // an empty request (created by the default ctor), or if this object was

@@ -439,7 +439,7 @@ TEST_F(WindowTest, ContainsPoint) {
 
 TEST_F(WindowTest, MakeWindowCapturable) {
   std::unique_ptr<Window> w1(CreateTestWindowWithId(1, root_window()));
-  // Initailly the window is not capturable.
+  // Initially the window is not capturable.
   EXPECT_FALSE(w1->subtree_capture_id().is_valid());
 
   // Creating requests makes the window capturable as long as those requests
@@ -483,6 +483,21 @@ TEST_F(WindowTest, MakeWindowCapturable) {
   consume_request(std::move(request3));
   EXPECT_FALSE(w1->subtree_capture_id().is_valid());
   EXPECT_FALSE(w1->layer()->GetSubtreeCaptureId().is_valid());
+}
+
+TEST_F(WindowTest, DeletingCapturableWindows) {
+  std::unique_ptr<Window> w1(CreateTestWindowWithId(1, root_window()));
+  // Initially the window is not capturable.
+  EXPECT_FALSE(w1->subtree_capture_id().is_valid());
+
+  // Deleting a window with capture requests on them will not result in a use-
+  // after-free crash.
+  ScopedWindowCaptureRequest request1 = w1->MakeWindowCapturable();
+  ScopedWindowCaptureRequest request2 = w1->MakeWindowCapturable();
+  EXPECT_TRUE(w1->subtree_capture_id().is_valid());
+  w1.reset();
+  EXPECT_FALSE(request1.GetCaptureId().is_valid());
+  EXPECT_FALSE(request2.GetCaptureId().is_valid());
 }
 
 TEST_F(WindowTest, LayerReleasingAndSettingOfCapturableWindow) {

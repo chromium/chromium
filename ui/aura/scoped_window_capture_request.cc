@@ -10,33 +10,66 @@ namespace aura {
 
 ScopedWindowCaptureRequest::ScopedWindowCaptureRequest(
     ScopedWindowCaptureRequest&& other)
-    : window_(other.window_) {
-  other.window_ = nullptr;
+    // Do not decrement requests on |other| nor increment them on |this| since
+    // we are moving the same request into here.
+    : window_(other.DetachFromCurrentWindow(/*decrement_requests=*/false)) {
+  if (window_)
+    AttachToCurrentWindow(/*increment_requests=*/false);
 }
 
 ScopedWindowCaptureRequest& ScopedWindowCaptureRequest::operator=(
     ScopedWindowCaptureRequest&& rhs) {
+  // Note that |this| might have been attached to a different window than that
+  // of |rhs|, so we need to detach from while decrementing the requests.
+  DetachFromCurrentWindow(/*decrement_requests=*/true);
+
+  // However, |rhs| is moving into |this|, so it's essentially the same request,
+  // therefore, no need to either increment or decrement the requests.
+  window_ = rhs.DetachFromCurrentWindow(/*decrement_requests=*/false);
   if (window_)
-    window_->OnScopedWindowCaptureRequestRemoved();
-  window_ = rhs.window_;
-  rhs.window_ = nullptr;
+    AttachToCurrentWindow(/*increment_requests=*/false);
+
   return *this;
 }
 
 ScopedWindowCaptureRequest::~ScopedWindowCaptureRequest() {
-  if (window_)
-    window_->OnScopedWindowCaptureRequestRemoved();
+  DetachFromCurrentWindow(/*decrement_requests=*/true);
 }
 
 viz::SubtreeCaptureId ScopedWindowCaptureRequest::GetCaptureId() const {
   return window_ ? window_->subtree_capture_id() : viz::SubtreeCaptureId();
 }
 
+void ScopedWindowCaptureRequest::OnWindowDestroying(Window* window) {
+  // No need to call OnScopedWindowCaptureRequestRemoved() since the window is
+  // being destroyed.
+  DetachFromCurrentWindow(/*decrement_requests=*/false);
+}
+
 ScopedWindowCaptureRequest::ScopedWindowCaptureRequest(Window* window)
     : window_(window) {
+  AttachToCurrentWindow(/*increment_requests=*/true);
+}
+
+void ScopedWindowCaptureRequest::AttachToCurrentWindow(
+    bool increment_requests) {
   DCHECK(window_);
   DCHECK(!window_->IsRootWindow());
-  window_->OnScopedWindowCaptureRequestAdded();
+  if (increment_requests)
+    window_->OnScopedWindowCaptureRequestAdded();
+  window_->AddObserver(this);
+}
+
+Window* ScopedWindowCaptureRequest::DetachFromCurrentWindow(
+    bool decrement_requests) {
+  Window* result = window_;
+  if (window_) {
+    window_->RemoveObserver(this);
+    if (decrement_requests)
+      window_->OnScopedWindowCaptureRequestRemoved();
+    window_ = nullptr;
+  }
+  return result;
 }
 
 }  // namespace aura
