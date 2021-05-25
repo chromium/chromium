@@ -8261,6 +8261,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
              tab to reading list."/>
   <suffix name="IPH_ReopenTab"
       label="In product help for reopening closed tabs."/>
+  <suffix name="IPH_SharedHighlightingBuilder"
+      label="The in product help message to notify the user that the share
+             action can preemptively share a link-to-text."/>
   <suffix name="IPH_TabGroupsDragAndDrop"
       label="In product help for educating user to drop one tab on another
              tab to create group."/>
