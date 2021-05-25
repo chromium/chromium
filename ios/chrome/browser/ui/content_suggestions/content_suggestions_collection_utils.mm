@@ -29,6 +29,7 @@ namespace {
 // Width of search field.
 const CGFloat kSearchFieldLarge = 432;
 const CGFloat kSearchFieldSmall = 343;
+const CGFloat kSearchFieldSmallMin = 304;
 const CGFloat kSearchFieldMinMargin = 8;
 
 // Top margin for the doodle.
@@ -118,7 +119,9 @@ CGFloat searchFieldWidth(CGFloat superviewWidth,
     return kSearchFieldLarge;
 
   // Special case for narrow sizes.
-  return MIN(kSearchFieldSmall, superviewWidth - kSearchFieldMinMargin * 2);
+  return MAX(
+      kSearchFieldSmallMin,
+      MIN(kSearchFieldSmall, superviewWidth - kSearchFieldMinMargin * 2));
 }
 
 CGFloat heightForLogoHeader(BOOL logoIsShowing,
