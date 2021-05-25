@@ -83,6 +83,8 @@ cr.define('settings.input_method_util', function() {
   /**
    * Default values for each option type.
    *
+   * WARNING: Keep this in sync with corresponding Google3 file for extension.
+   *
    * @type {Object<settings.input_method_util.OptionType, *>}
    * @const
    */
@@ -148,6 +150,7 @@ cr.define('settings.input_method_util', function() {
     PINYIN_CHINESE_SIMPLIFIED: 'zh-t-i0-pinyin',
     ZHUYIN_CHINESE_TRADITIONAL: 'zh-hant-t-i0-und',
     XKB_US_ENG: 'xkb:us::eng',
+    XKB_UK_ENG: 'xkb:gb:extd:eng',
   };
 
   /**
@@ -169,7 +172,8 @@ cr.define('settings.input_method_util', function() {
     }
     const engineId = getFirstPartyInputMethodEngineId(id);
     return engineId === InputToolCode.PINYIN_CHINESE_SIMPLIFIED ||
-        engineId === InputToolCode.XKB_US_ENG;
+        engineId === InputToolCode.XKB_US_ENG ||
+        engineId === InputToolCode.XKB_UK_ENG;
   }
 
   /**
@@ -193,6 +197,19 @@ cr.define('settings.input_method_util', function() {
           OptionType.PINYIN_ENABLE_FUZZY, OptionType.EDIT_USER_DICT);
     }
     if (engineId === InputToolCode.XKB_US_ENG) {
+      options.physicalKeyboard.push(
+          OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
+          OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION,
+          OptionType.ENABLE_PREDICTION);
+      options.virtualKeyboard.push(
+          OptionType.ENABLE_SOUND_ON_KEYPRESS,
+          OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
+          OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION,
+          OptionType.ENABLE_DOUBLE_SPACE_PERIOD,
+          OptionType.ENABLE_GESTURE_TYPING, OptionType.EDIT_USER_DICT);
+    }
+
+    if (engineId === InputToolCode.XKB_UK_ENG) {
       options.physicalKeyboard.push(
           OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
           OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION,
