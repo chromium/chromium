@@ -2107,8 +2107,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBackForwardCacheBrowserTest,
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
-  RenderFrameDeletedObserver deleted_observer(
-      shell()->web_contents()->GetMainFrame());
+  RenderFrameHostWrapper main_frame(shell()->web_contents()->GetMainFrame());
 
   AddPrerender(kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
@@ -2126,8 +2125,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBackForwardCacheBrowserTest,
 
   // Expect the navigation to be served from the back-forward cache to verify
   // the test is testing what is intended.
-  ASSERT_EQ(shell()->web_contents()->GetMainFrame(),
-            deleted_observer.render_frame_host());
+  ASSERT_EQ(shell()->web_contents()->GetMainFrame(), main_frame.get());
 
   // There is a known issue that when the initial renderer process is reused
   // after the back navigation, the session storage state changed in the

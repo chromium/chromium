@@ -1269,16 +1269,12 @@ class BackgroundForegroundProcessLimitBackForwardCacheBrowserTest
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 
-  void ExpectCached(const RenderFrameDeletedObserver& deleted_observer,
+  void ExpectCached(const RenderFrameHostImplHolder& rfh,
                     bool cached,
                     bool backgrounded) {
-    EXPECT_FALSE(deleted_observer.deleted());
-    EXPECT_EQ(cached, static_cast<RenderFrameHostImpl*>(
-                          deleted_observer.render_frame_host())
-                          ->IsInBackForwardCache());
-    EXPECT_EQ(backgrounded, deleted_observer.render_frame_host()
-                                ->GetProcess()
-                                ->IsProcessBackgrounded());
+    EXPECT_FALSE(rfh.IsDestroyed());
+    EXPECT_EQ(cached, rfh->IsInBackForwardCache());
+    EXPECT_EQ(backgrounded, rfh->GetProcess()->IsProcessBackgrounded());
   }
   // The number of pages the BackForwardCache can hold per tab.
   const size_t kBackForwardCacheSize = 4;
@@ -1292,16 +1288,15 @@ IN_PROC_BROWSER_TEST_F(
     CacheEvictionSameSite) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  std::vector<std::unique_ptr<RenderFrameDeletedObserver>> delete_observers;
+  std::vector<RenderFrameHostImplHolder> rfhs;
 
   for (size_t i = 0; i <= kBackForwardCacheSize * 2; ++i) {
     SCOPED_TRACE(i);
     GURL url(embedded_test_server()->GetURL(
         "a.com", base::StringPrintf("/title1.html?i=%zu", i)));
     ASSERT_TRUE(NavigateToURL(shell(), url));
-    RenderFrameHostImpl* rfh = current_frame_host();
-    EXPECT_FALSE(rfh->GetProcess()->IsProcessBackgrounded());
-    delete_observers.emplace_back(new RenderFrameDeletedObserver(rfh));
+    rfhs.emplace_back(current_frame_host());
+    EXPECT_FALSE(rfhs.back()->GetProcess()->IsProcessBackgrounded());
 
     for (size_t j = 0; j <= i; ++j) {
       SCOPED_TRACE(j);
@@ -1309,10 +1304,10 @@ IN_PROC_BROWSER_TEST_F(
       // should be in the cache, any before that should be deleted.
       if (i - j <= kForegroundBackForwardCacheSize) {
         // All of the processes should be in the foreground.
-        ExpectCached(*delete_observers[j], /*cached=*/i != j,
+        ExpectCached(rfhs[j], /*cached=*/i != j,
                      /*backgrounded=*/false);
       } else {
-        delete_observers[j]->WaitUntilDeleted();
+        rfhs[j].WaitUntilRenderFrameDeleted();
       }
     }
   }
@@ -1343,28 +1338,27 @@ IN_PROC_BROWSER_TEST_F(
     DISABLED_CacheEvictionCrossSite) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  std::vector<std::unique_ptr<RenderFrameDeletedObserver>> delete_observers;
+  std::vector<RenderFrameHostImplHolder> rfhs;
 
   for (size_t i = 0; i <= kBackForwardCacheSize * 2; ++i) {
     SCOPED_TRACE(i);
     GURL url(embedded_test_server()->GetURL(base::StringPrintf("a%zu.com", i),
                                             "/title1.html"));
     ASSERT_TRUE(NavigateToURL(shell(), url));
-    RenderFrameHostImpl* rfh = current_frame_host();
-    EXPECT_FALSE(rfh->GetProcess()->IsProcessBackgrounded());
-    delete_observers.emplace_back(new RenderFrameDeletedObserver(rfh));
+    rfhs.emplace_back(current_frame_host());
+    EXPECT_FALSE(rfhs.back()->GetProcess()->IsProcessBackgrounded());
 
     for (size_t j = 0; j <= i; ++j) {
       SCOPED_TRACE(j);
       // The last page is active, the previous |kBackgroundBackForwardCacheSize|
       // should be in the cache, any before that should be deleted.
       if (i - j <= kBackForwardCacheSize) {
-        EXPECT_FALSE(delete_observers[j]->deleted());
+        EXPECT_FALSE(rfhs[j].IsDestroyed());
         // Pages except the active one should be cached and in the background.
-        ExpectCached(*delete_observers[j], /*cached=*/i != j,
+        ExpectCached(rfhs[j], /*cached=*/i != j,
                      /*backgrounded=*/i != j);
       } else {
-        delete_observers[j]->WaitUntilDeleted();
+        rfhs[j].WaitUntilRenderFrameDeleted();
       }
     }
   }
@@ -1405,7 +1399,7 @@ IN_PROC_BROWSER_TEST_F(
     ChangeToForeground) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  std::vector<std::unique_ptr<RenderFrameDeletedObserver>> delete_observers;
+  std::vector<RenderFrameHostImplHolder> rfhs;
 
   // Navigate through a[0-3].com.
   for (size_t i = 0; i < kBackForwardCacheSize; ++i) {
@@ -1413,14 +1407,13 @@ IN_PROC_BROWSER_TEST_F(
     GURL url(embedded_test_server()->GetURL(base::StringPrintf("a%zu.com", i),
                                             "/title1.html"));
     ASSERT_TRUE(NavigateToURL(shell(), url));
-    RenderFrameHostImpl* rfh = current_frame_host();
-    EXPECT_FALSE(rfh->GetProcess()->IsProcessBackgrounded());
-    delete_observers.emplace_back(new RenderFrameDeletedObserver(rfh));
+    rfhs.emplace_back(current_frame_host());
+    EXPECT_FALSE(rfhs.back()->GetProcess()->IsProcessBackgrounded());
   }
   // Check that a0-2 are cached and backgrounded.
   for (size_t i = 0; i < kBackForwardCacheSize - 1; ++i) {
     SCOPED_TRACE(i);
-    ExpectCached(*delete_observers[i], /*cached=*/true, /*backgrounded=*/true);
+    ExpectCached(rfhs[i], /*cached=*/true, /*backgrounded=*/true);
   }
 
   // Navigate to a page which causes the processes for a[1-3] to be
@@ -1433,21 +1426,21 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* rfh = current_frame_host();
   ASSERT_FALSE(rfh->GetProcess()->IsProcessBackgrounded());
 
-  delete_observers[1]->render_frame_host()->GetProcess()->SetPriorityOverride(
+  rfhs[1]->GetProcess()->SetPriorityOverride(
       /*foreground=*/true);
-  delete_observers[2]->render_frame_host()->GetProcess()->SetPriorityOverride(
+  rfhs[2]->GetProcess()->SetPriorityOverride(
       /*foreground=*/true);
-  delete_observers[3]->render_frame_host()->GetProcess()->SetPriorityOverride(
+  rfhs[3]->GetProcess()->SetPriorityOverride(
       /*foreground=*/true);
 
   // The page should be evicted.
-  delete_observers[1]->WaitUntilDeleted();
+  rfhs[1].WaitUntilRenderFrameDeleted();
 
   // Check that a0 is cached and backgrounded.
-  ExpectCached(*delete_observers[0], /*cached=*/true, /*backgrounded=*/true);
+  ExpectCached(rfhs[0], /*cached=*/true, /*backgrounded=*/true);
   // Check that a2-3 are cached and foregrounded.
-  ExpectCached(*delete_observers[2], /*cached=*/true, /*backgrounded=*/false);
-  ExpectCached(*delete_observers[3], /*cached=*/true, /*backgrounded=*/false);
+  ExpectCached(rfhs[2], /*cached=*/true, /*backgrounded=*/false);
+  ExpectCached(rfhs[3], /*cached=*/true, /*backgrounded=*/false);
 }
 
 // Tests that |RenderFrameHost::ForEachRenderFrameHost| and
@@ -5577,17 +5570,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
   const std::string script_to_store =
       "executeCommandOnServiceWorker('StoreClients')";
   EXPECT_EQ("DONE", EvalJs(tab_to_execute_service_worker, script_to_store));
-  RenderFrameHostImpl* rfh =
-      static_cast<WebContentsImpl*>(tab_to_be_bfcached->web_contents())
-          ->GetFrameTree()
-          ->root()
-          ->current_frame_host();
-  RenderFrameDeletedObserver deleted_observer_rfh(rfh);
+  RenderFrameHostImplHolder rfh(
+      tab_to_be_bfcached->web_contents()->GetMainFrame());
 
   // 4) Navigate away to B in |tab_to_be_bfcached|.
   EXPECT_TRUE(NavigateToURL(tab_to_be_bfcached,
                             https_server.GetURL("b.com", "/title1.html")));
-  EXPECT_FALSE(deleted_observer_rfh.deleted());
+  EXPECT_FALSE(rfh.IsDestroyed());
   EXPECT_TRUE(rfh->IsInBackForwardCache());
 
   // 5) Trigger client.postMessage via |tab_to_execute_service_worker|. Cache in
@@ -5596,7 +5585,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
       "executeCommandOnServiceWorker('PostMessageToStoredClients')";
   EXPECT_EQ("DONE",
             EvalJs(tab_to_execute_service_worker, script_to_post_message));
-  deleted_observer_rfh.WaitUntilDeleted();
+  rfh.WaitUntilRenderFrameDeleted();
 
   // 6) Go back to A in |tab_to_be_bfcached|.
   tab_to_be_bfcached->web_contents()->GetController().GoBack();

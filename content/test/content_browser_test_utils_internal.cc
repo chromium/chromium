@@ -845,4 +845,21 @@ void UserAgentInjector::DidStartNavigation(
   navigation_handle->SetIsOverridingUserAgent(is_overriding_user_agent_);
 }
 
+RenderFrameHostImplHolder::RenderFrameHostImplHolder(RenderFrameHost* rfh)
+    : RenderFrameHostWrapper(rfh) {}
+
+RenderFrameHostImpl* RenderFrameHostImplHolder::get() const {
+  return static_cast<RenderFrameHostImpl*>(RenderFrameHostWrapper::get());
+}
+
+RenderFrameHostImpl& RenderFrameHostImplHolder::operator*() const {
+  DCHECK(get());
+  return *get();
+}
+
+RenderFrameHostImpl* RenderFrameHostImplHolder::operator->() const {
+  DCHECK(get());
+  return get();
+}
+
 }  // namespace content

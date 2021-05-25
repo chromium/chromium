@@ -624,6 +624,20 @@ class UserAgentInjector : public WebContentsObserver {
   bool is_overriding_user_agent_ = true;
 };
 
+// Just like RenderFrameHostHolder but holds and gives access to a
+// RenderFrameHostImpl.
+class RenderFrameHostImplHolder : public RenderFrameHostWrapper {
+ public:
+  explicit RenderFrameHostImplHolder(RenderFrameHost* rfh);
+
+  // Returns the pointer or nullptr if the RFH has already been deleted.
+  RenderFrameHostImpl* get() const;
+
+  // Pointerish operators. Feel free to add more if you need them.
+  RenderFrameHostImpl& operator*() const;
+  RenderFrameHostImpl* operator->() const;
+};
+
 }  // namespace content
 
 #endif  // CONTENT_TEST_CONTENT_BROWSER_TEST_UTILS_INTERNAL_H_

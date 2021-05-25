@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -334,8 +335,8 @@ class InProcessUtilityThreadHelper : public BrowserChildProcessObserver {
   DISALLOW_COPY_AND_ASSIGN(InProcessUtilityThreadHelper);
 };
 
-// This observer keeps tracks of whether a given RenderFrameHost is deleted or
-// not to avoid accessing it and causing use-after-free condition.
+// This observer keeps tracks of whether a given RenderFrameHost has received
+// WebContentsObserver::RenderFrameDeleted.
 class RenderFrameDeletedObserver : public WebContentsObserver {
  public:
   explicit RenderFrameDeletedObserver(RenderFrameHost* rfh);
@@ -344,8 +345,6 @@ class RenderFrameDeletedObserver : public WebContentsObserver {
   // Overridden WebContentsObserver methods.
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
 
-  // Returns the supplied RenderFrameHost or nullptr if already deleted.
-  RenderFrameHost* render_frame_host() const { return rfh_; }
   void WaitUntilDeleted();
   bool deleted() const;
 
@@ -355,6 +354,41 @@ class RenderFrameDeletedObserver : public WebContentsObserver {
   std::unique_ptr<base::RunLoop> runner_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameDeletedObserver);
+};
+
+// This class holds a RenderFrameHost*, providing safe access to it for testing.
+// If the RFH is destroyed, it can no longer be accessed.
+//
+// For convenience, it also wraps a RenderFrameDeletedObserver and provides
+// access to |deleted| and |WaitForDeleted|. Note, deletion of the RenderFrame
+// does not always correspond to destruction of the RenderFrameHost, see
+// the comments on |RenderFrameDeletedObserver|).
+class RenderFrameHostWrapper {
+ public:
+  explicit RenderFrameHostWrapper(RenderFrameHost* rfh);
+  ~RenderFrameHostWrapper();
+  RenderFrameHostWrapper(RenderFrameHostWrapper&&);
+
+  // Returns the pointer or nullptr if the RFH has already been destroyed.
+  RenderFrameHost* get() const;
+  // Returns true if RenderFrameHost has been destroyed.
+  bool IsDestroyed() const;
+
+  // See RenderFrameDeletedObserver for notes on the difference between
+  // RenderFrame being deleted and RenderFrameHost being destroyed.
+  void WaitUntilRenderFrameDeleted();
+  bool IsRenderFrameDeleted() const;
+
+  // Pointerish operators. Feel free to add more if you need them.
+  RenderFrameHost& operator*() const;
+  RenderFrameHost* operator->() const;
+
+ private:
+  const GlobalFrameRoutingId routing_id_;
+
+  // It's tempting to just inherit but RenderFrameDeletedObserver is not
+  // movable because it is a WebContentsObserver.
+  std::unique_ptr<RenderFrameDeletedObserver> deleted_observer_;
 };
 
 // Watches a WebContents. Can be used to block until it is destroyed or just
