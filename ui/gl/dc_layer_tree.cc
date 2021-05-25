@@ -308,9 +308,9 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
   return true;
 }
 
-bool DCLayerTree::ScheduleDCLayer(const ui::DCRendererLayerParams& params) {
-  pending_overlays_.push_back(
-      std::make_unique<ui::DCRendererLayerParams>(params));
+bool DCLayerTree::ScheduleDCLayer(
+    std::unique_ptr<ui::DCRendererLayerParams> params) {
+  pending_overlays_.push_back(std::move(params));
   return true;
 }
 

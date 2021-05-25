@@ -61,37 +61,35 @@ class SkiaOutputDeviceGL::OverlayData {
   explicit OverlayData(scoped_refptr<gpu::gles2::TexturePassthrough> texture)
       : texture_(std::move(texture)) {}
 
-  OverlayData(
-      std::unique_ptr<gpu::SharedImageRepresentationOverlay> representation,
-      std::unique_ptr<gpu::SharedImageRepresentationOverlay::ScopedReadAccess>
-          scoped_read_access)
-      : representation_(std::move(representation)),
-        scoped_read_access_(std::move(scoped_read_access)) {}
+  explicit OverlayData(
+      std::unique_ptr<gpu::SharedImageRepresentationOverlay> representation)
+      : representation_(std::move(representation)) {}
 
   ~OverlayData() = default;
   OverlayData(OverlayData&& other) = default;
   OverlayData& operator=(OverlayData&& other) {
     texture_ = std::move(other.texture_);
-    // Must happen in the same order as destruction to avoid having
-    // |scoped_read_access_| outlive |representation_|.
-    scoped_read_access_ = std::move(other.scoped_read_access_);
     representation_ = std::move(other.representation_);
     return *this;
   }
 
-  scoped_refptr<gl::GLImage> GetImage() {
+  scoped_refptr<gl::GLImage> GetImage(
+      std::unique_ptr<ScopedOverlayAccess>* access) {
     if (texture_)
       return texture_->GetLevelImage(texture_->target(), 0);
 
-    DCHECK(scoped_read_access_);
-    return scoped_read_access_->gl_image();
+    DCHECK(representation_);
+    auto scoped_read_access =
+        representation_->BeginScopedReadAccess(/*needs_gl_image=*/true);
+
+    DCHECK(scoped_read_access);
+    *access = std::move(scoped_read_access);
+
+    return (*access)->gl_image();
   }
 
  private:
   std::unique_ptr<gpu::SharedImageRepresentationOverlay> representation_;
-  std::unique_ptr<gpu::SharedImageRepresentationOverlay::ScopedReadAccess>
-      scoped_read_access_;
-
   scoped_refptr<gpu::gles2::TexturePassthrough> texture_;
 };
 
@@ -388,12 +386,17 @@ void SkiaOutputDeviceGL::SetEnableDCLayers(bool enable) {
   gl_surface_->SetEnableDCLayers(enable);
 }
 
+void SkiaOutputDeviceGL::EndOverlayAccess(
+    std::unique_ptr<ScopedOverlayAccess> overlay_access) {
+  // EndAccess() is called once |overlay_access| falls out of scope.
+}
+
 void SkiaOutputDeviceGL::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
 #if defined(OS_WIN)
   for (auto& dc_layer : overlays) {
-    ui::DCRendererLayerParams params;
-
+    std::unique_ptr<ui::DCRendererLayerParams> params =
+        std::make_unique<ui::DCRendererLayerParams>();
     // Get GLImages for DC layer textures.
     bool success = true;
     for (size_t i = 0; i < DCLayerOverlay::kNumResources; ++i) {
@@ -401,7 +404,8 @@ void SkiaOutputDeviceGL::ScheduleOverlays(
       if (i > 0 && mailbox.IsZero())
         break;
 
-      auto image = GetGLImageForMailbox(mailbox);
+      std::unique_ptr<ScopedOverlayAccess> access;
+      auto image = GetGLImageForMailbox(mailbox, &access);
       if (!image) {
         success = false;
         break;
@@ -409,7 +413,15 @@ void SkiaOutputDeviceGL::ScheduleOverlays(
 
       scheduled_overlay_mailboxes_.insert(mailbox);
       image->SetColorSpace(dc_layer.color_space);
-      params.images[i] = std::move(image);
+      params->images[i] = std::move(image);
+
+      // GetGLImageForMailbox() returns |access| if this overlay is a shared
+      // image. Transfer ownership of the scoped |access| object into a
+      // release CB that gets called after PresentToSwapChain();
+      if (access) {
+        params->release_image_cb[i] = base::BindOnce(
+            &SkiaOutputDeviceGL::EndOverlayAccess, std::move(access));
+      }
     }
 
     if (!success) {
@@ -417,17 +429,17 @@ void SkiaOutputDeviceGL::ScheduleOverlays(
       continue;
     }
 
-    params.z_order = dc_layer.z_order;
-    params.content_rect = dc_layer.content_rect;
-    params.quad_rect = dc_layer.quad_rect;
+    params->z_order = dc_layer.z_order;
+    params->content_rect = dc_layer.content_rect;
+    params->quad_rect = dc_layer.quad_rect;
     DCHECK(dc_layer.transform.IsFlat());
-    params.transform = dc_layer.transform;
-    params.clip_rect = dc_layer.clip_rect;
-    params.protected_video_type = dc_layer.protected_video_type;
-    params.hdr_metadata = dc_layer.hdr_metadata;
+    params->transform = dc_layer.transform;
+    params->clip_rect = dc_layer.clip_rect;
+    params->protected_video_type = dc_layer.protected_video_type;
+    params->hdr_metadata = dc_layer.hdr_metadata;
 
     // Schedule DC layer overlay to be presented at next SwapBuffers().
-    if (!gl_surface_->ScheduleDCLayer(params))
+    if (!gl_surface_->ScheduleDCLayer(std::move(params)))
       DLOG(ERROR) << "ScheduleDCLayer failed";
   }
 #endif  // OS_WIN
@@ -450,10 +462,11 @@ SkSurface* SkiaOutputDeviceGL::BeginPaint(
 void SkiaOutputDeviceGL::EndPaint() {}
 
 scoped_refptr<gl::GLImage> SkiaOutputDeviceGL::GetGLImageForMailbox(
-    const gpu::Mailbox& mailbox) {
+    const gpu::Mailbox& mailbox,
+    std::unique_ptr<ScopedOverlayAccess>* access) {
   auto it = overlays_.find(mailbox);
   if (it != overlays_.end())
-    return it->second.GetImage();
+    return it->second.GetImage(access);
 
   // TODO(crbug.com/1005306): Stop using MailboxManager for lookup once all
   // clients are using SharedImageInterface to create textures.
@@ -462,25 +475,20 @@ scoped_refptr<gl::GLImage> SkiaOutputDeviceGL::GetGLImageForMailbox(
   auto* texture_base = mailbox_manager_->ConsumeTexture(mailbox);
   if (texture_base) {
     DCHECK_EQ(texture_base->GetType(), gpu::TextureBase::Type::kPassthrough);
-    std::tie(it, std::ignore) = overlays_.try_emplace(
-        mailbox,
-        base::WrapRefCounted(
-            static_cast<gpu::gles2::TexturePassthrough*>(texture_base)));
-    return it->second.GetImage();
+    std::tie(it, std::ignore) = overlays_.insert(
+        {mailbox,
+         OverlayData(base::WrapRefCounted(
+             static_cast<gpu::gles2::TexturePassthrough*>(texture_base)))});
+    return it->second.GetImage(access);
   }
 
   auto overlay = shared_image_representation_factory_->ProduceOverlay(mailbox);
   if (!overlay)
     return nullptr;
 
-  std::unique_ptr<gpu::SharedImageRepresentationOverlay::ScopedReadAccess>
-      scoped_overlay_read_access =
-          overlay->BeginScopedReadAccess(/*need_gl_image=*/true);
-  DCHECK(scoped_overlay_read_access);
-
-  std::tie(it, std::ignore) = overlays_.try_emplace(
-      mailbox, std::move(overlay), std::move(scoped_overlay_read_access));
-  return it->second.GetImage();
+  std::tie(it, std::ignore) =
+      overlays_.try_emplace(mailbox, std::move(overlay));
+  return it->second.GetImage(access);
 }
 
 }  // namespace viz

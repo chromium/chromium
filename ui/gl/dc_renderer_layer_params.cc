@@ -9,10 +9,6 @@
 namespace ui {
 
 DCRendererLayerParams::DCRendererLayerParams() = default;
-DCRendererLayerParams::DCRendererLayerParams(
-    const DCRendererLayerParams& other) = default;
-DCRendererLayerParams& DCRendererLayerParams::operator=(
-    const DCRendererLayerParams& other) = default;
 DCRendererLayerParams::~DCRendererLayerParams() = default;
 
 }  // namespace ui

@@ -835,8 +835,8 @@ void DirectCompositionSurfaceWin::SetVSyncEnabled(bool enabled) {
 }
 
 bool DirectCompositionSurfaceWin::ScheduleDCLayer(
-    const ui::DCRendererLayerParams& params) {
-  return layer_tree_->ScheduleDCLayer(params);
+    std::unique_ptr<ui::DCRendererLayerParams> params) {
+  return layer_tree_->ScheduleDCLayer(std::move(params));
 }
 
 void DirectCompositionSurfaceWin::SetFrameRate(float frame_rate) {

@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
+#include "gpu/command_buffer/service/shared_image_representation.h"
 
 namespace gl {
 class GLImage;
@@ -82,7 +83,15 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
                                 OutputSurfaceFrame frame,
                                 gfx::SwapCompletionResult result);
 
-  scoped_refptr<gl::GLImage> GetGLImageForMailbox(const gpu::Mailbox& mailbox);
+  using ScopedOverlayAccess =
+      gpu::SharedImageRepresentationOverlay::ScopedReadAccess;
+
+  scoped_refptr<gl::GLImage> GetGLImageForMailbox(
+      const gpu::Mailbox& mailbox,
+      std::unique_ptr<ScopedOverlayAccess>* access);
+
+  static void EndOverlayAccess(
+      std::unique_ptr<ScopedOverlayAccess> overlay_access);
 
   gpu::MailboxManager* const mailbox_manager_;
 

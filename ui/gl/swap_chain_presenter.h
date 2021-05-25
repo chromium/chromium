@@ -33,7 +33,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   ~SwapChainPresenter() override;
 
   // Present the given overlay to swap chain.  Returns true on success.
-  bool PresentToSwapChain(const ui::DCRendererLayerParams& overlay);
+  bool PresentToSwapChain(ui::DCRendererLayerParams& overlay);
 
   const Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain() const {
     return swap_chain_;

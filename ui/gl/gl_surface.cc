@@ -14,6 +14,7 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/gl/dc_renderer_layer_params.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
@@ -168,7 +169,8 @@ void GLSurface::ScheduleCALayerInUseQuery(
   NOTIMPLEMENTED();
 }
 
-bool GLSurface::ScheduleDCLayer(const ui::DCRendererLayerParams& params) {
+bool GLSurface::ScheduleDCLayer(
+    std::unique_ptr<ui::DCRendererLayerParams> params) {
   NOTIMPLEMENTED();
   return false;
 }
@@ -456,8 +458,8 @@ bool GLSurfaceAdapter::ScheduleOverlayPlane(
 }
 
 bool GLSurfaceAdapter::ScheduleDCLayer(
-    const ui::DCRendererLayerParams& params) {
-  return surface_->ScheduleDCLayer(params);
+    std::unique_ptr<ui::DCRendererLayerParams> params) {
+  return surface_->ScheduleDCLayer(std::move(params));
 }
 
 bool GLSurfaceAdapter::SetEnableDCLayers(bool enable) {

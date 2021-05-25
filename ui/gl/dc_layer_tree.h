@@ -84,7 +84,7 @@ class DCLayerTree {
       DirectCompositionChildSurfaceWin* root_surface);
 
   // Schedule an overlay layer for the next CommitAndClearPendingOverlays call.
-  bool ScheduleDCLayer(const ui::DCRendererLayerParams& params);
+  bool ScheduleDCLayer(std::unique_ptr<ui::DCRendererLayerParams> params);
 
   // Called by SwapChainPresenter to initialize video processor that can handle
   // at least given input and output size.  The video processor is shared across
