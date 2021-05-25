@@ -255,5 +255,11 @@ TEST_F(DnsResolverPresentRoutineTest, TestEmptyNameServers) {
              {mojom::DnsResolverPresentProblem::kEmptyNameServers});
 }
 
+TEST_F(DnsResolverPresentRoutineTest, TestNoActiveNetwork) {
+  SetUpWiFi(shill::kStateDisconnect);
+  SetUpNameServers(kWellFormedDnsServers);
+  RunRoutine(mojom::RoutineVerdict::kNotRun, {});
+}
+
 }  // namespace network_diagnostics
 }  // namespace chromeos

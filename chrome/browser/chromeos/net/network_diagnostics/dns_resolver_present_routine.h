@@ -46,6 +46,7 @@ class DnsResolverPresentRoutine : public NetworkDiagnosticsRoutine {
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
 
+  bool connected_network_ = false;
   bool name_servers_found_ = false;
   bool non_empty_name_servers_ = false;
   bool well_formed_name_servers_ = false;

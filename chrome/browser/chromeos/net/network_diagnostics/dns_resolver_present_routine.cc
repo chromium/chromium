@@ -63,7 +63,9 @@ void DnsResolverPresentRoutine::RunRoutine(
 }
 
 void DnsResolverPresentRoutine::AnalyzeResultsAndExecuteCallback() {
-  if (!name_servers_found_) {
+  if (!connected_network_) {
+    set_verdict(mojom::RoutineVerdict::kNotRun);
+  } else if (!name_servers_found_) {
     set_verdict(mojom::RoutineVerdict::kProblem);
     problems_.emplace_back(
         mojom::DnsResolverPresentProblem::kNoNameServersFound);
@@ -138,6 +140,7 @@ void DnsResolverPresentRoutine::OnNetworkStateListReceived(
   if (default_guid.empty()) {
     AnalyzeResultsAndExecuteCallback();
   } else {
+    connected_network_ = true;
     FetchManagedProperties(default_guid);
   }
 }
