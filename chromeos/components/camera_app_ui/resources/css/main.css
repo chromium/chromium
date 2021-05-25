@@ -10,7 +10,8 @@
   --blue-600-dark: rgb(var(--blue-600-rgb));
   --grey-100: rgb(241, 243, 244);
   --grey-200: rgb(232, 234, 237);
-  --grey-900: rgb(32, 33, 36);
+  --grey-900-rgb: 32, 33, 36;
+  --grey-900: rgb(var(--grey-900-rgb));
 
   --fast1-duration: 100ms;
   --fast2-duration: 200ms;
@@ -1047,17 +1048,18 @@ body:not(.grid):not(.view-grid-settings) #preview-grid-vertical::before {
 
 #record-time {
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+  backdrop-filter: blur(10px);
+  background-color: rgba(var(--grey-900-rgb), 0.6);
+  border-radius: 18px;
   display: flex;
+  font-size: 13px;  /* TODO(b/189087290): Follow the carbon spec. */
+  font-variant-numeric: tabular-nums;
   height: 32px;
   justify-content: flex-start;
-  padding: 0 12px;
+  line-height: 20px;
+  padding-inline-end: 10px;
+  padding-inline-start: 8px;
   pointer-events: none;
-}
-
-body.recording-ui-paused #record-time {
-  background-color: black;
 }
 
 #record-time[hidden],
@@ -1082,8 +1084,6 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 #record-time [i18n-text=record_video_paused_msg] {
   color: white;
   flex-shrink: 0;
-  font-family: var(--fixed-width-font-family);
-  font-size: 13px;
 }
 
 #record-time #record-time-msg {
