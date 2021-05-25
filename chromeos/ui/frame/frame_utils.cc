@@ -5,6 +5,7 @@
 #include "chromeos/ui/frame/frame_utils.h"
 
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -34,9 +35,11 @@ int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
   // Check the frame first, as we allow a small area overlapping the contents
   // to be used for resize handles.
   views::Widget* widget = view->GetWidget();
-  // Ignore the resize border when maximized or full screen.
+  bool in_tablet_mode = chromeos::TabletState::Get()->InTabletMode();
+  // Ignore the resize border when maximized or full screen or in (split view)
+  // tablet mode.
   const bool has_resize_border =
-      !widget->IsMaximized() && !widget->IsFullscreen();
+      !widget->IsMaximized() && !widget->IsFullscreen() && !in_tablet_mode;
   const int resize_border_size =
       has_resize_border ? chromeos::kResizeInsideBoundsSize : 0;
 

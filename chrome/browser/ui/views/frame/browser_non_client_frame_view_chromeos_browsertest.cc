@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
@@ -167,6 +168,17 @@ class TopChromeMdParamTest : public BaseTest,
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_;
 };
 
+// Template used as a base class for touch-optimized UI test fixtures.
+template <class BaseTest>
+class TopChromeTouchTest : public BaseTest {
+ public:
+  TopChromeTouchTest() : touch_ui_scoper_(true) {}
+  ~TopChromeTouchTest() override = default;
+
+ private:
+  ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_;
+};
+
 // Template to be used when a test does not work with the webUI tabstrip.
 template <bool kEnabled, class BaseTest>
 class WebUiTabStripOverrideTest : public BaseTest {
@@ -270,10 +282,14 @@ using views::Widget;
 
 using BrowserNonClientFrameViewChromeOSTest =
     TopChromeMdParamTest<InProcessBrowserTest>;
+using BrowserNonClientFrameViewChromeOSTouchTest =
+    TopChromeTouchTest<InProcessBrowserTest>;
 using BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip =
     WebUiTabStripOverrideTest<false, BrowserNonClientFrameViewChromeOSTest>;
 using BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip =
     WebUiTabStripOverrideTest<true, BrowserNonClientFrameViewChromeOSTest>;
+using BrowserNonClientFrameViewChromeOSTouchTestWithWebUiTabStrip =
+    WebUiTabStripOverrideTest<true, BrowserNonClientFrameViewChromeOSTouchTest>;
 
 // This test does not make sense for the webUI tabstrip, since the window layout
 // is different in that case.
@@ -299,6 +315,50 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
   widget->Maximize();
   int expected_value = HTCLIENT;
   EXPECT_EQ(expected_value, frame_view->NonClientHitTest(top_edge));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowserNonClientFrameViewChromeOSTouchTestWithWebUiTabStrip,
+    TabletSplitViewNonClientHitTest) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  EXPECT_EQ(0, frame_view->GetBoundsForClientView().y());
+
+  Widget* widget = browser_view->GetWidget();
+  ASSERT_NO_FATAL_FAILURE(
+      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
+  ash::SplitViewTestApi().SnapWindow(widget->GetNativeWindow(),
+                                     ash::SplitViewTestApi::SnapPosition::LEFT);
+
+  // Touch on the top of the window is interpreted as client hit.
+  gfx::Point top_point(widget->GetWindowBoundsInScreen().width() / 2, 0);
+  EXPECT_EQ(HTCLIENT, frame_view->NonClientHitTest(top_point));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowserNonClientFrameViewChromeOSTouchTestWithWebUiTabStrip,
+    TabletSplitViewSwipeDownFromEdgeOpensWebUiTabStrip) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  EXPECT_EQ(0, frame_view->GetBoundsForClientView().y());
+
+  Widget* widget = browser_view->GetWidget();
+  ASSERT_NO_FATAL_FAILURE(
+      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
+  ash::SplitViewTestApi().SnapWindow(widget->GetNativeWindow(),
+                                     ash::SplitViewTestApi::SnapPosition::LEFT);
+
+  // A point above the window.
+  gfx::Point edge_point(widget->GetWindowBoundsInScreen().width() / 2, -1);
+
+  ASSERT_FALSE(browser_view->webui_tab_strip()->GetVisible());
+  aura::Window* window = widget->GetNativeWindow();
+  ui::test::EventGenerator event_generator(window->GetRootWindow());
+  event_generator.SetTouchRadius(10, 5);
+  event_generator.PressTouch(edge_point);
+  event_generator.MoveTouchBy(0, 100);
+  event_generator.ReleaseTouch();
+  ASSERT_TRUE(browser_view->webui_tab_strip()->GetVisible());
 }
 
 // Test that the frame view does not do any painting in non-immersive
