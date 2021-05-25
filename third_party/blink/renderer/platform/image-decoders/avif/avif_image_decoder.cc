@@ -815,6 +815,14 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     if (!decoder_)
       return false;
 
+    // For simplicity, use a hardcoded maxThreads of 2, independent of the image
+    // size and processor count. Note: even if we want maxThreads to depend on
+    // the image size, it is impossible to do so because maxThreads is passed to
+    // dav1d_open() inside avifDecoderParse(), but the image size is not known
+    // until avifDecoderParse() returns successfully. See
+    // https://github.com/AOMediaCodec/libavif/issues/636.
+    decoder_->maxThreads = 2;
+
     // TODO(wtc): Currently libavif always prioritizes the animation, but that's
     // not correct. It should instead select animation or still image based on
     // the preferred and major brands listed in the file.
