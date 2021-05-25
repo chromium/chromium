@@ -56,7 +56,7 @@ public class AssistantContactDetailsSection
             mEditor.edit(oldItem, newItem -> {
                 assert (newItem != null && newItem.isComplete());
                 mIgnoreProfileChangeNotifications = true;
-                addOrUpdateItem(newItem, true);
+                addOrUpdateItem(newItem, /* select= */ true, /* notify= */ true);
                 mIgnoreProfileChangeNotifications = false;
             }, cancel -> {});
         }
@@ -159,8 +159,8 @@ public class AssistantContactDetailsSection
     }
 
     @Override
-    protected void addOrUpdateItem(AutofillContact contact, boolean select) {
-        super.addOrUpdateItem(contact, select);
+    protected void addOrUpdateItem(AutofillContact contact, boolean select, boolean notify) {
+        super.addOrUpdateItem(contact, select, notify);
         addAutocompleteInformationToEditor(contact);
     }
 

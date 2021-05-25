@@ -46,12 +46,12 @@ public class AssistantShippingAddressSection
         if (mEditor == null) {
             return;
         }
-        mIgnoreProfileChangeNotifications = true;
         mEditor.edit(oldItem, newItem -> {
             assert (newItem != null && newItem.isComplete());
-            addOrUpdateItem(newItem, true);
+            mIgnoreProfileChangeNotifications = true;
+            addOrUpdateItem(newItem, /* select= */ true, /* notify= */ true);
+            mIgnoreProfileChangeNotifications = false;
         }, cancel -> {});
-        mIgnoreProfileChangeNotifications = false;
     }
 
     @Override
@@ -147,8 +147,8 @@ public class AssistantShippingAddressSection
     }
 
     @Override
-    protected void addOrUpdateItem(AutofillAddress address, boolean select) {
-        super.addOrUpdateItem(address, select);
+    protected void addOrUpdateItem(AutofillAddress address, boolean select, boolean notify) {
+        super.addOrUpdateItem(address, select, notify);
 
         // Update autocomplete information in the editor.
         if (mEditor == null) {

@@ -725,7 +725,34 @@ public class AutofillAssistantCollectUserDataUiTest {
         testLoginDetails("Guest", "Description of guest checkout",
                 viewHolder.mLoginsSection.getCollapsedView(), viewHolder.mLoginList.getItem(0));
 
-        /* Check delegate status. */
+        /* Check delegate status. The selections set in the model have been sent to the delegate. */
+        assertThat(delegate.mPaymentMethod, is(nullValue()));
+        assertThat(delegate.mContact, is(nullValue()));
+        assertThat(delegate.mAddress, is(nullValue()));
+        assertThat(delegate.mTermsStatus, is(AssistantTermsAndConditionsState.NOT_SELECTED));
+        assertThat(delegate.mLoginChoice.getIdentifier(), is("id")); // Default selected
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AutofillContact contact = AssistantCollectUserDataModel.createAutofillContact(
+                    mTestRule.getActivity(), profile, /* requestName= */ true,
+                    /* requestPhone= */ true, /* requestEmail= */ true);
+            model.set(AssistantCollectUserDataModel.AVAILABLE_CONTACTS,
+                    Collections.singletonList(contact));
+            AutofillAddress address = AssistantCollectUserDataModel.createAutofillAddress(
+                    mTestRule.getActivity(), profile);
+            model.set(AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES,
+                    Collections.singletonList(address));
+            AutofillPaymentInstrument paymentInstrument =
+                    AssistantCollectUserDataModel.createAutofillPaymentInstrument(
+                            mTestRule.getWebContents(), creditCard, profile);
+            model.set(AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS,
+                    Collections.singletonList(paymentInstrument));
+            model.set(AssistantCollectUserDataModel.AVAILABLE_LOGINS,
+                    Collections.singletonList(new AssistantLoginChoice(
+                            "id", "Guest", "Description of guest checkout", "", 0, null, "")));
+        });
+
+        /* Check delegate status. The previously selected items were sent to the delegate. */
         assertThat(delegate.mPaymentMethod.getCard().getNumber(), is("4111111111111111"));
         assertThat(delegate.mPaymentMethod.getCard().getName(), is("Jon Doe"));
         assertThat(delegate.mPaymentMethod.getCard().getBasicCardIssuerNetwork(), is("visa"));

@@ -477,13 +477,15 @@ class AssistantCollectUserDataBinder
      */
     private boolean updateSectionSelectedItem(
             AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
+        // These changes are sent by the controller, do not notify it when selecting the added item.
+        // This prevents creating a loop.
         if (propertyKey == AssistantCollectUserDataModel.SELECTED_SHIPPING_ADDRESS) {
             if (model.get(AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS)) {
                 AutofillAddress shippingAddress =
                         model.get(AssistantCollectUserDataModel.SELECTED_SHIPPING_ADDRESS);
                 if (shippingAddress != null) {
                     view.mShippingAddressSection.addOrUpdateItem(
-                            shippingAddress, /* select= */ true);
+                            shippingAddress, /* select= */ true, /* notify= */ false);
                 }
                 // No need to reset selection if null, this will be handled by setItems().
             }
@@ -494,7 +496,7 @@ class AssistantCollectUserDataBinder
                         model.get(AssistantCollectUserDataModel.SELECTED_PAYMENT_INSTRUMENT);
                 if (paymentInstrument != null) {
                     view.mPaymentMethodSection.addOrUpdateItem(
-                            paymentInstrument, /* select= */ true);
+                            paymentInstrument, /* select= */ true, /* notify= */ false);
                 }
                 // No need to reset selection if null, this will be handled by setItems().
             }
@@ -504,7 +506,8 @@ class AssistantCollectUserDataBinder
                 AutofillContact contact =
                         model.get(AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS);
                 if (contact != null) {
-                    view.mContactDetailsSection.addOrUpdateItem(contact, /* select= */ true);
+                    view.mContactDetailsSection.addOrUpdateItem(
+                            contact, /* select= */ true, /* notify= */ false);
                 }
                 // No need to reset selection if null, this will be handled by setItems().
             }
@@ -516,7 +519,8 @@ class AssistantCollectUserDataBinder
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.SELECTED_LOGIN) {
             view.mLoginSection.addOrUpdateItem(
-                    model.get(AssistantCollectUserDataModel.SELECTED_LOGIN), true);
+                    model.get(AssistantCollectUserDataModel.SELECTED_LOGIN), /* select= */ true,
+                    /* notify= */ false);
             return true;
         }
         return false;

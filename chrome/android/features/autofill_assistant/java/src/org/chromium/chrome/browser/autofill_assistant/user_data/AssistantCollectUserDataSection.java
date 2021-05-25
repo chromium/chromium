@@ -173,9 +173,7 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
         updateVisibility();
 
         if (initiallySelectedItem != null) {
-            mIgnoreItemSelectedNotifications = true;
-            selectItem(initiallySelectedItem);
-            mIgnoreItemSelectedNotifications = false;
+            selectItem(initiallySelectedItem, /*notify=*/true);
         }
     }
 
@@ -208,8 +206,9 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
      *
      * @param option The item to add or update.
      * @param select Whether to select the new/updated item or not.
+     * @param notify Whether to notify the controller of this change or not.
      */
-    void addOrUpdateItem(@Nullable T option, boolean select) {
+    void addOrUpdateItem(@Nullable T option, boolean select, boolean notify) {
         if (option == null) {
             return;
         }
@@ -233,9 +232,7 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
         }
 
         if (select) {
-            mIgnoreItemSelectedNotifications = true;
-            selectItem(item);
-            mIgnoreItemSelectedNotifications = false;
+            selectItem(item, notify);
         }
     }
 
@@ -316,9 +313,7 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
                     if (mIgnoreItemSelectedNotifications || !selected) {
                         return;
                     }
-                    mIgnoreItemSelectedNotifications = true;
-                    selectItem(item);
-                    mIgnoreItemSelectedNotifications = false;
+                    selectItem(item, /*notify=*/true);
                     if (item.mOption.isComplete()) {
                         // Workaround for Android bug: a layout transition may cause the newly
                         // checked radiobutton to not render properly.
@@ -334,13 +329,15 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
         updateVisibility();
     }
 
-    private void selectItem(Item item) {
+    private void selectItem(Item item, boolean notify) {
         mSelectedOption = item.mOption;
+        mIgnoreItemSelectedNotifications = true;
         mItemsView.setCheckedItem(item.mFullView);
+        mIgnoreItemSelectedNotifications = false;
         updateSummaryView(mSummaryView, item.mOption);
         updateVisibility();
 
-        if (mListener != null) {
+        if (mListener != null && notify) {
             mListener.onResult(
                     item.mOption != null && item.mOption.isComplete() ? item.mOption : null);
         }

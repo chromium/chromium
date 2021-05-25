@@ -70,7 +70,7 @@ public class AssistantPaymentMethodSection
         mEditor.edit(oldItem, newItem -> {
             assert (newItem != null && newItem.isComplete());
             mIgnorePaymentMethodsChangeNotifications = true;
-            addOrUpdateItem(newItem, true);
+            addOrUpdateItem(newItem, /* select= */ true, /* notify= */ true);
             mIgnorePaymentMethodsChangeNotifications = false;
         }, cancel -> {});
     }
