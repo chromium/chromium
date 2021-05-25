@@ -122,8 +122,11 @@ PermissionRequestChip::PermissionRequestChip(
 }
 
 PermissionRequestChip::~PermissionRequestChip() {
-  if (prompt_bubble_)
-    prompt_bubble_->GetWidget()->Close();
+  if (prompt_bubble_) {
+    views::Widget* widget = prompt_bubble_->GetWidget();
+    widget->RemoveObserver(this);
+    widget->Close();
+  }
 }
 
 void PermissionRequestChip::OpenBubble() {
