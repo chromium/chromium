@@ -90,14 +90,14 @@ cr.define('settings.input_method_util', function() {
    */
   /* #export */ const OPTION_DEFAULT = {
     [OptionType.ENABLE_COMPLETION]: false,
-    [OptionType.ENABLE_DOUBLE_SPACE_PERIOD]: false,
+    [OptionType.ENABLE_DOUBLE_SPACE_PERIOD]: true,
     [OptionType.ENABLE_GESTURE_TYPING]: true,
     [OptionType.ENABLE_PREDICTION]: false,
     [OptionType.ENABLE_SOUND_ON_KEYPRESS]: false,
     [OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 0,
     [OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
     [OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 1,
-    [OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION]: false,
+    [OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
     [OptionType.XKB_LAYOUT]: 'US',
     // Options for Korean input method.
     [OptionType.KOREAN_ENABLE_SYLLABLE_INPUT]: true,
