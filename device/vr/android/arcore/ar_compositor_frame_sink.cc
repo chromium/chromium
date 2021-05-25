@@ -289,7 +289,7 @@ void ArCompositorFrameSink::ReclaimResources(
 void ArCompositorFrameSink::OnBeginFrame(
     const viz::BeginFrameArgs& args,
     const viz::FrameTimingDetailsMap& timing_details) {
-  on_begin_frame_.Run(args);
+  on_begin_frame_.Run(args, timing_details);
 }
 
 void ArCompositorFrameSink::OnFrameSubmitAck(const viz::BeginFrameAck& ack) {

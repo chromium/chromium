@@ -83,6 +83,7 @@ class GL_EXPORT GLSurfacePresentationHelper {
   bool GetFrameTimestampInfoIfAvailable(const Frame& frame,
                                         base::TimeTicks* timestamp,
                                         base::TimeDelta* interval,
+                                        base::TimeTicks* writes_done,
                                         uint32_t* flags);
 
   // Check |pending_frames_| and run presentation callbacks.

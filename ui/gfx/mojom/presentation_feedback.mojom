@@ -15,4 +15,5 @@ struct PresentationFeedback {
   mojo_base.mojom.TimeTicks available_timestamp;
   mojo_base.mojom.TimeTicks ready_timestamp;
   mojo_base.mojom.TimeTicks latch_timestamp;
+  mojo_base.mojom.TimeTicks writes_done_timestamp;
 };

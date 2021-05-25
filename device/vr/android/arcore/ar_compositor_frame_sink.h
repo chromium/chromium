@@ -56,7 +56,8 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   // Used when the compositor acknowledges that it is ready to begin processing
   // or working on the frame that previously requested to Begin.
   using BeginFrameCallback =
-      base::RepeatingCallback<void(const viz::BeginFrameArgs& args)>;
+      base::RepeatingCallback<void(const viz::BeginFrameArgs& args,
+                                   const viz::FrameTimingDetailsMap&)>;
 
   using CompositorReceivedFrameCallback = base::RepeatingClosure;
 

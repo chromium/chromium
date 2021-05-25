@@ -67,12 +67,13 @@ bool GLSurfacePresentationHelper::GetFrameTimestampInfoIfAvailable(
     const Frame& frame,
     base::TimeTicks* timestamp,
     base::TimeDelta* interval,
+    base::TimeTicks* writes_done,
     uint32_t* flags) {
   DCHECK(frame.timer || frame.fence || egl_timestamp_client_);
 
   if (egl_timestamp_client_) {
     bool result = egl_timestamp_client_->GetFrameTimestampInfoIfAvailable(
-        timestamp, interval, flags, frame.frame_id);
+        timestamp, interval, writes_done, flags, frame.frame_id);
 
     // Workaround null timestamp by setting it to TimeTicks::Now() snapped to
     // the next vsync interval. See
@@ -319,14 +320,17 @@ void GLSurfacePresentationHelper::CheckPendingFrames() {
 
     base::TimeTicks timestamp;
     base::TimeDelta interval;
+    base::TimeTicks writes_done;
     uint32_t flags = 0;
     // Get timestamp info for a frame if available. If timestamp is not
     // available, it means this frame is not yet done.
-    if (!GetFrameTimestampInfoIfAvailable(frame, &timestamp, &interval, &flags))
+    if (!GetFrameTimestampInfoIfAvailable(frame, &timestamp, &interval,
+                                          &writes_done, &flags))
       break;
 
-    frame_presentation_callback(
-        gfx::PresentationFeedback(timestamp, interval, flags));
+    gfx::PresentationFeedback feedback(timestamp, interval, flags);
+    feedback.writes_done_timestamp = writes_done;
+    frame_presentation_callback(feedback);
   }
 
   if (!pending_frames_.empty())

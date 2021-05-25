@@ -1603,6 +1603,9 @@ void NativeViewGLSurfaceEGL::SetEnableSwapTimestamps() {
         presentation_flags_ = gfx::PresentationFeedback::kVSync |
                               gfx::PresentationFeedback::kHWCompletion;
         break;
+      case EGL_RENDERING_COMPLETE_TIME_ANDROID:
+        writes_done_index_ = static_cast<int>(supported_egl_timestamps_.size());
+        break;
     }
 
     // Stored in separate vectors so we can pass the egl timestamps
@@ -1880,6 +1883,7 @@ bool NativeViewGLSurfaceEGL::IsEGLTimestampSupported() const {
 bool NativeViewGLSurfaceEGL::GetFrameTimestampInfoIfAvailable(
     base::TimeTicks* presentation_time,
     base::TimeDelta* composite_interval,
+    base::TimeTicks* writes_done_time,
     uint32_t* presentation_flags,
     int frame_id) {
   DCHECK(presentation_time);
@@ -1962,6 +1966,17 @@ bool NativeViewGLSurfaceEGL::GetFrameTimestampInfoIfAvailable(
                          base::TimeDelta::FromNanoseconds(presentation_time_ns);
     *presentation_flags = presentation_flags_;
   }
+
+  // Get the WritesDone time if available, otherwise set to a null TimeTicks.
+  EGLnsecsANDROID writes_done_time_ns = egl_timestamps[writes_done_index_];
+  if (writes_done_time_ns == EGL_TIMESTAMP_INVALID_ANDROID ||
+      writes_done_time_ns == EGL_TIMESTAMP_PENDING_ANDROID) {
+    *writes_done_time = base::TimeTicks();
+  } else {
+    *writes_done_time = base::TimeTicks() +
+                        base::TimeDelta::FromNanoseconds(writes_done_time_ns);
+  }
+
   return true;
 }
 

@@ -1054,6 +1054,10 @@ void ArCoreGl::GetRenderedFrameStats(WebXrFrame* frame) {
   }
   base::TimeTicks now = base::TimeTicks::Now();
 
+  // Get the time when rendering completed from the render completion fence.
+  // TODO(klausw): This is an overestimate in AR compositor mode, the fence
+  // completes one frame late. The average_render_time_ calculation should use
+  // the WritesDone time reported via OnBeginFrame's timing_data instead.
   base::TimeTicks completion_time = now;
   DCHECK(frame->render_completion_fence);
   completion_time = static_cast<gl::GLFenceAndroidNativeFenceSync*>(
@@ -1075,33 +1079,32 @@ void ArCoreGl::GetRenderedFrameStats(WebXrFrame* frame) {
 
   average_render_time_.AddSample(completion_time - frame->time_copied);
 
-  // Save a GPU load estimate for use in GetFrameData. This is somewhat
-  // arbitrary, use the most recent rendering time divided by the nominal frame
-  // time. If this is greater than 1.0, it's not possible to hit the target
-  // framerate and the application should reduce its workload.
-  // (Intentionally not using averages here since the blink side is expected
-  // to do its own smoothing when using this data.)
   base::TimeDelta copied_to_completion = completion_time - frame->time_copied;
-  base::TimeDelta arcore_frametime = EstimatedArCoreFrameTime();
-  DCHECK(!arcore_frametime.is_zero());
-  // When using the ar_compositor, we tend to get our fences completed about one
-  // frame late. So assume that the copy actually took about half as much time.
-  // Since this is all multiplication/division, this results in just multiplying
-  // the new ratio by half.
-  // TODO(https://crbug.com/1188302): Improve ratio calculation so that this
-  // correction is not necessary.
-  float ratio_correction_factor = ar_compositor_ ? 0.5f : 1.0f;
-  rendering_time_ratio_ =
-      (copied_to_completion / arcore_frametime) * ratio_correction_factor;
+  if (ar_compositor_) {
+    // AR compositor mode uses timing data received in OnBeginFrame() for the
+    // GPU load estimate.
+    DVLOG(3) << __func__ << " time_js_submit=" << frame->time_js_submit
+             << " time_pose=" << frame->time_pose
+             << " time_copied=" << frame->time_copied
+             << " copied_to_completion=" << copied_to_completion;
+  } else {
+    // Save a GPU load estimate for use in GetFrameData. This is somewhat
+    // arbitrary, use the most recent rendering time divided by the nominal
+    // frame time.
+    base::TimeDelta arcore_frametime = EstimatedArCoreFrameTime();
+    DCHECK(!arcore_frametime.is_zero());
 
-  DVLOG(3) << __func__ << " time_js_submit=" << frame->time_js_submit
-           << " time_pose=" << frame->time_pose
-           << " time_copied=" << frame->time_copied
-           << " copied_to_completion=" << copied_to_completion
-           << " arcore_frametime=" << arcore_frametime
-           << ": rendering time ratio (%)=" << rendering_time_ratio_ * 100;
-  TRACE_COUNTER1("xr", "WebXR rendering time ratio (%)",
-                 rendering_time_ratio_ * 100);
+    rendering_time_ratio_ = copied_to_completion / arcore_frametime;
+    TRACE_COUNTER1("xr", "WebXR rendering time ratio (%)",
+                   rendering_time_ratio_ * 100);
+
+    DVLOG(3) << __func__ << " time_js_submit=" << frame->time_js_submit
+             << " time_pose=" << frame->time_pose
+             << " time_copied=" << frame->time_copied
+             << " copied_to_completion=" << copied_to_completion
+             << " arcore_frametime=" << arcore_frametime
+             << " rendering_time_ratio_=" << rendering_time_ratio_;
+  }
 
   // Add Animating/Processing/Rendering async annotations to event traces.
 
@@ -1819,7 +1822,8 @@ base::WeakPtr<ArCoreGl> ArCoreGl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void ArCoreGl::OnBeginFrame(const viz::BeginFrameArgs& args) {
+void ArCoreGl::OnBeginFrame(const viz::BeginFrameArgs& args,
+                            const viz::FrameTimingDetailsMap& frame_timing) {
   // With the ExternalBeginFrameController driving our compositing, we shouldn't
   // request any frames unless we actually have a frame to animate.
   DCHECK(webxr_->HaveAnimatingFrame());
@@ -1829,6 +1833,40 @@ void ArCoreGl::OnBeginFrame(const viz::BeginFrameArgs& args) {
   webxr_->GetAnimatingFrame()->begin_frame_args =
       std::make_unique<viz::BeginFrameArgs>(args);
 
+  // If we have information about frame timing from completed frames, use that
+  // to update GPU load heuristics. Typically, there will be one reported old
+  // frame for each OnBeginFrame once it reaches a steady state.
+  for (auto& timing_data : frame_timing) {
+    const viz::FrameTimingDetails& details = timing_data.second;
+    base::TimeTicks writes_done =
+        details.presentation_feedback.writes_done_timestamp;
+
+    // The GPU driver isn't required to support writes_done timestamps, so
+    // this data may be unavailable. In that case, don't update the rendering
+    // time ratio estimate. This disables dynamic viewport scaling since that
+    // feature is only active when the ratio is nonzero.
+    if (writes_done.is_null())
+      continue;
+
+    // For the GPU load, use the drawing time (draw start to render completion)
+    // divided by the nominal frame time.
+
+    base::TimeDelta delta = writes_done - details.draw_start_timestamp;
+    base::TimeDelta arcore_frametime = EstimatedArCoreFrameTime();
+    DCHECK(!arcore_frametime.is_zero());
+    rendering_time_ratio_ = delta / arcore_frametime;
+
+    DVLOG(3) << __func__ << ": frame_token=" << timing_data.first
+             << " draw_start_timestamp=" << details.draw_start_timestamp
+             << " writes_done="
+             << details.presentation_feedback.writes_done_timestamp
+             << " delta=" << delta
+             << " rendering_time_ratio_=" << rendering_time_ratio_;
+    TRACE_COUNTER1("xr", "WebXR rendering time ratio (%)",
+                   rendering_time_ratio_ * 100);
+  }
+
   webxr_->TryDeferredProcessing();
 }
+
 }  // namespace device

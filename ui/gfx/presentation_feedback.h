@@ -82,6 +82,10 @@ struct PresentationFeedback {
   // next rendering update. On Android this corresponds to the SurfaceFlinger
   // latch time.
   base::TimeTicks latch_timestamp;
+
+  // The time when write operations have completed, corresponding to the time
+  // when rendering on the GPU finished.
+  base::TimeTicks writes_done_timestamp;
 };
 
 inline bool operator==(const PresentationFeedback& lhs,
@@ -90,7 +94,8 @@ inline bool operator==(const PresentationFeedback& lhs,
          lhs.flags == rhs.flags &&
          lhs.available_timestamp == rhs.available_timestamp &&
          lhs.ready_timestamp == rhs.ready_timestamp &&
-         lhs.latch_timestamp == rhs.latch_timestamp;
+         lhs.latch_timestamp == rhs.latch_timestamp &&
+         lhs.writes_done_timestamp == rhs.writes_done_timestamp;
 }
 
 inline bool operator!=(const PresentationFeedback& lhs,
