@@ -54,11 +54,26 @@ class ZipWriter {
     progress_period_ = std::move(period);
   }
 
-  // Writes the files at |paths| to the ZIP file and closes this ZIP file.
-  // The file paths must be relative to |root_dir| specified in the
-  // Create method.
-  // Returns true if all entries were written successfuly.
-  bool WriteEntries(Paths paths);
+  // Sets the recursive flag, indicating whether the contents of subdirectories
+  // should be included.
+  void SetRecursive(bool b) { recursive_ = b; }
+
+  // Sets the filter callback.
+  void SetFilterCallback(FilterCallback callback) {
+    filter_callback_ = std::move(callback);
+  }
+
+  // Adds the contents of a directory. If the recursive flag is set, the
+  // contents of subdirectories are also added.
+  bool AddDirectoryContents(const base::FilePath& path);
+
+  // Adds the entries at |paths| to the ZIP file. These can be a mixed bag of
+  // files and directories. If the recursive flag is set, the contents of
+  // subdirectories is also added.
+  bool AddMixedEntries(Paths paths);
+
+  // Closes the ZIP file.
+  bool Close();
 
  private:
   // Takes ownership of |zip_file|.
@@ -68,18 +83,23 @@ class ZipWriter {
   // or should be cancelled.
   bool ShouldContinue();
 
-  // Adds the files at |paths| to the ZIP file. These FilePaths must be relative
-  // to |root_dir| specified in the Create method.
-  bool AddEntries(Paths paths);
-
   // Adds file content to currently open file entry.
   bool AddFileContent(const base::FilePath& path, base::File file);
 
   // Adds a file entry (including file contents).
   bool AddFileEntry(const base::FilePath& path, base::File file);
 
-  // Adds a directory entry.
+  // Adds file entries. All the paths should be existing files.
+  bool AddFileEntries(Paths paths);
+
+  // Adds a directory entry. If the recursive flag is set, the contents of this
+  // directory are also added.
   bool AddDirectoryEntry(const base::FilePath& path);
+
+  // Adds directory entries. All the paths should be existing directories. If
+  // the recursive flag is set, the contents of these directories are also
+  // added.
+  bool AddDirectoryEntries(Paths paths);
 
   // Opens a file or directory entry.
   bool OpenNewFileEntry(const base::FilePath& path,
@@ -89,10 +109,8 @@ class ZipWriter {
   // Closes the currently open entry.
   bool CloseNewFileEntry();
 
-  // Closes the ZIP file.
-  // Returns true if successful, false otherwise (typically if an entry failed
-  // to be written).
-  bool Close();
+  // Filters entries.
+  void Filter(std::vector<base::FilePath>* paths);
 
   // The actual zip file.
   zipFile zip_file_;
@@ -111,6 +129,12 @@ class ZipWriter {
 
   // Next time to report progress.
   base::TimeTicks next_progress_report_time_ = base::TimeTicks::Now();
+
+  // Filter used to exclude files from the ZIP file.
+  FilterCallback filter_callback_;
+
+  // Should recursively add directories?
+  bool recursive_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ZipWriter);
 };

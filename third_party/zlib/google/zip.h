@@ -97,16 +97,20 @@ struct ZipParams {
   int dest_fd = base::kInvalidPlatformFile;
 #endif
 
-  // The relative paths to the files that should be included in the ZIP file. If
-  // this is empty, all files in |src_dir| are included.
+  // The relative paths to the files and directories that should be included in
+  // the ZIP file. If this is empty, the whole contents of |src_dir| are
+  // included.
   //
   // These paths must be relative to |src_dir| and will be used as the file
-  // names in the created zip file. All files must be under |src_dir| in the
+  // names in the created ZIP file. All files must be under |src_dir| in the
   // file system hierarchy.
+  //
+  // All the paths in |src_files| are included in the created ZIP file,
+  // irrespective of |include_hidden_files| and |filter_callback|.
   Paths src_files;
 
-  // Filter used to exclude files from the ZIP file. Only effective when
-  // |src_files| is empty.
+  // Filter used to exclude files from the ZIP file. This is only taken in
+  // account when recursively adding subdirectory contents.
   FilterCallback filter_callback;
 
   // Optional progress reporting callback.
@@ -116,9 +120,12 @@ struct ZipParams {
   // creation operation completes.
   base::TimeDelta progress_period;
 
-  // Whether hidden files should be included in the ZIP file. Only effective
-  // when |src_files| is empty.
+  // Should add hidden files? This is only taken in account when recursively
+  // adding subdirectory contents.
   bool include_hidden_files = true;
+
+  // Should recursively add subdirectory contents?
+  bool recursive = false;
 
   // Abstraction around file system access used to read files. If left null, an
   // implementation that accesses files directly is used.

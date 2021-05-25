@@ -4,7 +4,6 @@
 
 #include "third_party/zlib/google/zip.h"
 
-#include <queue>
 #include <string>
 #include <vector>
 
@@ -28,10 +27,6 @@ bool IsHiddenFile(const base::FilePath& file_path) {
 
 bool ExcludeNoFilesFilter(const base::FilePath& file_path) {
   return true;
-}
-
-bool ExcludeHiddenFilesFilter(const base::FilePath& file_path) {
-  return !IsHiddenFile(file_path);
 }
 
 // Creates a directory at |extract_dir|/|entry_path|, including any parents.
@@ -127,41 +122,6 @@ bool Zip(const ZipParams& params) {
   DirectFileAccessor default_accessor(params.src_dir);
   FileAccessor* const file_accessor = params.file_accessor ?: &default_accessor;
 
-  Paths files_to_add = params.src_files;
-
-  std::vector<base::FilePath> all_files;
-  if (files_to_add.empty()) {
-    const auto exclude = [&params](const base::FilePath& path) {
-      return (!params.include_hidden_files && IsHiddenFile(path)) ||
-             (params.filter_callback &&
-              !params.filter_callback.Run(params.src_dir.Append(path)));
-    };
-
-    // Perform a Breadth First Search (BFS) of the source tree. Note that the
-    // BFS order might not be optimal when storing files in a ZIP (either for
-    // the storing side, or for the program that will extract this ZIP).
-    for (std::queue<base::FilePath> q({{}}); !q.empty(); q.pop()) {
-      std::vector<base::FilePath> files, dirs;
-      file_accessor->List(q.front(), &files, &dirs);
-
-      for (base::FilePath& path : files) {
-        // Skip hidden and filtered files.
-        if (!exclude(path))
-          all_files.push_back(std::move(path));
-      }
-
-      for (base::FilePath& path : dirs) {
-        // Skip hidden and filtered subdirs.
-        if (!exclude(path)) {
-          q.push(path);
-          all_files.push_back(std::move(path));
-        }
-      }
-    }
-
-    files_to_add = all_files;
-  }
-
   std::unique_ptr<internal::ZipWriter> zip_writer;
 
 #if defined(OS_POSIX)
@@ -182,8 +142,29 @@ bool Zip(const ZipParams& params) {
 
   zip_writer->SetProgressCallback(params.progress_callback,
                                   params.progress_period);
+  zip_writer->SetRecursive(params.recursive);
 
-  return zip_writer->WriteEntries(files_to_add);
+  if (!params.include_hidden_files || params.filter_callback)
+    zip_writer->SetFilterCallback(base::BindRepeating(
+        [](const ZipParams* const params, const base::FilePath& path) -> bool {
+          return (params->include_hidden_files || !IsHiddenFile(path)) &&
+                 (!params->filter_callback ||
+                  params->filter_callback.Run(params->src_dir.Append(path)));
+        },
+        &params));
+
+  if (params.src_files.empty()) {
+    // No source items are specified. Zip the entire source directory.
+    zip_writer->SetRecursive(true);
+    if (!zip_writer->AddDirectoryContents(base::FilePath()))
+      return false;
+  } else {
+    // Only zip the specified source items.
+    if (!zip_writer->AddMixedEntries(params.src_files))
+      return false;
+  }
+
+  return zip_writer->Close();
 }
 
 bool Unzip(const base::FilePath& src_file, const base::FilePath& dest_dir) {
@@ -197,9 +178,10 @@ bool UnzipWithFilterCallback(const base::FilePath& src_file,
                              bool log_skipped_files) {
   base::File file(src_file, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {
-    DLOG(WARNING) << "Failed to open " << src_file.value();
+    DLOG(WARNING) << "Cannot open '" << src_file << "'";
     return false;
   }
+
   return UnzipWithFilterAndWriters(
       file.GetPlatformFile(),
       base::BindRepeating(&CreateFilePathWriterDelegate, dest_dir),
@@ -214,7 +196,7 @@ bool UnzipWithFilterAndWriters(const base::PlatformFile& src_file,
                                bool log_skipped_files) {
   ZipReader reader;
   if (!reader.OpenFromPlatformFile(src_file)) {
-    DLOG(WARNING) << "Failed to open src_file " << src_file;
+    DLOG(WARNING) << "Cannot open '" << src_file << "'";
     return false;
   }
   while (reader.HasMore()) {
@@ -263,13 +245,9 @@ bool ZipWithFilterCallback(const base::FilePath& src_dir,
 bool Zip(const base::FilePath& src_dir,
          const base::FilePath& dest_file,
          bool include_hidden_files) {
-  if (include_hidden_files) {
-    return ZipWithFilterCallback(src_dir, dest_file,
-                                 base::BindRepeating(&ExcludeNoFilesFilter));
-  } else {
-    return ZipWithFilterCallback(
-        src_dir, dest_file, base::BindRepeating(&ExcludeHiddenFilesFilter));
-  }
+  return Zip({.src_dir = src_dir,
+              .dest_file = dest_file,
+              .include_hidden_files = include_hidden_files});
 }
 
 #if defined(OS_POSIX)
