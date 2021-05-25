@@ -60,10 +60,13 @@ void SetSuspendImminent() {
       power_manager::SuspendImminent_Reason_OTHER);
 }
 
-apps::mojom::AppPtr MakeApp(const char* app_id, apps::mojom::AppType app_type) {
+apps::mojom::AppPtr MakeApp(const char* app_id,
+                            apps::mojom::AppType app_type,
+                            apps::mojom::InstallSource install_source) {
   apps::mojom::AppPtr app = apps::mojom::App::New();
   app->app_id = app_id;
   app->app_type = app_type;
+  app->install_source = install_source;
   return app;
 }
 
@@ -107,21 +110,32 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         apps::AppServiceProxyFactory::GetForProfile(&testing_profile_);
     std::vector<apps::mojom::AppPtr> deltas;
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
-    deltas.push_back(MakeApp(/*app_id=*/"u", apps::mojom::AppType::kUnknown));
-    deltas.push_back(MakeApp(/*app_id=*/"a", apps::mojom::AppType::kArc));
-    deltas.push_back(MakeApp(/*app_id=*/"bu", apps::mojom::AppType::kBuiltIn));
-    deltas.push_back(MakeApp(/*app_id=*/"c", apps::mojom::AppType::kCrostini));
-    deltas.push_back(MakeApp(/*app_id=*/"w", apps::mojom::AppType::kWeb));
+    deltas.push_back(MakeApp(/*app_id=*/"u", apps::mojom::AppType::kUnknown,
+                             apps::mojom::InstallSource::kUnknown));
+    deltas.push_back(MakeApp(/*app_id=*/"a", apps::mojom::AppType::kArc,
+                             apps::mojom::InstallSource::kUser));
+    deltas.push_back(MakeApp(/*app_id=*/"bu", apps::mojom::AppType::kBuiltIn,
+                             apps::mojom::InstallSource::kSystem));
+    deltas.push_back(MakeApp(/*app_id=*/"c", apps::mojom::AppType::kCrostini,
+                             apps::mojom::InstallSource::kUser));
+    deltas.push_back(MakeApp(/*app_id=*/"w", apps::mojom::AppType::kWeb,
+                             apps::mojom::InstallSource::kSync));
     deltas.push_back(MakeApp(
-        /*app_id=*/"m", apps::mojom::AppType::kMacOs));
+        /*app_id=*/"m", apps::mojom::AppType::kMacOs,
+        apps::mojom::InstallSource::kUnknown));
     deltas.push_back(MakeApp(
-        /*app_id=*/"p", apps::mojom::AppType::kPluginVm));
+        /*app_id=*/"p", apps::mojom::AppType::kPluginVm,
+        apps::mojom::InstallSource::kUser));
     deltas.push_back(MakeApp(
-        /*app_id=*/"l", apps::mojom::AppType::kStandaloneBrowser));
+        /*app_id=*/"l", apps::mojom::AppType::kStandaloneBrowser,
+        apps::mojom::InstallSource::kSystem));
     deltas.push_back(MakeApp(
-        /*app_id=*/"r", apps::mojom::AppType::kRemote));
-    deltas.push_back(MakeApp(/*app_id=*/"bo", apps::mojom::AppType::kBorealis));
-    deltas.push_back(MakeApp(/*app_id=*/"s", apps::mojom::AppType::kSystemWeb));
+        /*app_id=*/"r", apps::mojom::AppType::kRemote,
+        apps::mojom::InstallSource::kPolicy));
+    deltas.push_back(MakeApp(/*app_id=*/"bo", apps::mojom::AppType::kBorealis,
+                             apps::mojom::InstallSource::kOem));
+    deltas.push_back(MakeApp(/*app_id=*/"s", apps::mojom::AppType::kSystemWeb,
+                             apps::mojom::InstallSource::kDefault));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                  false /* should_notify_initialized */);
   }
@@ -131,7 +145,8 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         apps::AppServiceProxyFactory::GetForProfile(&testing_profile_);
     std::vector<apps::mojom::AppPtr> deltas;
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
-    deltas.push_back(MakeApp(app_id.c_str(), app_type));
+    deltas.push_back(
+        MakeApp(app_id.c_str(), app_type, apps::mojom::InstallSource::kUser));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                  false /* should_notify_initialized */);
   }
@@ -141,12 +156,24 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kArc),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
+            AppTypeName::kArc, apps::mojom::InstallSource::kUser),
+        /*expected_count=*/1);
+    histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kBuiltIn),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
+            AppTypeName::kBuiltIn, apps::mojom::InstallSource::kSystem),
+        /*expected_count=*/1);
+    histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kCrostini),
+        /*expected_count=*/1);
+    histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
+            AppTypeName::kCrostini, apps::mojom::InstallSource::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -156,28 +183,57 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kWeb),
         /*expected_count=*/0);
     histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
+            AppTypeName::kWeb, apps::mojom::InstallSource::kSync),
+        /*expected_count=*/0);
+    histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kMacOs),
+        /*expected_count=*/1);
+    histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
+            AppTypeName::kMacOs, apps::mojom::InstallSource::kUnknown),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kPluginVm),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
+            AppTypeName::kPluginVm, apps::mojom::InstallSource::kUser),
+        /*expected_count=*/1);
+    histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kStandaloneBrowser),
+        /*expected_count=*/1);
+    histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
+            AppTypeName::kStandaloneBrowser,
+            apps::mojom::InstallSource::kSystem),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kRemote),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
+            AppTypeName::kRemote, apps::mojom::InstallSource::kPolicy),
+        /*expected_count=*/1);
+    histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kBorealis),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
+            AppTypeName::kBorealis, apps::mojom::InstallSource::kOem),
+        /*expected_count=*/1);
+    histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kSystemWeb),
+        /*expected_count=*/1);
+    histogram_tester_.ExpectTotalCount(
+        AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
+            AppTypeName::kSystemWeb, apps::mojom::InstallSource::kDefault),
         /*expected_count=*/1);
   }
 

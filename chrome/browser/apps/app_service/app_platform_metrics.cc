@@ -32,11 +32,21 @@ namespace {
 
 // UMA metrics for a snapshot count of installed apps.
 constexpr char kAppsCountHistogramPrefix[] = "Apps.AppsCount.";
+constexpr char kAppsCountPerInstallSourceHistogramPrefix[] =
+    "Apps.AppsCountPerInstallSource.";
 constexpr char kAppsRunningDurationHistogramPrefix[] = "Apps.RunningDuration.";
 constexpr char kAppsRunningPercentageHistogramPrefix[] =
     "Apps.RunningPercentage.";
 constexpr char kAppsActivatedCountHistogramPrefix[] = "Apps.ActivatedCount.";
 constexpr char kAppsUsageTimeHistogramPrefix[] = "Apps.UsageTime.";
+
+constexpr char kInstallSourceUnknownHistogram[] = "Unknown";
+constexpr char kInstallSourceSystemHistogram[] = "System";
+constexpr char kInstallSourcePolicyHistogram[] = "Policy";
+constexpr char kInstallSourceOemHistogram[] = "Oem";
+constexpr char kInstallSourcePreloadHistogram[] = "Preload";
+constexpr char kInstallSourceSyncHistogram[] = "Sync";
+constexpr char kInstallSourceUserHistogram[] = "User";
 
 constexpr base::TimeDelta kMinDuration = base::TimeDelta::FromSeconds(1);
 constexpr base::TimeDelta kMaxDuration = base::TimeDelta::FromDays(1);
@@ -180,6 +190,25 @@ apps::AppTypeName GetAppTypeName(Profile* profile,
       return apps::AppTypeName::kBorealis;
     case apps::mojom::AppType::kSystemWeb:
       return apps::AppTypeName::kSystemWeb;
+  }
+}
+
+std::string GetInstallSource(apps::mojom::InstallSource install_source) {
+  switch (install_source) {
+    case apps::mojom::InstallSource::kUnknown:
+      return kInstallSourceUnknownHistogram;
+    case apps::mojom::InstallSource::kSystem:
+      return kInstallSourceSystemHistogram;
+    case apps::mojom::InstallSource::kPolicy:
+      return kInstallSourcePolicyHistogram;
+    case apps::mojom::InstallSource::kOem:
+      return kInstallSourceOemHistogram;
+    case apps::mojom::InstallSource::kDefault:
+      return kInstallSourcePreloadHistogram;
+    case apps::mojom::InstallSource::kSync:
+      return kInstallSourceSyncHistogram;
+    case apps::mojom::InstallSource::kUser:
+      return kInstallSourceUserHistogram;
   }
 }
 
@@ -362,6 +391,16 @@ std::string AppPlatformMetrics::GetAppsCountHistogramNameForTest(
 }
 
 // static
+std::string
+AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
+    AppTypeName app_type_name,
+    apps::mojom::InstallSource install_source) {
+  return kAppsCountPerInstallSourceHistogramPrefix +
+         GetAppTypeHistogramName(app_type_name) + "." +
+         GetInstallSource(install_source);
+}
+
+// static
 std::string AppPlatformMetrics::GetAppsRunningDurationHistogramNameForTest(
     AppTypeName app_type_name) {
   return kAppsRunningDurationHistogramPrefix +
@@ -540,8 +579,11 @@ void AppPlatformMetrics::ClearRunningDuration() {
 
 void AppPlatformMetrics::RecordAppsCount(apps::mojom::AppType app_type) {
   std::map<AppTypeName, int> app_count;
+  std::map<AppTypeName, std::map<apps::mojom::InstallSource, int>>
+      app_count_per_install_source;
   app_registry_cache_.ForEachApp(
-      [app_type, this, &app_count](const apps::AppUpdate& update) {
+      [app_type, this, &app_count,
+       &app_count_per_install_source](const apps::AppUpdate& update) {
         if (app_type != apps::mojom::AppType::kUnknown &&
             (update.AppType() != app_type ||
              update.AppId() == extension_misc::kChromeAppId)) {
@@ -558,6 +600,7 @@ void AppPlatformMetrics::RecordAppsCount(apps::mojom::AppType app_type) {
         }
 
         ++app_count[app_type_name];
+        ++app_count_per_install_source[app_type_name][update.InstallSource()];
       });
 
   for (auto it : app_count) {
@@ -569,6 +612,12 @@ void AppPlatformMetrics::RecordAppsCount(apps::mojom::AppType app_type) {
       // often.
       base::UmaHistogramCounts1000(kAppsCountHistogramPrefix + histogram_name,
                                    it.second);
+      for (auto install_source_it : app_count_per_install_source[it.first]) {
+        base::UmaHistogramCounts1000(
+            kAppsCountPerInstallSourceHistogramPrefix + histogram_name + "." +
+                GetInstallSource(install_source_it.first),
+            it.second);
+      }
     }
   }
 }
