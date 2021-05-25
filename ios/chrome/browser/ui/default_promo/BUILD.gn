@@ -107,3 +107,29 @@ source_set("unit_tests") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "default_browser_promo_non_modal_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_chromium_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

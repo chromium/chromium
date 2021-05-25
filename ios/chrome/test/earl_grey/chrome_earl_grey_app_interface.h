@@ -592,6 +592,14 @@
 // Clear the watcher list, stopping monitoring.
 + (void)stopWatcher;
 
+#pragma mark - Default Browser Promo Utilities
+
+// Clears default browser promo data to restart capping for the promos.
++ (void)clearDefaultBrowserPromoData;
+
+// Copies a chrome:// URL that doesn't require internet connection.
++ (void)copyURLToPasteBoard;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_APP_INTERFACE_H_

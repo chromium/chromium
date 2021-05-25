@@ -1206,4 +1206,25 @@ int watchRunNumber = 0;
   }
 }
 
+#pragma mark - Default Browser Promo Utilities
+
++ (void)clearDefaultBrowserPromoData {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSArray<NSString*>* keys = @[
+    @"lastTimeUserInteractedWithFullscreenPromo",
+    @"userHasInteractedWithFullscreenPromo",
+    @"userHasInteractedWithTailoredFullscreenPromo",
+    @"userInteractedWithNonModalPromoCount",
+    @"remindMeLaterPromoActionInteraction",
+  ];
+  for (NSString* key in keys) {
+    [defaults removeObjectForKey:key];
+  }
+}
+
++ (void)copyURLToPasteBoard {
+  UIPasteboard* pasteboard = UIPasteboard.generalPasteboard;
+  pasteboard.URL = [NSURL URLWithString:@"chrome://version"];
+}
+
 @end
