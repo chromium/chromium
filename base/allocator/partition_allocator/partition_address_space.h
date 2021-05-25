@@ -278,12 +278,15 @@ ALWAYS_INLINE const uint16_t* EndOfReservationOffsetTable() {
   return internal::PartitionAddressSpace::EndOfReservationOffsetTable();
 }
 
-ALWAYS_INLINE uintptr_t GetReservationStart(void* address) {
+// If the given address doesn't point to direct-map allocated memory,
+// returns 0.
+ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(void* address) {
   PA_DCHECK(internal::PartitionAddressSpace::IsInBRPPool(address));
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
   uint16_t* offset_ptr =
       internal::PartitionAddressSpace::ReservationOffsetPointer(ptr_as_uintptr);
-  PA_DCHECK(*offset_ptr != internal::NotInDirectMapOffsetTag());
+  if (*offset_ptr == internal::NotInDirectMapOffsetTag())
+    return 0;
   uintptr_t reservation_start =
       (ptr_as_uintptr & kSuperPageBaseMask) -
       (static_cast<size_t>(*offset_ptr) << kSuperPageShift);

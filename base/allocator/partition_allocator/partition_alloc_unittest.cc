@@ -3065,13 +3065,13 @@ TEST_F(PartitionAllocTest, GetReservationStart) {
   EXPECT_EQ(0U, reservation_start & DirectMapAllocationGranularityOffsetMask());
 
   for (char* p = static_cast<char*>(ptr); p < (char*)ptr + large_size; ++p) {
-    void* ptr2 =
-        reinterpret_cast<char*>(GetReservationStart(p)) + PartitionPageSize();
+    void* ptr2 = reinterpret_cast<char*>(GetDirectMapReservationStart(p)) +
+                 PartitionPageSize();
     EXPECT_EQ(slot_start, ptr2);
   }
 
-  EXPECT_EQ(reservation_start,
-            reinterpret_cast<uintptr_t>(GetReservationStart(slot_start)));
+  EXPECT_EQ(reservation_start, reinterpret_cast<uintptr_t>(
+                                   GetDirectMapReservationStart(slot_start)));
 
   allocator.root()->Free(ptr);
 }

@@ -794,13 +794,10 @@ PartitionAllocGetSlotSpanForSizeQuery(void* ptr) {
 
 #if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 ALWAYS_INLINE void* PartitionAllocGetDirectMapSlotStart(void* ptr) {
-  auto* offset_ptr = ReservationOffsetPointer(reinterpret_cast<uintptr_t>(ptr));
-  if (LIKELY(*offset_ptr == NotInDirectMapOffsetTag()))
+  uintptr_t reservation_start = GetDirectMapReservationStart(ptr);
+  if (!reservation_start)
     return nullptr;
-  // TODO(tasak): optimize this function. i.e. GetReservationStart calls
-  // ReservationOffsetPointer again.
-  return reinterpret_cast<void*>(GetReservationStart(ptr) +
-                                 PartitionPageSize());
+  return reinterpret_cast<void*>(reservation_start + PartitionPageSize());
 }
 #endif
 
