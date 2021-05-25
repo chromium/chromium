@@ -37,13 +37,12 @@ size_t NumberOfWidgetsInAppListContainer() {
   return widgets.size();
 }
 
-// TODO(jamescook): Rename to AppListBubbleTest.
-class AppListBubbleTest : public AshTestBase {
+class AppListBubblePresenterTest : public AshTestBase {
  public:
-  AppListBubbleTest() {
+  AppListBubblePresenterTest() {
     scoped_features_.InitAndEnableFeature(features::kAppListBubble);
   }
-  ~AppListBubbleTest() override = default;
+  ~AppListBubblePresenterTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -62,14 +61,14 @@ class AppListBubbleTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_features_;
 };
 
-TEST_F(AppListBubbleTest, ShowOpensOneWidgetInAppListContainer) {
+TEST_F(AppListBubblePresenterTest, ShowOpensOneWidgetInAppListContainer) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
 
   EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer());
 }
 
-TEST_F(AppListBubbleTest, DismissClosesWidget) {
+TEST_F(AppListBubblePresenterTest, DismissClosesWidget) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
 
@@ -80,7 +79,7 @@ TEST_F(AppListBubbleTest, DismissClosesWidget) {
   EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
 }
 
-TEST_F(AppListBubbleTest, DismissWhenNotShowingDoesNotCrash) {
+TEST_F(AppListBubblePresenterTest, DismissWhenNotShowingDoesNotCrash) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   EXPECT_FALSE(presenter->IsShowing());
 
@@ -88,14 +87,14 @@ TEST_F(AppListBubbleTest, DismissWhenNotShowingDoesNotCrash) {
   // No crash.
 }
 
-TEST_F(AppListBubbleTest, ToggleOpensOneWidgetInAppListContainer) {
+TEST_F(AppListBubblePresenterTest, ToggleOpensOneWidgetInAppListContainer) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Toggle(GetPrimaryDisplay().id());
 
   EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer());
 }
 
-TEST_F(AppListBubbleTest, ToggleClosesWidgetInAppListContainer) {
+TEST_F(AppListBubblePresenterTest, ToggleClosesWidgetInAppListContainer) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Toggle(GetPrimaryDisplay().id());
 
@@ -106,20 +105,20 @@ TEST_F(AppListBubbleTest, ToggleClosesWidgetInAppListContainer) {
   EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
 }
 
-TEST_F(AppListBubbleTest, BubbleIsNotShowingByDefault) {
+TEST_F(AppListBubblePresenterTest, BubbleIsNotShowingByDefault) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
 
   EXPECT_FALSE(presenter->IsShowing());
 }
 
-TEST_F(AppListBubbleTest, BubbleIsShowingAfterShow) {
+TEST_F(AppListBubblePresenterTest, BubbleIsShowingAfterShow) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
 
   EXPECT_TRUE(presenter->IsShowing());
 }
 
-TEST_F(AppListBubbleTest, BubbleIsNotShowingAfterDismiss) {
+TEST_F(AppListBubblePresenterTest, BubbleIsNotShowingAfterDismiss) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
   presenter->Dismiss();
@@ -127,7 +126,7 @@ TEST_F(AppListBubbleTest, BubbleIsNotShowingAfterDismiss) {
   EXPECT_FALSE(presenter->IsShowing());
 }
 
-TEST_F(AppListBubbleTest, DoesNotCrashWhenNativeWidgetDestroyed) {
+TEST_F(AppListBubblePresenterTest, DoesNotCrashWhenNativeWidgetDestroyed) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
 
@@ -144,7 +143,7 @@ TEST_F(AppListBubbleTest, DoesNotCrashWhenNativeWidgetDestroyed) {
   // No crash.
 }
 
-TEST_F(AppListBubbleTest, ClickInTopLeftOfScreenClosesBubble) {
+TEST_F(AppListBubblePresenterTest, ClickInTopLeftOfScreenClosesBubble) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
 
@@ -160,7 +159,7 @@ TEST_F(AppListBubbleTest, ClickInTopLeftOfScreenClosesBubble) {
 
 // Verifies that the launcher does not reopen when it's closed by a click on the
 // home button.
-TEST_F(AppListBubbleTest, ClickOnHomeButtonClosesBubble) {
+TEST_F(AppListBubblePresenterTest, ClickOnHomeButtonClosesBubble) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
 
