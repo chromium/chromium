@@ -1168,28 +1168,8 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
    * @param {function()} callback Called when the initialize is completed.
    */
   initialize(callback) {
-    this.initialize_().finally(callback);
-  }
-
-  /**
-   * @private
-   */
-  async initialize_() {
-    this.totalBytes = 0;
-    const resolvedEntryMap = {};
-
-    for (const sourceEntry of assert(this.sourceEntries)) {
-      const resolvedEntries = await new Promise(
-          (resolve, reject) => fileOperationUtil.resolveRecursively_(
-              sourceEntry, resolve, reject));
-      for (const resolvedEntry of resolvedEntries) {
-        this.totalBytes += resolvedEntry.size;
-        resolvedEntryMap[resolvedEntry.toURL()] = resolvedEntry;
-      }
-    }
-
-    // For ZIP archiving, all the entries are processed at once.
-    this.processingEntries = [resolvedEntryMap];
+    this.totalBytes = this.sourceEntries.length;
+    callback();
   }
 
   /**
@@ -1243,16 +1223,10 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
     const destPath = await fileOperationUtil.deduplicatePath(
         this.targetDirEntry, destName + '.zip');
 
-    // The number of elements in processingEntries is 1. See also
-    // initialize().
-    const entries = [];
-    for (const url in this.processingEntries[0]) {
-      entries.push(this.processingEntries[0][url]);
-    }
-
     const success = await new Promise(
         resolve => chrome.fileManagerPrivate.zipSelection(
-            entries, this.zipBaseDirEntry, destPath, resolve));
+            assert(this.sourceEntries), this.zipBaseDirEntry, destPath,
+            resolve));
 
     if (!success) {
       // Cannot create ZIP archive.

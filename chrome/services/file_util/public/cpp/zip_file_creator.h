@@ -28,9 +28,9 @@ class ZipFileCreator {
 
   // Creates a zip file from the specified list of files and directories.
   ZipFileCreator(ResultCallback callback,
-                 const base::FilePath& src_dir,
-                 const std::vector<base::FilePath>& src_relative_paths,
-                 const base::FilePath& dest_file);
+                 base::FilePath src_dir,
+                 std::vector<base::FilePath> src_relative_paths,
+                 base::FilePath dest_file);
 
   // Starts creating the zip file.
   //

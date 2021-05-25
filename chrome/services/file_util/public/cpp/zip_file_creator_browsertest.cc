@@ -94,13 +94,9 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, SomeFilesZip) {
   bool success = false;
   base::RunLoop run_loop;
 
-  std::vector<base::FilePath> paths;
-  paths.push_back(kDir1);
-  paths.push_back(kFile1);
-  paths.push_back(kFile2);
   (new ZipFileCreator(
        base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
-       zip_base_dir(), paths, zip_archive_path()))
+       zip_base_dir(), {kDir1, kFile2}, zip_archive_path()))
       ->Start(LaunchService());
 
   run_loop.Run();
@@ -147,14 +143,14 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
   // root_dir/1
   // root_dir/1/1.txt -> Hello1/1
   // ...
-  // root_dir/1/7.txt -> Hello1/7
+  // root_dir/1/70.txt -> Hello1/70
   // root_dir/2
   // root_dir/2/1.txt -> Hello2/1
   // ...
-  // root_dir/2/7.txt -> Hello2/7
+  // root_dir/2/70.txt -> Hello2/70
   //...
   //...
-  // root_dir/10/7.txt -> Hello10/7
+  // root_dir/10/70.txt -> Hello10/70
 
   base::FilePath root_dir = zip_base_dir().Append("root_dir");
 
@@ -174,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
       base::FilePath dir(std::to_string(i));
       ASSERT_TRUE(base::CreateDirectory(root_dir.Append(dir)));
       file_tree_content[dir] = std::string();
-      for (int j = 1; j <= 7; j++) {
+      for (int j = 1; j <= 70; j++) {
         base::FilePath file = dir.Append(std::to_string(j) + ".txt");
         std::string content =
             "Hello" + std::to_string(i) + "/" + std::to_string(j);
@@ -187,15 +183,14 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
   // Sanity check on the files created.
   constexpr size_t kEntryCount = 89 /* files under root dir */ +
                                  10 /* 1 to 10 dirs */ +
-                                 10 * 7 /* files under 1 to 10 dirs */;
+                                 10 * 70 /* files under 1 to 10 dirs */;
   DCHECK_EQ(kEntryCount, file_tree_content.size());
 
   bool success = false;
   base::RunLoop run_loop;
   (new ZipFileCreator(
        base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
-       root_dir,
-       std::vector<base::FilePath>(),  // Empty means zip everything in dir.
+       root_dir, {},  // Empty means zip everything in root_dir.
        zip_archive_path()))
       ->Start(LaunchService());
 

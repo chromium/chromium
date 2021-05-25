@@ -567,10 +567,8 @@ TEST_F(ZipTest, ZipWithFileAccessor) {
   base::FilePath zip_file;
   ASSERT_TRUE(base::CreateTemporaryFile(&zip_file));
   VirtualFileSystem file_accessor;
-  const zip::ZipParams params{
-      .src_dir = base::FilePath(FILE_PATH_LITERAL("/test")),
-      .dest_file = zip_file,
-      .file_accessor = &file_accessor};
+  const zip::ZipParams params{.file_accessor = &file_accessor,
+                              .dest_file = zip_file};
   ASSERT_TRUE(zip::Zip(params));
 
   base::ScopedTempDir scoped_temp_dir;

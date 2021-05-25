@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Zip file creator provided by the utility process and exposed by mojo
-// policy control to the chrome browser process on OS_CHROMEOS.
+// policy control to the Chrome browser process on OS_CHROMEOS.
 
 module chrome.mojom;
 
@@ -11,10 +11,14 @@ import "components/services/filesystem/public/mojom/directory.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 
+// Service that zips files and folders.
 interface ZipFileCreator {
-  // OS_CHROMEOS: Create a |zip_file| from a list of source files.
+  // Creates a ZIP file and adds all the files and directories specified in
+  // |source_relative_paths|.
+  // Folders are recursively explored.
+  // If |source_relative_paths| is empty, then the whole source directory is
+  // zipped.
   CreateZipFile(pending_remote<filesystem.mojom.Directory> source_dir_mojo,
-                mojo_base.mojom.FilePath source_dir,
                 array<mojo_base.mojom.FilePath> source_relative_paths,
                 mojo_base.mojom.File zip_file)
       => (bool success);

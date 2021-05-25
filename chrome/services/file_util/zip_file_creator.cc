@@ -135,7 +135,6 @@ ZipFileCreator::~ZipFileCreator() = default;
 
 void ZipFileCreator::CreateZipFile(
     mojo::PendingRemote<filesystem::mojom::Directory> source_dir_remote,
-    const base::FilePath& source_dir,
     const std::vector<base::FilePath>& source_relative_paths,
     base::File zip_file,
     CreateZipFileCallback callback) {
@@ -152,7 +151,7 @@ void ZipFileCreator::CreateZipFile(
 
   MojoFileAccessor file_accessor(std::move(source_dir_remote));
   const bool success = zip::Zip({
-      .src_dir = source_dir,
+      .file_accessor = &file_accessor,
       .dest_fd = zip_file.GetPlatformFile(),
       .src_files = source_relative_paths,
       .progress_callback =
@@ -161,7 +160,7 @@ void ZipFileCreator::CreateZipFile(
             return true;
           }),
       .progress_period = base::TimeDelta::FromMilliseconds(500),
-      .file_accessor = &file_accessor,
+      .recursive = true,
   });
   std::move(callback).Run(success);
 }

@@ -31,17 +31,18 @@ void BindDirectoryInBackground(
 
 }  // namespace
 
-ZipFileCreator::ZipFileCreator(
-    ResultCallback callback,
-    const base::FilePath& src_dir,
-    const std::vector<base::FilePath>& src_relative_paths,
-    const base::FilePath& dest_file)
+ZipFileCreator::ZipFileCreator(ResultCallback callback,
+                               base::FilePath src_dir,
+                               std::vector<base::FilePath> src_relative_paths,
+                               base::FilePath dest_file)
     : callback_(std::move(callback)),
-      src_dir_(src_dir),
-      src_relative_paths_(src_relative_paths),
-      dest_file_(dest_file) {
+      src_dir_(std::move(src_dir)),
+      src_relative_paths_(std::move(src_relative_paths)),
+      dest_file_(std::move(dest_file)) {
   DCHECK(callback_);
 }
+
+ZipFileCreator::~ZipFileCreator() = default;
 
 void ZipFileCreator::Start(
     mojo::PendingRemote<chrome::mojom::FileUtilService> service) {
@@ -55,8 +56,6 @@ void ZipFileCreator::Start(
       base::BindOnce(&ZipFileCreator::CreateZipFile, base::Unretained(this),
                      std::move(service)));
 }
-
-ZipFileCreator::~ZipFileCreator() = default;
 
 void ZipFileCreator::CreateZipFile(
     mojo::PendingRemote<chrome::mojom::FileUtilService> service,
@@ -89,7 +88,7 @@ void ZipFileCreator::CreateZipFile(
   remote_zip_file_creator_.set_disconnect_handler(base::BindOnce(
       &ZipFileCreator::ReportDone, base::Unretained(this), false));
   remote_zip_file_creator_->CreateZipFile(
-      std::move(directory), src_dir_, src_relative_paths_, std::move(file),
+      std::move(directory), src_relative_paths_, std::move(file),
       base::BindOnce(&ZipFileCreator::ReportDone, base::Unretained(this)));
 }
 

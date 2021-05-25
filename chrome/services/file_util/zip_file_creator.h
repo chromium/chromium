@@ -25,7 +25,6 @@ class ZipFileCreator : public chrome::mojom::ZipFileCreator {
   // chrome::mojom::ZipFileCreator:
   void CreateZipFile(
       mojo::PendingRemote<filesystem::mojom::Directory> source_dir_remote,
-      const base::FilePath& source_dir,
       const std::vector<base::FilePath>& source_relative_paths,
       base::File zip_file,
       CreateZipFileCallback callback) override;

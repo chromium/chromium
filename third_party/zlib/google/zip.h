@@ -84,8 +84,12 @@ using FilterCallback = base::RepeatingCallback<bool(const base::FilePath&)>;
 
 // ZIP creation parameters and options.
 struct ZipParams {
-  // Source directory.
+  // Source directory. Ignored if |file_accessor| is set.
   base::FilePath src_dir;
+
+  // Abstraction around file system access used to read files.
+  // If left null, an implementation that accesses files directly is used.
+  FileAccessor* file_accessor = nullptr;  // Not owned
 
   // Destination file path.
   // Either dest_file or dest_fd should be set, but not both.
@@ -126,10 +130,6 @@ struct ZipParams {
 
   // Should recursively add subdirectory contents?
   bool recursive = false;
-
-  // Abstraction around file system access used to read files. If left null, an
-  // implementation that accesses files directly is used.
-  FileAccessor* file_accessor = nullptr;  // Not owned
 };
 
 // Zip files specified into a ZIP archives. The source files and ZIP destination

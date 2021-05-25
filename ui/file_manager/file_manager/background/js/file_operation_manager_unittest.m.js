@@ -995,8 +995,8 @@ export function testZip(callback) {
         const lastEvent = events[events.length - 1];
         assertEquals('copy-progress', lastEvent.type);
         assertEquals('SUCCESS', lastEvent.reason);
-        assertEquals(10, lastEvent.status.totalBytes);
-        assertEquals(10, lastEvent.status.processedBytes);
+        assertEquals(1, lastEvent.status.totalBytes);
+        assertEquals(1, lastEvent.status.processedBytes);
 
         assertFalse(events.some(event => {
           return event.type === 'delete';
