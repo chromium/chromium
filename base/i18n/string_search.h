@@ -88,6 +88,25 @@ class BASE_I18N_EXPORT FixedPatternStringSearchIgnoringCaseAndAccents {
   FixedPatternStringSearch base_search_;
 };
 
+// This class is for performing all matches of `find_this` in `in_this`.
+// `find_this` and `in_this` are passed as arguments in constructor.
+class BASE_I18N_EXPORT RepeatingStringSearch {
+ public:
+  RepeatingStringSearch(const std::u16string& find_this,
+                        const std::u16string& in_this,
+                        bool case_sensitive);
+  ~RepeatingStringSearch();
+
+  // Returns true if the next match exists. `match_index` and `match_length` are
+  // assigned the start position and total length of the match.
+  bool NextMatchResult(int& match_index, int& match_length);
+
+ private:
+  std::u16string find_this_;
+  std::u16string in_this_;
+  UStringSearch* search_;
+};
+
 }  // namespace i18n
 }  // namespace base
 

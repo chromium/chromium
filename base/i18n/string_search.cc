@@ -6,6 +6,8 @@
 
 #include "base/i18n/string_search.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "third_party/icu/source/i18n/unicode/usearch.h"
 
 namespace base {
@@ -106,6 +108,49 @@ bool StringSearch(const std::u16string& find_this,
                   bool forward_search) {
   return FixedPatternStringSearch(find_this, case_sensitive)
       .Search(in_this, match_index, match_length, forward_search);
+}
+
+RepeatingStringSearch::RepeatingStringSearch(const std::u16string& find_this,
+                                             const std::u16string& in_this,
+                                             bool case_sensitive)
+    : find_this_(find_this), in_this_(in_this) {
+  std::string locale = uloc_getDefault();
+  UErrorCode status = U_ZERO_ERROR;
+  search_ = usearch_open(find_this_.data(), find_this_.size(), in_this_.data(),
+                         in_this_.size(), locale.data(), /*breakiter=*/nullptr,
+                         &status);
+  DCHECK(status == U_ZERO_ERROR || status == U_USING_FALLBACK_WARNING ||
+         status == U_USING_DEFAULT_WARNING);
+  if (U_SUCCESS(status)) {
+    // http://icu-project.org/apiref/icu4c40/ucol_8h.html#6a967f36248b0a1bc7654f538ee8ba96
+    // Set comparison level to UCOL_PRIMARY to ignore secondary and tertiary
+    // differences. Set comparison level to UCOL_TERTIARY to include all
+    // comparison differences.
+    // Diacritical differences on the same base letter represent a
+    // secondary difference.
+    // Uppercase and lowercase versions of the same character represents a
+    // tertiary difference.
+    UCollator* collator = usearch_getCollator(search_);
+    ucol_setStrength(collator, case_sensitive ? UCOL_TERTIARY : UCOL_PRIMARY);
+    usearch_reset(search_);
+  }
+}
+
+RepeatingStringSearch::~RepeatingStringSearch() {
+  if (search_)
+    usearch_close(search_);
+}
+
+bool RepeatingStringSearch::NextMatchResult(int& match_index,
+                                            int& match_length) {
+  UErrorCode status = U_ZERO_ERROR;
+  const int match_start = usearch_next(search_, &status);
+  if (U_FAILURE(status) || match_start == USEARCH_DONE)
+    return false;
+  DCHECK_EQ(U_ZERO_ERROR, status);
+  match_index = match_start;
+  match_length = usearch_getMatchedLength(search_);
+  return true;
 }
 
 }  // namespace i18n

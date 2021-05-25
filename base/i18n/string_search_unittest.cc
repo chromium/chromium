@@ -5,9 +5,11 @@
 #include <stddef.h>
 
 #include <string>
+#include <vector>
 
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_search.h"
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/usearch.h"
@@ -327,6 +329,64 @@ TEST(StringSearchTest, FixedPatternMultipleSearch) {
   EXPECT_TRUE(query2.Search(u"hELLo", &index, &length));
   EXPECT_EQ(0U, index);
   EXPECT_EQ(5U, length);
+
+  if (locale_is_posix)
+    SetICUDefaultLocale(default_locale.data());
+}
+
+TEST(StringSearchTest, RepeatingStringSearch) {
+  struct MatchResult {
+    int match_index;
+    int match_length;
+  };
+
+  std::string default_locale(uloc_getDefault());
+  bool locale_is_posix = (default_locale == "en_US_POSIX");
+  if (locale_is_posix)
+    SetICUDefaultLocale("en_US");
+
+  const char16_t kPattern[] = u"fox";
+  const char16_t kTarget[] = u"The quick brown fox jumped over the lazy Fox";
+
+  // Case sensitive.
+  {
+    const MatchResult kExpectation[] = {{16, 3}};
+
+    RepeatingStringSearch searcher(kPattern, kTarget, /*case_sensitive=*/true);
+    std::vector<MatchResult> results;
+    int match_index;
+    int match_length;
+    while (searcher.NextMatchResult(match_index, match_length)) {
+      results.push_back(
+          {.match_index = match_index, .match_length = match_length});
+    }
+
+    ASSERT_EQ(base::size(kExpectation), results.size());
+    for (size_t i = 0; i < results.size(); ++i) {
+      EXPECT_EQ(results[i].match_index, kExpectation[i].match_index);
+      EXPECT_EQ(results[i].match_length, kExpectation[i].match_length);
+    }
+  }
+
+  // Case insensitive.
+  {
+    const MatchResult kExpectation[] = {{16, 3}, {41, 3}};
+
+    RepeatingStringSearch searcher(kPattern, kTarget, /*case_sensitive=*/false);
+    std::vector<MatchResult> results;
+    int match_index;
+    int match_length;
+    while (searcher.NextMatchResult(match_index, match_length)) {
+      results.push_back(
+          {.match_index = match_index, .match_length = match_length});
+    }
+
+    ASSERT_EQ(base::size(kExpectation), results.size());
+    for (size_t i = 0; i < results.size(); ++i) {
+      EXPECT_EQ(results[i].match_index, kExpectation[i].match_index);
+      EXPECT_EQ(results[i].match_length, kExpectation[i].match_length);
+    }
+  }
 
   if (locale_is_posix)
     SetICUDefaultLocale(default_locale.data());
