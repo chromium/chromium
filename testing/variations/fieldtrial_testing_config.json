@@ -4208,6 +4208,21 @@
             ]
         }
     ],
+    "IncognitoBiometricReauth": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "enable-incognito-authentication-ios"
+                    ]
+                }
+            ]
+        }
+    ],
     "IncompatibleApplicationsWarning": [
         {
             "platforms": [
