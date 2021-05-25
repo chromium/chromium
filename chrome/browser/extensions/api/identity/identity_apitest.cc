@@ -2879,11 +2879,6 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionPublicSessionTest, NonAllowlisted) {
       IdentityGetAuthTokenError::State::kNotAllowlistedInPublicSession, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionPublicSessionTest, Allowlisted) {
-  // GetAuthToken() should return a token for allowlisted extensions.
-  RunExtensionAndVerifyNoError(/*is_extension_allowlisted=*/true);
-}
-
 class GetAuthTokenFunctionChromeKioskTest
     : public GetAuthTokenFunctionDeviceLocalAccountTest {
  protected:
@@ -2909,12 +2904,6 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionChromeKioskTest, NonAllowlisted) {
   RunExtensionAndVerifyNoError(/*is_extension_allowlisted=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionChromeKioskTest, Allowlisted) {
-  // GetAuthToken() should return a token for allowlisted extensions in the
-  // Chrome Kiosk session.
-  RunExtensionAndVerifyNoError(/*is_extension_allowlisted=*/true);
-}
-
 class GetAuthTokenFunctionWebKioskTest
     : public GetAuthTokenFunctionDeviceLocalAccountTest {
  protected:
@@ -2938,12 +2927,6 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionWebKioskTest, NonAllowlisted) {
   // GetAuthToken() should return a token for non-allowlisted extensions in the
   // web Kiosk session.
   RunExtensionAndVerifyNoError(/*is_extension_allowlisted=*/false);
-}
-
-IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionWebKioskTest, Allowlisted) {
-  // GetAuthToken() should return a token for allowlisted extensions in the
-  // web Kiosk session.
-  RunExtensionAndVerifyNoError(/*is_extension_allowlisted=*/true);
 }
 
 #endif

@@ -124,7 +124,6 @@ const char* const kDefaultAppOrder[] = {
     arc::kInfinitePainterAppId,
     web_app::kShowtimeAppId,
     extension_misc::kGooglePlusAppId,
-    extension_misc::kChromeRemoteDesktopAppId,
 };
 
 // Reads external ordinal json file and returned the parsed value. Returns NULL

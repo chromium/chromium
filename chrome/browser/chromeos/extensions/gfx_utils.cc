@@ -44,9 +44,6 @@ const struct {
     {"com.google.android.apps.maps", "lneaknkopdijkpnocmklfnjbeapigfbh"},
     // Calculator
     {"com.google.android.calculator", "joodangkbfjnajiiifokapkpmhfnpleo"},
-    // Chrome Remote Desktop
-    {"com.google.chromeremotedesktop", "gbchcmhmhahfdphkhkmpfmihenigjmpp"},
-    {"com.google.chromeremotedesktop", "cdjikkcakjcdjemakobkmijmikhkegcj"},
     // Google Calender
     {"com.google.android.calendar", "ejjicmeblgpmajnghnpcppodonldlgfn"},
     {"com.google.android.calendar", "fpgfohogebplgnamlafljlcidjedbdeb"},

@@ -28,9 +28,6 @@ namespace extension_misc {
 // The extension id of the Calendar application.
 extern const char kCalendarAppId[];
 
-// The extension id of the Chrome Remote Desktop application.
-extern const char kChromeRemoteDesktopAppId[];
-
 // The extension id of the Cloud Print component application.
 extern const char kCloudPrintAppId[];
 

@@ -47,7 +47,6 @@ const char* const kPublicSessionWhitelist[] = {
     "kgimkbnclbekdkabkpjhpakhhalfanda",  // Bejeweled demo
     "joodangkbfjnajiiifokapkpmhfnpleo",  // Calculator
     "fpgfohogebplgnamlafljlcidjedbdeb",  // Calendar demo
-    "cdjikkcakjcdjemakobkmijmikhkegcj",  // Chrome Remote Desktop demo
     "jkoildpomkimndcphjpffmephmcmkfhn",  // Chromebook Demo App
     "lbhdhapagjhalobandnbdnmblnmocojh",  // Crackle demo
     "ielkookhdphmgbipcfmafkaiagademfp",  // Custom bookmarks
@@ -118,7 +117,6 @@ const char* const kPublicSessionWhitelist[] = {
     "ongnjlefhnoajpbodoldndkbkdgfomlp",  // Show Managed Storage
     "ilnpadgckeacioehlommkaafedibdeob",  // Enterprise DeviceAttributes
     "oflckobdemeldmjddmlbaiaookhhcngo",  // Citrix Receiver QA version
-    "ljacajndfccfgnfohlgkdphmbnpkjflk",  // Chrome Remote Desktop (Dev Build)
     "behllobkkfkfnphdnhnkndlbkcpglgmj",  // Autotest
 
     // Google Apps:
@@ -141,7 +139,6 @@ const char* const kPublicSessionWhitelist[] = {
     "khpfeaanjngmcnplbdlpegiifgpfgdco",  // Smart Card Connector
     "hmjkmjkepdijhoojdojkdfohbdgmmhki",  // Google Keep - notes and lists
     "felcaaldnbdncclmgdcncolpebgiejap",  // Google Sheets
-    "gbchcmhmhahfdphkhkmpfmihenigjmpp",  // Chrome Remote Desktop
     "khkjfddibboofomnlkndfedpoccieiee",  // Study Kit
     "becloognjehhioodmnimnehjcibkloed",  // Coding with Chrome
     "hfhhnacclhffhdffklopdkcgdhifgngh",  // Camera

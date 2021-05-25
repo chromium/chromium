@@ -199,8 +199,6 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // 1. Enterprise kiosk mode.
   // 2. Allowlisted first party apps in public session.
   virtual void StartDeviceAccessTokenRequest();
-
-  bool IsOriginAllowlistedInPublicSession();
 #endif
 
   // Methods for invoking UI. Overridable for testing.

@@ -58,16 +58,6 @@ namespace extensions {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// The list of apps that are allowed to use the Identity API to retrieve the
-// token from the device robot account in a public session.
-const char* const kPublicSessionAllowedOrigins[] = {
-    // Chrome Remote Desktop - Chromium branding.
-    "chrome-extension://ljacajndfccfgnfohlgkdphmbnpkjflk/",
-    // Chrome Remote Desktop - Official branding.
-    "chrome-extension://gbchcmhmhahfdphkhkmpfmihenigjmpp/"};
-#endif
-
 const char* const kExtensionsIdentityAPIOAuthConsumerName =
     "extensions_identity_api";
 
@@ -255,7 +245,7 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
       user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
 
   if (connector->IsEnterpriseManaged() && (is_kiosk || is_public_session)) {
-    if (is_public_session && !IsOriginAllowlistedInPublicSession()) {
+    if (is_public_session) {
       CompleteFunctionWithError(IdentityGetAuthTokenError(
           IdentityGetAuthTokenError::State::kNotAllowlistedInPublicSession));
       return;
@@ -481,8 +471,7 @@ void IdentityGetAuthTokenFunction::StartMintToken(
       case IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         // Always force minting token for ChromeOS kiosk app and public session.
-        if (user_manager::UserManager::Get()->IsLoggedInAsPublicAccount() &&
-            !IsOriginAllowlistedInPublicSession()) {
+        if (user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
           CompleteFunctionWithError(
               IdentityGetAuthTokenError(IdentityGetAuthTokenError::State::
                                             kNotAllowlistedInPublicSession));
@@ -853,19 +842,6 @@ void IdentityGetAuthTokenFunction::StartDeviceAccessTokenRequest() {
   OAuth2AccessTokenManager::ScopeSet scopes;
   scopes.insert(GaiaConstants::kAnyApiOAuth2Scope);
   device_access_token_request_ = service->StartAccessTokenRequest(scopes, this);
-}
-
-bool IdentityGetAuthTokenFunction::IsOriginAllowlistedInPublicSession() {
-  DCHECK(extension());
-  GURL extension_url = extension()->url();
-  for (size_t i = 0; i < base::size(kPublicSessionAllowedOrigins); i++) {
-    URLPattern allowed_origin(URLPattern::SCHEME_ALL,
-                              kPublicSessionAllowedOrigins[i]);
-    if (allowed_origin.MatchesSecurityOrigin(extension_url)) {
-      return true;
-    }
-  }
-  return false;
 }
 #endif
 
