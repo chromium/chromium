@@ -387,6 +387,15 @@
       "use_goma": true
     }
   },
+  "linux-1mbu-compile-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
   "linux-annotator-rel": {
     "gn_args": {
       "dcheck_always_on": true,
