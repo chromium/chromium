@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
@@ -148,6 +150,14 @@ void ChromeLabsBubbleView::Show(views::View* anchor_view,
                                 Browser* browser,
                                 const ChromeLabsBubbleViewModel* model,
                                 bool user_is_chromeos_owner) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (static_cast<ChromeLabsButton*>(anchor_view)->GetAshOwnerCheckTimer()) {
+    UmaHistogramMediumTimes("Toolbar.ChromeLabs.AshOwnerCheckTime",
+                            static_cast<ChromeLabsButton*>(anchor_view)
+                                ->GetAshOwnerCheckTimer()
+                                ->Elapsed());
+  }
+#endif
   g_chrome_labs_bubble = new ChromeLabsBubbleView(anchor_view, browser, model,
                                                   user_is_chromeos_owner);
   views::Widget* const widget =

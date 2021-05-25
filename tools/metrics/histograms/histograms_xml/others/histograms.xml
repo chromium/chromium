@@ -16818,6 +16818,19 @@ should be kept until we use this API.  -->
   <summary>Number of retries until the final response was recorded.</summary>
 </histogram>
 
+<histogram name="Toolbar.ChromeLabs.AshOwnerCheckTime" units="ms"
+    expires_after="M98">
+  <owner>elainechien@chromium.org</owner>
+  <owner>labs-on-chrome@google.com</owner>
+  <summary>
+    Chrome Labs features user-facing experiments through a button in the
+    toolbar.
+
+    Tracks time elapsed between when IsOwnerAsync is called and the callback to
+    show the Chrome Labs bubble is called when IsOwnerAsync returns.
+  </summary>
+</histogram>
+
 <histogram name="Toolbar.ChromeLabs.{State}LabAction"
     enum="ChromeLabsSelectedLab" expires_after="M96">
   <owner>elainechien@chromium.org</owner>

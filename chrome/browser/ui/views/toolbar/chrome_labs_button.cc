@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,11 +51,14 @@ void ChromeLabsButton::ButtonPressed() {
     ChromeLabsBubbleView::Hide();
     return;
   }
+
   // Ash-chrome uses a different FlagsStorage if the user is the owner. On
   // ChromeOS verifying if the owner is signed in is async operation.
   // Asynchronously check if the user is the owner and show the Chrome Labs
   // bubble only after we have this information.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Reset timer.
+  ash_owner_check_timer_ = nullptr;
   // Bypass possible incognito profile same as chrome://flags does.
   Profile* original_profile = browser_->profile()->GetOriginalProfile();
   if (base::SysInfo::IsRunningOnChromeOS() &&
@@ -63,6 +67,7 @@ void ChromeLabsButton::ButtonPressed() {
     ash::OwnerSettingsServiceAsh* service =
         ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
             original_profile);
+    ash_owner_check_timer_ = std::make_unique<base::ElapsedTimer>();
     service->IsOwnerAsync(
         base::BindOnce(&ChromeLabsBubbleView::Show, this, browser_, model_));
     return;

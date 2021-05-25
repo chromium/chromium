@@ -9,6 +9,10 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+namespace base {
+class ElapsedTimer;
+}
+
 class Browser;
 class Profile;
 
@@ -24,8 +28,21 @@ class ChromeLabsButton : public ToolbarButton {
   static bool ShouldShowButton(const ChromeLabsBubbleViewModel* model,
                                Profile* profile);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::ElapsedTimer* GetAshOwnerCheckTimer() {
+    return ash_owner_check_timer_.get();
+  }
+#endif
+
  private:
   void ButtonPressed();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Measures elapsed between when IsOwnerAsync is called and the callback
+  // passed into IsOwnerAsnc is called. The callback will be called after
+  // ownership is established.
+  std::unique_ptr<base::ElapsedTimer> ash_owner_check_timer_;
+#endif
 
   Browser* browser_;
 
