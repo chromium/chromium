@@ -1,5 +1,4 @@
 include_rules = [
-  '+components/android_autofill/browser',
   '+third_party/libaddressinput/chromium/chrome_metadata_source.h',
   '+third_party/libaddressinput/chromium/chrome_storage_impl.h',
 ]

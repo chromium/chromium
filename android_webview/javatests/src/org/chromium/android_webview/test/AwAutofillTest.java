@@ -15,6 +15,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
@@ -2762,6 +2763,144 @@ public class AwAutofillTest {
         String value1 =
                 executeJavaScriptAndWaitForResult("document.getElementById('pwdid').value;");
         assertEquals("\"password\"", value1);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testFrameDetachedOnFormSubmission() throws Throwable {
+        final String mainFrame = "<html><body>"
+                + "<script>"
+                + "function receiveMessage(event) {"
+                + "  var address_iframe = document.getElementById('address_iframe');"
+                + "  address_iframe.parentNode.removeChild(address_iframe);"
+                + "  setTimeout(delayedUpload, 0);"
+                + "}"
+                + "window.addEventListener('message', receiveMessage, false);"
+                + "</script>"
+                + "<iframe src='inner_frame_address_form.html' id='address_iframe'"
+                + "    name='address_iframe'>"
+                + "</iframe>"
+                + "</body></html>";
+        final String url = mWebServer.setResponse(FILE, mainFrame, null);
+        final String subFrame = "<html><body>"
+                + "<script>"
+                + "function send_post() {"
+                + "  window.parent.postMessage('SubmitComplete', '*');"
+                + "}"
+                + "</script>"
+                + "<form action='inner_frame_address_form.html' id='deleting_form'"
+                + "    onsubmit='send_post(); return false;'>"
+                + "  <input type='text' id='address_field' name='address' autocomplete='on'>"
+                + "   <input type='submit' id='submit_button' name='submit_button'>"
+                + "</form>"
+                + "</body></html>";
+        final String subFrameURL =
+                mWebServer.setResponse("/inner_frame_address_form.html", subFrame, null);
+        assertTrue(Uri.parse(subFrameURL).getPath().equals("/inner_frame_address_form.html"));
+        int cnt = 0;
+        loadUrlSync(url);
+        pollJavascriptResult("var iframe = document.getElementById('address_iframe');"
+                        + "var frame_doc = iframe.contentDocument;"
+                        + "frame_doc.getElementById('address_field').focus();"
+                        + "frame_doc.activeElement.id;",
+                "\"address_field\"");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+        executeJavaScriptAndWaitForResult("var iframe = document.getElementById('address_iframe');"
+                + "var frame_doc = iframe.contentDocument;"
+                + "frame_doc.getElementById('submit_button').click();");
+        waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT});
+        assertEquals(SubmissionSource.FORM_SUBMISSION, mSubmissionSource);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testFrameDetachedOnFormlessSubmission() throws Throwable {
+        final String mainFrame = "<html><body>"
+                + "<script>"
+                + "function receiveMessage(event) {"
+                + "  var address_iframe = document.getElementById('address_iframe');"
+                + "  address_iframe.parentNode.removeChild(address_iframe);"
+                + "}"
+                + "window.addEventListener('message', receiveMessage, false);"
+                + "</script>"
+                + "<iframe src='inner_frame_address_formless.html' id='address_iframe'"
+                + "    name='address_iframe'>"
+                + "</iframe>"
+                + "</body></html>";
+        final String url = mWebServer.setResponse(FILE, mainFrame, null);
+        final String subFrame = "<html><body>"
+                + "<script>"
+                + "function send_post() {"
+                + "  window.parent.postMessage('SubmitComplete', '*');"
+                + "}"
+                + "</script>"
+                + "<input type='text' id='address_field' name='address' autocomplete='on'>"
+                + "<input type='button' id='submit_button' name='submit_button'"
+                + "    onclick='send_post()'>"
+                + "</body></html>";
+        final String subFrameURL =
+                mWebServer.setResponse("/inner_frame_address_formless.html", subFrame, null);
+        assertTrue(Uri.parse(subFrameURL).getPath().equals("/inner_frame_address_formless.html"));
+        int cnt = 0;
+        loadUrlSync(url);
+        pollJavascriptResult("var iframe = document.getElementById('address_iframe');"
+                        + "var frame_doc = iframe.contentDocument;"
+                        + "frame_doc.getElementById('address_field').focus();"
+                        + "frame_doc.activeElement.id;",
+                "\"address_field\"");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+        executeJavaScriptAndWaitForResult("var iframe = document.getElementById('address_iframe');"
+                + "var frame_doc = iframe.contentDocument;"
+                + "frame_doc.getElementById('submit_button').click();");
+        // The additional AUTOFILL_VIEW_EXITED event caused by 'click' of the button.
+        waitForCallbackAndVerifyTypes(
+                cnt, new Integer[] {AUTOFILL_VIEW_EXITED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT});
+        assertEquals(SubmissionSource.FRAME_DETACHED, mSubmissionSource);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testLabelChange() throws Throwable {
+        final String data = "<html><head></head><body>"
+                + "<form action='a.html'>"
+                + "<label id='label_id'> Address </label>"
+                + "<input type='text' id='address' name='address' autocomplete='on'/>"
+                + "<p id='p_id'>Address 1</p>"
+                + "<input type='text' name='address1' autocomplete='on'/>"
+                + "<input type='submit' id='submit_button' name='submit_button'/>"
+                + "</form>"
+                + "</body></html>";
+        int cnt = 0;
+        final String url = mWebServer.setResponse(FILE, data, null);
+        loadUrlSync(url);
+        executeJavaScriptAndWaitForResult("document.getElementById('address').focus();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+        // Verify label change shall trigger new session.
+        executeJavaScriptAndWaitForResult(
+                "document.getElementById('label_id').innerHTML='address change';");
+        executeJavaScriptAndWaitForResult("document.getElementById('address').focus();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_VIEW_EXITED, AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED,
+                        AUTOFILL_SESSION_STARTED, AUTOFILL_VALUE_CHANGED});
+        // Verify inferred label change won't trigger new session.
+        executeJavaScriptAndWaitForResult(
+                "document.getElementById('p_id').innerHTML='address change';");
+        executeJavaScriptAndWaitForResult("document.getElementById('address').focus();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
+        cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_VALUE_CHANGED});
     }
 
     private void pollJavascriptResult(String script, String expectedResult) throws Throwable {
