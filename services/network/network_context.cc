@@ -124,6 +124,7 @@
 #include "net/cert/cert_and_ct_verifier.h"
 #include "net/cert/ct_log_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
+#include "services/network/ct_log_list_distributor.h"
 #include "services/network/expect_ct_reporter.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
@@ -1900,21 +1901,20 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
     std::vector<scoped_refptr<const net::CTLogVerifier>> ct_logs;
-    if (!params_->ct_logs.empty()) {
-      for (const auto& log : params_->ct_logs) {
-        scoped_refptr<const net::CTLogVerifier> log_verifier =
-            net::CTLogVerifier::Create(log->public_key, log->name);
-        if (!log_verifier) {
-          // TODO: Signal bad configuration (such as bad key).
-          continue;
-        }
-        ct_logs.push_back(std::move(log_verifier));
+    for (const auto& log : network_service_->log_list()) {
+      scoped_refptr<const net::CTLogVerifier> log_verifier =
+          net::CTLogVerifier::Create(log->public_key, log->name);
+      if (!log_verifier) {
+        // TODO: Signal bad configuration (such as bad key).
+        continue;
       }
-      auto ct_verifier = std::make_unique<net::MultiLogCTVerifier>();
-      ct_verifier->AddLogs(ct_logs);
-      cert_verifier = std::make_unique<net::CertAndCTVerifier>(
-          std::move(cert_verifier), std::move(ct_verifier));
+      ct_logs.push_back(std::move(log_verifier));
     }
+    auto ct_verifier = std::make_unique<net::MultiLogCTVerifier>(
+        network_service_->ct_log_list_distributor());
+    ct_verifier->SetLogs(ct_logs);
+    cert_verifier = std::make_unique<net::CertAndCTVerifier>(
+        std::move(cert_verifier), std::move(ct_verifier));
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
     // Whether the cert verifier is remote or in-process, we should wrap it in
@@ -1942,16 +1942,13 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   if (params_->enforce_chrome_ct_policy) {
     std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
     std::vector<std::string> operated_by_google_logs;
-    if (!params_->ct_logs.empty()) {
-      for (const auto& log : params_->ct_logs) {
-        if (log->operated_by_google || log->disqualified_at) {
-          std::string log_id = crypto::SHA256HashString(log->public_key);
-          if (log->operated_by_google)
-            operated_by_google_logs.push_back(log_id);
-          if (log->disqualified_at) {
-            disqualified_logs.push_back(
-                std::make_pair(log_id, log->disqualified_at.value()));
-          }
+    for (const auto& log : network_service_->log_list()) {
+      if (log->operated_by_google || log->disqualified_at) {
+        std::string log_id = crypto::SHA256HashString(log->public_key);
+        if (log->operated_by_google)
+          operated_by_google_logs.push_back(log_id);
+        if (log->disqualified_at) {
+          disqualified_logs.emplace_back(log_id, log->disqualified_at.value());
         }
       }
     }

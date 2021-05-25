@@ -6040,9 +6040,8 @@ TEST_F(NetworkContextTest, AddFtpAuthCacheEntry) {
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
 TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
-  mojom::NetworkContextParamsPtr params = CreateContextParams();
-  params->enforce_chrome_ct_policy = true;
-  params->ct_log_update_time = base::Time::Now();
+  // Configure CT logs in network service.
+  std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
 
   // The log public keys do not matter for the test, so invalid keys are used.
   // However, because the log IDs are derived from the SHA-256 hash of the log
@@ -6057,7 +6056,7 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
     log_info->name = std::string(4, 0x30 + static_cast<char>(i));
     log_info->operated_by_google = i % 2;
 
-    params->ct_logs.push_back(std::move(log_info));
+    log_list_mojo.push_back(std::move(log_info));
   }
   for (int i = 0; i < 3; ++i) {
     network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
@@ -6067,8 +6066,15 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
     log_info->operated_by_google = false;
     log_info->disqualified_at = base::TimeDelta::FromSeconds(i);
 
-    params->ct_logs.push_back(std::move(log_info));
+    log_list_mojo.push_back(std::move(log_info));
   }
+  network_service()->UpdateCtLogList(std::move(log_list_mojo));
+
+  // Configure CT params in network context.
+  mojom::NetworkContextParamsPtr params = CreateContextParams();
+  params->enforce_chrome_ct_policy = true;
+  params->ct_log_update_time = base::Time::Now();
+
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(params));
 

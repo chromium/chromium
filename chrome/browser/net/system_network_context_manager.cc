@@ -515,6 +515,37 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
       client_remote.InitWithNewPipeAndPassReceiver());
   network_service_network_context_->SetClient(std::move(client_remote));
 
+// Configure the Certificate Transparency logs.
+#if !defined(OS_ANDROID)
+  if (g_enable_certificate_transparency) {
+    std::vector<std::string> operated_by_google_logs =
+        certificate_transparency::GetLogsOperatedByGoogle();
+    std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs =
+        certificate_transparency::GetDisqualifiedLogs();
+    std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
+    for (const auto& ct_log : certificate_transparency::GetKnownLogs()) {
+      network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
+      log_info->public_key = std::string(ct_log.log_key, ct_log.log_key_length);
+      log_info->name = ct_log.log_name;
+
+      std::string log_id = crypto::SHA256HashString(log_info->public_key);
+      log_info->operated_by_google =
+          std::binary_search(std::begin(operated_by_google_logs),
+                             std::end(operated_by_google_logs), log_id);
+      auto it = std::lower_bound(
+          std::begin(disqualified_logs), std::end(disqualified_logs), log_id,
+          [](const auto& disqualified_log, const std::string& log_id) {
+            return disqualified_log.first < log_id;
+          });
+      if (it != std::end(disqualified_logs) && it->first == log_id) {
+        log_info->disqualified_at = it->second;
+      }
+      log_list_mojo.push_back(std::move(log_info));
+    }
+    network_service->UpdateCtLogList(std::move(log_list_mojo));
+  }
+#endif
+
   // Configure the stub resolver. This must be done after the system
   // NetworkContext is created, but before anything has the chance to use it.
   stub_resolver_config_reader_.UpdateNetworkService(true /* record_metrics */);
@@ -650,32 +681,8 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
   if (g_enable_certificate_transparency) {
     network_context_params->enforce_chrome_ct_policy = true;
     network_context_params->ct_log_update_time = base::GetBuildTime();
-
-    std::vector<std::string> operated_by_google_logs =
-        certificate_transparency::GetLogsOperatedByGoogle();
-    std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs =
-        certificate_transparency::GetDisqualifiedLogs();
-    for (const auto& ct_log : certificate_transparency::GetKnownLogs()) {
-      // TODO(rsleevi): https://crbug.com/702062 - Remove this duplication.
-      network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
-      log_info->public_key = std::string(ct_log.log_key, ct_log.log_key_length);
-      log_info->name = ct_log.log_name;
-
-      std::string log_id = crypto::SHA256HashString(log_info->public_key);
-      log_info->operated_by_google =
-          std::binary_search(std::begin(operated_by_google_logs),
-                             std::end(operated_by_google_logs), log_id);
-      auto it = std::lower_bound(
-          std::begin(disqualified_logs), std::end(disqualified_logs), log_id,
-          [](const auto& disqualified_log, const std::string& log_id) {
-            return disqualified_log.first < log_id;
-          });
-      if (it != std::end(disqualified_logs) && it->first == log_id) {
-        log_info->disqualified_at = it->second;
-      }
-      network_context_params->ct_logs.push_back(std::move(log_info));
-    }
   }
+
 #endif
 
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)

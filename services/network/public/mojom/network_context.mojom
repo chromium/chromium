@@ -57,9 +57,6 @@ import "url/mojom/url.mojom";
 [EnableIf=is_chromeos_ash]
 import "services/network/public/mojom/dhcp_wpad_url_client.mojom";
 
-[EnableIf=is_ct_supported]
-import "services/network/public/mojom/ct_log_info.mojom";
-
 const uint32 kWebSocketOptionNone = 0;
 // Disallow the request from sending cookies. Disallow the response from writing
 // cookies.
@@ -363,18 +360,12 @@ struct NetworkContextParams {
   [EnableIf=is_ct_supported]
   bool enable_sct_auditing = false;
 
-  // The Certificate Transparency logs that are known to the client. SCTs from
-  // these logs will be extracted and verified; other SCTs will be treated as
-  // unrecognized.
-  [EnableIf=is_ct_supported]
-  array<CTLogInfo> ct_logs;
-
   // The initial CT policy to be used for requests. See
   // NetworkContext.SetCTPolicy() for more.
   [EnableIf=is_ct_supported]
   CTPolicy? ct_policy;
 
-  // When the Certificate Transparency logs in |ct_logs| were last updated. If
+  // When the built-in Certificate Transparency logs were last updated. If
   // |enforce_chrome_ct_policy| is set, and |ct_log_update_time| is not
   // sufficiently recent, enforcement of the "Certificate Transparency in
   // Chrome" policy will be disabled.

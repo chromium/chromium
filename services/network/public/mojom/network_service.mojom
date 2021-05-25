@@ -38,6 +38,9 @@ import "url/mojom/url.mojom";
 [EnableIf=is_android]
 import "mojo/public/mojom/base/application_state.mojom";
 
+[EnableIf=is_ct_supported]
+import "services/network/public/mojom/ct_log_info.mojom";
+
 // Values for configuring HTTP authentication that can only be set once.
 struct HttpAuthStaticParams {
   // List of supported auth schemes. Unrecognized schemes are ignored.
@@ -337,6 +340,15 @@ interface NetworkService {
                        url.mojom.Url report_uri,
                        MutableNetworkTrafficAnnotationTag traffic_annotation,
                        pending_remote<network.mojom.URLLoaderFactory> factory);
+
+
+  // Updates the log list used for CT verification.
+  [EnableIf=is_ct_supported]
+  UpdateCtLogList(array<CTLogInfo> log_list);
+
+  // Disables or enables CT Enforcement.
+  [EnableIf=is_ct_supported]
+  SetCtEnforcementEnabled(bool enabled);
 
   // Calls base::debug::DumpWithoutCrashing for the network process.
   // TODO(http://crbug.com/934317): Remove this once done debugging renderer

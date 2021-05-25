@@ -445,44 +445,6 @@ class SystemNetworkContextManagerCertificateTransparencyBrowsertest
   }
 };
 
-#if BUILDFLAG(IS_CT_SUPPORTED)
-IN_PROC_BROWSER_TEST_P(
-    SystemNetworkContextManagerCertificateTransparencyBrowsertest,
-    CertificateTransparencyConfig) {
-  network::mojom::NetworkContextParamsPtr context_params =
-      g_browser_process->system_network_context_manager()
-          ->CreateDefaultNetworkContextParams();
-
-  const bool kDefault =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OFFICIAL_BUILD) && \
-    !defined(OS_ANDROID)
-      true;
-#else
-      false;
-#endif
-
-  EXPECT_EQ(GetParam().value_or(kDefault),
-            context_params->enforce_chrome_ct_policy);
-  EXPECT_NE(GetParam().value_or(kDefault), context_params->ct_logs.empty());
-
-  if (GetParam().value_or(kDefault)) {
-    bool has_google_log = false;
-    bool has_disqualified_log = false;
-    for (const auto& ct_log : context_params->ct_logs) {
-      has_google_log |= ct_log->operated_by_google;
-      has_disqualified_log |= ct_log->disqualified_at.has_value();
-    }
-    EXPECT_TRUE(has_google_log);
-    EXPECT_TRUE(has_disqualified_log);
-  }
-}
-#endif
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SystemNetworkContextManagerCertificateTransparencyBrowsertest,
-    ::testing::Values(absl::nullopt, true, false));
-
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 class SystemNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest
     : public policy::PolicyTest,

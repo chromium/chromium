@@ -17,6 +17,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -47,6 +48,10 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_CT_SUPPORTED)
+#include "services/network/public/mojom/ct_log_info.mojom.h"
+#endif
+
 namespace net {
 class FileNetLogObserver;
 class HostResolverManager;
@@ -59,6 +64,7 @@ class URLRequestContext;
 namespace network {
 
 class CRLSetDistributor;
+class CtLogListDistributor;
 class DnsConfigChangeManager;
 class HttpAuthCacheCopier;
 class NetLogProxySink;
@@ -184,6 +190,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       const GURL& reporting_uri,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingRemote<mojom::URLLoaderFactory> factory) override;
+  void UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list) override;
+  void SetCtEnforcementEnabled(bool enabled) override;
 #endif
 
 #if defined(OS_ANDROID)
@@ -225,6 +233,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     return crl_set_distributor_.get();
   }
 
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  CtLogListDistributor* ct_log_list_distributor() {
+    return ct_log_list_distributor_.get();
+  }
+#endif
+
   const FirstPartySets* first_party_sets() const {
     return first_party_sets_.get();
   }
@@ -250,6 +264,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
   SCTAuditingCache* sct_auditing_cache() { return sct_auditing_cache_.get(); }
+
+  const std::vector<mojom::CTLogInfoPtr>& log_list() const { return log_list_; }
 #endif
 
   mojom::URLLoaderNetworkServiceObserver*
@@ -352,6 +368,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
   std::unique_ptr<SCTAuditingCache> sct_auditing_cache_;
+
+  std::vector<mojom::CTLogInfoPtr> log_list_;
+
+  std::unique_ptr<CtLogListDistributor> ct_log_list_distributor_;
 #endif
 
   // Map from a renderer process id, to the set of plugin origins embedded by

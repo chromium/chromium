@@ -45,6 +45,8 @@ class NET_EXPORT CertAndCTVerifier : public CertVerifier {
                             const NetLogWithSource& net_log,
                             int result);
 
+  // TODO(crbug.com/1211074): Expose CT log list as part of
+  // CertVerifier::Config.
   std::unique_ptr<CertVerifier> cert_verifier_;
   std::unique_ptr<CTVerifier> ct_verifier_;
 };

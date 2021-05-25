@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/registration.h"
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 #include "chrome/browser/component_updater/pepper_flash_component_installer.h"
+#include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/sth_set_component_remover.h"
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
@@ -168,6 +170,8 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
     component_updater::RegisterVrAssetsComponent(cus);
   }
 #endif
+
+  MaybeRegisterPKIMetadataComponent(cus);
 
   RegisterSafetyTipsComponent(cus);
   RegisterCrowdDenyComponent(cus);

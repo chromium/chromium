@@ -300,6 +300,12 @@ TEST_F(ProofVerifierChromiumTest, FailsIfCertFails) {
   ASSERT_EQ(quic::QUIC_FAILURE, status);
 }
 
+class DoNothingLogNotifier : public MultiLogCTVerifier::CTLogProvider {
+ public:
+  DoNothingLogNotifier() = default;
+  ~DoNothingLogNotifier() = default;
+};
+
 // Valid SCT and cert
 TEST_F(ProofVerifierChromiumTest, ValidSCTList) {
   // Use different certificates for SCT tests.
@@ -322,8 +328,9 @@ TEST_F(ProofVerifierChromiumTest, ValidSCTList) {
       CTLogVerifier::Create(ct::GetTestPublicKey(), kLogDescription));
   ASSERT_TRUE(log);
   log_verifiers.push_back(log);
-  auto ct_verifier = std::make_unique<MultiLogCTVerifier>();
-  ct_verifier->AddLogs(log_verifiers);
+  DoNothingLogNotifier notifier;
+  auto ct_verifier = std::make_unique<MultiLogCTVerifier>(&notifier);
+  ct_verifier->SetLogs(log_verifiers);
 
   CertAndCTVerifier cert_verifier(std::move(dummy_verifier),
                                   std::move(ct_verifier));
@@ -364,8 +371,9 @@ TEST_F(ProofVerifierChromiumTest, InvalidSCTList) {
       CTLogVerifier::Create(ct::GetTestPublicKey(), kLogDescription));
   ASSERT_TRUE(log);
   log_verifiers.push_back(log);
-  auto ct_verifier = std::make_unique<MultiLogCTVerifier>();
-  ct_verifier->AddLogs(log_verifiers);
+  DoNothingLogNotifier notifier;
+  auto ct_verifier = std::make_unique<MultiLogCTVerifier>(&notifier);
+  ct_verifier->SetLogs(log_verifiers);
 
   CertAndCTVerifier cert_verifier(std::move(dummy_verifier),
                                   std::move(ct_verifier));

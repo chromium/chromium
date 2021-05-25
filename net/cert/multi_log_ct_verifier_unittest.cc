@@ -41,6 +41,12 @@ namespace {
 const char kHostname[] = "example.com";
 const char kLogDescription[] = "somelog";
 
+class DoNothingLogProvider : public MultiLogCTVerifier::CTLogProvider {
+ public:
+  DoNothingLogProvider() = default;
+  ~DoNothingLogProvider() = default;
+};
+
 class MultiLogCTVerifierTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -49,8 +55,9 @@ class MultiLogCTVerifierTest : public ::testing::Test {
     ASSERT_TRUE(log);
     log_verifiers_.push_back(log);
 
-    verifier_ = std::make_unique<MultiLogCTVerifier>();
-    verifier_->AddLogs(log_verifiers_);
+    DoNothingLogProvider notifier;
+    verifier_ = std::make_unique<MultiLogCTVerifier>(&notifier);
+    verifier_->SetLogs(log_verifiers_);
     std::string der_test_cert(ct::GetDerEncodedX509Cert());
     chain_ = X509Certificate::CreateFromBytes(
         der_test_cert.data(),
@@ -239,6 +246,29 @@ TEST_F(MultiLogCTVerifierTest, CountsSingleEmbeddedSCTInOriginsHistogram) {
   int old_embedded_count = NumEmbeddedSCTsInHistogram();
   ASSERT_TRUE(CheckPrecertificateVerification(embedded_sct_chain_));
   EXPECT_EQ(old_embedded_count + 1, NumEmbeddedSCTsInHistogram());
+}
+
+TEST_F(MultiLogCTVerifierTest, SetLogsRemovesOldLogs) {
+  log_verifiers_.clear();
+  verifier_->SetLogs(log_verifiers_);
+  // Log list is now empty so verification should fail.
+  ASSERT_FALSE(CheckPrecertificateVerification(embedded_sct_chain_));
+}
+
+TEST_F(MultiLogCTVerifierTest, SetLogsAddsNewLogs) {
+  // Clear the log list.
+  log_verifiers_.clear();
+  verifier_->SetLogs(log_verifiers_);
+
+  // Add valid log again via SetLogs
+  scoped_refptr<const CTLogVerifier> log(
+      CTLogVerifier::Create(ct::GetTestPublicKey(), kLogDescription));
+  ASSERT_TRUE(log);
+  log_verifiers_.push_back(log);
+  verifier_->SetLogs(log_verifiers_);
+
+  // Verification should now succeed.
+  ASSERT_TRUE(CheckPrecertificateVerification(embedded_sct_chain_));
 }
 
 }  // namespace

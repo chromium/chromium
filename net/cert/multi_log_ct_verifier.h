@@ -8,8 +8,11 @@
 #include <map>
 #include <string>
 
+#include "base/callback_forward.h"
+#include "base/callback_list.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/cert/ct_verifier.h"
@@ -28,10 +31,30 @@ class CTLogVerifier;
 // It must be initialized with a list of logs by calling AddLogs.
 class NET_EXPORT MultiLogCTVerifier : public CTVerifier {
  public:
-  MultiLogCTVerifier();
+  class NET_EXPORT CTLogProvider {
+   public:
+    using LogListCallbackList = base::RepeatingCallbackList<void(
+        const std::vector<scoped_refptr<const CTLogVerifier>>& log_verifiers)>;
+
+    base::CallbackListSubscription RegisterLogsListCallback(
+        LogListCallbackList::CallbackType callback);
+
+   protected:
+    CTLogProvider();
+    ~CTLogProvider();
+
+    void NotifyCallbacks(
+        const std::vector<scoped_refptr<const net::CTLogVerifier>>&
+            log_verifiers);
+
+   private:
+    LogListCallbackList callback_list_;
+  };
+
+  explicit MultiLogCTVerifier(CTLogProvider* notifier);
   ~MultiLogCTVerifier() override;
 
-  void AddLogs(
+  void SetLogs(
       const std::vector<scoped_refptr<const CTLogVerifier>>& log_verifiers);
 
   // CTVerifier implementation:
@@ -64,6 +87,8 @@ class NET_EXPORT MultiLogCTVerifier : public CTVerifier {
   // A log's ID is the SHA-256 of the log's key, as defined in section 3.2.
   // of RFC6962.
   std::map<std::string, scoped_refptr<const CTLogVerifier>> logs_;
+
+  base::CallbackListSubscription log_provider_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiLogCTVerifier);
 };

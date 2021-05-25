@@ -83,6 +83,8 @@
 #endif
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
+#include "components/certificate_transparency/ct_features.h"
+#include "services/network/ct_log_list_distributor.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #endif
 
@@ -325,6 +327,10 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
   http_auth_cache_copier_ = std::make_unique<HttpAuthCacheCopier>();
 
   crl_set_distributor_ = std::make_unique<CRLSetDistributor>();
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  ct_log_list_distributor_ = std::make_unique<CtLogListDistributor>();
+#endif
 
   doh_probe_activator_ = std::make_unique<DelayedDohProbeActivator>(this);
 
@@ -715,7 +721,25 @@ void NetworkService::ConfigureSCTAuditing(
   sct_auditing_cache_->set_traffic_annotation(traffic_annotation);
   sct_auditing_cache_->set_url_loader_factory(std::move(factory));
 }
-#endif
+
+void NetworkService::UpdateCtLogList(
+    std::vector<mojom::CTLogInfoPtr> log_list) {
+  log_list_ = std::move(log_list);
+  if (base::FeatureList::IsEnabled(
+          certificate_transparency::features::
+              kCertificateTransparencyComponentUpdater)) {
+    ct_log_list_distributor_->OnNewCtConfig(log_list_);
+  }
+}
+
+void NetworkService::SetCtEnforcementEnabled(bool enabled) {
+  // TODO(crbug.com/1211535): Implement Certificate Transparency killswitch.
+  DCHECK(base::FeatureList::IsEnabled(
+      certificate_transparency::features::
+          kCertificateTransparencyComponentUpdater));
+}
+
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if defined(OS_ANDROID)
 void NetworkService::DumpWithoutCrashing(base::Time dump_request_time) {

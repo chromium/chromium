@@ -2,12 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  sources = [
+    "certificate_transparency.proto",
+    "certificate_transparency_config.proto",
+    "ct_timestamp.proto",
+  ]
+}
+
 static_library("certificate_transparency") {
   sources = [
     "chrome_ct_policy_enforcer.cc",
     "chrome_ct_policy_enforcer.h",
     "chrome_require_ct_delegate.cc",
     "chrome_require_ct_delegate.h",
+    "ct_features.cc",
+    "ct_features.h",
     "ct_known_logs.cc",
     "ct_known_logs.h",
     "pref_names.cc",
@@ -24,6 +36,8 @@ static_library("certificate_transparency") {
     "//net",
     "//url",
   ]
+
+  public_deps = [ ":proto" ]
 }
 
 source_set("unit_tests") {
