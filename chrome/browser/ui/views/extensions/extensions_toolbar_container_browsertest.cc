@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -394,8 +395,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
 
 // Verifies that dragging extension icons is disabled in incognito windows.
 // https://crbug.com/1203833.
+// Flaky on Linux. http://crbug.com/1207630
+#if defined(OS_LINUX)
+#define MAYBE_IncognitoDraggingIsDisabled DISABLED_IncognitoDraggingIsDisabled
+#else
+#define MAYBE_IncognitoDraggingIsDisabled IncognitoDraggingIsDisabled
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
-                       IncognitoDraggingIsDisabled) {
+                       MAYBE_IncognitoDraggingIsDisabled) {
   // Load an extension, pin it, and enable it in incognito.
   scoped_refptr<const extensions::Extension> extension =
       LoadTestExtension("extensions/simple_with_popup");
