@@ -344,6 +344,11 @@ HRESULT PlatformSensorReaderWinrtLightSensor::OnReadingChangedCallback(
   if (!has_received_first_sample_ ||
       (abs(lux - last_reported_lux_) >=
        (last_reported_lux_ * kLuxPercentThreshold))) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     SensorReading reading;
     reading.als.value = lux;
     reading.als.timestamp = timestamp_delta.InSecondsF();
@@ -417,6 +422,11 @@ HRESULT PlatformSensorReaderWinrtAccelerometer::OnReadingChangedCallback(
       (abs(x - last_reported_x_) >= kAxisThreshold) ||
       (abs(y - last_reported_y_) >= kAxisThreshold) ||
       (abs(z - last_reported_z_) >= kAxisThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     // Windows.Devices.Sensors.Accelerometer exposes acceleration as
     // proportional and in the same direction as the force of gravity.
     // The generic sensor interface exposes acceleration simply as
@@ -497,6 +507,11 @@ HRESULT PlatformSensorReaderWinrtGyrometer::OnReadingChangedCallback(
       (abs(x - last_reported_x_) >= kDegreeThreshold) ||
       (abs(y - last_reported_y_) >= kDegreeThreshold) ||
       (abs(z - last_reported_z_) >= kDegreeThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     // Windows.Devices.Sensors.Gyrometer exposes angular velocity as degrees,
     // but the generic sensor interface uses radians so the data must be
     // converted.
@@ -576,6 +591,11 @@ HRESULT PlatformSensorReaderWinrtMagnetometer::OnReadingChangedCallback(
       (abs(x - last_reported_x_) >= kMicroteslaThreshold) ||
       (abs(y - last_reported_y_) >= kMicroteslaThreshold) ||
       (abs(z - last_reported_z_) >= kMicroteslaThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     SensorReading reading;
     reading.magn.x = x;
     reading.magn.y = y;
@@ -654,6 +674,11 @@ PlatformSensorReaderWinrtAbsOrientationEulerAngles::OnReadingChangedCallback(
       (abs(x - last_reported_x_) >= kDegreeThreshold) ||
       (abs(y - last_reported_y_) >= kDegreeThreshold) ||
       (abs(z - last_reported_z_) >= kDegreeThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     SensorReading reading;
     reading.orientation_euler.x = x;
     reading.orientation_euler.y = y;
@@ -762,6 +787,11 @@ PlatformSensorReaderWinrtAbsOrientationQuaternion::OnReadingChangedCallback(
   auto angle =
       abs(GetAngleBetweenOrientationSamples(reading, last_reported_sample));
   if (!has_received_first_sample_ || (angle >= kRadianThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     client_->OnReadingUpdated(reading);
 
     last_reported_sample = reading;

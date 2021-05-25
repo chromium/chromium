@@ -490,7 +490,8 @@ bool PlatformSensorReaderWin32::SetReportingInterval(
 
 HRESULT PlatformSensorReaderWin32::SensorReadingChanged(
     ISensorDataReport* report,
-    SensorReading* reading) const {
+    SensorReading* reading) {
+  base::AutoLock autolock(lock_);
   if (!client_)
     return E_FAIL;
 
@@ -501,6 +502,7 @@ HRESULT PlatformSensorReaderWin32::SensorReadingChanged(
 }
 
 void PlatformSensorReaderWin32::SensorError() {
+  base::AutoLock autolock(lock_);
   if (client_)
     client_->OnSensorError();
 }
