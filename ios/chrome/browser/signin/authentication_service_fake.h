@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/ptr_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
@@ -55,6 +56,9 @@ class AuthenticationServiceFake : public AuthenticationService {
 
   __strong ChromeIdentity* authenticated_identity_;
   bool have_accounts_changed_while_in_background_;
+
+  // WeakPtrFactory should be last.
+  base::WeakPtrFactory<AuthenticationServiceFake> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_AUTHENTICATION_SERVICE_FAKE_H_

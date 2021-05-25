@@ -77,24 +77,14 @@ void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
       base::UmaHistogramBoolean("Enterprise.BrowserSigninIOS.SignedOutByPolicy",
                                 true);
 
-      SceneState* scene_state =
-          SceneStateBrowserAgent::FromBrowser(browser_)->GetSceneState();
+      base::WeakPtr<PolicyWatcherBrowserAgent> weak_ptr =
+          weak_factory_.GetWeakPtr();
       // Sign the user out, but keep synced data (bookmarks, passwords, etc)
       // locally to be consistent with the policy's behavior on other platforms.
-      service->SignOut(
-          signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
-          /*force_clear_browsing_data=*/false, ^{
-            sign_out_in_progress_ = false;
-            BOOL sceneIsActive = scene_state.activationLevel >=
-                                 SceneActivationLevelForegroundActive;
-            if (sceneIsActive) {
-              // Try to show the signout prompt in all cases: if there is a sign
-              // in in progress, the UI will prevent the prompt from showing.
-              [handler_ showPolicySignoutPrompt];
-            } else {
-              scene_state.appState.shouldShowPolicySignoutPrompt = YES;
-            }
-          });
+      service->SignOut(signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
+                       /*force_clear_browsing_data=*/false, ^{
+                         weak_ptr->OnSignOutComplete();
+                       });
     }
 
     for (auto& observer : observers_) {
@@ -111,4 +101,19 @@ void PolicyWatcherBrowserAgent::AddObserver(
 void PolicyWatcherBrowserAgent::RemoveObserver(
     PolicyWatcherBrowserAgentObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void PolicyWatcherBrowserAgent::OnSignOutComplete() {
+  SceneState* scene_state =
+      SceneStateBrowserAgent::FromBrowser(browser_)->GetSceneState();
+  sign_out_in_progress_ = false;
+  BOOL sceneIsActive =
+      scene_state.activationLevel >= SceneActivationLevelForegroundActive;
+  if (sceneIsActive) {
+    // Try to show the signout prompt in all cases: if there is a sign
+    // in in progress, the UI will prevent the prompt from showing.
+    [handler_ showPolicySignoutPrompt];
+  } else {
+    scene_state.appState.shouldShowPolicySignoutPrompt = YES;
+  }
 }

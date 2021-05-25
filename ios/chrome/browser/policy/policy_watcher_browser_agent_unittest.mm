@@ -61,10 +61,10 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
     agent_ = PolicyWatcherBrowserAgent::FromBrowser(browser_.get());
 
     // SceneState Browser Agent.
-    AppState* app_state = [[AppState alloc] initWithBrowserLauncher:nil
-                                                 startupInformation:nil
-                                                applicationDelegate:nil];
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state];
+    app_state_ = [[AppState alloc] initWithBrowserLauncher:nil
+                                        startupInformation:nil
+                                       applicationDelegate:nil];
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
   }
@@ -94,6 +94,8 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
   PolicyWatcherBrowserAgent* agent_;
   std::unique_ptr<Browser> browser_;
   FakeSceneState* scene_state_;
+  // Keep app_state_ alive as it is a weak property of the scene state.
+  AppState* app_state_;
 };
 
 #pragma mark - Tests.
@@ -193,13 +195,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandIfSignedIn) {
 
 // Tests that the pref change doesn't trigger a command if the scene isn't
 // active.
-// TODO(crbug.com/1211546): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_NoCommandIfNotActive NoCommandIfNotActive
-#else
-#define MAYBE_NoCommandIfNotActive DISABLED_NoCommandIfNotActive
-#endif  // TARGET_IPHONE_SIMULATOR
-TEST_F(PolicyWatcherBrowserAgentTest, MAYBE_NoCommandIfNotActive) {
+TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
@@ -266,13 +262,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
 
 // Tests that the command to show the UI isn't sent if the authentication
 // service is still signing out the user.
-// TODO(crbug.com/1211546): The test is flaky on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_UINotShownWhileSignOut UINotShownWhileSignOut
-#else
-#define MAYBE_UINotShownWhileSignOut FLAKY_UINotShownWhileSignOut
-#endif  // TARGET_IPHONE_SIMULATOR
-TEST_F(PolicyWatcherBrowserAgentTest, MAYBE_UINotShownWhileSignOut) {
+TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
   chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
 
   AuthenticationService* authentication_service =
@@ -300,10 +290,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, MAYBE_UINotShownWhileSignOut) {
 
   OCMExpect([mockHandler showPolicySignoutPrompt]);
 
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForActionTimeout, ^bool {
-        return !authentication_service->IsAuthenticated();
-      }));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(authentication_service->IsAuthenticated());
 
   // Once the SignOut callback is executed, the command should be sent.
   EXPECT_OCMOCK_VERIFY(mockHandler);
