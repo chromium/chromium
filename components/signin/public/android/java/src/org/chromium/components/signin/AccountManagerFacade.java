@@ -113,10 +113,10 @@ public interface AccountManagerFacade {
     void checkChildAccountStatus(Account account, ChildAccountStatusListener listener);
 
     /**
-     * Gets the boolean for whether the account is subject to minor mode restrictions.
+     * Gets the boolean for whether the account can offer extended sync promos.
      * If the result is not yet fetched, the optional will be empty.
      */
-    Optional<Boolean> isAccountSubjectToMinorModeRestrictions(Account account);
+    Optional<Boolean> canOfferExtendedSyncPromos(Account account);
 
     /**
      * Creates an intent that will ask the user to add a new account to the device. See

@@ -223,7 +223,7 @@ public class SigninPromoUtilLaunchSigninPromoTest {
     }
 
     @Test
-    public void promoHiddenWhenDefaultAccountIsMinor() {
+    public void promoHiddenWhenCanOfferExtendedSyncPromosForDefaultAccount() {
         mPrefManager.setSigninPromoLastShownVersion(38);
         mAccountManagerTestRule.addAccount("test2@gmail.com");
         doAnswer(invocation -> {
@@ -231,7 +231,7 @@ public class SigninPromoUtilLaunchSigninPromoTest {
             return Optional.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL.equals(account.name));
         })
                 .when(mFakeAccountManagerFacade)
-                .isAccountSubjectToMinorModeRestrictions(any());
+                .canOfferExtendedSyncPromos(any());
 
         Assert.assertFalse(SigninPromoUtil.launchSigninPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
@@ -240,7 +240,7 @@ public class SigninPromoUtilLaunchSigninPromoTest {
     }
 
     @Test
-    public void promoVisibleWhenTheSecondaryAccountIsMinor() {
+    public void promoVisibleWhenCanOfferExtendedSyncPromosForTheSecondaryAccount() {
         final CoreAccountInfo secondAccount = mAccountManagerTestRule.addAccount("test2@gmail.com");
         mPrefManager.setSigninPromoLastShownVersion(38);
         doAnswer(invocation -> {
@@ -248,7 +248,7 @@ public class SigninPromoUtilLaunchSigninPromoTest {
             return Optional.of(secondAccount.getEmail().equals(account.name));
         })
                 .when(mFakeAccountManagerFacade)
-                .isAccountSubjectToMinorModeRestrictions(any());
+                .canOfferExtendedSyncPromos(any());
 
         Assert.assertTrue(SigninPromoUtil.launchSigninPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));

@@ -146,6 +146,11 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         return hasFeatures(account, new String[] {feature});
     }
 
+    @Override
+    public boolean hasCapability(Account account, String capability) {
+        return false;
+    }
+
     /**
      * Records a histogram value for how long time an action has taken using
      * {@link RecordHistogram#recordTimesHistogram(String, long))} if the browser

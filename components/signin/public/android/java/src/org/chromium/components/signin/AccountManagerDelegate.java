@@ -71,6 +71,12 @@ public interface AccountManagerDelegate {
     boolean hasFeature(Account account, String feature);
 
     /**
+     * @return Whether the account has the requested capability.
+     */
+    @WorkerThread
+    boolean hasCapability(Account account, String capability);
+
+    /**
      * Creates an intent that will ask the user to add a new account to the device. See
      * {@link AccountManager#addAccount} for details.
      * @param callback The callback to get the created intent. Will be invoked on the main thread.

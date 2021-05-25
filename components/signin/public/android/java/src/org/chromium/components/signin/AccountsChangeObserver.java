@@ -19,7 +19,7 @@ public interface AccountsChangeObserver {
     void onAccountsChanged();
 
     /**
-     * Called every time the MinorModeRestrictions gets updated.
+     * Called every time the capabilities get updated.
      */
-    default void onMinorModeRestrictionsUpdated() {}
+    default void onCapabilitiesUpdated() {}
 }

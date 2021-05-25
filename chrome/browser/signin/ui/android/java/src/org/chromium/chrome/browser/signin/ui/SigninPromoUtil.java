@@ -87,10 +87,10 @@ public final class SigninPromoUtil {
             return false;
         }
 
-        Optional<Boolean> isDefaultAccountSubjectToMinorModeRestrictions =
-                accountManagerFacade.isAccountSubjectToMinorModeRestrictions(accounts.get(0));
+        Optional<Boolean> canDefaultAccountOfferExtendedSyncPromos =
+                accountManagerFacade.canOfferExtendedSyncPromos(accounts.get(0));
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
-                && isDefaultAccountSubjectToMinorModeRestrictions.or(/* defaultValue= */ false)) {
+                && canDefaultAccountOfferExtendedSyncPromos.or(/* defaultValue= */ false)) {
             return false;
         }
 

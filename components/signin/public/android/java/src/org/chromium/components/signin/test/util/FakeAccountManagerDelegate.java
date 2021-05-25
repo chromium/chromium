@@ -148,6 +148,11 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
+    public boolean hasCapability(Account account, String capability) {
+        return hasFeature(account, capability);
+    }
+
+    @Override
     public void createAddAccountIntent(Callback<Intent> callback) {
         ThreadUtils.assertOnUiThread();
         ThreadUtils.postOnUiThread(callback.bind(null));

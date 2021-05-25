@@ -126,7 +126,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {}
 
     @Override
-    public Optional<Boolean> isAccountSubjectToMinorModeRestrictions(Account account) {
+    public Optional<Boolean> canOfferExtendedSyncPromos(Account account) {
         return Optional.absent();
     }
 

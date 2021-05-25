@@ -52,6 +52,9 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @VisibleForTesting
     public static final String FEATURE_IS_USM_ACCOUNT_KEY = "service_usm";
 
+    @VisibleForTesting
+    static final String CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS = "CanOfferExtendedChromeSyncPromos";
+
     private final AccountManagerDelegate mDelegate;
     private final AccountRestrictionPatternReceiver mAccountRestrictionPatternReceiver;
 
@@ -66,8 +69,9 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private int mUpdateTasksCounter;
     private final Queue<Callback<List<Account>>> mCallbacksWaitingForAccountsFetch =
             new ArrayDeque<>();
-    // The map stores the boolean for whether an account is subject to minor mode restrictions
-    private final Map<String, Boolean> mSubjectToMinorModeRestrictions = new HashMap<>();
+    // The map stores the boolean for whether an account can offer extended chrome sync promos
+    private final AtomicReference<Map<String, Boolean>> mCanOfferExtendedSyncPromos =
+            new AtomicReference<>();
 
     /**
      * @param delegate the AccountManagerDelegate to use as a backend
@@ -221,9 +225,9 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     @Override
-    public Optional<Boolean> isAccountSubjectToMinorModeRestrictions(Account account) {
+    public Optional<Boolean> canOfferExtendedSyncPromos(Account account) {
         return Optional.fromNullable(
-                mSubjectToMinorModeRestrictions.get(AccountUtils.canonicalizeName(account.name)));
+                mCanOfferExtendedSyncPromos.get().get(AccountUtils.canonicalizeName(account.name)));
     }
 
     /**
@@ -276,6 +280,27 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public boolean isGooglePlayServicesAvailable() {
         return mDelegate.isGooglePlayServicesAvailable();
+    }
+
+    private void updateCanOfferExtendedSyncPromos(List<Account> accounts) {
+        new AsyncTask<Void>() {
+            @Override
+            protected Void doInBackground() {
+                final Map<String, Boolean> subjectToMinorModeRestrictions = new HashMap<>();
+                for (Account account : accounts) {
+                    subjectToMinorModeRestrictions.put(AccountUtils.canonicalizeName(account.name),
+                            mDelegate.hasCapability(
+                                    account, CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS));
+                }
+                mCanOfferExtendedSyncPromos.set(subjectToMinorModeRestrictions);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void unused) {
+                // TODO(crbug/1206249): Notify observers
+            }
+        }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     private void updateAccounts() {
@@ -334,6 +359,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             final Callback<List<Account>> callback = mCallbacksWaitingForAccountsFetch.remove();
             callback.onResult(mFilteredAccounts.get());
         }
+        updateCanOfferExtendedSyncPromos(mFilteredAccounts.get());
     }
 
     private class InitializeTask extends AsyncTask<Void> {
