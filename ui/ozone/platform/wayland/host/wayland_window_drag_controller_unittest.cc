@@ -643,7 +643,9 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
 }
 
 // Regression test for https://crbug.com/1169446.
-TEST_P(WaylandWindowDragControllerTest, MotionEventsSkippedWhileReattaching) {
+// TODO(crbug.com/1206937): Test is flaky.
+TEST_P(WaylandWindowDragControllerTest,
+       DISABLED_MotionEventsSkippedWhileReattaching) {
   auto* dragged_window = window_.get();
   EXPECT_TRUE(dragged_window);
 
