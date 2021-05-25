@@ -10,7 +10,7 @@
 #include <map>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "gin/handle.h"
 #include "third_party/blink/public/platform/web_string.h"

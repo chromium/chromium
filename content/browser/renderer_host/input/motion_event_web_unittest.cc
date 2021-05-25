@@ -4,8 +4,8 @@
 
 #include <stddef.h>
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/math_constants.h"
-#include "base/stl_util.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/blink/blink_event_util.h"

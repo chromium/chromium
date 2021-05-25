@@ -4,8 +4,8 @@
 
 #include "content/shell/common/shell_origin_trial_policy.h"
 
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 

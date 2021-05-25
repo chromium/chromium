@@ -8,8 +8,8 @@
 #include <atk/atkutil.h>
 #include <atspi/atspi.h>
 
+#include "base/cxx17_backports.h"
 #include "base/process/process_handle.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"

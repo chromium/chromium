@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "base/check.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "content/test/mock_keyboard.h"
 
 namespace content {

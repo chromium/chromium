@@ -11,7 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/unguessable_token.h"
 #include "content/public/android/content_jni_headers/AppWebMessagePortDescriptor_jni.h"
 #include "mojo/public/cpp/system/message_pipe.h"

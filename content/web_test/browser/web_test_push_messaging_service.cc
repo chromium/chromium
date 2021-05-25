@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/time/time.h"
 #include "content/public/browser/permission_type.h"
 #include "content/web_test/browser/web_test_browser_context.h"

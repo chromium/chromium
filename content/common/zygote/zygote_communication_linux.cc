@@ -9,6 +9,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/unicodestring.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -16,7 +17,6 @@
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/unix_domain_socket.h"
-#include "base/stl_util.h"
 #include "content/common/zygote/zygote_commands_linux.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"

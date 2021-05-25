@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/task_environment.h"
 #include "content/renderer/pepper/gfx_conversion.h"
 #include "content/renderer/pepper/mock_renderer_ppapi_host.h"
