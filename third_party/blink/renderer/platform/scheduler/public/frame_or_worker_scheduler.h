@@ -10,11 +10,13 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_lifecycle_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 class FrameScheduler;
+class WebSchedulingTaskQueue;
 
 // This is the base class of FrameScheduler and WorkerScheduler.
 class PLATFORM_EXPORT FrameOrWorkerScheduler {
@@ -117,6 +119,9 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   std::unique_ptr<LifecycleObserverHandle> AddLifecycleObserver(ObserverType,
                                                                 Observer*)
       WARN_UNUSED_RESULT;
+
+  virtual std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
+      WebSchedulingPriority) = 0;
 
   virtual FrameScheduler* ToFrameScheduler() { return nullptr; }
 

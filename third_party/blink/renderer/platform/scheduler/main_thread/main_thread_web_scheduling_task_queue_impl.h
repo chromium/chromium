@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_WEB_SCHEDULING_TASK_QUEUE_IMPL_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_WEB_SCHEDULING_TASK_QUEUE_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_WEB_SCHEDULING_TASK_QUEUE_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_WEB_SCHEDULING_TASK_QUEUE_IMPL_H_
 
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
 
@@ -18,11 +18,11 @@ namespace scheduler {
 
 class MainThreadTaskQueue;
 
-class PLATFORM_EXPORT WebSchedulingTaskQueueImpl
+class PLATFORM_EXPORT MainThreadWebSchedulingTaskQueueImpl
     : public WebSchedulingTaskQueue {
  public:
-  WebSchedulingTaskQueueImpl(base::WeakPtr<MainThreadTaskQueue>);
-  ~WebSchedulingTaskQueueImpl() override = default;
+  MainThreadWebSchedulingTaskQueueImpl(base::WeakPtr<MainThreadTaskQueue>);
+  ~MainThreadWebSchedulingTaskQueueImpl() override = default;
 
   void SetPriority(WebSchedulingPriority) override;
 
@@ -36,4 +36,4 @@ class PLATFORM_EXPORT WebSchedulingTaskQueueImpl
 }  // namespace scheduler
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_WEB_SCHEDULING_TASK_QUEUE_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_WEB_SCHEDULING_TASK_QUEUE_IMPL_H_

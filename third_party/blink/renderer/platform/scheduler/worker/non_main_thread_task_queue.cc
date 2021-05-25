@@ -38,5 +38,28 @@ void NonMainThreadTaskQueue::OnTaskCompleted(
   }
 }
 
+void NonMainThreadTaskQueue::SetWebSchedulingPriority(
+    WebSchedulingPriority priority) {
+  if (web_scheduling_priority_ == priority)
+    return;
+  web_scheduling_priority_ = priority;
+  OnWebSchedulingPriorityChanged();
+}
+
+void NonMainThreadTaskQueue::OnWebSchedulingPriorityChanged() {
+  DCHECK(web_scheduling_priority_);
+  switch (web_scheduling_priority_.value()) {
+    case WebSchedulingPriority::kUserBlockingPriority:
+      SetQueuePriority(TaskQueue::QueuePriority::kHighPriority);
+      return;
+    case WebSchedulingPriority::kUserVisiblePriority:
+      SetQueuePriority(TaskQueue::QueuePriority::kNormalPriority);
+      return;
+    case WebSchedulingPriority::kBackgroundPriority:
+      SetQueuePriority(TaskQueue::QueuePriority::kLowPriority);
+      return;
+  }
+}
+
 }  // namespace scheduler
 }  // namespace blink

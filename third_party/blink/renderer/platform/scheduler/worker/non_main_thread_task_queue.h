@@ -6,8 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_TASK_QUEUE_H_
 
 #include "base/task/sequence_manager/task_queue_impl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 
 namespace blink {
 namespace scheduler {
@@ -43,9 +45,17 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
     return task_runner();
   }
 
+  void SetWebSchedulingPriority(WebSchedulingPriority priority);
+
  private:
+  void OnWebSchedulingPriorityChanged();
+
   // Not owned.
   NonMainThreadSchedulerImpl* non_main_thread_scheduler_;
+
+  // |web_scheduling_priority_| is the priority of the task queue within the web
+  // scheduling API. This priority is used to determine the task queue priority.
+  absl::optional<WebSchedulingPriority> web_scheduling_priority_;
 };
 
 }  // namespace scheduler
