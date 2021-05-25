@@ -4,7 +4,7 @@
 
 // clang-format off
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
-import {FilesToast} from './files_toast.m.js';
+import {FilesToast} from './files_toast.js';
 // clang-format on
 
 export function setUpPage() {

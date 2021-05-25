@@ -25,9 +25,6 @@
   <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
   <link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
   <link rel="import" href="chrome://resources/polymer/v1_0/paper-ripple/paper-ripple.html">
-  <link rel="import" href="chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/elements/files_ripple.html">
-  <link rel="import" href="chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/elements/files_toast.html">
-  <link rel="import" href="chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/elements/files_toggle_ripple.html">
 
   <script src="js/gallery_scripts.js"></script>
 </head>
@@ -59,9 +56,6 @@
         --ink-color: black;
         border: none;
         box-shadow: none;
-      }
-      files-toggle-ripple {
-        --files-toggle-ripple-activated-opacity: 0.4;
       }
 
       cr-input {
@@ -98,21 +92,18 @@
                 has-tooltip
                 disabled>
           <div class="icon"></div>
-          <files-toggle-ripple></files-toggle-ripple>
         </button>
         <button class="print icon-button"
                 i18n-values="aria-label:GALLERY_PRINT"
                 has-tooltip
                 disabled>
           <div class="icon"></div>
-          <files-ripple></files-ripple>
         </button>
         <button class="delete icon-button"
                 i18n-values="aria-label:GALLERY_DELETE"
                 has-tooltip
                 disabled>
           <div class="icon"></div>
-          <files-ripple></files-ripple>
         </button>
         <!-- Use button element for mode button to implement toggle switch
           -- button. -->
@@ -122,21 +113,18 @@
                 disabled>
           <div class="icon slide-mode"></div>
           <div class="icon thumbnail-mode"></div>
-          <files-ripple></files-ripple>
         </button>
         <button class="slideshow icon-button"
                 i18n-values="aria-label:GALLERY_SLIDESHOW"
                 has-tooltip
                 disabled>
           <div class="icon"></div>
-          <files-ripple></files-ripple>
         </button>
         <button class="share icon-button"
                 i18n-values="aria-label:GALLERY_SHARE"
                 has-tooltip
                 disabled>
           <div class="icon"></div>
-          <files-ripple></files-ripple>
         </button>
       </div>
     </div>
@@ -168,9 +156,7 @@
       <div class="error-banner"></div>
     </div>
     <div class="toast-stage">
-      <files-toast></files-toast>
     </div>
-    <files-tooltip></files-tooltip>
   </div>
 </body>
 </html>

@@ -12,7 +12,7 @@
 // #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 // #import {AutocompleteList} from './autocomplete_list.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import '../../elements/files_toggle_ripple.m.js';
+// #import '../../elements/files_toggle_ripple.js';
 // clang-format on
 
 /**

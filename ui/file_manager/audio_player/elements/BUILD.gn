@@ -53,7 +53,7 @@ js_library("repeat_button") {
     "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-button-state",
     "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-control-state",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
   ]
 }
 

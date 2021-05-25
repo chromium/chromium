@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/* eslint-disable no-var */
+
 /**
  * Command queue is the only way to modify images.
  * Supports undo/redo.
@@ -49,17 +51,15 @@ function CommandQueue(document, image, saveFunction) {
  *
  * @param {!ImageView} imageView The ImageView object to display the results.
  * @param {!ImageEditorPrompt} prompt Prompt to use with this CommandQueue.
- * @param {!FilesToast} toast Toast.
  * @param {function()} updateUndoRedo Function to update undo and redo buttons
  *     state.
  * @param {function(boolean)} lock Function to enable/disable buttons etc.
  */
 CommandQueue.prototype.attachUI = function(
-    imageView, prompt, toast, updateUndoRedo, lock) {
+    imageView, prompt, updateUndoRedo, lock) {
   this.UIContext_ = {
     imageView: imageView,
     prompt: prompt,
-    toast: toast,
     updateUndoRedo: updateUndoRedo,
     lock: lock
   };

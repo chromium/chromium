@@ -201,7 +201,6 @@ js_library("slide_mode") {
     "image_editor:viewport",
     "//third_party/polymer/v1_0/components-chromium/paper-progress:paper-progress-extracted",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
   ]
   externs_list =
       [ "//ui/file_manager/file_manager/externs/gallery_foreground.js" ]

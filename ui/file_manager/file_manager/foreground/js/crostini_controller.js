@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {FilesToast} from '../elements/files_toast.m.js';
+// #import {FilesToast} from '../elements/files_toast.js';
 // #import {DirectoryTree} from './ui/directory_tree.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {FilesMessage} from '../elements/files_message.m.js';

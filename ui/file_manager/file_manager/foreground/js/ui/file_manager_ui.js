@@ -6,7 +6,7 @@
 // #import {VolumeManager} from '../../../externs/volume_manager.m.js';
 // #import {FileGrid} from './file_grid.m.js';
 // #import {FileTable} from './file_table.m.js';
-// #import {FilesToast} from '../../elements/files_toast.m.js';
+// #import {FilesToast} from '../../elements/files_toast.js';
 // #import {Banners} from './banners.m.js';
 // #import {DirectoryTree} from './directory_tree.m.js';
 // #import {FilesPasswordDialog} from '../../elements/files_password_dialog.m.js';

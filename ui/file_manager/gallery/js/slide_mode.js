@@ -273,13 +273,6 @@ class SlideMode extends cr.EventTarget {
         'change', this.onOverwriteOriginalCheckboxChanged_.bind(this));
 
     /**
-     * @private {!FilesToast}
-     * @const
-     */
-    this.filesToast_ = /** @type {!FilesToast} */
-        (queryRequiredElement('files-toast'));
-
-    /**
      * @private {!HTMLElement}
      * @const
      */
@@ -389,13 +382,6 @@ class SlideMode extends cr.EventTarget {
     this.editButton_ = queryRequiredElement('button.edit', this.topToolbar_);
     GalleryUtil.decorateMouseFocusHandling(this.editButton_);
     this.editButton_.addEventListener('click', this.toggleEditor.bind(this));
-
-    /**
-     * @private {!FilesToggleRippleElement}
-     * @const
-     */
-    this.editButtonToggleRipple_ = /** @type {!FilesToggleRippleElement} */
-        (assert(this.editButton_.querySelector('files-toggle-ripple')));
 
     /**
      * @type {!HTMLElement}
@@ -1635,7 +1621,6 @@ class SlideMode extends cr.EventTarget {
     }
 
     ImageUtil.setAttribute(this.container_, 'editing', startEditing);
-    this.editButtonToggleRipple_.activated = this.isEditing();
 
     if (this.isEditing()) {  // isEditing has just been flipped to a new value.
       // The item should not be null.
@@ -1662,7 +1647,6 @@ class SlideMode extends cr.EventTarget {
               return;
             }
 
-            this.filesToast_.show(warningMessage);
           }.bind(this));
 
       // Show overwrite original bubble if it hasn't been shown for max times.

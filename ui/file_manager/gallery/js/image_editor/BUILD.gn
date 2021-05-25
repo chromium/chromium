@@ -46,7 +46,6 @@ js_library("commands") {
     ":image_util",
     ":image_view",
     ":viewport",
-    "//ui/file_manager/file_manager/foreground/elements:files_toast",
   ]
 }
 

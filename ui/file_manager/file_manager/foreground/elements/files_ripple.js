@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /**
  * Files ripple.
  *
  * Circle ripple effect with burst animation.
  */
 Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'files-ripple',
 
   properties: {
@@ -15,8 +20,8 @@ Polymer({
       type: Boolean,
       readOnly: true,
       value: false,
-      reflectToAttribute: true
-    }
+      reflectToAttribute: true,
+    },
   },
 
   /**

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/* eslint-disable no-var */
+
 /**
  * ImageEditor is the top level object that holds together and connects
  * everything needed for image editing.
@@ -117,12 +119,6 @@ class ImageEditor extends cr.EventTarget {
     this.exitButton_ = /** @type {!HTMLElement} */
         (queryRequiredElement('.edit-mode-toolbar cr-button.exit'));
     this.exitButton_.addEventListener('click', this.onExitClicked_.bind(this));
-
-    /**
-     * @private {!FilesToast}
-     */
-    this.filesToast_ = /** @type {!FilesToast}*/
-        (queryRequiredElement('files-toast'));
   }
 
   /**
@@ -224,7 +220,7 @@ class ImageEditor extends cr.EventTarget {
               assert(self.container_.ownerDocument),
               assert(self.imageView_.getEditableImage()), saveFunction);
           self.commandQueue_.attachUI(
-              self.getImageView(), self.getPrompt(), self.filesToast_,
+              self.getImageView(), self.getPrompt(),
               self.updateUndoRedo.bind(self), self.lockUI.bind(self));
           self.updateUndoRedo();
           loadCallback(loadType, delay, error);

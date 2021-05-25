@@ -6,7 +6,7 @@
 // #import {MultiMenuButton} from './ui/multi_menu_button.m.js';
 // #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 // #import {FilesTooltip} from '../elements/files_tooltip.js';
-// #import '../elements/files_toggle_ripple.m.js';
+// #import '../elements/files_toggle_ripple.js';
 
 /* #export */ class SelectionMenuController {
   /**

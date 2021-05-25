@@ -406,7 +406,7 @@ js_library("crostini_controller.m") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
     "//ui/file_manager/file_manager/externs/background:crostini.m",
     "//ui/file_manager/file_manager/foreground/elements:files_message.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_toast.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_toast",
     "//ui/webui/resources/js:assert.m",
   ]
 
@@ -632,10 +632,10 @@ js_library("deferred_elements.m") {
     "//ui/file_manager/file_manager/foreground/elements:files_format_dialog",
     "//ui/file_manager/file_manager/foreground/elements:files_message.m",
     "//ui/file_manager/file_manager/foreground/elements:files_password_dialog.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_ripple.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_ripple",
     "//ui/file_manager/file_manager/foreground/elements:files_spinner.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_toast.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_toast",
+    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
     "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/elements:xf_button.m",
     "//ui/file_manager/file_manager/foreground/elements:xf_circular_progress.m",
@@ -1185,7 +1185,6 @@ js_library("gear_menu_controller") {
     ":directory_model",
     ":file_manager_commands",
     "ui:gear_menu",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
   ]
 }
 
@@ -1743,7 +1742,6 @@ js_library("selection_menu_controller") {
   deps = [
     ":directory_model",
     ":file_manager_commands",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
   ]
 }
 
@@ -1751,7 +1749,7 @@ js_library("selection_menu_controller.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/selection_menu_controller.m.js" ]
   deps = [
     "ui:multi_menu_button.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
     "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr/ui:menu.m",
@@ -1761,10 +1759,7 @@ js_library("selection_menu_controller.m") {
 }
 
 js_library("sort_menu_controller") {
-  deps = [
-    ":file_list_model",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
-  ]
+  deps = [ ":file_list_model" ]
 }
 
 js_library("sort_menu_controller.m") {
@@ -1772,7 +1767,7 @@ js_library("sort_menu_controller.m") {
   deps = [
     ":file_list_model.m",
     "ui:multi_menu_button.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
     "//ui/webui/resources/js:util.m",
   ]
 
