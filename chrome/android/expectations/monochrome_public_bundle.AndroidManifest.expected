@@ -520,7 +520,7 @@
         android:name="org.chromium.chrome.browser.sync.ui.TrustedVaultKeyRetrievalProxyActivity"
         android:excludeFromRecents="true"
         android:exported="false"
-        android:theme="@style/Theme.AppCompat">
+        android:theme="@style/Theme.MaterialComponents">
     </activity>  # DIFF-ANCHOR: 76b60c10
     <activity  # DIFF-ANCHOR: 43bfa5de
         android:name="org.chromium.chrome.browser.test_dummy.TestDummyActivity"
@@ -528,7 +528,7 @@
         android:excludeFromRecents="true"
         android:exported="true"
         android:noHistory="true"
-        android:theme="@style/Theme.AppCompat">
+        android:theme="@style/Theme.MaterialComponents">
     </activity>  # DIFF-ANCHOR: 43bfa5de
     <activity  # DIFF-ANCHOR: b007dcaa
         android:name="org.chromium.chrome.browser.vr.VrCancelAnimationActivity"

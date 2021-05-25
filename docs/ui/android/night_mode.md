@@ -107,7 +107,7 @@ Colors used in styles can be either adaptive or independent of night mode. When 
 
 ### Themes
 
-If adding a new theme, make sure the parent (or any indirect ancestor) theme of the new theme is one of the AppCompat DayNight themes (prefixed with `Theme.AppCompat.DayNight`), or alternatively, define the same theme in values-night/ with the desired parent theme for night mode. See [dark theme](https://developer.android.com/preview/features/darktheme) in Android developer guide for more details.
+If adding a new theme, make sure the parent (or any indirect ancestor) theme of the new theme is one of the MaterialComponents DayNight themes (prefixed with `Theme.MaterialComponents.DayNight`), or alternatively, define the same theme in values-night/ with the desired parent theme for night mode. See [dark theme](https://developer.android.com/preview/features/darktheme) in Android developer guide for more details.
 
 ### Troubleshooting
 

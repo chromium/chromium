@@ -10,7 +10,7 @@
   <!-- TODO(crbug.com/1039415): See if this can be simplified.
        Android can swap themes for us automatically if we use styles with the
        same name in values and values-night.-->
-  <style name="Light" parent="@style/Theme.AppCompat.Light">
+  <style name="Light" parent="@style/Theme.MaterialComponents.Light">
     <item name="feedTextRippleDrawable">@drawable/feed_text_ripple_drawable_light</item>
     <!-- TODO(crbug.com/1039415): This is an old text style color (changed for
      Modern update back in 2018). Swap for @color/default_text_color.-->
@@ -19,7 +19,7 @@
     <item name="feedSpinnerColor">@color/modern_blue_600</item>
   </style>
 
-  <style name="Dark" parent="@style/Theme.AppCompat">
+  <style name="Dark" parent="@style/Theme.MaterialComponents">
     <item name="feedTextRippleDrawable">@drawable/feed_text_ripple_drawable_dark</item>
     <item name="feedPrimaryTextColor">@color/feed_default_text_color_dark</item>
     <item name="feedSecondaryTextColor">@color/feed_default_text_color_secondary_dark</item>

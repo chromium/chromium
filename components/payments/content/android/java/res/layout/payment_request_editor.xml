@@ -16,7 +16,8 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        style="@style/ModernToolbar" />
 
     <include layout="@layout/settings_action_bar_shadow" />
 

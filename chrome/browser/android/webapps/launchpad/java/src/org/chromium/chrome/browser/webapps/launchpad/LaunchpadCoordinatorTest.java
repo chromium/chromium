@@ -65,7 +65,7 @@ public class LaunchpadCoordinatorTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mActivity.setTheme(org.chromium.chrome.R.style.Theme_AppCompat);
+        mActivity.setTheme(org.chromium.chrome.R.style.Theme_MaterialComponents);
     }
 
     private LaunchpadCoordinator createCoordinator(boolean isSeparateActivity) {

@@ -15,6 +15,14 @@
         <!-- With ActionBar -->
         <item name="windowActionBar">true</item>
         <item name="windowNoTitle">false</item>
+
+        <!-- We override actionBarTheme because actionBarStyle does not affect the title text color
+             when we use a MaterialComponents based app theme. -->
+        <item name="actionBarTheme">@style/ActionBarThemeOverlay</item>
+    </style>
+
+    <style name="ActionBarThemeOverlay" parent="ThemeOverlay.MaterialComponents.ActionBar">
+        <item name="android:textColorPrimary">@color/default_text_color</item>
     </style>
 
     <style name="Base.Theme.Chromium.WithWindowAnimation">
@@ -114,6 +122,7 @@
         <!-- Status bar color -->
         <item name="colorPrimaryDark">@color/dark_status_bar_color</item>
         <item name="actionBarStyle">@style/ManageSpaceActionBarModern</item>
+        <item name="actionBarTheme">@style/ManageSpaceActionBarThemeOverlay</item>
     </style>
 
     <!-- Trusted Web Activities -->
@@ -129,7 +138,7 @@
         TODO(https://crbug.com/819142): Remove textAppearance when all TextViews have text style
         explicitly specified. -->
     <style name="Base.V17.Theme.Chromium.DialogWhenLarge"
-        parent="Theme.AppCompat.DayNight.DialogWhenLarge">
+        parent="Theme.MaterialComponents.DayNight.DialogWhenLarge">
         <item name="android:windowBackground">@drawable/bg_white_dialog</item>
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
         <item name="android:textColorLink">@color/default_text_color_link</item>
@@ -137,6 +146,7 @@
         <item name="colorAccent">@color/default_control_color_active</item>
         <item name="colorControlHighlight">@color/control_highlight_color</item>
         <item name="spinnerStyle">@style/SpinnerStyle</item>
+        <item name="textInputStyle">@style/TextInputStyle</item>
 
         <!-- Remove ActionBar -->
         <item name="windowNoTitle">true</item>
@@ -152,8 +162,8 @@
     </style>
 
     <!-- Settings -->
-    <style name="SettingsActionBarModern" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
-      <item name="titleTextStyle">@style/TextAppearance.Headline.Primary</item>
+    <style name="SettingsActionBarModern" parent="@style/Widget.MaterialComponents.Light.ActionBar.Solid">
+        <item name="titleTextStyle">@style/TextAppearance.Headline.Primary</item>
     </style>
 
     <style name="TextAppearance.AccessibilityTextPreference">
@@ -163,6 +173,9 @@
     <!-- Manage Space Activity styles -->
     <style name="ManageSpaceActionBarModern" parent="SettingsActionBarModern">
         <item name="titleTextStyle">@style/TextAppearance.Headline.Primary.Light</item>
+    </style>
+    <style name="ManageSpaceActionBarThemeOverlay" parent="ActionBarThemeOverlay">
+        <item name="android:textColorPrimary">@color/default_text_color_light</item>
     </style>
     <style name="ManageSpaceActivityButton">
       <item name="android:layout_width">wrap_content</item>
@@ -334,11 +347,6 @@
         <item name="android:scaleType">centerInside</item>
         <item name="tint">@color/default_icon_color_tint_list</item>
         <item name="android:background">?attr/selectableItemBackground</item>
-    </style>
-    <style name="ModernToolbar" parent="Widget.AppCompat.Toolbar">
-        <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
-        <item name="windowActionBarOverlay">true</item>
-        <item name="android:background">@color/default_bg_color</item>
     </style>
     <style name="ToolbarButton">
         <item name="android:background">?attr/selectableItemBackground</item>

@@ -10,7 +10,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingStart="0dp"
-    android:paddingEnd="0dp">
+    android:paddingEnd="0dp"
+    style="@style/ModernToolbar">
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/done"
         android:layout_width="wrap_content"

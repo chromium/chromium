@@ -15,7 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/pref_autofill_field_large_top_margin"
-        android:layout_marginBottom="@dimen/pref_autofill_field_bottom_margin">
+        android:layout_marginBottom="@dimen/pref_autofill_field_bottom_margin"
+        app:errorTextAppearance="@style/TextAppearance.ErrorCaption">
 
         <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
         <EditText
