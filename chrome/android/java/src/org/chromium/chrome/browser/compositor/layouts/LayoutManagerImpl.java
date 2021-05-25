@@ -97,12 +97,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     /** The {@link LayoutManagerHost}, who is responsible for showing the active {@link Layout}. */
     protected final LayoutManagerHost mHost;
 
-    /**
-     * A means of notifying features that the browser controls' android view is being forced to
-     * hide.
-     */
-    private final ObservableSupplierImpl<Boolean> mAndroidViewShownSupplier;
-
     /** The last X coordinate of the last {@link MotionEvent#ACTION_DOWN} event. */
     protected int mLastTapX;
 
@@ -274,8 +268,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
         mHost = host;
         mPxToDp = 1.f / mHost.getContext().getResources().getDisplayMetrics().density;
-        mAndroidViewShownSupplier = new ObservableSupplierImpl<>();
-        mAndroidViewShownSupplier.set(true);
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mLayoutStateProviderOneshotSupplier = layoutStateProviderOneshotSupplier;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
@@ -651,10 +643,8 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         if (overlayHidesControls || mActiveLayout.forceHideBrowserControlsAndroidView()) {
             mControlsHidingToken = controlsVisibilityManager.hideAndroidControlsAndClearOldToken(
                     mControlsHidingToken);
-            mAndroidViewShownSupplier.set(false);
         } else {
             controlsVisibilityManager.releaseAndroidControlsHidingToken(mControlsHidingToken);
-            mAndroidViewShownSupplier.set(true);
         }
     }
 
