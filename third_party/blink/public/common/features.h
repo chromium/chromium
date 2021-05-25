@@ -405,6 +405,12 @@ BLINK_COMMON_EXPORT extern const base::Feature kFledgeInterestGroupAPI;
 BLINK_COMMON_EXPORT extern const base::Feature
     kMinimizeAudioProcessingForUnusedOutput;
 
+// When <dialog>s are closed, this focuses the "previously focused" element
+// which had focus when the <dialog> was first opened.
+// TODO(crbug.com/649162): Remove DialogFocusNewSpecBehavior after
+// the feature is in stable with no issues.
+BLINK_COMMON_EXPORT extern const base::Feature kDialogFocusNewSpecBehavior;
+
 }  // namespace features
 }  // namespace blink
 

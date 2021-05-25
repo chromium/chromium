@@ -1050,5 +1050,12 @@
   "prefix": "playback_speed_button",
   "bases": ["media/controls"],
   "args": [ "--enable-features=PlaybackSpeedButton" ]
+  },
+  {
+    "prefix": "dialogfocus-old-behavior",
+    "bases": [
+      "external/wpt/html/semantics/interactive-elements/the-dialog-element"
+    ],
+    "args": ["--disable-features=DialogFocusNewSpecBehavior"]
   }
 ]

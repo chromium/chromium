@@ -40,6 +40,8 @@ class HTMLDialogElement final : public HTMLElement {
  public:
   explicit HTMLDialogElement(Document&);
 
+  void Trace(Visitor*) const override;
+
   void close(const String& return_value = String());
   void show();
   void showModal(ExceptionState&);
@@ -60,6 +62,7 @@ class HTMLDialogElement final : public HTMLElement {
 
   bool is_modal_;
   String return_value_;
+  WeakMember<Element> previously_focused_element_;
 };
 
 }  // namespace blink

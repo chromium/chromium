@@ -350,6 +350,10 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {"DeclarativeShadowDOM", blink::features::kDeclarativeShadowDOM},
           {"DocumentTransition", blink::features::kDocumentTransition},
+          // TODO(crbug.com/649162): Remove DialogFocusNewSpecBehavior after
+          // the feature is in stable with no issues.
+          {"DialogFocusNewSpecBehavior",
+           blink::features::kDialogFocusNewSpecBehavior},
           {"FeaturePolicyForClientHints",
            features::kFeaturePolicyForClientHints},
           {"EditingNG", blink::features::kEditingNG},
