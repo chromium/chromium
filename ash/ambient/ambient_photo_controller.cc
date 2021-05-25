@@ -428,6 +428,7 @@ void AmbientPhotoController::OnPhotoRawDataSaved(bool from_downloading,
       num_callbacks,
       base::BindOnce(&AmbientPhotoController::OnAllPhotoDecoded,
                      weak_factory_.GetWeakPtr(), from_downloading,
+                     cache_entry.details ? *cache_entry.details : std::string(),
                      /*hash=*/base::SHA1HashString(*cache_entry.image)));
 
   DecodePhotoRawData(from_downloading,
@@ -465,6 +466,7 @@ void AmbientPhotoController::OnPhotoDecoded(bool from_downloading,
 }
 
 void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading,
+                                               const std::string& details,
                                                const std::string& hash) {
   if (image_.isNull()) {
     LOG(WARNING) << "Image decoding failed";
@@ -489,8 +491,7 @@ void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading,
   PhotoWithDetails detailed_photo;
   detailed_photo.photo = image_;
   detailed_photo.related_photo = related_image_;
-  if (cache_entry_.details)
-    detailed_photo.details = *cache_entry_.details;
+  detailed_photo.details = details;
   detailed_photo.hash = hash;
 
   ResetImageData();

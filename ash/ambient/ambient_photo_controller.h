@@ -134,7 +134,9 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
                       base::RepeatingClosure on_done,
                       const gfx::ImageSkia& image);
 
-  void OnAllPhotoDecoded(bool from_downloading, const std::string& hash);
+  void OnAllPhotoDecoded(bool from_downloading,
+                         const std::string& details,
+                         const std::string& hash);
 
   void StartDownloadingWeatherConditionIcon(
       const base::Optional<WeatherInfo>& weather_info);
