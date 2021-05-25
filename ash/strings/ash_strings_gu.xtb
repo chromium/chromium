@@ -40,6 +40,7 @@
 <translation id="1247372569136754018">માઇક્રોફોન (આંતરિક)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> પરથી ચાર્જ કરી રહ્યાં છે</translation>
 <translation id="1255033239764210633">હવામાન કેવું છે?</translation>
+<translation id="1266097335951928626">સેલ્ફી કૅમેરા ચાલુ કરો</translation>
 <translation id="1267032506238418139">શૉર્ટકટ ફેરફાર</translation>
 <translation id="1269405891096105529">અતિથિ મોડમાં પેરિફેરલને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="1270290102613614947">ઓન-સ્ક્રીન કીબોર્ડ અક્ષમ કર્યું</translation>
@@ -84,6 +85,7 @@
 <translation id="1555130319947370107">વાદળી</translation>
 <translation id="1570871743947603115">બ્લૂટૂથ ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">આ સત્રમાં તમારી બધી પ્રવૃત્તિને ઍક્સેસ કરો</translation>
+<translation id="159255010947577753">માર્કર</translation>
 <translation id="1611993646327628135">ચાલુ</translation>
 <translation id="1615402009686901181">ગોપનીય કન્ટેન્ટ દેખાય ત્યારે વ્યવસ્થાપક પૉલિસીને કારણે સ્ક્રીન કૅપ્ચરની સુવિધા બંધ કરવામાં આવે છે</translation>
 <translation id="1632985212731562677">સ્વિચ ઍક્સેસને સેટિંગ &gt; ઍક્સેસિબિલિટીમાંથી બંધ કરી શકાય છે.</translation>
@@ -135,8 +137,10 @@
 <translation id="2016340657076538683">એક સંદેશ લખો</translation>
 <translation id="2018630726571919839">મને કોઈ જોક સંભળાવો</translation>
 <translation id="2021864487439853900">અનલૉક કરવા માટે ક્લિક કરો</translation>
+<translation id="2047639699071423250">મુખ્ય વિચાર ઉમેરો</translation>
 <translation id="2049240716062114887">ડેસ્કનું નામ બદલીને <ph name="DESK_NAME" /> કરવામાં આવ્યું હતું</translation>
 <translation id="2050339315714019657">પોર્ટ્રેટ</translation>
+<translation id="2066708475850724665">મૅગ્નિફાયર રોકો</translation>
 <translation id="2067602449040652523">કીબોર્ડનું તેજ</translation>
 <translation id="2078034614700056995">આગલી ડેસ્ક પર સ્વિચ કરવા માટે ચાર આંગળી વડે જમણી તરફ સ્વાઇપ કરો</translation>
 <translation id="2079504693865562705">શેલ્ફમાં ઍપ છુપાવો</translation>
@@ -144,10 +148,12 @@
 <translation id="2083190527011054446">ગુડ નાઇટ <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">નેટવર્કથી કનેક્ટ કરેલું નથી</translation>
 <translation id="2108303511227308752">Alt કી + Backspace કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Delete કીનો ઉપયોગ કરવા માટે <ph name="LAUNCHER_KEY_NAME" /> કી + backspace કી દબાવો.</translation>
+<translation id="211328683600082144">માઇક્રોફોન ચાલુ કરો</translation>
 <translation id="2126242104232412123">નવું ડેસ્ક</translation>
 <translation id="2127372758936585790">નિમ્ન-પાવર ચાર્જર</translation>
 <translation id="2132302418721800944">પૂર્ણ સ્ક્રીન રેકોર્ડ કરો</translation>
 <translation id="2135456203358955318">ડૉક કરેલ મૅગ્નિફાયર</translation>
+<translation id="2146800439053023141">બારનું સ્થાન ટૉગલ કરો</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ફરી પ્રયાસ કરો</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">ઓવરવ્યૂમાંથી બહાર નીકળવા માટે, ત્રણ આંગળી વડે નીચેની તરફ સ્વાઇપ કરો</translation>
@@ -326,6 +332,7 @@
 <translation id="3638400994746983214">પ્રાઇવસી સ્ક્રીનને ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> મેનેજ કરાયેલા વપરાશકર્તા</translation>
 <translation id="3665889125180354336">માઇક્રોફોનથી રેકોર્ડ કરો</translation>
+<translation id="3680908746918359504">બધાં માર્કર સાફ કરો</translation>
 <translation id="36813544980941320">તમારા ફોન અને <ph name="DEVICE_NAME" /> વચ્ચે વાઇ-ફાઇ નેટવર્ક શેર કરવામાં આવશે</translation>
 <translation id="3702809606464356667">વર્તમાન ડેસ્ક પરથી વિન્ડો બતાવી રહ્યાં છીએ, બધી ડેસ્ક પરની વિન્ડો બતાવવા માટે ઉપરની ઍરો કી દબાવો</translation>
 <translation id="3702846122927433391">નાઇજીરીયાની વસ્તી</translation>
@@ -376,6 +383,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{એક ઍપ માટે બંધ}one{# ઍપ માટે બંધ}other{# ઍપ માટે બંધ}}</translation>
 <translation id="4066027111132117168">ચાલુ છે, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">મધ્યમ સિગ્નલ</translation>
+<translation id="4095366824370681039">ઇંક પેન</translation>
 <translation id="4112140312785995938">પાછળ કરો</translation>
 <translation id="4114315158543974537">ફોન હબ ચાલુ કરો</translation>
 <translation id="412298498316631026">વિન્ડો</translation>
@@ -444,12 +452,15 @@
 <translation id="4570957409596482333">સાંભળવા માટે પસંદ કરો બટન</translation>
 <translation id="4577274620589681794">સમય સમાપ્ત · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">પ્રીવ્યૂ બતાવો</translation>
+<translation id="4578196883126898996">તમારું માઇક્રોફોન બંધ છે. તમારા ડિવાઇસનું માઇક્રોફોન બટન ચાલુ કરો.</translation>
 <translation id="4578906031062871102">સેટિંગ મેનૂ ખોલ્યું</translation>
 <translation id="4581047786858252841">માઇક્રોફોન ચાલુ છે</translation>
 <translation id="4585337515783392668">અજાણ્યા પ્રાપ્તકર્તા પર કાસ્ટ કરવાનું રોકો</translation>
+<translation id="4586483766170476230">સેલ્ફી કૅમેરાને રોકો</translation>
 <translation id="4587299710837179226">માઇક્રોફોન બંધ છે</translation>
 <translation id="4596144739579517758">ઘેરી થીમ બંધ છે</translation>
 <translation id="4611292653554630842">લૉગ ઇન કરો</translation>
+<translation id="4614295562446151104">માર્કર સાધનોને મોટાં કરો</translation>
 <translation id="4623167406982293031">એકાઉન્ટ ચકાસો</translation>
 <translation id="4628757576491864469">ડિવાઇસ</translation>
 <translation id="4642092649622328492">આંશિક સ્ક્રીનશૉટ લો</translation>
@@ -506,6 +517,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />, નવા ફોન સાથે કનેક્ટ થયું</translation>
 <translation id="5035389544768382859">ડિસ્પ્લેની ગોઠવણને કન્ફર્મ કરો</translation>
 <translation id="504465286040788597">પહેલાંનો ફકરો</translation>
+<translation id="5071064518267176975">ઍપ માઇક્રોફોનનો ઉપયોગ કરવા માગે છે</translation>
+<translation id="5075554201838155866">ઉપશીર્ષકો શરૂ કરો</translation>
 <translation id="5078796286268621944">ખોટો PIN</translation>
 <translation id="5083553833479578423">આસિસ્ટંટની વધુ સુવિધાઓને અનલૉક કરો.</translation>
 <translation id="5136175204352732067">અલગ કીબોર્ડ કનેક્ટ કર્યું</translation>
@@ -676,6 +689,7 @@
 <translation id="6612802754306526077">સ્ક્રીન રેકોર્ડિંગ મોડ પસંદ કર્યો</translation>
 <translation id="6614169507485700968">પ્રાઇવસી સ્ક્રીન ચાલુ છે</translation>
 <translation id="6627638273713273709">શોધ+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> માઇક્રોફોનનો ઉપયોગ કરવા ઇચ્છે છે</translation>
 <translation id="6637729079642709226">સમય બદલો</translation>
 <translation id="6641720045729354415">લાઇવ કૅપ્શન ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">આ તમે જ છો, તે <ph name="ORIGIN_NAME" /> કન્ફર્મ કરવા માગે છે</translation>
@@ -729,6 +743,7 @@
 <translation id="7029814467594812963">સત્રમાંથી બહાર નીકળો</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google આસિસ્ટંટ</translation>
 <translation id="7042322267639375032">સ્ટેટસ એરિયા ઓછો કરો</translation>
+<translation id="7045595904618419789">મૅગ્નિફાયર ચાલુ કરો</translation>
 <translation id="7055910611768509537">એક અઠવાડિયા કરતાં વધુ સમયથી સ્ટાઇલસનો વપરાશ કરવામાં આવ્યો નથી</translation>
 <translation id="7066646422045619941">આ નેટવર્ક તમારા વ્યવસ્થાપક દ્વારા અક્ષમ કરેલ છે.</translation>
 <translation id="7067196344162293536">સ્વતઃ ફેરવો</translation>
@@ -749,6 +764,7 @@
 <translation id="7256634071279256947">પાછળનો માઇક્રોફોન</translation>
 <translation id="726276584504105859">વિભાજિત સ્ક્રીનનો ઉપયોગ કરવા માટે અહીં ખેંચો</translation>
 <translation id="7262906531272962081">રિમાઇન્ડર બનાવો</translation>
+<translation id="7279434993080105272">માર્કરનો રંગ <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">લાઇવ કૅપ્શનની સુવિધા બંધ છે.</translation>
 <translation id="7303365578352795231">અન્ય ઉપકરણ પર જવાબ આપી રહ્યાં છે.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -778,6 +794,7 @@
 <translation id="7466449121337984263">કૃપા કરીને સેન્સરને સ્પર્શ કરો</translation>
 <translation id="7477793887173910789">તમારું મ્યુઝિક, વીડિયો અને બીજું ઘણું નિયંત્રિત કરો</translation>
 <translation id="7483025031359818980">સૉર્સ તરીકે પૂર્ણ સ્ક્રીન સેટ કરવામાં આવી</translation>
+<translation id="7486227320194954040">માર્કર સાધનોને નાનાં કરો</translation>
 <translation id="7497767806359279797">ભાષા અને કીબોર્ડ પસંદ કરો</translation>
 <translation id="7509246181739783082">તમારી ઓળખ ચકાસો</translation>
 <translation id="7513622367902644023">સ્ક્રીનશૉટ મોડ પસંદ કર્યો</translation>
@@ -796,6 +813,7 @@
 <translation id="7607002721634913082">થોભાવેલું</translation>
 <translation id="7618774594543487847">ન્યૂટ્રલ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">માર્કર પેન</translation>
 <translation id="7633755430369750696">નજીકના શેર સેટિંગ બતાવો.</translation>
 <translation id="7641938616688887143">રેકોર્ડ કરો</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> માટે સેટિંગ ખોલો, <ph name="CONNECTION_STATUS" /></translation>
@@ -811,6 +829,7 @@
 <translation id="7724603315864178912">કાપો</translation>
 <translation id="7745560842763881396">શેલ્ફમાં ઍપ બતાવો</translation>
 <translation id="7749443890790263709">ડેસ્કની મહત્તમ સંખ્યા પર પહોંચી ગયા.</translation>
+<translation id="7749640678855296659">તમારું માઇક્રોફોન હાલમાં બંધ છે</translation>
 <translation id="776344839111254542">અપડેટની વિગતો જોવા માટે ક્લિક કરો</translation>
 <translation id="7780159184141939021">સ્ક્રીનને ફેરવો</translation>
 <translation id="7796353162336583443">એક નોંધ અથવા સ્ક્રીનશૉટ લેવા, Google સહાયક, લૅઝર પૉઇન્ટર અથવા બૃહદદર્શક કાચનો ઉપયોગ કરવા માટે શેલ્ફ પરના સ્ટાઇલસ બટનને ટૅપ કરો.</translation>
@@ -858,6 +877,7 @@
 <translation id="8113423164597455979">ચાલુ, બધી ઍપ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
+<translation id="8132487352815776550">ઉપશીર્ષકો રોકો</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> થી કનેક્ટેડ છે</translation>
 <translation id="813913629614996137">પ્રારંભ કરી રહ્યું છે...</translation>
 <translation id="8142441511840089262">ડબલ ક્લિક કરો</translation>

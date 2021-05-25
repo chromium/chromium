@@ -168,6 +168,7 @@
 <translation id="1173894706177603556">পুনঃনামকরণ</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" />%, বিবরণ</translation>
 <translation id="1174073918202301297">শর্টকাট যোগ করা হয়েছে</translation>
+<translation id="1174366174291287894">Chrome থেকে কোনও সতর্কতা না পাওয়া পর্যন্ত আপনার সংযোগটি সুরক্ষিত</translation>
 <translation id="117445914942805388">আপনার সিঙ্ক করা সমস্ত ডিভাইস এবং Google অ্যাকাউন্ট থেকে ব্রাউজিং ডেটা খালি করার জন্য <ph name="BEGIN_LINK" />সিঙ্ক সেটিংস দেখুন<ph name="END_LINK" />।</translation>
 <translation id="1175364870820465910">&amp;প্রিন্ট...</translation>
 <translation id="1176471985365269981">আপনার ডিভাইসে ফাইল অথবা ফোল্ডার এডিট করার অনুমতি নেই</translation>
@@ -757,6 +758,7 @@
 <translation id="1781398670452016618"><ph name="DOMAIN" />-এর প্রয়োজন অনুযায়ী, আপনাকে এখনই ওয়াই-ফাই নেটওয়ার্কে কানেক্ট করতে হবে এবং একটি আপডেট ডাউনলোড করতে হবে।</translation>
 <translation id="1781502536226964113">নতুন ট্যাব পৃষ্ঠাটি খুলুন</translation>
 <translation id="1781771911845953849">অ্যাকাউন্ট এবং সিঙ্ক</translation>
+<translation id="1782101999402987960">আপনার অ্যাডমিনিস্ট্রেটর আপডেটগুলি ব্লক করেছেন</translation>
 <translation id="1782196717298160133">আপনার ফোন খোঁজা হচ্ছে</translation>
 <translation id="1784707308176068866">কোনও সহযোগী নেটিভ অ্যাপ্লিকেশন অনুরোধ করলে ব্যাকগ্রাউন্ডে চালান</translation>
 <translation id="1784849162047402014">ডিভাইসে ডিস্কের জায়গা কম আছে</translation>
@@ -1144,6 +1146,7 @@
 <translation id="2193365732679659387">বিশ্বস্ততার সেটিংস</translation>
 <translation id="2195331105963583686">সেই সময়ের পরে এখনও আপনি এই <ph name="DEVICE_TYPE" /> ব্যবহার করতে পারবেন, কিন্তু এখানে সফ্টওয়্যার এবং নিরাপত্তা সংক্রান্ত অটোমেটিক আপডেট আর পাবেন না</translation>
 <translation id="2195729137168608510">ইমেল আইডির সুরক্ষা</translation>
+<translation id="2198625180564913276">প্রোফাইল যোগ করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="2199298570273670671">সমস্যা</translation>
 <translation id="2199719347983604670">Chrome সিঙ্ক থেকে ডেটা</translation>
 <translation id="2200094388063410062">ইমেল</translation>
@@ -1708,6 +1711,7 @@
 <translation id="2805760958323556153">ExtensionInstallForcelist-এর নীতির মান ভুল। অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="2805770823691782631">অতিরিক্ত বিবরণ</translation>
 <translation id="2806372837663997957">আপনি যে ডিভাইসের সাথে শেয়ার করার চেষ্টা করছেন সেটিতে এই অনুরোধ গ্রহণ করা হয়নি</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">শর্টকাটটি আগে থেকেই আছে</translation>
 <translation id="2807517655263062534">ডাউনলোড করা ফাইল এখানে দেখা যাবে</translation>
 <translation id="2809586584051668049">এবং আরও <ph name="NUMBER_ADDITIONAL_DISABLED" />টি</translation>
@@ -2021,6 +2025,7 @@
 <translation id="315116470104423982">মোবাইল ডেটা</translation>
 <translation id="3151539355209957474">শুরুর সময়</translation>
 <translation id="3151562827395986343">ইতিহাস, কুকিজ, ক্যাশে এবং আরও কিছু সাফ করুন</translation>
+<translation id="3151616662954589507">সেলফি ক্যামেরা</translation>
 <translation id="3151786313568798007">সজ্জা</translation>
 <translation id="3154351730702813399">ডিভাইস প্রশাসক আপনার ব্রাউজিং অ্যাক্টিভিটি পর্যবেক্ষণ করতে পারেন।</translation>
 <translation id="3154429428035006212">এক মাসের বেশী অফ লাইন</translation>
@@ -2134,6 +2139,7 @@
 <translation id="32939749466444286">Linux কন্টেনারটি শুরু হয়নি। আবার চেষ্টা করুন।</translation>
 <translation id="3294437725009624529">অতিথি</translation>
 <translation id="3294686910656423119">ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ সম্পর্কিত রিপোর্ট</translation>
+<translation id="3295357220137379386">ডিভাইসটি আগেই অন্য কোথাও কানেক্ট রয়েছে</translation>
 <translation id="329838636886466101">মেরামত</translation>
 <translation id="3298789223962368867">ভুল ইউআরএল দেওয়া হয়েছে৷</translation>
 <translation id="32991397311664836">ডিভাইস:</translation>
@@ -3037,6 +3043,7 @@
 <translation id="4285498937028063278">আনপিন</translation>
 <translation id="428565720843367874">এই ফাইলটি স্ক্যান করার সময় এন্টি ভাইরাস সফ্টওয়্যার অপ্রত্যাশিতভাবে ব্যর্থ হয়েছে৷</translation>
 <translation id="4287099557599763816">স্ক্রিন রিডার</translation>
+<translation id="428715201724021596">প্রোফাইলের সাথে কানেক্ট করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="4287157641315808225">হ্যাঁ, ChromeVox অ্যাক্টিভেট করুন</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{কন্টেন্ট দেখান}one{সব কন্টেন্ট দেখান}other{সব কন্টেন্ট দেখান}}</translation>
 <translation id="4289372044984810120">এখান থেকে আপনার অ্যাকাউন্ট ম্যানেজ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -3263,6 +3270,7 @@
 <translation id="4538792345715658285">এন্টারপ্রাইজ নীতি দ্বারা ইনস্টল করা হয়েছে৷</translation>
 <translation id="4541123282641193691">আপনার অ্যাকাউন্ট যাচাই করা যায়নি। আবার চেষ্টা করুন অথবা Chromebook রিস্টার্ট করুন।</translation>
 <translation id="4541662893742891060">এই প্রোফাইলে কানেক্ট করা যায়নি। প্রযুক্তিগত সহায়তা পেতে, আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
+<translation id="4541706525461326392">প্রোফাইল সরানো হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="4541810033354695636">অগমেন্টেড রিয়েলিটি</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> এবং <ph name="WEBSITE_2" /> আপনার ডেটা পড়ে</translation>
 <translation id="454331522350252598">কোনও কনসার্টের ভিড়ে থাকা লোকজনের মতো কয়েক হাজার ব্যবহারকারী একই আগ্রহের বিষয় শেয়ার করলে বিজ্ঞাপনদাতারা তা জানতে পারে এবং নির্দিষ্ট কোনও ব্যক্তির বদলে ভিড়ের লোকজনকে দেখানোর জন্য বিজ্ঞাপন বেছে নেয়।</translation>
@@ -3638,6 +3646,7 @@
 <translation id="4953808748584563296">ডিফল্ট কমলা রঙের অবতার</translation>
 <translation id="4955710816792587366">আপনার পিন বেছে নিন</translation>
 <translation id="4959262764292427323">পাসওয়ার্ডগুলি আপনার Google অ্যাকাউন্টে সেভ করা হয়েছে যাতে আপনি আপনার যেকোনও ডিভাইসে সেগুলি ব্যবহার করতে পারেন</translation>
+<translation id="496027654926814138"><ph name="FILE_NAME" /> আক্রমণকারীকে আপনার ব্যক্তিগত তথ্য চুরি করার সুযোগ দিতে পারে।</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961361269522589229">রেসিপি সম্পর্কিত আইডিয়া</translation>
 <translation id="496185450405387901">এই অ্যাপটি আপনার অ্যাডমিনিস্ট্রেটর ইনস্টল করে দিয়েছেন।</translation>
@@ -3676,6 +3685,7 @@
 <translation id="5007392906805964215">পর্যালোচনা করুন</translation>
 <translation id="50080882645628821">প্রোফাইল সরাতে চান</translation>
 <translation id="5008936837313706385">অ্যাক্টিভিটির নাম</translation>
+<translation id="5009463889040999939">প্রোফাইলের নাম পরিবর্তন করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="5010043101506446253">সার্টিফিকেট কর্তৃপক্ষ</translation>
 <translation id="5015344424288992913">প্রক্সি স্থির করা হচ্ছে...</translation>
 <translation id="5017633213534173756">মনে রাখুন</translation>
@@ -4018,6 +4028,7 @@
 <translation id="5408750356094797285">জুম করুন: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">আপনার Google অ্যাকাউন্ট থেকে</translation>
 <translation id="5411472733320185105">এই হোস্টগুলি এবং ডোমেনগুলির জন্য প্রক্সি সেটিংস ব্যবহার করবেন না:</translation>
+<translation id="5414198321558177633">প্রোফাইলের তালিকা রিফ্রেশ করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="5414566801737831689">আপনার দেখা ওয়েবসাইটগুলির আইকনগুলি পড়ুন</translation>
 <translation id="5417312524372586921">ব্রাউজারের থিম</translation>
 <translation id="5419405654816502573">Voice match</translation>
@@ -4296,6 +4307,7 @@
 <translation id="5709557627224531708">Chrome-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করুন</translation>
 <translation id="5711983031544731014">আনলক করতে অক্ষম৷ আপনার পাসওয়ার্ড লিখুন৷</translation>
 <translation id="5712153969432126546">সাইট কখনও কখনও পিডিএফ ফাইল প্রকাশ করে, যেমন ডকুমেন্ট, চুক্তিপত্র এবং ফর্ম</translation>
+<translation id="5712323955984474772">পরবর্তী আপডেট</translation>
 <translation id="5715711091495208045">প্লাগ-ইন ব্রোকার: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ডিফল্ট সার্চ ইঞ্জিনগুলি</translation>
 <translation id="5719637365829998022">QR কোড স্ক্যান করা হয়েছে।</translation>
@@ -4583,6 +4595,7 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> <ph name="TAB_NAME" /> এর সাথে একটি Chrome ট্যাব এবং অডিও শেয়ার করছে।</translation>
 <translation id="6045114302329202345">প্রাইমারি TrackPoint বোতাম</translation>
 <translation id="6047632800149092791">সিঙ্ক কাজ করছে না। সাইন-আউট করে আবার ফিরে এসে দেখুন।</translation>
+<translation id="6049797270917061226">এই ফাইলটি আক্রমণকারীকে আপনার ব্যক্তিগত তথ্য চুরি করার সুযোগ দিতে পারে।</translation>
 <translation id="6051354611314852653">সিস্টেমটি এই ডিভাইসের জন্য এপিআই অ্যাক্সেস অনুমোদন করতে ব্যর্থ হয়েছে৷</translation>
 <translation id="6052976518993719690">SSL শংসাপত্র কর্তৃপক্ষ</translation>
 <translation id="6053401458108962351">ব্রাউজিং ডেটা সাফ করুন...</translation>
@@ -4809,6 +4822,7 @@
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{আপনার নেটওয়ার্কে নতুন প্রিন্টারটি}one{আপনার নেটওয়ার্কে নতুন প্রিন্টারগুলি}other{আপনার নেটওয়ার্কে নতুন প্রিন্টারগুলি}}</translation>
 <translation id="6285770818046456882">যে ডিভাইস ব্যবহার করে আপনাকে ফাইল ট্রান্সফার করা হচ্ছিল সেটি ট্রান্সফার বন্ধ করে দিয়েছে</translation>
 <translation id="6290613030083731160">শেয়ার করার মতো আশেপাশে কোনও ডিভাইস উপলভ্য নেই। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="6291086328725007688">অ্যাক্টিভেশন কোড যাচাই করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="6291741848715722067">কনফার্মেশন কোড</translation>
 <translation id="6291949900244949761">কোনও সাইট ইউএসবি ডিভাইস অ্যাক্সেস করতে চাইলে আমাকে জিজ্ঞাসা করুন (প্রস্তাবিত)</translation>
 <translation id="6291953229176937411">ফাইন্ডারে &amp;দেখান</translation>
@@ -4939,6 +4953,7 @@
 <translation id="6438234780621650381">সেটিংস রিসেট করুন</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - অডিও বাজছে</translation>
 <translation id="6442187272350399447">দুর্দান্ত</translation>
+<translation id="6442445294758185945">আপডেট ডাউনলোড করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="6444070574980481588">তারিখ ও সময় সেট করুন</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - ব্লুটুথ ডিভাইসের জন্য অনবরত স্ক্যান করা চলছে</translation>
 <translation id="6445450263907939268">এই পরিবর্তনগুলি না চাইলে আপনি আপনার পূর্ববর্তী সেটিংস পুনরুদ্ধার করতে পারেন।</translation>
@@ -6962,6 +6977,7 @@
 <translation id="8680251145628383637">আপনার সব ডিভাইসে আপনার বুকমার্ক, ইতিহাস এবং অন্যান্য সেটিংস পেতে সাইন-ইন করুন। এছাড়াও আপনি অটোমেটিক আপনার Google পরিষেবায় সাইন-ইন করবেন।</translation>
 <translation id="8681614230122836773">Chrome আপনার কম্পিউটারে ক্ষতিকর সফ্টওয়্যার খুঁজে পেয়েছে</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> কানেক্ট করা হয়েছে এবং এখন সেটি ব্যবহার করা যাবে</translation>
+<translation id="8683081248374354009">গ্রুপ রিসেট করুন</translation>
 <translation id="8688591111840995413">খারাপ পাসওয়ার্ড</translation>
 <translation id="8688672835843460752">উপলব্ধ</translation>
 <translation id="8690129572193755009">সাইটগুলি প্রোটোকল নিয়ন্ত্রণ করতে চাইতে পারে</translation>

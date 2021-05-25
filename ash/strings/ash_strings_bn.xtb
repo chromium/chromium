@@ -40,6 +40,7 @@
 <translation id="1247372569136754018">মাইক্রোফোন (অভ্যন্তরীণ)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> থেকে চার্জ হচ্ছে</translation>
 <translation id="1255033239764210633">আবহাওয়া কি রকম?</translation>
+<translation id="1266097335951928626">সেলফি ক্যামেরা চালু করুন</translation>
 <translation id="1267032506238418139">শর্টকাটে পরিবর্তন</translation>
 <translation id="1269405891096105529">গেস্ট মোডে পেরিফেরাল কাজ করে না</translation>
 <translation id="1270290102613614947">অন-স্ক্রিন কীবোর্ড অক্ষম করা রয়েছে</translation>
@@ -84,6 +85,7 @@
 <translation id="1555130319947370107">নীল</translation>
 <translation id="1570871743947603115">ব্লুটুথ টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">এই সেশনে আপনার সব অ্যাক্টিভিটি অ্যাক্সেস করুন</translation>
+<translation id="159255010947577753">মার্কার</translation>
 <translation id="1611993646327628135">চালু আছে</translation>
 <translation id="1615402009686901181">কোনও গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়</translation>
 <translation id="1632985212731562677">সেটিংস &gt; অ্যাক্সেসিবিলিটি বিকল্পে গিয়ে 'অ্যাক্সেস পাল্টান' ফিচারটি বন্ধ করা করতে পারেন।</translation>
@@ -135,8 +137,10 @@
 <translation id="2016340657076538683">একটি মেসেজ লিখুন</translation>
 <translation id="2018630726571919839">একটি জোকস শোনাও</translation>
 <translation id="2021864487439853900">আনলক করতে ক্লিক করুন</translation>
+<translation id="2047639699071423250">কী আইডিয়া যোগ করুন</translation>
 <translation id="2049240716062114887">ডেস্কের নাম পরিবর্তন করে <ph name="DESK_NAME" /> রাখা হয়েছে</translation>
 <translation id="2050339315714019657">প্রতিকৃতি</translation>
+<translation id="2066708475850724665">ম্যাগনিফায়ার বন্ধ করুন</translation>
 <translation id="2067602449040652523">কীবোর্ডের উজ্জ্বলতা</translation>
 <translation id="2078034614700056995">পরবর্তী ডেস্কে সুইচ করতে, চার আঙুল ব্যবহার করে ডানদিকে সোয়াইপ করুন</translation>
 <translation id="2079504693865562705">শেল্ফে অ্যাপ লুকিয়ে রাখুন</translation>
@@ -144,10 +148,12 @@
 <translation id="2083190527011054446">শুভরাত্রি <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">কোনও নেটওয়ার্কে কানেক্ট করা নেই</translation>
 <translation id="2108303511227308752">Alt + Backspace কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Delete কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Backspace কী প্রেস করুন।</translation>
+<translation id="211328683600082144">মাইক্রোফোন চালু করুন</translation>
 <translation id="2126242104232412123">নতুন ডেস্ক</translation>
 <translation id="2127372758936585790">নিম্ন শক্তির চার্জার</translation>
 <translation id="2132302418721800944">ফুল স্ক্রিন রেকর্ড করুন</translation>
 <translation id="2135456203358955318">ডক করা ম্যাগনিফায়ার</translation>
+<translation id="2146800439053023141">বার লোকেশন টগল করুন</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: আবার চেষ্টা করুন</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">'এক নজরে' মোড থেকে বেরিয়ে আসতে তিনটি আঙুল দিয়ে নিচের দিকে সোয়াইপ করুন</translation>
@@ -326,6 +332,7 @@
 <translation id="3638400994746983214">গোপনীয়তা স্ক্রিন টগল করুন। <ph name="STATE_TEXT" />।</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ম্যানেজ করা ব্যবহারকারী</translation>
 <translation id="3665889125180354336">মাইক্রোফোনে রেকর্ড করুন</translation>
+<translation id="3680908746918359504">সমস্ত মার্কার মুছে ফেলুন</translation>
 <translation id="36813544980941320">ফোন ও <ph name="DEVICE_NAME" />-এর মধ্যে ওয়াই-ফাই নেটওয়ার্ক শেয়ার করা হবে।</translation>
 <translation id="3702809606464356667">বর্তমান ডেস্ক থেকে উইন্ডো দেখানো হচ্ছে, সব ডেস্ক থেকে উইন্ডো দেখাতে 'উর্ধমুখী তীরচিহ্ন' কী প্রেস করুন</translation>
 <translation id="3702846122927433391">নাইজিরিয়াতে জনপ্রিয়</translation>
@@ -376,6 +383,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{একটি অ্যাপের জন্য বন্ধ}one{#টি অ্যাপের জন্য বন্ধ}other{#টি অ্যাপের জন্য বন্ধ}}</translation>
 <translation id="4066027111132117168"><ph name="REMAINING_TIME" />-এ</translation>
 <translation id="4072264167173457037">মাঝারি সিগন্যাল</translation>
+<translation id="4095366824370681039">যে সমস্ত পেনে কালি ভরে ব্যবহার করা হয়</translation>
 <translation id="4112140312785995938">পিছিয়ে যান</translation>
 <translation id="4114315158543974537">'ফোন হাব' ফিচার চালু করুন</translation>
 <translation id="412298498316631026">উইন্ডো</translation>
@@ -444,12 +452,15 @@
 <translation id="4570957409596482333">বাছুন ও শুনুন বোতাম</translation>
 <translation id="4577274620589681794">সময় শেষ হয়ে গেছে · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">প্রিভিউ দেখুন</translation>
+<translation id="4578196883126898996">আপনার মাইক্রোফোন বন্ধ আছে। আপনার ডিভাইসের মাইক্রোফোন বোতাম চালু করুন।</translation>
 <translation id="4578906031062871102">'সেটিংস' মেনু খোলা হয়েছে</translation>
 <translation id="4581047786858252841">মাইক্রোফোন চালু করা হয়েছে</translation>
 <translation id="4585337515783392668">অজানা ডিভাইসে কাস্ট করা বন্ধ করুন</translation>
+<translation id="4586483766170476230">সেলফি ক্যামেরা বন্ধ করুন</translation>
 <translation id="4587299710837179226">মাইক্রোফোন বন্ধ করা আছে</translation>
 <translation id="4596144739579517758">ডার্ক থিম বন্ধ আছে</translation>
 <translation id="4611292653554630842">লগ-ইন করুন</translation>
+<translation id="4614295562446151104">মার্কার টুল বড় করুন</translation>
 <translation id="4623167406982293031">অ্যাকাউন্ট যাচাই করুন</translation>
 <translation id="4628757576491864469">ডিভাইস</translation>
 <translation id="4642092649622328492">আংশিক স্ক্রিনশট নিন</translation>
@@ -506,6 +517,8 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />টি নতুন ফোনে কানেক্ট করা হয়েছে</translation>
 <translation id="5035389544768382859">ডিসপ্লে কনফিগারেশন কনফার্ম করুন</translation>
 <translation id="504465286040788597">পূর্ববর্তী অনুচ্ছেদ</translation>
+<translation id="5071064518267176975">অ্যাপ মাইক্রোফোন ব্যবহার করতে চায়</translation>
+<translation id="5075554201838155866">ক্লোজড ক্যাপশন শুরু করুন</translation>
 <translation id="5078796286268621944">ভুল পিন</translation>
 <translation id="5083553833479578423">অ্যাসিস্ট্যান্ট-এর আরও বৈশিষ্ট্য আনলক করুন।</translation>
 <translation id="5136175204352732067">বিভিন্ন কীবোর্ড কানেক্ট করা হয়েছে</translation>
@@ -676,6 +689,7 @@
 <translation id="6612802754306526077">স্ক্রিন রেকর্ডিং মোড বেছে নেওয়া হয়েছে</translation>
 <translation id="6614169507485700968">গোপনীয়তা স্ক্রিন চালু করা আছে</translation>
 <translation id="6627638273713273709">সার্চ+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> মাইক্রোফোন ব্যবহার করতে চায়</translation>
 <translation id="6637729079642709226">ব্যবহারের মোট সময় পরিবর্তন করা</translation>
 <translation id="6641720045729354415">লাইভ ক্যাপশন টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> আপনার পরিচয় যাচাই করতে চায়</translation>
@@ -729,6 +743,7 @@
 <translation id="7029814467594812963">সেশন থেকে প্রস্থান</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">স্ট্যাটাস এরিয়া আড়াল করুন</translation>
+<translation id="7045595904618419789">ম্যাগনিফায়ার চালু করুন</translation>
 <translation id="7055910611768509537">এক সপ্তাহের বেশি সময় ধরে স্টাইলাস ব্যবহার করা হয়নি</translation>
 <translation id="7066646422045619941">এই নেটওয়ার্কটি আপনার প্রশাসকের দ্বারা অক্ষম করা হয়েছে৷</translation>
 <translation id="7067196344162293536">স্বতঃ ঘূর্ণন</translation>
@@ -749,6 +764,7 @@
 <translation id="7256634071279256947">পেছনের মাইক্রোফোন</translation>
 <translation id="726276584504105859">বিভক্ত স্ক্রিন ব্যবহার করতে এখানে টেনে আনুন</translation>
 <translation id="7262906531272962081">রিমাইন্ডার তৈরি করুন</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> মার্কারের রঙ</translation>
 <translation id="7302889331339392448">লাইভ ক্যাপশন বন্ধ আছে।</translation>
 <translation id="7303365578352795231">অন্য ডিভাইসে উত্তর দেওয়া হচ্ছে।</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -778,6 +794,7 @@
 <translation id="7466449121337984263">সেন্সরটি স্পর্শ করুন</translation>
 <translation id="7477793887173910789">আপনার মিউজিক, ভিডিও ও আরও অনেক কিছু নিয়ন্ত্রণ করুন</translation>
 <translation id="7483025031359818980">ফুল স্ক্রিনকে সোর্স হিসেবে সেট করা হয়েছে</translation>
+<translation id="7486227320194954040">মার্কার টুল আড়াল করুন</translation>
 <translation id="7497767806359279797">ভাষা এবং কীবোর্ড বেছে নিন</translation>
 <translation id="7509246181739783082">আপনার পরিচয় যাচাই করুন</translation>
 <translation id="7513622367902644023">স্ক্রিনশট মোড বেছে নেওয়া হয়েছে</translation>
@@ -796,6 +813,7 @@
 <translation id="7607002721634913082">বিরত রয়েছে</translation>
 <translation id="7618774594543487847">নিউট্রাল</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ফারেনহাইট</translation>
+<translation id="7631906263969450674">মার্কার পেন</translation>
 <translation id="7633755430369750696">'নিয়ারবাই শেয়ার' সেটিংস দেখুন।</translation>
 <translation id="7641938616688887143">রেকর্ড করুন</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> নেটওয়ার্কের সেটিংস খুলুন, <ph name="CONNECTION_STATUS" /></translation>
@@ -811,6 +829,7 @@
 <translation id="7724603315864178912">কাটুন</translation>
 <translation id="7745560842763881396">শেল্ফে অ্যাপ দেখুন</translation>
 <translation id="7749443890790263709">সর্বাধিক সংখ্যক ডেস্ক যোগ করা হয়ে গেছে।</translation>
+<translation id="7749640678855296659">বর্তমানে আপনার মাইক্রোফোন বন্ধ করা আছে</translation>
 <translation id="776344839111254542">আপডেটের বিশদ বিবরণ জানার জন্য ক্লিক করুন</translation>
 <translation id="7780159184141939021">স্ক্রিন ঘোরান</translation>
 <translation id="7796353162336583443">একটি নোট, স্ক্রিনশট নিতে, Google অ্যাসিস্ট্যান্ট, লেজার পয়েন্টার বা ম্যাগনিফিকেশনের কাচ ব্যবহার করার জন্য শেলফের স্টাইলাস বোতামটি ট্যাপ করুন।</translation>
@@ -858,6 +877,7 @@
 <translation id="8113423164597455979">সমস্ত অ্যাপে</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° সেঃ</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
+<translation id="8132487352815776550">ক্লোজড ক্যাপশন বন্ধ করুন</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> তে সংযুক্ত</translation>
 <translation id="813913629614996137">আরম্ভ হচ্ছে…</translation>
 <translation id="8142441511840089262">ডবল ক্লিক করুন</translation>

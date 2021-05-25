@@ -166,7 +166,7 @@
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1173916544412572294">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, batería del teléfono: <ph name="BATTERY_STATUS" /> %, detalles</translation>
 <translation id="1174073918202301297">Se ha añadido el acceso directo</translation>
-<translation id="1174366174291287894">Tu conexión siempre es segura, a menos que Chrome te indique otra cosa</translation>
+<translation id="1174366174291287894">Tu conexión siempre es segura a menos que Chrome te indique lo contrario</translation>
 <translation id="117445914942805388">Para borrar los datos de navegación de todos los dispositivos sincronizados y de tu cuenta de Google, ve a la <ph name="BEGIN_LINK" />configuración de sincronización<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">Im&amp;primir...</translation>
 <translation id="1176471985365269981">No pueden editar archivos ni carpetas en tu dispositivo</translation>
@@ -1213,7 +1213,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2280486287150724112">Margen derecho</translation>
 <translation id="2282146716419988068">Proceso de GPU</translation>
 <translation id="2282155092769082568">URL de configuración automática:</translation>
-<translation id="2285942871162473373">No se ha podido reconocer tu huella dactilar. Inténtalo de nuevo.</translation>
+<translation id="2285942871162473373">No se ha podido reconocer tu huella digital. Inténtalo de nuevo.</translation>
 <translation id="2287944065963043964">Pantalla de inicio de sesión</translation>
 <translation id="2288181517385084064">Cambiar al modo de cámara de vídeo</translation>
 <translation id="2288697980820156726">Asigna este interruptor a la función Siguiente para pasar al siguiente elemento en la página</translation>
@@ -3274,7 +3274,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4538792345715658285">Instalada por una política empresarial</translation>
 <translation id="4541123282641193691">No se ha podido verificar tu cuenta. Vuelve a intentarlo o reinicia el Chromebook.</translation>
 <translation id="4541662893742891060">No se ha podido conectar a este perfil. Para obtener asistencia técnica, ponte en contacto con tu operador.</translation>
-<translation id="4541706525461326392">Eliminando perfil. Este proceso puede durar unos minutos.</translation>
+<translation id="4541706525461326392">Quitando perfil. Este proceso puede durar unos minutos.</translation>
 <translation id="4541810033354695636">realidad aumentada</translation>
 <translation id="4542520061254486227">Leer tus datos en <ph name="WEBSITE_1" /> y en <ph name="WEBSITE_2" /></translation>
 <translation id="454331522350252598">Cuando haya miles de usuarios con un interés similar (como una multitud en un concierto), los anunciantes podrán saberlo y seleccionar anuncios para esa multitud, en lugar de para cada persona de forma individual.</translation>
@@ -3510,7 +3510,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4811503964269049987">Agrupar pestañas seleccionadas</translation>
 <translation id="4813136279048157860">Mis imágenes</translation>
 <translation id="4813512666221746211">Error de red</translation>
-<translation id="4814378367953456825">Escribe un nombre para esta huella dactilar</translation>
+<translation id="4814378367953456825">Escribe un nombre para esta huella digital</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 marcador eliminado}other{{COUNT} marcadores eliminados}}</translation>
 <translation id="4819607494758673676">Notificaciones del Asistente de Google</translation>
 <translation id="4820236583224459650">Definir como ticket activo</translation>
@@ -3571,7 +3571,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4877276003880815204">Inspeccionar elementos</translation>
 <translation id="4878634973244289103">No se pueden enviar los comentarios. Vuelve a intentarlo más tarde.</translation>
 <translation id="4878653975845355462">El administrador ha desactivado los fondos personalizados</translation>
-<translation id="4878718769565915065">No se ha podido añadir una huella dactilar a esta llave de seguridad</translation>
+<translation id="4878718769565915065">No se ha podido añadir una huella digital a esta llave de seguridad</translation>
 <translation id="4879491255372875719">Automático (predeterminado)</translation>
 <translation id="4880827082731008257">Buscar en el historial</translation>
 <translation id="4881685975363383806">No me lo recuerdes la próxima vez</translation>
@@ -5101,7 +5101,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="659005207229852190">Se ha completado la comprobación de seguridad.</translation>
 <translation id="6590458744723262880">Cambia el nombre de la carpeta</translation>
 <translation id="6592267180249644460">Captura de registro de ReWebRTC: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="6592808042417736307">Se ha registrado tu huella dactilar</translation>
+<translation id="6592808042417736307">Se ha registrado tu huella digital</translation>
 <translation id="6593881952206664229">El contenido multimedia protegido por derechos de autor podría no reproducirse</translation>
 <translation id="6594011207075825276">Buscando dispositivos en serie...</translation>
 <translation id="6595187330192059106">Impedir siempre que <ph name="HOST" /> tenga un control total de los dispositivos MIDI.</translation>
@@ -6885,7 +6885,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8551588720239073785">Configuración de fecha y hora</translation>
 <translation id="8553342806078037065">Gestionar otros usuarios</translation>
 <translation id="8554899698005018844">Sin idioma</translation>
-<translation id="8557022314818157177">Sigue pulsando tu llave de seguridad hasta que tu huella dactilar quede registrada.</translation>
+<translation id="8557022314818157177">Sigue pulsando tu llave de seguridad hasta que tu huella digital quede registrada.</translation>
 <translation id="8557930019681227453">Archivo de manifiesto</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Abrir todas en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todas ({COUNT}) en una ventana &amp;nueva}}</translation>
 <translation id="8561206103590473338">Elefante</translation>
@@ -7165,7 +7165,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8838770651474809439">Hamburguesa</translation>
 <translation id="883911313571074303">Anotar imagen</translation>
 <translation id="8841843049738266382">Consultar y modificar usuarios de la lista de permitidos</translation>
-<translation id="8842594465773264717">Eliminar esta huella dactilar</translation>
+<translation id="8842594465773264717">Eliminar esta huella digital</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8846132060409673887">Consultar el fabricante y el modelo de este ordenador</translation>
 <translation id="8846163936679269230">Borrar perfiles de eSIM</translation>

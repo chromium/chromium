@@ -168,7 +168,7 @@
 <translation id="1173894706177603556">ରିନେମ୍ କରନ୍ତୁ</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଫୋନ୍‌ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" />%, ବିବରଣୀ</translation>
 <translation id="1174073918202301297">ସର୍ଟକଟ୍ ଯୋଗ କରାଗଲା</translation>
-<translation id="1174366174291287894">Chrome ଆପଣଙ୍କୁ କିଛି ନକହିବା ପର୍ଯ୍ଯନ୍ତ ଆପଣଙ୍କ ସଂଯୋଗ ସର୍ବଦା ସୁରକ୍ଷିତ ଅଟେ</translation>
+<translation id="1174366174291287894">ଯେ ପର୍ଯ୍ୟନ୍ତ Chrome ଆପଣଙ୍କ ସଂଯୋଗଟି ସୁରକ୍ଷିତ ନୁହେଁ ବୋଲି ଆପଣଙ୍କୁ କହି ନଥାଏ, ସେପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କ ସଂଯୋଗ ସର୍ବଦା ସୁରକ୍ଷିତ ରହିଥାଏ</translation>
 <translation id="117445914942805388">ଆପଣଙ୍କର ସମସ୍ତ ସିଙ୍କ୍‌ ହୋ‍ଇଥିବା ଡିଭାଇସ୍‌ ଏବଂ ଆପଣଙ୍କର ଆକାଉଣ୍ଟରୁ ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରିବାକୁ <ph name="BEGIN_LINK" />ସିଙ୍କ୍‍ ସେଟିଂସ୍‌କୁ ଯାଆନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="1175364870820465910">&amp;ମୁଦ୍ରଣ...</translation>
 <translation id="1176471985365269981">ଆପଣଙ୍କ ଡିଭାଇସରେ ଫାଇଲ୍ କିମ୍ବା ଫୋଲ୍ଡରଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
@@ -4603,7 +4603,7 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> ସହିତ ଏକ Chrome ଟାବ୍ ଏବଂ ଅଡିଓ ସେୟାର୍ କରୁଛି।</translation>
 <translation id="6045114302329202345">ପ୍ରାଥମିକ TrackPoint ବଟନ୍</translation>
 <translation id="6047632800149092791">ସିଙ୍କ୍ କାମ କରୁନାହିଁ। ସାଇନ୍ ଆଉଟ୍ କରି ପୁଣି ସାଇନ୍ ଇନ୍ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
-<translation id="6049797270917061226">ଏହି ଫାଇଲ୍ ଆକ୍ରମଣକାରୀମାନକୁ ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ସୂଚନା ଚୋରି କରିବାକୁ ଦେଇପାରିବ।</translation>
+<translation id="6049797270917061226">ଏହି ଫାଇଲ୍ ଦ୍ୱାରା ଆକ୍ରମଣକାରୀମାନେ ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ସୂଚନା ଚୋରି କରିପାରିବେ।</translation>
 <translation id="6051354611314852653">ଓହୋଃ!  ଏହି ଡିଭାଇସ୍ ପାଇଁ API ଆକ୍ସେସ୍ ଅଧିକୃତ କରିବାରେ ସିଷ୍ଟମ୍ ବିଫଳ ହେଲା।</translation>
 <translation id="6052976518993719690">SSL ସାର୍ଟିଫିକେସନ୍ କର୍ତ୍ତୃପକ୍ଷ</translation>
 <translation id="6053401458108962351">&amp;ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରନ୍ତୁ...</translation>

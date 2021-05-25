@@ -281,7 +281,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1919345977826869612">Anuncis</translation>
 <translation id="1919367280705858090">Obtenir ajuda amb un missatge d'error específic</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Cap}=1{1 lloc}other{# llocs}}</translation>
-<translation id="1924727005275031552">Nova</translation>
+<translation id="1924727005275031552">Nous</translation>
 <translation id="1945968466830820669">Podries perdre l'accés al compte de la teva organització o ser víctima d'un robatori d'identitat. Chromium et recomana que canviïs la contrasenya ara.</translation>
 <translation id="1947454675006758438">Grapat a la part superior dreta</translation>
 <translation id="1958218078413065209">La teva puntuació més alta és <ph name="SCORE" />.</translation>
@@ -403,7 +403,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="239429038616798445">Aquest mètode d'enviament no està disponible. Prova'n un altre.</translation>
 <translation id="2396249848217231973">&amp;Desfés la supressió</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
-<translation id="2413155254802890957">Anterior</translation>
+<translation id="2413155254802890957">Anteriors</translation>
 <translation id="2413528052993050574">El servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè és possible que el seu certificat de seguretat s'hagi revocat. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="2414886740292270097">Fosc</translation>
 <translation id="2438874542388153331">Encunyació quàdruple a la dreta</translation>

@@ -281,6 +281,7 @@
 <translation id="1919345977826869612">广告</translation>
 <translation id="1919367280705858090">了解如何解决特定错误消息指出的错误</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{无}=1{1 个网站}other{# 个网站}}</translation>
+<translation id="1924727005275031552">新</translation>
 <translation id="1945968466830820669">您可能会无法再访问所属组织的帐号，或被他人盗用身份信息。Chromium 建议您立即更改密码。</translation>
 <translation id="1947454675006758438">钉装（右上角）</translation>
 <translation id="1958218078413065209">您的最高得分是 <ph name="SCORE" />。</translation>
@@ -391,6 +392,7 @@
 <translation id="2357481397660644965">您的设备由 <ph name="DEVICE_MANAGER" /> 管理，您的帐号由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
 <translation id="2359629602545592467">多种货币</translation>
 <translation id="2359808026110333948">继续</translation>
+<translation id="2359961752320758691">已应用您的虚拟卡号。</translation>
 <translation id="2367567093518048410">级别</translation>
 <translation id="2372464001869762664">待您确认后，系统便会将您 Google 帐号中的信用卡详细信息共享给该网站。您可在 Plex 帐号详情中找到银行卡验证码 (CVC)。</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -401,6 +403,7 @@
 <translation id="239429038616798445">该送货方式不可用。请另选一种方式。</translation>
 <translation id="2396249848217231973">撤消删除(&amp;U)</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能已被撤消。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2414886740292270097">深色调</translation>
 <translation id="2438874542388153331">四孔（右侧）</translation>
@@ -894,12 +897,14 @@
 <translation id="4275830172053184480">重启您的设备</translation>
 <translation id="4277028893293644418">重置密码</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{这张卡已保存到您的 Google 帐号中}other{这些卡已保存到您的 Google 帐号中}}</translation>
+<translation id="4287885627794386150">符合试用条件但处于无效状态</translation>
 <translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 页的缩略图</translation>
 <translation id="42981349822642051">展开</translation>
 <translation id="4300675098767811073">多孔（右侧）</translation>
 <translation id="4302514097724775343">点按恐龙图标即可开始玩这款游戏</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">无法访问您的文件</translation>
+<translation id="4306529830550717874">保存地址？</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">屏蔽（默认）</translation>
 <translation id="4314815835985389558">管理同步数据</translation>
@@ -1387,6 +1392,7 @@
 <translation id="610911394827799129">您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录</translation>
 <translation id="6116338172782435947">查看复制到剪贴板的文字和图片</translation>
 <translation id="6120179357481664955">要记住您的 UPI ID 吗？</translation>
+<translation id="6123290840358279103">查看虚拟卡</translation>
 <translation id="6124432979022149706">Chrome 企业版连接器</translation>
 <translation id="6146055958333702838">请检查所有网线是否都已连好，然后重新启动您可能正在使用的任何路由器、调制解调器或其他网络设备。</translation>
 <translation id="614940544461990577">请试试以下办法：</translation>
@@ -1665,6 +1671,7 @@
 <translation id="7300012071106347854">钴蓝色</translation>
 <translation id="7302712225291570345">“<ph name="TEXT" />”</translation>
 <translation id="7304030187361489308">高</translation>
+<translation id="7305756307268530424">启用慢速模式</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">与连接相关的帮助</translation>
 <translation id="7323804146520582233">隐藏“<ph name="SECTION" />”部分</translation>
@@ -1690,6 +1697,7 @@
 <translation id="7378594059915113390">媒体控件</translation>
 <translation id="7378627244592794276">否</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7386364858855961704">不适用</translation>
 <translation id="7390545607259442187">确认信用卡</translation>
 <translation id="7399802613464275309">安全检查</translation>
 <translation id="7400418766976504921">网址</translation>
@@ -1741,6 +1749,7 @@
 <translation id="7548892272833184391">修正网络连接错误</translation>
 <translation id="7549584377607005141">此网页需要使用您之前输入的数据才能正常显示。您可以重新发送这些数据，不过，这么做会重复执行此网页之前执行过的所有操作。</translation>
 <translation id="7550637293666041147">您的设备用户名和 Chrome 用户名</translation>
+<translation id="755279583747225797">试用版功能处于有效状态</translation>
 <translation id="7552846755917812628">请尝试按以下提示操作：</translation>
 <translation id="7554475479213504905">仍然重新加载并显示</translation>
 <translation id="7554791636758816595">新标签页</translation>
@@ -1835,6 +1844,7 @@
 <translation id="7894280532028510793">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行网络诊断<ph name="END_LINK" />。</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7931318309563332511">未知</translation>
+<translation id="793209273132572360">更新地址？</translation>
 <translation id="7932579305932748336">涂层</translation>
 <translation id="79338296614623784">请输入有效的电话号码</translation>
 <translation id="7934052535022478634">付款已完成</translation>

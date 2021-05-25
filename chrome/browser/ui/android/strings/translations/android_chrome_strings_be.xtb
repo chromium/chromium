@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1016498331642356377">Хуткі пошук з дапамогай галасавых каманд. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="1028699632127661925">Ідзе адпраўка на прыладу "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="103269572468856066">Выдаліць і гэтыя даныя?</translation>
 <translation id="1036348656032585052">Выключыць</translation>
@@ -157,6 +158,7 @@
 <translation id="2067805253194386918">тэкст</translation>
 <translation id="2068748236079642969">Глядзець наступнае відэа</translation>
 <translation id="2074143993849053708">Дыялогавае акно для дачы згоды на выкарыстанне Памочніка для галасавога пошуку закрыта</translation>
+<translation id="2075835334924942448">Навіны можна будзе знайсці тут</translation>
 <translation id="2082238445998314030">Вынік <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Сінхранізацыя і персаналізацыя на ўсіх прыладах</translation>
 <translation id="2100273922101894616">Аўтаматычны ўваход</translation>
@@ -170,6 +172,7 @@
 <translation id="2131665479022868825">Эканомія: <ph name="DATA" /></translation>
 <translation id="213279576345780926">Закрыта ўкладка <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Дадаць на галоўны экран</translation>
+<translation id="2141396931810938595">На падставе выкарыстання</translation>
 <translation id="214888715418183969">Выберыце, што вы хочаце абагульваць з Chrome. Паказчыкі, якія вы з намі абагуліце, будуць выкарыстаны для паляпшэння функцый браўзера Chrome, стабільнасці і эфектыўнасці яго работы.</translation>
 <translation id="2154484045852737596">Рэдагаваць картку</translation>
 <translation id="2154710561487035718">Скапіраваць URL-адрас</translation>
@@ -257,6 +260,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аўдыяфайл}one{# аўдыяфайл}few{# аўдыяфайлы}many{# аўдыяфайлаў}other{# аўдыяфайла}}</translation>
 <translation id="2656405586795711023">Вэб-праграмы</translation>
 <translation id="2689830683995595741">Выкарыстоўваючы Chrome, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />. Таксама прымяняецца <ph name="BEGIN_LINK3" />Паведамленне аб прыватнасці ў дачыненні да Уліковых запісаў Google, якія кіруюцца праз Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2702516483241149200">Навінка: абагульце спасылку, пры выкарыстанні якой старонка прагартаецца гэтага фрагмента тэксту</translation>
 <translation id="2704606927547763573">Скапіравана</translation>
 <translation id="2707726405694321444">Абнавіць старонку</translation>
 <translation id="271033894570825754">Новае</translation>
@@ -304,6 +308,7 @@
 <translation id="2956410042958133412">Гэтым уліковым запісам кіруюць бацькі <ph name="PARENT_NAME_1" /> і <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрачытаная старонка}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаная старонка}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаныя старонкі}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаных старонак}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытанай старонкі}}</translation>
 <translation id="2979025552038692506">Выбраная ўкладка інкогніта</translation>
+<translation id="2979448359891869301">Не ўдаецца зрабіць большы здымак экрана. Паўтарыце спробу, калі памяць тэлефона будзе менш загружанай.</translation>
 <translation id="2987620471460279764">Тэкст, абагулены з іншай прылады</translation>
 <translation id="2989523299700148168">Нядаўнія</translation>
 <translation id="2992473221983447149">Апісанні відарысаў</translation>
@@ -345,6 +350,7 @@
 <translation id="3265534588625245297">Кіруйце сайтамі, на якія вы падпісаны</translation>
 <translation id="3269093882174072735">Загрузіць відарыс</translation>
 <translation id="3269956123044984603">Каб бачыць укладкі з іншых сваіх прылад, у наладах уліковага запісу Android уключыце наладу “Аўтасінхранізацыя даных”.</translation>
+<translation id="3280562213547448728">Галасавы пошук</translation>
 <translation id="3282568296779691940">Увайсці ў Chrome</translation>
 <translation id="3284510035090979597">Актыўная дапамога</translation>
 <translation id="3285080554353377245">Відэа пра выкарыстанне Chrome</translation>
@@ -395,6 +401,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="3563767357928833671">Паказваецца змесціва буфера абмену</translation>
 <translation id="3566923219790363270">Падтрымка VR у браўзеры Chrome яшчэ рыхтуецца. Перазапусціце яго пазней.</translation>
 <translation id="3568688522516854065">Каб бачыць укладкі з іншых сваіх прылад, увайдзіце і ўключыце сінхранізацыю</translation>
+<translation id="3577473026931028326">Нешта пайшло не так. Паўтарыце спробу.</translation>
 <translation id="3587482841069643663">Усе</translation>
 <translation id="3587596251841506391">Павысіць бяспеку ў інтэрнэце</translation>
 <translation id="3602290021589620013">Перадпрагляд</translation>
@@ -480,6 +487,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4195643157523330669">Адкрыць у новай укладцы</translation>
 <translation id="4198423547019359126">Няма месца для спампоўкі</translation>
 <translation id="4209895695669353772">Каб атрымліваць прапановы персаналізаванага змесціва ад Google, уключыце сінхранізацыю</translation>
+<translation id="4225895483398857530">Кнопка-ярлык на панэлі інструментаў</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
 <translation id="4248098802131000011">Захоўвайце паролі ў бяспечным месцы, каб прадухіліць іх раскрыццё ў выпадку ўцечкі даных або іншых праблем з бяспекай</translation>
 <translation id="4250229828105606438">Здымак экрана</translation>
@@ -746,12 +754,14 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5864419784173784555">Чаканне іншай спампоўкі…</translation>
 <translation id="5865733239029070421">Аўтаматычна адпраўляе ў Google статыстыку выкарыстання і справаздачы аб збоях</translation>
 <translation id="5869522115854928033">Захаваныя паролі</translation>
+<translation id="587735546353481577">Каб падпісацца на сайт, перайдзіце на яго, адкрыйце меню Chrome і націсніце "Падпісацца".</translation>
 <translation id="5880748256563468367">Перайсці да стужкі</translation>
 <translation id="5884076754568147479">Каб дапамагаць вам выконваць задачы, Google будзе збіраць URL-адрасы і змесціва сайтаў, на якіх вы выкарыстоўваеце Памочніка, а таксама інфармацыю, якую вы перадаяце праз яго</translation>
 <translation id="5919204609460789179">Каб запусціць сінхранізацыю, абнавіце <ph name="PRODUCT_NAME" /></translation>
 <translation id="5937580074298050696">Эканомія: <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Скінуць</translation>
 <translation id="5942872142862698679">Выкарыстоўваецца пошукавая сістэма Google</translation>
+<translation id="5945035219773565305">Бягучая рэкамендацыя:  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Праглядаецца апублікаваная версія старонкі</translation>
 <translation id="5952764234151283551">Адпраўляе ў Google URL-адрас старонкі, якую вы спрабуеце адкрыць</translation>
 <translation id="5956665950594638604">Адкрыць Даведачны цэнтр Chrome у новай укладцы</translation>
@@ -765,6 +775,10 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6000203700195075278">Падпісацца зноў</translation>
 <translation id="6002623704405939939">Каб выдаліць гісторыю <ph name="BEGIN_LINK1" />пошуку<ph name="END_LINK1" /> або іншых дзеянняў, перайдзіце ў <ph name="BEGIN_LINK2" />Мае дзеянні ў Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Прапанаваны пароль</translation>
+<translation id="6032091552407840792">Гэта пробная функцыя дзейнічае толькі ў <ph name="BEGIN_LINK" />некаторых рэгіёнах<ph name="END_LINK" />.</translation>
+<translation id="6033245666633565791">З дапамогай <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> Chrome падтрымлівае адкрытасць інтэрнэту, распрацоўваючы новыя тэхналогіі для абароны вас ад механізмаў адсочвання паводзін на розных сайтах.
+
+Пробныя функцыі Privacy Sandbox яшчэ знаходзяцца на стадыі распрацоўкі і даступныя не ва ўсіх рэгіёнах. Сайты маюць магчымасць выкарыстоўваць некаторыя функцыі Privacy Sandbox, не адмаўляючыся пакуль што ад існуючых вэб-тэхналогій, такіх як староннія файлы cookie.</translation>
 <translation id="6036057147555329831">Дадатковы модуль ICU</translation>
 <translation id="6039379616847168523">Перайсці на наступную ўкладку</translation>
 <translation id="6040143037577758943">Закрыць</translation>
@@ -830,6 +844,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6407224748847589805">Не ўдалося падключыцца да вашага камп'ютара. Паспрабуйце іншы спосаб спраўджання.</translation>
 <translation id="6410404864818553978">Асноўныя даныя пра выкарыстанне</translation>
 <translation id="6410883413783534063">Каб праглядаць некалькі старонак адначасова, карыстайцеся ўкладкамі</translation>
+<translation id="6411219469806822692">Не ўдаецца перамясціцца вышэй. Паспрабуйце пачаць з месца, якое б знаходзілася вышэй на старонцы.</translation>
 <translation id="6412673304250309937">Правярае, ці знаходзяцца URL-адрасы ў спісе небяспечных сайтаў, захаваным у Chrome. Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chrome можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі.</translation>
 <translation id="641643625718530986">Друк…</translation>
 <translation id="6427112570124116297">Пераклад вэб-старонак</translation>
@@ -892,10 +907,12 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="671481426037969117">Спрацаваў таймер праграмы "<ph name="FQDN" />". Заўтра ён зноў будзе запушчаны.</translation>
 <translation id="6738516213925468394">Даныя былі зашыфраваны з дапамогай <ph name="BEGIN_LINK" />фразы-пароля для сінхранізацыі<ph name="END_LINK" /> <ph name="TIME" />. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="6738867403308150051">Ідзе спампоўка…</translation>
+<translation id="6751521182688001123">Хуткае адкрыццё новай укладкі. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="6767294960381293877">Спіс прылад, з якімі можна абагуліць укладку, разгорнуты на палову экрана.</translation>
 <translation id="6783942555455976443">Захавайце старонку, каб прагледзець яе пазней. Вы атрымаеце напамін</translation>
 <translation id="6811034713472274749">Старонка гатовая да прагляду</translation>
 <translation id="6813446258015311409">Аркуш "Увайсці ў Chrome" адкрыты.</translation>
+<translation id="6817747507826986771">Хуткае абагульванне гэтай старонкі. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, укладка, выбрана</translation>
 <translation id="6846298663435243399">Ідзе загрузка…</translation>
@@ -966,6 +983,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7333031090786104871">Ідзе дадаванне папярэдняга сайта</translation>
 <translation id="7339898014177206373">Новае акно</translation>
 <translation id="7340958967809483333">Параметры рэкамендацый</translation>
+<translation id="7352339641508007922">Перацягніце край здымка экрана, калі вам патрэбны доўгі здымак</translation>
 <translation id="7352651011704765696">Нешта пайшло не так</translation>
 <translation id="7352939065658542140">ВІДЭА</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Абагуліць 1 выбраны элемент}one{Абагуліць # выбраны элемент}few{Абагуліць # выбраныя элементы}many{Абагуліць # выбраных элементаў}other{Абагуліць # выбранага элемента}}</translation>
@@ -1058,6 +1076,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7876243839304621966">Выдаліць усе</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> непрачытаная старонка}one{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрачытаная старонка}few{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрачытаныя старонкі}many{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрачытаных старонак}other{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрачытанай старонкі}}</translation>
 <translation id="7882131421121961860">Гісторыя не знойдзена</translation>
+<translation id="7884346424584885269">Браўзеру Chrome патрабуецца дазвол для праверкі наяўнасці прылад паблізу. <ph name="BEGIN_LINK" />Змяніце дазволы<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">Выконваецца ў браўзеры Chrome</translation>
 <translation id="789763218334337857">Як выкарыстоўваць Chrome</translation>
 <translation id="7903184275147100332">Пачакайце</translation>
@@ -1151,6 +1170,11 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8461694314515752532">Зашыфраваць сінхранізаваныя даныя з дапамогай фразы-пароля.</translation>
 <translation id="8466613982764129868">Праверце, ці прылада "<ph name="TARGET_DEVICE_NAME" />" падключана да інтэрнэту</translation>
 <translation id="8473863474539038330">Адрасы і іншае</translation>
+<translation id="8481921391193215807">Калі ўключыць функцыі Privacy Sandbox, сайты змогуць выкарыстоўваць пералічаныя тут тэхналогіі, якія забяспечваюць прыватнасць, каб прапаноўваць сваё змесціва і сэрвісы. У прыватнасці, гэта альтэрнатыўныя спосабы рашэння праблемы збору даных пра дзеянні карыстальнікаў на розных сайтах. З цягам часу могуць стаць даступнымі новыя пробныя функцыі.
+
+<ph name="BEGIN_LIST_ITEM1" />Рэкламадаўцы і выдаўцы змогуць выкарыстоўваць FLoC.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Рэкламадаўцы і выдаўцы змогуць ацэньваць эфектыўнасць рэкламы, не адсочваючы пры гэтым вашы дзеянні ў інтэрнэце.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Пробныя функцыі ўключаны</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Адкрыць старонку гісторыі</translation>
@@ -1262,6 +1286,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="9204836675896933765">Застаўся 1 файл</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">Нельга рабіць выклікі</translation>
+<translation id="9212845824145208577">Не ўдаецца перамясціцца ніжэй. Паспрабуйце пачаць з месца, якое б знаходзілася ніжэй на старонцы.</translation>
 <translation id="9219103736887031265">Відарысы</translation>
 <translation id="926205370408745186">Выдаліць дзеянні ў Chrome са службы лічбавага камфорту</translation>
 <translation id="927968626442779827">Выкарыстоўвайце Google Chrome, уключыўшы спрошчаны рэжым</translation>

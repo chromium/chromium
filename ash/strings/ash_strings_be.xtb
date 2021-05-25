@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Усталёўваць праграмы, пашырэнні, тэмы.</translation>
 <translation id="2977598380246111477">Наступная лічба</translation>
+<translation id="2992327365391326550">Стан кнопкі мікрафона прылады – "выключана".</translation>
 <translation id="2995447421581609334">Паказаць прылады для трансляцыі.</translation>
 <translation id="2996462380875591307">Прыстыкаваная лупа ўключана. Каб выключыць яе, зноў націсніце Ctrl + Пошук + D.</translation>
 <translation id="3000461861112256445">Монафанія</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">Каб увайсці, увядзіце бацькоўскі код доступу Family Link</translation>
 <translation id="3039939407102840004">Узровень зараду акумулятара пяра – <ph name="PERCENTAGE" />%.</translation>
 <translation id="3045488863354895414">Добры дзень,</translation>
+<translation id="3051189971848907985">Ідзе перайменаванне профілю. Пачакайце некалькі хвілін.</translation>
 <translation id="3055162170959710888">Сёння гэтай прыладай карысталіся <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Разгарнуць меню</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3371140690572404006">Прылада USB-C (пярэдні порт справа)</translation>
 <translation id="3375634426936648815">Падключана</translation>
+<translation id="3378442621503952303">Ідзе падключэнне да профілю. Пачакайце некалькі хвілін.</translation>
 <translation id="3386978599540877378">экранная лупа ў поўнаэкранным рэжыме</translation>
 <translation id="3400357268283240774">Дадатковыя налады</translation>
 <translation id="3410336247007142655">Паказаць налады цёмнай тэмы</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">Вітаю! Чым магу дапамагчы?</translation>
 <translation id="3826099427150913765">Пераключыцца на пароль</translation>
 <translation id="383058930331066723">Уключаны рэжым эканоміі зараду</translation>
+<translation id="3835880383832568924">Каб пабачыць абнаўленні, адкрыйце праграму "Спалучэнні клавіш"</translation>
 <translation id="383629559565718788">Паказаць налады клавіятуры</translation>
 <translation id="3846214748874656680">Выключыць поўнаэкранны рэжым</translation>
 <translation id="3846575436967432996">Няма даступнай інфармацыі пра сетку</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">Пакінуць водгук</translation>
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
 <translation id="4734965478015604180">Гарызантальна</translation>
+<translation id="4735498845456076464">Змянілася прызначэнне спалучэння клавіш <ph name="LAUNCHER_KEY_NAME" /> + лічба. Каб выканаць дзеянне функцыянальнай клавішы, націсніце <ph name="LAUNCHER_KEY_NAME" /> + адну з клавіш верхняга рада.</translation>
 <translation id="4744944742468440486">Інфармацыя, звязаная з вылучаным вамі фрагментам</translation>
 <translation id="4759238208242260848">Спампоўкі</translation>
 <translation id="4774338217796918551">Можна будзе прадоўжыць заўтра ў <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">Капіраваць</translation>
 <translation id="6910714959251846841">Для ўсталявання абнаўлення патрабуецца скід прылад з дапамогай Powerwash. Даведайцеся больш пра апошняе абнаўленне <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Не ўдалося распазнаць вашу разумную картку. Паўтарыце спробу.</translation>
+<translation id="6921188888306725546">Спалучэнні клавіш сталі больш зручнымі</translation>
 <translation id="6945221475159498467">Выбраць</translation>
 <translation id="6961121602502368900">Функцыя "Тэлефон без гуку" недаступная пры выкарыстанні працоўнага профілю</translation>
 <translation id="6961840794482373852">Змянілася прызначэнне спалучэння клавіш Alt + стрэлка ўверх. Каб выканаць дзеянне клавішы Page Up, націсніце <ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўверх.</translation>
@@ -934,6 +940,7 @@
 <translation id="8631727435199967028">Налады спецыяльных магчымасцей</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="8639760480004882931">Засталося: <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">Ідзе абнаўленне спіса профіляў. Пачакайце некалькі хвілін.</translation>
 <translation id="8646417893960517480">Таймер на <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Каб дадаць карыстальніка, увядзіце бацькоўскі код доступу Family Link</translation>
 <translation id="8649101189709089199">Чытаць уголас</translation>
@@ -961,6 +968,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Налады метадаў уводу</translation>
+<translation id="8818320199597151042">Ідзе выдаленне профілю. Пачакайце некалькі хвілін.</translation>
 <translation id="8825863694328519386">Каб вярнуцца назад, правядзіце пальцам з левага краю</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Кнопка "Назад"</translation>
@@ -1006,6 +1014,7 @@
 <translation id="9091626656156419976">Дысплэй "<ph name="DISPLAY_NAME" />" выдалены</translation>
 <translation id="9098969848082897657">Тэлефон без гуку</translation>
 <translation id="9099154003160514616">Ёсць абнаўленне Lacros</translation>
+<translation id="9100887602489003640">Ідзе дадаванне профілю. Пачакайце некалькі хвілін.</translation>
 <translation id="9105450214093926548">Падчас работы браўзера Lacros уваход у некалькі ўліковых запісаў не падтрымліваецца. Выкарыстайце другі профіль браўзера або закрыйце Lacros і паўтарыце спробу.</translation>
 <translation id="9133335900048457298">Запіс немагчымы з-за наяўнасці на экране абароненага змесціва</translation>
 <translation id="9151726767154816831">Для абнаўлення выканайце перазапуск і запусціце Powerwash</translation>

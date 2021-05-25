@@ -274,6 +274,7 @@
 <translation id="2781151931089541271">১ সেকেন্ড বাকি আছে</translation>
 <translation id="2801022321632964776">নিজের ভাষায় ব্রাউজ করতে, Chrome-কে লেটেস্ট ভার্সনে আপডেট করুন</translation>
 <translation id="2805756323405976993">অ্যাপ্স</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">আপনার <ph name="BEGIN_LINK" />Google অ্যাকাউন্ট<ph name="END_LINK" />-এ সেভ করা পাসওয়ার্ড দেখুন এবং পরিচালনা করুন</translation>
 <translation id="2818669890320396765">আপনার সমস্ত ডিভাইসে বুকমার্কগুলি পেতে সাইন-ইন করে সিঙ্ক বিকল্প চালু করুন</translation>
 <translation id="2827278682606527653">স্ক্রিনের অর্ধেক উচ্চতা পর্যন্ত ফিড কার্ড মেনু খোলা আছে</translation>
@@ -459,6 +460,7 @@
 <translation id="4056223980640387499">সেপিয়া</translation>
 <translation id="4060598801229743805">স্ক্রীনের প্রায় উপরের দিকে বিকল্পগুলি উপলব্ধ</translation>
 <translation id="4062305924942672200">আইনী তথ্য</translation>
+<translation id="4082818367361753283">গ্রুপ আইডি</translation>
 <translation id="4084682180776658562">বুকমার্ক</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> থেকে – <ph name="BEGIN_DEEMPHASIZED" />Google এর মাধ্যমে ডেলিভারি দেওয়া হয়েছে<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">অ্যাপ্লিকেশান ডেটা মুছবেন?</translation>
@@ -1182,7 +1184,9 @@
 <translation id="8662811608048051533">বেশিরভাগ সাইট থেকে আপনাকে সাইন-আউট করিয়ে দেয়।</translation>
 <translation id="8664979001105139458">ফাইলের নামটি আগে থেকেই আছে</translation>
 <translation id="8676789164135894283">সাইন-ইন করার ক্ষেত্রে যাচাইকরণ</translation>
+<translation id="867767487203716855">পরবর্তী আপডেট</translation>
 <translation id="8683039184091909753">ছবি</translation>
+<translation id="8683081248374354009">গ্রুপ রিসেট করুন</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{সিগনালের স্তর: #টি দণ্ড}one{সিগনালের স্তর: #টি দণ্ড}other{সিগনালের স্তর: #টি দণ্ড}}</translation>
 <translation id="869891660844655955">মেয়াদকাল সমাপ্তির তারিখ</translation>
 <translation id="8699120352855309748">এইসব ভাষায় অনুবাদ হবে না</translation>

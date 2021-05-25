@@ -245,6 +245,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Inštalácia aplikácií, rozšírení a motívov</translation>
 <translation id="2977598380246111477">Ďalšie číslo</translation>
+<translation id="2992327365391326550">Tlačidlo mikrofónu zariadenia je vypnuté.</translation>
 <translation id="2995447421581609334">Zobraziť zariadenia na prenos</translation>
 <translation id="2996462380875591307">Bola zapnutá ukotvená lupa. Vypnete ju opätovným stlačením kombinácie klávesov Ctrl+Hľadať+D.</translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
@@ -255,6 +256,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3038571455154067151">Ak sa chcete prihlásiť, zadajte prístupový kód rodiča Family Link</translation>
 <translation id="3039939407102840004">Úroveň batérie dotykového pera: <ph name="PERCENTAGE" />.</translation>
 <translation id="3045488863354895414">Dobré popoludnie,</translation>
+<translation id="3051189971848907985">Premenúva sa profil. Počkajte niekoľko minút.</translation>
 <translation id="3055162170959710888">Toto zariadenie si dnes používal(a) <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Rozbaliť ponuku</translation>
@@ -295,6 +297,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3368922792935385530">Pripojené</translation>
 <translation id="3371140690572404006">zariadenia USB-C (port vpravo vpredu)</translation>
 <translation id="3375634426936648815">Pripojené</translation>
+<translation id="3378442621503952303">Pripája sa k profilu. Počkajte niekoľko minút.</translation>
 <translation id="3386978599540877378">lupa na celú obrazovku</translation>
 <translation id="3400357268283240774">Ďalšie nastavenia</translation>
 <translation id="3410336247007142655">Zobraziť nastavenia tmavého motívu</translation>
@@ -351,6 +354,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="380165613292957338">Ako vám môžem pomôcť?</translation>
 <translation id="3826099427150913765">Prepnúť na heslo</translation>
 <translation id="383058930331066723">Režim šetriča batérie je zapnutý</translation>
+<translation id="3835880383832568924">Ak si chcete zobraziť, čo je nové, otvorte aplikáciu Skratky</translation>
 <translation id="383629559565718788">Zobraziť nastavenia klávesnice</translation>
 <translation id="3846214748874656680">Ukončiť režim celej obrazovky</translation>
 <translation id="3846575436967432996">Informácie o sieti nie sú k dispozícii</translation>
@@ -471,6 +475,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4705716602320768426">Odoslať spätnú väzbu</translation>
 <translation id="4731797938093519117">Rodičovský prístup</translation>
 <translation id="4734965478015604180">Na šírku</translation>
+<translation id="4735498845456076464">Klávesová skratka <ph name="LAUNCHER_KEY_NAME" /> + číslo bola zmenená. Ak chcete použiť klávesy s funkciami, stlačte kláves <ph name="LAUNCHER_KEY_NAME" /> + kláves v hornom rade.</translation>
 <translation id="4744944742468440486">Informácie súvisiace s vaším výberom</translation>
 <translation id="4759238208242260848">Stiahnuté</translation>
 <translation id="4774338217796918551">Vráť sa zajtra o <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6896758677409633944">Kopírovať</translation>
 <translation id="6910714959251846841">Táto aktualizácia vyžaduje vykonať v zariadení obnovenie Powerwash. Prečítajte si ďalšie informácie o najnovšej aktualizácii aplikácie <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Inteligentnú kartu sa nepodarilo rozpoznať. Skúste to znova.</translation>
+<translation id="6921188888306725546">Boli zlepšené klávesové skratky</translation>
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="6961121602502368900">Stíšenie telefónu nie je v pracovnom profile k dispozícii</translation>
 <translation id="6961840794482373852">Klávesová skratka Alt + šípka nahor bola zmenená. Ak chcete použiť kláves Page Up, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka nahor.</translation>
@@ -934,6 +940,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8631727435199967028">Nastavenia dostupnosti</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="8639760480004882931">Zostávajúca kapacita: <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">Obnovuje sa zoznam profilov. Počkajte niekoľko minút.</translation>
 <translation id="8646417893960517480">Časovač na <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Ak chcete pridať osobu, zadajte prístupový kód rodiča Family Link</translation>
 <translation id="8649101189709089199">Počúvanie vybraného textu</translation>
@@ -961,6 +968,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi‑Fi</translation>
 <translation id="881757059229893486">Nastavenia metód vstupu</translation>
+<translation id="8818320199597151042">Odstraňuje sa profil. Počkajte niekoľko minút.</translation>
 <translation id="8825863694328519386">Vrátite sa potiahnutím zľava</translation>
 <translation id="8828714802988429505">90 °</translation>
 <translation id="8841375032071747811">Tlačidlo Späť</translation>
@@ -1006,6 +1014,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="9091626656156419976">Obrazovka <ph name="DISPLAY_NAME" /> bola odstránená</translation>
 <translation id="9098969848082897657">Vypnutie zvuku telefónu</translation>
 <translation id="9099154003160514616">K dispozícii je aktualizácia prehliadača Lacros</translation>
+<translation id="9100887602489003640">Pridáva sa profil. Počkajte niekoľko minút.</translation>
 <translation id="9105450214093926548">Prihlásenie druhého používateľa nie je podporované, keď je spustený prehliadač Lacros. Použite radšej druhý profil v prehliadači Lacros alebo Lacros zavrite a skúste to znova.</translation>
 <translation id="9133335900048457298">Nie je možné nahrať chránený obsah</translation>
 <translation id="9151726767154816831">Aktualizáciu uskutočníte reštartovaním a použitím funkcie Powerwash</translation>

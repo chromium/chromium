@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Εγκαταστήσει εφαρμογές, επεκτάσεις και θέματα</translation>
 <translation id="2977598380246111477">Επόμενος αριθμός</translation>
+<translation id="2992327365391326550">Το κουμπί μικροφώνου της συσκευής είναι απενεργοποιημένο.</translation>
 <translation id="2995447421581609334">Εμφάνιση συσκευών μετάδοσης.</translation>
 <translation id="2996462380875591307">Ο Μεγεθυντικός φακός σε παράθυρο ενεργοποιήθηκε. Πατήστε Ctrl+Αναζήτηση+D ξανά για να τον απενεργοποιήσετε.</translation>
 <translation id="3000461861112256445">Μονοφωνικός ήχος</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">Για να συνδεθείτε, εισαγάγετε τον κωδικό πρόσβασης γονέα Family Link</translation>
 <translation id="3039939407102840004">Το επίπεδο της μπαταρίας της γραφίδας είναι <ph name="PERCENTAGE" />%.</translation>
 <translation id="3045488863354895414">Καλό απόγευμα,</translation>
+<translation id="3051189971848907985">Η μετονομασία του προφίλ βρίσκεται σε εξέλιξη. Περιμένετε λίγα λεπτά.</translation>
 <translation id="3055162170959710888">Χρησιμοποιήσατε αυτήν τη συσκευή για <ph name="USED_TIME" /> σήμερα</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Ανάπτυξη μενού</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">Σε σύνδεση</translation>
 <translation id="3371140690572404006">Συσκευή USB-C (δεξιά μπροστινή θύρα)</translation>
 <translation id="3375634426936648815">Συνδέθηκε</translation>
+<translation id="3378442621503952303">Η σύνδεση στο προφίλ βρίσκεται σε εξέλιξη. Περιμένετε λίγα λεπτά.</translation>
 <translation id="3386978599540877378">ο μεγεθυντικός φακός πλήρους οθόνης</translation>
 <translation id="3400357268283240774">Πρόσθετες ρυθμίσεις</translation>
 <translation id="3410336247007142655">Εμφάνιση ρυθμίσεων Σκούρου θέματος</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">Γεια, πώς μπορώ να βοηθήσω;</translation>
 <translation id="3826099427150913765">Αλλαγή σε κωδικό πρόσβασης</translation>
 <translation id="383058930331066723">Η λειτουργία εξοικονόμησης μπαταρίας είναι ενεργοποιημένη</translation>
+<translation id="3835880383832568924">Για να δείτε τις ενημερώσεις, ανοίξτε την εφαρμογή Συντομεύσεις.</translation>
 <translation id="383629559565718788">Εμφάνιση ρυθμίσεων πληκτρολογίου</translation>
 <translation id="3846214748874656680">Έξοδος από πλήρη οθόνη</translation>
 <translation id="3846575436967432996">Δεν υπάρχουν διαθέσιμες πληροφορίες δικτύου</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">Υποβολή σχολίων</translation>
 <translation id="4731797938093519117">Γονική πρόσβαση</translation>
 <translation id="4734965478015604180">Οριζόντια περιστροφή</translation>
+<translation id="4735498845456076464">Η συντόμευση πληκτρολογίου <ph name="LAUNCHER_KEY_NAME" /> + Αριθμός άλλαξε. Για να χρησιμοποιήσετε τα πλήκτρα λειτουργιών, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + ένα πλήκτρο στην επάνω σειρά.</translation>
 <translation id="4744944742468440486">Πληροφορίες που σχετίζονται με την επιλογή σας</translation>
 <translation id="4759238208242260848">Λήψεις</translation>
 <translation id="4774338217796918551">Επιστρέψτε ξανά αύριο στις <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">Αντιγραφή</translation>
 <translation id="6910714959251846841">Αυτή η ενημέρωση απαιτεί την εκτέλεση powerwash στη συσκευή σας. Μάθετε περισσότερα σχετικά με την πιο πρόσφατη ενημέρωση της εφαρμογής <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Δεν ήταν δυνατή η αναγνώριση της έξυπνης κάρτας σας. Επανάληψη.</translation>
+<translation id="6921188888306725546">Οι συντομεύσεις πληκτρολογίου έχουν βελτιωθεί</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6961121602502368900">Η Σίγαση τηλεφώνου δεν είναι διαθέσιμη στο προφίλ εργασίας</translation>
 <translation id="6961840794482373852">Η συντόμευση πληκτρολογίου Alt + Επάνω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Page Up, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Επάνω βέλος.</translation>
@@ -934,6 +940,7 @@
 <translation id="8631727435199967028">Ρυθμίσεις προσβασιμότητας</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="8639760480004882931">Απομένει <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">Η ανανέωση της λίστας προφίλ βρίσκεται σε εξέλιξη. Περιμένετε λίγα λεπτά.</translation>
 <translation id="8646417893960517480">Χρονόμετρο <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Για να προσθέσετε ένα άτομο, εισαγάγετε τον κωδικό πρόσβασης γονέα Family Link</translation>
 <translation id="8649101189709089199">Επιλέξτε για αυτόματη ανάγνωση</translation>
@@ -961,6 +968,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Ρυθμίσεις μεθόδων εισαγωγής</translation>
+<translation id="8818320199597151042">Η κατάργηση του προφίλ βρίσκεται σε εξέλιξη. Περιμένετε λίγα λεπτά.</translation>
 <translation id="8825863694328519386">Για να επιστρέψετε, σύρετε από τα αριστερά.</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Κουμπί "Πίσω"</translation>
@@ -1006,6 +1014,7 @@
 <translation id="9091626656156419976">Κατάργηση οθόνης <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Σίγαση τηλεφώνου</translation>
 <translation id="9099154003160514616">Υπάρχει διαθέσιμη ενημέρωση Lacros</translation>
+<translation id="9100887602489003640">Προσθήκη προφίλ. Περιμένετε λίγα λεπτά.</translation>
 <translation id="9105450214093926548">Η σύνδεση δεύτερου χρήστη δεν υποστηρίζεται όσο εκτελείται το πρόγραμμα περιήγησης Lacros. Αντί αυτού, χρησιμοποιήστε ένα δεύτερο προφίλ προγράμματος περιήγησης στο Lacros ή κλείστε το Lacros και δοκιμάστε ξανά.</translation>
 <translation id="9133335900048457298">Δεν είναι δυνατή η εγγραφή προστατευμένου περιεχομένου</translation>
 <translation id="9151726767154816831">Για να ολοκληρωθεί η ενημέρωση, πρέπει να γίνει επανεκκίνηση και powerwash</translation>

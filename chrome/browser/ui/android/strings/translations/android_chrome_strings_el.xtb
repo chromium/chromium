@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
+<translation id="1016498331642356377">Κάντε γρήγορη αναζήτηση με φωνητικές εντολές. Για να επεξεργαστείτε αυτήν τη συντόμευση, αγγίξτε παρατεταμένα.</translation>
 <translation id="1028699632127661925">Αποστολή στη συσκευή <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Διαγραφή δεδομένων ιστοτόπων και εφαρμογών;</translation>
 <translation id="1036348656032585052">Απενεργοποίηση</translation>
@@ -157,6 +158,7 @@
 <translation id="2067805253194386918">κείμενο</translation>
 <translation id="2068748236079642969">Παρακολούθηση επόμενου βίντεο</translation>
 <translation id="2074143993849053708">Κλειστή διεπαφή χρήστη για παροχή συναίνεσης σχετικά με τη φωνητική αναζήτηση μέσω του Βοηθού</translation>
+<translation id="2075835334924942448">Εδώ θα βρείτε ειδήσεις</translation>
 <translation id="2082238445998314030">Αποτέλεσμα <ph name="RESULT_NUMBER" /> από <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Συγχρονισμός και εξατομίκευση σε όλες τις συσκευές</translation>
 <translation id="2100273922101894616">Αυτόματη σύνδεση</translation>
@@ -170,6 +172,7 @@
 <translation id="2131665479022868825">Αποθηκεύτηκαν <ph name="DATA" /></translation>
 <translation id="213279576345780926">Η καρτέλα <ph name="TAB_TITLE" /> έκλεισε</translation>
 <translation id="2139186145475833000">Προσθήκη στην αρχική οθόνη</translation>
+<translation id="2141396931810938595">Βάσει της χρήσης σας</translation>
 <translation id="214888715418183969">Επιλέξτε τα δεδομένα που νιώθετε άνετα να κοινοποιείτε στο Chrome. Οι μετρήσεις που θα κοινοποιήσετε θα χρησιμοποιηθούν για τη βελτίωση των λειτουργιών, της απόδοσης και της σταθερότητας του Chrome.</translation>
 <translation id="2154484045852737596">Επεξεργασία κάρτας</translation>
 <translation id="2154710561487035718">Αντιγραφή διεύθυνσης URL</translation>
@@ -257,6 +260,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Αρχείο ήχου}other{# Αρχεία ήχου}}</translation>
 <translation id="2656405586795711023">Εφαρμογές ιστού</translation>
 <translation id="2689830683995595741">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους<ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />. Ισχύει επίσης η <ph name="BEGIN_LINK3" />Σημείωση απορρήτου για Λογαριασμούς Google που διαχειρίζονται από το Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2702516483241149200">Νέο: Κοινοποιήστε έναν σύνδεσμο που κάνει κύλιση σε αυτό το κείμενο</translation>
 <translation id="2704606927547763573">Αντιγράφ.</translation>
 <translation id="2707726405694321444">Ανανέωση σελίδας</translation>
 <translation id="271033894570825754">Νέο</translation>
@@ -304,6 +308,7 @@
 <translation id="2956410042958133412">Αυτός ο λογαριασμός τελεί υπό τη διαχείριση των γονέων <ph name="PARENT_NAME_1" /> και <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> μη αναγνωσμένη σελίδα}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> μη αναγνωσμένες σελίδες}}</translation>
 <translation id="2979025552038692506">Επιλεγμένη καρτέλα ανώνυμης περιήγησης</translation>
+<translation id="2979448359891869301">Δεν είναι δυνατή η επέκταση του στιγμιότυπου οθόνης. Δοκιμάστε ξανά όταν το τηλέφωνό σας δεν είναι απασχολημένο.</translation>
 <translation id="2987620471460279764">Κοινόχρηστο κείμενο από άλλη συσκευή</translation>
 <translation id="2989523299700148168">Πραγματοποιήθηκε επίσκεψη πρόσφατα</translation>
 <translation id="2992473221983447149">Περιγραφές εικόνας</translation>
@@ -345,6 +350,7 @@
 <translation id="3265534588625245297">Διαχειριστείτε τους ιστοτόπους που ακολουθείτε</translation>
 <translation id="3269093882174072735">Φόρτωση εικόνας</translation>
 <translation id="3269956123044984603">Για να εμφανίζονται οι καρτέλες από τις άλλες συσκευές σας, ενεργοποιήστε τον "Αυτόματο συγχρονισμό δεδομένων" στις ρυθμίσεις λογαριασμού Android.</translation>
+<translation id="3280562213547448728">Φωνητική αναζήτηση</translation>
 <translation id="3282568296779691940">Σύνδεση στο Chrome</translation>
 <translation id="3284510035090979597">Προληπτική βοήθεια</translation>
 <translation id="3285080554353377245">Βίντεο σχετικά με τον τρόπο χρήσης του Chrome</translation>
@@ -395,6 +401,7 @@
 <translation id="3563767357928833671">Το περιεχόμενο του προχείρου εμφανίζεται</translation>
 <translation id="3566923219790363270">Το Chrome εξακολουθεί να προετοιμάζεται για VR. Επανεκκίνηση Chrome αργότερα.</translation>
 <translation id="3568688522516854065">Για να εμφανίζονται οι καρτέλες σας από τις άλλες συσκευές σας, συνδεθείτε και ενεργοποιήστε τον συγχρονισμό</translation>
+<translation id="3577473026931028326">Παρουσιάστηκε κάποιο πρόβλημα. Επανάληψη.</translation>
 <translation id="3587482841069643663">Όλες</translation>
 <translation id="3587596251841506391">Συμβάλ. στη βελτίωση της ασφάλ.</translation>
 <translation id="3602290021589620013">Προεπισκόπηση</translation>
@@ -480,6 +487,7 @@
 <translation id="4195643157523330669">Άνοιγμα σε νέα καρτέλα</translation>
 <translation id="4198423547019359126">Δεν υπάρχουν διαθέσιμες τοποθεσίες λήψης</translation>
 <translation id="4209895695669353772">Για λήψη εξατομικευμένου περιεχομένου που προτείνεται από την Google, ενεργοποιήστε τον συγχρονισμό</translation>
+<translation id="4225895483398857530">Συντόμευση γραμμής εργαλείων</translation>
 <translation id="4242533952199664413">Ανοίξτε τις ρυθμίσεις</translation>
 <translation id="4248098802131000011">Προστατέψτε τους κωδικούς πρόσβασής σας από παραβιάσεις δεδομένων και άλλα ζητήματα ασφαλείας.</translation>
 <translation id="4250229828105606438">Στιγμιότυπο οθόνης</translation>
@@ -746,12 +754,14 @@
 <translation id="5864419784173784555">Αναμονή για άλλη λήψη…</translation>
 <translation id="5865733239029070421">Αποστέλλει αυτόματα στατιστικά στοιχεία χρήσης και αναφορές σφαλμάτων στην Google</translation>
 <translation id="5869522115854928033">Αποθηκευμένοι κωδικοί πρόσβασης</translation>
+<translation id="587735546353481577">Για να ακολουθήσετε έναν ιστότοπο, μεταβείτε στον ιστότοπο, ανοίξτε το μενού Chrome και πατήστε Παρακολούθηση.</translation>
 <translation id="5880748256563468367">Μετάβαση στη ροή</translation>
 <translation id="5884076754568147479">Για να σας βοηθήσει να ολοκληρώνετε τις εργασίες σας, η Google θα λάβει τα URL και το περιεχόμενο των ιστοτόπων στους οποίους χρησιμοποιείτε τον Βοηθό, καθώς και τις πληροφορίες που υποβάλετε μέσω του Βοηθού.</translation>
 <translation id="5919204609460789179">Ενημερώστε το <ph name="PRODUCT_NAME" /> για να ξεκινήσει ο συγχρονισμός</translation>
 <translation id="5937580074298050696">Εξοικονομήθηκαν <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Επαναφορά</translation>
 <translation id="5942872142862698679">Χρήση του Google για αναζήτηση</translation>
+<translation id="5945035219773565305">Τρέχουσα πρόταση:  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Προβάλλεται η ζωντανή σελίδα</translation>
 <translation id="5952764234151283551">Αποστέλλει στην Google το URL μιας σελίδας στην οποία προσπαθείτε να μεταβείτε</translation>
 <translation id="5956665950594638604">Άνοιγμα Κέντρου βοήθειας Chrome σε νέα καρτέλα</translation>
@@ -765,6 +775,10 @@
 <translation id="6000203700195075278">Ακολουθήστε ξανά</translation>
 <translation id="6002623704405939939">Για διαγραφή του ιστορικού <ph name="BEGIN_LINK1" />αναζήτησης<ph name="END_LINK1" /> ή άλλων μορφών ιστορικού, επισκεφτείτε την ενότητα <ph name="BEGIN_LINK2" />Η δραστηριότητά μου Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Προτεινόμενος κωδικός πρόσβασης</translation>
+<translation id="6032091552407840792">Αυτή η δοκιμή είναι ενεργή μόνο σε <ph name="BEGIN_LINK" />ορισμένες περιοχές<ph name="END_LINK" />.</translation>
+<translation id="6033245666633565791">Με το <ph name="BEGIN_LINK" />Πλαίσιο ιδιωτικότητας<ph name="END_LINK" />, το Chrome αναπτύσσει νέες τεχνολογίες για να σας προστατεύσει από την παρακολούθηση μεταξύ ιστοτόπων, διατηρώντας παράλληλα τον ανοικτό ιστό.
+
+Οι δοκιμές του Πλαισίου ιδιωτικότητας βρίσκονται ακόμα υπό ενεργή ανάπτυξη και διατίθενται σε επιλεγμένες περιοχές. Προς το παρόν, οι ιστότοποι μπορούν να δοκιμάσουν το Πλαίσιο ιδιωτικότητας ενώ συνεχίζουν να χρησιμοποιούν τρέχουσες τεχνολογίες ιστού, όπως τα cookie τρίτου μέρους.</translation>
 <translation id="6036057147555329831">Επιπλέον ICU</translation>
 <translation id="6039379616847168523">Μετάβαση στην επόμενη καρτέλα</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
@@ -830,6 +844,7 @@
 <translation id="6407224748847589805">Δεν είναι δυνατή η σύνδεση στον υπολογιστή σας. Δοκιμάστε διαφορετική επιλογή επαλήθευσης.</translation>
 <translation id="6410404864818553978">Βασικά δεδομένα χρήσης</translation>
 <translation id="6410883413783534063">Ανοίξτε καρτέλες για να επισκεφτείτε διαφορετικές σελίδες ταυτόχρονα.</translation>
+<translation id="6411219469806822692">Δεν είναι δυνατή η μετάβαση ψηλότερα. Δοκιμάστε να ξεκινήσετε από ακόμη πιο ψηλά στη σελίδα.</translation>
 <translation id="6412673304250309937">Ελέγχει αν τα URL περιλαμβάνονται στην λίστα μη ασφαλών ιστοτόπων που είναι αποθηκευμένη στο Chrome. Εάν ένας ιστότοπος προσπαθήσει να κλέψει τον κωδικό σας ή όταν κάνετε λήψη ενός επιβλαβούς αρχείου, το Chrome μπορεί επίσης να στείλει URL, καθώς και τμήματα του περιεχομένου της σελίδας, στην Ασφαλή περιήγηση.</translation>
 <translation id="641643625718530986">Εκτύπωση…</translation>
 <translation id="6427112570124116297">Μετάφραση ιστού</translation>
@@ -892,10 +907,12 @@
 <translation id="671481426037969117">Η αντίστροφη μέτρηση <ph name="FQDN" /> εξαντλήθηκε. Θα ξεκινήσει ξανά αύριο.</translation>
 <translation id="6738516213925468394">Τα δεδομένα σας κρυπτογραφήθηκαν με τη <ph name="BEGIN_LINK" />φράση πρόσβασης συγχρονισμού<ph name="END_LINK" /> στις <ph name="TIME" />. Καταχωρίστε την, για να ξεκινήσει ο συγχρονισμός.</translation>
 <translation id="6738867403308150051">Λήψη…</translation>
+<translation id="6751521182688001123">Ανοίξτε γρήγορα μια νέα καρτέλα. Για να επεξεργαστείτε αυτήν τη συντόμευση, αγγίξτε παρατεταμένα.</translation>
 <translation id="6767294960381293877">Άνοιγμα σε μισό ύψος της λίστας συσκευών στις οποίες θα κοινοποιηθεί μια καρτέλα.</translation>
 <translation id="6783942555455976443">Αποθηκεύστε αυτήν τη σελίδα για αργότερα και λάβετε σχετική υπενθύμιση.</translation>
 <translation id="6811034713472274749">Σελίδα έτοιμη για προβολή</translation>
 <translation id="6813446258015311409">Σύνδεση στο Chrome, έγινε άνοιγμα.</translation>
+<translation id="6817747507826986771">Κοινοποιήστε γρήγορα αυτήν τη σελίδα. Για να επεξεργαστείτε αυτήν τη συντόμευση, αγγίξτε παρατεταμένα.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, καρτέλα, επιλέχθηκε</translation>
 <translation id="6846298663435243399">Φόρτωση…</translation>
@@ -966,6 +983,7 @@
 <translation id="7333031090786104871">Η προσθήκη του προηγούμενου ιστοτόπου δεν έχει ολοκληρωθεί</translation>
 <translation id="7339898014177206373">Νέο παράθυρο</translation>
 <translation id="7340958967809483333">Επιλογές για Discover</translation>
+<translation id="7352339641508007922">Σύρετε για να τραβήξετε ένα μεγάλο στιγμιότυπο οθόνης</translation>
 <translation id="7352651011704765696">Παρουσιάστηκε κάποιο πρόβλημα</translation>
 <translation id="7352939065658542140">ΒΙΝΤΕΟ</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Κοινοποίηση 1 επιλεγμένου στοιχείου}other{Κοινοποίηση # επιλεγμένων στοιχείων}}</translation>
@@ -1058,6 +1076,7 @@
 <translation id="7876243839304621966">Κατάργηση όλων</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Έχετε <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> μη αναγνωσμένη σελίδα}other{Έχετε <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> μη αναγνωσμένες σελίδες}}</translation>
 <translation id="7882131421121961860">Δεν βρέθηκε ιστορικό</translation>
+<translation id="7884346424584885269">Το Chrome χρειάζεται άδεια για σάρωση για κοντινές συσκευές. <ph name="BEGIN_LINK" />Ενημέρωση αδειών<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">Εκτέλεση στο Chrome</translation>
 <translation id="789763218334337857">Τρόπος χρήσης του Chrome</translation>
 <translation id="7903184275147100332">Μπορεί να χρειαστεί λίγα λεπτά</translation>
@@ -1151,6 +1170,11 @@
 <translation id="8461694314515752532">Κρυπτογράφηση συγχρονισμένων δεδομένων με τη δική σας φράση πρόσβασης συγχρονισμού</translation>
 <translation id="8466613982764129868">Βεβαιωθείτε ότι η συσκευή <ph name="TARGET_DEVICE_NAME" /> είναι συνδεδεμένη στο διαδίκτυο.</translation>
 <translation id="8473863474539038330">Διευθύνσεις και άλλα</translation>
+<translation id="8481921391193215807">Όταν είναι ενεργοποιημένο, οι ιστότοποι μπορούν να χρησιμοποιούν τις τεχνικές διατήρησης απορρήτου που εμφανίζονται εδώ για την παροχή του περιεχομένου και των υπηρεσιών τους. Σε αυτές περιλαμβάνονται εναλλακτικές λύσεις για την παρακολούθηση μεταξύ ιστοτόπων. Περισσότερες δοκιμές ενδέχεται να προστεθούν με την πάροδο του χρόνου.
+
+<ph name="BEGIN_LIST_ITEM1" />Οι διαφημιζόμενοι και οι εκδότες μπορούν να χρησιμοποιήσουν την τεχνολογία FLoC.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Οι διαφημιζόμενοι και οι εκδότες μπορούν να εξετάζουν την αποδοτικότητα των διαφημίσεων, με τέτοιον τρόπο ώστε να μην γίνεται εντοπισμός καθώς περιηγείστε μεταξύ ιστοτόπων.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Οι δοκιμαστικές λειτουργίες είναι ενεργοποιημένες</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Άνοιγμα σελίδας "Ιστορικό"</translation>
@@ -1262,6 +1286,7 @@
 <translation id="9204836675896933765">1 αρχείο απομένει</translation>
 <translation id="9206873250291191720">Α</translation>
 <translation id="9209888181064652401">Δεν είναι δυνατή η πραγματοποίηση κλήσεων</translation>
+<translation id="9212845824145208577">Δεν είναι δυνατή η μετάβαση χαμηλότερα. Δοκιμάστε να ξεκινήσετε από ακόμη πιο χαμηλά στη σελίδα.</translation>
 <translation id="9219103736887031265">Εικόνες</translation>
 <translation id="926205370408745186">Κατάργηση της δραστηριότητάς σας στο Chrome από το Digital Wellbeing</translation>
 <translation id="927968626442779827">Χρησιμοποιήστε τη λειτουργία Lite στο Google Chrome.</translation>

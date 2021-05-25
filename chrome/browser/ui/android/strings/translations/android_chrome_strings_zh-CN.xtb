@@ -275,6 +275,7 @@
 <translation id="2781151931089541271">还剩 1 秒</translation>
 <translation id="2801022321632964776">更新即可在最新版本的 Chrome 中使用您的语言</translation>
 <translation id="2805756323405976993">应用</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">查看和管理您的 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" />中保存的密码</translation>
 <translation id="2818669890320396765">要将您的书签同步到您的所有设备上，请登录您的帐号并开启同步功能</translation>
 <translation id="2827278682606527653">动态卡片上的菜单已半屏打开</translation>
@@ -458,6 +459,7 @@
 <translation id="4056223980640387499">棕褐色调</translation>
 <translation id="4060598801229743805">选项位于屏幕顶部附近</translation>
 <translation id="4062305924942672200">法律信息</translation>
+<translation id="4082818367361753283">群组 ID</translation>
 <translation id="4084682180776658562">添加书签</translation>
 <translation id="4084712963632273211">来自 <ph name="PUBLISHER_ORIGIN" /> - <ph name="BEGIN_DEEMPHASIZED" />由 Google 提供<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">要删除应用数据吗？</translation>
@@ -1183,7 +1185,9 @@
 <translation id="8662811608048051533">会致使您从大多数网站退出。</translation>
 <translation id="8664979001105139458">文件名已存在</translation>
 <translation id="8676789164135894283">登录验证</translation>
+<translation id="867767487203716855">下一次更新</translation>
 <translation id="8683039184091909753">图片</translation>
+<translation id="8683081248374354009">重置群组</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{信号强度：# 格}other{信号强度：# 格}}</translation>
 <translation id="869891660844655955">截止日期</translation>
 <translation id="8699120352855309748">不询问是否翻译这些语言</translation>

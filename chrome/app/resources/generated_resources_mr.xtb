@@ -2151,7 +2151,7 @@
 <translation id="32939749466444286">Linux कंटेनर सुरू झाले नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="3294437725009624529">अतिथी</translation>
 <translation id="3294686910656423119">वापर आकडेवारी आणि क्रॅश अहवाल</translation>
-<translation id="3295357220137379386">डिव्हाइस व्यस्त आहे</translation>
+<translation id="3295357220137379386">डिव्हाइस व्यग्र आहे</translation>
 <translation id="329838636886466101">दुरुस्त करा</translation>
 <translation id="3298789223962368867">चुकीची URL एंटर केली.</translation>
 <translation id="32991397311664836">डिव्हाइस:</translation>
@@ -3666,7 +3666,7 @@
 <translation id="4953808748584563296">डीफॉल्ट नारिंगी अवतार</translation>
 <translation id="4955710816792587366">तुमचा पिन निवडा</translation>
 <translation id="4959262764292427323">तुम्हाला कोणत्याही डिव्हाइसवर वापरता यावे यासाठी तुमच्या Google खात्यामध्ये पासवर्ड सेव्ह केले जातात</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> हल्लेखोरांना तुमची वैयक्तिक माहिती चोरी करण्याची अनुमती देऊ शकेल.</translation>
+<translation id="496027654926814138"><ph name="FILE_NAME" /> हल्लेखोरांना तुमची वैयक्तिक माहिती चोरी करू देऊ शकेल.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961361269522589229">पाककलेशी संबंधित कल्पना</translation>
 <translation id="496185450405387901">हे अ‍ॅप तुमच्या अ‍ॅडमिनिस्ट्रेटरने इंस्टॉल केले आहे.</translation>

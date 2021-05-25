@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">ফাইল ডাউনলোড করতে Chromium-এর জন্য স্টোরেজের অ্যাক্সেস প্রয়োজন</translation>
 <translation id="2572494885440352020">Chromium সহায়ক</translation>
 <translation id="2577788541081224677">সব ডিভাইস জুড়ে Chromium-এ থাকা ডেটা অ্যাক্সেস করার জন্য সাইন-ইন করুন যাতে আপনি সিঙ্ক চালু করতে পারেন।</translation>
+<translation id="2580426763510374355">Chromium OS ইনস্টল করুন</translation>
 <translation id="2583187216237139145">এই প্রোফাইল ব্যবহার করার সময় জেনারেট হওয়া Chromium ডেটা (যেমন বুকমার্ক, ইতিহাস, পাসওয়ার্ড ও অন্যান্য সেটিংস) অফিস প্রোফাইল অ্যাডমিনিস্ট্রেটর মুছে দিতে পারেন। <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">আপডেটটি প্রয়োগ করতে Chromium OS আবার চালু করা প্রয়োজন।</translation>
 <translation id="2648074677641340862">ইনস্টলেশনের সময় একটি অপারেটিং সিস্টেম ত্রুটি ঘটেছে৷ অনুগ্রহ করে Chromium আবার ডাউনলোড করুন৷</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium বিটা</translation>
 <translation id="5479196819031988440">Chromium OS এই পৃষ্ঠাটি খুলতে পারবে না।</translation>
 <translation id="5480860683791598150">এই সাইটটির সাথে আপনার লোকেশন শেয়ার করার জন্য Chromium কে আপনার লোকেশনের তথ্যে অ্যাক্সেস দিতে হবে</translation>
+<translation id="5481338274774984070">Chromium আপনাকে সাজেস্ট করে যে আপনি ফাইলটি ডাউনলোড করবেন না এবং এটি খুলবেন না।</translation>
 <translation id="549669000822060376">Chromium যখন সিস্টেম আপডেটগুলিকে ইনস্টল করে তখন দয়া করে অপেক্ষা করুন৷</translation>
 <translation id="5496810170689441661">Chromium আপনার পাসওয়ার্ড এডিট করার অনুমতি চাইছে। অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="5527463683072221100">Chromium-এ পিডিএফ ফাইল খুলুন</translation>

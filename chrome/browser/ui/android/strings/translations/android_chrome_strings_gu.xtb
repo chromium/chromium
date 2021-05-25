@@ -275,6 +275,7 @@
 <translation id="2781151931089541271">1 સેકંડ બાકી</translation>
 <translation id="2801022321632964776">Chromeના એકદમ નવા વર્ઝનમાં તમારી ભાષા મેળવવા માટે અપડેટ કરો</translation>
 <translation id="2805756323405976993">ઍપ</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">સાચવેલા પાસવર્ડ તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" />માં જુઓ અને મેનેજ કરો</translation>
 <translation id="2818669890320396765">તમારા બધા ઉપકરણો પર તમારા બુકમાર્ક મેળવવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -458,6 +459,7 @@
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">સ્ક્રીનની ટોચ પર વિકલ્પો ઉપલબ્ધ છે</translation>
 <translation id="4062305924942672200">કાનુની માહિતી</translation>
+<translation id="4082818367361753283">ગ્રૂપ ID</translation>
 <translation id="4084682180776658562">બુકમાર્ક</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> તરફથી - <ph name="BEGIN_DEEMPHASIZED" />Google દ્વારા વિતરિત <ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ઍપનો ડેટા ડિલીટ કરીએ?</translation>
@@ -1183,7 +1185,9 @@
 <translation id="8662811608048051533">તમને મોટાભાગની સાઇટોમાંથી સાઇન આઉટ કરે છે.</translation>
 <translation id="8664979001105139458">ફાઇલનું નામ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="8676789164135894283">સાઇન ઇન માટેની ચકાસણીઓ</translation>
+<translation id="867767487203716855">આગલી અપડેટ</translation>
 <translation id="8683039184091909753">છબી</translation>
+<translation id="8683081248374354009">ગ્રૂપને રીસેટ કરો</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{સિગ્નલની ક્ષમતાનું સ્તર: # બાર}one{સિગ્નલની ક્ષમતાનું સ્તર: # બાર}other{સિગ્નલની ક્ષમતાનું સ્તર: # બાર}}</translation>
 <translation id="869891660844655955">સમાપ્તિ તારીખ</translation>
 <translation id="8699120352855309748">આ ભાષાઓનો અનુવાદ કરવાની ઑફર કરશો નહીં</translation>

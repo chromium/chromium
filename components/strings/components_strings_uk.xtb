@@ -285,7 +285,7 @@
 <translation id="1919345977826869612">Оголошення</translation>
 <translation id="1919367280705858090">Як виправити конкретну помилку</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Немає}=1{1 сайт}one{# сайт}few{# сайти}many{# сайтів}other{# сайту}}</translation>
-<translation id="1924727005275031552">Нові</translation>
+<translation id="1924727005275031552">Нові дані</translation>
 <translation id="1945968466830820669">Ви можете втратити доступ до облікового запису організації, або хтось може викрасти вашу особисту інформацію. Chromium радить змінити пароль.</translation>
 <translation id="1947454675006758438">Скріпити вгорі праворуч</translation>
 <translation id="1958218078413065209">Ваш найкращий результат – <ph name="SCORE" />.</translation>
@@ -407,7 +407,7 @@
 <translation id="239429038616798445">Цей спосіб відправлення недоступний. Виберіть інший спосіб.</translation>
 <translation id="2396249848217231973">&amp;Відмінити видалення</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
-<translation id="2413155254802890957">Старі</translation>
+<translation id="2413155254802890957">Старі дані</translation>
 <translation id="2413528052993050574">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Можливо, його сертифікат безпеки відкликано. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2438874542388153331">Пробити чотири отвори праворуч</translation>
@@ -910,7 +910,7 @@
 <translation id="4275830172053184480">Перезапустіть пристрій</translation>
 <translation id="4277028893293644418">Скинути пароль</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Цю картку збережено у вашому обліковому записі Google}one{Ці картки збережено у вашому обліковому записі Google}few{Ці картки збережено у вашому обліковому записі Google}many{Ці картки збережено у вашому обліковому записі Google}other{Ці картки збережено у вашому обліковому записі Google}}</translation>
-<translation id="4287885627794386150">Доступна в пробній версії, але неактивна</translation>
+<translation id="4287885627794386150">Доступно в пробній версії, але не активовано</translation>
 <translation id="4297502707443874121">Ескіз для сторінки <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Розгорнути</translation>
 <translation id="4300675098767811073">Пробити кілька отворів праворуч</translation>

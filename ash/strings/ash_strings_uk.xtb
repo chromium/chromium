@@ -153,7 +153,7 @@
 <translation id="2127372758936585790">Зарядний пристрій низької потужності</translation>
 <translation id="2132302418721800944">Записувати весь екран</translation>
 <translation id="2135456203358955318">Закріплена лупа</translation>
-<translation id="2146800439053023141">Перемкнути місцезнаходження панелі</translation>
+<translation id="2146800439053023141">Змінити розташування панелі</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Повторити</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Щоб вийти з режиму огляду, проведіть трьома пальцями вниз</translation>
@@ -813,7 +813,7 @@
 <translation id="7607002721634913082">Призупинено</translation>
 <translation id="7618774594543487847">Нейтральні кольори</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7631906263969450674">Перо маркера</translation>
+<translation id="7631906263969450674">Перо-маркер</translation>
 <translation id="7633755430369750696">Показати налаштування функції "Передавання поблизу".</translation>
 <translation id="7641938616688887143">Записати</translation>
 <translation id="7642647758716480637">Відкрити налаштування мережі "<ph name="NETWORK_NAME" />", <ph name="CONNECTION_STATUS" /></translation>

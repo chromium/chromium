@@ -2136,7 +2136,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="32939749466444286">Ez da abiarazi Linux edukiontzia. Saiatu berriro.</translation>
 <translation id="3294437725009624529">Gonbidatua</translation>
 <translation id="3294686910656423119">Erabilera-estatistikak eta hutsegite-txostenak</translation>
-<translation id="3295357220137379386">Gailua lanpetuta dago</translation>
+<translation id="3295357220137379386">Gailua okupatuta dago</translation>
 <translation id="329838636886466101">Konpondu</translation>
 <translation id="3298789223962368867">Idatzitako URLak ez du balio.</translation>
 <translation id="32991397311664836">Gailuak:</translation>
@@ -3652,7 +3652,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4953808748584563296">Abatar laranja lehenetsia</translation>
 <translation id="4955710816792587366">Aukeratu PIN kode bat</translation>
 <translation id="4959262764292427323">Pasahitzak Google-ko kontuan gordetzen dira, edozein gailutan eskura izan ditzazun</translation>
-<translation id="496027654926814138">Baliteke <ph name="FILE_NAME" /> fitxategiak erasotzaileei. informazio pertsonala lapurtzen uztea.</translation>
+<translation id="496027654926814138">Baliteke <ph name="FILE_NAME" /> fitxategiak erasotzaileei informazio pertsonala lapurtzen uztea.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961361269522589229">errezeta-ideiak</translation>
 <translation id="496185450405387901">Administratzaileak instalatu du aplikazio hau.</translation>

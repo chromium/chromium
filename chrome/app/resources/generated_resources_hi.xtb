@@ -168,7 +168,7 @@
 <translation id="1173894706177603556">नाम बदलें</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, फ़ोन की बैटरी <ph name="BATTERY_STATUS" />%, जानकारी</translation>
 <translation id="1174073918202301297">शॉर्टकट जोड़ा गया</translation>
-<translation id="1174366174291287894">जब तक Chrome की ओर से न कहा जाए, तब तक आपका कनेक्शन हमेशा सुरक्षित है</translation>
+<translation id="1174366174291287894">जब तक Chrome से कोई चेतावनी न मिले, तब तक आपका कनेक्शन सुरक्षित है</translation>
 <translation id="117445914942805388">अपने सभी सिंक किए हुए डिवाइस और अपने 'Google खाते' से ब्राउज़िंग डेटा साफ़ करने के लिए, <ph name="BEGIN_LINK" />सिंक सेटिंग पर जाएं<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;प्रिंट करें...</translation>
 <translation id="1176471985365269981">आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति नहीं है</translation>
@@ -1150,7 +1150,7 @@
 <translation id="2193365732679659387">विश्‍वास सेटिंग</translation>
 <translation id="2195331105963583686">आप उस समय के बाद भी, इस <ph name="DEVICE_TYPE" /> का इस्तेमाल कर पाएंगे. हालांकि, इसमें अपने आप होने वाले सॉफ़्टवेयर और सुरक्षा अपडेट नहीं मिलेंगे</translation>
 <translation id="2195729137168608510">ईमेल सुरक्षा</translation>
-<translation id="2198625180564913276">प्रोफ़ाइल जोड़ी जा रही है. अपडेट पूरा होने में कुछ मिनट लग सकते हैं.</translation>
+<translation id="2198625180564913276">प्रोफ़ाइल जोड़ी जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="2199298570273670671">गड़बड़ी</translation>
 <translation id="2199719347983604670">Chrome सिंक का डेटा</translation>
 <translation id="2200094388063410062">ई-मेल</translation>
@@ -3062,7 +3062,7 @@
 <translation id="4285498937028063278">टैब बड़ी करें</translation>
 <translation id="428565720843367874">इस फ़ाइल को स्कैन करते समय एंटी-वायरस साफ़्टवेयर अनपेक्षित रूप से विफल रहा.</translation>
 <translation id="4287099557599763816">स्क्रीन रीडर</translation>
-<translation id="428715201724021596">प्रोफ़ाइल से कनेक्ट किया जा रहा है. अपडेट पूरा होने में कुछ मिनट लग सकते हैं.</translation>
+<translation id="428715201724021596">प्रोफ़ाइल से कनेक्ट किया जा रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="4287157641315808225">हां, ChromeVox चालू करें</translation>
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{दिखाएं}one{सूचना का पूरा कॉन्टेंट दिखाएं}other{सूचनाओं का पूरा कॉन्टेंट दिखाएं}}</translation>
 <translation id="4289372044984810120">अपने खाते यहां प्रबंधित करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -3290,7 +3290,7 @@
 <translation id="4538792345715658285">एंटरप्राइज़ नीति द्वारा इंस्टॉल किया गया.</translation>
 <translation id="4541123282641193691">आपके खाते की पुष्टि नहीं हो सकी. कृपया फिर से कोशिश करें या अपना Chromebook रीस्टार्ट करें.</translation>
 <translation id="4541662893742891060">इस प्रोफ़ाइल से कनेक्ट नहीं किया जा सकता. तकनीकी सहायता के लिए, कृपया मोबाइल और इंटरनेट सेवा देने वाली अपनी कंपनी से संपर्क करें.</translation>
-<translation id="4541706525461326392">प्रोफ़ाइल हटाई जा रही है. अपडेट पूरा होने में कुछ मिनट लग सकते हैं.</translation>
+<translation id="4541706525461326392">प्रोफ़ाइल हटाई जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="4541810033354695636">ऑगमेंटेड रिएलिटी (एआर)</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> और <ph name="WEBSITE_2" /> पर अपना डेटा पढ़ें</translation>
 <translation id="454331522350252598">विज्ञापन देने वाले यह जान सकते हैं कि कब हज़ारों उपयोगकर्ताओं की दिलचस्पी एक-दूसरे से मिलती है, जैसे कि कॉन्सर्ट में शामिल हुई भीड़ की दिलचस्पी एक जैसी होती है. इस तरह, विज्ञापन देने वाले, एक-एक व्यक्ति के लिए विज्ञापन चुनने के बजाय, उन हज़ारों उपयोगकर्ताओं के लिए एक साथ विज्ञापन चुन सकते हैं.</translation>
@@ -3668,7 +3668,7 @@
 <translation id="4953808748584563296">डिफ़ॉल्ट नारंगी अवतार</translation>
 <translation id="4955710816792587366">अनलॉक करने के लिए अपना पिन चुनें</translation>
 <translation id="4959262764292427323">पासवर्ड आपके Google खाते में सेव किए जाते हैं ताकि आप किसी भी डिवाइस पर उनका इस्तेमाल कर सकें</translation>
-<translation id="496027654926814138"><ph name="FILE_NAME" /> से हमलावर आपकी निजी जानकारी चुरा सकते हैं.</translation>
+<translation id="496027654926814138"><ph name="FILE_NAME" /> फ़ाइल से हमलावर आपकी निजी जानकारी चुरा सकते हैं.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961361269522589229">रेसिपी के आइडिया</translation>
 <translation id="496185450405387901">इस ऐप्लिकेशन को आपके एडमिन ने इंस्टॉल किया है.</translation>
@@ -3708,7 +3708,7 @@
 <translation id="5007392906805964215">समीक्षा करें</translation>
 <translation id="50080882645628821">प्रोफ़ाइल हटाएं</translation>
 <translation id="5008936837313706385">गतिविधि का नाम</translation>
-<translation id="5009463889040999939">प्रोफ़ाइल का नाम बदला जा रहा है. अपडेट पूरा होने में कुछ मिनट लग सकते हैं.</translation>
+<translation id="5009463889040999939">प्रोफ़ाइल का नाम बदला जा रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="5010043101506446253">प्रमाणपत्र प्राधिकरण</translation>
 <translation id="5015344424288992913">प्रॉक्सी को परिष्कृत कर रहा है...</translation>
 <translation id="5017633213534173756">याद रखें</translation>
@@ -4053,7 +4053,7 @@
 <translation id="5408750356094797285">ज़ूम करें: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">आपके Google खाते से</translation>
 <translation id="5411472733320185105">इन होस्‍ट और डोमेन के लिए प्रॉक्‍सी सेटिंग का उपयोग न करें:</translation>
-<translation id="5414198321558177633">प्रोफ़ाइल की सूची रीफ़्रेश की जा रही है. अपडेट पूरा होने में कुछ मिनट लग सकते हैं.</translation>
+<translation id="5414198321558177633">प्रोफ़ाइल की सूची रीफ़्रेश की जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="5414566801737831689">आप जिन वेबसाइट पर जाते हैं, उनके आइकॉन पढ़ें</translation>
 <translation id="5417312524372586921">ब्राउज़र थीम</translation>
 <translation id="5419405654816502573">Voice Match</translation>
@@ -4848,7 +4848,7 @@
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{आपके नेटवर्क पर नया प्रिंटर}one{आपके नेटवर्क पर नए प्रिंटर}other{आपके नेटवर्क पर नए प्रिंटर}}</translation>
 <translation id="6285770818046456882">आपके साथ शेयर करने वाले डिवाइस ने ट्रांसफ़र रद्द कर दिया है</translation>
 <translation id="6290613030083731160">आस-पास शेयर करने वाला कोई भी डिवाइस उपलब्ध नहीं है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
-<translation id="6291086328725007688">ऐक्टिवेशन कोड की पुष्टि की जा रही है. अपडेट पूरा होने में कुछ मिनट लग सकते हैं.</translation>
+<translation id="6291086328725007688">ऐक्टिवेशन कोड की पुष्टि की जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="6291741848715722067">पुष्टि करने वाला कोड</translation>
 <translation id="6291949900244949761">जब कोई साइट USB डिवाइस एक्सेस करना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
 <translation id="6291953229176937411">खोजकर्ता में &amp;दिखाएं</translation>

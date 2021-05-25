@@ -456,6 +456,7 @@
 <translation id="5782227691023083829">Μετάφραση...</translation>
 <translation id="5797070761912323120">Η Google μπορεί να χρησιμοποιήσει το ιστορικό σας για την εξατομίκευση της Αναζήτησης, των διαφημίσεων και άλλων υπηρεσιών Google</translation>
 <translation id="5803566855766646066">Είστε βέβαιοι ότι θέλετε να απορρίψετε αυτήν τη νέα κάρτα;</translation>
+<translation id="5812974770859303494">Προσθήκη σε…</translation>
 <translation id="5816228676161003208">Σας επιτρέπει να πραγματοποιείτε ταχύτερη αναζήτηση με φωνητικές εντολές.</translation>
 <translation id="581659025233126501">Ενεργοποίηση συγχρονισμού</translation>
 <translation id="5819208479324046259">Διαχείριση από <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
@@ -615,7 +616,6 @@
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
 <translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7062545763355031412">Αποδοχή και εναλλαγή λογαριασμών</translation>
-<translation id="708844789167408367">Αποσύνδεση και απενεργοποίηση συγχρονισμού…</translation>
 <translation id="7099761977003084116">Πρόσφατες καρτέλες</translation>
 <translation id="7102005569666697658">Λήψη… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Απόκρυψη</translation>
@@ -767,6 +767,7 @@
 <translation id="8654802032646794042">Ακύρωση</translation>
 <translation id="8668210798914567634">Αυτή η σελίδα αποθηκεύτηκε στη λίστα ανάγνωσης</translation>
 <translation id="8680787084697685621">Τα στοιχεία σύνδεσης λογαριασμού έχουν λήξει.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Κλείσιμο καρτέλας}other{Κλείσιμο καρτελών}}</translation>
 <translation id="8706588385081740091">Κωδικοί πρόσβασης</translation>
 <translation id="8717864919010420084">Αντιγραφή συνδέσμου</translation>
 <translation id="8721297211384281569">Μενού εργαλείων</translation>

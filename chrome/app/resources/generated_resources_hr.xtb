@@ -166,7 +166,7 @@
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1173916544412572294">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, telefonska baterija <ph name="BATTERY_STATUS" />%, pojedinosti</translation>
 <translation id="1174073918202301297">Prečac je dodan</translation>
-<translation id="1174366174291287894">Veza je uvijek sigurna osim ako Chrome kaže da nije</translation>
+<translation id="1174366174291287894">Veza je uvijek sigurna, osim ako Chrome kaže da nije</translation>
 <translation id="117445914942805388">Da biste izbrisali podatke o pregledavanju sa svih svojih sinkroniziranih uređaja i svojeg Google računa, <ph name="BEGIN_LINK" />otvorite postavke sinkronizacije<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Ispis...</translation>
 <translation id="1176471985365269981">Nije dopušteno uređivanje datoteka ili mapa na uređaju</translation>
