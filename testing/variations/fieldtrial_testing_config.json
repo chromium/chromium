@@ -4120,6 +4120,29 @@
             ]
         }
     ],
+    "IPH_ProfileSwitch": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:profile_switch_trigger;comparator:==0;window:360;storage:360",
+                        "event_used": "name:profile_menu_shown;comparator:==0;window:360;storage:360",
+                        "session_rate": "any"
+                    },
+                    "enable_features": [
+                        "IPH_ProfileSwitch"
+                    ]
+                }
+            ]
+        }
+    ],
     "IdentifiabilityStudy": [
         {
             "platforms": [
@@ -6211,29 +6234,6 @@
                     },
                     "enable_features": [
                         "ProbabilisticCryptidRenderer"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ProfileSwitchIPH": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:profile_switch_trigger;comparator:==0;window:360;storage:360",
-                        "event_used": "name:profile_menu_shown;comparator:==0;window:360;storage:360",
-                        "session_rate": "any"
-                    },
-                    "enable_features": [
-                        "IPH_ProfileSwitch"
                     ]
                 }
             ]
