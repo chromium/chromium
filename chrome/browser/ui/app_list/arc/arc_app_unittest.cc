@@ -2513,7 +2513,9 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderForShelfGroup) {
 }
 
 // Test that icon is correctly updated for suspended/non-suspended app.
-TEST_P(ArcAppModelBuilderTest, IconLoaderForSuspendedApps) {
+//
+// TODO(https://crbug.com/1211227): The test is flaky.
+TEST_P(ArcAppModelBuilderTest, DISABLED_IconLoaderForSuspendedApps) {
   arc::mojom::AppInfo app = fake_apps()[0];
   const std::string app_id = ArcAppTest::GetAppId(app);
 
