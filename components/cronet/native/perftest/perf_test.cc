@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/cronet/native/test/test_upload_data_provider.h"
@@ -99,7 +100,7 @@ std::string BuildBenchmarkName(ExecutorType executor,
 class UploadDataProvider : public cronet::test::TestUploadDataProvider {
  public:
   // |length| indicates how many bytes to upload.
-  UploadDataProvider(size_t length)
+  explicit UploadDataProvider(size_t length)
       : TestUploadDataProvider(cronet::test::TestUploadDataProvider::SYNC,
                                nullptr),
         length_(length),
@@ -226,8 +227,10 @@ class Callback : public cronet::test::TestUrlRequestCallback {
   void OnFailed(Cronet_UrlRequestPtr request,
                 Cronet_UrlResponseInfoPtr info,
                 Cronet_ErrorPtr error) override {
-    CHECK(false) << "Request failed with error "
-                 << Cronet_Error_error_code_get(error);
+    CHECK(false) << "Request failed with error code "
+                 << Cronet_Error_error_code_get(error) << ", QUIC error code "
+                 << Cronet_Error_quic_detailed_error_code_get(error)
+                 << ", message " << Cronet_Error_message_get(error);
   }
 
   // A simple executor that posts back to |task_runner_|.
@@ -401,6 +404,11 @@ class Benchmark {
 
 void PerfTest(const char* json_args) {
   base::AtExitManager exit_manager;
+
+  // Initialize the benchmark environment. See
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/threading_and_tasks_testing.md#full-fledged-base_test_taskenvironment
+  // for more details.
+  base::test::TaskEnvironment task_environment;
 
   // Parse benchmark options into |g_options|.
   std::string benchmark_options = json_args;
