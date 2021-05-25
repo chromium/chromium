@@ -351,6 +351,7 @@ WallpaperPrivateSetWallpaperIfExistsFunction::Run() {
 
   WallpaperControllerClientImpl::Get()->SetOnlineWallpaperIfExists(
       GetUserFromBrowserContext(browser_context())->GetAccountId(), params->url,
+      params->collection_id,
       wallpaper_api_util::GetLayoutEnum(
           wallpaper_base::ToString(params->layout)),
       params->preview_mode,
@@ -737,6 +738,7 @@ ExtensionFunction::ResponseAction WallpaperPrivateGetImagesInfoFunction::Run() {
 
 void WallpaperPrivateGetImagesInfoFunction::OnImagesInfoFetched(
     bool success,
+    const std::string& collection_id,
     const std::vector<backdrop::Image>& images) {
   if (!success) {
     Respond(Error("Images info is not available."));

@@ -82324,6 +82324,22 @@ others/histograms.xml -->
   <int value="1" label="Android Wallpapers App"/>
 </enum>
 
+<enum name="WallpaperCollection">
+  <int value="-1750392449" label="Landscapes"/>
+  <int value="-1479919333" label="Made by Canvas"/>
+  <int value="-1094276707" label="Element"/>
+  <int value="-917389828" label="Collage"/>
+  <int value="-622998436" label="Imaginary"/>
+  <int value="711032077" label="Cityscapes"/>
+  <int value="1129315377" label="Composition"/>
+  <int value="1659755048" label="Illustrations"/>
+  <int value="1668389814" label="Art"/>
+  <int value="1804492839" label="Colors"/>
+  <int value="1894705443" label="Leisure"/>
+  <int value="2084467495" label="Dessert time"/>
+  <int value="2094027636" label="Solid colors"/>
+</enum>
+
 <enum name="WallpaperColorExtractionResult">
   <int value="0" label="(Dark, Vibrant): failure"/>
   <int value="1" label="(Dark, Vibrant): success"/>

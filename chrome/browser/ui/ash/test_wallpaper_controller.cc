@@ -51,6 +51,7 @@ void TestWallpaperController::SetCustomWallpaper(
 void TestWallpaperController::SetOnlineWallpaper(
     const AccountId& account_id,
     const GURL& url,
+    const std::string& collection_id,
     ash::WallpaperLayout layout,
     bool preview_mode,
     SetOnlineWallpaperCallback callback) {
@@ -60,6 +61,7 @@ void TestWallpaperController::SetOnlineWallpaper(
 void TestWallpaperController::SetOnlineWallpaperIfExists(
     const AccountId& account_id,
     const std::string& url,
+    const std::string& collection_id,
     ash::WallpaperLayout layout,
     bool preview_mode,
     SetOnlineWallpaperCallback callback) {

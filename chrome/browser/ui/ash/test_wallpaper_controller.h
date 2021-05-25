@@ -53,11 +53,13 @@ class TestWallpaperController : public ash::WallpaperController {
                           bool preview_mode) override;
   void SetOnlineWallpaper(const AccountId& account_id,
                           const GURL& url,
+                          const std::string& collection_id,
                           ash::WallpaperLayout layout,
                           bool preview_mode,
                           SetOnlineWallpaperCallback callback) override;
   void SetOnlineWallpaperIfExists(const AccountId& account_id,
                                   const std::string& url,
+                                  const std::string& collection_id,
                                   ash::WallpaperLayout layout,
                                   bool preview_mode,
                                   SetOnlineWallpaperCallback callback) override;

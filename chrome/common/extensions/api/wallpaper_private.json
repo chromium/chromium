@@ -101,6 +101,11 @@
             "name": "url"
           },
           {
+            "type": "string",
+            "name": "collectionId",
+            "description": "The id of the collection that the wallpaper belongs to. The id is used for analytics. If it is empty, the metric will not be logged."
+          },
+          {
             "name": "layout",
             "$ref": "wallpaper.WallpaperLayout"
           },

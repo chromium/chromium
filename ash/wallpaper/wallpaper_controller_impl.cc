@@ -41,7 +41,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -1011,12 +1013,13 @@ void WallpaperControllerImpl::SetCustomWallpaper(
 void WallpaperControllerImpl::SetOnlineWallpaper(
     const AccountId& account_id,
     const GURL& url,
+    const std::string& collection_id,
     WallpaperLayout layout,
     bool preview_mode,
     SetOnlineWallpaperCallback callback) {
   DCHECK(callback);
   SetOnlineWallpaperIfExists(
-      account_id, url.spec(), layout, preview_mode,
+      account_id, url.spec(), collection_id, layout, preview_mode,
       base::BindOnce(&WallpaperControllerImpl::OnAttemptSetOnlineWallpaper,
                      weak_factory_.GetWeakPtr(), account_id, url, layout,
                      preview_mode, std::move(callback)));
@@ -1025,11 +1028,21 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
 void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
     const AccountId& account_id,
     const std::string& url,
+    const std::string& collection_id,
     WallpaperLayout layout,
     bool preview_mode,
     SetOnlineWallpaperCallback callback) {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   DCHECK(CanSetUserWallpaper(account_id));
+
+  // |collection_id| is empty when the wallpaper is automatically set with
+  // daily refresh.
+  if (!collection_id.empty()) {
+    const int collection_id_hash = base::PersistentHash(collection_id);
+    base::UmaHistogramSparse("Ash.Wallpaper.Collection", collection_id_hash);
+    DVLOG(1) << "SetOnlineWallpaperIfExists: collection_id=" << collection_id
+             << " collection_id_hash=" << collection_id_hash;
+  }
 
   const OnlineWallpaperParams params = {account_id, url, layout, preview_mode};
   base::PostTaskAndReplyWithResult(
@@ -2296,7 +2309,10 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
       break;
     case DAILY:
     case ONLINE:
-      SetOnlineWallpaper(account_id, GURL(info.location), info.layout,
+      // Skip setting collection id when wallpaper is synced acrossed devices.
+      // We don't want to log a collection impression when wallpaper is synced.
+      SetOnlineWallpaper(account_id, GURL(info.location),
+                         /*collection_id=*/std::string(), info.layout,
                          /*preview_mode=*/false, base::DoNothing());
       break;
     case POLICY:

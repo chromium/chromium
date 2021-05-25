@@ -280,7 +280,7 @@ void ImageInfoFetcher::OnResponseFetched(const std::string& response) {
   }
 
   backdrop_fetcher_.reset();
-  std::move(callback_).Run(success, images);
+  std::move(callback_).Run(success, collection_id_, images);
 }
 
 SurpriseMeImageFetcher::SurpriseMeImageFetcher(const std::string& collection_id,

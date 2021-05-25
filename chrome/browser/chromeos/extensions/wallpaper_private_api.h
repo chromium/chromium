@@ -313,6 +313,7 @@ class WallpaperPrivateGetImagesInfoFunction : public ExtensionFunction {
 
   // Callback upon completion of fetching the images info.
   void OnImagesInfoFetched(bool success,
+                           const std::string& collection_id,
                            const std::vector<backdrop::Image>& images);
 
   DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateGetImagesInfoFunction);

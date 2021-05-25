@@ -51,6 +51,7 @@ class ImageInfoFetcher {
  public:
   using OnImagesInfoFetched =
       base::OnceCallback<void(bool success,
+                              const std::string& collection_id,
                               const std::vector<backdrop::Image>& images)>;
 
   explicit ImageInfoFetcher(const std::string& collection_id);

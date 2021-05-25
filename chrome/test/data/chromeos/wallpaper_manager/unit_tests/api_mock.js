@@ -6,6 +6,7 @@
 var TestConstants = {
   isPowerwashed: 0,
   wallpaperUrl: 'https://test.com/test.jpg',
+  collectionId: 'test_collection',
   highResolutionSuffix: 'suffix',
   // A dummy string which is used to mock an image.
   IMAGE: '*#*@#&',
@@ -280,7 +281,7 @@ var chrome = {
     },
     onWallpaperChangedBy3rdParty: {addListener: function(listener) {}},
     getCollectionsInfo: function(callback) {
-      callback([{collectionId: 'dummyId'}]);
+      callback([{collectionId: TestConstants.collectionId}]);
     },
     getImagesInfo: function(collectionId, callback) {
       callback([{imageUrl: TestConstants.wallpaperUrl}]);

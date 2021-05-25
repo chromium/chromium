@@ -9,9 +9,12 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "url/gurl.h"
 
 namespace backdrop {
 class Collection;
@@ -72,6 +75,7 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
 
   void OnFetchCollectionImages(FetchImagesForCollectionCallback callback,
                                bool success,
+                               const std::string& collection_id,
                                const std::vector<backdrop::Image>& images);
 
   std::unique_ptr<backdrop_wallpaper_handlers::CollectionInfoFetcher>
@@ -80,9 +84,14 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
   std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher>
       wallpaper_images_info_fetcher_;
 
-  // Store a mapping of valid image asset_ids to their URL to validate user
-  // wallpaper selections.
-  std::map<uint64_t, GURL> image_asset_id_map_;
+  struct ImageInfo {
+    GURL image_url;
+    std::string collection_id;
+  };
+
+  // Store a mapping of valid image asset_ids to their ImageInfo to validate
+  // user wallpaper selections.
+  std::map<uint64_t, ImageInfo> image_asset_id_map_;
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   Profile* const profile_ = nullptr;

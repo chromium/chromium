@@ -298,26 +298,30 @@ void WallpaperControllerClientImpl::SetCustomWallpaper(
 void WallpaperControllerClientImpl::SetOnlineWallpaper(
     const AccountId& account_id,
     const GURL& url,
+    const std::string& collection_id,
     ash::WallpaperLayout layout,
     bool preview_mode,
     ash::WallpaperController::SetOnlineWallpaperCallback callback) {
   if (!IsKnownUser(account_id))
     return;
 
-  wallpaper_controller_->SetOnlineWallpaper(account_id, url, layout,
-                                            preview_mode, std::move(callback));
+  wallpaper_controller_->SetOnlineWallpaper(account_id, url, collection_id,
+                                            layout, preview_mode,
+                                            std::move(callback));
 }
 
 void WallpaperControllerClientImpl::SetOnlineWallpaperIfExists(
     const AccountId& account_id,
     const std::string& url,
+    const std::string& collection_id,
     ash::WallpaperLayout layout,
     bool preview_mode,
     ash::WallpaperController::SetOnlineWallpaperCallback callback) {
   if (!IsKnownUser(account_id))
     return;
   wallpaper_controller_->SetOnlineWallpaperIfExists(
-      account_id, url, layout, preview_mode, std::move(callback));
+      account_id, url, collection_id, layout, preview_mode,
+      std::move(callback));
 }
 
 void WallpaperControllerClientImpl::SetOnlineWallpaperFromData(

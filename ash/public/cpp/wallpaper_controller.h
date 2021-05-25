@@ -61,17 +61,18 @@ class ASH_PUBLIC_EXPORT WallpaperController {
                                   const gfx::ImageSkia& image,
                                   bool preview_mode) = 0;
 
-  // Sets the wallpaper at |url| as the active wallpaper for the user at
-  // |account_id|. The first time this is called, will download the wallpaper
-  // and cache on disk. Subsequent calls with the same url will use the stored
-  // wallpaper. If |preview_mode| is true, the visible background wallpaper will
-  // change, but that change will not be persisted in preferences. Call
-  // |ConfirmPreviewMode| or |CancelPreviewMode| to finalize. |callback| is
-  // required and will be called after the image is fetched (from network or
-  // disk) and decoded.
+  // Sets the wallpaper at |url| and |collection_id| as the active wallpaper for
+  // the user at |account_id|. The first time this is called, will download the
+  // wallpaper and cache on disk. Subsequent calls with the same url will use
+  // the stored wallpaper. If |preview_mode| is true, the visible background
+  // wallpaper will change, but that change will not be persisted in
+  // preferences. Call |ConfirmPreviewMode| or |CancelPreviewMode| to finalize.
+  // |callback| is required and will be called after the image is fetched (from
+  // network or disk) and decoded.
   using SetOnlineWallpaperCallback = base::OnceCallback<void(bool success)>;
   virtual void SetOnlineWallpaper(const AccountId& account_id,
                                   const GURL& url,
+                                  const std::string& collection_id,
                                   WallpaperLayout layout,
                                   bool preview_mode,
                                   SetOnlineWallpaperCallback callback) = 0;
@@ -84,6 +85,7 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // returns true and sets wallpaper for the user, otherwise returns false.
   // |account_id|: The user's account id.
   // |url|: The wallpaper url.
+  // |collection_id|: The wallpaper collection id .e.g. city_for_chromebook.
   // |layout|: The layout of the wallpaper, used for wallpaper resizing.
   // |preview_mode|: If true, show the wallpaper immediately but doesn't change
   //                 the user wallpaper info until |ConfirmPreviewWallpaper| is
@@ -92,6 +94,7 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   virtual void SetOnlineWallpaperIfExists(
       const AccountId& account_id,
       const std::string& url,
+      const std::string& collection_id,
       WallpaperLayout layout,
       bool preview_mode,
       SetOnlineWallpaperCallback callback) = 0;

@@ -904,8 +904,8 @@ WallpaperManager.prototype.setSelectedOnlineWallpaper_ = function(
 
   var selectedGridItem = this.wallpaperGrid_.getListItem(selectedItem);
   chrome.wallpaperPrivate.setWallpaperIfExists(
-      selectedItem.highResolutionURL, selectedItem.layout, previewMode,
-      exists => {
+      selectedItem.highResolutionURL, selectedItem.collectionId || '',
+      selectedItem.layout, previewMode, exists => {
         if (exists) {
           successCallback();
           return;
@@ -1660,13 +1660,14 @@ WallpaperManager.prototype.setDailyRefreshWallpaper_ = function() {
           this.pendingDailyRefreshInfo_.resumeToken = nextResumeToken;
           // Find the name of the collection based on its id for display
           // purpose.
-          var collectionName;
-          for (var i = 0; i < this.collectionsInfo_.length; ++i) {
-            if (this.collectionsInfo_[i]['collectionId'] ===
-                this.pendingDailyRefreshInfo_.collectionId) {
-              collectionName = this.collectionsInfo_[i]['collectionName'];
-            }
-          }
+          var collection = this.collectionsInfo_.find(
+              info => info['collectionId'] ===
+                  this.pendingDailyRefreshInfo_.collectionId);
+          var collectionName = collection !== undefined ?
+              collection['collectionName'] :
+              undefined;
+          var collectionId =
+              collection !== undefined ? collection['collectionId'] : undefined;
           var dailyRefreshImageInfo = {
             highResolutionURL:
                 imageInfo['imageUrl'] + str('highResolutionSuffix'),
@@ -1674,7 +1675,8 @@ WallpaperManager.prototype.setDailyRefreshWallpaper_ = function() {
             source: Constants.WallpaperSourceEnum.Daily,
             displayText: imageInfo['displayText'],
             authorWebsite: imageInfo['actionUrl'],
-            collectionName: collectionName
+            collectionName: collectionName,
+            collectionId: collectionId
           };
 
           var previewMode = this.shouldPreviewWallpaper_();
