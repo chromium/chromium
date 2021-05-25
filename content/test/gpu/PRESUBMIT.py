@@ -13,7 +13,7 @@ def CommonChecks(input_api, output_api):
 
   gpu_env = dict(input_api.environ)
   gpu_env.update({
-      'PYTHONPATH': input_api.PresubmitLocalPath(),
+      'PYTHONPATH': str(input_api.PresubmitLocalPath()),
       'PYTHONDONTWRITEBYTECODE': '1',
   })
 
