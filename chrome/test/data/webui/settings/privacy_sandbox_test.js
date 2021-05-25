@@ -240,12 +240,6 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     testMetricsBrowserProxy.resetResolver('recordAction');
 
-    page.$$('#resetFlocIdButton').click();
-    assertEquals(
-        'Settings.PrivacySandbox.ResetFloc',
-        await testMetricsBrowserProxy.whenCalled('recordAction'));
-    testMetricsBrowserProxy.resetResolver('recordAction');
-
     // Ensure that an action is only recorded in response to interaction with
     // the toggle, and not for the generated preference changing.
     page.set('prefs.generated.floc_enabled.value', false);

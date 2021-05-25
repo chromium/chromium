@@ -315,6 +315,8 @@ bool PrivacySandboxSettings::IsFlocIdResettable() const {
 
 void PrivacySandboxSettings::ResetFlocId() const {
   SetFlocDataAccessibleFromNow(/*reset_calculate_timer=*/true);
+  base::RecordAction(
+      base::UserMetricsAction("Settings.PrivacySandbox.ResetFloc"));
 }
 
 bool PrivacySandboxSettings::IsFlocPrefEnabled() const {
@@ -323,6 +325,9 @@ bool PrivacySandboxSettings::IsFlocPrefEnabled() const {
 
 void PrivacySandboxSettings::SetFlocPrefEnabled(bool enabled) const {
   pref_service_->SetBoolean(prefs::kPrivacySandboxFlocEnabled, enabled);
+  base::RecordAction(base::UserMetricsAction(
+      enabled ? "Settings.PrivacySandbox.FlocEnabled"
+              : "Settings.PrivacySandbox.FlocDisabled"));
 }
 
 bool PrivacySandboxSettings::IsConversionMeasurementAllowed(
