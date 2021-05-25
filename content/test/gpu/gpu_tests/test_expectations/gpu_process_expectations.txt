@@ -87,8 +87,5 @@ crbug.com/1084796 [ chromeos ] GpuProcess_readback_webgl_gpu_process [ Skip ]
 crbug.com/1099576 [ mac amd ] GpuProcess_mac_webgl_backgrounded_high_performance [ Skip ]
 crbug.com/1099576 [ mac intel ] GpuProcess_mac_webgl_backgrounded_high_performance [ Skip ]
 
-# Flaky on Fuchsia
-crbug.com/1087298 [ fuchsia ] GpuProcess_webgl_disabled_extension [ Failure ]
-
 # Flakily hits a DCHECK during shared image creation.
 crbug.com/1188437 [ linux intel display-server-wayland ] GpuProcess_webgl [ RetryOnFailure ]
