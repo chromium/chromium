@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_track_processor.h"
+#include "third_party/blink/renderer/modules/breakout_box/metrics.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/stream_test_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -73,6 +75,7 @@ class MediaStreamTrackGeneratorTest : public testing::Test {
 };
 
 TEST_F(MediaStreamTrackGeneratorTest, VideoFramesAreWritten) {
+  base::HistogramTester histogram_tester;
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   MediaStreamTrackGenerator* generator = MediaStreamTrackGenerator::Create(
@@ -110,9 +113,13 @@ TEST_F(MediaStreamTrackGeneratorTest, VideoFramesAreWritten) {
   close_tester.WaitUntilSettled();
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_TRUE(generator->Ended());
+  histogram_tester.ExpectUniqueSample("Media.BreakoutBox.Usage",
+                                      BreakoutBoxUsage::kWritableVideo, 1);
+  histogram_tester.ExpectTotalCount("Media.BreakoutBox.Usage", 1);
 }
 
 TEST_F(MediaStreamTrackGeneratorTest, AudioDataAreWritten) {
+  base::HistogramTester histogram_tester;
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   MediaStreamTrackGenerator* generator = MediaStreamTrackGenerator::Create(
@@ -153,9 +160,13 @@ TEST_F(MediaStreamTrackGeneratorTest, AudioDataAreWritten) {
 
   WebMediaStreamAudioSink::RemoveFromAudioTrack(
       &media_stream_audio_sink, WebMediaStreamTrack(generator->Component()));
+  histogram_tester.ExpectUniqueSample("Media.BreakoutBox.Usage",
+                                      BreakoutBoxUsage::kWritableAudio, 1);
+  histogram_tester.ExpectTotalCount("Media.BreakoutBox.Usage", 1);
 }
 
 TEST_F(MediaStreamTrackGeneratorTest, SignalsAreRead) {
+  base::HistogramTester histogram_tester;
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   MediaStreamTrackGenerator* generator = MediaStreamTrackGenerator::Create(
@@ -177,6 +188,9 @@ TEST_F(MediaStreamTrackGeneratorTest, SignalsAreRead) {
   EXPECT_EQ(signal->signalType(), "set-min-frame-rate");
   EXPECT_TRUE(signal->hasFrameRate());
   EXPECT_EQ(signal->frameRate(), min_frame_rate);
+  histogram_tester.ExpectUniqueSample(
+      "Media.BreakoutBox.Usage", BreakoutBoxUsage::kReadableControlVideo, 1);
+  histogram_tester.ExpectTotalCount("Media.BreakoutBox.Usage", 1);
 }
 
 TEST_F(MediaStreamTrackGeneratorTest, FramesDoNotFlowOnStoppedGenerator) {

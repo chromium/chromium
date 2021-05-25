@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_track_generator.h"
+#include "third_party/blink/renderer/modules/breakout_box/metrics.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/stream_test_utils.h"
@@ -118,6 +120,7 @@ class MediaStreamTrackProcessorTest : public testing::Test {
 };
 
 TEST_F(MediaStreamTrackProcessorTest, VideoFramesAreExposed) {
+  base::HistogramTester histogram_tester;
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
@@ -163,9 +166,13 @@ TEST_F(MediaStreamTrackProcessorTest, VideoFramesAreExposed) {
   sink_loop.Run();
   EXPECT_EQ(mock_video_sink.number_of_frames(), 1);
   EXPECT_EQ(mock_video_sink.last_frame(), frame);
+  histogram_tester.ExpectUniqueSample("Media.BreakoutBox.Usage",
+                                      BreakoutBoxUsage::kReadableVideo, 1);
+  histogram_tester.ExpectTotalCount("Media.BreakoutBox.Usage", 1);
 }
 
 TEST_F(MediaStreamTrackProcessorTest, AudioDataAreExposed) {
+  base::HistogramTester histogram_tester;
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
@@ -211,9 +218,13 @@ TEST_F(MediaStreamTrackProcessorTest, AudioDataAreExposed) {
 
   WebMediaStreamAudioSink::RemoveFromAudioTrack(&mock_audio_sink,
                                                 WebMediaStreamTrack(component));
+  histogram_tester.ExpectUniqueSample("Media.BreakoutBox.Usage",
+                                      BreakoutBoxUsage::kReadableAudio, 1);
+  histogram_tester.ExpectTotalCount("Media.BreakoutBox.Usage", 1);
 }
 
 TEST_F(MediaStreamTrackProcessorTest, VideoControlSignalsAreForwarded) {
+  base::HistogramTester histogram_tester;
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
@@ -262,6 +273,9 @@ TEST_F(MediaStreamTrackProcessorTest, VideoControlSignalsAreForwarded) {
                     exception_state));
   invalid_signal_tester.WaitUntilSettled();
   EXPECT_TRUE(invalid_signal_tester.IsRejected());
+  histogram_tester.ExpectUniqueSample(
+      "Media.BreakoutBox.Usage", BreakoutBoxUsage::kWritableControlVideo, 1);
+  histogram_tester.ExpectTotalCount("Media.BreakoutBox.Usage", 1);
 }
 
 TEST_F(MediaStreamTrackProcessorTest, AudioControlSignalsAreRejected) {

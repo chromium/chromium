@@ -6,6 +6,8 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
+#include "third_party/blink/renderer/modules/breakout_box/metrics.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -15,9 +17,22 @@
 
 namespace blink {
 
+namespace {
+class PlaceholderTransferringOptimizer
+    : public WritableStreamTransferringOptimizer {
+  UnderlyingSinkBase* PerformInProcessOptimization(
+      ScriptState* script_state) override {
+    RecordBreakoutBoxUsage(BreakoutBoxUsage::kWritableAudioWorker);
+    return nullptr;
+  }
+};
+}  // namespace
+
 MediaStreamAudioTrackUnderlyingSink::MediaStreamAudioTrackUnderlyingSink(
     PushableMediaStreamAudioSource* source)
-    : source_(source->GetWeakPtr()) {}
+    : source_(source->GetWeakPtr()) {
+  RecordBreakoutBoxUsage(BreakoutBoxUsage::kWritableAudio);
+}
 
 ScriptPromise MediaStreamAudioTrackUnderlyingSink::start(
     ScriptState* script_state,
@@ -72,6 +87,11 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::close(
   if (source_)
     source_->StopSource();
   return ScriptPromise::CastUndefined(script_state);
+}
+
+std::unique_ptr<WritableStreamTransferringOptimizer>
+MediaStreamAudioTrackUnderlyingSink::GetTransferringOptimizer() {
+  return std::make_unique<PlaceholderTransferringOptimizer>();
 }
 
 }  // namespace blink
