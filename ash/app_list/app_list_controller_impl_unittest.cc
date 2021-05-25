@@ -101,7 +101,7 @@ AppsGridView* GetAppsGridView() {
 void ShowAppListNow(AppListViewState state) {
   Shell::Get()->app_list_controller()->presenter()->Show(
       state, display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-      base::TimeTicks::Now());
+      base::TimeTicks::Now(), /*show_source*/ absl::nullopt);
 }
 
 void DismissAppListNow() {

@@ -43,7 +43,7 @@ class AppListPresenterImplTest : public AshTestBase {
   // Shows the app list on the primary display.
   void ShowAppList() {
     presenter()->Show(AppListViewState::kPeeking, GetPrimaryDisplay().id(),
-                      base::TimeTicks());
+                      base::TimeTicks(), /*show_source=*/absl::nullopt);
   }
 
   // Shows the Assistant UI.

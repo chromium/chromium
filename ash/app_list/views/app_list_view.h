@@ -80,6 +80,21 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
     DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
+  class ASH_EXPORT ScopedAccessibilityAnnouncementLock {
+   public:
+    explicit ScopedAccessibilityAnnouncementLock(AppListView* view)
+        : view_(view) {
+      ++view_->accessibility_event_disablers_;
+    }
+
+    ~ScopedAccessibilityAnnouncementLock() {
+      --view_->accessibility_event_disablers_;
+    }
+
+   private:
+    AppListView* const view_;
+  };
+
   // Number of the size of shelf. Used to determine the opacity of items in the
   // app list during dragging.
   static constexpr float kNumOfShelfSize = 2.0;
@@ -524,6 +539,10 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   AppListModel* const model_;        // Not Owned.
   SearchModel* const search_model_;  // Not Owned.
 
+  // Keeps track of the number of locks that prevent the app list view
+  // from creating app list transition accessibility events. This is used to
+  // prevent A11Y announcements when showing the assistant UI.
+  int accessibility_event_disablers_ = 0;
   AppListMainView* app_list_main_view_ = nullptr;
   gfx::NativeView parent_window_ = nullptr;
 

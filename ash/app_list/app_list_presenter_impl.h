@@ -80,7 +80,8 @@ class ASH_EXPORT AppListPresenterImpl
   // AppListShowSources: kSearchKey, kShelfButton, or kSwipeFromShelf.
   void Show(AppListViewState preferred_state,
             int64_t display_id,
-            base::TimeTicks event_time_stamp);
+            base::TimeTicks event_time_stamp,
+            absl::optional<AppListShowSource> show_source);
 
   // Hide the open app list window. This may leave the view open but hidden.
   // If |event_time_stamp| is not 0, it means |Dismiss()| was triggered by

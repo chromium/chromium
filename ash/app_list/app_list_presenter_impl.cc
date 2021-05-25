@@ -150,7 +150,8 @@ aura::Window* AppListPresenterImpl::GetWindow() const {
 
 void AppListPresenterImpl::Show(AppListViewState preferred_state,
                                 int64_t display_id,
-                                base::TimeTicks event_time_stamp) {
+                                base::TimeTicks event_time_stamp,
+                                absl::optional<AppListShowSource> show_source) {
   if (is_target_visibility_show_) {
     // Launcher is always visible on the internal display when home launcher is
     // enabled in tablet mode.
@@ -196,6 +197,17 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
       shelf->shelf_widget()->GetDragAndDropHostForAppList());
   view_->SetShelfHasRoundedCorners(
       IsShelfBackgroundTypeWithRoundedCorners(shelf->GetBackgroundType()));
+  std::unique_ptr<AppListView::ScopedAccessibilityAnnouncementLock>
+      scoped_accessibility_lock;
+
+  // App list view state accessibility alerts should be suppressed when the app
+  // list view is shown by the assistant. The assistant UI should handle its
+  // own accessibility notifications.
+  if (show_source && *show_source == kAssistantEntryPoint) {
+    scoped_accessibility_lock =
+        std::make_unique<AppListView::ScopedAccessibilityAnnouncementLock>(
+            view_);
+  }
   view_->Show(preferred_state, IsSideShelf(shelf));
 
   SnapAppListBoundsToDisplayEdge();
@@ -288,7 +300,7 @@ ShelfAction AppListPresenterImpl::ToggleAppList(
   }
   Show(request_fullscreen ? AppListViewState::kFullscreenAllApps
                           : AppListViewState::kPeeking,
-       display_id, event_time_stamp);
+       display_id, event_time_stamp, show_source);
   return SHELF_ACTION_APP_LIST_SHOWN;
 }
 

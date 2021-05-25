@@ -568,7 +568,7 @@ void AppListControllerImpl::ShowAppList() {
   DCHECK(!features::IsAppListBubbleEnabled() ||
          !bubble_presenter_->IsShowing());
   presenter_.Show(AppListViewState::kPeeking, GetDisplayIdToShowAppListOn(),
-                  base::TimeTicks());
+                  base::TimeTicks(), /*show_source=*/absl::nullopt);
 }
 
 aura::Window* AppListControllerImpl::GetWindow() {
@@ -713,7 +713,8 @@ void AppListControllerImpl::Show(int64_t display_id,
     bubble_presenter_->Show(display_id);
     return;
   }
-  presenter_.Show(AppListViewState::kPeeking, display_id, event_time_stamp);
+  presenter_.Show(AppListViewState::kPeeking, display_id, event_time_stamp,
+                  show_source);
 }
 
 void AppListControllerImpl::UpdateYPositionAndOpacity(
