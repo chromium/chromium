@@ -13,6 +13,7 @@
 #include "base/numerics/ranges.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "pdf/ppapi_migration/pdfium_font_linux.h"
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/module.h"
 #include "ppapi/cpp/private/pdf.h"
@@ -22,8 +23,6 @@
 namespace chrome_pdf {
 
 namespace {
-
-PP_Instance g_last_instance_id;
 
 PP_BrowserFont_Trusted_Weight WeightToBrowserFontTrustedWeight(int weight) {
   static_assert(PP_BROWSERFONT_TRUSTED_WEIGHT_100 == 0,
@@ -161,7 +160,7 @@ void* MapFont(FPDF_SYSFONTINFO*,
   }
 
   PP_Resource font_resource = pp::PDF::GetFontFileWithFallback(
-      pp::InstanceHandle(g_last_instance_id),
+      pp::InstanceHandle(GetLastPepperInstance()),
       &description.pp_font_description(),
       static_cast<PP_PrivateFontCharset>(charset));
   long res_id = font_resource;
@@ -197,11 +196,6 @@ FPDF_SYSFONTINFO g_font_info = {1,           0, EnumFonts, MapFont,   0,
 
 void InitializeLinuxFontMapper() {
   FPDF_SetSystemFontInfo(&g_font_info);
-}
-
-void SetLastInstance(pp::Instance* last_instance) {
-  if (last_instance)
-    g_last_instance_id = last_instance->pp_instance();
 }
 
 }  // namespace chrome_pdf

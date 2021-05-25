@@ -640,6 +640,10 @@ class PDFiumEngine : public PDFEngine,
   void UpdateLinkUnderCursor(const std::string& target_url);
   void SetLinkUnderCursorForAnnotation(FPDF_ANNOTATION annot, int page_index);
 
+  // Keeps track of the most recently used plugin instance.
+  // TODO(crbug.com/702993): Remove when PPAPI is gone.
+  void SetLastInstance();
+
   PDFEngine::Client* const client_;
 
   // The current document layout.

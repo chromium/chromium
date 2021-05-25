@@ -50,6 +50,7 @@
 #include "pdf/pdfium/pdfium_unsupported_features.h"
 #include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
+#include "pdf/ppapi_migration/pdfium_font_linux.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/url_loader_wrapper_impl.h"
 #include "ppapi/cpp/instance.h"
@@ -545,10 +546,8 @@ PDFiumEngine::PDFiumEngine(PDFEngine::Client* client,
   IFSDK_PAUSE::user = nullptr;
   IFSDK_PAUSE::NeedToPauseNow = Pause_NeedToPauseNow;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // PreviewModeClient does not know its pp::Instance.
-  SetLastInstance(client_->GetPluginInstance());
-#endif
+  SetLastInstance();
 }
 
 PDFiumEngine::~PDFiumEngine() {
@@ -1003,9 +1002,7 @@ pp::Buffer_Dev PDFiumEngine::PrintPagesAsRasterPdf(
 
   KillFormFocus();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  SetLastInstance(client_->GetPluginInstance());
-#endif
+  SetLastInstance();
 
   return ConvertPdfToBufferDev(
       print_.PrintPagesAsPdf(page_ranges, page_range_count, print_settings,
@@ -3154,9 +3151,7 @@ bool PDFiumEngine::ContinuePaint(int progressive_index, SkBitmap& image_data) {
   DCHECK_LT(static_cast<size_t>(progressive_index), progressive_paints_.size());
 
   last_progressive_start_time_ = base::Time::Now();
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  SetLastInstance(client_->GetPluginInstance());
-#endif
+  SetLastInstance();
 
   int page_index = progressive_paints_[progressive_index].page_index();
   DCHECK(PageIndexInBounds(page_index));
@@ -3643,9 +3638,7 @@ void PDFiumEngine::SetCurrentPage(int index) {
     FORM_DoPageAAction(old_page, form(), FPDFPAGE_AACTION_CLOSE);
   }
   most_visible_page_ = index;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  SetLastInstance(client_->GetPluginInstance());
-#endif
+  SetLastInstance();
   if (most_visible_page_ != -1 && called_do_document_action_) {
     FPDF_PAGE new_page = pages_[most_visible_page_]->GetPage();
     FORM_DoPageAAction(new_page, form(), FPDFPAGE_AACTION_OPEN);
@@ -4262,6 +4255,12 @@ void PDFiumEngine::RequestThumbnail(int page_index,
   DCHECK(PageIndexInBounds(page_index));
   pages_[page_index]->RequestThumbnail(device_pixel_ratio,
                                        std::move(send_callback));
+}
+
+void PDFiumEngine::SetLastInstance() {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  SetLastPepperInstance(client_->GetPluginInstance());
+#endif
 }
 
 PDFiumEngine::ProgressivePaint::ProgressivePaint(int index,
