@@ -12,7 +12,6 @@
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/components/quick_answers/test/test_helpers.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

@@ -5,7 +5,6 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/test/base/chrome_ash_test_base.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"

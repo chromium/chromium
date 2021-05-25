@@ -18,7 +18,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/triggers/ad_redirect_trigger.h"
-#include "components/safe_browsing/content/triggers/mock_trigger_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/features.h"
 #include "content/public/browser/render_frame_host.h"

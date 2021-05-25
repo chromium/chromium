@@ -16,8 +16,8 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/crash/content/browser/error_reporting/javascript_error_report.h"
-#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
+#include "components/crash/content/browser/error_reporting/javascript_error_report.h"  // nogncheck
+#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"  // nogncheck
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"

@@ -63,7 +63,6 @@ default_args = {
 # their includes checked for proper dependencies when you run either
 # "gn check" or "gn gen --check".
 no_check_targets = [
-  "//chrome/test:browser_tests",
   "//chrome/test:browser_tests_runner",
   "//chrome/test:interactive_ui_tests",
   "//chrome/test:unit_tests",
