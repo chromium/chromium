@@ -4,11 +4,11 @@
     <title>
       Test CancelValuesAndHoldAtTime
     </title>
-    <script src="../../resources/testharness.js"></script>
-    <script src="../../resources/testharnessreport.js"></script>
-    <script src="../resources/audio-param.js"></script>
-    <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/webaudio/resources/audio-param.js"></script>
+    <script src="/webaudio/resources/audit-util.js"></script>
+    <script src="/webaudio/resources/audit.js"></script>
   </head>
   <body>
     <script id="layout-test-code">
@@ -16,6 +16,38 @@
       let renderDuration = 0.5;
 
       let audit = Audit.createTaskRunner();
+
+      audit.define(
+          {label: 'cancelTime', description: 'Test Invalid Values'},
+          (task, should) => {
+            let context = new OfflineAudioContext({
+              numberOfChannels: 1,
+              length: 1,
+              sampleRate: 8000
+            });
+
+            let src = new ConstantSourceNode(context);
+            src.connect(context.destination);
+
+            should(
+                () => src.offset.cancelAndHoldAtTime(-1),
+                'cancelAndHoldAtTime(-1)')
+                .throw(RangeError);
+
+            // These are TypeErrors because |cancelTime| is a
+            // double, not unrestricted double.
+            should(
+                () => src.offset.cancelAndHoldAtTime(NaN),
+                'cancelAndHoldAtTime(NaN)')
+                .throw(TypeError);
+
+            should(
+                () => src.offset.cancelAndHoldAtTime(Infinity),
+                'cancelAndHoldAtTime(Infinity)')
+                .throw(TypeError);
+
+            task.done();
+          });
 
       // The first few tasks test the cancellation of each relevant automation
       // function.  For the test, a simple linear ramp from 0 to 1 is used to
