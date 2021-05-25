@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#import "ios/chrome/browser/infobars/infobar_controller_delegate.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_banner_interaction_handler.h"
@@ -68,10 +69,13 @@ void InfobarBannerOverlayRequestCallbackInstaller::RemoveInfobar(
     OverlayRequest* request,
     OverlayResponse* response) {
   InfoBarIOS* infobar = GetOverlayRequestInfobar(request);
-  if (!infobar)
+  InfoBarControllerDelegate* infobar_controller_delegate =
+      static_cast<InfoBarControllerDelegate*>(infobar);
+  if (!infobar || !infobar_controller_delegate->IsOwned() ||
+      !infobar->delegate())
     return;
 
-  static_cast<InfoBarControllerDelegate*>(infobar)->RemoveInfoBar();
+  infobar_controller_delegate->RemoveInfoBar();
 }
 
 #pragma mark - OverlayRequestCallbackInstaller
