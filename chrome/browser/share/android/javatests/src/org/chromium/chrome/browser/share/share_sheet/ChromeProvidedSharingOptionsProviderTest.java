@@ -34,7 +34,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
@@ -137,9 +136,11 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
-    @FlakyTest(message = "crbug.com/1207314")
-    public void getPropertyModels_screenshotEnabled() {
+    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
+            ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
+    public void
+    getPropertyModels_screenshotEnabled() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/false, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
@@ -159,9 +160,11 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
-    @FlakyTest(message = "crbug.com/1207314")
-    public void getPropertyModels_printingEnabled_includesPrinting() {
+    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
+            ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
+    public void
+    getPropertyModels_printingEnabled_includesPrinting() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
