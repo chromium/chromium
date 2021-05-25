@@ -159,7 +159,10 @@ HRESULT CreateAV1Decoder(const IID& iid, void** object) {
   if (acts_num < 1)
     return E_FAIL;
 
-  return acts[0]->ActivateObject(iid, object);
+  hr = acts[0]->ActivateObject(iid, object);
+  for (UINT32 i = 0; i < acts_num; ++i)
+    acts[i]->Release();
+  return hr;
 }
 
 uint64_t g_last_process_output_time;
