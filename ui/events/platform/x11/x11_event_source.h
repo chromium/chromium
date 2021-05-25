@@ -61,9 +61,6 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   static bool HasInstance();
   static X11EventSource* GetInstance();
 
-  // Called when there is a new XEvent available. Processes a single X event.
-  void DispatchXEvent();
-
   x11::Connection* connection() { return connection_; }
 
   // Returns the timestamp of the event currently being dispatched.  Falls back
