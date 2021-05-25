@@ -98,6 +98,14 @@ class _UnionMember(object):
 
 
 class _UnionMemberImpl(_UnionMember):
+    """
+    Represents a flattened member type of an union type or the special null
+    type, which represents that the union type includes a nullable type.
+
+    For example, either of (A? or B) or (A or B?) is represented as a list of
+    [_UnionMemberImpl(A), _UnionMemberImpl(B), _UnionMemberImpl(null)].
+    """
+
     def __init__(self, union, idl_type):
         assert isinstance(union, web_idl.NewUnion)
         assert idl_type is None or isinstance(idl_type, web_idl.IdlType)
@@ -120,6 +128,18 @@ class _UnionMemberImpl(_UnionMember):
 
 
 class _UnionMemberSubunion(_UnionMember):
+    """
+    Represents a subset of flattened member types in an union type as
+    'subunion'.
+
+    For example, given an union type X = (A or B or C) with the following use
+    cases,
+      ((A or B) or C)
+      (A or (B or C))
+    subunions of the union type X are represented as
+    [_UnionMemberSubunion(A or B), _UnionMemberSubunion(B or C)].
+    """
+
     def __init__(self, union, subunion):
         assert isinstance(union, web_idl.NewUnion)
         assert isinstance(subunion, web_idl.NewUnion)
@@ -138,11 +158,23 @@ class _UnionMemberSubunion(_UnionMember):
 
 
 class _UnionMemberAlias(_UnionMember):
+    """
+    Represents a typedef'ed aliases to a flattened member type or subunion of
+    an union type.
+
+    For example, given the following Web IDL fragments,
+      typedef (A or B) T1;
+      typedef B T2;
+      (T1 or C)
+    _UnionMemberAlias(T1) represents an alias to _UnionMemberSubunion(A or B)
+    and _UnionMemberAlias(T2) represents an alias to _UnionMemberImpl(B).
+    """
+
     def __init__(self, impl, typedef):
         assert isinstance(impl, (_UnionMemberImpl, _UnionMemberSubunion))
         assert isinstance(typedef, web_idl.Typedef)
 
-        _UnionMember.__init__(self, base_name=typedef.identifier)
+        _UnionMember.__init__(self, base_name=blink_class_name(typedef))
         self._var_name = impl.var_name
         self._type_info = impl.type_info
 
@@ -548,11 +580,6 @@ def make_accessor_functions(cg_context):
     decls = ListNode()
     defs = ListNode()
 
-    def add(func_decl, func_def):
-        decls.append(func_decl)
-        defs.append(func_def)
-        defs.append(EmptyNode())
-
     func_def = CxxFuncDefNode(name="GetContentType",
                               arg_decls=[],
                               return_type="ContentType",
@@ -651,23 +678,6 @@ def make_accessor_functions(cg_context):
         ])
         return func_def, None
 
-    for member in cg_context.union_members:
-        if member.is_null:
-            add(*make_api_pred(member))
-            add(*make_api_set_null(member))
-        else:
-            add(*make_api_pred(member))
-            for alias in member.typedef_aliases:
-                add(*make_api_pred(alias))
-            add(*make_api_get(member))
-            for alias in member.typedef_aliases:
-                add(*make_api_get(alias))
-            if member.type_info.is_move_effective:
-                add(*make_api_set_copy_and_move(member))
-            else:
-                add(*make_api_set(member))
-        decls.append(EmptyNode())
-
     def make_api_subunion_pred(subunion, subunion_members):
         func_def = CxxFuncDefNode(name=subunion.api_pred,
                                   arg_decls=[],
@@ -724,12 +734,56 @@ def make_accessor_functions(cg_context):
         func_def.body.append(node)
         return func_decl, func_def
 
+    def make_api_subunion_alias_pred(subunion, alias):
+        func_def = CxxFuncDefNode(name=alias.api_pred,
+                                  arg_decls=[],
+                                  return_type="bool",
+                                  const=True)
+        func_def.set_base_template_vars(cg_context.template_bindings())
+        func_def.body.append(F("return {}();", subunion.api_pred))
+        return func_def, None
+
+    def make_api_subunion_alias_get(subunion, alias):
+        func_def = CxxFuncDefNode(name=alias.api_get,
+                                  arg_decls=[],
+                                  return_type=alias.type_info.value_t,
+                                  const=True)
+        func_def.set_base_template_vars(cg_context.template_bindings())
+        func_def.body.append(F("return {}();", subunion.api_get))
+        return func_def, None
+
+    def add(func_decl, func_def):
+        decls.append(func_decl)
+        defs.append(func_def)
+        defs.append(EmptyNode())
+
+    # Accessors to member types of the union type
+    for member in cg_context.union_members:
+        if member.is_null:
+            add(*make_api_pred(member))
+            add(*make_api_set_null(member))
+        else:
+            add(*make_api_pred(member))
+            add(*make_api_get(member))
+            if member.type_info.is_move_effective:
+                add(*make_api_set_copy_and_move(member))
+            else:
+                add(*make_api_set(member))
+            for alias in member.typedef_aliases:
+                add(*make_api_pred(alias))
+                add(*make_api_get(alias))
+        decls.append(EmptyNode())
+
+    # Accessors to subunions in the union type
     for subunion in cg_context.union.union_members:
         subunion_members = create_union_members(subunion)
         subunion = _UnionMemberSubunion(cg_context.union, subunion)
         add(*make_api_subunion_pred(subunion, subunion_members))
         add(*make_api_subunion_get(subunion, subunion_members))
         add(*make_api_subunion_set(subunion, subunion_members))
+        for alias in subunion.typedef_aliases:
+            add(*make_api_subunion_alias_pred(subunion, alias))
+            add(*make_api_subunion_alias_get(subunion, alias))
         decls.append(EmptyNode())
 
     return decls, defs
