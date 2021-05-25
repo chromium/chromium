@@ -662,7 +662,6 @@ blink_core_tests_html = [
   "forms/html_text_area_element_test.cc",
   "forms/internal_popup_menu_test.cc",
   "forms/option_list_test.cc",
-  "forms/password_input_type_test.cc",
   "forms/step_range_test.cc",
   "forms/text_control_element_test.cc",
   "forms/type_ahead_test.cc",

@@ -19,7 +19,6 @@
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/safe_browsing/core/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
-#import "components/security_state/ios/insecure_input_tab_helper.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/autofill_tab_helper.h"
@@ -176,8 +175,6 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     PasswordTabHelper::FromWebState(web_state)->GetSuggestionProvider(),
     AutofillTabHelper::FromWebState(web_state)->GetSuggestionProvider(),
   ]);
-
-  InsecureInputTabHelper::CreateForWebState(web_state);
 
   ukm::InitializeSourceUrlRecorderForWebState(web_state);
 

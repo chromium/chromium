@@ -57,7 +57,6 @@
 #include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/security_interstitials/core/pref_names.h"
-#include "components/security_state/content/ssl_status_input_event_data.h"
 #include "components/security_state/core/features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
@@ -108,7 +107,6 @@
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -173,42 +171,6 @@ void InjectScript(content::WebContents* contents) {
     EXPECT_TRUE(js_result);
   }
 }
-
-// A delegate class that allows emulating selection of a file for an
-// INPUT TYPE=FILE form field.
-class FileChooserDelegate : public content::WebContentsDelegate {
- public:
-  // Constructs a WebContentsDelegate that mocks a file dialog.
-  // The mocked file dialog will always reply that the user selected |file|.
-  explicit FileChooserDelegate(const base::FilePath& file,
-                               base::OnceClosure callback)
-      : file_(file), callback_(std::move(callback)) {}
-
-  // Copy of the params passed to RunFileChooser.
-  const blink::mojom::FileChooserParams& params() const { return *params_; }
-
-  // WebContentsDelegate:
-  void RunFileChooser(content::RenderFrameHost* render_frame_host,
-                      scoped_refptr<content::FileSelectListener> listener,
-                      const blink::mojom::FileChooserParams& params) override {
-    // Send the selected file to the renderer process.
-    std::vector<blink::mojom::FileChooserFileInfoPtr> files;
-    files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
-        blink::mojom::NativeFileInfo::New(file_, std::u16string())));
-    listener->FileSelected(std::move(files), base::FilePath(),
-                           blink::mojom::FileChooserParams::Mode::kOpen);
-
-    params_ = params.Clone();
-    std::move(callback_).Run();
-  }
-
- private:
-  base::FilePath file_;
-  base::OnceClosure callback_;
-  blink::mojom::FileChooserParamsPtr params_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileChooserDelegate);
-};
 
 // A WebContentsObserver useful for testing the DidChangeVisibleSecurityState()
 // method: it keeps track of the latest security style and explanation that was
@@ -1421,40 +1383,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
   SetUpMockCertVerifierForHttpsServer(0, net::OK);
   TestBlobOrFilesystemURL("filesystem", kCreateFilesystemUrlJavascript,
                           true /* use_secure_inner_origin */);
-}
-
-// Tests that the security level of a HTTP page is not downgraded when a form
-// field is modified by JavaScript.
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
-                       SecurityLevelNotDowngradedAfterScriptModification) {
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
-
-  // Navigate to an HTTP page. Use a non-local hostname so that it is
-  // not considered secure.
-  ui_test_utils::NavigateToURL(
-      browser(),
-      GetURLWithNonLocalHostname(embedded_test_server(),
-                                 "/textinput/focus_input_on_load.html"));
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
-
-  // Verify a value set operation isn't treated as user-input.
-  EXPECT_TRUE(content::ExecuteScript(
-      contents, "document.getElementById('text_id').value='v';"));
-  InjectScript(contents);
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(security_state::WARNING, helper->GetSecurityLevel());
-
-  // Verify an InsertText operation isn't treated as user-input.
-  EXPECT_TRUE(content::ExecuteScript(
-      contents, "document.execCommand('InsertText',false,'a');"));
-  InjectScript(contents);
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(security_state::WARNING, helper->GetSecurityLevel());
 }
 
 // Tests that the security state for a WebContents is up to date when the

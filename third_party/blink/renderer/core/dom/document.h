@@ -1466,10 +1466,6 @@ class CORE_EXPORT Document : public ContainerNode,
   }
   PropertyRegistry& EnsurePropertyRegistry();
 
-  // Used to notify the embedder when the user edits the value of a
-  // text field in a non-secure context.
-  void MaybeQueueSendDidEditFieldInInsecureContext();
-
   // May return nullptr when PerformanceManager instrumentation is disabled.
   DocumentResourceCoordinator* GetResourceCoordinator();
 
@@ -1804,8 +1800,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   const OriginAccessEntry& AccessEntryFromURL();
 
-  void SendDidEditFieldInInsecureContext();
-
   void UpdateActiveState(bool is_active, bool update_active_chain, Element*);
   void UpdateHoverState(Element*);
 
@@ -2107,10 +2101,6 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<SnapCoordinator> snap_coordinator_;
 
   Member<PropertyRegistry> property_registry_;
-
-  bool logged_field_edit_;
-
-  TaskHandle sensitive_input_edited_task_;
 
   Member<NetworkStateObserver> network_state_observer_;
 

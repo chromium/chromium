@@ -13,7 +13,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/security_state/core/features.h"
-#include "components/security_state/core/insecure_input_event_data.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -94,9 +93,6 @@ class TestSecurityStateHelper {
     is_view_source_ = is_view_source;
   }
 
-  void set_insecure_field_edit(bool insecure_field_edit) {
-    insecure_input_events_.insecure_field_edited = insecure_field_edit;
-  }
   void set_has_policy_certificate(bool has_policy_cert) {
     has_policy_certificate_ = has_policy_cert;
   }
@@ -120,7 +116,6 @@ class TestSecurityStateHelper {
     state->malicious_content_status = malicious_content_status_;
     state->is_error_page = is_error_page_;
     state->is_view_source = is_view_source_;
-    state->insecure_input_events = insecure_input_events_;
     state->safety_tip_info = safety_tip_info_;
     return state;
   }
@@ -146,7 +141,6 @@ class TestSecurityStateHelper {
   bool is_error_page_;
   bool is_view_source_;
   bool has_policy_certificate_;
-  InsecureInputEventData insecure_input_events_;
   security_state::SafetyTipInfo safety_tip_info_;
 };
 
@@ -312,15 +306,11 @@ TEST(SecurityStateTest, MixedContentWithPolicyCertificate) {
   EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
 }
 
-// Tests that WARNING is set on normal http pages regardless of
-// form edits.
-TEST(SecurityStateTest, WarningOnHttpAndFormEdits) {
+// Tests that HTTP URLs cause a WARNING security level.
+TEST(SecurityStateTest, WarningOnHttp) {
   TestSecurityStateHelper helper;
   helper.SetUrl(GURL(kHttpUrl));
 
-  EXPECT_EQ(WARNING, helper.GetSecurityLevel());
-
-  helper.set_insecure_field_edit(true);
   EXPECT_EQ(WARNING, helper.GetSecurityLevel());
 }
 

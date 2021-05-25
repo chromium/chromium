@@ -6,8 +6,6 @@ static_library("content") {
   sources = [
     "content_utils.cc",
     "content_utils.h",
-    "ssl_status_input_event_data.cc",
-    "ssl_status_input_event_data.h",
   ]
 
   public_deps = [

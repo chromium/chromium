@@ -9,7 +9,6 @@ if (is_android) {
 
 static_library("core") {
   sources = [
-    "insecure_input_event_data.h",
     "security_state.cc",
     "security_state.h",
   ]

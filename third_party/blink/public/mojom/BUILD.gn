@@ -88,7 +88,6 @@ mojom("mojom_platform") {
     "input/pointer_lock_result.mojom",
     "input/scroll_direction.mojom",
     "input/touch_event.mojom",
-    "insecure_input/insecure_input_service.mojom",
     "interest_group/ad_auction_service.mojom",
     "interest_group/interest_group_types.mojom",
     "interest_group/restricted_interest_group_store.mojom",

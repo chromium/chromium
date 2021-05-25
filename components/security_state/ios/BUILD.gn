@@ -5,12 +5,8 @@
 component("ios") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "insecure_input_tab_helper.h",
-    "insecure_input_tab_helper.mm",
     "security_state_utils.h",
     "security_state_utils.mm",
-    "ssl_status_input_event_data.h",
-    "ssl_status_input_event_data.mm",
   ]
   deps = [
     "//base",

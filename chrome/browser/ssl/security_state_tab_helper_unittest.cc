@@ -10,7 +10,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ssl/tls_deprecation_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/security_state/content/ssl_status_input_event_data.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -24,21 +23,6 @@ const char kInsecureMainFrameFormSubmissionSecurityLevelHistogram[] =
     "Security.SecurityLevel.InsecureMainFrameFormSubmission";
 const char kInsecureMainFrameNonFormNavigationSecurityLevelHistogram[] =
     "Security.SecurityLevel.InsecureMainFrameNonFormNavigation";
-
-// Stores the Insecure Input Events to the entry's SSLStatus user data.
-void SetInputEvents(content::NavigationEntry* entry,
-                    security_state::InsecureInputEventData events) {
-  security_state::SSLStatus& ssl = entry->GetSSL();
-  security_state::SSLStatusInputEventData* input_events =
-      static_cast<security_state::SSLStatusInputEventData*>(
-          ssl.user_data.get());
-  if (!input_events) {
-    ssl.user_data =
-        std::make_unique<security_state::SSLStatusInputEventData>(events);
-  } else {
-    *input_events->input_events() = events;
-  }
-}
 
 class SecurityStateTabHelperHistogramTest
     : public ChromeRenderViewHostTestHarness {
@@ -73,13 +57,6 @@ class SecurityStateTabHelperHistogramTest
    private:
     bool is_in_main_frame_ = true;
   };
-
-  void ClearInputEvents() {
-    content::NavigationEntry* entry =
-        web_contents()->GetController().GetVisibleEntry();
-    SetInputEvents(entry, security_state::InsecureInputEventData());
-    helper_->DidChangeVisibleSecurityState();
-  }
 
   void StartNavigation(bool is_form, bool is_main_frame) {
     MockNavigationHandle handle(GURL("http://example.test"),

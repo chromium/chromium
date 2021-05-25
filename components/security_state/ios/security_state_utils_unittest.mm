@@ -6,72 +6,28 @@
 
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #include "components/security_state/core/security_state.h"
-#import "components/security_state/ios/insecure_input_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-// This test fixture creates an IOSSecurityStateTabHelper and an
-// InsecureInputTabHelper for the WebState, then loads a non-secure
-// HTML document.
+// This test fixture creates an IOSSecurityStateTabHelper, then loads a
+// non-secure HTML document.
 class SecurityStateUtilsTest : public web::WebTestWithWebState {
  protected:
   void SetUp() override {
     web::WebTestWithWebState::SetUp();
     SafeBrowsingUrlAllowList::CreateForWebState(web_state());
-    InsecureInputTabHelper::CreateForWebState(web_state());
-    insecure_input_ = InsecureInputTabHelper::FromWebState(web_state());
-    ASSERT_TRUE(insecure_input_);
 
     url_ = GURL("http://chromium.test");
     LoadHtml(@"<html><body></body></html>", url_);
   }
 
-  // Returns the InsecureInputEventData for current WebState().
-  security_state::InsecureInputEventData GetInsecureInputEventData() const {
-    return security_state::GetVisibleSecurityStateForWebState(web_state())
-        ->insecure_input_events;
-  }
-
-  InsecureInputTabHelper* insecure_input() { return insecure_input_; }
-
-  InsecureInputTabHelper* insecure_input_;
   GURL url_;
 };
-
-// Ensures that |insecure_field_edited| is set only when an editing event has
-// been reported.
-TEST_F(SecurityStateUtilsTest, SecurityInfoAfterEditing) {
-  // Verify |insecure_field_edited| is not set prematurely.
-  security_state::InsecureInputEventData events = GetInsecureInputEventData();
-  EXPECT_FALSE(events.insecure_field_edited);
-
-  // Simulate an edit and verify |insecure_field_edited| is noted in the
-  // insecure_input_events.
-  insecure_input()->DidEditFieldInInsecureContext();
-  events = GetInsecureInputEventData();
-  EXPECT_TRUE(events.insecure_field_edited);
-}
-
-// Ensures that re-navigating to the same page does not keep
-// |insecure_field_set| set.
-TEST_F(SecurityStateUtilsTest, InsecureInputClearedOnRenavigation) {
-  // Simulate an edit and verify |insecure_field_edited| is noted in the
-  // insecure_input_events.
-  insecure_input()->DidEditFieldInInsecureContext();
-  security_state::InsecureInputEventData events = GetInsecureInputEventData();
-  EXPECT_TRUE(events.insecure_field_edited);
-
-  // Navigate to the same page again.
-  LoadHtml(@"<html><body></body></html>", GURL("http://chromium.test"));
-  events = GetInsecureInputEventData();
-  EXPECT_FALSE(events.insecure_field_edited);
-}
 
 // Verifies GetMaliciousContentStatus() return values.
 TEST_F(SecurityStateUtilsTest, GetMaliciousContentStatus) {

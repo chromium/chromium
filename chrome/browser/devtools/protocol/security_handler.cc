@@ -34,7 +34,6 @@ const char kRanContentWithCertErrorSecurityStateIssueId[] =
     "ran-content-with-cert-error";
 const char kPkpBypassedSecurityStateIssueId[] = "pkp-bypassed";
 const char kIsErrorPageSecurityStateIssueId[] = "is-error-page";
-const char kInsecureInputEventsSecurityStateIssueId[] = "insecure-input-events";
 const char kCertMissingSubjectAltName[] = "cert-missing-subject-alt-name";
 
 std::string SecurityLevelToProtocolSecurityState(
@@ -192,8 +191,6 @@ CreateVisibleSecurityState(content::WebContents* web_contents) {
       security_state::IsSchemeCryptographic(state->url);
   bool malicious_content = state->malicious_content_status !=
                            security_state::MALICIOUS_CONTENT_STATUS_NONE;
-  bool insecure_input_events =
-      state->insecure_input_events.insecure_field_edited;
 
   bool secure_origin = scheme_is_cryptographic;
   if (!scheme_is_cryptographic)
@@ -228,9 +225,6 @@ CreateVisibleSecurityState(content::WebContents* web_contents) {
     security_state_issue_ids.push_back(kPkpBypassedSecurityStateIssueId);
   if (state->is_error_page)
     security_state_issue_ids.push_back(kIsErrorPageSecurityStateIssueId);
-  if (insecure_input_events)
-    security_state_issue_ids.push_back(
-        kInsecureInputEventsSecurityStateIssueId);
   if (cert_missing_subject_alt_name)
     security_state_issue_ids.push_back(kCertMissingSubjectAltName);
 

@@ -198,9 +198,6 @@ void SSLManager::DidCommitProvisionalLoad(const LoadCommittedDetails& details) {
     // |entry| points to the NavigationEntry that has just committed and it may
     // contain existing ssl flags which we do not want to reset.
     remove_content_status_flags = ~0;
-    // Also clear any UserData from the SSLStatus.
-    if (entry)
-      entry->GetSSL().user_data = nullptr;
   }
 
   if (!UpdateEntry(entry, add_content_status_flags,

@@ -642,7 +642,6 @@ if (!is_ios && !is_fuchsia) {
       "metrics/content/subprocess_metrics_provider_browsertest.cc",
       "optimization_guide/content/renderer/page_text_agent_browsertest.cc",
       "paint_preview/renderer/paint_preview_recorder_browsertest.cc",
-      "security_state/content/content_utils_browsertest.cc",
       "ukm/content/source_url_recorder_browsertest.cc",
     ]
 

@@ -28,30 +28,6 @@ namespace content {
 
 namespace {
 
-// A test class for testing SSLStatus user data.
-class TestSSLStatusData : public SSLStatus::UserData {
- public:
-  TestSSLStatusData() {}
-  ~TestSSLStatusData() override {}
-
-  void set_user_data_flag(bool user_data_flag) {
-    user_data_flag_ = user_data_flag;
-  }
-  bool user_data_flag() { return user_data_flag_; }
-
-  // SSLStatus implementation:
-  std::unique_ptr<SSLStatus::UserData> Clone() override {
-    std::unique_ptr<TestSSLStatusData> cloned =
-        std::make_unique<TestSSLStatusData>();
-    cloned->set_user_data_flag(user_data_flag_);
-    return std::move(cloned);
-  }
-
- private:
-  bool user_data_flag_ = false;
-  DISALLOW_COPY_AND_ASSIGN(TestSSLStatusData);
-};
-
 blink::PageState CreateTestPageState() {
   blink::ExplodedPageState exploded_state;
   std::string encoded_data;
@@ -196,25 +172,6 @@ TEST_F(NavigationEntryTest, NavigationEntrySSLStatus) {
   int content_status = entry1_->GetSSL().content_status;
   EXPECT_FALSE(!!(content_status & SSLStatus::DISPLAYED_INSECURE_CONTENT));
   EXPECT_FALSE(!!(content_status & SSLStatus::RAN_INSECURE_CONTENT));
-}
-
-// Tests that SSLStatus user data can be added, retrieved, and copied.
-TEST_F(NavigationEntryTest, SSLStatusUserData) {
-  // Set up an SSLStatus with some user data on it.
-  SSLStatus ssl;
-  ssl.user_data = std::make_unique<TestSSLStatusData>();
-  TestSSLStatusData* ssl_data =
-      static_cast<TestSSLStatusData*>(ssl.user_data.get());
-  ASSERT_TRUE(ssl_data);
-  ssl_data->set_user_data_flag(true);
-
-  // Clone the SSLStatus and test that the user data has been cloned.
-  SSLStatus cloned(ssl);
-  TestSSLStatusData* cloned_ssl_data =
-      static_cast<TestSSLStatusData*>(cloned.user_data.get());
-  ASSERT_TRUE(cloned_ssl_data);
-  EXPECT_TRUE(cloned_ssl_data->user_data_flag());
-  EXPECT_NE(cloned_ssl_data, ssl_data);
 }
 
 // Test other basic accessors
