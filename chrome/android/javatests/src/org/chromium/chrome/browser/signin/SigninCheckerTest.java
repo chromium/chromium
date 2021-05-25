@@ -25,6 +25,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -82,6 +83,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1205346")
     public void signinWhenPrimaryAccountIsRenamedToAKnownAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
         mAccountManagerTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
@@ -103,6 +105,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1205346")
     public void signoutWhenPrimaryAccountIsRenamedToAnUnknownAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
         mAccountManagerTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
@@ -124,6 +127,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1205346")
     public void signoutWhenPrimaryAccountIsRemoved() {
         mActivityTestRule.startMainActivityOnBlankPage();
         mAccountManagerTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
