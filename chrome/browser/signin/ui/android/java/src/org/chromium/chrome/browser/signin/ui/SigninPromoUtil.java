@@ -8,14 +8,11 @@ import android.accounts.Account;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import com.google.common.base.Optional;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -117,8 +114,26 @@ public final class SigninPromoUtil {
     public static void setupSigninPromoViewFromCache(SigninPromoController signinPromoController,
             ProfileDataCache profileDataCache, PersonalizedSigninPromoView view,
             SigninPromoController.OnDismissListener listener) {
+        final AccountManagerFacade accountManagerFacade =
+                AccountManagerFacadeProvider.getInstance();
+        if (!accountManagerFacade.isCachePopulated()) {
+            signinPromoController.setupPromoView(view, /* profileData= */ null, listener);
+            return;
+        }
+        final List<Account> accounts = accountManagerFacade.tryGetGoogleAccounts();
+        if (accounts.isEmpty()) {
+            signinPromoController.setupPromoView(view, /* profileData= */ null, listener);
+            return;
+        }
+        final Account defaultAccount = accounts.get(0);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
+                && accountManagerFacade.canOfferExtendedSyncPromos(defaultAccount).or(false)
+                && signinPromoController.getAccessPoint()
+                        == SigninAccessPoint.NTP_CONTENT_SUGGESTIONS) {
+            return;
+        }
         signinPromoController.setupPromoView(
-                view, getDefaultProfileData(profileDataCache), listener);
+                view, profileDataCache.getProfileDataOrDefault(defaultAccount.name), listener);
     }
 
     /**
@@ -130,28 +145,23 @@ public final class SigninPromoUtil {
     public static void setupSyncPromoViewFromCache(SigninPromoController signinPromoController,
             ProfileDataCache profileDataCache, PersonalizedSigninPromoView view,
             SigninPromoController.OnDismissListener listener) {
-        String signedInAccount = CoreAccountInfo.getEmailFrom(
+        final Account primaryAccount = CoreAccountInfo.getAndroidAccountFrom(
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-        assert signedInAccount != null : "Sync promo should only be shown for a signed in account";
-        signinPromoController.setupPromoView(
-                view, profileDataCache.getProfileDataOrDefault(signedInAccount), listener);
-    }
+        assert primaryAccount != null : "Sync promo should only be shown for a signed in account";
 
-    /**
-     * @return The default profile data if the account list is available, otherwise returns null.
-     */
-    private static @Nullable DisplayableProfileData getDefaultProfileData(
-            ProfileDataCache profileDataCache) {
-        final AccountManagerFacade accountManagerFacade =
-                AccountManagerFacadeProvider.getInstance();
-        if (accountManagerFacade.isCachePopulated()) {
-            final List<Account> accounts = accountManagerFacade.tryGetGoogleAccounts();
-            if (accounts.size() > 0) {
-                return profileDataCache.getProfileDataOrDefault(accounts.get(0).name);
-            }
+        final boolean canPrimaryAccountOfferExtendedSyncPromos =
+                AccountManagerFacadeProvider.getInstance()
+                        .canOfferExtendedSyncPromos(primaryAccount)
+                        .or(false);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
+                && canPrimaryAccountOfferExtendedSyncPromos
+                && signinPromoController.getAccessPoint()
+                        == SigninAccessPoint.NTP_CONTENT_SUGGESTIONS) {
+            return;
         }
-        return null;
+        signinPromoController.setupPromoView(
+                view, profileDataCache.getProfileDataOrDefault(primaryAccount.name), listener);
     }
 }

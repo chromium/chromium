@@ -203,6 +203,11 @@ public class SigninPromoController {
         }
     }
 
+    @AccessPoint
+    int getAccessPoint() {
+        return mAccessPoint;
+    }
+
     /**
      * Called when the signin promo is destroyed.
      */
