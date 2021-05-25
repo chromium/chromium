@@ -137,7 +137,7 @@ const base::Feature kDynamicMaxAutocomplete{"OmniboxDynamicMaxAutocomplete",
 // classification (contextual web).
 const base::Feature kClobberTriggersContextualWebZeroSuggest{
     "OmniboxClobberTriggersContextualWebZeroSuggest",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    enabled_by_default_desktop_only};
 
 // Used to adjust the age threshold since the last visit in order to consider a
 // normalized keyword search term as a zero-prefix suggestion. If disabled, the
