@@ -574,8 +574,8 @@ void AuthenticationService::HandleForgottenIdentity(
   }
 
   // Sign the user out.
-  SignOut(signin_metrics::ABORT_SIGNIN, /*force_clear_browsing_data=*/false,
-          nil);
+  SignOut(signin_metrics::ACCOUNT_REMOVED_FROM_DEVICE,
+          /*force_clear_browsing_data=*/false, nil);
   if (should_prompt)
     SetPromptForSignIn();
 }
