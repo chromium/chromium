@@ -5,7 +5,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 
 #include "base/command_line.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace switches {
 

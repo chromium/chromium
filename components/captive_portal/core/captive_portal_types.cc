@@ -5,7 +5,7 @@
 #include "components/captive_portal/core/captive_portal_types.h"
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace captive_portal {
 

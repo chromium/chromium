@@ -5,8 +5,8 @@
 #include "components/proxy_config/proxy_prefs.h"
 
 #include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 
 namespace ProxyPrefs {
 

@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 

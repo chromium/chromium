@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "autocomplete_match.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"

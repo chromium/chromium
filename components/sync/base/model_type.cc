@@ -8,9 +8,9 @@
 
 #include <ostream>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "components/sync/protocol/app_setting_specifics.pb.h"

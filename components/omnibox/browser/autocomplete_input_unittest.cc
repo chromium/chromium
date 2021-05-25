@@ -8,8 +8,8 @@
 
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"

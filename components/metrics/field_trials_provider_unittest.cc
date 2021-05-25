@@ -4,7 +4,7 @@
 
 #include "components/metrics/field_trials_provider.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"

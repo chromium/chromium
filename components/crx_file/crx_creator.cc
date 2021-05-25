@@ -4,9 +4,9 @@
 
 #include "components/crx_file/crx_creator.h"
 
+#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
 #include "components/crx_file/crx3.pb.h"
 #include "components/crx_file/crx_file.h"
 #include "crypto/rsa_private_key.h"

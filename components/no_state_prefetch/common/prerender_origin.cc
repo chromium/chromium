@@ -4,8 +4,8 @@
 
 #include "components/no_state_prefetch/common/prerender_origin.h"
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 
 namespace prerender {
 

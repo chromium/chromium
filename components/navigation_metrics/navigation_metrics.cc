@@ -4,10 +4,10 @@
 
 #include "components/navigation_metrics/navigation_metrics.h"
 
+#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/stl_util.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/url_formatter/url_formatter.h"

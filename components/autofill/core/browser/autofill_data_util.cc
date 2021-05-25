@@ -8,8 +8,8 @@
 #include <iterator>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/i18n/char_iterator.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/task_environment.h"
 #include "net/base/request_priority.h"
 #include "net/nqe/effective_connection_type.h"

@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_registrar.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "components/spellcheck/browser/spellchecker_session_bridge_android.h"
 
 namespace spellcheck {

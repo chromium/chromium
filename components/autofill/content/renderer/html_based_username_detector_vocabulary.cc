@@ -4,7 +4,7 @@
 
 #include "components/autofill/content/renderer/html_based_username_detector_vocabulary.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace autofill {
 

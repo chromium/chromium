@@ -7,8 +7,8 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 
 namespace tab_count_metrics {
 

@@ -6,8 +6,8 @@
 
 #include <dlfcn.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 
 decltype(&::gnome_keyring_is_available)
     GnomeKeyringLoader::gnome_keyring_is_available_ptr;

@@ -4,7 +4,7 @@
 
 #include "components/feature_engagement/public/feature_list.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "components/feature_engagement/public/feature_constants.h"
 
 namespace feature_engagement {

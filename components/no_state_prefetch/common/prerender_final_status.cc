@@ -5,7 +5,7 @@
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace prerender {
 

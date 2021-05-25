@@ -8,8 +8,8 @@
 
 #include "base/base64url.h"
 #include "base/big_endian.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/gcm_driver/crypto/message_payload_parser.h"

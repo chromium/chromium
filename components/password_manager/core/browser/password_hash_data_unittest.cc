@@ -4,7 +4,7 @@
 
 #include "components/password_manager/core/browser/password_hash_data.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

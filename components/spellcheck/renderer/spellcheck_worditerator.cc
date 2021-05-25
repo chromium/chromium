@@ -11,9 +11,9 @@
 #include <string>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/i18n/break_iterator.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/spellcheck/renderer/spellcheck.h"

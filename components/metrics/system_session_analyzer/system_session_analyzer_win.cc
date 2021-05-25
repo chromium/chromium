@@ -4,8 +4,8 @@
 
 #include "components/metrics/system_session_analyzer/system_session_analyzer_win.h"
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 
 namespace metrics {

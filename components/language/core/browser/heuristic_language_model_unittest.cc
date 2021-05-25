@@ -6,8 +6,8 @@
 
 #include <cmath>
 
+#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/prefs/pref_registry_simple.h"

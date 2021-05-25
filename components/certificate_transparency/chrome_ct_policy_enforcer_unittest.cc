@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/build_time.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "base/version.h"

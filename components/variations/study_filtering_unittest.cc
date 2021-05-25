@@ -12,8 +12,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"

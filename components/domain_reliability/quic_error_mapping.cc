@@ -4,7 +4,7 @@
 
 #include "components/domain_reliability/quic_error_mapping.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace domain_reliability {
 

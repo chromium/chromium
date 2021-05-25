@@ -5,7 +5,7 @@
 #include "components/history/core/browser/android/android_urls_sql_handler.h"
 
 #include "base/check.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "components/history/core/browser/android/android_urls_database.h"
 
 namespace history {

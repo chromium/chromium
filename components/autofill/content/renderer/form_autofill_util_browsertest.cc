@@ -5,8 +5,8 @@
 #include "base/strings/stringprintf.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/field_trial.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"

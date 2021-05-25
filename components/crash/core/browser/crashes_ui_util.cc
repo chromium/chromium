@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"

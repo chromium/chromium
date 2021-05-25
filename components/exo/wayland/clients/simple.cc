@@ -9,7 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/time/time.h"
 #include "components/exo/wayland/clients/client_helper.h"
 #include "third_party/skia/include/core/SkCanvas.h"

@@ -8,7 +8,7 @@
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "components/exo/wayland/server_util.h"
 #include "ui/gfx/color_space.h"
 

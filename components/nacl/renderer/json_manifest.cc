@@ -9,9 +9,9 @@
 
 #include <set>
 
+#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "components/nacl/common/nacl_types.h"
 #include "components/nacl/renderer/nexe_load_manager.h"
 #include "url/gurl.h"

@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/element_detection.h"

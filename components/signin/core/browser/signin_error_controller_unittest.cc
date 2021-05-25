@@ -9,8 +9,8 @@
 #include <functional>
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/scoped_observation.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"

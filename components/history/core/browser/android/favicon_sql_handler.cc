@@ -5,9 +5,9 @@
 #include "components/history/core/browser/android/favicon_sql_handler.h"
 
 #include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/stl_util.h"
 #include "components/favicon/core/favicon_database.h"
 
 using base::Time;

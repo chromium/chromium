@@ -4,9 +4,9 @@
 
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 
+#include "base/cxx17_backports.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/icu/source/common/unicode/utf8.h"
 
