@@ -8478,8 +8478,17 @@ IN_PROC_BROWSER_TEST_F(
 // On the Android test environments, the test might fail due to IP restrictions.
 // See the discussion at http://crrev.com/c/2564926.
 #if !defined(OS_ANDROID)
+
+// TODO(https://crbug.com/1213145): The test is consistently failing on some Mac
+// bots.
+#if defined(OS_MAC)
+#define MAYBE_TrivialRTCPeerConnectionCached \
+  DISABLED_TrivialRTCPeerConnectionCached
+#else
+#define MAYBE_TrivialRTCPeerConnectionCached TrivialRTCPeerConnectionCached
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       TrivialRTCPeerConnectionCached) {
+                       MAYBE_TrivialRTCPeerConnectionCached) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   GURL url_a(https_server()->GetURL("/title1.html"));
@@ -8552,8 +8561,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // On the Android test environments, the test might fail due to IP restrictions.
 // See the discussion at http://crrev.com/c/2564926.
 #if !defined(OS_ANDROID)
+
+// TODO(https://crbug.com/1213145): The test is consistently failing on some Mac
+// bots.
+#if defined(OS_MAC)
+#define MAYBE_NonTrivialRTCPeerConnectionNotCached \
+  DISABLED_NonTrivialRTCPeerConnectionNotCached
+#else
+#define MAYBE_NonTrivialRTCPeerConnectionNotCached \
+  NonTrivialRTCPeerConnectionNotCached
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       NonTrivialRTCPeerConnectionNotCached) {
+                       MAYBE_NonTrivialRTCPeerConnectionNotCached) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   GURL url_a(https_server()->GetURL("/title1.html"));
