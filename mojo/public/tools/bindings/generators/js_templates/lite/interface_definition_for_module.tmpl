@@ -20,7 +20,7 @@
 /**
  * @implements {mojo.internal.interfaceSupport.PendingReceiver}
  */
-export const {{interface.name}}PendingReceiver = class {
+export class {{interface.name}}PendingReceiver {
   /**
    * @param {!MojoHandle|!mojo.internal.interfaceSupport.Endpoint} handle
    */
@@ -34,10 +34,10 @@ export const {{interface.name}}PendingReceiver = class {
     mojo.internal.interfaceSupport.bind(
         this.handle, '{{mojom_namespace}}.{{interface.name}}', scope);
   }
-};
+}
 
 /** @interface */
-export const {{interface.name}}Interface = class {
+export class {{interface.name}}Interface {
 {%-  for method in interface.methods %}
   {{generateMethodAnnotation(method)}}
   {{method.name}}(
@@ -46,12 +46,12 @@ export const {{interface.name}}Interface = class {
 {%-   endfor -%}
 ) {}
 {%- endfor %}
-};
+}
 
 /**
  * @implements { {{interface.name}}Interface }
  */
-export const {{interface.name}}Remote = class {
+export class {{interface.name}}Remote {
   /** @param {MojoHandle|mojo.internal.interfaceSupport.Endpoint=} handle */
   constructor(handle = undefined) {
     /**
@@ -99,14 +99,14 @@ export const {{interface.name}}Remote = class {
         ]);
   }
 {%-  endfor %}
-};
+}
 
 /**
  * An object which receives request messages for the {{interface.name}}
  * mojom interface. Must be constructed over an object which implements that
  * interface.
  */
-export const {{interface.name}}Receiver = class {
+export class {{interface.name}}Receiver {
   /**
    * @param {!{{interface.name}}Interface } impl
    */
@@ -136,9 +136,9 @@ export const {{interface.name}}Receiver = class {
     /** @public {!mojo.internal.interfaceSupport.ConnectionErrorEventRouter} */
     this.onConnectionError = this.helper_internal_.getConnectionErrorEventRouter();
   }
-};
+}
 
-export const {{interface.name}} = class {
+export class {{interface.name}} {
   /**
    * @return {!string}
    */
@@ -158,7 +158,7 @@ export const {{interface.name}} = class {
     remote.$.bindNewPipeAndPassReceiver().bindInBrowser();
     return remote;
   }
-};
+}
 
 {#--- Enums #}
 {% from "lite/enum_definition_for_module.tmpl" import enum_def with context %}
@@ -172,7 +172,7 @@ export const {{interface.name}} = class {
  * on this object for each message defined in the mojom interface, and each
  * receiver can have any number of listeners added to it.
  */
-export const {{interface.name}}CallbackRouter = class {
+export class {{interface.name}}CallbackRouter {
   constructor() {
     this.helper_internal_ = new mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal(
       {{interface.name}}Remote);
@@ -215,4 +215,4 @@ export const {{interface.name}}CallbackRouter = class {
   removeListener(id) {
     return this.router_.removeListener(id);
   }
-};
+}
