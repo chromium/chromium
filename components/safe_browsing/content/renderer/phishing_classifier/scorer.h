@@ -99,7 +99,7 @@ class Scorer {
   int tflite_model_version() const;
 
   // Returns the thresholds configured for the visual TFLite model categories.
-  const google::protobuf::RepeatedPtrField<ClientSideModel::Threshold>&
+  const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&
   tflite_thresholds() const;
 
  protected:

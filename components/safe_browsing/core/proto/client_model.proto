@@ -103,8 +103,20 @@ message ClientSideModel {
   // The vision model.
   optional VisionModel vision_model = 12;
 
+  // Reserved tag numbers holding deprecated fields.
+  reserved 13;
+  reserved 14;
+  reserved 15;
+  reserved 16;
+
+  optional TfLiteModelMetadata tflite_metadata = 17;
+
+  // next available tag number: 18
+}
+
+message TfLiteModelMetadata {
   // The version number of the visual TFLite model.
-  optional int32 tflite_model_version = 13;
+  optional int32 model_version = 1;
 
   message Threshold {
     // The label for the category
@@ -117,13 +129,11 @@ message ClientSideModel {
   // The list of threshold values for each category in the TFLite model. Pages
   // where the model score exceeds one of these thresholds will be sent to
   // Safe Browsing for a more definitive classification.
-  repeated Threshold tflite_thresholds = 14;
+  repeated Threshold thresholds = 2;
 
   // The width and height of the input tensor to the corresponding TFLite model.
-  optional int32 tflite_model_input_width = 15;
-  optional int32 tflite_model_input_height = 16;
-
-  // next available tag number: 17
+  optional int32 input_width = 3;
+  optional int32 input_height = 4;
 }
 
 // Wrapper of the vision model for the similarity check target images.
