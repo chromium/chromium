@@ -2178,12 +2178,6 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(content::ExecuteScript(active_web_contents, "video.play();"));
   ASSERT_TRUE(content::ExecuteScript(active_web_contents,
                                      "video.autoPictureInPicture = true;"));
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "addVisibilityChangeEventListener();"));
-
-  // Hide page.
-  active_web_contents->WasHidden();
-  WaitForTitle(active_web_contents, u"hidden");
 
   // Enter Picture-in-Picture manually.
   bool result = false;
@@ -2191,9 +2185,12 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowControllerBrowserTest,
       active_web_contents, "enterPictureInPicture();", &result));
   EXPECT_TRUE(result);
 
+  active_web_contents->WasHidden();
+
   // Show page and check that video left Picture-in-Picture automatically.
   active_web_contents->WasShown();
-  WaitForTitle(active_web_contents, u"visible");
+  WaitForTitle(active_web_contents, u"leavepictureinpicture");
+
   bool in_picture_in_picture = false;
   ASSERT_TRUE(ExecuteScriptAndExtractBool(
       active_web_contents, "isInPictureInPicture();", &in_picture_in_picture));
@@ -2264,9 +2261,9 @@ class WebAppPictureInPictureWindowControllerBrowserTest
   DISALLOW_COPY_AND_ASSIGN(WebAppPictureInPictureWindowControllerBrowserTest);
 };
 
-// Show/hide pwa page and check that Auto Picture-in-Picture is triggered.
+// Hide pwa page and check that Picture-in-Picture is entered automatically.
 IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
-                       AutoPictureInPicture) {
+                       AutoEnterPictureInPicture) {
   InstallAndLaunchPWA(main_url());
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
@@ -2278,6 +2275,24 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
   // Hide page and check that video entered Picture-in-Picture automatically.
   web_contents()->WasHidden();
   WaitForTitle(web_contents(), u"video.enterpictureinpicture");
+}
+
+// Show pwa page and check that Auto Picture-in-Picture is exited automatically.
+IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
+                       AutoExitPictureInPicture) {
+  InstallAndLaunchPWA(main_url());
+  bool result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
+                                                   "playVideo();", &result));
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(content::ExecuteScript(web_contents(),
+                                     "video.autoPictureInPicture = true;"));
+  result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      web_contents(), "enterPictureInPicture();", &result));
+  ASSERT_TRUE(result);
+
+  web_contents()->WasHidden();
 
   // Show page and check that video left Picture-in-Picture automatically.
   web_contents()->WasShown();
@@ -2404,88 +2419,139 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Check that Auto Picture-in-Picture applies only to the video element whose
-// autoPictureInPicture attribute was set most recently
+// autoPictureInPicture attribute was set most recently.
 IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
-                       AutoPictureInPictureAttributeApplies) {
+                       AutoPictureInPictureAttributeAppliesToLastElement) {
   InstallAndLaunchPWA(main_url());
+  ASSERT_TRUE(
+      content::ExecuteScript(web_contents(),
+                             "video.autoPictureInPicture = true;"
+                             "secondVideo.autoPictureInPicture = true;"));
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
                                                    "playVideo();", &result));
   ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = true;"));
+  result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       web_contents(), "playSecondVideo();", &result));
   ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScript(
-      web_contents(), "secondVideo.autoPictureInPicture = true;"));
 
   // Hide page and check that second video is the video that enters
   // Picture-in-Picture automatically.
   web_contents()->WasHidden();
   WaitForTitle(web_contents(), u"secondVideo.enterpictureinpicture");
+}
 
-  // Show page and unset Auto Picture-in-Picture attribute on second video.
-  web_contents()->WasShown();
-  WaitForTitle(web_contents(), u"visible");
-  ASSERT_TRUE(content::ExecuteScript(
-      web_contents(), "secondVideo.autoPictureInPicture = false;"));
-
-  // Hide page and check that first video is the video that enters
-  // Picture-in-Picture automatically.
-  web_contents()->WasHidden();
-  WaitForTitle(web_contents(), u"video.enterpictureinpicture");
-
-  // Show page and unset Auto Picture-in-Picture attribute on first video.
-  web_contents()->WasShown();
-  WaitForTitle(web_contents(), u"visible");
+IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
+                       AutoPictureInPictureAttributeAppliesToInsertedElement) {
+  InstallAndLaunchPWA(main_url());
   ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = false;"));
-
-  // Hide page and check that there is no video that enters Picture-in-Picture
-  // automatically.
-  web_contents()->WasHidden();
-  WaitForTitle(web_contents(), u"hidden");
-
-  // Show page and append a video with Auto Picture-in-Picture attribute.
-  web_contents()->WasShown();
-  WaitForTitle(web_contents(), u"visible");
+                                     "video.autoPictureInPicture = true;"));
+  bool result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
+                                                   "playVideo();", &result));
+  ASSERT_TRUE(result);
+  result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       web_contents(), "addHtmlVideoWithAutoPictureInPicture();", &result));
   ASSERT_TRUE(result);
 
-  // Hide page and check that the html video is the video that enters
+  // Hide the page and check that the inserted video is the video that enters
   // Picture-in-Picture automatically.
   web_contents()->WasHidden();
   WaitForTitle(web_contents(), u"htmlVideo.enterpictureinpicture");
 }
 
-// Check that video does not leave Picture-in-Picture automatically when it
+IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
+                       AutoPictureInPictureCanBeUnset) {
+  InstallAndLaunchPWA(main_url());
+  ASSERT_TRUE(content::ExecuteScript(web_contents(),
+                                     "video.autoPictureInPicture = true;"));
+  bool result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
+                                                   "playVideo();", &result));
+  ASSERT_TRUE(result);
+
+  // Unset autoPictureInPicture and check that the video doesn't enter
+  // Picture-in-Picture automatically.
+  ASSERT_TRUE(content::ExecuteScript(web_contents(),
+                                     "video.autoPictureInPicture = false;"));
+
+  bool in_picture_in_picture;
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      web_contents(), "isInPictureInPicture();", &in_picture_in_picture));
+  EXPECT_FALSE(in_picture_in_picture);
+
+  web_contents()->WasHidden();
+  WaitForTitle(web_contents(), u"hidden");
+
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      web_contents(), "isInPictureInPicture();", &in_picture_in_picture));
+  EXPECT_FALSE(in_picture_in_picture);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
+                       AutoPictureInPictureAppliesAfterUnsetOnAnotherVideo) {
+  InstallAndLaunchPWA(main_url());
+  ASSERT_TRUE(
+      content::ExecuteScript(web_contents(),
+                             "video.autoPictureInPicture = true;"
+                             "secondVideo.autoPictureInPicture = true;"));
+  bool result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
+                                                   "playVideo();", &result));
+  ASSERT_TRUE(result);
+  result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      web_contents(), "playSecondVideo();", &result));
+  ASSERT_TRUE(result);
+
+  // Unset autoPictureInPicture on the element where it was set last, and check
+  // that the first video enters Picture-in-Picture automatically.
+  ASSERT_TRUE(content::ExecuteScript(
+      web_contents(), "secondVideo.autoPictureInPicture = false;"));
+
+  bool in_picture_in_picture;
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      web_contents(), "isInPictureInPicture();", &in_picture_in_picture));
+  EXPECT_FALSE(in_picture_in_picture);
+
+  web_contents()->WasHidden();
+  WaitForTitle(web_contents(), u"video.enterpictureinpicture");
+
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      web_contents(), "isInPictureInPicture();", &in_picture_in_picture));
+  EXPECT_TRUE(in_picture_in_picture);
+}
+
+// Check that video does not leave Picture-in-Picture automatically when it is
 // not the most recent element with the Auto Picture-in-Picture attribute set.
 IN_PROC_BROWSER_TEST_F(
     WebAppPictureInPictureWindowControllerBrowserTest,
     AutoPictureInPictureNotTriggeredOnPageShownIfNotEnteredAutoPictureInPicture) {
   InstallAndLaunchPWA(main_url());
+  ASSERT_TRUE(
+      content::ExecuteScript(web_contents(),
+                             "video.autoPictureInPicture = true;"
+                             "secondVideo.autoPictureInPicture = true;"));
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
                                                    "playVideo();", &result));
   ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = true;"));
-
-  // Hide page and check that video entered Picture-in-Picture automatically.
-  web_contents()->WasHidden();
-  WaitForTitle(web_contents(), u"video.enterpictureinpicture");
-
+  result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       web_contents(), "playSecondVideo();", &result));
   ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScript(
-      web_contents(), "secondVideo.autoPictureInPicture = true;"));
+  result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      web_contents(), "enterPictureInPicture();", &result));
+  ASSERT_TRUE(result);
+
+  web_contents()->WasHidden();
 
   // Show page and check that video did not leave Picture-in-Picture
   // automatically as it's not the most recent element with the Auto
-  // Picture-in-Picture attribute set anymore.
+  // Picture-in-Picture attribute set.
   web_contents()->WasShown();
   WaitForTitle(web_contents(), u"visible");
 
