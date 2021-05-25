@@ -643,14 +643,17 @@ void CastWebContentsImpl::ReadyToCommitNavigation(
   // Skip injecting bindings scripts if |navigation_handle| is not
   // 'current' main frame navigation, e.g. another DidStartNavigation is
   // emitted. Also skip injecting for same document navigation and error page.
-  if (navigation_handle != active_navigation_ ||
-      navigation_handle->IsErrorPage()) {
-    return;
+  if (navigation_handle == active_navigation_ &&
+      !navigation_handle->IsErrorPage()) {
+    // Injects registered bindings script into the main frame.
+    script_injector_.InjectScriptsForURL(
+        navigation_handle->GetURL(), navigation_handle->GetRenderFrameHost());
   }
 
-  // Injects registered bindings script into the main frame.
-  script_injector_.InjectScriptsForURL(navigation_handle->GetURL(),
-                                       navigation_handle->GetRenderFrameHost());
+  // Notifies observers that the navigation of the main frame is ready.
+  for (Observer& observer : observer_list_) {
+    observer.MainFrameReadyToCommitNavigation(navigation_handle);
+  }
 }
 
 void CastWebContentsImpl::DidFinishNavigation(

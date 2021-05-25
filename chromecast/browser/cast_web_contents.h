@@ -27,6 +27,7 @@ class AssociatedInterfaceProvider;
 }  // namespace blink
 
 namespace content {
+class NavigationHandle;
 class WebContents;
 }  // namespace content
 
@@ -154,6 +155,11 @@ class CastWebContents {
         int render_frame_id,
         service_manager::InterfaceProvider* frame_interfaces,
         blink::AssociatedInterfaceProvider* frame_associated_interfaces) {}
+
+    // Called when the navigation is ready to be committed in the WebContents'
+    // main frame.
+    virtual void MainFrameReadyToCommitNavigation(
+        content::NavigationHandle* navigation_handle) {}
 
     // A navigation has finished in the WebContents' main frame.
     virtual void MainFrameFinishedNavigation() {}
