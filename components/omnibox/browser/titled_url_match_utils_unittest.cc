@@ -366,7 +366,7 @@ TEST(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kBookmarkPaths,
-        {{OmniboxFieldTrial::kBookmarkPathsUiReplaceTitle, "true"}});
+        {{OmniboxFieldTrial::kBookmarkPathsUiReplaceTitle.name, "true"}});
     test_with_and_without_url_and_ancestor_matches(
         "title", "https://url.com", "url.com", "grandparent/parent/title");
   }
@@ -375,7 +375,7 @@ TEST(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kBookmarkPaths,
-        {{OmniboxFieldTrial::kBookmarkPathsUiReplaceUrl, "true"}});
+        {{OmniboxFieldTrial::kBookmarkPathsUiReplaceUrl.name, "true"}});
     test_with_and_without_url_and_ancestor_matches(
         "title", "https://url.com", "grandparent/parent", "title");
   }
@@ -384,7 +384,7 @@ TEST(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kBookmarkPaths,
-        {{OmniboxFieldTrial::kBookmarkPathsUiAppendAfterTitle, "true"}});
+        {{OmniboxFieldTrial::kBookmarkPathsUiAppendAfterTitle.name, "true"}});
     test_with_and_without_url_and_ancestor_matches(
         "title", "https://url.com", "url.com", "title : grandparent/parent");
   }
@@ -393,7 +393,7 @@ TEST(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kBookmarkPaths,
-        {{OmniboxFieldTrial::kBookmarkPathsUiDynamicReplaceUrl, "true"}});
+        {{OmniboxFieldTrial::kBookmarkPathsUiDynamicReplaceUrl.name, "true"}});
     test("title", "https://url.com", false, false, "grandparent/parent",
          "title");
     test("title", "https://url.com", true, false, "url.com", "title");

@@ -70,13 +70,9 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
   const std::u16string formatted_url = url_formatter::FormatUrl(
       url, format_types, net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
 
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          omnibox::kBookmarkPaths,
-          OmniboxFieldTrial::kBookmarkPathsUiReplaceUrl, false)) {
+  if (OmniboxFieldTrial::kBookmarkPathsUiReplaceUrl.Get()) {
     match.contents = path;
-  } else if (base::GetFieldTrialParamByFeatureAsBool(
-                 omnibox::kBookmarkPaths,
-                 OmniboxFieldTrial::kBookmarkPathsUiDynamicReplaceUrl, false)) {
+  } else if (OmniboxFieldTrial::kBookmarkPathsUiDynamicReplaceUrl.Get()) {
     match.contents = !titled_url_match.has_ancestor_match &&
                              !titled_url_match.url_match_positions.empty()
                          ? formatted_url
@@ -102,13 +98,9 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
       ACMatchClassification::MATCH | ACMatchClassification::URL,
       ACMatchClassification::URL);
 
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          omnibox::kBookmarkPaths,
-          OmniboxFieldTrial::kBookmarkPathsUiReplaceTitle, false)) {
+  if (OmniboxFieldTrial::kBookmarkPathsUiReplaceTitle.Get()) {
     match.description = path + u"/" + title;
-  } else if (base::GetFieldTrialParamByFeatureAsBool(
-                 omnibox::kBookmarkPaths,
-                 OmniboxFieldTrial::kBookmarkPathsUiAppendAfterTitle, false)) {
+  } else if (OmniboxFieldTrial::kBookmarkPathsUiAppendAfterTitle.Get()) {
     match.description = title + u" : " + path;
   } else {
     match.description = title;

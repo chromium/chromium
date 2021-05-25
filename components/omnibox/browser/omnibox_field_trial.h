@@ -108,6 +108,7 @@ struct HUPScoringParams {
 };
 
 namespace OmniboxFieldTrial {
+
 // A mapping that contains multipliers indicating that matches of the
 // specified type should have their relevance score multiplied by the
 // given number.  Omitted types are assumed to have multipliers of 1.0.
@@ -354,17 +355,6 @@ int KeywordScoreForSufficientlyCompleteMatch();
 // ---------------------------------------------------------
 // For UI experiments.
 
-// Short bookmarks.
-// Determine whether bookmarks should look for exact matches only or prefix
-// matches as well when the input is short.
-bool IsShortBookmarkSuggestionsEnabled();
-bool IsShortBookmarkSuggestionsByTotalInputLengthEnabled();
-// If |...Counterfactual()| returns true, when applicable, the feature will be
-// logged as triggered but won't affect omnibox results.
-bool ShortBookmarkSuggestionsByTotalInputLengthCounterfactual();
-// Returns the minimum input length to enable prefix matches.
-size_t ShortBookmarkSuggestionsByTotalInputLengthThreshold();
-
 // Returns true if the tab switch suggestions flag is enabled.
 bool IsTabSwitchSuggestionsEnabled();
 
@@ -388,31 +378,6 @@ bool IsExperimentalKeywordModeEnabled();
 
 // Returns true if the new focus UI is enabled.
 bool IsRefinedFocusStateEnabled();
-
-// Rich autocompletion.
-bool IsRichAutocompletionEnabled();
-extern const base::FeatureParam<bool> kRichAutocompletionAutocompleteTitles;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteTitlesShortcutProvider;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteTitlesNoInputsWithSpaces;
-extern const base::FeatureParam<int>
-    kRichAutocompletionAutocompleteTitlesMinChar;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteNonPrefixAll;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteNonPrefixShortcutProvider;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces;
-extern const base::FeatureParam<int>
-    kRichAutocompletionAutocompleteNonPrefixMinChar;
-bool RichAutocompletionShowAdditionalText();
-extern const base::FeatureParam<bool> kRichAutocompletionSplitTitleCompletion;
-extern const base::FeatureParam<bool> kRichAutocompletionSplitUrlCompletion;
-extern const base::FeatureParam<int> kRichAutocompletionSplitCompletionMinChar;
-extern const base::FeatureParam<bool> kRichAutocompletionCounterfactual;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompletePreferUrlsOverPrefixes;
 
 // On Device Head Suggestions feature and its helper functions.
 bool IsOnDeviceHeadSuggestEnabledForIncognito();
@@ -532,22 +497,85 @@ extern const char kOnDeviceHeadSuggestDemoteMode[];
 // Non-const because some unittests modify this value.
 extern int kDefaultMinimumTimeBetweenSuggestQueriesMs;
 
-// Parameter names used for short bookmarks variations.
-extern const char
-    kShortBookmarkSuggestionsByTotalInputLengthCounterfactualParam[];
-extern const char kShortBookmarkSuggestionsByTotalInputLengthThresholdParam[];
-
 // Parameter names used by omnibox experiments that hide the path (and
 // optionally subdomains) in the steady state.
 extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 
+// `FeatureParam`s
+
+// Rich autocompletion.
+bool IsRichAutocompletionEnabled();
+bool RichAutocompletionShowAdditionalText();
+extern const base::FeatureParam<bool> kRichAutocompletionAutocompleteTitles;
+extern const base::FeatureParam<bool>
+    kRichAutocompletionAutocompleteTitlesShortcutProvider;
+extern const base::FeatureParam<bool>
+    kRichAutocompletionAutocompleteTitlesNoInputsWithSpaces;
+extern const base::FeatureParam<int>
+    kRichAutocompletionAutocompleteTitlesMinChar;
+extern const base::FeatureParam<bool>
+    kRichAutocompletionAutocompleteNonPrefixAll;
+extern const base::FeatureParam<bool>
+    kRichAutocompletionAutocompleteNonPrefixShortcutProvider;
+extern const base::FeatureParam<bool>
+    kRichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces;
+extern const base::FeatureParam<int>
+    kRichAutocompletionAutocompleteNonPrefixMinChar;
+extern const base::FeatureParam<bool> kRichAutocompletionShowAdditionalText;
+extern const base::FeatureParam<bool> kRichAutocompletionSplitTitleCompletion;
+extern const base::FeatureParam<bool> kRichAutocompletionSplitUrlCompletion;
+extern const base::FeatureParam<int> kRichAutocompletionSplitCompletionMinChar;
+extern const base::FeatureParam<bool> kRichAutocompletionCounterfactual;
+extern const base::FeatureParam<bool>
+    kRichAutocompletionAutocompletePreferUrlsOverPrefixes;
+
+// Bookmark paths.
 // Parameter names used for bookmark path variations that determine whether
 // bookmark suggestion texts will contain the title, URL, and/or path.
-extern const char kBookmarkPathsCounterfactual[];
-extern const char kBookmarkPathsUiReplaceTitle[];
-extern const char kBookmarkPathsUiReplaceUrl[];
-extern const char kBookmarkPathsUiAppendAfterTitle[];
-extern const char kBookmarkPathsUiDynamicReplaceUrl[];
+extern const base::FeatureParam<std::string> kBookmarkPathsCounterfactual;
+extern const base::FeatureParam<bool> kBookmarkPathsUiReplaceTitle;
+extern const base::FeatureParam<bool> kBookmarkPathsUiReplaceUrl;
+extern const base::FeatureParam<bool> kBookmarkPathsUiAppendAfterTitle;
+extern const base::FeatureParam<bool> kBookmarkPathsUiDynamicReplaceUrl;
+
+// Short bookmarks.
+// Determine whether bookmarks should look for exact matches only or prefix
+// matches as well when the input is short.
+bool IsShortBookmarkSuggestionsEnabled();
+bool IsShortBookmarkSuggestionsByTotalInputLengthEnabled();
+// Returns the minimum input length to enable prefix matches.
+size_t ShortBookmarkSuggestionsByTotalInputLengthThreshold();
+// If true, when applicable, the feature will be logged as triggered but won't
+// affect omnibox results.
+extern const base::FeatureParam<bool>
+    kShortBookmarkSuggestionsByTotalInputLengthCounterfactual;
+extern const base::FeatureParam<int>
+    kShortBookmarkSuggestionsByTotalInputLengthThreshold;
+
+// New params should be inserted above this comment and formatted as:
+// - Short comment categorizing the relevant features & params.
+// - Optional: `bool Is[FeatureName]Enabled();` helpers that check if the
+//   related features in `omnibox_features.h` are enabled.
+// - Optional: Helper getter functions to determine the param values when
+//   they're not trivial. E.g. a helper may be needed to return the min of 2
+//   params. Trivial helpers that simply return the param values should be
+//   omitted.
+// - `extern const base::FeatureParam<[T]> k[ParamName];` declarations for
+//   params. Param names should not begin with a `omnibox` prefix or end with a
+//   `Param` suffix. Names for the same or related feature should share a common
+//   prefix.
+// An example:
+/*
+  // Drive suggestions.
+  // True if the feature to enable the document provider is enabled.
+  bool IsDocumentSuggestionsEnabled();
+  // True if the feature to debounce the document provider is enabled.
+  bool IsDocumentDebouncingEnabled();
+  // The minimum input length for which to show document suggestions.
+  extern const base::FeatureParam<int> kDocumentMinChar;
+  // If true, document suggestions will be hidden but logged for analysis.
+  extern const base::FeatureParam<bool> kDocumentCounterfactual;
+*/
 
 namespace internal {
 // The bundled omnibox experiment comes with a set of parameters

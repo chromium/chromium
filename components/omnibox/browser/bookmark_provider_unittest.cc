@@ -574,7 +574,7 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kShortBookmarkSuggestionsByTotalInputLength,
         {{OmniboxFieldTrial::
-              kShortBookmarkSuggestionsByTotalInputLengthThresholdParam,
+              kShortBookmarkSuggestionsByTotalInputLengthThreshold.name,
           "5"}});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
@@ -589,7 +589,7 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kShortBookmarkSuggestionsByTotalInputLength,
         {{OmniboxFieldTrial::
-              kShortBookmarkSuggestionsByTotalInputLengthCounterfactualParam,
+              kShortBookmarkSuggestionsByTotalInputLengthCounterfactual.name,
           "true"}});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0, trigger_feature);
@@ -604,10 +604,10 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kShortBookmarkSuggestionsByTotalInputLength,
         {{OmniboxFieldTrial::
-              kShortBookmarkSuggestionsByTotalInputLengthThresholdParam,
+              kShortBookmarkSuggestionsByTotalInputLengthThreshold.name,
           "5"},
          {OmniboxFieldTrial::
-              kShortBookmarkSuggestionsByTotalInputLengthCounterfactualParam,
+              kShortBookmarkSuggestionsByTotalInputLengthCounterfactual.name,
           "true"}});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
@@ -729,20 +729,20 @@ TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kBookmarkPaths,
-        {{OmniboxFieldTrial::kBookmarkPathsCounterfactual, "control"}});
+        {{OmniboxFieldTrial::kBookmarkPathsCounterfactual.name, "control"}});
     TestNumMatchesAndTriggeredFeature("carefully", 1);
     TestNumMatchesAndTriggeredFeature("carefully other", 0, trigger_feature);
   }
 
   {
-    // When enabled with "enabled" counterfactal logging, should return path
+    // When enabled with "enabled" counterfactual logging, should return path
     // matched bookmarks and trigger counterfactual logging if it path
     // matched.
     SCOPED_TRACE("feature enabled with enabled counterfactual");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kBookmarkPaths,
-        {{OmniboxFieldTrial::kBookmarkPathsCounterfactual, "enabled"}});
+        {{OmniboxFieldTrial::kBookmarkPathsCounterfactual.name, "enabled"}});
     TestNumMatchesAndTriggeredFeature("carefully", 1);
     TestNumMatchesAndTriggeredFeature("carefully other", 1, trigger_feature);
   }

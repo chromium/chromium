@@ -152,8 +152,8 @@ std::vector<TitledUrlMatch> BookmarkProvider::GetMatchesWithBookmarkPaths(
   //   determine if the feature triggered.
   // - When set to "enabled", counterfactual logging will occur and path matched
   //   bookmarks will be returned.
-  std::string counterfactual = base::GetFieldTrialParamValueByFeature(
-      omnibox::kBookmarkPaths, OmniboxFieldTrial::kBookmarkPathsCounterfactual);
+  std::string counterfactual =
+      OmniboxFieldTrial::kBookmarkPathsCounterfactual.Get();
 
   bool match_paths = base::FeatureList::IsEnabled(omnibox::kBookmarkPaths) &&
                      counterfactual != "control";
@@ -198,7 +198,8 @@ query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(
         OmniboxTriggeredFeatureService::Feature::
             kShortBookmarkSuggestionsByTotalInputLength);
     return OmniboxFieldTrial::
-                   ShortBookmarkSuggestionsByTotalInputLengthCounterfactual()
+                   kShortBookmarkSuggestionsByTotalInputLengthCounterfactual
+                       .Get()
                ? query_parser::MatchingAlgorithm::DEFAULT
                : query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
   }
