@@ -109,7 +109,6 @@ const CGFloat KErrorIconImageSize = 18;
 
   _imageView = [[UIImageView alloc] init];
   _imageView.translatesAutoresizingMaskIntoConstraints = NO;
-  _imageView.contentMode = UIViewContentModeCenter;
   _imageView.layer.masksToBounds = YES;
   _imageView.contentMode = UIViewContentModeScaleAspectFit;
   // Creates the image rounded corners.
