@@ -748,7 +748,7 @@
   {
     "name": "copy-link-to-text",
     "owners": [ "johntlee" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 94
   },
   {
     "name": "cpu-affinity-restrict-to-little-cores",
@@ -3289,7 +3289,7 @@
   {
     "name": "ios-shared-highlighting-color-change",
     "owners": [ "cheickcisse@google.com" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 95
   },
   {
     "name": "ios-synthetic-crash-reports",
@@ -4235,7 +4235,7 @@
   {
     "name": "preemptive-link-to-text-generation",
     "owners": [ "cheickcisse@google.com" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 94
   },
   {
     "name": "prefer-constant-frame-rate",
@@ -4728,17 +4728,17 @@
   {
     "name": "shared-highlighting-ios",
     "owners": ["tmartino"],
-    "expiry_milestone": 90
+    "expiry_milestone": 94
   },
   {
     "name": "shared-highlighting-use-blocklist",
     "owners": ["tmartino"],
-    "expiry_milestone": 91
+    "expiry_milestone": 94
   },
   {
     "name": "shared-highlighting-v2",
     "owners": ["kmilka"],
-    "expiry_milestone": 92
+    "expiry_milestone": 94
   },
   {
     "name": "sharing-device-expiration",
@@ -4973,7 +4973,7 @@
   {
     "name": "text-fragment-color-change",
     "owners": [ "cheickcisse@google.com" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 94
   },
   {
     "name": "texture-layer-skip-wait-for-activation",
