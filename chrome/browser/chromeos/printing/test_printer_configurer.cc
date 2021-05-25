@@ -5,11 +5,15 @@
 #include "chrome/browser/chromeos/printing/test_printer_configurer.h"
 
 #include "base/callback.h"
+#include "chrome/browser/chromeos/printing/test_cups_printers_manager.h"
 #include "chromeos/printing/printer_configuration.h"
 
 namespace chromeos {
 
 TestPrinterConfigurer::TestPrinterConfigurer() = default;
+
+TestPrinterConfigurer::TestPrinterConfigurer(TestCupsPrintersManager* manager)
+    : manager_(manager) {}
 
 TestPrinterConfigurer::~TestPrinterConfigurer() = default;
 
@@ -28,6 +32,8 @@ bool TestPrinterConfigurer::IsConfigured(const std::string& printer_id) const {
 
 void TestPrinterConfigurer::MarkConfigured(const std::string& printer_id) {
   configured_printers_.insert(printer_id);
+  if (manager_)
+    manager_->InstallPrinter(printer_id);
 }
 
 void TestPrinterConfigurer::AssignPrinterSetupResult(

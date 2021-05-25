@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/printing/test_cups_printers_manager.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 
@@ -24,6 +25,16 @@ absl::optional<Printer> TestCupsPrintersManager::GetPrinter(
   return printers_.Get(id);
 }
 
+void TestCupsPrintersManager::FetchPrinterStatus(const std::string& printer_id,
+                                                 PrinterStatusCallback cb) {
+  auto it = printer_status_map_.find(printer_id);
+  if (it == printer_status_map_.end()) {
+    FAIL() << "Printer status not found: " << printer_id;
+  }
+  std::move(cb).Run(std::move(it->second));
+  printer_status_map_.erase(it);
+}
+
 // Add |printer| to the corresponding list in |printers_| bases on the given
 // |printer_class|.
 void TestCupsPrintersManager::AddPrinter(const Printer& printer,
@@ -32,7 +43,12 @@ void TestCupsPrintersManager::AddPrinter(const Printer& printer,
 }
 
 void TestCupsPrintersManager::InstallPrinter(const std::string& id) {
-  installed_.insert(id);
+  EXPECT_TRUE(installed_.insert(id).second);
+}
+
+void TestCupsPrintersManager::SetPrinterStatus(
+    const chromeos::CupsPrinterStatus& status) {
+  printer_status_map_[status.GetPrinterId()] = status;
 }
 
 }  // namespace chromeos

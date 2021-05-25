@@ -8,9 +8,18 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+
+class Profile;
+
+namespace chromeos {
+class PpdProvider;
+class PrinterConfigurer;
+struct PrintServersConfig;
+}  // namespace chromeos
 
 namespace crosapi {
 
@@ -22,6 +31,9 @@ class LocalPrinterAsh : public mojom::LocalPrinter {
   LocalPrinterAsh(const LocalPrinterAsh&) = delete;
   LocalPrinterAsh& operator=(const LocalPrinterAsh&) = delete;
   ~LocalPrinterAsh() override;
+
+  static mojom::PrintServersConfigPtr ConfigToMojom(
+      const chromeos::PrintServersConfig& config);
 
   void BindReceiver(mojo::PendingReceiver<mojom::LocalPrinter> receiver);
 
@@ -45,6 +57,13 @@ class LocalPrinterAsh : public mojom::LocalPrinter {
   void GetPolicies(GetPoliciesCallback callback) override;
 
  private:
+  // Exposed so that unit tests can override them.
+  virtual Profile* GetActiveUserProfile();
+  virtual scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
+      Profile* profile);
+  virtual std::unique_ptr<chromeos::PrinterConfigurer> CreatePrinterConfigurer(
+      Profile* profile);
+
   // This class supports any number of connections. This allows the client to
   // have multiple, potentially thread-affine, remotes.
   mojo::ReceiverSet<mojom::LocalPrinter> receivers_;
