@@ -193,6 +193,11 @@ public class PaymentRequestSpec {
         return mNativePointer;
     }
 
+    /** Whether the secure-payment-confirmation method is requested. */
+    public boolean isSecurePaymentConfirmationRequested() {
+        return PaymentRequestSpecJni.get().isSecurePaymentConfirmationRequested(mNativePointer);
+    }
+
     @NativeMethods
     /* package */ interface Natives {
         long create(ByteBuffer optionsByteBuffer, ByteBuffer detailsByteBuffer,
@@ -205,5 +210,6 @@ public class PaymentRequestSpec {
         byte[] getPaymentDetails(long nativePaymentRequestSpec);
         byte[][] getMethodData(long nativePaymentRequestSpec);
         byte[] getPaymentOptions(long nativePaymentRequestSpec);
+        boolean isSecurePaymentConfirmationRequested(long nativePaymentRequestSpec);
     }
 }

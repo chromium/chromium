@@ -54,6 +54,9 @@ class PaymentRequestSpec {
   // Recomputes spec based on details.
   void RecomputeSpecForDetails(JNIEnv* env);
 
+  // Returns whether the secure-payment-confirmation method is requested.
+  bool IsSecurePaymentConfirmationRequested(JNIEnv* env);
+
   // Returns the selected shipping option error.
   base::android::ScopedJavaLocalRef<jstring> SelectedShippingOptionError(
       JNIEnv* env);

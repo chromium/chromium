@@ -85,6 +85,10 @@ void PaymentRequestSpec::RecomputeSpecForDetails(JNIEnv* env) {
   spec_->RecomputeSpecForDetails();
 }
 
+bool PaymentRequestSpec::IsSecurePaymentConfirmationRequested(JNIEnv* env) {
+  return spec_->IsSecurePaymentConfirmationRequested();
+}
+
 base::android::ScopedJavaLocalRef<jstring>
 PaymentRequestSpec::SelectedShippingOptionError(JNIEnv* env) {
   return base::android::ConvertUTF16ToJavaString(
