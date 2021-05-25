@@ -22,18 +22,6 @@
    @apply --diagnostics-caution-banner-font;
  }
 
- .card-width {
-   width: 100%;
- }
-
- .diagonstics-cards-container {
-   align-items: center;
-   display: flex;
-   flex-direction: column;
-   padding-inline: var(--container-padding);
-   width: var(--content-container-width);
- }
-
  #diagnosticsContainer {
    align-items: center;
    box-sizing: border-box;
@@ -85,7 +73,7 @@
   <div class="overview-container">
     <overview-card id="overviewCard"></overview-card>
   </div>
-  <div class="diagonstics-cards-container">
+  <div class="diagnostics-cards-container">
     <template is="dom-if" if="[[showBatteryStatusCard_]]" restamp>
       <div class="card-width">
         <battery-status-card id="batteryStatusCard"
@@ -102,9 +90,6 @@
       <memory-card id="memoryCard"
         is-test-running="{{isTestRunning}}">
       </memory-card>
-    </div>
-    <div class="card-width" hidden="[[!isNetworkingEnabled_()]]">
-      <network-list></network-list>
     </div>
   </div>
   <div class="session-log-container">

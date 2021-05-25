@@ -1,3 +1,9 @@
 <style include="cr-shared-style diagnostics-shared diagnostics-fonts">
 </style>
-<div><system-page id="systemPage"></system-page></div>
+<div id="diagnosticsAppContainer">
+  <navigation-view-panel
+    hidden$="[[!isNetworkingEnabled_]]" id="navigationPanel">
+  </navigation-view-panel>
+  <system-page hidden$="[[isNetworkingEnabled_]]"></system-page>
+</div>
+

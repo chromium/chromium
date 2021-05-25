@@ -14,6 +14,10 @@
       background-color: var(--cros-bg-color);
     }
 
+    .card-width {
+      width: 100%;
+    }
+
     .data-point-margin-end {
       margin-right: 20px;
     }
@@ -25,6 +29,14 @@
     paper-tooltip {
       --paper-tooltip-min-width: auto;
       line-height: 18px;
+    }
+
+    .diagnostics-cards-container {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      padding-inline: var(--container-padding);
+      width: var(--content-container-width);
     }
 
     .diagnostics-chip {

@@ -1,16 +1,16 @@
 <style include="diagnostics-shared diagnostics-fonts">
-  #connectivityCard {
-    width: 100%;
-  }
 </style>
 
-<div id="networkListContainer">
-  <connectivity-card id="connectivityCard" active-guid="[[activeGuid_]]"
-    is-test-running="{{isTestRunning}}">
-  </connectivity-card>
+<div id="networkListContainer" class="diagnostics-cards-container">
+  <div class="diagnostics-cards-container">
+    <connectivity-card class="card-width" active-guid="[[activeGuid_]]"
+        is-test-running="{{isTestRunning}}">
+    </connectivity-card>
+  </div>
   <dom-repeat id="networkCardList" items="[[otherNetworkGuids_]]" as="guid">
     <template>
-      <network-card guid="[[guid]]"></network-card>
+      <network-card class="card-width" guid="[[guid]]">
+      </network-card>
     </template>
   </dom-repeat>
 </div>

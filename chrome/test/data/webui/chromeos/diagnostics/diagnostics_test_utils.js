@@ -195,3 +195,16 @@ export function getEthernetInfoElement(element) {
   return /** @type {!EthernetInfoElement} */ (
       element.shadowRoot.querySelector('ethernet-info'));
 }
+
+/**
+ * Helper function for getting an element from a navigation-view-panel element.
+ * @param {?T} element
+ * @param {string} selector
+ * @template T
+ * @return {!HTMLElement}
+ */
+export function getNavigationViewPanelElement(element, selector) {
+  const navPanel = element.$$('navigation-view-panel');
+  return /** @type {!HTMLElement} */ (
+      navPanel.shadowRoot.querySelector(`#${selector}`));
+}

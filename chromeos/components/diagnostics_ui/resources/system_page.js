@@ -12,7 +12,6 @@ import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 import './icons.js';
 import './memory_card.js';
-import './network_list.js';
 import './overview_card.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -142,14 +141,6 @@ Polymer({
               this.$.toast.show();
             })
         .catch(() => {/* File selection cancelled */});
-  },
-
-  /**
-   * @protected
-   * @return {boolean}
-   */
-  isNetworkingEnabled_() {
-    return loadTimeData.getBoolean('isNetworkingEnabled');
   },
 
   /** @private */

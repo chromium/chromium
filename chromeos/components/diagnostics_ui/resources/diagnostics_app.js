@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/ash/common/navigation_view_panel.js';
+import './network_list.js';
 import './strings.m.js';
 import './system_page.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -21,8 +24,19 @@ Polymer({
 
   behaviors: [I18nBehavior],
 
-  properties: {},
+  properties: {
+    /** @private {boolean} */
+    isNetworkingEnabled_: {
+      type: Boolean,
+      value: loadTimeData.getBoolean('isNetworkingEnabled'),
+    },
+  },
 
   /** @override */
-  created() {},
+  attached() {
+    if (this.isNetworkingEnabled_) {
+      this.$$('#navigationPanel').addSelector('System', 'system-page');
+      this.$$('#navigationPanel').addSelector('Connectivity', 'network-list');
+    }
+  },
 });

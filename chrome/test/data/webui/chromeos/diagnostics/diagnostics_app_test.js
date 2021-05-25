@@ -15,6 +15,7 @@ import {setNetworkHealthProviderForTesting, setSystemDataProviderForTesting, set
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
 
+import * as dx_utils from './diagnostics_test_utils.js';
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
 
 export function appTestSuite() {
@@ -100,20 +101,13 @@ export function appTestSuite() {
     return flushTasks();
   }
 
-  /**
-   * Get the system page.
-   * @return {!SystemPageElement}
-   */
-  function getSystemPage() {
-    return /** @type {!SystemPageElement} */ (page.$$('#systemPage'));
-  }
-
   test('SystemPagePopulated', () => {
     return initializeDiagnosticsApp(
                fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
                fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
         .then(() => {
-          const systemPage = getSystemPage();
+          const systemPage =
+              dx_utils.getNavigationViewPanelElement(page, 'system-page');
           assertTrue(!!systemPage);
           assertTrue(isVisible(systemPage));
         });
