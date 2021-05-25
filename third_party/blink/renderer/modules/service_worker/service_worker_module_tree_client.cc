@@ -40,15 +40,19 @@ void ServiceWorkerModuleTreeClient::NotifyModuleTreeLoadFinished(
   }
 
   // With top-level await: https://github.com/w3c/ServiceWorker/pull/1444
-  if (!module_script->HasEmptyRecord() &&
-      module_script->V8Module()->IsGraphAsync()) {
-    worker_reporting_proxy.DidFailToFetchModuleScript();
-    worker_global_scope->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kJavaScript,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "Top-level await is disallowed in service workers."));
-    worker_global_scope->close();
-    return;
+  if (!module_script->HasEmptyRecord()) {
+    v8::Local<v8::Module> record = module_script->V8Module();
+    if (record->GetStatus() >= v8::Module::kInstantiated &&
+        record->IsGraphAsync()) {
+      worker_reporting_proxy.DidFailToFetchModuleScript();
+      worker_global_scope->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kError,
+              "Top-level await is disallowed in service workers."));
+      worker_global_scope->close();
+      return;
+    }
   }
 
   worker_reporting_proxy.DidFetchScript();
