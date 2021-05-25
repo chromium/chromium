@@ -549,10 +549,10 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
                   kBackForwardCacheDisabledForDelegate);
   }
 
+  const bool is_prerendering = rfh->GetLifecycleState() ==
+                               RenderFrameHost::LifecycleState::kPrerendering;
   if (!IsBackForwardCacheEnabled() || is_disabled_for_testing_ ||
-      // TODO(https://crbug.com/1176151): Replace with LifecycleState check once
-      // it tracks prerender too.
-      rfh->frame_tree()->is_prerendering()) {
+      is_prerendering) {
     result.No(
         BackForwardCacheMetrics::NotRestoredReason::kBackForwardCacheDisabled);
 
@@ -568,9 +568,7 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
                     kBackForwardCacheDisabledByLowMemory);
     }
 
-    // TODO(https://crbug.com/1176151): Replace with LifecycleState check once
-    // it tracks prerender too.
-    if (rfh->frame_tree()->is_prerendering()) {
+    if (is_prerendering) {
       result.No(BackForwardCacheMetrics::NotRestoredReason::
                     kBackForwardCacheDisabledForPrerender);
     }
