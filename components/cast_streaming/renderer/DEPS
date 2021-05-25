@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/cast_streaming/mojo",
   "+media/base",
   "+media/mojo",
   "+mojo/public",

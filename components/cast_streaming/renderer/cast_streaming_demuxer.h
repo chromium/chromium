@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_RENDERER_CAST_STREAMING_DEMUXER_H_
 #define COMPONENTS_CAST_STREAMING_RENDERER_CAST_STREAMING_DEMUXER_H_
 
-#include "components/cast_streaming/mojo/cast_streaming_session.mojom.h"
+#include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
 #include "media/base/demuxer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

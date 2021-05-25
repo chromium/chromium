@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "components/cast_streaming/mojo/cast_streaming_session.mojom.h"
+#include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace cast_api_bindings {

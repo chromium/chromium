@@ -9,7 +9,7 @@ import("//testing/test.gni")
 source_set("renderer") {
   deps = [
     "//base",
-    "//components/cast_streaming/mojo:mojom",
+    "//components/cast_streaming/public/mojom",
     "//media",
     "//media/mojo/common",
     "//mojo/public/cpp/bindings",

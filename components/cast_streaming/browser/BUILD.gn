@@ -40,7 +40,7 @@ source_set("receiver_session") {
     "//mojo/public/cpp/system",
   ]
   public_deps = [
-    "//components/cast_streaming/mojo:mojom",
+    "//components/cast_streaming/public/mojom",
     "//third_party/openscreen/src/cast/common:channel",
   ]
   visibility = [ ":*" ]

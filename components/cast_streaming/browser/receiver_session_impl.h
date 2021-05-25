@@ -7,7 +7,7 @@
 
 #include "components/cast_streaming/browser/cast_streaming_session.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
-#include "components/cast_streaming/mojo/cast_streaming_session.mojom.h"
+#include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
