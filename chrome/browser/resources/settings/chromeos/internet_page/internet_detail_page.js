@@ -337,6 +337,13 @@ Polymer({
    */
   applyingChanges_: false,
 
+  /**
+   * Flag, if true, indicating that the next deviceState_ update
+   * should call deepLinkToSimLockElement_().
+   * @private {boolean}
+   */
+  pendingSimLockDeepLink_: false,
+
   /** @override */
   attached() {
     if (loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
@@ -448,14 +455,13 @@ Polymer({
     }
 
     if (settingId === chromeos.settings.mojom.Setting.kCellularSimLock) {
-      // In this rare case, toggle not focusable until after a second wait.
-      // This is slightly preferable to requestAnimationFrame used within
-      // network-siminfo to focus elements since it can be reproduced in
-      // testing.
-      Polymer.RenderStatus.afterNextRender(this, () => {
-        this.afterRenderShowDeepLink(
-            settingId, () => this.$$('network-siminfo').getSimLockToggle());
-      });
+      this.advancedExpanded_ = true;
+
+      // If the page just loaded, deviceState_ will not be fully initialized
+      // yet, so we won't know which SIM info element to focus. Set
+      // pendingSimLockDeepLink_ to indicate that a SIM info element should be
+      // focused next deviceState_ update.
+      this.pendingSimLockDeepLink_ = true;
       return false;
     }
 
@@ -707,6 +713,30 @@ Polymer({
       if (shouldGetNetworkDetails) {
         this.getNetworkDetails_();
       }
+      if (this.pendingSimLockDeepLink_) {
+        this.pendingSimLockDeepLink_ = false;
+        this.deepLinkToSimLockElement_();
+      }
+    });
+  },
+
+  /** @private */
+  deepLinkToSimLockElement_() {
+    const settingId = chromeos.settings.mojom.Setting.kCellularSimLock;
+    const simLockStatus = this.deviceState_.simLockStatus;
+
+    // In this rare case, element not focusable until after a second wait.
+    // This is slightly preferable to requestAnimationFrame used within
+    // network-siminfo to focus elements since it can be reproduced in
+    // testing.
+    Polymer.RenderStatus.afterNextRender(this, () => {
+      if (simLockStatus && !!simLockStatus.lockType) {
+        this.afterRenderShowDeepLink(
+            settingId, () => this.$$('network-siminfo').getUnlockButton());
+        return;
+      }
+      this.afterRenderShowDeepLink(
+          settingId, () => this.$$('network-siminfo').getSimLockToggle());
     });
   },
 

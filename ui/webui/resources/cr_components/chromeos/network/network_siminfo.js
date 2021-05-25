@@ -120,6 +120,13 @@ Polymer({
     return /** @type {?CrToggleElement} */ (this.$$('#simLockButton'));
   },
 
+  /**
+   * @return {?CrButtonElement}
+   */
+  getUnlockButton() {
+    return /** @type {?CrButtonElement} */ (this.$$('#unlockPinButton'));
+  },
+
   /** @private */
   onDialogOpenChanged_() {
     if (this.isDialogOpen_) {

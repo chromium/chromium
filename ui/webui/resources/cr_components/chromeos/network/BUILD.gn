@@ -196,6 +196,7 @@ js_library("network_siminfo") {
     ":mojo_interface_provider",
     ":onc_mojo",
     ":sim_lock_dialogs",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js/cr/ui:focus_without_ink",
   ]

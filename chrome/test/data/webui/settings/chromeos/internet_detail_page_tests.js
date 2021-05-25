@@ -86,6 +86,44 @@ suite('InternetDetailPage', function() {
     return result;
   }
 
+  /**
+   * @param {boolean} isSimLocked
+   */
+  function deepLinkToSimLockElement(isSimLocked) {
+    init();
+    const mojom = chromeos.networkConfig.mojom;
+
+    const test_iccid = '11111111111111111';
+    mojoApi_.setDeviceStateForTest({
+      type: mojom.NetworkType.kCellular,
+      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
+      simLockStatus: {
+        lockEnabled: true,
+        lockType: isSimLocked ? 'sim-pin' : undefined,
+      },
+      simInfos: [{
+        iccid: test_iccid,
+        isPrimary: true,
+      }],
+    });
+
+    const cellularNetwork =
+        getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
+    cellularNetwork.connectable = false;
+    cellularNetwork.typeProperties.cellular.iccid = test_iccid;
+    mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+
+    const params = new URLSearchParams;
+    params.append('guid', 'cellular_guid');
+    params.append('type', 'Cellular');
+    params.append('name', 'cellular');
+    params.append('settingId', '14');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.NETWORK_DETAIL, params);
+
+    return flushAsync();
+  }
+
   setup(function() {
     loadTimeData.overrideValues({
       internetAddConnection: 'internetAddConnection',
@@ -564,30 +602,8 @@ suite('InternetDetailPage', function() {
       await popStatePromise;
     });
 
-    test('Deep link to sim lock toggle', async () => {
-      init();
-      const mojom = chromeos.networkConfig.mojom;
-      mojoApi_.setDeviceStateForTest({
-        type: mojom.NetworkType.kCellular,
-        deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
-        simLockStatus: {
-          lockEnabled: false,
-        },
-      });
-      const cellularNetwork =
-          getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
-      cellularNetwork.connectable = false;
-      mojoApi_.setManagedPropertiesForTest(cellularNetwork);
-
-      const params = new URLSearchParams;
-      params.append('guid', 'cellular_guid');
-      params.append('type', 'Cellular');
-      params.append('name', 'cellular');
-      params.append('settingId', '14');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.NETWORK_DETAIL, params);
-
-      Polymer.dom.flush();
+    test('Deep link to sim lock toggle with cellular flag off', async () => {
+      await deepLinkToSimLockElement(/*isSimLocked=*/ false);
 
       const simInfo = internetDetailPage.$$('#cellularSimInfo');
 
@@ -598,6 +614,40 @@ suite('InternetDetailPage', function() {
       assertEquals(
           simInfo.$$('#simLockButton'), getDeepActiveElement(),
           'Sim lock toggle should be focused for settingId=14.');
+    });
+
+    test('Deep link to sim lock toggle with cellular flag on', async () => {
+      loadTimeData.overrideValues({
+        updatedCellularActivationUi: true,
+      });
+      await deepLinkToSimLockElement(/*isSimLocked=*/ false);
+
+      const simInfo = internetDetailPage.$$('#cellularSimInfoAdvanced');
+
+      // In this rare case, wait after next render twice due to focus behavior
+      // of the siminfo component.
+      await test_util.waitAfterNextRender(simInfo);
+      await test_util.waitAfterNextRender(simInfo);
+      assertEquals(
+          simInfo.$$('#simLockButton'), getDeepActiveElement(),
+          'Sim lock toggle should be focused for settingId=14.');
+    });
+
+    test('Deep link to sim unlock button with cellular flag on', async () => {
+      loadTimeData.overrideValues({
+        updatedCellularActivationUi: true,
+      });
+      await deepLinkToSimLockElement(/*isSimLocked=*/ true);
+
+      const simInfo = internetDetailPage.$$('#cellularSimInfoAdvanced');
+
+      // In this rare case, wait after next render twice due to focus behavior
+      // of the siminfo component.
+      await test_util.waitAfterNextRender(simInfo);
+      await test_util.waitAfterNextRender(simInfo);
+      assertEquals(
+          simInfo.$$('#unlockPinButton'), getDeepActiveElement(),
+          'Sim unlock button should be focused for settingId=14.');
     });
 
     test('Cellular page hides hidden toggle', function() {
