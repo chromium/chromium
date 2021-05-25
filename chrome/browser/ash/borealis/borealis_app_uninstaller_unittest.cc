@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -21,13 +22,8 @@
 namespace borealis {
 namespace {
 
-class CallbackFactory : public testing::StrictMock<testing::MockFunction<void(
-                            BorealisAppUninstaller::UninstallResult)>> {
- public:
-  base::OnceCallback<void(BorealisAppUninstaller::UninstallResult)> BindOnce() {
-    return base::BindOnce(&CallbackFactory::Call, base::Unretained(this));
-  }
-};
+using CallbackFactory =
+    StrictCallbackFactory<void(BorealisAppUninstaller::UninstallResult)>;
 
 class BorealisInstallerMock : public BorealisInstaller {
  public:

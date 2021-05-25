@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,12 +17,7 @@ namespace borealis {
 namespace {
 
 template <typename F>
-class CallbackFactory : public testing::StrictMock<testing::MockFunction<F>> {
- public:
-  base::OnceCallback<F> GetOnce() {
-    return base::BindOnce(&CallbackFactory<F>::Call, base::Unretained(this));
-  }
-};
+using CallbackFactory = StrictCallbackFactory<F>;
 
 class ParseIntTransition : public Transition<std::string, int, bool> {
   void Start(std::unique_ptr<std::string> in) override {
@@ -46,7 +42,7 @@ TEST(TransitionTest, TransitionCanTransformInputToOutput) {
       }));
 
   transition.Begin(std::make_unique<std::string>("12345"),
-                   callback_handler.GetOnce());
+                   callback_handler.BindOnce());
   task_environment.RunUntilIdle();
 }
 
@@ -61,7 +57,7 @@ TEST(TransitionTest, TransitionCanFail) {
       }));
 
   transition.Begin(std::make_unique<std::string>("not a number"),
-                   callback_handler.GetOnce());
+                   callback_handler.BindOnce());
   task_environment.RunUntilIdle();
 }
 
@@ -86,7 +82,7 @@ TEST(TransitionTest, MultipleCompletionFiresCallbackOnce) {
         EXPECT_EQ(result.Error(), "foo");
       }));
 
-  transition.Begin(nullptr, callback_handler.GetOnce());
+  transition.Begin(nullptr, callback_handler.BindOnce());
   task_environment.RunUntilIdle();
 }
 

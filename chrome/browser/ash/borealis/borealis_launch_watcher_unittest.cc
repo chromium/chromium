@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
@@ -18,14 +19,8 @@
 namespace borealis {
 namespace {
 
-class CallbackForTestingExpectation {
- public:
-  base::OnceCallback<void(absl::optional<std::string>)> GetCallback() {
-    return base::BindOnce(&CallbackForTestingExpectation::Callback,
-                          base::Unretained(this));
-  }
-  MOCK_METHOD(void, Callback, (absl::optional<std::string>), ());
-};
+using CallbackFactory =
+    StrictCallbackFactory<void(absl::optional<std::string>)>;
 
 class BorealisLaunchWatcherTest : public testing::Test {
  public:
@@ -64,7 +59,7 @@ class BorealisLaunchWatcherTest : public testing::Test {
 };
 
 TEST_F(BorealisLaunchWatcherTest, VmStartsCallbackRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
+  CallbackFactory callback_expectation;
   BorealisLaunchWatcher watcher(profile_.get(), "FooVm");
   vm_tools::cicerone::ContainerStartedSignal signal;
   signal.set_owner_id(
@@ -73,27 +68,27 @@ TEST_F(BorealisLaunchWatcherTest, VmStartsCallbackRan) {
   signal.set_container_name("FooContainer");
 
   EXPECT_CALL(callback_expectation,
-              Callback(absl::optional<std::string>("FooContainer")));
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
+              Call(absl::optional<std::string>("FooContainer")));
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
   fake_cicerone_client_->NotifyContainerStarted(std::move(signal));
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisLaunchWatcherTest, VmTimesOutCallbackRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
+  CallbackFactory callback_expectation;
   BorealisLaunchWatcher watcher(profile_.get(), "FooVm");
   watcher.SetTimeoutForTesting(base::TimeDelta::FromMilliseconds(0));
 
   EXPECT_CALL(callback_expectation,
-              Callback(absl::optional<std::string>(absl::nullopt)));
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
+              Call(absl::optional<std::string>(absl::nullopt)));
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisLaunchWatcherTest, VmAlreadyStartedCallbackRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
+  CallbackFactory callback_expectation;
   BorealisLaunchWatcher watcher(profile_.get(), "FooVm");
   vm_tools::cicerone::ContainerStartedSignal signal;
   signal.set_owner_id(
@@ -102,15 +97,15 @@ TEST_F(BorealisLaunchWatcherTest, VmAlreadyStartedCallbackRan) {
   signal.set_container_name("FooContainer");
 
   EXPECT_CALL(callback_expectation,
-              Callback(absl::optional<std::string>("FooContainer")));
+              Call(absl::optional<std::string>("FooContainer")));
   fake_cicerone_client_->NotifyContainerStarted(std::move(signal));
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisLaunchWatcherTest, VmStartsMultipleCallbacksRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
+  CallbackFactory callback_expectation;
   BorealisLaunchWatcher watcher(profile_.get(), "FooVm");
   vm_tools::cicerone::ContainerStartedSignal signal;
   signal.set_owner_id(
@@ -119,31 +114,31 @@ TEST_F(BorealisLaunchWatcherTest, VmStartsMultipleCallbacksRan) {
   signal.set_container_name("FooContainer");
 
   EXPECT_CALL(callback_expectation,
-              Callback(absl::optional<std::string>("FooContainer")))
+              Call(absl::optional<std::string>("FooContainer")))
       .Times(2);
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
   fake_cicerone_client_->NotifyContainerStarted(std::move(signal));
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisLaunchWatcherTest, VmTimesOutMultipleCallbacksRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
+  CallbackFactory callback_expectation;
   BorealisLaunchWatcher watcher(profile_.get(), "FooVm");
   watcher.SetTimeoutForTesting(base::TimeDelta::FromMilliseconds(0));
 
   EXPECT_CALL(callback_expectation,
-              Callback(absl::optional<std::string>(absl::nullopt)))
+              Call(absl::optional<std::string>(absl::nullopt)))
       .Times(2);
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisLaunchWatcherTest, OtherVmsStartBorealisTimesOutCallbackRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
+  CallbackFactory callback_expectation;
   BorealisLaunchWatcher watcher(profile_.get(), "FooVm");
   watcher.SetTimeoutForTesting(base::TimeDelta::FromMilliseconds(0));
   vm_tools::cicerone::ContainerStartedSignal signal1;
@@ -155,10 +150,10 @@ TEST_F(BorealisLaunchWatcherTest, OtherVmsStartBorealisTimesOutCallbackRan) {
   signal2.set_vm_name("not-FooVm");
 
   EXPECT_CALL(callback_expectation,
-              Callback(absl::optional<std::string>(absl::nullopt)));
+              Call(absl::optional<std::string>(absl::nullopt)));
   fake_cicerone_client_->NotifyContainerStarted(std::move(signal1));
   fake_cicerone_client_->NotifyContainerStarted(std::move(signal2));
-  watcher.AwaitLaunch(callback_expectation.GetCallback());
+  watcher.AwaitLaunch(callback_expectation.BindOnce());
 
   task_environment_.RunUntilIdle();
 }

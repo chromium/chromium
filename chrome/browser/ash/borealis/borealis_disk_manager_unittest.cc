@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
+#include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
@@ -30,32 +31,15 @@ class FreeSpaceProviderMock
     : public BorealisDiskManagerImpl::FreeSpaceProvider {
  public:
   FreeSpaceProviderMock() = default;
-  ~FreeSpaceProviderMock() = default;
+  ~FreeSpaceProviderMock() override = default;
   MOCK_METHOD(void, Get, (base::OnceCallback<void(int64_t)>), ());
 };
 
-class DiskInfoCallbackFactory
-    : public testing::StrictMock<testing::MockFunction<void(
-          Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
-                   std::string>)>> {
- public:
-  base::OnceCallback<
-      void(Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>)>
-  BindOnce() {
-    return base::BindOnce(&DiskInfoCallbackFactory::Call,
-                          base::Unretained(this));
-  }
-};
+using DiskInfoCallbackFactory = StrictCallbackFactory<void(
+    Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>)>;
 
-class RequestDeltaCallbackFactory
-    : public testing::StrictMock<
-          testing::MockFunction<void(Expected<uint64_t, std::string>)>> {
- public:
-  base::OnceCallback<void(Expected<uint64_t, std::string>)> BindOnce() {
-    return base::BindOnce(&RequestDeltaCallbackFactory::Call,
-                          base::Unretained(this));
-  }
-};
+using RequestDeltaCallbackFactory =
+    StrictCallbackFactory<void(Expected<uint64_t, std::string>)>;
 
 class BorealisDiskManagerTest : public testing::Test {
  public:

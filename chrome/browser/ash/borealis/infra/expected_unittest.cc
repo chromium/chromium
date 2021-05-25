@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -80,7 +81,7 @@ TEST(ExpectedTest, MaybeGettersReturnNullWhenWrong) {
 }
 
 template <typename T>
-using CallbackFactory = testing::StrictMock<testing::MockFunction<void(T&)>>;
+using CallbackFactory = StrictCallbackFactory<void(T&)>;
 
 TEST(ExpectedTest, HandleCallsCorrectCallback) {
   CallbackFactory<A> a_callback;

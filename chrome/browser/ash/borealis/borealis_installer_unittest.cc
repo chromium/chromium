@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -370,17 +371,7 @@ class BorealisUninstallerTest : public BorealisInstallerTest {
   BorealisServiceFake* fake_service_ = nullptr;
 };
 
-class CallbackFactory
-    : public testing::StrictMock<
-          testing::MockFunction<void(BorealisUninstallResult)>> {
- public:
-  base::OnceCallback<void(BorealisUninstallResult)> BindOnce() {
-    return base::BindOnce(&CallbackFactory::Call, weak_factory_.GetWeakPtr());
-  }
-
- private:
-  base::WeakPtrFactory<CallbackFactory> weak_factory_{this};
-};
+using CallbackFactory = StrictCallbackFactory<void(BorealisUninstallResult)>;
 
 TEST_F(BorealisUninstallerTest, ErrorIfUninstallIsAlreadyInProgress) {
   CallbackFactory callback_factory;
