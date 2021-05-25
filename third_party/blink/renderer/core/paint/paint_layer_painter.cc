@@ -458,17 +458,30 @@ PaintResult PaintLayerPainter::PaintLayerContents(
   if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
     if (object.FirstFragment().NextFragment()) {
       result = kMayBeClippedByCullRect;
-    } else if (!object.FirstFragment().GetCullRect().Rect().Contains(
-                   visual_rect)) {
-      result = kMayBeClippedByCullRect;
-    } else if (const auto* box = DynamicTo<LayoutBox>(object)) {
-      PhysicalRect contents_visual_rect =
-          box->PhysicalContentsVisualOverflowRect();
-      contents_visual_rect.Move(object.FirstFragment().PaintOffset());
-      if (!PhysicalRect(object.FirstFragment().GetContentsCullRect().Rect())
-               .Contains(contents_visual_rect)) {
+    } else {
+      IntRect cull_rect = object.FirstFragment().GetCullRect().Rect();
+      bool cull_rect_intersects_self = cull_rect.Intersects(visual_rect);
+      if (!cull_rect.Contains(visual_rect))
         result = kMayBeClippedByCullRect;
+
+      bool cull_rect_intersects_contents = true;
+      if (const auto* box = DynamicTo<LayoutBox>(object)) {
+        PhysicalRect contents_visual_rect =
+            box->PhysicalContentsVisualOverflowRect();
+        contents_visual_rect.Move(object.FirstFragment().PaintOffset());
+        PhysicalRect contents_cull_rect(
+            object.FirstFragment().GetContentsCullRect().Rect());
+        cull_rect_intersects_contents =
+            contents_cull_rect.Intersects(contents_visual_rect);
+        if (!contents_cull_rect.Contains(contents_visual_rect))
+          result = kMayBeClippedByCullRect;
+      } else {
+        cull_rect_intersects_contents = cull_rect_intersects_self;
       }
+
+      if (!cull_rect_intersects_self && !cull_rect_intersects_contents)
+        should_paint_content = false;
+
       // The above doesn't consider clips on non-self-painting contents.
       // Will update in ScopedBoxContentsPaintState.
     }
@@ -485,25 +498,30 @@ PaintResult PaintLayerPainter::PaintLayerContents(
 
   if (should_paint_content || should_paint_self_outline ||
       is_painting_overlay_overflow_controls) {
-    // Collect the fragments. This will compute the clip rectangles and paint
-    // offsets for each layer fragment.
+    // Collect the fragments. If CullRectUpdate is enabled, this will just
+    // create a light-weight adapter from FragmentData to PaintLayerFragment
+    // and we'll remove the adapter in the future. Otherwise this will compute
+    // the clip rectangles and paint offsets for each layer fragment.
     paint_layer_.CollectFragments(
         layer_fragments, local_painting_info.root_layer,
         &local_painting_info.cull_rect, kIgnoreOverlayScrollbarSize,
         respect_overflow_clip, &offset_from_root,
         local_painting_info.sub_pixel_accumulation);
 
-    // PaintLayer::CollectFragments depends on the paint dirty rect in
-    // complicated ways. For now, always assume a partially painted output
-    // for fragmented content.
-    if (layer_fragments.size() > 1)
-      result = kMayBeClippedByCullRect;
-
-    if (should_paint_content) {
-      should_paint_content = AtLeastOneFragmentIntersectsDamageRect(
-          layer_fragments, local_painting_info, paint_flags, offset_from_root);
-      if (!should_paint_content)
+    if (!RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+      // PaintLayer::CollectFragments depends on the paint dirty rect in
+      // complicated ways. For now, always assume a partially painted output
+      // for fragmented content.
+      if (layer_fragments.size() > 1)
         result = kMayBeClippedByCullRect;
+
+      if (should_paint_content) {
+        should_paint_content = AtLeastOneFragmentIntersectsDamageRect(
+            layer_fragments, local_painting_info, paint_flags,
+            offset_from_root);
+        if (!should_paint_content)
+          result = kMayBeClippedByCullRect;
+      }
     }
   }
 
@@ -623,6 +641,8 @@ bool PaintLayerPainter::AtLeastOneFragmentIntersectsDamageRect(
     const PaintLayerPaintingInfo& local_painting_info,
     PaintLayerFlags local_paint_flags,
     const PhysicalOffset& offset_from_root) {
+  DCHECK(!RuntimeEnabledFeatures::CullRectUpdateEnabled());
+
   if (&paint_layer_ == local_painting_info.root_layer &&
       (local_paint_flags & kPaintLayerPaintingOverflowContents))
     return true;

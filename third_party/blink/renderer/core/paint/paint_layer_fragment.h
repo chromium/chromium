@@ -81,6 +81,7 @@ struct PaintLayerFragment {
   // Defines the coordinate space of the above rects:
   // root_fragment_data->LocalBorderBoxProperties().Transform() +
   // root_fragment_data.PaintOffset().
+  // It's for legacy cull rect calculation (pre-CompositeAfterPaint) only.
   const FragmentData* root_fragment_data = nullptr;
 
   // The corresponding FragmentData of this structure.
