@@ -134,6 +134,14 @@ void OverviewGridEventHandler::OnGestureEvent(ui::GestureEvent* event) {
 void OverviewGridEventHandler::HandleClickOrTap(ui::Event* event) {
   CHECK_EQ(ui::EP_PRETARGET, event->phase());
 
+  // If the user is renaming a desk, rather than closing overview the focused
+  // `DeskNameView` should lose focus.
+  if (grid_->IsDeskNameBeingModified()) {
+    grid_->CommitDeskNameChanges();
+    event->StopPropagation();
+    return;
+  }
+
   if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     aura::Window* window = static_cast<views::View*>(event->target())
                                ->GetWidget()

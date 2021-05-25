@@ -4224,6 +4224,35 @@ TEST_F(DesksTest, NameNudgesMultiDisplay) {
   EXPECT_EQ(std::u16string(), desk_name_view_2->GetText());
 }
 
+// Tests that when a user has a `DeskNameView` focused and clicks within the
+// overview grid, the `DeskNameView` loses focus and the overview grid is not
+// closed.
+TEST_F(DesksTest, ClickingOverviewGridUnfocusesDeskNameView) {
+  // Create a second desk so we don't start in zero state.
+  NewDesk();
+
+  // Start overview.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Focus on a `DeskNameView`.
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_EQ(2u, desks_bar_view->mini_views().size());
+  auto* desk_name_view = desks_bar_view->mini_views()[0]->desk_name_view();
+  desk_name_view->RequestFocus();
+  ASSERT_TRUE(desk_name_view->HasFocus());
+
+  // Click the center of the overview grid. This should not close overview mode
+  // and should remove focus from the focused `desk_name_view`.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(overview_grid->bounds().CenterPoint());
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(desk_name_view->HasFocus());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+}
+
 TEST_F(DesksTest, ScrollableDesks) {
   UpdateDisplay("201x400");
   auto* overview_controller = Shell::Get()->overview_controller();
