@@ -60,7 +60,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Session.OpenedTabCounts" units="operations"
-    expires_after="2021-09-19">
+    expires_after="2021-11-21">
   <owner>rohitrao@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -605,7 +605,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SessionRestore.UnrecoverableWriteErrorCount"
-    units="operations" expires_after="2021-09-19">
+    units="operations" expires_after="2021-11-21">
   <owner>sky@chromium.org</owner>
   <owner>davidbienvenu@chromium.org</owner>
   <summary>

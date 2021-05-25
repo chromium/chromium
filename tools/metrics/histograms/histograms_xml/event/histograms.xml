@@ -864,7 +864,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.HandledToRendererSwap2"
-    units="microseconds" expires_after="2021-09-19">
+    units="microseconds" expires_after="2021-11-21">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

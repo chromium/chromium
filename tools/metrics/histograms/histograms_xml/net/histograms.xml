@@ -4826,7 +4826,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SameSiteBlockedCookieSiteEngagement.CookieNoSameSite"
-    enum="SiteEngagementLevel" expires_after="2021-09-19">
+    enum="SiteEngagementLevel" expires_after="2021-11-21">
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>

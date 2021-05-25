@@ -411,7 +411,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.NumberOfExceptions" units="units"
-    expires_after="2021-09-19">
+    expires_after="2021-11-21">
   <owner>battre@chromium.org</owner>
   <summary>
     The number of user defined hostname patterns for content settings at browser

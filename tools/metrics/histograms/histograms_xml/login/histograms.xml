@@ -138,7 +138,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.OfflineSuccess.Attempts" units="units"
-    expires_after="2021-09-19">
+    expires_after="2021-11-21">
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -157,7 +157,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.PasswordChanged.ReauthReason" enum="LoginReauthReasons"
-    expires_after="2021-09-19">
+    expires_after="2021-11-21">
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -176,7 +176,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.PasswordNotChanged.ReauthReason"
-    enum="LoginReauthReasons" expires_after="2021-09-19">
+    enum="LoginReauthReasons" expires_after="2021-11-21">
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -214,7 +214,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Login.PromptToLoginTime" units="ms" expires_after="2021-09-19">
+<histogram name="Login.PromptToLoginTime" units="ms" expires_after="2021-11-21">
   <owner>elijahtaylor@google.com</owner>
   <owner>yusukes@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>

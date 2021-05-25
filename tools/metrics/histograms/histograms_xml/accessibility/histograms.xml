@@ -223,7 +223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosCaretHighlight" enum="BooleanEnabled"
-    expires_after="2021-09-19">
+    expires_after="2021-11-21">
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -288,7 +288,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.ToggleDictationMethod"
-    enum="CrosDictationToggleDictationMethod" expires_after="2021-09-19">
+    enum="CrosDictationToggleDictationMethod" expires_after="2021-11-21">
   <owner>anastasi@google.com</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -317,7 +317,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosFocusHighlight" enum="BooleanEnabled"
-    expires_after="2021-09-19">
+    expires_after="2021-11-21">
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -338,7 +338,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosLargeCursor" enum="BooleanEnabled"
-    expires_after="2021-09-19">
+    expires_after="2021-11-21">
   <owner>dmazzoni@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -559,7 +559,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels" enum="BooleanEnabled"
-    expires_after="2021-09-19">
+    expires_after="2021-11-21">
   <owner>katie@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -615,7 +615,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.PageLanguage" enum="LanguageCode"
-    expires_after="2021-09-19">
+    expires_after="2021-11-21">
   <owner>katie@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1572,7 +1572,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.FromExtensionAPI"
-    enum="TextToSpeechFromExtensionAPI" expires_after="2021-09-19">
+    enum="TextToSpeechFromExtensionAPI" expires_after="2021-11-21">
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <summary>
@@ -1624,7 +1624,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.HasVoiceName"
-    enum="TextToSpeechHasVoiceName" expires_after="2021-09-19">
+    enum="TextToSpeechHasVoiceName" expires_after="2021-11-21">
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <summary>
@@ -1644,7 +1644,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.Native" enum="TextToSpeechNative"
-    expires_after="2021-09-19">
+    expires_after="2021-11-21">
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <summary>
@@ -1666,7 +1666,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.TextLength" units="bytes"
-    expires_after="2021-09-19">
+    expires_after="2021-11-21">
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <summary>

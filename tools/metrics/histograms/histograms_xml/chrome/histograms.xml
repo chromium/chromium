@@ -166,7 +166,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
-    expires_after="2021-09-19">
+    expires_after="2021-11-21">
   <owner>gayane@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>
