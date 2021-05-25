@@ -158,12 +158,6 @@ int PrerenderHostRegistry::ReserveHostToActivate(
   if (!host)
     return RenderFrameHost::kNoFrameTreeNodeId;
 
-  // If the host is not ready for activation yet, destroys it and returns
-  // an invalid id. This is because it is likely that the prerendered page is
-  // never used from now on.
-  if (!host->is_ready_for_activation())
-    return RenderFrameHost::kNoFrameTreeNodeId;
-
   // Compare navigation params from activation with the navigation params
   // from the initial prerender navigation. If they don't match, the navigation
   // should not activate the prerendered page.

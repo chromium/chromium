@@ -145,18 +145,10 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
   }
 
   ActivateResult Activate(NavigationRequest& navigation_request) {
-    if (frame_tree_->root()->HasNavigation()) {
-      // We do not yet support activation if there is an ongoing navigation in
-      // the main frame as the code assumes that NavigationRequest is associated
-      // with the fixed frame tree node. Ongoing navigations in frames are
-      // supported experimentally and require more investigation to ensure that
-      // these NavigationRequests can be transferred to a new
-      // NavigationController and that new NavigationEntries will be correctly
-      // created for them.
-      // TODO(https://crbug.com/1190644): Make sure sub-frame navigations are
-      // fine.
-      return ActivateResult(FinalStatus::kInProgressNavigation, nullptr);
-    }
+    // There should be no ongoing main-frame navigation during activation.
+    // TODO(https://crbug.com/1190644): Make sure sub-frame navigations are
+    // fine.
+    DCHECK(!frame_tree_->root()->HasNavigation());
 
     // NOTE: TakePrerenderedPage() clears the current_frame_host value of
     // frame_tree_->root(). Do not add any code between here and

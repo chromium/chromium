@@ -225,10 +225,11 @@ TEST_F(PrerenderHostRegistryTest,
   navigation->Start();
   NavigationRequest* navigation_request = navigation->GetNavigationHandle();
 
-  // The prerender host is not ready for activation yet, so the registry
-  // shouldn't select the host and instead should abandon it.
+  // The prerender host is not ready for activation yet, the registry
+  // should still continue to select the host as the activation is deferred
+  // until the host is ready for activation.
   EXPECT_EQ(navigation_request->prerender_frame_tree_node_id(),
-            kNoFrameTreeNodeId);
+            prerender_frame_tree_node_id);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 

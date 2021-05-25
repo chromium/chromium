@@ -4864,6 +4864,7 @@ void NavigationRequest::WillStartRequest() {
   }
 
   throttle_runner_->RegisterNavigationThrottles();
+  commit_deferrer_->RegisterDeferringConditions(*this);
 
   // If the content/ embedder did not pass the NavigationUIData at the beginning
   // of the navigation, ask for it now.
@@ -5594,6 +5595,7 @@ bool NavigationRequest::IsInPrimaryMainFrame() {
 }
 
 bool NavigationRequest::IsPrerenderedPageActivation() {
+  // TODO(https://crbug.com/1211736): Make this CHECK more robust.
   CHECK_GE(state_, WILL_START_REQUEST);
   return prerender_frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId;
 }

@@ -27,6 +27,7 @@
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/input/synthetic_tap_gesture.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -55,6 +56,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1294,6 +1296,86 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
   // Both rfh_a and rfh_b lifecycle state's should be kActive after activation.
   EXPECT_EQ(LifecycleStateImpl::kActive, rfh_a->lifecycle_state());
   EXPECT_EQ(LifecycleStateImpl::kActive, rfh_b->lifecycle_state());
+}
+
+// Test that prerender activation is deferred and resumed after the ongoing
+// (in-flight) main-frame navigation in the prerendering frame tree commits.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       SupportActivationWithOngoingMainFrameNavigation) {
+  // Create a HTTP response to control prerendering main-frame navigation.
+  net::test_server::ControllableHttpResponse main_document_response(
+      embedded_test_server(), "/main_document");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL kInitialUrl =
+      embedded_test_server()->GetURL("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl =
+      embedded_test_server()->GetURL("/main_document");
+
+  // Navigate to an initial page in primary frame tree.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender, and navigate to a page that doesn't commit navigation.
+  {
+    test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+    EXPECT_TRUE(ExecJs(web_contents(),
+                       JsReplace("add_prerender($1)", kPrerenderingUrl)));
+    registry_observer.WaitForTrigger(kPrerenderingUrl);
+    EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
+  }
+
+  int host_id = GetHostForUrl(kPrerenderingUrl);
+  test::PrerenderHostObserver prerender_observer(*web_contents_impl(), host_id);
+  EXPECT_FALSE(prerender_observer.was_activated());
+
+  // Defer the activation until the ongoing main-frame navigation in prerender
+  // frame tree commits.
+  {
+    // Start navigation in primary page to kPrerenderingUrl.
+    TestNavigationManager primary_page_manager(shell()->web_contents(),
+                                               kPrerenderingUrl);
+    ASSERT_TRUE(ExecJs(shell()->web_contents()->GetMainFrame(),
+                       JsReplace("location = $1", kPrerenderingUrl)));
+
+    // Continue the navigation until it reaches WillCommitNavigation where the
+    // navigation is deferred by a commit deferral.
+    EXPECT_TRUE(primary_page_manager.WaitForResponse());
+    primary_page_manager.ResumeNavigation();
+
+    NavigationRequest* request = static_cast<NavigationRequest*>(
+        primary_page_manager.GetNavigationHandle());
+
+    // The navigation should be deferred.
+    EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
+
+    // The navigation should not have proceeded past WillProcessResponse
+    // because the PrerenderCommitDeferringCondition is deferring it.
+    EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
+
+    // Complete the prerender response and finish ongoing prerender main frame
+    // navigation.
+    main_document_response.WaitForRequest();
+    main_document_response.Send(net::HTTP_OK, "main_document");
+    main_document_response.Done();
+
+    // The URL should still point to the kInitialUrl until the activation is
+    // completed.
+    EXPECT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+    // Make sure that the prerender was not activated yet.
+    EXPECT_FALSE(prerender_observer.was_activated());
+
+    primary_page_manager.WaitForNavigationFinished();
+    prerender_observer.WaitForActivation();
+  }
+
+  // Prerender should be activated and the URL should point to kPrerenderingUrl.
+  {
+    EXPECT_TRUE(prerender_observer.was_activated());
+    EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+    EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+  }
 }
 
 // Tests that prerendering is gated behind CSP:prefetch-src

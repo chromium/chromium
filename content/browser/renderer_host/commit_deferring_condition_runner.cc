@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/commit_deferring_condition_runner.h"
 
+#include "content/browser/prerender/prerender_commit_deferring_condition.h"
 #include "content/browser/renderer_host/back_forward_cache_commit_deferring_condition.h"
 #include "content/browser/renderer_host/commit_deferring_condition.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -16,7 +17,6 @@ std::unique_ptr<CommitDeferringConditionRunner>
 CommitDeferringConditionRunner::Create(NavigationRequest& navigation_request) {
   auto runner =
       base::WrapUnique(new CommitDeferringConditionRunner(navigation_request));
-  runner->RegisterDeferringConditions(navigation_request);
   return runner;
 }
 
@@ -53,6 +53,8 @@ void CommitDeferringConditionRunner::ResumeProcessing() {
 
 void CommitDeferringConditionRunner::RegisterDeferringConditions(
     NavigationRequest& navigation_request) {
+  DCHECK_GE(navigation_request.state(), NavigationRequest::WILL_START_REQUEST);
+
   // Let WebContents add deferring conditions.
   std::vector<std::unique_ptr<CommitDeferringCondition>> delegate_conditions =
       navigation_request.GetDelegate()
@@ -61,6 +63,9 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
     DCHECK(condition);
     AddCondition(std::move(condition));
   }
+
+  AddCondition(
+      PrerenderCommitDeferringCondition::MaybeCreate(navigation_request));
 
   // The BFCache deferring condition should run after all other conditions
   // since it'll disable eviction on a cached renderer.
