@@ -340,7 +340,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libexpat
   # and whatever else without interference from each other.
-  'libexpat_revision': 'e976867fb57a0cd87e3b0fe05d59e0ed63c6febb',
+  'libexpat_revision': 'a28238bdeebc087071777001245df1876a11f5ee',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling wuffs
   # and whatever else without interference from each other.
