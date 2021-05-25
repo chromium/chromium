@@ -81,16 +81,11 @@ void IncognitoMenuView::BuildMenu() {
   }
 #endif
 
-  const bool new_menu_design =
-      base::FeatureList::IsEnabled(features::kNewProfilePicker);
-
   AddFeatureButton(
-      l10n_util::GetStringUTF16(
-          new_menu_design ? IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON_NEW
-                          : IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON),
+      l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON_NEW),
       base::BindRepeating(&IncognitoMenuView::OnExitButtonClicked,
                           base::Unretained(this)),
-      new_menu_design ? vector_icons::kCloseIcon : kCloseAllIcon);
+      vector_icons::kCloseIcon);
 }
 
 std::u16string IncognitoMenuView::GetAccessibleWindowTitle() const {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TEST_BASE_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TEST_BASE_H_
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 namespace content {
@@ -48,9 +47,6 @@ class ProfilePickerTestBase : public InProcessBrowserTest {
 
   // Gets the picker's web contents.
   content::WebContents* web_contents();
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TEST_BASE_H_

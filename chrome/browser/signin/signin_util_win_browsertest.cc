@@ -543,11 +543,7 @@ class ExistingWinBrowserProfilesSigninUtilTest
   ExistingWinBrowserProfilesSigninUtilTest()
       : BrowserTestHelper(L"gaia_id_for_foo_gmail.com",
                           L"foo@gmail.com",
-                          "lst-123456") {
-    // TODO(droger): Disable the profile picker using the local state preference
-    // instead.
-    feature_list_.InitAndDisableFeature(features::kNewProfilePicker);
-  }
+                          "lst-123456") {}
 
  protected:
   bool SetUpUserDataDirectory() override {
@@ -578,6 +574,9 @@ class ExistingWinBrowserProfilesSigninUtilTest
 // but before this step ends, |current_profile| is created and browser switches
 // to that profile just to prepare the browser for the next step.
 IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_PRE_Run) {
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kBrowserShowProfilePickerOnStartup, false);
+
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   Profile* profile = profile_manager->GetLastUsedProfile();

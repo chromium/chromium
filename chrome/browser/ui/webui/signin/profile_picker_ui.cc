@@ -162,9 +162,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
           g_browser_process->local_state()->GetInteger(
               prefs::kBrowserProfilePickerAvailabilityOnStartup));
   bool ask_on_startup_allowed =
-      availability_on_startup ==
-          ProfilePicker::AvailabilityOnStartup::kEnabled &&
-      base::FeatureList::IsEnabled(kEnableProfilePickerOnStartupFeature);
+      availability_on_startup == ProfilePicker::AvailabilityOnStartup::kEnabled;
   html_source->AddBoolean("askOnStartup",
                           g_browser_process->local_state()->GetBoolean(
                               prefs::kBrowserShowProfilePickerOnStartup));

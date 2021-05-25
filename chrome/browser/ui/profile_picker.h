@@ -27,10 +27,6 @@ class View;
 class WebView;
 }  // namespace views
 
-// Kill switch to disable showing the picker on startup. Has no effect if
-// features::kNewProfilePicker is disabled.
-extern const base::Feature kEnableProfilePickerOnStartupFeature;
-
 class ProfilePicker {
  public:
   // Only work when passed as the argument 'on_select_profile_target_url' to

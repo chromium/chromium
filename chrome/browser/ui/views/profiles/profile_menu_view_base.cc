@@ -297,11 +297,8 @@ class AvatarImageView : public views::ImageView {
     gfx::ImageSkia sized_avatar_image = views::GetImageSkiaFromImageModel(
         SizeImageModel(avatar_image_, ProfileMenuViewBase::kIdentityImageSize),
         GetNativeTheme());
-    if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-      sized_avatar_image =
-          AddCircularBackground(sized_avatar_image, GetBackgroundColor(),
-                                kIdentityImageSizeInclBorder);
-    }
+    sized_avatar_image = AddCircularBackground(
+        sized_avatar_image, GetBackgroundColor(), kIdentityImageSizeInclBorder);
     gfx::ImageSkia sized_badge = AddCircularBackground(
         SizeImage(root_view_->GetSyncIcon(), kBadgeSize), GetBackgroundColor(),
         kBadgeSize + 2 * kBadgePadding);
@@ -586,19 +583,14 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
     const std::u16string& subtitle,
     const ui::ThemedVectorIcon& avatar_header_art) {
   constexpr int kBottomMargin = kDefaultMargin;
-  const bool new_design =
-      base::FeatureList::IsEnabled(features::kNewProfilePicker);
 
   identity_info_container_->RemoveAllChildViews(/*delete_children=*/true);
-  // In the new design, the colored background fully bleeds to the edges of the
-  // menu and to achieve that |container_margin| is set to 0. In this case,
-  // further margins will be added by children views.
-  const int container_margin = new_design ? 0 : kMenuEdgeMargin;
+  // The colored background fully bleeds to the edges of the menu and to achieve
+  // that margin is set to 0. Further margins will be added by children views.
   identity_info_container_->SetLayoutManager(
       CreateBoxLayout(views::BoxLayout::Orientation::kVertical,
                       views::BoxLayout::CrossAxisAlignment::kStretch,
-                      gfx::Insets(container_margin, container_margin,
-                                  kBottomMargin, container_margin)));
+                      gfx::Insets(0, 0, kBottomMargin, 0)));
 
   auto avatar_image_view = std::make_unique<AvatarImageView>(image_model, this);
 
@@ -610,38 +602,6 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
   // after considering other options, including fixes on the AT side.
   GetViewAccessibility().OverrideName(GetAccessibleWindowTitle());
 #endif
-
-  if (!new_design) {
-    if (!profile_name.empty()) {
-      DCHECK(edit_button_params.has_value());
-      const SkColor kBackgroundColor = GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_HighlightedMenuItemBackgroundColor);
-
-      heading_container_->RemoveAllChildViews(/*delete_children=*/true);
-      heading_container_->SetLayoutManager(
-          std::make_unique<views::FillLayout>());
-      heading_container_->SetBackground(
-          views::CreateSolidBackground(kBackgroundColor));
-
-      views::LabelButton* heading_button =
-          heading_container_->AddChildView(std::make_unique<HoverButton>(
-              base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
-                                  base::Unretained(this),
-                                  std::move(edit_button_params->edit_action)),
-              profile_name));
-      heading_button->SetEnabledTextColors(views::style::GetColor(
-          *this, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
-      heading_button->SetTooltipText(edit_button_params->edit_tooltip_text);
-      heading_button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-      heading_button->SetBorder(
-          views::CreateEmptyBorder(gfx::Insets(kDefaultMargin)));
-    }
-
-    identity_info_container_->AddChildView(std::move(avatar_image_view));
-    BuildProfileTitleAndSubtitle(/*parent=*/identity_info_container_, title,
-                                 subtitle);
-    return;
-  }
 
   std::unique_ptr<views::Label> heading_label;
   if (!profile_name.empty()) {

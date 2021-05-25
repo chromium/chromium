@@ -363,13 +363,9 @@ constexpr size_t kPlaceholderAvatarIndex = 0;
 #endif
 
 ui::ImageModel GetGuestAvatar(int size) {
-  if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
     return ui::ImageModel::FromVectorIcon(
         kUserAccountAvatarIcon, ui::NativeTheme::kColorId_AvatarIconGuest,
         size);
-  }
-  return ui::ImageModel::FromVectorIcon(kUserAccountAvatarIcon,
-                                        gfx::kGoogleGrey500, size);
 }
 
 gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
@@ -438,28 +434,12 @@ gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
     return gfx::Image();
   }
 
-  if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-    // Get a higher res than 16px so it looks good after cropping to a circle.
-    gfx::Image icon =
-        entry->GetAvatarIcon(kAvatarIconSize, /*download_high_res=*/false);
-    return profiles::GetSizedAvatarIcon(
-        icon, /*is_rectangle=*/true, kMenuAvatarIconSize, kMenuAvatarIconSize,
-        profiles::SHAPE_CIRCLE);
-  }
-
-  constexpr int kOldMenuAvatarIconSize = 38;
+  // Get a higher res than 16px so it looks good after cropping to a circle.
   gfx::Image icon =
-      entry->GetAvatarIcon(kOldMenuAvatarIconSize, /*download_high_res=*/false);
-
-  // The image might be too large and need to be resized, e.g. if this is a
-  // signed-in user using the GAIA profile photo.
-  if (icon.Width() > kOldMenuAvatarIconSize ||
-      icon.Height() > kOldMenuAvatarIconSize) {
-    icon = profiles::GetSizedAvatarIcon(icon, /*is_rectangle=*/true,
-                                        kOldMenuAvatarIconSize,
-                                        kOldMenuAvatarIconSize);
-  }
-  return icon;
+      entry->GetAvatarIcon(kAvatarIconSize, /*download_high_res=*/false);
+  return profiles::GetSizedAvatarIcon(icon, /*is_rectangle=*/true,
+                                      kMenuAvatarIconSize, kMenuAvatarIconSize,
+                                      profiles::SHAPE_CIRCLE);
 }
 #endif
 

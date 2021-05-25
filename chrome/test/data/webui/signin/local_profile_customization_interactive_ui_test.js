@@ -22,7 +22,6 @@ var LocalProfileCustomizationFocusTest =
     return {
       enabled: [
         'features::kSignInProfileCreation',
-        'features::kNewProfilePicker',
       ]
     };
   }

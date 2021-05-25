@@ -358,14 +358,10 @@ base::scoped_nsobject<NSMenuItem> BuildPeopleMenu(
     id app_delegate,
     const std::u16string& product_name,
     bool is_pwa) {
-  const bool new_picker =
-      base::FeatureList::IsEnabled(features::kNewProfilePicker);
-  base::scoped_nsobject<NSMenuItem> item =
-      Item(new_picker ? IDS_PROFILES_MENU_NAME
-                      : IDS_PROFILES_OPTIONS_GROUP_NAME)
-          .tag(IDC_PROFILE_MAIN_MENU)
-          .submenu({})
-          .Build();
+  base::scoped_nsobject<NSMenuItem> item = Item(IDS_PROFILES_MENU_NAME)
+                                               .tag(IDC_PROFILE_MAIN_MENU)
+                                               .submenu({})
+                                               .Build();
   return item;
 }
 

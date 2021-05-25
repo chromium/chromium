@@ -98,7 +98,6 @@ var ProfileTypeChoiceTest = class extends SigninBrowserTest {
     return {
       enabled: [
         'features::kSignInProfileCreation',
-        'features::kNewProfilePicker',
       ]
     };
   }
@@ -119,15 +118,6 @@ var LocalProfileCustomizationTest = class extends SigninBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://profile-picker/test_loader.html?module=signin/local_profile_customization_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kNewProfilePicker',
-      ]
-    };
   }
 };
 
@@ -152,7 +142,6 @@ var ProfilePickerAppTest = class extends SigninBrowserTest {
     return {
       enabled: [
         'features::kSignInProfileCreation',
-        'features::kNewProfilePicker',
       ]
     };
   }
@@ -179,7 +168,6 @@ var ProfilePickerMainViewTest = class extends SigninBrowserTest {
     return {
       enabled: [
         'features::kSignInProfileCreation',
-        'features::kNewProfilePicker',
       ]
     };
   }
@@ -199,15 +187,6 @@ var ProfileCardMenuTest = class extends SigninBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://profile-picker/test_loader.html?module=signin/profile_card_menu_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kNewProfilePicker',
-      ]
-    };
   }
 };
 

@@ -1056,8 +1056,7 @@ void AppShimManager::UpdateAppProfileMenu(AppState* app_state) {
 
   // Send the profile menu to the app shim process.
   app_state->multi_profile_host->GetAppShim()->UpdateProfileMenu(
-      std::move(items),
-      base::FeatureList::IsEnabled(features::kNewProfilePicker));
+      std::move(items));
 }
 
 AppShimManager::ProfileState* AppShimManager::GetOrCreateProfileState(

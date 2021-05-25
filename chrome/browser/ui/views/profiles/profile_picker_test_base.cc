@@ -114,9 +114,7 @@ class ViewDeletedWaiter : public views::ViewObserver {
 
 }  // namespace
 
-ProfilePickerTestBase::ProfilePickerTestBase() {
-  feature_list_.InitAndEnableFeature(features::kNewProfilePicker);
-}
+ProfilePickerTestBase::ProfilePickerTestBase() = default;
 
 ProfilePickerTestBase::~ProfilePickerTestBase() = default;
 

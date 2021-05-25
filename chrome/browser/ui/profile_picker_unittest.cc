@@ -22,7 +22,6 @@ class ProfilePickerTest : public testing::Test {
  public:
   ProfilePickerTest()
       : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    feature_list_.InitAndEnableFeature(features::kNewProfilePicker);
   }
 
   void SetUp() override { ASSERT_TRUE(testing_profile_manager_.SetUp()); }
@@ -47,7 +46,6 @@ class ProfilePickerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager testing_profile_manager_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_TwoActive) {
@@ -63,18 +61,6 @@ TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_TwoActive) {
   // Should be within the activity time threshold.
   task_environment()->FastForwardBy(base::TimeDelta::FromDays(27));
   EXPECT_TRUE(ProfilePicker::ShouldShowAtLaunch());
-}
-TEST_F(ProfilePickerTest, ShouldShowAtLaunch_KillSwitch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnableProfilePickerOnStartupFeature);
-
-  TestingProfile* profile1 =
-      testing_profile_manager()->CreateTestingProfile("profile1");
-  GetProfileAttributes(profile1)->SetActiveTimeToNow();
-  TestingProfile* profile2 =
-      testing_profile_manager()->CreateTestingProfile("profile2");
-  GetProfileAttributes(profile2)->SetActiveTimeToNow();
-  EXPECT_FALSE(ProfilePicker::ShouldShowAtLaunch());
 }
 
 TEST_F(ProfilePickerTest,

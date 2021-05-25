@@ -35,7 +35,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "chrome_labs_touch.icon",
     "click_to_call_illustration.icon",
     "click_to_call_illustration_dark.icon",
-    "close_all.icon",
     "computer_with_circle_background.icon",
     "copy.icon",
     "crashed_tab.icon",

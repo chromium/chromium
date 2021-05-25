@@ -85,7 +85,6 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void BuildFeatureButtons();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   void BuildSelectableProfiles();
-  void BuildProfileManagementHeading();
   void BuildProfileManagementFeatureButtons();
 #endif
 

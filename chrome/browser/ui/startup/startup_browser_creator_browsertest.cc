@@ -2425,7 +2425,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorInfobarsKioskTest,
 class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
  public:
   StartupBrowserCreatorPickerTestBase() {
-    scoped_feature_list_.InitAndEnableFeature(features::kNewProfilePicker);
     // This test configures command line params carefully. Make sure
     // InProcessBrowserTest does _not_ add about:blank as a startup URL to the
     // command line.
@@ -2458,9 +2457,6 @@ class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
       entry->SetActiveTimeToNow();
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 struct ProfilePickerSetup {
@@ -2497,9 +2493,6 @@ class StartupBrowserCreatorPickerTest
       command_line->AppendSwitch(*GetParam().switch_name);
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Create a secondary profile in a separate PRE run because the existence of

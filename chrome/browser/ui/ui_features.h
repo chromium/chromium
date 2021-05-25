@@ -39,8 +39,6 @@ extern const base::FeatureParam<std::string> kExtensionsSidePanelId;
 
 extern const base::Feature kForceSignInReauth;
 
-extern const base::Feature kNewProfilePicker;
-
 extern const base::Feature kNewTabstripAnimation;
 
 extern const base::Feature kProminentDarkModeActiveTabTitle;

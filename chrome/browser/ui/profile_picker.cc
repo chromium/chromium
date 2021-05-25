@@ -44,9 +44,6 @@ ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
 const char ProfilePicker::kTaskManagerUrl[] =
     "chrome://profile-picker/task-manager";
 
-const base::Feature kEnableProfilePickerOnStartupFeature{
-    "EnableProfilePickerOnStartup", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // static
 bool ProfilePicker::Shown() {
   PrefService* prefs = g_browser_process->local_state();
@@ -57,12 +54,6 @@ bool ProfilePicker::Shown() {
 // static
 bool ProfilePicker::ShouldShowAtLaunch() {
   AvailabilityOnStartup availability_on_startup = GetAvailabilityOnStartup();
-
-  if (!base::FeatureList::IsEnabled(features::kNewProfilePicker))
-    return false;
-
-  if (!base::FeatureList::IsEnabled(kEnableProfilePickerOnStartupFeature))
-    return false;
 
   if (availability_on_startup == AvailabilityOnStartup::kDisabled)
     return false;

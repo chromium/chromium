@@ -1140,8 +1140,6 @@ TEST_F(ProfileAttributesStorageTest, ProfilesState_SingleProfile) {
 // Themes aren't used on Android
 #if !defined(OS_ANDROID)
 TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kNewProfilePicker);
   AddTestingProfile();
   base::FilePath profile_path = GetProfilePath("testing_profile_path0");
 
