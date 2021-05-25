@@ -2241,16 +2241,19 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithTextShopSimilarProducts_20201022",
+                    "name": "EnabledWithTextShopImageWithGoogleLens",
                     "params": {
                         "disableOnIncognito": "true",
-                        "lensShopVariation": "ShopSimilarProducts",
+                        "lensShopVariation": "ShopImageWithGoogleLens",
+                        "logUkm": "true",
                         "minAgsaVersionNameForShopping": "11.17"
                     },
                     "enable_features": [
                         "ContextMenuEnableLensShoppingAllowlist",
-                        "ContextMenuSearchAndShopWithGoogleLens",
                         "ContextMenuShopWithGoogleLens"
+                    ],
+                    "disable_features": [
+                        "ContextMenuSearchAndShopWithGoogleLens"
                     ]
                 }
             ]
