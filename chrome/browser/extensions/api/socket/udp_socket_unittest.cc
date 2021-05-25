@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/storage_partition.h"
@@ -170,7 +171,13 @@ static void OnMulticastReadCompleted(base::OnceClosure quit_run_loop,
   std::move(quit_run_loop).Run();
 }
 
-TEST_F(UDPSocketUnitTest, TestUDPMulticastRecv) {
+// TODO(https://crbug.com/1210643): Test is flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_TestUDPMulticastRecv DISABLED_TestUDPMulticastRecv
+#else
+#define MAYBE_TestUDPMulticastRecv TestUDPMulticastRecv
+#endif
+TEST_F(UDPSocketUnitTest, MAYBE_TestUDPMulticastRecv) {
   const int kPort = 9999;
   const char kGroup[] = "237.132.100.17";
   bool packet_received = false;
