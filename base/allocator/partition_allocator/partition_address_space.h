@@ -221,9 +221,8 @@ class BASE_EXPORT PartitionAddressSpace {
   // kSuperPageSize) * sizeof(uint16_t), kSuperPageSize).
   static constexpr size_t kBRPPoolOffsetTableActualSize =
       (kBRPPoolSize >> kSuperPageShift) * sizeof(uint16_t);
-  // TODO(tasak): Use bits::AlignUp after making the function support constexpr.
   static constexpr size_t kBRPPoolOffsetTableSize =
-      (kBRPPoolOffsetTableActualSize + kSuperPageSize - 1) & kSuperPageBaseMask;
+      bits::AlignUp(kBRPPoolOffsetTableActualSize, kSuperPageSize);
 
   static_assert(kBRPPoolOffsetTableSize == kSuperPageSize,
                 "kBRPPoolOffsetTableSize should be equal to kSuperPageSize, "
