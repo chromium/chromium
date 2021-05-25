@@ -2612,7 +2612,11 @@
     ],
 
     'release_bot_enable_v8_oilpan_dcheck_always_on': [
-      'release_bot_blink', 'enable_v8_oilpan', 'dcheck_always_on',
+      'release_bot_blink',
+      'enable_v8_oilpan',
+      'dcheck_always_on',
+      # Live byte verification is currently only enabled in DCHECK builds.
+      'enable_v8_oilpan_live_byte_verification',
     ],
 
     'release_bot_extended_tracing': [
@@ -3116,6 +3120,10 @@
 
     'enable_v8_oilpan': {
       'gn_args': 'enable_blink_heap_use_v8_oilpan=true',
+    },
+
+    'enable_v8_oilpan_live_byte_verification': {
+      'gn_args': 'cppgc_enable_verify_live_bytes=true',
     },
 
     'enable_vulkan': {
