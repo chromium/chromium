@@ -15,7 +15,7 @@ namespace internal {
 // A SequenceLocalStorageMap holds (slot_id) -> (value, destructor) items for a
 // sequence. When a task runs, it is expected that a pointer to its sequence's
 // SequenceLocalStorageMap is set in TLS using
-// ScopedSetSequenceMapLocalStorageForCurrentThread. When a
+// ScopedSetSequenceLocalStorageMapForCurrentThread. When a
 // SequenceLocalStorageMap is destroyed, it invokes the destructors associated
 // with values stored within it.
 // The Get() and Set() methods should not be accessed directly.
