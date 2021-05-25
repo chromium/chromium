@@ -35,15 +35,18 @@ std::u16string UnifiedAudioDetailedViewController::GetAccessibleName() const {
 }
 
 void UnifiedAudioDetailedViewController::OnAudioNodesChanged() {
-  view_->Update();
+  if (view_)
+    view_->Update();
 }
 
 void UnifiedAudioDetailedViewController::OnActiveOutputNodeChanged() {
-  view_->Update();
+  if (view_)
+    view_->Update();
 }
 
 void UnifiedAudioDetailedViewController::OnActiveInputNodeChanged() {
-  view_->Update();
+  if (view_)
+    view_->Update();
 }
 
 }  // namespace ash
