@@ -199,6 +199,7 @@ test("chromeos_unittests") {
       "//chromeos/startup:unit_tests",
       "//chromeos/timezone:unit_tests",
       "//chromeos/tpm:unit_tests",
+      "//chromeos/utils:unit_tests",
       "//components/onc",
       "//components/policy:generated",
       "//components/policy/proto",
