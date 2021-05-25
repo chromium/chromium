@@ -2689,15 +2689,14 @@
             ],
             "experiments": [
                 {
-                    "name": "ShoppingTasksRecipeTasksChromeCart_Enabled",
+                    "name": "RecipeTasksChromeCart_Enabled",
                     "params": {
                         "NtpModulesLoadTimeoutMillisecondsParam": "3000"
                     },
                     "enable_features": [
                         "NtpChromeCartModule",
                         "NtpModules",
-                        "NtpRecipeTasksModule",
-                        "NtpShoppingTasksModule"
+                        "NtpRecipeTasksModule"
                     ]
                 }
             ]
