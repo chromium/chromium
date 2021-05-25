@@ -5,7 +5,6 @@
 #include "device/vr/openxr/openxr_path_helper.h"
 
 #include "base/check.h"
-#include "base/stl_util.h"
 #include "device/vr/openxr/openxr_util.h"
 
 namespace device {

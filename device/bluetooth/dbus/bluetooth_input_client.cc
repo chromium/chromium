@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_manager.h"

@@ -4,7 +4,6 @@
 
 #include "services/network/public/cpp/network_isolation_key_mojom_traits.h"
 
-#include "base/stl_util.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/mojom/network_isolation_key.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"

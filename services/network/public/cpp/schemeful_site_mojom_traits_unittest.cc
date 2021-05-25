@@ -4,7 +4,6 @@
 
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 
-#include "base/stl_util.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/mojom/schemeful_site.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"

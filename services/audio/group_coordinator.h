@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/stl_util.h"
 #include "base/unguessable_token.h"
 
 namespace audio {

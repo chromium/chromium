@@ -4,7 +4,6 @@
 
 #include "device/vr/openxr/openxr_input_helper.h"
 
-#include "base/stl_util.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/util/xr_standard_gamepad_builder.h"

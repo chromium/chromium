@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"

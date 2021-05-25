@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/browser/verified_contents.h"

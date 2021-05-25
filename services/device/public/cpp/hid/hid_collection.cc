@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "services/device/public/cpp/hid/hid_item_state_table.h"
 
 namespace device {

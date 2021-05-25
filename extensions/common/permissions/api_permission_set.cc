@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "extensions/common/error_utils.h"

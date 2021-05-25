@@ -4,7 +4,6 @@
 
 #include "services/device/serial/serial_port_impl.h"
 
-#include "base/stl_util.h"
 #include "base/test/bind.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

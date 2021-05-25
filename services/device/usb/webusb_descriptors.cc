@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/stl_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_device_handle.h"
 #include "url/gurl.h"
