@@ -8,7 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
-#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -62,39 +62,8 @@ InterpolationValue CSSFontStretchInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState* state,
     ConversionCheckers& conversion_checkers) const {
-  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
-    return CreateFontStretchValue(
-        FontSelectionValue(primitive_value->GetFloatValue()));
-  }
-
-  const auto& identifier_value = To<CSSIdentifierValue>(value);
-  CSSValueID keyword = identifier_value.GetValueID();
-
-  switch (keyword) {
-    case CSSValueID::kInvalid:
-      return nullptr;
-    case CSSValueID::kUltraCondensed:
-      return CreateFontStretchValue(UltraCondensedWidthValue());
-    case CSSValueID::kExtraCondensed:
-      return CreateFontStretchValue(ExtraCondensedWidthValue());
-    case CSSValueID::kCondensed:
-      return CreateFontStretchValue(CondensedWidthValue());
-    case CSSValueID::kSemiCondensed:
-      return CreateFontStretchValue(SemiCondensedWidthValue());
-    case CSSValueID::kNormal:
-      return CreateFontStretchValue(NormalWidthValue());
-    case CSSValueID::kSemiExpanded:
-      return CreateFontStretchValue(SemiExpandedWidthValue());
-    case CSSValueID::kExpanded:
-      return CreateFontStretchValue(ExpandedWidthValue());
-    case CSSValueID::kExtraExpanded:
-      return CreateFontStretchValue(ExtraExpandedWidthValue());
-    case CSSValueID::kUltraExpanded:
-      return CreateFontStretchValue(UltraExpandedWidthValue());
-    default:
-      NOTREACHED();
-      return nullptr;
-  }
+  return CreateFontStretchValue(
+      StyleBuilderConverterBase::ConvertFontStretch(value));
 }
 
 InterpolationValue
