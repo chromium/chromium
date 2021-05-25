@@ -25,8 +25,11 @@ logging.basicConfig(
 import cross_device_test_config
 
 from core import path_util
+path_util.AddTelemetryToPath()
+
 from core import upload_results_to_perf_dashboard
 from core import results_merger
+from core import bot_platforms
 
 path_util.AddAndroidPylibToPath()
 
@@ -362,6 +365,10 @@ def process_perf_results(output_json,
     # we are deprecating perf-id crbug.com/817823
     configuration_name = build_properties_map['buildername']
 
+  _update_perf_results_for_calibration(benchmarks_shard_map_file,
+                                       benchmark_enabled_map,
+                                       benchmark_directory_map,
+                                       configuration_name)
   if not smoke_test_mode and handle_perf:
     try:
       return_code, benchmark_upload_result_map = _handle_perf_results(
@@ -498,6 +505,91 @@ def _GetCpuCount(log=True):
     # we can even delete this whole function and use multiprocessing.cpu_count()
     # directly.
     return 4
+
+
+def _load_shard_id_from_test_results(directory):
+  shard_id = None
+  test_json_path = os.path.join(directory, 'test_results.json')
+  try:
+    with open(test_json_path) as f:
+      test_json = json.load(f)
+      all_results = test_json['tests']
+      for _, benchmark_results in all_results.items():
+        for _, measurement_result in benchmark_results.items():
+          shard_id = measurement_result['shard']
+          break
+  except IOError as e:
+    logging.error('Failed to open test_results.json from %s: %s',
+                  test_json_path, e)
+  except KeyError as e:
+    logging.error('Failed to locate results in test_results.json: %s', e)
+  return shard_id
+
+
+def _find_device_id_by_shard_id(benchmarks_shard_map_file, shard_id):
+  try:
+    with open(benchmarks_shard_map_file) as f:
+      shard_map_json = json.load(f)
+      device_id = shard_map_json['extra_infos']['bot #%s' % shard_id]
+  except KeyError as e:
+    logging.error('Failed to locate device name in shard map: %s', e)
+  return device_id
+
+
+def _update_perf_json_with_summary_on_device_id(directory, device_id):
+  perf_json_path = os.path.join(directory, 'perf_results.json')
+  try:
+    with open(perf_json_path, 'r') as f:
+      perf_json = json.load(f)
+  except IOError as e:
+    logging.error('Failed to open perf_results.json from %s: %s',
+                  perf_json_path, e)
+  summary_key_guid = str(uuid.uuid4())
+  summary_key_generic_set = {
+      'value': ['device_id'],
+      'guid': summary_key_guid,
+      'type': 'GenericSet'
+  }
+  perf_json.insert(0, summary_key_generic_set)
+  stories_guids = set()
+  for entry in perf_json:
+    if 'diagnostics' in entry:
+      entry['diagnostics']['summaryKeys'] = summary_key_guid
+      stories_guids.add(entry['diagnostics']['stories'])
+  for entry in perf_json:
+    if 'guid' in entry and entry['guid'] in stories_guids:
+      entry['values'].append(device_id)
+  try:
+    with open(perf_json_path, 'w') as f:
+      json.dump(perf_json, f)
+  except IOError as e:
+    logging.error('Failed to writing perf_results.json to %s: %s',
+                  perf_json_path, e)
+
+
+def _should_add_device_id_in_perf_result(builder_name):
+  # We should always add device id in calibration builders.
+  # For testing purpose, adding fyi as well for faster turnaround, because
+  # calibration builders run every 24 hours.
+  return (builder_name in bot_platforms.CALIBRATION_PLATFORMS) or (
+      builder_name == 'android-pixel2-perf-fyi')
+
+
+def _update_perf_results_for_calibration(benchmarks_shard_map_file,
+                                         benchmark_enabled_map,
+                                         benchmark_directory_map,
+                                         configuration_name):
+  if not _should_add_device_id_in_perf_result(configuration_name):
+    return
+  logging.info('Updating perf results for %s.', configuration_name)
+  for benchmark_name, directories in benchmark_directory_map.items():
+    if not benchmark_enabled_map.get(benchmark_name, False):
+      continue
+    for directory in directories:
+      shard_id = _load_shard_id_from_test_results(directory)
+      device_id = _find_device_id_by_shard_id(benchmarks_shard_map_file,
+                                              shard_id)
+      _update_perf_json_with_summary_on_device_id(directory, device_id)
 
 
 def _handle_perf_results(

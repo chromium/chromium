@@ -669,6 +669,7 @@ PLATFORMS_BY_NAME = {p.name: p for p in ALL_PLATFORMS}
 FYI_PLATFORMS = {
     p for p in ALL_PLATFORMS if p.is_fyi
 }
+CALIBRATION_PLATFORMS = {p for p in ALL_PLATFORMS if p.is_calibration}
 OFFICIAL_PLATFORMS = {p for p in ALL_PLATFORMS if p.is_official}
 ALL_PLATFORM_NAMES = {
     p.name for p in ALL_PLATFORMS
