@@ -1652,7 +1652,6 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @FlakyTest(message = "https://crbug.com/1213173")
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testDismissTileWithContextMenuAndUndo() throws Exception {
         if (!mImmediateReturn) {
@@ -1660,6 +1659,7 @@ public class StartSurfaceTest {
         }
         StartSurfaceTestUtils.waitForOverviewVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         SiteSuggestion siteToDismiss = mMostVisitedSites.getCurrentSites().get(1);
         final View tileView = getTileViewFor(siteToDismiss);
@@ -1685,7 +1685,6 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @FlakyTest(message = "https://crbug.com/1213173")
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testOpenTileInNewTabWithContextMenu() throws ExecutionException {
         if (!mImmediateReturn) {
@@ -1693,25 +1692,25 @@ public class StartSurfaceTest {
         }
         StartSurfaceTestUtils.waitForOverviewVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
 
         SiteSuggestion siteToOpen = mMostVisitedSites.getCurrentSites().get(1);
         final View tileView = getTileViewFor(siteToOpen);
 
         // Open the tile using the context menu.
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
         invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB);
         hideWatcher.waitForBehavior();
         CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
-        // Verifies a new Tab is created.
+        // Verifies a new tab is created.
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
     }
 
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @FlakyTest(message = "https://crbug.com/1213173")
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testOpenTileInIncognitoTabWithContextMenu() throws ExecutionException {
         Assume.assumeFalse("https://crbug.com/1210554", mUseInstantStart && mImmediateReturn);
@@ -1720,18 +1719,19 @@ public class StartSurfaceTest {
         }
         StartSurfaceTestUtils.waitForOverviewVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
 
         SiteSuggestion siteToOpen = mMostVisitedSites.getCurrentSites().get(1);
         final View tileView = getTileViewFor(siteToOpen);
 
-        // Open the tile using the context menu.
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        // Open the incognito tile using the context menu.
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
         invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB);
         hideWatcher.waitForBehavior();
         CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
-        // Verifies a new Tab is created.
+        // Verifies a new incognito tab is created.
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 1);
     }
 
@@ -1744,6 +1744,8 @@ public class StartSurfaceTest {
     }
 
     private View getTileViewFor(SiteSuggestion suggestion) {
+        onViewWaiting(
+                allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout), isDisplayed()));
         View tileView = getMvTilesLayout().getTileViewForTesting(suggestion);
         Assert.assertNotNull("Tile not found for suggestion " + suggestion.url, tileView);
 
