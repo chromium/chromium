@@ -1099,22 +1099,14 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
           navigation_rfh->GetProcess()->GetID(),
           url::Origin::Create(request->common_params().url)) &&
       !request->IsForMhtmlSubframe()) {
-    base::debug::SetCrashKeyString(
-        base::debug::AllocateCrashKeyString("lock_url",
-                                            base::debug::CrashKeySize::Size256),
-        process_lock.ToString());
-    base::debug::SetCrashKeyString(
-        base::debug::AllocateCrashKeyString("commit_origin",
-                                            base::debug::CrashKeySize::Size64),
-        request->common_params().url.GetOrigin().spec());
-    base::debug::SetCrashKeyString(
-        base::debug::AllocateCrashKeyString("is_main_frame",
-                                            base::debug::CrashKeySize::Size32),
-        frame_tree_node_->IsMainFrame() ? "true" : "false");
-    base::debug::SetCrashKeyString(
-        base::debug::AllocateCrashKeyString("use_current_rfh",
-                                            base::debug::CrashKeySize::Size32),
-        use_current_rfh ? "true" : "false");
+    SCOPED_CRASH_KEY_STRING256("GetFrameHostForNav", "lock_url",
+                               process_lock.ToString());
+    SCOPED_CRASH_KEY_STRING64("GetFrameHostForNav", "commit_origin",
+                              request->common_params().url.GetOrigin().spec());
+    SCOPED_CRASH_KEY_BOOL("GetFrameHostForNav", "is_main_frame",
+                          frame_tree_node_->IsMainFrame());
+    SCOPED_CRASH_KEY_BOOL("GetFrameHostForNav", "use_current_rfh",
+                          use_current_rfh);
     NOTREACHED() << "Picked an incompatible process for URL: "
                  << process_lock.ToString() << " lock vs "
                  << request->common_params().url.GetOrigin();

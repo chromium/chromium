@@ -12,6 +12,7 @@ namespace blink {
 
 class MediaStreamVideoSource;
 class PushableMediaStreamVideoSource;
+class WritableStreamTransferringOptimizer;
 
 class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
     : public UnderlyingSinkBase {
@@ -32,6 +33,9 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
                       ExceptionState& exception_state) override;
   ScriptPromise close(ScriptState* script_state,
                       ExceptionState& exception_state) override;
+
+  std::unique_ptr<WritableStreamTransferringOptimizer>
+  GetTransferringOptimizer();
 
  private:
   base::WeakPtr<MediaStreamVideoSource> source_;

@@ -14,16 +14,40 @@ RootWebArea
     }
 }
 
-*none
+RootWebArea
+  img
+    *SvgRoot
 {
     domNode : svg
-    ignored : true
-    ignoredReasons : [
-    ]
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                nativeSource : title
+                type : relatedElement
+            }
+            [3] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
     nodeId : <string>
+    properties : [
+    ]
     role : {
-        type : role
-        value : none
+        type : internalRole
+        value : SvgRoot
     }
 }
 

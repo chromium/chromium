@@ -4,29 +4,36 @@
 
 #include "content/browser/conversions/conversion_storage_sql_migrations.h"
 
+#include <vector>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_storage_sql.h"
 #include "content/browser/conversions/sql_utils.h"
 #include "content/browser/conversions/storable_impression.h"
+#include "net/base/schemeful_site.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "url/origin.h"
 
 namespace content {
 
 namespace {
 
-// |ConversionStorageSql::GetActiveImpressions()| cannot be used for migration
-// logic as it may use columns that are not present in older versions.
-std::vector<StorableImpression> GetImpressions(sql::Database* db,
-                                               int64_t start_impression_id,
-                                               int num_impressions) {
+struct ImpressionIdAndConversionOrigin {
+  int64_t impression_id;
+  url::Origin conversion_origin;
+};
+
+std::vector<ImpressionIdAndConversionOrigin>
+GetImpressionIdAndConversionOrigins(sql::Database* db,
+                                    int64_t start_impression_id,
+                                    int num_impressions) {
   DCHECK_GE(num_impressions, 0);
   const char kGetImpressionsSql[] =
-      "SELECT impression_data, impression_origin, conversion_origin, "
-      "reporting_origin, impression_time, expiry_time, impression_id "
+      "SELECT impression_id, conversion_origin "
       "FROM impressions "
       "WHERE impression_id >= ? "
       "ORDER BY impression_id "
@@ -37,26 +44,13 @@ std::vector<StorableImpression> GetImpressions(sql::Database* db,
   statement.BindInt64(0, start_impression_id);
   statement.BindInt(1, num_impressions);
 
-  std::vector<StorableImpression> impressions;
+  std::vector<ImpressionIdAndConversionOrigin> impressions;
   while (statement.Step()) {
-    std::string impression_data = statement.ColumnString(0);
-    url::Origin impression_origin =
+    int64_t impression_id = statement.ColumnInt64(0);
+    url::Origin conversion_origin =
         DeserializeOrigin(statement.ColumnString(1));
-    url::Origin conversion_destination =
-        DeserializeOrigin(statement.ColumnString(2));
-    url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(3));
-    base::Time impression_time = statement.ColumnTime(4);
-    base::Time expiry_time = statement.ColumnTime(5);
-    int64_t impression_id = statement.ColumnInt64(6);
 
-    // All impressions prior to the addition of the |source_type| column are
-    // |kNavigation|.
-    StorableImpression impression(impression_data, impression_origin,
-                                  conversion_destination, reporting_origin,
-                                  impression_time, expiry_time,
-                                  StorableImpression::SourceType::kNavigation,
-                                  /*priority=*/0, impression_id);
-    impressions.push_back(std::move(impression));
+    impressions.push_back({impression_id, std::move(conversion_origin)});
   }
   if (!statement.Succeeded())
     return {};
@@ -161,8 +155,9 @@ bool ConversionStorageSqlMigrations::MigrateToVersion2(
   // entire impressions table into memory.
   int64_t start_impression_id = 0;
   const size_t kNumImpressionsPerUpdate = 100u;
-  std::vector<StorableImpression> impressions =
-      GetImpressions(db, start_impression_id, kNumImpressionsPerUpdate);
+  std::vector<ImpressionIdAndConversionOrigin> impressions =
+      GetImpressionIdAndConversionOrigins(db, start_impression_id,
+                                          kNumImpressionsPerUpdate);
 
   const char kUpdateDestinationSql[] =
       "UPDATE impressions SET conversion_destination = ? WHERE impression_id = "
@@ -178,20 +173,20 @@ bool ConversionStorageSqlMigrations::MigrateToVersion2(
       // The conversion destination is derived from the conversion origin
       // dynamically.
       update_destination_statement.BindString(
-          0, impression.ConversionDestination().Serialize());
-      update_destination_statement.BindInt64(1, *impression.impression_id());
+          0, net::SchemefulSite(impression.conversion_origin).Serialize());
+      update_destination_statement.BindInt64(1, impression.impression_id);
       update_destination_statement.Run();
 
       // Track the largest row id. This is more efficient than sorting all the
       // rows.
-      if (*impression.impression_id() > start_impression_id)
-        start_impression_id = *impression.impression_id();
+      if (impression.impression_id > start_impression_id)
+        start_impression_id = impression.impression_id;
     }
 
     // Fetch the next batch of rows from the database.
     start_impression_id += 1;
-    impressions =
-        GetImpressions(db, start_impression_id, kNumImpressionsPerUpdate);
+    impressions = GetImpressionIdAndConversionOrigins(db, start_impression_id,
+                                                      kNumImpressionsPerUpdate);
   }
 
   // Create the pre-existing impression table indices on the new table.

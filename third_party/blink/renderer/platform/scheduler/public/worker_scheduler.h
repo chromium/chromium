@@ -69,6 +69,8 @@ class PLATFORM_EXPORT WorkerScheduler : public FrameOrWorkerScheduler {
 
   // FrameOrWorkerScheduler implementation:
   void SetPreemptedForCooperativeScheduling(Preempted) override {}
+  std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
+      WebSchedulingPriority) override;
 
  protected:
   scoped_refptr<NonMainThreadTaskQueue> ThrottleableTaskQueue();

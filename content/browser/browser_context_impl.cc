@@ -86,10 +86,8 @@ BrowserContext::Impl::~Impl() {
   if (!rph_crash_key_value.empty()) {
     NOTREACHED() << "rph_with_bc_reference : " << rph_crash_key_value;
 
-    static auto* crash_key = base::debug::AllocateCrashKeyString(
-        "rph_with_bc_reference", base::debug::CrashKeySize::Size256);
-    base::debug::ScopedCrashKeyString auto_clear(crash_key,
-                                                 rph_crash_key_value);
+    SCOPED_CRASH_KEY_STRING256("BrowserContext", "dangling_rph",
+                               rph_crash_key_value);
     base::debug::DumpWithoutCrashing();
   }
 

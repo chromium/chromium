@@ -83,10 +83,9 @@ void SetAccessibilityCrashKey(ui::AXMode mode) {
   // least one renderer in the same process had that flag.
   // Examples of when multiple renderers could share the same process:
   // 1) Android, 2) When many tabs are open.
-  static auto* ax_mode_crash_key = base::debug::AllocateCrashKeyString(
+  static auto* const ax_mode_crash_key = base::debug::AllocateCrashKeyString(
       "ax_mode", base::debug::CrashKeySize::Size64);
-  if (ax_mode_crash_key)
-    base::debug::SetCrashKeyString(ax_mode_crash_key, mode.ToString());
+  base::debug::SetCrashKeyString(ax_mode_crash_key, mode.ToString());
 }
 
 }  // namespace

@@ -258,35 +258,35 @@ void AddHistogramSample(void* hist, int sample) {
 }
 
 void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
-  namespace bd = base::debug;
+  using base::debug::AllocateCrashKeyString;
+  using base::debug::CrashKeySize;
+  using base::debug::SetCrashKeyString;
+
   switch (id) {
     case v8::CrashKeyId::kIsolateAddress:
-      static bd::CrashKeyString* isolate_address = bd::AllocateCrashKeyString(
-          "v8_isolate_address", bd::CrashKeySize::Size32);
-      bd::SetCrashKeyString(isolate_address, value);
+      static auto* const isolate_address =
+          AllocateCrashKeyString("v8_isolate_address", CrashKeySize::Size32);
+      SetCrashKeyString(isolate_address, value);
       break;
     case v8::CrashKeyId::kReadonlySpaceFirstPageAddress:
-      static bd::CrashKeyString* ro_space_firstpage_address =
-          bd::AllocateCrashKeyString("v8_ro_space_firstpage_address",
-                                     bd::CrashKeySize::Size32);
-      bd::SetCrashKeyString(ro_space_firstpage_address, value);
+      static auto* const ro_space_firstpage_address = AllocateCrashKeyString(
+          "v8_ro_space_firstpage_address", CrashKeySize::Size32);
+      SetCrashKeyString(ro_space_firstpage_address, value);
       break;
     case v8::CrashKeyId::kMapSpaceFirstPageAddress:
-      static bd::CrashKeyString* map_space_firstpage_address =
-          bd::AllocateCrashKeyString("v8_map_space_firstpage_address",
-                                     bd::CrashKeySize::Size32);
-      bd::SetCrashKeyString(map_space_firstpage_address, value);
+      static auto* const map_space_firstpage_address = AllocateCrashKeyString(
+          "v8_map_space_firstpage_address", CrashKeySize::Size32);
+      SetCrashKeyString(map_space_firstpage_address, value);
       break;
     case v8::CrashKeyId::kCodeSpaceFirstPageAddress:
-      static bd::CrashKeyString* code_space_firstpage_address =
-          bd::AllocateCrashKeyString("v8_code_space_firstpage_address",
-                                     bd::CrashKeySize::Size32);
-      bd::SetCrashKeyString(code_space_firstpage_address, value);
+      static auto* const code_space_firstpage_address = AllocateCrashKeyString(
+          "v8_code_space_firstpage_address", CrashKeySize::Size32);
+      SetCrashKeyString(code_space_firstpage_address, value);
       break;
     case v8::CrashKeyId::kDumpType:
-      static bd::CrashKeyString* dump_type =
-          bd::AllocateCrashKeyString("dump-type", bd::CrashKeySize::Size32);
-      bd::SetCrashKeyString(dump_type, value);
+      static auto* const dump_type =
+          AllocateCrashKeyString("dump-type", CrashKeySize::Size32);
+      SetCrashKeyString(dump_type, value);
       break;
     default:
       // Doing nothing for new keys is a valid option. Having this case allows

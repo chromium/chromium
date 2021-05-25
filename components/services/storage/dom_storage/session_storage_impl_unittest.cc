@@ -25,7 +25,6 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "components/services/storage/dom_storage/legacy_dom_storage_database.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "components/services/storage/dom_storage/testing_legacy_session_storage_database.h"
 #include "mojo/public/cpp/bindings/remote.h"

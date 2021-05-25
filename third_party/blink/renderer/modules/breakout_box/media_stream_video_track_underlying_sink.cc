@@ -5,14 +5,28 @@
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_video_track_underlying_sink.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
+#include "third_party/blink/renderer/modules/breakout_box/metrics.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
+namespace {
+class PlaceholderTransferringOptimizer
+    : public WritableStreamTransferringOptimizer {
+  UnderlyingSinkBase* PerformInProcessOptimization(
+      ScriptState* script_state) override {
+    RecordBreakoutBoxUsage(BreakoutBoxUsage::kWritableVideoWorker);
+    return nullptr;
+  }
+};
+}  // namespace
 
 MediaStreamVideoTrackUnderlyingSink::MediaStreamVideoTrackUnderlyingSink(
     PushableMediaStreamVideoSource* source)
-    : source_(source->GetWeakPtr()) {}
+    : source_(source->GetWeakPtr()) {
+  RecordBreakoutBoxUsage(BreakoutBoxUsage::kWritableVideo);
+}
 
 ScriptPromise MediaStreamVideoTrackUnderlyingSink::start(
     ScriptState* script_state,
@@ -71,6 +85,11 @@ ScriptPromise MediaStreamVideoTrackUnderlyingSink::close(
   if (source_)
     source_->StopSource();
   return ScriptPromise::CastUndefined(script_state);
+}
+
+std::unique_ptr<WritableStreamTransferringOptimizer>
+MediaStreamVideoTrackUnderlyingSink::GetTransferringOptimizer() {
+  return std::make_unique<PlaceholderTransferringOptimizer>();
 }
 
 }  // namespace blink

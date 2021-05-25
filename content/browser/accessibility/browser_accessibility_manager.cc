@@ -225,9 +225,9 @@ bool BrowserAccessibilityManager::Unserialize(
   LOG(ERROR) << ax_tree()->error();
   LOG(ERROR) << tree_update.ToString();
 
-  static auto* ax_tree_error = base::debug::AllocateCrashKeyString(
+  static auto* const ax_tree_error = base::debug::AllocateCrashKeyString(
       "ax_tree_error", base::debug::CrashKeySize::Size256);
-  static auto* ax_tree_update = base::debug::AllocateCrashKeyString(
+  static auto* const ax_tree_update = base::debug::AllocateCrashKeyString(
       "ax_tree_update", base::debug::CrashKeySize::Size256);
   // Temporarily log some additional crash keys so we can try to
   // figure out why we're getting bad accessibility trees here.

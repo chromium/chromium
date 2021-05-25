@@ -1536,10 +1536,15 @@ bool AXNode::IsLeaf() const {
     // contents. See https://crbug.com/689204.
     // So we decided to not enforce the leafiness of buttons and expose all
     // children.
-    // Images are not leaves because the same role is used for image maps,
-    // which can have link and/or text children.
     case ax::mojom::Role::kButton:
       return false;
+    case ax::mojom::Role::kImage: {
+      // Images are not leaves when they are image maps. Therefore, do not
+      // truncate descendants except in the case where ARIA role=img.
+      std::string role =
+          data().GetStringAttribute(ax::mojom::StringAttribute::kRole);
+      return role == "img" || role == "image";
+    }
     case ax::mojom::Role::kDocCover:
     case ax::mojom::Role::kGraphicsSymbol:
     case ax::mojom::Role::kMeter:

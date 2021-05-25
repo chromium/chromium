@@ -180,4 +180,7 @@ struct SpeechRecognitionOptions {
   // In the case of web fallback (not for launch, used for development only),
   // this option will be ignored.
   SpeechRecognitionMode recognition_mode;
+
+  // Whether to enable formatting and punctuation in the recognition results.
+  bool enable_formatting;
 };

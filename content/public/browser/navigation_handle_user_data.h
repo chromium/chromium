@@ -32,7 +32,7 @@ namespace content {
 //   // ... more public stuff here ...
 //  private:
 //   explicit FooData(content::NavigationHandle& navigation_handle);
-//   friend class content::NavigationHandleUserData<FooData>;
+//   friend NavigationHandleUserData<FooData>;
 //   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 //   // ... more private stuff here ...
 // };

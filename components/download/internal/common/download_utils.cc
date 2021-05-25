@@ -54,6 +54,9 @@ const int kDefaultDownloadExpiredTimeInDays = 90;
 // Default time for an overwritten download to be removed from the history.
 const int kDefaultOverwrittenDownloadExpiredTimeInDays = 90;
 
+// Default buffer size in bytes to write to the download file.
+const int kDefaultDownloadFileBufferSize = 4096;
+
 #if defined(OS_ANDROID)
 // Default maximum length of a downloaded file name on Android.
 const int kDefaultMaxFileNameLengthOnAndroid = 127;
@@ -653,6 +656,12 @@ base::TimeDelta GetOverwrittenDownloadDeleteTime() {
       kOverwrittenDownloadDeleteTimeFinchKey,
       kDefaultOverwrittenDownloadExpiredTimeInDays);
   return base::TimeDelta::FromDays(expired_days);
+}
+
+int GetDownloadFileBufferSize() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kAllowFileBufferSizeControl, kDownloadFileBufferSizeFinchKey,
+      kDefaultDownloadFileBufferSize);
 }
 
 }  // namespace download

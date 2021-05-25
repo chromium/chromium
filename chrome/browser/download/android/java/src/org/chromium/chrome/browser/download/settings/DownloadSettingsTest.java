@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -25,7 +26,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -99,6 +99,7 @@ public class DownloadSettingsTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.DOWNLOAD_LATER)
+    @FlakyTest(message = "https://crbug.com/1213183")
     public void testGeneralSettings() throws Exception {
         mSettingsActivityTestRule.startSettingsActivity();
         assertPreference(DownloadSettings.PREF_LOCATION_CHANGE);
@@ -110,6 +111,7 @@ public class DownloadSettingsTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.DOWNLOAD_LATER)
+    @FlakyTest(message = "https://crbug.com/1213183")
     public void testWithoutDownloadLater() throws Exception {
         mSettingsActivityTestRule.startSettingsActivity();
         assertPreference(DownloadSettings.PREF_LOCATION_CHANGE);

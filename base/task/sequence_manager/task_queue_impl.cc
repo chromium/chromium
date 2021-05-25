@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/stack_container.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -1391,15 +1392,16 @@ size_t TaskQueueImpl::DelayedIncomingQueue::PQueue::SweepCancelledTasks(
   // move all the cancelled tasks into a temporary container before deleting
   // them. This is to avoid |c| from changing while c.erase() is running.
   auto delete_start = std::stable_partition(c.begin(), c.end(), keep_task);
-  std::vector<Task> tasks_to_delete;
-  std::move(delete_start, c.end(), std::back_inserter(tasks_to_delete));
+  StackVector<Task, 8> tasks_to_delete;
+  std::move(delete_start, c.end(),
+            std::back_inserter(tasks_to_delete.container()));
   c.erase(delete_start, c.end());
 
   // stable_partition ensures order was not changed if there was nothing to
   // delete.
-  if (!tasks_to_delete.empty()) {
+  if (!tasks_to_delete->empty()) {
     ranges::make_heap(c, comp);
-    tasks_to_delete.clear();
+    tasks_to_delete->clear();
   }
   return num_high_res_tasks_swept;
 }

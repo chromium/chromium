@@ -542,10 +542,10 @@ bool DWriteFontFamilyProxy::LoadFamily() {
   SCOPED_UMA_HISTOGRAM_TIMER("DirectWrite.Fonts.Proxy.LoadFamilyTime");
   TRACE_EVENT0("dwrite,fonts", "DWriteFontFamilyProxy::LoadFamily");
 
-  auto* font_key_name = base::debug::AllocateCrashKeyString(
-      "font_key_name", base::debug::CrashKeySize::Size32);
-  base::debug::ScopedCrashKeyString crash_key(font_key_name,
-                                              base::WideToUTF8(family_name_));
+  // TODO(dcheng): Is this crash key still used? There does not appear to be
+  // anything obvious below that would trigger a crash report.
+  SCOPED_CRASH_KEY_STRING32("LoadFamily", "font_key_name",
+                            base::WideToUTF8(family_name_));
 
   mswr::ComPtr<IDWriteFontCollection> collection;
   if (!proxy_collection_->LoadFamily(family_index_, &collection)) {

@@ -13,6 +13,7 @@ namespace blink {
 
 class MediaStreamAudioSource;
 class PushableMediaStreamAudioSource;
+class WritableStreamTransferringOptimizer;
 
 class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSink
     : public UnderlyingSinkBase {
@@ -34,6 +35,9 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSink
                       ExceptionState& exception_state) override;
   ScriptPromise close(ScriptState* script_state,
                       ExceptionState& exception_state) override;
+
+  std::unique_ptr<WritableStreamTransferringOptimizer>
+  GetTransferringOptimizer();
 
  private:
   base::WeakPtr<MediaStreamAudioSource> source_;

@@ -48,7 +48,8 @@ void ProjectorClientImpl::StartSpeechRecognition() {
   DCHECK_EQ(speech_recognizer_.get(), nullptr);
   speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
       weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetPrimaryUserProfile(),
-      kEnglishLanguageCode, /*recognition_mode_ime=*/false);
+      kEnglishLanguageCode, /*recognition_mode_ime=*/false,
+      /*enable_formatting=*/true);
   speech_recognizer_->Start();
 }
 

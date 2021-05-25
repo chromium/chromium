@@ -2332,6 +2332,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMain) {
   RunHtmlTest(FILE_PATH_LITERAL("main.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMapAnyContents) {
+  RunHtmlTest(FILE_PATH_LITERAL("map-any-contents.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMapUnused) {
   RunHtmlTest(FILE_PATH_LITERAL("map-unused.html"));
 }

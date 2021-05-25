@@ -13,6 +13,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -313,6 +315,83 @@ TEST_F(WorkerSchedulerTest, MAYBE_NestedPauseHandlesTasks) {
   pause_handle.reset();
   RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre("T1", "T2"));
+}
+
+class NonMainThreadWebSchedulingTaskQueueTest : public WorkerSchedulerTest {
+ public:
+  void SetUp() override {
+    WorkerSchedulerTest::SetUp();
+
+    for (int i = 0; i <= static_cast<int>(WebSchedulingPriority::kLastPriority);
+         i++) {
+      WebSchedulingPriority priority = static_cast<WebSchedulingPriority>(i);
+      std::unique_ptr<WebSchedulingTaskQueue> task_queue =
+          worker_scheduler_->CreateWebSchedulingTaskQueue(priority);
+      task_queues_.push_back(std::move(task_queue));
+    }
+  }
+
+  void TearDown() override {
+    WorkerSchedulerTest::TearDown();
+    task_queues_.clear();
+  }
+
+ protected:
+  // Helper for posting tasks to a WebSchedulingTaskQueue. |task_descriptor| is
+  // a string with space delimited task identifiers. The first letter of each
+  // task identifier specifies the task queue priority:
+  // - 'U': UserBlocking
+  // - 'V': UserVisible
+  // - 'B': Background
+  void PostWebSchedulingTestTasks(Vector<String>* run_order,
+                                  const String& task_descriptor) {
+    std::istringstream stream(task_descriptor.Utf8());
+    while (!stream.eof()) {
+      std::string task;
+      stream >> task;
+      WebSchedulingPriority priority;
+      switch (task[0]) {
+        case 'U':
+          priority = WebSchedulingPriority::kUserBlockingPriority;
+          break;
+        case 'V':
+          priority = WebSchedulingPriority::kUserVisiblePriority;
+          break;
+        case 'B':
+          priority = WebSchedulingPriority::kBackgroundPriority;
+          break;
+        default:
+          EXPECT_FALSE(true);
+          return;
+      }
+      task_queues_[static_cast<int>(priority)]->GetTaskRunner()->PostTask(
+          FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
+                                    String::FromUTF8(task)));
+    }
+  }
+  Vector<std::unique_ptr<WebSchedulingTaskQueue>> task_queues_;
+};
+
+TEST_F(NonMainThreadWebSchedulingTaskQueueTest, TasksRunInPriorityOrder) {
+  Vector<String> run_order;
+
+  PostWebSchedulingTestTasks(&run_order, "B1 B2 V1 V2 U1 U2");
+
+  RunUntilIdle();
+  EXPECT_THAT(run_order,
+              testing::ElementsAre("U1", "U2", "V1", "V2", "B1", "B2"));
+}
+
+TEST_F(NonMainThreadWebSchedulingTaskQueueTest, DynamicTaskPriorityOrder) {
+  Vector<String> run_order;
+
+  PostWebSchedulingTestTasks(&run_order, "B1 B2 V1 V2 U1 U2");
+  task_queues_[static_cast<int>(WebSchedulingPriority::kUserBlockingPriority)]
+      ->SetPriority(WebSchedulingPriority::kBackgroundPriority);
+
+  RunUntilIdle();
+  EXPECT_THAT(run_order,
+              testing::ElementsAre("V1", "V2", "B1", "B2", "U1", "U2"));
 }
 
 }  // namespace worker_scheduler_unittest

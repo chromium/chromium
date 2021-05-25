@@ -266,9 +266,7 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
         (!request.url.has_host() ||
          allowed_hosts_.find(request.url.host()) == allowed_hosts_.end())) {
       // Temporary reporting the bad WebUI host for for http://crbug.com/837328.
-      static auto* crash_key = base::debug::AllocateCrashKeyString(
-          "webui_url", base::debug::CrashKeySize::Size64);
-      base::debug::SetCrashKeyString(crash_key, request.url.spec());
+      SCOPED_CRASH_KEY_STRING64("WebUIURLLoader", "url", request.url.spec());
 
       DVLOG(1) << "Bad host: \"" << request.url.host() << '"';
       mojo::ReportBadMessage("Incorrect host");

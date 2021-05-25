@@ -45,8 +45,9 @@ class ServiceBinderImpl {
   void BindServiceInterface(mojo::GenericPendingReceiver* receiver) {
     // Set a crash key so utility process crash reports indicate which service
     // was running in the process.
-    static auto* service_name_crash_key = base::debug::AllocateCrashKeyString(
-        "service-name", base::debug::CrashKeySize::Size32);
+    static auto* const service_name_crash_key =
+        base::debug::AllocateCrashKeyString("service-name",
+                                            base::debug::CrashKeySize::Size32);
     const std::string& service_name = receiver->interface_name().value();
     base::debug::SetCrashKeyString(service_name_crash_key, service_name);
 

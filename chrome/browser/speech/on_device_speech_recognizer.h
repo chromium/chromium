@@ -36,11 +36,15 @@ class OnDeviceSpeechRecognizer
   // |language_or_locale| specificies the recognition language.
   // |recognition_mode_ime| is whether to use speech recognition configured for
   // IME or Captions.
+  // |enable_formatting| is whether to include extra, assumed formatting and
+  // punctuation.
+  // TODO(katie): Combine bools into an int of bits.
   OnDeviceSpeechRecognizer(
       const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
       Profile* profile,
       std::string language_or_locale,
-      bool recognition_mode_ime);
+      bool recognition_mode_ime,
+      bool enable_formatting);
   ~OnDeviceSpeechRecognizer() override;
   OnDeviceSpeechRecognizer(const OnDeviceSpeechRecognizer&) = delete;
   OnDeviceSpeechRecognizer& operator=(const OnDeviceSpeechRecognizer&) = delete;

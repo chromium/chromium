@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -113,7 +112,7 @@ public class PictureInPictureControllerTest {
     @MediumTest
     @CommandLineFlags.Add({"enable-features=Portals"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1211930")
+    @FlakyTest(message = "https://crbug.com/1211930")
     public void testExitPipOnPortalActivation() throws Throwable {
         testExitOn(()
                            -> JavaScriptUtils.executeJavaScript(getWebContents(),
@@ -124,7 +123,7 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1211930")
+    @FlakyTest(message = "https://crbug.com/1211930")
     public void testExitOnLeaveFullscreen() throws Throwable {
         testExitOn(() -> DOMUtils.exitFullscreen(getWebContents()));
     }
@@ -133,7 +132,7 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1211930")
+    @FlakyTest(message = "https://crbug.com/1211930")
     public void testExitOnCloseTab() throws Throwable {
         // We want 2 Tabs so we can close the first without any special behaviour.
         mActivityTestRule.loadUrlInNewTab(mTestServer.getURL(TEST_PATH));
@@ -145,7 +144,7 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1211930")
+    @FlakyTest(message = "https://crbug.com/1211930")
     public void testExitOnCrash() throws Throwable {
         testExitOn(() -> WebContentsUtils.simulateRendererKilled(getWebContents(), false));
     }
@@ -154,7 +153,7 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1211930")
+    @FlakyTest(message = "https://crbug.com/1211930")
     public void testExitOnNewForegroundTab() throws Throwable {
         testExitOn(new Runnable() {
             @Override

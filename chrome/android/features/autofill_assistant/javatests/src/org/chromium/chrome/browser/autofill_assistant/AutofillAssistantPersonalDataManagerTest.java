@@ -813,6 +813,7 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1213197")
     public void testEditOfServerCard() throws Exception {
         String profileId = mHelper.addDummyProfile("Adam West", "adamwest@google.com");
         mHelper.addServerCreditCard(mHelper.createDummyCreditCard(

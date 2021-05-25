@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/cpu_affinity_posix.h"
+#include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -218,10 +219,17 @@ void PowerScheduler::ApplyPolicyOnSequence() {
     base::TimeTicks now = base::TimeTicks::Now();
     if (new_affinity == base::CpuAffinityMode::kDefault &&
         !enforced_affinity_setup_time_.is_null()) {
+      auto throttling_duration = now - enforced_affinity_setup_time_;
       UMA_HISTOGRAM_CUSTOM_TIMES("Power.PowerScheduler.ThrottlingDuration",
-                                 now - enforced_affinity_setup_time_,
+                                 throttling_duration,
                                  base::TimeDelta::FromMilliseconds(1),
                                  base::TimeDelta::FromMinutes(10), 100);
+
+      UMA_HISTOGRAM_SCALED_ENUMERATION(
+          "Power.PowerScheduler.ThrottlingDurationPerCpuAffinityMode",
+          GetCpuAffinityModeForUma(enforced_affinity_),
+          throttling_duration.InMicroseconds(),
+          base::Time::kMicrosecondsPerMillisecond);
     }
     enforced_affinity_setup_time_ = now;
     enforced_affinity_ = new_affinity;

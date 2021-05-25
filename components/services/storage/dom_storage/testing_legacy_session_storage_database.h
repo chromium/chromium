@@ -22,7 +22,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "components/services/storage/dom_storage/legacy_dom_storage_database.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace url {
@@ -42,6 +42,9 @@ class ProcessMemoryDump;
 }  // namespace base
 
 namespace storage {
+
+using LegacyDomStorageValuesMap =
+    std::map<std::u16string, absl::optional<std::u16string>>;
 
 // A legacy implementation of Session Storage used only in tests to provide
 // coverage of session storage migration code.

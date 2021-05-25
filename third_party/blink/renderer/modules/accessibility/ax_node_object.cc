@@ -381,6 +381,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIncludeObject;
 
   // Anything with CSS alt should be included.
+  // Descendants are pruned: IsRelevantPseudoElementDescendant() returns false.
   // Note: this is duplicated from AXLayoutObject because CSS alt text may apply
   // to both Elements and pseudo-elements.
   absl::optional<String> alt_text = GetCSSAltText(GetNode());
@@ -482,7 +483,14 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   return kDefaultBehavior;
 }
 
+// static
 absl::optional<String> AXNodeObject::GetCSSAltText(const Node* node) {
+  // CSS alt text rules allow text to be assigned to ::before/::after content.
+  // For example, the following CSS assigns "bullet" text to bullet.png:
+  // .something::before {
+  //   content: url(bullet.png) / "bullet";
+  // }
+
   if (!node || !node->GetComputedStyle() ||
       node->GetComputedStyle()->ContentBehavesAsNormal()) {
     return absl::nullopt;
@@ -718,18 +726,17 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return RoleFromLayoutObjectOrNode();
   }
 
-  if (GetCSSAltText(GetNode())) {
+  if (GetNode()->IsPseudoElement() && GetCSSAltText(GetNode())) {
     const ComputedStyle* style = GetNode()->GetComputedStyle();
     ContentData* content_data = style->GetContentData();
-
     // We just check the first item of the content list to determine the
     // appropriate role, should only ever be image or text.
-    // TODO(accessibility) Should it still be possible to use an ARIA role here?
     // TODO(accessibility) Is it possible to use CSS alt text on an HTML tag
     // with strong semantics? If so, why are we overriding the role here?
     // We only need to ensure the accessible name gets the CSS alt text.
-    // Note: by doing this, we are often hiding a child image, because
-    // CanHaveChildren() returns false for an image.
+    // Note: by doing this, we are often hiding child pseudo element content
+    // because IsRelevantPseudoElementDescendant() returns false when an
+    // ancestor has CSS alt text.
     if (content_data->IsImage())
       return ax::mojom::blink::Role::kImage;
 
@@ -2994,7 +3001,6 @@ String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
   AXObjectCache().GetAriaOwnedChildren(this, owned_children);
 
   // TODO(aleventhal) Why isn't this just using cached children?
-  AXNodeObject* parent = const_cast<AXNodeObject*>(this);
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
     auto* child_text_node = DynamicTo<Text>(child);
@@ -3003,7 +3009,7 @@ String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
       // skip over empty text nodes
       continue;
     }
-    AXObject* child_obj = AXObjectCache().GetOrCreate(child, parent);
+    AXObject* child_obj = AXObjectCache().GetOrCreate(child);
     if (child_obj && !AXObjectCache().IsAriaOwned(child_obj))
       children.push_back(child_obj);
   }
@@ -3469,7 +3475,7 @@ void AXNodeObject::AddImageMapChildren() {
         AXObjectCache().GetOrCreate(primary_image_element);
     if (ax_primary_image &&
         ax_primary_image->ChildCountIncludingIgnored() == 0 &&
-        Traversal<HTMLAreaElement>::FirstWithin(*map)) {
+        NodeTraversal::FirstChild(*map)) {
       // The primary image still needs to add the area children, and there's at
       // least one to add.
       AXObjectCache().ChildrenChanged(primary_image_element);
@@ -3478,27 +3484,23 @@ void AXNodeObject::AddImageMapChildren() {
   }
 
   // Yes, this is the primary image.
-  HTMLAreaElement* first_area = Traversal<HTMLAreaElement>::FirstWithin(*map);
-  if (first_area) {
-    // If the <area> children were part of a different parent, notify that
-    // parent that its children have changed.
-    if (AXObject* ax_preexisting = AXObjectCache().Get(first_area)) {
-      if (AXObject* ax_previous_parent = ax_preexisting->CachedParentObject()) {
-        if (ax_previous_parent != this) {
-          DCHECK(ax_previous_parent->GetNode());
-          AXObjectCache().ChildrenChangedWithCleanLayout(
-              ax_previous_parent->GetNode(), ax_previous_parent);
-          ax_previous_parent->ClearChildren();
-        }
-      }
-    }
 
-    // Add the area children to |this|.
-    for (HTMLAreaElement& area :
-         Traversal<HTMLAreaElement>::DescendantsOf(*map)) {
-      // Add an <area> element for this child if it has a link and is visible.
-      AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(&area, this));
+  // If the children were part of a different parent, notify that parent that
+  // its children have changed.
+  if (AXObject* ax_previous_parent = AXObjectCache().GetAXImageForMap(*map)) {
+    if (ax_previous_parent != this) {
+      DCHECK(ax_previous_parent->GetNode());
+      AXObjectCache().ChildrenChangedWithCleanLayout(
+          ax_previous_parent->GetNode(), ax_previous_parent);
+      ax_previous_parent->ClearChildren();
     }
+  }
+
+  // Add the children to |this|.
+  Node* child = LayoutTreeBuilderTraversal::FirstChild(*map);
+  while (child) {
+    AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(child, this));
+    child = LayoutTreeBuilderTraversal::NextSibling(*child);
   }
 }
 
@@ -3741,11 +3743,6 @@ void AXNodeObject::CheckValidChild(AXObject* child) {
 
   Node* child_node = child->GetNode();
 
-  // An HTML image can only have area children.
-  DCHECK(!IsA<HTMLImageElement>(GetNode()) || IsA<HTMLAreaElement>(child_node))
-      << "Image elements can only have area children, but this one has:\n"
-      << child->ToString(true, true);
-
   // <area> children should only be added via AddImageMapChildren(), as the
   // children of an <image usemap>, and never alone or as children of a <map>.
   DCHECK(IsA<HTMLImageElement>(GetNode()) || !IsA<HTMLAreaElement>(child_node))
@@ -3905,9 +3902,6 @@ bool AXNodeObject::CanHaveChildren() const {
       // Note: these can have AXInlineTextBox children, but when adding them, we
       // also check AXObjectCache().InlineTextBoxAccessibilityEnabled().
       return true;
-    case ax::mojom::blink::Role::kImage:
-      // Can turn into an image map if gains children later.
-      return GetNode() && GetNode()->IsLink();
     default:
       break;
   }
@@ -3919,8 +3913,6 @@ bool AXNodeObject::CanHaveChildren() const {
     return true;
 
   switch (AriaRoleAttribute()) {
-    case ax::mojom::blink::Role::kImage:
-      return false;
     case ax::mojom::blink::Role::kCheckBox:
     case ax::mojom::blink::Role::kListBoxOption:
     case ax::mojom::blink::Role::kMath:  // role="math" is flat, unlike <math>

@@ -573,6 +573,7 @@
 
     'chromium.perf.calibration': {
       'linux-perf-calibration': 'official_goma_linux_perf',
+      'android-pixel2-perf-calibration': 'official_goma_minimal_symbols_android_arm64',
     },
 
     'chromium.perf.fyi': {

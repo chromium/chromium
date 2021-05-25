@@ -1021,6 +1021,19 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   </summary>
 </histogram>
 
+<histogram name="Power.PowerScheduler.ThrottlingDurationPerCpuAffinityMode"
+    enum="CpuAffinityMode" expires_after="2021-10-29">
+  <owner>eseckler@chromium.org</owner>
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Duration in milliseconds during which CPU throttling was active, split by
+    the CPU affinity for that duration. Only recorded when a CPU throttling
+    policy is active (e.g. throttle while idle). A sample is recorded every time
+    throttling stops (e.g. when exiting idle state), on the order of once per
+    second.
+  </summary>
+</histogram>
+
 <histogram name="Power.PowerSupplyMaxPower" units="W"
     expires_after="2021-10-31">
   <owner>bleung@chromium.org</owner>

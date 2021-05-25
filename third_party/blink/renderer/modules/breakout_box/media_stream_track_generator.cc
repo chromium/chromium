@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_sink.h"
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_video_track_underlying_sink.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
@@ -206,7 +207,8 @@ void MediaStreamTrackGenerator::CreateVideoStream(ScriptState* script_state) {
   video_underlying_sink_ =
       MakeGarbageCollected<MediaStreamVideoTrackUnderlyingSink>(source);
   writable_ = WritableStream::CreateWithCountQueueingStrategy(
-      script_state, video_underlying_sink_, /*high_water_mark=*/1);
+      script_state, video_underlying_sink_, /*high_water_mark=*/1,
+      video_underlying_sink_->GetTransferringOptimizer());
 }
 
 void MediaStreamTrackGenerator::CreateAudioStream(ScriptState* script_state) {
@@ -217,7 +219,8 @@ void MediaStreamTrackGenerator::CreateAudioStream(ScriptState* script_state) {
   audio_underlying_sink_ =
       MakeGarbageCollected<MediaStreamAudioTrackUnderlyingSink>(source);
   writable_ = WritableStream::CreateWithCountQueueingStrategy(
-      script_state, audio_underlying_sink_, /*high_water_mark=*/1);
+      script_state, audio_underlying_sink_, /*high_water_mark=*/1,
+      audio_underlying_sink_->GetTransferringOptimizer());
 }
 
 void MediaStreamTrackGenerator::CreateVideoControlStream(

@@ -25,13 +25,43 @@ namespace debug {
 //
 // The preferred API is //components/crash/core/common:crash_key, however not
 // all clients can hold a direct dependency on that target. The API provided
-// in this file indirects the dependency.
+// in this file indirects the dependency and adds some convenience helpers that
+// make the API a bit less clunky.
 //
-// Example usage:
-//   static CrashKeyString* crash_key =
-//       AllocateCrashKeyString("name", CrashKeySize::Size32);
-//   SetCrashKeyString(crash_key, "value");
-//   ClearCrashKeyString(crash_key);
+// TODO(dcheng): Some of the nicer APIs should probably be upstreamed into
+// //components/crash.
+//
+// Preferred usage when a crash key value only needs to be set within a scope:
+//
+//   SCOPED_CRASH_KEY_STRING32("category", "name", "value");
+//   base::debug::DumpWithoutCrashing();
+//
+// If the crash key is pre-allocated elsewhere, but the value only needs to be
+// set within a scope:
+//
+//   base::debug::ScopedCrashKeyString scoper(
+//       GetCrashKeyForComponent(),
+//       "value");
+//
+// Otherwise, if the crash key needs to persist (e.g. the actual crash dump is
+// triggered some time later asynchronously):
+//
+//   static auto* const crash_key = base::debug::AllocateCrashKeyString(
+//       "name", base::debug::CrashKeySize::Size32);
+//   base::debug::SetCrashKeyString(crash_key);
+//
+//   // Do other work before calling `base::debug::DumpWithoutCrashing()` later.
+//
+// ***WARNING***
+//
+// Do *not* write this:
+//
+//   base::debug::SetCrashKeyString(
+//       base::debug::AllocateCrashKeyString(
+//           "name", base::debug::CrashKeySize::Size32),
+//       "value");
+//
+// As this will leak a heap allocation every time the crash key is set!
 
 // The maximum length for a crash key's value must be one of the following
 // pre-determined values.
@@ -46,6 +76,10 @@ struct CrashKeyString;
 // Allocates a new crash key with the specified |name| with storage for a
 // value up to length |size|. This will return null if the crash key system is
 // not initialized.
+//
+// Note: this internally allocates, so the returned pointer should always
+// be cached in a variable with static storage duration, e.g.:
+//   static auto* const crash_key = base::debug::AllocateCrashKeyString(...);
 BASE_EXPORT CrashKeyString* AllocateCrashKeyString(const char name[],
                                                    CrashKeySize size);
 

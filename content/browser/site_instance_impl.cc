@@ -443,10 +443,8 @@ StoragePartitionConfig SiteInfo::GetStoragePartitionConfigForUrl(
     // TODO(acolwell): Once we have confidence all callers are setting
     // |is_site_url| correctly, replace crash reporting with code that returns a
     // default config for this scheme in the non-site URL case.
-    static auto* guest_url_crash_key = base::debug::AllocateCrashKeyString(
-        "guest_url", base::debug::CrashKeySize::Size256);
-    base::debug::SetCrashKeyString(guest_url_crash_key,
-                                   url.possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING256("StoragePartitionConfigForUrl", "guest_url",
+                               url.possibly_invalid_spec());
     base::debug::DumpWithoutCrashing();
   }
 
@@ -1354,17 +1352,10 @@ std::string SiteInstanceImpl::GetPartitionDomain(
       storage_partition_config.partition_domain()) {
     // Trigger crash logging if we encounter a case that violates our
     // assumptions.
-    static auto* storage_partition_domain_key =
-        base::debug::AllocateCrashKeyString("storage_partition_domain",
-                                            base::debug::CrashKeySize::Size256);
-    static auto* storage_partition_config_domain_key =
-        base::debug::AllocateCrashKeyString(
-            "storage_partition_config_domain_key",
-            base::debug::CrashKeySize::Size256);
-    base::debug::SetCrashKeyString(storage_partition_domain_key,
-                                   storage_partition->GetPartitionDomain());
-    base::debug::SetCrashKeyString(storage_partition_config_domain_key,
-                                   storage_partition_config.partition_domain());
+    SCOPED_CRASH_KEY_STRING256("GetPartitionDomain", "domain",
+                               storage_partition->GetPartitionDomain());
+    SCOPED_CRASH_KEY_STRING256("GetPartitionDomain", "config_domain_key",
+                               storage_partition_config.partition_domain());
 
     base::debug::DumpWithoutCrashing();
 

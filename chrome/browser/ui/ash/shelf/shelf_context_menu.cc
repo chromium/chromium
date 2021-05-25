@@ -95,9 +95,6 @@ ShelfContextMenu::~ShelfContextMenu() = default;
 
 std::unique_ptr<ui::SimpleMenuModel> ShelfContextMenu::GetBaseMenuModel() {
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
-  // TODO(manucornet): Don't add 'swap with next' on the last item, or 'swap
-  // with previous' on the first one. For now, these options appear, but
-  // selecting them is a no-op.
   AddContextMenuOption(menu_model.get(), ash::SWAP_WITH_NEXT,
                        IDS_SHELF_CONTEXT_MENU_SWAP_WITH_NEXT);
   AddContextMenuOption(menu_model.get(), ash::SWAP_WITH_PREVIOUS,
@@ -119,9 +116,11 @@ bool ShelfContextMenu::IsCommandIdEnabled(int command_id) const {
 
   if (command_id == ash::SWAP_WITH_NEXT ||
       command_id == ash::SWAP_WITH_PREVIOUS) {
-    // Only show commands to reorder shelf items when ChromeVox is enabled.
+    // Only show commands to reorder shelf items when ChromeVox or SwitchAccess
+    // are enabled.
     if (!AccessibilityManager::Get() ||
-        !AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
+        (!AccessibilityManager::Get()->IsSpokenFeedbackEnabled() &&
+         !AccessibilityManager::Get()->IsSwitchAccessEnabled())) {
       return false;
     }
     const ash::ShelfModel* model = controller_->shelf_model();
