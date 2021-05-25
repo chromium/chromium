@@ -77,6 +77,6 @@ echeapi.system.getSystemInfo =
     EcheApiBindingImpl.getSystemInfo.bind(EcheApiBindingImpl);
 echeapi.system.registerScreenBacklightState =
     EcheApiBindingImpl.onScreenBacklightStateChanged.bind(EcheApiBindingImpl);
-echeapi.webrtc.registerTabletModeChangedReceiver =
+echeapi.system.registerTabletModeChangedReceiver =
     EcheApiBindingImpl.onReceivedTabletModeChanged.bind(EcheApiBindingImpl);
 window['echeapi'] = echeapi;
