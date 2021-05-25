@@ -4,6 +4,13 @@
 
 #include "base/values.h"
 
+// values.h is a widely included header and its size has significant impact on
+// build time. Try not to raise this limit unless absolutely necessary. See
+// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
+#ifndef NACL_TC_REV
+#pragma clang max_tokens_here 547000
+#endif
+
 #include <algorithm>
 #include <cmath>
 #include <ostream>
