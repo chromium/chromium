@@ -6,6 +6,7 @@
 
 #include <type_traits>
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
@@ -505,12 +506,46 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
 
   RestoreTrailingCollapsibleSpaceIfRemoved();
 
+  if (text_chunk_offsets_ && AppendTextChunks(string, *layout_object))
+    return;
   if (!ComputedStyle::CollapseWhiteSpace(whitespace))
     AppendPreserveWhitespace(string, &style, layout_object);
   else if (ComputedStyle::PreserveNewline(whitespace) && !is_svg_text)
     AppendPreserveNewline(string, &style, layout_object);
   else
     AppendCollapseWhitespace(string, &style, layout_object);
+}
+
+template <typename OffsetMappingBuilder>
+bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextChunks(
+    const String& string,
+    LayoutText& layout_text) {
+  auto iter = text_chunk_offsets_->find(&layout_text);
+  if (iter == text_chunk_offsets_->end())
+    return false;
+  const ComputedStyle& style = layout_text.StyleRef();
+  EWhiteSpace whitespace = style.WhiteSpace();
+  unsigned start = 0;
+  for (unsigned offset : iter->value) {
+    DCHECK_LT(offset, string.length());
+    if (start < offset) {
+      if (!ComputedStyle::CollapseWhiteSpace(whitespace)) {
+        AppendPreserveWhitespace(string.Substring(start, offset - start),
+                                 &style, &layout_text);
+      } else {
+        AppendCollapseWhitespace(StringView(string, start, offset - start),
+                                 &style, &layout_text);
+      }
+    }
+    ExitAndEnterSvgTextChunk(layout_text);
+    start = offset;
+  }
+  if (!ComputedStyle::CollapseWhiteSpace(whitespace)) {
+    AppendPreserveWhitespace(string.Substring(start), &style, &layout_text);
+  } else {
+    AppendCollapseWhitespace(StringView(string, start), &style, &layout_text);
+  }
+  return true;
 }
 
 template <typename OffsetMappingBuilder>
@@ -887,6 +922,38 @@ NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBreakOpportunity(
   return item;
 }
 
+// The logic is similar to AppendForcedBreak().
+template <typename OffsetMappingBuilder>
+void NGInlineItemsBuilderTemplate<
+    OffsetMappingBuilder>::ExitAndEnterSvgTextChunk(LayoutText& layout_text) {
+  DCHECK(block_flow_->IsNGSVGText());
+  DCHECK(text_chunk_offsets_);
+
+  if (bidi_context_.IsEmpty())
+    return;
+  typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
+                                                       nullptr);
+  // These bidi controls need to be associated with the |layout_text| so
+  // that items from a LayoutObject are consecutive.
+  for (const auto& bidi : base::Reversed(bidi_context_))
+    AppendOpaque(NGInlineItem::kBidiControl, bidi.exit, &layout_text);
+
+  // Then re-add bidi controls to restore the bidi context.
+  for (const auto& bidi : bidi_context_)
+    AppendOpaque(NGInlineItem::kBidiControl, bidi.enter, &layout_text);
+}
+
+template <typename OffsetMappingBuilder>
+void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterSvgTextChunk(
+    const ComputedStyle* style) {
+  if (LIKELY(!block_flow_->IsNGSVGText() || !text_chunk_offsets_))
+    return;
+  EnterBidiContext(nullptr, style, kLeftToRightIsolateCharacter,
+                   kRightToLeftIsolateCharacter,
+                   kPopDirectionalIsolateCharacter);
+  // This context is automatically popped by Exit(nullptr) in ExitBlock().
+}
+
 template <typename OffsetMappingBuilder>
 NGInlineItem& NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::Append(
     NGInlineItem::NGInlineItemType type,
@@ -1076,6 +1143,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterBlock(
     const ComputedStyle* style) {
   // Handle bidi-override on the block itself.
   if (style->RtlOrdering() == EOrder::kLogical) {
+    EnterSvgTextChunk(style);
     switch (style->GetUnicodeBidi()) {
       case UnicodeBidi::kNormal:
       case UnicodeBidi::kEmbed:

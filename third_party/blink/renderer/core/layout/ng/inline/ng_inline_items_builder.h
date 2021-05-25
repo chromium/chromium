@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/empty_offset_mapping_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -44,9 +45,13 @@ class NGInlineItemsBuilderTemplate {
 
  public:
   // Create a builder that appends items to |items|.
-  NGInlineItemsBuilderTemplate(LayoutBlockFlow* block_flow,
-                               Vector<NGInlineItem>* items)
-      : block_flow_(block_flow), items_(items) {}
+  NGInlineItemsBuilderTemplate(
+      LayoutBlockFlow* block_flow,
+      Vector<NGInlineItem>* items,
+      const SvgTextChunkOffsets* chunk_offsets = nullptr)
+      : block_flow_(block_flow),
+        items_(items),
+        text_chunk_offsets_(chunk_offsets) {}
   ~NGInlineItemsBuilderTemplate();
 
   LayoutBlockFlow* GetLayoutBlockFlow() const { return block_flow_; }
@@ -178,6 +183,8 @@ class NGInlineItemsBuilderTemplate {
   };
   Vector<BidiContext> bidi_context_;
 
+  const SvgTextChunkOffsets* text_chunk_offsets_;
+
   bool has_bidi_controls_ = false;
   bool has_ruby_ = false;
   bool is_empty_inline_ = true;
@@ -202,6 +209,9 @@ class NGInlineItemsBuilderTemplate {
 
   void AppendForcedBreakCollapseWhitespace(LayoutObject*);
   void AppendForcedBreak(LayoutObject*);
+  bool AppendTextChunks(const String& string, LayoutText& layout_text);
+  void ExitAndEnterSvgTextChunk(LayoutText& layout_text);
+  void EnterSvgTextChunk(const ComputedStyle* style);
 
   void RemoveTrailingCollapsibleSpaceIfExists();
   void RemoveTrailingCollapsibleSpace(NGInlineItem*);

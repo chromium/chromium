@@ -919,13 +919,18 @@ void NGInlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
   DCHECK(!layout_block_flow->GetDocument().NeedsLayoutTreeUpdate() ||
          layout_block_flow->IsLayoutNGObjectForCanvasFormattedText());
 
+  const SvgTextChunkOffsets* chunk_offsets = nullptr;
+  if (data->svg_node_data_ && data->svg_node_data_->chunk_offsets.size() > 0)
+    chunk_offsets = &data->svg_node_data_->chunk_offsets;
+
   // TODO(xiaochengh): ComputeOffsetMappingIfNeeded() discards the
   // NGInlineItems and text content built by |builder|, because they are
   // already there in NGInlineNodeData. For efficiency, we should make
   // |builder| not construct items and text content.
   Vector<NGInlineItem> items;
   items.ReserveCapacity(EstimateInlineItemsCount(*layout_block_flow));
-  NGInlineItemsBuilderForOffsetMapping builder(layout_block_flow, &items);
+  NGInlineItemsBuilderForOffsetMapping builder(layout_block_flow, &items,
+                                               chunk_offsets);
   builder.GetOffsetMappingBuilder().ReserveCapacity(
       EstimateOffsetMappingItemsCount(*layout_block_flow));
   CollectInlinesInternal(&builder, nullptr);
@@ -989,6 +994,7 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
   LayoutBlockFlow* block = GetLayoutBlockFlow();
   block->WillCollectInlines();
 
+  const SvgTextChunkOffsets* chunk_offsets = nullptr;
   if (block->IsNGSVGText()) {
     // SVG <text> doesn't support reusing the previous result now.
     previous_data = nullptr;
@@ -999,12 +1005,14 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
     Vector<NGInlineItem> items;
     items.ReserveCapacity(EstimateInlineItemsCount(*block));
     NGInlineItemsBuilderForOffsetMapping items_builder(block, &items);
-    items_builder.GetOffsetMappingBuilder().ReserveCapacity(
-        EstimateOffsetMappingItemsCount(*block));
+    NGOffsetMappingBuilder& mapping_builder =
+        items_builder.GetOffsetMappingBuilder();
+    mapping_builder.ReserveCapacity(EstimateOffsetMappingItemsCount(*block));
     CollectInlinesInternal(&items_builder, nullptr);
+    String ifc_text_content = items_builder.ToString();
 
     NGSVGTextLayoutAttributesBuilder svg_attr_builder(*this);
-    svg_attr_builder.Build(items_builder.ToString(), items);
+    svg_attr_builder.Build(ifc_text_content, items);
 
     auto svg_data = std::make_unique<SVGInlineNodeData>();
     svg_data->character_data_list = svg_attr_builder.CharacterDataList();
@@ -1012,11 +1020,39 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
     svg_data->text_path_range_list = svg_attr_builder.TextPathRangeList();
     data->svg_node_data_ = std::move(svg_data);
 
-    // TODO(tkent): Pass "text chunk" information to NGInlineItemsBuilder.
+    // Compute DOM offsets of text chunks.
+    mapping_builder.SetDestinationString(ifc_text_content);
+    std::unique_ptr<NGOffsetMapping> mapping = mapping_builder.Build();
+    // Index in a UTF-32 sequence
+    unsigned last_addressable = 0;
+    // Index in a UTF-16 sequence for last_addressable.
+    unsigned text_content_offset = 0;
+    for (const auto& char_data : data->svg_node_data_->character_data_list) {
+      if (!char_data.second.anchored_chunk)
+        continue;
+      unsigned addressable_offset = char_data.first;
+      if (addressable_offset == 0u)
+        continue;
+      while (last_addressable < addressable_offset) {
+        ++last_addressable;
+        ++text_content_offset;
+        if (text_content_offset < ifc_text_content.length() &&
+            U16_IS_LEAD(ifc_text_content[text_content_offset - 1]) &&
+            U16_IS_TRAIL(ifc_text_content[text_content_offset]))
+          ++text_content_offset;
+      }
+      const auto* unit = mapping->GetLastMappingUnit(text_content_offset);
+      auto result = data->svg_node_data_->chunk_offsets.insert(
+          To<LayoutText>(&unit->GetLayoutObject()), Vector<unsigned>());
+      result.stored_value->value.push_back(
+          unit->ConvertTextContentToFirstDOMOffset(text_content_offset));
+    }
+    if (data->svg_node_data_->chunk_offsets.size() > 0)
+      chunk_offsets = &data->svg_node_data_->chunk_offsets;
   }
 
   data->items.ReserveCapacity(EstimateInlineItemsCount(*block));
-  NGInlineItemsBuilder builder(block, &data->items);
+  NGInlineItemsBuilder builder(block, &data->items, chunk_offsets);
   CollectInlinesInternal(&builder, previous_data);
   builder.DidFinishCollectInlines(data);
 
