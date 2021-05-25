@@ -7,8 +7,8 @@
 #include <gtest/gtest.h>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
-#include "base/stl_util.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_recorder.h"
 #include "third_party/skia/include/core/SkCanvas.h"

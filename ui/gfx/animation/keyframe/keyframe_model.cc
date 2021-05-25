@@ -4,9 +4,9 @@
 
 #include "ui/gfx/animation/keyframe/keyframe_model.h"
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 
 namespace gfx {
 namespace {

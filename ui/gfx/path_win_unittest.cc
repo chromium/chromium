@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/win/scoped_gdi_object.h"
 #include "skia/ext/skia_utils_win.h"
 #include "testing/gtest/include/gtest/gtest.h"

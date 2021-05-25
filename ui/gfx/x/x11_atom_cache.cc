@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 

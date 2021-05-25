@@ -9,9 +9,9 @@
 #include <map>
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

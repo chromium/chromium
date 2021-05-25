@@ -4,7 +4,7 @@
 
 #include "ui/gl/gl_switches.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 
 #if defined(OS_ANDROID)

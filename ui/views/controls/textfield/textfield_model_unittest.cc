@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"

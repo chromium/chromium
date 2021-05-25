@@ -7,8 +7,8 @@
 #include <stdint.h>
 
 #include "base/barrier_closure.h"
+#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

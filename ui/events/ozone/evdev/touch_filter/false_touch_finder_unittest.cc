@@ -10,8 +10,8 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_switches.h"

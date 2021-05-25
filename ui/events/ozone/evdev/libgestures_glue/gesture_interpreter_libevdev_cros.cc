@@ -8,8 +8,8 @@
 #include <libevdev/libevdev.h>
 #include <linux/input.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/timer.h"
 #include "ui/events/base_event_utils.h"

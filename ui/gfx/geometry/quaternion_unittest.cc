@@ -4,8 +4,8 @@
 
 #include <cmath>
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/math_constants.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/vector3d_f.h"

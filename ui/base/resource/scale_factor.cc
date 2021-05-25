@@ -4,7 +4,7 @@
 
 #include "ui/base/resource/scale_factor.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace ui {
 

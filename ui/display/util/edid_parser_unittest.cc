@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/ranges.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/display/types/display_constants.h"

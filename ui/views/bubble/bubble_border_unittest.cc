@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"

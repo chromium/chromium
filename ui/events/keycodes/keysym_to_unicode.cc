@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 
+#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
 
 namespace ui {

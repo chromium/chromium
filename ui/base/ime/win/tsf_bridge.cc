@@ -6,10 +6,10 @@
 
 #include <map>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_local_storage.h"
 #include "base/trace_event/trace_event.h"

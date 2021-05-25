@@ -10,8 +10,8 @@
 #include <numeric>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
 #include "ui/gfx/x/future.h"
 
 // These constants are obtained from GL/glx.h and GL/glxext.h.

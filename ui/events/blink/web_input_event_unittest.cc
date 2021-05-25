@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

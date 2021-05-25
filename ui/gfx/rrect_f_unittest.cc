@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/gfx/rrect_f.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/rrect_f_builder.h"
 

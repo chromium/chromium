@@ -14,12 +14,12 @@
 
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/leak_annotations.h"
 #include "base/environment.h"
 #include "base/logging.h"
 #include "base/nix/mime_util_xdg.h"
 #include "base/nix/xdg_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/themes/theme_properties.h"  // nogncheck
 #include "printing/buildflags/buildflags.h"          // nogncheck

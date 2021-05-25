@@ -8,9 +8,9 @@
 
 #include <cstring>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "ui/events/devices/device_util_linux.h"
 

@@ -6,8 +6,8 @@
 
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence.h"

@@ -8,8 +8,8 @@
 
 #include <limits>
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkScalar.h"

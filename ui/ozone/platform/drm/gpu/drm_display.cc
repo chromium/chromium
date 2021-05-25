@@ -7,8 +7,8 @@
 #include <xf86drmMode.h>
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display_features.h"

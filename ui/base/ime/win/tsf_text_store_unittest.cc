@@ -12,8 +12,8 @@
 
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_variant.h"
 #include "build/build_config.h"

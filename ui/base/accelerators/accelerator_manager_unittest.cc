@@ -4,7 +4,7 @@
 
 #include "ui/base/accelerators/accelerator_manager.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"

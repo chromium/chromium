@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
