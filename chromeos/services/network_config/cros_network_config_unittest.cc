@@ -1344,6 +1344,39 @@ TEST_F(CrosNetworkConfigTest, CellularInhibitState) {
   EXPECT_EQ(mojom::InhibitReason::kInstallingProfile, cellular->inhibit_reason);
 }
 
+TEST_F(CrosNetworkConfigTest, CellularInhibitState_Connecting) {
+  const char kTestEuiccPath[] = "euicc_path";
+  mojom::DeviceStatePropertiesPtr cellular =
+      GetDeviceStateFromList(mojom::NetworkType::kCellular);
+  ASSERT_TRUE(cellular);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  EXPECT_EQ(mojom::InhibitReason::kNotInhibited, cellular->inhibit_reason);
+
+  // Set connect requested on cellular network.
+  NetworkStateHandler* network_state_handler =
+      NetworkHandler::Get()->network_state_handler();
+  const NetworkState* network_state =
+      network_state_handler->GetNetworkStateFromGuid("cellular_guid");
+  network_state_handler->SetNetworkConnectRequested(network_state->path(),
+                                                    true);
+
+  // Verify the inhibit state is not set when connecting if there are no EUICC.
+  cellular = GetDeviceStateFromList(mojom::NetworkType::kCellular);
+  ASSERT_TRUE(cellular);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  EXPECT_EQ(mojom::InhibitReason::kNotInhibited, cellular->inhibit_reason);
+
+  // Verify the adding EUICC sets the inhibit reason correctly.
+  helper()->hermes_manager_test()->AddEuicc(dbus::ObjectPath(kTestEuiccPath),
+                                            "eid", /*is_active=*/true,
+                                            /*physical_slot=*/0);
+  cellular = GetDeviceStateFromList(mojom::NetworkType::kCellular);
+  ASSERT_TRUE(cellular);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  EXPECT_EQ(mojom::InhibitReason::kConnectingToProfile,
+            cellular->inhibit_reason);
+}
+
 TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
   // Assert initial state.
   mojom::DeviceStatePropertiesPtr cellular =
