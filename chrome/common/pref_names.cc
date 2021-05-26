@@ -2022,6 +2022,12 @@ const char kMediaDeviceIdSalt[] = "media.device_id_salt";
 // the content.
 const char kMediaStorageIdSalt[] = "media.storage_id_salt";
 
+#if defined(OS_WIN)
+// Mapping of origin to their origin id (UnguessableToken). Origin IDs are only
+// stored for origins using MediaFoundation-based CDMs.
+const char kMediaCdmOrigin[] = "media.cdm.origins";
+#endif  // defined(OS_WIN)
+
 // The last used printer and its settings.
 const char kPrintPreviewStickySettings[] =
     "printing.print_preview_sticky_settings";
