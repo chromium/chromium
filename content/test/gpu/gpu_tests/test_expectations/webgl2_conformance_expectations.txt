@@ -716,8 +716,7 @@ crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/mul
 crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 
 # Flakily hitting a fatal V8 compiler issue.
-crbug.com/1213266 [ android android-pixel-4 ] deqp/functional/gles3/fbocolorbuffer/tex2darray_03.html [ RetryOnFailure ]
-crbug.com/1213266 [ android android-pixel-4 passthrough ] deqp/functional/gles3/fborender/resize_03.html [ RetryOnFailure ]
+crbug.com/1213266 [ android android-pixel-4 ] deqp/functional/gles3/* [ RetryOnFailure ]
 
 crbug.com/1037958 [ mac amd-0x679e ] conformance2/transform_feedback/switching-objects.html [ RetryOnFailure ]
 
