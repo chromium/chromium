@@ -232,6 +232,8 @@ extern const base::Feature kMultilingualTyping;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kNoteTakingForEnabledWebApps;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kNotificationsRefresh;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOnDeviceGrammarCheck;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOnDeviceSpeechRecognition;
@@ -388,6 +390,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMicMuteNotificationsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMinimumChromeVersionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNetworkingInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNewOobeLayoutEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationsRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputNoiseCancellationUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeChromeVoxHintEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeScreensPriorityEnabled();

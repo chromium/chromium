@@ -504,10 +504,6 @@ const base::Feature kMicMuteNotifications{"MicMuteNotifications",
 const base::Feature kMinimumChromeVersion{"MinimumChromeVersion",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether new OOBE layout is shown or not.
-const base::Feature kNewOobeLayout{"NewOobeLayout",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Whether image annotation is enabled in the ChromeOS media app.
 const base::Feature kMediaAppAnnotation{"MediaAppAnnotation",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
@@ -528,10 +524,18 @@ const base::Feature kMediaAppVideoControls{"MediaAppVideoControls",
 const base::Feature kMultilingualTyping{"MultilingualTyping",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether new OOBE layout is shown or not.
+const base::Feature kNewOobeLayout{"NewOobeLayout",
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables support for specific enabled web apps to be treated as note-taking
 // apps on Chrome OS.
 const base::Feature kNoteTakingForEnabledWebApps{
     "NoteTakingForEnabledWebApps", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables new notifications UI and grouped notifications.
+const base::Feature kNotificationsRefresh{"NotificationsRefresh",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether to enable on-device grammar check service.
 const base::Feature kOnDeviceGrammarCheck{"OnDeviceGrammarCheck",
