@@ -31,12 +31,12 @@ public interface DropdownItemProcessor {
     /**
      * @see org.chromium.chrome.browser.omnibox.UrlFocusChangeListener#onUrlFocusChange(boolean)
      */
-    default void onUrlFocusChange(boolean hasFocus) {}
+    void onUrlFocusChange(boolean hasFocus);
 
     /**
      * Signals that native initialization has completed.
      */
-    default void onNativeInitialized() {}
+    void onNativeInitialized();
 
     /**
      * Record suggestion impressions for this processor.

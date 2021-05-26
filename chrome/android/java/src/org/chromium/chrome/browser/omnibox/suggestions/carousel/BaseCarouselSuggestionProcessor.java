@@ -33,4 +33,10 @@ public abstract class BaseCarouselSuggestionProcessor implements SuggestionProce
      * @return Minimum height of an element hosted by the carousel.
      */
     public abstract int getMinimumCarouselItemViewHeight();
+
+    @Override
+    public void onUrlFocusChange(boolean hasFocus) {}
+
+    @Override
+    public void onNativeInitialized() {}
 }

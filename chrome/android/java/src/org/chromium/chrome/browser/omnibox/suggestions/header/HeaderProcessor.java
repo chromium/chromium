@@ -74,4 +74,10 @@ public class HeaderProcessor implements DropdownItemProcessor {
             }
         });
     }
+
+    @Override
+    public void onUrlFocusChange(boolean hasFocus) {}
+
+    @Override
+    public void onNativeInitialized() {}
 }

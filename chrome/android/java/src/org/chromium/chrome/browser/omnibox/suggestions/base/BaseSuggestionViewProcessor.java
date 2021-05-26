@@ -246,4 +246,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     protected Context getContext() {
         return mContext;
     }
+
+    @Override
+    public void onUrlFocusChange(boolean hasFocus) {}
 }

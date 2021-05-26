@@ -424,6 +424,7 @@ class BuildConfigGenerator extends DefaultTask {
                 |  ]
                 |
                 |  proguard_configs = ["androidx_fragment.flags"]
+                |  use_classic_desugar = true
                 |
                 |  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"
                 |""".stripMargin())
