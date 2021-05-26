@@ -200,14 +200,19 @@ void ScreenOrientationController::lock(
   if (!screen_orientation_service_.is_bound())
     return;
 
-  CancelPendingLocks();
-  pending_callback_ = std::move(callback);
-  screen_orientation_service_->LockOrientation(
-      orientation,
-      WTF::Bind(&ScreenOrientationController::OnLockOrientationResult,
-                WrapWeakPersistent(this), ++request_id_));
+  // https://jeremyroman.github.io/alternate-loading-modes/#patch-orientation-lock
+  // Step 7.3.10. Screen Orientation API.
+  // Defer to lock with |orientation| until the prerendering page is activated
+  // via appending lock operation to the post-prerendering activation steps
+  // list.
+  if (DomWindow()->document()->IsPrerendering()) {
+    DomWindow()->document()->AddPostPrerenderingActivationStep(
+        WTF::Bind(&ScreenOrientationController::LockOrientationInternal,
+                  WrapWeakPersistent(this), orientation, std::move(callback)));
+    return;
+  }
 
-  active_lock_ = true;
+  LockOrientationInternal(orientation, std::move(callback));
 }
 
 void ScreenOrientationController::unlock() {
@@ -215,9 +220,19 @@ void ScreenOrientationController::unlock() {
   if (!screen_orientation_service_.is_bound())
     return;
 
-  CancelPendingLocks();
-  screen_orientation_service_->UnlockOrientation();
-  active_lock_ = false;
+  // https://jeremyroman.github.io/alternate-loading-modes/#patch-orientation-lock
+  // Step 7.3.10. Screen Orientation API.
+  // Defer to unlock with |orientation| until the prerendering page is activated
+  // via appending unlock operation to the post-prerendering activation steps
+  // list.
+  if (DomWindow()->document()->IsPrerendering()) {
+    DomWindow()->document()->AddPostPrerenderingActivationStep(
+        WTF::Bind(&ScreenOrientationController::UnlockOrientationInternal,
+                  WrapWeakPersistent(this)));
+    return;
+  }
+
+  UnlockOrientationInternal();
 }
 
 bool ScreenOrientationController::MaybeHasActiveLock() const {
@@ -293,6 +308,25 @@ void ScreenOrientationController::CancelPendingLocks() {
 
 int ScreenOrientationController::GetRequestIdForTests() {
   return pending_callback_ ? request_id_ : -1;
+}
+
+void ScreenOrientationController::LockOrientationInternal(
+    device::mojom::blink::ScreenOrientationLockType orientation,
+    std::unique_ptr<WebLockOrientationCallback> callback) {
+  CancelPendingLocks();
+  pending_callback_ = std::move(callback);
+  screen_orientation_service_->LockOrientation(
+      orientation,
+      WTF::Bind(&ScreenOrientationController::OnLockOrientationResult,
+                WrapWeakPersistent(this), ++request_id_));
+
+  active_lock_ = true;
+}
+
+void ScreenOrientationController::UnlockOrientationInternal() {
+  CancelPendingLocks();
+  screen_orientation_service_->UnlockOrientation();
+  active_lock_ = false;
 }
 
 }  // namespace blink

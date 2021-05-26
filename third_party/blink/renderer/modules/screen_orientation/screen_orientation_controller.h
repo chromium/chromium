@@ -72,6 +72,11 @@ class MODULES_EXPORT ScreenOrientationController final
   void CancelPendingLocks();
   int GetRequestIdForTests();
 
+  void LockOrientationInternal(
+      device::mojom::blink::ScreenOrientationLockType orientation,
+      std::unique_ptr<WebLockOrientationCallback> callback);
+  void UnlockOrientationInternal();
+
   Member<ScreenOrientation> orientation_;
   bool active_lock_ = false;
   HeapMojoAssociatedRemote<device::mojom::blink::ScreenOrientation>
