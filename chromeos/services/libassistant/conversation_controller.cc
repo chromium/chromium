@@ -324,6 +324,13 @@ void ConversationController::StartEditReminderInteraction(
   if (!assistant_manager_internal_)
     return;
 
+  // Cancels any ongoing StopInteraction posted by StopActiveInteraction()
+  // before we move forward to start an EditReminderInteraction. Failing to
+  // do this could expose a race condition and potentially result in the
+  // following EditReminderInteraction getting barged in and cancelled.
+  // See b/182948180.
+  MaybeStopPreviousInteraction();
+
   SendVoicelessInteraction(assistant::CreateEditReminderInteraction(client_id),
                            /*description=*/std::string(),
                            /*is_user_initiated=*/true);

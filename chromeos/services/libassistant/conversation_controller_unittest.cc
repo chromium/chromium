@@ -29,6 +29,12 @@ class AssistantManagerInternalMock
   MOCK_METHOD(void,
               StopAssistantInteractionInternal,
               (bool cancel_conversation));
+  MOCK_METHOD(void,
+              SendVoicelessInteraction,
+              (const std::string&,
+               const std::string&,
+               const assistant_client::VoicelessOptions& options,
+               assistant_client::SuccessCallbackInternal on_done));
 };
 
 class AssistantManagerMock : public assistant::FakeAssistantManager {
@@ -95,7 +101,7 @@ TEST_F(ConversationControllerTest, ShouldStopInteractionAfterDelay) {
 }
 
 TEST_F(ConversationControllerTest,
-       ShouldStopInteractionImmediatelyBeforeNewInteraction) {
+       ShouldStopInteractionImmediatelyBeforeNewVoiceInteraction) {
   StartLibassistant();
 
   EXPECT_CALL(assistant_manager_internal_mock(),
@@ -112,6 +118,26 @@ TEST_F(ConversationControllerTest,
       .Times(1)
       .After(stop);
   controller().StartVoiceInteraction();
+}
+
+TEST_F(ConversationControllerTest,
+       ShouldStopInteractionImmediatelyBeforeNewEditReminderInteraction) {
+  StartLibassistant();
+
+  EXPECT_CALL(assistant_manager_internal_mock(),
+              StopAssistantInteractionInternal)
+      .Times(0);
+
+  controller().StopActiveInteraction(true);
+  testing::Mock::VerifyAndClearExpectations(&assistant_manager_internal_mock());
+
+  ::testing::Expectation stop = EXPECT_CALL(assistant_manager_internal_mock(),
+                                            StopAssistantInteractionInternal)
+                                    .Times(1);
+  EXPECT_CALL(assistant_manager_internal_mock(), SendVoicelessInteraction)
+      .Times(1)
+      .After(stop);
+  controller().StartEditReminderInteraction("client-id");
 }
 
 }  // namespace libassistant
