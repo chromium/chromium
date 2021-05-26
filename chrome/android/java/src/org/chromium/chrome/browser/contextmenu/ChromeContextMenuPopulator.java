@@ -66,6 +66,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -132,8 +133,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 Action.COPY_EMAIL_ADDRESS, Action.COPY_LINK_TEXT, Action.SAVE_LINK,
                 Action.SAVE_IMAGE, Action.OPEN_IMAGE, Action.OPEN_IMAGE_IN_NEW_TAB,
                 Action.SEARCH_BY_IMAGE, Action.LOAD_ORIGINAL_IMAGE, Action.SAVE_VIDEO,
-                Action.SHARE_IMAGE, Action.OPEN_IN_OTHER_WINDOW, Action.SEND_EMAIL,
-                Action.ADD_TO_CONTACTS, Action.CALL, Action.SEND_TEXT_MESSAGE,
+                Action.SHARE_IMAGE, Action.OPEN_IN_OTHER_WINDOW, Action.OPEN_IN_NEW_WINDOW,
+                Action.SEND_EMAIL, Action.ADD_TO_CONTACTS, Action.CALL, Action.SEND_TEXT_MESSAGE,
                 Action.COPY_PHONE_NUMBER, Action.OPEN_IN_NEW_CHROME_TAB,
                 Action.OPEN_IN_CHROME_INCOGNITO_TAB, Action.OPEN_IN_BROWSER, Action.OPEN_IN_CHROME,
                 Action.SHARE_LINK, Action.OPEN_IN_EPHEMERAL_TAB, Action.OPEN_IMAGE_IN_EPHEMERAL_TAB,
@@ -185,7 +186,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int REMOVE_HIGHLIGHT = 37;
             int LEARN_MORE = 38;
             int OPEN_IN_NEW_TAB_IN_GROUP = 39;
-            int NUM_ENTRIES = 40;
+            int OPEN_IN_NEW_WINDOW = 40;
+            int NUM_ENTRIES = 41;
         }
 
         // Note: these values must match the ContextMenuSaveLinkType enum in enums.xml.
@@ -396,6 +398,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 params.getLinkUrl().getSpec());
     }
 
+    @VisibleForTesting
+    boolean isTabletScreen() {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+    }
+
     @Override
     public List<Pair<Integer, ModelList>> buildContextMenu() {
         boolean hasSaveImage = false;
@@ -422,9 +429,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     if (!mItemDelegate.isIncognito() && mItemDelegate.isIncognitoSupported()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
                     }
-                    if (mItemDelegate.isOpenInOtherWindowSupported()
-                            || mItemDelegate.canEnterMultiWindowMode()) {
+                    if (mItemDelegate.isOpenInOtherWindowSupported()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_OTHER_WINDOW));
+                    } else if (isTabletScreen() && mItemDelegate.canEnterMultiWindowMode()) {
+                        linkGroup.add(createListItem(Item.OPEN_IN_NEW_WINDOW));
                     }
                 }
                 if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)
@@ -664,6 +672,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             mItemDelegate.onOpenInNewIncognitoTab(mParams.getUrl());
         } else if (itemId == R.id.contextmenu_open_in_other_window) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_OTHER_WINDOW);
+            mItemDelegate.onOpenInOtherWindow(mParams.getUrl(), mParams.getReferrer());
+        } else if (itemId == R.id.contextmenu_open_in_new_window) {
+            recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_WINDOW);
+            // |openInOtherWindow| can handle opening in a new window as well.
             mItemDelegate.onOpenInOtherWindow(mParams.getUrl(), mParams.getReferrer());
         } else if (itemId == R.id.contextmenu_open_in_ephemeral_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_EPHEMERAL_TAB);

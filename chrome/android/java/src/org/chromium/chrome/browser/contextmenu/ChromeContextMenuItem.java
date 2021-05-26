@@ -33,15 +33,16 @@ import java.lang.annotation.RetentionPolicy;
 class ChromeContextMenuItem {
     @IntDef({Item.OPEN_IN_NEW_CHROME_TAB, Item.OPEN_IN_CHROME_INCOGNITO_TAB,
             Item.OPEN_IN_BROWSER_ID, Item.OPEN_IN_NEW_TAB, Item.OPEN_IN_INCOGNITO_TAB,
-            Item.OPEN_IN_OTHER_WINDOW, Item.OPEN_IN_EPHEMERAL_TAB, Item.COPY_LINK_ADDRESS,
-            Item.COPY_LINK_TEXT, Item.SAVE_LINK_AS, Item.SHARE_LINK, Item.DIRECT_SHARE_LINK,
-            Item.READ_LATER, Item.LOAD_ORIGINAL_IMAGE, Item.SAVE_IMAGE, Item.OPEN_IMAGE,
-            Item.OPEN_IMAGE_IN_NEW_TAB, Item.OPEN_IMAGE_IN_EPHEMERAL_TAB, Item.COPY_IMAGE,
-            Item.SEARCH_BY_IMAGE, Item.SEARCH_WITH_GOOGLE_LENS, Item.SHOP_SIMILAR_PRODUCTS,
-            Item.SHOP_IMAGE_WITH_GOOGLE_LENS, Item.SEARCH_SIMILAR_PRODUCTS, Item.SHARE_IMAGE,
-            Item.DIRECT_SHARE_IMAGE, Item.CALL, Item.SEND_MESSAGE, Item.ADD_TO_CONTACTS, Item.COPY,
-            Item.SAVE_VIDEO, Item.OPEN_IN_CHROME, Item.OPEN_IN_NEW_TAB_IN_GROUP,
-            Item.SHARE_HIGHLIGHT, Item.REMOVE_HIGHLIGHT, Item.LEARN_MORE})
+            Item.OPEN_IN_OTHER_WINDOW, Item.OPEN_IN_NEW_WINDOW, Item.OPEN_IN_EPHEMERAL_TAB,
+            Item.COPY_LINK_ADDRESS, Item.COPY_LINK_TEXT, Item.SAVE_LINK_AS, Item.SHARE_LINK,
+            Item.DIRECT_SHARE_LINK, Item.READ_LATER, Item.LOAD_ORIGINAL_IMAGE, Item.SAVE_IMAGE,
+            Item.OPEN_IMAGE, Item.OPEN_IMAGE_IN_NEW_TAB, Item.OPEN_IMAGE_IN_EPHEMERAL_TAB,
+            Item.COPY_IMAGE, Item.SEARCH_BY_IMAGE, Item.SEARCH_WITH_GOOGLE_LENS,
+            Item.SHOP_SIMILAR_PRODUCTS, Item.SHOP_IMAGE_WITH_GOOGLE_LENS,
+            Item.SEARCH_SIMILAR_PRODUCTS, Item.SHARE_IMAGE, Item.DIRECT_SHARE_IMAGE, Item.CALL,
+            Item.SEND_MESSAGE, Item.ADD_TO_CONTACTS, Item.COPY, Item.SAVE_VIDEO,
+            Item.OPEN_IN_CHROME, Item.OPEN_IN_NEW_TAB_IN_GROUP, Item.SHARE_HIGHLIGHT,
+            Item.REMOVE_HIGHLIGHT, Item.LEARN_MORE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Item {
         // Values are numerated from 0 and can't have gaps.
@@ -55,42 +56,43 @@ class ChromeContextMenuItem {
         int OPEN_IN_NEW_TAB_IN_GROUP = 4;
         int OPEN_IN_INCOGNITO_TAB = 5;
         int OPEN_IN_OTHER_WINDOW = 6;
-        int OPEN_IN_EPHEMERAL_TAB = 7;
-        int COPY_LINK_ADDRESS = 8;
-        int COPY_LINK_TEXT = 9;
-        int SAVE_LINK_AS = 10;
-        int SHARE_LINK = 11;
-        int DIRECT_SHARE_LINK = 12;
-        int READ_LATER = 13;
+        int OPEN_IN_NEW_WINDOW = 7;
+        int OPEN_IN_EPHEMERAL_TAB = 8;
+        int COPY_LINK_ADDRESS = 9;
+        int COPY_LINK_TEXT = 10;
+        int SAVE_LINK_AS = 11;
+        int SHARE_LINK = 12;
+        int DIRECT_SHARE_LINK = 13;
+        int READ_LATER = 14;
         // Image Group
-        int LOAD_ORIGINAL_IMAGE = 14;
-        int SAVE_IMAGE = 15;
-        int OPEN_IMAGE = 16;
-        int OPEN_IMAGE_IN_NEW_TAB = 17;
-        int OPEN_IMAGE_IN_EPHEMERAL_TAB = 18;
-        int COPY_IMAGE = 19;
-        int SEARCH_BY_IMAGE = 20;
-        int SEARCH_WITH_GOOGLE_LENS = 21;
-        int SHOP_SIMILAR_PRODUCTS = 22;
-        int SHOP_IMAGE_WITH_GOOGLE_LENS = 23;
-        int SEARCH_SIMILAR_PRODUCTS = 24;
-        int SHARE_IMAGE = 25;
-        int DIRECT_SHARE_IMAGE = 26;
+        int LOAD_ORIGINAL_IMAGE = 15;
+        int SAVE_IMAGE = 16;
+        int OPEN_IMAGE = 17;
+        int OPEN_IMAGE_IN_NEW_TAB = 18;
+        int OPEN_IMAGE_IN_EPHEMERAL_TAB = 19;
+        int COPY_IMAGE = 20;
+        int SEARCH_BY_IMAGE = 21;
+        int SEARCH_WITH_GOOGLE_LENS = 22;
+        int SHOP_SIMILAR_PRODUCTS = 23;
+        int SHOP_IMAGE_WITH_GOOGLE_LENS = 24;
+        int SEARCH_SIMILAR_PRODUCTS = 25;
+        int SHARE_IMAGE = 26;
+        int DIRECT_SHARE_IMAGE = 27;
         // Message Group
-        int CALL = 27;
-        int SEND_MESSAGE = 28;
-        int ADD_TO_CONTACTS = 29;
-        int COPY = 30;
+        int CALL = 28;
+        int SEND_MESSAGE = 29;
+        int ADD_TO_CONTACTS = 30;
+        int COPY = 31;
         // Video Group
-        int SAVE_VIDEO = 31;
+        int SAVE_VIDEO = 32;
         // Other
-        int OPEN_IN_CHROME = 32;
+        int OPEN_IN_CHROME = 33;
         // Shared Highlighting options
-        int SHARE_HIGHLIGHT = 33;
-        int REMOVE_HIGHLIGHT = 34;
-        int LEARN_MORE = 35;
+        int SHARE_HIGHLIGHT = 34;
+        int REMOVE_HIGHLIGHT = 35;
+        int LEARN_MORE = 36;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 36;
+        int NUM_ENTRIES = 37;
     }
 
     /**
@@ -104,6 +106,7 @@ class ChromeContextMenuItem {
             R.id.contextmenu_open_in_new_tab_in_group, // Item.OPEN_IN_NEW_TAB_IN_GROUP
             R.id.contextmenu_open_in_incognito_tab, // Item.OPEN_IN_INCOGNITO_TAB
             R.id.contextmenu_open_in_other_window, // Item.OPEN_IN_OTHER_WINDOW
+            R.id.contextmenu_open_in_new_window, // Item.OPEN_IN_NEW_WINDOW
             R.id.contextmenu_open_in_ephemeral_tab, // Item.OPEN_IN_EPHEMERAL_TAB
             R.id.contextmenu_copy_link_address, // Item.COPY_LINK_ADDRESS
             R.id.contextmenu_copy_link_text, // Item.COPY_LINK_TEXT
@@ -146,6 +149,7 @@ class ChromeContextMenuItem {
             R.string.contextmenu_open_in_new_tab_group, // Item.OPEN_IN_NEW_TAB_IN_GROUP
             R.string.contextmenu_open_in_incognito_tab, // Item.OPEN_IN_INCOGNITO_TAB:
             R.string.contextmenu_open_in_other_window, // Item.OPEN_IN_OTHER_WINDOW:
+            R.string.contextmenu_open_in_new_window, // Item.OPEN_IN_NEW_WINDOW:
             R.string.contextmenu_open_in_ephemeral_tab, // Item.OPEN_IN_EPHEMERAL_TAB:
             R.string.contextmenu_copy_link_address, // Item.COPY_LINK_ADDRESS:
             R.string.contextmenu_copy_link_text, // Item.COPY_LINK_TEXT:

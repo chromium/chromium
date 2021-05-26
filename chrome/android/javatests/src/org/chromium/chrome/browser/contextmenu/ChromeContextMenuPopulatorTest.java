@@ -567,6 +567,31 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    public void testOpenInNewWindow() {
+        FirstRunStatus.setFirstRunFlowComplete(true);
+
+        HashMap<String, Boolean> features = new HashMap<String, Boolean>();
+        features.put(ChromeFeatureList.READ_LATER, false);
+        ChromeFeatureList.setTestFeatures(features);
+
+        ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
+                new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false,
+                0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false);
+
+        when(mItemDelegate.canEnterMultiWindowMode()).thenReturn(true);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        doReturn(true).when(mPopulator).isTabletScreen();
+        int[] expectedMultiWindow = {R.id.contextmenu_open_in_new_tab,
+                R.id.contextmenu_open_in_incognito_tab, R.id.contextmenu_open_in_new_window,
+                R.id.contextmenu_open_in_ephemeral_tab, R.id.contextmenu_copy_link_address,
+                R.id.contextmenu_copy_link_text, R.id.contextmenu_save_link_as,
+                R.id.contextmenu_share_link};
+        checkMenuOptions(expectedMultiWindow);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
     public void testHttpLink_WithoutAutoGroupCreation() {
         TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.setForTesting(false);
 
