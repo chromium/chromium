@@ -104,6 +104,7 @@ class ProfileSyncServiceFactoryTest : public testing::Test {
 
 #if !defined(OS_ANDROID)
     datatypes.push_back(syncer::THEMES);
+    datatypes.push_back(syncer::READING_LIST);
     datatypes.push_back(syncer::SEARCH_ENGINES);
 #endif  // !defined(OS_ANDROID)
 
