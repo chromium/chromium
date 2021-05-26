@@ -8,6 +8,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "components/browsing_data/core/features.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_util.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
@@ -204,6 +206,11 @@ bool AccessContextAuditDatabase::InitializeSchema() {
   if (!db_.Execute(kCreateCookiesTable))
     return false;
 
+  // When user controls to clear third-party data are enabled and a user
+  // deletes their history, we keep records of cross-site storage access but
+  // replace the top_frame_origin with an empty string. The empty strings
+  // get interpreted as opaque origins when we load data from the db into
+  // AccessRecords.
   const char kCreateStorageApiTable[] =
       "CREATE TABLE IF NOT EXISTS originStorageAPIs"
       "(top_frame_origin TEXT NOT NULL,"
@@ -303,7 +310,10 @@ void AccessContextAuditDatabase::AddRecords(
 
       insert_cookie.Reset(true);
     } else {
-      insert_storage_api.BindString(0, record.top_frame_origin.Serialize());
+      insert_storage_api.BindString(0,
+                                    record.top_frame_origin.opaque()
+                                        ? ""
+                                        : record.top_frame_origin.Serialize());
       insert_storage_api.BindInt(1, static_cast<int>(record.type));
       insert_storage_api.BindString(2, record.origin.Serialize());
       insert_storage_api.BindTime(3, record.last_access_time);
@@ -498,11 +508,54 @@ void AccessContextAuditDatabase::RemoveAllRecordsForOriginKeyedStorage(
   remove_statement.Run();
 }
 
+namespace {
+
+bool IsSameSite(const url::Origin& origin1, const url::Origin& origin2) {
+  return net::registry_controlled_domains::SameDomainOrHost(
+      origin1, origin2,
+      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+}  // namespace
+
 void AccessContextAuditDatabase::RemoveAllRecordsForTopFrameOrigins(
     const std::vector<url::Origin>& origins) {
   sql::Transaction transaction(&db_);
   if (!transaction.Begin())
     return;
+
+  // If user controls to remove cross-site cookies are enabled, we need to keep
+  // track of cross-site storage access records. We need to clear storage for
+  // these origins so that they cannot be used to recover the cross-site cookies
+  // after they are removed.
+  std::vector<AccessContextAuditDatabase::AccessRecord>
+      cross_site_storage_records;
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kEnableRemovingAllThirdPartyCookies)) {
+    std::vector<AccessContextAuditDatabase::AccessRecord> all_storage_records =
+        GetStorageRecordsForTopFrameOrigins(origins);
+    std::map<
+        std::tuple<url::Origin, AccessContextAuditDatabase::StorageAPIType>,
+        base::Time>
+        storage_to_last_access_map;
+    for (const auto& record : all_storage_records) {
+      if (!IsSameSite(record.top_frame_origin, record.origin)) {
+        auto key = std::make_tuple(record.origin, record.type);
+        auto it = storage_to_last_access_map.find(key);
+        if (it == storage_to_last_access_map.end() ||
+            it->second < record.last_access_time) {
+          storage_to_last_access_map[key] = record.last_access_time;
+        }
+      }
+    }
+    for (const auto& item : storage_to_last_access_map) {
+      cross_site_storage_records.emplace_back(
+          url::Origin(),
+          /* type= */ std::get<1>(item.first),
+          /* storage_origin= */ std::get<0>(item.first),
+          /* last_access_time= */ item.second);
+    }
+  }
 
   // Remove all records with a top frame origin present in |origins| from both
   // the cookies and storage API tables.
@@ -528,7 +581,10 @@ void AccessContextAuditDatabase::RemoveAllRecordsForTopFrameOrigins(
     remove_cookies.Reset(true);
   }
 
-  transaction.Commit();
+  if (!transaction.Commit())
+    return;
+
+  AddRecords(cross_site_storage_records);
 }
 
 std::vector<AccessContextAuditDatabase::AccessRecord>
@@ -552,6 +608,25 @@ AccessContextAuditDatabase::GetCookieRecords() {
   return records;
 }
 
+namespace {
+
+AccessContextAuditDatabase::AccessRecord StorageAccessRecordFromStatement(
+    const sql::Statement& statement) {
+  return AccessContextAuditDatabase::AccessRecord(
+      // If the top-frame origin is empty string, that means we deleted the
+      // top_frame_origin of a cross-site access record. In this case we set the
+      // AccessRecord's top_frame_origin to an opaque origin.
+      statement.ColumnString(0) == ""
+          ? url::Origin()
+          : url::Origin::Create(GURL(statement.ColumnString(0))),
+      static_cast<AccessContextAuditDatabase::StorageAPIType>(
+          statement.ColumnInt(1)),
+      url::Origin::Create(GURL(statement.ColumnString(2))),
+      statement.ColumnTime(3));
+}
+
+}  // namespace
+
 std::vector<AccessContextAuditDatabase::AccessRecord>
 AccessContextAuditDatabase::GetStorageRecords() {
   std::vector<AccessContextAuditDatabase::AccessRecord> records;
@@ -563,11 +638,30 @@ AccessContextAuditDatabase::GetStorageRecords() {
       db_.GetCachedStatement(SQL_FROM_HERE, kSelectStorageApiRecords));
 
   while (select_storage_api.Step()) {
-    records.emplace_back(
-        url::Origin::Create(GURL(select_storage_api.ColumnString(0))),
-        static_cast<StorageAPIType>(select_storage_api.ColumnInt(1)),
-        url::Origin::Create(GURL(select_storage_api.ColumnString(2))),
-        select_storage_api.ColumnTime(3));
+    records.emplace_back(StorageAccessRecordFromStatement(select_storage_api));
+  }
+
+  return records;
+}
+
+std::vector<AccessContextAuditDatabase::AccessRecord>
+AccessContextAuditDatabase::GetStorageRecordsForTopFrameOrigins(
+    const std::vector<url::Origin>& origins) {
+  std::vector<AccessContextAuditDatabase::AccessRecord> records;
+
+  const char kSelectStorageApiRecords[] =
+      "SELECT top_frame_origin, type, origin, access_utc FROM "
+      "originStorageAPIs WHERE top_frame_origin = ?";
+  sql::Statement select_storage_api(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectStorageApiRecords));
+
+  for (const auto& origin : origins) {
+    select_storage_api.BindString(0, origin.Serialize());
+    while (select_storage_api.Step()) {
+      records.emplace_back(
+          StorageAccessRecordFromStatement(select_storage_api));
+    }
+    select_storage_api.Reset(true);
   }
 
   return records;

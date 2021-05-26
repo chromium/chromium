@@ -121,7 +121,8 @@ void AccessContextAuditService::RecordStorageAPIAccess(
     const url::Origin& storage_origin,
     AccessContextAuditDatabase::StorageAPIType type,
     const url::Origin& top_frame_origin) {
-  // Opaque top frame origins are not supported.
+  // Opaque top frame origins are only supported for storing cross-site storage
+  // access records after history deletions.
   if (top_frame_origin.opaque())
     return;
   DCHECK(!storage_origin.opaque());

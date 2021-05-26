@@ -146,6 +146,10 @@ class AccessContextAuditService
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, OpaqueOrigins);
   FRIEND_TEST_ALL_PREFIXES(AccessContextAuditServiceTest, SessionOnlyRecords);
 
+  friend class AccessContextAuditThirdPartyDataClearingTest;
+  FRIEND_TEST_ALL_PREFIXES(AccessContextAuditThirdPartyDataClearingTest,
+                           HistoryDeletion);
+
   // Records accesses for all cookies in |details| against |top_frame_origin|.
   // Should only be accessed via the CookieAccessHelper.
   void RecordCookieAccess(

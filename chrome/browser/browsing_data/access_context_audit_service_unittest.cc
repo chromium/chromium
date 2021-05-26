@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
+#include "components/browsing_data/core/features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/history/core/browser/history_database_params.h"
@@ -106,8 +107,7 @@ class AccessContextAuditServiceTest : public testing::Test {
   }
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kClientStorageAccessContextAuditing}, {});
+    feature_list_.InitWithFeatures(enabled_features(), disabled_features());
 
     task_runner_ = base::ThreadPool::CreateUpdateableSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -174,6 +174,13 @@ class AccessContextAuditServiceTest : public testing::Test {
 
   scoped_refptr<base::UpdateableSequencedTaskRunner> task_runner_;
   std::vector<AccessContextAuditDatabase::AccessRecord> records_;
+
+  virtual std::vector<base::Feature> enabled_features() {
+    return {features::kClientStorageAccessContextAuditing};
+  }
+  virtual std::vector<base::Feature> disabled_features() {
+    return {browsing_data::features::kEnableRemovingAllThirdPartyCookies};
+  }
 };
 
 TEST_F(AccessContextAuditServiceTest, RegisterDeletionObservers) {
@@ -810,4 +817,75 @@ TEST_F(AccessContextAuditServiceTest, CookieAccessHelper) {
   EXPECT_EQ(1u, records.size());
   CheckContainsCookieRecord(test_cookie.get(), kTopFrameOrigin, kAccessTime3,
                             records);
+}
+
+class AccessContextAuditThirdPartyDataClearingTest
+    : public AccessContextAuditServiceTest {
+ protected:
+  std::vector<base::Feature> enabled_features() override {
+    return {features::kClientStorageAccessContextAuditing,
+            browsing_data::features::kEnableRemovingAllThirdPartyCookies};
+  }
+  std::vector<base::Feature> disabled_features() override { return {}; }
+};
+
+// Test that when we enable user controls to clear third-party data, we do not
+// clear records of cross-site storage access. This is because when we delete
+// third-party data, we query the access context audit service to determine
+// which sites accessed storage in cross-site contexts and delete storage for
+// those sites. Our solution is to remove the top-level origin from the records
+// when users clear history, but only clear the records when the respective
+// storage is deleted.
+TEST_F(AccessContextAuditThirdPartyDataClearingTest, HistoryDeletion) {
+  const GURL kTopLevelURL("https://toplevel.com/");
+  const GURL kCrossSiteURL("https://cross.site.com/");
+  const url::Origin kTopLevelOrigin = url::Origin::Create(kTopLevelURL);
+  const url::Origin kCrossSiteOrigin = url::Origin::Create(kCrossSiteURL);
+
+  // Should keep records of same-site and cross-site cookie accesses.
+  // Third-party data clearing does not depend on the access context auditing
+  // service to determine which cookies to clear, so these should get deleted.
+  service()->RecordCookieAccess(
+      {*net::CanonicalCookie::Create(kTopLevelURL, "same=site; max-age=3600",
+                                     base::Time::Now(),
+                                     absl::nullopt /* server_time */)},
+      kTopLevelOrigin);
+  service()->RecordCookieAccess(
+      {*net::CanonicalCookie::Create(kCrossSiteURL, "cross=site; max-age=3600",
+                                     base::Time::Now(),
+                                     absl::nullopt /* server_time */)},
+      kTopLevelOrigin);
+
+  // Set a same-site storage access record. This should get deleted.
+  service()->RecordStorageAPIAccess(
+      kTopLevelOrigin, AccessContextAuditDatabase::StorageAPIType::kIndexedDB,
+      kTopLevelOrigin);
+  // Set a cross-site storage access record. This should be kept but the
+  // top-level origin should be removed.
+  service()->RecordStorageAPIAccess(
+      kCrossSiteOrigin,
+      AccessContextAuditDatabase::StorageAPIType::kLocalStorage,
+      kTopLevelOrigin);
+
+  // Ensure all records are added.
+  EXPECT_EQ(4u, GetAllAccessRecords().size());
+
+  // Remove history entries for the top level URL.
+  history_service()->AddPageWithDetails(kTopLevelURL, u"Test 1", 1, 1,
+                                        base::Time::Now(), false,
+                                        history::SOURCE_BROWSED);
+  history_service()->DeleteURLs({kTopLevelURL});
+  base::RunLoop run_loop;
+  history_service()->FlushForTest(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Ensure only the cross-site storage access record remains and its top-level
+  // origin is opaque.
+  std::vector<AccessContextAuditDatabase::AccessRecord> records =
+      GetAllAccessRecords();
+  EXPECT_EQ(1u, records.size());
+  EXPECT_EQ(AccessContextAuditDatabase::StorageAPIType::kLocalStorage,
+            records[0].type);
+  EXPECT_EQ(kCrossSiteOrigin, records[0].origin);
+  EXPECT_TRUE(records[0].top_frame_origin.opaque());
 }

@@ -135,6 +135,9 @@ class AccessContextAuditDatabase
   friend class base::RefCountedThreadSafe<AccessContextAuditDatabase>;
   bool InitializeSchema();
 
+  std::vector<AccessRecord> GetStorageRecordsForTopFrameOrigins(
+      const std::vector<url::Origin>& origins);
+
   sql::Database db_;
   sql::MetaTable meta_table_;
   base::FilePath db_file_path_;
