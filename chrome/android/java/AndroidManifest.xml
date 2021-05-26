@@ -1290,6 +1290,14 @@ by a child template that "extends" this file.
                   android:readPermission="android.permission.GLOBAL_SEARCH" />
       </provider>
 
+      <!-- Provider for App to Web impression attribution.
+           TODO(https://crbug.com/1210171): Gate this provider behind a custom permission? -->
+      <provider android:name="org.chromium.chrome.browser.attribution_reporting.AttributionReportingProvider"
+          android:authorities="{{ manifest_package }}.AttributionReporting"
+          android:exported="true"
+          tools:ignore="ExportedContentProvider">
+      </provider>
+
       {% block base_application_definitions %}
       {% endblock %}
       {% block extra_application_definitions_for_test %}

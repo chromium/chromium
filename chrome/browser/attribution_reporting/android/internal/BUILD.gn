@@ -4,11 +4,13 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerFactory.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerImpl.java",
+    "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProviderImpl.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/InputEventValidator.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/NoopAttributionIntentHandler.java",
   ]
   deps = [
     "//base:base_java",
+    "//chrome/android:base_module_java",
     "//chrome/browser/attribution_reporting/android:java",
     "//chrome/browser/flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -41,12 +43,16 @@ android_library("junit_tests") {
 
 android_library("javatests") {
   testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/attribution_reporting/InputEventValidatorManualTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProviderImplTest.java",
+    "java/src/org/chromium/chrome/browser/attribution_reporting/InputEventValidatorManualTest.java",
+  ]
 
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/browser/attribution_reporting/android:java",
     "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_test_support",
     "//content/public/test/android:content_java_test_support",

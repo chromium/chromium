@@ -839,6 +839,11 @@
         android:exported="false"
         android:initOrder="100">
     </provider>  # DIFF-ANCHOR: bc0a9a7a
+    <provider  # DIFF-ANCHOR: c2150e02
+        android:name="org.chromium.chrome.browser.attribution_reporting.AttributionReportingProvider"
+        android:authorities="$PACKAGE.AttributionReporting"
+        android:exported="true">
+    </provider>  # DIFF-ANCHOR: c2150e02
     <provider  # DIFF-ANCHOR: b73a881a
         android:name="org.chromium.chrome.browser.download.DownloadFileProvider"
         android:authorities="$PACKAGE.DownloadFileProvider"
