@@ -91,6 +91,8 @@ class AssistiveSuggester : public SuggestionsSource {
 
   bool IsActionEnabled(AssistiveType action);
 
+  bool WithinGrammarFragment(int cursor_pos, int anchor_pos);
+
   Profile* profile_;
   PersonalInfoSuggester personal_info_suggester_;
   EmojiSuggester emoji_suggester_;

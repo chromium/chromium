@@ -19,6 +19,8 @@
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -447,6 +449,21 @@ void AssistiveSuggester::RecordAssistiveMatchMetrics(const std::u16string& text,
   }
 }
 
+bool AssistiveSuggester::WithinGrammarFragment(int cursor_pos, int anchor_pos) {
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context)
+    return false;
+
+  gfx::Range cursor_range = cursor_pos <= anchor_pos
+                                ? gfx::Range(cursor_pos, anchor_pos)
+                                : gfx::Range(anchor_pos, cursor_pos);
+  absl::optional<ui::GrammarFragment> grammar_fragment_opt =
+      input_context->GetGrammarFragment(cursor_range);
+
+  return grammar_fragment_opt != absl::nullopt;
+}
+
 bool AssistiveSuggester::OnSurroundingTextChanged(const std::u16string& text,
                                                   int cursor_pos,
                                                   int anchor_pos) {
@@ -456,7 +473,8 @@ bool AssistiveSuggester::OnSurroundingTextChanged(const std::u16string& text,
   // Only multi word cares about tracking the current state of the text field
   multi_word_suggester_.OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
 
-  if (!Suggest(text, cursor_pos, anchor_pos)) {
+  if (WithinGrammarFragment(cursor_pos, anchor_pos) ||
+      !Suggest(text, cursor_pos, anchor_pos)) {
     DismissSuggestion();
   }
   return IsSuggestionShown();

@@ -39,6 +39,7 @@
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_engine_handler_interface.h"
 #include "ui/base/ime/chromeos/input_method_chromeos.h"
+#include "ui/base/ime/chromeos/mock_ime_input_context_handler.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_input_flags.h"
@@ -389,6 +390,76 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserEmail) {
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.TimeToAccept.PersonalInfo", 1);
 
+  SetFocus(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+                       DoesntSuggestWhenTheCursorIsWithinGrammarError) {
+  ui::MockIMEInputContextHandler mock_ime_input_context_handler;
+  ui::IMEBridge::Initialize();
+  ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
+
+  mock_ime_input_context_handler.AddGrammarFragments(
+      {ui::GrammarFragment(gfx::Range(0, 16), "test")});
+
+  base::HistogramTester histogram_tester;
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfileIfExists(profile_);
+  signin::SetPrimaryAccount(identity_manager, "johnwayne@me.xyz",
+                            signin::ConsentLevel::kSync);
+
+  engine_->Enable(kEngineIdUs);
+
+  TextInputTestHelper helper(GetBrowserInputMethod());
+  SetUpTextInput(helper);
+
+  const std::u16string text = u"my email is  Peter";
+
+  helper.GetTextInputClient()->InsertText(
+      text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  helper.GetTextInputClient()->SetEditableSelectionRange(gfx::Range(12, 12));
+  helper.WaitForSurroundingTextChanged(text);
+  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Match",
+                                      AssistiveType::kPersonalEmail, 1);
+  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Coverage",
+                                      AssistiveType::kPersonalEmail, 0);
+  SetFocus(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+                       SuggestsWhenTheCursorIsOutsideGrammarError) {
+  ui::MockIMEInputContextHandler mock_ime_input_context_handler;
+  ui::IMEBridge::Initialize();
+  ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
+
+  mock_ime_input_context_handler.AddGrammarFragments(
+      {ui::GrammarFragment(gfx::Range(0, 5), "test")});
+
+  base::HistogramTester histogram_tester;
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfileIfExists(profile_);
+  signin::SetPrimaryAccount(identity_manager, "johnwayne@me.xyz",
+                            signin::ConsentLevel::kSync);
+
+  engine_->Enable(kEngineIdUs);
+
+  TextInputTestHelper helper(GetBrowserInputMethod());
+  SetUpTextInput(helper);
+
+  const std::u16string text = u"my email is  Peter";
+
+  helper.GetTextInputClient()->InsertText(
+      text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  helper.GetTextInputClient()->SetEditableSelectionRange(gfx::Range(12, 12));
+  helper.WaitForSurroundingTextChanged(text);
+  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Match",
+                                      AssistiveType::kPersonalEmail, 1);
+  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Coverage",
+                                      AssistiveType::kPersonalEmail, 1);
   SetFocus(nullptr);
 }
 
