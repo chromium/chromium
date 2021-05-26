@@ -1550,7 +1550,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.CreateAnswer"
-    enum="PeerConnectionSdpUsageCategory" expires_after="2021-11-07">
+    enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1562,7 +1562,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.CreateOffer"
-    enum="PeerConnectionSdpUsageCategory" expires_after="2021-07-01">
+    enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1574,7 +1574,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.SetLocalAnswer"
-    enum="PeerConnectionSdpUsageCategory" expires_after="2021-07-01">
+    enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1587,7 +1587,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.SetLocalOffer"
-    enum="PeerConnectionSdpUsageCategory" expires_after="2021-07-01">
+    enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1600,7 +1600,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.SetRemoteAnswer"
-    enum="PeerConnectionSdpUsageCategory" expires_after="2021-07-01">
+    enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1613,7 +1613,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.SetRemoteOffer"
-    enum="PeerConnectionSdpUsageCategory" expires_after="2021-07-01">
+    enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
