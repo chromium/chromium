@@ -290,15 +290,10 @@ Node* Sanitizer::DropElement(Node* node, DocumentFragment* fragment) {
 Node* Sanitizer::BlockElement(Node* node,
                               DocumentFragment* fragment,
                               ExceptionState& exception_state) {
-  Node* parent = node->parentNode();
+  ContainerNode* parent = node->parentNode();
   Node* next_sibling = node->nextSibling();
-  while (node->hasChildren()) {
-    Node* n = node->firstChild();
-    if (next_sibling) {
-      parent->insertBefore(n, next_sibling, exception_state);
-    } else {
-      parent->appendChild(n, exception_state);
-    }
+  while (Node* child = node->firstChild()) {
+    parent->InsertBefore(child, next_sibling, exception_state);
     if (exception_state.HadException()) {
       return nullptr;
     }
