@@ -292,17 +292,22 @@ suite('InternetDetailMenu', function() {
         assertEquals(profileName, event.detail.networkState.name);
       });
 
-  test('Deep link to remove profile', async function() {
-    addEsimCellularNetwork('100000', '11111111111111111111111111111111');
-    init();
-    await flushAsync();
-    assertElementIsDeepLinked(27, 'removeBtn');
-  });
+  test('Network state is null if no profile is found', async function() {
+    const getTrippleDot = () => {
+      return internetDetailMenu.$$('#moreNetworkDetail');
+    };
+    addEsimCellularNetwork('1', '1');
+    await init();
+    assertTrue(!!getTrippleDot());
 
-  test('Deep link to rename profile', async function() {
-    addEsimCellularNetwork('100000', '11111111111111111111111111111111');
-    init();
+    // Remove current eSIM profile.
+    mojoApi_.resetForTest();
     await flushAsync();
-    assertElementIsDeepLinked(28, 'renameBtn');
+
+    // Trigger change in esim manager listener
+    eSimManagerRemote.notifyProfileChangedForTest(null);
+    await flushAsync();
+
+    assertFalse(!!getTrippleDot());
   });
 });
