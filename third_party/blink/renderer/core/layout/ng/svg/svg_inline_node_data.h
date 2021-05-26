@@ -35,7 +35,7 @@ using SvgTextChunkOffsets = HashMap<const LayoutText*, Vector<unsigned>>;
 
 // SVG-specific data stored in NGInlineNodeData.
 struct SvgInlineNodeData final {
-  Vector<std::pair<unsigned, NGSVGCharacterData>> character_data_list;
+  Vector<std::pair<unsigned, NGSvgCharacterData>> character_data_list;
   Vector<SvgTextContentRange> text_length_range_list;
   Vector<SvgTextContentRange> text_path_range_list;
   SvgTextChunkOffsets chunk_offsets;

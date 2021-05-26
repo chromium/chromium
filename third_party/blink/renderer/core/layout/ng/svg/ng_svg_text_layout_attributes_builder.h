@@ -27,16 +27,16 @@ class NGInlineNode;
 // textLength.
 //
 // [1] https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
-class NGSVGTextLayoutAttributesBuilder final {
+class NGSvgTextLayoutAttributesBuilder final {
   STACK_ALLOCATED();
 
  public:
-  explicit NGSVGTextLayoutAttributesBuilder(NGInlineNode ifc);
+  explicit NGSvgTextLayoutAttributesBuilder(NGInlineNode ifc);
 
   void Build(const String& ifc_text_content, const Vector<NGInlineItem>& items);
 
   // This function can be called just once after Build().
-  Vector<std::pair<unsigned, NGSVGCharacterData>> CharacterDataList();
+  Vector<std::pair<unsigned, NGSvgCharacterData>> CharacterDataList();
   // This function can be called just once after Build().
   Vector<SvgTextContentRange> TextLengthRangeList();
   // This function can be called just once after Build().
@@ -47,9 +47,9 @@ class NGSVGTextLayoutAttributesBuilder final {
 
   // The result of Build().
   // A list of a pair of addressable character index and an
-  // NGSVGCharacterData. This is named 'resolved' because this is
+  // NGSvgCharacterData. This is named 'resolved' because this is
   // the outcome of '3. Resolve character positioning'.
-  Vector<std::pair<unsigned, NGSVGCharacterData>> resolved_;
+  Vector<std::pair<unsigned, NGSvgCharacterData>> resolved_;
 
   // The result of Build().
   // A list of a pair of start addressable character index and end

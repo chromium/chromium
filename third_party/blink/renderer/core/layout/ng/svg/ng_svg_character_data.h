@@ -13,11 +13,11 @@ namespace blink {
 
 // An extension of blink::SVGCharacterData for LayoutNG.
 // This struct adds |anchored_chunk| data member to SVGCharacterData.
-struct NGSVGCharacterData final : public SVGCharacterData {
+struct NGSvgCharacterData final : public SVGCharacterData {
   bool anchored_chunk = false;
 };
 
-std::ostream& operator<<(std::ostream& ostream, const NGSVGCharacterData& data);
+std::ostream& operator<<(std::ostream& ostream, const NGSvgCharacterData& data);
 
 }  // namespace blink
 

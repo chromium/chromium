@@ -116,7 +116,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
       const LayoutBlockFlow* block_flow);
 
   // This function is available after PrepareLayout(), only for SVG <text>.
-  const Vector<std::pair<unsigned, NGSVGCharacterData>>& SVGCharacterDataList()
+  const Vector<std::pair<unsigned, NGSvgCharacterData>>& SvgCharacterDataList()
       const;
   // This function is available after PrepareLayout(), only for SVG <text>.
   const Vector<SvgTextContentRange>& SvgTextLengthRangeList() const;

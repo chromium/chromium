@@ -194,7 +194,7 @@ class LayoutAttributesStack final {
   HeapVector<Member<LayoutAttributesIterator>> stack_;
 };
 
-bool HasUpdated(const NGSVGCharacterData& data) {
+bool HasUpdated(const NGSvgCharacterData& data) {
   return data.HasX() || data.HasY() || data.HasDx() || data.HasDy() ||
          data.HasRotate() || data.anchored_chunk;
 }
@@ -218,7 +218,7 @@ bool HasValidTextLength(const LayoutObject& layout_object) {
 
 }  // anonymous namespace
 
-NGSVGTextLayoutAttributesBuilder::NGSVGTextLayoutAttributesBuilder(
+NGSvgTextLayoutAttributesBuilder::NGSvgTextLayoutAttributesBuilder(
     NGInlineNode ifc)
     : block_flow_(To<LayoutBlockFlow>(ifc.GetLayoutBox())) {}
 
@@ -229,7 +229,7 @@ NGSVGTextLayoutAttributesBuilder::NGSVGTextLayoutAttributesBuilder(
 // resolve_dy, "rotate" of result[], and "anchored chunk" of result[].
 //
 // [1]: https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
-void NGSVGTextLayoutAttributesBuilder::Build(
+void NGSvgTextLayoutAttributesBuilder::Build(
     const String& ifc_text_content,
     const Vector<NGInlineItem>& items) {
   LayoutAttributesStack attr_stack;
@@ -294,7 +294,7 @@ void NGSVGTextLayoutAttributesBuilder::Build(
 
     StringView item_string(ifc_text_content, item.StartOffset(), item.Length());
     for (unsigned i = 0; i < item.Length();) {
-      NGSVGCharacterData data;
+      NGSvgCharacterData data;
 
       // 2.2. Set the "anchored chunk" flag of result[index] to true.
       // 1.6.1.1. If i < new_check_count, then set the "anchored chunk" flag
@@ -382,18 +382,18 @@ void NGSVGTextLayoutAttributesBuilder::Build(
   attr_stack.Pop();
 }
 
-Vector<std::pair<unsigned, NGSVGCharacterData>>
-NGSVGTextLayoutAttributesBuilder::CharacterDataList() {
+Vector<std::pair<unsigned, NGSvgCharacterData>>
+NGSvgTextLayoutAttributesBuilder::CharacterDataList() {
   return std::move(resolved_);
 }
 
 Vector<SvgTextContentRange>
-NGSVGTextLayoutAttributesBuilder::TextLengthRangeList() {
+NGSvgTextLayoutAttributesBuilder::TextLengthRangeList() {
   return std::move(text_length_range_list_);
 }
 
 Vector<SvgTextContentRange>
-NGSVGTextLayoutAttributesBuilder::TextPathRangeList() {
+NGSvgTextLayoutAttributesBuilder::TextPathRangeList() {
   return std::move(text_path_range_list_);
 }
 

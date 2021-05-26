@@ -9,10 +9,10 @@
 namespace blink {
 
 std::ostream& operator<<(std::ostream& ostream,
-                         const NGSVGCharacterData& data) {
+                         const NGSvgCharacterData& data) {
   if (data.HasX() || data.HasY() || data.HasDx() || data.HasDy() ||
       data.HasRotate() || data.anchored_chunk) {
-    ostream << "NGSVGCharacterData {";
+    ostream << "NGSvgCharacterData {";
     if (data.HasX())
       ostream << "x=" << data.x << " ";
     if (data.HasY())
@@ -27,7 +27,7 @@ std::ostream& operator<<(std::ostream& ostream,
       ostream << "anchored_chunk";
     ostream << "}";
   } else {
-    ostream << "NGSVGCharacterData {default}";
+    ostream << "NGSvgCharacterData {default}";
   }
   return ostream;
 }

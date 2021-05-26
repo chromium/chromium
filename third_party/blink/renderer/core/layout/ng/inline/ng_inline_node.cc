@@ -1011,7 +1011,7 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
     CollectInlinesInternal(&items_builder, nullptr);
     String ifc_text_content = items_builder.ToString();
 
-    NGSVGTextLayoutAttributesBuilder svg_attr_builder(*this);
+    NGSvgTextLayoutAttributesBuilder svg_attr_builder(*this);
     svg_attr_builder.Build(ifc_text_content, items);
 
     auto svg_data = std::make_unique<SvgInlineNodeData>();
@@ -1897,8 +1897,8 @@ bool NGInlineNode::ShouldReportLetterSpacingUseCounterForTesting(
                                              block_flow);
 }
 
-const Vector<std::pair<unsigned, NGSVGCharacterData>>&
-NGInlineNode::SVGCharacterDataList() const {
+const Vector<std::pair<unsigned, NGSvgCharacterData>>&
+NGInlineNode::SvgCharacterDataList() const {
   DCHECK(IsSVGText());
   return Data().svg_node_data_->character_data_list;
 }

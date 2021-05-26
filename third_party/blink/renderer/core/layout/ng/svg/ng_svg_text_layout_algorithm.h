@@ -12,11 +12,11 @@ namespace blink {
 
 struct SvgTextContentRange;
 
-class NGSVGTextLayoutAlgorithm {
+class NGSvgTextLayoutAlgorithm {
   STACK_ALLOCATED();
 
  public:
-  NGSVGTextLayoutAlgorithm(NGInlineNode node, WritingMode writing_mode);
+  NGSvgTextLayoutAlgorithm(NGInlineNode node, WritingMode writing_mode);
 
   // Apply SVG specific text layout algorithm to |items|.
   // Text items in |items| will be converted to kSVGText type.
@@ -54,7 +54,7 @@ class NGSVGTextLayoutAlgorithm {
   // "horizontal" flag defined in the specification.
   bool horizontal_;
 
-  struct NGSVGPerCharacterInfo {
+  struct SvgPerCharacterInfo {
     absl::optional<float> x;
     absl::optional<float> y;
     absl::optional<float> rotate;
@@ -71,7 +71,7 @@ class NGSVGTextLayoutAlgorithm {
   };
   // This data member represents "result" defined in the specification, but it
   // contains only addressable characters.
-  Vector<NGSVGPerCharacterInfo> result_;
+  Vector<SvgPerCharacterInfo> result_;
 
   // This data member represents "CSS_positions" defined in the specification,
   // but it contains only addressable characters.
