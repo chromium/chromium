@@ -140,6 +140,10 @@ class MockHoldingSpaceClient : public HoldingSpaceClient {
               (const base::FilePath& file_path),
               (override));
   MOCK_METHOD(void,
+              CancelItems,
+              (const std::vector<const HoldingSpaceItem*>& items),
+              (override));
+  MOCK_METHOD(void,
               CopyImageToClipboard,
               (const HoldingSpaceItem& item, SuccessCallback callback),
               (override));

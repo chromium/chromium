@@ -76,6 +76,13 @@ void HoldingSpaceClientImpl::AddScreenRecording(
   GetHoldingSpaceKeyedService(profile_)->AddScreenRecording(file_path);
 }
 
+void HoldingSpaceClientImpl::CancelItems(
+    const std::vector<const HoldingSpaceItem*>& items) {
+  auto* const service = GetHoldingSpaceKeyedService(profile_);
+  for (const HoldingSpaceItem* item : items)
+    service->CancelItem(item);
+}
+
 void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
                                                   SuccessCallback callback) {
   holding_space_metrics::RecordItemAction(

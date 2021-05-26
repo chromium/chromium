@@ -483,6 +483,9 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command_id, int event_flags) {
   DCHECK_GE(selection.size(), 1u);
 
   switch (static_cast<HoldingSpaceCommandId>(command_id)) {
+    case HoldingSpaceCommandId::kCancelItem:
+      HoldingSpaceController::Get()->client()->CancelItems(GetItems(selection));
+      break;
     case HoldingSpaceCommandId::kCopyImageToClipboard:
       DCHECK_EQ(selection.size(), 1u);
       HoldingSpaceController::Get()->client()->CopyImageToClipboard(
@@ -530,11 +533,27 @@ void HoldingSpaceViewDelegate::OnTabletModeEnded() {
   UpdateSelectionUi();
 }
 
+// TODO(crbug.com/1184438): Handle i18n and add icons for in-progress commands.
 ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
   std::vector<const HoldingSpaceItemView*> selection = GetSelection();
   DCHECK_GE(selection.size(), 1u);
+
+  const bool is_cancelable = std::all_of(selection.begin(), selection.end(),
+                                         [](const HoldingSpaceItemView* view) {
+                                           return view->item()->IsInProgress();
+                                         });
+
+  if (is_cancelable) {
+    // The "Cancel" command should only be present if *all* of the selected
+    // holding space items are cancelable.
+    context_menu_model_->AddItem(
+        static_cast<int>(HoldingSpaceCommandId::kCancelItem), u"[I18N] Cancel");
+
+    // NOTE: The "Cancel" command is separated from all other commands.
+    context_menu_model_->AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
+  }
 
   if (selection.size() == 1u) {
     // The "Show in folder" command should only be present if there is only one

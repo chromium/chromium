@@ -300,6 +300,12 @@ void HoldingSpaceKeyedService::AddItemOfType(
       base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
 }
 
+void HoldingSpaceKeyedService::CancelItem(const HoldingSpaceItem* item) {
+  // Currently it is only possible to cancel download type items.
+  if (HoldingSpaceItem::IsDownload(item->type()) && downloads_delegate_)
+    downloads_delegate_->Cancel(item);
+}
+
 void HoldingSpaceKeyedService::Shutdown() {
   ShutdownDelegates();
 }
@@ -351,8 +357,10 @@ void HoldingSpaceKeyedService::InitializeDelegates() {
     return;
 
   // The `HoldingSpaceDownloadsDelegate` monitors the status of downloads.
-  delegates_.push_back(std::make_unique<HoldingSpaceDownloadsDelegate>(
-      this, &holding_space_model_));
+  auto downloads_delegate = std::make_unique<HoldingSpaceDownloadsDelegate>(
+      this, &holding_space_model_);
+  downloads_delegate_ = downloads_delegate.get();
+  delegates_.push_back(std::move(downloads_delegate));
 
   // The `HoldingSpaceFileSystemDelegate` monitors the file system for changes.
   delegates_.push_back(std::make_unique<HoldingSpaceFileSystemDelegate>(
@@ -373,6 +381,7 @@ void HoldingSpaceKeyedService::InitializeDelegates() {
 }
 
 void HoldingSpaceKeyedService::ShutdownDelegates() {
+  downloads_delegate_ = nullptr;
   delegates_.clear();
 }
 

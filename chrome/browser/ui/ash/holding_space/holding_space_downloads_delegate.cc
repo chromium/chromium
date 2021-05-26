@@ -61,6 +61,10 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
   InProgressDownload& operator=(const InProgressDownload&) = delete;
   ~InProgressDownload() override = default;
 
+  // Cancels the underlying `download_item_`. NOTE: This is expected to be
+  // invoked in direct response to an explicit user action.
+  void Cancel() { download_item_->Cancel(/*from_user=*/true); }
+
   // Returns the file path associated with the underlying `download_item_`.
   // NOTE: The file path may be empty before a target file path has been picked.
   const base::FilePath& GetFilePath() const {
@@ -159,6 +163,17 @@ HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() {
 void HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(
     content::DownloadManager* download_manager) {
   download_manager_for_testing = download_manager;
+}
+
+// TODO(crbug.com/1184438): Handle Lacros downloads.
+void HoldingSpaceDownloadsDelegate::Cancel(const HoldingSpaceItem* item) {
+  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
+  for (const auto& in_progress_download : in_progress_downloads_) {
+    if (in_progress_download->GetHoldingSpaceItem() == item) {
+      in_progress_download->Cancel();
+      return;
+    }
+  }
 }
 
 void HoldingSpaceDownloadsDelegate::Init() {

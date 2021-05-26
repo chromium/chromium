@@ -44,6 +44,9 @@ class HoldingSpaceDownloadsDelegate
   static void SetDownloadManagerForTesting(
       content::DownloadManager* download_manager);
 
+  // Attempts to cancel the download underlying the specified `item`.
+  void Cancel(const HoldingSpaceItem* item);
+
  private:
   class InProgressDownload;
 
