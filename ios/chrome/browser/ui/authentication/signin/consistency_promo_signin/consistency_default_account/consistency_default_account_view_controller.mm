@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -140,6 +141,7 @@ constexpr CGFloat kTitleSubtitleMargin = 0.;
   UILabel* label = [[UILabel alloc] init];
   label.text =
       l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
+  label.textColor = [UIColor colorNamed:kGrey700Color];
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   label.numberOfLines = 0;
   [self.contentView addArrangedSubview:label];
@@ -148,6 +150,8 @@ constexpr CGFloat kTitleSubtitleMargin = 0.;
   // Add IdentityButtonControl for the default identity.
   self.identityButtonControl =
       [[IdentityButtonControl alloc] initWithFrame:CGRectZero];
+  self.identityButtonControl.backgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   self.identityButtonControl.arrowDirection = IdentityButtonControlArrowRight;
   self.identityButtonControl.avatarSize = kAvatarSize;
   self.identityButtonControl.minimumTopMargin = kMinimumTopMargin;
