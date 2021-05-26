@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_header_item.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,6 +46,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.view.backgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   self.preferredContentSize =
       CGSizeMake(kViewControllerWidth, kViewControllerHeight);
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
