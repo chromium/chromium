@@ -399,7 +399,6 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
                                        ParserPrefetchPolicy prefetch_policy)
     : ScriptableDocumentParser(document, content_policy),
       options_(&document),
-      reentry_permit_(HTMLParserReentryPermit::Create()),
       token_(sync_policy != kAllowAsynchronousParsing
                  ? std::make_unique<HTMLToken>()
                  : nullptr),
@@ -478,6 +477,7 @@ void HTMLDocumentParser::Dispose() {
 }
 
 void HTMLDocumentParser::Trace(Visitor* visitor) const {
+  visitor->Trace(reentry_permit_);
   visitor->Trace(tree_builder_);
   visitor->Trace(parser_scheduler_);
   visitor->Trace(script_runner_);

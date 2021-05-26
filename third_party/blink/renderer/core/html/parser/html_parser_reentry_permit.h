@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_REENTRY_PERMIT_H_
 
 #include "base/macros.h"
-#include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -36,9 +36,9 @@ namespace blink {
 // flag. However recursively parsing end script tags, or running
 // custom element constructors, does set the parser pause flag.
 class HTMLParserReentryPermit final
-    : public RefCounted<HTMLParserReentryPermit> {
+    : public GarbageCollected<HTMLParserReentryPermit> {
  public:
-  static scoped_refptr<HTMLParserReentryPermit> Create();
+  HTMLParserReentryPermit();
   ~HTMLParserReentryPermit() = default;
 
   unsigned ScriptNestingLevel() const { return script_nesting_level_; }
@@ -75,14 +75,14 @@ class HTMLParserReentryPermit final
     return ScriptNestingLevelIncrementer(this);
   }
 
- private:
-  HTMLParserReentryPermit();
+  void Trace(Visitor*) const {}
 
+ private:
   // https://html.spec.whatwg.org/C/#script-nesting-level
-  unsigned script_nesting_level_;
+  unsigned script_nesting_level_ = 0;
 
   // https://html.spec.whatwg.org/C/#parser-pause-flag
-  bool parser_pause_flag_;
+  bool parser_pause_flag_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(HTMLParserReentryPermit);
 };

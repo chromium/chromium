@@ -135,7 +135,7 @@ class HTMLParserScriptRunner final
   PendingScript* TryTakeReadyScriptWaitingForParsing(
       HeapDeque<Member<PendingScript>>* waiting_scripts);
 
-  scoped_refptr<HTMLParserReentryPermit> reentry_permit_;
+  Member<HTMLParserReentryPermit> reentry_permit_;
   Member<Document> document_;
   Member<HTMLParserScriptRunnerHost> host_;
 

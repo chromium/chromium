@@ -269,7 +269,7 @@ class HTMLConstructionSite final {
       const QualifiedName&,
       const AtomicString& is);
 
-  HTMLParserReentryPermit* reentry_permit_;
+  Member<HTMLParserReentryPermit> reentry_permit_;
   Member<Document> document_;
 
   // This is the root ContainerNode to which the parser attaches all newly

@@ -122,7 +122,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   bool IsParsingAtLineNumber() const final;
   OrdinalNumber LineNumber() const final;
 
-  HTMLParserReentryPermit* ReentryPermit() { return reentry_permit_.get(); }
+  HTMLParserReentryPermit* ReentryPermit() { return reentry_permit_.Get(); }
 
   struct TokenizedChunk {
     USING_FAST_MALLOC(TokenizedChunk);
@@ -250,7 +250,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
 
   HTMLParserOptions options_;
   HTMLInputStream input_;
-  scoped_refptr<HTMLParserReentryPermit> reentry_permit_;
+  Member<HTMLParserReentryPermit> reentry_permit_ =
+      MakeGarbageCollected<HTMLParserReentryPermit>();
 
   std::unique_ptr<HTMLToken> token_;
   std::unique_ptr<HTMLTokenizer> tokenizer_;

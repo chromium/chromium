@@ -396,6 +396,7 @@ HTMLConstructionSite::~HTMLConstructionSite() {
 }
 
 void HTMLConstructionSite::Trace(Visitor* visitor) const {
+  visitor->Trace(reentry_permit_);
   visitor->Trace(document_);
   visitor->Trace(attachment_root_);
   visitor->Trace(head_);
