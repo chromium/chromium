@@ -44,26 +44,7 @@ class PLATFORM_EXPORT CullRect {
 
   // Applies one transform to the cull rect. Before this function is called,
   // the cull rect is in the space of the parent the transform node.
-  // For CompositeAfterPaint, when the transform is a scroll translation, the
-  // cull rect is converted in the following steps:
-  // 1. it's clipped by the container rect,
-  // 2. transformed by inverse of the scroll translation,
-  // 3. expanded by thousands of pixels for composited scrolling.
-  // 4. clipped by the contents rect.
-  // TODO(wangxianzhu): Remove this function for CullRectUpdate.
   void ApplyTransform(const TransformPaintPropertyNode&);
-
-  // For CompositeAfterPaint only. Applies transforms from |source| (not
-  // included) to |destination| (included). For each scroll translation, the
-  // cull rect is converted as described in ApplyTransform(). If |old_cull_rect|
-  // is provided, and the cull rect converted by the last scroll translation
-  // doesn't cover the whole scrolling contents, and the new cull rect doesn't
-  // change enough (by hundreds of pixels) from |old_cull_rect|, the cull rect
-  // will be set to |old_cull_rect| to avoid repaint on each composited scroll.
-  // TODO(wangxianzhu): Remove this function for CullRectUpdate.
-  void ApplyTransforms(const TransformPaintPropertyNode& source,
-                       const TransformPaintPropertyNode& destination,
-                       const absl::optional<CullRect>& old_cull_rect);
 
   // For CullRectUpdate only. Similar to the above but also applies clips and
   // expands for all directly composited transforms (including scrolling and
@@ -100,7 +81,6 @@ class PLATFORM_EXPORT CullRect {
       const TransformPaintPropertyNode& root_transform,
       const TransformPaintPropertyNode& scroll_translation);
 
-  void ApplyTransformWithoutExpansion(const TransformPaintPropertyNode&);
   // Returns false if the rect is clipped to be invisible. Otherwise returns
   // true, even if the cull rect is empty due to a special 3d transform in case
   // later 3d transforms make the cull rect visible again.

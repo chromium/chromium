@@ -277,35 +277,7 @@ void PaintLayerPainter::AdjustForPaintProperties(
       return;
 
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      auto& cull_rect = painting_info.cull_rect;
-      // CullRect::ApplyTransforms() requires the cull rect in the source
-      // transform space. Convert cull_rect from the root layer's local space.
-      //
-      // TODO(paint-dev): Become block fragmentation aware. Just using the first
-      // fragment seems wrong.
-      cull_rect.MoveBy(RoundedIntPoint(first_root_fragment.PaintOffset()));
-      absl::optional<CullRect> old_cull_rect;
-      if (!paint_layer_.SelfOrDescendantNeedsRepaint() &&
-          !RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-        old_cull_rect = paint_layer_.PreviousCullRect();
-        // Convert old_cull_rect into the layer's transform space.
-        old_cull_rect->MoveBy(RoundedIntPoint(first_fragment.PaintOffset()));
-      }
-      if (paint_flags & kPaintLayerPaintingOverflowContents) {
-        // Use PostScrollTranslation as the source transform to avoid clipping
-        // of the scrolling contents in CullRect::ApplyTransforms().
-        source_transform = &first_root_fragment.PostScrollTranslation();
-        // Map cull_rect into scrolling contents space (i.e. source_transform).
-        if (const auto* properties = first_root_fragment.PaintProperties()) {
-          if (const auto* scroll_translation = properties->ScrollTranslation())
-            cull_rect.Move(-scroll_translation->Translation2D());
-        }
-      }
-      cull_rect.ApplyTransforms(source_transform->Unalias(),
-                                destination_transform.Unalias(), old_cull_rect);
-      // Convert cull_rect from the layer's transform space to the layer's local
-      // space.
-      cull_rect.MoveBy(-RoundedIntPoint(first_fragment.PaintOffset()));
+      DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
     } else if (!painting_info.cull_rect.IsInfinite()) {
       auto rect = painting_info.cull_rect.Rect();
       const FragmentData& primary_stitching_fragment =
