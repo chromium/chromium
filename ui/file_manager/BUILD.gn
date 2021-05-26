@@ -84,8 +84,8 @@ preprocess_if_expr("preprocess_static") {
     "audio_player/js/audio_player.js",
     "audio_player/js/background.js",
     "audio_player/js/error_util.js",
-    "audio_player/js/main.m.js",
-    "audio_player/js/main_background.m.js",
+    "audio_player/js/main.js",
+    "audio_player/js/main_background.js",
     "audio_player/js/metadata_worker.js",
     "audio_player/js/test_util.js",
 
@@ -410,8 +410,8 @@ generate_grd("build_grd") {
 
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
   input_files = [
-    "audio_player/js/main.m.rollup.js",
-    "audio_player/js/main_background.m.rollup.js",
+    "audio_player/js/main.rollup.js",
+    "audio_player/js/main_background.rollup.js",
     "audio_player/js/metadata_worker.rollup.js",
 
     # Fix broken images:
@@ -422,8 +422,8 @@ generate_grd("build_grd") {
   ]
 
   resource_path_rewrites = [
-    "audio_player/js/main.m.rollup.js|audio_player/js/main.m.js",
-    "audio_player/js/main_background.m.rollup.js|audio_player/js/main_background.m.js",
+    "audio_player/js/main.rollup.js|audio_player/js/main.js",
+    "audio_player/js/main_background.rollup.js|audio_player/js/main_background.js",
     "audio_player/js/metadata_worker.rollup.js|audio_player/js/metadata_worker.js",
   ]
 

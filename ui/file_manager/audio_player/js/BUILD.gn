@@ -18,8 +18,8 @@ group("js_modules") {
     ":audio_player",
     ":background",
     ":error_util",
-    ":main.m",
-    ":main_background.m",
+    ":main",
+    ":main_background",
     ":test_util",
   ]
 }
@@ -47,7 +47,7 @@ js_type_check("closure_compile_polymer") {
 
   deps = [
     ":audio_player",
-    ":main.m",
+    ":main",
   ]
 }
 
@@ -106,11 +106,11 @@ js_library("test_util") {
   ]
 }
 
-js_library("main.m") {
+js_library("main") {
   deps = [ ":audio_player" ]
 }
 
-js_library("main_background.m") {
+js_library("main_background") {
   deps = [
     ":background",
     ":error_util",
@@ -132,9 +132,9 @@ optimize_webui("build") {
   host = "audio_player"
 
   input = preprocess_folder
-  js_module_in_files = [ "main.m.js" ]
+  js_module_in_files = [ "main.js" ]
 
-  js_out_files = [ "main.m.rollup.js" ]
+  js_out_files = [ "main.rollup.js" ]
 
   external_paths = [
     "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
@@ -142,7 +142,7 @@ optimize_webui("build") {
   ]
 
   deps = [
-    ":main.m",
+    ":main",
     "//ui/file_manager:preprocess_generated",
     "//ui/file_manager:preprocess_static",
     "//ui/webui/resources:preprocess",
@@ -173,9 +173,9 @@ optimize_webui("build_background") {
   host = "audio_player"
 
   input = preprocess_folder
-  js_module_in_files = [ "main_background.m.js" ]
+  js_module_in_files = [ "main_background.js" ]
 
-  js_out_files = [ "main_background.m.rollup.js" ]
+  js_out_files = [ "main_background.rollup.js" ]
 
   external_paths = [
     "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
@@ -183,7 +183,7 @@ optimize_webui("build_background") {
   ]
 
   deps = [
-    ":main_background.m",
+    ":main_background",
     "//ui/file_manager:preprocess_generated",
     "//ui/file_manager:preprocess_static",
     "//ui/webui/resources:preprocess",

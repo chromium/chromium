@@ -106,7 +106,7 @@
       <!-- The AudioPlayer app pages and scripts. -->
       <include name="IDR_AUDIO_PLAYER_MANIFEST" file="audio_player/manifest.json" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_BACKGROUND_HTML" file="audio_player/background.html" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_MODULE" file="audio_player/audio_player_module.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
+      <include name="IDR_AUDIO_PLAYER_MODULE" file="audio_player/audio_player.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_ICON_FAVICON_16" file="audio_player/icons/audio-player-favicon-16.png" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_ICON_FAVICON_32" file="audio_player/icons/audio-player-favicon-32.png" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_ICON_16" file="audio_player/icons/audio-player-16.png" type="BINDATA" />

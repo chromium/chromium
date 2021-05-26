@@ -13,4 +13,4 @@ window.reload = reload;
 window.unload = unload;
 window.AudioPlayer = AudioPlayer;
 
-console.log('AudioPlayer main.m.js loaded');
+console.log('AudioPlayer main.js loaded');
