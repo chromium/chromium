@@ -211,10 +211,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   void UpdateControlVisibility(AppListViewState app_list_state,
                                bool is_in_drag);
 
-  // Overridden from ui::EventHandler:
-  void OnGestureEvent(ui::GestureEvent* event) override;
-  void OnMouseEvent(ui::MouseEvent* event) override;
-
   // Returns true if a touch or click lies between two occupied tiles.
   bool EventIsBetweenOccupiedTiles(const ui::LocatedEvent* event);
 
@@ -777,10 +773,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Invoked when |host_drag_start_timer_| fires.
   void OnHostDragStartTimerFired();
-
-  // Indicates whether the drag event (from the gesture or mouse) should be
-  // handled by AppsGridView.
-  bool ShouldHandleDragEvent(const ui::LocatedEvent& event);
 
   // Create a layer mask for graident alpha when the feature is enabled.
   void MaybeCreateGradientMask();

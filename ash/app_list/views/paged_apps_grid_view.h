@@ -8,6 +8,7 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_export.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace gfx {
 class Vector2d;
@@ -33,13 +34,34 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView {
   void HandleScrollFromAppListView(const gfx::Vector2d& offset,
                                    ui::EventType type);
 
+  // ui::EventHandler:
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
+
   // AppsGridView:
   gfx::Insets GetTilePadding() const override;
   gfx::Size GetTileGridSize() const override;
 
  private:
+  // Indicates whether the drag event (from the gesture or mouse) should be
+  // handled by PagedAppsGridView.
+  bool ShouldHandleDragEvent(const ui::LocatedEvent& event);
+
   // Created by AppListMainView, owned by views hierarchy.
   ContentsView* const contents_view_;
+
+  // Whether the grid is in mouse drag. Used for between-item drags that move
+  // the entire grid, not for app icon drags.
+  bool is_in_mouse_drag_ = false;
+
+  // The initial mouse drag location in root window coordinate. Updates when the
+  // drag on PagedAppsGridView starts. Used for between-item drags that move the
+  // entire grid, not for app icon drags.
+  gfx::PointF mouse_drag_start_point_;
+
+  // The last mouse drag location in root window coordinate. Used for
+  // between-item drags that move the entire grid, not for app icon drags.
+  gfx::PointF last_mouse_drag_point_;
 };
 
 }  // namespace ash
