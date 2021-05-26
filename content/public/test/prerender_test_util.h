@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_PRERENDER_TEST_UTIL_H_
 #define CONTENT_PUBLIC_TEST_PRERENDER_TEST_UTIL_H_
 
+#include "base/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test_utils.h"
@@ -91,6 +92,10 @@ class PrerenderTestHelper {
   // RenderFrameHost::kNoFrameTreeNodeId upon failure.
   int GetHostForUrl(const GURL& gurl);
 
+  // Waits until a prerender has finished loading. Note: this may not be called
+  // when the load fails (e.g. because it was blocked by a NavigationThrottle,
+  // or the WebContents is destroyed). If the prerender doesn't yet exist, this
+  // will wait until it is triggered.
   void WaitForPrerenderLoadCompletion(const GURL& gurl);
   void WaitForPrerenderLoadCompletion(int host_id);
 

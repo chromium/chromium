@@ -1514,12 +1514,21 @@ class TestNavigationManager : public WebContentsObserver {
 
   ~TestNavigationManager() override;
 
+  // Waits until the navigation starts. This is called from
+  // WebContentsObserver::DidStartNavigation and is run before any navigation
+  // throttles are registered.
+  void WaitForDidStartNavigation();
+
   // Waits until the navigation request is ready to be sent to the network
-  // stack. Returns false if the request was aborted before starting.
+  // stack. This will wait until all NavigationThrottles have proceeded through
+  // WillStartRequest. Returns false if the request was aborted before
+  // starting.
   WARN_UNUSED_RESULT bool WaitForRequestStart();
 
-  // Waits until the navigation response's headers have been received. Returns
-  // false if the request was aborted before getting a response.
+  // Waits until the navigation response's headers have been received. This
+  // will wait until all NavigationThrottles have proceeded through
+  // WillProcessResponse. Returns false if the request was aborted before
+  // getting a response.
   WARN_UNUSED_RESULT bool WaitForResponse();
 
   // Waits until the navigation has been finished. Will automatically resume
@@ -1553,9 +1562,10 @@ class TestNavigationManager : public WebContentsObserver {
  private:
   enum class NavigationState {
     INITIAL = 0,
-    STARTED = 1,
-    RESPONSE = 2,
-    FINISHED = 3,
+    WILL_START = 1,
+    STARTED = 2,
+    RESPONSE = 3,
+    FINISHED = 4,
   };
 
   // WebContentsObserver:
@@ -1580,10 +1590,10 @@ class TestNavigationManager : public WebContentsObserver {
   void OnNavigationStateChanged();
 
   const GURL url_;
-  NavigationRequest* request_;
-  bool navigation_paused_;
-  NavigationState current_state_;
-  NavigationState desired_state_;
+  NavigationRequest* request_ = nullptr;
+  bool navigation_paused_ = false;
+  NavigationState current_state_ = NavigationState::INITIAL;
+  NavigationState desired_state_ = NavigationState::WILL_START;
   bool was_committed_ = false;
   bool was_successful_ = false;
   base::OnceClosure quit_closure_;

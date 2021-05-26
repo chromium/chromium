@@ -1555,6 +1555,7 @@ if (!is_android) {
       "../browser/permissions/permissions_browsertest.cc",
       "../browser/permissions/permissions_browsertest.h",
       "../browser/picture_in_picture/picture_in_picture_window_controller_browsertest.cc",
+      "../browser/plugins/pdf_iframe_navigation_throttle_browsertest.cc",
       "../browser/plugins/plugin_response_interceptor_url_loader_throttle_browsertest.cc",
       "../browser/policy/cloud/chrome_browser_cloud_management_browsertest.cc",
       "../browser/policy/cloud/cloud_policy_browsertest.cc",

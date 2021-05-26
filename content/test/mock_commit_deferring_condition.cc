@@ -4,6 +4,8 @@
 
 #include "content/test/mock_commit_deferring_condition.h"
 
+#include "content/browser/renderer_host/navigation_request.h"
+
 namespace content {
 
 MockCommitDeferringConditionWrapper::MockCommitDeferringConditionWrapper(
@@ -64,6 +66,20 @@ MockCommitDeferringCondition::WillCommitNavigation(base::OnceClosure resume) {
 base::WeakPtr<MockCommitDeferringCondition>
 MockCommitDeferringCondition::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+MockCommitDeferringConditionInstaller::MockCommitDeferringConditionInstaller(
+    WebContents* web_contents,
+    std::unique_ptr<MockCommitDeferringCondition> condition)
+    : WebContentsObserver(web_contents), condition_(std::move(condition)) {}
+
+MockCommitDeferringConditionInstaller::
+    ~MockCommitDeferringConditionInstaller() = default;
+
+void MockCommitDeferringConditionInstaller::DidStartNavigation(
+    NavigationHandle* handle) {
+  static_cast<NavigationRequest*>(handle)
+      ->RegisterCommitDeferringConditionForTesting(std::move(condition_));
 }
 
 }  //  namespace content

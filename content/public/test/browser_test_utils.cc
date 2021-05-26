@@ -2908,24 +2908,23 @@ void FrameDeletedObserver::Wait() {
 
 TestNavigationManager::TestNavigationManager(WebContents* web_contents,
                                              const GURL& url)
-    : WebContentsObserver(web_contents),
-      url_(url),
-      request_(nullptr),
-      navigation_paused_(false),
-      current_state_(NavigationState::INITIAL),
-      desired_state_(NavigationState::STARTED) {}
+    : WebContentsObserver(web_contents), url_(url) {}
 
 TestNavigationManager::~TestNavigationManager() {
   if (navigation_paused_)
     request_->GetNavigationThrottleRunnerForTesting()->CallResumeForTesting();
 }
 
+void TestNavigationManager::WaitForDidStartNavigation() {
+  if (current_state_ >= NavigationState::WILL_START)
+    return;
+
+  DCHECK_EQ(desired_state_, NavigationState::WILL_START);
+  WaitForDesiredState();
+}
+
 bool TestNavigationManager::WaitForRequestStart() {
-  // This is the default desired state. A browser-initiated navigation can reach
-  // this state synchronously, so the TestNavigationManager is set to always
-  // pause navigations at WillStartRequest. This ensures the user can always
-  // call WaitForWillStartRequest.
-  DCHECK(desired_state_ == NavigationState::STARTED);
+  desired_state_ = NavigationState::STARTED;
   return WaitForDesiredState();
 }
 
@@ -2964,6 +2963,18 @@ void TestNavigationManager::DidStartNavigation(NavigationHandle* handle) {
       base::BindOnce(&TestNavigationManager::OnWillProcessResponse,
                      weak_factory_.GetWeakPtr()));
   request_->RegisterThrottleForTesting(std::move(throttle));
+
+  current_state_ = NavigationState::WILL_START;
+
+  OnNavigationStateChanged();
+
+  // This is the default desired state. A browser-initiated navigation can
+  // reach WillStartRequest state synchronously, so the TestNavigationManager
+  // is set to always pause navigations at WillStartRequest. This ensures the
+  // navigation will defer and the user can always call
+  // WaitForRequestStart.
+  if (desired_state_ == NavigationState::WILL_START)
+    desired_state_ = NavigationState::STARTED;
 }
 
 void TestNavigationManager::DidFinishNavigation(NavigationHandle* handle) {
@@ -2998,7 +3009,7 @@ void TestNavigationManager::OnWillProcessResponse() {
 // TODO(csharrison): Remove CallResumeForTesting method calls in favor of doing
 // it through the throttle.
 bool TestNavigationManager::WaitForDesiredState() {
-  // If the desired state has laready been reached, just return.
+  // If the desired state has already been reached, just return.
   if (current_state_ == desired_state_)
     return true;
 

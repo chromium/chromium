@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -38,6 +39,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
+#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_commit_deferring_condition.h"
@@ -1988,22 +1990,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ErrorPageNetworkError) {
   }
 }
 
-class MockCommitDeferringConditionInstaller : public WebContentsObserver {
- public:
-  MockCommitDeferringConditionInstaller(
-      WebContents* web_contents,
-      std::unique_ptr<MockCommitDeferringCondition> condition)
-      : WebContentsObserver(web_contents), condition_(std::move(condition)) {}
-  ~MockCommitDeferringConditionInstaller() override = default;
-
-  void DidStartNavigation(NavigationHandle* handle) override {
-    static_cast<NavigationRequest*>(handle)
-        ->RegisterCommitDeferringConditionForTesting(std::move(condition_));
-  }
-
-  std::unique_ptr<MockCommitDeferringCondition> condition_;
-};
-
 class ReadyToCommitObserver : public WebContentsObserver {
  public:
   explicit ReadyToCommitObserver(WebContents* web_contents) {
@@ -2145,6 +2131,68 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   condition.CallResumeClosure();
 
   EXPECT_FALSE(condition2.WasInvoked());
+}
+
+// Ensure throttles registered by tests using RegisterThrottleForTesting() are
+// executed after those registered by the WebContents' browser client (i.e. how
+// non-test throttles are normally registered).
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       RegisterThrottleForTestingIsLast) {
+  WebContents* web_contents = shell()->web_contents();
+  GURL simple_url(embedded_test_server()->GetURL("/simple_page.html"));
+
+  TestNavigationThrottle* client_throttle = nullptr;
+
+  // Set the client to register a TestNavigationThrottle that defers in
+  // WillStartRequest. We'll save a pointer to this throttle in
+  // |client_throttle| when its registered.
+  content::ShellContentBrowserClient::Get()
+      ->set_create_throttles_for_navigation_callback(base::BindLambdaForTesting(
+          [&client_throttle](content::NavigationHandle* handle)
+              -> std::vector<std::unique_ptr<content::NavigationThrottle>> {
+            std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+            std::unique_ptr<TestNavigationThrottle> throttle(
+                new TestNavigationThrottle(
+                    handle, NavigationThrottle::DEFER,
+                    NavigationThrottle::PROCEED, NavigationThrottle::PROCEED,
+                    NavigationThrottle::PROCEED, base::DoNothing(),
+                    base::DoNothing(), base::DoNothing(), base::DoNothing()));
+            client_throttle = throttle.get();
+            throttles.push_back(std::move(throttle));
+            return throttles;
+          }));
+
+  // Add another similar throttle using the installer which will use
+  // RegisterThrottleForTesting and registers throttles in DidStartNavigation,
+  // before browser client throttles are registered.
+  TestNavigationThrottleInstaller test_throttle_installer(
+      web_contents, NavigationThrottle::DEFER, NavigationThrottle::PROCEED,
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
+
+  // Start navigating.
+  TestNavigationManager manager(shell()->web_contents(), simple_url);
+  shell()->LoadURL(simple_url);
+  auto* handle = manager.GetNavigationHandle();
+  auto* runner =
+      NavigationRequest::From(handle)->GetNavigationThrottleRunnerForTesting();
+
+  // The navigation should have been deferred by one of our throttles. Ensure
+  // it's the client throttle since we explicitly want test throttles to
+  // execute after all others.
+  ASSERT_TRUE(handle->IsDeferredForTesting());
+  ASSERT_NE(client_throttle, nullptr);
+  EXPECT_EQ(runner->GetDeferringThrottle(), client_throttle);
+
+  // Now when we resume we should get deferred by the other throttle. This
+  // should be the throttle installed via RegisterThrottleForTesting.
+  client_throttle->ResumeNavigation();
+  ASSERT_TRUE(handle->IsDeferredForTesting());
+  EXPECT_EQ(runner->GetDeferringThrottle(),
+            test_throttle_installer.navigation_throttle());
+
+  // Finish the navigation.
+  test_throttle_installer.navigation_throttle()->ResumeNavigation();
+  manager.WaitForNavigationFinished();
 }
 
 // Tests the case where a browser-initiated navigation to a normal webpage is

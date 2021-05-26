@@ -51,6 +51,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/mock_commit_deferring_condition.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_mojo_binder_policy_applier_unittest.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -1891,6 +1892,174 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, TitleWhilePrerendering) {
   EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
   // The title should be updated with the activated page.
   EXPECT_EQ(shell()->web_contents()->GetTitle(), kPrerenderingTitle);
+}
+
+// Ensures WebContents::OpenURL targeting a frame in a prerendered host will
+// successfully navigate that frame.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OpenURLInPrerenderingFrame) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/page_with_blank_iframe.html");
+  const GURL kNewIframeUrl = GetUrl("/simple_page.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  const int host_id = AddPrerender(kPrerenderingUrl);
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
+  auto* prerendered_render_frame_host = GetPrerenderedMainFrameHost(host_id);
+  auto* child_frame = ChildFrameAt(prerendered_render_frame_host, 0);
+  ASSERT_TRUE(child_frame);
+
+  // Navigate the iframe's FrameTreeNode in the prerendering frame tree. This
+  // should successfully navigate.
+  TestNavigationManager iframe_observer(shell()->web_contents(), kNewIframeUrl);
+  shell()->web_contents()->OpenURL(OpenURLParams(
+      kNewIframeUrl, Referrer(), child_frame->GetFrameTreeNodeId(),
+      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_AUTO_SUBFRAME,
+      /*is_renderer_initiated=*/false));
+  iframe_observer.WaitForNavigationFinished();
+  EXPECT_TRUE(iframe_observer.was_committed());
+  EXPECT_TRUE(iframe_observer.was_successful());
+  EXPECT_EQ(child_frame->GetLastCommittedURL(), kNewIframeUrl);
+}
+
+// Ensures WebContents::OpenURL with a cross-origin URL targeting a frame in a
+// prerendered host will successfully navigate that frame, though it should be
+// deferred until activation.
+// TODO(bokan): This test exposes a race condition between the iframe
+// navigation and the prerenderingchange event being dispatched.
+// https://crbug.com/1213454.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       DISABLED_OpenURLCrossOriginInPrerenderingFrame) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/page_with_blank_iframe.html");
+  const GURL kNewIframeUrl = GetCrossOriginUrl("/simple_page.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  const int host_id = AddPrerender(kPrerenderingUrl);
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
+  auto* prerendered_render_frame_host = GetPrerenderedMainFrameHost(host_id);
+  auto* child_frame = ChildFrameAt(prerendered_render_frame_host, 0);
+  ASSERT_TRUE(child_frame);
+
+  TestNavigationManager iframe_observer(shell()->web_contents(), kNewIframeUrl);
+
+  // Navigate the iframe's FrameTreeNode in the prerendering frame tree. This
+  // should successfully navigate but the navigation will be deferred until the
+  // prerendering page is activated.
+  {
+    shell()->web_contents()->OpenURL(OpenURLParams(
+        kNewIframeUrl, Referrer(), child_frame->GetFrameTreeNodeId(),
+        WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_AUTO_SUBFRAME,
+        /*is_renderer_initiated=*/false));
+    iframe_observer.WaitForDidStartNavigation();
+    NavigationRequest* request =
+        static_cast<NavigationRequest*>(iframe_observer.GetNavigationHandle());
+    EXPECT_EQ(request->state(), NavigationRequest::WILL_START_REQUEST);
+    EXPECT_TRUE(request->IsDeferredForTesting());
+  }
+
+  // Now navigate the primary page to the prerendered URL so that we activate
+  // the prerender.
+  {
+    test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                   kPrerenderingUrl);
+    ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+                       JsReplace("location = $1", kPrerenderingUrl)));
+    prerender_observer.WaitForActivation();
+  }
+
+  // Now that we're activated, the iframe navigation should be able to finish.
+  // Ensure the navigation completes in the iframe.
+  {
+    iframe_observer.WaitForNavigationFinished();
+    content::RenderFrameHost* child_frame =
+        ChildFrameAt(web_contents()->GetMainFrame(), 0);
+    ASSERT_TRUE(child_frame);
+    EXPECT_EQ(child_frame->GetLastCommittedURL(), kNewIframeUrl);
+  }
+}
+
+// Ensures WebContents::OpenURL to a frame in a currently activating (i.e.
+// "reserved") prerendering host navigates the frame.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       OpenURLInReservedPrerenderingFrame) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/page_with_blank_iframe.html");
+  const GURL kNewIframeUrl = GetUrl("/simple_page.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  int prerender_host_id = RenderFrameHost::kNoFrameTreeNodeId;
+  RenderFrameHost* child_frame = nullptr;
+  {
+    ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+    prerender_host_id = AddPrerender(kPrerenderingUrl);
+    ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+    ASSERT_NE(prerender_host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
+    auto* prerendered_render_frame_host =
+        GetPrerenderedMainFrameHost(prerender_host_id);
+    child_frame = ChildFrameAt(prerendered_render_frame_host, 0);
+    ASSERT_TRUE(child_frame);
+  }
+
+  // Now navigate the primary page to the prerendered URL so that we activate
+  // the prerender.
+  test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                 kPrerenderingUrl);
+  TestNavigationManager activation_observer(shell()->web_contents(),
+                                            kPrerenderingUrl);
+  MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/false);
+  {
+    MockCommitDeferringConditionInstaller installer(web_contents(),
+                                                    condition.PassToDelegate());
+    ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+                       JsReplace("location = $1", kPrerenderingUrl)));
+
+    ASSERT_TRUE(activation_observer.WaitForResponse());
+    activation_observer.ResumeNavigation();
+
+    // The prerender host should have been reserved.
+    ASSERT_TRUE(
+        web_contents_impl()->GetPrerenderHostRegistry()->FindReservedHostById(
+            prerender_host_id));
+  }
+
+  // Use the OpenURL API to navigate the iframe in the reserved prerendering
+  // frame tree. This navigation should succeed.
+  {
+    TestNavigationManager iframe_observer(shell()->web_contents(),
+                                          kNewIframeUrl);
+    shell()->web_contents()->OpenURL(OpenURLParams(
+        kNewIframeUrl, Referrer(), child_frame->GetFrameTreeNodeId(),
+        WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_AUTO_SUBFRAME,
+        /*is_renderer_initiated=*/false));
+    iframe_observer.WaitForNavigationFinished();
+    EXPECT_EQ(child_frame->GetLastCommittedURL(), kNewIframeUrl);
+  }
+
+  // Allow the navigation to complete to activation, the iframe navigation
+  // should be able to finish.  Ensure the navigation completes in the iframe.
+  {
+    condition.CallResumeClosure();
+    prerender_observer.WaitForActivation();
+  }
 }
 
 class ScopedDataSaverTestContentBrowserClient

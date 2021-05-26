@@ -119,10 +119,15 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
                             const GURL& gurl) {
     registry_observer_ =
         std::make_unique<PrerenderHostRegistryObserver>(web_contents);
-    registry_observer_->NotifyOnTrigger(
-        gurl,
-        base::BindOnce(&PrerenderHostObserverImpl::StartObserving,
-                       base::Unretained(this), std::ref(web_contents), gurl));
+    if (PrerenderHost* host = GetPrerenderHostRegistry(&web_contents)
+                                  .FindHostByUrlForTesting(gurl)) {
+      StartObserving(web_contents, host->GetInitialUrl());
+    } else {
+      registry_observer_->NotifyOnTrigger(
+          gurl,
+          base::BindOnce(&PrerenderHostObserverImpl::StartObserving,
+                         base::Unretained(this), std::ref(web_contents), gurl));
+    }
   }
 
   void OnActivated() override {

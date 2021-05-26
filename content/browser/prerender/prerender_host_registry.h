@@ -33,7 +33,7 @@ class RenderFrameHostImpl;
 //
 // - Triggers (e.g., PrerenderProcessor) can request to create a new prerender
 //   host by CreateAndStartHost() and cancel it by AbandonHost(Async)().
-//   Triggers cannot cancel the host after it's preserved by an activator.
+//   Triggers cannot cancel the host after it's reserved by an activator.
 // - Activators (i.e., NavigationRequest) can reserve the prerender host on
 //   activation start by ReserveHostToActivate() and activate it by
 //   ActivateReservedHost(). They can abandon the host by

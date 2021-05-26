@@ -223,12 +223,16 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
  private:
   // WebContents where this prerenderer is embedded.
   WebContentsImpl& web_contents_;
+
+  // This can be called when |frame_tree_| is destroyed so it must be
+  // destructed after |frame_tree_|.
+  base::OnceClosure on_stopped_loading_for_tests_;
+
   // Frame tree created for the prerenderer to load the page and prepare it for
   // a future activation. During activation, the prerendered page will be taken
   // out from |frame_tree_| and moved over to |web_contents_|'s primary frame
   // tree, while |frame_tree_| will be deleted.
   std::unique_ptr<FrameTree> frame_tree_;
-  base::OnceClosure on_stopped_loading_for_tests_;
 };
 
 PrerenderHost::PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
