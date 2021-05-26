@@ -10,6 +10,8 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.base.Optional;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -20,6 +22,8 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.ConnectionRetry;
 import org.chromium.components.signin.ConnectionRetry.AuthTask;
+
+import java.util.List;
 
 /**
  * Java instance for the native ProfileOAuth2TokenServiceDelegate.
@@ -159,10 +163,9 @@ final class ProfileOAuth2TokenServiceDelegate {
     @VisibleForTesting
     @CalledByNative
     boolean hasOAuth2RefreshToken(String accountName) {
-        return mAccountManagerFacade.isCachePopulated()
-                && AccountUtils.findAccountByName(
-                           mAccountManagerFacade.tryGetGoogleAccounts(), accountName)
-                != null;
+        Optional<List<Account>> accounts = mAccountManagerFacade.getGoogleAccounts();
+        return accounts.isPresent()
+                && AccountUtils.findAccountByName(accounts.get(), accountName) != null;
     }
 
     @VisibleForTesting

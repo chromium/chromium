@@ -15,6 +15,8 @@ import android.accounts.Account;
 
 import androidx.test.filters.SmallTest;
 
+import com.google.common.base.Optional;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -177,7 +179,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     @SmallTest
     public void testHasOAuth2RefreshTokenWhenCacheIsNotPopulated() {
         mAccountManagerFacade.addAccount(ACCOUNT);
-        when(mAccountManagerFacade.isCachePopulated()).thenReturn(false);
+        when(mAccountManagerFacade.getGoogleAccounts()).thenReturn(Optional.absent());
         Assert.assertFalse(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
     }
 
