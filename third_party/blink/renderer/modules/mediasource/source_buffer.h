@@ -177,11 +177,10 @@ class SourceBuffer final : public EventTargetWithInlineData,
       MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */);
   void Abort_Locked(
       MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */);
-  void Remove_Locked(
-      double start,
-      double end,
-      ExceptionState*,
-      MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */);
+  void Remove_Locked(double start,
+                     double end,
+                     ExceptionState*,
+                     MediaSourceAttachmentSupplement::ExclusiveKey pass_key);
   void ChangeType_Locked(
       const String& type,
       ExceptionState*,

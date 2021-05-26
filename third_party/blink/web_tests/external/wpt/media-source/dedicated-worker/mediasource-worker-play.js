@@ -1,5 +1,9 @@
 importScripts("mediasource-worker-util.js");
 
+// Note, we do not use testharness.js utilities within the worker context
+// because it also communicates using postMessage to the main HTML document's
+// harness, and would confuse the test case message parsing there.
+
 onmessage = function(evt) {
   postMessage({ subject: messageSubject.ERROR, info: "No message expected by Worker"});
 };
@@ -24,6 +28,15 @@ util.mediaSource.addEventListener("sourceopen", () => {
       // Unnecessary for this buffering, except helps with test coverage.
       sourceBuffer.changeType(util.mediaMetadata.type);
       util.mediaSource.endOfStream();
+      // Sanity check the duration.
+      // Unnecessary for this buffering, except helps with test coverage.
+      var duration = util.mediaSource.duration;
+      if (isNaN(duration) || duration <= 0.0 || duration >= 1.0) {
+        postMessage({
+          subject: messageSubject.ERROR,
+          info: "mediaSource.duration " + duration + " is not within expected range (0,1)"
+        });
+      }
     };
   };
   util.mediaLoadPromise.then(mediaData => { sourceBuffer.appendBuffer(mediaData); },

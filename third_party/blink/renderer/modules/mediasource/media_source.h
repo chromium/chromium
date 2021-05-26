@@ -80,6 +80,7 @@ class MediaSource final : public EventTargetWithInlineData,
       LOCKS_EXCLUDED(attachment_link_lock_);
   void setDuration(double, ExceptionState&)
       LOCKS_EXCLUDED(attachment_link_lock_);
+  double duration() LOCKS_EXCLUDED(attachment_link_lock_);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(sourceopen, kSourceopen)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(sourceended, kSourceended)
@@ -125,7 +126,9 @@ class MediaSource final : public EventTargetWithInlineData,
       LOCKS_EXCLUDED(attachment_link_lock_);
   void Close();
   bool IsClosed() const;
-  double duration() const LOCKS_EXCLUDED(attachment_link_lock_);
+  double GetDuration_Locked(
+      MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */) const
+      LOCKS_EXCLUDED(attachment_link_lock_);
   WebTimeRanges BufferedInternal(
       MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */) const
       LOCKS_EXCLUDED(attachment_link_lock_);
@@ -159,7 +162,7 @@ class MediaSource final : public EventTargetWithInlineData,
   // attachment's RunExclusively() callback.
   void EndOfStreamAlgorithm(
       const WebMediaSource::EndOfStreamStatus,
-      MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */)
+      MediaSourceAttachmentSupplement::ExclusiveKey pass_key)
       LOCKS_EXCLUDED(attachment_link_lock_);
 
   // Helper to run operations while holding cross-thread attachment's exclusive
@@ -227,7 +230,7 @@ class MediaSource final : public EventTargetWithInlineData,
   void DurationChangeAlgorithm(
       double new_duration,
       ExceptionState*,
-      MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */)
+      MediaSourceAttachmentSupplement::ExclusiveKey pass_key)
       LOCKS_EXCLUDED(attachment_link_lock_);
 
   // Usage of |*web_media_source_| must be within scope of attachment's

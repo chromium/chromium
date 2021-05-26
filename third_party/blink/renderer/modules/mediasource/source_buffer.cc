@@ -895,7 +895,7 @@ void SourceBuffer::Remove_Locked(
     double start,
     double end,
     ExceptionState* exception_state,
-    MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */) {
+    MediaSourceAttachmentSupplement::ExclusiveKey pass_key) {
   DCHECK(source_);
   DCHECK(!updating_);
   source_->AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
@@ -904,7 +904,7 @@ void SourceBuffer::Remove_Locked(
   //    steps.
   // 4. If start is negative or greater than duration, then throw a TypeError
   //    exception and abort these steps.
-  double duration = source_->duration();
+  double duration = source_->GetDuration_Locked(pass_key);
   if (start < 0 || std::isnan(duration) || start > duration) {
     MediaSource::LogAndThrowTypeError(
         *exception_state,
