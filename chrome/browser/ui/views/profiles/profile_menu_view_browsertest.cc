@@ -197,6 +197,11 @@ class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,
                                       public extensions::ExtensionBrowserTest {
  public:
   ProfileMenuViewExtensionsTest() {
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+    // The IPH is not implemented on Lacros.
+    scoped_feature_list_.InitAndEnableFeature(
+        feature_engagement::kIPHProfileSwitchFeature);
+#endif
     subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
@@ -209,6 +214,7 @@ class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,
         context, base::BindRepeating(&CreateTestTracker));
   }
   base::CallbackListSubscription subscription_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Make sure nothing bad happens when the browser theme changes while the
