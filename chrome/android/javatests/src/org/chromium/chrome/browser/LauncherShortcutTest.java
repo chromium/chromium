@@ -156,12 +156,9 @@ public class LauncherShortcutTest {
 
     @Test
     @SmallTest
-    public void testDynamicShortcuts() throws TimeoutException {
+    public void testDynamicShortcuts() {
         IncognitoUtils.setEnabledForTesting(true);
-        CallbackHelper callbackHelper = new CallbackHelper();
-        LauncherShortcutActivity.updateIncognitoShortcutForTesting(
-                mActivityTestRule.getActivity(), callbackHelper::notifyCalled);
-        callbackHelper.waitForFirst();
+        LauncherShortcutActivity.updateIncognitoShortcut(mActivityTestRule.getActivity());
         ShortcutManager shortcutManager =
                 mActivityTestRule.getActivity().getSystemService(ShortcutManager.class);
         List<ShortcutInfo> shortcuts = shortcutManager.getDynamicShortcuts();
@@ -171,18 +168,12 @@ public class LauncherShortcutTest {
                 shortcuts.get(0).getId());
 
         IncognitoUtils.setEnabledForTesting(false);
-        callbackHelper = new CallbackHelper();
-        LauncherShortcutActivity.updateIncognitoShortcutForTesting(
-                mActivityTestRule.getActivity(), callbackHelper::notifyCalled);
-        callbackHelper.waitForFirst();
+        LauncherShortcutActivity.updateIncognitoShortcut(mActivityTestRule.getActivity());
         shortcuts = shortcutManager.getDynamicShortcuts();
         Assert.assertEquals("Incorrect number of dynamic shortcuts.", 0, shortcuts.size());
 
         IncognitoUtils.setEnabledForTesting(true);
-        callbackHelper = new CallbackHelper();
-        LauncherShortcutActivity.updateIncognitoShortcutForTesting(
-                mActivityTestRule.getActivity(), callbackHelper::notifyCalled);
-        callbackHelper.waitForFirst();
+        LauncherShortcutActivity.updateIncognitoShortcut(mActivityTestRule.getActivity());
         shortcuts = shortcutManager.getDynamicShortcuts();
         Assert.assertEquals("Incorrect number of dynamic shortcuts after re-enabling incognito.", 1,
                 shortcuts.size());
@@ -190,12 +181,9 @@ public class LauncherShortcutTest {
 
     @Test
     @SmallTest
-    public void testDynamicShortcuts_LanguageChange() throws TimeoutException {
+    public void testDynamicShortcuts_LanguageChange() {
         IncognitoUtils.setEnabledForTesting(true);
-        CallbackHelper callbackHelper = new CallbackHelper();
-        LauncherShortcutActivity.updateIncognitoShortcutForTesting(
-                mActivityTestRule.getActivity(), callbackHelper::notifyCalled);
-        callbackHelper.waitForFirst();
+        LauncherShortcutActivity.updateIncognitoShortcut(mActivityTestRule.getActivity());
         ShortcutManager shortcutManager =
                 mActivityTestRule.getActivity().getSystemService(ShortcutManager.class);
         List<ShortcutInfo> shortcuts = shortcutManager.getDynamicShortcuts();
@@ -204,10 +192,7 @@ public class LauncherShortcutTest {
                 "Incorrect label", "New Incognito tab", shortcuts.get(0).getLongLabel());
 
         LauncherShortcutActivity.setDynamicShortcutStringForTesting("Foo");
-        callbackHelper = new CallbackHelper();
-        LauncherShortcutActivity.updateIncognitoShortcutForTesting(
-                mActivityTestRule.getActivity(), callbackHelper::notifyCalled);
-        callbackHelper.waitForFirst();
+        LauncherShortcutActivity.updateIncognitoShortcut(mActivityTestRule.getActivity());
         shortcuts = shortcutManager.getDynamicShortcuts();
         Assert.assertEquals(
                 "Incorrect number of dynamic shortcuts after updating.", 1, shortcuts.size());
