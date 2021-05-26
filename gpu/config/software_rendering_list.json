@@ -1136,7 +1136,7 @@
     },
     {
       "id": 137,
-      "description": "GPU rasterization on CrOS is blocklisted on anything but Intel, Mali T8/G, Imagination, Freedreno, or AMD GPU/drivers for now.",
+      "description": "GPU rasterization on CrOS is blocklisted on anything but Intel, Mali T8/G, Freedreno, or AMD GPU/drivers for now.",
       "cr_bugs": [684094, 996858, 1020500],
       "os": {
         "type": "chromeos"
@@ -1151,7 +1151,6 @@
           "subpixel_font_rendering": "unsupported"},
         { "gl_renderer": "Mali-G.*",
           "subpixel_font_rendering": "unsupported"},
-        { "gl_renderer": "PowerVR.*" },
         { "vendor_id": "0x1002" }
       ]
     },
