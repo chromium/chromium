@@ -36,6 +36,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/widget_test.h"
 
 namespace {
@@ -395,14 +396,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
 
 // Verifies that dragging extension icons is disabled in incognito windows.
 // https://crbug.com/1203833.
-// Flaky on Linux. http://crbug.com/1207630
-#if defined(OS_LINUX)
-#define MAYBE_IncognitoDraggingIsDisabled DISABLED_IncognitoDraggingIsDisabled
-#else
-#define MAYBE_IncognitoDraggingIsDisabled IncognitoDraggingIsDisabled
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
-                       MAYBE_IncognitoDraggingIsDisabled) {
+                       IncognitoDraggingIsDisabled) {
   // Load an extension, pin it, and enable it in incognito.
   scoped_refptr<const extensions::Extension> extension =
       LoadTestExtension("extensions/simple_with_popup");
@@ -420,6 +415,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
   }
 
   Browser* incognito_browser = CreateIncognitoBrowser();
+
+  views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+  views::test::WaitForAnimatingLayoutManager(
+      GetExtensionsToolbarContainerForBrowser(incognito_browser));
 
   // Verify the extension has a (visible) action for both the incognito and
   // on-the-record browser.
