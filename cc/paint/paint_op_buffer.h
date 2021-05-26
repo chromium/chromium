@@ -1045,6 +1045,15 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
       size_t input_size,
       const PaintOp::DeserializeOptions& options);
 
+  // Given the |bounds| of a PaintOpBuffer that would be transformed by |ctm|
+  // when rendered, compute the bounds needed to raster the buffer at a fixed
+  // scale into an auxiliary image instead of rasterizing at scale dynamically.
+  // This is used to enforce scaling decisions made pre-serialization when
+  // rasterizing after deserializing the buffer.
+  static SkRect GetFixedScaleBounds(const SkMatrix& ctm,
+                                    const SkRect& bounds,
+                                    int max_texture_size = 0);
+
   // Returns the size of the paint op buffer. That is, the number of ops
   // contained in it.
   size_t size() const { return op_count_; }

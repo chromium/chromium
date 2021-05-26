@@ -1796,12 +1796,23 @@ class OopTextBlobPixelTest
       error_pixels_percentage = 4.f;
       max_abs_error = 36;
     }
-
+    float avg_error = max_abs_error;
+    // And if the text is stored in a PaintFilter, allow for more differences
+    // since OOP-R converts to a fixed scale image before the transform. We
+    // could convert GPU-raster to fixed scale for direct comparison, but this
+    // ensures that both scaling modes produce approximately the same image.
+    if (GetTextBlobStrategy(GetParam()) == TextBlobStrategy::kRecordFilter &&
+        (GetMatrixStrategy(GetParam()) == MatrixStrategy::kPerspective ||
+         GetMatrixStrategy(GetParam()) == MatrixStrategy::kComplex)) {
+      error_pixels_percentage = 12.f;
+      max_abs_error = 220;
+      avg_error = 50.f;
+    }
     FuzzyPixelComparator comparator(
         /*discard_alpha=*/false,
         /*error_pixels_percentage_limit=*/error_pixels_percentage,
         /*small_error_pixels_percentage_limit=*/0.0f,
-        /*avg_abs_error_limit=*/max_abs_error,
+        /*avg_abs_error_limit=*/avg_error,
         /*max_abs_error_limit=*/max_abs_error,
         /*small_error_threshold=*/0);
     ExpectEquals(actual, expected, comparator);

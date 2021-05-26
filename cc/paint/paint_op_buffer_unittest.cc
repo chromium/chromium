@@ -3313,6 +3313,12 @@ TEST_P(PaintFilterSerializationTest, Basic) {
   filters.emplace_back(new RecordPaintFilter(
       sk_sp<PaintRecord>{new PaintRecord}, SkRect::MakeXYWH(10, 15, 20, 25)));
 
+  // Use a non-identity ctm to confirm that RecordPaintFilters are converted
+  // from raster-at-scale to fixed scale properly.
+  float scale_x = 2.f;
+  float scale_y = 3.f;
+  SkM44 ctm = SkM44::Scale(scale_x, scale_y);
+
   TestOptionsProvider options_provider;
   for (size_t i = 0; i < filters.size(); ++i) {
     SCOPED_TRACE(i);
@@ -3327,7 +3333,7 @@ TEST_P(PaintFilterSerializationTest, Basic) {
 
     PaintOpWriter writer(memory.data(), memory.size(),
                          options_provider.serialize_options(), GetParam());
-    writer.Write(filter.get(), SkM44());
+    writer.Write(filter.get(), ctm);
     ASSERT_GT(writer.size(), 0u) << PaintFilter::TypeToString(filter->type());
 
     sk_sp<PaintFilter> deserialized_filter;
@@ -3335,7 +3341,41 @@ TEST_P(PaintFilterSerializationTest, Basic) {
                          options_provider.deserialize_options(), GetParam());
     reader.Read(&deserialized_filter);
     ASSERT_TRUE(deserialized_filter);
-    EXPECT_TRUE(*filter == *deserialized_filter);
+
+    if (filter->type() == PaintFilter::Type::kPaintRecord) {
+      // The filter's scaling behavior should be converted to kFixedScale so
+      // they are no longer equal.
+      ASSERT_EQ(deserialized_filter->type(), PaintFilter::Type::kPaintRecord);
+
+      const RecordPaintFilter& expected =
+          static_cast<const RecordPaintFilter&>(*filter);
+      const RecordPaintFilter& actual =
+          static_cast<const RecordPaintFilter&>(*deserialized_filter);
+
+      EXPECT_EQ(actual.scaling_behavior(),
+                RecordPaintFilter::ScalingBehavior::kFixedScale);
+
+      SkRect expected_bounds =
+          SkRect::MakeXYWH(scale_x * expected.record_bounds().x(),
+                           scale_y * expected.record_bounds().y(),
+                           scale_x * expected.record_bounds().width(),
+                           scale_y * expected.record_bounds().height());
+      EXPECT_EQ(actual.record_bounds(), expected_bounds);
+      EXPECT_EQ(actual.raster_scale().width(), scale_x);
+      EXPECT_EQ(actual.raster_scale().height(), scale_y);
+
+      // And the first op in the deserialized filter's record should be a
+      // ScaleOp containing the extracted scale factors (if there's no
+      // security constraints that disable record serialization)
+      if (!GetParam()) {
+        const ScaleOp* scale = actual.record()->GetOpAtForTesting<ScaleOp>(0);
+        ASSERT_TRUE(scale);
+        EXPECT_EQ(scale->sx, scale_x);
+        EXPECT_EQ(scale->sy, scale_y);
+      }
+    } else {
+      EXPECT_TRUE(*filter == *deserialized_filter);
+    }
   }
 }
 
@@ -3753,6 +3793,34 @@ TEST(PaintOpBufferTest, RecordShadersCachedSize) {
   size_t shader_size = shader_entry->CachedSize();
   EXPECT_GT(estimated_image_size, serializer.written());
   EXPECT_GT(shader_size, estimated_image_size);
+}
+
+TEST(PaintOpBufferTest, RecordFilterSerializeScaledImages) {
+  auto record_buffer = sk_make_sp<PaintOpBuffer>();
+  record_buffer->push<DrawImageOp>(
+      CreateDiscardablePaintImage(gfx::Size(10, 10)), 0.f, 0.f);
+
+  auto filter =
+      sk_make_sp<RecordPaintFilter>(record_buffer, SkRect::MakeWH(10.f, 10.f));
+  auto buffer = sk_make_sp<PaintOpBuffer>();
+  buffer->push<ScaleOp>(0.5f, 0.8f);
+  PaintFlags flags;
+  flags.setImageFilter(filter);
+  buffer->push<DrawRectOp>(SkRect::MakeWH(10.f, 10.f), flags);
+
+  std::unique_ptr<char, base::AlignedFreeDeleter> memory(
+      static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
+                                            PaintOpBuffer::PaintOpAlign)));
+  TestOptionsProvider options_provider;
+  SimpleBufferSerializer serializer(memory.get(),
+                                    PaintOpBuffer::kInitialBufferSize,
+                                    options_provider.serialize_options());
+  serializer.Serialize(buffer.get());
+
+  ASSERT_EQ(options_provider.decoded_images().size(), 1u);
+  auto scale = options_provider.decoded_images().at(0).scale();
+  EXPECT_EQ(scale.width(), 0.5f);
+  EXPECT_EQ(scale.height(), 0.8f);
 }
 
 TEST(PaintOpBufferTest, TotalOpCount) {

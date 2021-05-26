@@ -61,17 +61,14 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
   // generally be used for internal PaintOpBuffers that want to be sent as-is.
   void Serialize(const PaintOpBuffer* buffer);
   // Serialize the buffer with a scale and a playback rect.  This should
-  // generally be used for internal PaintOpBuffers in PaintShaders that have
-  // a scale and a tiling, but don't want the clearing or other complicated
-  // logic of the top level Serialize.
-  // post_matrix_for_analysis adds a scale that is not added to the serialized
-  // buffer, but used in analysis. This is required for cases that don't modify
-  // the record during serialization, but need to send resources based on the
-  // raster scale (mainly PaintRecord backed PaintFilters).
+  // generally be used for internal PaintOpBuffers in PaintShaders and
+  // PaintFilters that need to guarantee the nested buffer is rasterized at the
+  // specific scale to a separate image. This ensures that scale-dependent
+  // analysis made during serialization is consistent with analysis done during
+  // rasterization.
   void Serialize(const PaintOpBuffer* buffer,
                  const gfx::Rect& playback_rect,
-                 const gfx::SizeF& post_scale,
-                 const SkMatrix& post_matrix_for_analysis);
+                 const gfx::SizeF& post_scale);
 
   bool valid() const { return valid_; }
 

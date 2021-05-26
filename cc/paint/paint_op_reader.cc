@@ -1087,12 +1087,27 @@ void PaintOpReader::ReadRecordPaintFilter(
     sk_sp<PaintFilter>* filter,
     const absl::optional<PaintFilter::CropRect>& crop_rect) {
   SkRect record_bounds;
+  gfx::SizeF raster_scale;
+  PaintShader::ScalingBehavior scaling_behavior;
   sk_sp<PaintRecord> record;
-  Read(&record_bounds);
+  ReadSimple(&record_bounds);
+  ReadSimple(&raster_scale);
+  if (raster_scale.width() <= 0.f || raster_scale.height() <= 0.f) {
+    SetInvalid();
+    return;
+  }
+
+  ReadSimple(&scaling_behavior);
+  if (!IsValidPaintShaderScalingBehavior(scaling_behavior)) {
+    SetInvalid();
+    return;
+  }
+
   Read(&record);
   if (!valid_)
     return;
-  filter->reset(new RecordPaintFilter(std::move(record), record_bounds));
+  filter->reset(new RecordPaintFilter(std::move(record), record_bounds,
+                                      raster_scale, scaling_behavior));
 }
 
 void PaintOpReader::ReadMergePaintFilter(

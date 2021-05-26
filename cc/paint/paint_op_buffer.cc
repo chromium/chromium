@@ -3009,6 +3009,45 @@ sk_sp<PaintOpBuffer> PaintOpBuffer::MakeFromMemory(
   return buffer;
 }
 
+// static
+SkRect PaintOpBuffer::GetFixedScaleBounds(const SkMatrix& ctm,
+                                          const SkRect& bounds,
+                                          int max_texture_size) {
+  SkSize scale;
+  if (!ctm.decomposeScale(&scale)) {
+    // Decomposition failed, use an approximation.
+    scale.set(SkScalarSqrt(ctm.getScaleX() * ctm.getScaleX() +
+                           ctm.getSkewX() * ctm.getSkewX()),
+              SkScalarSqrt(ctm.getScaleY() * ctm.getScaleY() +
+                           ctm.getSkewY() * ctm.getSkewY()));
+  }
+
+  SkScalar raster_width = bounds.width() * scale.width();
+  SkScalar raster_height = bounds.height() * scale.height();
+  SkScalar tile_area = raster_width * raster_height;
+  // Clamp the tile area to about 4M pixels, and per-dimension max texture size
+  // if it's provided.
+  static const SkScalar kMaxTileArea = 2048 * 2048;
+  SkScalar down_scale = 1.f;
+  if (tile_area > kMaxTileArea) {
+    down_scale = SkScalarSqrt(kMaxTileArea / tile_area);
+  }
+  if (max_texture_size > 0) {
+    // This only updates down_scale if the tile is larger than the texture size
+    // after ensuring its area is less than kMaxTileArea
+    down_scale = std::min(
+        down_scale, max_texture_size / std::max(raster_width, raster_height));
+  }
+
+  if (down_scale < 1.f) {
+    scale.set(down_scale * scale.width(), down_scale * scale.height());
+  }
+  return SkRect::MakeXYWH(
+      bounds.fLeft * scale.width(), bounds.fTop * scale.height(),
+      SkScalarCeilToInt(SkScalarAbs(scale.width() * bounds.width())),
+      SkScalarCeilToInt(SkScalarAbs(scale.height() * bounds.height())));
+}
+
 void PaintOpBuffer::ReallocBuffer(size_t new_size) {
   DCHECK_GE(new_size, used_);
   std::unique_ptr<char, base::AlignedFreeDeleter> new_data(

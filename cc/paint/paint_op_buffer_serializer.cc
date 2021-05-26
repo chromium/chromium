@@ -76,11 +76,9 @@ void PaintOpBufferSerializer::Serialize(const PaintOpBuffer* buffer) {
   SerializeBuffer(canvas.get(), buffer, nullptr);
 }
 
-void PaintOpBufferSerializer::Serialize(
-    const PaintOpBuffer* buffer,
-    const gfx::Rect& playback_rect,
-    const gfx::SizeF& post_scale,
-    const SkMatrix& post_matrix_for_analysis) {
+void PaintOpBufferSerializer::Serialize(const PaintOpBuffer* buffer,
+                                        const gfx::Rect& playback_rect,
+                                        const gfx::SizeF& post_scale) {
   std::unique_ptr<SkCanvas> canvas = MakeAnalysisCanvas(options_);
 
   PlaybackParams params = MakeParams(canvas.get());
@@ -97,7 +95,6 @@ void PaintOpBufferSerializer::Serialize(
     SerializeOp(canvas.get(), &scale_op, nullptr, params);
   }
 
-  canvas->concat(post_matrix_for_analysis);
   SerializeBuffer(canvas.get(), buffer, nullptr);
 }
 

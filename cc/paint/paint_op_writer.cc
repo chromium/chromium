@@ -534,8 +534,7 @@ void PaintOpWriter::Write(const PaintShader* shader,
     const gfx::Rect playback_rect(
         gfx::ToEnclosingRect(gfx::SkRectToRectF(shader->tile())));
 
-    Write(shader->record_.get(), playback_rect, paint_record_post_scale,
-          SkMatrix::I());
+    Write(shader->record_.get(), playback_rect, paint_record_post_scale);
   } else {
     DCHECK_EQ(shader->id_, PaintShader::kInvalidRecordShaderId);
     Write(false);
@@ -793,18 +792,18 @@ void PaintOpWriter::Write(const ImagePaintFilter& filter,
 
 void PaintOpWriter::Write(const RecordPaintFilter& filter,
                           const SkM44& current_ctm) {
-  WriteSimple(filter.record_bounds());
+  // Convert to a fixed scale filter so that any content contained within
+  // the filter's PaintRecord is rasterized at the scale we use here for
+  // analysis (e.g. this ensures any contained text blobs will not be missing
+  // from the cache).
+  auto scaled_filter = filter.CreateScaledPaintRecord(
+      current_ctm.asM33(), options_.max_texture_size);
+  WriteSimple(scaled_filter->record_bounds());
+  WriteSimple(scaled_filter->raster_scale());
+  WriteSimple(scaled_filter->scaling_behavior());
 
-  // The logic here to only use the scale component of the matrix during
-  // analysis is for consistency with the rasterization of the filter later in
-  // pipeline in skia. For every draw with a filter, SkCanvas creates a layer
-  // for the draw and modifies the scale for these filters.
-  // See SkCanvas::internalSaveLayer.
-  SkMatrix mat = current_ctm.asM33();
-  SkSize scale;
-  if (!mat.isScaleTranslate() && mat.decomposeScale(&scale))
-    mat = SkMatrix::Scale(scale.width(), scale.height());
-  Write(filter.record().get(), gfx::Rect(), gfx::SizeF(1.f, 1.f), mat);
+  Write(scaled_filter->record().get(), gfx::Rect(),
+        scaled_filter->raster_scale());
 }
 
 void PaintOpWriter::Write(const MergePaintFilter& filter,
@@ -899,8 +898,7 @@ void PaintOpWriter::Write(const LightingSpotPaintFilter& filter,
 
 void PaintOpWriter::Write(const PaintRecord* record,
                           const gfx::Rect& playback_rect,
-                          const gfx::SizeF& post_scale,
-                          const SkMatrix& post_matrix_for_analysis) {
+                          const gfx::SizeF& post_scale) {
   AlignMemory(PaintOpBuffer::PaintOpAlign);
 
   // We need to record how many bytes we will serialize, but we don't know this
@@ -920,18 +918,15 @@ void PaintOpWriter::Write(const PaintRecord* record,
     return;
   }
 
-  // Nested records are used for picture shaders and filters which don't support
-  // using lcd text. Make sure we disable it here to match this in the text
-  // analysis canvas.
-  PaintOp::SerializeOptions lcd_disabled_options(
-      options_.image_provider, options_.transfer_cache, options_.paint_cache,
-      options_.strike_server, options_.color_space,
-      /*can_use_lcd_text=*/false, options_.context_supports_distance_field_text,
-      options_.max_texture_size);
+  // Nested records are used for picture shaders and filters. These are always
+  // converted to a fixed scale mode (hence |post_scale|), which means they are
+  // first rendered offscreen via SkImage::MakeFromPicture. This inherently does
+  // not support lcd text, so reflect that in the serialization options.
+  PaintOp::SerializeOptions lcd_disabled_options = options_;
+  lcd_disabled_options.can_use_lcd_text = false;
   SimpleBufferSerializer serializer(memory_, remaining_bytes_,
                                     lcd_disabled_options);
-  serializer.Serialize(record, playback_rect, post_scale,
-                       post_matrix_for_analysis);
+  serializer.Serialize(record, playback_rect, post_scale);
 
   if (!serializer.valid()) {
     valid_ = false;

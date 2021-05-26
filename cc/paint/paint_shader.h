@@ -148,7 +148,10 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
     return base::OptionalOrNullptr(tile_scale_);
   }
   const sk_sp<PaintRecord>& paint_record() const { return record_; }
-  bool GetRasterizationTileRect(const SkMatrix& ctm, SkRect* tile_rect) const;
+  bool GetRasterizationTileRect(const SkMatrix& ctm, SkRect* tile_rect) const {
+    return GetClampedRasterizationTileRect(ctm, /*max_texture_size=*/0,
+                                           tile_rect);
+  }
 
   SkTileMode tx() const { return tx_; }
   SkTileMode ty() const { return ty_; }
@@ -183,6 +186,10 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   FRIEND_TEST_ALL_PREFIXES(PaintOpBufferTest, RecordShadersCached);
 
   explicit PaintShader(Type type);
+
+  bool GetClampedRasterizationTileRect(const SkMatrix& ctm,
+                                       int max_texture_size,
+                                       SkRect* tile_rect) const;
 
   sk_sp<SkShader> GetSkShader(SkFilterQuality quality) const;
 
