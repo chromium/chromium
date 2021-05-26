@@ -10,9 +10,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/caption_bubble_controller.h"
-#include "chrome/common/pref_names.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -39,8 +37,9 @@ const char* const kCaptionStylePrefsToObserve[] = {
 
 namespace captions {
 
-LiveCaptionController::LiveCaptionController(PrefService* profile_prefs)
-    : profile_prefs_(profile_prefs) {}
+LiveCaptionController::LiveCaptionController(PrefService* profile_prefs,
+                                             PrefService* global_prefs)
+    : profile_prefs_(profile_prefs), global_prefs_(global_prefs) {}
 
 LiveCaptionController::~LiveCaptionController() {
   if (enabled_) {
@@ -114,8 +113,8 @@ void LiveCaptionController::OnLiveCaptionEnabledChanged() {
     StartLiveCaption();
   } else {
     StopLiveCaption();
-    speech::SodaInstaller::GetInstance()->SetUninstallTimer(
-        profile_prefs_, g_browser_process->local_state());
+    speech::SodaInstaller::GetInstance()->SetUninstallTimer(profile_prefs_,
+                                                            global_prefs_);
   }
 }
 
@@ -123,12 +122,11 @@ void LiveCaptionController::OnLiveCaptionLanguageChanged() {
   if (enabled_)
     speech::SodaInstaller::GetInstance()->InstallLanguage(
         profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode),
-        g_browser_process->local_state());
+        global_prefs_);
 }
 
 bool LiveCaptionController::IsLiveCaptionEnabled() {
-  PrefService* profile_prefs = profile_prefs_;
-  return profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled);
+  return profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
 }
 
 void LiveCaptionController::StartLiveCaption() {
@@ -146,8 +144,7 @@ void LiveCaptionController::StartLiveCaption() {
     CreateUI();
   } else {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
-    speech::SodaInstaller::GetInstance()->Init(
-        profile_prefs_, g_browser_process->local_state());
+    speech::SodaInstaller::GetInstance()->Init(profile_prefs_, global_prefs_);
   }
 }
 
