@@ -336,8 +336,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, Disconnect) {
 // re-enable it.
 IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
                        DISABLED_PerformScrollToMakeVisible) {
+  // Set the screen height to be small so that we can detect if we've
+  // scrolled past our target, even if the max scroll is bounded.
   constexpr int kScreenWidth = 720;
-  constexpr int kScreenHeight = 640;
+  constexpr int kScreenHeight = 20;
   gfx::Rect screen_bounds(kScreenWidth, kScreenHeight);
 
   LoadPage(kPage1Path, kPage1Title);
@@ -348,26 +350,38 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
       frame_impl_->web_contents_for_test()->GetContentNativeView();
   content_view->SetBounds(screen_bounds);
 
-  // Get a node that is off the screen.
-  fuchsia::accessibility::semantics::Node* node =
-      semantics_manager_.semantic_tree()->GetNodeFromLabel(kOffscreenNodeName);
-  ASSERT_TRUE(node);
   AccessibilityBridge* bridge = frame_impl_->accessibility_bridge_for_test();
-  ui::AXNode* ax_node = bridge->ax_tree_for_test()->GetFromId(node->node_id());
+
+  // Get a node that is off the screen, and verify that it is off the screen.
+  fuchsia::accessibility::semantics::Node* fuchsia_node =
+      semantics_manager_.semantic_tree()->GetNodeFromLabel(kOffscreenNodeName);
+  ASSERT_TRUE(fuchsia_node);
+
+  // Get the corresponding AXNode.
+  auto ax_node_id = bridge->node_id_mapper_for_test()
+                        ->ToAXNodeID(fuchsia_node->node_id())
+                        ->second;
+  ui::AXNode* ax_node = bridge->ax_tree_for_test()->GetFromId(ax_node_id);
   ASSERT_TRUE(ax_node);
   bool is_offscreen = false;
   bridge->ax_tree_for_test()->GetTreeBounds(ax_node, &is_offscreen);
   EXPECT_TRUE(is_offscreen);
 
-  // Perform SHOW_ON_SCREEN on that node and check that it is on the screen.
+  // Perform SHOW_ON_SCREEN on that node.
+  // The fuchsia root node should receive an update since the root node is
+  // scrolled. Wait for that update.
   base::RunLoop run_loop;
-  bridge->set_event_received_callback_for_test(run_loop.QuitClosure());
+  semantics_manager_.semantic_tree()->SetNodeUpdatedCallback(
+      0u, run_loop.QuitClosure());
+
   semantics_manager_.RequestAccessibilityAction(
-      node->node_id(),
+      fuchsia_node->node_id(),
       fuchsia::accessibility::semantics::Action::SHOW_ON_SCREEN);
   semantics_manager_.RunUntilNumActionsHandledEquals(1);
+
   run_loop.Run();
 
+  // Verify that the AXNode we tried to make visible is now onscreen.
   // Initialize |is_offscreen| to false before calling GetTreeBounds as
   // specified by the API.
   is_offscreen = false;
