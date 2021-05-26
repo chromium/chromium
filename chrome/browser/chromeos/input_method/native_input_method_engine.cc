@@ -515,6 +515,9 @@ void NativeInputMethodEngine::ImeObserver::OnAssistiveWindowButtonClicked(
       if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
         assistive_suggester_->AcceptSuggestion(button.index);
       }
+      if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
+        grammar_manager_->AcceptSuggestion();
+      }
       break;
     case ui::ime::ButtonId::kUndo:
       autocorrect_manager_->UndoAutocorrect();

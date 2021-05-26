@@ -159,6 +159,9 @@ void GrammarManager::DismissSuggestion() {
 }
 
 void GrammarManager::AcceptSuggestion() {
+  if (!suggestion_shown_)
+    return;
+
   DismissSuggestion();
 
   ui::IMEInputContextHandlerInterface* input_context =

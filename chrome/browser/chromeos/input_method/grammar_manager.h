@@ -44,6 +44,10 @@ class GrammarManager {
                                 int cursor_pos,
                                 int anchor_pos);
 
+  // Dismisses the suggestion window and replaces the incorrect grammar fragment
+  // with the suggestion.
+  void AcceptSuggestion();
+
  private:
   void Check(const std::u16string& text);
 
@@ -53,8 +57,6 @@ class GrammarManager {
       const std::vector<ui::GrammarFragment>& results) const;
 
   void DismissSuggestion();
-
-  void AcceptSuggestion();
 
   void SetButtonHighlighted(const ui::ime::AssistiveWindowButton& button);
 
