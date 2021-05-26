@@ -1,3 +1,13 @@
+// Asserts that the given attributes are present in 'entry' and hold equal
+// values.
+const assert_all_equal_ = (entry, attributes) => {
+  let first = attributes[0];
+  attributes.slice(1).forEach(other => {
+    assert_equals(entry[first], entry[other],
+      `${first} should be equal to ${other}`);
+  });
+}
+
 // Asserts that the given attributes are present in 'entry' and hold values
 // that are sorted in the same order as given in 'attributes'.
 const assert_ordered_ = (entry, attributes) => {
@@ -37,9 +47,9 @@ const assert_positive_ = (entry, attributes) => {
 
 const invariants = {
   // Asserts that attributes of the given PerformanceResourceTiming entry match
-  // what the spec dictates for any resource fetched without redirects but
-  // passing the Timing-Allow-Origin checks.
-  assert_tao_pass_no_redirect: entry => {
+  // what the spec dictates for any resource fetched over HTTP without
+  // redirects but passing the Timing-Allow-Origin checks.
+  assert_tao_pass_no_redirect_http: entry => {
     assert_ordered_(entry, [
       "fetchStart",
       "domainLookupStart",
@@ -70,6 +80,118 @@ const invariants = {
     ]);
   },
 
+  // Like assert_tao_pass_no_redirect_http but for resources fetched over HTTPS
+  assert_tao_pass_no_redirect_https: entry => {
+    assert_ordered_(entry, [
+      "fetchStart",
+      "domainLookupStart",
+      "domainLookupEnd",
+      "secureConnectionStart",
+      "connectStart",
+      "connectEnd",
+      "requestStart",
+      "responseStart",
+      "responseEnd",
+    ]);
+
+    assert_zeroed_(entry, [
+      "workerStart",
+      "redirectStart",
+      "redirectEnd",
+    ]);
+
+    assert_not_negative_(entry, [
+      "duration",
+    ]);
+
+    assert_positive_(entry, [
+      "fetchStart",
+      "transferSize",
+      "encodedBodySize",
+      "decodedBodySize",
+    ]);
+  },
+
+  // Like assert_tao_pass_no_redirect_http but, since the resource's bytes
+  // won't be retransmitted, the encoded and decoded sizes must be zero.
+  assert_tao_pass_304_not_modified_http: entry => {
+    assert_ordered_(entry, [
+      "fetchStart",
+      "domainLookupStart",
+      "domainLookupEnd",
+      "connectStart",
+      "connectEnd",
+      "requestStart",
+      "responseStart",
+      "responseEnd",
+    ]);
+
+    assert_zeroed_(entry, [
+      "workerStart",
+      "secureConnectionStart",
+      "redirectStart",
+      "redirectEnd",
+      "encodedBodySize",
+      "decodedBodySize",
+    ]);
+
+    assert_not_negative_(entry, [
+      "duration",
+    ]);
+
+    assert_positive_(entry, [
+      "fetchStart",
+      "transferSize",
+    ]);
+  },
+
+  // Like assert_tao_pass_304_not_modified_http but for resources fetched over
+  // HTTPS.
+  assert_tao_pass_304_not_modified_https: entry => {
+    assert_ordered_(entry, [
+      "fetchStart",
+      "domainLookupStart",
+      "domainLookupEnd",
+      "secureConnectionStart",
+      "connectStart",
+      "connectEnd",
+      "requestStart",
+      "responseStart",
+      "responseEnd",
+    ]);
+
+    assert_zeroed_(entry, [
+      "workerStart",
+      "redirectStart",
+      "redirectEnd",
+      "encodedBodySize",
+      "decodedBodySize",
+    ]);
+
+    assert_not_negative_(entry, [
+      "duration",
+    ]);
+
+    assert_positive_(entry, [
+      "fetchStart",
+      "transferSize",
+    ]);
+  },
+
+  // Asserts that attributes of the given PerformanceResourceTiming entry match
+  // what the spec dictates for any resource subsequently fetched over a
+  // persistent connection. When this happens, we expect that certain
+  // attributes describing transport layer behaviour will be equal.
+  assert_connection_reused: entry => {
+    assert_all_equal_(entry, [
+      "fetchStart",
+      "connectStart",
+      "connectEnd",
+      "domainLookupStart",
+      "domainLookupEnd",
+    ]);
+  },
+
   // Asserts that attributes of the given PerformanceResourceTiming entry match
   // what the spec dictates for any resource fetched over HTTP through an HTTP
   // redirect.
@@ -94,7 +216,7 @@ const invariants = {
   // Asserts that attributes of the given PerformanceResourceTiming entry match
   // what the spec dictates for any resource fetched over HTTPS through a
   // cross-origin redirect.
-  // (e.g. GET http://remote.com/foo => 304 Location: https://remote.com/foo)
+  // (e.g. GET http://remote.com/foo => 302 Location: https://remote.com/foo)
   assert_cross_origin_redirected_resource: entry => {
     assert_zeroed_(entry, [
       "redirectStart",

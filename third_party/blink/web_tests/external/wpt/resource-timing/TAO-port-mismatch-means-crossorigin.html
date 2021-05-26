@@ -32,7 +32,7 @@ const port_match_url = `${location.protocol}//${ORIGINAL_HOST}:${PORT2}` +
                        `/resource-timing/resources/TAOResponse.py?` +
                        `tao=origin_port_${PORT}`;
 attribute_test(
-  fetch, port_match_url, invariants.assert_tao_pass_no_redirect,
+  fetch, port_match_url, invariants.assert_tao_pass_no_redirect_http,
   "An identical port must pass the TAO check");
 
 </script>

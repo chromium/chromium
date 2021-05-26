@@ -12,15 +12,15 @@ const path = location.origin +
 attribute_test_with_validator(load.iframe, path,
   el => {
     try {
-        el.contentWindow.document;
-        throw new Error("iframe document.domain was not set");
+      el.contentWindow.document;
+      throw new Error("iframe document.domain was not set");
     } catch(error) {
-        if (error.name != "SecurityError") {
-          throw(error);
-        }
+      if (error.name != "SecurityError") {
+        throw(error);
+      }
     }
   },
-  invariants.assert_tao_pass_no_redirect,
+  invariants.assert_tao_pass_no_redirect_http,
   "test that document.domain being set doesn't have an impact on the " +
   "resource timing entry."
 );
