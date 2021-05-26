@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/concierge/concierge_client.h"

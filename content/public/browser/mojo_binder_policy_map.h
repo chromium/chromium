@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_MOJO_BINDER_POLICY_MAP_H_
 #define CONTENT_PUBLIC_BROWSER_MOJO_BINDER_POLICY_MAP_H_
 
-#include "base/containers/flat_map.h"
 #include "base/strings/string_piece_forward.h"
 #include "content/common/content_export.h"
 

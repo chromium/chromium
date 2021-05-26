@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"

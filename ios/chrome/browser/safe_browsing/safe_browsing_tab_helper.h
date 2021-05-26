@@ -8,7 +8,6 @@
 #include <list>
 #include <map>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

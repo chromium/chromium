@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/containers/flat_map.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "third_party/blink/common/permissions_policy/policy_value_mojom_traits.h"
 #include "third_party/blink/public/common/common_export.h"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher.pb.h"
 #include "components/keyed_service/core/keyed_service.h"

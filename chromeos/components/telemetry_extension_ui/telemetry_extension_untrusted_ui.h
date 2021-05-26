@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"

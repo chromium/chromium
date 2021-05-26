@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetch_tracker.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"

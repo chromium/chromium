@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_INSTALLED_SCRIPTS_SENDER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_INSTALLED_SCRIPTS_SENDER_H_
 
-#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "content/browser/service_worker/service_worker_installed_script_reader.h"
 #include "content/common/content_export.h"

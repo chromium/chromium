@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/containers/flat_map.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 

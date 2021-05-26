@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/containers/flat_map.h"
 #include "chromeos/components/sync_wifi/local_network_collector.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

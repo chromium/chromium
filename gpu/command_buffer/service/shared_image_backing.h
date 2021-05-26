@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"

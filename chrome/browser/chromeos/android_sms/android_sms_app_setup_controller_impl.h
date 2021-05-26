@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ANDROID_SMS_ANDROID_SMS_APP_SETUP_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_CHROMEOS_ANDROID_SMS_ANDROID_SMS_APP_SETUP_CONTROLLER_IMPL_H_
 
-#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_app_setup_controller.h"

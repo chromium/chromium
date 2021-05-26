@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"

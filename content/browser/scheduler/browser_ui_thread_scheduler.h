@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/containers/flat_map.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "content/browser/scheduler/browser_task_queues.h"
 #include "content/common/content_export.h"

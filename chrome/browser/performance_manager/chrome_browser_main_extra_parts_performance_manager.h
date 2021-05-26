@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"

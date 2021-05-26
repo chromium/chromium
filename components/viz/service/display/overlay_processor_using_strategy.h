@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/display/overlay_strategy.h"

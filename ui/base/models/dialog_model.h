@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/containers/flat_map.h"
 #include "base/types/pass_key.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/dialog_model_host.h"

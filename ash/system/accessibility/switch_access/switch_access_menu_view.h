@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "ui/views/view.h"
 
 namespace ash {

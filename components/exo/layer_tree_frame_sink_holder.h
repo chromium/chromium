@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/containers/flat_map.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/exo/frame_sink_resource_manager.h"
 #include "components/exo/wm_helper.h"

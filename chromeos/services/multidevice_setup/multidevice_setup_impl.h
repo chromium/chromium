@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/flat_map.h"
 #include "chromeos/services/multidevice_setup/feature_state_manager.h"
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_base.h"

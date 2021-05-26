@@ -8,7 +8,6 @@
 #include <windows.h>
 #include <wrl/implements.h>
 
-#include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
 

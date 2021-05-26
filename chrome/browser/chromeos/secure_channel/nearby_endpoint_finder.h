@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_ENDPOINT_FINDER_H_
 #define CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_ENDPOINT_FINDER_H_
 
-#include "base/containers/flat_map.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
 

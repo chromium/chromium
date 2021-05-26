@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_LOADER_HELPERS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_LOADER_HELPERS_H_
 
-#include "base/containers/flat_map.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_info.h"

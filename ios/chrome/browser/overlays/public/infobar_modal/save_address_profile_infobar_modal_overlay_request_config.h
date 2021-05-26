@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_MODAL_SAVE_ADDRESS_PROFILE_INFOBAR_MODAL_OVERLAY_REQUEST_CONFIG_H_
 
 #import <UIKit/UIKit.h>
-#include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_config.h"

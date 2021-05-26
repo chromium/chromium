@@ -7,7 +7,6 @@
 
 #include <iosfwd>
 
-#include "base/containers/flat_map.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/enums.h"

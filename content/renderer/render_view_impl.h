@@ -13,7 +13,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/id_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"

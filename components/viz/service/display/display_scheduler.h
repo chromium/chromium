@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
-#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"

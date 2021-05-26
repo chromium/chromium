@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/fast_ink/fast_ink_host.h"
-#include "base/containers/flat_map.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/view.h"

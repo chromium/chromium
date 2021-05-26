@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/flat_map.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity.h"
 #include "chrome/browser/media/router/providers/cast/cast_media_controller.h"
 #include "components/cast_channel/cast_message_handler.h"

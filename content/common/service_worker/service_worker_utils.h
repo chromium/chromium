@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"

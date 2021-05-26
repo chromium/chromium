@@ -9,7 +9,6 @@
 
 #include <map>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
