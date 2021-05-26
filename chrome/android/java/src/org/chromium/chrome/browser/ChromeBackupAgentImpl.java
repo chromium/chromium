@@ -43,6 +43,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -153,7 +154,9 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     @VisibleForTesting
     protected boolean accountExistsOnDevice(String userName) {
         return AccountUtils.findAccountByName(
-                       AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(), userName)
+                       AccountManagerFacadeProvider.getInstance().getGoogleAccounts().or(
+                               Collections.emptyList()),
+                       userName)
                 != null;
     }
 
