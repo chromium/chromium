@@ -4244,6 +4244,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/jank_tracker/JankMetricMeasurementTest.java",
       "android/junit/src/org/chromium/base/memory/MemoryPressureMonitorTest.java",
       "android/junit/src/org/chromium/base/metrics/CachingUmaRecorderTest.java",
+      "android/junit/src/org/chromium/base/metrics/test/ShadowRecordHistogramTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildConnectionAllocatorTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildProcessConnectionTest.java",
       "android/junit/src/org/chromium/base/supplier/ObservableSupplierImplTest.java",

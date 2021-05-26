@@ -48,5 +48,12 @@ jint JNI_RecordHistogram_GetHistogramTotalCountForTesting(
   return histogram->SnapshotSamples()->TotalCount();
 }
 
+void JNI_RecordHistogram_ForgetHistogramForTesting(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& histogram_name) {
+  StatisticsRecorder::ForgetHistogramForTesting(
+      android::ConvertJavaStringToUTF8(env, histogram_name));
+}
+
 }  // namespace android
 }  // namespace base

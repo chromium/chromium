@@ -282,11 +282,22 @@ public class RecordHistogram {
     }
 
     /**
+     * Forgets the given histogram, for testing purposes only.
+     *
+     * @param name name of the histogram to forget
+     */
+    @VisibleForTesting
+    public static void forgetHistogramForTesting(String name) {
+        RecordHistogramJni.get().forgetHistogramForTesting(name);
+    }
+
+    /**
      * Natives API to read metrics reported when testing.
      */
     @NativeMethods
     public interface Natives {
         int getHistogramValueCountForTesting(String name, int sample);
         int getHistogramTotalCountForTesting(String name);
+        void forgetHistogramForTesting(String name);
     }
 }
