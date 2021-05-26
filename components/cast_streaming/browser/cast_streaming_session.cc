@@ -5,12 +5,14 @@
 #include "components/cast_streaming/browser/cast_streaming_session.h"
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/cast_streaming/browser/cast_message_port_impl.h"
 #include "components/cast_streaming/browser/config_conversions.h"
 #include "components/cast_streaming/browser/stream_consumer.h"
 #include "components/openscreen_platform/network_util.h"
 #include "components/openscreen_platform/task_runner.h"
+#include "media/base/timestamp_constants.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/openscreen/src/cast/streaming/receiver.h"
@@ -106,7 +108,7 @@ class CastStreamingSession::Internal
     // We can use unretained pointers here because StreamConsumer is owned by
     // this object and |client_| is guaranteed to outlive this object.
     audio_consumer_ = std::make_unique<StreamConsumer>(
-        audio_receiver, std::move(data_pipe_producer),
+        audio_receiver, media::kNoTimestamp, std::move(data_pipe_producer),
         base::BindRepeating(
             &CastStreamingSession::Client::OnAudioBufferReceived,
             base::Unretained(client_)),
@@ -138,8 +140,13 @@ class CastStreamingSession::Internal
     // this object and |client_| is guaranteed to outlive this object.
     // |data_timeout_timer_| is also owned by this object and will outlive both
     // StreamConsumers.
+    // The frame duration is set to 10 minutes to work around cases where
+    // senders do not send data for a long period of time. We end up with
+    // overlapping video frames but this is fine since the media pipeline mostly
+    // considers the playout time when deciding which frame to present or play
     video_consumer_ = std::make_unique<StreamConsumer>(
-        video_receiver, std::move(data_pipe_producer),
+        video_receiver, base::TimeDelta::FromMinutes(10),
+        std::move(data_pipe_producer),
         base::BindRepeating(
             &CastStreamingSession::Client::OnVideoBufferReceived,
             base::Unretained(client_)),

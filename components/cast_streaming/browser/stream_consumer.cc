@@ -10,6 +10,7 @@
 namespace cast_streaming {
 
 StreamConsumer::StreamConsumer(openscreen::cast::Receiver* receiver,
+                               base::TimeDelta frame_duration,
                                mojo::ScopedDataPipeProducerHandle data_pipe,
                                FrameReceivedCB frame_received_cb,
                                base::RepeatingClosure on_new_frame)
@@ -19,6 +20,7 @@ StreamConsumer::StreamConsumer(openscreen::cast::Receiver* receiver,
       pipe_watcher_(FROM_HERE,
                     mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                     base::SequencedTaskRunnerHandle::Get()),
+      frame_duration_(frame_duration),
       on_new_frame_(std::move(on_new_frame)) {
   DCHECK(receiver_);
   receiver_->SetConsumer(this);
@@ -156,16 +158,8 @@ void StreamConsumer::OnFramesReady(int next_frame_buffer_size) {
            << "Received new frame. Timestamp: " << playout_time
            << ", is_key_frame: " << is_key_frame;
 
-  // Senders may not send a new video frame for a very long time if there is no
-  // update to send. When that happens, the Chromium media pipeline may end up
-  // deciding it does not have enough data, resulting in the stream being
-  // stalled. Setting the frame duration to 10 minutes prevents the media
-  // pipeline from considering the stream as being stalled. As a result, we end
-  // up with overlapping frames but this is fine since the media pipeline mostly
-  // considers the playout time when deciding which frame to present or play.
   frame_received_cb_.Run(media::mojom::DecoderBuffer::New(
-      playout_time /* timestamp */,
-      base::TimeDelta::FromMinutes(10) /* duration */,
+      playout_time /* timestamp */, frame_duration_,
       false /* is_end_of_stream */, buffer_size, is_key_frame,
       media::EmptyExtraData(), media::mojom::DecryptConfigPtr(),
       base::TimeDelta() /* front_discard */,

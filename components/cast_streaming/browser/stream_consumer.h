@@ -34,6 +34,7 @@ class StreamConsumer : public openscreen::cast::Receiver::Consumer {
   // been written to |data_pipe|. On error, |data_pipe| will be closed.
   // On every new frame, |on_new_frame| will be called.
   StreamConsumer(openscreen::cast::Receiver* receiver,
+                 base::TimeDelta frame_duration,
                  mojo::ScopedDataPipeProducerHandle data_pipe,
                  FrameReceivedCB frame_received_cb,
                  base::RepeatingClosure on_new_frame);
@@ -74,6 +75,8 @@ class StreamConsumer : public openscreen::cast::Receiver::Consumer {
 
   // Offset for frames playout time. This is initialized by the first frame.
   base::TimeDelta playout_offset_ = base::TimeDelta::Max();
+
+  const base::TimeDelta frame_duration_;
 
   // Closure called on every new frame.
   base::RepeatingClosure on_new_frame_;
