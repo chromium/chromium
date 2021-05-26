@@ -132,6 +132,8 @@ bool ChannelProxy::Context::OnMessageReceived(const Message& message) {
 
 // Called on the IPC::Channel thread
 bool ChannelProxy::Context::OnMessageReceivedNoFilter(const Message& message) {
+  recordreplay::Assert("ChannelProxy::Context::OnMessageReceivedNoFilter %lu %d",
+                       recordreplay::PointerId(this), message.routing_id());
   GetTaskRunner(message.routing_id())
       ->PostTask(FROM_HERE,
                  base::BindOnce(&Context::OnDispatchMessage, this, message));

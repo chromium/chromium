@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
@@ -397,6 +398,9 @@ void SyncChannel::SyncContext::Clear() {
 }
 
 bool SyncChannel::SyncContext::OnMessageReceived(const Message& msg) {
+  recordreplay::Assert("SyncChannel::SyncContext::OnMessageReceived %lu %d",
+                       recordreplay::PointerId(this), msg.routing_id());
+
   // Give the filters a chance at processing this message.
   if (TryFilters(msg))
     return true;
