@@ -678,7 +678,7 @@ TEST_F(AccessibilityTest, AXObjectComparisonOperators) {
 
 TEST_F(AccessibilityTest, AXObjectUnignoredAncestorsIterator) {
   SetBodyInnerHTML(
-      R"HTML(<p id="paragraph"><b role="none" id="bold"><br id="br"></b></p>)HTML");
+      R"HTML(<p id="paragraph"><b id="bold"><br id="br"></b></p>)HTML");
 
   AXObject* root = GetAXRootObject();
   ASSERT_NE(nullptr, root);
