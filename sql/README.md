@@ -276,12 +276,21 @@ using `sql::Statement::ColumnTime()`.
 Column types should not include information ignored by SQLite, such as numeric
 precision or scale specifiers, or string length specifiers.
 
-Columns should have the `NOT NULL` constraint whenever possible. This saves
-maintainers from having to reason about the less intuitive cases of
-[`NULL` handling](https://sqlite.org/nulls.html).
+Columns should have
+[`NOT NULL` constraints](https://sqlite.org/lang_createtable.html#not_null_constraints)
+whenever possible. This saves maintainers from having to reason about the less
+intuitive cases of [`NULL` handling](https://sqlite.org/nulls.html).
 
-Columns should avoid `DEFAULT` values. This moves the burden of checking that
-`INSERT` statements aren't missing any columns from the code reviewer to SQLite.
+`NOT NULL` constraints must be explicitly stated in column definitions that
+include `PRIMARY KEY` specifiers. For historical reasons, SQLite
+[allows NULL primary keys](https://sqlite.org/lang_createtable.html#the_primary_key)
+in most cases.  When a table's primary key is composed of multiple columns,
+each column's definition should have a `NOT NULL` constraint.
+
+Columns should avoid `DEFAULT` values. Columns that have `NOT NULL` constraints
+and lack a `DEFAULT` value are easier to review and maintain, as SQLite takes
+over the burden of checking that `INSERT` statements aren't missing these
+columns.
 
 Surrogate primary keys should use the column type `INTEGER PRIMARY KEY`, to take
 advantage of SQLite's rowid optimizations.
