@@ -827,7 +827,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
     auto url_data = url_index_->GetByUrl(
         url, static_cast<UrlData::CorsMode>(cors_mode),
         is_cache_disabled ? UrlIndex::kCacheDisabled : UrlIndex::kNormal);
-    mb_data_source_ = new MultibufferDataSource(
+    mb_data_source_ = new MultiBufferDataSource(
         main_task_runner_, std::move(url_data), media_log_.get(),
         buffered_data_source_host_.get(),
         base::BindRepeating(&WebMediaPlayerImpl::NotifyDownloading,
@@ -1085,16 +1085,16 @@ bool WebMediaPlayerImpl::SetSinkId(
   return true;
 }
 
-STATIC_ASSERT_ENUM(WebMediaPlayer::kPreloadNone, MultibufferDataSource::NONE);
+STATIC_ASSERT_ENUM(WebMediaPlayer::kPreloadNone, MultiBufferDataSource::NONE);
 STATIC_ASSERT_ENUM(WebMediaPlayer::kPreloadMetaData,
-                   MultibufferDataSource::METADATA);
-STATIC_ASSERT_ENUM(WebMediaPlayer::kPreloadAuto, MultibufferDataSource::AUTO);
+                   MultiBufferDataSource::METADATA);
+STATIC_ASSERT_ENUM(WebMediaPlayer::kPreloadAuto, MultiBufferDataSource::AUTO);
 
 void WebMediaPlayerImpl::SetPreload(WebMediaPlayer::Preload preload) {
   DVLOG(1) << __func__ << "(" << preload << ")";
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  preload_ = static_cast<MultibufferDataSource::Preload>(preload);
+  preload_ = static_cast<MultiBufferDataSource::Preload>(preload);
   if (mb_data_source_)
     mb_data_source_->SetPreload(preload_);
 }
@@ -1667,7 +1667,7 @@ void WebMediaPlayerImpl::OnPipelineSuspended() {
       // will cancel upon destruction of this class and |mb_data_source_| is
       // gauranteeed to outlive us.
       have_enough_after_lazy_load_cb_.Reset(
-          base::BindOnce(&MultibufferDataSource::OnBufferingHaveEnough,
+          base::BindOnce(&MultiBufferDataSource::OnBufferingHaveEnough,
                          base::Unretained(mb_data_source_), true));
       main_task_runner_->PostDelayedTask(
           FROM_HERE, have_enough_after_lazy_load_cb_.callback(),
@@ -2614,9 +2614,9 @@ void WebMediaPlayerImpl::DataSourceInitialized(bool success) {
   }
 
   // No point in preloading data as we'll probably just throw it away anyways.
-  if (IsStreaming() && preload_ > MultibufferDataSource::METADATA &&
+  if (IsStreaming() && preload_ > MultiBufferDataSource::METADATA &&
       mb_data_source_) {
-    mb_data_source_->SetPreload(MultibufferDataSource::METADATA);
+    mb_data_source_->SetPreload(MultiBufferDataSource::METADATA);
   }
 
   StartPipeline();
@@ -2837,7 +2837,7 @@ void WebMediaPlayerImpl::StartPipeline() {
 
   // If possible attempt to avoid decoder spool up until playback starts.
   Pipeline::StartType start_type = Pipeline::StartType::kNormal;
-  if (!chunk_demuxer_ && preload_ == MultibufferDataSource::METADATA &&
+  if (!chunk_demuxer_ && preload_ == MultiBufferDataSource::METADATA &&
       !client_->CouldPlayIfEnoughData() && !IsStreaming()) {
     start_type =
         (has_poster_ || base::FeatureList::IsEnabled(kPreloadMetadataLazyLoad))

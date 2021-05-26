@@ -132,7 +132,7 @@ class MEDIA_BLINK_EXPORT MultiBuffer {
     virtual void SetDeferred(bool deferred) = 0;
   };
 
-  // Multibuffers use a global shared LRU to free memory.
+  // MultiBuffers use a global shared LRU to free memory.
   // This effectively means that recently used multibuffers can
   // borrow memory from less recently used ones.
   class MEDIA_BLINK_EXPORT GlobalLRU : public base::RefCounted<GlobalLRU> {

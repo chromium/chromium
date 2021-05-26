@@ -35,9 +35,9 @@ class MultiBufferReader;
 // A data source capable of loading URLs and buffering the data using an
 // in-memory sliding window.
 //
-// MultibufferDataSource must be created and destroyed on the thread associated
+// MultiBufferDataSource must be created and destroyed on the thread associated
 // with the |task_runner| passed in the constructor.
-class MEDIA_BLINK_EXPORT MultibufferDataSource : public DataSource {
+class MEDIA_BLINK_EXPORT MultiBufferDataSource : public DataSource {
  public:
   using DownloadingCB = base::RepeatingCallback<void(bool)>;
   using RedirectCB = base::RepeatingCallback<void()>;
@@ -58,13 +58,13 @@ class MEDIA_BLINK_EXPORT MultibufferDataSource : public DataSource {
   // |url| and |cors_mode| are passed to the object. Buffered byte range changes
   // will be reported to |host|. |downloading_cb| will be called whenever the
   // downloading/paused state of the source changes.
-  MultibufferDataSource(
+  MultiBufferDataSource(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
       scoped_refptr<UrlData> url_data,
       MediaLog* media_log,
       BufferedDataSourceHost* host,
       DownloadingCB downloading_cb);
-  ~MultibufferDataSource() override;
+  ~MultiBufferDataSource() override;
 
   // Executes |init_cb| with the result of initialization when it has completed.
   //
@@ -148,7 +148,7 @@ class MEDIA_BLINK_EXPORT MultibufferDataSource : public DataSource {
   // Set reader_ while asserting proper locking.
   void SetReader(MultiBufferReader* reader);
 
-  friend class MultibufferDataSourceTest;
+  friend class MultiBufferDataSourceTest;
 
   // Task posted to perform actual reading on the render thread.
   void ReadTask();
@@ -277,20 +277,20 @@ class MEDIA_BLINK_EXPORT MultibufferDataSource : public DataSource {
   DownloadingCB downloading_cb_;
 
   // Preload this many seconds of data by default.
-  media::Tuneable<int> preload_seconds_ = {"SrcMediaMultibufferPreloadSeconds",
+  media::Tuneable<int> preload_seconds_ = {"SrcMediaMultiBufferPreloadSeconds",
                                            0, 10, 60};
 
   // Keep this many seconds of data for going back by default.
   media::Tuneable<int> keep_after_playback_seconds_ = {
-      "SrcMediaMultibufferKeepAfterPlaybackSeconds", 0, 2, 60};
+      "SrcMediaMultiBufferKeepAfterPlaybackSeconds", 0, 2, 60};
 
   // Disallow rebinding WeakReference ownership to a different thread by keeping
   // a persistent reference. This avoids problems with the thread-safety of
   // reaching into this class from multiple threads to attain a WeakPtr.
-  base::WeakPtr<MultibufferDataSource> weak_ptr_;
-  base::WeakPtrFactory<MultibufferDataSource> weak_factory_{this};
+  base::WeakPtr<MultiBufferDataSource> weak_ptr_;
+  base::WeakPtrFactory<MultiBufferDataSource> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(MultibufferDataSource);
+  DISALLOW_COPY_AND_ASSIGN(MultiBufferDataSource);
 };
 
 }  // namespace media

@@ -68,7 +68,7 @@ class MEDIA_BLINK_EXPORT ResourceMultiBufferDataProvider
 
   // Use protected instead of private for testing purposes.
  protected:
-  friend class MultibufferDataSourceTest;
+  friend class MultiBufferDataSourceTest;
   friend class ResourceMultiBufferDataProviderTest;
   friend class MockBufferedDataSource;
 

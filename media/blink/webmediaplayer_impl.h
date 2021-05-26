@@ -634,7 +634,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
       WebMediaPlayer::kReadyStateHaveNothing;
 
   // Preload state for when |data_source_| is created after setPreload().
-  MultibufferDataSource::Preload preload_ = MultibufferDataSource::METADATA;
+  MultiBufferDataSource::Preload preload_ = MultiBufferDataSource::METADATA;
 
   // Poster state (for UMA reporting).
   bool has_poster_ = false;
@@ -750,7 +750,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   //
   // |demuxer_| will contain the appropriate demuxer based on which resource
   // load strategy we're using.
-  MultibufferDataSource* mb_data_source_ = nullptr;
+  MultiBufferDataSource* mb_data_source_ = nullptr;
   std::unique_ptr<DataSource> data_source_;
   std::unique_ptr<Demuxer> demuxer_;
   ChunkDemuxer* chunk_demuxer_ = nullptr;

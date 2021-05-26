@@ -685,7 +685,7 @@ class WebMediaPlayerImplTest
             LoadType load_type = LoadType::kFullyBuffered) {
     const bool is_streaming = load_type == LoadType::kStreaming;
 
-    // The URL is used by MultibufferDataSource to determine if it should assume
+    // The URL is used by MultiBufferDataSource to determine if it should assume
     // the resource is fully buffered locally. We can use a fake one here since
     // we're injecting the response artificially. It's value is unknown to the
     // underlying demuxer.

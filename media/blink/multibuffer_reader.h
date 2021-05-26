@@ -110,7 +110,7 @@ class MEDIA_BLINK_EXPORT MultiBufferReader : public MultiBuffer::Reader {
   }
 
  private:
-  friend class MultibufferDataSourceTest;
+  friend class MultiBufferDataSourceTest;
 
   // Returns the block for a particular byte position.
   MultiBufferBlockId block(int64_t byte_pos) const {
