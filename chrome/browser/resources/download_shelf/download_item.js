@@ -23,8 +23,8 @@ const DisplayMode = {
   kNormal: 'normal',
   // Shows icon + warning text + discard button + context menu button.
   kWarn: 'warn',
-  // Shows icon + warning text + save button + discard button.
-  kWarnSave: 'warn-save'
+  // Shows icon + warning text + keep button + discard button.
+  kWarnKeep: 'warn-keep'
 };
 
 export class DownloadItemElement extends CustomElement {
@@ -53,6 +53,8 @@ export class DownloadItemElement extends CustomElement {
         .addEventListener('click', e => this.onDropdownButtonClick_(e));
     this.$('#discard-button')
         .addEventListener('click', e => this.onDiscardButtonClick_(e));
+    this.$('#keep-button')
+        .addEventListener('click', e => this.onKeepButtonClick_(e));
     this.addEventListener('contextmenu', e => this.onContextMenu_(e));
   }
 
@@ -147,12 +149,12 @@ export class DownloadItemElement extends CustomElement {
     } else if (
         item.mode === DownloadMode.kDangerous ||
         item.mode === DownloadMode.kMixedContentWarn) {
-      downloadElement.dataset.displayMode = DisplayMode.kWarnSave;
+      downloadElement.dataset.displayMode = DisplayMode.kWarnKeep;
     } else {
       downloadElement.dataset.displayMode = DisplayMode.kWarn;
     }
 
-    this.$('#save-button').innerText = item.warningConfirmButtonText;
+    this.$('#keep-button').innerText = item.warningConfirmButtonText;
     this.$('#warning-text').innerText = this.clampedWarningText_;
   }
 
@@ -179,8 +181,12 @@ export class DownloadItemElement extends CustomElement {
 
   /** @param {!Event} e */
   onDiscardButtonClick_(e) {
-    // TODO(crbug.com/1182529): Notify C++ through mojo. Remove this item
-    // from download_list.
+    this.apiProxy_.discardDownload(this.item.id);
+  }
+
+  /** @param {!Event} e */
+  onKeepButtonClick_(e) {
+    this.apiProxy_.keepDownload(this.item.id);
   }
 
   /**

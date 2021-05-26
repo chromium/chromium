@@ -201,6 +201,12 @@ interface PageHandler {
   // Notify the Views component to hide itself.
   DoClose();
 
+  // Discard a download item.
+  DiscardDownload(uint32 download_id);
+
+  // Keep a download item.
+  KeepDownload(uint32 download_id);
+
   // Returns an array of download items.
   GetDownloads() => (array<DownloadItem> download_items);
 

@@ -84,6 +84,9 @@ export class DownloadListElement extends CustomElement {
           if (index >= 0) {
             this.items_.splice(index, 1);
             this.updateElements_();
+            if (this.items_.length === 0) {
+              this.apiProxy_.doClose();
+            }
           }
         }),
         callbackRouter.onDownloadOpened.addListener((downloadId) => {

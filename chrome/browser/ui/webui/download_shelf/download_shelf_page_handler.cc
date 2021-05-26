@@ -40,6 +40,14 @@ void DownloadShelfPageHandler::DoClose() {
   download_shelf_ui_->DoClose();
 }
 
+void DownloadShelfPageHandler::DiscardDownload(uint32_t download_id) {
+  download_shelf_ui_->DiscardDownload(download_id);
+}
+
+void DownloadShelfPageHandler::KeepDownload(uint32_t download_id) {
+  download_shelf_ui_->KeepDownload(download_id);
+}
+
 void DownloadShelfPageHandler::GetDownloads(GetDownloadsCallback callback) {
   TRACE_EVENT0("browser",
                "custom_metric:DownloadShelfPageHandler:GetDownloads");

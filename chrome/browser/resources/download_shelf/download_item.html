@@ -6,7 +6,7 @@
   --spinner-color: var(--google-grey-900-rgb);
   --text-width: 140px;
   --warn-text-width: 241px;
-  --warn-save-text-width: 318px;
+  --warn-keep-text-width: 318px;
   --transparent-button-color: rgba(0, 0, 0, 0);
 }
 
@@ -165,7 +165,7 @@
   line-height: 150%;
 }
 
-#save-button {
+#keep-button {
   display: none;
   margin-inline-start: 4px;
   z-index: 2;
@@ -181,8 +181,8 @@
   width: var(--warn-text-width);
 }
 
-[data-display-mode='warn-save'] #text-container {
-  width: var(--warn-save-text-width);
+[data-display-mode='warn-keep'] #text-container {
+  width: var(--warn-keep-text-width);
 }
 
 [data-display-mode^='warn'] .progress {
@@ -203,11 +203,11 @@
   display: none;
 }
 
-[data-display-mode='warn-save'] #save-button {
+[data-display-mode='warn-keep'] #keep-button {
   display: block;
 }
 
-[data-display-mode='warn-save'] #dropdown-button {
+[data-display-mode='warn-keep'] #dropdown-button {
   display: none;
 }
 
@@ -234,7 +234,7 @@
     <div id="status-text"></div>
     <div id="warning-text"></div>
   </div>
-  <cr-button id="save-button">
+  <cr-button id="keep-button">
     <!-- Text depends on file type so fill it in programmatically. -->
   </cr-button>
   <cr-button id="discard-button">$i18n{discardButtonText}</cr-button>

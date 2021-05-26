@@ -24,6 +24,8 @@ class TestDownloadShelfHandler : public DownloadShelfHandler {
  public:
   MOCK_METHOD0(DoClose, void());
   MOCK_METHOD0(DoShowAll, void());
+  MOCK_METHOD1(DiscardDownload, void(uint32_t));
+  MOCK_METHOD1(KeepDownload, void(uint32_t));
   MOCK_METHOD1(GetDownloads,
                void(download_shelf::mojom::PageHandler::GetDownloadsCallback));
   MOCK_METHOD4(ShowContextMenu,

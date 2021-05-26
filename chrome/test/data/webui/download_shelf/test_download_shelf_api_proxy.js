@@ -11,6 +11,8 @@ export class TestDownloadShelfApiProxy extends TestBrowserProxy {
     super([
       'doClose',
       'doShowAll',
+      'discardDownload',
+      'keepDownload',
       'getDownloads',
       'getFileIcon',
       'openDownload',
@@ -36,6 +38,16 @@ export class TestDownloadShelfApiProxy extends TestBrowserProxy {
   /** @override */
   doShowAll() {
     this.methodCalled('doShowAll');
+  }
+
+  /** @override */
+  discardDownload(downloadId) {
+    this.methodCalled('discardDownload', [downloadId]);
+  }
+
+  /** @override */
+  keepDownload(downloadId) {
+    this.methodCalled('keepDownload', [downloadId]);
   }
 
   /** @override */

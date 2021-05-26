@@ -28,6 +28,12 @@ export class DownloadShelfApiProxy {
    */
   getFileIcon(downloadId) {}
 
+  /** @param {number} downloadId */
+  discardDownload(downloadId) {}
+
+  /** @param {number} downloadId */
+  keepDownload(downloadId) {}
+
   /**
    * @param {number} downloadId
    * @param {number} clientX
@@ -82,6 +88,16 @@ export class DownloadShelfApiProxyImpl {
     return new Promise(resolve => {
       chrome.downloads.getFileIcon(downloadId, resolve);
     });
+  }
+
+  /** @override */
+  discardDownload(downloadId) {
+    this.handler.discardDownload(downloadId);
+  }
+
+  /** @override */
+  keepDownload(downloadId) {
+    this.handler.keepDownload(downloadId);
   }
 
   /** @override */

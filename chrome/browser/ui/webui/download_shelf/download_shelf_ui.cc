@@ -7,6 +7,7 @@
 #include "base/location.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -88,14 +89,40 @@ void DownloadShelfUI::DoShowAll() {
     embedder()->DoShowAll();
 }
 
+void DownloadShelfUI::DiscardDownload(uint32_t download_id) {
+  DownloadUIModel* download_ui_model = FindDownloadById(download_id);
+  // WebUI's view is updated asynchronously via Mojo IPC, so the
+  // corresponding C++ DownloadUIModel might already be gone due
+  // to races with other UI surfaces.
+  if (!download_ui_model)
+    return;
+
+  DownloadCommands(download_ui_model).ExecuteCommand(DownloadCommands::DISCARD);
+}
+
+void DownloadShelfUI::KeepDownload(uint32_t download_id) {
+  DownloadUIModel* download_ui_model = FindDownloadById(download_id);
+  // WebUI's view is updated asynchronously via Mojo IPC, so the
+  // corresponding C++ DownloadUIModel might already be gone due
+  // to races with other UI surfaces.
+  if (!download_ui_model)
+    return;
+
+  DownloadCommands(download_ui_model).ExecuteCommand(DownloadCommands::KEEP);
+}
+
 void DownloadShelfUI::ShowContextMenu(
     uint32_t download_id,
     int32_t client_x,
     int32_t client_y,
     base::OnceClosure on_menu_will_show_callback) {
   DownloadUIModel* download_ui_model = FindDownloadById(download_id);
+  // WebUI's view is updated asynchronously via Mojo IPC, so the
+  // corresponding C++ DownloadUIModel might already be gone due
+  // to races with other UI surfaces.
   if (!download_ui_model)
     return;
+
   if (embedder()) {
     embedder()->ShowDownloadContextMenu(download_ui_model,
                                         gfx::Point(client_x, client_y),
