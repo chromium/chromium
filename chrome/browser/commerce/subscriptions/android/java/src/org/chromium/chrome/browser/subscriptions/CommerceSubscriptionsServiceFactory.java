@@ -20,6 +20,7 @@ public class CommerceSubscriptionsServiceFactory {
     protected static final Map<Profile, CommerceSubscriptionsService>
             sProfileToSubscriptionsService = new HashMap<>();
     private static ProfileManager.Observer sProfileManagerObserver;
+    private static CommerceSubscriptionsService sSubscriptionsServiceForTesting;
 
     /** Creates new instance. */
     public CommerceSubscriptionsServiceFactory() {
@@ -56,6 +57,7 @@ public class CommerceSubscriptionsServiceFactory {
      *         profile.
      */
     public CommerceSubscriptionsService getForLastUsedProfile() {
+        if (sSubscriptionsServiceForTesting != null) return sSubscriptionsServiceForTesting;
         Profile profile = Profile.getLastUsedRegularProfile();
         CommerceSubscriptionsService service = sProfileToSubscriptionsService.get(profile);
         if (service == null) {
@@ -63,5 +65,12 @@ public class CommerceSubscriptionsServiceFactory {
             sProfileToSubscriptionsService.put(profile, service);
         }
         return service;
+    }
+
+    /** Sets the CommerceSubscriptionsService for testing. */
+    @VisibleForTesting
+    public static void setSubscriptionsServiceForTesting(
+            CommerceSubscriptionsService subscriptionsService) {
+        sSubscriptionsServiceForTesting = subscriptionsService;
     }
 }
