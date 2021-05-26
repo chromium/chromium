@@ -182,6 +182,10 @@
 #include "content/browser/net/reporting_service_proxy.h"
 #endif
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_ASH)
+#include "content/browser/service_sandbox_type.h"
+#endif
+
 #if defined(OS_MAC)
 #include "content/browser/renderer_host/text_input_host_impl.h"
 #include "third_party/blink/public/mojom/input/text_input_host.mojom.h"

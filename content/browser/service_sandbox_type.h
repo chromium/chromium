@@ -5,7 +5,9 @@
 #ifndef CONTENT_BROWSER_SERVICE_SANDBOX_TYPE_H_
 #define CONTENT_BROWSER_SERVICE_SANDBOX_TYPE_H_
 
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_process_host.h"
@@ -143,5 +145,19 @@ inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<video_capture::mojom::VideoCaptureService>() {
   return sandbox::policy::SandboxType::kVideoCapture;
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_ASH)
+// shape_detection::mojom::ShapeDetectionService
+namespace shape_detection {
+namespace mojom {
+class ShapeDetectionService;
+}  // namespace mojom
+}  // namespace shape_detection
+template <>
+inline sandbox::policy::SandboxType content::GetServiceSandboxType<
+    shape_detection::mojom::ShapeDetectionService>() {
+  return sandbox::policy::SandboxType::kUtility;
+}
+#endif
 
 #endif  // CONTENT_BROWSER_SERVICE_SANDBOX_TYPE_H_
