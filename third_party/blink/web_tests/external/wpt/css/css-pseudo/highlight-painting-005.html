@@ -1,0 +1,32 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Pseudo-Elements Test: highlight painting</title>
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#highlight-painting">
+<link rel="help" href="https://drafts.csswg.org/css-text-decor-4/#painting">
+<link rel="help" href="https://www.w3.org/TR/CSS22/zindex.html#painting-order">
+<link rel="match" href="highlight-painting-005-ref.html">
+<meta name="assert" value="originating element decorations are lifted to paint over the ::selection overlay background">
+<script src="support/selections.js"></script>
+<link rel="stylesheet" href="support/highlights.css">
+<style>
+    main {
+        font-size: 7em;
+        margin: 0.5em;
+        width: min-content;
+        height: 0.25em;
+        text-decoration: currentColor solid line-through;
+    }
+    main::selection {
+        background: white;
+    }
+</style>
+<p>Test passes if all of the text below is decorated with a line-through.
+<main class="highlight_reftest">quick</main>
+<script>
+    const target = document.querySelector("main");
+    selectRangeWith(range => {
+        range.selectNodeContents(target);
+        range.setStart(target.childNodes[0], 1);
+        range.setEnd(target.childNodes[0], 4);
+    });
+</script>

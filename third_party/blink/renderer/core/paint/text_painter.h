@@ -11,6 +11,7 @@
 
 namespace blink {
 
+class TextDecorationOffsetBase;
 class TextRun;
 struct TextRunPaintInfo;
 class LayoutTextCombine;
@@ -48,6 +49,17 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
              unsigned length,
              const TextPaintStyle&,
              DOMNodeId node_id);
+
+  void PaintDecorationsExceptLineThrough(const TextDecorationOffsetBase&,
+                                         TextDecorationInfo&,
+                                         const PaintInfo&,
+                                         const Vector<AppliedTextDecoration>&,
+                                         const TextPaintStyle& text_style,
+                                         bool* has_line_through_decoration);
+  void PaintDecorationsOnlyLineThrough(TextDecorationInfo&,
+                                       const PaintInfo&,
+                                       const Vector<AppliedTextDecoration>&,
+                                       const TextPaintStyle&);
 
  private:
   template <PaintInternalStep step>
