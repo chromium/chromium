@@ -427,4 +427,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) CrosDisksClient : public DBusClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
+namespace ash {
+using ::chromeos::MOUNT_ERROR_NONE;
+using ::chromeos::MOUNT_TYPE_DEVICE;
+using ::chromeos::MountError;
+using ::chromeos::MountType;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_CROS_DISKS_CLIENT_H_

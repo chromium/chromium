@@ -27,10 +27,6 @@ namespace ash {
 
 namespace {
 
-namespace disks = ::chromeos::disks;
-using ::chromeos::MountError;
-using ::chromeos::MountType;
-
 constexpr base::FilePath::CharType kExternalUpdateManifest[] =
     "external_update.json";
 constexpr char kExternalCrx[] = "external_crx";

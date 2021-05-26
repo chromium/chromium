@@ -10,7 +10,7 @@
 namespace arc {
 
 void ArcUsbHostBridgeDelegate::AttachDevicesToArcVm() {
-  auto* const usb_detector = chromeos::CrosUsbDetector::Get();
+  auto* const usb_detector = ash::CrosUsbDetector::Get();
   if (usb_detector && IsArcVmEnabled())
     usb_detector->ConnectSharedDevicesOnVmStartup(kArcVmName);
 }

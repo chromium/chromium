@@ -38,7 +38,7 @@
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -162,14 +162,14 @@ class CrosUsbNotificationDelegate
 
   void Close(bool by_user) override {
     if (by_user)
-      disposition_ = chromeos::CrosUsbNotificationClosed::kByUser;
+      disposition_ = CrosUsbNotificationClosed::kByUser;
   }
 
  private:
   ~CrosUsbNotificationDelegate() override = default;
   void HandleConnectToVm(const std::string& vm_name) {
     disposition_ = CrosUsbNotificationClosed::kConnectToLinux;
-    chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
+    CrosUsbDetector* detector = CrosUsbDetector::Get();
     if (detector) {
       detector->AttachUsbDeviceToVm(vm_name, guid_, base::DoNothing());
       return;
@@ -507,7 +507,7 @@ void CrosUsbDetector::OnMountEvent(
     return;
   }
 
-  const chromeos::disks::Disk* disk =
+  const auto* disk =
       disks::DiskMountManager::GetInstance()->FindDiskBySourcePath(
           mount_info.source_path);
 
@@ -965,4 +965,4 @@ void CrosUsbDetector::RelinquishDeviceClaim(const std::string& guid) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -259,4 +259,11 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) DiskMountManager {
 }  // namespace disks
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when chromeos/disks is moved to ash.
+namespace ash {
+namespace disks {
+using ::chromeos::disks::DiskMountManager;
+}  // namespace disks
+}  // namespace ash
+
 #endif  // CHROMEOS_DISKS_DISK_MOUNT_MANAGER_H_

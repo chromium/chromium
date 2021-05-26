@@ -31,6 +31,9 @@
 #include "chrome/browser/ash/system/breakpad_consent_watcher.h"
 // TODO(https://crbug.com/1164001): forward declare when moved to
 // chrome/browser/ash/.
+#include "chrome/browser/ash/usb/cros_usb_detector.h"
+// TODO(https://crbug.com/1164001): forward declare when moved to
+// chrome/browser/ash/.
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/chromeos/external_metrics.h"
@@ -74,7 +77,6 @@ class LockToSingleUserManager;
 namespace chromeos {
 
 class BulkPrintersCalculatorFactory;
-class CrosUsbDetector;
 class EventRewriterDelegateImpl;
 class FastTransitionObserver;
 class IdleActionWarningObserver;
