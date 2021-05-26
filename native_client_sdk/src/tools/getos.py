@@ -10,8 +10,6 @@ the location of Chrome.  This is used, for example, to determine the correct
 Toolchain to invoke.
 """
 
-from __future__ import print_function
-
 import argparse
 import os
 import re
@@ -265,7 +263,7 @@ def main(args):
     out = platform
 
   if out:
-    print(out)
+    print out
   return 0
 
 
