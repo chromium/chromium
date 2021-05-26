@@ -10,6 +10,8 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/js/icon.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
@@ -19,28 +21,30 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://re
 
 import {BrowserService} from './browser_service.js';
 import {UMA_MAX_BUCKET_VALUE, UMA_MAX_SUBSET_BUCKET_VALUE} from './constants.js';
+import {HistoryEntry} from './externs.js';
 
+export interface HistoryItemElement {
+  $: {
+    'checkbox': CrCheckboxElement,
+    'icon': HTMLElement,
+    'link': HTMLElement,
+    'menu-button': CrIconButtonElement,
+    'time-accessed': HTMLElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- */
 const HistoryItemElementBase =
-    mixinBehaviors([FocusRowBehavior], PolymerElement);
+    mixinBehaviors([FocusRowBehavior], PolymerElement) as
+    {new (): PolymerElement & FocusRowBehavior};
 
-/** @polymer */
 export class HistoryItemElement extends HistoryItemElementBase {
   static get is() {
     return 'history-item';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      // Underlying HistoryEntry data for this item. Contains read-only fields
+      // Underlying HistoryEntry data for this.item. Contains read-only fields
       // from the history backend, as well as fields computed by history-list.
       item: {
         type: Object,
@@ -62,7 +66,6 @@ export class HistoryItemElement extends HistoryItemElementBase {
         reflectToAttribute: true,
       },
 
-      /** @type {Element} */
       lastFocused: {
         type: Object,
         notify: true,
@@ -78,10 +81,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
         observer: 'ironListTabIndexChanged_',
       },
 
-      selectionNotAllowed_: {
-        type: Boolean,
-        value: !loadTimeData.getBoolean('allowDeletingHistory'),
-      },
+      selectionNotAllowed_: Boolean,
 
       hasTimeGap: Boolean,
 
@@ -97,7 +97,6 @@ export class HistoryItemElement extends HistoryItemElementBase {
         value: true,
       },
 
-      /** @private */
       ariaDescribedByForHeading_: {
         type: String,
         computed: 'getAriaDescribedByForHeading_(isCardStart, isCardEnd)',
@@ -105,18 +104,17 @@ export class HistoryItemElement extends HistoryItemElementBase {
     };
   }
 
-  constructor() {
-    super();
+  private isShiftKeyDown_: boolean = false;
+  private selectionNotAllowed_: boolean =
+      !loadTimeData.getBoolean('allowDeletingHistory');
+  private eventTracker_: EventTracker = new EventTracker();
 
-    /** @private {boolean} */
-    this.mouseDown_ = false;
-
-    /** @private {boolean} */
-    this.isShiftKeyDown_ = false;
-
-    /** @private {!EventTracker} */
-    this.eventTracker_ = new EventTracker();
-  }
+  item: HistoryEntry;
+  index: number;
+  searchTerm: string;
+  isCardStart: boolean;
+  isCardEnd: boolean;
+  numberOfItems: number;
 
   /** @override */
   connectedCallback() {
@@ -124,11 +122,12 @@ export class HistoryItemElement extends HistoryItemElementBase {
 
     this.setAttribute('role', 'row');
 
-    afterNextRender(this, function() {
+    afterNextRender(this, () => {
       // Adding listeners asynchronously to reduce blocking time, since these
       // history items are items in a potentially long list.
       this.eventTracker_.add(
-          this.$.checkbox, 'keydown', e => this.onCheckboxKeydown_(e));
+          this.$.checkbox, 'keydown',
+          e => this.onCheckboxKeydown_(e as KeyboardEvent));
     });
   }
 
@@ -138,12 +137,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
     this.eventTracker_.remove(this.$.checkbox, 'keydown');
   }
 
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
+  private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
@@ -152,8 +146,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
     focusWithoutInk(this.$['menu-button']);
   }
 
-  /** @param {!KeyboardEvent} e */
-  onCheckboxKeydown_(e) {
+  private onCheckboxKeydown_(e: KeyboardEvent) {
     if (e.shiftKey && e.key === 'Tab') {
       this.focus();
     }
@@ -162,12 +155,11 @@ export class HistoryItemElement extends HistoryItemElementBase {
   /**
    * Toggle item selection whenever the checkbox or any non-interactive part
    * of the item is clicked.
-   * @param {MouseEvent} e
-   * @private
    */
-  onItemClick_(e) {
-    for (let i = 0; i < e.path.length; i++) {
-      const elem = e.path[i];
+  private onItemClick_(e: MouseEvent) {
+    const path = e.composedPath();
+    for (let i = 0; i < path.length; i++) {
+      const elem = path[i] as HTMLElement;
       if (elem.id !== 'checkbox' &&
           (elem.nodeName === 'A' || elem.nodeName === 'CR-ICON-BUTTON')) {
         return;
@@ -189,19 +181,12 @@ export class HistoryItemElement extends HistoryItemElementBase {
    * This is bound to mouse/keydown instead of click/press because this
    * has to fire before onCheckboxChange_. If we bind it to click/press,
    * it might trigger out of desired order.
-   *
-   * @param {!Event} e
-   * @private
    */
-  onCheckboxClick_(e) {
+  private onCheckboxClick_(e: MouseEvent) {
     this.isShiftKeyDown_ = e.shiftKey;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onCheckboxChange_(e) {
+  private onCheckboxChange_() {
     this.fire_('history-checkbox-select', {
       index: this.index,
       // If the user clicks or press enter/space key, oncheckboxClick_ will
@@ -212,28 +197,19 @@ export class HistoryItemElement extends HistoryItemElementBase {
     this.isShiftKeyDown_ = false;
   }
 
-  /**
-   * @param {MouseEvent} e
-   * @private
-   */
-  onItemMousedown_(e) {
+  private onItemMousedown_(e: MouseEvent) {
     // Prevent shift clicking a checkbox from selecting text.
     if (e.shiftKey) {
       e.preventDefault();
     }
   }
 
-  /**
-   * @private
-   * @return {string}
-   */
-  getEntrySummary_() {
+  private getEntrySummary_(): string {
     const item = this.item;
     return loadTimeData.getStringF(
         'entrySummary',
         this.isCardStart || this.isCardEnd ?
-            this.cardTitle_(
-                this.numberOfItems, item.dateRelativeDay, this.searchTerm) :
+            this.cardTitle_(this.numberOfItems, this.searchTerm) :
             '',
         item.dateTimeOfDay,
         item.starred ? loadTimeData.getString('bookmarked') : '', item.title,
@@ -244,33 +220,25 @@ export class HistoryItemElement extends HistoryItemElementBase {
    * The first and last rows of a card have a described-by field pointing to
    * the date header, to make sure users know if they have jumped between cards
    * when navigating up or down with the keyboard.
-   * @private
-   * @return {string}
    */
-  getAriaDescribedByForHeading_() {
+  private getAriaDescribedByForHeading_(): string {
     return this.isCardStart || this.isCardEnd ? 'date-accessed' : '';
   }
 
-  /**
-   * @param {boolean} selected
-   * @return {string}
-   * @private
-   */
-  getAriaChecked_(selected) {
+  private getAriaChecked_(selected: boolean): string {
     return selected ? 'true' : 'false';
   }
 
   /**
    * Remove bookmark of current item when bookmark-star is clicked.
-   * @private
    */
-  onRemoveBookmarkTap_() {
+  private onRemoveBookmarkTap_() {
     if (!this.item.starred) {
       return;
     }
 
-    if (this.shadowRoot.querySelector('#bookmark-star') ===
-        this.root.activeElement) {
+    if (this.shadowRoot!.querySelector('#bookmark-star') ===
+        this.shadowRoot!.activeElement) {
       focusWithoutInk(this.$['menu-button']);
     }
 
@@ -285,7 +253,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
    * Fires a custom event when the menu button is clicked. Sends the details
    * of the history item and where the menu should appear.
    */
-  onMenuButtonTap_(e) {
+  private onMenuButtonTap_(e: Event) {
     this.fire_('open-menu', {
       target: e.target,
       index: this.index,
@@ -298,9 +266,8 @@ export class HistoryItemElement extends HistoryItemElementBase {
 
   /**
    * Record metrics when a result is clicked.
-   * @private
    */
-  onLinkClick_() {
+  private onLinkClick_() {
     const browserService = BrowserService.getInstance();
     browserService.recordAction('EntryLinkClick');
 
@@ -313,8 +280,8 @@ export class HistoryItemElement extends HistoryItemElementBase {
     }
 
     const ageInDays = Math.ceil(
-        (new Date() - new Date(this.item.time)) / 1000 /* s/ms */ /
-        60 /* m/s */ / 60 /* h/m */ / 24 /* d/h */);
+        (new Date().getTime() - new Date(this.item.time).getTime()) /
+        1000 /* s/ms */ / 60 /* m/s */ / 60 /* h/m */ / 24 /* d/h */);
 
     browserService.recordHistogram(
         'HistoryPage.ClickPosition', Math.min(this.index, UMA_MAX_BUCKET_VALUE),
@@ -343,9 +310,8 @@ export class HistoryItemElement extends HistoryItemElementBase {
 
   /**
    * Set the favicon image, based on the URL of the history item.
-   * @private
    */
-  itemChanged_() {
+  private itemChanged_() {
     this.$.icon.style.backgroundImage = getFaviconForPageURL(
         this.item.url, this.item.isUrlInRemoteUserData,
         this.item.remoteIconUrlForUma);
@@ -354,13 +320,11 @@ export class HistoryItemElement extends HistoryItemElementBase {
   }
 
   /**
-   * @param {number} numberOfItems The number of items in the card.
-   * @param {string} historyDate Date of the current result.
-   * @param {string} search The search term associated with these results.
-   * @return {string} The title for this history card.
-   * @private
+   * @param numberOfItems The number of items in the card.
+   * @param search The search term associated with these results.
+   * @return The title for this history card.
    */
-  cardTitle_(numberOfItems, historyDate, search) {
+  private cardTitle_(numberOfItems: number, search: string): string {
     if (this.item === undefined) {
       return '';
     }
@@ -371,32 +335,34 @@ export class HistoryItemElement extends HistoryItemElementBase {
     return searchResultsTitle(numberOfItems, search);
   }
 
-  /** @private */
-  addTimeTitle_() {
+  private addTimeTitle_() {
     const el = this.$['time-accessed'];
     el.setAttribute('title', new Date(this.item.time).toString());
     this.eventTracker_.remove(el, 'mouseover');
   }
 
   /**
-   * @param {!Element} sampleElement An element to find an equivalent for.
-   * @return {?Element} An equivalent element to focus, or null to use the
+   * @param sampleElement An element to find an equivalent for.
+   * @return An equivalent element to focus, or null to use the
    *     default element.
    */
-  getCustomEquivalent(sampleElement) {
+  getCustomEquivalent(sampleElement: Element): Element|null {
     return sampleElement.getAttribute('focus-type') === 'star' ? this.$.link :
                                                                  null;
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 
 customElements.define(HistoryItemElement.is, HistoryItemElement);
 
 /**
- * @param {number} numberOfResults
- * @param {string} searchTerm
- * @return {string} The title for a page of search results.
+ * @return The title for a page of search results.
  */
-export function searchResultsTitle(numberOfResults, searchTerm) {
+export function searchResultsTitle(
+    numberOfResults: number, searchTerm: string): string {
   const resultId = numberOfResults === 1 ? 'searchResult' : 'searchResults';
   return loadTimeData.getStringF(
       'foundSearchResults', numberOfResults, loadTimeData.getString(resultId),

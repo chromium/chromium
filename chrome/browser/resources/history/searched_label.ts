@@ -24,6 +24,8 @@ export class HistorySearchedLabelElement extends PolymerElement {
     };
   }
 
+  searchTerm: string;
+
   static get observers() {
     return ['setSearchedTextToBold_(title, searchTerm)'];
   }
@@ -31,9 +33,8 @@ export class HistorySearchedLabelElement extends PolymerElement {
   /**
    * Updates the page title. If a search term is specified, highlights any
    * occurrences of the search term in bold.
-   * @private
    */
-  setSearchedTextToBold_() {
+  private setSearchedTextToBold_() {
     if (this.title === undefined) {
       return;
     }

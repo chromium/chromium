@@ -10,7 +10,12 @@ import {HistoryEntry, HistoryQuery, QueryResult} from './externs.js';
 import {QueryState} from './externs.js';
 import {HistoryRouterElement} from './router.js';
 
-/** @polymer */
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-query-manager': HistoryQueryManagerElement,
+  }
+}
+
 export class HistoryQueryManagerElement extends PolymerElement {
   static get is() {
     return 'history-query-manager';
@@ -22,28 +27,16 @@ export class HistoryQueryManagerElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {QueryState} */
       queryState: {
         type: Object,
         notify: true,
-        value() {
-          return {
-            // Whether the most recent query was incremental.
-            incremental: false,
-            // A query is initiated by page load.
-            querying: true,
-            searchTerm: '',
-          };
-        },
       },
 
-      /** @type {QueryResult} */
       queryResult: {
         type: Object,
         notify: true,
       },
 
-      /** @type {?HistoryRouterElement} */
       router: Object,
     };
   }
@@ -52,11 +45,21 @@ export class HistoryQueryManagerElement extends PolymerElement {
     return ['searchTermChanged_(queryState.searchTerm)'];
   }
 
+  private eventTracker_: EventTracker = new EventTracker();
+  queryState: QueryState;
+  queryResult: QueryResult;
+  router?: HistoryRouterElement;
+
   constructor() {
     super();
 
-    /** @private {!EventTracker} */
-    this.eventTracker_ = new EventTracker();
+    this.queryState = {
+      // Whether the most recent query was incremental.
+      incremental: false,
+      // A query is initiated by page load.
+      querying: true,
+      searchTerm: '',
+    };
   }
 
   /** @override */
@@ -78,11 +81,7 @@ export class HistoryQueryManagerElement extends PolymerElement {
     this.queryHistory_(false /* incremental */);
   }
 
-  /**
-   * @param {boolean} incremental
-   * @private
-   */
-  queryHistory_(incremental) {
+  private queryHistory_(incremental: boolean) {
     this.set('queryState.querying', true);
     this.set('queryState.incremental', incremental);
 
@@ -94,12 +93,8 @@ export class HistoryQueryManagerElement extends PolymerElement {
     promise.then(result => this.onQueryResult_(result), () => {});
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onChangeQuery_(e) {
-    const changes = /** @type {{search: ?string}} */ (e.detail);
+  private onChangeQuery_(e: CustomEvent<{search?: string}>) {
+    const changes = e.detail;
     let needsUpdate = false;
 
     if (changes.search !== null &&
@@ -116,22 +111,16 @@ export class HistoryQueryManagerElement extends PolymerElement {
     }
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onQueryHistory_(e) {
-    this.queryHistory_(/** @type {boolean} */ (e.detail));
+  private onQueryHistory_(e: CustomEvent<boolean>): boolean {
+    this.queryHistory_(e.detail);
     return false;
   }
 
   /**
-   * @param {{info: !HistoryQuery,
-   *          value: !Array<!HistoryEntry>}} results List of results with
-   *     information about the query.
-   * @private
+   * @param results List of results with information about the query.
    */
-  onQueryResult_(results) {
+  private onQueryResult_(results:
+                             {info: HistoryQuery, value: Array<HistoryEntry>}) {
     this.set('queryState.querying', false);
     this.set('queryResult.info', results.info);
     this.set('queryResult.results', results.value);
@@ -139,8 +128,7 @@ export class HistoryQueryManagerElement extends PolymerElement {
         new CustomEvent('query-finished', {bubbles: true, composed: true}));
   }
 
-  /** @private */
-  searchTermChanged_() {
+  private searchTermChanged_() {
     // TODO(tsergeant): Ignore incremental searches in this metric.
     if (this.queryState.searchTerm) {
       BrowserService.getInstance().recordAction('Search');

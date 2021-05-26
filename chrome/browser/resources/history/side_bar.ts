@@ -15,17 +15,21 @@ import './shared_style.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
 
-/**
- * @typedef {{
- *   managed: boolean,
- *   otherFormsOfHistory: boolean,
- * }}
- */
-export let FooterInfo;
+export type FooterInfo = {
+  managed: boolean,
+  otherFormsOfHistory: boolean,
+};
+
+export interface HistorySideBarElement {
+  $: {
+    'cbd-ripple': PaperRippleElement,
+  };
+}
 
 export class HistorySideBarElement extends PolymerElement {
   static get is() {
@@ -43,18 +47,12 @@ export class HistorySideBarElement extends PolymerElement {
         notify: true,
       },
 
-      /** @private */
-      guestSession_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isGuestSession'),
-      },
+      guestSession_: Boolean,
 
-      /** @type {FooterInfo} */
       footerInfo: Object,
 
       /**
        * Used to display notices for profile sign-in status and managed status.
-       * @private
        */
       showFooter_: {
         type: Boolean,
@@ -64,66 +62,51 @@ export class HistorySideBarElement extends PolymerElement {
     };
   }
 
+  private guestSession_ = loadTimeData.getBoolean('isGuestSession');
+  footerInfo: FooterInfo;
+
   /** @override */
   ready() {
     super.ready();
-    this.addEventListener(
-        'keydown', e => this.onKeydown_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener('keydown', e => this.onKeydown_(e));
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeydown_(e) {
+  private onKeydown_(e: KeyboardEvent) {
     if (e.key === ' ') {
-      e.composedPath()[0].click();
+      (e.composedPath()[0] as HTMLElement).click();
     }
   }
 
-  /**
-   * @private
-   */
-  onSelectorActivate_() {
+  private onSelectorActivate_() {
     this.dispatchEvent(new CustomEvent(
         'history-close-drawer', {bubbles: true, composed: true}));
   }
 
   /**
    * Relocates the user to the clear browsing data section of the settings page.
-   * @param {Event} e
-   * @private
    */
-  onClearBrowsingDataTap_(e) {
+  private onClearBrowsingDataTap_(e: Event) {
     const browserService = BrowserService.getInstance();
     browserService.recordAction('InitClearBrowsingData');
     browserService.openClearBrowsingData();
-    /** @type {PaperRippleElement} */ (this.$['cbd-ripple']).upAction();
+    this.$['cbd-ripple'].upAction();
     e.preventDefault();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeClearBrowsingDataTabIndex_() {
+  private computeClearBrowsingDataTabIndex_(): string {
     return this.guestSession_ ? '-1' : '';
   }
 
   /**
    * Prevent clicks on sidebar items from navigating. These are only links for
    * accessibility purposes, taps are handled separately by <iron-selector>.
-   * @private
    */
-  onItemClick_(e) {
+  private onItemClick_(e: Event) {
     e.preventDefault();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowFooter_(includeOtherFormsOfBrowsingHistory, managed) {
+  private computeShowFooter_(
+      includeOtherFormsOfBrowsingHistory: boolean, managed: boolean): boolean {
     return includeOtherFormsOfBrowsingHistory || managed;
   }
 }

@@ -12,40 +12,49 @@ import './shared_style.js';
 import './synced_device_card.js';
 import './strings.m.js';
 
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusGrid} from 'chrome://resources/js/cr/ui/focus_grid.m.js';
+import {FocusRow} from 'chrome://resources/js/cr/ui/focus_row.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Debouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
 import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 import {ForeignSession, ForeignSessionTab} from './externs.js';
+import {HistorySyncedDeviceCardElement} from './synced_device_card.js';
 
-/**
- * @typedef {{device: string,
- *           lastUpdateTime: string,
- *           opened: boolean,
- *           separatorIndexes: !Array<number>,
- *           timestamp: number,
- *           tabs: !Array<!ForeignSessionTab>,
- *           tag: string}}
- */
-let ForeignDeviceInternal;
+type ForeignDeviceInternal = {
+  device: string,
+  lastUpdateTime: string,
+  opened: boolean,
+  separatorIndexes: Array<number>,
+  timestamp: number,
+  tabs: Array<ForeignSessionTab>,
+  tag: string,
+};
+
+declare global {
+  interface HTMLElementEventMap {
+    'synced-device-card-open-menu':
+        CustomEvent<{tag: string, target: HTMLElement}>;
+  }
+}
+
+export interface HistorySyncedDeviceManagerElement {
+  $: {
+    'menu': CrLazyRenderElement,
+  };
+}
 
 export class HistorySyncedDeviceManagerElement extends PolymerElement {
   static get is() {
     return 'history-synced-device-manager';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /**
-       * @type {?Array<!ForeignSession>}
-       */
       sessionList: {
         type: Array,
         observer: 'updateSyncedDevices',
@@ -58,57 +67,40 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
 
       /**
        * An array of synced devices with synced tab data.
-       * @type {!Array<!ForeignDeviceInternal>}
        */
-      syncedDevices_: {
-        type: Array,
-        value() {
-          return [];
-        },
-      },
+      syncedDevices_: Array,
 
-      /** @private */
       signInState: {
         type: Boolean,
         observer: 'signInStateChanged_',
       },
 
-      /** @private */
-      guestSession_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isGuestSession'),
-      },
-
-      /** @private */
-      fetchingSyncedTabs_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /** @private */
+      guestSession_: Boolean,
+      fetchingSyncedTabs_: Boolean,
       hasSeenForeignData_: Boolean,
 
       /**
        * The session ID referring to the currently active action menu.
-       * @private {?string}
        */
       actionMenuModel_: String,
     };
   }
 
-  constructor() {
-    super();
+  private focusGrid_: FocusGrid|null = null;
+  private syncedDevices_: Array<ForeignDeviceInternal> = [];
+  private hasSeenForeignData_: boolean;
+  private fetchingSyncedTabs_: boolean = false;
+  private actionMenuModel_: string|null = null;
+  private guestSession_: boolean = loadTimeData.getBoolean('isGuestSession');
+  private debouncer_: Debouncer|null = null;
+  private signInState: boolean;
 
-    /** @type {?FocusGrid} */
-    this.focusGrid_ = null;
-
-    /** @private {Debouncer} */
-    this.debouncer_;
-  }
+  searchTerm: string;
+  sessionList: Array<ForeignSession>;
 
   ready() {
     super.ready();
-    this.addEventListener('open-menu', this.onOpenMenu_);
+    this.addEventListener('synced-device-card-open-menu', this.onOpenMenu_);
     this.addEventListener('update-focus-grid', this.updateFocusGrid_);
   }
 
@@ -127,7 +119,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.focusGrid_.destroy();
+    this.focusGrid_!.destroy();
   }
 
   /** @return {HTMLElement} */
@@ -135,13 +127,9 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
     return this;
   }
 
-  /**
-   * @param {!ForeignSession} session
-   * @return {!ForeignDeviceInternal}
-   * @private
-   */
-  createInternalDevice_(session) {
-    let tabs = [];
+  private createInternalDevice_(session: ForeignSession):
+      ForeignDeviceInternal {
+    let tabs: Array<ForeignSessionTab> = [];
     const separatorIndexes = [];
     for (let i = 0; i < session.windows.length; i++) {
       const windowId = session.windows[i].sessionId;
@@ -184,14 +172,12 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
     };
   }
 
-  /** @private */
-  onSignInTap_() {
+  private onSignInTap_() {
     BrowserService.getInstance().startSignInFlow();
   }
 
-  /** @private */
-  onOpenMenu_(e) {
-    const menu = /** @type {CrActionMenuElement} */ (this.$.menu.get());
+  private onOpenMenu_(e: CustomEvent<{tag: string, target: HTMLElement}>) {
+    const menu = this.$['menu'].get() as CrActionMenuElement;
     this.actionMenuModel_ = e.detail.tag;
     menu.showAt(e.detail.target);
     BrowserService.getInstance().recordHistogram(
@@ -199,20 +185,19 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
         SyncedTabsHistogram.LIMIT);
   }
 
-  /** @private */
-  onOpenAllTap_() {
-    const menu = assert(this.$.menu.getIfExists());
+  private onOpenAllTap_() {
+    const menu = assert(this.$['menu'].getIfExists()) as CrActionMenuElement;
     const browserService = BrowserService.getInstance();
     browserService.recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.OPEN_ALL,
         SyncedTabsHistogram.LIMIT);
-    browserService.openForeignSessionAllTabs(assert(this.actionMenuModel_));
+    browserService.openForeignSessionAllTabs(
+        assert(this.actionMenuModel_) as string);
     this.actionMenuModel_ = null;
-    menu.close();
+    menu!.close();
   }
 
-  /** @private */
-  updateFocusGrid_() {
+  private updateFocusGrid_() {
     if (!this.focusGrid_) {
       return;
     }
@@ -220,40 +205,42 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
     this.focusGrid_.destroy();
 
     this.debouncer_ = Debouncer.debounce(this.debouncer_, microTask, () => {
-      Array.from(this.shadowRoot.querySelectorAll('history-synced-device-card'))
-          .reduce((prev, cur) => prev.concat(cur.createFocusRows()), [])
+      const cards =
+          this.shadowRoot!.querySelectorAll('history-synced-device-card');
+      Array.from(cards)
+          .reduce(
+              (prev: Array<FocusRow>, cur: HistorySyncedDeviceCardElement) =>
+                  prev.concat(cur.createFocusRows()),
+              [])
           .forEach((row) => {
-            this.focusGrid_.addRow(row);
+            this.focusGrid_!.addRow(row);
           });
-      this.focusGrid_.ensureRowActive(1);
+      this.focusGrid_!.ensureRowActive(1);
     });
   }
 
-  /** @private */
-  onDeleteSessionTap_() {
-    const menu = assert(this.$.menu.getIfExists());
+  private onDeleteSessionTap_() {
+    const menu = assert(this.$['menu'].getIfExists()) as CrActionMenuElement;
     const browserService = BrowserService.getInstance();
     browserService.recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.HIDE_FOR_NOW,
         SyncedTabsHistogram.LIMIT);
-    browserService.deleteForeignSession(assert(this.actionMenuModel_));
+    browserService.deleteForeignSession(
+        assert(this.actionMenuModel_) as string);
     this.actionMenuModel_ = null;
-    menu.close();
+    menu!.close();
   }
 
-  /** @private */
-  clearDisplayedSyncedDevices_() {
+  private clearDisplayedSyncedDevices_() {
     this.syncedDevices_ = [];
   }
 
   /**
    * Decide whether or not should display no synced tabs message.
-   * @param {boolean} signInState
-   * @param {number} syncedDevicesLength
-   * @param {boolean} guestSession
-   * @return {boolean}
    */
-  showNoSyncedMessage(signInState, syncedDevicesLength, guestSession) {
+  showNoSyncedMessage(
+      signInState: boolean, syncedDevicesLength: number,
+      guestSession: boolean): boolean {
     if (guestSession) {
       return true;
     }
@@ -264,11 +251,8 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   /**
    * Shows the signin guide when the user is not signed in and not in a guest
    * session.
-   * @param {boolean} signInState
-   * @param {boolean} guestSession
-   * @return {boolean}
    */
-  showSignInGuide(signInState, guestSession) {
+  showSignInGuide(signInState: boolean, guestSession: boolean): boolean {
     const show = !signInState && !guestSession;
     if (show) {
       BrowserService.getInstance().recordAction(
@@ -281,9 +265,8 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   /**
    * Decide what message should be displayed when user is logged in and there
    * are no synced tabs.
-   * @return {string}
    */
-  noSyncedTabsMessage() {
+  noSyncedTabsMessage(): string {
     let stringName = this.fetchingSyncedTabs_ ? 'loading' : 'noSyncedResults';
     if (this.searchTerm !== '') {
       stringName = 'noSearchResults';
@@ -297,9 +280,8 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
    * avoid doing extra work in this case. The logic could be more intelligent
    * about updating individual tabs rather than replacing whole sessions, but
    * this approach seems to have acceptable performance.
-   * @param {?Array<!ForeignSession>} sessionList
    */
-  updateSyncedDevices(sessionList) {
+  updateSyncedDevices(sessionList: Array<ForeignSession>) {
     this.fetchingSyncedTabs_ = false;
 
     if (!sessionList) {
@@ -313,7 +295,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
           SyncedTabsHistogram.LIMIT);
     }
 
-    const devices = [];
+    const devices: Array<ForeignDeviceInternal> = [];
     sessionList.forEach((session) => {
       const device = this.createInternalDevice_(session);
       if (device.tabs.length !== 0) {
@@ -328,10 +310,8 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
    * Get called when user's sign in state changes, this will affect UI of synced
    * tabs page. Sign in promo gets displayed when user is signed out, and
    * different messages are shown when there are no synced tabs.
-   * @param {?boolean} current
-   * @param {?boolean} previous
    */
-  signInStateChanged_(current, previous) {
+  signInStateChanged_(_current: boolean, previous?: boolean) {
     if (previous === undefined) {
       return;
     }
@@ -349,9 +329,13 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
     this.fetchingSyncedTabs_ = true;
   }
 
-  searchTermChanged(searchTerm) {
+  searchTermChanged() {
     this.clearDisplayedSyncedDevices_();
     this.updateSyncedDevices(this.sessionList);
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

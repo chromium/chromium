@@ -2,16 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import './shared_style.js';
 import './strings.m.js';
+
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+export interface HistoryToolbarElement {
+  $: {
+    'main-toolbar': CrToolbarElement,
+  };
+}
+
 export class HistoryToolbarElement extends PolymerElement {
   static get is() {
     return 'history-toolbar';
@@ -28,16 +35,12 @@ export class HistoryToolbarElement extends PolymerElement {
       // listContainer.selectedItem.selectedPaths.length.
       count: {
         type: Number,
-        value: 0,
         observer: 'changeToolbarView_',
       },
 
       // True if 1 or more history items are selected. When this value changes
       // the background colour changes.
-      itemsSelected_: {
-        type: Boolean,
-        value: false,
-      },
+      itemsSelected_: Boolean,
 
       pendingDelete: Boolean,
 
@@ -73,20 +76,18 @@ export class HistoryToolbarElement extends PolymerElement {
     };
   }
 
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
+  count: number = 0;
+  searchTerm: string;
+  showMenuPromo: boolean;
+  private itemsSelected_: boolean = false;
+
+  private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  /** @return {CrToolbarSearchFieldElement} */
-  get searchField() {
-    return /** @type {CrToolbarElement} */ (this.$['main-toolbar'])
-        .getSearchField();
+  get searchField(): CrToolbarSearchFieldElement {
+    return this.$['main-toolbar'].getSearchField();
   }
 
   deleteSelectedItems() {
@@ -100,43 +101,31 @@ export class HistoryToolbarElement extends PolymerElement {
   /**
    * Changes the toolbar background color depending on whether any history items
    * are currently selected.
-   * @private
    */
-  changeToolbarView_() {
+  private changeToolbarView_() {
     this.itemsSelected_ = this.count > 0;
   }
 
   /**
    * When changing the search term externally, update the search field to
    * reflect the new search term.
-   * @private
    */
-  searchTermChanged_() {
+  private searchTermChanged_() {
     if (this.searchField.getValue() !== this.searchTerm) {
       this.searchField.showAndFocus();
       this.searchField.setValue(this.searchTerm);
     }
   }
 
-  /**
-   * @param {boolean} showMenuPromo
-   * @return {boolean}
-   * @private
-   */
-  canShowMenuPromo_(showMenuPromo) {
+  private canShowMenuPromo_(): boolean {
     return this.showMenuPromo && !loadTimeData.getBoolean('isGuestSession');
   }
 
-  /**
-   * @param {!CustomEvent<string>} event
-   * @private
-   */
-  onSearchChanged_(event) {
+  private onSearchChanged_(event: CustomEvent<string>) {
     this.fire_('change-query', {search: event.detail});
   }
 
-  /** @private */
-  numberOfItemsSelected_(count) {
+  private numberOfItemsSelected_(count: number): string {
     return count > 0 ? loadTimeData.getStringF('itemsSelected', count) : '';
   }
 }

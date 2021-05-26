@@ -2,16 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+
+import './history_list.js';
+import './history_toolbar.js';
+import './query_manager.js';
 import './router.js';
 import './shared_style.js';
+import './side_bar.js';
 import './strings.m.js';
 
+import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {FindShortcutBehavior, FindShortcutBehaviorInterface} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
@@ -26,8 +34,8 @@ import {HistoryToolbarElement} from './history_toolbar.js';
 import {HistoryQueryManagerElement} from './query_manager.js';
 import {FooterInfo} from './side_bar.js';
 
-let lazyLoadPromise = null;
-export function ensureLazyLoaded() {
+let lazyLoadPromise: Promise<void>|null = null;
+export function ensureLazyLoaded(): Promise<void> {
   if (!lazyLoadPromise) {
     const script = document.createElement('script');
     script.type = 'module';
@@ -43,7 +51,7 @@ export function ensureLazyLoaded() {
       customElements.whenDefined('cr-drawer'),
       customElements.whenDefined('cr-icon-button'),
       customElements.whenDefined('cr-toolbar-selection-overlay'),
-    ]);
+    ]) as unknown as Promise<void>;
   }
   return lazyLoadPromise;
 }
@@ -55,67 +63,75 @@ export function ensureLazyLoaded() {
 // called once.
 export function listenForPrivilegedLinkClicks() {
   ['click', 'auxclick'].forEach(function(eventName) {
-    document.addEventListener(eventName, function(e) {
+    document.addEventListener(eventName, function(evt: Event) {
+      const e = evt as MouseEvent;
       // Ignore buttons other than left and middle.
       if (e.button > 1 || e.defaultPrevented) {
         return;
       }
 
-      const eventPath = e.path;
-      let anchor = null;
+      const eventPath = e.composedPath() as Array<HTMLElement>;
+      let anchor: HTMLAnchorElement|null = null;
       if (eventPath) {
         for (let i = 0; i < eventPath.length; i++) {
           const element = eventPath[i];
-          if (element.tagName === 'A' && element.href) {
-            anchor = element;
+          if (element.tagName === 'A' && (element as HTMLAnchorElement).href) {
+            anchor = element as HTMLAnchorElement;
             break;
           }
         }
       }
 
       // Fallback if Event.path is not available.
-      let el = e.target;
+      let el = e.target as HTMLElement;
       if (!anchor && el.nodeType === Node.ELEMENT_NODE &&
           el.webkitMatchesSelector('A, A *')) {
         while (el.tagName !== 'A') {
-          el = el.parentElement;
+          el = el.parentElement as HTMLElement;
         }
-        anchor = el;
+        anchor = el as HTMLAnchorElement;
       }
 
       if (!anchor) {
         return;
       }
 
-      anchor = /** @type {!HTMLAnchorElement} */ (anchor);
       if ((anchor.protocol === 'file:' || anchor.protocol === 'about:') &&
           (e.button === 0 || e.button === 1)) {
         BrowserService.getInstance().navigateToUrl(
-            anchor.href, anchor.target, /** @type {!MouseEvent} */ (e));
+            anchor.href, anchor.target, e);
         e.preventDefault();
       }
     });
   });
 }
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {FindShortcutBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const HistoryAppElementBase = mixinBehaviors(
-    [FindShortcutBehavior, IronScrollTargetBehavior, WebUIListenerBehavior],
-    PolymerElement);
+declare global {
+  interface Window {
+    // https://github.com/microsoft/TypeScript/issues/40807
+    requestIdleCallback(callback: () => void): void;
+  }
+}
 
-/** @polymer */
+export interface HistoryAppElement {
+  $: {
+    'drawer': CrLazyRenderElement,
+    'history': HistoryListElement,
+    'toolbar': HistoryToolbarElement,
+  };
+}
+
+const HistoryAppElementBase =
+    mixinBehaviors(
+        [FindShortcutBehavior, IronScrollTargetBehavior, WebUIListenerBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & FindShortcutBehavior & IronScrollTargetBehavior &
+      WebUIListenerBehavior
+    };
+
 export class HistoryAppElement extends HistoryAppElementBase {
   static get is() {
     return 'history-app';
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 
   static get properties() {
@@ -126,26 +142,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
         observer: 'selectedPageChanged_',
       },
 
-      /** @type {!QueryResult} */
-      queryResult_: {
-        type: Object,
-        value() {
-          return {
-            info: null,
-            results: null,
-            sessionList: null,
-          };
-        }
-      },
+      queryResult_: Object,
 
-      isUserSignedIn_: {
-        type: Boolean,
-        // Updated on synced-device-manager attach by chrome.sending
-        // 'otherDevicesInitialized'.
-        value: loadTimeData.getBoolean('isUserSignedIn'),
-      },
+      // Updated on synced-device-manager attach by chrome.sending
+      // 'otherDevicesInitialized'.
+      isUserSignedIn_: Boolean,
 
-      /** @private */
       pendingDelete_: Boolean,
 
       toolbarShadow_: {
@@ -176,17 +178,23 @@ export class HistoryAppElement extends HistoryAppElementBase {
     };
   }
 
+  private eventTracker_: EventTracker = new EventTracker();
+  private browserService_: BrowserService|null = null;
+  private queryResult_: QueryResult;
+  private isUserSignedIn_: boolean = loadTimeData.getBoolean('isUserSignedIn');
+  private pendingDelete_: boolean;
+  private hasDrawer_: boolean;
+  private selectedPage_: string;
+  private toolbarShadow_: boolean;
+
   constructor() {
     super();
 
-    /** @private {?function(!Event)} */
-    this.boundOnKeyDown_ = null;
-
-    /** @private {?BrowserService} */
-    this.browserService_ = null;
-
-    /** @type {HTMLElement} */
-    this.scrollTarget;
+    this.queryResult_ = {
+      info: undefined,
+      results: undefined,
+      sessionList: undefined,
+    };
 
     listenForPrivilegedLinkClicks();
   }
@@ -195,22 +203,22 @@ export class HistoryAppElement extends HistoryAppElementBase {
   connectedCallback() {
     super.connectedCallback();
 
-    this.boundOnKeyDown_ = e => this.onKeyDown_(e);
-    document.addEventListener('keydown', this.boundOnKeyDown_);
+    this.eventTracker_.add(
+        document, 'keydown', e => this.onKeyDown_(e as KeyboardEvent));
     this.addWebUIListener(
         'sign-in-state-changed',
-        signedIn => this.onSignInStateChanged_(signedIn));
+        (signedIn: boolean) => this.onSignInStateChanged_(signedIn));
     this.addWebUIListener(
         'has-other-forms-changed',
-        hasOtherForms => this.onHasOtherFormsChanged_(hasOtherForms));
+        (hasOtherForms: boolean) =>
+            this.onHasOtherFormsChanged_(hasOtherForms));
     this.addWebUIListener(
         'foreign-sessions-changed',
-        sessionList => this.setForeignSessions_(sessionList));
+        (sessionList: Array<ForeignSession>) =>
+            this.setForeignSessions_(sessionList));
     this.browserService_ = BrowserService.getInstance();
-    /** @type {!HistoryQueryManagerElement} */ (
-        this.shadowRoot.querySelector('history-query-manager'))
-        .initialize();
-    this.browserService_.getForeignSessions().then(
+    this.shadowRoot!.querySelector('history-query-manager')!.initialize();
+    this.browserService_!.getForeignSessions().then(
         sessionList => this.setForeignSessions_(sessionList));
   }
 
@@ -228,14 +236,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
   /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
-    document.removeEventListener('keydown', this.boundOnKeyDown_);
-    this.boundOnKeyDown_ = null;
+    this.eventTracker_.removeAll();
   }
 
-  /** @private */
-  onFirstRender_() {
+  private onFirstRender_() {
     setTimeout(() => {
-      this.browserService_.recordTime(
+      this.browserService_!.recordTime(
           'History.ResultsRenderedTime', window.performance.now());
     });
 
@@ -250,7 +256,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
     // Lazily load the remainder of the UI.
     ensureLazyLoaded().then(function() {
       window.requestIdleCallback(function() {
-        document.fonts.load('bold 12px Roboto');
+        // https://github.com/microsoft/TypeScript/issues/13569
+        (document as any).fonts.load('bold 12px Roboto');
       });
     });
   }
@@ -262,9 +269,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
     }
   }
 
-  /** @private */
-  onCrToolbarMenuTap_() {
-    const drawer = /** @type {!CrDrawerElement} */ (this.$.drawer.get());
+  private onCrToolbarMenuTap_() {
+    const drawer = this.$.drawer.get() as CrDrawerElement;
     drawer.toggle();
   }
 
@@ -288,9 +294,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
   /**
    * Listens for call to cancel selection and loops through all items to set
    * checkbox to be unselected.
-   * @private
    */
-  unselectAll() {
+  private unselectAll() {
     const list = /** @type {HistoryListElement} */ (this.$.history);
     const toolbar = /** @type {HistoryToolbarElement} */ (this.$.toolbar);
     list.unselectAllItems();
@@ -301,22 +306,16 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.$.history.deleteSelectedWithPrompt();
   }
 
-  /** @private */
-  onQueryFinished_() {
+  private onQueryFinished_() {
     const list = /** @type {HistoryListElement} */ (this.$['history']);
-    list.historyResult(
-        assert(this.queryResult_.info), assert(this.queryResult_.results));
+    list.historyResult(this.queryResult_.info!, this.queryResult_.results!);
     if (document.body.classList.contains('loading')) {
       document.body.classList.remove('loading');
       this.onFirstRender_();
     }
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeyDown_(e) {
+  private onKeyDown_(e: KeyboardEvent) {
     if ((e.key === 'Delete' || e.key === 'Backspace') && !hasKeyModifiers(e)) {
       this.onDeleteCommand_();
       return;
@@ -338,8 +337,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     }
   }
 
-  /** @private */
-  onDeleteCommand_() {
+  private onDeleteCommand_() {
     if (this.$.toolbar.count === 0 || this.pendingDelete_) {
       return;
     }
@@ -347,12 +345,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   /**
-   * @return {boolean} Whether the command was actually triggered.
-   * @private
+   * @return Whether the command was actually triggered.
    */
-  onSelectAllCommand_() {
+  private onSelectAllCommand_(): boolean {
     if (this.$.toolbar.searchField.isSearchFocused() ||
-        this.syncedTabsSelected_(this.selectedPage_)) {
+        this.syncedTabsSelected_(this.selectedPage_!)) {
       return false;
     }
     this.selectOrUnselectAll();
@@ -360,61 +357,46 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   /**
-   * @param {!Array<!ForeignSession>} sessionList Array of objects describing
-   *     the sessions from other devices.
-   * @private
+   * @param sessionList Array of objects describing the sessions from other
+   *     devices.
    */
-  setForeignSessions_(sessionList) {
+  private setForeignSessions_(sessionList: Array<ForeignSession>) {
     this.set('queryResult_.sessionList', sessionList);
   }
 
   /**
    * Update sign in state of synced device manager after user logs in or out.
-   * @param {boolean} isUserSignedIn
-   * @private
    */
-  onSignInStateChanged_(isUserSignedIn) {
+  private onSignInStateChanged_(isUserSignedIn: boolean) {
     this.isUserSignedIn_ = isUserSignedIn;
   }
 
   /**
    * Update sign in state of synced device manager after user logs in or out.
-   * @param {boolean} hasOtherForms
-   * @private
    */
-  onHasOtherFormsChanged_(hasOtherForms) {
+  private onHasOtherFormsChanged_(hasOtherForms: boolean) {
     this.set('footerInfo.otherFormsOfHistory', hasOtherForms);
   }
 
-  /**
-   * @param {string} selectedPage
-   * @return {boolean}
-   * @private
-   */
-  syncedTabsSelected_(selectedPage) {
+  private syncedTabsSelected_(selectedPage: string): boolean {
     return selectedPage === 'syncedTabs';
   }
 
   /**
-   * @param {boolean} querying
-   * @param {boolean} incremental
-   * @param {string} searchTerm
-   * @return {boolean} Whether a loading spinner should be shown (implies the
+   * @return Whether a loading spinner should be shown (implies the
    *     backend is querying a new search term).
-   * @private
    */
-  shouldShowSpinner_(querying, incremental, searchTerm) {
+  private shouldShowSpinner_(
+      querying: boolean, incremental: boolean, searchTerm: string): boolean {
     return querying && !incremental && searchTerm !== '';
   }
 
-  /** @private */
-  selectedPageChanged_() {
+  private selectedPageChanged_() {
     this.unselectAll();
     this.historyViewChanged_();
   }
 
-  /** @private */
-  historyViewChanged_() {
+  private historyViewChanged_() {
     // This allows the synced-device-manager to render so that it can be set
     // as the scroll target.
     requestAnimationFrame(() => {
@@ -423,10 +405,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.recordHistoryPageView_();
   }
 
-  /** @private */
-  hasDrawerChanged_() {
-    const drawer =
-        /** @type {?CrDrawerElement} */ (this.$.drawer.getIfExists());
+  private hasDrawerChanged_() {
+    const drawer = this.$.drawer.getIfExists() as CrDrawerElement;
     if (!this.hasDrawer_ && drawer && drawer.open) {
       drawer.cancel();
     }
@@ -437,25 +417,19 @@ export class HistoryAppElement extends HistoryAppElementBase {
    * when the synced-device-manager is instantiated for the first time.
    * Otherwise the fallback selection will continue to be used after the
    * corresponding item is added as a child of iron-pages.
-   * @param {string} selectedPage
-   * @param {Array} items
-   * @return {string}
-   * @private
    */
-  getSelectedPage_(selectedPage, items) {
+  private getSelectedPage_(selectedPage: string, _items: Array<any>): string {
     return selectedPage;
   }
 
-  /** @private */
-  closeDrawer_() {
-    const drawer = this.$.drawer.get();
+  private closeDrawer_() {
+    const drawer = this.$.drawer.get() as CrDrawerElement;
     if (drawer && drawer.open) {
       drawer.close();
     }
   }
 
-  /** @private */
-  recordHistoryPageView_() {
+  private recordHistoryPageView_() {
     let histogramValue = HistoryPageViewHistogram.END;
     switch (this.selectedPage_) {
       case 'syncedTabs':
@@ -468,13 +442,13 @@ export class HistoryAppElement extends HistoryAppElementBase {
         break;
     }
 
-    this.browserService_.recordHistogram(
+    this.browserService_!.recordHistogram(
         'History.HistoryPageView', histogramValue,
         HistoryPageViewHistogram.END);
   }
 
   // Override FindShortcutBehavior methods.
-  handleFindShortcut(modalContextOpen) {
+  handleFindShortcut(modalContextOpen: boolean): boolean {
     if (modalContextOpen) {
       return false;
     }
@@ -483,8 +457,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   // Override FindShortcutBehavior methods.
-  searchInputHasFocus() {
+  searchInputHasFocus(): boolean {
     return this.$.toolbar.searchField.isSearchFocused();
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

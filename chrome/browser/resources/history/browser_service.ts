@@ -6,6 +6,11 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {RESULTS_PER_PAGE} from './constants.js';
 import {ForeignSession, HistoryEntry, HistoryQuery} from './externs.js';
 
+type RemoveVisitsRequest = Array<{
+  url: string,
+  timestamps: Array<number>,
+}>;
+
 /**
  * @fileoverview Defines a singleton object, history.BrowserService, which
  * provides access to chrome.send APIs.
@@ -17,40 +22,32 @@ export class BrowserService {
     return sendWithPromise('getForeignSessions');
   }
 
-  /** @param {!string} url */
-  removeBookmark(url) {
+  removeBookmark(url: string) {
     chrome.send('removeBookmark', [url]);
   }
 
   /**
-   * @param {!Array<!HistoryEntry>} removalList
-   * @return {!Promise} Promise that is resolved when items are deleted
+   * @return Promise that is resolved when items are deleted
    *     successfully or rejected when deletion fails.
    */
-  removeVisits(removalList) {
+  removeVisits(removalList: RemoveVisitsRequest): Promise<void> {
     return sendWithPromise('removeVisits', removalList);
   }
 
   /** @param {string} sessionTag */
-  openForeignSessionAllTabs(sessionTag) {
+  openForeignSessionAllTabs(sessionTag: string) {
     chrome.send('openForeignSession', [sessionTag]);
   }
 
-  /**
-   * @param {string} sessionTag
-   * @param {number} windowId
-   * @param {number} tabId
-   * @param {MouseEvent} e
-   */
-  openForeignSessionTab(sessionTag, windowId, tabId, e) {
+  openForeignSessionTab(
+      sessionTag: string, windowId: number, tabId: number, e: MouseEvent) {
     chrome.send('openForeignSession', [
       sessionTag, String(windowId), String(tabId), e.button || 0, e.altKey,
       e.ctrlKey, e.metaKey, e.shiftKey
     ]);
   }
 
-  /** @param {string} sessionTag */
-  deleteForeignSession(sessionTag) {
+  deleteForeignSession(sessionTag: string) {
     chrome.send('deleteForeignSession', [sessionTag]);
   }
 
@@ -58,40 +55,26 @@ export class BrowserService {
     chrome.send('clearBrowsingData');
   }
 
-  /**
-   * @param {string} histogram
-   * @param {number} value
-   * @param {number} max
-   */
-  recordHistogram(histogram, value, max) {
+  recordHistogram(histogram: string, value: number, max: number) {
     chrome.send('metricsHandler:recordInHistogram', [histogram, value, max]);
   }
 
   /**
    * Record an action in UMA.
-   * @param {string} action The name of the action to be logged.
+   * @param action The name of the action to be logged.
    */
-  recordAction(action) {
+  recordAction(action: string) {
     if (action.indexOf('_') === -1) {
       action = `HistoryPage_${action}`;
     }
     chrome.send('metricsHandler:recordAction', [action]);
   }
 
-  /**
-   * @param {string} histogram
-   * @param {number} time
-   */
-  recordTime(histogram, time) {
+  recordTime(histogram: string, time: number) {
     chrome.send('metricsHandler:recordTime', [histogram, time]);
   }
 
-  /**
-   * @param {string} url
-   * @param {string} target
-   * @param {!MouseEvent} e
-   */
-  navigateToUrl(url, target, e) {
+  navigateToUrl(url: string, target: string, e: MouseEvent) {
     chrome.send(
         'navigateToUrl',
         [url, target, e.button, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey]);
@@ -108,11 +91,8 @@ export class BrowserService {
     return sendWithPromise('queryHistoryContinuation');
   }
 
-  /**
-   * @param {string} searchTerm
-   * @return {!Promise<{info: !HistoryQuery, value: !Array<!HistoryEntry>}>}
-   */
-  queryHistory(searchTerm) {
+  queryHistory(searchTerm: string):
+      Promise<{info: HistoryQuery, value: Array<HistoryEntry>}> {
     return sendWithPromise('queryHistory', searchTerm, RESULTS_PER_PAGE);
   }
 
@@ -120,16 +100,13 @@ export class BrowserService {
     chrome.send('startSignInFlow');
   }
 
-  /** @return {!BrowserService} */
-  static getInstance() {
+  static getInstance(): BrowserService {
     return instance || (instance = new BrowserService());
   }
 
-  /** @param {!BrowserService} obj */
-  static setInstance(obj) {
+  static setInstance(obj: BrowserService) {
     instance = obj;
   }
 }
 
-/** @type {?BrowserService} */
-let instance = null;
+let instance: BrowserService|null = null;

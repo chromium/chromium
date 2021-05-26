@@ -9,7 +9,6 @@ import {Debouncer, html, microTask, PolymerElement} from 'chrome://resources/pol
 
 import {QueryState} from './externs.js';
 
-/** @polymer */
 export class HistoryRouterElement extends PolymerElement {
   static get is() {
     return 'history-router';
@@ -27,20 +26,17 @@ export class HistoryRouterElement extends PolymerElement {
         observer: 'selectedPageChanged_',
       },
 
-      /** @type {QueryState} */
       queryState: Object,
 
       path_: String,
 
       queryParams_: Object,
 
-      /** @private {string} */
       query_: {
         type: String,
         observer: 'onQueryChanged_',
       },
 
-      /** @private {string} */
       urlQuery_: {
         type: String,
         observer: 'onUrlQueryChanged_',
@@ -52,15 +48,14 @@ export class HistoryRouterElement extends PolymerElement {
     return ['onUrlChanged_(path_, queryParams_)'];
   }
 
-  constructor() {
-    super();
-
-    /** @private {boolean} */
-    this.parsing_ = false;
-
-    /** @private {Debouncer} */
-    this.debouncer_;
-  }
+  selectedPage: string;
+  queryState: QueryState;
+  private parsing_: boolean = false;
+  private debouncer_: Debouncer|null = null;
+  private query_: string;
+  private queryParams_: {q: string};
+  private path_: string;
+  private urlQuery_: string;
 
   /** @override */
   connectedCallback() {
@@ -74,18 +69,16 @@ export class HistoryRouterElement extends PolymerElement {
   }
 
   /**
-   * @param {?string} current Current value of the query.
-   * @param {?string} previous Previous value of the query.
-   * @private
+   * @param current Current value of the query.
+   * @param previous Previous value of the query.
    */
-  onQueryChanged_(current, previous) {
+  private onQueryChanged_(_current: string, previous?: string) {
     if (previous !== undefined) {
       this.urlQuery_ = this.query_;
     }
   }
 
-  /** @private */
-  onUrlQueryChanged_() {
+  private onUrlQueryChanged_() {
     this.query_ = this.urlQuery_;
   }
 
@@ -105,8 +98,7 @@ export class HistoryRouterElement extends PolymerElement {
     this.set('queryParams_.q', this.queryState.searchTerm || null);
   }
 
-  /** @private */
-  selectedPageChanged_() {
+  private selectedPageChanged_() {
     // Update the URL if the page was changed externally, but ignore the update
     // if it came from parseUrl_().
     if (!this.parsing_) {
@@ -114,10 +106,9 @@ export class HistoryRouterElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  parseUrl_() {
+  private parseUrl_() {
     this.parsing_ = true;
-    const changes = {};
+    const changes: {search: string} = {search: ''};
     const sections = this.path_.substr(1).split('/');
     const page = sections[0] || 'history';
 
@@ -133,8 +124,7 @@ export class HistoryRouterElement extends PolymerElement {
     this.parsing_ = false;
   }
 
-  /** @private */
-  onUrlChanged_() {
+  private onUrlChanged_() {
     // Changing the url and query parameters at the same time will cause two
     // calls to onUrlChanged_. Debounce the actual work so that these two
     // changes get processed together.

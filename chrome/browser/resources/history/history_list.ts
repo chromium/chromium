@@ -8,76 +8,82 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import './shared_style.js';
 
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
 import {BROWSING_GAP_TIME, UMA_MAX_BUCKET_VALUE, UMA_MAX_SUBSET_BUCKET_VALUE} from './constants.js';
 import {HistoryEntry, HistoryQuery, QueryState} from './externs.js';
-import {searchResultsTitle} from './history_item.js';
+import {HistoryItemElement, searchResultsTitle} from './history_item.js';
 
-/**
- * @typedef {!CustomEvent<{
- *   index: number,
- *   item: !HistoryEntry,
- *   path: string,
- *   target: !HTMLElement
- * }>}
- */
-let OpenMenuEvent;
+type OpenMenuEvent = CustomEvent<{
+  index: number,
+  item: HistoryEntry,
+  path: string,
+  target: HTMLElement,
+}>;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
+type ActionMenuModel = {
+  index: number,
+  item: HistoryEntry,
+  path: string,
+  target: HTMLElement,
+};
+
+type HistoryCheckboxSelectEvent = CustomEvent<{
+  index: number,
+  shiftKey: boolean,
+}>;
+
+export interface HistoryListElement {
+  $: {
+    'infinite-list': IronListElement,
+    'scroll-threshold': IronScrollThresholdElement,
+    'dialog': CrLazyRenderElement,
+    'sharedMenu': CrLazyRenderElement,
+  };
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    'history-checkbox-select': HistoryCheckboxSelectEvent;
+    'open-menu': OpenMenuEvent;
+    'remove-bookmark-stars': CustomEvent<string>;
+  }
+}
+
 const HistoryListElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
 
-/** @polymer */
 export class HistoryListElement extends HistoryListElementBase {
   static get is() {
     return 'history-list';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       // The search term for the current query. Set when the query returns.
-      searchedTerm: {
-        type: String,
-        value: '',
-      },
+      searchedTerm: String,
 
-      resultLoadingDisabled_: {
-        type: Boolean,
-        value: false,
-      },
+      resultLoadingDisabled_: Boolean,
 
       /**
        * Indexes into historyData_ of selected items.
-       * @type {!Set<number>}
        */
-      selectedItems: {
-        type: Object,
-        value: /** @return {!Set<string>} */ function() {
-          return new Set();
-        },
-      },
+      selectedItems: Object,
 
-      canDeleteHistory_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('allowDeletingHistory'),
-      },
+      canDeleteHistory_: Boolean,
 
       // An array of history entries in reverse chronological order.
       historyData_: {
@@ -87,7 +93,6 @@ export class HistoryListElement extends HistoryListElementBase {
 
       lastFocused_: Object,
 
-      /** @private */
       listBlurred_: Boolean,
 
       lastSelectedIndex: Number,
@@ -95,23 +100,24 @@ export class HistoryListElement extends HistoryListElementBase {
       pendingDelete: {
         notify: true,
         type: Boolean,
-        value: false,
       },
 
-      /** @type {!QueryState} */
       queryState: Object,
 
-      /**
-       * @private {?{
-       *   index: number,
-       *   item: !HistoryEntry,
-       *   path: string,
-       *   target: !HTMLElement
-       * }}
-       */
       actionMenuModel_: Object,
     };
   }
+
+  private historyData_: Array<HistoryEntry>;
+  private canDeleteHistory_: boolean =
+      loadTimeData.getBoolean('allowDeletingHistory');
+  private actionMenuModel_: ActionMenuModel|null = null;
+  private resultLoadingDisabled_: boolean = false;
+  searchedTerm: string = '';
+  selectedItems: Set<number> = new Set();
+  pendingDelete: boolean = false;
+  lastSelectedIndex: number;
+  queryState: QueryState;
 
   /** @override */
   connectedCallback() {
@@ -120,7 +126,7 @@ export class HistoryListElement extends HistoryListElementBase {
     // It is possible (eg, when middle clicking the reload button) for all other
     // resize events to fire before the list is attached and can be measured.
     // Adding another resize here ensures it will get sized correctly.
-    /** @type {IronListElement} */ (this.$['infinite-list']).notifyResize();
+    this.$['infinite-list'].notifyResize();
     this.$['infinite-list'].scrollTarget = this;
     this.$['scroll-threshold'].scrollTarget = this;
     this.setAttribute('aria-roledescription', this.i18n('ariaRoleDescription'));
@@ -134,20 +140,12 @@ export class HistoryListElement extends HistoryListElementBase {
     this.setAttribute('role', 'application');
 
     this.addEventListener('history-checkbox-select', this.onItemSelected_);
+    this.addEventListener('open-menu', this.onOpenMenu_);
     this.addEventListener(
-        'open-menu', e => this.onOpenMenu_(/** @type {!OpenMenuEvent} */ (e)));
-    this.addEventListener(
-        'remove-bookmark-stars',
-        e => this.onRemoveBookmarkStars_(
-            /** @type {!CustomEvent<string>} */ (e)));
+        'remove-bookmark-stars', e => this.onRemoveBookmarkStars_(e));
   }
 
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
+  private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
@@ -156,11 +154,10 @@ export class HistoryListElement extends HistoryListElementBase {
   // Public methods:
 
   /**
-   * @param {HistoryQuery} info An object containing information about the
-   *    query.
-   * @param {!Array<!HistoryEntry>} results A list of results.
+   * @param info An object containing information about the query.
+   * @param results A list of results.
    */
-  historyResult(info, results) {
+  historyResult(info: HistoryQuery, results: Array<HistoryEntry>) {
     this.initializeResults_(info, results);
     this.closeMenu_();
 
@@ -177,16 +174,17 @@ export class HistoryListElement extends HistoryListElementBase {
   /**
    * Adds the newly updated history results into historyData_. Adds new fields
    * for each result.
-   * @param {!Array<!HistoryEntry>} historyResults The new history results.
-   * @param {boolean} incremental Whether the result is from loading more
-   * history, or a new search/list reload.
-   * @param {boolean} finished True if there are no more results available and
-   * result loading should be disabled.
+   * @param historyResults The new history results.
+   * @param incremental Whether the result is from loading more history, or a
+   *     new search/list reload.
+   * @param finished True if there are no more results available and result
+   *     loading should be disabled.
    */
-  addNewResults(historyResults, incremental, finished) {
+  addNewResults(
+      historyResults: Array<HistoryEntry>, incremental: boolean,
+      finished: boolean) {
     const results = historyResults.slice();
-    /** @type {IronScrollThresholdElement} */ (this.$['scroll-threshold'])
-        .clearTriggers();
+    this.$['scroll-threshold'].clearTriggers();
 
     if (!incremental) {
       this.resultLoadingDisabled_ = false;
@@ -200,8 +198,7 @@ export class HistoryListElement extends HistoryListElementBase {
     if (this.historyData_) {
       // If we have previously received data, push the new items onto the
       // existing array.
-      results.unshift('historyData_');
-      this.push.apply(this, results);
+      this.push('historyData_', ...results);
     } else {
       // The first time we receive data, use set() to ensure the iron-list is
       // initialized correctly.
@@ -211,8 +208,7 @@ export class HistoryListElement extends HistoryListElementBase {
     this.resultLoadingDisabled_ = finished;
   }
 
-  /** @private */
-  onHistoryDeleted_() {
+  private onHistoryDeleted_() {
     // Do not reload the list when there are items checked.
     if (this.getSelectedItemCount() > 0) {
       return;
@@ -238,7 +234,7 @@ export class HistoryListElement extends HistoryListElementBase {
       return;
     }
 
-    this.historyData_.forEach((item, index) => {
+    this.historyData_.forEach((_item, index) => {
       this.changeSelection_(index, true);
     });
   }
@@ -277,10 +273,10 @@ export class HistoryListElement extends HistoryListElementBase {
     if (this.queryState.searchTerm !== '') {
       browserService.recordAction('SearchResultRemove');
     }
-    this.$.dialog.get().showModal();
+    (this.$.dialog.get() as CrDialogElement).showModal();
 
     // TODO(dbeam): remove focus flicker caused by showModal() + focus().
-    this.shadowRoot.querySelector('.action-button').focus();
+    (this.shadowRoot!.querySelector('.action-button') as HTMLElement).focus();
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -288,11 +284,8 @@ export class HistoryListElement extends HistoryListElementBase {
 
   /**
    * Set the selection status for an item at a particular index.
-   * @param {number} index
-   * @param {boolean} selected
-   * @private
    */
-  changeSelection_(index, selected) {
+  private changeSelection_(index: number, selected: boolean) {
     this.set(`historyData_.${index}.selected`, selected);
     if (selected) {
       this.selectedItems.add(index);
@@ -306,9 +299,8 @@ export class HistoryListElement extends HistoryListElementBase {
    * successful, removes them from the view. Does not prompt the user before
    * deleting -- see deleteSelectedWithPrompt for a version of this method which
    * does prompt.
-   * @private
    */
-  deleteSelected_() {
+  private deleteSelected_() {
     assert(!this.pendingDelete);
 
     const toBeRemoved = Array.from(this.selectedItems.values())
@@ -329,11 +321,9 @@ export class HistoryListElement extends HistoryListElementBase {
    * Remove all |indices| from the history list. Uses notifySplices to send a
    * single large notification to Polymer, rather than many small notifications,
    * which greatly improves performance.
-   * @param {!Array<number>} indices
-   * @private
    */
-  removeItemsByIndex_(indices) {
-    const splices = [];
+  private removeItemsByIndex_(indices: Array<number>) {
+    const splices: Array<any> = [];
     indices.sort(function(a, b) {
       // Sort in reverse numerical order.
       return b - a;
@@ -353,10 +343,9 @@ export class HistoryListElement extends HistoryListElementBase {
 
   /**
    * Closes the overflow menu.
-   * @private
    */
-  closeMenu_() {
-    const menu = this.$.sharedMenu.getIfExists();
+  private closeMenu_() {
+    const menu = this.$.sharedMenu.getIfExists() as CrActionMenuElement;
     if (menu && menu.open) {
       this.actionMenuModel_ = null;
       menu.close();
@@ -366,29 +355,25 @@ export class HistoryListElement extends HistoryListElementBase {
   /////////////////////////////////////////////////////////////////////////////
   // Event listeners:
 
-  /** @private */
-  onDialogConfirmTap_() {
+  private onDialogConfirmTap_() {
     BrowserService.getInstance().recordAction('ConfirmRemoveSelected');
 
     this.deleteSelected_();
-    const dialog = assert(this.$.dialog.getIfExists());
+    const dialog = assert(this.$.dialog.getIfExists()) as CrDialogElement;
     dialog.close();
   }
 
-  /** @private */
-  onDialogCancelTap_() {
+  private onDialogCancelTap_() {
     BrowserService.getInstance().recordAction('CancelRemoveSelected');
 
-    const dialog = assert(this.$.dialog.getIfExists());
+    const dialog = assert(this.$.dialog.getIfExists()) as CrDialogElement;
     dialog.close();
   }
 
   /**
    * Remove bookmark star for history items with matching URLs.
-   * @param {!CustomEvent<string>} e
-   * @private
    */
-  onRemoveBookmarkStars_(e) {
+  private onRemoveBookmarkStars_(e: CustomEvent<string>) {
     const url = e.detail;
 
     if (this.historyData_ === undefined) {
@@ -404,9 +389,8 @@ export class HistoryListElement extends HistoryListElementBase {
 
   /**
    * Called when the page is scrolled to near the bottom of the list.
-   * @private
    */
-  onScrollToBottom_() {
+  private onScrollToBottom_() {
     if (this.resultLoadingDisabled_ || this.queryState.querying) {
       return;
     }
@@ -418,38 +402,30 @@ export class HistoryListElement extends HistoryListElementBase {
    * Open the overflow menu and ensure that the item is visible in the scroll
    * pane when its menu is opened (it is possible to open off-screen items using
    * keyboard shortcuts).
-   * @param {!OpenMenuEvent} e
-   * @private
    */
-  onOpenMenu_(e) {
+  private onOpenMenu_(e: OpenMenuEvent) {
     const index = e.detail.index;
-    const list = /** @type {IronListElement} */ (this.$['infinite-list']);
+    const list = this.$['infinite-list'];
     if (index < list.firstVisibleIndex || index > list.lastVisibleIndex) {
       list.scrollToIndex(index);
     }
 
     const target = e.detail.target;
     this.actionMenuModel_ = e.detail;
-    const menu = /** @type {CrActionMenuElement} */ (this.$.sharedMenu.get());
+    const menu = this.$.sharedMenu.get() as CrActionMenuElement;
     menu.showAt(target);
   }
 
-  /** @private */
-  onMoreFromSiteTap_() {
+  private onMoreFromSiteTap_() {
     BrowserService.getInstance().recordAction('EntryMenuShowMoreFromSite');
 
     const menu = assert(this.$.sharedMenu.getIfExists());
-    this.fire_('change-query', {search: this.actionMenuModel_.item.domain});
+    this.fire_('change-query', {search: this.actionMenuModel_!.item.domain});
     this.actionMenuModel_ = null;
     this.closeMenu_();
   }
 
-  /**
-   * @param {!Array<!HistoryEntry>} items
-   * @return {!Promise}
-   * @private
-   */
-  deleteItems_(items) {
+  private deleteItems_(items: Array<HistoryEntry>): Promise<void> {
     const removalList = items.map(item => ({
                                     url: item.url,
                                     timestamps: item.allTimestamps,
@@ -459,14 +435,13 @@ export class HistoryListElement extends HistoryListElementBase {
     return BrowserService.getInstance().removeVisits(removalList);
   }
 
-  /** @private */
-  onRemoveFromHistoryTap_() {
+  private onRemoveFromHistoryTap_() {
     const browserService = BrowserService.getInstance();
     browserService.recordAction('EntryMenuRemoveFromHistory');
 
     assert(!this.pendingDelete);
     const menu = assert(this.$.sharedMenu.getIfExists());
-    const itemData = this.actionMenuModel_;
+    const itemData = this.actionMenuModel_!;
 
     this.deleteItems_([itemData.item]).then(() => {
       // This unselect-all resets the toolbar when deleting a selected item
@@ -487,7 +462,7 @@ export class HistoryListElement extends HistoryListElementBase {
         setTimeout(() => {
           this.$['infinite-list'].focusItem(
               Math.min(this.historyData_.length - 1, index));
-          const item = getDeepActiveElement();
+          const item = getDeepActiveElement() as HistoryItemElement;
           if (item && item.focusOnMenuButton) {
             item.focusOnMenuButton();
           }
@@ -507,11 +482,7 @@ export class HistoryListElement extends HistoryListElementBase {
     this.closeMenu_();
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  onItemSelected_(e) {
+  private onItemSelected_(e: HistoryCheckboxSelectEvent) {
     const index = e.detail.index;
     const indices = [];
 
@@ -543,12 +514,8 @@ export class HistoryListElement extends HistoryListElementBase {
   /**
    * Check whether the time difference between the given history item and the
    * next one is large enough for a spacer to be required.
-   * @param {HistoryEntry} item
-   * @param {number} index The index of |item| in |historyData_|.
-   * @return {boolean} Whether or not time gap separator is required.
-   * @private
    */
-  needsTimeGap_(item, index) {
+  private needsTimeGap_(_item: HistoryEntry, index: number): boolean {
     const length = this.historyData_.length;
     if (index === undefined || index >= length - 1 || length === 0) {
       return false;
@@ -567,12 +534,9 @@ export class HistoryListElement extends HistoryListElementBase {
 
   /**
    * True if the given item is the beginning of a new card.
-   * @param {HistoryEntry} item
-   * @param {number} i Index of |item| within |historyData_|.
-   * @return {boolean}
-   * @private
+   * @param i Index of |item| within |historyData_|.
    */
-  isCardStart_(item, i) {
+  private isCardStart_(_item: HistoryEntry, i: number): boolean {
     const length = this.historyData_.length;
     if (i === undefined || length === 0 || i > length - 1) {
       return false;
@@ -584,12 +548,9 @@ export class HistoryListElement extends HistoryListElementBase {
 
   /**
    * True if the given item is the end of a card.
-   * @param {HistoryEntry} item
-   * @param {number} i Index of |item| within |historyData_|.
-   * @return {boolean}
-   * @private
+   * @param i Index of |item| within |historyData_|.
    */
-  isCardEnd_(item, i) {
+  private isCardEnd_(_item: HistoryEntry, i: number): boolean {
     const length = this.historyData_.length;
     if (i === undefined || length === 0 || i > length - 1) {
       return false;
@@ -599,40 +560,21 @@ export class HistoryListElement extends HistoryListElementBase {
         this.historyData_[i + 1].dateRelativeDay;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  hasResults_() {
+  private hasResults_(): boolean {
     return this.historyData_.length > 0;
   }
 
-  /**
-   * @param {string} searchedTerm
-   * @return {string}
-   * @private
-   */
-  noResultsMessage_(searchedTerm) {
+  private noResultsMessage_(searchedTerm: string): string {
     const messageId = searchedTerm !== '' ? 'noSearchResults' : 'noResults';
     return loadTimeData.getString(messageId);
   }
 
-  /**
-   * @param {string} searchedTerm
-   * @param {string} domain
-   * @return {boolean}
-   * @private
-   */
-  canSearchMoreFromSite_(searchedTerm, domain) {
+  private canSearchMoreFromSite_(searchedTerm: string, domain: string):
+      boolean {
     return searchedTerm === '' || searchedTerm !== domain;
   }
 
-  /**
-   * @param {HistoryQuery} info
-   * @param {!Array<HistoryEntry>} results
-   * @private
-   */
-  initializeResults_(info, results) {
+  private initializeResults_(info: HistoryQuery, results: Array<HistoryEntry>) {
     if (results.length === 0) {
       return;
     }
@@ -655,10 +597,13 @@ export class HistoryListElement extends HistoryListElementBase {
    * Adding in order to address an issue with a flaky test. After the list is
    * updated, the test would not see the updated elements when using Polymer 2.
    * This has yet to be reproduced in manual testing.
-   * @private
    */
-  onHistoryDataChanged_() {
+  private onHistoryDataChanged_() {
     this.$['infinite-list'].fire('iron-resize');
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 
