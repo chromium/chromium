@@ -1711,26 +1711,18 @@ bool PaintLayer::HasOverflowControls() const {
                               GetLayoutObject().StyleRef().HasResize());
 }
 
-void PaintLayer::AppendSingleFragmentIgnoringPagination(
+void PaintLayer::AppendSingleFragmentIgnoringPaginationForHitTesting(
     PaintLayerFragments& fragments,
-    const PaintLayer* root_layer,
-    const CullRect* cull_rect,
-    OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior,
-    ShouldRespectOverflowClipType respect_overflow_clip,
-    const PhysicalOffset* offset_from_root,
-    const PhysicalOffset& sub_pixel_accumulation) const {
+    ShouldRespectOverflowClipType respect_overflow_clip) const {
   PaintLayerFragment fragment;
-  ClipRectsContext clip_rects_context(
-      root_layer, &root_layer->GetLayoutObject().FirstFragment(),
-      overlay_scrollbar_clip_behavior, respect_overflow_clip,
-      sub_pixel_accumulation);
-  Clipper(GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(clip_rects_context, &GetLayoutObject().FirstFragment(),
-                      cull_rect, fragment.layer_bounds,
-                      fragment.background_rect, fragment.foreground_rect,
-                      offset_from_root);
-  fragment.root_fragment_data = &root_layer->GetLayoutObject().FirstFragment();
   fragment.fragment_data = &GetLayoutObject().FirstFragment();
+  ClipRectsContext clip_rects_context(this, fragment.fragment_data,
+                                      kExcludeOverlayScrollbarSizeForHitTesting,
+                                      respect_overflow_clip);
+  Clipper(GeometryMapperOption::kUseGeometryMapper)
+      .CalculateRects(clip_rects_context, fragment.fragment_data, nullptr,
+                      fragment.layer_bounds, fragment.background_rect,
+                      fragment.foreground_rect);
   if (GetLayoutObject().CanTraversePhysicalFragments()) {
     // Make sure that we actually traverse the fragment tree, by providing a
     // physical fragment. Otherwise we'd fall back to LayoutObject traversal.
@@ -2209,11 +2201,9 @@ PaintLayer* PaintLayer::HitTestLayer(PaintLayer* root_layer,
   if (recursion_data.intersects_location) {
     layer_fragments.emplace();
     if (applied_transform) {
-      DCHECK(root_layer == this);
-      PhysicalOffset ignored;
-      AppendSingleFragmentIgnoringPagination(
-          *layer_fragments, root_layer, nullptr,
-          kExcludeOverlayScrollbarSizeForHitTesting, clip_behavior, &ignored);
+      DCHECK_EQ(root_layer, this);
+      AppendSingleFragmentIgnoringPaginationForHitTesting(*layer_fragments,
+                                                          clip_behavior);
     } else {
       CollectFragments(*layer_fragments, root_layer, nullptr,
                        kExcludeOverlayScrollbarSizeForHitTesting,
