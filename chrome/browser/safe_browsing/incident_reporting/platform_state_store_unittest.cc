@@ -52,7 +52,7 @@ TEST(PlatformStateStoreTest, DeserializeEmpty) {
   PlatformStateStoreLoadResult load_result =
       DeserializeIncidentsSent(std::string(), deserialized.get());
   ASSERT_EQ(PlatformStateStoreLoadResult::SUCCESS, load_result);
-  ASSERT_TRUE(deserialized->empty());
+  ASSERT_TRUE(deserialized->DictEmpty());
 }
 
 // Tests that serialize followed by deserialize doesn't lose data.

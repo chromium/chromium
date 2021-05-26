@@ -49,7 +49,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
   // Check to make sure there is no existing pref for window placement.
   const base::DictionaryValue* placement = pref->GetDictionary(path_);
   ASSERT_TRUE(placement);
-  EXPECT_TRUE(placement->empty());
+  EXPECT_TRUE(placement->DictEmpty());
 
   // Replace the window with one that doesn't have resize controls.
   [window_ close];
@@ -116,7 +116,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
   // Check to make sure there is no existing pref for window placement.
   const base::DictionaryValue* placement = pref->GetDictionary(path_);
   ASSERT_TRUE(placement);
-  EXPECT_TRUE(placement->empty());
+  EXPECT_TRUE(placement->DictEmpty());
 
   // Ask the window to save its position, then check that a preference
   // exists.  We're technically passing in a pointer to the user prefs

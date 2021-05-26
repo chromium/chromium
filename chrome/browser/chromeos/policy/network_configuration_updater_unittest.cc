@@ -325,8 +325,12 @@ MATCHER_P(IsEqualTo,
   return value->Equals(&arg);
 }
 
-MATCHER(IsEmpty, std::string(negation ? "isn't" : "is") + " empty.") {
+MATCHER(IsListEmpty, std::string(negation ? "isn't" : "is") + " empty.") {
   return arg.empty();
+}
+
+MATCHER(IsDictEmpty, std::string(negation ? "isn't" : "is") + " empty.") {
+  return arg.DictEmpty();
 }
 
 ACTION_P(SetCertificateList, list) {
@@ -961,7 +965,7 @@ TEST_P(NetworkConfigurationUpdaterTestWithParam, PolicyChange) {
 
   // Another update is expected if the policy goes away.
   EXPECT_CALL(network_config_handler_,
-              SetPolicy(CurrentONCSource(), _, IsEmpty(), IsEmpty()));
+              SetPolicy(CurrentONCSource(), _, IsListEmpty(), IsDictEmpty()));
   certificate_importer_->SetExpectedONCClientCertificates({});
 
   policy.Erase(GetParam());

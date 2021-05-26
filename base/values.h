@@ -650,10 +650,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // DEPRECATED, use `Value::FindKey(key)` instead.
   bool HasKey(StringPiece key) const;
 
-  // Returns whether the dictionary is empty.
-  // DEPRECATED, use `Value::DictEmpty()` instead.
-  bool empty() const { return dict().empty(); }
-
   // Clears any current contents of this dictionary.
   // DEPRECATED, use `Value::DictClear()` instead.
   void Clear();

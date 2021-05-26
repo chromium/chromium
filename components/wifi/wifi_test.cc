@@ -190,7 +190,7 @@ bool WiFiTest::ParseCommandLine(int argc, const char* argv[]) {
   if (parsed_command_line.HasSwitch("connect")) {
     if (!network_guid.empty()) {
       std::string error;
-      if (!properties->empty()) {
+      if (!properties->DictEmpty()) {
         VLOG(0) << "Using connect properties: " << *properties;
         wifi_service_->SetProperties(network_guid, std::move(properties),
                                      &error);
