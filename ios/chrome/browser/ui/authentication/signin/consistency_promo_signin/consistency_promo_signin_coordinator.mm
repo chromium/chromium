@@ -6,6 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "components/signin/public/base/account_consistency_method.h"
+#import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -341,7 +342,9 @@
     return;
   }
   __weak __typeof(self) weakSelf = self;
-  if (error.state() == GoogleServiceAuthError::State::NONE) {
+  if (error.state() == GoogleServiceAuthError::State::NONE &&
+      self.authenticationService->GetAuthenticatedIdentity() &&
+      accountsInCookieJarInfo.signed_in_accounts.size() > 0) {
     [self.defaultAccountCoordinator stopSigninSpinner];
     [self.navigationController
         dismissViewControllerAnimated:YES
