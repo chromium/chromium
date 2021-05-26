@@ -64,8 +64,6 @@ static_library("base") {
     "time.h",
     "unique_position.cc",
     "unique_position.h",
-    "unrecoverable_error_info.cc",
-    "unrecoverable_error_info.h",
     "user_selectable_type.cc",
     "user_selectable_type.h",
     "weak_handle.cc",
