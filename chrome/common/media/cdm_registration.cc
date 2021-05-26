@@ -119,11 +119,14 @@ std::unique_ptr<content::CdmInfo> CreateCdmInfoForChromeOS(
   capability.audio_codecs = media::GetCdmSupportedAudioCodecs();
 
   // Add the supported codecs as if they came from the component manifest.
-  capability.video_codecs.push_back(media::VideoCodec::kCodecVP8);
-  capability.video_codecs.push_back(media::VideoCodec::kCodecVP9);
-  capability.video_codecs.push_back(media::VideoCodec::kCodecAV1);
+  // Not specifying any profiles to indicate that all relevant profiles
+  // should be considered supported.
+  const std::vector<media::VideoCodecProfile> kAllProfiles = {};
+  capability.video_codecs.emplace(media::VideoCodec::kCodecVP8, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kCodecVP9, kAllProfiles);
+  capability.video_codecs.emplace(media::VideoCodec::kCodecAV1, kAllProfiles);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  capability.video_codecs.push_back(media::VideoCodec::kCodecH264);
+  capability.video_codecs.emplace(media::VideoCodec::kCodecH264, kAllProfiles);
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   // Both encryption schemes are supported on ChromeOS.
@@ -240,13 +243,15 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   capability.audio_codecs = media::GetCdmSupportedAudioCodecs();
 
   // We currently support VP9, H264 and HEVC video formats with
-  // decrypt-and-decode.
-  capability.video_codecs.push_back(media::VideoCodec::kCodecVP9);
+  // decrypt-and-decode. Not specifying any profiles to indicate that all
+  // relevant profiles should be considered supported.
+  const std::vector<media::VideoCodecProfile> kAllProfiles = {};
+  capability.video_codecs.emplace(media::VideoCodec::kCodecVP9, kAllProfiles);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  capability.video_codecs.push_back(media::VideoCodec::kCodecH264);
+  capability.video_codecs.emplace(media::VideoCodec::kCodecH264, kAllProfiles);
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  capability.video_codecs.push_back(media::VideoCodec::kCodecHEVC);
+  capability.video_codecs.emplace(media::VideoCodec::kCodecHEVC, kAllProfiles);
 #endif
 
   // Both encryption schemes are supported on ChromeOS.

@@ -4,9 +4,22 @@
 
 #include "media/mojo/mojom/cdm_capability_mojom_traits.h"
 
+#include <set>
 #include <utility>
 
 namespace mojo {
+
+namespace {
+
+template <typename T>
+bool AreUnique(const std::vector<T>& values) {
+  std::set<T> unique_values;
+  for (const auto& value : values)
+    unique_values.emplace(value);
+  return values.size() == unique_values.size();
+}
+
+}  // namespace
 
 // static
 bool StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability>::
@@ -16,9 +29,19 @@ bool StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability>::
   if (!input.ReadAudioCodecs(&audio_codecs))
     return false;
 
-  std::vector<media::VideoCodec> video_codecs;
+  // Ensure that the AudioCodecs are unique.
+  if (!AreUnique(audio_codecs))
+    return false;
+
+  media::CdmCapability::VideoCodecMap video_codecs;
   if (!input.ReadVideoCodecs(&video_codecs))
     return false;
+
+  // Ensure that the VideoCodecProfiles in each entry are unique.
+  for (const auto& codec : video_codecs) {
+    if (!AreUnique(codec.second))
+      return false;
+  }
 
   std::vector<media::EncryptionScheme> encryption_schemes;
   if (!input.ReadEncryptionSchemes(&encryption_schemes))

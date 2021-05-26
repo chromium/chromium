@@ -12,7 +12,7 @@ CdmCapability::CdmCapability() = default;
 
 CdmCapability::CdmCapability(
     std::vector<AudioCodec> audio_codecs,
-    std::vector<VideoCodec> video_codecs,
+    VideoCodecMap video_codecs,
     base::flat_set<EncryptionScheme> encryption_schemes,
     base::flat_set<CdmSessionType> session_types)
     : audio_codecs(std::move(audio_codecs)),

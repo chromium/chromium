@@ -200,7 +200,7 @@ bool GetAudioCodecs(const base::Value& manifest,
 // valid. Returns false and does not modify |video_codecs| if the manifest entry
 // is incorrectly formatted.
 bool GetVideoCodecs(const base::Value& manifest,
-                    std::vector<media::VideoCodec>* video_codecs) {
+                    media::CdmCapability::VideoCodecMap* video_codecs) {
   DCHECK(manifest.is_dict());
   DCHECK(video_codecs);
 
@@ -222,21 +222,24 @@ bool GetVideoCodecs(const base::Value& manifest,
     return true;
   }
 
-  std::vector<media::VideoCodec> result;
   const std::vector<base::StringPiece> supported_codecs =
       base::SplitStringPiece(codecs, kCdmValueDelimiter, base::TRIM_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
 
+  // As the manifest string does not include profiles, specify {} to indicate
+  // that all relevant profiles should be considered supported.
+  media::CdmCapability::VideoCodecMap result;
+  const std::vector<media::VideoCodecProfile> kAllProfiles = {};
   for (const auto& codec : supported_codecs) {
     if (codec == kCdmSupportedCodecVp8) {
-      result.push_back(media::VideoCodec::kCodecVP8);
+      result.emplace(media::VideoCodec::kCodecVP8, kAllProfiles);
     } else if (codec == kCdmSupportedCodecVp9) {
-      result.push_back(media::VideoCodec::kCodecVP9);
+      result.emplace(media::VideoCodec::kCodecVP9, kAllProfiles);
     } else if (codec == kCdmSupportedCodecAv1) {
-      result.push_back(media::VideoCodec::kCodecAV1);
+      result.emplace(media::VideoCodec::kCodecAV1, kAllProfiles);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     } else if (codec == kCdmSupportedCodecAvc1) {
-      result.push_back(media::VideoCodec::kCodecH264);
+      result.emplace(media::VideoCodec::kCodecH264, kAllProfiles);
 #endif
     }
   }

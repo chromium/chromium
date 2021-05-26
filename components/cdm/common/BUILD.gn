@@ -42,6 +42,7 @@ if (enable_library_cdms) {
       "//content/public/common",
       "//media",
       "//media/cdm:cdm_api",
+      "//testing/gmock",
       "//testing/gtest",
     ]
   }

@@ -23,6 +23,7 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/eme_constants.h"
 #include "media/base/key_system_properties.h"
+#include "media/cdm/cdm_capability.h"
 #include "media/media_buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
@@ -56,10 +57,12 @@ using media::EmeSessionTypeSupport;
 using media::KeySystemProperties;
 using media::SupportedCodecs;
 
+namespace {
+
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 // External Clear Key (used for testing).
-static void AddExternalClearKey(
+void AddExternalClearKey(
     std::vector<std::unique_ptr<KeySystemProperties>>* concrete_key_systems) {
   // TODO(xhwang): Move these into an array so we can use a for loop to add
   // supported key systems below.
@@ -140,9 +143,63 @@ static void AddExternalClearKey(
 }
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
-static SupportedCodecs GetSupportedCodecs(
-    const media::CdmCapability& capability,
-    bool is_secure) {
+SupportedCodecs GetVP9Codecs(
+    const std::vector<media::VideoCodecProfile>& profiles) {
+  if (profiles.empty()) {
+    // If no profiles are specified, then all are supported.
+    return media::EME_CODEC_VP9_PROFILE0 | media::EME_CODEC_VP9_PROFILE2;
+  }
+
+  SupportedCodecs supported_vp9_codecs = media::EME_CODEC_NONE;
+  for (const auto& profile : profiles) {
+    switch (profile) {
+      case media::VP9PROFILE_PROFILE0:
+        supported_vp9_codecs |= media::EME_CODEC_VP9_PROFILE0;
+        break;
+      case media::VP9PROFILE_PROFILE2:
+        supported_vp9_codecs |= media::EME_CODEC_VP9_PROFILE2;
+        break;
+      default:
+        DVLOG(1) << "Unexpected " << GetCodecName(media::VideoCodec::kCodecVP9)
+                 << " profile: " << GetProfileName(profile);
+        break;
+    }
+  }
+
+  return supported_vp9_codecs;
+}
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_CHROMEOS_ASH)
+SupportedCodecs GetHevcCodecs(
+    const std::vector<media::VideoCodecProfile>& profiles) {
+  if (profiles.empty()) {
+    // If no profiles are specified, then all are supported.
+    return media::EME_CODEC_HEVC_PROFILE_MAIN |
+           media::EME_CODEC_HEVC_PROFILE_MAIN10;
+  }
+
+  SupportedCodecs supported_hevc_codecs = media::EME_CODEC_NONE;
+  for (const auto& profile : profiles) {
+    switch (profile) {
+      case media::HEVCPROFILE_MAIN:
+        supported_hevc_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN;
+        break;
+      case media::HEVCPROFILE_MAIN10:
+        supported_hevc_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN10;
+        break;
+      default:
+        DVLOG(1) << "Unexpected " << GetCodecName(media::VideoCodec::kCodecHEVC)
+                 << " profile: " << GetProfileName(profile);
+        break;
+    }
+  }
+
+  return supported_hevc_codecs;
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_CHROMEOS_ASH)
+
+SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability,
+                                   bool is_secure) {
   SupportedCodecs supported_codecs = media::EME_CODEC_NONE;
 
   for (const auto& codec : capability.audio_codecs) {
@@ -167,14 +224,16 @@ static SupportedCodecs GetSupportedCodecs(
     }
   }
 
+  // For compatibility with older CDMs different profiles are only used
+  // with some video codecs.
   for (const auto& codec : capability.video_codecs) {
-    switch (codec) {
+    switch (codec.first) {
       case media::VideoCodec::kCodecVP8:
         supported_codecs |= media::EME_CODEC_VP8;
         break;
       case media::VideoCodec::kCodecVP9:
-        supported_codecs |= media::EME_CODEC_VP9_PROFILE0;
-        supported_codecs |= media::EME_CODEC_VP9_PROFILE2;
+        supported_codecs |= GetVP9Codecs(codec.second);
+        break;
         break;
       case media::VideoCodec::kCodecAV1:
         supported_codecs |= media::EME_CODEC_AV1;
@@ -189,14 +248,13 @@ static SupportedCodecs GetSupportedCodecs(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         if (is_secure && base::FeatureList::IsEnabled(
                              chromeos::features::kCdmFactoryDaemon)) {
-          supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN;
-          supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN10;
+          supported_codecs |= GetHevcCodecs(codec.second);
         }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
       default:
-        DVLOG(1) << "Unexpected supported codec: " << GetCodecName(codec);
+        DVLOG(1) << "Unexpected supported codec: " << GetCodecName(codec.first);
         break;
     }
   }
@@ -205,8 +263,7 @@ static SupportedCodecs GetSupportedCodecs(
 }
 
 // Returns persistent-license session support.
-static EmeSessionTypeSupport GetPersistentLicenseSupport(
-    bool supported_by_the_cdm) {
+EmeSessionTypeSupport GetPersistentLicenseSupport(bool supported_by_the_cdm) {
   // Do not support persistent-license if the process cannot persist data.
   // TODO(crbug.com/457487): Have a better plan on this. See bug for details.
   if (ChromeRenderThreadObserver::is_incognito_process()) {
@@ -250,7 +307,7 @@ static EmeSessionTypeSupport GetPersistentLicenseSupport(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-static void AddWidevine(
+void AddWidevine(
     std::vector<std::unique_ptr<KeySystemProperties>>* concrete_key_systems) {
 #if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
   base::Version glibc_version(gnu_get_libc_version());
@@ -339,6 +396,8 @@ static void AddWidevine(
 }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+}  // namespace
 
 void AddChromeKeySystems(
     std::vector<std::unique_ptr<KeySystemProperties>>* key_systems_properties) {

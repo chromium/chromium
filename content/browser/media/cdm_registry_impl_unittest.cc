@@ -40,10 +40,15 @@ const char kVersion2[] = "1.1.1.2";
 const char kTestKeySystem[] = "com.example.somesystem";
 const char kTestFileSystemId[] = "file_system_id";
 
-// Helper function to compare a STL container to an initializer_list.
-template <typename Container, typename T>
-bool StlEquals(const Container a, std::initializer_list<T> b) {
-  return a == Container(b);
+// Helper function to convert a VideoCodecMap to a list of VideoCodec values
+// so that they can be compared. VideoCodecProfiles are ignored.
+std::vector<media::VideoCodec> VideoCodecMapToList(
+    const media::CdmCapability::VideoCodecMap& map) {
+  std::vector<media::VideoCodec> list;
+  for (const auto& entry : map) {
+    list.push_back(entry.first);
+  }
+  return list;
 }
 
 #define EXPECT_STL_EQ(container, ...)                            \
@@ -55,7 +60,7 @@ bool StlEquals(const Container a, std::initializer_list<T> b) {
   EXPECT_STL_EQ(cdm.capability->audio_codecs, __VA_ARGS__)
 
 #define EXPECT_VIDEO_CODECS(...) \
-  EXPECT_STL_EQ(cdm.capability->video_codecs, __VA_ARGS__)
+  EXPECT_STL_EQ(VideoCodecMapToList(cdm.capability->video_codecs), __VA_ARGS__)
 
 #define EXPECT_ENCRYPTION_SCHEMES(...) \
   EXPECT_STL_EQ(cdm.capability->encryption_schemes, __VA_ARGS__)
@@ -75,7 +80,7 @@ class CdmRegistryImplTest : public testing::Test {
  protected:
   media::CdmCapability GetTestCdmCapability() {
     return media::CdmCapability(
-        {media::kCodecVorbis}, {media::kCodecVP8, media::kCodecVP9},
+        {media::kCodecVorbis}, {{media::kCodecVP8, {}}, {media::kCodecVP9, {}}},
         {EncryptionScheme::kCenc},
         {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
   }

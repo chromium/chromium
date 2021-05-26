@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -45,10 +46,15 @@ const char kVersion[] = "1.1.1.1";
 const char kTestPath[] = "/aa/bb";
 const char kTestFileSystemId[] = "file_system_id";
 
-// Helper function to compare a STL container to an initializer_list.
-template <typename Container, typename T>
-bool StlEquals(const Container a, std::initializer_list<T> b) {
-  return a == Container(b);
+// Helper function to convert a VideoCodecMap to a list of VideoCodec values
+// so that they can be compared. VideoCodecProfiles are ignored.
+std::vector<media::VideoCodec> VideoCodecMapToList(
+    const media::CdmCapability::VideoCodecMap& map) {
+  std::vector<media::VideoCodec> list;
+  for (const auto& entry : map) {
+    list.push_back(entry.first);
+  }
+  return list;
 }
 
 #define EXPECT_STL_EQ(container, ...)                            \
@@ -59,8 +65,10 @@ bool StlEquals(const Container a, std::initializer_list<T> b) {
 #define EXPECT_AUDIO_CODECS(...) \
   EXPECT_STL_EQ(capability_->sw_secure_capability->audio_codecs, __VA_ARGS__)
 
-#define EXPECT_VIDEO_CODECS(...) \
-  EXPECT_STL_EQ(capability_->sw_secure_capability->video_codecs, __VA_ARGS__)
+#define EXPECT_VIDEO_CODECS(...)                                            \
+  EXPECT_STL_EQ(                                                            \
+      VideoCodecMapToList(capability_->sw_secure_capability->video_codecs), \
+      __VA_ARGS__)
 
 #define EXPECT_ENCRYPTION_SCHEMES(...)                                 \
   EXPECT_STL_EQ(capability_->sw_secure_capability->encryption_schemes, \
@@ -72,8 +80,10 @@ bool StlEquals(const Container a, std::initializer_list<T> b) {
 #define EXPECT_HW_SECURE_AUDIO_CODECS(...) \
   EXPECT_STL_EQ(capability_->hw_secure_capability->audio_codecs, __VA_ARGS__)
 
-#define EXPECT_HW_SECURE_VIDEO_CODECS(...) \
-  EXPECT_STL_EQ(capability_->hw_secure_capability->video_codecs, __VA_ARGS__)
+#define EXPECT_HW_SECURE_VIDEO_CODECS(...)                                  \
+  EXPECT_STL_EQ(                                                            \
+      VideoCodecMapToList(capability_->hw_secure_capability->video_codecs), \
+      __VA_ARGS__)
 
 #define EXPECT_HW_SECURE_ENCRYPTION_SCHEMES(...)                       \
   EXPECT_STL_EQ(capability_->hw_secure_capability->encryption_schemes, \
@@ -104,7 +114,7 @@ class KeySystemSupportImplTest : public testing::Test {
   media::CdmCapability TestCdmCapability() {
     return media::CdmCapability(
         {AudioCodec::kCodecVorbis},
-        {VideoCodec::kCodecVP8, VideoCodec::kCodecVP9},
+        {{VideoCodec::kCodecVP8, {}}, {VideoCodec::kCodecVP9, {}}},
         {EncryptionScheme::kCenc, EncryptionScheme::kCbcs},
         {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
   }
@@ -182,6 +192,25 @@ TEST_F(KeySystemSupportImplTest, HardwareSecureCapability) {
                                       EncryptionScheme::kCbcs);
   EXPECT_HW_SECURE_SESSION_TYPES(CdmSessionType::kTemporary,
                                  CdmSessionType::kPersistentLicense);
+}
+
+TEST_F(KeySystemSupportImplTest, Profiles) {
+  Register("KeySystem",
+           media::CdmCapability(
+               {AudioCodec::kCodecVorbis},
+               {{VideoCodec::kCodecVP9,
+                 {media::VP9PROFILE_PROFILE0, media::VP9PROFILE_PROFILE2}}},
+               {EncryptionScheme::kCenc}, {CdmSessionType::kTemporary}));
+
+  EXPECT_TRUE(IsSupported("KeySystem"));
+  EXPECT_TRUE(capability_->sw_secure_capability);
+  EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP9);
+  EXPECT_TRUE(base::Contains(
+      capability_->sw_secure_capability->video_codecs[VideoCodec::kCodecVP9],
+      media::VP9PROFILE_PROFILE0));
+  EXPECT_TRUE(base::Contains(
+      capability_->sw_secure_capability->video_codecs[VideoCodec::kCodecVP9],
+      media::VP9PROFILE_PROFILE2));
 }
 
 TEST_F(KeySystemSupportImplTest, MultipleKeySystems) {

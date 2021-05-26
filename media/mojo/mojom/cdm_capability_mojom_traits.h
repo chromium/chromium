@@ -24,7 +24,7 @@ struct StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability> {
     return input.audio_codecs;
   }
 
-  static const std::vector<media::VideoCodec>& video_codecs(
+  static const media::CdmCapability::VideoCodecMap& video_codecs(
       const media::CdmCapability& input) {
     return input.video_codecs;
   }
