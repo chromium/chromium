@@ -332,8 +332,7 @@ void ProcessMirrorHeader(
   return;
 
 #elif defined(OS_ANDROID)
-  if (manage_accounts_params.show_consistency_promo &&
-      base::FeatureList::IsEnabled(kMobileIdentityConsistency)) {
+  if (manage_accounts_params.show_consistency_promo) {
     auto* window = web_contents->GetNativeView()->GetWindowAndroid();
     if (!window) {
       // The page is prefetched in the background, ignore the header.

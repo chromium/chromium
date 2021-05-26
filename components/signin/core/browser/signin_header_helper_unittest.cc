@@ -195,12 +195,8 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdChromeOS) {
 #else  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #if defined(OS_ANDROID)
 // Tests that eligible_for_consistency request is returned on Android
-// when reaching to Gaia origin and there's no primary account. Only
-// applicable when the Mobile Identity Consistency is enabled.
+// when reaching to Gaia origin and there's no primary account.
 TEST_F(SigninHeaderHelperTest, TestEligibleForConsistencyRequestGaiaOrigin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kMobileIdentityConsistency);
-
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(GURL("https://accounts.google.com"), /*gaia_id=*/"",
                            /*is_child_account=*/absl::nullopt,
@@ -211,12 +207,8 @@ TEST_F(SigninHeaderHelperTest, TestEligibleForConsistencyRequestGaiaOrigin) {
 
 // Tests that eligible_for_consistency request is NOT returned on Android
 // when reaching to NON-Gaia origin and there's no primary account
-// Only applicable when the Mobile Identity Consistency is enabled.
 TEST_F(SigninHeaderHelperTest,
        TestNoEligibleForConsistencyRequestNonGaiaOrigin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kMobileIdentityConsistency);
-
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(GURL("https://docs.google.com"), /*gaia_id=*/"",
                            /*is_child_account=*/absl::nullopt, "");
@@ -226,9 +218,6 @@ TEST_F(SigninHeaderHelperTest,
 // Tests that the full Mirror request is returned when the
 // force_account_consistency param is true.
 TEST_F(SigninHeaderHelperTest, TestForceAccountConsistencyMobile) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kMobileIdentityConsistency);
-
   account_consistency_ = AccountConsistencyMethod::kMirror;
   force_account_consistency_ = true;
   CheckMirrorHeaderRequest(
