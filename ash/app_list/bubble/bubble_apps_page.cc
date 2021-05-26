@@ -39,8 +39,8 @@ BubbleAppsPage::BubbleAppsPage(AppListViewDelegate* view_delegate) {
 
   // TODO(https://crbug.com/1204551): Localized strings.
   // TODO(https://crbug.com/1204551): Styling.
-  auto* continue_label = scroll_contents->AddChildView(
-      std::make_unique<views::Label>(u"Continue"));
+  auto* continue_label =
+      scroll_contents->AddChildView(std::make_unique<views::Label>(u"Label"));
   continue_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   auto* continue_section =
@@ -54,7 +54,7 @@ BubbleAppsPage::BubbleAppsPage(AppListViewDelegate* view_delegate) {
   continue_layout->set_cross_axis_alignment(
       BoxLayout::CrossAxisAlignment::kStretch);
   for (int i = 0; i < 4; ++i) {
-    continue_section->AddChildView(std::make_unique<views::Label>(u"Task"));
+    continue_section->AddChildView(std::make_unique<views::Label>(u"Item"));
   }
 
   // TODO(https://crbug.com/1204551): Replace with real recent apps view.
@@ -68,7 +68,7 @@ BubbleAppsPage::BubbleAppsPage(AppListViewDelegate* view_delegate) {
   recent_apps_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
   for (int i = 0; i < 5; ++i) {
-    recent_apps->AddChildView(std::make_unique<views::Label>(u"Recent"));
+    recent_apps->AddChildView(std::make_unique<views::Label>(u"Item"));
   }
 
   // All apps section.
