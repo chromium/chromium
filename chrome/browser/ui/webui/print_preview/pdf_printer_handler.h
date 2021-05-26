@@ -91,6 +91,10 @@ class PdfPrinterHandler : public PrinterHandler,
   void OnDirectorySelected(const base::FilePath& filename,
                            const base::FilePath& directory);
 
+  void OnSaveLocationReady(const base::FilePath& default_filename,
+                           bool prompt_user,
+                           const base::FilePath& path);
+
   // Return save location as the Drive mount or fetch from Download Preferences.
   base::FilePath GetSaveLocation() const;
 

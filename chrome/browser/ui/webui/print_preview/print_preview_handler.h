@@ -29,6 +29,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace crosapi {
 namespace mojom {
+class DriveIntegrationService;
 class LocalPrinter;
 }
 }  // namespace crosapi
@@ -225,6 +226,13 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
                            base::Value policies,
                            const std::string& default_printer);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Sets |kIsDriveMounted| for Lacros chrome then returns the initial settings.
+  void OnDrivePathReady(base::Value initial_settings,
+                        const std::string& callback_id,
+                        const base::FilePath& drive_path);
+#endif
+
   // Sends the printer capabilities to the Web UI. |settings_info| contains
   // printer capabilities information. If |settings_info| is empty, sends
   // error notification to the Web UI instead.
@@ -316,6 +324,12 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // The pointer is constant - if ash crashes and the mojo connection is lost,
   // lacros will automatically be restarted.
   crosapi::mojom::LocalPrinter* local_printer_ = nullptr;
+
+  // Used to transmit mojo interface method calls to ash chrome.
+  // Null if the interface is unavailable.
+  // The pointer is constant - if ash crashes and the mojo connection is lost,
+  // lacros will automatically be restarted.
+  crosapi::mojom::DriveIntegrationService* drive_integration_service_ = nullptr;
 #endif
 
   base::WeakPtrFactory<PrintPreviewHandler> weak_factory_{this};

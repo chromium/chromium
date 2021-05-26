@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
@@ -406,9 +407,28 @@ void PdfPrinterHandler::SelectFile(const base::FilePath& default_filename,
 
   sticky_settings_->SaveInPrefs(profile_->GetPrefs());
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* service = chromeos::LacrosService::Get();
+  if (service &&
+      service->IsAvailable<crosapi::mojom::DriveIntegrationService>()) {
+    service->GetRemote<crosapi::mojom::DriveIntegrationService>()
+        ->GetMountPointPath(
+            base::BindOnce(&PdfPrinterHandler::OnSaveLocationReady,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(default_filename), prompt_user));
+    return;
+  }
+#endif
+
+  OnSaveLocationReady(default_filename, prompt_user, GetSaveLocation());
+}
+
+void PdfPrinterHandler::OnSaveLocationReady(
+    const base::FilePath& default_filename,
+    bool prompt_user,
+    const base::FilePath& path) {
   // Handle the no prompting case. Like the dialog prompt, this function
   // returns and eventually FileSelected() gets called.
-  base::FilePath path = GetSaveLocation();
   if (!prompt_user) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},

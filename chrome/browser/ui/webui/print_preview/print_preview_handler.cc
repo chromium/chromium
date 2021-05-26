@@ -89,6 +89,7 @@
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager_util.h"
+#include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
@@ -196,11 +197,11 @@ const char kPdfPrinterDisabled[] = "pdfPrinterDisabled";
 const char kDestinationsManaged[] = "destinationsManaged";
 // Name of a dictionary field holding the cloud print URL.
 const char kCloudPrintURL[] = "cloudPrintURL";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Name of a dictionary field indicating whether the user's Drive directory is
 // mounted.
 const char kIsDriveMounted[] = "isDriveMounted";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Get the print job settings dictionary from |json_str|.
 // Returns |base::Value()| on failure.
@@ -225,7 +226,7 @@ UserActionBuckets DetermineUserAction(const base::Value& settings) {
     return UserActionBuckets::kOpenInMacPreview;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (settings.FindBoolKey(kSettingPrintToGoogleDrive).value_or(false)) {
     return UserActionBuckets::kPrintToGoogleDriveCros;
   }
@@ -378,6 +379,13 @@ PrintPreviewHandler::PrintPreviewHandler() {
     local_printer_ = service->GetRemote<crosapi::mojom::LocalPrinter>().get();
   } else {
     LOG(ERROR) << "Local printer not available";
+  }
+
+  if (service->IsAvailable<crosapi::mojom::DriveIntegrationService>()) {
+    drive_integration_service_ =
+        service->GetRemote<crosapi::mojom::DriveIntegrationService>().get();
+  } else {
+    LOG(ERROR) << "Drive integration service not available";
   }
 #endif
   ReportUserActionHistogram(UserActionBuckets::kPreviewStarted);
@@ -933,10 +941,26 @@ void PrintPreviewHandler::SendInitialSettings(
           Profile::FromWebUI(web_ui()));
   initial_settings.SetBoolKey(kIsDriveMounted,
                               drive_service && drive_service->IsMounted());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (drive_integration_service_) {
+    drive_integration_service_->GetMountPointPath(base::BindOnce(
+        &PrintPreviewHandler::OnDrivePathReady, weak_factory_.GetWeakPtr(),
+        std::move(initial_settings), callback_id));
+    return;
+  }
+#endif
 
   ResolveJavascriptCallback(base::Value(callback_id), initial_settings);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void PrintPreviewHandler::OnDrivePathReady(base::Value initial_settings,
+                                           const std::string& callback_id,
+                                           const base::FilePath& drive_path) {
+  initial_settings.SetBoolKey(kIsDriveMounted, !drive_path.empty());
+  ResolveJavascriptCallback(base::Value(callback_id), initial_settings);
+}
+#endif
 
 void PrintPreviewHandler::ClosePreviewDialog() {
   print_preview_ui()->OnClosePrintPreviewDialog();
