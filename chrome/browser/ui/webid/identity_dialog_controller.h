@@ -42,9 +42,11 @@ class IdentityDialogController
   ~IdentityDialogController() override;
 
   // content::IdentityRequestDelegate
-  void ShowInitialPermissionDialog(content::WebContents* rp_web_contents,
-                                   const GURL& idp_url,
-                                   InitialApprovalCallback) override;
+  void ShowInitialPermissionDialog(
+      content::WebContents* rp_web_contents,
+      const GURL& idp_url,
+      content::IdentityRequestDialogController::PermissionDialogMode mode,
+      InitialApprovalCallback) override;
 
   void ShowAccountsDialog(content::WebContents* rp_web_contents,
                           content::WebContents* idp_web_contents,

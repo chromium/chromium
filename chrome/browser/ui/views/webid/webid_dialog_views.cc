@@ -41,8 +41,10 @@ WebIdDialogViews::~WebIdDialogViews() = default;
 
 void WebIdDialogViews::ShowInitialPermission(const std::u16string& idp_hostname,
                                              const std::u16string& rp_hostname,
+                                             PermissionDialogMode mode,
                                              PermissionCallback callback) {
   state_ = State::kInitialPermission;
+  permission_dialog_mode_ = mode;
   auto content_view = WebIdPermissionView::CreateForInitialPermission(
       this, idp_hostname, rp_hostname);
   permission_callback_ = std::move(callback);
@@ -153,12 +155,14 @@ void WebIdDialogViews::OnClose() {
     case State::kUninitialized:
       break;
   }
+  state_ = State::kUninitialized;
 }
 
 bool WebIdDialogViews::Accept() {
   std::move(permission_callback_).Run(UserApproval::kApproved);
   // Accepting only closes the dialog once we are at token exchange state.
-  return state_ == State::kTokenExchangePermission;
+  return permission_dialog_mode_ == PermissionDialogMode::kStateless ||
+         state_ == State::kTokenExchangePermission;
 }
 
 bool WebIdDialogViews::Cancel() {

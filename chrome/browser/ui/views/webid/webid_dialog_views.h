@@ -39,6 +39,7 @@ class WebIdDialogViews : public WebIdDialog,
 
   void ShowInitialPermission(const std::u16string& idp_hostname,
                              const std::u16string& rp_hostname,
+                             PermissionDialogMode mode,
                              PermissionCallback) override;
   void ShowTokenExchangePermission(const std::u16string& idp_hostname,
                                    const std::u16string& rp_hostname,
@@ -69,6 +70,12 @@ class WebIdDialogViews : public WebIdDialog,
 
   PermissionCallback permission_callback_;
   CloseCallback close_callback_;
+
+  // Modifies behavior based on whether the caller expects state to carry
+  // through multiple calls or whether the dialog should close at the end
+  // of a single invocation.
+  PermissionDialogMode permission_dialog_mode_ =
+      PermissionDialogMode::kStateful;
 
   // Dialog widget that shows the content. It is created and shown on the first
   // step. It remains shown until user reaches the end of the flow or explicitly

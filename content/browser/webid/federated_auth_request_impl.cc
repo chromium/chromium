@@ -101,6 +101,7 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
     case RequestMode::kPermission:
       request_dialog_controller_->ShowInitialPermissionDialog(
           web_contents, provider_,
+          IdentityRequestDialogController::PermissionDialogMode::kStateful,
           base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
                          weak_ptr_factory_.GetWeakPtr()));
       break;

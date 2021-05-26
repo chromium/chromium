@@ -22,6 +22,7 @@ IdentityDialogController::~IdentityDialogController() = default;
 void IdentityDialogController::ShowInitialPermissionDialog(
     content::WebContents* rp_web_contents,
     const GURL& idp_url,
+    content::IdentityRequestDialogController::PermissionDialogMode mode,
     InitialApprovalCallback callback) {
   DCHECK(!view_);
 
@@ -35,7 +36,8 @@ void IdentityDialogController::ShowInitialPermissionDialog(
       base::UTF8ToUTF16(rp_web_contents->GetVisibleURL().GetOrigin().host());
 
   GetOrCreateView(rp_web_contents)
-      .ShowInitialPermission(idp_hostname, rp_hostname, std::move(callback));
+      .ShowInitialPermission(idp_hostname, rp_hostname, mode,
+                             std::move(callback));
 }
 
 void IdentityDialogController::ShowIdProviderWindow(

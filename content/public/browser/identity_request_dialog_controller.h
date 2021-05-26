@@ -43,6 +43,11 @@ class CONTENT_EXPORT IdentityRequestDialogController {
     kDenied,
   };
 
+  enum class PermissionDialogMode {
+    kStateless,
+    kStateful,
+  };
+
   using AccountList = std::vector<content::IdentityRequestAccount>;
   using InitialApprovalCallback = base::OnceCallback<void(UserApproval)>;
   using IdProviderWindowClosedCallback = base::OnceCallback<void()>;
@@ -65,6 +70,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // - |rp_web_contents| is the RP web contents that has initiated the
   //   identity request.
   // - |idp_url| is the IDP URL that gets displayed to the user.
+  // - |mode| determines whether the dialog should maintain state across
+  //   multiple calls
   // - |approval_callback| callback is called with appropriate status depending
   //   on whether user granted or denied the permission.
   //
@@ -73,6 +80,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   virtual void ShowInitialPermissionDialog(
       WebContents* rp_web_contents,
       const GURL& idp_url,
+      PermissionDialogMode mode,
       InitialApprovalCallback approval_callback);
 
   // Shows and accounts selections for the given IDP. The |on_selected| callback

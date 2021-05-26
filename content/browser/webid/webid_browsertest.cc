@@ -80,6 +80,7 @@ class FakeIdentityRequestDialogController
 
   void ShowInitialPermissionDialog(WebContents*,
                                    const GURL&,
+                                   PermissionDialogMode mode,
                                    InitialApprovalCallback callback) override {
     std::move(callback).Run(initial_permission_response_);
   }

@@ -40,6 +40,7 @@ IdentityRequestAccount::~IdentityRequestAccount() = default;
 void IdentityRequestDialogController::ShowInitialPermissionDialog(
     WebContents* rp_web_contents,
     const GURL& idp_url,
+    PermissionDialogMode mode,
     InitialApprovalCallback approval_callback) {
   std::move(approval_callback).Run(UserApproval::kDenied);
 }

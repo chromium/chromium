@@ -16,6 +16,8 @@ class WebContents;
 }  // namespace content
 
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
+using PermissionDialogMode =
+    content::IdentityRequestDialogController::PermissionDialogMode;
 using PermissionCallback =
     content::IdentityRequestDialogController::InitialApprovalCallback;
 using CloseCallback =
@@ -31,6 +33,7 @@ class WebIdDialog {
   // user accepted or denied/closed the dialog.
   virtual void ShowInitialPermission(const std::u16string& idp_hostname,
                                      const std::u16string& rp_hostname,
+                                     PermissionDialogMode mode,
                                      PermissionCallback) = 0;
 
   // Creates and shows a confirmation dialog for return permission. The provided

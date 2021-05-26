@@ -77,6 +77,7 @@ FederatedAuthNavigationThrottle::WillStartRequest() {
         GetContentClient()->browser()->CreateIdentityRequestDialogController();
     request_dialog_controller_->ShowInitialPermissionDialog(
         navigation_handle()->GetWebContents(), navigation_url,
+        IdentityRequestDialogController::PermissionDialogMode::kStateless,
         base::BindOnce(&FederatedAuthNavigationThrottle::OnSigninApproved,
                        weak_ptr_factory_.GetWeakPtr()));
     return NavigationThrottle::DEFER;

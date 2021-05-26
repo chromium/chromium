@@ -23,8 +23,11 @@ class MockIdentityRequestDialogController
   MockIdentityRequestDialogController& operator=(
       const MockIdentityRequestDialogController&) = delete;
 
-  MOCK_METHOD3(ShowInitialPermissionDialog,
-               void(WebContents*, const GURL&, InitialApprovalCallback));
+  MOCK_METHOD4(ShowInitialPermissionDialog,
+               void(WebContents*,
+                    const GURL&,
+                    PermissionDialogMode,
+                    InitialApprovalCallback));
   MOCK_METHOD4(ShowIdProviderWindow,
                void(WebContents*,
                     WebContents*,

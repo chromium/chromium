@@ -25,6 +25,7 @@ class WebIdDialogAndroidStub : public WebIdDialog {
 
   void ShowInitialPermission(const std::u16string& idp_hostname,
                              const std::u16string& rp_hostname,
+                             PermissionDialogMode mode,
                              PermissionCallback callback) override {
     // Post a task to run the callback because FederatedAuthNavigationThrottle
     // currently assumes these callbacks are run asynchronously.
