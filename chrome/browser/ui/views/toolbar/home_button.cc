@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -179,9 +180,20 @@ int HomeButton::OnDragUpdated(const ui::DropTargetEvent& event) {
 
 ui::mojom::DragOperation HomeButton::OnPerformDrop(
     const ui::DropTargetEvent& event) {
-  if (!browser_)
-    return ui::mojom::DragOperation::kNone;
+  auto cb = GetDropCallback(event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(cb).Run(event, output_drag_op);
+  return output_drag_op;
+}
 
+views::View::DropCallback HomeButton::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  return base::BindOnce(&HomeButton::UpdateHomePage,
+                        weak_ptr_factory_.GetWeakPtr());
+}
+
+void HomeButton::UpdateHomePage(const ui::DropTargetEvent& event,
+                                ui::mojom::DragOperation& output_drag_op) {
   GURL new_homepage_url;
   std::u16string title;
   if (event.data().GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES,
@@ -196,7 +208,7 @@ ui::mojom::DragOperation HomeButton::OnPerformDrop(
 
     HomePageUndoBubble::ShowBubble(browser_, old_is_ntp, old_homepage, this);
   }
-  return ui::mojom::DragOperation::kNone;
+  output_drag_op = ui::mojom::DragOperation::kNone;
 }
 
 BEGIN_METADATA(HomeButton, ToolbarButton)
