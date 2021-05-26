@@ -215,13 +215,18 @@ void SharesheetBubbleView::ShowBubble(
         CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY, kPrimaryTextLineHeight,
         kSecondaryTextColor, gfx::ALIGN_CENTER, views::style::STYLE_PRIMARY));
   } else {
+    if (show_content_previews) {
+      header_body_separator_ =
+          body_view->AddChildView(std::make_unique<views::Separator>());
+    }
+
     auto scroll_view = std::make_unique<views::ScrollView>();
     scroll_view->SetContents(MakeScrollableTargetView(std::move(targets)));
     scroll_view->ClipHeightTo(kTargetViewHeight, kTargetViewExpandedHeight);
     body_view->AddChildView(std::move(scroll_view));
 
     if (expanded_view_) {
-      expand_button_separator_ =
+      body_footer_separator_ =
           body_view->AddChildView(std::make_unique<views::Separator>());
       expand_button_ =
           footer_view_->AddChildView(std::make_unique<SharesheetExpandButton>(
@@ -589,10 +594,13 @@ void SharesheetBubbleView::ExpandButtonPressed() {
   show_expanded_view_ = !show_expanded_view_;
   ResizeBubble(kDefaultBubbleWidth, GetBubbleHeight());
 
-  // Scrollview has separators that overlaps with |expand_button_separator_|
-  // to create a double line when both are visible, so when scrollview is
-  // expanded we hide our separator.
-  expand_button_separator_->SetVisible(!show_expanded_view_);
+  // Scrollview has separators that overlaps with |header_body_separator_| and
+  // |body_footer_separator_| to create a double line when both are visible, so
+  // when scrollview is expanded we hide our separators.
+  if (header_body_separator_)
+    header_body_separator_->SetVisible(!show_expanded_view_);
+  body_footer_separator_->SetVisible(!show_expanded_view_);
+
   expanded_view_->SetVisible(show_expanded_view_);
   expanded_view_separator_->SetVisible(show_expanded_view_);
 
