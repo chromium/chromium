@@ -19,6 +19,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/feature_engagement/public/feature_constants.h"
 
 namespace autofill {
 
@@ -143,6 +144,15 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
                 app_locale);
 #endif
       }
+#if defined(OS_ANDROID)
+      // Set the IPH feature in order to show the IPH bubble when the virtual
+      // card is presented in the keyboard accessory.
+      if (credit_card->record_type() == CreditCard::VIRTUAL_CARD) {
+        suggestion->feature_for_iph =
+            feature_engagement::kIPHKeyboardAccessoryPaymentVirtualCardFeature
+                .name;
+      }
+#endif  // OS_ANDROID
     }
   }
 

@@ -69,6 +69,8 @@ struct Suggestion {
   bool is_value_secondary = false;
   // Whether suggestion was interacted with and is now in a loading state.
   IsLoading is_loading = IsLoading(false);
+  // The In-Product-Help feature that should be shown for the suggestion.
+  std::string feature_for_iph;
 };
 
 }  // namespace autofill

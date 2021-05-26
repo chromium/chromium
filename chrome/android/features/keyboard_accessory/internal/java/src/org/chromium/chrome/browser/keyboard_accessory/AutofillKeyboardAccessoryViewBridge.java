@@ -151,15 +151,17 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
      * @param suggestionId Identifier for the suggestion type.
      * @param isDeletable Whether the item can be deleted by the user.
+     * @param featureForIPH The In-Product-Help feature used for displaying the bubble for the
+     *         suggestion.
      */
     @CalledByNative
     private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
             String label, String sublabel, String itemTag, int iconId, int suggestionId,
-            boolean isDeletable) {
+            boolean isDeletable, String featureForIPH) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
         array[index] = new AutofillSuggestion(label, sublabel, itemTag, drawableId,
                 false /* isIconAtStart */, suggestionId, isDeletable, false /* isMultilineLabel */,
-                false /* isBoldLabel */, /* featureForIPH= */ "");
+                false /* isBoldLabel */, featureForIPH);
     }
 
     /**

@@ -22,6 +22,7 @@
 #include "ui/base/resource/resource_bundle.h"
 
 using base::android::ConvertUTF16ToJavaString;
+using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -89,7 +90,8 @@ void AutofillKeyboardAccessoryView::Show() {
         ConvertUTF16ToJavaString(env, controller_->GetSuggestionLabelAt(i)),
         ConvertUTF16ToJavaString(env, item_tag), android_icon_id,
         suggestion.frontend_id,
-        controller_->GetRemovalConfirmationText(i, nullptr, nullptr));
+        controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
+        ConvertUTF8ToJavaString(env, suggestion.feature_for_iph));
   }
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_, data_array,
                                                 controller_->IsRTL());
