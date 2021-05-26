@@ -111,6 +111,7 @@ IN_PROC_BROWSER_TEST_P(WebAppIntegrationBrowserTest, Default) {
   for (auto& action : helper_.testing_actions()) {
     helper_.ExecuteAction(action);
   }
+  helper_.ResetRegistrarObserver();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
