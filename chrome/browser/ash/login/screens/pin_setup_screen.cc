@@ -119,10 +119,8 @@ PinSetupScreen::PinSetupScreen(PinSetupScreenView* view,
   DCHECK(view_);
   view_->Bind(this);
 
-  if (features::IsPinSetupForFamilyLinkEnabled()) {
-    quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
-        &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
-  }
+  quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
+      &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
 }
 
 PinSetupScreen::~PinSetupScreen() {
@@ -148,9 +146,8 @@ bool PinSetupScreen::MaybeSkip(WizardContext* context) {
 
   // Show setup for Family Link users on tablet and clamshell if the device
   // supports PIN for login.
-  bool show_for_family_link_user = features::IsPinSetupForFamilyLinkEnabled() &&
-                                   active_user_profile->IsChild() &&
-                                   has_login_support_.value_or(false);
+  bool show_for_family_link_user =
+      active_user_profile->IsChild() && has_login_support_.value_or(false);
   if (show_for_family_link_user)
     return false;
 

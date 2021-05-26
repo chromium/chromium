@@ -252,24 +252,14 @@ class PinForLoginSetupScreenTest : public PinSetupScreenTest {
   ~PinForLoginSetupScreenTest() override = default;
 };
 
-class PinSetupForFamilyLink : public PinForLoginSetupScreenTest {
- protected:
-  PinSetupForFamilyLink() : PinForLoginSetupScreenTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kPinSetupForFamilyLink);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 INSTANTIATE_TEST_SUITE_P(All,
-                         PinSetupForFamilyLink,
+                         PinForLoginSetupScreenTest,
                          ::testing::Values(user_manager::USER_TYPE_REGULAR,
                                            user_manager::USER_TYPE_CHILD));
 
 // Tests that PIN setup is shown to Family Link users (but not to regular users)
 // on clamshell devices that support low entropy credentials.
-IN_PROC_BROWSER_TEST_P(PinSetupForFamilyLink, ClamshellMode) {
+IN_PROC_BROWSER_TEST_P(PinForLoginSetupScreenTest, ClamshellMode) {
   ShowPinSetupScreen();
 
   if (GetParam() == user_manager::USER_TYPE_CHILD) {
@@ -306,7 +296,7 @@ IN_PROC_BROWSER_TEST_P(PinSetupForFamilyLink, ClamshellMode) {
 
 // Tests that PIN setup is shown to Family Link and regular users in tablet
 // mode.
-IN_PROC_BROWSER_TEST_P(PinSetupForFamilyLink, TabletMode) {
+IN_PROC_BROWSER_TEST_P(PinForLoginSetupScreenTest, TabletMode) {
   ShellTestApi().SetTabletModeEnabledForTest(true);
   ShowPinSetupScreen();
 

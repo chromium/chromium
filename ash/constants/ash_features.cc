@@ -557,11 +557,6 @@ const base::Feature kOsSettingsDeepLinking{"OsSettingsDeepLinking",
 // and perform phone-side actions within Chrome OS.
 const base::Feature kPhoneHub{"PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables PIN setup in OOBE for Family Link users on all devices supporting low
-// entropy credentials regardless the form factor.
-const base::Feature kPinSetupForFamilyLink{"PinSetupForFamilyLink",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kPinSetupForManagedUsers{"PinSetupForManagedUsers",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -934,10 +929,6 @@ bool IsPhoneHubEnabled() {
 
 bool IsSamlReauthenticationOnLockscreenEnabled() {
   return base::FeatureList::IsEnabled(kEnableSamlReauthenticationOnLockscreen);
-}
-
-bool IsPinSetupForFamilyLinkEnabled() {
-  return base::FeatureList::IsEnabled(kPinSetupForFamilyLink);
 }
 
 bool IsPinSetupForManagedUsersEnabled() {

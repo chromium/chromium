@@ -244,8 +244,6 @@ extern const base::Feature kOsSettingsDeepLinking;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPhoneHub;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kPinSetupForFamilyLink;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPinSetupForManagedUsers;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPluginVmFullscreen;
@@ -398,7 +396,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubUseBleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinAutosubmitBackfillFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinAutosubmitFeatureEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinSetupForFamilyLinkEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinSetupForManagedUsersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorFeaturePodEnabled();
