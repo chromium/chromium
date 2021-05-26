@@ -26,7 +26,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
-class EventHandler;
 class UserModel;
 
 class MockActionDelegate : public ActionDelegate {
@@ -73,9 +72,9 @@ class MockActionDelegate : public ActionDelegate {
            base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
                callback));
   MOCK_METHOD1(SetStatusMessage, void(const std::string& message));
-  MOCK_METHOD0(GetStatusMessage, std::string());
+  MOCK_CONST_METHOD0(GetStatusMessage, std::string());
   MOCK_METHOD1(SetBubbleMessage, void(const std::string& message));
-  MOCK_METHOD0(GetBubbleMessage, std::string());
+  MOCK_CONST_METHOD0(GetBubbleMessage, std::string());
   MOCK_CONST_METHOD2(FindElement,
                      void(const Selector& selector, ElementFinder::Callback));
   MOCK_CONST_METHOD2(FindAllElements,
@@ -135,12 +134,12 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD0(Close, void());
   MOCK_METHOD0(Restart, void());
   MOCK_CONST_METHOD0(GetUserData, UserData*());
-  MOCK_METHOD0(GetPersonalDataManager, autofill::PersonalDataManager*());
+  MOCK_CONST_METHOD0(GetPersonalDataManager, autofill::PersonalDataManager*());
   MOCK_CONST_METHOD0(GetWebsiteLoginManager, WebsiteLoginManager*());
-  MOCK_METHOD0(GetWebContents, content::WebContents*());
+  MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
   MOCK_CONST_METHOD0(GetWebController, WebController*());
-  MOCK_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());
-  MOCK_METHOD0(GetLocale, std::string());
+  MOCK_CONST_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());
+  MOCK_CONST_METHOD0(GetLocale, std::string());
   MOCK_METHOD2(SetDetails,
                void(std::unique_ptr<Details> details, base::TimeDelta delay));
   MOCK_METHOD2(AppendDetails,
@@ -159,10 +158,10 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD1(SetUserActions,
                void(std::unique_ptr<std::vector<UserAction>> user_action));
   MOCK_METHOD1(SetViewportMode, void(ViewportMode mode));
-  MOCK_METHOD0(GetViewportMode, ViewportMode());
+  MOCK_CONST_METHOD0(GetViewportMode, ViewportMode());
   MOCK_METHOD1(SetPeekMode,
                void(ConfigureBottomSheetProto::PeekMode peek_mode));
-  MOCK_METHOD0(GetPeekMode, ConfigureBottomSheetProto::PeekMode());
+  MOCK_CONST_METHOD0(GetPeekMode, ConfigureBottomSheetProto::PeekMode());
   MOCK_METHOD0(ExpandBottomSheet, void());
   MOCK_METHOD0(CollapseBottomSheet, void());
   MOCK_METHOD3(
@@ -171,8 +170,7 @@ class MockActionDelegate : public ActionDelegate {
            base::RepeatingCallback<void(const FormProto::Result*)>
                changed_callback,
            base::OnceCallback<void(const ClientStatus&)> cancel_callback));
-  MOCK_METHOD0(GetUserModel, UserModel*());
-  MOCK_METHOD0(GetEventHandler, EventHandler*());
+  MOCK_CONST_METHOD0(GetUserModel, UserModel*());
   MOCK_METHOD1(WaitForWindowHeightChange,
                void(base::OnceCallback<void(const ClientStatus&)> callback));
   MOCK_METHOD4(WaitForDocumentReadyState,

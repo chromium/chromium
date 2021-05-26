@@ -57,7 +57,7 @@ class ActionDelegate {
 
   // Returns the current status message. Usually used to restore a message after
   // the action.
-  virtual std::string GetStatusMessage() = 0;
+  virtual std::string GetStatusMessage() const = 0;
 
   // Show a bubble / tooltip on the bottom bar. Dismisses the bubble if
   // |message| is empty.
@@ -65,7 +65,7 @@ class ActionDelegate {
 
   // Returns the current bubble / status message. Usually used to restore a
   // message after the action.
-  virtual std::string GetBubbleMessage() = 0;
+  virtual std::string GetBubbleMessage() const = 0;
 
   // Checks one or more elements.
   virtual void RunElementChecks(BatchElementChecker* checker) = 0;
@@ -281,13 +281,13 @@ class ActionDelegate {
   virtual void Close() = 0;
 
   // Get current personal data manager.
-  virtual autofill::PersonalDataManager* GetPersonalDataManager() = 0;
+  virtual autofill::PersonalDataManager* GetPersonalDataManager() const = 0;
 
   // Get current login fetcher.
   virtual WebsiteLoginManager* GetWebsiteLoginManager() const = 0;
 
   // Get associated web contents.
-  virtual content::WebContents* GetWebContents() = 0;
+  virtual content::WebContents* GetWebContents() const = 0;
 
   // Get the ElementStore.
   virtual ElementStore* GetElementStore() const = 0;
@@ -297,10 +297,10 @@ class ActionDelegate {
 
   // Returns the e-mail address that corresponds to the access token or an empty
   // string.
-  virtual std::string GetEmailAddressForAccessTokenAccount() = 0;
+  virtual std::string GetEmailAddressForAccessTokenAccount() const = 0;
 
   // Returns the locale for the current device or platform.
-  virtual std::string GetLocale() = 0;
+  virtual std::string GetLocale() const = 0;
 
   // Sets or updates contextual information.
   // Passing nullptr clears the contextual information.
@@ -344,13 +344,13 @@ class ActionDelegate {
   virtual void SetViewportMode(ViewportMode mode) = 0;
 
   // Get the current viewport mode.
-  virtual ViewportMode GetViewportMode() = 0;
+  virtual ViewportMode GetViewportMode() const = 0;
 
   // Set the peek mode.
   virtual void SetPeekMode(ConfigureBottomSheetProto::PeekMode peek_mode) = 0;
 
   // Checks the current peek mode.
-  virtual ConfigureBottomSheetProto::PeekMode GetPeekMode() = 0;
+  virtual ConfigureBottomSheetProto::PeekMode GetPeekMode() const = 0;
 
   // Expands the bottom sheet. This is the same as the user swiping up.
   virtual void ExpandBottomSheet() = 0;
@@ -385,7 +385,7 @@ class ActionDelegate {
   virtual const UserData* GetUserData() const = 0;
 
   // Access to the user model.
-  virtual UserModel* GetUserModel() = 0;
+  virtual UserModel* GetUserModel() const = 0;
 
   // Show |generic_ui| to the user and call |end_action_callback| when done.
   // Note that this callback needs to be tied to one or multiple interactions

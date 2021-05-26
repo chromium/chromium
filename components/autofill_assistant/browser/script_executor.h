@@ -102,7 +102,7 @@ class ScriptExecutor : public ActionDelegate,
   void Run(const UserData* user_data, RunScriptCallback callback);
 
   const UserData* GetUserData() const override;
-  UserModel* GetUserModel() override;
+  UserModel* GetUserModel() const override;
 
   // Override ScriptExecutorDelegate::NavigationListener
   void OnNavigationStateChanged() override;
@@ -140,9 +140,9 @@ class ScriptExecutor : public ActionDelegate,
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
       override;
   void SetStatusMessage(const std::string& message) override;
-  std::string GetStatusMessage() override;
+  std::string GetStatusMessage() const override;
   void SetBubbleMessage(const std::string& message) override;
-  std::string GetBubbleMessage() override;
+  std::string GetBubbleMessage() const override;
   void FindElement(const Selector& selector,
                    ElementFinder::Callback callback) const override;
   void FindAllElements(const Selector& selector,
@@ -207,13 +207,13 @@ class ScriptExecutor : public ActionDelegate,
   void LoadURL(const GURL& url) override;
   void Shutdown(bool show_feedback_chip) override;
   void Close() override;
-  autofill::PersonalDataManager* GetPersonalDataManager() override;
+  autofill::PersonalDataManager* GetPersonalDataManager() const override;
   WebsiteLoginManager* GetWebsiteLoginManager() const override;
-  content::WebContents* GetWebContents() override;
+  content::WebContents* GetWebContents() const override;
   ElementStore* GetElementStore() const override;
   WebController* GetWebController() const override;
-  std::string GetEmailAddressForAccessTokenAccount() override;
-  std::string GetLocale() override;
+  std::string GetEmailAddressForAccessTokenAccount() const override;
+  std::string GetLocale() const override;
   void SetDetails(std::unique_ptr<Details> details,
                   base::TimeDelta delay) override;
   void AppendDetails(std::unique_ptr<Details> details,
@@ -230,9 +230,9 @@ class ScriptExecutor : public ActionDelegate,
       const ShowProgressBarProto::StepProgressBarConfiguration& configuration)
       override;
   void SetViewportMode(ViewportMode mode) override;
-  ViewportMode GetViewportMode() override;
+  ViewportMode GetViewportMode() const override;
   void SetPeekMode(ConfigureBottomSheetProto::PeekMode peek_mode) override;
-  ConfigureBottomSheetProto::PeekMode GetPeekMode() override;
+  ConfigureBottomSheetProto::PeekMode GetPeekMode() const override;
   void ExpandBottomSheet() override;
   void CollapseBottomSheet() override;
   void WaitForWindowHeightChange(

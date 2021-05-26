@@ -131,7 +131,7 @@ const UserData* ScriptExecutor::GetUserData() const {
   return user_data_;
 }
 
-UserModel* ScriptExecutor::GetUserModel() {
+UserModel* ScriptExecutor::GetUserModel() const {
   return delegate_->GetUserModel();
 }
 
@@ -300,7 +300,7 @@ void ScriptExecutor::SetStatusMessage(const std::string& message) {
   delegate_->SetStatusMessage(message);
 }
 
-std::string ScriptExecutor::GetStatusMessage() {
+std::string ScriptExecutor::GetStatusMessage() const {
   return delegate_->GetStatusMessage();
 }
 
@@ -308,7 +308,7 @@ void ScriptExecutor::SetBubbleMessage(const std::string& message) {
   delegate_->SetBubbleMessage(message);
 }
 
-std::string ScriptExecutor::GetBubbleMessage() {
+std::string ScriptExecutor::GetBubbleMessage() const {
   return delegate_->GetBubbleMessage();
 }
 
@@ -635,7 +635,7 @@ void ScriptExecutor::Close() {
   should_stop_script_ = true;
 }
 
-autofill::PersonalDataManager* ScriptExecutor::GetPersonalDataManager() {
+autofill::PersonalDataManager* ScriptExecutor::GetPersonalDataManager() const {
   return delegate_->GetPersonalDataManager();
 }
 
@@ -643,7 +643,7 @@ WebsiteLoginManager* ScriptExecutor::GetWebsiteLoginManager() const {
   return delegate_->GetWebsiteLoginManager();
 }
 
-content::WebContents* ScriptExecutor::GetWebContents() {
+content::WebContents* ScriptExecutor::GetWebContents() const {
   return delegate_->GetWebContents();
 }
 
@@ -655,11 +655,11 @@ WebController* ScriptExecutor::GetWebController() const {
   return delegate_->GetWebController();
 }
 
-std::string ScriptExecutor::GetEmailAddressForAccessTokenAccount() {
+std::string ScriptExecutor::GetEmailAddressForAccessTokenAccount() const {
   return delegate_->GetEmailAddressForAccessTokenAccount();
 }
 
-std::string ScriptExecutor::GetLocale() {
+std::string ScriptExecutor::GetLocale() const {
   return delegate_->GetLocale();
 }
 
@@ -685,7 +685,7 @@ void ScriptExecutor::SetViewportMode(ViewportMode mode) {
   delegate_->SetViewportMode(mode);
 }
 
-ViewportMode ScriptExecutor::GetViewportMode() {
+ViewportMode ScriptExecutor::GetViewportMode() const {
   return delegate_->GetViewportMode();
 }
 
@@ -694,7 +694,7 @@ void ScriptExecutor::SetPeekMode(
   delegate_->SetPeekMode(peek_mode);
 }
 
-ConfigureBottomSheetProto::PeekMode ScriptExecutor::GetPeekMode() {
+ConfigureBottomSheetProto::PeekMode ScriptExecutor::GetPeekMode() const {
   return delegate_->GetPeekMode();
 }
 
