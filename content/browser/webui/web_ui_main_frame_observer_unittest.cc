@@ -10,8 +10,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "components/crash/content/browser/error_reporting/javascript_error_report.h"
-#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
+#include "components/crash/content/browser/error_reporting/javascript_error_report.h"  // nogncheck
+#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"  // nogncheck
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_features.h"

@@ -83,7 +83,13 @@ if (enable_pdf) {
   }
 
   source_set("internal") {
-    visibility = [ ":*" ]
+    visibility = [
+      ":*",
+
+      # TODO(crbug.com/1158929): Eliminate chrome_find_request_manager_browsertest.cc's dependence
+      # on document_loader_impl.h.
+      "//chrome/test:browser_tests",
+    ]
 
     sources = [
       "accessibility.cc",

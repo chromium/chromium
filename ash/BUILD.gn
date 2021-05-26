@@ -25,6 +25,7 @@ component("ash") {
   friend = [
     ":*",
     "//ash/app_list:*",
+    "//chrome/test:browser_tests",
     "//components/exo:*",
     "//components/exo/wayland:*",
   ]
@@ -2628,6 +2629,7 @@ static_library("test_support") {
     "//ash/app_list:*",
     "//ash/shortcut_viewer:*",
     "//chrome/test:accessibility_live_site_tests",
+    "//chrome/test:browser_tests",
     "//chrome/test:captured_sites_interactive_tests",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
