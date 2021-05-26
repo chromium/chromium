@@ -5,16 +5,16 @@
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 
 namespace media {
+namespace switches {
+const char kForceControlFaceAe[] = "force-control-face-ae";
+}  // namespace switches
+
 namespace features {
 
 // Controls if the camera frame is rotated to the upright display orientation in
 // the Chrome OS VideoCaptureDevice implementation.
 const base::Feature kDisableCameraFrameRotationAtSource{
     "DisableCameraFrameRotationAtSource", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, will force enable face AE if the camera supports.
-const base::Feature kForceEnableFaceAe{"ForceEnableFaceAe",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace media

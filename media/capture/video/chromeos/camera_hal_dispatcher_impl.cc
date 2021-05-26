@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -45,7 +46,9 @@ const base::FilePath::CharType kArcCamera3SocketPath[] =
     "/run/camera/camera3.sock";
 const char kArcCameraGroup[] = "arc-camera";
 const base::FilePath::CharType kForceEnableAePath[] =
-    "/run/camera/force_enable_ae";
+    "/run/camera/force_enable_face_ae";
+const base::FilePath::CharType kForceDisableAePath[] =
+    "/run/camera/force_disable_face_ae";
 
 std::string GenerateRandomToken() {
   char random_bytes[16];
@@ -171,15 +174,24 @@ bool CameraHalDispatcherImpl::Start(
   TRACE_EVENT0("camera", "CameraHalDispatcherImpl");
   base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
 
-  base::FilePath file_path(kForceEnableAePath);
-  if (base::FeatureList::IsEnabled(media::features::kForceEnableFaceAe)) {
-    if (!base::PathExists(file_path)) {
-      base::File file(file_path, base::File::FLAG_CREATE_ALWAYS);
+  base::FilePath enable_file_path(kForceEnableAePath);
+  base::FilePath disable_file_path(kForceDisableAePath);
+  if (!base::DeleteFile(enable_file_path)) {
+    LOG(WARNING) << "Could not delete " << kForceEnableAePath;
+  }
+  if (!base::DeleteFile(disable_file_path)) {
+    LOG(WARNING) << "Could not delete " << kForceDisableAePath;
+  }
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(media::switches::kForceControlFaceAe)) {
+    if (command_line->GetSwitchValueASCII(
+            media::switches::kForceControlFaceAe) == "enable") {
+      base::File file(enable_file_path, base::File::FLAG_CREATE_ALWAYS);
       file.Close();
-    }
-  } else {
-    if (base::PathExists(file_path)) {
-      base::DeleteFile(file_path);
+    } else {
+      base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS);
+      file.Close();
     }
   }
 

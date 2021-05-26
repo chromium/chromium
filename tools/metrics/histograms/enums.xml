@@ -49197,6 +49197,7 @@ from previous Chrome versions.
   <int value="1664463407" label="FirstPartySets:enabled"/>
   <int value="1665349789" label="spurious-power-button-window"/>
   <int value="1665400247" label="OsSettingsDeepLinking:enabled"/>
+  <int value="1665430464" label="force-control-face-ae"/>
   <int value="1667584730" label="WebXR:disabled"/>
   <int value="1668611601" label="enable-encrypted-media"/>
   <int value="1669767166" label="NewTabPageBackgrounds:disabled"/>

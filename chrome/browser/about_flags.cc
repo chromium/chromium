@@ -2352,6 +2352,13 @@ const FeatureEntry::Choice kDrawPredictedPointsChoices[] = {
     {flag_descriptions::kDraw2PredictedPoints3Ms,
      switches::kDrawPredictedInkPoint, switches::kDraw2Points3Ms}};
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const FeatureEntry::Choice kForceControlFaceAeChoices[] = {
+    {"Default", "", ""},
+    {"Enable", media::switches::kForceControlFaceAe, "enable"},
+    {"Disable", media::switches::kForceControlFaceAe, "disable"}};
+#endif
+
 #if defined(OS_ANDROID)
 // The variations of --password-change-in-settings.
 const FeatureEntry::FeatureParam
@@ -4064,9 +4071,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPreferConstantFrameRateName,
      flag_descriptions::kPreferConstantFrameRateDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kPreferConstantFrameRate)},
-    {"force-enable-face-ae", flag_descriptions::kForceEnableFaceAeName,
-     flag_descriptions::kForceEnableFaceAeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(media::features::kForceEnableFaceAe)},
+    {"force-control-face-ae", flag_descriptions::kForceControlFaceAeName,
+     flag_descriptions::kForceControlFaceAeDescription, kOsCrOS,
+     MULTI_VALUE_TYPE(kForceControlFaceAeChoices)},
     {"crostini-gpu-support", flag_descriptions::kCrostiniGpuSupportName,
      flag_descriptions::kCrostiniGpuSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCrostiniGpuSupport)},

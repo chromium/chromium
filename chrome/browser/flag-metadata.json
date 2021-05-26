@@ -2926,16 +2926,16 @@
     "expiry_milestone": 99
   },
   {
+    "name": "force-control-face-ae",
+    "owners": [ "chromeos-camera-eng@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "force-effective-connection-type",
     "owners": [ "//components/data_reduction_proxy/OWNERS" ],
     // ECT is a baked-in feature of Chrome. This flag is used for frequent
     // testing and should not be removed.
     "expiry_milestone": -1
-  },
-  {
-    "name": "force-enable-face-ae",
-    "owners": [ "chromeos-camera-eng@google.com" ],
-    "expiry_milestone": 100
   },
   {
     "name": "force-secure-payment-confirmation-dialog",
