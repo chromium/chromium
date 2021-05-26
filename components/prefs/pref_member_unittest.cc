@@ -88,6 +88,8 @@ class PrefMemberTestClass {
   void OnPreferenceChanged(const std::string& pref_name) {
     EXPECT_EQ(pref_name, kStringPref);
     EXPECT_EQ(str_.GetValue(), prefs_->GetString(kStringPref));
+    EXPECT_EQ(str_.IsDefaultValue(),
+              prefs_->FindPreference(kStringPref)->IsDefaultValue());
     ++observe_cnt_;
   }
 
@@ -116,18 +118,21 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   EXPECT_FALSE(prefs.GetBoolean(kBoolPref));
   EXPECT_FALSE(boolean.GetValue());
   EXPECT_FALSE(*boolean);
+  EXPECT_TRUE(boolean.IsDefaultValue());
 
   // Try changing through the member variable.
   boolean.SetValue(true);
   EXPECT_TRUE(boolean.GetValue());
   EXPECT_TRUE(prefs.GetBoolean(kBoolPref));
   EXPECT_TRUE(*boolean);
+  EXPECT_FALSE(boolean.IsDefaultValue());
 
   // Try changing back through the pref.
   prefs.SetBoolean(kBoolPref, false);
   EXPECT_FALSE(prefs.GetBoolean(kBoolPref));
   EXPECT_FALSE(boolean.GetValue());
   EXPECT_FALSE(*boolean);
+  EXPECT_FALSE(boolean.IsDefaultValue());
 
   // Test int
   IntegerPrefMember integer;
@@ -137,18 +142,21 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   EXPECT_EQ(0, prefs.GetInteger(kIntPref));
   EXPECT_EQ(0, integer.GetValue());
   EXPECT_EQ(0, *integer);
+  EXPECT_TRUE(integer.IsDefaultValue());
 
   // Try changing through the member variable.
   integer.SetValue(5);
   EXPECT_EQ(5, integer.GetValue());
   EXPECT_EQ(5, prefs.GetInteger(kIntPref));
   EXPECT_EQ(5, *integer);
+  EXPECT_FALSE(integer.IsDefaultValue());
 
   // Try changing back through the pref.
   prefs.SetInteger(kIntPref, 2);
   EXPECT_EQ(2, prefs.GetInteger(kIntPref));
   EXPECT_EQ(2, integer.GetValue());
   EXPECT_EQ(2, *integer);
+  EXPECT_FALSE(integer.IsDefaultValue());
 
   // Test double
   DoublePrefMember double_member;
@@ -158,18 +166,21 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   EXPECT_EQ(0.0, prefs.GetDouble(kDoublePref));
   EXPECT_EQ(0.0, double_member.GetValue());
   EXPECT_EQ(0.0, *double_member);
+  EXPECT_TRUE(double_member.IsDefaultValue());
 
   // Try changing through the member variable.
   double_member.SetValue(1.0);
   EXPECT_EQ(1.0, double_member.GetValue());
   EXPECT_EQ(1.0, prefs.GetDouble(kDoublePref));
   EXPECT_EQ(1.0, *double_member);
+  EXPECT_FALSE(double_member.IsDefaultValue());
 
   // Try changing back through the pref.
   prefs.SetDouble(kDoublePref, 3.0);
   EXPECT_EQ(3.0, prefs.GetDouble(kDoublePref));
   EXPECT_EQ(3.0, double_member.GetValue());
   EXPECT_EQ(3.0, *double_member);
+  EXPECT_FALSE(double_member.IsDefaultValue());
 
   // Test string
   StringPrefMember string;
@@ -179,18 +190,21 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   EXPECT_EQ("default", prefs.GetString(kStringPref));
   EXPECT_EQ("default", string.GetValue());
   EXPECT_EQ("default", *string);
+  EXPECT_TRUE(string.IsDefaultValue());
 
   // Try changing through the member variable.
   string.SetValue("foo");
   EXPECT_EQ("foo", string.GetValue());
   EXPECT_EQ("foo", prefs.GetString(kStringPref));
   EXPECT_EQ("foo", *string);
+  EXPECT_FALSE(string.IsDefaultValue());
 
   // Try changing back through the pref.
   prefs.SetString(kStringPref, "bar");
   EXPECT_EQ("bar", prefs.GetString(kStringPref));
   EXPECT_EQ("bar", string.GetValue());
   EXPECT_EQ("bar", *string);
+  EXPECT_FALSE(string.IsDefaultValue());
 
   // Test string list
   base::ListValue expected_list;
@@ -202,6 +216,7 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   EXPECT_TRUE(expected_list.Equals(prefs.GetList(kStringListPref)));
   EXPECT_EQ(expected_vector, string_list.GetValue());
   EXPECT_EQ(expected_vector, *string_list);
+  EXPECT_TRUE(string_list.IsDefaultValue());
 
   // Try changing through the pref member.
   expected_list.AppendString("foo");
@@ -211,6 +226,7 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   EXPECT_TRUE(expected_list.Equals(prefs.GetList(kStringListPref)));
   EXPECT_EQ(expected_vector, string_list.GetValue());
   EXPECT_EQ(expected_vector, *string_list);
+  EXPECT_FALSE(string_list.IsDefaultValue());
 
   // Try adding through the pref.
   expected_list.AppendString("bar");
@@ -220,6 +236,7 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   EXPECT_TRUE(expected_list.Equals(prefs.GetList(kStringListPref)));
   EXPECT_EQ(expected_vector, string_list.GetValue());
   EXPECT_EQ(expected_vector, *string_list);
+  EXPECT_FALSE(string_list.IsDefaultValue());
 
   // Try removing through the pref.
   expected_list.Remove(0, nullptr);
@@ -229,6 +246,7 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   EXPECT_TRUE(expected_list.Equals(prefs.GetList(kStringListPref)));
   EXPECT_EQ(expected_vector, string_list.GetValue());
   EXPECT_EQ(expected_vector, *string_list);
+  EXPECT_FALSE(string_list.IsDefaultValue());
 }
 
 TEST_F(PrefMemberTest, InvalidList) {
@@ -276,24 +294,33 @@ TEST_F(PrefMemberTest, Observer) {
 
   PrefMemberTestClass test_obj(&prefs);
   EXPECT_EQ("default", *test_obj.str_);
+  EXPECT_TRUE(test_obj.str_.IsDefaultValue());
+
+  // Changing the pref from the default value to an explicitly-set version of
+  // the same value fires the observer. The caller may be sensitive to
+  // IsDefaultValue().
+  prefs.SetString(kStringPref, "default");
+  EXPECT_EQ("default", *test_obj.str_);
+  EXPECT_EQ(1, test_obj.observe_cnt_);
+  EXPECT_FALSE(test_obj.str_.IsDefaultValue());
 
   // Calling SetValue should not fire the observer.
   test_obj.str_.SetValue("hello");
-  EXPECT_EQ(0, test_obj.observe_cnt_);
+  EXPECT_EQ(1, test_obj.observe_cnt_);
   EXPECT_EQ("hello", prefs.GetString(kStringPref));
 
   // Changing the pref does fire the observer.
   prefs.SetString(kStringPref, "world");
-  EXPECT_EQ(1, test_obj.observe_cnt_);
+  EXPECT_EQ(2, test_obj.observe_cnt_);
   EXPECT_EQ("world", *(test_obj.str_));
 
   // Not changing the value should not fire the observer.
   prefs.SetString(kStringPref, "world");
-  EXPECT_EQ(1, test_obj.observe_cnt_);
+  EXPECT_EQ(2, test_obj.observe_cnt_);
   EXPECT_EQ("world", *(test_obj.str_));
 
   prefs.SetString(kStringPref, "hello");
-  EXPECT_EQ(2, test_obj.observe_cnt_);
+  EXPECT_EQ(3, test_obj.observe_cnt_);
   EXPECT_EQ("hello", prefs.GetString(kStringPref));
 }
 

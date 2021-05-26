@@ -891,6 +891,11 @@ const base::Feature kSmartDim{"SmartDim", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kSoundContentSetting{"SoundContentSetting",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable 3DES ciphers in SSL/TLS. They are disabled by default as of M93. This
+// feature flag is available to restore the old behavior in an emergency.
+const base::Feature kSSLCipher3DES{"SSLCipher3DES",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables chrome://sys-internals.
 const base::Feature kSysInternals{"SysInternals",

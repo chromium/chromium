@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -235,6 +236,8 @@ void SSLConfigServiceManagerPref::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kH2ClientCertCoalescingHosts);
   registry->RegisterBooleanPref(prefs::kCECPQ2Enabled,
                                 default_context_config.cecpq2_enabled);
+  // Note the default value here is ignored due to the IsDefaultValue() check in
+  // GetSSLConfigFromPrefs().
   registry->RegisterBooleanPref(prefs::kTripleDESEnabled,
                                 default_context_config.triple_des_enabled);
 }
@@ -307,7 +310,14 @@ SSLConfigServiceManagerPref::GetSSLConfigFromPrefs() const {
   // is especially conservative.
   config->cecpq2_enabled =
       cecpq2_enabled_.GetValue() && variations_unrestricted_;
-  config->triple_des_enabled = triple_des_enabled_.GetValue();
+
+  // If the preference is unset, check base::Feature. This cannot be set as the
+  // default value of the pref because base::FeatureList is not initialized when
+  // prefs are registered.
+  config->triple_des_enabled =
+      triple_des_enabled_.IsDefaultValue()
+          ? base::FeatureList::IsEnabled(features::kSSLCipher3DES)
+          : triple_des_enabled_.GetValue();
 
   return config;
 }

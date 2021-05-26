@@ -596,6 +596,9 @@ COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kSmartDim;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSoundContentSetting;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kSSLCipher3DES;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSysInternals;

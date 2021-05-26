@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -47,6 +48,7 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/quic_simple_test_server.h"
@@ -617,6 +619,15 @@ class SSLPolicyTest : public PolicyTest {
     return LoadResult{true, web_contents->GetTitle()};
   }
 
+  void ExpectVersionOrCipherMismatch() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_TRUE(content::EvalJs(web_contents,
+                                "document.body.innerHTML.indexOf('ERR_SSL_"
+                                "VERSION_OR_CIPHER_MISMATCH') >= 0")
+                    .ExtractBool());
+  }
+
  private:
   net::EmbeddedTestServer https_server_;
 };
@@ -626,6 +637,16 @@ class CECPQ2PolicyTest : public SSLPolicyTest {
   CECPQ2PolicyTest() {
     scoped_feature_list_.InitAndEnableFeature(
         net::features::kPostQuantumCECPQ2);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class SSLPolicyTest3DES : public SSLPolicyTest {
+ public:
+  SSLPolicyTest3DES() {
+    scoped_feature_list_.InitAndEnableFeature(features::kSSLCipher3DES);
   }
 
  private:
@@ -690,14 +711,16 @@ IN_PROC_BROWSER_TEST_F(CECPQ2PolicyTest, ChromeVariations) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-IN_PROC_BROWSER_TEST_F(SSLPolicyTest, TripleDESEnabledPolicy) {
+// Test the admin policy behaves correctly when 3DES is enabled by feature flag.
+IN_PROC_BROWSER_TEST_F(SSLPolicyTest3DES, TripleDESEnabledPolicy) {
   // Start a server that only supports TLS_RSA_WITH_3DES_EDE_CBC_SHA.
   net::SSLServerConfig ssl_config;
+  ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
   ssl_config.cipher_suite_for_testing = 0x000a;
   ASSERT_TRUE(StartTestServer(ssl_config));
 
-  // 3DES is enabled by default, for now.
-  EXPECT_TRUE(GetBooleanPref(prefs::kTripleDESEnabled));
+  // Without a policy, the feature flag takes predecence. title1.html has no
+  // title, so start with title2.html.
   LoadResult result = LoadPage("/title2.html");
   EXPECT_TRUE(result.success);
   EXPECT_EQ(u"Title Of Awesomeness", result.title);
@@ -709,7 +732,6 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest, TripleDESEnabledPolicy) {
   content::FlushNetworkServiceInstanceForTesting();
 
   // 3DES is still enabled.
-  EXPECT_TRUE(GetBooleanPref(prefs::kTripleDESEnabled));
   result = LoadPage("/title3.html");
   EXPECT_TRUE(result.success);
   EXPECT_EQ(u"Title Of More Awesomeness", result.title);
@@ -720,9 +742,44 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest, TripleDESEnabledPolicy) {
   content::FlushNetworkServiceInstanceForTesting();
 
   // 3DES is now disabled.
-  EXPECT_FALSE(GetBooleanPref(prefs::kTripleDESEnabled));
-  result = LoadPage("/title.html");
+  result = LoadPage("/title1.html");
   EXPECT_FALSE(result.success);
+  ExpectVersionOrCipherMismatch();
+}
+
+// Test the admin policy behaves correctly when 3DES is disabled (default).
+IN_PROC_BROWSER_TEST_F(SSLPolicyTest, TripleDESEnabledPolicy) {
+  // Start a server that only supports TLS_RSA_WITH_3DES_EDE_CBC_SHA.
+  net::SSLServerConfig ssl_config;
+  ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  ssl_config.cipher_suite_for_testing = 0x000a;
+  ASSERT_TRUE(StartTestServer(ssl_config));
+
+  // Without a policy, 3DES is disabled.
+  LoadResult result = LoadPage("/title1.html");
+  EXPECT_FALSE(result.success);
+  ExpectVersionOrCipherMismatch();
+
+  // Enable 3DES by policy.
+  PolicyMap policies;
+  SetPolicy(&policies, key::kTripleDESEnabled, base::Value(true));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // 3DES is now enabled.
+  result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
+  // Disable 3DES by policy.
+  SetPolicy(&policies, key::kTripleDESEnabled, base::Value(false));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // 3DES is now disabled.
+  result = LoadPage("/title3.html");
+  EXPECT_FALSE(result.success);
+  ExpectVersionOrCipherMismatch();
 }
 
 }  // namespace policy

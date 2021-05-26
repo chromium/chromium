@@ -63,18 +63,15 @@ class COMPONENTS_PREFS_EXPORT PrefMemberBase : public PrefObserver {
     void UpdateValue(base::Value* value,
                      bool is_managed,
                      bool is_user_modifiable,
+                     bool is_default_value,
                      base::OnceClosure callback) const;
 
     void MoveToSequence(scoped_refptr<base::SequencedTaskRunner> task_runner);
 
     // See PrefMember<> for description.
-    bool IsManaged() const {
-      return is_managed_;
-    }
-
-    bool IsUserModifiable() const {
-      return is_user_modifiable_;
-    }
+    bool IsManaged() const { return is_managed_; }
+    bool IsUserModifiable() const { return is_user_modifiable_; }
+    bool IsDefaultValue() const { return is_default_value_; }
 
    protected:
     friend class base::RefCountedThreadSafe<Internal>;
@@ -90,8 +87,9 @@ class COMPONENTS_PREFS_EXPORT PrefMemberBase : public PrefObserver {
     bool IsOnCorrectSequence() const;
 
     scoped_refptr<base::SequencedTaskRunner> owning_task_runner_;
-    mutable bool is_managed_;
-    mutable bool is_user_modifiable_;
+    mutable bool is_managed_ = false;
+    mutable bool is_user_modifiable_ = false;
+    mutable bool is_default_value_ = false;
 
     DISALLOW_COPY_AND_ASSIGN(Internal);
   };
@@ -219,6 +217,15 @@ class PrefMember : public subtle::PrefMemberBase {
   bool IsUserModifiable() const {
     VerifyPref();
     return internal_->IsUserModifiable();
+  }
+
+  // Checks whether the pref is currently using its default value, and has not
+  // been set by any higher-priority source (even with the same value). This
+  // method should only be used from the sequence the PrefMember is currently
+  // on, which is the UI thread unless changed by |MoveToSequence|.
+  bool IsDefaultValue() const {
+    VerifyPref();
+    return internal_->IsDefaultValue();
   }
 
   // Retrieve the value of the member variable.

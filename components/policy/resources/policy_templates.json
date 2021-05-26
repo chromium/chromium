@@ -25930,13 +25930,10 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'example_value': False,
       'id': 858,
       'caption': '''Enable 3DES cipher suites in TLS''',
-      # TODO(davidben): Add the 'system-security' tag when we flip the default.
-      'tags': [],
+      'tags': ['system-security'],
       'desc': '''Warning: 3DES will be completely removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> in version 95 (around October 2021) and this policy will stop working then.
 
-      If the policy is set to true, then 3DES cipher suites in TLS will be enabled. If it is set to false, they will be disabled. If the policy is unset, 3DES cipher suites are currently enabled by default. They will be disabled by default in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 93.
-
-      In <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 92, this policy may be used to preview the change and test for incompatibilities. In <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 93 and later, it may be used to temporarily retain compatibility with an outdated server. This is a stopgap measure and the server should be reconfigured.
+      If the policy is set to true, then 3DES cipher suites in TLS will be enabled. If it is set to false, they will be disabled. If the policy is unset, 3DES cipher suites are disabled by default. This policy may be used to temporarily retain compatibility with an outdated server. This is a stopgap measure and the server should be reconfigured.
       ''',
     },
     {

@@ -48,6 +48,9 @@ struct NET_EXPORT SSLContextConfig {
   bool cecpq2_enabled = true;
 
   // If false, disables 3DES cipher suites in TLS connections.
+  //
+  // TODO(https://crbug.com/1203442): Disable this by default, once the change
+  // has successfully shipped in Chrome 93.
   bool triple_des_enabled = true;
 
   // ADDING MORE HERE? Don't forget to update |SSLContextConfigsAreEqual|.
