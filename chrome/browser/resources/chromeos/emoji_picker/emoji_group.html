@@ -1,7 +1,7 @@
 <style>
   :host {
     --emoji-group-clear-recents-icon-size: 16px;
-    --emoji-group-heading-size: 32px
+    --emoji-group-heading-size: 32px;
     margin-top: 10px;
     position: relative;
   }
@@ -38,7 +38,8 @@
     margin-inline-end: calc(
       (var(--emoji-group-button-size) -
        var(--emoji-group-clear-recents-icon-size))* .5);
-    --cr-icon-button-size: var(--emoji-group-clear-recents-icon-size);
+    --cr-icon-button-icon-size: var(--emoji-group-clear-recents-icon-size);
+    --cr-icon-button-size: var(--emoji-size);
   }
 
   #clear-recents {
