@@ -28,6 +28,7 @@
 #include "components/services/app_service/app_service_impl.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user.h"
 #include "extensions/common/constants.h"
 
@@ -443,7 +444,7 @@ void AppServiceProxyChromeOs::OnAppUpdate(const apps::AppUpdate& update) {
   if ((update.PausedChanged() &&
        update.Paused() == apps::mojom::OptionalBool::kTrue) ||
       (update.ReadinessChanged() &&
-       update.Readiness() == apps::mojom::Readiness::kUninstalledByUser)) {
+       !apps_util::IsInstalled(update.Readiness()))) {
     pending_pause_requests_.MaybeRemoveApp(update.AppId());
   }
 

@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 
 ShelfExtensionAppUpdater::ShelfExtensionAppUpdater(
@@ -52,7 +53,8 @@ void ShelfExtensionAppUpdater::OnExtensionUnloaded(
     return;
 
   if (reason == extensions::UnloadedExtensionReason::UNINSTALL) {
-    delegate()->OnAppUninstalledPrepared(browser_context, extension->id());
+    delegate()->OnAppUninstalledPrepared(browser_context, extension->id(),
+                                         /*by_migration=*/false);
   } else {
     delegate()->OnAppUpdated(browser_context, extension->id(),
                              /*reload_icon=*/true);

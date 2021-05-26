@@ -309,10 +309,10 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
           base::StringPrintf(
               "%s { Basic web app } [testapplistposition] [testpinposition]",
               GetWebAppId().substr(0, 8).c_str()));
-      // Old Chrome app is unpinned.
+      // Old Chrome app prefs are retained.
       EXPECT_EQ(
           app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
-          "kbmnembi { Nothing } [testapplistposition] [INVALID[]]");
+          "kbmnembi { Nothing } [testapplistposition] [testpinposition]");
 #endif
     }
   }
@@ -328,14 +328,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
     EXPECT_TRUE(IsExtensionAppInstalled());
     EXPECT_FALSE(IsWebAppInstalled());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Re-pin the old Chrome app.
-    app_list_syncable_service->SetPinPosition(
-        kExtensionId, syncer::StringOrdinal("testpinposition"));
-    EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
-              "kbmnembi { Nothing } [testapplistposition] [testpinposition]");
-#endif
   }
 
   // Re-run migration.
@@ -371,9 +363,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
         base::StringPrintf(
             "%s { Basic web app } [testapplistposition] [testpinposition]",
             GetWebAppId().substr(0, 8).c_str()));
-    // Old Chrome app should get unpinned again.
+    // Old Chrome app prefs are retained.
     EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
-              "kbmnembi { Nothing } [testapplistposition] [INVALID[]]");
+              "kbmnembi { Nothing } [testapplistposition] [testpinposition]");
 #endif
   }
 }

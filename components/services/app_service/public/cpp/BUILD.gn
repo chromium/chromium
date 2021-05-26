@@ -169,6 +169,15 @@ source_set("test_support") {
   ]
 }
 
+source_set("types") {
+  sources = [
+    "types_util.cc",
+    "types_util.h",
+  ]
+
+  deps = [ "//components/services/app_service/public/mojom" ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

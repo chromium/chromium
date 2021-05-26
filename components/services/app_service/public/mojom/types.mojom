@@ -118,6 +118,7 @@ enum Readiness {
   // apps, so publishers must set the app as uninstalled before
   // removing it.
   kRemoved,
+  kUninstalledByMigration,
 };
 
 // How the app was installed.

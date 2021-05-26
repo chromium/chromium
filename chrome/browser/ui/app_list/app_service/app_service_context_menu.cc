@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -67,10 +68,9 @@ AppServiceContextMenu::AppServiceContextMenu(
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [this](const apps::AppUpdate& update) {
-        app_type_ =
-            update.Readiness() == apps::mojom::Readiness::kUninstalledByUser
-                ? apps::mojom::AppType::kUnknown
-                : app_type_ = update.AppType();
+        app_type_ = apps_util::IsInstalled(update.Readiness())
+                        ? app_type_ = update.AppType()
+                        : apps::mojom::AppType::kUnknown;
       });
 }
 

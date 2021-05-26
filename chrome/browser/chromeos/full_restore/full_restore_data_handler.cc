@@ -10,6 +10,7 @@
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 
 namespace chromeos {
 namespace full_restore {
@@ -26,7 +27,7 @@ FullRestoreDataHandler::~FullRestoreDataHandler() = default;
 
 void FullRestoreDataHandler::OnAppUpdate(const apps::AppUpdate& update) {
   if (!update.ReadinessChanged() ||
-      update.Readiness() != apps::mojom::Readiness::kUninstalledByUser) {
+      apps_util::IsInstalled(update.Readiness())) {
     return;
   }
 

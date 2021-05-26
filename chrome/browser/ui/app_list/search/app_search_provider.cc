@@ -46,6 +46,7 @@
 #include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "chromeos/components/string_matching/tokenized_string_match.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -313,7 +314,7 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
         apps::AppServiceProxyFactory::GetForProfile(profile());
     proxy->AppRegistryCache().ForEachApp([this, apps_vector](
                                              const apps::AppUpdate& update) {
-      if ((update.Readiness() == apps::mojom::Readiness::kUninstalledByUser) ||
+      if (!apps_util::IsInstalled(update.Readiness()) ||
           (update.ShowInSearch() != apps::mojom::OptionalBool::kTrue &&
            !(update.Recommendable() == apps::mojom::OptionalBool::kTrue &&
              update.AppType() == apps::mojom::AppType::kBuiltIn))) {
@@ -376,7 +377,7 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
  private:
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override {
-    if (update.Readiness() == apps::mojom::Readiness::kUninstalledByUser ||
+    if (!apps_util::IsInstalled(update.Readiness()) ||
         update.IconKeyChanged()) {
       icon_cache_.RemoveIcon(update.AppType(), update.AppId());
     }

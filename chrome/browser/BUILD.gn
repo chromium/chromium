@@ -2192,6 +2192,7 @@ static_library("browser") {
     "//components/send_tab_to_self",
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/cpp:protocol_handling",
+    "//components/services/app_service/public/cpp:types",
     "//components/services/heap_profiling",
     "//components/services/language_detection/public/cpp",
     "//components/services/language_detection/public/mojom",
