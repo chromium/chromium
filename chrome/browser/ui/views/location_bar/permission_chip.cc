@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
@@ -169,10 +170,12 @@ void PermissionChip::Collapse(bool allow_restart) {
 }
 
 void PermissionChip::StartDismissTimer() {
-  constexpr auto kDelayBeforeDismissingRequest =
-      base::TimeDelta::FromSeconds(6);
-  dismiss_timer_.Start(FROM_HERE, kDelayBeforeDismissingRequest, this,
-                       &PermissionChip::Dismiss);
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionChipAutoDismiss)) {
+    auto delay = base::TimeDelta::FromMilliseconds(
+        permissions::features::kPermissionChipAutoDismissDelay.Get());
+    dismiss_timer_.Start(FROM_HERE, delay, this, &PermissionChip::Dismiss);
+  }
 }
 
 void PermissionChip::Dismiss() {

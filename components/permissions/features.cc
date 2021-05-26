@@ -32,6 +32,11 @@ const base::Feature kOneTimeGeolocationPermission{
 const base::Feature kPermissionChip{"PermissionChip",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPermissionChipAutoDismiss{
+    "PermissionChipAutoDismiss", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::FeatureParam<int> kPermissionChipAutoDismissDelay{
+    &kPermissionChipAutoDismiss, "delay_ms", 6000};
+
 // When kPermissionChip (above) is enabled, controls whether or not the
 // permission chip should be more prominent when the request is associated with
 // a gesture. Does nothing when kPermissionChip is disabled.
