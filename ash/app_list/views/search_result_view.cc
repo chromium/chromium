@@ -170,7 +170,7 @@ void SearchResultView::CreateTitleRenderText() {
     }
     if (tag.styles & SearchResult::Tag::MATCH &&
         app_list_features::IsLauncherQueryHighlightingEnabled()) {
-      render_text->ApplyWeight(gfx::Font::Weight::BOLD, tag.range);
+      render_text->ApplyWeight(gfx::Font::Weight::MEDIUM, tag.range);
     }
   }
   title_text_ = std::move(render_text);
