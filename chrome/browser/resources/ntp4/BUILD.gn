@@ -34,7 +34,7 @@ js_library("apps_page") {
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:ui.m",
     "//ui/webui/resources/js/cr/ui:context_menu_handler.m",
-    "//ui/webui/resources/js/cr/ui:drag_wrapper.m",
+    "//ui/webui/resources/js/cr/ui:drag_wrapper",
     "//ui/webui/resources/js/cr/ui:menu.m",
     "//ui/webui/resources/js/cr/ui:menu_item.m",
   ]

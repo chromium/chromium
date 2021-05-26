@@ -260,14 +260,14 @@ js_library("detail_view") {
 js_library("drop_overlay") {
   deps = [
     ":drag_and_drop_handler",
-    "//ui/webui/resources/js/cr/ui:drag_wrapper.m",
+    "//ui/webui/resources/js/cr/ui:drag_wrapper",
   ]
 }
 
 js_library("drag_and_drop_handler") {
   deps = [
     ":service",
-    "//ui/webui/resources/js/cr/ui:drag_wrapper.m",
+    "//ui/webui/resources/js/cr/ui:drag_wrapper",
   ]
 }
 

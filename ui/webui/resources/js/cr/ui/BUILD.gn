@@ -35,7 +35,10 @@ preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [ "focus_outline_manager.js" ]
+  in_files = [
+    "drag_wrapper.js",
+    "focus_outline_manager.js",
+  ]
 
   if (is_chromeos_ash) {
     in_files += [
@@ -43,7 +46,6 @@ preprocess_if_expr("preprocess_src") {
       "command.js",
       "context_menu_handler.js",
       "dialogs.js",
-      "drag_wrapper.js",
       "focus_grid.js",
       "focus_manager.js",
       "focus_row.js",
@@ -76,7 +78,6 @@ preprocess_if_expr("preprocess_generated") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "array_data_model.m.js",
-    "drag_wrapper.m.js",
     "focus_grid.m.js",
     "focus_outline_manager.m.js",
     "focus_row.m.js",
@@ -128,7 +129,6 @@ js_type_check("ui_resources") {
     ":command",
     ":context_menu_handler",
     ":dialogs",
-    ":drag_wrapper",
     ":focus_grid",
     ":focus_manager",
     ":focus_outline_manager",
@@ -184,10 +184,6 @@ js_library("context_menu_handler") {
 }
 
 js_library("dialogs") {
-  deps = [ "../..:cr" ]
-}
-
-js_library("drag_wrapper") {
   deps = [ "../..:cr" ]
 }
 
@@ -347,7 +343,6 @@ js_modulizer("modulize") {
     "command.js",
     "context_menu_handler.js",
     "dialogs.js",
-    "drag_wrapper.js",
     "focus_grid.js",
     "focus_outline_manager.js",
     "focus_row.js",
@@ -380,7 +375,7 @@ js_type_check("ui_resources_modules") {
     ":command.m",
     ":context_menu_handler.m",
     ":dialogs.m",
-    ":drag_wrapper.m",
+    ":drag_wrapper",
     ":focus_grid.m",
     ":focus_outline_manager.m",
     ":focus_row.m",
@@ -451,9 +446,7 @@ js_library("dialogs.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("drag_wrapper.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/drag_wrapper.m.js" ]
-  extra_deps = [ ":modulize" ]
+js_library("drag_wrapper") {
 }
 
 js_library("focus_grid.m") {
