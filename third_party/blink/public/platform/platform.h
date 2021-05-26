@@ -287,13 +287,6 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Network -------------------------------------------------------------
 
-  // Returns the WebCodeCacheLoader that is used to fetch data from code caches.
-  // It is OK to return a nullptr. When a nullptr is returned, data would not
-  // be fetched from code cache.
-  virtual std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() {
-    return nullptr;
-  }
-
   // Returns a new WebURLLoaderFactory that wraps the given
   // network::mojom::URLLoaderFactory.
   virtual std::unique_ptr<WebURLLoaderFactory> WrapURLLoaderFactory(
@@ -328,6 +321,7 @@ class BLINK_PLATFORM_EXPORT Platform {
                              const uint8_t* data,
                              size_t data_size) {}
 
+  // A request to fetch contents associated with this URL from metadata cache.
   using FetchCachedCodeCallback =
       base::OnceCallback<void(base::Time, mojo_base::BigBuffer)>;
   // A request to fetch previously cached code for the resource fetched from the
@@ -336,9 +330,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual void FetchCachedCode(blink::mojom::CodeCacheType cache_type,
                                const WebURL&,
                                FetchCachedCodeCallback) {}
-  // A request to clear cached code from storage. This can be called by the
-  // Renderer after fetching cached code that has become stale due to changes
-  // in the Renderer or runtime environment.
   virtual void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
                                    const GURL&) {}
 

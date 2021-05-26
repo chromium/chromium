@@ -40,7 +40,7 @@ void StaticDataNavigationBodyLoader::SetDefersLoading(LoaderFreezeMode mode) {
 
 void StaticDataNavigationBodyLoader::StartLoadingBody(
     WebNavigationBodyLoader::Client* client,
-    bool use_isolated_code_cache) {
+    blink::mojom::CodeCacheHost* code_cache_host) {
   DCHECK(!is_in_continue_);
   client_ = client;
   Continue();

@@ -259,6 +259,18 @@ std::string ExecuteJavaScriptMethodAndGetResult(
   return result;
 }
 
+// Navigates to a URL and waits till the navigation is finished. It doesn't wait
+// for the load to complete. Use this instead of NavigateToURL in tests that are
+// testing navigation related cases and doesn't need the load to finish. Load
+// could get blocked on blink::mojom::CodeCacheHostInterface if the browser
+// interface is not available.
+bool NavigateToURLAndDoNotWaitForLoadStop(Shell* window, const GURL& url) {
+  TestNavigationManager observer(window->web_contents(), url);
+  window->LoadURL(url);
+  observer.WaitForNavigationFinished();
+  return url == window->web_contents()->GetMainFrame()->GetLastCommittedURL();
+}
+
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        ExecuteJavaScriptMethodWorksWithArguments) {
   EXPECT_TRUE(NavigateToURL(
@@ -1931,7 +1943,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
     injector.set_fake_receiver_for_next_commit(
         std::move(interface_broker_receiver));
 
-    ASSERT_TRUE(NavigateToURL(shell(), first_url));
+    ASSERT_TRUE(NavigateToURLAndDoNotWaitForLoadStop(shell(), first_url));
     ASSERT_EQ(first_url, injector.url_of_last_commit());
     ASSERT_TRUE(injector.original_receiver_of_last_commit().is_valid());
   }
@@ -1984,7 +1996,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_CALL(navigation_finished_callback, Run());
 
   // Start the same-process navigation.
-  ASSERT_TRUE(NavigateToURL(shell(), second_url));
+  ASSERT_TRUE(NavigateToURLAndDoNotWaitForLoadStop(shell(), second_url));
 
   // Wait for a connection error on the |test_interface| as a signal, after
   // which it can be safely assumed that no GetInterface message will ever be
@@ -2479,7 +2491,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
         interface_broker_1.BindNewPipeAndPassReceiver());
     interface_broker_1.set_disconnect_handler(
         wait_until_connection_error_loop_1.QuitClosure());
-    ASSERT_TRUE(NavigateToURL(shell(), kUrl1));
+    ASSERT_TRUE(NavigateToURLAndDoNotWaitForLoadStop(shell(), kUrl1));
   }
 
   // The test below only makes sense for same-RFH navigations, so we need to
@@ -2492,7 +2504,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
         interface_broker_2.BindNewPipeAndPassReceiver());
     interface_broker_2.set_disconnect_handler(
         wait_until_connection_error_loop_2.QuitClosure());
-    ASSERT_TRUE(NavigateToURL(shell(), kUrl2));
+    ASSERT_TRUE(NavigateToURLAndDoNotWaitForLoadStop(shell(), kUrl2));
   }
 
   // Simulate two interface requests corresponding to the first navigation
@@ -2510,7 +2522,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // first URL.
   {
     base::HistogramTester histogram_tester;
-    ASSERT_TRUE(NavigateToURL(shell(), kUrl3));
+    ASSERT_TRUE(NavigateToURLAndDoNotWaitForLoadStop(shell(), kUrl3));
     histogram_tester.ExpectUniqueSample(
         "RenderFrameHostImpl.DroppedInterfaceRequests", 2, 1);
     histogram_tester.ExpectUniqueSample(
@@ -2526,7 +2538,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // A final navigation should record the sample from the second URL.
   {
     base::HistogramTester histogram_tester;
-    ASSERT_TRUE(NavigateToURL(shell(), kUrl4));
+    ASSERT_TRUE(NavigateToURLAndDoNotWaitForLoadStop(shell(), kUrl4));
+
     histogram_tester.ExpectUniqueSample(
         "RenderFrameHostImpl.DroppedInterfaceRequests", 1, 1);
     histogram_tester.ExpectUniqueSample(

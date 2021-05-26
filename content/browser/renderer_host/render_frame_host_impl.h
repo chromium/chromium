@@ -1524,6 +1524,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CreateInstalledAppProvider(
       mojo::PendingReceiver<blink::mojom::InstalledAppProvider> receiver);
 
+  void CreateCodeCacheHost(
+      mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
+
 #if defined(OS_ANDROID)
   void BindNFCReceiver(mojo::PendingReceiver<device::mojom::NFC> receiver);
 #endif
@@ -3703,6 +3706,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // A counter which is incremented by one every time this RenderFrameHost sends
   // a `CommitNavigation` or `CommitFailedNavigation` IPC to the renderer.
   int commit_navigation_sent_counter_ = 0;
+
+  // CodeCacheHost processes requests to fetch / write generated code for
+  // JavaScript / WebAssembly resources.
+  mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>
+      code_cache_host_receivers_;
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<RenderFrameHostImpl> weak_ptr_factory_{this};

@@ -175,7 +175,10 @@ class CodeCacheHostTestcase {
 
   // Mapping from renderer id to CodeCacheHostImpl instances being fuzzed.
   // Access only from UI thread.
-  std::map<int, std::unique_ptr<content::CodeCacheHostImpl>> code_cache_hosts_;
+  std::map<
+      int,
+      std::unique_ptr<mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>>>
+      code_cache_host_receivers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -230,7 +233,7 @@ void CodeCacheHostTestcase::TearDown() {
 }
 
 void CodeCacheHostTestcase::TearDownOnUIThread() {
-  code_cache_hosts_.clear();
+  code_cache_host_receivers_.clear();
   generated_code_cache_context_.reset();
   cache_storage_control_wrapper_.reset();
   browser_context_.reset();
@@ -295,10 +298,13 @@ void CodeCacheHostTestcase::AddCodeCacheHostImpl(
     mojo::PendingReceiver<::blink::mojom::CodeCacheHost>&& receiver) {
   auto code_cache_host = std::make_unique<content::CodeCacheHostImpl>(
       renderer_id, /*render_process_host_impl=*/nullptr,
-      generated_code_cache_context_, std::move(receiver));
+      generated_code_cache_context_);
   code_cache_host->SetCacheStorageControlForTesting(
       cache_storage_control_wrapper_.get());
-  code_cache_hosts_[renderer_id] = std::move(code_cache_host);
+  auto receivers =
+      std::make_unique<mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>>();
+  receivers->Add(std::move(code_cache_host), std::move(receiver));
+  code_cache_host_receivers_[renderer_id] = std::move(receivers);
 }
 
 void CodeCacheHostTestcase::AddCodeCacheHost(

@@ -104,12 +104,13 @@ class CONTENT_EXPORT NavigationBodyLoader
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper);
+          resource_load_info_notifier_wrapper,
+      RenderFrameImpl* render_frame_impl);
 
   // blink::WebNavigationBodyLoader
   void SetDefersLoading(blink::WebLoaderFreezeMode mode) override;
   void StartLoadingBody(WebNavigationBodyLoader::Client* client,
-                        bool use_isolated_code_cache) override;
+                        blink::mojom::CodeCacheHost* code_cache_host) override;
 
   // network::mojom::URLLoaderClient
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;

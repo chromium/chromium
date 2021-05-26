@@ -310,6 +310,7 @@ struct SameSizeAsDocumentLoader
   bool is_cross_site_cross_browsing_context_group;
   WebVector<WebHistoryItem> app_history_back_entries;
   WebVector<WebHistoryItem> app_history_forward_entries;
+  mojo::Remote<blink::mojom::CodeCacheHost> code_cache_host;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -1590,7 +1591,7 @@ void DocumentLoader::StartLoadingInternal() {
     // synchronously and parse it, and it's already loaded in a buffer usually.
     // This means we should not defer, and we'll finish loading synchronously
     // from StartLoadingBody().
-    body_loader_->StartLoadingBody(this, false /* use_isolated_code_cache */);
+    body_loader_->StartLoadingBody(this, nullptr /*code_cache_host*/);
     return;
   }
 
@@ -1663,7 +1664,7 @@ void DocumentLoader::StartLoadingResponse() {
   if (!url_.ProtocolIsInHTTPFamily()) {
     // We only support code cache for http family, and browser insists on not
     // event asking for code cache with other schemes.
-    body_loader_->StartLoadingBody(this, false /* use_isolated_code_cache */);
+    body_loader_->StartLoadingBody(this, nullptr /*code_cache_host*/);
     return;
   }
 
@@ -1681,7 +1682,12 @@ void DocumentLoader::StartLoadingResponse() {
       MakeGarbageCollected<SourceKeyedCachedMetadataHandler>(
           WTF::TextEncoding(), std::move(cached_metadata_sender));
 
-  body_loader_->StartLoadingBody(this, use_isolated_code_cache);
+  blink::mojom::CodeCacheHost* code_cache_host = nullptr;
+  if (use_isolated_code_cache) {
+    code_cache_host = GetCodeCacheHost();
+    DCHECK(code_cache_host);
+  }
+  body_loader_->StartLoadingBody(this, code_cache_host);
 }
 
 void DocumentLoader::DidInstallNewDocument(Document* document) {
@@ -2650,6 +2656,33 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
   }
 
   return csp;
+}
+
+bool& GetDisableCodeCacheForTesting() {
+  static bool disable_code_cache_for_testing = false;
+  return disable_code_cache_for_testing;
+}
+
+blink::mojom::CodeCacheHost* DocumentLoader::GetCodeCacheHost() {
+  if (!code_cache_host_) {
+    if (GetDisableCodeCacheForTesting()) {
+      return nullptr;
+    }
+    GetFrame()->Client()->GetBrowserInterfaceBroker().GetInterface(
+        code_cache_host_.BindNewPipeAndPassReceiver());
+    code_cache_host_.set_disconnect_handler(WTF::Bind(
+        &DocumentLoader::OnCodeCacheHostClosed, WrapWeakPersistent(this)));
+  }
+  return code_cache_host_.get();
+}
+
+void DocumentLoader::OnCodeCacheHostClosed() {
+  code_cache_host_.reset();
+}
+
+// static
+void DocumentLoader::DisableCodeCacheForTesting() {
+  GetDisableCodeCacheForTesting() = true;
 }
 
 DEFINE_WEAK_IDENTIFIER_MAP(DocumentLoader)

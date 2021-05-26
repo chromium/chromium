@@ -466,6 +466,12 @@ bool ResourceLoader::ShouldFetchCodeCache() {
   if (!RuntimeEnabledFeatures::IsolatedCodeCacheEnabled())
     return false;
 
+  // Since code cache requests use a per-frame interface, don't fetch cached
+  // code for keep-alive requests. These are only used for beaconing and we
+  // don't expect code cache to help there.
+  if (ShouldBeKeptAliveWhenDetached())
+    return false;
+
   const ResourceRequestHead& request = resource_->GetResourceRequest();
   if (!request.Url().ProtocolIsInHTTPFamily())
     return false;

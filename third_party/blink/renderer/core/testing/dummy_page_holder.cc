@@ -83,6 +83,9 @@ DummyPageHolder::DummyPageHolder(
   if (setting_overrider)
     std::move(setting_overrider).Run(settings);
 
+  // DummyPageHolder doesn't provide a browser interface, so code caches cannot
+  // be fetched. If testing for code caches provide a mock code cache host.
+  DocumentLoader::DisableCodeCacheForTesting();
   local_frame_client_ = local_frame_client;
   if (!local_frame_client_)
     local_frame_client_ = MakeGarbageCollected<DummyLocalFrameClient>();

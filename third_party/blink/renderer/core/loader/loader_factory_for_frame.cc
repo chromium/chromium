@@ -14,9 +14,12 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/prefetched_signed_exchange_manager.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
@@ -137,7 +140,11 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
 
 std::unique_ptr<WebCodeCacheLoader>
 LoaderFactoryForFrame::CreateCodeCacheLoader() {
-  return Platform::Current()->CreateCodeCacheLoader();
+  if (document_loader_->GetCodeCacheHost() == nullptr) {
+    return nullptr;
+  }
+  return blink::WebCodeCacheLoader::CreateForFrame(
+      document_loader_->GetCodeCacheHost());
 }
 
 std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>

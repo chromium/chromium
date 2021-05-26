@@ -212,11 +212,6 @@ void RendererBlinkPlatformImpl::Shutdown() {}
 
 //------------------------------------------------------------------------------
 
-std::unique_ptr<blink::WebCodeCacheLoader>
-RendererBlinkPlatformImpl::CreateCodeCacheLoader() {
-  return blink::WebCodeCacheLoader::Create();
-}
-
 std::unique_ptr<blink::WebURLLoaderFactory>
 RendererBlinkPlatformImpl::WrapURLLoaderFactory(
     blink::CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>

@@ -332,6 +332,7 @@ WebViewHelper::WebViewHelper(
       agent_group_scheduler_(
           blink::ThreadScheduler::Current()->CreateAgentGroupScheduler()),
       platform_(Platform::Current()) {
+  DocumentLoader::DisableCodeCacheForTesting();
   CreateTestWebFrameWidgetCallback create_callback =
       std::move(create_web_frame_callback);
   if (!create_callback) {
@@ -422,6 +423,7 @@ WebViewImpl* WebViewHelper::InitializeAndLoad(
     TestWebFrameClient* web_frame_client,
     TestWebViewClient* web_view_client,
     void (*update_settings_func)(WebSettings*)) {
+  DocumentLoader::DisableCodeCacheForTesting();
   Initialize(web_frame_client, web_view_client, update_settings_func);
 
   LoadFrame(GetWebView()->MainFrameImpl(), url);

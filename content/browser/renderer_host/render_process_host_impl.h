@@ -58,6 +58,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "net/base/network_isolation_key.h"
 #include "net/net_buildflags.h"
@@ -451,8 +452,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Allows external code to supply a callback that is invoked immediately
   // after the CodeCacheHostImpl is created and bound.  Used for swapping
   // the binding for a test version of the service.
-  using CodeCacheHostReceiverHandler =
-      base::RepeatingCallback<void(RenderProcessHost*, CodeCacheHostImpl*)>;
+  using CodeCacheHostReceiverHandler = base::RepeatingCallback<void(
+      RenderProcessHost*,
+      CodeCacheHostImpl*,
+      mojo::ReceiverId,
+      mojo::ReceiverSet<blink::mojom::CodeCacheHost>&)>;
   static void SetCodeCacheHostReceiverHandlerForTesting(
       CodeCacheHostReceiverHandler handler);
 
@@ -1073,6 +1077,15 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // The memory allocator, if any, in which the renderer will write its metrics.
   std::unique_ptr<base::PersistentMemoryAllocator> metrics_allocator_;
 
+  // TODO(mythria): Currently we are in the process of migrating CodeCacheHost
+  // interface to use execution specific contexts. Once the migration is
+  // complete remove CodeCacheHost interface from the RenderProcessHost.
+  // Currently fetching code caches from main thread use the interface
+  // associated with the RenderFrameHost. All others (fetches from worker
+  // threads, writing into code caches) use per-process interface.
+  // TODO(mythria): Change this to unique receiver set so we don't need to hold
+  // the CodeCacheHostImpl explicitly.
+  mojo::ReceiverSet<blink::mojom::CodeCacheHost> code_cache_host_receivers_;
   std::unique_ptr<CodeCacheHostImpl> code_cache_host_impl_;
 
   bool channel_connected_;

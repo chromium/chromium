@@ -36,19 +36,19 @@
 
 namespace extensions {
 
-// Asks the |extension_id| to inject |content_script| into |web_contents| and
-// waits until the script reports that it has finished executing.
-void ExecuteProgrammaticContentScript(content::WebContents* web_contents,
-                                      const ExtensionId& extension_id,
-                                      const std::string& content_script) {
+// Asks the |extension_id| to inject |content_script| into |web_contents|.
+void ExecuteProgrammaticContentScriptNoWait(content::WebContents* web_contents,
+                                            const ExtensionId& extension_id,
+                                            const std::string& content_script,
+                                            const char* message) {
   // Build a script that executes the original `content_script` and then sends
   // an ack via `domAutomationController.send`.
   const char kAckingScriptTemplate[] = R"(
       %s;
-      domAutomationController.send("Hello from acking script!");
+      domAutomationController.send("%s");
   )";
-  std::string acking_script =
-      base::StringPrintf(kAckingScriptTemplate, content_script.c_str());
+  std::string acking_script = base::StringPrintf(
+      kAckingScriptTemplate, content_script.c_str(), message);
 
   // Build a script to execute in the extension's background page.
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
@@ -63,9 +63,18 @@ void ExecuteProgrammaticContentScript(content::WebContents* web_contents,
   // cause is not 100% understood, but it might be because the IPC related to
   // `chrome.test.sendMessage` can't be dispatched while running a nested
   // message loop while handling a DidCommit IPC.
-  content::DOMMessageQueue message_queue;
   ASSERT_TRUE(browsertest_util::ExecuteScriptInBackgroundPageNoWait(
       web_contents->GetBrowserContext(), extension_id, background_script));
+}
+
+// Asks the |extension_id| to inject |content_script| into |web_contents| and
+// waits until the script reports that it has finished executing.
+void ExecuteProgrammaticContentScript(content::WebContents* web_contents,
+                                      const ExtensionId& extension_id,
+                                      const std::string& content_script) {
+  content::DOMMessageQueue message_queue;
+  ExecuteProgrammaticContentScriptNoWait(
+      web_contents, extension_id, content_script, "Hello from acking script!");
   std::string msg;
   EXPECT_TRUE(message_queue.WaitForMessage(&msg));
   EXPECT_EQ("\"Hello from acking script!\"", msg);
@@ -106,15 +115,23 @@ class ContentScriptExecuterBeforeDidCommit {
                 extension_id,
                 content_script)) {}
 
+  void WaitForMessage() {
+    std::string msg;
+    EXPECT_TRUE(message_queue_.WaitForMessage(&msg));
+    EXPECT_EQ("\"Hello from acking script!\"", msg);
+  }
+
  private:
   static void ExecuteContentScript(content::WebContents* web_contents,
                                    const ExtensionId& extension_id,
                                    const std::string& content_script,
                                    content::RenderFrameHost* ignored) {
-    ExecuteProgrammaticContentScript(web_contents, extension_id,
-                                     content_script);
+    ExecuteProgrammaticContentScriptNoWait(web_contents, extension_id,
+                                           content_script,
+                                           "Hello from acking script!");
   }
 
+  content::DOMMessageQueue message_queue_;
   content::CommitMessageDelayer commit_delayer_;
 };
 
@@ -227,6 +244,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
         new_url, web_contents, extension->id(),
         "document.body.innerText = 'content script has run'");
     ui_test_utils::NavigateToURL(browser(), new_url);
+    content_script_executer.WaitForMessage();
   }
 
   // Verify that the process shows up as having been injected with content

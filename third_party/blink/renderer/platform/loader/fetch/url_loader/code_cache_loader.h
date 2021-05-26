@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_CODE_CACHE_LOADER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_CODE_CACHE_LOADER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_CODE_CACHE_LOADER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_CODE_CACHE_LOADER_H_
 
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
@@ -21,7 +21,15 @@ namespace blink {
 class BLINK_PLATFORM_EXPORT CodeCacheLoader : public WebCodeCacheLoader {
  public:
   CodeCacheLoader();
-  explicit CodeCacheLoader(base::WaitableEvent* terminate_sync_load_event);
+  // |code_cache_host| is the per-frame mojo interface that should be used when
+  // fetching code cache. If this value is nullptr it uses per-process
+  // interface.
+  // TODO(mythria): Remove the per-process interface and only expect non nullptr
+  // for |code_cache_host|.
+  // |terminate_sync_load_event| is required on worker threads to monitor for
+  // any terminate requests from main thread.
+  CodeCacheLoader(mojom::CodeCacheHost* code_cache_host,
+                  base::WaitableEvent* terminate_sync_load_event);
 
   ~CodeCacheLoader() override;
 
@@ -55,10 +63,11 @@ class BLINK_PLATFORM_EXPORT CodeCacheLoader : public WebCodeCacheLoader {
   mojo_base::BigBuffer data_for_sync_load_;
   bool terminated_ = false;
   base::WaitableEventWatcher terminate_watcher_;
+  mojom::CodeCacheHost* code_cache_host_;
   base::WaitableEvent* terminate_sync_load_event_ = nullptr;
   base::WeakPtrFactory<CodeCacheLoader> weak_ptr_factory_{this};
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_CODE_CACHE_LOADER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER__FETCH_URL_LOADER_CODE_CACHE_LOADER_H_

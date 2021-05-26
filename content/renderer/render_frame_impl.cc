@@ -1156,7 +1156,7 @@ class RenderFrameImpl::MHTMLBodyLoaderClient
         navigation_params_(std::move(navigation_params)),
         body_loader_(std::move(navigation_params_->body_loader)),
         done_callback_(std::move(done_callback)) {
-    body_loader_->StartLoadingBody(this, false /* use_isolated_code_cache */);
+    body_loader_->StartLoadingBody(this, nullptr /*code_cache_host*/);
   }
 
   ~MHTMLBodyLoaderClient() override {

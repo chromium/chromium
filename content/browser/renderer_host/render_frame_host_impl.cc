@@ -54,6 +54,7 @@
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/compute_pressure/compute_pressure_manager.h"
 #include "content/browser/contacts/contacts_manager_impl.h"
 #include "content/browser/data_url_loader_factory.h"
@@ -94,6 +95,7 @@
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/cookie_utils.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/debug_urls.h"
@@ -8570,6 +8572,16 @@ void RenderFrameHostImpl::CreateNotificationService(
 void RenderFrameHostImpl::CreateInstalledAppProvider(
     mojo::PendingReceiver<blink::mojom::InstalledAppProvider> receiver) {
   InstalledAppProviderImpl::Create(this, std::move(receiver));
+}
+
+void RenderFrameHostImpl::CreateCodeCacheHost(
+    mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
+  // Create a new CodeCacheHostImpl and bind it to the given receiver.
+  code_cache_host_receivers_.Add(
+      std::make_unique<CodeCacheHostImpl>(
+          GetProcess()->GetID(), GetProcess(),
+          GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()),
+      std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(

@@ -119,6 +119,7 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/mojom/input/input_host.mojom.h"
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
 #include "third_party/blink/public/mojom/locks/lock_manager.mojom.h"
@@ -561,6 +562,9 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<blink::mojom::CacheStorage>(base::BindRepeating(
       &RenderFrameHostImpl::BindCacheStorage, base::Unretained(host)));
+
+  map->Add<blink::mojom::CodeCacheHost>(base::BindRepeating(
+      &RenderFrameHostImpl::CreateCodeCacheHost, base::Unretained(host)));
 
   map->Add<blink::mojom::ComputePressureHost>(base::BindRepeating(
       &RenderFrameHostImpl::BindComputePressureHost, base::Unretained(host)));

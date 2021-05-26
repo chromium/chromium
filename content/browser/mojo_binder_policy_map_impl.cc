@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 
@@ -49,6 +50,9 @@ void RegisterContentBinderPoliciesForSameOriginPrerendering(
   map.SetPolicy<blink::mojom::NativeIOHost>(MojoBinderPolicy::kGrant);
   map.SetPolicy<network::mojom::RestrictedCookieManager>(
       MojoBinderPolicy::kGrant);
+  // Set policy to Grant for CodeCacheHost. Without this loads won't progress
+  // since we wait for a response from code cache when loading resources.
+  map.SetPolicy<blink::mojom::CodeCacheHost>(MojoBinderPolicy::kGrant);
 }
 
 // A singleton class that stores the `MojoBinderPolicyMap` of interfaces which

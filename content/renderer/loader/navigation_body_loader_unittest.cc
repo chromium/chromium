@@ -65,7 +65,7 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   }
 
   void StartLoading() {
-    loader_->StartLoadingBody(this, false /* use_isolated_code_cache */);
+    loader_->StartLoadingBody(this, nullptr /*code_cache_host*/);
     base::RunLoop().RunUntilIdle();
   }
 

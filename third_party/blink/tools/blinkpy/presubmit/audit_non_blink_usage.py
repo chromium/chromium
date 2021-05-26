@@ -899,6 +899,15 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/renderer/core/loader/document_loader.cc',
+            'third_party/blink/renderer/core/loader/document_loader.h',
+        ],
+        'allowed': [
+            'blink::mojom::CodeCacheHost',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/xml'],
         'allowed': [
             'xpathyy::.+',

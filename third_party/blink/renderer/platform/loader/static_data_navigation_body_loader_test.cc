@@ -80,14 +80,14 @@ class StaticDataNavigationBodyLoaderTest
 };
 
 TEST_F(StaticDataNavigationBodyLoaderTest, DataReceived) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_data_received_ = true;
   Write("hello");
   EXPECT_EQ("hello", TakeDataReceived());
 }
 
 TEST_F(StaticDataNavigationBodyLoaderTest, WriteFromDataReceived) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_data_received_ = true;
   buffer_to_write_ = "world";
   Write("hello");
@@ -96,7 +96,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest, WriteFromDataReceived) {
 
 TEST_F(StaticDataNavigationBodyLoaderTest,
        SetDefersLoadingAndWriteFromDataReceived) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_data_received_ = true;
   freeze_mode_ = LoaderFreezeMode::kStrict;
   buffer_to_write_ = "world";
@@ -108,7 +108,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
 
 TEST_F(StaticDataNavigationBodyLoaderTest,
        SetDefersLoadingWithBfcacheAndWriteFromDataReceived) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_data_received_ = true;
   freeze_mode_ = LoaderFreezeMode::kBufferIncoming;
   buffer_to_write_ = "world";
@@ -119,7 +119,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
 }
 
 TEST_F(StaticDataNavigationBodyLoaderTest, DestroyFromDataReceived) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_data_received_ = true;
   destroy_loader_ = false;
   Write("hello");
@@ -127,7 +127,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest, DestroyFromDataReceived) {
 }
 
 TEST_F(StaticDataNavigationBodyLoaderTest, SetDefersLoadingFromDataReceived) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_data_received_ = true;
   freeze_mode_ = LoaderFreezeMode::kStrict;
   Write("hello");
@@ -138,7 +138,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest, SetDefersLoadingFromDataReceived) {
 
 TEST_F(StaticDataNavigationBodyLoaderTest,
        SetDefersLoadingWithBfcacheFromDataReceived) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_data_received_ = true;
   freeze_mode_ = LoaderFreezeMode::kBufferIncoming;
   Write("hello");
@@ -150,7 +150,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
 TEST_F(StaticDataNavigationBodyLoaderTest, WriteThenStart) {
   Write("hello");
   expecting_data_received_ = true;
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   EXPECT_EQ("hello", TakeDataReceived());
   expecting_finished_ = true;
   loader_->Finish();
@@ -164,7 +164,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
   loader_->Finish();
   expecting_data_received_ = true;
   freeze_mode_ = LoaderFreezeMode::kStrict;
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   EXPECT_EQ("hello", TakeDataReceived());
   expecting_finished_ = true;
   loader_->SetDefersLoading(LoaderFreezeMode::kNone);
@@ -178,7 +178,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
   loader_->Finish();
   expecting_data_received_ = true;
   freeze_mode_ = LoaderFreezeMode::kBufferIncoming;
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   EXPECT_EQ("hello", TakeDataReceived());
   expecting_finished_ = true;
   loader_->SetDefersLoading(LoaderFreezeMode::kNone);
@@ -188,7 +188,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest,
 
 TEST_F(StaticDataNavigationBodyLoaderTest, StartDeferred) {
   loader_->SetDefersLoading(LoaderFreezeMode::kStrict);
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   Write("hello");
   expecting_data_received_ = true;
   loader_->SetDefersLoading(LoaderFreezeMode::kNone);
@@ -197,7 +197,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest, StartDeferred) {
 
 TEST_F(StaticDataNavigationBodyLoaderTest, StartDeferredWithBackForwardCache) {
   loader_->SetDefersLoading(LoaderFreezeMode::kBufferIncoming);
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   Write("hello");
   expecting_data_received_ = true;
   loader_->SetDefersLoading(LoaderFreezeMode::kNone);
@@ -205,7 +205,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest, StartDeferredWithBackForwardCache) {
 }
 
 TEST_F(StaticDataNavigationBodyLoaderTest, DestroyFromFinished) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_finished_ = true;
   destroy_loader_ = true;
   loader_->Finish();
@@ -213,7 +213,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest, DestroyFromFinished) {
 }
 
 TEST_F(StaticDataNavigationBodyLoaderTest, SetDefersLoadingFromFinished) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_finished_ = true;
   freeze_mode_ = LoaderFreezeMode::kStrict;
   loader_->Finish();
@@ -222,7 +222,7 @@ TEST_F(StaticDataNavigationBodyLoaderTest, SetDefersLoadingFromFinished) {
 
 TEST_F(StaticDataNavigationBodyLoaderTest,
        SetDefersLoadingWithBfcacheFromFinished) {
-  loader_->StartLoadingBody(this, false);
+  loader_->StartLoadingBody(this, nullptr);
   expecting_finished_ = true;
   freeze_mode_ = LoaderFreezeMode::kBufferIncoming;
   loader_->Finish();

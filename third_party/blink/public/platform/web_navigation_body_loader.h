@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
 #include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 
@@ -53,7 +54,9 @@ class BLINK_EXPORT WebNavigationBodyLoader {
 
   // Starts loading the body. Client must be non-null, and will receive
   // the body, code cache and final result.
-  virtual void StartLoadingBody(Client*, bool use_isolated_code_cache) = 0;
+  virtual void StartLoadingBody(
+      Client*,
+      blink::mojom::CodeCacheHost* code_cache_host) = 0;
 };
 
 }  // namespace blink

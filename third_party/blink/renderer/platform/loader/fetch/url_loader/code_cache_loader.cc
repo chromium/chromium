@@ -2,20 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/loader/code_cache_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/code_cache_loader.h"
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/url_conversion.h"
 
 namespace blink {
 
-CodeCacheLoader::CodeCacheLoader() : CodeCacheLoader(nullptr) {}
+CodeCacheLoader::CodeCacheLoader() : CodeCacheLoader(nullptr, nullptr) {}
 
-CodeCacheLoader::CodeCacheLoader(base::WaitableEvent* terminate_sync_load_event)
-    : terminate_sync_load_event_(terminate_sync_load_event) {}
+CodeCacheLoader::CodeCacheLoader(mojom::CodeCacheHost* code_cache_host,
+                                 base::WaitableEvent* terminate_sync_load_event)
+    : code_cache_host_(code_cache_host),
+      terminate_sync_load_event_(terminate_sync_load_event) {}
 
 CodeCacheLoader::~CodeCacheLoader() = default;
 
@@ -74,11 +78,24 @@ void CodeCacheLoader::FetchFromCodeCacheImpl(mojom::CodeCacheType cache_type,
   // This may run on a different thread for synchronous events. It is Ok to pass
   // fetch_event, because the thread is stalled and it will keep the fetch_event
   // alive.
-  Platform::Current()->FetchCachedCode(
-      cache_type, url,
-      base::BindOnce(&CodeCacheLoader::OnReceiveCachedCode,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     fetch_event));
+  auto receive_callback = base::BindOnce(&CodeCacheLoader::OnReceiveCachedCode,
+                                         weak_ptr_factory_.GetWeakPtr(),
+                                         std::move(callback), fetch_event);
+  if (code_cache_host_) {
+    code_cache_host_->FetchCachedCode(
+        cache_type, WebStringToGURL(url.GetString()),
+        base::BindOnce(
+            [](Platform::FetchCachedCodeCallback callback, base::Time time,
+               mojo_base::BigBuffer data) {
+              std::move(callback).Run(time, std::move(data));
+            },
+            std::move(receive_callback)));
+  } else {
+    // TODO(mythria): This path is required for workers currently. Once we
+    // update worker requests to go through WorkerHost remove this path.
+    Platform::Current()->FetchCachedCode(cache_type, url,
+                                         std::move(receive_callback));
+  }
 }
 
 void CodeCacheLoader::OnReceiveCachedCode(FetchCodeCacheCallback callback,
@@ -110,9 +127,17 @@ void CodeCacheLoader::OnTerminate(base::WaitableEvent* fetch_event,
 }
 
 // static
-std::unique_ptr<WebCodeCacheLoader> WebCodeCacheLoader::Create(
+std::unique_ptr<WebCodeCacheLoader> WebCodeCacheLoader::CreateForFrame(
+    mojom::CodeCacheHost* code_cache_host) {
+  return std::make_unique<CodeCacheLoader>(
+      code_cache_host, /*terminate_sync_load_event*/ nullptr);
+}
+
+// static
+std::unique_ptr<WebCodeCacheLoader> WebCodeCacheLoader::CreateForWorker(
     base::WaitableEvent* terminate_sync_load_event) {
-  return std::make_unique<CodeCacheLoader>(terminate_sync_load_event);
+  return std::make_unique<CodeCacheLoader>(/*code_cache_host*/ nullptr,
+                                           terminate_sync_load_event);
 }
 
 }  // namespace blink

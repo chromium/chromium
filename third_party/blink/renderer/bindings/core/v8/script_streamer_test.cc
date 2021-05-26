@@ -78,7 +78,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
     return std::make_unique<NoopWebURLLoader>();
   }
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {
-    return Platform::Current()->CreateCodeCacheLoader();
+    return std::make_unique<CodeCacheLoaderMock>();
   }
 
   class NoopWebURLLoader final : public WebURLLoader {

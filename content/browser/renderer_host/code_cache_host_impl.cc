@@ -93,15 +93,11 @@ absl::optional<GURL> GetSecondaryKeyForCodeCache(const GURL& resource_url,
 
 CodeCacheHostImpl::CodeCacheHostImpl(
     int render_process_id,
-    RenderProcessHostImpl* render_process_host_impl,
-    scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
-    mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver)
+    RenderProcessHost* render_process_host,
+    scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context)
     : render_process_id_(render_process_id),
-      render_process_host_impl_(render_process_host_impl),
-      generated_code_cache_context_(std::move(generated_code_cache_context)),
-      receiver_(this, std::move(receiver)) {
-  // render_process_host_impl may be null in tests.
-}
+      render_process_host_(render_process_host),
+      generated_code_cache_context_(std::move(generated_code_cache_context)) {}
 
 CodeCacheHostImpl::~CodeCacheHostImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -188,7 +184,7 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
       ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
           render_process_id_, cache_storage_origin);
   if (!origin_allowed) {
-    receiver_.ReportBadMessage("Bad cache_storage origin.");
+    mojo::ReportBadMessage("Bad cache_storage origin.");
     return;
   }
 
@@ -204,7 +200,7 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
   storage::mojom::CacheStorageControl* cache_storage_control =
       cache_storage_control_for_testing_
           ? cache_storage_control_for_testing_
-          : render_process_host_impl_->GetStoragePartition()
+          : render_process_host_->GetStoragePartition()
                 ->GetCacheStorageControl();
   cache_storage_control->AddReceiver(
       cross_origin_embedder_policy, mojo::NullRemote(), cache_storage_origin,

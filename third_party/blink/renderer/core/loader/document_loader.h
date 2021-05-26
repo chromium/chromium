@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
@@ -355,6 +356,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // activated.
   void NotifyPrerenderingDocumentActivated();
 
+  blink::mojom::CodeCacheHost* GetCodeCacheHost();
+  void OnCodeCacheHostClosed();
+  static void DisableCodeCacheForTesting();
+
  protected:
   Vector<KURL> redirect_chain_;
 
@@ -630,6 +635,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   WebVector<WebHistoryItem> app_history_back_entries_;
   WebVector<WebHistoryItem> app_history_forward_entries_;
+
+  // This is the interface that handles generated code cache
+  // requests to fetch code cache when loading resources.
+  mojo::Remote<blink::mojom::CodeCacheHost> code_cache_host_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

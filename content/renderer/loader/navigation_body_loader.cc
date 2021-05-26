@@ -10,6 +10,7 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
@@ -103,7 +104,7 @@ void NavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
     navigation_params->body_loader.reset(new NavigationBodyLoader(
         original_url, std::move(response_head), std::move(response_body),
         std::move(url_loader_client_endpoints), task_runner,
-        std::move(resource_load_info_notifier_wrapper)));
+        std::move(resource_load_info_notifier_wrapper), render_frame_impl));
   }
 }
 
@@ -114,7 +115,8 @@ NavigationBodyLoader::NavigationBodyLoader(
     network::mojom::URLLoaderClientEndpointsPtr endpoints,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-        resource_load_info_notifier_wrapper)
+        resource_load_info_notifier_wrapper,
+    RenderFrameImpl* render_frame_impl)
     : response_head_(std::move(response_head)),
       response_body_(std::move(response_body)),
       endpoints_(std::move(endpoints)),
@@ -208,7 +210,7 @@ void NavigationBodyLoader::SetDefersLoading(blink::WebLoaderFreezeMode mode) {
 
 void NavigationBodyLoader::StartLoadingBody(
     WebNavigationBodyLoader::Client* client,
-    bool use_isolated_code_cache) {
+    blink::mojom::CodeCacheHost* code_cache_host) {
   TRACE_EVENT1("loading", "NavigationBodyLoader::StartLoadingBody", "url",
                original_url_.possibly_invalid_spec());
   client_ = client;
@@ -217,8 +219,9 @@ void NavigationBodyLoader::StartLoadingBody(
   resource_load_info_notifier_wrapper_->NotifyResourceResponseReceived(
       std::move(response_head_), blink::PreviewsTypes::PREVIEWS_OFF);
 
-  if (use_isolated_code_cache) {
-    code_cache_loader_ = blink::WebCodeCacheLoader::Create();
+  if (code_cache_host) {
+    code_cache_loader_ =
+        blink::WebCodeCacheLoader::CreateForFrame(code_cache_host);
     code_cache_loader_->FetchFromCodeCache(
         blink::mojom::CodeCacheType::kJavascript, original_url_,
         base::BindOnce(&NavigationBodyLoader::CodeCacheReceived,
