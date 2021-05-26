@@ -82,6 +82,8 @@ std::string ItemTypeToString(HoldingSpaceItem::Type type) {
       return "PinnedFile";
     case HoldingSpaceItem::Type::kPrintedPdf:
       return "PrintedPdf";
+    case HoldingSpaceItem::Type::kScan:
+      return "Scan";
     case HoldingSpaceItem::Type::kScreenRecording:
       return "ScreenRecording";
     case HoldingSpaceItem::Type::kScreenshot:

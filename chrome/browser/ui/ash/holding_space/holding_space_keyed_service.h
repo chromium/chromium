@@ -97,6 +97,9 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Adds a nearby share item backed by the provided absolute file path.
   void AddNearbyShare(const base::FilePath& nearby_share_path);
 
+  // Adds a scanned item backed by the provided absolute file path.
+  void AddScan(const base::FilePath& file_path);
+
   // Adds a screen recording item backed by the provided absolute file path.
   void AddScreenRecording(const base::FilePath& screen_recording_path);
 

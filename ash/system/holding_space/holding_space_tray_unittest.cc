@@ -959,7 +959,8 @@ INSTANTIATE_TEST_SUITE_P(
                       HoldingSpaceItem::Type::kDownload,
                       HoldingSpaceItem::Type::kLacrosDownload,
                       HoldingSpaceItem::Type::kNearbyShare,
-                      HoldingSpaceItem::Type::kPrintedPdf));
+                      HoldingSpaceItem::Type::kPrintedPdf,
+                      HoldingSpaceItem::Type::kScan));
 
 // Tests how download chips are updated during item addition, removal and
 // initialization.

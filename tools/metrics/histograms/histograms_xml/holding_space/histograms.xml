@@ -45,6 +45,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="NearbyShare" summary="Items backed by a nearby shared file."/>
   <variant name="PinnedFile" summary="Items pinned explicitly by the user."/>
   <variant name="PrintedPdf" summary="Items backed by a printed PDF file."/>
+  <variant name="Scan" summary="Items backed by a scanned file."/>
   <variant name="ScreenRecording"
       summary="Items backed by a screen recording file."/>
   <variant name="Screenshot" summary="Items backed by a screenshot file."/>

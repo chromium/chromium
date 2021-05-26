@@ -1863,6 +1863,9 @@ class HoldingSpaceKeyedServiceAddItemTest
         holding_space_service->AddPrintedPdf(file_path,
                                              /*from_incognito_profile=*/false);
         break;
+      case HoldingSpaceItem::Type::kScan:
+        holding_space_service->AddScan(file_path);
+        break;
       case HoldingSpaceItem::Type::kScreenRecording:
         holding_space_service->AddScreenRecording(file_path);
         break;

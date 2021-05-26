@@ -40,7 +40,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     kPrintedPdf = 6,
     kDiagnosticsLog = 7,
     kLacrosDownload = 8,
-    kMaxValue = kLacrosDownload,
+    kScan = 9,
+    kMaxValue = kScan,
   };
 
   HoldingSpaceItem(const HoldingSpaceItem&) = delete;

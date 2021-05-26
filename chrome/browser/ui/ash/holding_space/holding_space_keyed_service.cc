@@ -246,6 +246,10 @@ void HoldingSpaceKeyedService::AddNearbyShare(
   AddItemOfType(HoldingSpaceItem::Type::kNearbyShare, nearby_share_path);
 }
 
+void HoldingSpaceKeyedService::AddScan(const base::FilePath& file_path) {
+  AddItemOfType(HoldingSpaceItem::Type::kScan, file_path);
+}
+
 void HoldingSpaceKeyedService::AddScreenRecording(
     const base::FilePath& screen_recording_file) {
   AddItemOfType(HoldingSpaceItem::Type::kScreenRecording,
