@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "build/build_config.h"
@@ -700,9 +701,8 @@ struct AutocompleteMatch {
   // Set in matches originating from keyword results.
   bool from_keyword = false;
 
-  // Set to a matching action if appropriate.  The action is not owned, and the
-  // owner must outlive this.
-  OmniboxAction* action = nullptr;
+  // Set to a matching action if appropriate.
+  scoped_refptr<OmniboxAction> action;
 
   // True if this match is from a previous result.
   bool from_previous = false;

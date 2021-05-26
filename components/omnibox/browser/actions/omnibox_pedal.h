@@ -151,7 +151,6 @@ class OmniboxPedal : public OmniboxAction {
   };
 
   OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url);
-  ~OmniboxPedal() override;
 
   // Writes labels associated with this Pedal by taking named
   //  values from provided dictionary value |ui_strings|.
@@ -191,6 +190,8 @@ class OmniboxPedal : public OmniboxAction {
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest, SynonymGroupsDriveConceptMatches);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalImplementationsTest,
                            UnorderedSynonymExpressionsAreConceptMatches);
+
+  ~OmniboxPedal() override;
 
   OmniboxPedalId id_;
 

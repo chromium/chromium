@@ -38,6 +38,9 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),
             GURL("chrome://settings/clearBrowserData")) {}
+
+ protected:
+  ~OmniboxPedalClearBrowsingData() override = default;
 };
 
 // =============================================================================
@@ -52,6 +55,9 @@ class OmniboxPedalManagePasswords : public OmniboxPedal {
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_PASSWORDS),
             GURL("chrome://settings/passwords")) {}
+
+ protected:
+  ~OmniboxPedalManagePasswords() override = default;
 };
 
 // =============================================================================
@@ -67,6 +73,9 @@ class OmniboxPedalUpdateCreditCard : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD),
             GURL("chrome://settings/payments")) {}
+
+ protected:
+  ~OmniboxPedalUpdateCreditCard() override = default;
 };
 
 // =============================================================================
@@ -91,6 +100,9 @@ class OmniboxPedalLaunchIncognito : public OmniboxPedal {
       const AutocompleteProviderClient& client) const override {
     return client.IsIncognitoModeAvailable();
   }
+
+ protected:
+  ~OmniboxPedalLaunchIncognito() override = default;
 };
 
 // =============================================================================
@@ -121,6 +133,9 @@ class OmniboxPedalTranslate : public OmniboxPedal {
     return !input.current_url().SchemeIs(
         client.GetEmbedderRepresentationOfAboutScheme());
   }
+
+ protected:
+  ~OmniboxPedalTranslate() override = default;
 };
 
 // =============================================================================
@@ -135,6 +150,9 @@ class OmniboxPedalUpdateChrome : public OmniboxPedal {
                          IDS_ACC_OMNIBOX_PEDAL_UPDATE_CHROME_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_UPDATE_CHROME),
             GURL("chrome://settings/help")) {}
+
+ protected:
+  ~OmniboxPedalUpdateChrome() override = default;
 };
 
 // =============================================================================
@@ -150,6 +168,9 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK),
             GURL()) {}
+
+ protected:
+  ~OmniboxPedalRunChromeSafetyCheck() override = default;
 };
 
 // =============================================================================
@@ -165,6 +186,9 @@ class OmniboxPedalManageSecuritySettings : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS),
             GURL()) {}
+
+ protected:
+  ~OmniboxPedalManageSecuritySettings() override = default;
 };
 
 // =============================================================================
@@ -179,6 +203,9 @@ class OmniboxPedalManageCookies : public OmniboxPedal {
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_COOKIES_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_COOKIES),
                      GURL()) {}
+
+ protected:
+  ~OmniboxPedalManageCookies() override = default;
 };
 
 // =============================================================================
@@ -193,6 +220,9 @@ class OmniboxPedalManageAddresses : public OmniboxPedal {
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_ADDRESSES_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_ADDRESSES),
                      GURL()) {}
+
+ protected:
+  ~OmniboxPedalManageAddresses() override = default;
 };
 
 // =============================================================================
@@ -207,6 +237,9 @@ class OmniboxPedalManageSync : public OmniboxPedal {
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC),
                      GURL()) {}
+
+ protected:
+  ~OmniboxPedalManageSync() override = default;
 };
 
 // =============================================================================
@@ -222,6 +255,9 @@ class OmniboxPedalManageSiteSettings : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS),
             GURL()) {}
+
+ protected:
+  ~OmniboxPedalManageSiteSettings() override = default;
 };
 
 // =============================================================================
@@ -235,6 +271,9 @@ class OmniboxPedalAuthRequired : public OmniboxPedal {
       const AutocompleteProviderClient& client) const override {
     return client.IsAuthenticated();
   }
+
+ protected:
+  ~OmniboxPedalAuthRequired() override = default;
 };
 
 // =============================================================================
@@ -248,6 +287,9 @@ class OmniboxPedalCreateGoogleDoc : public OmniboxPedalAuthRequired {
     return omnibox::kDriveDocsIcon;
   }
 #endif
+
+ protected:
+  ~OmniboxPedalCreateGoogleDoc() override = default;
 };
 
 // =============================================================================
@@ -261,6 +303,9 @@ class OmniboxPedalCreateGoogleSheet : public OmniboxPedalAuthRequired {
     return omnibox::kDriveSheetsIcon;
   }
 #endif
+
+ protected:
+  ~OmniboxPedalCreateGoogleSheet() override = default;
 };
 
 // =============================================================================
@@ -274,6 +319,9 @@ class OmniboxPedalCreateGoogleSlide : public OmniboxPedalAuthRequired {
     return omnibox::kDriveSlidesIcon;
   }
 #endif
+
+ protected:
+  ~OmniboxPedalCreateGoogleSlide() override = default;
 };
 
 // =============================================================================
@@ -288,6 +336,9 @@ class OmniboxPedalCreateGoogleCalendarEvent : public OmniboxPedalAuthRequired {
     return omnibox::kGoogleCalendarIcon;
   }
 #endif
+
+ protected:
+  ~OmniboxPedalCreateGoogleCalendarEvent() override = default;
 };
 
 // =============================================================================
@@ -301,6 +352,9 @@ class OmniboxPedalCreateGoogleSite : public OmniboxPedalAuthRequired {
     return omnibox::kGoogleSitesIcon;
   }
 #endif
+
+ protected:
+  ~OmniboxPedalCreateGoogleSite() override = default;
 };
 
 // =============================================================================
@@ -314,6 +368,9 @@ class OmniboxPedalCreateGoogleKeepNote : public OmniboxPedalAuthRequired {
     return omnibox::kGoogleKeepNoteIcon;
   }
 #endif
+
+ protected:
+  ~OmniboxPedalCreateGoogleKeepNote() override = default;
 };
 
 // =============================================================================
@@ -327,6 +384,9 @@ class OmniboxPedalCreateGoogleForm : public OmniboxPedalAuthRequired {
     return omnibox::kDriveFormsIcon;
   }
 #endif
+
+ protected:
+  ~OmniboxPedalCreateGoogleForm() override = default;
 };
 
 // =============================================================================
@@ -337,6 +397,9 @@ class OmniboxPedalSeeChromeTips : public OmniboxPedal {
       : OmniboxPedal(OmniboxPedalId::SEE_CHROME_TIPS,
                      OmniboxPedal::LabelStrings(),
                      GURL()) {}
+
+ protected:
+  ~OmniboxPedalSeeChromeTips() override = default;
 };
 
 // =============================================================================
@@ -350,6 +413,9 @@ class OmniboxPedalManageGoogleAccount : public OmniboxPedalAuthRequired {
     return omnibox::kGoogleSuperGIcon;
   }
 #endif
+
+ protected:
+  ~OmniboxPedalManageGoogleAccount() override = default;
 };
 
 // =============================================================================
@@ -363,15 +429,18 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
     return omnibox::kGoogleSuperGIcon;
   }
 #endif
+
+ protected:
+  ~OmniboxPedalChangeGooglePassword() override = default;
 };
 
 // =============================================================================
 
-std::unordered_map<OmniboxPedalId, std::unique_ptr<OmniboxPedal>>
+std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
 GetPedalImplementations(bool with_branding) {
-  std::unordered_map<OmniboxPedalId, std::unique_ptr<OmniboxPedal>> pedals;
+  std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
   const auto add = [&](OmniboxPedalId id, OmniboxPedal* pedal) {
-    pedals.insert(std::make_pair(id, std::unique_ptr<OmniboxPedal>(pedal)));
+    pedals.insert(std::make_pair(id, base::WrapRefCounted(pedal)));
   };
   add(OmniboxPedalId::CLEAR_BROWSING_DATA, new OmniboxPedalClearBrowsingData());
   add(OmniboxPedalId::MANAGE_PASSWORDS, new OmniboxPedalManagePasswords());

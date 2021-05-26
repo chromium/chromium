@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_PROVIDER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_PROVIDER_H_
 
-#include <memory>
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/values.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
@@ -79,7 +79,7 @@ class OmniboxPedalProvider {
   // vector and index by id separately.  The lookup is needed rarely but
   // iterating over the whole collection happens very frequently, so we should
   // really optimize for iteration (vector), not lookup (map).
-  std::unordered_map<OmniboxPedalId, std::unique_ptr<OmniboxPedal>> pedals_;
+  std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals_;
 
   // Common words that may be used when typing to trigger Pedals.  All instances
   // of these words are removed from match text when looking for triggers.

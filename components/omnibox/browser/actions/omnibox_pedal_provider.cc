@@ -37,6 +37,11 @@ constexpr size_t kMaximumMaxTokens = 64;
 
 }  // namespace
 
+size_t EstimateMemoryUsage(scoped_refptr<OmniboxPedal> pedal) {
+  // Consider the ref-counted Pedals to be part of the provider's memory usage.
+  return pedal->EstimateMemoryUsage();
+}
+
 OmniboxPedalProvider::OmniboxPedalProvider(AutocompleteProviderClient& client,
                                            bool with_branding)
     : client_(client),

@@ -718,11 +718,6 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 void OmniboxEditModel::ExecuteAction(
     const AutocompleteMatch& match,
     base::TimeTicks match_selection_timestamp) {
-  // Note the |action| pointer is extracted from the match before reverting the
-  // view below because the match reference will expire with its container.
-  const OmniboxAction* action = match.action;
-  CHECK(action);
-
   // Record the presence of any actions in the result set.
   for (const AutocompleteMatch& match_in_result : result()) {
     if (match_in_result.action) {
@@ -730,10 +725,11 @@ void OmniboxEditModel::ExecuteAction(
     }
   }
 
-  action->RecordActionExecuted();
+  match.action->RecordActionExecuted();
+  OmniboxPedal::ExecutionContext context(*client_, *controller_,
+                                         match_selection_timestamp);
+  match.action->Execute(context);
 
-  // TODO(tommycli): Resolve questions about memory safety with calling
-  // RevertAll() first. It may destroy the list of matches.
   {
     // This block resets omnibox to unedited state and closes popup, which
     // may not seem necessary in cases of navigation but makes sense for
@@ -741,9 +737,6 @@ void OmniboxEditModel::ExecuteAction(
     base::AutoReset<bool> tmp(&in_revert_, true);
     view_->RevertAll();
   }
-  OmniboxPedal::ExecutionContext context(*client_, *controller_,
-                                         match_selection_timestamp);
-  action->Execute(context);
 }
 
 void OmniboxEditModel::OpenMatch(AutocompleteMatch match,

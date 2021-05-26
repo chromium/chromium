@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -75,15 +76,15 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
         ACMatchClassification::URL);
     switch_to_tab_match.has_tab_match = true;
 
-    AutocompleteMatch pedal_match(nullptr, 500, false,
-                                  AutocompleteMatchType::SEARCH_SUGGEST);
-    pedal_match.contents = u"clear data";
-    pedal_match.description = u"Search";
-    pedal_match.description_class = ClassifyTermMatches(
-        termMatches, pedal_match.description.size(),
+    AutocompleteMatch action_match(nullptr, 500, false,
+                                   AutocompleteMatchType::SEARCH_SUGGEST);
+    action_match.contents = u"clear data";
+    action_match.description = u"Search";
+    action_match.description_class = ClassifyTermMatches(
+        termMatches, action_match.description.size(),
         ACMatchClassification::MATCH | ACMatchClassification::URL,
         ACMatchClassification::DIM);
-    pedal_ = std::make_unique<OmniboxPedal>(
+    action_ = base::MakeRefCounted<OmniboxPedal>(
         OmniboxPedalId::CLEAR_BROWSING_DATA,
         OmniboxPedal::LabelStrings(
             IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT,
@@ -91,7 +92,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
             IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX,
             IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),
         GURL());
-    pedal_match.action = pedal_.get();
+    action_match.action = action_.get();
 
     AutocompleteMatch multiple_actions_match(
         nullptr, 500, false, AutocompleteMatchType::HISTORY_URL);
@@ -108,7 +109,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
 
     matches.push_back(search_match);
     matches.push_back(switch_to_tab_match);
-    matches.push_back(pedal_match);
+    matches.push_back(action_match);
     matches.push_back(multiple_actions_match);
     results.AppendMatches(autocomplete_controller->input_, matches);
 
@@ -168,7 +169,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<OmniboxPedal> pedal_;
+  scoped_refptr<OmniboxAction> action_;
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxSuggestionButtonRowBrowserTest, InvokeUi) {

@@ -56,7 +56,7 @@ TEST_F(OmniboxPedalTest, SynonymGroupsDriveConceptMatches) {
   constexpr int required_a = 2;
   constexpr int required_b = 3;
   constexpr int nonsense = 4;
-  OmniboxPedal test_pedal(
+  scoped_refptr<OmniboxPedal> test_pedal = base::MakeRefCounted<OmniboxPedal>(
       OmniboxPedalId::CLEAR_BROWSING_DATA,
       OmniboxPedal::LabelStrings(
           IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT,
@@ -67,14 +67,14 @@ TEST_F(OmniboxPedalTest, SynonymGroupsDriveConceptMatches) {
   const auto add_group = [&](bool required, int token) {
     OmniboxPedal::SynonymGroup group(required, true, 1);
     group.AddSynonym(make_sequence({token}));
-    test_pedal.AddSynonymGroup(std::move(group));
+    test_pedal->AddSynonymGroup(std::move(group));
   };
   add_group(false, optional);
   add_group(true, required_a);
   add_group(true, required_b);
 
   const auto is_concept_match = [&](OmniboxPedal::TokenSequence sequence) {
-    return test_pedal.IsConceptMatch(sequence);
+    return test_pedal->IsConceptMatch(sequence);
   };
 
   // As long as required synonym groups are present, order shouldn't matter.

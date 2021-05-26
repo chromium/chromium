@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/buildflags.h"
@@ -27,7 +28,13 @@ class OmniboxClient;
 // in the suggestion button row and are not matches themselves.
 //
 // Omnibox Pedals are a type of Omnibox Action.
-class OmniboxAction {
+//
+// Actions are ref-counted to support a flexible ownership model.
+//  - Some actions are ephemeral and specific to the match, and should be
+//    destroyed when the match is destroyed, so matches have the only reference.
+//  - Some actions (like Pedals) are fixed and expensive to copy, so matches
+//    should merely hold one of the references to the action.
+class OmniboxAction : public base::RefCounted<OmniboxAction> {
  public:
   struct LabelStrings {
     LabelStrings(int id_hint,
@@ -66,7 +73,6 @@ class OmniboxAction {
   };
 
   OmniboxAction(LabelStrings strings, GURL url);
-  virtual ~OmniboxAction();
 
   // Provides read access to labels associated with this Action.
   const LabelStrings& GetLabelStrings() const;
@@ -99,6 +105,9 @@ class OmniboxAction {
   virtual int32_t GetID() const;
 
  protected:
+  friend class base::RefCounted<OmniboxAction>;
+  virtual ~OmniboxAction();
+
   // Use this for the common case of navigating to a URL.
   void OpenURL(ExecutionContext& context, const GURL& url) const;
 
