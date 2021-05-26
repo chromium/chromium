@@ -360,13 +360,6 @@ IPC_MESSAGE_ROUTED3(ExtensionMsg_DispatchOnDisconnect,
 
 // Messages sent from the renderer to the browser:
 
-// Notify the browser that the given extension added a listener to an event from
-// an extension service worker.
-IPC_MESSAGE_CONTROL3(ExtensionHostMsg_AddLazyServiceWorkerListener,
-                     std::string /* extension_id */,
-                     std::string /* name */,
-                     GURL /* service_worker_scope */)
-
 // Notify the browser that the given extension is no longer interested in
 // receiving the given event from an extension service worker.
 IPC_MESSAGE_CONTROL3(ExtensionHostMsg_RemoveLazyServiceWorkerListener,

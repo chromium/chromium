@@ -34,6 +34,13 @@ interface EventRouter {
   AddLazyListenerForMainThread(string extension_id,
                                string event_name);
 
+  // Notifies the browser that the given extension added a listener to an event
+  // from an extension service worker.
+  AddLazyListenerForServiceWorker(string extension_id,
+                                  url.mojom.Url worker_scope_url,
+                                  string event_name);
+
+
   // Notifies the browser that the given |extension_id| or |listener_url|
   // removed a listener to an event. If it has |extension_id| in |param|, the
   // listener is removed for the extension. Otherwise, it has a |listener_url|

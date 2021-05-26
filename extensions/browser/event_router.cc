@@ -274,6 +274,19 @@ void EventRouter::AddLazyListenerForMainThread(const std::string& extension_id,
   AddLazyEventListener(event_name, extension_id);
 }
 
+void EventRouter::AddLazyListenerForServiceWorker(
+    const std::string& extension_id,
+    const GURL& worker_scope_url,
+    const std::string& event_name) {
+  std::unique_ptr<EventListener> listener =
+      EventListener::ForExtensionServiceWorker(
+          event_name, extension_id, nullptr, worker_scope_url,
+          // Lazy listener, without worker version id and thread id.
+          blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId, nullptr);
+  AddLazyEventListenerImpl(std::move(listener),
+                           RegisteredEventType::kServiceWorker);
+}
+
 void EventRouter::RemoveListenerForMainThread(
     mojom::EventListenerParamPtr param,
     const std::string& event_name) {
@@ -466,19 +479,6 @@ void EventRouter::RemoveLazyEventListener(const std::string& event_name,
   RemoveLazyEventListenerImpl(
       EventListener::ForExtension(event_name, extension_id, nullptr, nullptr),
       RegisteredEventType::kLazy);
-}
-
-void EventRouter::AddLazyServiceWorkerEventListener(
-    const std::string& event_name,
-    const ExtensionId& extension_id,
-    const GURL& service_worker_scope) {
-  std::unique_ptr<EventListener> listener =
-      EventListener::ForExtensionServiceWorker(
-          event_name, extension_id, nullptr, service_worker_scope,
-          // Lazy listener, without worker version id and thread id.
-          blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId, nullptr);
-  AddLazyEventListenerImpl(std::move(listener),
-                           RegisteredEventType::kServiceWorker);
 }
 
 void EventRouter::RemoveLazyServiceWorkerEventListener(
@@ -678,9 +678,9 @@ void EventRouter::DispatchEventWithLazyListener(const std::string& extension_id,
   const bool has_listener = ExtensionHasEventListener(extension_id, event_name);
   if (!has_listener) {
     if (is_service_worker_based_background) {
-      AddLazyServiceWorkerEventListener(
-          event_name, extension_id,
-          Extension::GetBaseURLFromExtensionId(extension_id));
+      AddLazyListenerForServiceWorker(
+          extension_id, Extension::GetBaseURLFromExtensionId(extension_id),
+          event_name);
     } else {
       AddLazyEventListener(event_name, extension_id);
     }

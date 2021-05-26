@@ -157,6 +157,10 @@ class EventRouter : public KeyedService,
   void AddLazyListenerForMainThread(const std::string& extension_id,
                                     const std::string& name) override;
 
+  void AddLazyListenerForServiceWorker(const std::string& extension_id,
+                                       const GURL& worker_scope_url,
+                                       const std::string& name) override;
+
   void RemoveListenerForMainThread(mojom::EventListenerParamPtr param,
                                    const std::string& name) override;
 
@@ -214,11 +218,8 @@ class EventRouter : public KeyedService,
                             const ExtensionId& extension_id);
   void RemoveLazyEventListener(const std::string& event_name,
                                const ExtensionId& extension_id);
-  // Similar to Add/RemoveLazyEventListener, but applies to extension service
+  // Similar to RemoveLazyEventListener, but applies to extension service
   // workers.
-  void AddLazyServiceWorkerEventListener(const std::string& event_name,
-                                         const ExtensionId& extension_id,
-                                         const GURL& service_worker_scope);
   void RemoveLazyServiceWorkerEventListener(const std::string& event_name,
                                             const ExtensionId& extension_id,
                                             const GURL& service_worker_scope);
