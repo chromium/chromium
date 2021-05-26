@@ -322,13 +322,7 @@ class AppListSyncableServiceTest : public AppListTestBase {
       model_updater_factory_scope_;
 };
 
-// Flaky on CrOS. See https://crbug.com/1202295
-#if defined(OS_CHROMEOS)
-#define MAYBE_OEMFolderForConflictingPos DISABLED_OEMFolderForConflictingPos
-#else
-#define MAYBE_OEMFolderForConflictingPos OEMFolderForConflictingPos
-#endif
-TEST_F(AppListSyncableServiceTest, MAYBE_OEMFolderForConflictingPos) {
+TEST_F(AppListSyncableServiceTest, OEMFolderForConflictingPos) {
   // Create a "web store" app.
   const std::string web_store_app_id(extensions::kWebStoreAppId);
   scoped_refptr<extensions::Extension> store =
@@ -406,16 +400,7 @@ TEST_F(AppListSyncableServiceTest, OEMItemIgnoreSyncParent) {
   EXPECT_EQ(ash::kOemFolderId, oem_app_item->folder_id());
 }
 
-// Verifies that an OEM apps parent ID in sync data is not overridden to the OEM
-// folder.
-// Flaky on CrOS. See https://crbug.com/1202295
-#if defined(OS_CHROMEOS)
-#define MAYBE_OEMAppParentNotOverridenInSync \
-  DISABLED_OEMAppParentNotOverridenInSync
-#else
-#define MAYBE_OEMAppParentNotOverridenInSync OEMAppParentNotOverridenInSync
-#endif
-TEST_F(AppListSyncableServiceTest, MAYBE_OEMAppParentNotOverridenInSync) {
+TEST_F(AppListSyncableServiceTest, OEMAppParentNotOverridenInSync) {
   const std::string oem_app_id = CreateNextAppId(extensions::kWebStoreAppId);
   scoped_refptr<extensions::Extension> oem_app = MakeApp(
       kOemAppName, oem_app_id, extensions::Extension::WAS_INSTALLED_BY_OEM);
