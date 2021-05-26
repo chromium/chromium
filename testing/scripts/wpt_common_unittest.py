@@ -192,22 +192,9 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
             updated_json["tests"]["external"]["wpt"]["test.html"]["artifacts"]
                 ["actual_text"])
 
-        # Ensure that a diff was also generated. Since there's no expected
-        # output, the actual text is all new. We don't validate the entire diff
-        # files to avoid checking line numbers/markup.
-        diff_path = os.path.join(artifact_subdir, "test-diff.txt")
-        self.assertIn("+test.html actual text", written_files[diff_path])
-        self.assertEqual(
-            [diff_path],
-            updated_json["tests"]["external"]["wpt"]["test.html"]["artifacts"]
-                ["text_diff"])
-        pretty_diff_path = os.path.join(artifact_subdir,
-                                        "test-pretty-diff.html")
-        self.assertIn("test.html actual text", written_files[pretty_diff_path])
-        self.assertEqual(
-            [pretty_diff_path],
-            updated_json["tests"]["external"]["wpt"]["test.html"]["artifacts"]
-                ["pretty_text_diff"])
+        self.assertIn(actual_path, written_files)
+        self.assertNotIn(diff_path, written_files)
+        self.assertNotIn(pretty_diff_path, written_files)
 
     def test_write_log_artifact(self):
         # Ensure that crash log artifacts are written to the correct location.

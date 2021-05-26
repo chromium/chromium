@@ -140,36 +140,39 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             test_failures.FILENAME_SUFFIX_ACTUAL,
             results_dir, path_so_far, actual_text)
         root_node["artifacts"]["actual_text"] = [actual_subpath]
+
         # Try to locate the expected output of this test, if it exists.
         expected_subpath, expected_text = \
             self._maybe_write_expected_output(results_dir, path_so_far)
         if expected_subpath:
             root_node["artifacts"]["expected_text"] = [expected_subpath]
+            diff_content = unified_diff(expected_text, actual_text,
+                                        expected_subpath, actual_subpath)
+            diff_subpath = self._write_text_artifact(
+                test_failures.FILENAME_SUFFIX_DIFF, results_dir,
+                path_so_far, diff_content)
+            root_node["artifacts"]["text_diff"] = [diff_subpath]
 
-        diff_content = unified_diff(expected_text, actual_text,
-                                    expected_subpath, actual_subpath)
-        diff_subpath = self._write_text_artifact(
-            test_failures.FILENAME_SUFFIX_DIFF, results_dir,
-            path_so_far, diff_content)
-        root_node["artifacts"]["text_diff"] = [diff_subpath]
-        # The html_diff library requires str arguments but the file contents is
-        # read-in as unicode. In python3 the contents comes in as a str, but in
-        # python2 it remains type unicode, so we have to encode it to get the
-        # str version.
-        if six.PY2:
-            expected_text = expected_text.encode('utf8')
-            actual_text = actual_text.encode('utf8')
-        html_diff_content = html_diff(expected_text, actual_text)
-        if six.PY2:
-            # Ensure the diff itself is properly decoded, to avoid
-            # UnicodeDecodeErrors when writing to file. This can happen if
-            # the diff contains unicode characters but the file is written
-            # as ascii because of the default system-level encoding.
-            html_diff_content = unicode(html_diff_content, 'utf8')
-        html_diff_subpath = self._write_text_artifact(
-            test_failures.FILENAME_SUFFIX_HTML_DIFF, results_dir,
-            path_so_far, html_diff_content, extension=".html")
-        root_node["artifacts"]["pretty_text_diff"] = [html_diff_subpath]
+            # The html_diff library requires str arguments but the file
+            # contents is read-in as unicode. In python3 the contents comes
+            # in as a str, but in python2 it remains type unicode, so we
+            # have to encode it to get the str version.
+            if six.PY2:
+                expected_text = expected_text.encode('utf8')
+                actual_text = actual_text.encode('utf8')
+
+            html_diff_content = html_diff(expected_text, actual_text)
+            if six.PY2:
+                # Ensure the diff itself is properly decoded, to avoid
+                # UnicodeDecodeErrors when writing to file. This can happen if
+                # the diff contains unicode characters but the file is written
+                # as ascii because of the default system-level encoding.
+                html_diff_content = unicode(html_diff_content, 'utf8')
+
+            html_diff_subpath = self._write_text_artifact(
+                test_failures.FILENAME_SUFFIX_HTML_DIFF, results_dir,
+                path_so_far, html_diff_content, extension=".html")
+            root_node["artifacts"]["pretty_text_diff"] = [html_diff_subpath]
 
     def _process_test_leaves(self, results_dir, delim, root_node, path_so_far):
         """Finds and processes each test leaf below the specified root.
