@@ -3856,12 +3856,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAriaElementReflectionDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kEnableAriaElementReflection)},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-encryption-migration",
-     flag_descriptions::kEnableEncryptionMigrationName,
-     flag_descriptions::kEnableEncryptionMigrationDescription, kOsCrOS,
-     ENABLE_DISABLE_VALUE_TYPE(
-         chromeos::switches::kEnableEncryptionMigration,
-         chromeos::switches::kDisableEncryptionMigration)},
     {"enable-cros-ime-assist-autocorrect",
      flag_descriptions::kImeAssistAutocorrectName,
      flag_descriptions::kImeAssistAutocorrectDescription, kOsCrOS,

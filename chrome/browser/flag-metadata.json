@@ -1696,11 +1696,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "enable-encryption-migration",
-    "owners": [ "fukino" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "enable-ephemeral-guest-profiles-on-desktop",
     "owners": [ "rhalavati", "chrome-privacy-core@google.com" ],
     "expiry_milestone": 92

@@ -4190,12 +4190,6 @@ const char kDnsProxyEnableDOHDescription[] =
     "When enabled, the DNS proxy will perform DNS-over-HTTPS in accordance "
     "with the Chrome OS SecureDNS settings.";
 
-const char kEnableEncryptionMigrationName[] =
-    "Enable encryption migration of user data";
-const char kEnableEncryptionMigrationDescription[] =
-    "If enabled and the device supports ARC, the user will be asked to update "
-    "the encryption of user data when the user signs in.";
-
 const char kEnableHostnameSettingName[] = "Enable setting the device hostname";
 const char kEnableHostnameSettingDescription[] =
     "Enables the ability to set the Chrome OS hostname, the name of the device "

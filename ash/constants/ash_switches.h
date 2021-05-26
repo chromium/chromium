@@ -77,8 +77,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableDemoMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableDeviceDisabling[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDisableEncryptionMigration[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableFineGrainedTimeZoneDetection[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableGaiaServices[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -107,8 +105,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableCastReceiver[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableConsumerKiosk[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnableTabletFormFactor[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kEnableEncryptionMigration[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnableExtensionAssetsSharing[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableHoudini[];

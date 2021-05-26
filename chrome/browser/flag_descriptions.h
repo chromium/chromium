@@ -2419,9 +2419,6 @@ extern const char kEnableDnsProxyDescription[];
 extern const char kDnsProxyEnableDOHName[];
 extern const char kDnsProxyEnableDOHDescription[];
 
-extern const char kEnableEncryptionMigrationName[];
-extern const char kEnableEncryptionMigrationDescription[];
-
 extern const char kEnableHostnameSettingName[];
 extern const char kEnableHostnameSettingDescription[];
 

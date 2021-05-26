@@ -156,10 +156,9 @@ FingerprintState GetInitialFingerprintState(const user_manager::User* user) {
 }
 
 // Returns true if dircrypto migration check should be performed.
+// TODO(achuith): Get rid of this function altogether.
 bool ShouldCheckNeedDircryptoMigration() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kDisableEncryptionMigration) &&
-         arc::IsArcAvailable();
+  return arc::IsArcAvailable();
 }
 
 // Returns true if the user can run ARC based on the user type.

@@ -243,11 +243,6 @@ bool ShouldForceDircrypto(const AccountId& account_id) {
   if (IsTestingMigrationUI())
     return true;
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableEncryptionMigration)) {
-    return false;
-  }
-
   // If the device is not officially supported to run ARC, we don't need to
   // force Ext4 dircrypto.
   if (!arc::IsArcAvailable())

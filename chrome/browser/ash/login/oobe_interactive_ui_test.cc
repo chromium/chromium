@@ -546,9 +546,6 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
 
     if (params_.arc_state != ArcState::kNotAvailable) {
       arc::SetArcAvailableCommandLineForTesting(command_line);
-      // Prevent encryption migration screen from showing up after user login
-      // with ARC available.
-      command_line->AppendSwitch(switches::kDisableEncryptionMigration);
       command_line->AppendSwitchASCII(
           switches::kArcTosHostForTests,
           arc_tos_server_->GetURL("/arc-tos").spec());

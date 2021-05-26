@@ -226,9 +226,6 @@ const char kDisableDemoMode[] = "disable-demo-mode";
 // If this switch is set, the device cannot be remotely disabled by its owner.
 const char kDisableDeviceDisabling[] = "disable-device-disabling";
 
-// Disable encryption migration for user's cryptohome to run latest Arc.
-const char kDisableEncryptionMigration[] = "disable-encryption-migration";
-
 // Disables fine grained time zone detection.
 const char kDisableFineGrainedTimeZoneDetection[] =
     "disable-fine-grained-time-zone-detection";
@@ -294,9 +291,6 @@ const char kEnableCastReceiver[] = "enable-cast-receiver";
 
 // Enables consumer kiosk mode for Chrome OS.
 const char kEnableConsumerKiosk[] = "enable-consumer-kiosk";
-
-// Enables encryption migration for user's cryptohome to run latest Arc.
-const char kEnableEncryptionMigration[] = "enable-encryption-migration";
 
 // Enables sharing assets for installed default apps.
 const char kEnableExtensionAssetsSharing[] = "enable-extension-assets-sharing";
