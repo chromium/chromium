@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
@@ -260,12 +261,11 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnCloseTag(
 void NGInlineLayoutStateStack::OnEndPlaceItems(const NGConstraintSpace& space,
                                                NGLogicalLineItems* line_box,
                                                FontBaseline baseline_type) {
-  for (auto it = stack_.rbegin(); it != stack_.rend(); ++it) {
-    NGInlineBoxState* box = &(*it);
-    if (!box->has_end_edge && box->needs_box_fragment &&
-        box->style->BoxDecorationBreak() == EBoxDecorationBreak::kClone)
-      box->has_end_edge = true;
-    EndBoxState(space, box, line_box, baseline_type);
+  for (auto& box : base::Reversed(stack_)) {
+    if (!box.has_end_edge && box.needs_box_fragment &&
+        box.style->BoxDecorationBreak() == EBoxDecorationBreak::kClone)
+      box.has_end_edge = true;
+    EndBoxState(space, &box, line_box, baseline_type);
   }
 
   // Up to this point, the offset of inline boxes are stored in placeholder so

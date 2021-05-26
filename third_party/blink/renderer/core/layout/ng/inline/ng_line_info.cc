@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
@@ -87,9 +88,7 @@ bool NGLineInfo::ComputeNeedsAccurateEndPosition() const {
 }
 
 unsigned NGLineInfo::InflowEndOffset() const {
-  const NGInlineItemResults& item_results = Results();
-  for (auto it = item_results.rbegin(); it != item_results.rend(); ++it) {
-    const NGInlineItemResult& item_result = *it;
+  for (const auto& item_result : base::Reversed(Results())) {
     DCHECK(item_result.item);
     const NGInlineItem& item = *item_result.item;
     if (item.Type() == NGInlineItem::kText ||
@@ -140,10 +139,8 @@ LayoutUnit NGLineInfo::ComputeTrailingSpaceWidth(
     return LayoutUnit();
   }
 
-  const NGInlineItemResults& item_results = Results();
   LayoutUnit trailing_spaces_width;
-  for (auto it = item_results.rbegin(); it != item_results.rend(); ++it) {
-    const NGInlineItemResult& item_result = *it;
+  for (const auto& item_result : base::Reversed(Results())) {
     DCHECK(item_result.item);
     const NGInlineItem& item = *item_result.item;
 

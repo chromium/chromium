@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_logical_line_item.h"
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
 
 namespace blink {
@@ -63,8 +64,7 @@ NGLogicalLineItem* NGLogicalLineItems::FirstInFlowChild() {
 }
 
 NGLogicalLineItem* NGLogicalLineItems::LastInFlowChild() {
-  for (auto it = rbegin(); it != rend(); it++) {
-    auto& child = *it;
+  for (auto& child : base::Reversed(*this)) {
     if (child.HasInFlowFragment())
       return &child;
   }

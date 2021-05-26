@@ -177,8 +177,7 @@ inline bool MoveToEndOfCollapsibleSpaces(const StringView& string,
 // open/close or bidi controls are ignored.
 // Returns nullptr if there were no previous items.
 NGInlineItem* LastItemToCollapseWith(Vector<NGInlineItem>* items) {
-  for (auto it = items->rbegin(); it != items->rend(); it++) {
-    NGInlineItem& item = *it;
+  for (auto& item : base::Reversed(*items)) {
     if (item.EndCollapseType() != NGInlineItem::kOpaqueToCollapsing)
       return &item;
   }
@@ -877,8 +876,8 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendForcedBreak(
                                                          nullptr);
     // These bidi controls need to be associated with the |layout_object| so
     // that items from a LayoutObject are consecutive.
-    for (auto it = bidi_context_.rbegin(); it != bidi_context_.rend(); ++it) {
-      AppendOpaque(NGInlineItem::kBidiControl, it->exit, layout_object);
+    for (const auto& bidi : base::Reversed(bidi_context_)) {
+      AppendOpaque(NGInlineItem::kBidiControl, bidi.exit, layout_object);
     }
   }
 
