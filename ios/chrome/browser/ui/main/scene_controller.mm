@@ -1591,6 +1591,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     return;
   }
 
+  // Suppress iPad web sign-in.
+  // TODO(crbug.com/1211794): Remove iPad suppression once the UI is adapted.
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    return;
+  }
+
   self.signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:self.mainInterface
