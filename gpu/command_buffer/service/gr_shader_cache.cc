@@ -67,7 +67,8 @@ GrShaderCache::~GrShaderCache() {
 
 sk_sp<SkData> GrShaderCache::load(const SkData& key) {
   TRACE_EVENT0("gpu", "GrShaderCache::load");
-  DCHECK_NE(current_client_id_, kInvalidClientId);
+  base::AutoLock auto_lock(lock_);
+  DCHECK_NE(current_client_id(), kInvalidClientId);
 
   CacheKey cache_key(SkData::MakeWithoutCopy(key.data(), key.size()));
   auto it = store_.Get(cache_key);
@@ -103,7 +104,8 @@ sk_sp<SkData> GrShaderCache::load(const SkData& key) {
 
 void GrShaderCache::store(const SkData& key, const SkData& data) {
   TRACE_EVENT0("gpu", "GrShaderCache::store");
-  DCHECK_NE(current_client_id_, kInvalidClientId);
+  base::AutoLock auto_lock(lock_);
+  DCHECK_NE(current_client_id(), kInvalidClientId);
 
   CacheKey cache_key(SkData::MakeWithCopy(key.data(), key.size()));
   if (IsVkPipelineCacheEntry(cache_key)) {
@@ -137,6 +139,7 @@ void GrShaderCache::store(const SkData& key, const SkData& data) {
 void GrShaderCache::PopulateCache(const std::string& key,
                                   const std::string& data) {
   TRACE_EVENT0("gpu", "GrShaderCache::PopulateCache");
+  base::AutoLock auto_lock(lock_);
 
   std::string decoded_key;
   base::Base64Decode(key, &decoded_key);
@@ -174,6 +177,7 @@ void GrShaderCache::PopulateCache(const std::string& key,
 
 GrShaderCache::Store::iterator GrShaderCache::AddToCache(CacheKey key,
                                                          CacheData data) {
+  lock_.AssertAcquired();
   auto it = store_.Put(key, std::move(data));
   curr_size_bytes_ += it->second.data->size();
   return it;
@@ -181,6 +185,7 @@ GrShaderCache::Store::iterator GrShaderCache::AddToCache(CacheKey key,
 
 template <typename Iterator>
 void GrShaderCache::EraseFromCache(Iterator it, bool overwriting) {
+  lock_.AssertAcquired();
   DCHECK_GE(curr_size_bytes_, it->second.data->size());
 
   if (it->second.prefetched_but_not_read && IsVkPipelineCacheEntry(it->first)) {
@@ -195,11 +200,13 @@ void GrShaderCache::EraseFromCache(Iterator it, bool overwriting) {
 }
 
 void GrShaderCache::CacheClientIdOnDisk(int32_t client_id) {
+  base::AutoLock auto_lock(lock_);
   client_ids_to_cache_on_disk_.insert(client_id);
 }
 
 void GrShaderCache::PurgeMemory(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  base::AutoLock auto_lock(lock_);
   size_t original_limit = cache_size_limit_;
 
   switch (memory_pressure_level) {
@@ -219,6 +226,7 @@ void GrShaderCache::PurgeMemory(
 
 bool GrShaderCache::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                                  base::trace_event::ProcessMemoryDump* pmd) {
+  base::AutoLock auto_lock(lock_);
   using base::trace_event::MemoryAllocatorDump;
   std::string dump_name =
       base::StringPrintf("gpu/gr_shader_cache/cache_0x%" PRIXPTR,
@@ -230,14 +238,25 @@ bool GrShaderCache::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
   return true;
 }
 
+size_t GrShaderCache::num_cache_entries() const {
+  base::AutoLock auto_lock(lock_);
+  return store_.size();
+}
+
+size_t GrShaderCache::curr_size_bytes_for_testing() const {
+  base::AutoLock auto_lock(lock_);
+  return curr_size_bytes_;
+}
+
 void GrShaderCache::WriteToDisk(const CacheKey& key, CacheData* data) {
-  DCHECK_NE(current_client_id_, kInvalidClientId);
+  lock_.AssertAcquired();
+  DCHECK_NE(current_client_id(), kInvalidClientId);
 
   if (!data->pending_disk_write)
     return;
 
   // Only cache the shader on disk if this client id is permitted.
-  if (client_ids_to_cache_on_disk_.count(current_client_id_) == 0)
+  if (client_ids_to_cache_on_disk_.count(current_client_id()) == 0)
     return;
 
   data->pending_disk_write = false;
@@ -248,6 +267,7 @@ void GrShaderCache::WriteToDisk(const CacheKey& key, CacheData* data) {
 }
 
 void GrShaderCache::EnforceLimits(size_t size_needed) {
+  lock_.AssertAcquired();
   DCHECK_LE(size_needed, cache_size_limit_);
 
   while (size_needed + curr_size_bytes_ > cache_size_limit_)
@@ -255,6 +275,16 @@ void GrShaderCache::EnforceLimits(size_t size_needed) {
 }
 
 void GrShaderCache::StoreVkPipelineCacheIfNeeded(GrDirectContext* gr_context) {
+  // This method must be called only by one gpu thread which is gpu main
+  // thread. Calling it from multiple gpu threads and hence multiple context is
+  // redundant and expensive since each GrContext will have same key. Hence
+  // adding a DCHECK here.
+  // TODO(vikassoni) : https://crbug.com/1211085. Ensure that we call this
+  // method from only one gpu thread when multiple gpu threads aka dr-dc is
+  // implemented.
+  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
+
+  base::AutoLock auto_lock(lock_);
   if (enable_vk_pipeline_cache_ && need_store_pipeline_cache_) {
     {
       base::ScopedClosureRunner uma_runner(base::BindOnce(
@@ -279,17 +309,26 @@ bool GrShaderCache::IsVkPipelineCacheEntry(const CacheKey& key) {
   return key.data->size() == 4;
 }
 
+int32_t GrShaderCache::current_client_id() const {
+  lock_.AssertAcquired();
+  auto it = current_client_id_.find(base::PlatformThread::CurrentId());
+  if (it != current_client_id_.end())
+    return it->second;
+  return kInvalidClientId;
+}
+
 GrShaderCache::ScopedCacheUse::ScopedCacheUse(GrShaderCache* cache,
                                               int32_t client_id)
     : cache_(cache) {
-  DCHECK_EQ(cache_->current_client_id_, kInvalidClientId);
+  base::AutoLock auto_lock(cache_->lock_);
+  DCHECK_EQ(cache_->current_client_id(), kInvalidClientId);
   DCHECK_NE(client_id, kInvalidClientId);
-
-  cache_->current_client_id_ = client_id;
+  cache_->current_client_id_[base::PlatformThread::CurrentId()] = client_id;
 }
 
 GrShaderCache::ScopedCacheUse::~ScopedCacheUse() {
-  cache_->current_client_id_ = kInvalidClientId;
+  base::AutoLock auto_lock(cache_->lock_);
+  cache_->current_client_id_.erase(base::PlatformThread::CurrentId());
 }
 
 GrShaderCache::CacheKey::CacheKey(sk_sp<SkData> data) : data(std::move(data)) {
