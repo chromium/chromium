@@ -144,8 +144,8 @@ NavigatorShare::ShareClientImpl::ShareClientImpl(
 
 void NavigatorShare::ShareClientImpl::Callback(mojom::blink::ShareError error) {
   if (navigator_) {
-    DCHECK_EQ(navigator_->client_, this);
-    navigator_->client_ = nullptr;
+    DCHECK(navigator_->clients_.Contains(this));
+    navigator_->clients_.erase(this);
   }
 
   if (error == mojom::blink::ShareError::OK) {
@@ -185,7 +185,7 @@ NavigatorShare& NavigatorShare::From(Navigator& navigator) {
 
 void NavigatorShare::Trace(Visitor* visitor) const {
   visitor->Trace(service_remote_);
-  visitor->Trace(client_);
+  visitor->Trace(clients_);
   Supplement<Navigator>::Trace(visitor);
 }
 
@@ -227,11 +227,17 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
                        ? WebFeature::kWebSharePolicyAllow
                        : WebFeature::kWebSharePolicyDisallow);
 
-  if (client_) {
+// This is due to a limitation on Android, where we sometimes are not advised
+// when the share completes. This goes against the web share spec to work around
+// the platform-specific bug, it is explicitly skipping section §2.1.2 step 2 of
+// the Web Share spec. https://www.w3.org/TR/web-share/#share-method
+#if !defined(OS_ANDROID)
+  if (!clients_.IsEmpty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "A earlier share had not yet completed.");
     return ScriptPromise();
   }
+#endif
 
   if (!LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
     VLOG(1) << "Share without transient activation (user gesture)";
@@ -291,13 +297,18 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  client_ = MakeGarbageCollected<ShareClientImpl>(this, has_files, resolver);
+
+  ShareClientImpl* client =
+      MakeGarbageCollected<ShareClientImpl>(this, has_files, resolver);
+  clients_.insert(client);
+  ScriptPromise promise = resolver->Promise();
+
   service_remote_->Share(
       data->hasTitle() ? data->title() : g_empty_string,
       data->hasText() ? data->text() : g_empty_string, url, std::move(files),
-      WTF::Bind(&ShareClientImpl::Callback, WrapPersistent(client_.Get())));
+      WTF::Bind(&ShareClientImpl::Callback, WrapPersistent(client)));
 
-  return resolver->Promise();
+  return promise;
 }
 
 ScriptPromise NavigatorShare::share(ScriptState* script_state,
@@ -308,10 +319,10 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
 }
 
 void NavigatorShare::OnConnectionError() {
-  if (client_) {
-    client_->OnConnectionError();
-    client_ = nullptr;
+  for (auto& client : clients_) {
+    client->OnConnectionError();
   }
+  clients_.clear();
   service_remote_.reset();
 }
 

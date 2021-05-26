@@ -57,7 +57,10 @@ class MODULES_EXPORT NavigatorShare final
   HeapMojoRemote<blink::mojom::blink::ShareService> service_remote_{nullptr};
 
   // Represents a user's current intent to share some data.
-  Member<ShareClientImpl> client_ = nullptr;
+  // This set must have at most 1 element on non-Android platforms. This is a
+  // set, and not just and object in order to work around an Android specific
+  // bug in opposition to the web-share spec.
+  HeapHashSet<Member<ShareClientImpl>> clients_;
 };
 
 }  // namespace blink
