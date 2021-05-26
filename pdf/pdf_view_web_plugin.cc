@@ -363,6 +363,23 @@ bool PdfViewWebPlugin::ExecuteEditCommand(const blink::WebString& name,
   return false;
 }
 
+bool PdfViewWebPlugin::StartFind(const blink::WebString& search_text,
+                                 bool case_sensitive,
+                                 int /*identifier*/) {
+  engine()->StartFind(search_text.Utf8(), case_sensitive);
+  return true;
+}
+
+void PdfViewWebPlugin::SelectFindResult(bool forward, int /*identifier*/) {
+  engine()->SelectFindResult(forward);
+}
+
+void PdfViewWebPlugin::StopFind() {
+  engine()->StopFind();
+  // TODO(crbug.com/1199999): Clear tickmarks on scroller when find is
+  // dismissed.
+}
+
 blink::WebTextInputType PdfViewWebPlugin::GetPluginTextInputType() {
   return text_input_type_;
 }

@@ -111,6 +111,11 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool CanRedo() const override;
   bool ExecuteEditCommand(const blink::WebString& name,
                           const blink::WebString& value) override;
+  bool StartFind(const blink::WebString& search_text,
+                 bool case_sensitive,
+                 int /*identifier*/) override;
+  void SelectFindResult(bool forward, int /*identifier*/) override;
+  void StopFind() override;
   blink::WebTextInputType GetPluginTextInputType() override;
 
   // PdfViewPluginBase:
