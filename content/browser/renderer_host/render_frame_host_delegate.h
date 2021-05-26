@@ -188,6 +188,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                    const std::u16string& message,
                                    const std::u16string& default_prompt,
                                    JavaScriptDialogType type,
+                                   bool disable_third_party_subframe_suppresion,
                                    JavaScriptDialogCallback callback) {}
 
   virtual void RunBeforeUnloadConfirm(RenderFrameHostImpl* render_frame_host,

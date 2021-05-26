@@ -126,12 +126,14 @@ void FakeLocalFrameHost::DidFinishDocumentLoad() {}
 
 void FakeLocalFrameHost::RunModalAlertDialog(
     const WTF::String& alert_message,
+    bool disable_third_party_subframe_suppresion,
     RunModalAlertDialogCallback callback) {
   std::move(callback).Run();
 }
 
 void FakeLocalFrameHost::RunModalConfirmDialog(
     const WTF::String& alert_message,
+    bool disable_third_party_subframe_suppresion,
     RunModalConfirmDialogCallback callback) {
   std::move(callback).Run(true);
 }
@@ -139,6 +141,7 @@ void FakeLocalFrameHost::RunModalConfirmDialog(
 void FakeLocalFrameHost::RunModalPromptDialog(
     const WTF::String& alert_message,
     const WTF::String& default_value,
+    bool disable_third_party_subframe_suppresion,
     RunModalPromptDialogCallback callback) {
   std::move(callback).Run(true, g_empty_string);
 }

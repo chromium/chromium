@@ -86,11 +86,14 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       mojom::blink::ResourceTimingInfoPtr timing) override;
   void DidFinishDocumentLoad() override;
   void RunModalAlertDialog(const WTF::String& alert_message,
+                           bool disable_third_party_subframe_suppresion,
                            RunModalAlertDialogCallback callback) override;
   void RunModalConfirmDialog(const WTF::String& alert_message,
+                             bool disable_third_party_subframe_suppresion,
                              RunModalConfirmDialogCallback callback) override;
   void RunModalPromptDialog(const WTF::String& alert_message,
                             const WTF::String& default_value,
+                            bool disable_third_party_subframe_suppresion,
                             RunModalPromptDialogCallback callback) override;
   void RunBeforeUnloadConfirm(bool is_reload,
                               RunBeforeUnloadConfirmCallback callback) override;
