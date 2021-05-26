@@ -351,13 +351,8 @@ IN_PROC_BROWSER_TEST_F(EulaTest, LearnMore) {
 }
 
 // Tests that "Additional ToS" dialog could be opened and closed.
-// TODO(crbug.com/1175244): Flaky on linux-chromeos-rel.
-#ifdef NDEBUG
-#define MAYBE_AdditionalToS DISABLED_AdditionalToS
-#else
-#define MAYBE_AdditionalToS AdditionalToS
-#endif
-IN_PROC_BROWSER_TEST_F(EulaTest, MAYBE_AdditionalToS) {
+// TODO(crbug.com/1175244): Flaky on linux-chromeos-rel and linux-chromeos-dbg.
+IN_PROC_BROWSER_TEST_F(EulaTest, DISABLED_AdditionalToS) {
   base::HistogramTester histogram_tester;
   ShowEulaScreen();
 
