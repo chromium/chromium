@@ -16,7 +16,6 @@
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 
-class GURL;
 struct ExtensionMsg_ExternalConnectionInfo;
 struct ExtensionMsg_TabTargetConnectionInfo;
 struct ServiceWorkerIdentifier;
@@ -66,10 +65,6 @@ class ExtensionMessageFilter : public content::BrowserMessageFilter {
   // Message handlers on the UI thread.
   void OnExtensionRemoveLazyListener(const std::string& extension_id,
                                      const std::string& event_name);
-  void OnExtensionRemoveLazyServiceWorkerListener(
-      const std::string& extension_id,
-      const std::string& event_name,
-      const GURL& worker_scope_url);
   void OnExtensionAddFilteredListener(
       const std::string& extension_id,
       const std::string& event_name,

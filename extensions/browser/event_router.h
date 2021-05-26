@@ -173,6 +173,10 @@ class EventRouter : public KeyedService,
   void RemoveLazyListenerForMainThread(const std::string& extension_id,
                                        const std::string& name) override;
 
+  void RemoveLazyListenerForServiceWorker(const std::string& extension_id,
+                                          const GURL& worker_scope_url,
+                                          const std::string& name) override;
+
   // Removes an extension as an event listener for |event_name|.
   //
   // Note that multiple extensions can share a process due to process
@@ -218,11 +222,6 @@ class EventRouter : public KeyedService,
                             const ExtensionId& extension_id);
   void RemoveLazyEventListener(const std::string& event_name,
                                const ExtensionId& extension_id);
-  // Similar to RemoveLazyEventListener, but applies to extension service
-  // workers.
-  void RemoveLazyServiceWorkerEventListener(const std::string& event_name,
-                                            const ExtensionId& extension_id,
-                                            const GURL& service_worker_scope);
 
   // If |add_lazy_listener| is true also add the lazy version of this listener.
   void AddFilteredEventListener(

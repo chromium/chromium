@@ -60,4 +60,10 @@ interface EventRouter {
   // receiving the given event from a lazy background page.
   RemoveLazyListenerForMainThread(string extension_id,
                                   string event_name);
+
+  // Notifies the browser that the given extension is no longer interested in
+  // receiving the given event from an extension service worker.
+  RemoveLazyListenerForServiceWorker(string extension_id,
+                                     url.mojom.Url worker_scope_url,
+                                     string event_name);
 };

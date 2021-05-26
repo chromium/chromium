@@ -302,9 +302,8 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(context->IsForServiceWorker());
     DCHECK_NE(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    dispatcher_->Send(new ExtensionHostMsg_RemoveLazyServiceWorkerListener(
-        context->GetExtensionID(), event_name,
-        context->service_worker_scope()));
+    dispatcher_->SendRemoveEventLazyListener(
+        context->GetExtensionID(), context->service_worker_scope(), event_name);
   }
 
   void SendAddFilteredEventListenerIPC(ScriptContext* context,
