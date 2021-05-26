@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
 #include "third_party/blink/renderer/core/inspector/protocol/Network.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
 namespace blink {
 
@@ -189,11 +190,23 @@ void AuditsIssue::ReportNavigatorUserAgentAccess(
       protocol::Audits::NavigatorUserAgentIssueDetails::create()
           .setUrl(url)
           .build();
-  auto location = SourceLocation::Capture(execution_context);
+
+  // Try to get only the script name quickly.
+  String script_url = GetCurrentScriptUrl(5);
+  if (script_url.IsEmpty())
+    script_url = GetCurrentScriptUrl(200);
+
+  std::unique_ptr<SourceLocation> location;
+  if (!script_url.IsEmpty())
+    location = std::make_unique<SourceLocation>(script_url, 1, 0, nullptr);
+  else
+    location = SourceLocation::Capture(execution_context);
+
   if (location) {
     navigator_user_agent_details->setLocation(
         CreateProtocolLocation(*location));
   }
+
   auto details = protocol::Audits::InspectorIssueDetails::create()
                      .setNavigatorUserAgentIssueDetails(
                          std::move(navigator_user_agent_details))
