@@ -95,9 +95,9 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, GetPackageNameAndLaunchApp) {
   EXPECT_EQ(0u, app_instance()->launch_requests().size());
   // Verify |chrome.arcAppsPrivate.getLaunchableApps| returns the package name
   // of the launchable app only. The JS test will attempt to launch the app.
-  EXPECT_TRUE(RunExtensionTest({.name = "arc_app_launcher/launch_app",
-                                .custom_arg = "Package_0",
-                                .launch_as_platform_app = true}))
+  EXPECT_TRUE(RunExtensionTest(
+      "arc_app_launcher/launch_app",
+      {.custom_arg = "Package_0", .launch_as_platform_app = true}))
       << message_;
 
   // Verify the app is not launched because it's not ready.
@@ -158,9 +158,9 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest,
   CreateAppInstance(prefs);
   arc::mojom::AppInfo launchable_app("App_0", "Package_0", "Dummy_activity_0");
   app_instance()->SendRefreshAppList({launchable_app});
-  EXPECT_TRUE(RunExtensionTest({.name = "arc_app_launcher/launch_app",
-                                .custom_arg = "Package_0",
-                                .launch_as_platform_app = true}))
+  EXPECT_TRUE(RunExtensionTest(
+      "arc_app_launcher/launch_app",
+      {.custom_arg = "Package_0", .launch_as_platform_app = true}))
       << message_;
 
   // Should still see no apps launched in the histogram.
@@ -184,9 +184,9 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, DemoModeAppLaunchSourceReported) {
   CreateAppInstance(prefs);
   arc::mojom::AppInfo launchable_app("App_0", "Package_0", "Dummy_activity_0");
   app_instance()->SendRefreshAppList({launchable_app});
-  EXPECT_TRUE(RunExtensionTest({.name = "arc_app_launcher/launch_app",
-                                .custom_arg = "Package_0",
-                                .launch_as_platform_app = true}))
+  EXPECT_TRUE(RunExtensionTest(
+      "arc_app_launcher/launch_app",
+      {.custom_arg = "Package_0", .launch_as_platform_app = true}))
       << message_;
 
   // Should see 1 app launched from the highlights app in the histogram.

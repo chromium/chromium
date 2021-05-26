@@ -35,15 +35,15 @@ class AccessibilityPrivateApiTest : public ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest, SendSyntheticKeyEvent) {
-  ASSERT_TRUE(RunExtensionTest({.name = "accessibility_private/",
-                                .page_url = "send_synthetic_key_event.html"}))
+  ASSERT_TRUE(RunExtensionTest("accessibility_private/",
+                               {.page_url = "send_synthetic_key_event.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest,
                        GetDisplayNameForLocaleTest) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "accessibility_private/", .page_url = "display_locale.html"}))
+  ASSERT_TRUE(RunExtensionTest("accessibility_private/",
+                               {.page_url = "display_locale.html"}))
       << message_;
 }
 
@@ -61,8 +61,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest, MAYBE_OpenSettingsSubpage) {
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 
-  ASSERT_TRUE(RunExtensionTest({.name = "accessibility_private/",
-                                .page_url = "open_settings_subpage.html"}))
+  ASSERT_TRUE(RunExtensionTest("accessibility_private/",
+                               {.page_url = "open_settings_subpage.html"}))
       << message_;
 
   chrome::SettingsWindowManager* settings_manager =
@@ -90,8 +90,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest,
       .InstallSystemAppsForTesting();
 
   ASSERT_TRUE(RunExtensionTest(
-      {.name = "accessibility_private/",
-       .page_url = "open_settings_subpage_invalid_subpage.html"}))
+      "accessibility_private/",
+      {.page_url = "open_settings_subpage_invalid_subpage.html"}))
       << message_;
 
   chrome::SettingsWindowManager* settings_manager =
@@ -105,14 +105,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest,
 IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest,
                        IsFeatureEnabled_FeatureDisabled) {
   ASSERT_TRUE(RunExtensionTest(
-      {.name = "accessibility_private/",
-       .page_url = "is_feature_enabled_feature_disabled.html"}))
+      "accessibility_private/",
+      {.page_url = "is_feature_enabled_feature_disabled.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest, AcceptConfirmationDialog) {
-  ASSERT_TRUE(RunExtensionTest({.name = "accessibility_private/",
-                                .page_url = "accept_confirmation_dialog.html"}))
+  ASSERT_TRUE(RunExtensionTest("accessibility_private/",
+                               {.page_url = "accept_confirmation_dialog.html"}))
       << message_;
 
   // The test has requested to open the confirmation dialog. Check that
@@ -132,8 +132,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest, AcceptConfirmationDialog) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest, CancelConfirmationDialog) {
-  ASSERT_TRUE(RunExtensionTest({.name = "accessibility_private/",
-                                .page_url = "cancel_confirmation_dialog.html"}))
+  ASSERT_TRUE(RunExtensionTest("accessibility_private/",
+                               {.page_url = "cancel_confirmation_dialog.html"}))
       << message_;
 
   // The test has requested to open the confirmation dialog. Check that
@@ -153,8 +153,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest, CancelConfirmationDialog) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest, CloseConfirmationDialog) {
-  ASSERT_TRUE(RunExtensionTest({.name = "accessibility_private/",
-                                .page_url = "cancel_confirmation_dialog.html"}))
+  ASSERT_TRUE(RunExtensionTest("accessibility_private/",
+                               {.page_url = "cancel_confirmation_dialog.html"}))
       << message_;
 
   // The test has requested to open the confirmation dialog. Check that
@@ -187,8 +187,8 @@ class AccessibilityPrivateApiFeatureEnabledTest : public ExtensionApiTest {
 IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiFeatureEnabledTest,
                        IsFeatureEnabled_FeatureEnabled) {
   ASSERT_TRUE(
-      RunExtensionTest({.name = "accessibility_private/",
-                        .page_url = "is_feature_enabled_feature_enabled.html"}))
+      RunExtensionTest("accessibility_private/",
+                       {.page_url = "is_feature_enabled_feature_enabled.html"}))
       << message_;
 }
 

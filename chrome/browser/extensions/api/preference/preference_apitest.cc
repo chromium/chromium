@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, PersistentIncognito) {
   PrefService* prefs = profile_->GetPrefs();
   SetCookieControlsMode(prefs, CookieControlsMode::kOff);
 
-  EXPECT_TRUE(RunExtensionTest({.name = "preference/persistent_incognito"},
+  EXPECT_TRUE(RunExtensionTest("preference/persistent_incognito", {},
                                {.allow_in_incognito = true}))
       << message_;
 
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, SessionOnlyIncognito) {
   PrefService* prefs = profile_->GetPrefs();
   SetCookieControlsMode(prefs, CookieControlsMode::kOff);
 
-  EXPECT_TRUE(RunExtensionTest({.name = "preference/session_only_incognito"},
+  EXPECT_TRUE(RunExtensionTest("preference/session_only_incognito", {},
                                {.allow_in_incognito = true}))
       << message_;
 
@@ -255,8 +255,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, Clear) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChange) {
-  EXPECT_TRUE(RunExtensionTest({.name = "preference/onchange"},
-                               {.allow_in_incognito = true}))
+  EXPECT_TRUE(
+      RunExtensionTest("preference/onchange", {}, {.allow_in_incognito = true}))
       << message_;
 }
 

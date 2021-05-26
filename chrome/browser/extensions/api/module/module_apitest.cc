@@ -8,14 +8,14 @@
 using ExtensionModuleApiTest = extensions::ExtensionApiTest;
 
 IN_PROC_BROWSER_TEST_F(ExtensionModuleApiTest, CognitoFile) {
-  ASSERT_TRUE(RunExtensionTest({.name = "extension_module/cognito_file"},
+  ASSERT_TRUE(RunExtensionTest("extension_module/cognito_file", {},
                                {.allow_file_access = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionModuleApiTest, IncognitoFile) {
   ASSERT_TRUE(
-      RunExtensionTest({.name = "extension_module/incognito_file"},
+      RunExtensionTest("extension_module/incognito_file", {},
                        {.allow_in_incognito = true, .allow_file_access = true}))
       << message_;
 }
@@ -25,7 +25,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionModuleApiTest, CognitoNoFile) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionModuleApiTest, IncognitoNoFile) {
-  ASSERT_TRUE(RunExtensionTest({.name = "extension_module/incognito_nofile"},
+  ASSERT_TRUE(RunExtensionTest("extension_module/incognito_nofile", {},
                                {.allow_in_incognito = true}))
       << message_;
 }

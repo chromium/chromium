@@ -55,7 +55,7 @@ class PermissionsApiTestWithContextType
  protected:
   bool RunTest(const char* extension_name) {
     return RunExtensionTest(
-        {.name = extension_name},
+        extension_name, {},
         {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
 };
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsFileAccess) {
 
   EXPECT_TRUE(RunExtensionTest("permissions/file_access_no")) << message_;
   EXPECT_FALSE(prefs->AllowFileAccess(last_loaded_extension_id()));
-  EXPECT_TRUE(RunExtensionTest({.name = "permissions/file_access_yes"},
+  EXPECT_TRUE(RunExtensionTest("permissions/file_access_yes", {},
                                {.allow_file_access = true}))
       << message_;
   EXPECT_TRUE(prefs->AllowFileAccess(last_loaded_extension_id()));
@@ -229,8 +229,8 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, FileLoad) {
     EXPECT_TRUE(base::CopyFile(original_empty_file, empty_file));
   }
   EXPECT_TRUE(RunExtensionTest(
-      {.name = "permissions/file_load",
-       .custom_arg = temp_dir.GetPath().MaybeAsASCII().c_str()},
+      "permissions/file_load",
+      {.custom_arg = temp_dir.GetPath().MaybeAsASCII().c_str()},
       {.allow_file_access = true}))
       << message_;
   {

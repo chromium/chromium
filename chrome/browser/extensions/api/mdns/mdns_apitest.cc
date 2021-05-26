@@ -62,8 +62,8 @@ IN_PROC_BROWSER_TEST_F(MDnsAPITest, RegisterListener) {
               RemoveObserver(A<DnsSdRegistry::DnsSdObserver*>()))
       .Times(1);
 
-  EXPECT_TRUE(RunExtensionTest(
-      {.name = "mdns/api", .page_url = "register_listener.html"}))
+  EXPECT_TRUE(
+      RunExtensionTest("mdns/api", {.page_url = "register_listener.html"}))
       << message_;
 
   extensions::ResultCatcher catcher;
@@ -93,8 +93,8 @@ IN_PROC_BROWSER_TEST_F(MDnsAPITest, ForceDiscovery) {
               RemoveObserver(A<DnsSdRegistry::DnsSdObserver*>()))
       .Times(1);
 
-  EXPECT_TRUE(RunExtensionTest(
-      {.name = "mdns/api", .page_url = "force_discovery.html"}))
+  EXPECT_TRUE(
+      RunExtensionTest("mdns/api", {.page_url = "force_discovery.html"}))
       << message_;
 
   extensions::ResultCatcher catcher;
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(MDnsAPITest, RegisterMultipleListeners) {
       .Times(1);
 
   EXPECT_TRUE(RunExtensionTest(
-      {.name = "mdns/api", .page_url = "register_multiple_listeners.html"}))
+      "mdns/api", {.page_url = "register_multiple_listeners.html"}))
       << message_;
 
   extensions::ResultCatcher catcher;
@@ -152,13 +152,13 @@ IN_PROC_BROWSER_TEST_F(MDnsAPITest, RegisterTooManyListeners) {
               RemoveObserver(A<DnsSdRegistry::DnsSdObserver*>()))
       .Times(1);
 
-  EXPECT_TRUE(RunExtensionTest(
-      {.name = "mdns/api-packaged-apps", .launch_as_platform_app = true}))
+  EXPECT_TRUE(RunExtensionTest("mdns/api-packaged-apps",
+                               {.launch_as_platform_app = true}))
       << message_;
 }
 
 // Test loading extension and registering multiple listeners.
 IN_PROC_BROWSER_TEST_F(MDnsAPITest, MaxServiceInstancesPerEventConst) {
-  EXPECT_TRUE(RunExtensionTest(
-      {.name = "mdns/api", .page_url = "get_max_service_instances.html"}));
+  EXPECT_TRUE(RunExtensionTest("mdns/api",
+                               {.page_url = "get_max_service_instances.html"}));
 }

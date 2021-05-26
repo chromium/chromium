@@ -158,8 +158,8 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
     if (!will_reply)
       listener = std::make_unique<ExtensionTestMessageListener>("ready", false);
     // Show first popup in first window and expect it to have loaded.
-    ASSERT_TRUE(RunExtensionTest({.name = "browser_action/open_popup",
-                                  .page_url = "open_popup_succeeds.html"}))
+    ASSERT_TRUE(RunExtensionTest("browser_action/open_popup",
+                                 {.page_url = "open_popup_succeeds.html"}))
         << message_;
     if (listener)
       EXPECT_TRUE(listener->WaitUntilSatisfied());
@@ -277,10 +277,10 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopupIncognito) {
   content::WindowedNotificationObserver frame_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
-  ASSERT_TRUE(RunExtensionTest({.name = "browser_action/open_popup",
-                                .page_url = "open_popup_succeeds.html",
-                                .open_in_incognito = true},
-                               {.allow_in_incognito = true}))
+  ASSERT_TRUE(RunExtensionTest(
+      "browser_action/open_popup",
+      {.page_url = "open_popup_succeeds.html", .open_in_incognito = true},
+      {.allow_in_incognito = true}))
       << message_;
   frame_observer.Wait();
   // Non-Aura Linux uses a singleton for the popup, so it looks like all windows
@@ -330,8 +330,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   ExtensionTestMessageListener listener("ready", true);
   // Load the test extension which will do nothing except notifyPass() to
   // return control here.
-  ASSERT_TRUE(RunExtensionTest({.name = "browser_action/open_popup",
-                                .page_url = "open_popup_fails.html"}))
+  ASSERT_TRUE(RunExtensionTest("browser_action/open_popup",
+                               {.page_url = "open_popup_fails.html"}))
       << message_;
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
