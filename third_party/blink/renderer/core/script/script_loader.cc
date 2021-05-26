@@ -82,9 +82,7 @@ namespace blink {
 
 ScriptLoader::ScriptLoader(ScriptElementBase* element,
                            const CreateElementFlags flags)
-    : element_(element),
-      will_be_parser_executed_(false),
-      will_execute_when_document_finished_parsing_(false) {
+    : element_(element) {
   // <spec href="https://html.spec.whatwg.org/C/#already-started">... The
   // cloning steps for script elements must set the "already started" flag on
   // the copy if it is set on the element being cloned.</spec>
@@ -255,7 +253,7 @@ network::mojom::CredentialsMode ScriptLoader::ModuleScriptCredentialsMode(
   return network::mojom::CredentialsMode::kOmit;
 }
 
-// https://github.com/w3c/webappsec-permissions-policy/issues/135
+// https://github.com/WICG/document-policy/issues/2
 bool ShouldBlockSyncScriptForDocumentPolicy(
     const ScriptElementBase* element,
     ScriptLoader::ScriptTypeAtPrepare script_type,
@@ -409,7 +407,6 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   if (!IsScriptForEventSupported())
     return false;
 
-  // This Document Policy is still in the process of being added to the spec.
   if (ShouldBlockSyncScriptForDocumentPolicy(element_.Get(), GetScriptType(),
                                              parser_inserted_)) {
     element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(

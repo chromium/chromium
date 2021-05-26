@@ -192,9 +192,9 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   bool is_external_script_ = false;
 
   // Same as "The parser will handle executing the script."
-  bool will_be_parser_executed_;
+  bool will_be_parser_executed_ = false;
 
-  bool will_execute_when_document_finished_parsing_;
+  bool will_execute_when_document_finished_parsing_ = false;
 
   // A PendingScript is first created in PrepareScript() and stored in
   // |prepared_pending_script_|.
