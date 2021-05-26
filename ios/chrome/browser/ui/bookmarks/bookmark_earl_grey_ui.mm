@@ -453,6 +453,20 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+- (void)verifyEmptyBackgroundIsAbsent {
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTableViewIllustratedEmptyViewID)]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_BOOKMARK_EMPTY_TITLE))]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_BOOKMARK_EMPTY_MESSAGE))]
+      assertWithMatcher:grey_nil()];
+}
+
 - (void)verifyEmptyState {
   [self verifyEmptyBackgroundAppears];
 

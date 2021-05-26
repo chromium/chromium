@@ -118,6 +118,8 @@ id<GREYMatcher> SearchIconButton();
 
 - (void)verifyEmptyBackgroundAppears;
 
+- (void)verifyEmptyBackgroundIsAbsent;
+
 - (void)verifyEmptyState;
 
 - (void)verifyBookmarkFolderIsSeen:(NSString*)bookmarkFolder;

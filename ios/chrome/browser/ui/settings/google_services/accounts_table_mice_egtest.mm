@@ -35,11 +35,6 @@ namespace {
 
 // Constant for timeout while waiting for asynchronous sync operations.
 const NSTimeInterval kSyncOperationTimeout = 10.0;
-
-// Returns a matcher for when there are no bookmarks saved.
-id<GREYMatcher> NoBookmarksLabel() {
-  return grey_text(l10n_util::GetNSString(IDS_IOS_BOOKMARK_NO_BOOKMARKS_LABEL));
-}
 }
 
 // Integration tests using the Account Settings screen.
@@ -97,9 +92,8 @@ id<GREYMatcher> NoBookmarksLabel() {
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
-  // Assert that the no bookmarks label is not present.
-  [[EarlGrey selectElementWithMatcher:NoBookmarksLabel()]
-      assertWithMatcher:grey_nil()];
+  // Assert that the empty state background is absent.
+  [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
 }
 
 // Tests that selecting sign-out and clear data from a non-managed user account
@@ -346,9 +340,8 @@ id<GREYMatcher> NoBookmarksLabel() {
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
-  // Assert that the no bookmarks label is not present.
-  [[EarlGrey selectElementWithMatcher:NoBookmarksLabel()]
-      assertWithMatcher:grey_nil()];
+  // Assert that the empty state background is absent.
+  [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
 }
 
 // Tests to sign out with a managed account without syncing.
@@ -369,9 +362,8 @@ id<GREYMatcher> NoBookmarksLabel() {
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
-  // Assert that the no bookmarks label is not present.
-  [[EarlGrey selectElementWithMatcher:NoBookmarksLabel()]
-      assertWithMatcher:grey_nil()];
+  // Assert that the empty state background is absent.
+  [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
 }
 
 @end

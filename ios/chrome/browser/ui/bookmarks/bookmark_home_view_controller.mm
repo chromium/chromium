@@ -419,8 +419,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   // If we navigate back to the root level, we need to make sure the root level
   // folders are created or deleted if needed.
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates) &&
-      [self isDisplayingBookmarkRoot]) {
+  if ([self isDisplayingBookmarkRoot]) {
     [self refreshContents];
   }
 
@@ -1509,7 +1508,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 // Shows empty bookmarks background view.
 - (void)showEmptyBackground {
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
     if (!self.emptyViewBackground) {
       self.emptyViewBackground = [[TableViewIllustratedEmptyView alloc]
           initWithFrame:self.sharedState.tableView.bounds
@@ -1542,33 +1540,16 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
     self.sharedState.tableView.backgroundView = self.emptyViewBackground;
     self.navigationItem.searchController = nil;
-  } else {
-    if (!self.emptyTableBackgroundView) {
-      // Set up the background view shown when the table is empty.
-      self.emptyTableBackgroundView = [[BookmarkEmptyBackground alloc]
-          initWithFrame:self.sharedState.tableView.bounds];
-      self.emptyTableBackgroundView.autoresizingMask =
-          UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-      self.emptyTableBackgroundView.text =
-          GetNSString(IDS_IOS_BOOKMARK_NO_BOOKMARKS_LABEL);
-      self.emptyTableBackgroundView.frame = self.sharedState.tableView.bounds;
-    }
-    self.sharedState.tableView.backgroundView = self.emptyTableBackgroundView;
-  }
 }
 
 - (void)hideEmptyBackground {
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
-    if (self.sharedState.tableView.backgroundView == self.emptyViewBackground) {
-      self.sharedState.tableView.backgroundView = nil;
-    }
-    self.navigationItem.searchController = self.searchController;
-    if ([self isDisplayingBookmarkRoot]) {
-      self.navigationItem.largeTitleDisplayMode =
-          UINavigationItemLargeTitleDisplayModeAutomatic;
-    }
-  } else {
+  if (self.sharedState.tableView.backgroundView == self.emptyViewBackground) {
     self.sharedState.tableView.backgroundView = nil;
+  }
+  self.navigationItem.searchController = self.searchController;
+  if ([self isDisplayingBookmarkRoot]) {
+    self.navigationItem.largeTitleDisplayMode =
+        UINavigationItemLargeTitleDisplayModeAutomatic;
   }
 }
 

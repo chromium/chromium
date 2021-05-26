@@ -176,8 +176,7 @@ const int kMaxBookmarksSearchResults = 50;
 // root.
 - (void)generateTableViewDataForRootNode {
   // If all the permanent nodes are empty, do not create items for any of them.
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates) &&
-      ![self hasBookmarksOrFolders]) {
+  if (![self hasBookmarksOrFolders]) {
     return;
   }
 
@@ -278,8 +277,7 @@ const int kMaxBookmarksSearchResults = 50;
         _syncedBookmarksObserver->IsPerformingInitialSync()) {
       [self.consumer
           updateTableViewBackgroundStyle:BookmarkHomeBackgroundStyleLoading];
-    } else if (base::FeatureList::IsEnabled(kIllustratedEmptyStates) &&
-               ![self hasBookmarksOrFolders]) {
+    } else if (![self hasBookmarksOrFolders]) {
       [self.consumer
           updateTableViewBackgroundStyle:BookmarkHomeBackgroundStyleEmpty];
     } else {
@@ -351,9 +349,7 @@ const int kMaxBookmarksSearchResults = 50;
   [self.sharedState.tableView reloadData];
   // Update the TabelView background to make sure the new state of the promo
   // does not affect the background.
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
-    [self updateTableViewBackground];
-  }
+  [self updateTableViewBackground];
 }
 
 #pragma mark - BookmarkModelBridgeObserver Callbacks
@@ -516,9 +512,8 @@ const int kMaxBookmarksSearchResults = 50;
 #pragma mark - Private Helpers
 
 - (BOOL)hasBookmarksOrFolders {
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates) &&
-      self.sharedState.tableViewDisplayedRootNode ==
-          self.sharedState.bookmarkModel->root_node()) {
+  if (self.sharedState.tableViewDisplayedRootNode ==
+      self.sharedState.bookmarkModel->root_node()) {
     // The root node always has its permanent nodes. If all the permanent nodes
     // are empty, we treat it as if the root itself is empty.
     const auto& childrenOfRootNode =
