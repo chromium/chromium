@@ -1,8 +1,10 @@
 This is a testharness.js-based test.
 PASS [document] unsafe-none => unsafe-none
 FAIL [document] unsafe-none => credentialless assert_equals: expected "error" but got "retrieved"
+PASS [document] unsafe-none => credentialless (omit)
 PASS [document] unsafe-none => credentialless + CORP
 PASS [document] unsafe-none => require-corp
+PASS [document] unsafe-none => require-corp (omit)
 PASS [document] unsafe-none => require-corp + CORP
 PASS [document] credentialless => unsafe-none
 PASS [document] credentialless => credentialless
