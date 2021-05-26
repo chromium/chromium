@@ -171,6 +171,15 @@ const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
 const base::Feature kCdmFactoryDaemon{"CdmFactoryDaemon",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, the value of |kCellularUseAttachApn| should have no effect and
+// and the LTE attach APN configuration will not be sent to the modem. This
+// flag exists because the |kCellularUseAttachApn| flag can be enabled
+// by command-line arguments via board overlays which takes precedence over
+// server-side field trial config, which may be needed to turn off the Attach
+// APN feature.
+const base::Feature kCellularForbidAttachApn{"CellularForbidAttachApn",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, send the LTE attach APN configuration to the modem.
 const base::Feature kCellularUseAttachApn{"CellularUseAttachApn",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1010,12 +1019,18 @@ bool ShouldUseQuickAnswersTextAnnotator() {
 
 bool ShouldUseV1DeviceSync() {
   return !ShouldUseV2DeviceSync() ||
-         !base::FeatureList::IsEnabled(features::kDisableCryptAuthV1DeviceSync);
+         !base::FeatureList::IsEnabled(kDisableCryptAuthV1DeviceSync);
 }
 
 bool ShouldUseV2DeviceSync() {
-  return base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment) &&
-         base::FeatureList::IsEnabled(features::kCryptAuthV2DeviceSync);
+  return base::FeatureList::IsEnabled(kCryptAuthV2Enrollment) &&
+         base::FeatureList::IsEnabled(kCryptAuthV2DeviceSync);
+}
+
+bool ShouldUseAttachApn() {
+  // See comment on |kCellularForbidAttachApn| for details.
+  return !base::FeatureList::IsEnabled(kCellularForbidAttachApn) &&
+         base::FeatureList::IsEnabled(kCellularUseAttachApn);
 }
 
 }  // namespace features

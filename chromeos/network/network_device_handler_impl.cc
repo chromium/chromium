@@ -419,8 +419,6 @@ void NetworkDeviceHandlerImpl::ApplyUsbEthernetMacAddressSourceToShill() {
 
 void NetworkDeviceHandlerImpl::ApplyUseAttachApnToShill() {
   NetworkStateHandler::DeviceStateList list;
-  bool use_attach_apn =
-      base::FeatureList::IsEnabled(chromeos::features::kCellularUseAttachApn);
   network_state_handler_->GetDeviceListByType(NetworkTypePattern::Cellular(),
                                               &list);
   if (list.empty()) {
@@ -431,10 +429,10 @@ void NetworkDeviceHandlerImpl::ApplyUseAttachApnToShill() {
        it != list.end(); ++it) {
     const DeviceState* device_state = *it;
 
-    SetDevicePropertyInternal(device_state->path(),
-                              shill::kUseAttachAPNProperty,
-                              base::Value(use_attach_apn), base::DoNothing(),
-                              network_handler::ErrorCallback());
+    SetDevicePropertyInternal(
+        device_state->path(), shill::kUseAttachAPNProperty,
+        base::Value(features::ShouldUseAttachApn()), base::DoNothing(),
+        network_handler::ErrorCallback());
   }
 }
 
