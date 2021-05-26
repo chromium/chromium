@@ -10,6 +10,8 @@ for more details about the presubmit API built into depot_tools.
 
 import re
 
+USE_PYTHON3 = True
+
 SYNC_BOOKMARKS_SOURCE_FILES = (
   r'^components[\\/]sync_bookmarks[\\/].*\.(cc|h)$',)
 

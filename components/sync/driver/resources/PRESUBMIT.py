@@ -19,6 +19,7 @@ def _CommonChecks(input_api, output_api):
     old_sys_path = sys.path[:]
     cwd = input_api.PresubmitLocalPath()
     sys.path += [input_api.os_path.join(cwd, '..', '..', '..', '..', 'tools')]
+    # TODO(crbug.com/1212015): This does not work in Python3 yet:
     from web_dev_style import presubmit_support
     results += presubmit_support.CheckStyle(input_api, output_api)
   finally:
