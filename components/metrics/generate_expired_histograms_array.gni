@@ -153,6 +153,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/histograms_xml/webauthn/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/weblayer/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/windows/histograms.xml",
+      "//tools/metrics/histograms/histograms_xml/xr/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/obsolete_histograms.xml",
       "//tools/metrics/histograms/enums.xml",
     ]

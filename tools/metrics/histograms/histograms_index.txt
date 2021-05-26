@@ -119,3 +119,4 @@ tools/metrics/histograms/histograms_xml/web_rtc/histograms.xml
 tools/metrics/histograms/histograms_xml/webauthn/histograms.xml
 tools/metrics/histograms/histograms_xml/weblayer/histograms.xml
 tools/metrics/histograms/histograms_xml/windows/histograms.xml
+tools/metrics/histograms/histograms_xml/xr/histograms.xml
