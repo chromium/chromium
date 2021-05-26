@@ -149,10 +149,13 @@ Polymer({
     const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
                               .getMojoServiceRemote();
     networkConfig.getNetworkState(this.guid_).then(response => {
-      if (response.result.type !==
+      if (!response.result ||
+          response.result.type !==
               chromeos.networkConfig.mojom.NetworkType.kCellular ||
           !response.result.typeState.cellular.eid ||
           !response.result.typeState.cellular.iccid) {
+        this.eSimNetworkState_ = null;
+        console.warn('Unable to find eSIM network with GUID: ', this.guid_);
         return;
       }
       this.eSimNetworkState_ = response.result;

@@ -306,4 +306,23 @@ suite('InternetDetailMenu', function() {
         const event = await renameProfilePromise;
         assertEquals(profileName, event.detail.networkState.name);
       });
+
+  test('Network state is null if no profile is found', async function() {
+    const getTrippleDot = () => {
+      return internetDetailMenu.$$('#moreNetworkDetail');
+    };
+    addEsimCellularNetwork('1', '1');
+    await init();
+    assertTrue(!!getTrippleDot());
+
+    // Remove current eSIM profile.
+    mojoApi_.resetForTest();
+    await flushAsync();
+
+    // Trigger change in esim manager listener
+    eSimManagerRemote.notifyProfileChangedForTest(null);
+    await flushAsync();
+
+    assertFalse(!!getTrippleDot());
+  });
 });
