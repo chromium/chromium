@@ -4197,21 +4197,6 @@
             ]
         }
     ],
-    "IllustratedEmptyStates": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IllustratedEmptyStates"
-                    ]
-                }
-            ]
-        }
-    ],
     "IncognitoBiometricReauth": [
         {
             "platforms": [

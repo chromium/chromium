@@ -29,9 +29,6 @@ extern const base::Feature kTestFeature;
 // an enterprise policy.
 extern const base::Feature kEnableIOSManagedSettingsUI;
 
-// Feature flag to enable new illustrations and UI on empty states.
-extern const base::Feature kIllustratedEmptyStates;
-
 // Feature flag to enable Shared Highlighting (Link to Text).
 extern const base::Feature kSharedHighlightingIOS;
 
