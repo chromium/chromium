@@ -633,8 +633,9 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_Success) {
   EXPECT_EQ("openUdp succeeded", EvalJs(shell(), script));
 }
 
+// TODO(crbug.com/1213100): Fix this flaky test.
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenUdp_TransientActivation) {
+                       DISABLED_OpenUdp_TransientActivation) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
   base::HistogramTester histogram_tester;
