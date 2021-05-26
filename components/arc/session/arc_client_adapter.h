@@ -28,7 +28,7 @@ class ArcClientAdapter {
   class Observer {
    public:
     virtual ~Observer() = default;
-    virtual void ArcInstanceStopped() = 0;
+    virtual void ArcInstanceStopped(bool is_system_shutdown) = 0;
   };
 
   // DemoModeDelegate contains functions used to load the demo session apps for

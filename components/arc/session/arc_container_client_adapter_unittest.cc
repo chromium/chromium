@@ -14,7 +14,8 @@ namespace arc {
 
 namespace {
 
-class ArcContainerClientAdapterTest : public testing::Test {
+class ArcContainerClientAdapterTest : public testing::Test,
+                                      public ArcClientAdapter::Observer {
  public:
   ArcContainerClientAdapterTest() = default;
   ~ArcContainerClientAdapterTest() override = default;
@@ -25,6 +26,7 @@ class ArcContainerClientAdapterTest : public testing::Test {
   void SetUp() override {
     chromeos::SessionManagerClient::InitializeFake();
     client_adapter_ = CreateArcContainerClientAdapter();
+    client_adapter_->AddObserver(this);
     chromeos::FakeSessionManagerClient::Get()->set_arc_available(true);
   }
 
@@ -33,16 +35,40 @@ class ArcContainerClientAdapterTest : public testing::Test {
     chromeos::SessionManagerClient::Shutdown();
   }
 
+  // ArcClientAdapter::Observer:
+  void ArcInstanceStopped(bool is_system_shutdown) override {
+    is_system_shutdown_ = is_system_shutdown;
+  }
+
  protected:
   ArcClientAdapter* client_adapter() { return client_adapter_.get(); }
+
+  const absl::optional<bool>& is_system_shutdown() const {
+    return is_system_shutdown_;
+  }
 
  private:
   std::unique_ptr<ArcClientAdapter> client_adapter_;
   content::BrowserTaskEnvironment browser_task_environment_;
+  absl::optional<bool> is_system_shutdown_;
 };
 
 void OnMiniInstanceStarted(bool result) {
   DCHECK(result);
+}
+
+TEST_F(ArcContainerClientAdapterTest, ArcInstanceStopped) {
+  chromeos::FakeSessionManagerClient::Get()->NotifyArcInstanceStopped(
+      login_manager::ArcContainerStopReason::USER_REQUEST);
+  ASSERT_TRUE(is_system_shutdown().has_value());
+  EXPECT_FALSE(is_system_shutdown().value());
+}
+
+TEST_F(ArcContainerClientAdapterTest, ArcInstanceStoppedSystemShutdown) {
+  chromeos::FakeSessionManagerClient::Get()->NotifyArcInstanceStopped(
+      login_manager::ArcContainerStopReason::SESSION_MANAGER_SHUTDOWN);
+  ASSERT_TRUE(is_system_shutdown().has_value());
+  EXPECT_TRUE(is_system_shutdown().value());
 }
 
 // b/164816080 This test ensures that a new container instance that is
@@ -65,7 +91,7 @@ TEST_F(ArcContainerClientAdapterTest,
     bool stopped_called() const { return stopped_called_; }
 
     // ArcClientAdapter::Observer:
-    void ArcInstanceStopped() override {
+    void ArcInstanceStopped(bool is_system_shutdown) override {
       stopped_called_ = true;
 
       if (child_observer_) {
