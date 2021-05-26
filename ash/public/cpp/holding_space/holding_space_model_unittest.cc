@@ -93,6 +93,61 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Tests -----------------------------------------------------------------------
 
+// Verifies that `HoldingSpaceModel::UpdatePauseForItem()` works as intended.
+TEST_P(HoldingSpaceModelTest, UpdatePauseForItem) {
+  ScopedModelObservation observation(&model());
+
+  // Verify the `model()` is initially empty.
+  EXPECT_EQ(model().items().size(), 0u);
+
+  // Create a holding space `item`.
+  auto item = HoldingSpaceItem::CreateFileBackedItem(
+      /*type=*/GetParam(), base::FilePath("file_path"),
+      GURL("filesystem::file_system_url"),
+      /*progress=*/absl::nullopt,
+      /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
+  auto* item_ptr = item.get();
+
+  // Add `item` to the `model()`.
+  model().AddItem(std::move(item));
+  EXPECT_EQ(model().items().size(), 1u);
+  EXPECT_EQ(model().items()[0].get(), item_ptr);
+
+  // Verify the item is not paused.
+  EXPECT_FALSE(item_ptr->IsPaused());
+
+  // Attempt to update pause to `false`. This should no-op.
+  model().UpdatePauseForItem(item_ptr->id(), false);
+  EXPECT_FALSE(observation.TakeLastUpdatedItem());
+  EXPECT_FALSE(item_ptr->IsPaused());
+
+  // Update pause to `true`.
+  model().UpdatePauseForItem(item_ptr->id(), true);
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_TRUE(item_ptr->IsPaused());
+
+  // Update pause to `false`.
+  model().UpdatePauseForItem(item_ptr->id(), false);
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_FALSE(item_ptr->IsPaused());
+
+  // Update pause to `true` and progress to completion. Because the item is no
+  // longer in progress, it should no longer be paused.
+  model().UpdatePauseForItem(item_ptr->id(), true);
+  model().UpdateProgressForItem(item_ptr->id(), 1.f);
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(item_ptr->progress(), 1.f);
+  EXPECT_FALSE(item_ptr->IsPaused());
+
+  // Attempts to update pause should no-op for completed items.
+  model().UpdatePauseForItem(item_ptr->id(), true);
+  EXPECT_FALSE(observation.TakeLastUpdatedItem());
+  EXPECT_FALSE(item_ptr->IsPaused());
+  model().UpdatePauseForItem(item_ptr->id(), false);
+  EXPECT_FALSE(observation.TakeLastUpdatedItem());
+  EXPECT_FALSE(item_ptr->IsPaused());
+}
+
 // Verifies that `HoldingSpaceModel::UpdateProgressForItem()` works as intended.
 TEST_P(HoldingSpaceModelTest, UpdateProgressForItem) {
   ScopedModelObservation observation(&model());

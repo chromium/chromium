@@ -187,6 +187,10 @@ bool HoldingSpaceItem::UpdateProgress(const absl::optional<float>& progress) {
   }
 
   progress_ = progress;
+
+  if (progress_ == 1.f)
+    paused_ = false;
+
   return true;
 }
 
@@ -210,6 +214,18 @@ bool HoldingSpaceItem::IsScreenCapture() const {
     case Type::kScan:
       return false;
   }
+}
+
+bool HoldingSpaceItem::IsPaused() const {
+  return paused_;
+}
+
+bool HoldingSpaceItem::UpdatePause(bool paused) {
+  if (!IsInProgress() || paused_ == paused)
+    return false;
+
+  paused_ = paused;
+  return true;
 }
 
 HoldingSpaceItem::HoldingSpaceItem(Type type,

@@ -76,6 +76,37 @@ TEST_P(HoldingSpaceItemTest, DeserializeId) {
   EXPECT_EQ(deserialized_holding_space_id, holding_space_item->id());
 }
 
+// Tests pause for each holding space item type.
+TEST_P(HoldingSpaceItemTest, Pause) {
+  // Create an in-progress `holding_space_item`.
+  auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+      /*type=*/GetParam(), base::FilePath("file_path"),
+      GURL("filesystem::file_system_url"), /*progress=*/0.5f,
+      /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
+
+  // Initially items are not paused.
+  EXPECT_FALSE(holding_space_item->IsPaused());
+
+  // It should be possible to update pause to a new value.
+  EXPECT_TRUE(holding_space_item->UpdatePause(true));
+  EXPECT_TRUE(holding_space_item->IsPaused());
+
+  // It should no-op to try to update pause to its existing value.
+  EXPECT_FALSE(holding_space_item->UpdatePause(true));
+  EXPECT_TRUE(holding_space_item->IsPaused());
+
+  // Once progress has been marked completed, items are no longer paused.
+  EXPECT_TRUE(holding_space_item->UpdateProgress(1.f));
+  EXPECT_EQ(holding_space_item->progress(), 1.f);
+  EXPECT_FALSE(holding_space_item->IsPaused());
+
+  // It should no-op to try to update pause for items which are not in-progress.
+  EXPECT_FALSE(holding_space_item->UpdatePause(true));
+  EXPECT_FALSE(holding_space_item->IsPaused());
+  EXPECT_FALSE(holding_space_item->UpdatePause(false));
+  EXPECT_FALSE(holding_space_item->IsPaused());
+}
+
 // Tests progress for each holding space item type.
 TEST_P(HoldingSpaceItemTest, Progress) {
   // Create a `holding_space_item` w/ explicitly specified progress.

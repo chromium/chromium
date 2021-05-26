@@ -124,6 +124,15 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Returns true if this item is a screen capture.
   bool IsScreenCapture() const;
 
+  // Returns true if progress of this item is paused.
+  // NOTE: Only in-progress items can be paused.
+  bool IsPaused() const;
+
+  // Updates whether progress of this item is `paused_`, returning `false` to
+  // indicate no-op.
+  // NOTE: Only in-progress items can be paused.
+  bool UpdatePause(bool paused);
+
   const std::string& id() const { return id_; }
 
   Type type() const { return type_; }
@@ -168,9 +177,13 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   std::unique_ptr<HoldingSpaceImage> image_;
 
   // The progress of the item.
-  // If present, the value is >= `0.f` and <= `1.f`.
-  // If absent, `progress_` is indeterminate.
+  // NOTE: If present, the value is >= `0.f` and <= `1.f`.
+  // NOTE: If absent, `progress_` is indeterminate.
   absl::optional<float> progress_;
+
+  // Whether or not progress of this item is paused.
+  // NOTE: Only in-progress items can be paused.
+  bool paused_ = false;
 
   // Mutable to allow const access from `AddDeletionCallback()`.
   mutable base::RepeatingClosureList deletion_callback_list_;

@@ -26,6 +26,8 @@ namespace ash {
 
 class HoldingSpaceModelObserver;
 
+// TODO(crbug.com/1213274): Merge `Update*ForItem()` APIs to allow for updating
+// multiple holding space item attributes atomically.
 // The data model for the temporary holding space UI. It contains the list of
 // items that should be shown in the temporary holding space UI - each item will
 // represent a piece of data added to the holding space by the user (for
@@ -65,6 +67,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   void UpdateBackingFileForItem(const std::string& id,
                                 const base::FilePath& file_path,
                                 const GURL& file_system_url);
+
+  // Updates whether progress is `paused` for a single holding space item.
+  // NOTE: Only in-progress holding space items can be paused.
+  void UpdatePauseForItem(const std::string& id, bool paused);
 
   // Updates the progress for a single holding space item.
   // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
