@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/frame/non_client_frame_view_ash.h",
   "+ash/resources/vector_icons",
+  "+ash/style/scoped_light_mode_as_default.h",
   "+components/strings/grit/components_strings.h",
   "+ui/aura",
   "+ui/gfx",

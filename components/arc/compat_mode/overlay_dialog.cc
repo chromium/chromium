@@ -4,6 +4,7 @@
 
 #include "components/arc/compat_mode/overlay_dialog.h"
 
+#include "components/arc/compat_mode/style/arc_color_provider.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "ui/views/background.h"
@@ -15,7 +16,7 @@ namespace {
 
 std::unique_ptr<views::View> MakeOverlayDialogContainerView(
     std::unique_ptr<views::View> dialog_view) {
-  constexpr SkColor kScrimColor = SkColorSetA(gfx::kGoogleGrey900, 0x99);
+  const SkColor kScrimColor = GetShieldLayerColor(ShieldLayerType::kShield60);
 
   auto container = views::Builder<views::FlexLayoutView>()
                        .SetInteriorMargin(gfx::Insets(0, 32))

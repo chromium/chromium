@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "components/arc/compat_mode/overlay_dialog.h"
+#include "components/arc/compat_mode/style/arc_color_provider.h"
 #include "components/arc/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -42,8 +43,10 @@ std::unique_ptr<views::BubbleBorder> CreateBorder(SkColor background_color) {
 std::unique_ptr<views::Button> CreateCloseButton(
     views::Button::PressedCallback close_callback) {
   constexpr gfx::Size kCloseButtonSize{32, 32};
-  auto close_button = views::CreateVectorImageButtonWithNativeTheme(
-      std::move(close_callback), vector_icons::kCloseRoundedIcon);
+  auto close_button = views::CreateVectorImageButton(std::move(close_callback));
+  views::SetImageFromVectorIconWithColor(
+      close_button.get(), vector_icons::kCloseRoundedIcon,
+      GetContentLayerColor(ContentLayerType::kIconColorPrimary));
   close_button->SetSize(kCloseButtonSize);
   close_button->ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
   return close_button;
@@ -75,6 +78,7 @@ std::unique_ptr<views::View> CreateMessageBox(ClickedCallback link_callback) {
       IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_BODY, link, &offset);
   auto body_label = std::make_unique<views::StyledLabel>();
   body_label->SetText(text);
+  body_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
   body_label->SetTextContext(
       views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT);
   body_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -111,8 +115,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
   layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
   layout->set_inside_border_insets(gfx::Insets(6));
 
-  const auto background_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground);
+  const auto background_color = GetDialogBackgroundBaseColor();
   auto border = CreateBorder(background_color);
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));
@@ -135,10 +138,8 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
 
   auto image_view = std::make_unique<views::ImageView>();
   constexpr int kLogoImageSize = 122;
-  image_view->SetImage(
-      gfx::CreateVectorIcon(kCompatModeSplashscreenIcon, kLogoImageSize,
-                            GetNativeTheme()->GetSystemColor(
-                                ui::NativeTheme::kColorId_DefaultIconColor)));
+  image_view->SetImage(gfx::CreateVectorIcon(kCompatModeSplashscreenIcon,
+                                             kLogoImageSize, background_color));
   main_view->AddChildView(std::move(image_view));
 
   auto message_box = CreateMessageBox(base::BindRepeating(

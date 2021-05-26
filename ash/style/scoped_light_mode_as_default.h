@@ -5,6 +5,8 @@
 #ifndef ASH_STYLE_SCOPED_LIGHT_MODE_AS_DEFAULT_H_
 #define ASH_STYLE_SCOPED_LIGHT_MODE_AS_DEFAULT_H_
 
+#include "ash/ash_export.h"
+
 namespace ash {
 
 // A helper class to set default color mode to light. Color mode is dark by
@@ -12,7 +14,7 @@ namespace ash {
 // the components need to be kept as LIGHT by default before launching
 // dark/light mode. E.g. power button menu and system toast. Overriding only if
 // the kDarkLightMode feature is disabled.
-class ScopedLightModeAsDefault {
+class ASH_EXPORT ScopedLightModeAsDefault {
  public:
   ScopedLightModeAsDefault();
   ScopedLightModeAsDefault(const ScopedLightModeAsDefault&) = delete;

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "components/arc/compat_mode/overlay_dialog.h"
+#include "components/arc/compat_mode/style/arc_color_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -32,8 +33,7 @@ ResizeConfirmationDialogView::ResizeConfirmationDialogView(
   constexpr int kCornerRadius = 12;
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-      GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_DialogBackground));
+      GetDialogBackgroundBaseColor());
   border->SetCornerRadius(kCornerRadius);
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));

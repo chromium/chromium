@@ -30,6 +30,8 @@ static_library("arc") {
     "compat_mode/resize_toggle_menu.h",
     "compat_mode/resize_util.cc",
     "compat_mode/resize_util.h",
+    "compat_mode/style/arc_color_provider.cc",
+    "compat_mode/style/arc_color_provider.h",
     "crash_collector/arc_crash_collector_bridge.cc",
     "crash_collector/arc_crash_collector_bridge.h",
     "dark_theme/arc_dark_theme_bridge.cc",
