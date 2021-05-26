@@ -9,7 +9,10 @@ for more details about the presubmit API built into depot_tools.
 """
 
 import re
-import string
+
+# This line is 'magic' in that git-cl looks for it to decide whether to
+# use Python3 instead of Python2 when running the code in this file.
+USE_PYTHON3 = True
 
 # Well-defined simple classes containing only <= 4 ints, or <= 2 floats.
 BASE_TIME_TYPES = [
@@ -18,8 +21,7 @@ BASE_TIME_TYPES = [
     'base::TimeTicks',
 ]
 
-BASE_TIME_TYPES_RE = re.compile(r'\bconst (%s)&' %
-                                string.join(BASE_TIME_TYPES, '|'))
+BASE_TIME_TYPES_RE = re.compile(r'\bconst (%s)&' % '|'.join(BASE_TIME_TYPES))
 
 def _FilterFile(affected_file):
   """Return true if the file could contain code requiring a presubmit check."""
