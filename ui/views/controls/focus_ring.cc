@@ -56,11 +56,13 @@ SkColor GetColor(View* focus_ring, bool valid) {
     return default_color;
 
   View* const fallback_color_view = GetViewForSubtreeColors(focus_ring);
-  if (!fallback_color_view)
-    return default_color;
 
-  const SkColor background_color = focus_ring->GetThemeProvider()->GetColor(
-      fallback_color_view->GetProperty(kFocusRingBackgroundColorId));
+  const SkColor background_color =
+      fallback_color_view
+          ? focus_ring->GetThemeProvider()->GetColor(
+                fallback_color_view->GetProperty(kFocusRingBackgroundColorId))
+          : focus_ring->GetNativeTheme()->GetSystemColor(
+                ui::NativeTheme::kColorId_WindowBackground);
 
   // This blends towards the fully-opaque version of the focus-ring color until
   // the minimum contrast is reached (if possible). If `default_color` is
@@ -81,8 +83,12 @@ SkColor GetColor(View* focus_ring, bool valid) {
   if (boosted_contrast > color_utils::kMinimumVisibleContrastRatio)
     return contrasty_color.color;
 
-  return focus_ring->GetThemeProvider()->GetColor(
-      fallback_color_view->GetProperty(kFocusRingFallbackColorId));
+  // If a fallback color exists, use it. Otherwise use the boosted color as it's
+  // the best we have here for now.
+  return fallback_color_view
+             ? focus_ring->GetThemeProvider()->GetColor(
+                   fallback_color_view->GetProperty(kFocusRingFallbackColorId))
+             : contrasty_color.color;
 }
 
 double GetCornerRadius() {
