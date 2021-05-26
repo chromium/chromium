@@ -109,6 +109,9 @@ class MediaRoute {
   }
   bool is_local_presentation() const { return is_local_presentation_; }
 
+  void set_is_connecting(bool is_connecting) { is_connecting_ = is_connecting; }
+  bool is_connecting() const { return is_connecting_; }
+
   bool operator==(const MediaRoute& other) const;
 
  private:
@@ -150,6 +153,10 @@ class MediaRoute {
   // |true| if the presentation associated with this route is a local
   // presentation.
   bool is_local_presentation_ = false;
+
+  // |true| if the route is created by the MRP but is waiting for receivers'
+  // response.
+  bool is_connecting_ = false;
 };
 
 }  // namespace media_router

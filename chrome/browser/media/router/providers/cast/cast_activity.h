@@ -57,6 +57,8 @@ class CastActivity {
   absl::optional<int> mirroring_tab_id() const { return mirroring_tab_id_; }
   const MediaSinkInternal sink() const { return sink_; }
 
+  void SetRouteIsConnecting(bool is_connecting);
+
   // Adds a new client |client_id| to this session and returns the handles of
   // the two pipes to be held by Blink It is invalid to call this method if the
   // client already exists.

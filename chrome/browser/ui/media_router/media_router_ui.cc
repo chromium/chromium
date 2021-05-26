@@ -974,10 +974,14 @@ UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
   if (route) {
     ui_sink.status_text = base::UTF8ToUTF16(route->description());
     ui_sink.route = *route;
-    ui_sink.state = terminating_route_id_ && route->media_route_id() ==
-                                                 terminating_route_id_.value()
-                        ? UIMediaSinkState::DISCONNECTING
-                        : UIMediaSinkState::CONNECTED;
+    if (terminating_route_id_ &&
+        route->media_route_id() == terminating_route_id_.value()) {
+      ui_sink.state = UIMediaSinkState::DISCONNECTING;
+    } else if (route->is_connecting()) {
+      ui_sink.state = UIMediaSinkState::CONNECTING;
+    } else {
+      ui_sink.state = UIMediaSinkState::CONNECTED;
+    }
   } else {
     ui_sink.state = current_route_request() &&
                             sink.sink.id() == current_route_request()->sink_id

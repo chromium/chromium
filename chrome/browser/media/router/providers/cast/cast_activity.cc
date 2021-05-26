@@ -23,6 +23,10 @@ CastActivity::CastActivity(const MediaRoute& route,
 
 CastActivity::~CastActivity() = default;
 
+void CastActivity::SetRouteIsConnecting(bool is_connecting) {
+  route_.set_is_connecting(is_connecting);
+}
+
 mojom::RoutePresentationConnectionPtr CastActivity::AddClient(
     const CastMediaSource& source,
     const url::Origin& origin,

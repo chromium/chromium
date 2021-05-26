@@ -219,6 +219,7 @@ bool StructTraits<media_router::mojom::MediaRouteDataView,
   out->set_for_display(data.for_display());
   out->set_off_the_record(data.is_off_the_record());
   out->set_local_presentation(data.is_local_presentation());
+  out->set_is_connecting(data.is_connecting());
 
   return true;
 }

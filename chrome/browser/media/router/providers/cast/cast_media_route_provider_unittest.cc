@@ -24,6 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using testing::WithArg;
 
 namespace media_router {
 
@@ -38,6 +39,22 @@ static constexpr char kOrigin[] = "https://www.youtube.com";
 static constexpr int kTabId = 1;
 static constexpr base::TimeDelta kRouteTimeout =
     base::TimeDelta::FromSeconds(30);
+
+base::Value MakeReceiverStatus() {
+  return base::test::ParseJson(R"({
+        "applications": [{
+          "appId": "ABCDEFGH",
+          "displayName": "theDisplayName",
+          "namespaces": [
+            {"name": "urn:x-cast:com.google.cast.media"},
+            {"name": "urn:x-cast:com.google.foo"},
+          ],
+          "sessionId": "theSessionId",
+          "statusText": "theAppStatus",
+          "transportId": "theTransportId",
+        }],
+      })");
+}
 }  // namespace
 
 class CastMediaRouteProviderTest : public testing::Test {
@@ -100,6 +117,22 @@ class CastMediaRouteProviderTest : public testing::Test {
                                    RouteRequestResult::ResultCode result) {
     EXPECT_FALSE(error);
     EXPECT_EQ(RouteRequestResult::ResultCode::OK, result);
+    route_.reset();
+  }
+
+  void SendLaunchSessionResponseSuccess() {
+    cast_channel::LaunchSessionResponse response;
+    response.result = cast_channel::LaunchSessionResponse::Result::kOk;
+    response.receiver_status = MakeReceiverStatus();
+    std::move(launch_session_callback_).Run(std::move(response));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SendLaunchSessionResponseFailure() {
+    cast_channel::LaunchSessionResponse response;
+    response.result = cast_channel::LaunchSessionResponse::Result::kError;
+    std::move(launch_session_callback_).Run(std::move(response));
+    base::RunLoop().RunUntilIdle();
   }
 
  protected:
@@ -117,6 +150,8 @@ class CastMediaRouteProviderTest : public testing::Test {
   TestMediaSinkService media_sink_service_;
   MockCastAppDiscoveryService app_discovery_service_;
   std::unique_ptr<CastMediaRouteProvider> provider_;
+
+  cast_channel::LaunchSessionCallback launch_session_callback_;
 
   url::Origin origin_ = url::Origin::Create(GURL(kOrigin));
   std::unique_ptr<MediaRoute> route_;
@@ -186,7 +221,10 @@ TEST_F(CastMediaRouteProviderTest, CreateRoute) {
   EXPECT_CALL(
       message_handler_,
       LaunchSession(sink.cast_data().cast_channel_id, kAppId,
-                    kDefaultLaunchTimeout, default_supported_app_types, _, _));
+                    kDefaultLaunchTimeout, default_supported_app_types, _, _))
+      .WillOnce(WithArg<5>([this](auto callback) {
+        launch_session_callback_ = std::move(callback);
+      }));
   provider_->CreateRoute(
       kCastSource, sink.sink().id(), kPresentationId, origin_, kTabId,
       kRouteTimeout, /* incognito */ false,
@@ -194,13 +232,18 @@ TEST_F(CastMediaRouteProviderTest, CreateRoute) {
           &CastMediaRouteProviderTest::ExpectCreateRouteSuccessAndSetRoute,
           base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
+  SendLaunchSessionResponseSuccess();
+  ASSERT_TRUE(route_);
 }
 
 TEST_F(CastMediaRouteProviderTest, TerminateRoute) {
   MediaSinkInternal sink = CreateCastSink(1);
   media_sink_service_.AddOrUpdateSink(sink);
 
-  EXPECT_CALL(message_handler_, LaunchSession(_, _, _, _, _, _));
+  EXPECT_CALL(message_handler_, LaunchSession)
+      .WillOnce(WithArg<5>([this](auto callback) {
+        launch_session_callback_ = std::move(callback);
+      }));
   provider_->CreateRoute(
       kCastSource, sink.sink().id(), kPresentationId, origin_, kTabId,
       kRouteTimeout, /* incognito */ false,
@@ -208,12 +251,18 @@ TEST_F(CastMediaRouteProviderTest, TerminateRoute) {
           &CastMediaRouteProviderTest::ExpectCreateRouteSuccessAndSetRoute,
           base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
+  SendLaunchSessionResponseSuccess();
 
   ASSERT_TRUE(route_);
+  EXPECT_CALL(message_handler_, StopSession)
+      .WillOnce(WithArg<3>([](auto callback) {
+        std::move(callback).Run(cast_channel::Result::kOk);
+      }));
   provider_->TerminateRoute(
       route_->media_route_id(),
       base::BindOnce(&CastMediaRouteProviderTest::ExpectTerminateRouteSuccess,
                      base::Unretained(this)));
+  ASSERT_FALSE(route_);
 }
 
 TEST_F(CastMediaRouteProviderTest, GetState) {

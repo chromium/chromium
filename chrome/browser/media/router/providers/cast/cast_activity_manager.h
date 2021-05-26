@@ -230,14 +230,21 @@ class CastActivityManager : public CastActivityManagerBase,
                              const std::vector<MediaRoute>& routes);
 
   void HandleLaunchSessionResponse(
-      const MediaRoute::Id& route_id,
-      const MediaSinkInternal& sink,
-      const CastMediaSource& cast_source,
+      DoLaunchSessionParams params,
       cast_channel::LaunchSessionResponse response);
   void HandleStopSessionResponse(
       const MediaRoute::Id& route_id,
       mojom::MediaRouteProvider::TerminateRouteCallback callback,
       cast_channel::Result result);
+  void HandleLaunchSessionResponseFailures(
+      ActivityMap::iterator activity_it,
+      DoLaunchSessionParams params,
+      const std::string& message,
+      RouteRequestResult::ResultCode result_code);
+  void EnsureConnection(const std::string& client_id,
+                        int channel_id,
+                        const std::string& destination_id,
+                        const CastMediaSource& cast_source);
 
   AppActivity* FindActivityForAutoJoin(const CastMediaSource& cast_source,
                                        const url::Origin& origin,
