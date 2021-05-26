@@ -672,7 +672,7 @@ class Driver(object):
                 assert not self.err_seen_eof
                 err_line, self.err_seen_eof = self._strip_eof(err_line)
             if out_line:
-                if out_line[-1] != '\n':
+                if not out_line.endswith(b'\n'):
                     _log.error(
                         'Last character read from DRT stdout line was not a newline!  This indicates either a NRWT or DRT bug.'
                     )

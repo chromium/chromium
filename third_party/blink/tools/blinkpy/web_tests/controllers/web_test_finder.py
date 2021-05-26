@@ -125,9 +125,8 @@ class WebTestFinder(object):
         times = convert_times_trie_to_flat_paths(times_trie)
 
         # Ignore tests with a time==0 because those are skipped tests.
-        sorted_times = sorted(
-            [test for (test, time) in times.iteritems() if time],
-            key=lambda t: (times[t], t))
+        sorted_times = sorted([test for (test, time) in times.items() if time],
+                              key=lambda t: (times[t], t))
         clamped_percentile = max(0, min(100, fastest_percentile))
         number_of_tests_to_return = int(
             len(sorted_times) * clamped_percentile / 100)

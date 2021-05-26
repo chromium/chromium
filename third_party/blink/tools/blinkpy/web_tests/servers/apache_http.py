@@ -173,7 +173,7 @@ class ApacheHTTP(server_base.ServerBase):
 
         if additional_dirs:
             self._start_cmd = start_cmd
-            for alias, path in additional_dirs.iteritems():
+            for alias, path in additional_dirs.items():
                 start_cmd += [
                     '-c',
                     'Alias %s "%s"' % (alias, path),
