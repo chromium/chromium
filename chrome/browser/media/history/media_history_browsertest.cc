@@ -1163,8 +1163,9 @@ class MediaHistoryForPrerenderBrowserTest : public MediaHistoryBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Test is flaky: crbug.com/1213333.
 IN_PROC_BROWSER_TEST_F(MediaHistoryForPrerenderBrowserTest,
-                       KeepRecordingMediaSession) {
+                       DISABLED_KeepRecordingMediaSession) {
   // Start a page and wait for significant playback so we record watchtime.
   ASSERT_TRUE(SetupPageAndStartPlaying(browser(), GetTestURL()));
   EXPECT_TRUE(SetMediaMetadata(browser()));
