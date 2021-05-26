@@ -546,11 +546,13 @@ def _update_perf_json_with_summary_on_device_id(directory, device_id):
                   perf_json_path, e)
   summary_key_guid = str(uuid.uuid4())
   summary_key_generic_set = {
-      'value': ['device_id'],
+      'values': ['device_id'],
       'guid': summary_key_guid,
       'type': 'GenericSet'
   }
   perf_json.insert(0, summary_key_generic_set)
+  logging.info('Inserted summary key generic set for perf result in %s: %s',
+               directory, summary_key_generic_set)
   stories_guids = set()
   for entry in perf_json:
     if 'diagnostics' in entry:
@@ -565,14 +567,16 @@ def _update_perf_json_with_summary_on_device_id(directory, device_id):
   except IOError as e:
     logging.error('Failed to writing perf_results.json to %s: %s',
                   perf_json_path, e)
+  logging.info('Finished adding device id %s in perf result.', device_id)
 
 
 def _should_add_device_id_in_perf_result(builder_name):
   # We should always add device id in calibration builders.
   # For testing purpose, adding fyi as well for faster turnaround, because
   # calibration builders run every 24 hours.
-  return (builder_name in bot_platforms.CALIBRATION_PLATFORMS) or (
-      builder_name == 'android-pixel2-perf-fyi')
+  return any([
+      builder_name == p.name for p in bot_platforms.CALIBRATION_PLATFORMS
+  ]) or (builder_name == 'android-pixel2-perf-fyi')
 
 
 def _update_perf_results_for_calibration(benchmarks_shard_map_file,
