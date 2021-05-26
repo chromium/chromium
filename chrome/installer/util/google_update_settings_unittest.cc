@@ -10,8 +10,8 @@
 #include <memory>
 
 #include "base/base_paths.h"
+#include "base/cxx17_backports.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"

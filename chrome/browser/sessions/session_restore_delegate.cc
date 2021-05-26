@@ -7,8 +7,8 @@
 #include <stddef.h>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/field_trial.h"
-#include "base/stl_util.h"
 #include "chrome/browser/sessions/session_restore_stats_collector.h"
 #include "chrome/browser/sessions/tab_loader.h"
 #include "chrome/common/url_constants.h"

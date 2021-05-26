@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/win/atl.h"
 #include "base/win/shlwapi.h"

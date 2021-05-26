@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"

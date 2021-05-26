@@ -8,10 +8,10 @@
 
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_unittest_base.h"

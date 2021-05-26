@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/fileicon_source.h"
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/browser/icon_manager.h"

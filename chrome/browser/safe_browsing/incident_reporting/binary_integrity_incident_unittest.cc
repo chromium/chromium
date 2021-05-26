@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

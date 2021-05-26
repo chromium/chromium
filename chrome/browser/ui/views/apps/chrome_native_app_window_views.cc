@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "apps/ui/views/app_window_frame_view.h"
+#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"

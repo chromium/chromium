@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/environment.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"

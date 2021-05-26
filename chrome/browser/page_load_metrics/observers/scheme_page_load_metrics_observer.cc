@@ -4,8 +4,8 @@
 
 #include "chrome/browser/page_load_metrics/observers/scheme_page_load_metrics_observer.h"
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 
 namespace {

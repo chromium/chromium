@@ -11,9 +11,9 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"
 #include "testing/gtest/include/gtest/gtest.h"

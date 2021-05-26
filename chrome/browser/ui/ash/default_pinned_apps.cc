@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/default_pinned_apps.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"

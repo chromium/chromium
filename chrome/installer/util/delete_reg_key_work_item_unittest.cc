@@ -11,8 +11,8 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/win/registry.h"
 #include "chrome/installer/util/registry_test_data.h"
 #include "chrome/installer/util/work_item.h"

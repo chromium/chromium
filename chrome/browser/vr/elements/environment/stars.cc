@@ -4,10 +4,10 @@
 
 #include "chrome/browser/vr/elements/environment/stars.h"
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/math_constants.h"
 #include "base/numerics/ranges.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
 #include "chrome/browser/vr/ui_scene_constants.h"
 #include "device/vr/vr_gl_util.h"

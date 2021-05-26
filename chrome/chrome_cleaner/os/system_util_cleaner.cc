@@ -17,11 +17,11 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/process/process_info.h"
 #include "base/process/process_iterator.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/simple_thread.h"
 #include "base/win/scoped_com_initializer.h"

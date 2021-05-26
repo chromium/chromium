@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_split.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/network/network_handler_test_helper.h"

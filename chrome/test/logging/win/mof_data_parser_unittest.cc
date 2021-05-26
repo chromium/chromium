@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "chrome/test/logging/win/mof_data_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

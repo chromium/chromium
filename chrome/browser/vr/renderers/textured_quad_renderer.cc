@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/renderers/textured_quad_renderer.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "device/vr/vr_gl_util.h"
 #include "ui/gfx/transform.h"
 

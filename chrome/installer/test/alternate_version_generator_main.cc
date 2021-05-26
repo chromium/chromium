@@ -13,10 +13,10 @@
 #include "base/at_exit.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "chrome/installer/test/alternate_version_generator.h"
 
 namespace {

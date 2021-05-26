@@ -5,8 +5,8 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/stl_util.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/features/simple_feature.h"

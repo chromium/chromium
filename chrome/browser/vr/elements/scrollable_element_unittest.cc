@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/elements/scrollable_element.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "cc/test/geometry_test_utils.h"
 #include "chrome/browser/vr/input_event.h"
 #include "testing/gtest/include/gtest/gtest.h"

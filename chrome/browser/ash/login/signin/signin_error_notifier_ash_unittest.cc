@@ -9,8 +9,8 @@
 #include <memory>
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory_ash.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"

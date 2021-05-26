@@ -7,9 +7,9 @@
 #include <stdint.h>
 #include <windows.h>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 

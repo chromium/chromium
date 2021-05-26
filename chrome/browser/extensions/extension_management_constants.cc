@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/extension_management_constants.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace extensions {
 namespace schema_constants {

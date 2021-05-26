@@ -4,8 +4,8 @@
 
 #include "chrome/browser/vr/elements/controller.h"
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/math_constants.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
 #include "chrome/browser/vr/ui_scene_constants.h"

@@ -5,9 +5,9 @@
 #include <stddef.h>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"

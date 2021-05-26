@@ -15,8 +15,8 @@
 
 #include <wrl/module.h>
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/notification_helper/notification_activator.h"
 #include "chrome/notification_helper/trace_util.h"

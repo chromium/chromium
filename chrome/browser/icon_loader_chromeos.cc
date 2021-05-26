@@ -11,10 +11,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "chrome/grit/theme_resources.h"
 #include "content/public/browser/browser_task_traits.h"

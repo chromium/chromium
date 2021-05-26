@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "chrome/browser/media/router/event_page_request_manager_factory.h"
 #include "extensions/common/extension_builder.h"
 

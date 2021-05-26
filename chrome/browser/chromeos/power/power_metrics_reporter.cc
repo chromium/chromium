@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/power/power_metrics_reporter.h"
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"

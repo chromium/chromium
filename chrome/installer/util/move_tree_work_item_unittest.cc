@@ -10,9 +10,9 @@
 #include <memory>
 
 #include "base/base_paths.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/installer/util/work_item.h"

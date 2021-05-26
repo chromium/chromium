@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/android/jni_array.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "chrome/android/chrome_jni_headers/ChromeBackupAgentImpl_jni.h"
 #include "chrome/browser/android/chrome_backup_agent.h"
 #include "chrome/browser/profiles/profile_manager.h"

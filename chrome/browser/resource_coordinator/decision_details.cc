@@ -4,7 +4,7 @@
 
 #include "chrome/browser/resource_coordinator/decision_details.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace resource_coordinator {

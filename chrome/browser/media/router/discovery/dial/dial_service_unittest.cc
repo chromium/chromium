@@ -8,9 +8,9 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/ip_address.h"

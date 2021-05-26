@@ -5,7 +5,7 @@
 #include "extensions/renderer/storage_area.h"
 
 #include "base/command_line.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/simple_feature.h"

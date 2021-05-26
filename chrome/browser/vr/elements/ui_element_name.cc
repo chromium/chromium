@@ -5,7 +5,7 @@
 #include "chrome/browser/vr/elements/ui_element_name.h"
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace vr {
 

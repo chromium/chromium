@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/wallpaper_function_base.h"
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/task_traits.h"

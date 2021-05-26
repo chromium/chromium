@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <cstring>
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "content/public/common/content_constants.h"
 

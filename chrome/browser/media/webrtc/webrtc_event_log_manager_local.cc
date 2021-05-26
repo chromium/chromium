@@ -4,8 +4,8 @@
 
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_local.h"
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"

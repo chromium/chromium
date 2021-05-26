@@ -8,8 +8,8 @@
 
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"
 #include "chrome/chrome_cleaner/os/file_path_sanitization.h"

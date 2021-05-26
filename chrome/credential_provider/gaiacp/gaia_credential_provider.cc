@@ -9,9 +9,9 @@
 #include <string>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/common/chrome_version.h"

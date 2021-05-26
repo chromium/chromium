@@ -4,7 +4,7 @@
 
 #include "chrome/common/webui_url_constants.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "components/nacl/common/buildflags.h"

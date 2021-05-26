@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "base/cpu.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"

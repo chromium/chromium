@@ -4,7 +4,7 @@
 
 #include "chrome/renderer/app_categorizer.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

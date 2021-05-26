@@ -12,8 +12,8 @@
 
 #include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
