@@ -242,8 +242,14 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::MapDescendantToColumnSet(
   DCHECK(!ContainingColumnSpannerPlaceholder(layout_object));
   DCHECK_NE(layout_object, this);
   DCHECK(layout_object->IsDescendantOf(this));
-  // Out-of-flow objects don't belong in column sets.
-  DCHECK(layout_object->ContainingBlock()->IsDescendantOf(this));
+  // Out-of-flow objects don't belong in column sets. DHCECK that the object is
+  // contained by the flow thread, except for legends ("rendered" or
+  // not). Although a rendered legend isn't part of the fragmentation context,
+  // we'll let it contribute to creation of a column set, for the sake of
+  // simplicity. Style and DOM changes may later on change which LEGEND child is
+  // the rendered legend, and we don't want to keep track of that.
+  DCHECK(layout_object->IsRenderedLegend() ||
+         layout_object->ContainingBlock()->IsDescendantOf(this));
   DCHECK_EQ(layout_object->FlowThreadContainingBlock(), this);
   DCHECK(!layout_object->IsLayoutMultiColumnSet());
   DCHECK(!layout_object->IsLayoutMultiColumnSpannerPlaceholder());
