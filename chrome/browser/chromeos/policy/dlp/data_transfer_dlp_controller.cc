@@ -228,7 +228,8 @@ void DataTransferDlpController::PasteIfAllowed(
   // called.
   DCHECK_NE(level, DlpRulesManager::Level::kBlock);
 
-  if (level == DlpRulesManager::Level::kAllow) {
+  if (level == DlpRulesManager::Level::kAllow ||
+      level == DlpRulesManager::Level::kReport) {
     std::move(callback).Run(true);
     return;
   }
