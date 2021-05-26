@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SHARING_WEBRTC_NETWORK_TRAVERSAL_ICE_CONFIG_FETCHER_H_
-#define CHROME_BROWSER_SHARING_WEBRTC_NETWORK_TRAVERSAL_ICE_CONFIG_FETCHER_H_
+#ifndef CHROME_BROWSER_NEARBY_SHARING_NETWORK_TRAVERSAL_ICE_CONFIG_FETCHER_H_
+#define CHROME_BROWSER_NEARBY_SHARING_NETWORK_TRAVERSAL_ICE_CONFIG_FETCHER_H_
 
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -35,4 +35,4 @@ class NetworkTraversalIceConfigFetcher
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
-#endif  // CHROME_BROWSER_SHARING_WEBRTC_NETWORK_TRAVERSAL_ICE_CONFIG_FETCHER_H_
+#endif  // CHROME_BROWSER_NEARBY_SHARING_NETWORK_TRAVERSAL_ICE_CONFIG_FETCHER_H_

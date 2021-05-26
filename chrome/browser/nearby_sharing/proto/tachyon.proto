@@ -8,7 +8,7 @@
 
 syntax = "proto3";
 
-package chrome_browser_sharing_webrtc_proto;
+package nearbyshare.tachyon_proto;
 
 option optimize_for = LITE_RUNTIME;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sharing/webrtc/sharing_mojo_service.h"
+#include "chrome/browser/nearby_sharing/sharing_mojo_service.h"
 
 #include "chrome/browser/service_sandbox_type.h"
 #include "content/public/browser/service_process_host.h"

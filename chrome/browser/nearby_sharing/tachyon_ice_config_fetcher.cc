@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sharing/webrtc/tachyon_ice_config_fetcher.h"
+#include "chrome/browser/nearby_sharing/tachyon_ice_config_fetcher.h"
 
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -10,11 +10,11 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
-#include "chrome/browser/sharing/webrtc/proto/duration.pb.h"
-#include "chrome/browser/sharing/webrtc/proto/ice.pb.h"
-#include "chrome/browser/sharing/webrtc/proto/tachyon.pb.h"
-#include "chrome/browser/sharing/webrtc/proto/tachyon_common.pb.h"
-#include "chrome/browser/sharing/webrtc/proto/tachyon_enums.pb.h"
+#include "chrome/browser/nearby_sharing/proto/duration.pb.h"
+#include "chrome/browser/nearby_sharing/proto/ice.pb.h"
+#include "chrome/browser/nearby_sharing/proto/tachyon.pb.h"
+#include "chrome/browser/nearby_sharing/proto/tachyon_common.pb.h"
+#include "chrome/browser/nearby_sharing/proto/tachyon_enums.pb.h"
 #include "chrome/services/sharing/public/cpp/sharing_webrtc_metrics.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
@@ -26,7 +26,7 @@
 
 namespace {
 
-namespace tachyon_proto = chrome_browser_sharing_webrtc_proto;
+namespace tachyon_proto = nearbyshare::tachyon_proto;
 
 const char kIceConfigApiUrl[] =
     "https://instantmessaging-pa.googleapis.com/v1/peertopeer:geticeserver";
