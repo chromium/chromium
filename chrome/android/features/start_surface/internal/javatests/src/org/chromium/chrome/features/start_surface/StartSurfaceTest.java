@@ -38,6 +38,8 @@ import static org.chromium.chrome.test.util.ViewUtils.waitForStableView;
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import android.support.test.runner.lifecycle.Stage;
@@ -462,11 +464,15 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @FlakyTest(message = "https://crbug.com/1169673")
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_FromResumeShowStart() throws Exception {
         // clang-format on
+        Assume.assumeFalse("https://crbug.com/1196473",
+            isInstantReturn()
+                && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
+                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
+
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
