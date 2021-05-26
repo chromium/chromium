@@ -22,7 +22,9 @@
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_id.h"
 #include "net/base/url_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/webview/webview.h"
 
 namespace {
@@ -35,6 +37,31 @@ const char kPanelActiveKey[] = "active";
 const char kPanelActivatableKey[] = "activatable";
 const char kPanelWidth[] = "width";
 const char kPanelTrueValue[] = "true";
+
+class ExtensionsSidePanelButton : public ToolbarButton {
+ public:
+  METADATA_HEADER(ExtensionsSidePanelButton);
+
+ protected:
+  SkColor GetForegroundColor(ButtonState state) const override {
+    const ui::NativeTheme* native_theme = GetNativeTheme();
+    DCHECK(native_theme);
+    // Highlight the activatable state of extension button to increase
+    // visibility.
+    switch (state) {
+      case ButtonState::STATE_HOVERED:
+      case ButtonState::STATE_PRESSED:
+      case ButtonState::STATE_NORMAL:
+        return native_theme->GetSystemColor(
+            ui::NativeTheme::kColorId_ProminentButtonColor);
+      default:
+        return ToolbarButton::GetForegroundColor(state);
+    }
+  }
+};
+
+BEGIN_METADATA(ExtensionsSidePanelButton, ToolbarButton)
+END_METADATA
 
 }  // namespace
 
@@ -68,7 +95,7 @@ ExtensionsSidePanelController::~ExtensionsSidePanelController() = default;
 
 std::unique_ptr<ToolbarButton>
 ExtensionsSidePanelController::CreateToolbarButton() {
-  auto toolbar_button = std::make_unique<ToolbarButton>();
+  auto toolbar_button = std::make_unique<ExtensionsSidePanelButton>();
   toolbar_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_LEFT_ALIGNED_SIDE_PANEL_BUTTON));
   toolbar_button->SetTooltipText(
