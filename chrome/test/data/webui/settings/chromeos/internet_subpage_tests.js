@@ -273,6 +273,26 @@ suite('InternetSubpage', function() {
           });
         });
 
+    test('No js error when previous route is null', function() {
+      // This is a test for regression here https://crbug.com/1213162.
+      // |oldRoute| in currentRouteChanged() could become undefined if a page
+      // is refreshed. This test makes sure if |oldRoute| is undefined no js
+      // console error is thrown.
+      initSubpage(true /* isUpdatedCellularUiEnabled */);
+      const mojom = chromeos.networkConfig.mojom;
+      addCellularNetworks();
+      return flushAsync().then(() => {
+        const params = new URLSearchParams;
+        params.append('guid', 'cellular1_guid');
+        params.append('type', 'Cellular');
+        params.append('name', 'cellular1');
+        settings.Router.getInstance().navigateTo(
+            settings.routes.INTERNET_NETWORKS, params);
+        internetSubpage.currentRouteChanged(
+            settings.routes.INTERNET_NETWORKS, undefined);
+      });
+    });
+
     // Regression test for https://crbug.com/1197342.
     test('pSIM section shows when cellularNetworks present', async () => {
       initSubpage(true /* isUpdatedCellularUiEnabled */);
