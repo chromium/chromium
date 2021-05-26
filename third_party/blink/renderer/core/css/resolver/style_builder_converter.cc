@@ -222,11 +222,14 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
     const CSSValue& value,
     FontBuilder* font_builder,
     const Document* document_for_count) {
-  if (const auto* system_font =
-          DynamicTo<cssvalue::CSSPendingSystemFontValue>(value))
-    return system_font->ResolveFontFamily();
-
   FontDescription::FamilyDescription desc(FontDescription::kNoFamily);
+
+  if (const auto* system_font =
+          DynamicTo<cssvalue::CSSPendingSystemFontValue>(value)) {
+    desc.family.SetFamily(system_font->ResolveFontFamily());
+    return desc;
+  }
+
   FontFamily* curr_family = nullptr;
 
   for (auto& family : To<CSSValueList>(value)) {
@@ -410,8 +413,10 @@ FontDescription::Size StyleBuilderConverterBase::ConvertFontSize(
   }
 
   if (const auto* system_font =
-          DynamicTo<cssvalue::CSSPendingSystemFontValue>(value))
-    return system_font->ResolveFontSize(document);
+          DynamicTo<cssvalue::CSSPendingSystemFontValue>(value)) {
+    return FontDescription::Size(0, system_font->ResolveFontSize(document),
+                                 true);
+  }
 
   const auto& primitive_value = To<CSSPrimitiveValue>(value);
   if (primitive_value.IsPercentage()) {

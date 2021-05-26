@@ -30,19 +30,13 @@ const FontSelectionValue& CSSPendingSystemFontValue::ResolveFontWeight() const {
   return LayoutThemeFontProvider::SystemFontWeight(system_font_id_);
 }
 
-FontDescription::FamilyDescription
-CSSPendingSystemFontValue::ResolveFontFamily() const {
-  FontDescription::FamilyDescription desc(FontDescription::kNoFamily);
-  desc.family.SetFamily(
-      LayoutThemeFontProvider::SystemFontFamily(system_font_id_));
-  return desc;
+const AtomicString& CSSPendingSystemFontValue::ResolveFontFamily() const {
+  return LayoutThemeFontProvider::SystemFontFamily(system_font_id_);
 }
 
-FontDescription::Size CSSPendingSystemFontValue::ResolveFontSize(
+float CSSPendingSystemFontValue::ResolveFontSize(
     const Document* document) const {
-  return FontDescription::Size(
-      0, LayoutThemeFontProvider::SystemFontSize(system_font_id_, document),
-      true);
+  return LayoutThemeFontProvider::SystemFontSize(system_font_id_, document);
 }
 
 String CSSPendingSystemFontValue::CustomCSSText() const {

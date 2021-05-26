@@ -7,10 +7,12 @@
 
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
-#include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
+
+class FontSelectionValue;
+
 namespace cssvalue {
 
 // The 'font' shorthand accepts some special system font values, like 'caption'
@@ -36,8 +38,8 @@ class CSSPendingSystemFontValue : public CSSValue {
 
   const FontSelectionValue& ResolveFontStyle() const;
   const FontSelectionValue& ResolveFontWeight() const;
-  FontDescription::FamilyDescription ResolveFontFamily() const;
-  FontDescription::Size ResolveFontSize(const Document*) const;
+  const AtomicString& ResolveFontFamily() const;
+  float ResolveFontSize(const Document*) const;
 
   bool Equals(const CSSPendingSystemFontValue& other) const {
     return system_font_id_ == other.system_font_id_;
