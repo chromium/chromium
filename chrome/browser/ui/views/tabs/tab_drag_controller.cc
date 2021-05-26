@@ -1329,6 +1329,10 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
 
   attached_context_tabs_closed_tracker_.reset();
 
+  // Detaching may trigger the Widget bounds to change. Such bounds changes
+  // should be ignored as they may lead to reentrancy and bad things happening.
+  widget_observation_.Reset();
+
   attach_index_ = -1;
 
   // When the user detaches we assume they want to reorder.
@@ -1338,7 +1342,7 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
   // reattach ownership is transferred.
   std::unique_ptr<TabDragController> me =
       attached_context_->ReleaseDragController();
-  DCHECK(me.get() == this);
+  DCHECK_EQ(me.get(), this);
 
   if (release_capture == RELEASE_CAPTURE)
     attached_context_->AsView()->GetWidget()->ReleaseCapture();
