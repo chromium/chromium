@@ -346,8 +346,8 @@ std::string NetworkState::GetVpnProviderType() const {
 
 bool NetworkState::RequiresActivation() const {
   return type() == shill::kTypeCellular &&
-         activation_state() != shill::kActivationStateActivated &&
-         activation_state() != shill::kActivationStateUnknown;
+         (activation_state() == shill::kActivationStateNotActivated ||
+          activation_state() == shill::kActivationStatePartiallyActivated);
 }
 
 bool NetworkState::SecurityRequiresPassphraseOnly() const {
