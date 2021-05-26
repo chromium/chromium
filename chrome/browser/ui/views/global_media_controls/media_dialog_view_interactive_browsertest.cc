@@ -429,6 +429,9 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitForEnterPictureInPicture() {
+    if (GetActiveWebContents()->HasPictureInPictureVideo())
+      return;
+
     content::MediaStartStopObserver observer(
         GetActiveWebContents(),
         content::MediaStartStopObserver::Type::kEnterPictureInPicture);
@@ -436,6 +439,9 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitForExitPictureInPicture() {
+    if (!GetActiveWebContents()->HasPictureInPictureVideo())
+      return;
+
     content::MediaStartStopObserver observer(
         GetActiveWebContents(),
         content::MediaStartStopObserver::Type::kExitPictureInPicture);
@@ -828,7 +834,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
 }
 
 // Test is flaky crbug.com/1213256.
-IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, DISABLED_PictureInPicture) {
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, PictureInPicture) {
   // Open a tab and play media.
   OpenTestURL();
   StartPlayback();
