@@ -35,9 +35,12 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "components/session_manager/core/session_manager.h"
 #include "extensions/common/extension.h"
 #include "ui/display/display.h"
@@ -150,6 +153,9 @@ void AppListClientImpl::OpenSearchResult(
   if (!search_controller_->GetLastQueryLength() &&
       launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox)
     RecordZeroStateSuggestionOpenTypeHistogram(result->metrics_type());
+
+  if (launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox)
+    RecordOpenedResultFromSearchBox(result_type);
 
   // OpenResult may cause |result| to be deleted.
   search_controller_->OpenResult(result, event_flags);
@@ -554,4 +560,33 @@ void AppListClientImpl::MaybeRecordViewShown() {
       /*min=*/base::TimeDelta::FromSeconds(1),
       /*max=*/base::TimeDelta::FromDays(7),
       /*bucket_count=*/100);
+}
+
+void AppListClientImpl::RecordOpenedResultFromSearchBox(
+    ash::AppListSearchResultType result_type) {
+  // Check whether there is any Chrome non-app browser window open and not
+  // minimized.
+  bool non_app_browser_open_and_not_minimzed = false;
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (browser->type() != Browser::TYPE_NORMAL ||
+        browser->window()->IsMinimized()) {
+      // Skip if `browser` is not a normal browser or `browser` is minimized.
+      continue;
+    }
+
+    non_app_browser_open_and_not_minimzed = true;
+    break;
+  }
+
+  if (non_app_browser_open_and_not_minimzed) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Apps.OpenedAppListSearchResultFromSearchBox."
+        "ExistNonAppBrowserWindowOpenAndNotMinimized",
+        result_type);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Apps.OpenedAppListSearchResultFromSearchBox."
+        "NonAppBrowserWindowsEitherClosedOrMinimized",
+        result_type);
+  }
 }
