@@ -130,14 +130,33 @@ Go to [code coverage dashboard](https://analysis.chromium.org/p/chromium/coverag
 ## How to run tests
 
 ### Run tests locally
-*  [Run gtest locally]
+*  [Run gtest locally](#Run-gtest-locally)
 *  [Run browser tests locally]
 *  [Run tests on Android](./android_test_instructions.md#Running-Tests)
    It includes the instructions to run gTests, JUnit tests and Instrumentation tests on Android.
 *  [Run EarlGrey tests locally](../ios/testing.md#running-tests-from-xcode)
-*  [Run Web Tests locally](./testing/web_tests.md#running-web-tests)
+*  [Run Web Tests locally](./web_tests.md#running-web-tests)
 *  [Telemetry: Run benchmarks locally]
 *  [Run fuzz target locally]
+
+#### Run gtest locally
+
+Before you can run a gtest, you need to build the appropriate launcher target
+that contains your test, such as `blink_unittests`:
+
+```bash
+autoninja -C out/Default blink_unittests
+```
+
+To run specific tests, rather than all tests in a launcher, pass
+`--gtest_filter=` with a pattern. The simplest pattern is the full name of a
+test (SuiteOrFixtureName.TestName), but you can use wildcards:
+
+```bash
+out/Default/blink_unittests --gtest_filter='Foo*'
+```
+
+Use `--help` for more ways to select and run tests.
 
 ### Run tests remotely(on Swarming)
 >TODO: add the link to the instruction about how to run tests on Swarming.
