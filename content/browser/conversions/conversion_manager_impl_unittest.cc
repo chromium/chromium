@@ -103,7 +103,7 @@ class TestConversionReporter
   absl::optional<SentReportInfo> sent_report_info_ = absl::nullopt;
   size_t expected_num_reports_ = 0u;
   size_t num_reports_ = 0u;
-  int64_t last_conversion_id_ = 0UL;
+  int64_t last_conversion_id_ = 0;
   base::Time last_report_time_;
   base::OnceClosure quit_closure_;
 };
@@ -176,7 +176,7 @@ class ConversionManagerImplTest : public testing::Test {
 TEST_F(ConversionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
   auto impression = ImpressionBuilder(clock().Now())
                         .SetExpiry(kImpressionExpiry)
-                        .SetData("100")
+                        .SetData(100)
                         .Build();
   conversion_manager_->HandleImpression(impression);
 
@@ -195,7 +195,7 @@ TEST_F(ConversionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
 TEST_F(ConversionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
   conversion_manager_->HandleImpression(ImpressionBuilder(clock().Now())
                                             .SetExpiry(kImpressionExpiry)
-                                            .SetData("100")
+                                            .SetData(100)
                                             .Build());
   task_environment_.FastForwardBy(2 * kImpressionExpiry);
 
@@ -213,7 +213,7 @@ TEST_F(ConversionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
 TEST_F(ConversionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   auto impression = ImpressionBuilder(clock().Now())
                         .SetExpiry(kImpressionExpiry)
-                        .SetData("100")
+                        .SetData(100)
                         .Build();
   conversion_manager_->HandleImpression(impression);
 

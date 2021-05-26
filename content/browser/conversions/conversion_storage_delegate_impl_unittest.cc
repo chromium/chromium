@@ -29,8 +29,7 @@ ConversionReport GetReport(base::Time impression_time,
                               .SetExpiry(expiry)
                               .SetSourceType(source_type)
                               .Build(),
-                          /*conversion_data=*/"123", conversion_time,
-                          report_time,
+                          /*conversion_data=*/123, conversion_time, report_time,
                           /*conversion_id=*/absl::nullopt);
 }
 

@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +42,7 @@ TEST_F(ConversionPolicyTest, HighEntropyConversionData_StrippedToLowerBits) {
   uint64_t conversion_data = 8LU;
 
   // The policy should strip the data to the lower 3 bits.
-  EXPECT_EQ("0", ConversionPolicy::CreateForTesting(
+  EXPECT_EQ(0LU, ConversionPolicy::CreateForTesting(
                      std::make_unique<EmptyNoiseProvider>())
                      ->GetSanitizedConversionData(conversion_data));
 }
@@ -53,7 +52,7 @@ TEST_F(ConversionPolicyTest, SanitizeHighEntropyImpressionData_Unchanged) {
 
   // The policy should not alter the impression data, and return the base 10
   // representation.
-  EXPECT_EQ("256",
+  EXPECT_EQ(256LU,
             ConversionPolicy().GetSanitizedImpressionData(impression_data));
 }
 
@@ -61,14 +60,14 @@ TEST_F(ConversionPolicyTest, ThreeBitConversionData_Unchanged) {
   std::unique_ptr<ConversionPolicy> policy = ConversionPolicy::CreateForTesting(
       std::make_unique<EmptyNoiseProvider>());
   for (uint64_t conversion_data = 0; conversion_data < 8; conversion_data++) {
-    EXPECT_EQ(base::NumberToString(conversion_data),
+    EXPECT_EQ(conversion_data,
               policy->GetSanitizedConversionData(conversion_data));
   }
 }
 
 TEST_F(ConversionPolicyTest, SantizizeConversionData_OutputHasNoise) {
   // The policy should include noise when sanitizing data.
-  EXPECT_EQ("5", ConversionPolicy::CreateForTesting(
+  EXPECT_EQ(5LU, ConversionPolicy::CreateForTesting(
                      std::make_unique<IncrementingNoiseProvider>())
                      ->GetSanitizedConversionData(4UL));
 }
@@ -77,7 +76,7 @@ TEST_F(ConversionPolicyTest, SantizizeConversionData_OutputHasNoise) {
 TEST_F(ConversionPolicyTest, DebugMode_ConversionDataNotNoised) {
   uint64_t conversion_data = 0UL;
   for (int i = 0; i < 100; i++) {
-    EXPECT_EQ(base::NumberToString(conversion_data),
+    EXPECT_EQ(conversion_data,
               ConversionPolicy(/*debug_mode=*/true)
                   .GetSanitizedConversionData(conversion_data));
   }

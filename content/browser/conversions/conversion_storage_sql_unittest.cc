@@ -351,7 +351,7 @@ TEST_F(ConversionStorageSqlTest,
                                  .Build());
 
   clock()->Advance(base::TimeDelta::FromDays(1));
-  StorableConversion conversion("1", net::SchemefulSite(conversion_origin),
+  StorableConversion conversion(1, net::SchemefulSite(conversion_origin),
                                 reporting_origin);
   EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
 
@@ -395,7 +395,7 @@ TEST_F(ConversionStorageSqlTest,
                                  .Build());
 
   clock()->Advance(base::TimeDelta::FromDays(1));
-  StorableConversion conversion("1", net::SchemefulSite(conversion_origin),
+  StorableConversion conversion(1, net::SchemefulSite(conversion_origin),
                                 reporting_origin);
   EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
 

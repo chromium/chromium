@@ -22,7 +22,7 @@ namespace content {
 struct CONTENT_EXPORT ConversionReport {
   // The conversion_id may not be set for a conversion report.
   ConversionReport(const StorableImpression& impression,
-                   const std::string& conversion_data,
+                   uint64_t conversion_data,
                    base::Time conversion_time,
                    base::Time report_time,
                    const absl::optional<int64_t>& conversion_id);
@@ -32,9 +32,8 @@ struct CONTENT_EXPORT ConversionReport {
   // Impression associated with this conversion report.
   const StorableImpression impression;
 
-  // Data provided at reporting time by the reporting origin. String
-  // representing a valid hexadecimal number.
-  const std::string conversion_data;
+  // Data provided at reporting time by the reporting origin.
+  uint64_t conversion_data;
 
   // The time the conversion occurred.
   const base::Time conversion_time;

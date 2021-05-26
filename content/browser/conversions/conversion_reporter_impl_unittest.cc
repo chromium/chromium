@@ -35,7 +35,7 @@ ConversionReport GetReport(base::Time conversion_time,
   // Construct impressions with a null impression time as it is not used for
   // reporting.
   return ConversionReport(ImpressionBuilder(base::Time()).Build(),
-                          /*conversion_data=*/"", conversion_time, report_time,
+                          /*conversion_data=*/0, conversion_time, report_time,
                           /*conversion_id=*/conversion_id);
 }
 
@@ -177,7 +177,7 @@ TEST_F(ConversionReporterImplTest,
 
 TEST_F(ConversionReporterImplTest, ManyReportsAddedAtOnce_SentInOrder) {
   std::vector<ConversionReport> reports;
-  int64_t last_report_id = 0UL;
+  int64_t last_report_id = 0;
   for (int i = 1; i < 10; i++) {
     reports.push_back(GetReport(clock().Now(),
                                 clock().Now() + base::TimeDelta::FromMinutes(i),
@@ -283,7 +283,7 @@ TEST_F(ConversionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
             .Build();
     std::vector<ConversionReport> reports{
         ConversionReport(std::move(impression),
-                         /*conversion_data=*/"", clock().Now(), clock().Now(),
+                         /*conversion_data=*/0, clock().Now(), clock().Now(),
                          /*conversion_id=*/1)};
     reporter_->AddReportsToQueue(
         std::move(reports),

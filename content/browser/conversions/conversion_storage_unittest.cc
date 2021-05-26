@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_clock.h"
 #include "content/browser/conversions/conversion_report.h"
@@ -112,7 +111,7 @@ TEST_F(ConversionStorageTest,
   EXPECT_TRUE(storage->GetConversionsToReport(clock()->Now()).empty());
   EXPECT_TRUE(storage->GetActiveImpressions().empty());
   EXPECT_EQ(0, storage->DeleteExpiredImpressions());
-  EXPECT_EQ(0, storage->DeleteConversion(0UL));
+  EXPECT_EQ(0, storage->DeleteConversion(0));
   EXPECT_NO_FATAL_FAILURE(storage->ClearData(
       base::Time::Min(), base::Time::Max(), base::NullCallback()));
 }
@@ -165,7 +164,7 @@ TEST_F(ConversionStorageTest,
           .SetConversionOrigin(url::Origin::Create(GURL("https://sub.a.test")))
           .Build();
   storage()->StoreImpression(impression);
-  StorableConversion conversion("1", net::SchemefulSite(GURL("https://a.test")),
+  StorableConversion conversion(1, net::SchemefulSite(GURL("https://a.test")),
                                 impression.reporting_origin());
   EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
 }
@@ -387,7 +386,7 @@ TEST_F(ConversionStorageTest,
 TEST_F(ConversionStorageTest,
        NewImpressionForConvertedImpression_MarkedInactive) {
   storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now()).SetData("0").Build());
+      ImpressionBuilder(clock()->Now()).SetData(0).Build());
   EXPECT_TRUE(
       storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
@@ -397,8 +396,7 @@ TEST_F(ConversionStorageTest,
   DeleteConversionReports(storage()->GetConversionsToReport(clock()->Now()));
 
   // Store a new impression that should mark the first inactive.
-  auto new_impression =
-      ImpressionBuilder(clock()->Now()).SetData("1000").Build();
+  auto new_impression = ImpressionBuilder(clock()->Now()).SetData(1000).Build();
   storage()->StoreImpression(new_impression);
 
   // Only the new impression should convert.
@@ -464,8 +462,7 @@ TEST_F(
   clock()->Advance(base::TimeDelta::FromMilliseconds(3));
 
   // Make a conversion with different impression data.
-  auto third_impression =
-      ImpressionBuilder(clock()->Now()).SetData("10").Build();
+  auto third_impression = ImpressionBuilder(clock()->Now()).SetData(10).Build();
   storage()->StoreImpression(third_impression);
 
   ConversionReport third_expected_conversion =
@@ -615,14 +612,14 @@ TEST_F(ConversionStorageTest, ClearDataNullFilter) {
   for (int i = 0; i < 5; i++) {
     auto origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
-    StorableConversion conversion("1", net::SchemefulSite(origin), origin);
+    StorableConversion conversion(1, net::SchemefulSite(origin), origin);
     EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
   }
   clock()->Advance(base::TimeDelta::FromDays(1));
   for (int i = 5; i < 10; i++) {
     auto origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
-    StorableConversion conversion("1", net::SchemefulSite(origin), origin);
+    StorableConversion conversion(1, net::SchemefulSite(origin), origin);
     EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
   }
 
@@ -795,20 +792,19 @@ TEST_F(ConversionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
   delegate()->set_attribution_logic(
       StorableImpression::AttributionLogic::kNever);
   storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now()).SetData("5").Build());
+      ImpressionBuilder(clock()->Now()).SetData(5).Build());
 
   const auto conversion = DefaultConversion();
   EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(conversion));
 
   delegate()->set_attribution_logic(
       StorableImpression::AttributionLogic::kTruthfully);
-  const auto impression =
-      ImpressionBuilder(clock()->Now()).SetData("7").Build();
+  const auto impression = ImpressionBuilder(clock()->Now()).SetData(7).Build();
   storage()->StoreImpression(impression);
   EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
 
   storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now()).SetData("9").Build());
+      ImpressionBuilder(clock()->Now()).SetData(9).Build());
   EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(conversion));
 
   const ConversionReport expected_report =

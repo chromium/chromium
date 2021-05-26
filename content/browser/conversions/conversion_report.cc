@@ -9,7 +9,7 @@
 namespace content {
 
 ConversionReport::ConversionReport(const StorableImpression& impression,
-                                   const std::string& conversion_data,
+                                   uint64_t conversion_data,
                                    base::Time conversion_time,
                                    base::Time report_time,
                                    const absl::optional<int64_t>& conversion_id)

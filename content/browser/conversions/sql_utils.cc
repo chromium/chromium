@@ -5,6 +5,7 @@
 #include "content/browser/conversions/sql_utils.h"
 
 #include "base/check.h"
+#include "base/strings/string_number_conversions.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -19,6 +20,17 @@ std::string SerializeOrigin(const url::Origin& origin) {
 
 url::Origin DeserializeOrigin(const std::string& origin) {
   return url::Origin::Create(GURL(origin));
+}
+
+std::string SerializeImpressionOrConversionData(uint64_t data) {
+  return base::NumberToString(data);
+}
+
+uint64_t DeserializeImpressionOrConversionData(const std::string& data) {
+  uint64_t n;
+  bool success = base::StringToUint64(data, &n);
+  DCHECK(success);
+  return n;
 }
 
 }  // namespace content

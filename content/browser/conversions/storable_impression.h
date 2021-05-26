@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_CONVERSIONS_STORABLE_IMPRESSION_H_
 
 #include <stdint.h>
-#include <string>
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -44,7 +43,7 @@ class CONTENT_EXPORT StorableImpression {
   };
 
   // If |impression_id| is not available, 0 should be provided.
-  StorableImpression(const std::string& impression_data,
+  StorableImpression(uint64_t impression_data,
                      const url::Origin& impression_origin,
                      const url::Origin& conversion_origin,
                      const url::Origin& reporting_origin,
@@ -57,7 +56,7 @@ class CONTENT_EXPORT StorableImpression {
   StorableImpression& operator=(const StorableImpression& other) = delete;
   ~StorableImpression();
 
-  const std::string& impression_data() const { return impression_data_; }
+  uint64_t impression_data() const { return impression_data_; }
 
   const url::Origin& impression_origin() const { return impression_origin_; }
 
@@ -82,8 +81,7 @@ class CONTENT_EXPORT StorableImpression {
   net::SchemefulSite ConversionDestination() const;
 
  private:
-  // String representing a valid hexadecimal number.
-  std::string impression_data_;
+  uint64_t impression_data_;
   url::Origin impression_origin_;
   url::Origin conversion_origin_;
   url::Origin reporting_origin_;

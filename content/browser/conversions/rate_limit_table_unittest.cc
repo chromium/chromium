@@ -38,7 +38,7 @@ class RateLimitTableTest : public testing::Test {
                                 .SetConversionOrigin(conversion_origin)
                                 .SetImpressionId(impression_id)
                                 .Build(),
-                            /*conversion_data=*/"",
+                            /*conversion_data=*/0,
                             /*conversion_time=*/clock()->Now(),
                             /*report_time=*/clock()->Now(),
                             /*conversion_id=*/absl::nullopt);

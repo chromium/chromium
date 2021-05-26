@@ -42,10 +42,8 @@ const char kReportUrl[] =
 // are all the same.
 ConversionReport GetReport(int64_t conversion_id) {
   return ConversionReport(
-      ImpressionBuilder(base::Time())
-          .SetData(base::NumberToString(conversion_id))
-          .Build(),
-      /*conversion_data=*/base::NumberToString(conversion_id),
+      ImpressionBuilder(base::Time()).SetData(conversion_id).Build(),
+      /*conversion_data=*/conversion_id,
       /*conversion_time=*/base::Time(),
       /*report_time=*/base::Time(),
       /*conversion_id=*/conversion_id);
@@ -204,11 +202,11 @@ TEST_F(ConversionNetworkSenderTest,
 TEST_F(ConversionNetworkSenderTest, ReportSent_QueryParamsSetCorrectly) {
   auto impression =
       ImpressionBuilder(base::Time())
-          .SetData("100")
+          .SetData(100)
           .SetReportingOrigin(url::Origin::Create(GURL("https://a.com")))
           .Build();
   ConversionReport report(impression,
-                          /*conversion_data=*/"5",
+                          /*conversion_data=*/5,
                           /*conversion_time=*/base::Time(),
                           /*report_time=*/base::Time(),
                           /*conversion_id=*/1);
@@ -225,12 +223,12 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_QueryParamsSetCorrectly) {
 TEST_F(ConversionNetworkSenderTest, ReportSent_RequestAttributesSet) {
   auto impression =
       ImpressionBuilder(base::Time())
-          .SetData("1")
+          .SetData(1)
           .SetReportingOrigin(url::Origin::Create(GURL("https://a.com")))
           .SetConversionOrigin(url::Origin::Create(GURL("https://sub.b.com")))
           .Build();
   ConversionReport report(impression,
-                          /*conversion_data=*/"1",
+                          /*conversion_data=*/1,
                           /*conversion_time=*/base::Time(),
                           /*report_time=*/base::Time(),
                           /*conversion_id=*/1);

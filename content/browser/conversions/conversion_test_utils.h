@@ -220,7 +220,7 @@ class ImpressionBuilder {
 
   ImpressionBuilder& SetExpiry(base::TimeDelta delta);
 
-  ImpressionBuilder& SetData(const std::string& data);
+  ImpressionBuilder& SetData(uint64_t data);
 
   ImpressionBuilder& SetImpressionOrigin(const url::Origin& origin);
 
@@ -237,7 +237,7 @@ class ImpressionBuilder {
   StorableImpression Build() const;
 
  private:
-  std::string impression_data_;
+  uint64_t impression_data_;
   base::Time impression_time_;
   base::TimeDelta expiry_;
   url::Origin impression_origin_;

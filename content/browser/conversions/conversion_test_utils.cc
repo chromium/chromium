@@ -207,7 +207,7 @@ void TestConversionManager::Reset() {
 // Builds an impression with default values. This is done as a builder because
 // all values needed to be provided at construction time.
 ImpressionBuilder::ImpressionBuilder(base::Time time)
-    : impression_data_("123"),
+    : impression_data_(123),
       impression_time_(time),
       expiry_(base::TimeDelta::FromMilliseconds(kExpiryTime)),
       impression_origin_(url::Origin::Create(GURL(kDefaultImpressionOrigin))),
@@ -223,7 +223,7 @@ ImpressionBuilder& ImpressionBuilder::SetExpiry(base::TimeDelta delta) {
   return *this;
 }
 
-ImpressionBuilder& ImpressionBuilder::SetData(const std::string& data) {
+ImpressionBuilder& ImpressionBuilder::SetData(uint64_t data) {
   impression_data_ = data;
   return *this;
 }
@@ -273,7 +273,7 @@ StorableImpression ImpressionBuilder::Build() const {
 
 StorableConversion DefaultConversion() {
   StorableConversion conversion(
-      /*conversion_data=*/"111",
+      /*conversion_data=*/111,
       /*conversion_destination=*/
       net::SchemefulSite(GURL(kDefaultConversionDestination)),
       /*reporting_origin=*/url::Origin::Create(GURL(kDefaultReportOrigin)));

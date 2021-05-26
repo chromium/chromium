@@ -170,7 +170,8 @@ void ConversionStorageSql::StoreImpression(
       "VALUES (?,?,?,?,?,?,?,?,?,?)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
-  statement.BindString(0, impression.impression_data());
+  statement.BindString(
+      0, SerializeImpressionOrConversionData(impression.impression_data()));
   statement.BindString(1, serialized_impression_origin);
   statement.BindString(2, SerializeOrigin(impression.conversion_origin()));
   statement.BindString(3, serialized_conversion_destination);
@@ -239,7 +240,8 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
 
   while (statement.Step()) {
     int64_t impression_id = statement.ColumnInt64(0);
-    std::string impression_data = statement.ColumnString(1);
+    uint64_t impression_data =
+        DeserializeImpressionOrConversionData(statement.ColumnString(1));
     url::Origin impression_origin =
         DeserializeOrigin(statement.ColumnString(2));
     url::Origin conversion_origin =
@@ -302,7 +304,8 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     sql::Statement store_conversion_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kStoreConversionSql));
     store_conversion_statement.BindInt64(0, *report.impression.impression_id());
-    store_conversion_statement.BindString(1, report.conversion_data);
+    store_conversion_statement.BindString(
+        1, SerializeImpressionOrConversionData(report.conversion_data));
     store_conversion_statement.BindTime(2, current_time);
     store_conversion_statement.BindTime(3, report.report_time);
     if (!store_conversion_statement.Run())
@@ -392,7 +395,8 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
 
   std::vector<ConversionReport> conversions;
   while (statement.Step()) {
-    std::string conversion_data = statement.ColumnString(0);
+    uint64_t conversion_data =
+        DeserializeImpressionOrConversionData(statement.ColumnString(0));
     base::Time conversion_time = statement.ColumnTime(1);
     base::Time report_time = statement.ColumnTime(2);
     int64_t conversion_id = statement.ColumnInt64(3);
@@ -401,7 +405,8 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
     url::Origin conversion_origin =
         DeserializeOrigin(statement.ColumnString(5));
     url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(6));
-    std::string impression_data = statement.ColumnString(7);
+    uint64_t impression_data =
+        DeserializeImpressionOrConversionData(statement.ColumnString(7));
     base::Time impression_time = statement.ColumnTime(8);
     base::Time expiry_time = statement.ColumnTime(9);
     int64_t impression_id = statement.ColumnInt64(10);
@@ -779,7 +784,8 @@ std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(
 
   std::vector<StorableImpression> impressions;
   while (statement.Step()) {
-    std::string impression_data = statement.ColumnString(0);
+    uint64_t impression_data =
+        DeserializeImpressionOrConversionData(statement.ColumnString(0));
     url::Origin impression_origin =
         DeserializeOrigin(statement.ColumnString(1));
     url::Origin conversion_origin =

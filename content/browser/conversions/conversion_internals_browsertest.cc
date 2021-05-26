@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 
   TestConversionManager manager;
   manager.SetActiveImpressionsForWebUI(
-      {ImpressionBuilder(base::Time::Now()).SetData("100").Build(),
+      {ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
        ImpressionBuilder(base::Time::Now())
            .SetSourceType(StorableImpression::SourceType::kEvent)
            .SetPriority(10)
@@ -334,15 +334,15 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 
   TestConversionManager manager;
   ConversionReport report(
-      ImpressionBuilder(base::Time::Now()).SetData("100").Build(),
-      /*conversion_data=*/"7", /*conversion_time=*/base::Time::Now(),
+      ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
+      /*conversion_data=*/7, /*conversion_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now(), /*conversion_id=*/1);
   ConversionReport report2(
       ImpressionBuilder(base::Time::Now())
-          .SetData("200")
+          .SetData(200)
           .SetSourceType(StorableImpression::SourceType::kEvent)
           .Build(),
-      /*conversion_data=*/"7", /*conversion_time=*/base::Time::Now(),
+      /*conversion_data=*/7, /*conversion_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now(), /*conversion_id=*/1);
   manager.SetReportsForWebUI({report, report2});
   OverrideWebUIConversionManager(&manager);
@@ -371,8 +371,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 
   TestConversionManager manager;
   ConversionReport report(
-      ImpressionBuilder(base::Time::Now()).SetData("100").Build(),
-      /*conversion_data=*/"7", /*conversion_time=*/base::Time::Now(),
+      ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
+      /*conversion_data=*/7, /*conversion_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now(), /*conversion_id=*/1);
   manager.SetReportsForWebUI({report});
   OverrideWebUIConversionManager(&manager);
@@ -411,8 +411,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 
   TestConversionManager manager;
   ConversionReport report(
-      ImpressionBuilder(base::Time::Now()).SetData("100").Build(),
-      /*conversion_data=*/"7", /*conversion_time=*/base::Time::Now(),
+      ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
+      /*conversion_data=*/7, /*conversion_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now(), /*conversion_id=*/1);
   manager.SetReportsForWebUI({report});
   OverrideWebUIConversionManager(&manager);

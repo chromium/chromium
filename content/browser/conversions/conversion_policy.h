@@ -45,13 +45,10 @@ class CONTENT_EXPORT ConversionPolicy {
 
   // Gets the sanitized conversion data for a conversion. This strips entropy
   // from the provided to data to at most 3 bits of information.
-  virtual std::string GetSanitizedConversionData(
-      uint64_t conversion_data) const;
+  virtual uint64_t GetSanitizedConversionData(uint64_t conversion_data) const;
 
-  // Gets the sanitized impression data for an impression. Returns the decoded
-  // number as a base 10 string.
-  virtual std::string GetSanitizedImpressionData(
-      uint64_t impression_data) const;
+  // Gets the sanitized impression data for an impression.
+  virtual uint64_t GetSanitizedImpressionData(uint64_t impression_data) const;
 
   // Returns the expiry time for an impression that is clamped to a maximum
   // value of 30 days from |impression_time|.

@@ -9,7 +9,7 @@
 namespace content {
 
 StorableImpression::StorableImpression(
-    const std::string& impression_data,
+    uint64_t impression_data,
     const url::Origin& impression_origin,
     const url::Origin& conversion_origin,
     const url::Origin& reporting_origin,

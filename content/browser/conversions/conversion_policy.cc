@@ -7,7 +7,6 @@
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 
 namespace content {
@@ -51,7 +50,7 @@ ConversionPolicy::ConversionPolicy(
 
 ConversionPolicy::~ConversionPolicy() = default;
 
-std::string ConversionPolicy::GetSanitizedConversionData(
+uint64_t ConversionPolicy::GetSanitizedConversionData(
     uint64_t conversion_data) const {
   // Add noise to the conversion when the value is first sanitized from a
   // conversion registration event. This noised data will be used for all
@@ -60,13 +59,13 @@ std::string ConversionPolicy::GetSanitizedConversionData(
     conversion_data = noise_provider_->GetNoisedConversionData(conversion_data);
 
   // Allow at most 3 bits of entropy in conversion data.
-  return base::NumberToString(conversion_data % kMaxAllowedConversionValues);
+  return conversion_data % kMaxAllowedConversionValues;
 }
 
-std::string ConversionPolicy::GetSanitizedImpressionData(
+uint64_t ConversionPolicy::GetSanitizedImpressionData(
     uint64_t impression_data) const {
   // Impression data is allowed the full 64 bits.
-  return base::NumberToString(impression_data);
+  return impression_data;
 }
 
 base::Time ConversionPolicy::GetExpiryTimeForImpression(

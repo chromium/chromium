@@ -11,10 +11,10 @@
 namespace content {
 
 StorableConversion::StorableConversion(
-    std::string conversion_data,
+    uint64_t conversion_data,
     net::SchemefulSite conversion_destination,
     url::Origin reporting_origin)
-    : conversion_data_(std::move(conversion_data)),
+    : conversion_data_(conversion_data),
       conversion_destination_(std::move(conversion_destination)),
       reporting_origin_(std::move(reporting_origin)) {
   DCHECK(!reporting_origin_.opaque());
