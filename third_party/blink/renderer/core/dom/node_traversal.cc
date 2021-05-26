@@ -124,6 +124,18 @@ Node* NodeTraversal::Previous(const Node& current, const Node* stay_within) {
   return current.parentNode();
 }
 
+Node* NodeTraversal::PreviousAbsoluteSiblingIncludingPseudo(
+    const Node& current,
+    const Node* stay_within) {
+  for (Node& iter : InclusiveAncestorsOf(current)) {
+    if (iter == stay_within)
+      return nullptr;
+    if (Node* result = iter.PseudoAwarePreviousSibling())
+      return result;
+  }
+  return nullptr;
+}
+
 Node* NodeTraversal::PreviousAbsoluteSibling(const Node& current,
                                              const Node* stay_within) {
   if (current == stay_within)

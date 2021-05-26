@@ -213,6 +213,9 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Get an AXObject* backed by the passed-in DOM node or the node's layout
   // object, whichever is available.
+  // If it no longer the correct type of AXObject (AXNodeObject/AXLayoutObject),
+  // will Invalidate() the AXObject so that it is refreshed with a new object
+  // when safe to do so.
   AXObject* Get(const Node*);
   AXObject* Get(const LayoutObject*);
 

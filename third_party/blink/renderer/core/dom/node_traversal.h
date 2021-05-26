@@ -95,7 +95,11 @@ class NodeTraversal {
   CORE_EXPORT static Node* NextIncludingPseudo(
       const Node&,
       const Node* stay_within = nullptr);
-  static Node* NextIncludingPseudoSkippingChildren(
+  // See comment for |FlatTreeTraversal::PreviousAbsoluteSibling| for details.
+  CORE_EXPORT static Node* PreviousAbsoluteSiblingIncludingPseudo(
+      const Node&,
+      const Node* stay_within = nullptr);
+  CORE_EXPORT static Node* NextIncludingPseudoSkippingChildren(
       const Node&,
       const Node* stay_within = nullptr);
 
