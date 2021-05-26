@@ -14,6 +14,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -68,6 +69,8 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
         Preference resetButton = findPreference(RESET_FLOC_BUTTON);
         resetButton.setOnPreferenceClickListener(this);
         resetButton.setTitle(R.string.privacy_sandbox_floc_reset_button);
+
+        RecordUserAction.record("Settings.PrivacySandbox.FlocSubpageOpened");
 
         updateInformation();
     }

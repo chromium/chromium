@@ -37,7 +37,10 @@ android_library("java") {
 
 android_library("javatests") {
   testonly = true
-  sources = [ "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragmentTest.java" ]
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FlocSettingsFragmentTest.java",
+    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragmentTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",
@@ -48,6 +51,7 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit:junit",
   ]
 }

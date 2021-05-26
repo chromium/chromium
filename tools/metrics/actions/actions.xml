@@ -22031,6 +22031,15 @@ should be able to be added at any place in this file.
   <description>User enables FLoC on the privacy sandbox page.</description>
 </action>
 
+<action name="Settings.PrivacySandbox.FlocSubpageOpened">
+  <owner>andzaytsev@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User opens the FLoC subpage by clicking on an element on the privacy sandbox
+    page.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.OpenedFromCookiesPageToast">
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
