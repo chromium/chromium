@@ -42,15 +42,15 @@ declare_args() {
 # Allows different projects to specify their own suppression/ignore lists for
 # sanitizer tools.
 # asan_suppressions_file = "path/to/asan_suppressions.cc"
-# asan_win_blacklist_path = "path/to/asan/blocklist_win.txt"
+# asan_win_ignorelist_path = "path/to/asan/blocklist_win.txt"
 # lsan_suppressions_file = "path/to/lsan_suppressions.cc"
 # tsan_suppressions_file = "path/to/tsan_suppressions.cc"
-# tsan_blacklist_path = "path/to/tsan/ignores.txt"
-# msan_blacklist_path = "path/to/msan/blacklist.txt"
-# ubsan_blacklist_path = "path/to/ubsan/blacklist.txt"
-# ubsan_vptr_blacklist_path = "path/to/ubsan/vptr_blacklist.txt"
-# ubsan_security_blacklist_path = "path/to/ubsan/security_blacklist.txt"
-# cfi_blacklist_path = "path/to/cfi/ignores.txt"
+# tsan_ignorelist_path = "path/to/tsan/ignores.txt"
+# msan_ignorelist_path = "path/to/msan/ignorelist.txt"
+# ubsan_ignorelist_path = "path/to/ubsan/ignorelist.txt"
+# ubsan_vptr_ignorelist_path = "path/to/ubsan/vptr_ignorelist.txt"
+# ubsan_security_ignorelist_path = "path/to/ubsan/security_ignorelist.txt"
+# cfi_ignorelist_path = "path/to/cfi/ignores.txt"
 
 declare_args() {
   # Android 32-bit non-component, non-clang builds cannot have symbol_level=2
