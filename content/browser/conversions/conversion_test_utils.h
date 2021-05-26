@@ -88,6 +88,8 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
   int GetMaxImpressionsPerOrigin() const override;
   int GetMaxConversionsPerOrigin() const override;
   RateLimitConfig GetRateLimits() const override;
+  StorableImpression::AttributionLogic SelectAttributionLogic(
+      const StorableImpression& impression) const override;
 
   void set_max_conversions_per_impression(int max) {
     max_conversions_per_impression_ = max;
@@ -103,6 +105,11 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
 
   void set_rate_limits(RateLimitConfig c) { rate_limits_ = c; }
 
+  void set_attribution_logic(
+      StorableImpression::AttributionLogic attribution_logic) {
+    attribution_logic_ = attribution_logic;
+  }
+
   void set_report_time_ms(int report_time_ms) {
     report_time_ms_ = report_time_ms;
   }
@@ -116,6 +123,9 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
       .time_window = base::TimeDelta::Max(),
       .max_attributions_per_window = INT_MAX,
   };
+
+  StorableImpression::AttributionLogic attribution_logic_ =
+      StorableImpression::AttributionLogic::kTruthfully;
 
   int report_time_ms_ = 0;
 };

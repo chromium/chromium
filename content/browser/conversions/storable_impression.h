@@ -33,6 +33,16 @@ class CONTENT_EXPORT StorableImpression {
     kMaxValue = kEvent,
   };
 
+  // Denotes the attribution logic for an impression.
+  // TODO(apaseltiner): Add `kFalsely`.
+  enum class AttributionLogic {
+    // Never send a report for this impression even if it gets attributed.
+    kNever = 0,
+    // Attribute the impression truthfully.
+    kTruthfully = 1,
+    kMaxValue = kTruthfully,
+  };
+
   // If |impression_id| is not available, 0 should be provided.
   StorableImpression(const std::string& impression_data,
                      const url::Origin& impression_origin,

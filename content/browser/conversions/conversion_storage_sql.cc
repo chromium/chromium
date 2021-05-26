@@ -178,7 +178,8 @@ void ConversionStorageSql::StoreImpression(
   statement.BindTime(5, impression.impression_time());
   statement.BindTime(6, impression.expiry_time());
   statement.BindInt(7, static_cast<int>(impression.source_type()));
-  statement.BindInt(8, 1 /*true*/);
+  statement.BindInt(
+      8, static_cast<int>(delegate_->SelectAttributionLogic(impression)));
   statement.BindInt64(9, impression.priority());
   statement.Run();
 
@@ -216,7 +217,8 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   // past their expiry time.
   const char kGetMatchingImpressionsSql[] =
       "SELECT impression_id, impression_data, impression_origin, "
-      "conversion_origin, impression_time, expiry_time, priority "
+      "conversion_origin, impression_time, expiry_time, priority, "
+      "attributed_truthfully "
       "FROM impressions "
       "WHERE conversion_destination = ? AND reporting_origin = ? "
       "AND active = 1 AND expiry_time > ? AND source_type = ?"
@@ -230,6 +232,10 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   statement.BindInt(3, static_cast<int>(kSourceType));
 
   std::vector<StorableImpression> impressions;
+
+  // Store attribution logic for ease of lookup in conversion-storage below.
+  base::flat_map<int64_t, StorableImpression::AttributionLogic>
+      attribution_logics;
 
   while (statement.Step()) {
     int64_t impression_id = statement.ColumnInt64(0);
@@ -246,12 +252,16 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     base::Time impression_time = statement.ColumnTime(4);
     base::Time expiry_time = statement.ColumnTime(5);
     int64_t attribution_source_priority = statement.ColumnInt64(6);
+    StorableImpression::AttributionLogic attribution_logic =
+        static_cast<StorableImpression::AttributionLogic>(
+            statement.ColumnInt(7));
 
     StorableImpression impression(impression_data, impression_origin,
                                   conversion_origin, reporting_origin,
                                   impression_time, expiry_time, kSourceType,
                                   attribution_source_priority, impression_id);
     impressions.push_back(std::move(impression));
+    attribution_logics.insert_or_assign(impression_id, attribution_logic);
   }
 
   // Exit early if the last statement wasn't valid or if we have no impressions.
@@ -277,18 +287,27 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   if (!transaction.Begin())
     return false;
 
-  const char kStoreConversionSql[] =
-      "INSERT INTO conversions "
-      "(impression_id, conversion_data, conversion_time, report_time) "
-      "VALUES(?,?,?,?)";
-  sql::Statement store_conversion_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kStoreConversionSql));
-  store_conversion_statement.BindInt64(0, *report.impression.impression_id());
-  store_conversion_statement.BindString(1, report.conversion_data);
-  store_conversion_statement.BindTime(2, current_time);
-  store_conversion_statement.BindTime(3, report.report_time);
-  if (!store_conversion_statement.Run())
-    return false;
+  // Reports with `AttributionLogic::kNever` should be included in all
+  // attribution operations and matching, but only `kTruthfully` should generate
+  // reports that get sent.
+  const bool create_report =
+      attribution_logics[*report.impression.impression_id()] ==
+      StorableImpression::AttributionLogic::kTruthfully;
+
+  if (create_report) {
+    const char kStoreConversionSql[] =
+        "INSERT INTO conversions "
+        "(impression_id, conversion_data, conversion_time, report_time) "
+        "VALUES(?,?,?,?)";
+    sql::Statement store_conversion_statement(
+        db_->GetCachedStatement(SQL_FROM_HERE, kStoreConversionSql));
+    store_conversion_statement.BindInt64(0, *report.impression.impression_id());
+    store_conversion_statement.BindString(1, report.conversion_data);
+    store_conversion_statement.BindTime(2, current_time);
+    store_conversion_statement.BindTime(3, report.report_time);
+    if (!store_conversion_statement.Run())
+      return false;
+  }
 
   // Mark impressions inactive if they hit the max conversions allowed limit
   // supplied by the delegate. Because only active impressions log conversions,
@@ -337,10 +356,13 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     // |RateLimitTable::ClearDataForImpressionIds()| here.
   }
 
-  if (!rate_limit_table_.AddRateLimit(db_.get(), report))
+  if (create_report && !rate_limit_table_.AddRateLimit(db_.get(), report))
     return false;
 
-  return transaction.Commit();
+  if (!transaction.Commit())
+    return false;
+
+  return create_report;
 }
 
 std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
@@ -924,9 +946,8 @@ bool ConversionStorageSql::CreateSchema() {
   //     conversions table meaning it cannot be deleted yet.
   // |source_type| is the type of the source of the impression, currently always
   // |kNavigation|.
-  // |attributed_truthfully| is whether the impression was noisily attributed:
-  // the impression was either marked inactive to start so it would never send a
-  // report, or a fake conversion report was generated for the impression.
+  // |attributed_truthfully| corresponds to the
+  // |StorableImpression::AttributionLogic| enum.
   const char kImpressionTableSql[] =
       "CREATE TABLE IF NOT EXISTS impressions"
       "(impression_id INTEGER PRIMARY KEY,"

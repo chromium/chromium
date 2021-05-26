@@ -70,6 +70,12 @@ ConversionStorageDelegateImpl::GetRateLimits() const {
   };
 }
 
+StorableImpression::AttributionLogic
+ConversionStorageDelegateImpl::SelectAttributionLogic(
+    const StorableImpression& impression) const {
+  return StorableImpression::AttributionLogic::kTruthfully;
+}
+
 base::Time ConversionStorageDelegateImpl::GetReportTimeForConversion(
     const ConversionReport& report) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -73,6 +73,11 @@ class ConversionStorage {
 
     // Returns the rate limits for capping attributions per window.
     virtual RateLimitConfig GetRateLimits() const = 0;
+
+    // Selects how to handle the given impression; may involve RNG or other
+    // dynamic criteria.
+    virtual StorableImpression::AttributionLogic SelectAttributionLogic(
+        const StorableImpression& impression) const = 0;
   };
   virtual ~ConversionStorage() = default;
 

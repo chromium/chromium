@@ -38,6 +38,8 @@ class CONTENT_EXPORT ConversionStorageDelegateImpl
   int GetMaxImpressionsPerOrigin() const override;
   int GetMaxConversionsPerOrigin() const override;
   RateLimitConfig GetRateLimits() const override;
+  StorableImpression::AttributionLogic SelectAttributionLogic(
+      const StorableImpression& impression) const override;
 
  private:
   // Get the time a conversion report should be sent, by batching reports into

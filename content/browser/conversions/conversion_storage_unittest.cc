@@ -769,4 +769,77 @@ TEST_F(ConversionStorageTest, MaxAttributionReportsBetweenSites) {
   EXPECT_TRUE(ReportsEqual({expected_report, expected_report}, actual_reports));
 }
 
+TEST_F(ConversionStorageTest, NeverAttributeImpression_ReportNotStored) {
+  delegate()->set_attribution_logic(
+      StorableImpression::AttributionLogic::kNever);
+  delegate()->set_max_conversions_per_impression(1);
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+
+  const auto conversion = DefaultConversion();
+  EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(conversion));
+  EXPECT_TRUE(storage()->GetActiveImpressions().empty());
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_TRUE(ReportsEqual({}, actual_reports));
+}
+
+TEST_F(ConversionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
+  delegate()->set_rate_limits({
+      .time_window = base::TimeDelta::Max(),
+      .max_attributions_per_window = 1,
+  });
+
+  delegate()->set_attribution_logic(
+      StorableImpression::AttributionLogic::kNever);
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData("5").Build());
+
+  const auto conversion = DefaultConversion();
+  EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(conversion));
+
+  delegate()->set_attribution_logic(
+      StorableImpression::AttributionLogic::kTruthfully);
+  const auto impression =
+      ImpressionBuilder(clock()->Now()).SetData("7").Build();
+  storage()->StoreImpression(impression);
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
+
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData("9").Build());
+  EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(conversion));
+
+  const ConversionReport expected_report =
+      GetExpectedReport(impression, conversion);
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_TRUE(ReportsEqual({expected_report}, actual_reports));
+}
+
+TEST_F(ConversionStorageTest,
+       NeverAndTruthfullyAttributeImpressions_ReportNotStored) {
+  delegate()->set_attribution_logic(
+      StorableImpression::AttributionLogic::kTruthfully);
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(1));
+
+  delegate()->set_attribution_logic(
+      StorableImpression::AttributionLogic::kNever);
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+
+  const auto conversion = DefaultConversion();
+  EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(conversion));
+  EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(conversion));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_TRUE(ReportsEqual({}, actual_reports));
+}
+
 }  // namespace content

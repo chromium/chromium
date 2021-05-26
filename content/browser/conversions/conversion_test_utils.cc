@@ -119,6 +119,11 @@ ConversionStorage::Delegate::RateLimitConfig
 ConfigurableStorageDelegate::GetRateLimits() const {
   return rate_limits_;
 }
+StorableImpression::AttributionLogic
+ConfigurableStorageDelegate::SelectAttributionLogic(
+    const StorableImpression& impression) const {
+  return attribution_logic_;
+}
 
 ConversionManager* TestManagerProvider::GetManager(
     WebContents* web_contents) const {
