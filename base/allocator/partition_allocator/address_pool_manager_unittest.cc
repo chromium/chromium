@@ -193,7 +193,8 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByNonBRPPool) {
   for (size_t i = 0; i < kAllocCount; ++i) {
     addrs[i] = AddressPoolManager::GetInstance()->Reserve(
         GetNonBRPPool(), nullptr,
-        DirectMapAllocationGranularity() * kNumPages[i]);
+        AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap *
+            kNumPages[i]);
     EXPECT_TRUE(addrs[i]);
     EXPECT_TRUE(
         !(reinterpret_cast<uintptr_t>(addrs[i]) & kSuperPageOffsetMask));
@@ -201,9 +202,11 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByNonBRPPool) {
   for (size_t i = 0; i < kAllocCount; ++i) {
     const char* ptr = reinterpret_cast<const char*>(addrs[i]);
     size_t num_pages =
-        bits::AlignUp(kNumPages[i] * DirectMapAllocationGranularity(),
-                      kSuperPageSize) /
-        DirectMapAllocationGranularity();
+        bits::AlignUp(
+            kNumPages[i] *
+                AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap,
+            kSuperPageSize) /
+        AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap;
     for (size_t j = 0; j < num_pages; ++j) {
       if (j < kNumPages[i]) {
         EXPECT_TRUE(AddressPoolManager::IsManagedByNonBRPPool(ptr));
@@ -211,13 +214,14 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByNonBRPPool) {
         EXPECT_FALSE(AddressPoolManager::IsManagedByNonBRPPool(ptr));
       }
       EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(ptr));
-      ptr += DirectMapAllocationGranularity();
+      ptr += AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap;
     }
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
     AddressPoolManager::GetInstance()->UnreserveAndDecommit(
         GetNonBRPPool(), addrs[i],
-        DirectMapAllocationGranularity() * kNumPages[i]);
+        AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap *
+            kNumPages[i]);
     EXPECT_FALSE(AddressPoolManager::IsManagedByNonBRPPool(addrs[i]));
     EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(addrs[i]));
   }

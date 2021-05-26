@@ -14,8 +14,16 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
+
+// *Shift() and *Size() functions used in this file aren't constexpr on
+// OS_APPLE, but need to be used in constexpr context here. We're fine since
+// this is 32-bit only logic and we don't build 32-bit for OS_APPLE.
+#if defined(OS_APPLE)
+#error "32-bit GigaCage isn't supported on Apple OSes"
+#endif
 
 namespace base {
 
@@ -31,37 +39,47 @@ class BASE_EXPORT AddressPoolManagerBitmap {
   static constexpr uint64_t kGiB = 1024 * 1024 * 1024ull;
   static constexpr uint64_t kAddressSpaceSize = 4ull * kGiB;
 
-  // If !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT),
-  // BRP pool includes only normal buckets. Despite normal buckets operate at
-  // the 2MB super page granularity, we need to lower granularity down to
-  // partition page level to eliminate the guard pages at the ends. This is
-  // needed so that pointers immediately past an allocation that immediately
-  // precede a super page in BRP pool don't accidentally fall into that pool.
-  // If BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT), BRP pool includes both normal
-  // buckets and direct-maps. Because of the guard pages, we still need to use
-  // PartitionPageSize(). c.f. GetDirectMapMetadataAndGuardPagesSize().
-  // As long as DirectMapAllocationGranularity() is no smaller than
-  // PageAllocationGranularity(), which it is, we don't need to decrease
-  // the bitmap granularity any further.
+  // For BRP pool, we use partition page granularity to eliminate the guard
+  // pages at the ends. This is needed so that pointers to the end of an
+  // allocation that immediately precede a super page in BRP pool don't
+  // accidentally fall into that pool.
+  //
+  // Note, direct map allocations may also belong to this pool (depending on the
+  // ENABLE_BRP_DIRECTMAP_SUPPORT setting). The same logic as above applies. It
+  // is important to note, however, that the granularity used here has to be a
+  // minimum of partition page size and direct map allocation granularity. Since
+  // DirectMapAllocationGranularity() is no smaller than
+  // PageAllocationGranularity(), we don't need to decrease the bitmap
+  // granularity any further.
   static constexpr size_t kBitShiftOfBRPPoolBitmap = PartitionPageShift();
   static constexpr size_t kBytesPer1BitOfBRPPoolBitmap = PartitionPageSize();
+  static_assert(kBytesPer1BitOfBRPPoolBitmap == 1 << kBitShiftOfBRPPoolBitmap,
+                "");
   static constexpr size_t kGuardOffsetOfBRPPoolBitmap = 1;
   static constexpr size_t kGuardBitsOfBRPPoolBitmap = 2;
   static constexpr size_t kBRPPoolBits =
       kAddressSpaceSize / kBytesPer1BitOfBRPPoolBitmap;
 
-  // Non-BRP pool includes both normal bucket and direct map allocations, so
-  // DirectMapAllocationGranularity() has to be used. No need to eliminate guard
-  // pages at the ends, as this is a BackupRefPtr-specific concern.
+  // Non-BRP pool may include both normal bucket and direct map allocations, so
+  // the bitmap granularity has to be at least as small as
+  // DirectMapAllocationGranularity(). No need to eliminate guard pages at the
+  // ends, as this is a BackupRefPtr-specific concern, hence no need to lower
+  // the granularity to partition page size.
+  static constexpr size_t kBitShiftOfNonBRPPoolBitmap =
+      DirectMapAllocationGranularityShift();
+  static constexpr size_t kBytesPer1BitOfNonBRPPoolBitmap =
+      DirectMapAllocationGranularity();
+  static_assert(kBytesPer1BitOfNonBRPPoolBitmap ==
+                    1 << kBitShiftOfNonBRPPoolBitmap,
+                "");
   static constexpr size_t kNonBRPPoolBits =
-      kAddressSpaceSize / DirectMapAllocationGranularity();
+      kAddressSpaceSize / kBytesPer1BitOfNonBRPPoolBitmap;
 
   // Returns false for nullptr.
   static bool IsManagedByNonBRPPool(const void* address) {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
     static_assert(
-        std::numeric_limits<uintptr_t>::max() /
-                DirectMapAllocationGranularity() <
+        std::numeric_limits<uintptr_t>::max() >> kBitShiftOfNonBRPPoolBitmap <
             non_brp_pool_bits_.size(),
         "The bitmap is too small, will result in unchecked out of bounds "
         "accesses.");
@@ -69,8 +87,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
     // is responsible for guaranteeing that the address is inside a valid
     // allocation and the deallocation call won't race with this call.
     return TS_UNCHECKED_READ(
-        non_brp_pool_bits_)[address_as_uintptr /
-                            DirectMapAllocationGranularity()];
+        non_brp_pool_bits_)[address_as_uintptr >> kBitShiftOfNonBRPPoolBitmap];
   }
 
   // Returns false for nullptr.

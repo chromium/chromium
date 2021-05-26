@@ -311,9 +311,12 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
   AutoLock guard(AddressPoolManagerBitmap::GetLock());
   if (handle == kNonBRPPoolHandle) {
-    SetBitmap(AddressPoolManagerBitmap::non_brp_pool_bits_,
-              ptr_as_uintptr / DirectMapAllocationGranularity(),
-              length / DirectMapAllocationGranularity());
+    PA_DCHECK((length %
+               AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap) == 0);
+    SetBitmap(
+        AddressPoolManagerBitmap::non_brp_pool_bits_,
+        ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap,
+        length >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap);
   } else {
     PA_DCHECK(handle == kBRPPoolHandle);
     PA_DCHECK(
@@ -353,13 +356,21 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
                                     uintptr_t address,
                                     size_t length) {
   AutoLock guard(AddressPoolManagerBitmap::GetLock());
-  // Currently, address regions allocated by kBRPPoolHandle are never freed
-  // in PartitionAlloc, except on error paths, because only normal buckets are
-  // allocated from there. Thus LIKELY is used.
+  // Address regions allocated for normal buckets are never freed, so frequency
+  // of codepaths taken depends solely on which pool direct map allocations go
+  // to. In the ENABLE_BRP_DIRECTMAP_SUPPORT case, they usually go to BRP pool,
+  // and non-BRP pool otherwise.
+#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  if (UNLIKELY(handle == kNonBRPPoolHandle)) {
+#else
   if (LIKELY(handle == kNonBRPPoolHandle)) {
-    ResetBitmap(AddressPoolManagerBitmap::non_brp_pool_bits_,
-                address / DirectMapAllocationGranularity(),
-                length / DirectMapAllocationGranularity());
+#endif
+    PA_DCHECK((length %
+               AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap) == 0);
+    ResetBitmap(
+        AddressPoolManagerBitmap::non_brp_pool_bits_,
+        address >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap,
+        length >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap);
   } else {
     PA_DCHECK(handle == kBRPPoolHandle);
     PA_DCHECK(
