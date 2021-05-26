@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, CpuUsage, ExternalPowerSource, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, CpuUsage, ConnectionType, ExternalPowerSource, KeyboardInfo, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js'
 import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!BatteryChargeStatus>} */
@@ -296,3 +296,28 @@ export let fakeCellularNetwork = {
   macAddress: '85:C5:A6:30:3F:31',
   ipConfigProperties: null,
 };
+
+/** @type {!Array<!KeyboardInfo>} */
+export let fakeKeyboards = [
+  {
+    id: 3,
+    connectionType: ConnectionType.kInternal,
+    name: 'AT Translated Set 2 keyboard',
+  },
+];
+
+/** @type {!Array<!TouchDeviceInfo>} */
+export let fakeTouchDevices = [
+  {
+    id: 6,
+    connectionType: ConnectionType.kInternal,
+    type: TouchDeviceType.kPointer,
+    name: 'Sample touchpad',
+  },
+  {
+    id: 7,
+    connectionType: ConnectionType.kInternal,
+    type: TouchDeviceType.kDirect,
+    name: 'Sample touchscreen',
+  },
+];

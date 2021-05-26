@@ -26,6 +26,7 @@ js_type_check("closure_compile_module") {
     ":fake_network_health_provider",
     ":fake_system_data_provider",
     ":fake_system_routine_controller",
+    ":input_list",
     ":memory_card",
     ":mojo_interface_provider",
     ":mojo_utils",
@@ -166,6 +167,12 @@ js_library("icons") {
   ]
 }
 
+js_library("input_list") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("memory_card") {
   deps = [
     ":data_point",
@@ -279,6 +286,7 @@ js_library("system_page") {
     ":diagnostics_browser_proxy",
     ":diagnostics_card",
     ":diagnostics_types",
+    ":input_list",
     ":memory_card",
     ":mojo_interface_provider",
     ":overview_card",
@@ -316,6 +324,7 @@ html_to_js("web_components") {
     "diagnostics_shared_css.js",
     "ethernet_info.js",
     "icons.js",
+    "input_list.js",
     "memory_card.js",
     "network_card.js",
     "network_info.js",

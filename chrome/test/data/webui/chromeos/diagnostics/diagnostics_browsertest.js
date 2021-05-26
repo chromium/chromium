@@ -58,6 +58,7 @@ const debug_suites_list = [
   'FakeNetworkHealthProvider',
   'FakeSystemDataProvider',
   'FakeSystemRoutineContoller',
+  'InputList',
   'MemoryCard',
   'NetworkCard',
   'NetworkInfo',

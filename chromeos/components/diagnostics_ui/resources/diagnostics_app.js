@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/ash/common/navigation_view_panel.js';
+import './input_list.js';
 import './network_list.js';
 import './strings.m.js';
 import './system_page.js';
@@ -26,17 +27,39 @@ Polymer({
 
   properties: {
     /** @private {boolean} */
+    showNavPanel_: {
+      type: Boolean,
+      computed: 'computeShowNavPanel_(isNetworkingEnabled_, isInputEnabled_)',
+    },
+
+    /** @private {boolean} */
     isNetworkingEnabled_: {
       type: Boolean,
       value: loadTimeData.getBoolean('isNetworkingEnabled'),
     },
+
+    /** @private {boolean} */
+    isInputEnabled_: {
+      type: Boolean,
+      value: loadTimeData.getBoolean('isInputEnabled'),
+    },
+  },
+
+  /** @private */
+  computeShowNavPanel_(isNetworkingEnabled, isInputEnabled) {
+    return isNetworkingEnabled || isInputEnabled;
   },
 
   /** @override */
   attached() {
-    if (this.isNetworkingEnabled_) {
+    if (this.showNavPanel_) {
       this.$$('#navigationPanel').addSelector('System', 'system-page');
-      this.$$('#navigationPanel').addSelector('Connectivity', 'network-list');
+      if (this.isNetworkingEnabled_) {
+        this.$$('#navigationPanel').addSelector('Connectivity', 'network-list');
+      }
+      if (this.isInputEnabled_) {
+        this.$$('#navigationPanel').addSelector('Input', 'input-list');
+      }
     }
   },
 });

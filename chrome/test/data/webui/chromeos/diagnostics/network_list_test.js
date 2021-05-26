@@ -26,10 +26,6 @@ export function networkListTestSuite() {
     setNetworkHealthProviderForTesting(provider);
   });
 
-  setup(() => {
-    document.body.innerHTML = '';
-  });
-
   teardown(() => {
     networkListElement.remove();
     networkListElement = null;

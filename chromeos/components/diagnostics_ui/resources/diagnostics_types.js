@@ -10,6 +10,7 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import './input_data_provider.mojom-lite.js';
 import './system_data_provider.mojom-lite.js';
 import './system_routine_controller.mojom-lite.js';
 
@@ -385,25 +386,29 @@ export let NetworkType = {
  * Type alias for ConnectionType.
  * @typedef {chromeos.diagnostics.mojom.ConnectionType}
  */
-export let ConnectionType;
+export let ConnectionType =
+    chromeos.diagnostics.mojom.ConnectionType;
 
 /**
  * Type alias for KeyboardInfo.
  * @typedef {chromeos.diagnostics.mojom.KeyboardInfo}
  */
-export let KeyboardInfo;
+export let KeyboardInfo =
+    chromeos.diagnostics.mojom.KeyboardInfo;
 
 /**
  * Type alias for TouchDeviceType.
  * @typedef {chromeos.diagnostics.mojom.TouchDeviceType}
  */
-export let TouchDeviceType;
+export let TouchDeviceType =
+    chromeos.diagnostics.mojom.TouchDeviceType;
 
 /**
  * Type alias for TouchDeviceInfo.
  * @typedef {chromeos.diagnostics.mojom.TouchDeviceInfo}
  */
-export let TouchDeviceInfo;
+export let TouchDeviceInfo =
+    chromeos.diagnostics.mojom.TouchDeviceInfo;
 
 /**
  * Type alias for the the response from InputDataProvider.GetConnectedDevices.
@@ -416,4 +421,5 @@ export let GetConnectedDevicesResponse;
  * Type alias for InputDataProviderInterface.
  * @typedef {chromeos.diagnostics.mojom.InputDataProviderInterface}
  */
-export let InputDataProviderInterface;
+export let InputDataProviderInterface =
+    chromeos.diagnostics.mojom.InputDataProviderInterface;

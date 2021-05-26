@@ -23,6 +23,7 @@ js_type_check("closure_compile") {
     ":fake_network_health_provider_test",
     ":fake_system_data_provider_test",
     ":fake_system_routine_controller_test",
+    ":input_list_test",
     ":memory_card_test",
     ":mojo_interface_provider_test",
     ":network_card_test",
@@ -169,6 +170,16 @@ js_library("fake_system_routine_controller_test") {
     "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
     "//chromeos/components/diagnostics_ui/resources:fake_system_routine_controller",
   ]
+}
+
+js_library("input_list_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:fake_data",
+    "//chromeos/components/diagnostics_ui/resources:input_list",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("memory_card_test") {
