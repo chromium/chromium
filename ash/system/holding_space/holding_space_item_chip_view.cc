@@ -37,6 +37,14 @@ constexpr gfx::Insets kPadding(8, 8, 8, /*right=*/10);
 constexpr int kPreferredHeight = 40;
 constexpr int kPreferredWidth = 160;
 
+// Helpers ---------------------------------------------------------------------
+
+// TODO(crbug.com/1202796): Create ash colors.
+SkColor GetMultiSelectTextColor() {
+  return AshColorProvider::Get()->IsDarkModeEnabled() ? gfx::kGoogleBlue100
+                                                      : gfx::kGoogleBlue800;
+}
+
 // PaintCallbackLabel ----------------------------------------------------------
 
 class PaintCallbackLabel : public views::Label {
@@ -207,8 +215,7 @@ void HoldingSpaceItemChipView::UpdateLabel() {
 
   label_->SetEnabledColor(
       selected() && multiselect
-          ? AshColorProvider::Get()->GetControlsLayerColor(
-                AshColorProvider::ControlsLayerType::kFocusRingColor)
+          ? GetMultiSelectTextColor()
           : AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
