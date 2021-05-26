@@ -57,6 +57,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
@@ -472,7 +473,11 @@ void FrameFetchContext::AddClientHintsIfNecessary(
                ->navigator()
                ->SerializeLanguagesForClientHintHeader();
 
-    prefers_color_scheme = document_->InDarkMode() ? "dark" : "light";
+    MediaValues* media_values =
+        MediaValues::CreateDynamicIfFrameExists(GetFrame());
+    bool is_dark_mode = media_values->GetPreferredColorScheme() ==
+                        mojom::blink::PreferredColorScheme::kDark;
+    prefers_color_scheme = is_dark_mode ? "dark" : "light";
 
     // TODO(crbug.com/1151050): |SerializeLanguagesForClientHintHeader| getter
     // affects later calls if there is a DevTools override. The following blink

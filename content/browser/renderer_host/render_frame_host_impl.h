@@ -1701,6 +1701,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // NavigationEntry this RenderFrameHostImpl committed.
   BackForwardCacheMetrics* GetBackForwardCacheMetrics();
 
+  blink::mojom::PreferredColorScheme GetPreferredColorScheme() const {
+    return preferred_color_scheme_;
+  }
+
   const std::string& GetEncoding() const { return canonical_encoding_; }
 
   // Returns a base salt used to generate frame-specific IDs for media-device
@@ -2355,6 +2359,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DidChangeName(const std::string& name,
                      const std::string& unique_name) override;
   void CancelInitialHistoryLoad() override;
+  void DidUpdatePreferredColorScheme(
+      blink::mojom::PreferredColorScheme preferred_color_scheme) override;
   void UpdateEncoding(const std::string& encoding) override;
   void UpdateState(const blink::PageState& state) override;
   void OpenURL(blink::mojom::OpenURLParamsPtr params) override;
@@ -3555,6 +3561,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   scoped_refptr<WebAuthRequestSecurityChecker>
       webauth_request_security_checker_;
+
+  // The preferred color scheme for this frame.
+  blink::mojom::PreferredColorScheme preferred_color_scheme_ =
+      blink::mojom::PreferredColorScheme::kLight;
 
   // Container for arbitrary document-associated feature-specific data. Should
   // be reset when committing a cross-document navigation in this

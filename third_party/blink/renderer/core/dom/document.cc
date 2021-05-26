@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/core/css/invalidation/style_invalidator.h"
 #include "third_party/blink/renderer/core/css/media_query_list.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
+#include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
@@ -7966,6 +7967,10 @@ void Document::ColorSchemeChanged() {
   UpdateForcedColors();
   GetStyleEngine().ColorSchemeChanged();
   MediaQueryAffectingValueChanged(MediaValueChange::kOther);
+  MediaValues* media_values =
+      MediaValues::CreateDynamicIfFrameExists(GetFrame());
+  GetFrame()->GetLocalFrameHostRemote().DidUpdatePreferredColorScheme(
+      media_values->GetPreferredColorScheme());
 }
 
 void Document::VisionDeficiencyChanged() {

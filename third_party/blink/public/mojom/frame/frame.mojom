@@ -28,6 +28,7 @@ import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/choosers/popup_menu.mojom";
 import "third_party/blink/public/mojom/context_menu/context_menu.mojom";
 import "third_party/blink/public/mojom/conversions/conversions.mojom";
+import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
 import "third_party/blink/public/mojom/devtools/inspector_issue.mojom";
@@ -542,6 +543,10 @@ interface LocalFrameHost {
   // Used when a prerendered page is activated. Notifies the browser that the
   // document in this frame dispatched the prerenderingchange event.
   DidActivateForPrerendering();
+
+  // Notifies the frame that the document preferred color scheme has changed
+  // due to DevTools media emulation.
+  DidUpdatePreferredColorScheme(PreferredColorScheme preferred_color_scheme);
 };
 
 // Implemented in Blink, this interface defines frame-specific methods that will

@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -2274,4 +2275,74 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest, UseCounter) {
   ui_test_utils::NavigateToURL(browser(), gurl);
 
   web_feature_waiter->Wait();
+}
+
+class ClientHintsBrowserTestWithEmulatedMedia
+    : public DevToolsProtocolTestBase {
+ public:
+  ClientHintsBrowserTestWithEmulatedMedia()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    scoped_feature_list_.InitFromCommandLine(
+        "UserAgentClientHint,AcceptCHFrame,PrefersColorSchemeClientHintHeader",
+        "");
+
+    https_server_.ServeFilesFromSourceDirectory(
+        "chrome/test/data/client_hints");
+    https_server_.RegisterRequestMonitor(base::BindRepeating(
+        &ClientHintsBrowserTestWithEmulatedMedia::MonitorResourceRequest,
+        base::Unretained(this)));
+    EXPECT_TRUE(https_server_.Start());
+
+    test_url_ = https_server_.GetURL("/accept_ch_without_lifetime.html");
+  }
+
+  ~ClientHintsBrowserTestWithEmulatedMedia() override = default;
+
+  void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
+    if (request.headers.find("sec-ch-prefers-color-scheme") !=
+        request.headers.end()) {
+      prefers_color_scheme_observed_ =
+          request.headers.at("sec-ch-prefers-color-scheme");
+    }
+  }
+
+  const GURL& test_url() const { return test_url_; }
+
+  const std::string& prefers_color_scheme_observed() const {
+    return prefers_color_scheme_observed_;
+  }
+
+  void EmulatePrefersColorScheme(std::string value) {
+    base::Value feature(base::Value::Type::DICTIONARY);
+    feature.SetKey("name", base::Value("prefers-color-scheme"));
+    feature.SetKey("value", base::Value(value));
+    base::Value features(base::Value::Type::LIST);
+    features.Append(std::move(feature));
+    base::Value params(base::Value::Type::DICTIONARY);
+    params.SetKey("features", std::move(features));
+    SendCommandSync("Emulation.setEmulatedMedia", std::move(params));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_;
+  GURL test_url_;
+  std::string prefers_color_scheme_observed_;
+
+  DISALLOW_COPY_AND_ASSIGN(ClientHintsBrowserTestWithEmulatedMedia);
+};
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithEmulatedMedia,
+                       PrefersColorScheme) {
+  ui_test_utils::NavigateToURL(browser(), test_url());
+  EXPECT_EQ(prefers_color_scheme_observed(), "");
+  Attach();
+
+  EmulatePrefersColorScheme("light");
+  ui_test_utils::NavigateToURL(browser(), test_url());
+  EXPECT_EQ(prefers_color_scheme_observed(), "light");
+
+  EmulatePrefersColorScheme("dark");
+  ui_test_utils::NavigateToURL(browser(), test_url());
+  EXPECT_EQ(prefers_color_scheme_observed(), "dark");
 }

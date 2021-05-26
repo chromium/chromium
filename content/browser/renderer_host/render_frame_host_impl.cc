@@ -1442,6 +1442,12 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // of overrides.
   idle_manager_ =
       std::make_unique<IdleManagerImpl>(GetProcess()->GetBrowserContext());
+
+  preferred_color_scheme_ =
+      ui::NativeTheme::GetInstanceForWeb()->GetPreferredColorScheme() ==
+              ui::NativeTheme::PreferredColorScheme::kDark
+          ? blink::mojom::PreferredColorScheme::kDark
+          : blink::mojom::PreferredColorScheme::kLight;
 }
 
 RenderFrameHostImpl::~RenderFrameHostImpl() {
@@ -4761,6 +4767,11 @@ void RenderFrameHostImpl::UpdateTitle(
   }
 
   delegate_->UpdateTitle(this, received_title, title_direction);
+}
+
+void RenderFrameHostImpl::DidUpdatePreferredColorScheme(
+    blink::mojom::PreferredColorScheme preferred_color_scheme) {
+  preferred_color_scheme_ = preferred_color_scheme;
 }
 
 void RenderFrameHostImpl::UpdateEncoding(const std::string& encoding_name) {

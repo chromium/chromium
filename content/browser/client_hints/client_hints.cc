@@ -356,10 +356,10 @@ void AddLangHeader(net::HttpRequestHeaders* headers, BrowserContext* context) {
 
 void AddPrefersColorSchemeHeader(net::HttpRequestHeaders* headers,
                                  FrameTreeNode* frame_tree_node) {
+  if (!frame_tree_node)
+    return;
   blink::mojom::PreferredColorScheme preferred_color_scheme =
-      WebContents::FromRenderFrameHost(frame_tree_node->current_frame_host())
-          ->GetOrCreateWebPreferences()
-          .preferred_color_scheme;
+      frame_tree_node->current_frame_host()->GetPreferredColorScheme();
   bool is_dark_mode =
       preferred_color_scheme == blink::mojom::PreferredColorScheme::kDark;
   SetHeaderToString(headers,
