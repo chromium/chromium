@@ -104,7 +104,7 @@ public class AccessibilitySnapshotTest {
 
     @SmallTest
     public void testRequestAccessibilitySnapshotOneNodeSelection() throws Throwable {
-        final String data = "<html><body><b id='node'>foo</b></body></html>";
+        final String data = "<html><body><b role='none' id='node'>foo</b></body></html>";
 
         AccessibilitySnapshotNode root =
                 receiveAccessibilitySnapshot(data, getSelectionScript("node", 0, "node", 3));
@@ -140,8 +140,8 @@ public class AccessibilitySnapshotTest {
     @Test
     @SmallTest
     public void testRequestAccessibilitySnapshotMultiNodeSelection() throws Throwable {
-        final String data =
-                "<html><body><b id='node1'>foo</b><b>middle</b><b id='node2'>bar</b></body></html>";
+        final String data = "<html><body><b id='node1' role='none'>foo</b><b>middle</b>"
+                + "<b id='node2' role='none'>bar</b></body></html>";
 
         AccessibilitySnapshotNode root =
                 receiveAccessibilitySnapshot(data, getSelectionScript("node1", 1, "node2", 1));

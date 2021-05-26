@@ -1683,10 +1683,6 @@ bool AXObject::IsLink() const {
   return ui::IsLink(RoleValue());
 }
 
-bool AXObject::IsInPageLinkTarget() const {
-  return false;
-}
-
 bool AXObject::IsImageMapLink() const {
   return false;
 }
@@ -1780,44 +1776,6 @@ bool AXObject::IsNativeCheckboxInMixedState(const Node* node) {
   if (inputType != input_type_names::kCheckbox)
     return false;
   return input->ShouldAppearIndeterminate();
-}
-
-bool AXObject::IsLandmarkRelated() const {
-  switch (RoleValue()) {
-    case ax::mojom::blink::Role::kApplication:
-    case ax::mojom::blink::Role::kArticle:
-    case ax::mojom::blink::Role::kBanner:
-    case ax::mojom::blink::Role::kComplementary:
-    case ax::mojom::blink::Role::kContentInfo:
-    case ax::mojom::blink::Role::kDocAcknowledgments:
-    case ax::mojom::blink::Role::kDocAfterword:
-    case ax::mojom::blink::Role::kDocAppendix:
-    case ax::mojom::blink::Role::kDocBibliography:
-    case ax::mojom::blink::Role::kDocChapter:
-    case ax::mojom::blink::Role::kDocConclusion:
-    case ax::mojom::blink::Role::kDocCredits:
-    case ax::mojom::blink::Role::kDocEndnotes:
-    case ax::mojom::blink::Role::kDocEpilogue:
-    case ax::mojom::blink::Role::kDocErrata:
-    case ax::mojom::blink::Role::kDocForeword:
-    case ax::mojom::blink::Role::kDocGlossary:
-    case ax::mojom::blink::Role::kDocIntroduction:
-    case ax::mojom::blink::Role::kDocPart:
-    case ax::mojom::blink::Role::kDocPreface:
-    case ax::mojom::blink::Role::kDocPrologue:
-    case ax::mojom::blink::Role::kDocToc:
-    case ax::mojom::blink::Role::kFooter:
-    case ax::mojom::blink::Role::kForm:
-    case ax::mojom::blink::Role::kHeader:
-    case ax::mojom::blink::Role::kMain:
-    case ax::mojom::blink::Role::kNavigation:
-    case ax::mojom::blink::Role::kRegion:
-    case ax::mojom::blink::Role::kSearch:
-    case ax::mojom::blink::Role::kSection:
-      return true;
-    default:
-      return false;
-  }
 }
 
 bool AXObject::IsMenuRelated() const {
