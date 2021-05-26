@@ -64,7 +64,6 @@
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_status_monitor.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
-#include "chrome/browser/ui/ash/shelf/multi_profile_browser_status_monitor.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_extension_app_updater.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
@@ -254,16 +253,8 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
       std::make_unique<AppServiceAppWindowShelfController>(this);
   app_service_app_window_controller_ = app_service_controller.get();
   app_window_controllers_.emplace_back(std::move(app_service_controller));
-  if (SessionControllerClientImpl::IsMultiProfileAvailable()) {
-    // If running in separated desktop mode, we create the multi profile
-    // version of status monitor.
-    browser_status_monitor_ =
-        std::make_unique<MultiProfileBrowserStatusMonitor>(this);
-  } else {
-    // Create our v1/v2 application / browser monitors which will inform the
-    // shelf of status changes.
-    browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
-  }
+  // Create the browser monitor which will inform the shelf of status changes.
+  browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
 }
 
 ChromeShelfController::~ChromeShelfController() {

@@ -2104,8 +2104,6 @@ static_library("ui") {
       "ash/shelf/extension_uninstaller.h",
       "ash/shelf/lacros_app_window.cc",
       "ash/shelf/lacros_app_window.h",
-      "ash/shelf/multi_profile_browser_status_monitor.cc",
-      "ash/shelf/multi_profile_browser_status_monitor.h",
       "ash/shelf/settings_window_observer.cc",
       "ash/shelf/settings_window_observer.h",
       "ash/shelf/shelf_app_updater.cc",

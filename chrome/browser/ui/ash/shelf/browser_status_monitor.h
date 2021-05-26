@@ -31,16 +31,17 @@ class BrowserStatusMonitor : public BrowserListObserver,
   explicit BrowserStatusMonitor(ChromeShelfController* shelf_controller);
   ~BrowserStatusMonitor() override;
 
-  // Do the initialization work. Note: This function should not be called in the
-  // constructor function because the virtual member function
-  // AddAppBrowserToShelf() is called inside this function.
+  // Do the initialization work. Note: the init phase is separate from
+  // construction because this function will make callbacks to
+  // ChromeShelfController and ChromeShelfController creates an instance of this
+  // class in its own constructor and may not be fully initialized yet.
   void Initialize();
 
   // A function which gets called when the current user has changed.
   // Note that this function is called by the ChromeShelfController to be
   // able to do the activation in a proper order - rather then setting an
   // observer.
-  virtual void ActiveUserChanged(const std::string& user_email) {}
+  void ActiveUserChanged(const std::string& user_email);
 
   // A shortcut to call the ChromeShelfController's UpdateAppState().
   void UpdateAppItemState(content::WebContents* contents, bool remove);
@@ -64,20 +65,17 @@ class BrowserStatusMonitor : public BrowserListObserver,
   // application uninstalls, page crashes, ...).
   void WebContentsDestroyed(content::WebContents* web_contents);
 
- protected:
-  // Add a windowed browser-based app to the shelf. This can get overwritten for
-  // multi profile implementations.
-  virtual void AddAppBrowserToShelf(Browser* browser);
+ private:
+  // Add a windowed browser-based app to the shelf.
+  void AddAppBrowserToShelf(Browser* browser);
 
-  // Remove a windowed browser-based app from the shelf. This can get
-  // overwritten for multi profile implementations.
-  virtual void RemoveAppBrowserFromShelf(Browser* browser);
+  // Remove a windowed browser-based app from the shelf.
+  void RemoveAppBrowserFromShelf(Browser* browser);
 
   // Check if an application is currently in the shelf by browser or app id.
   bool IsAppBrowserInShelf(Browser* browser);
   bool IsAppBrowserInShelfWithAppId(const std::string& app_id);
 
- private:
   class LocalWebContentsObserver;
 
   // Called by TabStripModelChanged()

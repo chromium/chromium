@@ -117,6 +117,54 @@ void BrowserStatusMonitor::Initialize() {
   browser_tab_strip_tracker_.Init();
 }
 
+void BrowserStatusMonitor::ActiveUserChanged(const std::string& user_email) {
+  // When the active profile changes, all windowed and tabbed apps owned by the
+  // newly selected profile are added to the shelf, and the ones owned by other
+  // profiles are removed.
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    bool owned = multi_user_util::IsProfileFromActiveUser(browser->profile());
+    TabStripModel* tab_strip_model = browser->tab_strip_model();
+
+    if (browser->is_type_app() || browser->is_type_app_popup()) {
+      // Add windowed apps owned by the current profile, and remove the one
+      // owned by other profiles.
+      bool app_in_shelf = IsAppBrowserInShelf(browser);
+      content::WebContents* active_web_contents =
+          tab_strip_model->GetActiveWebContents();
+
+      if (owned && !app_in_shelf) {
+        // Adding an app to the shelf consists of two actions: add the browser
+        // (shelf item) and add the content (shelf item status).
+        AddAppBrowserToShelf(browser);
+        if (active_web_contents) {
+          shelf_controller_->UpdateAppState(active_web_contents,
+                                            false /*remove*/);
+        }
+      } else if (!owned && app_in_shelf) {
+        // Removing an app from the shelf requires to remove the content and
+        // the shelf item (reverse order of addition).
+        if (active_web_contents) {
+          shelf_controller_->UpdateAppState(active_web_contents,
+                                            true /*remove*/);
+        }
+        RemoveAppBrowserFromShelf(browser);
+      }
+
+    } else if (browser->is_type_normal()) {
+      // Add tabbed apps owned by the current profile, and remove the ones owned
+      // by other profiles.
+      for (int i = 0; i < tab_strip_model->count(); ++i) {
+        shelf_controller_->UpdateAppState(tab_strip_model->GetWebContentsAt(i),
+                                          !owned /*remove*/);
+      }
+    }
+  }
+
+  // Update the browser state since some of the additions/removals above might
+  // have had an impact on the browser item state.
+  UpdateBrowserItemState();
+}
+
 void BrowserStatusMonitor::UpdateAppItemState(content::WebContents* contents,
                                               bool remove) {
   DCHECK(contents);
@@ -143,7 +191,8 @@ void BrowserStatusMonitor::OnBrowserAdded(Browser* browser) {
   DCHECK(insert_result.second);
 #endif
 
-  if (IsAppBrowser(browser)) {
+  if (IsAppBrowser(browser) &&
+      multi_user_util::IsProfileFromActiveUser(browser->profile())) {
     AddAppBrowserToShelf(browser);
   }
 }
@@ -155,7 +204,8 @@ void BrowserStatusMonitor::OnBrowserRemoved(Browser* browser) {
   DCHECK_EQ(num_removed, 1U);
 #endif
 
-  if (IsAppBrowser(browser)) {
+  if (IsAppBrowser(browser) &&
+      multi_user_util::IsProfileFromActiveUser(browser->profile())) {
     RemoveAppBrowserFromShelf(browser);
   }
 
