@@ -19,15 +19,13 @@
 namespace chromeos {
 namespace diagnostics {
 // Stores network state, managed properties, and an observer for a network.
-// TODO(michaelcheco): Use NetworkProperties to construct a mojo::Network
-// struct and send it to its corresponding observer.
 struct NetworkProperties {
   explicit NetworkProperties(
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state);
   ~NetworkProperties();
   chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state;
   chromeos::network_config::mojom::ManagedPropertiesPtr managed_properties;
-  // TODO(michaelcheco): Add NetworkStateObserver as a member of this struct.
+  mojo::Remote<mojom::NetworkStateObserver> observer;
 };
 
 using NetworkPropertiesMap = std::map<std::string, NetworkProperties>;
@@ -49,6 +47,9 @@ class NetworkHealthProvider
   // mojom::NetworkHealthProvider
   void ObserveNetworkList(
       mojo::PendingRemote<mojom::NetworkListObserver> observer) override;
+
+  void ObserveNetwork(mojo::PendingRemote<mojom::NetworkStateObserver> observer,
+                      const std::string& guid) override;
 
   // CrosNetworkConfigObserver
   void OnNetworkStateListChanged() override;
@@ -88,6 +89,22 @@ class NetworkHealthProvider
   // network (if one exists) and uses |network_list_observer_| to send the
   // result to each observer.
   void NotifyNetworkListObservers();
+
+  // Creates a mojom::Network struct and sends it to the corresponding
+  // network state observer.
+  void NotifyNetworkStateObserver(const NetworkProperties& network_props);
+
+  // Gets network state from CrosNetworkConfig.
+  void GetNetworkState();
+
+  // Gets device state from CrosNetworkConfig.
+  void GetDeviceState();
+
+  NetworkProperties& GetNetworkProperties(const std::string& guid);
+
+  // Finds a matching device for a given network type.
+  network_config::mojom::DeviceStateProperties* GetMatchingDevice(
+      network_config::mojom::NetworkType type);
 
   // Map of networks that are active and of a supported
   // type (Ethernet, WiFi, Cellular).

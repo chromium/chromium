@@ -67,6 +67,28 @@ struct FakeNetworkListObserver : public mojom::NetworkListObserver {
   mojo::Receiver<mojom::NetworkListObserver> receiver{this};
 };
 
+struct FakeNetworkStateObserver : public mojom::NetworkStateObserver {
+  void OnNetworkStateChanged(mojom::NetworkPtr network_ptr) override {
+    fake_network_state_updates.push_back(std::move(network_ptr));
+    network_state_changed_event_received_ = true;
+  }
+
+  mojo::PendingRemote<mojom::NetworkStateObserver> pending_remote() {
+    return receiver.BindNewPipeAndPassRemote();
+  }
+
+  bool network_state_changed_event_received() {
+    return network_state_changed_event_received_;
+  }
+
+  // Tracks calls to OnNetworkStateChanged. Each call adds an element to
+  // the vector.
+  std::vector<mojom::NetworkPtr> fake_network_state_updates;
+
+  mojo::Receiver<mojom::NetworkStateObserver> receiver{this};
+  bool network_state_changed_event_received_ = false;
+};
+
 }  // namespace
 
 class NetworkHealthProviderTest : public testing::Test {
@@ -355,6 +377,31 @@ TEST_F(NetworkHealthProviderTest, ActiveGuidResetsWhenConnectionStateChanges) {
 
   EXPECT_EQ(0U, fake_network_list_observer.fake_active_guid.size());
   EXPECT_EQ(fake_network_list_observer.fake_active_guid, "");
+}
+
+TEST_F(NetworkHealthProviderTest, NetworkStateObserver) {
+  ResetDevicesAndServices();
+  SetupWiFiNetwork();
+  FakeNetworkStateObserver fake_network_state_observer;
+  network_health_provider_->ObserveNetwork(
+      fake_network_state_observer.pending_remote(), "wifi1_guid");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, fake_network_state_observer.fake_network_state_updates.size());
+  auto network =
+      std::move(fake_network_state_observer.fake_network_state_updates[0]);
+
+  // Correct NetworkTypeProperties struct set.
+  EXPECT_EQ(network->type_properties->which(),
+            mojom::NetworkTypeProperties::Tag::kWifi);
+  EXPECT_EQ(network->type_properties->get_wifi()->signal_strength, 50);
+  // Network state correctly mapped to corresponding mojom::NetworkState enum.
+  EXPECT_EQ(network->state, mojom::NetworkState::kConnected);
+  // Network state correctly mapped to corresponding mojom::NetworkType enum.
+  EXPECT_EQ(network->type, mojom::NetworkType::kWiFi);
+  EXPECT_EQ(network->guid, "wifi1_guid");
+  LOG(INFO) << network->mac_address.value() << "$";
+  EXPECT_EQ(fake_network_state_observer.network_state_changed_event_received(),
+            true);
 }
 
 }  // namespace diagnostics
