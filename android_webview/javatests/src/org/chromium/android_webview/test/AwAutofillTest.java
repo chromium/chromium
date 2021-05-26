@@ -2893,7 +2893,7 @@ public class AwAutofillTest {
         executeJavaScriptAndWaitForResult("document.getElementById('address').focus();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_VIEW_EXITED, AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_EXITED, AUTOFILL_VIEW_ENTERED,
                         AUTOFILL_SESSION_STARTED, AUTOFILL_VALUE_CHANGED});
         // Verify inferred label change won't trigger new session.
         executeJavaScriptAndWaitForResult(
