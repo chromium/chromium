@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/public/cpp/app_types.h"
-#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/escape.h"
@@ -102,14 +101,19 @@ void SendArcUrls(exo::DataExchangeDelegate::SendDataCallback callback,
   std::move(callback).Run(base::RefCountedString16::TakeString(&data));
 }
 
-void SendAfterShare(exo::DataExchangeDelegate::SendDataCallback callback,
-                    scoped_refptr<base::RefCountedMemory> data,
-                    bool success,
-                    const std::string& failure_reason) {
-  if (!success)
-    LOG(ERROR) << "Error sharing paths for drag and drop: " << failure_reason;
+void SendAfterShare(ui::EndpointType target,
+                    exo::DataExchangeDelegate::SendDataCallback callback,
+                    std::vector<std::string> file_urls) {
+  std::string joined = base::JoinString(file_urls, kUriListSeparator);
+  scoped_refptr<base::RefCountedMemory> data;
+  if (target == ui::EndpointType::kArc) {
+    // Arc uses utf-16 data.
+    std::u16string utf16 = base::UTF8ToUTF16(joined);
+    data = base::RefCountedString16::TakeString(&utf16);
+  } else {
+    data = base::RefCountedString::TakeString(&joined);
+  }
 
-  // Still send the data, even if sharing failed.
   std::move(callback).Run(data);
 }
 
@@ -136,9 +140,9 @@ bool IsPathShared(Profile* profile,
   return false;
 }
 
-// Parse text/uri-list data into FilePath and FileSystemURL.
-std::vector<FileInfo> GetFileInfo(ui::EndpointType source,
-                                  const std::vector<uint8_t>& data) {
+// Translate |vm_paths| from |source| VM to host paths.
+std::vector<FileInfo> TranslateVMToHost(ui::EndpointType source,
+                                        std::vector<ui::FileInfo> vm_paths) {
   std::vector<FileInfo> file_info;
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   bool is_crostini = source == ui::EndpointType::kCrostini;
@@ -154,11 +158,8 @@ std::vector<FileInfo> GetFileInfo(ui::EndpointType source,
     vm_name = plugin_vm::kPluginVmName;
   }
 
-  std::vector<ui::FileInfo> filenames =
-      ui::URIListToFileInfos(std::string(data.begin(), data.end()));
-
-  for (const ui::FileInfo& file : filenames) {
-    base::FilePath path = std::move(file.path);
+  for (ui::FileInfo& info : vm_paths) {
+    base::FilePath path = std::move(info.path);
     storage::FileSystemURL url;
 
     // Convert the VM path to a path in the host if possible (in homedir or
@@ -185,9 +186,31 @@ std::vector<FileInfo> GetFileInfo(ui::EndpointType source,
   return file_info;
 }
 
-void ShareAndSend(ui::EndpointType target,
-                  std::vector<FileInfo> files,
-                  exo::DataExchangeDelegate::SendDataCallback callback) {
+// Crack paths and get FileSystemURL.
+std::vector<FileInfo> CrackPaths(std::vector<base::FilePath> paths) {
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  base::FilePath virtual_path;
+  std::vector<FileInfo> file_info;
+
+  for (auto& path : paths) {
+    // Convert absolute host path to FileSystemURL if possible.
+    storage::FileSystemURL url;
+    if (mount_points->GetVirtualPath(path, &virtual_path)) {
+      url = mount_points->CreateCrackedFileSystemURL(
+          url::Origin(), storage::kFileSystemTypeExternal, virtual_path);
+    }
+    file_info.push_back({std::move(path), std::move(url)});
+  }
+  return file_info;
+}
+
+// Share |files| with |target| VM and invoke |callback| with translated file:
+// URLs.
+void ShareAndTranslateHostToVM(
+    ui::EndpointType target,
+    std::vector<FileInfo> files,
+    base::OnceCallback<void(std::vector<std::string>)> callback) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   bool is_arc = target == ui::EndpointType::kArc;
   bool is_crostini = target == ui::EndpointType::kCrostini;
@@ -209,12 +232,12 @@ void ShareAndSend(ui::EndpointType target,
 
   const std::string vm_prefix =
       base::StrCat({kVmFileScheme, ":", vm_name, ":"});
-  std::vector<std::string> lines_to_send;
+  std::vector<std::string> file_urls;
   auto* share_path = guest_os::GuestOsSharePath::GetForProfile(primary_profile);
   std::vector<base::FilePath> paths_to_share;
 
   for (auto& info : files) {
-    std::string line_to_send;
+    std::string file_url;
     bool share_required = false;
     if (is_arc) {
       GURL arc_url;
@@ -223,19 +246,19 @@ void ShareAndSend(ui::EndpointType target,
         LOG(WARNING) << "Could not convert arc path " << info.path;
         continue;
       }
-      line_to_send = arc_url.spec();
+      file_url = arc_url.spec();
     } else if (is_crostini || is_plugin_vm) {
       base::FilePath path;
       // Check if it is a path inside the VM: 'vmfile:<vm_name>:'.
       if (base::StartsWith(info.path.value(), vm_prefix,
                            base::CompareCase::SENSITIVE)) {
-        line_to_send = ui::FilePathToFileURL(
+        file_url = ui::FilePathToFileURL(
             base::FilePath(info.path.value().substr(vm_prefix.size())));
       } else if (file_manager::util::ConvertFileSystemURLToPathInsideVM(
                      primary_profile, info.url, vm_mount,
                      /*map_crostini_home=*/is_crostini, &path)) {
         // Convert to path inside the VM.
-        line_to_send = ui::FilePathToFileURL(path);
+        file_url = ui::FilePathToFileURL(path);
         share_required = true;
       } else {
         LOG(WARNING) << "Could not convert into VM path " << info.path;
@@ -243,21 +266,11 @@ void ShareAndSend(ui::EndpointType target,
       }
     } else {
       // Use path without conversion as default.
-      line_to_send = ui::FilePathToFileURL(info.path);
+      file_url = ui::FilePathToFileURL(info.path);
     }
-    lines_to_send.push_back(std::move(line_to_send));
+    file_urls.push_back(std::move(file_url));
     if (share_required && !share_path->IsPathShared(vm_name, info.path))
       paths_to_share.push_back(std::move(info.path));
-  }
-
-  // Arc uses utf-16 data.
-  std::string joined = base::JoinString(lines_to_send, kUriListSeparator);
-  scoped_refptr<base::RefCountedMemory> data;
-  if (is_arc) {
-    std::u16string utf16 = base::UTF8ToUTF16(joined);
-    data = base::RefCountedString16::TakeString(&utf16);
-  } else {
-    data = base::RefCountedString::TakeString(&joined);
   }
 
   if (!paths_to_share.empty()) {
@@ -265,8 +278,17 @@ void ShareAndSend(ui::EndpointType target,
       share_path->SharePaths(
           vm_name, std::move(paths_to_share),
           /*persist=*/false,
-          base::BindOnce(&SendAfterShare, std::move(callback),
-                         std::move(data)));
+          base::BindOnce(
+              [](base::OnceCallback<void(std::vector<std::string>)> callback,
+                 std::vector<std::string> file_urls, bool success,
+                 const std::string& failure_reason) {
+                if (!success)
+                  LOG(ERROR) << "Error sharing paths: " << failure_reason;
+
+                // Still send the data, even if sharing failed.
+                std::move(callback).Run(file_urls);
+              },
+              std::move(callback), std::move(file_urls)));
       return;
     }
 
@@ -275,14 +297,30 @@ void ShareAndSend(ui::EndpointType target,
             file_manager::EventRouterFactory::GetForProfile(primary_profile)) {
       event_router->DropFailedPluginVmDirectoryNotShared();
     }
-    std::string empty;
-    data = base::RefCountedString::TakeString(&empty);
+    file_urls.clear();
   }
 
-  std::move(callback).Run(std::move(data));
+  std::move(callback).Run(std::move(file_urls));
 }
 
 }  // namespace
+
+std::vector<base::FilePath> TranslateVMPathsToHost(
+    ui::EndpointType source,
+    const std::vector<ui::FileInfo>& vm_paths) {
+  std::vector<FileInfo> translated = TranslateVMToHost(source, vm_paths);
+  std::vector<base::FilePath> result;
+  for (auto& info : translated)
+    result.push_back(std::move(info.path));
+  return result;
+}
+
+void ShareWithVMAndTranslateToFileUrls(
+    ui::EndpointType target,
+    const std::vector<base::FilePath>& files,
+    base::OnceCallback<void(std::vector<std::string>)> callback) {
+  ShareAndTranslateHostToVM(target, CrackPaths(files), std::move(callback));
+}
 
 ChromeDataExchangeDelegate::ChromeDataExchangeDelegate() = default;
 
@@ -311,7 +349,9 @@ std::vector<ui::FileInfo> ChromeDataExchangeDelegate::GetFilenames(
     ui::EndpointType source,
     const std::vector<uint8_t>& data) const {
   std::vector<ui::FileInfo> result;
-  for (const auto& info : GetFileInfo(source, data))
+  std::vector<FileInfo> file_info = TranslateVMToHost(
+      source, ui::URIListToFileInfos(std::string(data.begin(), data.end())));
+  for (auto& info : file_info)
     result.push_back(ui::FileInfo(std::move(info.path), base::FilePath()));
   return result;
 }
@@ -326,22 +366,13 @@ void ChromeDataExchangeDelegate::SendFileInfo(
     ui::EndpointType target,
     const std::vector<ui::FileInfo>& files,
     SendDataCallback callback) const {
-  storage::ExternalMountPoints* mount_points =
-      storage::ExternalMountPoints::GetSystemInstance();
-  base::FilePath virtual_path;
-  std::vector<FileInfo> list;
+  std::vector<base::FilePath> paths;
+  for (const auto& file : files)
+    paths.push_back(file.path);
 
-  for (const auto& info : files) {
-    // Convert absolute host path to FileSystemURL if possible.
-    storage::FileSystemURL url;
-    if (mount_points->GetVirtualPath(info.path, &virtual_path)) {
-      url = mount_points->CreateCrackedFileSystemURL(
-          url::Origin(), storage::kFileSystemTypeExternal, virtual_path);
-    }
-    list.push_back({info.path, std::move(url)});
-  }
-
-  ShareAndSend(target, std::move(list), std::move(callback));
+  ShareAndTranslateHostToVM(
+      target, CrackPaths(std::move(paths)),
+      base::BindOnce(&SendAfterShare, target, std::move(callback)));
 }
 
 bool ChromeDataExchangeDelegate::HasUrlsInPickle(
@@ -370,17 +401,22 @@ void ChromeDataExchangeDelegate::SendPickle(ui::EndpointType target,
   }
 
   std::vector<FileInfo> list;
-  for (const auto& url : file_system_urls)
-    list.push_back({url.path(), std::move(url)});
+  for (auto& url : file_system_urls) {
+    base::FilePath path = url.path();
+    list.push_back({std::move(path), std::move(url)});
+  }
 
-  ShareAndSend(target, std::move(list), std::move(callback));
+  ShareAndTranslateHostToVM(
+      target, std::move(list),
+      base::BindOnce(&SendAfterShare, target, std::move(callback)));
 }
 
 base::Pickle ChromeDataExchangeDelegate::CreateClipboardFilenamesPickle(
     ui::EndpointType source,
     const std::vector<uint8_t>& data) const {
   std::vector<std::string> filenames;
-  std::vector<FileInfo> file_info = GetFileInfo(source, data);
+  std::vector<FileInfo> file_info = TranslateVMToHost(
+      source, ui::URIListToFileInfos(std::string(data.begin(), data.end())));
   for (const auto& info : file_info) {
     if (info.url.is_valid())
       filenames.push_back(info.url.ToGURL().spec());
