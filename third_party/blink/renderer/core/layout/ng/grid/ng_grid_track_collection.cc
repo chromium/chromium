@@ -567,6 +567,11 @@ NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
   }
 }
 
+NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
+    const Vector<Range>& ranges,
+    GridTrackSizingDirection direction)
+    : direction_(direction), ranges_(ranges) {}
+
 void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
     const NGGridBlockTrackCollection::Range& block_track_range,
     const NGGridTrackList& specified_track_list,

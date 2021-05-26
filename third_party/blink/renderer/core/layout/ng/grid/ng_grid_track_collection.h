@@ -248,6 +248,7 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
     : public NGGridTrackCollectionBase {
  public:
   struct Range {
+    Range(const Range& range) = default;
     // Copies fields that are the same as in |GridBlockTrackCollection::Range|.
     Range(const NGGridBlockTrackCollection::Range& block_track_range,
           wtf_size_t starting_set_index);
@@ -312,6 +313,11 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
   NGGridLayoutAlgorithmTrackCollection(
       const NGGridBlockTrackCollection& block_track_collection,
       bool is_available_size_indefinite);
+
+  // TODO(ansollan): Refactor the track collection abstraction so that we only
+  // pass what is needed for placing in flow and out of flow items.
+  NGGridLayoutAlgorithmTrackCollection(const Vector<Range>& ranges,
+                                       GridTrackSizingDirection direction);
 
   wtf_size_t EndLineOfImplicitGrid() const;
   bool IsGridLineWithinImplicitGrid(wtf_size_t grid_line) const;

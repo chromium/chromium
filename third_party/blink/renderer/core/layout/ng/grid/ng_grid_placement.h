@@ -26,7 +26,9 @@ class CORE_EXPORT NGGridPlacement {
 
   NGGridPlacement(const ComputedStyle& grid_style,
                   const wtf_size_t column_auto_repetitions,
-                  const wtf_size_t row_auto_repetitions);
+                  const wtf_size_t row_auto_repetitions,
+                  const wtf_size_t column_start_offset = 0,
+                  const wtf_size_t row_start_offset = 0);
 
   void RunAutoPlacementAlgorithm(GridItems* grid_items);
   // Helper function to resolve start and end lines of out of flow items.

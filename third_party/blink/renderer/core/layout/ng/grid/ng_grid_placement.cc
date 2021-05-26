@@ -9,7 +9,9 @@ namespace blink {
 
 NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
                                  const wtf_size_t column_auto_repetitions,
-                                 const wtf_size_t row_auto_repetitions)
+                                 const wtf_size_t row_auto_repetitions,
+                                 const wtf_size_t column_start_offset,
+                                 const wtf_size_t row_start_offset)
     : grid_style_(grid_style),
       packing_behavior_(grid_style.IsGridAutoFlowAlgorithmSparse()
                             ? PackingBehavior::kSparse
@@ -27,7 +29,9 @@ NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
           grid_style.GridTemplateRows().NGTrackList().AutoRepeatSize() *
           row_auto_repetitions),
       column_auto_repetitions_(column_auto_repetitions),
-      row_auto_repetitions_(row_auto_repetitions) {}
+      row_auto_repetitions_(row_auto_repetitions),
+      column_start_offset_(column_start_offset),
+      row_start_offset_(row_start_offset) {}
 
 // https://drafts.csswg.org/css-grid/#auto-placement-algo
 void NGGridPlacement::RunAutoPlacementAlgorithm(GridItems* grid_items) {

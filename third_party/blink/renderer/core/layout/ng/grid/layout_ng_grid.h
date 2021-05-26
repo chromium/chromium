@@ -46,7 +46,7 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGMixin<LayoutBlock>,
  private:
   const NGGridData* GetGridData() const;
   Vector<LayoutUnit> ComputeTrackSizesInRange(
-      const NGGridData::RangeData& range,
+      const NGGridLayoutAlgorithmTrackCollection::Range& range,
       GridTrackSizingDirection direction) const;
   Vector<LayoutUnit> ComputeExpandedPositions(
       GridTrackSizingDirection direction) const;

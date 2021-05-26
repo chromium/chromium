@@ -165,7 +165,7 @@ const NGGridData* LayoutNGGrid::GetGridData() const {
 // See comment above |NGGridData| for explanation on why we can't just divide
 // the set sizes by their track count.
 Vector<LayoutUnit> LayoutNGGrid::ComputeTrackSizesInRange(
-    const NGGridData::RangeData& range,
+    const NGGridLayoutAlgorithmTrackCollection::Range& range,
     GridTrackSizingDirection direction) const {
   Vector<LayoutUnit> track_sizes;
   const auto* grid_data = GetGridData();
