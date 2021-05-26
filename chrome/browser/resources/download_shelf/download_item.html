@@ -3,11 +3,20 @@
   --button-hover-color: rgba(var(--google-grey-900-rgb), .1);
   --button-icon-stroke-color: var(--google-grey-refresh-700);
   --pi: 3.14159265358979;
-  --spinner-color: var(--google-grey-900-rgb);
+  --spinner-color-rgb: var(--google-grey-900-rgb);
   --text-width: 140px;
   --warn-text-width: 241px;
   --warn-keep-text-width: 318px;
+  --separator-color: rgba(0, 0, 0, .1);
   --transparent-button-color: rgba(0, 0, 0, 0);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --button-hover-color: rgba(255, 255, 255, .1);
+    --separator-color: rgba(255, 255, 255, .1);
+    --spinner-color-rgb: 255, 255, 255;
+  }
 }
 
 .download-item {
@@ -28,7 +37,7 @@
   --stroke-width: 1.2px;
 
   --download-progress: 0;
-  --indicator-color: var(--spinner-color);
+  --indicator-color: var(--spinner-color-rgb);
 
   align-items: center;
   display: flex;
@@ -154,7 +163,7 @@
 }
 
 #separator {
-  background-color: rgba(0, 0, 0, .1);
+  background-color: var(--separator-color);
   height: 90%;
   margin-inline-start: 4px;
   width: 1px;
