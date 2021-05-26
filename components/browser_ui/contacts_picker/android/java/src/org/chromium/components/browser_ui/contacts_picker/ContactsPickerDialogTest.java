@@ -106,8 +106,9 @@ public class ContactsPickerDialogTest extends DummyUiActivityTestCase
 
     @Before
     public void setUp() throws Exception {
-        mWindowAndroid = TestThreadUtils.runOnUiThreadBlocking(
-                () -> { return new ActivityWindowAndroid(getActivity()); });
+        mWindowAndroid = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true);
+        });
         FeatureList.setTestFeatures(Collections.singletonMap(
                 ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL, true));
         mIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);

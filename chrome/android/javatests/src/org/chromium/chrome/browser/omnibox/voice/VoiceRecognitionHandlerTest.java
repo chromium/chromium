@@ -484,7 +484,7 @@ public class VoiceRecognitionHandlerTest {
         private IntentCallback mCallback;
 
         public TestWindowAndroid(Context context) {
-            super(context);
+            super(context, /* listenToActivityState= */ true);
         }
 
         public void setCancelableIntentSuccess(boolean success) {

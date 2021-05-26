@@ -146,8 +146,9 @@ public class OverlayPanelManagerTest extends DummyUiActivityTestCase {
 
     @Before
     public void setUp() {
-        mWindowAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return new ActivityWindowAndroid(getActivity()); });
+        mWindowAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true);
+        });
     }
 
     @After

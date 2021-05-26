@@ -84,8 +84,9 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mWindowAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return new ActivityWindowAndroid(getActivity()); });
+        mWindowAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true);
+        });
 
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
     }

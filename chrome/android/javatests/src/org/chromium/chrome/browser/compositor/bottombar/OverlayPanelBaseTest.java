@@ -128,7 +128,8 @@ public class OverlayPanelBaseTest extends DummyUiActivityTestCase {
     @Before
     public void setUp() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mWindowAndroid = new ActivityWindowAndroid(getActivity());
+            mWindowAndroid =
+                    new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true);
             OverlayPanelManager panelManager = new OverlayPanelManager();
             mExpandPanel = new MockOverlayPanel(InstrumentationRegistry.getTargetContext(),
                     mLayoutManager, panelManager, mBrowserControlsStateProvider, mWindowAndroid,

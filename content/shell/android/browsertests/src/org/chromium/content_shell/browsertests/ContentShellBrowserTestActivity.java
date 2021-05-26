@@ -59,7 +59,7 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
         ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
         setContentView(getTestActivityViewId());
         mShellManager = (ShellManager) findViewById(getShellManagerViewId());
-        mWindowAndroid = new ActivityWindowAndroid(this);
+        mWindowAndroid = new ActivityWindowAndroid(this, /* listenToActivityState= */ true);
         mShellManager.setWindow(mWindowAndroid);
 
         Window wind = this.getWindow();

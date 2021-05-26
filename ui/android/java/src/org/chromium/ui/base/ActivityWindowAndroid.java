@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
@@ -31,20 +33,41 @@ public class ActivityWindowAndroid
 
     /**
      * Creates an Activity-specific WindowAndroid with associated intent functionality.
-     * TODO(jdduke): Remove this overload when all callsites have been updated to
-     * indicate their activity state listening preference.
      * @param context Context wrapping an activity associated with the WindowAndroid.
+     * @param listenToActivityState Whether to listen to activity state changes.
      */
-    public ActivityWindowAndroid(Context context) {
-        this(context, true);
+    public ActivityWindowAndroid(Context context, boolean listenToActivityState) {
+        this(context, listenToActivityState,
+                new ActivityAndroidPermissionDelegate(
+                        new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
+                new ActivityKeyboardVisibilityDelegate(
+                        new WeakReference<Activity>(ContextUtils.activityFromContext(context))));
     }
 
     /**
      * Creates an Activity-specific WindowAndroid with associated intent functionality.
      * @param context Context wrapping an activity associated with the WindowAndroid.
      * @param listenToActivityState Whether to listen to activity state changes.
+     * @param keyboardVisibilityDelegate Delegate which handles keyboard visibility.
      */
-    public ActivityWindowAndroid(Context context, boolean listenToActivityState) {
+    public ActivityWindowAndroid(Context context, boolean listenToActivityState,
+            @NonNull ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate) {
+        this(context, listenToActivityState,
+                new ActivityAndroidPermissionDelegate(
+                        new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
+                keyboardVisibilityDelegate);
+    }
+
+    /**
+     * Creates an Activity-specific WindowAndroid with associated intent functionality.
+     * @param context Context wrapping an activity associated with the WindowAndroid.
+     * @param listenToActivityState Whether to listen to activity state changes.
+     * @param activityAndroidPermissionDelegate Delegates which handles android permissions.
+     * @param keyboardVisibilityDelegate Delegate which handles keyboard visibility.
+     */
+    public ActivityWindowAndroid(Context context, boolean listenToActivityState,
+            ActivityAndroidPermissionDelegate activityAndroidPermissionDelegate,
+            ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate) {
         super(context);
         Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null) {
@@ -55,16 +78,8 @@ public class ActivityWindowAndroid
             ApplicationStatus.registerStateListenerForActivity(this, activity);
         }
 
-        setKeyboardDelegate(createKeyboardVisibilityDelegate());
-        setAndroidPermissionDelegate(createAndroidPermissionDelegate());
-    }
-
-    protected ActivityAndroidPermissionDelegate createAndroidPermissionDelegate() {
-        return new ActivityAndroidPermissionDelegate(getActivity());
-    }
-
-    protected ActivityKeyboardVisibilityDelegate createKeyboardVisibilityDelegate() {
-        return new ActivityKeyboardVisibilityDelegate(getActivity());
+        setKeyboardDelegate(activityKeyboardVisibilityDelegate);
+        setAndroidPermissionDelegate(activityAndroidPermissionDelegate);
     }
 
     @Override

@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.autofill.mojom.FocusedFieldType;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -112,8 +113,9 @@ public class AutofillKeyboardAccessoryIntegrationTest {
      * being the upper half in multi-window mode.
      */
     private static class MultiWindowKeyboard extends FakeKeyboard {
-        public MultiWindowKeyboard(WeakReference<Activity> activity) {
-            super(activity);
+        public MultiWindowKeyboard(WeakReference<Activity> activity,
+                Supplier<ManualFillingComponent> manualFillingComponentSupplier) {
+            super(activity, manualFillingComponentSupplier);
         }
 
         @Override

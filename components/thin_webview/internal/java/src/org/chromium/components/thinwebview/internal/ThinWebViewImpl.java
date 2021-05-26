@@ -48,7 +48,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     public ThinWebViewImpl(Context context, ThinWebViewConstraints constraints) {
         super(context);
         if (ContextUtils.activityFromContext(context) != null) {
-            mWindowAndroid = new ActivityWindowAndroid(context);
+            mWindowAndroid = new ActivityWindowAndroid(context, /* listenToActivityState= */ true);
         } else {
             mWindowAndroid = new WindowAndroid(context);
         }

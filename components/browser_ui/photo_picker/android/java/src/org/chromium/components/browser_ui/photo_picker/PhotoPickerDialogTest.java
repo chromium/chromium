@@ -131,8 +131,9 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
     @Before
     public void setUp() throws Exception {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-        mWindowAndroid = TestThreadUtils.runOnUiThreadBlocking(
-                () -> { return new ActivityWindowAndroid(getActivity()); });
+        mWindowAndroid = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true);
+        });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             DecoderServiceHost.setIntentSupplier(
                     () -> { return new Intent(getActivity(), TestImageDecoderService.class); });

@@ -248,7 +248,8 @@ public class OverlayPanelEventFilterTest extends DummyUiActivityTestCase {
         mTouchSlopDp = ViewConfiguration.get(context).getScaledTouchSlop() / mDpToPx;
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mWindowAndroid = new ActivityWindowAndroid(getActivity());
+            mWindowAndroid =
+                    new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true);
             mActivity = getActivity();
 
             mPanel = new MockOverlayPanel(context, mLayoutManager, new OverlayPanelManager(),

@@ -59,11 +59,9 @@ public class SelectFileDialogTest {
     private static class ActivityWindowAndroidForTest extends ActivityWindowAndroid {
         public Intent lastIntent;
         public IntentCallback lastCallback;
-        /**
-         * @param activity
-         */
+
         public ActivityWindowAndroidForTest(Activity activity) {
-            super(activity);
+            super(activity, /* listenToActivityState= */ true);
         }
 
         @Override

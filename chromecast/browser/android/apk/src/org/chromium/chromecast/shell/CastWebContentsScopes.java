@@ -32,8 +32,9 @@ class CastWebContentsScopes {
     public static Observer<WebContents> onLayoutActivity(
             Activity activity, FrameLayout layout, @ColorInt int backgroundColor) {
         layout.setBackgroundColor(backgroundColor);
-        return onLayoutInternal(
-                activity, layout, () -> new ActivityWindowAndroid(activity), backgroundColor);
+        return onLayoutInternal(activity, layout, () -> {
+            return new ActivityWindowAndroid(activity, /* listenToActivityState= */ true);
+        }, backgroundColor);
     }
 
     public static Observer<WebContents> onLayoutFragment(

@@ -9,53 +9,49 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 
 import java.lang.ref.WeakReference;
 
 /**
- * A {@link SingleWindowKeyboardVisibilityDelegate} that considers UI elements of a
- * {@link ChromeActivity} which amend or replace the keyboard.
+ * A {@link SingleWindowKeyboardVisibilityDelegate} that considers UI elements of an
+ * {@link Activity} which amend or replace the keyboard.
  */
 public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibilityDelegate
         implements ManualFillingComponent.SoftKeyboardDelegate {
+    private final Supplier<ManualFillingComponent> mManualFillingComponentSupplier;
+
     /**
      * Creates a new visibility delegate.
-     * @param activity A {@link WeakReference} to a {@link ChromeActivity}.
+     * @param activity A {@link WeakReference} to an {@link Activity}.
      */
-    public ChromeKeyboardVisibilityDelegate(WeakReference<Activity> activity) {
+    public ChromeKeyboardVisibilityDelegate(WeakReference<Activity> activity,
+            @NonNull Supplier<ManualFillingComponent> manualFillingComponentSupplier) {
         super(activity);
-        assert activity.get() instanceof ChromeActivity;
-    }
-
-    @Override
-    public @Nullable ChromeActivity getActivity() {
-        return (ChromeActivity) super.getActivity();
+        mManualFillingComponentSupplier = manualFillingComponentSupplier;
     }
 
     @Override
     public boolean hideKeyboard(View view) {
-        ChromeActivity activity = getActivity();
         boolean wasManualFillingViewShowing = false;
-        if (activity != null) {
+        if (mManualFillingComponentSupplier.hasValue()) {
             wasManualFillingViewShowing =
-                    activity.getManualFillingComponent().isFillingViewShown(view);
-            activity.getManualFillingComponent().hide();
+                    mManualFillingComponentSupplier.get().isFillingViewShown(view);
+            mManualFillingComponentSupplier.get().hide();
         }
         return super.hideKeyboard(view) || wasManualFillingViewShowing;
     }
 
     @Override
     public boolean isKeyboardShowing(Context context, View view) {
-        ChromeActivity activity = getActivity();
         return super.isKeyboardShowing(context, view)
-                || (activity != null
-                        && activity.getManualFillingComponent().isFillingViewShown(view));
+                || (mManualFillingComponentSupplier.hasValue()
+                        && mManualFillingComponentSupplier.get().isFillingViewShown(view));
     }
 
     /**

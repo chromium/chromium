@@ -13,8 +13,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
+import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -30,7 +32,8 @@ public class ChromeWindow extends ActivityWindowAndroid {
      */
     @VisibleForTesting
     public interface KeyboardVisibilityDelegateFactory {
-        ChromeKeyboardVisibilityDelegate create(WeakReference<Activity> activity);
+        ChromeKeyboardVisibilityDelegate create(@NonNull WeakReference<Activity> activity,
+                @NonNull Supplier<ManualFillingComponent> manualFillingComponentSupplier);
     }
     private static KeyboardVisibilityDelegateFactory sKeyboardVisibilityDelegateFactory =
             ChromeKeyboardVisibilityDelegate::new;
@@ -45,12 +48,33 @@ public class ChromeWindow extends ActivityWindowAndroid {
      * @param activityTabProvider Provides the current activity's {@link Tab}.
      * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder}.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
+     * @param manualFillingComponentSupplier Supplies the {@link ManualFillingComponent}.
      */
     public ChromeWindow(@NonNull Activity activity,
             @NonNull ActivityTabProvider activityTabProvider,
             @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
-        super(activity);
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull Supplier<ManualFillingComponent> manualFillingComponentSupplier) {
+        this(activity, activityTabProvider, compositorViewHolderSupplier,
+                modalDialogManagerSupplier,
+                sKeyboardVisibilityDelegateFactory.create(
+                        new WeakReference<Activity>(activity), manualFillingComponentSupplier));
+    }
+
+    /**
+     * Creates Chrome specific ActivityWindowAndroid.
+     * @param activity The activity that owns the ChromeWindow.
+     * @param activityTabProvider Provides the current activity's {@link Tab}.
+     * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder}.
+     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
+     * @param activityKeyboardVisibilityDelegate Delegate to handle keyboard visibility.
+     */
+    public ChromeWindow(@NonNull Activity activity,
+            @NonNull ActivityTabProvider activityTabProvider,
+            @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate) {
+        super(activity, /* listenToActivityState= */ true, activityKeyboardVisibilityDelegate);
         mActivityTabProvider = activityTabProvider;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -67,11 +91,6 @@ public class ChromeWindow extends ActivityWindowAndroid {
     public ModalDialogManager getModalDialogManager() {
         // TODO(crbug.com/1155658): Move ModalDialogManager to UnownedUserData.
         return mModalDialogManagerSupplier.get();
-    }
-
-    @Override
-    protected ChromeKeyboardVisibilityDelegate createKeyboardVisibilityDelegate() {
-        return sKeyboardVisibilityDelegateFactory.create(getActivity());
     }
 
     /**

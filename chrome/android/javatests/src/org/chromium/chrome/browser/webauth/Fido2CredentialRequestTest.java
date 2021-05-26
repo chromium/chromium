@@ -42,7 +42,6 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.InternalAuthenticator;
 import org.chromium.chrome.browser.autofill.InternalAuthenticatorJni;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -166,8 +165,8 @@ public class Fido2CredentialRequestTest {
          * Constructor.
          * @param activity The app activity.
          */
-        public MockActivityWindowAndroid(ChromeActivity activity) {
-            super(activity);
+        public MockActivityWindowAndroid(Activity activity) {
+            super(activity, /* listenToActivityState= */ true);
         }
 
         /**

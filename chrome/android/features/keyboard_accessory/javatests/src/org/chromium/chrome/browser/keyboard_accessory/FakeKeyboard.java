@@ -11,6 +11,9 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
@@ -35,8 +38,9 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
     private static final int KEYBOARD_HEIGHT_DP = 234;
     private boolean mIsShowing;
 
-    public FakeKeyboard(WeakReference<Activity> activity) {
-        super(activity);
+    public FakeKeyboard(WeakReference<Activity> activity,
+            @NonNull Supplier<ManualFillingComponent> manualFillingComponentSupplier) {
+        super(activity, manualFillingComponentSupplier);
     }
 
     protected int getStaticKeyboardHeight() {
