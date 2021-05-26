@@ -32,10 +32,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaBackendImpl
  public:
   using ReserveQuotaCallback = QuotaReservationManager::ReserveQuotaCallback;
 
-  QuotaBackendImpl(base::SequencedTaskRunner* file_task_runner,
+  QuotaBackendImpl(scoped_refptr<base::SequencedTaskRunner> file_task_runner,
                    ObfuscatedFileUtil* obfuscated_file_util,
                    FileSystemUsageCache* file_system_usage_cache,
-                   QuotaManagerProxy* quota_manager_proxy);
+                   scoped_refptr<QuotaManagerProxy> quota_manager_proxy);
   ~QuotaBackendImpl() override;
 
   // QuotaReservationManager::QuotaBackend overrides.
@@ -79,13 +79,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaBackendImpl
                                       FileSystemType type,
                                       base::FilePath* usage_file_path);
 
-  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
   // Owned by SandboxFileSystemBackendDelegate.
-  ObfuscatedFileUtil* obfuscated_file_util_;
-  FileSystemUsageCache* file_system_usage_cache_;
+  ObfuscatedFileUtil* const obfuscated_file_util_;
+  FileSystemUsageCache* const file_system_usage_cache_;
 
-  scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
+  const scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
 
   base::WeakPtrFactory<QuotaBackendImpl> weak_ptr_factory_{this};
 

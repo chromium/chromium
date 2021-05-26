@@ -17,6 +17,7 @@
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
@@ -117,11 +118,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // AttemptAutoMountForURLRequest. Only external filesystems are auto mounted
   // when a filesystem: URL request is made.
   FileSystemContext(
-      base::SingleThreadTaskRunner* io_task_runner,
-      base::SequencedTaskRunner* file_task_runner,
-      ExternalMountPoints* external_mount_points,
-      SpecialStoragePolicy* special_storage_policy,
-      QuotaManagerProxy* quota_manager_proxy,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+      scoped_refptr<ExternalMountPoints> external_mount_points,
+      scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+      scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
       std::vector<std::unique_ptr<FileSystemBackend>> additional_backends,
       const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
       const base::FilePath& partition_path,
@@ -371,20 +372,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // Override the default leveldb Env with |env_override_| if set.
   std::unique_ptr<leveldb::Env> env_override_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> default_file_task_runner_;
+  const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> default_file_task_runner_;
 
-  scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
+  const scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
 
-  std::unique_ptr<SandboxFileSystemBackendDelegate> sandbox_delegate_;
+  const std::unique_ptr<SandboxFileSystemBackendDelegate> sandbox_delegate_;
 
   // Regular file system backends.
-  std::unique_ptr<SandboxFileSystemBackend> sandbox_backend_;
+  const std::unique_ptr<SandboxFileSystemBackend> sandbox_backend_;
   std::unique_ptr<IsolatedFileSystemBackend> isolated_backend_;
 
   // Additional file system backends.
-  std::unique_ptr<PluginPrivateFileSystemBackend> plugin_private_backend_;
-  std::vector<std::unique_ptr<FileSystemBackend>> additional_backends_;
+  const std::unique_ptr<PluginPrivateFileSystemBackend> plugin_private_backend_;
+  const std::vector<std::unique_ptr<FileSystemBackend>> additional_backends_;
 
   std::vector<URLRequestAutoMountHandler> auto_mount_handlers_;
 
@@ -398,7 +399,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
 
   // External mount points visible in the file system context (excluding system
   // external mount points).
-  scoped_refptr<ExternalMountPoints> external_mount_points_;
+  const scoped_refptr<ExternalMountPoints> external_mount_points_;
 
   // MountPoints used to crack FileSystemURLs. The MountPoints are ordered
   // in order they should try to crack a FileSystemURL.
@@ -407,9 +408,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // The base path of the storage partition for this context.
   const base::FilePath partition_path_;
 
-  bool is_incognito_;
+  const bool is_incognito_;
 
-  std::unique_ptr<FileSystemOperationRunner> operation_runner_;
+  const std::unique_ptr<FileSystemOperationRunner> operation_runner_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(FileSystemContext);
 };

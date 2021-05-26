@@ -27,6 +27,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_backend.h"
 #include "storage/browser/test/test_file_system_context.h"
@@ -116,8 +117,8 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
 
     file_system_context_ =
         storage::CreateFileSystemContextWithAdditionalProvidersForTesting(
-            base::ThreadTaskRunnerHandle::Get().get(),
-            base::ThreadTaskRunnerHandle::Get().get(),
+            base::ThreadTaskRunnerHandle::Get(),
+            base::ThreadTaskRunnerHandle::Get(),
             /*quota_manager_proxy=*/nullptr, std::move(additional_providers),
             dir_.GetPath());
 

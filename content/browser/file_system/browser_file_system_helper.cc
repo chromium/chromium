@@ -39,6 +39,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -120,7 +121,7 @@ scoped_refptr<storage::FileSystemContext> CreateFileSystemContext(
     BrowserContext* browser_context,
     const base::FilePath& profile_path,
     bool is_incognito,
-    storage::QuotaManagerProxy* quota_manager_proxy) {
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy) {
   // Setting up additional filesystem backends.
   std::vector<std::unique_ptr<storage::FileSystemBackend>> additional_backends;
   GetContentClient()->browser()->GetAdditionalFileSystemBackends(
@@ -134,13 +135,12 @@ scoped_refptr<storage::FileSystemContext> CreateFileSystemContext(
 
   auto options = CreateBrowserFileSystemOptions(
       browser_context->CanUseDiskWhenOffTheRecord() ? false : is_incognito);
-  scoped_refptr<storage::FileSystemContext> file_system_context =
-      new storage::FileSystemContext(
-          GetIOThreadTaskRunner({}).get(), g_fileapi_task_runner.Get().get(),
-          browser_context->GetMountPoints(),
-          browser_context->GetSpecialStoragePolicy(), quota_manager_proxy,
-          std::move(additional_backends), url_request_auto_mount_handlers,
-          profile_path, options);
+  auto file_system_context = base::MakeRefCounted<storage::FileSystemContext>(
+      GetIOThreadTaskRunner({}), g_fileapi_task_runner.Get(),
+      browser_context->GetMountPoints(),
+      browser_context->GetSpecialStoragePolicy(),
+      std::move(quota_manager_proxy), std::move(additional_backends),
+      url_request_auto_mount_handlers, profile_path, options);
 
   for (const storage::FileSystemType& type :
        file_system_context->GetFileSystemTypes()) {

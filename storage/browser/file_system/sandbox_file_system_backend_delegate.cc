@@ -177,14 +177,14 @@ std::string SandboxFileSystemBackendDelegate::GetTypeString(
 }
 
 SandboxFileSystemBackendDelegate::SandboxFileSystemBackendDelegate(
-    QuotaManagerProxy* quota_manager_proxy,
-    base::SequencedTaskRunner* file_task_runner,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner,
     const base::FilePath& profile_path,
-    SpecialStoragePolicy* special_storage_policy,
+    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
     const FileSystemOptions& file_system_options,
     leveldb::Env* env_override)
-    : file_task_runner_(file_task_runner),
-      quota_manager_proxy_(quota_manager_proxy),
+    : file_task_runner_(std::move(file_task_runner)),
+      quota_manager_proxy_(std::move(quota_manager_proxy)),
       sandbox_file_util_(std::make_unique<AsyncFileUtilAdapter>(
           std::make_unique<ObfuscatedFileUtil>(
               special_storage_policy,
@@ -197,19 +197,18 @@ SandboxFileSystemBackendDelegate::SandboxFileSystemBackendDelegate(
       file_system_usage_cache_(std::make_unique<FileSystemUsageCache>(
           file_system_options.is_incognito())),
       quota_observer_(
-          std::make_unique<SandboxQuotaObserver>(quota_manager_proxy,
-                                                 file_task_runner,
+          std::make_unique<SandboxQuotaObserver>(quota_manager_proxy_,
+                                                 file_task_runner_,
                                                  obfuscated_file_util(),
                                                  usage_cache())),
       quota_reservation_manager_(std::make_unique<QuotaReservationManager>(
-          std::make_unique<QuotaBackendImpl>(file_task_runner_.get(),
+          std::make_unique<QuotaBackendImpl>(file_task_runner_,
                                              obfuscated_file_util(),
                                              usage_cache(),
-                                             quota_manager_proxy))),
-      special_storage_policy_(special_storage_policy),
+                                             quota_manager_proxy_))),
+      special_storage_policy_(std::move(special_storage_policy)),
       file_system_options_(file_system_options),
-      is_filesystem_opened_(false) {
-}
+      is_filesystem_opened_(false) {}
 
 SandboxFileSystemBackendDelegate::~SandboxFileSystemBackendDelegate() {
   DETACH_FROM_THREAD(io_thread_checker_);

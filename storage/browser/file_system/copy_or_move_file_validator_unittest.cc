@@ -25,6 +25,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_backend.h"
@@ -64,7 +65,8 @@ class CopyOrMoveFileValidatorTestHelper {
     ASSERT_TRUE(base_.CreateUniqueTempDir());
     base::FilePath base_dir = base_.GetPath();
 
-    file_system_context_ = CreateFileSystemContextForTesting(nullptr, base_dir);
+    file_system_context_ = CreateFileSystemContextForTesting(
+        /*quota_manager_proxy=*/nullptr, base_dir);
 
     // Set up TestFileSystemBackend to require CopyOrMoveFileValidator.
     FileSystemBackend* test_file_system_backend =

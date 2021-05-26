@@ -31,6 +31,7 @@
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/blob_data_snapshot.h"
 #include "storage/browser/blob/blob_impl.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/fake_blob_data_handle.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,8 +81,8 @@ class BlobStorageContextTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     base::ThreadRestrictions::SetIOAllowed(false);
     context_ = std::make_unique<BlobStorageContext>();
-    file_system_context_ =
-        CreateFileSystemContextForTesting(nullptr, base::FilePath());
+    file_system_context_ = CreateFileSystemContextForTesting(
+        /*quota_manager_proxy=*/nullptr, base::FilePath());
   }
 
   void TearDown() override {

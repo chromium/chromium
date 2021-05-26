@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,8 +40,8 @@ class FileStreamForwarderTest : public testing::Test {
     ASSERT_TRUE(dest_file.IsValid());
     dest_fd_ = base::ScopedFD(dest_file.TakePlatformFile());
 
-    context_ = storage::CreateFileSystemContextForTesting(nullptr,
-                                                          temp_dir_.GetPath());
+    context_ = storage::CreateFileSystemContextForTesting(
+        /*quota_manager_proxy=*/nullptr, temp_dir_.GetPath());
 
     // Prepare a file system.
     constexpr char kURLOrigin[] = "http://origin/";

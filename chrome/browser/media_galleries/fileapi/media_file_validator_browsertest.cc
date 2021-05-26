@@ -29,6 +29,7 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_backend.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -135,8 +136,9 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
         std::make_unique<MediaFileSystemBackend>(base, base::NullCallback()));
     file_system_context_ =
         storage::CreateFileSystemContextWithAdditionalProvidersForTesting(
-            content::GetIOThreadTaskRunner({}).get(), file_system_runner_.get(),
-            nullptr, std::move(additional_providers), base);
+            content::GetIOThreadTaskRunner({}), file_system_runner_,
+            /*quota_manager_proxy=*/nullptr, std::move(additional_providers),
+            base);
 
     move_src_ = file_system_context_->CreateCrackedFileSystemURL(
         url::Origin::Create(GURL(kOrigin)), storage::kFileSystemTypeTest,

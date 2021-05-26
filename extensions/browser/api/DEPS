@@ -5,6 +5,7 @@ include_rules = [
   "+services/device/public",
   "+services/metrics/public/cpp",
   "+storage/browser/file_system",
+  "+storage/browser/quota",
   "+storage/common/file_system",
   "+third_party/openscreen/src/cast/common/certificate/proto",
   "+third_party/openscreen/src/cast/common/channel/proto",

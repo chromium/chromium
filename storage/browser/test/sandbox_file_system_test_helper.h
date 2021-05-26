@@ -51,9 +51,9 @@ class SandboxFileSystemTestHelper {
   // a single base directory, they have to share a context, so that they don't
   // have multiple databases fighting over the lock to the origin directory
   // [deep down inside ObfuscatedFileUtil].
-  void SetUp(FileSystemContext* file_system_context);
+  void SetUp(scoped_refptr<FileSystemContext> file_system_context);
   void SetUp(const base::FilePath& base_dir,
-             QuotaManagerProxy* quota_manager_proxy);
+             scoped_refptr<QuotaManagerProxy> quota_manager_proxy);
   void TearDown();
 
   base::FilePath GetOriginRootPath();

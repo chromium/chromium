@@ -5,7 +5,9 @@
 #include "storage/browser/test/sandbox_file_system_test_helper.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -41,17 +43,17 @@ void SandboxFileSystemTestHelper::SetUp(const base::FilePath& base_dir) {
 }
 
 void SandboxFileSystemTestHelper::SetUp(
-    FileSystemContext* file_system_context) {
-  file_system_context_ = file_system_context;
+    scoped_refptr<FileSystemContext> file_system_context) {
+  file_system_context_ = std::move(file_system_context);
 
   SetUpFileSystem();
 }
 
 void SandboxFileSystemTestHelper::SetUp(
     const base::FilePath& base_dir,
-    QuotaManagerProxy* quota_manager_proxy) {
-  file_system_context_ =
-      CreateFileSystemContextForTesting(quota_manager_proxy, base_dir);
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy) {
+  file_system_context_ = CreateFileSystemContextForTesting(
+      std::move(quota_manager_proxy), base_dir);
 
   SetUpFileSystem();
 }

@@ -134,11 +134,11 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
 }
 
 FileSystemContext::FileSystemContext(
-    base::SingleThreadTaskRunner* io_task_runner,
-    base::SequencedTaskRunner* file_task_runner,
-    ExternalMountPoints* external_mount_points,
-    SpecialStoragePolicy* special_storage_policy,
-    QuotaManagerProxy* quota_manager_proxy,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+    scoped_refptr<ExternalMountPoints> external_mount_points,
+    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
     std::vector<std::unique_ptr<FileSystemBackend>> additional_backends,
     const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
     const base::FilePath& partition_path,
@@ -147,12 +147,12 @@ FileSystemContext::FileSystemContext(
       env_override_(options.is_in_memory()
                         ? leveldb_chrome::NewMemEnv("FileSystem")
                         : nullptr),
-      io_task_runner_(io_task_runner),
-      default_file_task_runner_(file_task_runner),
-      quota_manager_proxy_(quota_manager_proxy),
+      io_task_runner_(std::move(io_task_runner)),
+      default_file_task_runner_(std::move(file_task_runner)),
+      quota_manager_proxy_(std::move(quota_manager_proxy)),
       sandbox_delegate_(std::make_unique<SandboxFileSystemBackendDelegate>(
-          quota_manager_proxy,
-          file_task_runner,
+          quota_manager_proxy_.get(),
+          default_file_task_runner_.get(),
           partition_path,
           special_storage_policy,
           options,
@@ -160,14 +160,14 @@ FileSystemContext::FileSystemContext(
       sandbox_backend_(
           std::make_unique<SandboxFileSystemBackend>(sandbox_delegate_.get())),
       plugin_private_backend_(std::make_unique<PluginPrivateFileSystemBackend>(
-          file_task_runner,
+          default_file_task_runner_,
           partition_path,
-          special_storage_policy,
+          std::move(special_storage_policy),
           options,
           env_override_.get())),
       additional_backends_(std::move(additional_backends)),
       auto_mount_handlers_(auto_mount_handlers),
-      external_mount_points_(external_mount_points),
+      external_mount_points_(std::move(external_mount_points)),
       partition_path_(partition_path),
       is_incognito_(options.is_incognito()),
       operation_runner_(std::make_unique<FileSystemOperationRunner>(
@@ -189,10 +189,10 @@ FileSystemContext::FileSystemContext(
       !base::Contains(backend_map_, kFileSystemTypeLocalForPlatformApp));
   RegisterBackend(isolated_backend_.get());
 
-  if (quota_manager_proxy) {
+  if (quota_manager_proxy_) {
     // Quota client assumes all backends have registered.
     // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
-    quota_manager_proxy->RegisterLegacyClient(
+    quota_manager_proxy_->RegisterLegacyClient(
         base::MakeRefCounted<FileSystemQuotaClient>(this),
         QuotaClientType::kFileSystem, QuotaManagedStorageTypes());
   }
@@ -205,8 +205,8 @@ FileSystemContext::FileSystemContext(
 
   // Additional mount points must be added before regular system-wide
   // mount points.
-  if (external_mount_points)
-    url_crackers_.push_back(external_mount_points);
+  if (external_mount_points_)
+    url_crackers_.push_back(external_mount_points_.get());
   url_crackers_.push_back(ExternalMountPoints::GetSystemInstance());
   url_crackers_.push_back(IsolatedContext::GetInstance());
 }

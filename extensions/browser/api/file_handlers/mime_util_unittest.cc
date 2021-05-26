@@ -17,6 +17,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extensions_test.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -61,7 +62,7 @@ class FileHandlersMimeUtilTest : public ExtensionsTest {
   void SetUp() override {
     ExtensionsTest::SetUp();
     file_system_context_ = storage::CreateFileSystemContextForTesting(
-        nullptr, browser_context()->GetPath());
+        /*quota_manager_proxy=*/nullptr, browser_context()->GetPath());
 
     const std::string kSampleContent = "<html><body></body></html>";
     base::FilePath temp_filename = CreateTemporaryFile(kSampleContent);

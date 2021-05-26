@@ -23,6 +23,7 @@
 #include "net/base/test_completion_callback.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,7 +64,7 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     handle_ = std::make_unique<FileSystemAccessFileHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
-            test_src_origin_, test_src_url_, /*process_id=*/1),
+            test_src_origin_, test_src_url_, /*worker_process_id=*/1),
         test_file_url_,
         FileSystemAccessManagerImpl::SharedHandleState(
             allow_grant_, allow_grant_, /*file_system=*/{}));

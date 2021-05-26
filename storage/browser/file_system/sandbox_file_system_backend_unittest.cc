@@ -23,6 +23,7 @@
 #include "storage/browser/file_system/file_system_features.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_options.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -92,9 +93,9 @@ class SandboxFileSystemBackendTest
   void SetUpNewDelegate(const FileSystemOptions& options) {
     incognito_env_override_ = leveldb_chrome::NewMemEnv("FileSystem");
     delegate_ = std::make_unique<SandboxFileSystemBackendDelegate>(
-        nullptr /* quota_manager_proxy */,
-        base::ThreadTaskRunnerHandle::Get().get(), data_dir_.GetPath(),
-        nullptr /* special_storage_policy */, options,
+        /*quota_manager_proxy=*/nullptr, base::ThreadTaskRunnerHandle::Get(),
+        data_dir_.GetPath(),
+        /*special_storage_policy=*/nullptr, options,
         options.is_in_memory() ? incognito_env_override_.get() : nullptr);
   }
 

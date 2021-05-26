@@ -33,6 +33,7 @@
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/browser/file_system/file_writer_delegate.h"
 #include "storage/browser/file_system/sandbox_file_stream_writer.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_mount_option.h"
@@ -175,8 +176,8 @@ class FileWriterDelegateTest : public PlatformTest {
 void FileWriterDelegateTest::SetUp() {
   ASSERT_TRUE(dir_.CreateUniqueTempDir());
 
-  file_system_context_ =
-      CreateFileSystemContextForTesting(nullptr, dir_.GetPath());
+  file_system_context_ = CreateFileSystemContextForTesting(
+      /*quota_manager_proxy=*/nullptr, dir_.GetPath());
   ASSERT_EQ(base::File::FILE_OK,
             AsyncFileTestHelper::CreateFile(file_system_context_.get(),
                                             GetFileSystemURL("test")));

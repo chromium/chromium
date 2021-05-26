@@ -23,6 +23,7 @@
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/browser/test/test_file_system_options.h"
@@ -195,11 +196,12 @@ class MultiThreadFileSystemOperationRunnerTest : public testing::Test {
 
     base::FilePath base_dir = base_.GetPath();
     file_system_context_ = base::MakeRefCounted<FileSystemContext>(
-        base::ThreadTaskRunnerHandle::Get().get(),
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}).get(),
-        storage::ExternalMountPoints::CreateRefCounted().get(),
-        base::MakeRefCounted<storage::MockSpecialStoragePolicy>().get(),
-        nullptr, std::vector<std::unique_ptr<storage::FileSystemBackend>>(),
+        base::ThreadTaskRunnerHandle::Get(),
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+        storage::ExternalMountPoints::CreateRefCounted(),
+        base::MakeRefCounted<storage::MockSpecialStoragePolicy>(),
+        /*quota_manager_proxy=*/nullptr,
+        std::vector<std::unique_ptr<storage::FileSystemBackend>>(),
         std::vector<storage::URLRequestAutoMountHandler>(), base_dir,
         storage::CreateAllowFileAccessOptions());
 

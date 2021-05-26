@@ -32,6 +32,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -132,7 +133,7 @@ class FileSystemProviderProviderAsyncFileUtilTest : public testing::Test {
     async_file_util_ = std::make_unique<internal::ProviderAsyncFileUtil>();
 
     file_system_context_ = storage::CreateFileSystemContextForTesting(
-        nullptr, data_dir_.GetPath());
+        /*quota_manager_proxy=*/nullptr, data_dir_.GetPath());
 
     Service* service = Service::Get(profile_);  // Owned by its factory.
     service->RegisterProvider(FakeExtensionProvider::Create(kExtensionId));

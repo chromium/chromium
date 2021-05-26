@@ -27,6 +27,7 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/file_system/local_file_util.h"
 #include "storage/browser/file_system/native_file_util.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/file_system_test_file_set.h"
 #include "storage/browser/test/test_file_system_context.h"
@@ -107,7 +108,7 @@ class DraggedFileUtilTest : public testing::Test {
     SimulateDropFiles();
 
     file_system_context_ = CreateFileSystemContextForTesting(
-        nullptr /* quota_manager */, partition_dir_.GetPath());
+        /*quota_manager_proxy=*/nullptr, partition_dir_.GetPath());
 
     isolated_context()->AddReference(filesystem_id_);
   }

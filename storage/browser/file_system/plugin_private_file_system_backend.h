@@ -46,11 +46,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
   class FileSystemIDToPluginMap;
   using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
 
-  PluginPrivateFileSystemBackend(base::SequencedTaskRunner* file_task_runner,
-                                 const base::FilePath& profile_path,
-                                 SpecialStoragePolicy* special_storage_policy,
-                                 const FileSystemOptions& file_system_options,
-                                 leveldb::Env* env_override);
+  PluginPrivateFileSystemBackend(
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+      const base::FilePath& profile_path,
+      scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+      const FileSystemOptions& file_system_options,
+      leveldb::Env* env_override);
   ~PluginPrivateFileSystemBackend() override;
 
   // This must be used to open 'private' filesystem instead of regular
@@ -139,7 +140,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
   ObfuscatedFileUtil* obfuscated_file_util();
   const base::FilePath& base_path() const { return base_path_; }
 
-  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   const FileSystemOptions file_system_options_;
   const base::FilePath base_path_;
   std::unique_ptr<AsyncFileUtil> file_util_;

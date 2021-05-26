@@ -5,14 +5,21 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_BROWSER_FILE_SYSTEM_HELPER_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_BROWSER_FILE_SYSTEM_HELPER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/common/content_export.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/base/clipboard/file_info.h"
 
+class GURL;
+
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace storage {
 class FileSystemContext;
 class FileSystemURL;
+class QuotaManagerProxy;
 }  // namespace storage
 
 namespace content {
@@ -24,10 +31,11 @@ struct DropData;
 // Helper method that returns FileSystemContext constructed for
 // the browser process.
 CONTENT_EXPORT scoped_refptr<storage::FileSystemContext>
-CreateFileSystemContext(BrowserContext* browser_context,
-                        const base::FilePath& profile_path,
-                        bool is_incognito,
-                        storage::QuotaManagerProxy* quota_manager_proxy);
+CreateFileSystemContext(
+    BrowserContext* browser_context,
+    const base::FilePath& profile_path,
+    bool is_incognito,
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
 // Verifies that |url| is valid and has a registered backend in |context|.
 CONTENT_EXPORT bool FileSystemURLIsValid(storage::FileSystemContext* context,

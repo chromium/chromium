@@ -18,6 +18,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/isolated_context.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_options.h"
@@ -63,9 +64,9 @@ class FileSystemContextTest : public testing::Test {
   FileSystemContext* CreateFileSystemContextForTest(
       ExternalMountPoints* external_mount_points) {
     return new FileSystemContext(
-        base::ThreadTaskRunnerHandle::Get().get(),
-        base::ThreadTaskRunnerHandle::Get().get(), external_mount_points,
-        storage_policy_.get(), mock_quota_manager_->proxy(),
+        base::ThreadTaskRunnerHandle::Get(),
+        base::ThreadTaskRunnerHandle::Get(), external_mount_points,
+        storage_policy_, mock_quota_manager_->proxy(),
         std::vector<std::unique_ptr<FileSystemBackend>>(),
         std::vector<URLRequestAutoMountHandler>(), data_dir_.GetPath(),
         CreateAllowFileAccessOptions());

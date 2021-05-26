@@ -32,6 +32,8 @@
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/blob/blob_url_registry.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/fake_blob.h"
 #include "storage/browser/test/fake_progress_client.h"
 #include "storage/browser/test/mock_blob_registry_delegate.h"
@@ -71,14 +73,14 @@ class BlobRegistryImplTest : public testing::Test {
         base::ThreadPool::CreateTaskRunner({base::MayBlock()}));
     auto storage_policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
     file_system_context_ = base::MakeRefCounted<FileSystemContext>(
-        base::ThreadTaskRunnerHandle::Get().get(),
-        base::ThreadTaskRunnerHandle::Get().get(),
-        nullptr /* external_mount_points */, storage_policy.get(),
-        nullptr /* quota_manager_proxy */,
+        base::ThreadTaskRunnerHandle::Get(),
+        base::ThreadTaskRunnerHandle::Get(),
+        /*external_mount_points=*/nullptr, std::move(storage_policy),
+        /*quota_manager_proxy=*/nullptr,
         std::vector<std::unique_ptr<FileSystemBackend>>(),
         std::vector<URLRequestAutoMountHandler>(), data_dir_.GetPath(),
         FileSystemOptions(FileSystemOptions::PROFILE_MODE_INCOGNITO,
-                          false /* force_in_memory */,
+                          /*force_in_memory=*/false,
                           std::vector<std::string>()));
     registry_impl_ = std::make_unique<BlobRegistryImpl>(
         context_->AsWeakPtr(), url_registry_.AsWeakPtr(), file_system_context_);

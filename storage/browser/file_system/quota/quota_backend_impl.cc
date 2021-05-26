@@ -24,14 +24,14 @@
 namespace storage {
 
 QuotaBackendImpl::QuotaBackendImpl(
-    base::SequencedTaskRunner* file_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner,
     ObfuscatedFileUtil* obfuscated_file_util,
     FileSystemUsageCache* file_system_usage_cache,
-    QuotaManagerProxy* quota_manager_proxy)
-    : file_task_runner_(file_task_runner),
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy)
+    : file_task_runner_(std::move(file_task_runner)),
       obfuscated_file_util_(obfuscated_file_util),
       file_system_usage_cache_(file_system_usage_cache),
-      quota_manager_proxy_(quota_manager_proxy) {}
+      quota_manager_proxy_(std::move(quota_manager_proxy)) {}
 
 QuotaBackendImpl::~QuotaBackendImpl() = default;
 

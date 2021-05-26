@@ -13,6 +13,7 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/file_system/obfuscated_file_util.h"
 #include "storage/browser/file_system/plugin_private_file_system_backend.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/browser/test/test_file_system_options.h"
@@ -39,7 +40,7 @@ class PluginPrivateFileSystemBackendTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     context_ = CreateFileSystemContextForTesting(
-        nullptr /* quota_manager_proxy */, data_dir_.GetPath());
+        /*quota_manager_proxy=*/nullptr, data_dir_.GetPath());
   }
 
   FileSystemURL CreateURL(const GURL& root_url, const std::string& relative) {

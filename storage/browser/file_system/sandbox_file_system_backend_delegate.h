@@ -87,12 +87,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
   // Returns the type directory name in sandbox directory for given |type|.
   static std::string GetTypeString(FileSystemType type);
 
-  SandboxFileSystemBackendDelegate(QuotaManagerProxy* quota_manager_proxy,
-                                   base::SequencedTaskRunner* file_task_runner,
-                                   const base::FilePath& profile_path,
-                                   SpecialStoragePolicy* special_storage_policy,
-                                   const FileSystemOptions& file_system_options,
-                                   leveldb::Env* env_override);
+  SandboxFileSystemBackendDelegate(
+      scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+      const base::FilePath& profile_path,
+      scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+      const FileSystemOptions& file_system_options,
+      leveldb::Env* env_override);
 
   ~SandboxFileSystemBackendDelegate() override;
 
@@ -238,15 +239,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
 
   ObfuscatedFileUtil* obfuscated_file_util();
 
-  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
-  scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
+  const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+  const scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
 
   std::unique_ptr<AsyncFileUtil> sandbox_file_util_;
   std::unique_ptr<FileSystemUsageCache> file_system_usage_cache_;
   std::unique_ptr<SandboxQuotaObserver> quota_observer_;
   std::unique_ptr<QuotaReservationManager> quota_reservation_manager_;
 
-  scoped_refptr<SpecialStoragePolicy> special_storage_policy_;
+  const scoped_refptr<SpecialStoragePolicy> special_storage_policy_;
 
   FileSystemOptions file_system_options_;
 

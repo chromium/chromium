@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/null_task_runner.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -21,6 +22,7 @@
 #include "storage/browser/file_system/file_system_options.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -61,23 +63,18 @@ TEST(BrowserFileSystemHelperTest,
   EXPECT_EQ(kSensitiveOrigin, original_file.origin().GetURL());
 
   // Prepare fake FileSystemContext to use in the test.
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner(
-      new base::NullTaskRunner);
-  scoped_refptr<base::SequencedTaskRunner> file_task_runner(
-      new base::NullTaskRunner);
   storage::FileSystemOptions file_system_options(
       storage::FileSystemOptions::PROFILE_MODE_NORMAL,
-      false /* force_in_memory */, std::vector<std::string>());
-  scoped_refptr<storage::FileSystemContext> test_file_system_context(
-      new storage::FileSystemContext(
-          io_task_runner.get(), file_task_runner.get(),
-          external_mount_points.get(),
-          nullptr,  // special_storage_policy
-          nullptr,  // quota_manager_proxy,
+      /*force_in_memory=*/false, std::vector<std::string>());
+  auto test_file_system_context =
+      base::MakeRefCounted<storage::FileSystemContext>(
+          /*io_task_runner=*/base::MakeRefCounted<base::NullTaskRunner>(),
+          /*file_task_runner=*/base::MakeRefCounted<base::NullTaskRunner>(),
+          std::move(external_mount_points), /*special_storage_policy=*/nullptr,
+          /*quota_manager_proxy=*/nullptr,
           std::vector<std::unique_ptr<storage::FileSystemBackend>>(),
           std::vector<storage::URLRequestAutoMountHandler>(),
-          base::FilePath(),  // partition_path
-          file_system_options));
+          /*partition_path=*/base::FilePath(), file_system_options);
 
   // Prepare content::DropData containing |file_system_url|.
   DropData::FileSystemFileInfo filesystem_file_info;

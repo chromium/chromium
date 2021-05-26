@@ -258,14 +258,14 @@ class ObfuscatedOriginEnumerator
 };
 
 ObfuscatedFileUtil::ObfuscatedFileUtil(
-    SpecialStoragePolicy* special_storage_policy,
+    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
     const base::FilePath& file_system_directory,
     leveldb::Env* env_override,
     GetTypeStringForURLCallback get_type_string_for_url,
     const std::set<std::string>& known_type_strings,
     SandboxFileSystemBackendDelegate* sandbox_delegate,
     bool is_incognito)
-    : special_storage_policy_(special_storage_policy),
+    : special_storage_policy_(std::move(special_storage_policy)),
       file_system_directory_(file_system_directory),
       env_override_(env_override),
       is_incognito_(is_incognito),

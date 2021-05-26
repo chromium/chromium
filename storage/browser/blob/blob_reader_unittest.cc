@@ -37,6 +37,7 @@
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_file_util.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/fake_blob_data_handle.h"
 #include "storage/browser/test/test_file_system_context.h"
@@ -207,8 +208,8 @@ class BlobReaderTest : public ::testing::Test {
   ~BlobReaderTest() override = default;
 
   void SetUp() override {
-    file_system_context_ =
-        CreateFileSystemContextForTesting(nullptr, base::FilePath());
+    file_system_context_ = CreateFileSystemContextForTesting(
+        /*quota_manager_proxy=*/nullptr, base::FilePath());
   }
 
   void TearDown() override {

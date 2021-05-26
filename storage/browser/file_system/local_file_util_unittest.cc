@@ -21,6 +21,7 @@
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/local_file_util.h"
 #include "storage/browser/file_system/native_file_util.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -42,8 +43,8 @@ class LocalFileUtilTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
-    file_system_context_ =
-        CreateFileSystemContextForTesting(nullptr, data_dir_.GetPath());
+    file_system_context_ = CreateFileSystemContextForTesting(
+        /*quota_manager_proxy=*/nullptr, data_dir_.GetPath());
   }
 
   void TearDown() override {

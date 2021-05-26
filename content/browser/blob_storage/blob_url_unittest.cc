@@ -40,6 +40,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/fake_blob_data_handle.h"
 #include "storage/browser/test/mock_blob_registry_delegate.h"
@@ -109,7 +110,7 @@ class BlobURLTest : public testing::Test {
   void SetUpFileSystem() {
     // Prepare file system.
     file_system_context_ = storage::CreateFileSystemContextForTesting(
-        nullptr, temp_dir_.GetPath());
+        /*quota_manager_proxy=*/nullptr, temp_dir_.GetPath());
 
     file_system_context_->OpenFileSystem(
         url::Origin::Create(GURL(kFileSystemURLOrigin)), kFileSystemType,

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
 #include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
@@ -17,12 +18,12 @@
 namespace storage {
 
 SandboxQuotaObserver::SandboxQuotaObserver(
-    QuotaManagerProxy* quota_manager_proxy,
-    base::SequencedTaskRunner* update_notify_runner,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
+    scoped_refptr<base::SequencedTaskRunner> update_notify_runner,
     ObfuscatedFileUtil* sandbox_file_util,
     FileSystemUsageCache* file_system_usage_cache)
-    : quota_manager_proxy_(quota_manager_proxy),
-      update_notify_runner_(update_notify_runner),
+    : quota_manager_proxy_(std::move(quota_manager_proxy)),
+      update_notify_runner_(std::move(update_notify_runner)),
       sandbox_file_util_(sandbox_file_util),
       file_system_usage_cache_(file_system_usage_cache) {}
 

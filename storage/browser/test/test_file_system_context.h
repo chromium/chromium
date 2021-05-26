@@ -23,7 +23,7 @@ class FileSystemBackend;
 namespace storage {
 
 FileSystemContext* CreateFileSystemContextForTesting(
-    QuotaManagerProxy* quota_manager_proxy,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
     const base::FilePath& base_path);
 
 // The caller is responsible for including TestFileSystemBackend in
@@ -31,14 +31,14 @@ FileSystemContext* CreateFileSystemContextForTesting(
 FileSystemContext* CreateFileSystemContextWithAdditionalProvidersForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner,
-    QuotaManagerProxy* quota_manager_proxy,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
     std::vector<std::unique_ptr<FileSystemBackend>> additional_providers,
     const base::FilePath& base_path);
 
 FileSystemContext* CreateFileSystemContextWithAutoMountersForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner,
-    QuotaManagerProxy* quota_manager_proxy,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
     std::vector<std::unique_ptr<FileSystemBackend>> additional_providers,
     const std::vector<URLRequestAutoMountHandler>& auto_mounters,
     const base::FilePath& base_path);
@@ -46,14 +46,14 @@ FileSystemContext* CreateFileSystemContextWithAutoMountersForTesting(
 FileSystemContext* CreateIncognitoFileSystemContextForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner,
-    QuotaManagerProxy* quota_manager_proxy,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
     const base::FilePath& base_path);
 
 FileSystemContext*
 CreateIncognitoFileSystemContextWithAdditionalProvidersForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner,
-    QuotaManagerProxy* quota_manager_proxy,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
     std::vector<std::unique_ptr<FileSystemBackend>> additional_providers,
     const base::FilePath& base_path);
 }  // namespace storage
