@@ -183,6 +183,7 @@ ts_library("library") {
     # Auto-generated .d.ts files.
     "$root_dir/cr_elements/action_link_css.m.d.ts",
     "$root_dir/cr_elements/cr_grid/cr_grid.d.ts",
+    "$root_dir/cr_elements/cr_icons_css.m.d.ts",
     "$root_dir/cr_elements/cr_input/cr_input_style_css.m.d.ts",
     "$root_dir/cr_elements/cr_menu_selector/cr_menu_selector.d.ts",
     "$root_dir/cr_elements/cr_page_host_style_css.d.ts",
@@ -228,6 +229,7 @@ ts_definitions("generate_definitions") {
   js_files = [
     "cr_elements/action_link_css.m.js",
     "cr_elements/cr_grid/cr_grid.js",
+    "cr_elements/cr_icons_css.m.js",
     "cr_elements/cr_input/cr_input_style_css.m.js",
     "cr_elements/cr_menu_selector/cr_menu_selector.js",
     "cr_elements/cr_page_host_style_css.js",

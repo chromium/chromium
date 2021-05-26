@@ -69,10 +69,45 @@ def main(argv):
       if os.path.exists(to_delete):
         os.remove(to_delete)
 
-  node.RunNode([
+  stdout = node.RunNode([
       node_modules.PathToTypescript(), '--project',
       os.path.join(args.gen_dir, _TSCONFIG_GEN)
   ])
+
+  # Verify that that no unexpected .d.ts files were generated.
+  lines = stdout.splitlines()
+  token = 'TSFILE: '
+  generated_files = []
+  for l in lines:
+    if token in l:
+      generated_files.append(
+          os.path.normpath(os.path.relpath(l[len(token):], args.out_dir)))
+
+  generated_files.sort()
+  args.js_files.sort()
+
+  unexpected_file = None
+  for i, _js_file in enumerate(args.js_files):
+    js_file = os.path.normpath(_js_file)
+
+    if os.path.dirname(js_file) != os.path.dirname(generated_files[i]):
+      unexpected_file = generated_files[i]
+      break
+
+    base = os.path.splitext(os.path.basename(js_file))[0]
+    if base + '.d.ts' != os.path.basename(generated_files[i]):
+      unexpected_file = generated_files[i]
+      break
+
+  # Delete all generated files to not pollute the gen/ folder with any invalid
+  # files, which could cause problems on subsequent builds.
+  if unexpected_file is not None:
+    for f in generated_files:
+      os.remove(os.path.join(args.out_dir, f))
+
+    raise Exception(\
+        'Unexpected file \'%s\' generated, deleting all generated files.' \
+        % unexpected_file)
 
 
 if __name__ == '__main__':
