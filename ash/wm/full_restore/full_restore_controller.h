@@ -84,6 +84,9 @@ class ASH_EXPORT FullRestoreController
   void OnARCTaskReadyForUnparentedWindow(aura::Window* window) override;
 
   // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
   void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;

@@ -284,6 +284,26 @@ void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
   UpdateAndObserveWindow(window);
 }
 
+void FullRestoreController::OnWindowPropertyChanged(aura::Window* window,
+                                                    const void* key,
+                                                    intptr_t old) {
+  if (key != full_restore::kActivationIndexKey &&
+      key != full_restore::kLaunchedFromFullRestoreKey) {
+    return;
+  }
+
+  if (window->GetProperty(full_restore::kActivationIndexKey) ||
+      window->GetProperty(full_restore::kLaunchedFromFullRestoreKey)) {
+    return;
+  }
+
+  // Once these two properties are cleared, there is no need to observe `window`
+  // anymore.
+  DCHECK(windows_observation_.IsObservingSource(window));
+  windows_observation_.RemoveObservation(window);
+  to_be_shown_windows_.erase(window);
+}
+
 void FullRestoreController::OnWindowStackingChanged(aura::Window* window) {
   DCHECK(windows_observation_.IsObservingSource(window));
 
@@ -329,6 +349,14 @@ void FullRestoreController::OnWindowVisibilityChanged(aura::Window* window,
     app_list_widget->Deactivate();
 }
 
+void FullRestoreController::OnWindowDestroying(aura::Window* window) {
+  DCHECK(windows_observation_.IsObservingSource(window));
+  windows_observation_.RemoveObservation(window);
+
+  if (base::Contains(restore_property_clear_callbacks_, window))
+    ClearLaunchedKey(window, /*is_destroying=*/true);
+}
+
 void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
   DCHECK(window);
   DCHECK(window->parent());
@@ -352,14 +380,6 @@ void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
     base::AutoReset<bool> auto_reset_is_stacking(&is_stacking_, true);
     window->parent()->StackChildBelow(window, target_sibling);
   }
-}
-
-void FullRestoreController::OnWindowDestroying(aura::Window* window) {
-  DCHECK(windows_observation_.IsObservingSource(window));
-  windows_observation_.RemoveObservation(window);
-
-  if (base::Contains(restore_property_clear_callbacks_, window))
-    ClearLaunchedKey(window, /*is_destroying=*/true);
 }
 
 void FullRestoreController::SaveAllWindows() {
