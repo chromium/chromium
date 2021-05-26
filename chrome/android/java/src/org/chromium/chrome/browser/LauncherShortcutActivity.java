@@ -14,11 +14,8 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -64,15 +61,6 @@ public class LauncherShortcutActivity extends Activity {
      * @param context The context used to retrieve the system {@link ShortcutManager}.
      */
     public static void updateIncognitoShortcut(Context context) {
-        updateIncognitoShortcutInternal(context, null);
-    }
-
-    /**
-     * @param context The context used to retrieve the system {@link ShortcutManager}.
-     * @param callback Called when updating is finished or when nothing should be done.
-     */
-    private static void updateIncognitoShortcutInternal(
-            Context context, @Nullable Runnable callback) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return;
 
         SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
@@ -83,25 +71,17 @@ public class LauncherShortcutActivity extends Activity {
         // Add the shortcut regardless of whether it was previously added in case the locale has
         // changed since the last addition.
         // TODO(https://crbug.com/1068847): Investigate better locale change handling.
-        PostTask.postTask(TaskTraits.USER_VISIBLE_MAY_BLOCK, () -> {
-            if (incognitoEnabled) {
-                boolean success = LauncherShortcutActivity.addIncognitoLauncherShortcut(context);
+        if (incognitoEnabled) {
+            boolean success = LauncherShortcutActivity.addIncognitoLauncherShortcut(context);
 
-                // Save a shared preference indicating the incognito shortcut has been added.
-                if (success) {
-                    preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, true);
-                }
-            } else if (!incognitoEnabled && incognitoShortcutAdded) {
-                LauncherShortcutActivity.removeIncognitoLauncherShortcut(context);
-                preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
+            // Save a shared preference indicating the incognito shortcut has been added.
+            if (success) {
+                preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, true);
             }
-            if (callback != null) callback.run();
-        });
-    }
-
-    @VisibleForTesting
-    static void updateIncognitoShortcutForTesting(Context context, Runnable callback) {
-        updateIncognitoShortcutInternal(context, callback);
+        } else if (!incognitoEnabled && incognitoShortcutAdded) {
+            LauncherShortcutActivity.removeIncognitoLauncherShortcut(context);
+            preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
+        }
     }
 
     /**
