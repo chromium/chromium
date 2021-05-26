@@ -28,6 +28,10 @@ void ResetMockAuthentication();
 // and resets kIosBookmarkPromoAlreadySeen flag for bookmarks.
 void ResetSigninPromoPreferences();
 
+// Revokes the Sync consent of the primary account. The user will be in the
+// signed-in state.
+void RevokeSyncConsent();
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_TEST_APP_SIGNIN_TEST_UTIL_H_

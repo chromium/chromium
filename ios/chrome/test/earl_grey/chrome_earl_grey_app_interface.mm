@@ -807,6 +807,10 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
       base::SysNSStringToUTF8(GUID));
 }
 
++ (void)revokeSyncConsent {
+  chrome_test_util::RevokeSyncConsent();
+}
+
 + (void)clearSyncFirstSetupComplete {
   PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
   prefs->ClearPref(syncer::prefs::kSyncFirstSetupComplete);

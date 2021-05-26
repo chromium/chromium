@@ -81,6 +81,8 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
 
   if (!enableSync) {
     [ChromeEarlGrey stopSync];
+    [ChromeEarlGrey revokeSyncConsent];
+    // Ensure that Sync preferences do not take into account the first setup.
     [ChromeEarlGrey clearSyncFirstSetupComplete];
   }
 }

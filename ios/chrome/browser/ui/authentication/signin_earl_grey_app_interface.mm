@@ -61,7 +61,7 @@
       chrome_test_util::GetOriginalBrowserState();
   CoreAccountInfo info =
       IdentityManagerFactory::GetForBrowserState(browserState)
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   return base::SysUTF8ToNSString(info.gaia);
 }

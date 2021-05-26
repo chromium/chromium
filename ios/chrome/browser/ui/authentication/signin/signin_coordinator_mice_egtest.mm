@@ -24,10 +24,13 @@
 #error "This file requires ARC support."
 #endif
 
+using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SettingsDoneButton;
-using chrome_test_util::WebStateScrollViewMatcher;
+using chrome_test_util::ClearBrowsingDataButton;
+using chrome_test_util::ConfirmClearBrowsingDataButton;
+using chrome_test_util::SettingsMenuPrivacyButton;
 
 // Sign-in interaction tests that work with |kMobileIdentityConsistency|
 // enabled.
@@ -190,6 +193,25 @@ using chrome_test_util::WebStateScrollViewMatcher;
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests that a user in the |ConsentLevel::kSignin| state will be signed out
+// after clearing their browsing history.
+- (void)testUserSignedOutWhenClearingBrowsingData {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
+  [ChromeEarlGreyUI
+      tapPrivacyMenuButton:ButtonWithAccessibilityLabelId(
+                               IDS_IOS_CLEAR_BROWSING_DATA_TITLE)];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [[EarlGrey selectElementWithMatcher:ConfirmClearBrowsingDataButton()]
+      performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedOut];
 }
 
 @end

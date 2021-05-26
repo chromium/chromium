@@ -125,11 +125,10 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
 
   [manager_ loadModel:model_];
 
-  EXPECT_EQ(4, [model_ numberOfSections]);
+  EXPECT_EQ(3, [model_ numberOfSections]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:0]);
   EXPECT_EQ(5, [model_ numberOfItemsInSection:1]);
   EXPECT_EQ(0, [model_ numberOfItemsInSection:2]);
-  EXPECT_EQ(0, [model_ numberOfItemsInSection:3]);
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {

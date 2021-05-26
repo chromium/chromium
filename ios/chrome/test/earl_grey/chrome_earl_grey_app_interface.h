@@ -340,6 +340,9 @@
 // Clears fake sync server data if the server is running.
 + (void)clearSyncServerData;
 
+// Removes Sync consent for the primary account.
++ (void)revokeSyncConsent;
+
 // Clears the first sync setup preference.
 + (void)clearSyncFirstSetupComplete;
 
