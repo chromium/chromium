@@ -211,27 +211,6 @@ helpApp.ClientApiDelegate.prototype.updateLauncherSearchIndex
     = function(data) {};
 
 /**
- * The client Api for interacting with the help app instance.
- * @record
- * @struct
- */
-helpApp.ClientApi = function() {};
-
-/**
- * Sets the delegate through which HelpApp can access open-source privileged
- * WebUI methods.
- * @param {!helpApp.ClientApiDelegate} delegate
- */
-helpApp.ClientApi.prototype.setDelegate = function(delegate) {};
-
-/**
- * Gets the delegate through which HelpApp can access open-source privileged
- * WebUI methods.
- * @return {!helpApp.ClientApiDelegate}
- */
-helpApp.ClientApi.prototype.getDelegate = function() {};
-
-/**
  * Launch data that can be read by the app when it first loads.
  * @type {{
  *     delegate: (!helpApp.ClientApiDelegate | undefined),

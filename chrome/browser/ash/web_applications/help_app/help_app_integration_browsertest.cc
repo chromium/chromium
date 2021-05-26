@@ -295,8 +295,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // the discover notification.
   constexpr char kScript[] = R"(
     (async () => {
-      const app = document.querySelector('showoff-app');
-      await app.getDelegate().maybeShowDiscoverNotification();
+      await window.customLaunchData.delegate.maybeShowDiscoverNotification();
       window.domAutomationController.send(true);
     })();
   )";
@@ -398,8 +397,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2OpenFeedbackDialog) {
   // Script that tells the Help App to open the feedback dialog.
   constexpr char kScript[] = R"(
     (async () => {
-      const app = document.querySelector('showoff-app');
-      const res = await app.getDelegate().openFeedbackDialog();
+      const res = await window.customLaunchData.delegate.openFeedbackDialog();
       window.domAutomationController.send(res === null);
     })();
   )";
@@ -429,8 +427,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
   // Script that tells the Help App to show parental controls.
   constexpr char kScript[] = R"(
     (async () => {
-      const app = document.querySelector('showoff-app');
-      await app.getDelegate().showParentalControls();
+      await window.customLaunchData.delegate.showParentalControls();
     })();
   )";
   // Trigger the script, then wait for settings to open. Use ExecuteScript
@@ -455,7 +452,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // Script that adds a data item to the launcher search index.
   constexpr char kScript[] = R"(
     (async () => {
-      const delegate = document.querySelector('showoff-app').getDelegate();
+      const delegate = window.customLaunchData.delegate;
       await delegate.updateLauncherSearchIndex([{
         id: 'test-id',
         title: 'Title',
@@ -506,7 +503,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // Script that adds a data item to the launcher search index.
   constexpr char kScript[] = R"(
     (async () => {
-      const delegate = document.querySelector('showoff-app').getDelegate();
+      const delegate = window.customLaunchData.delegate;
       await delegate.updateLauncherSearchIndex([
         {
           id: '6318213',  // Fix connection problems.

@@ -17,8 +17,7 @@ GUEST_TEST('GuestHasLang', () => {
  * Returns the app's client API delegate.
  */
 async function waitForInitialIndexUpdate() {
-  const delegate = /** @type {!helpApp.ClientApi} */ (
-    document.querySelector('showoff-app')).getDelegate();
+  const delegate = window.customLaunchData.delegate;
 
   for (let numTries = 0; numTries < 50; numTries++) {
     // 'Chrome' appears in the mock app's fake search results, and should appear
