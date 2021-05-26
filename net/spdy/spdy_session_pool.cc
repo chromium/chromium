@@ -521,6 +521,11 @@ void SpdySessionPool::OnSSLConfigForServerChanged(const HostPortPair& server) {
         (proxy_server.is_http_like() && !proxy_server.is_http() &&
          proxy_server.host_port_pair() == server)) {
       session->MakeUnavailable();
+      // Note this call preserves active streams but fails any streams that are
+      // waiting on a stream ID.
+      // TODO(https://crbug.com/1213609): This is not ideal, but SpdySession
+      // does not have a state that supports this.
+      session->StartGoingAway(kLastStreamId, ERR_NETWORK_CHANGED);
       session->MaybeFinishGoingAway();
       DCHECK(!IsSessionAvailable(session));
     }

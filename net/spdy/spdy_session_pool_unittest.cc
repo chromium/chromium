@@ -17,6 +17,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "net/base/test_completion_callback.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_network_session.h"
@@ -24,6 +25,7 @@
 #include "net/log/test_net_log.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/socket_tag.h"
+#include "net/socket/socket_test_util.h"
 #include "net/socket/transport_client_socket_pool.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_stream_test_util.h"
@@ -33,6 +35,8 @@
 #include "net/test/test_certificate_data.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -76,6 +80,10 @@ class SpdySessionPoolTest : public TestWithTaskEnvironment {
 
   size_t num_active_streams(base::WeakPtr<SpdySession> session) {
     return session->active_streams_.size();
+  }
+
+  size_t max_concurrent_streams(base::WeakPtr<SpdySession> session) {
+    return session->max_concurrent_streams_;
   }
 
   SpdySessionDependencies session_deps_;
@@ -1462,8 +1470,8 @@ static const struct {
      false},
 };
 
-// Tests the OnSSLConfigForServerChanged() method when there are no streams
-// active.
+// Tests the OnSSLConfigForServerChanged() method matches SpdySessions as
+// expected.
 TEST_F(SpdySessionPoolTest, SSLConfigForServerChanged) {
   const MockConnect connect_data(SYNCHRONOUS, OK);
   const MockRead reads[] = {
@@ -1516,76 +1524,158 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChanged) {
   }
 }
 
-// Tests the OnSSLConfigForServerChanged() method when there are streams active.
+// Tests the OnSSLConfigForServerChanged() method when there are streams open.
 TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithStreams) {
+  // Set up a SpdySession with an active, created, and pending stream.
+  SpdyTestUtil spdy_util;
+  spdy::SettingsMap settings;
+  settings[spdy::SETTINGS_MAX_CONCURRENT_STREAMS] = 2;
+  spdy::SpdySerializedFrame settings_frame =
+      spdy_util.ConstructSpdySettings(settings);
+  spdy::SpdySerializedFrame settings_ack = spdy_util.ConstructSpdySettingsAck();
+  spdy::SpdySerializedFrame req(
+      spdy_util.ConstructSpdyGet(nullptr, 0, 1, MEDIUM));
+
   const MockConnect connect_data(SYNCHRONOUS, OK);
   const MockRead reads[] = {
+      CreateMockRead(settings_frame),
       MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
   };
+  const MockWrite writes[] = {
+      CreateMockWrite(settings_ack),
+      CreateMockWrite(req),
+  };
 
-  std::vector<std::unique_ptr<StaticSocketDataProvider>> socket_data;
-  size_t num_tests = base::size(kSSLServerTests);
-  for (size_t i = 0; i < num_tests; i++) {
-    socket_data.push_back(std::make_unique<StaticSocketDataProvider>(
-        reads, base::span<MockWrite>()));
-    socket_data.back()->set_connect_data(connect_data);
-    session_deps_.socket_factory->AddSocketDataProvider(
-        socket_data.back().get());
-    AddSSLSocketData();
-  }
+  StaticSocketDataProvider socket_data(reads, writes);
+  socket_data.set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(&socket_data);
+  AddSSLSocketData();
 
   CreateNetworkSession();
 
-  std::vector<base::WeakPtr<SpdySession>> sessions;
-  std::vector<base::WeakPtr<SpdyStream>> streams;
-  for (size_t i = 0; i < num_tests; i++) {
-    SCOPED_TRACE(i);
-    SpdySessionKey key(
-        HostPortPair::FromURL(GURL(kSSLServerTests[i].url)),
-        ProxyServer::FromPacString(kSSLServerTests[i].proxy_pac_string),
-        PRIVACY_MODE_DISABLED, SpdySessionKey::IsProxySession::kFalse,
-        SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow);
-    sessions.push_back(
-        CreateSpdySession(http_session_.get(), key, NetLogWithSource()));
-    streams.push_back(CreateStreamSynchronously(
-        SPDY_BIDIRECTIONAL_STREAM, sessions.back(),
-        GURL(kSSLServerTests[i].url), MEDIUM, NetLogWithSource()));
-    ASSERT_TRUE(streams.back());
-  }
+  const GURL url(kDefaultUrl);
+  SpdySessionKey key(HostPortPair::FromURL(url), ProxyServer::Direct(),
+                     PRIVACY_MODE_DISABLED,
+                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                     NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+  base::WeakPtr<SpdySession> session =
+      CreateSpdySession(http_session_.get(), key, NetLogWithSource());
 
-  // All sessions are active and available.
-  for (size_t i = 0; i < num_tests; i++) {
-    SCOPED_TRACE(i);
-    EXPECT_TRUE(sessions[i]->is_active());
-    EXPECT_TRUE(sessions[i]->IsAvailable());
-  }
+  // Pick up the SETTINGS frame to update SETTINGS_MAX_CONCURRENT_STREAMS.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2u, max_concurrent_streams(session));
 
-  spdy_session_pool_->OnSSLConfigForServerChanged(
-      HostPortPair(kSSLServerTestHost, 443));
+  // The first two stream requests should succeed.
+  base::WeakPtr<SpdyStream> active_stream = CreateStreamSynchronously(
+      SPDY_REQUEST_RESPONSE_STREAM, session, url, MEDIUM, NetLogWithSource());
+  test::StreamDelegateDoNothing active_stream_delegate(active_stream);
+  active_stream->SetDelegate(&active_stream_delegate);
+  base::WeakPtr<SpdyStream> created_stream = CreateStreamSynchronously(
+      SPDY_REQUEST_RESPONSE_STREAM, session, url, MEDIUM, NetLogWithSource());
+  test::StreamDelegateDoNothing created_stream_delegate(created_stream);
+  created_stream->SetDelegate(&created_stream_delegate);
 
-  // The sessions should continue to be active, but now some are unavailable.
-  for (size_t i = 0; i < num_tests; i++) {
-    SCOPED_TRACE(i);
-    ASSERT_TRUE(sessions[i]);
-    EXPECT_TRUE(sessions[i]->is_active());
-    if (kSSLServerTests[i].expect_invalidated) {
-      EXPECT_FALSE(sessions[i]->IsAvailable());
-      EXPECT_TRUE(sessions[i]->IsGoingAway());
-    } else {
-      EXPECT_TRUE(sessions[i]->IsAvailable());
-      EXPECT_FALSE(sessions[i]->IsGoingAway());
-    }
-  }
+  // The third will block.
+  TestCompletionCallback callback;
+  SpdyStreamRequest stream_request;
+  EXPECT_THAT(
+      stream_request.StartRequest(SPDY_REQUEST_RESPONSE_STREAM, session, url,
+                                  /*can_send_early=*/false, MEDIUM, SocketTag(),
+                                  NetLogWithSource(), callback.callback(),
+                                  TRAFFIC_ANNOTATION_FOR_TESTS),
+      IsError(ERR_IO_PENDING));
 
-  // Each stream is still around. Close them.
-  for (size_t i = 0; i < num_tests; i++) {
-    SCOPED_TRACE(i);
-    ASSERT_TRUE(streams[i]);
-    streams[i]->Close();
-  }
+  // Activate the first stream by sending data.
+  spdy::Http2HeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
+  active_stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
+  base::RunLoop().RunUntilIdle();
 
-  // TODO(https://crbug.com/982499): The invalidated sessions should be closed
-  // after a RunUntilIdle(), but they are not.
+  // The active stream should now have a stream ID.
+  EXPECT_EQ(1u, active_stream->stream_id());
+  EXPECT_EQ(spdy::kInvalidStreamId, created_stream->stream_id());
+  EXPECT_TRUE(session->is_active());
+  EXPECT_TRUE(session->IsAvailable());
+
+  spdy_session_pool_->OnSSLConfigForServerChanged(HostPortPair::FromURL(url));
+  base::RunLoop().RunUntilIdle();
+
+  // The active stream is still alive, so the session is still active.
+  ASSERT_TRUE(session);
+  EXPECT_TRUE(session->is_active());
+  ASSERT_TRUE(active_stream);
+
+  // The session is no longer available.
+  EXPECT_FALSE(session->IsAvailable());
+  EXPECT_TRUE(session->IsGoingAway());
+
+  // The pending and created stream are cancelled.
+  // TODO(https://crbug.com/1213609): Ideally, this would be recoverable.
+  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_NETWORK_CHANGED));
+  EXPECT_THAT(created_stream_delegate.WaitForClose(),
+              IsError(ERR_NETWORK_CHANGED));
+
+  // Close the active stream.
+  active_stream->Close();
+  // TODO(https://crbug.com/982499): The invalidated session should be closed
+  // after a RunUntilIdle(), but it is not.
+}
+
+// Tests the OnSSLConfigForServerChanged() method when there only pending
+// streams active.
+TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithOnlyPendingStreams) {
+  // Set up a SpdySession that accepts no streams.
+  SpdyTestUtil spdy_util;
+  spdy::SettingsMap settings;
+  settings[spdy::SETTINGS_MAX_CONCURRENT_STREAMS] = 0;
+  spdy::SpdySerializedFrame settings_frame =
+      spdy_util.ConstructSpdySettings(settings);
+  spdy::SpdySerializedFrame settings_ack = spdy_util.ConstructSpdySettingsAck();
+
+  const MockConnect connect_data(SYNCHRONOUS, OK);
+  const MockRead reads[] = {
+      CreateMockRead(settings_frame),
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
+  };
+  const MockWrite writes[] = {
+      CreateMockWrite(settings_ack),
+  };
+
+  StaticSocketDataProvider socket_data(reads, writes);
+  socket_data.set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(&socket_data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+
+  const GURL url(kDefaultUrl);
+  SpdySessionKey key(HostPortPair::FromURL(url), ProxyServer::Direct(),
+                     PRIVACY_MODE_DISABLED,
+                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                     NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+  base::WeakPtr<SpdySession> session =
+      CreateSpdySession(http_session_.get(), key, NetLogWithSource());
+
+  // Pick up the SETTINGS frame to update SETTINGS_MAX_CONCURRENT_STREAMS.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0u, max_concurrent_streams(session));
+
+  // Create a stream. It should block on the stream limit.
+  TestCompletionCallback callback;
+  SpdyStreamRequest stream_request;
+  ASSERT_THAT(
+      stream_request.StartRequest(SPDY_REQUEST_RESPONSE_STREAM, session, url,
+                                  /*can_send_early=*/false, MEDIUM, SocketTag(),
+                                  NetLogWithSource(), callback.callback(),
+                                  TRAFFIC_ANNOTATION_FOR_TESTS),
+      IsError(ERR_IO_PENDING));
+
+  spdy_session_pool_->OnSSLConfigForServerChanged(HostPortPair::FromURL(url));
+  base::RunLoop().RunUntilIdle();
+
+  // The pending stream is cancelled.
+  // TODO(https://crbug.com/1213609): Ideally, this would be recoverable.
+  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_NETWORK_CHANGED));
+  EXPECT_FALSE(session);
 }
 
 }  // namespace net
