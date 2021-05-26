@@ -33,9 +33,6 @@ class WebMediaSource;
 // increased complexity for handling the latter. Concrete implementations of
 // this interface are reference counted to ensure they are available potentially
 // cross-thread and from the registry.
-//
-// TODO(https://crbug.com/878133): This is not yet implementing the multi-thread
-// aspect.
 class CORE_EXPORT MediaSourceAttachment
     : public URLRegistrable,
       public WTF::ThreadSafeRefCounted<MediaSourceAttachment> {
