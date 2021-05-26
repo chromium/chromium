@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
-#import "base/test/ios/wait_util.h"
 
 #include "base/command_line.h"
 #import "base/ios/ios_util.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/personal_data_manager.h"

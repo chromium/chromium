@@ -26,11 +26,17 @@ source_set("hooks") {
   testonly = true
   sources = [ "eg_tests_hook.mm" ]
   deps = [
+    ":switches",
     "//base",
     "//components/policy/core/common:test_support",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser",
     "//ios/chrome/browser/policy:test_support",
+    "//ios/chrome/browser/ui/authentication:eg_app_support+eg2",
+    "//ios/chrome/test/app:test_support",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/public/provider/chrome/browser/signin:test_support",
   ]
 }
 
@@ -57,6 +63,7 @@ source_set("eg_app_support+eg2") {
   ]
 
   deps = [
+    ":switches",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser",
@@ -270,5 +277,14 @@ source_set("chrome_egtest_bundle_main+eg2") {
     "//base",
     "//base:i18n",
     "//ui/base",
+  ]
+}
+
+source_set("switches") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "test_switches.h",
+    "test_switches.mm",
   ]
 }

@@ -157,7 +157,10 @@ source_set("eg_app_support+eg2") {
     "signin_earl_grey_app_interface.h",
     "signin_earl_grey_app_interface.mm",
   ]
-  visibility = [ "//ios/chrome/test/earl_grey:eg_app_support+eg2" ]
+  visibility = [
+    "//ios/chrome/test/earl_grey:eg_app_support+eg2",
+    "//ios/chrome/test/earl_grey:hooks",
+  ]
   deps = [
     ":authentication",
     "unified_consent",

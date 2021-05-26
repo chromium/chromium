@@ -49,8 +49,7 @@ bool DisableMainThreadFreezeDetection();
 // provider when testing. May return nullptr.
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider();
 
-// Global integration tests setup.  This is not used by EarlGrey-based
-// integration tests.
+// Global integration tests setup.
 void SetUpTestsIfPresent();
 
 // Runs the integration tests.  This is not used by EarlGrey-based integration

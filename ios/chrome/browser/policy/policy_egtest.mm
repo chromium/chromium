@@ -6,8 +6,10 @@
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/chrome_switches.h"
@@ -15,6 +17,8 @@
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/translate/translate_app_interface.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -26,10 +30,13 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #include "ios/chrome/test/earl_grey/chrome_test_case.h"
+#include "ios/chrome/test/earl_grey/test_switches.h"
 #include "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -474,6 +481,74 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 
   // Open the "learn more" link.
   [ChromeEarlGrey tapWebStateElementWithID:@"learn-more-link"];
+}
+
+// Tests that when the BrowserSignin policy is updated while the app is not
+// launched, a policy screen is displayed at startup.
+- (void)testBrowserSignInDisabledAtStartup {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Create the config to relaunch Chrome.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+
+  // Configure the policy to disable SignIn.
+  std::string policy_data = "<dict>"
+                            "    <key>BrowserSignin</key>"
+                            "    <integer>0</integer>"
+                            "</dict>";
+  base::RemoveChars(policy_data, base::kWhitespaceASCII, &policy_data);
+
+  config.additional_args.push_back(
+      "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
+  config.additional_args.push_back(policy_data);
+
+  // Add the switch to make sure that fakeIdentity1 is known at startup to avoid
+  // automatic sign out.
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kSignInAtStartup);
+
+  // Relaunch the app to take the configuration into account.
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Check that the sign out pop up is presented.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                     IDS_IOS_ENTERPRISE_SIGNED_OUT))]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  bool promptPresented = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, condition);
+  GREYAssertTrue(promptPresented, @"'Signed Out' prompt not shown");
+}
+
+// Tests that the UI notifying the user of their sign out is displayed when the
+// policy changes while the app is launched.
+- (void)testBrowserSignInDisabledWhileAppVisible {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Force sign out.
+  SetPolicy(0, policy::key::kBrowserSignin);
+
+  // Check that the sign out pop up is presented.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                     IDS_IOS_ENTERPRISE_SIGNED_OUT))]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  bool promptPresented = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, condition);
+  GREYAssertTrue(promptPresented, @"'Signed Out' prompt not shown");
 }
 
 @end
