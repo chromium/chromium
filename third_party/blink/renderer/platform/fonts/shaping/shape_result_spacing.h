@@ -20,7 +20,8 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   STACK_ALLOCATED();
 
  public:
-  explicit ShapeResultSpacing(const TextContainerType& text)
+  explicit ShapeResultSpacing(const TextContainerType& text,
+                              bool allow_word_spacing_anywhere = false)
       : text_(text),
         letter_spacing_(0),
         word_spacing_(0),
@@ -31,7 +32,8 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
         has_spacing_(false),
         normalize_space_(false),
         allow_tabs_(false),
-        is_after_expansion_(false) {}
+        is_after_expansion_(false),
+        allow_word_spacing_anywhere_(allow_word_spacing_anywhere) {}
 
   const TextContainerType& Text() const { return text_; }
   float LetterSpacing() const { return has_spacing_ ? letter_spacing_ : .0f; }
@@ -91,6 +93,7 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   bool normalize_space_;
   bool allow_tabs_;
   bool is_after_expansion_;
+  bool allow_word_spacing_anywhere_;
 };
 
 // Forward declare so no implicit instantiations happen before the

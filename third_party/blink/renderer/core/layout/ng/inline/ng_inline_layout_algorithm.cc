@@ -819,7 +819,7 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
   String line_text = line_text_builder.ToString();
   DCHECK_GT(line_text.length(), 0u);
 
-  ShapeResultSpacing<String> spacing(line_text);
+  ShapeResultSpacing<String> spacing(line_text, Node().IsSVGText());
   spacing.SetExpansion(space, line_info->BaseDirection(),
                        line_info->LineStyle().GetTextJustify());
   const LayoutObject* box = Node().GetLayoutBox();

@@ -1246,7 +1246,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
   // Provide full context of the entire node to the shaper.
   ReusingTextShaper shaper(data, previous_items);
-  ShapeResultSpacing<String> spacing(text_content);
+  ShapeResultSpacing<String> spacing(text_content, IsSVGText());
 
   DCHECK(!data->segments ||
          data->segments->EndOffset() == text_content.length());

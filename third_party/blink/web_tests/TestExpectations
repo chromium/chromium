@@ -4243,7 +4243,6 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/text-with-geometric-precis
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/tspan-multiple-outline.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/tspan-multiple-outline-vertical.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/tspan-outline.html [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/word-spacing-leading-ws.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/transforms/text-with-mask-with-svg-transform.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/transforms/text-with-pattern-inside-transformed-html.xhtml [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/transforms/text-with-pattern-with-svg-transform.svg [ Failure ]

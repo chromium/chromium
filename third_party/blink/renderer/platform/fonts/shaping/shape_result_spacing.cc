@@ -139,7 +139,8 @@ float ShapeResultSpacing<TextContainerType>::ComputeSpacing(
   if (has_letter_spacing && !Character::TreatAsZeroWidthSpace(character))
     spacing += letter_spacing_;
 
-  if (treat_as_space && (index || character == kNoBreakSpaceCharacter))
+  if (treat_as_space && (allow_word_spacing_anywhere_ || index ||
+                         character == kNoBreakSpaceCharacter))
     spacing += word_spacing_;
 
   if (!HasExpansion())
