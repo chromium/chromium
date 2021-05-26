@@ -14,25 +14,10 @@ import("//build/config/chromeos/ui_mode.gni")
 # |locales_without_pseudolocales|.
 
 # The following additional platform specific lists are created:
-# - |android_apk_locales| subset for Android based apk builds
 # - |android_bundle_locales_as_resources| locales formatted for XML output names
 # - |locales_as_mac_outputs| formated for mac output bundles
 # - |ios_packed_locales| subset for iOS
 # - |ios_packed_locales_as_mac_outputs| subset for iOS output
-
-# Android doesn't ship all locales in order to save space (but webview does).
-# http://crbug.com/369218
-android_apk_omitted_locales = [
-  "bn",
-  "et",
-  "gu",
-  "kn",
-  "ml",
-  "mr",
-  "ms",
-  "ta",
-  "te",
-]
 
 # Chrome on iOS only ships with a subset of the locales supported by other
 # version of Chrome as the corresponding locales are not supported by the
@@ -57,7 +42,6 @@ ios_unsupported_locales = [
 # These list are defined even when not building for Android or iOS for the
 # sake of build/locale_tool.py. Ensure that GN doesn't complain about them
 # being unused.
-not_needed([ "android_apk_omitted_locales" ])
 not_needed([ "ios_unsupported_locales" ])
 
 # Superset of all locales used in Chrome with platform specific changes noted.
@@ -182,11 +166,6 @@ chromeos_only_locales = [ "is" ]
 
 if (is_android) {
   locales = all_chrome_locales
-
-  # Android doesn't ship all locales on KitKat in order to save space
-  # (but webview does). http://crbug.com/369218
-  android_apk_locales = all_chrome_locales - android_bundle_only_locales -
-                        android_apk_omitted_locales
 
   # List for Android locale names in .xml exports. Note: needs to stay in sync
   # with |ToAndroidLocaleName| in build/android/gyp/util/resource_utils.py.

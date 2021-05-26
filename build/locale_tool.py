@@ -322,10 +322,9 @@ class _PrettyPrintListAsLinesTest(unittest.TestCase):
 ##########################################################################
 
 # Various list of locales that will be extracted from build/config/locales.gni
-# Do not use these directly, use ChromeLocales(), AndroidAPKOmittedLocales() and
-# IosUnsupportedLocales() instead to access these lists.
+# Do not use these directly, use ChromeLocales(), and IosUnsupportedLocales()
+# instead to access these lists.
 _INTERNAL_CHROME_LOCALES = []
-_INTERNAL_ANDROID_APK_OMITTED_LOCALES = []
 _INTERNAL_IOS_UNSUPPORTED_LOCALES = []
 
 
@@ -334,13 +333,6 @@ def ChromeLocales():
   if not _INTERNAL_CHROME_LOCALES:
     _ExtractAllChromeLocalesLists()
   return _INTERNAL_CHROME_LOCALES
-
-
-def AndroidAPKOmittedLocales():
-  """Return the list of locales omitted from Android APKs."""
-  if not _INTERNAL_ANDROID_APK_OMITTED_LOCALES:
-    _ExtractAllChromeLocalesLists()
-  return _INTERNAL_ANDROID_APK_OMITTED_LOCALES
 
 
 def IosUnsupportedLocales():
@@ -404,9 +396,6 @@ action("create_foo") {   # fake action to avoid GN complaints.
 # Write the locales lists to files in the output directory.
 _filename = root_build_dir + "/foo"
 write_file(_filename + ".locales", locales, "json")
-write_file(_filename + ".android_apk_omitted_locales",
-            android_apk_omitted_locales,
-            "json")
 write_file(_filename + ".ios_unsupported_locales",
             ios_unsupported_locales,
             "json")
@@ -460,10 +449,6 @@ def _ExtractAllChromeLocalesLists():
     global _INTERNAL_CHROME_LOCALES
     _INTERNAL_CHROME_LOCALES = _ReadJsonList(
         os.path.join(out_path, 'foo.locales'))
-
-    global _INTERNAL_ANDROID_APK_OMITTED_LOCALES
-    _INTERNAL_ANDROID_APK_OMITTED_LOCALES = _ReadJsonList(
-        os.path.join(out_path, 'foo.android_apk_omitted_locales'))
 
     global _INTERNAL_IOS_UNSUPPORTED_LOCALES
     _INTERNAL_IOS_UNSUPPORTED_LOCALES = _ReadJsonList(
@@ -1286,9 +1271,8 @@ class _ListLocalesCommand(_Command):
   description = 'List supported Chrome locales'
   long_description = r'''
 List locales of interest, by default this prints all locales supported by
-Chrome, but `--type=android_apk_omitted` can be used to print the list of
-locales omitted from Android APKs (but not app bundles), and
-`--type=ios_unsupported` for the list of locales unsupported on iOS.
+Chrome, but `--type=ios_unsupported` can be used for the list of locales
+unsupported on iOS.
 
 These values are extracted directly from build/config/locales.gni.
 
@@ -1299,7 +1283,6 @@ instead of the default format (which is a space-separated list of locale names).
   # Maps type argument to a function returning the corresponding locales list.
   TYPE_MAP = {
       'all': ChromeLocales,
-      'android_apk_omitted': AndroidAPKOmittedLocales,
       'ios_unsupported': IosUnsupportedLocales,
   }
 

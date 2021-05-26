@@ -2002,13 +2002,7 @@ if (current_toolchain == default_toolchain) {
       renaming_sources = []
       renaming_destinations = []
 
-      # Only include all Android locales on bundle builds.
-      if (_is_bundle_module) {
-        _locales_list = locales
-      } else {
-        _locales_list = android_apk_locales
-      }
-      foreach(_locale, _locales_list) {
+      foreach(_locale, locales) {
         renaming_sources +=
             [ "$target_gen_dir/${_variant}_paks/locales/$_locale.pak" ]
         renaming_destinations += [ "locales/$_locale.pak" ]
