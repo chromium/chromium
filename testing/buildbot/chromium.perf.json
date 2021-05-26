@@ -1711,7 +1711,8 @@
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
-            "True"
+            "True",
+            "--use-dynamic-shards"
           ],
           "requires_simultaneous_shard_dispatch": true,
           "script": "//testing/trigger_scripts/perf_device_trigger.py"
