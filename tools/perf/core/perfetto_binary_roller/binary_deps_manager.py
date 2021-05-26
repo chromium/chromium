@@ -17,8 +17,10 @@ BINARY_CS_FOLDER = 'perfetto_binaries'
 DATA_BUCKET = cloud_storage.INTERNAL_BUCKET
 DATA_CS_FOLDER = 'perfetto_data'
 LATEST_FILENAME = 'latest'
-LOCAL_STORAGE_FOLDER = os.path.join(os.path.dirname(__file__), 'bin')
-CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'binary_deps.json')
+LOCAL_STORAGE_FOLDER = os.path.abspath(
+  os.path.join(os.path.dirname(__file__), 'bin'))
+CONFIG_PATH = os.path.abspath(
+  os.path.join(os.path.dirname(__file__), 'binary_deps.json'))
 
 
 def _GetHostPlatform():
