@@ -1232,10 +1232,9 @@ void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
   delegate_ = delegate;
   if (delegate_) {
     delegate_->Attach(this);
-    // RenderFrameDevToolsAgentHost should not be told about the main renderer
-    // frame until/unless there is a `delegate_`.
-    if (GetMainFrame()->IsRenderFrameLive())
-      RenderFrameDevToolsAgentHost::WebContentsMainFrameCreated(this);
+    // RenderFrameDevToolsAgentHost should not be told about the WebContents
+    // until there is a `delegate_`.
+    RenderFrameDevToolsAgentHost::AttachToWebContents(this);
   }
 
   // Re-read values from the new delegate and apply them.
@@ -6516,15 +6515,6 @@ void WebContentsImpl::RenderFrameCreated(
       if (!delegate_ || delegate_->ShouldFocusPageAfterCrash()) {
         view_->Focus();
       }
-    }
-
-    // RenderFrameDevToolsAgentHost should not be told about the main renderer
-    // frame until/unless there is a `delegate_`.
-    if (delegate_) {
-      // TODO(crbug.com/1199687): Under MPArch, with multiple frame trees in a
-      // WebContents, this is intended to just notify about the main frame of
-      // the root page.
-      RenderFrameDevToolsAgentHost::WebContentsMainFrameCreated(this);
     }
   }
 
