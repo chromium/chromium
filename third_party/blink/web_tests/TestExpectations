@@ -439,6 +439,7 @@ crbug.com/1169216 external/wpt/html/canvas/element/filters/2d.filter.canvasFilte
 crbug.com/1169216 external/wpt/html/canvas/element/filters/2d.filter.canvasFilterObject.componentTransfer.gamma.html [ Failure ]
 crbug.com/1169216 external/wpt/html/canvas/element/filters/2d.filter.canvasFilterObject.componentTransfer.linear.html [ Failure ]
 crbug.com/1169216 external/wpt/html/canvas/element/filters/2d.filter.canvasFilterObject.componentTransfer.table.html [ Failure ]
+crbug.com/1169216 external/wpt/html/canvas/element/manual/filters/canvas-filter-object-component-transfer.html [ Failure ]
 
 # Most of these fail due to subpixel differences, but a couple are real failures.
 crbug.com/1044742 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-animation.html [ Failure ]
