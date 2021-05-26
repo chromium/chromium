@@ -4,6 +4,7 @@
 
 #include "components/login/base_screen_handler_utils.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/account_id/account_id.h"
 
 namespace login {
@@ -26,7 +27,11 @@ bool ParseStringList(const base::Value* value, StringListType* out_value) {
 }  // namespace
 
 bool ParseValue(const base::Value* value, bool* out_value) {
-  return value->GetAsBoolean(out_value);
+  if (out_value && value->is_bool()) {
+    *out_value = value->GetBool();
+    return true;
+  }
+  return value->is_bool();
 }
 
 bool ParseValue(const base::Value* value, int* out_value) {
@@ -38,20 +43,36 @@ bool ParseValue(const base::Value* value, int* out_value) {
 }
 
 bool ParseValue(const base::Value* value, double* out_value) {
-  return value->GetAsDouble(out_value);
+  if (out_value && (value->is_double() || value->is_int())) {
+    *out_value = value->GetDouble();
+    return true;
+  }
+  return value->is_double() || value->is_int();
 }
 
 bool ParseValue(const base::Value* value, std::string* out_value) {
-  return value->GetAsString(out_value);
+  if (out_value && value->is_string()) {
+    *out_value = value->GetString();
+    return true;
+  }
+  return value->is_string();
 }
 
 bool ParseValue(const base::Value* value, std::u16string* out_value) {
-  return value->GetAsString(out_value);
+  if (out_value && value->is_string()) {
+    *out_value = base::UTF8ToUTF16(value->GetString());
+    return true;
+  }
+  return value->is_string();
 }
 
 bool ParseValue(const base::Value* value,
                 const base::DictionaryValue** out_value) {
-  return value->GetAsDictionary(out_value);
+  if (out_value && value->is_dict()) {
+    *out_value = static_cast<const base::DictionaryValue*>(value);
+    return true;
+  }
+  return value->is_dict();
 }
 
 bool ParseValue(const base::Value* value, StringList* out_value) {
@@ -63,11 +84,10 @@ bool ParseValue(const base::Value* value, String16List* out_value) {
 }
 
 bool ParseValue(const base::Value* value, AccountId* out_value) {
-  std::string serialized;
-  const bool has_string = value->GetAsString(&serialized);
-  if (!has_string)
+  if (!value->is_string())
     return false;
 
+  std::string serialized = value->GetString();
   if (AccountId::Deserialize(serialized, out_value))
     return true;
 
