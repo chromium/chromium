@@ -146,7 +146,7 @@
 - (void)identityChooserCoordinatorDidClose:
     (IdentityChooserCoordinator*)coordinator {
   CHECK_EQ(self.identityChooserCoordinator, coordinator);
-  self.identityChooserCoordinator.delegate = nil;
+  [self.identityChooserCoordinator stop];
   self.identityChooserCoordinator = nil;
 }
 

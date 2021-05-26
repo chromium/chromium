@@ -32,6 +32,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 @property(nonatomic, assign) BOOL hidden;
 @property(nonatomic, copy) NSString* userName;
 @property(nonatomic, copy) NSString* email;
+@property(nonatomic, copy) NSString* givenName;
 @property(nonatomic, strong) UIImage* userImage;
 @property(nonatomic, assign) BOOL UIEnabled;
 
@@ -47,9 +48,12 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   _userImage = userImage;
 }
 
-- (void)setSelectedIdentityUserName:(NSString*)userName email:(NSString*)email {
+- (void)setSelectedIdentityUserName:(NSString*)userName
+                              email:(NSString*)email
+                          givenName:(NSString*)givenName {
   self.userName = userName;
   self.email = email;
+  self.givenName = givenName;
 }
 
 @end

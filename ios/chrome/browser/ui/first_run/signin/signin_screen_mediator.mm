@@ -156,7 +156,8 @@
   if (self.selectedIdentity) {
     [self.consumer
         setSelectedIdentityUserName:self.selectedIdentity.userFullName
-                              email:self.selectedIdentity.userEmail];
+                              email:self.selectedIdentity.userEmail
+                          givenName:self.selectedIdentity.userGivenName];
 
     ChromeIdentity* selectedIdentity = self.selectedIdentity;
     __weak __typeof(self) weakSelf = self;

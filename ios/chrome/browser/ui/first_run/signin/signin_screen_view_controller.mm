@@ -29,6 +29,10 @@ const CGFloat kIdentityControlMaxWidth = 327;
 // Scrim displayed above the view when the UI is disabled.
 @property(nonatomic, strong) ActivityOverlayView* overlay;
 
+// The string to be displayed in the "Cotinue" button to personalize it. Usually
+// the given name, or the email address if no given name.
+@property(nonatomic, copy) NSString* personalizedButtonPrompt;
+
 @end
 
 @implementation SigninScreenViewController
@@ -113,7 +117,10 @@ const CGFloat kIdentityControlMaxWidth = 327;
   }
 }
 
-- (void)setSelectedIdentityUserName:(NSString*)userName email:(NSString*)email {
+- (void)setSelectedIdentityUserName:(NSString*)userName
+                              email:(NSString*)email
+                          givenName:(NSString*)givenName {
+  self.personalizedButtonPrompt = givenName ? givenName : email;
   [self updateUIForIdentityAvailable:YES];
   [self.identityControl setIdentityName:userName email:email];
 }
@@ -154,10 +161,9 @@ const CGFloat kIdentityControlMaxWidth = 327;
 - (void)updateUIForIdentityAvailable:(BOOL)identityAvailable {
   self.identityControl.hidden = !identityAvailable;
   if (identityAvailable) {
-    // TODO(crbug.com/1189836): Use the real name.
     self.primaryActionString = l10n_util::GetNSStringF(
         IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
-        base::SysNSStringToUTF16(@"Account Name (Test)"));
+        base::SysNSStringToUTF16(self.personalizedButtonPrompt));
     ;
   } else {
     self.primaryActionString =
