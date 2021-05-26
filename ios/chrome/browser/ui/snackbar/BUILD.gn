@@ -7,6 +7,7 @@ source_set("snackbar") {
   sources = [
     "snackbar_coordinator.h",
     "snackbar_coordinator.mm",
+    "snackbar_coordinator_delegate.h",
   ]
   deps = [
     "//ios/chrome/browser/main:public",

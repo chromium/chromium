@@ -58,5 +58,8 @@ extern GuideName* const kDiscoverFeedHeaderMenuGuide;
 // A guide that is constrained to match the frame of the location view in the
 // primary toolbar (i.e. the Address Bar).
 extern GuideName* const kPrimaryToolbarLocationViewGuide;
+// A guide that is constrained to match the frame of the bottom toolbar in the
+// tab grid.
+extern GuideName* const kTabGridBottomToolbarGuide;
 
 #endif  // IOS_CHROME_BROWSER_UI_UTIL_LAYOUT_GUIDE_NAMES_H_
