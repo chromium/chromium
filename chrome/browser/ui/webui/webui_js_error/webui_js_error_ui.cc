@@ -33,6 +33,19 @@ WebUIJsErrorUI::WebUIJsErrorUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIWebUIJsErrorHost);
+
+  // As this is just a debugging page, we don't waste the translators' time by
+  // actually translating the i18n strings. However, we still want to be able to
+  // use this page to test the $i18n{} replacement system, so we still add
+  // "translation" strings.
+  source->AddString("title", "WebUI JavaScript Error Page");
+  source->AddString("explainerText",
+                    "This page generates a JavaScript error on load. Other\n"
+                    "types of errors can be generated with the buttons:");
+  source->AddString("logErrorButton", "Log Error");
+  source->AddString("uncaughtErrorButton", "Throw Uncaught Error");
+  source->AddString("promiseRejectButton", "Unhandled Promise Rejection");
+
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kWebuiJsErrorResources, kWebuiJsErrorResourcesSize),
