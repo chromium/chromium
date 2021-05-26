@@ -139,7 +139,6 @@ export class BookmarksListElement extends BookmarksListElementBase {
    * @private
    */
   onChanged_(id, changedInfo) {
-    console.log('changed!');
     const path = this.findPathToId_(id);
     Object.assign(path[path.length - 1], changedInfo);
 

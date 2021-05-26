@@ -60,6 +60,7 @@ suite('SidePanelBookmarkFolderTest', () => {
     bookmarkFolder = /** @type {!BookmarkFolderElement} */ (
         document.createElement('bookmark-folder'));
     bookmarkFolder.folder = folder;
+    bookmarkFolder.openByDefault = true;
     document.body.appendChild(bookmarkFolder);
 
     await flushTasks();
@@ -99,14 +100,12 @@ suite('SidePanelBookmarkFolderTest', () => {
 
   test('OpensAndClosesFolder', () => {
     const arrowIcon = bookmarkFolder.shadowRoot.querySelector('#arrowIcon');
-    const childrenElement =
-        bookmarkFolder.shadowRoot.querySelector('#children');
-    assertFalse(arrowIcon.hasAttribute('open'));
-    assertTrue(childrenElement.hasAttribute('hidden'));
+    assertTrue(arrowIcon.hasAttribute('open'));
+    assertEquals(3, getChildElements().length);
 
     bookmarkFolder.shadowRoot.querySelector('.row').click();
-    assertTrue(arrowIcon.hasAttribute('open'));
-    assertFalse(childrenElement.hasAttribute('hidden'));
+    assertFalse(arrowIcon.hasAttribute('open'));
+    assertEquals(3, getChildElements().length);
   });
 
   test('OpensBookmark', async () => {

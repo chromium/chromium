@@ -34,6 +34,7 @@
     --cr-icon-button-active-background-color: transparent;
     margin: 0;
     transform: rotate(-90deg);
+    transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   #arrowIcon[open] {
@@ -75,21 +76,23 @@
   <div class="title">[[folder.title]]</div>
 </div>
 
-<div id="children" hidden$="[[!open_]]">
-  <template is="dom-repeat" items="[[folder.children]]">
-    <template is="dom-if" if="[[!item.url]]">
-      <bookmark-folder folder="[[item]]" depth="[[childDepth_]]">
-      </bookmark-folder>
-    </template>
+<div id="children">
+  <template is="dom-if" if="[[open_]]">
+    <template is="dom-repeat" items="[[folder.children]]">
+      <template is="dom-if" if="[[!item.url]]">
+        <bookmark-folder folder="[[item]]" depth="[[childDepth_]]">
+        </bookmark-folder>
+      </template>
 
-    <template is="dom-if" if="[[item.url]]">
-      <a href="[[item.url]]" class="bookmark row" on-click="onBookmarkClick_">
-        <div
-            class="icon"
-            style="background-image: [[getBookmarkIcon_(item.url)]]">
-        </div>
-        <div class="title">[[item.title]]</div>
-      </a>
+      <template is="dom-if" if="[[item.url]]">
+        <a href="[[item.url]]" class="bookmark row" on-click="onBookmarkClick_">
+          <div
+              class="icon"
+              style="background-image: [[getBookmarkIcon_(item.url)]]">
+          </div>
+          <div class="title">[[item.title]]</div>
+        </a>
+      </template>
     </template>
   </template>
 </div>

@@ -134,7 +134,7 @@ suite('SidePanelBookmarksListTest', () => {
            Node.DOCUMENT_POSITION_FOLLOWING));
   });
 
-  test('AddsCreatedBookmark', () => {
+  test('AddsCreatedBookmark', async () => {
     bookmarksApi.callbackRouter.onCreated.dispatchEvent('999', {
       id: '999',
       title: 'New bookmark',
@@ -146,6 +146,8 @@ suite('SidePanelBookmarksListTest', () => {
 
     const rootFolderElement = getFolderElements(bookmarksList)[0];
     const childFolder = getFolderElements(rootFolderElement)[0];
+    childFolder.shadowRoot.querySelector('.row').click();  // Open folder.
+    await flushTasks();
     const childFolderBookmarks = getBookmarkElements(childFolder);
     assertEquals(2, childFolderBookmarks.length);
   });
