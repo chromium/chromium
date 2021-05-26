@@ -4,15 +4,16 @@
 
 package org.chromium.chrome.browser.payments.handler;
 
+import android.app.Activity;
 import android.os.Handler;
 import android.view.View;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator.PaymentHandlerToolbarObserver;
@@ -54,12 +55,12 @@ import java.lang.annotation.RetentionPolicy;
     // Used to postpone execution of a callback to avoid destroy objects (e.g., WebContents) in
     // their own methods.
     private final Handler mHandler = new Handler();
-    private final DestroyObserver mActivityDestroyListener;
-    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final View mTabView;
     private final BottomSheetController mBottomSheetController;
     private final int mToolbarViewHeightPx;
     private @CloseReason int mCloseReason = CloseReason.OTHERS;
+    private final TabObscuringHandler mTabObscuringHandler;
+    private final ActivityStateListener mActivityStateListener;
 
     /** A token held while the payment sheet is obscuring all visible tabs. */
     private int mTabObscuringToken = TokenHolder.INVALID_TOKEN;
@@ -86,15 +87,15 @@ import java.lang.annotation.RetentionPolicy;
      * @param observer The {@link PaymentHandlerUiObserver} that observes this Payment Handler UI.
      * @param tabView The view of the main tab.
      * @param toolbarViewHeightPx The height of the toolbar view in px.
-     * @param activityLifeCycleDispatcher The lifecycle dispatcher of the activity where this UI
-     *         lives.
      * @param sheetController A {@link BottomSheetController} to show UI in.
+     * @param tabObscuringHandler Handles the obscuring of tabs.
+     * @param activity The current android {@link Activity}.
      */
     /* package */ PaymentHandlerMediator(PropertyModel model, Runnable hider,
             WebContents paymentRequestWebContents, WebContents paymentHandlerWebContents,
             PaymentHandlerUiObserver observer, View tabView, int toolbarViewHeightPx,
-            ActivityLifecycleDispatcher activityLifeCycleDispatcher,
-            BottomSheetController sheetController) {
+            BottomSheetController sheetController, TabObscuringHandler tabObscuringHandler,
+            Activity activity) {
         super(paymentHandlerWebContents);
         assert paymentHandlerWebContents != null;
         mTabView = tabView;
@@ -107,16 +108,18 @@ import java.lang.annotation.RetentionPolicy;
         mHider = hider;
         mPaymentHandlerUiObserver = observer;
         mModel.set(PaymentHandlerProperties.CONTENT_VISIBLE_HEIGHT_PX, contentVisibleHeight());
+        mTabObscuringHandler = tabObscuringHandler;
 
-        mActivityLifecycleDispatcher = activityLifeCycleDispatcher;
-        mActivityDestroyListener = new DestroyObserver() {
+        mActivityStateListener = new ActivityStateListener() {
             @Override
-            public void onDestroy() {
-                mCloseReason = CloseReason.ACTIVITY_DIED;
-                mHandler.post(mHider);
+            public void onActivityStateChange(Activity activity, @ActivityState int newState) {
+                if (newState == ActivityState.DESTROYED) {
+                    mCloseReason = CloseReason.ACTIVITY_DIED;
+                    mHandler.post(mHider);
+                }
             }
         };
-        mActivityLifecycleDispatcher.register(mActivityDestroyListener);
+        ApplicationStatus.registerStateListenerForActivity(mActivityStateListener, activity);
     }
 
     // Implement View.OnLayoutChangeListener:
@@ -152,32 +155,24 @@ import java.lang.annotation.RetentionPolicy;
     /**
      * Set whether to obscure all tabs. Note the difference between scrim and obscure, while scrims
      * reduces the background visibility, obscure makes the background invisible to screen readers.
-     * @param activity The ChromeActivity of the tab.
      * @param obscure Whether to obscure all tabs.
      */
-    private void setObscureState(ChromeActivity activity, boolean obscure) {
-        TabObscuringHandler obscuringHandler = activity.getTabObscuringHandler();
-        if (obscuringHandler == null) return;
-
+    private void setObscureState(boolean obscure) {
         if (obscure && mTabObscuringToken == TokenHolder.INVALID_TOKEN) {
-            mTabObscuringToken = obscuringHandler.obscureAllTabs();
+            mTabObscuringToken = mTabObscuringHandler.obscureAllTabs();
         } else if (!obscure && mTabObscuringToken != TokenHolder.INVALID_TOKEN) {
-            obscuringHandler.unobscureAllTabs(mTabObscuringToken);
+            mTabObscuringHandler.unobscureAllTabs(mTabObscuringToken);
             mTabObscuringToken = TokenHolder.INVALID_TOKEN;
         }
     }
 
     private void showScrim() {
-        // Using an empty scrim observer is to avoid the dismissal of the bottom-sheet on tapping.
-        ChromeActivity activity = ChromeActivity.fromWebContents(mPaymentHandlerWebContents);
-        assert activity != null;
-
         ScrimCoordinator coordinator = mBottomSheetController.getScrimCoordinator();
         if (coordinator != null && !coordinator.isShowingScrim()) {
             PropertyModel params = mBottomSheetController.createScrimParams();
             coordinator.showScrim(params);
         }
-        setObscureState(activity, true);
+        setObscureState(true);
     }
 
     // Implement BottomSheetObserver:
@@ -205,7 +200,7 @@ import java.lang.annotation.RetentionPolicy;
     // Implement WebContentsObserver:
     @Override
     public void destroy() {
-        mActivityLifecycleDispatcher.unregister(mActivityDestroyListener);
+        ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
 
         switch (mCloseReason) {
             case CloseReason.INSECURE_NAVIGATION:
@@ -238,11 +233,7 @@ import java.lang.annotation.RetentionPolicy;
     }
 
     private void hideScrim() {
-        ChromeActivity activity = ChromeActivity.fromWebContents(mPaymentHandlerWebContents);
-        // activity would be null when this method is triggered by activity being destroyed.
-        if (activity == null) return;
-
-        setObscureState(activity, false);
+        setObscureState(false);
 
         ScrimCoordinator coordinator = mBottomSheetController.getScrimCoordinator();
         if (coordinator != null && coordinator.isShowingScrim()) {

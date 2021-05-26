@@ -440,11 +440,12 @@ public class ExpandablePaymentHandlerTest {
         startDefaultServer();
         PaymentHandlerCoordinator paymentHandler = new PaymentHandlerCoordinator();
         mBottomSheetTestSupport.suppressSheet(StateChangeReason.UNKNOWN);
-        mRule.runOnUiThread(
-                ()
-                        -> Assert.assertNull(paymentHandler.show(
-                                mDefaultActivity.getCurrentWebContents(), defaultPaymentAppUrl(),
-                                mDefaultIsIncognito, defaultUiObserver())));
+        mRule.runOnUiThread(() -> {
+            Assert.assertNull(paymentHandler.show(mDefaultActivity.getCurrentWebContents(),
+                    defaultPaymentAppUrl(), mDefaultIsIncognito, defaultUiObserver()));
+            // When the return value is null, the caller needs to hide() manually.
+            paymentHandler.hide();
+        });
         waitForUiClosed();
     }
 }

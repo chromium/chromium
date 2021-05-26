@@ -27,6 +27,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
@@ -105,6 +106,7 @@ import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -125,12 +127,15 @@ import java.util.function.Consumer;
 public class RootUiCoordinator
         implements DestroyObserver, InflationObserver, NativeInitObserver,
                    MenuOrKeyboardActionController.MenuOrKeyboardActionHandler, AppMenuBlocker {
+    private final UnownedUserDataSupplier<TabObscuringHandler> mTabObscuringHandlerSupplier =
+            new TabObscuringHandlerSupplier();
+
     protected ChromeActivity mActivity;
     protected @Nullable AppMenuCoordinator mAppMenuCoordinator;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
-    private final TabObscuringHandler mTabObscuringHandler;
     private final AccessibilityVisibilityHandler mAccessibilityVisibilityHandler;
     private final @Nullable AutofillSessionLifetimeController mAutofillSessionLifetimeController;
+    private final ActivityWindowAndroid mWindowAndroid;
 
     private ActivityTabProvider mActivityTabProvider;
     private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
@@ -209,6 +214,7 @@ public class RootUiCoordinator
      * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
      * @param startSurfaceParentTabSupplier Supplies the parent tab for the StartSurface.
      * @param browserControlsManager Manages the browser controls.
+     * @param windowAndroid The current {@link WindowAndroid}.
      */
     public RootUiCoordinator(ChromeActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -221,9 +227,12 @@ public class RootUiCoordinator
             OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
-            @NonNull BrowserControlsManager browserControlsManager) {
+            @NonNull BrowserControlsManager browserControlsManager,
+            @NonNull ActivityWindowAndroid windowAndroid) {
         mCallbackController = new CallbackController();
         mActivity = activity;
+        mWindowAndroid = windowAndroid;
+        setupUnownedUserDataSuppliers();
         mOnOmniboxFocusChangedListener = onOmniboxFocusChangedListener;
         mBrowserControlsManager = browserControlsManager;
         mActivity.getLifecycleDispatcher().register(this);
@@ -236,9 +245,10 @@ public class RootUiCoordinator
         mActivity.getLayoutManagerSupplier().addObserver(mLayoutManagerSupplierCallback);
 
         mShareDelegateSupplier = shareDelegateSupplier;
-        mTabObscuringHandler = new TabObscuringHandler();
-        mAccessibilityVisibilityHandler = new AccessibilityVisibilityHandler(
-                activity.getLifecycleDispatcher(), mActivityTabProvider, mTabObscuringHandler);
+        mTabObscuringHandlerSupplier.set(new TabObscuringHandler());
+        mAccessibilityVisibilityHandler =
+                new AccessibilityVisibilityHandler(activity.getLifecycleDispatcher(),
+                        mActivityTabProvider, mTabObscuringHandlerSupplier.get());
         // While Autofill is supported on Android O, meaningful Autofill interactions in Chrome
         // require the compatibility mode introduced in Android P.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -291,6 +301,7 @@ public class RootUiCoordinator
         mCallbackController.destroy();
         mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(this);
 
+        destroyUnownedUserDataSuppliers();
         mActivity.getLayoutManagerSupplier().removeObserver(mLayoutManagerSupplierCallback);
 
         if (mMessageDispatcher != null) {
@@ -370,6 +381,15 @@ public class RootUiCoordinator
         }
 
         mActivity = null;
+    }
+
+    private void setupUnownedUserDataSuppliers() {
+        mTabObscuringHandlerSupplier.attach(mWindowAndroid.getUnownedUserDataHost());
+    }
+
+    private void destroyUnownedUserDataSuppliers() {
+        // TabObscuringHandler doesn't have a destroy method.
+        mTabObscuringHandlerSupplier.destroy();
     }
 
     @Override
@@ -464,14 +484,13 @@ public class RootUiCoordinator
             mMessageDispatcher = MessagesFactory.createMessageDispatcher(container,
                     mMessageContainerCoordinator::getMessageMaxTranslation,
                     new ChromeMessageAutodismissDurationProvider(),
-                    mActivity.getWindowAndroid()::startAnimationOverContent);
+                    mWindowAndroid::startAnimationOverContent);
             mMessageQueueMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                     mMessageContainerCoordinator, mActivity.getFullscreenManager(),
                     mActivityTabProvider, mLayoutStateProviderOneShotSupplier,
                     mActivity.getModalDialogManagerSupplier(), mMessageDispatcher);
             mMessageDispatcher.setDelegate(mMessageQueueMediator);
-            MessagesFactory.attachMessageDispatcher(
-                    mActivity.getWindowAndroid(), mMessageDispatcher);
+            MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
         }
     }
 
@@ -689,14 +708,14 @@ public class RootUiCoordinator
             mToolbarManager = new ToolbarManager(mActivity, mBrowserControlsManager,
                     mActivity.getFullscreenManager(), toolbarContainer,
                     mActivity.getCompositorViewHolder(), urlFocusChangedCallback,
-                    mTopUiThemeColorProvider, mTabObscuringHandler, mShareDelegateSupplier,
-                    mIdentityDiscController, mButtonDataProviders, mActivityTabProvider,
-                    mScrimCoordinator, mActionModeControllerCallback, mFindToolbarManager,
-                    mProfileSupplier, mBookmarkBridgeSupplier, mCanAnimateBrowserControls,
-                    mLayoutStateProviderOneShotSupplier, mAppMenuSupplier,
-                    shouldShowMenuUpdateBadge(), mTabModelSelectorSupplier, mStartSurfaceSupplier,
-                    mOmniboxFocusStateSupplier, mIntentMetadataOneshotSupplier,
-                    mPromoShownOneshotSupplier, mActivity.getWindowAndroid(),
+                    mTopUiThemeColorProvider, mTabObscuringHandlerSupplier.get(),
+                    mShareDelegateSupplier, mIdentityDiscController, mButtonDataProviders,
+                    mActivityTabProvider, mScrimCoordinator, mActionModeControllerCallback,
+                    mFindToolbarManager, mProfileSupplier, mBookmarkBridgeSupplier,
+                    mCanAnimateBrowserControls, mLayoutStateProviderOneShotSupplier,
+                    mAppMenuSupplier, shouldShowMenuUpdateBadge(), mTabModelSelectorSupplier,
+                    mStartSurfaceSupplier, mOmniboxFocusStateSupplier,
+                    mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier, mWindowAndroid,
                     mActivity::isInOverviewMode, mActivity.getModalDialogManagerSupplier(),
                     mActivity.getStatusBarColorController(),
                     /* appMenuDelegate= */ mActivity, mActivity.getLifecycleDispatcher(),
@@ -822,8 +841,7 @@ public class RootUiCoordinator
             stubId = R.id.find_toolbar_tablet_stub;
         }
         mFindToolbarManager = new FindToolbarManager(mActivity.findViewById(stubId),
-                mTabModelSelectorSupplier.get(), mActivity.getWindowAndroid(),
-                mActionModeControllerCallback);
+                mTabModelSelectorSupplier.get(), mWindowAndroid, mActionModeControllerCallback);
 
         mFindToolbarObserver = new FindToolbarObserver() {
             @Override
@@ -875,7 +893,7 @@ public class RootUiCoordinator
             mBottomSheetSnackbarManager = new SnackbarManager(mActivity,
                     view.findViewById(org.chromium.components.browser_ui.bottomsheet.R.id
                                               .bottom_sheet_snackbar_container),
-                    mActivity.getWindowAndroid());
+                    mWindowAndroid);
         };
 
         Supplier<OverlayPanelManager> panelManagerSupplier = ()
@@ -883,17 +901,19 @@ public class RootUiCoordinator
 
         // TODO(1094000): Initialize after inflation so we don't need to pass in view suppliers.
         mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
-                () -> mScrimCoordinator, sheetInitializedCallback, mActivity.getWindow(),
-                mActivity.getWindowAndroid().getKeyboardDelegate(),
+                ()
+                        -> mScrimCoordinator,
+                sheetInitializedCallback, mActivity.getWindow(),
+                mWindowAndroid.getKeyboardDelegate(),
                 () -> mActivity.findViewById(R.id.sheet_container));
         BottomSheetControllerFactory.setExceptionReporter(
                 (throwable)
                         -> PureJavaExceptionReporter.reportJavaException((Throwable) throwable));
-        BottomSheetControllerFactory.attach(mActivity.getWindowAndroid(), mBottomSheetController);
+        BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);
 
         mBottomSheetManager = new BottomSheetManager(mBottomSheetController, mActivityTabProvider,
                 mBrowserControlsManager, mActivity::getModalDialogManager,
-                this::getBottomSheetSnackbarManager, mTabObscuringHandler,
+                this::getBottomSheetSnackbarManager, mTabObscuringHandlerSupplier.get(),
                 mOmniboxFocusStateSupplier, panelManagerSupplier, mStartSurfaceSupplier);
     }
 
@@ -902,7 +922,7 @@ public class RootUiCoordinator
      * @return {@link TabObscuringHandler} object.
      */
     public TabObscuringHandler getTabObscuringHandler() {
-        return mTabObscuringHandler;
+        return mTabObscuringHandlerSupplier.get();
     }
 
     /** @return The {@link BottomSheetController} for this activity. */

@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.ActivityWindowAndroid;
 
 /**
  * A {@link RootUiCoordinator} variant that controls UI for {@link BaseCustomTabActivity}.
@@ -40,11 +41,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            BrowserControlsManager browserControlsManager) {
+            BrowserControlsManager browserControlsManager, ActivityWindowAndroid windowAndroid) {
         super(activity, null, shareDelegateSupplier, tabProvider, profileSupplier,
                 bookmarkBridgeSupplier, contextualSearchManagerSupplier, tabModelSelectorSupplier,
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
-                new OneshotSupplierImpl<>(), () -> null, browserControlsManager);
+                new OneshotSupplierImpl<>(), () -> null, browserControlsManager, windowAndroid);
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
     }
