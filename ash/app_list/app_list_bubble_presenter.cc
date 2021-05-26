@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/bubble/app_list_bubble_event_filter.h"
 #include "ash/app_list/bubble/app_list_bubble_view.h"
 #include "ash/shelf/home_button.h"
@@ -19,7 +20,11 @@
 
 namespace ash {
 
-AppListBubblePresenter::AppListBubblePresenter() = default;
+AppListBubblePresenter::AppListBubblePresenter(
+    AppListControllerImpl* controller)
+    : controller_(controller) {
+  DCHECK(controller_);
+}
 
 AppListBubblePresenter::~AppListBubblePresenter() {
   if (bubble_widget_)
@@ -35,7 +40,8 @@ void AppListBubblePresenter::Show(int64_t display_id) {
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display_id);
   Shelf* shelf = Shelf::ForWindow(root_window);
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(
-      std::make_unique<AppListBubbleView>(root_window, shelf->alignment()));
+      std::make_unique<AppListBubbleView>(controller_, root_window,
+                                          shelf->alignment()));
   bubble_widget_->AddObserver(this);
   bubble_widget_->Show();
   // TODO(https://crbug.com/1205494): Focus search box.

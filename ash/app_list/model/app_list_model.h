@@ -121,7 +121,9 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // Deletes all items. This is used in profile switches.
   void DeleteAllItems();
 
-  AppListItemList* top_level_item_list() { return top_level_item_list_.get(); }
+  AppListItemList* top_level_item_list() const {
+    return top_level_item_list_.get();
+  }
 
   AppListModelStatus status() const { return status_; }
 

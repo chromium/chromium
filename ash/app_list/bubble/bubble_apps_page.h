@@ -10,6 +10,8 @@
 
 namespace ash {
 
+class AppListViewDelegate;
+
 // The default page for the app list bubble / clamshell launcher. Contains a
 // scroll view with:
 // - Continue section with recent tasks and recent apps
@@ -17,7 +19,7 @@ namespace ash {
 // Does not include the search box, which is owned by a parent view.
 class ASH_EXPORT BubbleAppsPage : public views::View {
  public:
-  BubbleAppsPage();
+  explicit BubbleAppsPage(AppListViewDelegate* view_delegate);
   BubbleAppsPage(const BubbleAppsPage&) = delete;
   BubbleAppsPage& operator=(const BubbleAppsPage&) = delete;
   ~BubbleAppsPage() override;

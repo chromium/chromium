@@ -259,7 +259,7 @@ AppListControllerImpl::AppListControllerImpl()
       is_notification_indicator_enabled_(
           ::features::IsNotificationIndicatorEnabled()) {
   if (features::IsAppListBubbleEnabled())
-    bubble_presenter_ = std::make_unique<AppListBubblePresenter>();
+    bubble_presenter_ = std::make_unique<AppListBubblePresenter>(this);
 
   model_->AddObserver(this);
   SessionControllerImpl* session_controller =

@@ -63,8 +63,10 @@ BubbleBorder::Arrow GetArrowCorner(ShelfAlignment shelf_alignment) {
 
 }  // namespace
 
-AppListBubbleView::AppListBubbleView(aura::Window* root_window,
+AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
+                                     aura::Window* root_window,
                                      ShelfAlignment shelf_alignment) {
+  DCHECK(view_delegate);
   DCHECK(root_window);
   // The bubble is anchored to a screen corner point, but the API takes a rect.
   SetAnchorRect(gfx::Rect(GetAnchorPointInScreen(root_window, shelf_alignment),
@@ -88,7 +90,7 @@ AppListBubbleView::AppListBubbleView(aura::Window* root_window,
       base::BindRepeating(&AppListBubbleView::FlipPage, base::Unretained(this)),
       u"Flip page"));
 
-  apps_page_ = AddChildView(std::make_unique<BubbleAppsPage>());
+  apps_page_ = AddChildView(std::make_unique<BubbleAppsPage>(view_delegate));
 
   search_page_ = AddChildView(std::make_unique<BubbleSearchPage>());
   search_page_->SetVisible(false);

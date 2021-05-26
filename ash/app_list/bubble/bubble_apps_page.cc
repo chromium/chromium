@@ -8,6 +8,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/app_list/bubble/scrollable_apps_grid_view.h"
+#include "base/check.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -18,7 +20,9 @@ using views::BoxLayout;
 
 namespace ash {
 
-BubbleAppsPage::BubbleAppsPage() {
+BubbleAppsPage::BubbleAppsPage(AppListViewDelegate* view_delegate) {
+  DCHECK(view_delegate);
+
   SetUseDefaultFillLayout(true);
 
   // The entire page scrolls.
@@ -29,8 +33,9 @@ BubbleAppsPage::BubbleAppsPage() {
       views::ScrollView::ScrollBarMode::kDisabled);
 
   auto scroll_contents = std::make_unique<views::View>();
-  scroll_contents->SetLayoutManager(
+  auto* layout = scroll_contents->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
+  layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
   // TODO(https://crbug.com/1204551): Localized strings.
   // TODO(https://crbug.com/1204551): Styling.
@@ -66,17 +71,15 @@ BubbleAppsPage::BubbleAppsPage() {
     recent_apps->AddChildView(std::make_unique<views::Label>(u"Recent"));
   }
 
-  // TODO(https://crbug.com/1204551): Replace with real apps grid. For now,
-  // create enough labels to force the scroll view to scroll.
-  auto* all_apps =
-      scroll_contents->AddChildView(std::make_unique<views::View>());
-  const int kAllAppsSpacing = 16;
-  all_apps->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kAllAppsSpacing));
-  for (int i = 0; i < 20; ++i) {
-    all_apps->AddChildView(std::make_unique<views::Label>(u"App"));
-  }
+  // All apps section.
+  auto* apps_grid =
+      scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
+          view_delegate, /*folder_delegate=*/nullptr));
+  apps_grid->Init();
+  AppListModel* model = view_delegate->GetModel();
+  apps_grid->SetModel(model);
+  apps_grid->SetItemList(model->top_level_item_list());
+  apps_grid->ResetForShowApps();
 
   scroll->SetContents(std::move(scroll_contents));
 }

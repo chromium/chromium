@@ -15,13 +15,14 @@
 namespace ash {
 
 class AppListBubbleEventFilter;
+class AppListControllerImpl;
 
 // Manages the UI for the bubble launcher used in clamshell mode. Handles
 // showing and hiding the UI. Only one bubble can be visible at a time, across
 // all displays.
 class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
  public:
-  AppListBubblePresenter();
+  explicit AppListBubblePresenter(AppListControllerImpl* controller);
   AppListBubblePresenter(const AppListBubblePresenter&) = delete;
   AppListBubblePresenter& operator=(const AppListBubblePresenter&) = delete;
   ~AppListBubblePresenter() override;
@@ -44,6 +45,8 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
   views::Widget* bubble_widget_for_test() { return bubble_widget_; }
 
  private:
+  AppListControllerImpl* const controller_;
+
   // Owned by native widget.
   views::Widget* bubble_widget_ = nullptr;
 

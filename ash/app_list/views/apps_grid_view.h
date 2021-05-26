@@ -77,7 +77,9 @@ struct ASH_EXPORT GridIndex {
   int slot = -1;  // Which slot in the page an item view is in.
 };
 
-// AppsGridView displays a grid for AppListItemList sub model.
+// AppsGridView displays a grid of app icons. It is used for:
+// - The main grid of apps in the launcher
+// - The grid of apps in a folder
 class ASH_EXPORT AppsGridView : public views::View,
                                 public AppListItemListObserver,
                                 public PaginationModelObserver,
@@ -91,10 +93,16 @@ class ASH_EXPORT AppsGridView : public views::View,
     TOUCH,
   };
 
+  // TODO(crbug.com/1211608): Remove `contents_view`. ScrollableAppsGridView
+  // doesn't have one.
   AppsGridView(ContentsView* contents_view,
                AppListViewDelegate* app_list_view_delegate,
                AppsGridViewFolderDelegate* folder_delegate);
   ~AppsGridView() override;
+
+  // Initializes the class. Calls virtual methods, so its code cannot be in the
+  // constructor.
+  void Init();
 
   // Sets fixed layout parameters. After setting this, CalculateLayout below
   // is no longer called to dynamically choosing those layout params.
@@ -107,7 +115,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   gfx::Size GetTotalTileSize() const;
 
   // Returns the padding around a tile view.
-  gfx::Insets GetTilePadding() const;
+  virtual gfx::Insets GetTilePadding() const = 0;
 
   // Returns the size of the entire tile grid with padding between tiles.
   gfx::Size GetTileGridSizeWithPadding() const;
@@ -367,6 +375,30 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   int BackgroundCardCountForTesting() const { return background_cards_.size(); }
 
+ protected:
+  // Returns the size of the entire tile grid.
+  virtual gfx::Size GetTileGridSize() const = 0;
+
+  // Calculates the item views' bounds for non-folder.
+  virtual void CalculateIdealBounds();
+
+  // Calculates the item views' bounds for folder.
+  void CalculateIdealBoundsForFolder();
+
+  // Gets the bounds of the tile located at |index|, where |index| contains the
+  // page/slot info.
+  gfx::Rect GetExpectedTileBounds(const GridIndex& index) const;
+
+  bool ignore_layout() const { return ignore_layout_; }
+  views::BoundsAnimator* bounds_animator() { return bounds_animator_.get(); }
+  views::View* items_container() { return items_container_; }
+  const views::ViewModelT<PulsingBlockView>& pulsing_blocks_model() {
+    return pulsing_blocks_model_;
+  }
+  int reorder_placeholder_slot() const { return reorder_placeholder_.slot; }
+  int vertical_tile_padding() const { return vertical_tile_padding_; }
+  int horizontal_tile_padding() const { return horizontal_tile_padding_; }
+
  private:
   class FadeoutLayerDelegate;
   friend class test::AppsGridViewTestApi;
@@ -415,8 +447,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // transition target page.
   const gfx::Vector2d CalculateTransitionOffset(int page_of_view) const;
 
-  // Calculates the item views' bounds for folder.
-  void CalculateIdealBoundsForFolder();
   void AnimateToIdealBounds(AppListItemView* released_drag_view);
 
   // Invoked when the given |view|'s current bounds and target bounds are on
@@ -568,19 +598,12 @@ class ASH_EXPORT AppsGridView : public views::View,
   // occurring inside a folder, and |drop_target_| is a valid index.
   bool DraggedItemCanEnterFolder();
 
-  // Returns the size of the entire tile grid.
-  gfx::Size GetTileGridSize() const;
-
   // Returns the slot number which the given |point| falls into or the closest
   // slot if |point| is outside the page's bounds.
   GridIndex GetNearestTileIndexForPoint(const gfx::Point& point) const;
 
   // Calculates the offset distance to center the grid in the container.
   gfx::Vector2d GetGridCenteringOffset() const;
-
-  // Gets the bounds of the tile located at |index|, where |index| contains the
-  // page/slot info.
-  gfx::Rect GetExpectedTileBounds(const GridIndex& index) const;
 
   // Gets the item view currently displayed at |slot| on the current page. If
   // there is no item displayed at |slot|, returns nullptr. Note that this finds
@@ -674,9 +697,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Returns true if the page is the right target to flip to.
   bool IsValidPageFlipTarget(int page) const;
-
-  // Calculates the item views' bounds for non-folder.
-  void CalculateIdealBounds();
 
   // Returns model index of the item view of the specified item.
   int GetModelIndexOfItem(const AppListItem* item) const;
@@ -781,11 +801,13 @@ class ASH_EXPORT AppsGridView : public views::View,
   // This can be nullptr. Only grid views inside folders have a folder delegate.
   AppsGridViewFolderDelegate* folder_delegate_ = nullptr;
 
+  // TODO(crbug.com/1211608): Move these to PagedAppsGridView.
   PaginationModel pagination_model_{this};
   // Must appear after |pagination_model_|.
   std::unique_ptr<PaginationController> pagination_controller_;
 
   // Created by AppListMainView, owned by views hierarchy.
+  // TODO(crbug.com/1211608): Remove this member.
   ContentsView* contents_view_ = nullptr;
 
   AppListViewDelegate* const app_list_view_delegate_;

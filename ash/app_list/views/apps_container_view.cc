@@ -13,10 +13,10 @@
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
-#include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/page_switcher.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -68,9 +68,9 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
 
   AppListViewDelegate* view_delegate =
       contents_view_->GetAppListMainView()->view_delegate();
-  apps_grid_view_ =
-      AddChildView(std::make_unique<AppsGridView>(contents_view_, view_delegate,
-                                                  /*folder_delegate=*/nullptr));
+  apps_grid_view_ = AddChildView(std::make_unique<PagedAppsGridView>(
+      contents_view, /*folder_delegate=*/nullptr));
+  apps_grid_view_->Init();
 
   // Page switcher should be initialized after AppsGridView.
   auto page_switcher = std::make_unique<PageSwitcher>(

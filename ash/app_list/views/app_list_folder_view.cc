@@ -15,11 +15,11 @@
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
-#include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/page_switcher.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/top_icon_animation_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -472,7 +472,8 @@ AppListFolderView::AppListFolderView(AppsContainerView* container_view,
   view_model_->Add(contents_container_, kIndexContentsContainer);
 
   items_grid_view_ = contents_container_->AddChildView(
-      std::make_unique<AppsGridView>(contents_view_, view_delegate, this));
+      std::make_unique<PagedAppsGridView>(contents_view_, this));
+  items_grid_view_->Init();
   items_grid_view_->SetModel(model);
   view_model_->Add(items_grid_view_, kIndexChildItems);
 

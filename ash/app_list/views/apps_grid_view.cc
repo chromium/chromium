@@ -28,6 +28,7 @@
 #include "ash/app_list/views/search_result_tile_item_view.h"
 #include "ash/app_list/views/top_icon_animation_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/ash_features.h"
@@ -404,9 +405,10 @@ AppsGridView::AppsGridView(ContentsView* contents_view,
       contents_view_(contents_view),
       app_list_view_delegate_(app_list_view_delegate),
       page_flip_delay_(kPageFlipDelay) {
-  DCHECK(contents_view_);
   DCHECK(app_list_view_delegate_);
+}
 
+void AppsGridView::Init() {
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   // Clip any icons that are outside the grid view's bounds. These icons would
   // otherwise be visible to the user when the grid view is off screen.
@@ -458,7 +460,8 @@ AppsGridView::~AppsGridView() {
   // Cancel animations now, otherwise RemoveAllChildViews() may call back to
   // ViewHierarchyChanged() during removal, which can lead to double deletes
   // (because ViewHierarchyChanged() may attempt to delete a view that is part
-  // way through deletion).
+  // way through deletion). Note that cancelling animations may cause
+  // AppListItemView to Layout(), which may call back into this object.
   bounds_animator_->Cancel();
 
   view_model_.Clear();
@@ -474,15 +477,6 @@ gfx::Size AppsGridView::GetTotalTileSize() const {
   gfx::Rect rect(GetTileViewSize(GetAppListConfig(), cardified_state_));
   rect.Inset(GetTilePadding());
   return rect.size();
-}
-
-gfx::Insets AppsGridView::GetTilePadding() const {
-  if (folder_delegate_) {
-    const int tile_padding_in_folder =
-        GetAppListConfig().grid_tile_spacing_in_folder() / 2;
-    return gfx::Insets(-tile_padding_in_folder, -tile_padding_in_folder);
-  }
-  return gfx::Insets(-vertical_tile_padding_, -horizontal_tile_padding_);
 }
 
 gfx::Size AppsGridView::GetTileGridSizeWithPadding() const {
@@ -1085,6 +1079,8 @@ const char* AppsGridView::GetClassName() const {
   return "AppsGridView";
 }
 
+// TODO(crbug.com/1211608): Move to PagedAppsGridView when the pagination model
+// and controller are moved.
 void AppsGridView::Layout() {
   if (ignore_layout_)
     return;
@@ -1206,6 +1202,7 @@ void AppsGridView::ViewHierarchyChanged(
   }
 }
 
+// TODO(crbug.com/1211608): Move to PagedAppsGridView.
 void AppsGridView::OnGestureEvent(ui::GestureEvent* event) {
   // If a tap/long-press occurs within a valid tile, it is usually a mistake and
   // should not close the launcher in clamshell mode. Otherwise, we should let
@@ -1231,6 +1228,7 @@ void AppsGridView::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
+// TODO(crbug.com/1211608): Move to PagedAppsGridView.
 void AppsGridView::OnMouseEvent(ui::MouseEvent* event) {
   if (IsTabletMode() || !event->IsLeftMouseButton())
     return;
@@ -2142,6 +2140,8 @@ void AppsGridView::OnFolderItemRemoved() {
   item_list_ = nullptr;
 }
 
+// TODO(crbug.com/1211608): Move to PagedAppsGridView when more of the member
+// variables move.
 void AppsGridView::UpdateOpacity(bool restore_opacity) {
   if (view_structure_.pages().empty())
     return;
@@ -2221,6 +2221,7 @@ void AppsGridView::UpdateOpacity(bool restore_opacity) {
   }
 }
 
+// TODO(crbug.com/1211608): Move to PagedAppsGridView.
 bool AppsGridView::HandleScrollFromAppListView(const gfx::Point& location,
                                                const gfx::Vector2d& offset,
                                                ui::EventType type) {
@@ -2300,6 +2301,14 @@ void AppsGridView::OnAppListConfigUpdated() {
 }
 
 const AppListConfig& AppsGridView::GetAppListConfig() const {
+  // TODO(crbug.com/1211608): Get the real config. This method cannot be pure
+  // virtual and implemented in subclasses because AppListItemView may call
+  // GetAppListConfig() during this object's destruction.
+  if (!contents_view_) {
+    AppListConfig* config = AppListConfigProvider::Get().GetConfigForType(
+        AppListConfigType::kLarge, /*can_create=*/true);
+    return *config;
+  }
   return contents_view_->app_list_view()->GetAppListConfig();
 }
 
@@ -2938,6 +2947,13 @@ bool AppsGridView::IsPointWithinBottomDragBuffer(
 
 void AppsGridView::OnAppListItemViewPressed(AppListItemView* pressed_item_view,
                                             const ui::Event& event) {
+  // TODO(crbug.com/1211608): Refactor to support ScrollableAppsGridView. For
+  // now, just don't crash.
+  if (!contents_view_) {
+    NOTIMPLEMENTED();
+    return;
+  }
+
   if (dragging())
     return;
 
@@ -3299,14 +3315,6 @@ GridIndex AppsGridView::GetNearestTileIndexForPoint(
   return GridIndex(current_page, row * cols_ + col);
 }
 
-gfx::Size AppsGridView::GetTileGridSize() const {
-  gfx::Rect rect(GetTotalTileSize());
-  rect.set_size(
-      gfx::Size(rect.width() * cols_, rect.height() * rows_per_page_));
-  rect.Inset(-GetTilePadding());
-  return rect.size();
-}
-
 gfx::Rect AppsGridView::GetExpectedTileBounds(const GridIndex& index) const {
   if (!cols_)
     return gfx::Rect();
@@ -3629,6 +3637,7 @@ bool AppsGridView::IsValidPageFlipTarget(int page) const {
          pagination_model_.total_pages() == page;
 }
 
+// TODO(crbug.com/1211608): Move to PagedAppsGridView.
 void AppsGridView::CalculateIdealBounds() {
   DCHECK(!folder_delegate_);
 
@@ -3734,6 +3743,7 @@ void AppsGridView::RecordAppMovingTypeMetrics(AppListAppMovingType type) {
                             kMaxAppListAppMovingType);
 }
 
+// TODO(crbug.com/1211608): Move to PagedAppsGridView.
 void AppsGridView::UpdateTilePadding() {
   gfx::Size content_size = GetContentsBounds().size();
   const gfx::Size tile_size =
@@ -3811,6 +3821,9 @@ void AppsGridView::MaybeCreateFolderDroppingAccessibilityEvent() {
 }
 
 views::View* AppsGridView::GetAnnouncementView() {
+  // TODO(crbug.com/1211608): Support announcements in ScrollableAppsGridView.
+  if (!contents_view_)
+    return nullptr;
   return contents_view_->app_list_view()->announcement_view();
 }
 
@@ -3818,6 +3831,9 @@ void AppsGridView::AnnounceItemNotificationBadge(
     const std::u16string& selected_view_title) {
   // Set a11y name to announce the notification badge for the focused item.
   views::View* announcement_view = GetAnnouncementView();
+  // TODO(crbug.com/1211608): Support announcements in ScrollableAppsGridView.
+  if (!announcement_view)
+    return;
   announcement_view->GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(IDS_APP_LIST_APP_FOCUS_NOTIFICATION_BADGE,
                                  selected_view_title));
@@ -3829,6 +3845,9 @@ void AppsGridView::AnnounceFolderDrop(const std::u16string& moving_view_title,
                                       bool target_is_folder) {
   // Set a11y name to announce possible move to folder or creation of folder.
   views::View* announcement_view = GetAnnouncementView();
+  // TODO(crbug.com/1211608): Support announcements in ScrollableAppsGridView.
+  if (!announcement_view)
+    return;
   announcement_view->GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(
           target_is_folder
@@ -3844,6 +3863,9 @@ void AppsGridView::AnnounceKeyboardFoldering(
     bool target_is_folder) {
   // Set a11y name to announce keyboard move to folder or creation of folder.
   views::View* announcement_view = GetAnnouncementView();
+  // TODO(crbug.com/1211608): Support announcements in ScrollableAppsGridView.
+  if (!announcement_view)
+    return;
   announcement_view->GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(
           target_is_folder
@@ -3884,6 +3906,9 @@ void AppsGridView::AnnounceReorder(const GridIndex& target_index) {
 
   // Set the accessible name of the announcement view.
   views::View* announcement_view = GetAnnouncementView();
+  // TODO(crbug.com/1211608): Support announcements in ScrollableAppsGridView.
+  if (!announcement_view)
+    return;
   announcement_view->GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(
           IDS_APP_LIST_APP_DRAG_LOCATION_ACCESSIBILE_NAME,
@@ -3953,6 +3978,7 @@ void AppsGridView::OnHostDragStartTimerFired() {
   }
 }
 
+// TODO(crbug.com/1211608): Move to PagedAppsGridView.
 bool AppsGridView::ShouldHandleDragEvent(const ui::LocatedEvent& event) {
   // If |pagination_model_| is empty, don't handle scroll events.
   if (pagination_model_.total_pages() <= 0)
