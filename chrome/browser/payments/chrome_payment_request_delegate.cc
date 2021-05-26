@@ -152,11 +152,14 @@ void ChromePaymentRequestDelegate::DoFullCardRequest(
     base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
         result_delegate) {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (rfh && rfh->IsCurrent() && shown_dialog_) {
-    shown_dialog_->ShowCvcUnmaskPrompt(
-        credit_card, result_delegate,
-        content::WebContents::FromRenderFrameHost(rfh));
-  }
+  if (!rfh || !rfh->IsCurrent() || !shown_dialog_)
+    return;
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  shown_dialog_->ShowCvcUnmaskPrompt(credit_card, result_delegate,
+                                     web_contents);
 }
 
 autofill::RegionDataLoader*
