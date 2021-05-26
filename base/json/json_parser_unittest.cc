@@ -10,7 +10,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

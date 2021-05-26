@@ -17,7 +17,6 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/record_histogram_checker.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 

@@ -9,7 +9,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/process/process_handle.h"
 #include "base/profiler/thread_delegate_posix.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/json/string_escape.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"

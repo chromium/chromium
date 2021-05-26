@@ -18,7 +18,6 @@
 #include "base/profiler/stack_sampler_impl.h"
 #include "base/profiler/suspendable_thread_delegate.h"
 #include "base/profiler/unwinder.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

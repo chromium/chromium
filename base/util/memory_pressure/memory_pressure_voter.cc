@@ -6,7 +6,6 @@
 
 #include <numeric>
 
-#include "base/stl_util.h"
 #include "base/trace_event/base_tracing.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

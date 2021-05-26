@@ -14,7 +14,6 @@
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"

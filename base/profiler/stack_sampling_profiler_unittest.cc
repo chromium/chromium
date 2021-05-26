@@ -28,7 +28,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_native_library.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"

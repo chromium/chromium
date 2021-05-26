@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/stl_util.h"
 
 namespace base {
 

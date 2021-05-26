@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/process/memory.h"
-#include "base/stl_util.h"
 
 #include <windows.h>  // Must be in front of other Windows header files.
 
 #include <new.h>
 #include <psapi.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 #if defined(__clang__)
 // This global constructor is trivial and non-racy (per being const).

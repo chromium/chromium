@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 
 namespace base {
 

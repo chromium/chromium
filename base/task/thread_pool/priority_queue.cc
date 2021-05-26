@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 
 namespace base {
 namespace internal {

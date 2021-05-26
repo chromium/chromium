@@ -18,7 +18,6 @@
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 
 #if !defined(OS_NACL_NONSFI)

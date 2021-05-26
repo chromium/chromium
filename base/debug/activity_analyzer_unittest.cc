@@ -19,7 +19,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/pending_task.h"
 #include "base/process/process.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"

@@ -23,7 +23,6 @@
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"

@@ -11,7 +11,6 @@
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier_suspend.h"
 #include "base/profiler/suspendable_thread_delegate.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

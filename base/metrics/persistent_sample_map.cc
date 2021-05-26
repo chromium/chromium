@@ -10,7 +10,6 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 
 namespace base {
 

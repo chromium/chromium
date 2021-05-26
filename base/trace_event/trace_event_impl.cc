@@ -12,7 +12,6 @@
 #include "base/json/string_escape.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_handle.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
