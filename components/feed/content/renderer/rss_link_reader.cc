@@ -38,6 +38,26 @@ GURL GetRssUrlFromLinkElement(const blink::WebDocument& document,
   return result;
 }
 
+std::vector<GURL> GetRssLinksFromDocument(blink::WebDocument document) {
+  std::vector<GURL> rss_urls;
+  if (document.IsNull())
+    return rss_urls;
+  const blink::WebElement head = document.Head();
+  if (head.IsNull())
+    return rss_urls;
+  blink::WebElementCollection link_iter = head.GetElementsByHTMLTagName("link");
+  if (link_iter.IsNull())
+    return rss_urls;
+  for (blink::WebElement element = link_iter.FirstItem();
+       !element.IsNull() && rss_urls.size() < kMaxRssUrls;
+       element = link_iter.NextItem()) {
+    GURL url = GetRssUrlFromLinkElement(document, element);
+    if (url.is_valid())
+      rss_urls.push_back(url);
+  }
+  return rss_urls;
+}
+
 }  // namespace
 
 RssLinkReader::RssLinkReader(content::RenderFrame* render_frame,
@@ -53,19 +73,9 @@ RssLinkReader::RssLinkReader(content::RenderFrame* render_frame,
 RssLinkReader::~RssLinkReader() = default;
 
 void RssLinkReader::GetRssLinks(GetRssLinksCallback callback) {
-  std::vector<GURL> rss_urls;
   blink::WebDocument document = render_frame()->GetWebFrame()->GetDocument();
-  const blink::WebElement head = document.Head();
-  blink::WebElementCollection link_iter = head.GetElementsByHTMLTagName("link");
-  for (blink::WebElement element = link_iter.FirstItem();
-       !element.IsNull() && rss_urls.size() < kMaxRssUrls;
-       element = link_iter.NextItem()) {
-    GURL url = GetRssUrlFromLinkElement(document, element);
-    if (url.is_valid())
-      rss_urls.push_back(url);
-  }
   std::move(callback).Run(
-      mojom::RssLinks::New(document.Url(), std::move(rss_urls)));
+      mojom::RssLinks::New(document.Url(), GetRssLinksFromDocument(document)));
 }
 
 void RssLinkReader::OnDestruct() {
