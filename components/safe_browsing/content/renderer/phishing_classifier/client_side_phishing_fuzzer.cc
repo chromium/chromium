@@ -12,6 +12,9 @@
 
 DEFINE_PROTO_FUZZER(
     const safe_browsing::ClientSidePhishingFuzzerCase& fuzzing_case) {
+  if (!fuzzing_case.model().IsInitialized())
+    return;
+
   std::string model_str;
   if (!fuzzing_case.model().SerializeToString(&model_str))
     return;
