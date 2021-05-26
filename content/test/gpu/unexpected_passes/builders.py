@@ -35,6 +35,7 @@ FAKE_TRY_BUILDERS = {
     ],
     'android_optional_gpu_tests_rel': [
         'Optional Android Release (Nexus 5X)',
+        'Optional Android Release (Pixel 4)',
     ],
     'linux-angle-rel': [
         'ANGLE GPU Linux Release (Intel HD 630)',

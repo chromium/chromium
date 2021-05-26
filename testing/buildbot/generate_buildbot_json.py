@@ -1491,6 +1491,7 @@ class BBJSONGenerator(object):
         'ANGLE GPU Linux Release (Intel HD 630)',
         'ANGLE GPU Linux Release (NVIDIA)',
         'Optional Android Release (Nexus 5X)',
+        'Optional Android Release (Pixel 4)',
         'Optional Linux Release (Intel HD 630)',
         'Optional Linux Release (NVIDIA)',
         'Optional Mac Release (Intel)',

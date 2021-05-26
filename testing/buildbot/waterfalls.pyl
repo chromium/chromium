@@ -4444,6 +4444,21 @@
         # tests running on this bot, similarly to how they run on the optional
         # desktop trybots.
       },
+      'Optional Android Release (Pixel 4)': {
+        'browser_config': 'android-chromium',
+        'os_type': 'android',
+        'skip_merge_script': True,
+        'mixins': [
+          'android_r',
+          'enable_resultdb',
+          'flame',
+          'gpu-swarming-pool',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_pixel4_telemetry_tests',
+          'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
+        },
+      },
       'Optional Linux Release (Intel HD 630)': {
         'os_type': 'linux',
         'browser_config': 'release',

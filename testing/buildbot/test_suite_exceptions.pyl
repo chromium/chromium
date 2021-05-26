@@ -3080,6 +3080,13 @@
       'Mac FYI Retina Release (NVIDIA)',
     ],
   },
+  'webgl2_conformance_gles_passthrough_tests': {
+    'remove_from': [
+      # Currently only enough Pixel 4 capacity to run either validating or
+      # passthrough on the trybot, not both.
+      'Optional Android Release (Pixel 4)',
+    ],
+  },
   'webgl2_conformance_validating_tests': {
     'remove_from': [
       # The Mac NVIDIA Retina bots don't have the capacity to run

@@ -479,6 +479,7 @@
       'Mac FYI arm64 Release (Apple DTK)': 'gpu_fyi_tests_release_trybot_arm64',
       'Mac FYI GPU ASAN Release': 'gpu_fyi_tests_release_trybot_asan',
       'Optional Android Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64',
+      'Optional Android Release (Pixel 4)': 'gpu_tests_android_release_trybot',
       'Win10 FYI x64 SkiaRenderer Dawn Release (NVIDIA)': 'gpu_tests_sk_dawn_release_trybot',
     },
 
