@@ -5,7 +5,9 @@
 #ifndef PDF_PPAPI_MIGRATION_PDFIUM_FONT_LINUX_H_
 #define PDF_PPAPI_MIGRATION_PDFIUM_FONT_LINUX_H_
 
-#include "ppapi/c/pp_instance.h"
+namespace blink {
+struct WebFontDescription;
+}
 
 namespace pp {
 class Instance;
@@ -13,11 +15,25 @@ class Instance;
 
 namespace chrome_pdf {
 
+// Returns a handle to the font mapped based on `desc` and `charset`, for use
+// as the font_id in GetPepperFontData() and DeletePepperFont() below. Returns
+// nullptr on failure.
+void* MapPepperFont(const blink::WebFontDescription& desc, int charset);
+
+// Reads data from the `font_id` handle for `table` into a `buffer` of
+// `buf_size`. Returns the amount of data read on success, or 0 on failure. If
+// `buffer` is null, then just return the required size for the buffer.
+unsigned long GetPepperFontData(void* font_id,
+                                unsigned int table,
+                                unsigned char* buffer,
+                                unsigned long buf_size);
+
+// Releases resources allocated by MapPepperFont().
+void DeletePepperFont(void* font_id);
+
 // Keeps track of the most recently used plugin instance. This is a no-op if
 // `last_instance` is null.
 void SetLastPepperInstance(pp::Instance* last_instance);
-
-PP_Instance GetLastPepperInstance();
 
 }  // namespace chrome_pdf
 

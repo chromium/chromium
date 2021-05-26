@@ -14,27 +14,22 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "pdf/ppapi_migration/pdfium_font_linux.h"
-#include "ppapi/cpp/instance.h"
-#include "ppapi/cpp/module.h"
-#include "ppapi/cpp/private/pdf.h"
-#include "ppapi/cpp/trusted/browser_font_trusted.h"
+#include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/pdfium/public/fpdf_sysfontinfo.h"
 
 namespace chrome_pdf {
 
 namespace {
 
-PP_BrowserFont_Trusted_Weight WeightToBrowserFontTrustedWeight(int weight) {
-  static_assert(PP_BROWSERFONT_TRUSTED_WEIGHT_100 == 0,
-                "PP_BrowserFont_Trusted_Weight min");
-  static_assert(PP_BROWSERFONT_TRUSTED_WEIGHT_900 == 8,
-                "PP_BrowserFont_Trusted_Weight max");
+blink::WebFontDescription::Weight WeightToBlinkWeight(int weight) {
+  static_assert(blink::WebFontDescription::kWeight100 == 0, "Blink Weight min");
+  static_assert(blink::WebFontDescription::kWeight900 == 8, "Blink Weight max");
   constexpr int kMinimumWeight = 100;
   constexpr int kMaximumWeight = 900;
   int normalized_weight =
       base::ClampToRange(weight, kMinimumWeight, kMaximumWeight);
   normalized_weight = (normalized_weight / 100) - 1;
-  return static_cast<PP_BrowserFont_Trusted_Weight>(normalized_weight);
+  return static_cast<blink::WebFontDescription::Weight>(normalized_weight);
 }
 
 // This list is for CPWL_FontMap::GetDefaultFontByCharset().
@@ -56,23 +51,19 @@ void* MapFont(FPDF_SYSFONTINFO*,
               int pitch_family,
               const char* face,
               int* exact) {
-  // Do not attempt to map fonts if PPAPI is not initialized (for Privet local
-  // printing).
-  // TODO(noamsml): Real font substitution (http://crbug.com/391978)
-  if (!pp::Module::Get())
-    return nullptr;
-
-  pp::BrowserFontDescription description;
-
   // Pretend the system does not have the Symbol font to force a fallback to
   // the built in Symbol font in CFX_FontMapper::FindSubstFont().
   if (strcmp(face, "Symbol") == 0)
     return nullptr;
 
+  blink::WebFontDescription desc;
+
   if (pitch_family & FXFONT_FF_FIXEDPITCH) {
-    description.set_family(PP_BROWSERFONT_TRUSTED_FAMILY_MONOSPACE);
+    desc.generic_family = blink::WebFontDescription::kGenericFamilyMonospace;
   } else if (pitch_family & FXFONT_FF_ROMAN) {
-    description.set_family(PP_BROWSERFONT_TRUSTED_FAMILY_SERIF);
+    desc.generic_family = blink::WebFontDescription::kGenericFamilySerif;
+  } else {
+    desc.generic_family = blink::WebFontDescription::kGenericFamilyStandard;
   }
 
   static const struct {
@@ -124,17 +115,17 @@ void* MapFont(FPDF_SYSFONTINFO*,
   size_t i;
   for (i = 0; i < base::size(kPdfFontSubstitutions); ++i) {
     if (strcmp(face, kPdfFontSubstitutions[i].pdf_name) == 0) {
-      description.set_face(kPdfFontSubstitutions[i].face);
+      desc.family = blink::WebString::FromUTF8(kPdfFontSubstitutions[i].face);
       if (kPdfFontSubstitutions[i].bold)
-        description.set_weight(PP_BROWSERFONT_TRUSTED_WEIGHT_BOLD);
+        desc.weight = blink::WebFontDescription::kWeightBold;
       if (kPdfFontSubstitutions[i].italic)
-        description.set_italic(true);
+        desc.italic = true;
       break;
     }
   }
 
   if (i == base::size(kPdfFontSubstitutions)) {
-    // Convert to UTF-8 before calling set_face().
+    // Convert to UTF-8 and make sure it is valid.
     std::string face_utf8;
     if (base::IsStringUTF8(face)) {
       face_utf8 = face;
@@ -149,22 +140,12 @@ void* MapFont(FPDF_SYSFONTINFO*,
     if (face_utf8.empty())
       return nullptr;
 
-    description.set_face(face_utf8);
-    description.set_weight(WeightToBrowserFontTrustedWeight(weight));
-    description.set_italic(italic > 0);
+    desc.family = blink::WebString::FromUTF8(face_utf8);
+    desc.weight = WeightToBlinkWeight(weight);
+    desc.italic = italic > 0;
   }
 
-  if (!pp::PDF::IsAvailable()) {
-    NOTREACHED();
-    return nullptr;
-  }
-
-  PP_Resource font_resource = pp::PDF::GetFontFileWithFallback(
-      pp::InstanceHandle(GetLastPepperInstance()),
-      &description.pp_font_description(),
-      static_cast<PP_PrivateFontCharset>(charset));
-  long res_id = font_resource;
-  return reinterpret_cast<void*>(res_id);
+  return MapPepperFont(desc, charset);
 }
 
 unsigned long GetFontData(FPDF_SYSFONTINFO*,
@@ -172,21 +153,11 @@ unsigned long GetFontData(FPDF_SYSFONTINFO*,
                           unsigned int table,
                           unsigned char* buffer,
                           unsigned long buf_size) {
-  if (!pp::PDF::IsAvailable()) {
-    NOTREACHED();
-    return 0;
-  }
-
-  uint32_t size = buf_size;
-  long res_id = reinterpret_cast<long>(font_id);
-  if (!pp::PDF::GetFontTableForPrivateFontFile(res_id, table, buffer, &size))
-    return 0;
-  return size;
+  return GetPepperFontData(font_id, table, buffer, buf_size);
 }
 
 void DeleteFont(FPDF_SYSFONTINFO*, void* font_id) {
-  long res_id = reinterpret_cast<long>(font_id);
-  pp::Module::Get()->core()->ReleaseResource(res_id);
+  DeletePepperFont(font_id);
 }
 
 FPDF_SYSFONTINFO g_font_info = {1,           0, EnumFonts, MapFont,   0,
