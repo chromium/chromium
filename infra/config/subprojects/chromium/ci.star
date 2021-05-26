@@ -1978,6 +1978,7 @@ ci.cipd_builder(
         category = "android",
         short_name = "androidx",
     ),
+    notifies = ["chromium-androidx-packager"],
     executable = "recipe:android/androidx_packager",
     schedule = "0 7,14,22 * * * *",
     triggered_by = [],
