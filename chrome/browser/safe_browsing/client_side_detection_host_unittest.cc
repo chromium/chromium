@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -26,6 +27,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_model_loader.h"
+#include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -133,6 +135,8 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MOCK_METHOD1(IsInCache, bool(const GURL&));
   MOCK_METHOD0(OverPhishingReportLimit, bool());
   MOCK_METHOD0(GetModelStr, std::string());
+  MOCK_METHOD0(GetModelSharedMemoryRegion, base::ReadOnlySharedMemoryRegion());
+  MOCK_METHOD0(GetModelType, CSDModelType());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockClientSideDetectionService);
@@ -196,6 +200,12 @@ class FakePhishingDetector : public mojom::PhishingDetector {
   }
 
   // mojom::PhishingDetector
+  void SetPhishingFlatBufferModel(base::ReadOnlySharedMemoryRegion region,
+                                  base::File file) override {
+    region_ = std::move(region);
+  }
+
+  // mojom::PhishingDetector
   void StartPhishingDetection(
       const GURL& url,
       StartPhishingDetectionCallback callback) override {
@@ -223,10 +233,15 @@ class FakePhishingDetector : public mojom::PhishingDetector {
 
   void CheckModel(const std::string& model) { EXPECT_EQ(model, model_); }
 
+  void CheckModel(base::ReadOnlySharedMemoryRegion region) {
+    EXPECT_EQ(region.GetGUID(), region_.GetGUID());
+  }
+
   void Reset() {
     phishing_detection_started_ = false;
     url_ = GURL();
     model_ = "";
+    region_ = base::ReadOnlySharedMemoryRegion();
   }
 
  private:
@@ -234,6 +249,7 @@ class FakePhishingDetector : public mojom::PhishingDetector {
   bool phishing_detection_started_ = false;
   GURL url_;
   std::string model_ = "";
+  base::ReadOnlySharedMemoryRegion region_ = base::ReadOnlySharedMemoryRegion();
 
   DISALLOW_COPY_AND_ASSIGN(FakePhishingDetector);
 };
@@ -274,8 +290,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     InitTestApi();
 
     // Inject service classes.
-    csd_service_ =
-        std::make_unique<StrictMock<MockClientSideDetectionService>>();
+    csd_service_ = std::make_unique<MockClientSideDetectionService>();
     database_manager_ = new StrictMock<MockSafeBrowsingDatabaseManager>();
     ui_manager_ = new StrictMock<MockSafeBrowsingUIManager>(
         // TODO(crbug/925153): Port consumers of the SafeBrowsingService to
@@ -298,6 +313,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         std::make_unique<StrictMock<MockSafeBrowsingTokenFetcher>>();
     raw_token_fetcher_ = token_fetcher.get();
     csd_host_->set_token_fetcher_for_testing(std::move(token_fetcher));
+
+    testing::DefaultValue<CSDModelType>::Set(CSDModelType::kProtobuf);
   }
 
   void TearDown() override {
@@ -375,9 +392,9 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
  protected:
   std::unique_ptr<ClientSideDetectionHost> csd_host_;
-  std::unique_ptr<StrictMock<MockClientSideDetectionService>> csd_service_;
+  std::unique_ptr<MockClientSideDetectionService> csd_service_;
   scoped_refptr<StrictMock<MockSafeBrowsingUIManager> > ui_manager_;
-  scoped_refptr<StrictMock<MockSafeBrowsingDatabaseManager> > database_manager_;
+  scoped_refptr<StrictMock<MockSafeBrowsingDatabaseManager>> database_manager_;
   FakePhishingDetector fake_phishing_detector_;
   StrictMock<MockSafeBrowsingTokenFetcher>* raw_token_fetcher_ = nullptr;
   base::SimpleTestTickClock clock_;
@@ -1136,6 +1153,20 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
                 .GetAllSamples("SBClientPhishing.PhishingDetectionDuration")
                 .front()
                 .min);
+}
+
+TEST_F(ClientSideDetectionHostTest, TestSendFlatBufferModelToRenderFrame) {
+  base::MappedReadOnlyRegion mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(10);
+  EXPECT_CALL(*csd_service_, GetModelType())
+      .WillRepeatedly(Return(CSDModelType::kFlatbuffer));
+  EXPECT_CALL(*csd_service_, GetModelSharedMemoryRegion())
+      .WillRepeatedly(
+          Return(testing::ByMove(mapped_region.region.Duplicate())));
+  csd_host_->SendModelToRenderFrame();
+  base::RunLoop().RunUntilIdle();
+  fake_phishing_detector_.CheckModel(mapped_region.region.Duplicate());
+  fake_phishing_detector_.Reset();
 }
 
 TEST_F(ClientSideDetectionHostTest, TestSendModelToRenderFrame) {

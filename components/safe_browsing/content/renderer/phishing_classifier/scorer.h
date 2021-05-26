@@ -24,8 +24,10 @@
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/macros.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
+#include "components/safe_browsing/core/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -39,8 +41,15 @@ class Scorer {
   virtual ~Scorer();
 
   // Factory method which creates a new Scorer object by parsing the given
-  // model.  If parsing fails this method returns NULL.
+  // model. If parsing fails this method returns NULL.
+  // Can use this if model_str is empty.
   static Scorer* Create(const base::StringPiece& model_str,
+                        base::File visual_tflite_model);
+
+  // Factory method which creates a new Scorer object by parsing the given
+  // flatbuffer or tflite model. If parsing fails this method returns NULL.
+  // Use this only if region is valid.
+  static Scorer* Create(base::ReadOnlySharedMemoryRegion region,
                         base::File visual_tflite_model);
 
   // This method computes the probability that the given features are indicative
@@ -121,6 +130,12 @@ class Scorer {
   ClientSideModel model_;
   std::unordered_set<std::string> page_terms_;
   std::unordered_set<uint32_t> page_words_;
+
+  // Unowned. Points within flatbuffer_mapping_ and should not be free()d.
+  // It remains valid till flatbuffer_mapping_ is valid and should be reassigned
+  // if the mapping is updated.
+  const flat::ClientSideModel* flatbuffer_model_;
+  base::ReadOnlySharedMemoryMapping flatbuffer_mapping_;
 
   base::MemoryMappedFile visual_tflite_model_;
 

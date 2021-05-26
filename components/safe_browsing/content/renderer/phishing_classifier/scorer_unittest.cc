@@ -12,18 +12,40 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/threading/thread.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
+#include "components/safe_browsing/core/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
+
+namespace {
+
+std::string GetFlatBufferString() {
+  flatbuffers::FlatBufferBuilder builder(1024);
+  flat::ClientSideModelBuilder csd_model_builder(builder);
+  builder.Finish(csd_model_builder.Finish());
+  return std::string(reinterpret_cast<char*>(builder.GetBufferPointer()),
+                     builder.GetSize());
+}
+
+base::MappedReadOnlyRegion GetMappedReadOnlyRegionWithData(std::string data) {
+  base::MappedReadOnlyRegion mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(data.length());
+  EXPECT_TRUE(mapped_region.IsValid());
+  memcpy(mapped_region.mapping.memory(), data.data(), data.length());
+  return mapped_region;
+}
+
+}  // namespace
 
 class PhishingScorerTest : public ::testing::Test {
  protected:
@@ -107,6 +129,25 @@ class PhishingScorerTest : public ::testing::Test {
   // A DiscardableMemoryAllocator is needed for certain Skia operations.
   base::TestDiscardableMemoryAllocator test_allocator_;
 };
+
+TEST_F(PhishingScorerTest, HasValidFlatBufferModel) {
+  std::unique_ptr<Scorer> scorer;
+  std::string flatbuffer = GetFlatBufferString();
+  base::MappedReadOnlyRegion mapped_region =
+      GetMappedReadOnlyRegionWithData(flatbuffer);
+  scorer.reset(Scorer::Create(mapped_region.region.Duplicate(), base::File()));
+  EXPECT_TRUE(scorer.get() != nullptr);
+
+  // Invalid region.
+  scorer.reset(
+      Scorer::Create(base::ReadOnlySharedMemoryRegion(), base::File()));
+  EXPECT_FALSE(scorer.get());
+
+  // Invalid buffer in region.
+  mapped_region = GetMappedReadOnlyRegionWithData("bogus string");
+  scorer.reset(Scorer::Create(mapped_region.region.Duplicate(), base::File()));
+  EXPECT_FALSE(scorer.get());
+}
 
 TEST_F(PhishingScorerTest, HasValidModel) {
   std::unique_ptr<Scorer> scorer;

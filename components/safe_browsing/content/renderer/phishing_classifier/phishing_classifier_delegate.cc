@@ -96,6 +96,23 @@ void PhishingClassifierDelegate::SetPhishingModel(
   g_phishing_scorer.Get().reset(scorer);
 }
 
+void PhishingClassifierDelegate::SetPhishingFlatBufferModel(
+    base::ReadOnlySharedMemoryRegion flatbuffer_region,
+    base::File tflite_visual_model) {
+  safe_browsing::Scorer* scorer = nullptr;
+  // An invalid region or invalid model file means we should disable
+  // client-side phishing detection.
+  if (flatbuffer_region.IsValid() || tflite_visual_model.IsValid()) {
+    scorer = safe_browsing::Scorer::Create(std::move(flatbuffer_region),
+                                           std::move(tflite_visual_model));
+    if (!scorer)
+      return;
+  }
+  for (auto* delegate : PhishingClassifierDelegates())
+    delegate->SetPhishingScorer(scorer);
+  g_phishing_scorer.Get().reset(scorer);
+}
+
 // static
 PhishingClassifierDelegate* PhishingClassifierDelegate::Create(
     content::RenderFrame* render_frame,

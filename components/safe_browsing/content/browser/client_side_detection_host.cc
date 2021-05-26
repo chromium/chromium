@@ -369,6 +369,22 @@ void ClientSideDetectionHost::DidFinishNavigation(
   classification_request_->Start();
 }
 
+void ClientSideDetectionHost::SetPhishingModel() {
+  switch (csd_service_->GetModelType()) {
+    case CSDModelType::kNone:
+    case CSDModelType::kProtobuf:
+      phishing_detector_->SetPhishingModel(
+          csd_service_->GetModelStr(),
+          csd_service_->GetVisualTfLiteModel().Duplicate());
+      return;
+    case CSDModelType::kFlatbuffer:
+      phishing_detector_->SetPhishingFlatBufferModel(
+          csd_service_->GetModelSharedMemoryRegion(),
+          csd_service_->GetVisualTfLiteModel().Duplicate());
+      return;
+  }
+}
+
 void ClientSideDetectionHost::SendModelToRenderFrame() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!web_contents() || web_contents() != tab_ || !csd_service_)
@@ -381,9 +397,7 @@ void ClientSideDetectionHost::SendModelToRenderFrame() {
       phishing_detector_.reset();
     frame->GetRemoteInterfaces()->GetInterface(
         phishing_detector_.BindNewPipeAndPassReceiver());
-    phishing_detector_->SetPhishingModel(
-        csd_service_->GetModelStr(),
-        csd_service_->GetVisualTfLiteModel().Duplicate());
+    SetPhishingModel();
   }
 }
 
@@ -402,9 +416,7 @@ void ClientSideDetectionHost::RenderFrameCreated(
     phishing_detector_.reset();
   render_frame_host->GetRemoteInterfaces()->GetInterface(
       phishing_detector_.BindNewPipeAndPassReceiver());
-  phishing_detector_->SetPhishingModel(
-      csd_service_->GetModelStr(),
-      csd_service_->GetVisualTfLiteModel().Duplicate());
+  SetPhishingModel();
 }
 
 void ClientSideDetectionHost::OnPhishingPreClassificationDone(

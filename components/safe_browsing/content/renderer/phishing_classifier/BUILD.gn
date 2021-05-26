@@ -37,6 +37,7 @@ source_set("phishing_classifier") {
       "//components/safe_browsing/core:client_model_proto",
       "//components/safe_browsing/core:csd_proto",
       "//components/safe_browsing/core/common",
+      "//components/safe_browsing/core/fbs:client_model",
       "//content/public/renderer",
       "//crypto",
       "//skia",
@@ -70,6 +71,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
     "//components/safe_browsing/core:client_model_proto",
     "//components/safe_browsing/core:csd_proto",
+    "//components/safe_browsing/core/fbs:client_model",
     "//crypto",
     "//skia",
     "//testing/gmock",
@@ -97,6 +99,7 @@ if (use_libfuzzer) {
       ":client_side_phishing_fuzzer_proto",
       ":phishing_classifier",
       "//base:base",
+      "//components/safe_browsing/core/fbs:client_model",
       "//skia",
       "//third_party/libprotobuf-mutator",
     ]

@@ -24,11 +24,13 @@
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_observer.h"
@@ -123,9 +125,17 @@ class ClientSideDetectionService : public KeyedService {
   // Sends a model to each renderer.
   virtual void SendModelToRenderers();
 
-  // Returns the model string. Virtual so that mock implementation can override
-  // it.
+  // Returns the model string. Used only for protobuf model. Virtual so that
+  // mock implementation can override it.
   virtual std::string GetModelStr();
+
+  // Returns the model type (protobuf or flatbuffer). Virtual so that mock
+  // implementation can override it.
+  virtual CSDModelType GetModelType();
+
+  // Returns the ReadOnlySharedMemoryRegion for the flatbuffer model. Virtual so
+  // that mock implementation can override it.
+  virtual base::ReadOnlySharedMemoryRegion GetModelSharedMemoryRegion();
 
   // Returns the TfLite model file. Virtual so that mock implementation can
   // override it.
