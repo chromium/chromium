@@ -2091,6 +2091,8 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   // Make sure that document.fonts.ready fires, if appropriate.
   FontFaceSetDocument::DidLayout(*this);
 
+  UnblockLoadEventAfterLayoutTreeUpdate();
+
   TRACE_EVENT_END1("blink,devtools.timeline", "UpdateLayoutTree",
                    "elementCount", element_count);
 
@@ -3417,7 +3419,8 @@ void Document::ImplicitClose() {
 
   fetcher_->ScheduleWarnUnusedPreloads();
 
-  UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
+  if (GetStyleEngine().HaveRenderBlockingStylesheetsLoaded())
+    UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
 
   load_event_progress_ = kLoadEventCompleted;
 
@@ -6567,8 +6570,10 @@ void Document::FinishedParsing() {
     // the window load event too early.  To avoid this we force the styles to be
     // up to date before calling FrameLoader::finishedParsing().  See
     // https://bugs.webkit.org/show_bug.cgi?id=36864 starting around comment 35.
-    if (!is_initial_empty_document_)
+    if (!is_initial_empty_document_ &&
+        GetStyleEngine().HaveRenderBlockingStylesheetsLoaded()) {
       UpdateStyleAndLayoutTree();
+    }
 
     BeginLifecycleUpdatesIfRenderingReady();
 
@@ -8132,6 +8137,20 @@ void Document::RunPostPrerenderingActivationSteps() {
 bool Document::InStyleRecalc() const {
   return lifecycle_.GetState() == DocumentLifecycle::kInStyleRecalc ||
          style_engine_->InContainerQueryStyleRecalc();
+}
+
+void Document::DelayLoadEventUntilLayoutTreeUpdate() {
+  if (delay_load_event_until_layout_tree_update_)
+    return;
+  delay_load_event_until_layout_tree_update_ = true;
+  IncrementLoadEventDelayCount();
+}
+
+void Document::UnblockLoadEventAfterLayoutTreeUpdate() {
+  if (delay_load_event_until_layout_tree_update_) {
+    delay_load_event_until_layout_tree_update_ = false;
+    DecrementLoadEventDelayCount();
+  }
 }
 
 Document::PaintPreviewScope::PaintPreviewScope(Document& document,
