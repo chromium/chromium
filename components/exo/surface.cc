@@ -382,6 +382,10 @@ void Surface::AddSubSurface(Surface* sub_surface) {
   sub_surfaces_.push_back(std::make_pair(sub_surface, gfx::Point()));
   sub_surfaces_changed_ = true;
 
+  // Propagate the kSkipImeProcessing property to the new child.
+  if (window_->GetProperty(aura::client::kSkipImeProcessing))
+    sub_surface->window()->SetProperty(aura::client::kSkipImeProcessing, true);
+
   // The shell might have not be added to the root yet.
   if (window_->GetRootWindow()) {
     auto display =
