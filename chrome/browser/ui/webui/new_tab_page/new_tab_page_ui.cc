@@ -79,12 +79,10 @@ bool IsDriveModuleEnabled(Profile* profile) {
     return true;
   }
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  auto account = identity_manager->FindExtendedAccountInfoByAccountId(
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync));
-  if (!account) {
-    return false;
-  }
-  return account->IsManaged();
+  return identity_manager
+      ->FindExtendedAccountInfoByAccountId(
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync))
+      .IsManaged();
 }
 
 content::WebUIDataSource* CreateNewTabPageUiHtmlSource(

@@ -2155,24 +2155,99 @@ TEST_F(IdentityManagerTest,
             identity_manager_observer()->BatchChangeRecords().at(0).at(0));
 }
 
-// Checks that FindExtendedAccountInfoByAccountId() returns information about
-// the account if the account is found or nullopt if there are no accounts with
-// requested |account_id|.
-TEST_F(IdentityManagerTest, FindExtendedAccountInfoByAccountId) {
-  auto account_id =
-      identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail);
+// Check that FindExtendedAccountInfo returns a valid account info iff the
+// account is known, and all the extended information is available.
+TEST_F(IdentityManagerTest, FindExtendedAccountInfo) {
+  CoreAccountInfo account_info;
+  account_info.email = kTestEmail2;
+  account_info.gaia = kTestGaiaId2;
+  account_info.account_id = identity_manager()->PickAccountIdForAccount(
+      account_info.gaia, account_info.email);
 
-  absl::optional<AccountInfo> maybe_account_info;
+  // FindExtendedAccountInfo() returns empty if the account_info is invalid.
+  EXPECT_TRUE(
+      identity_manager()->FindExtendedAccountInfo(CoreAccountInfo{}).IsEmpty());
+
+  // FindExtendedAccountInfo() returns empty if the account_info is unknown.
+  EXPECT_TRUE(
+      identity_manager()->FindExtendedAccountInfo(account_info).IsEmpty());
+
+  // Insert the core account information in the AccountTrackerService.
+  const CoreAccountId account_id =
+      account_tracker()->SeedAccountInfo(account_info.gaia, account_info.email);
+  ASSERT_EQ(account_info.account_id, account_id);
+
+  // FindExtendedAccountInfo() returns extended account information if
+  // the account is known.
+  const AccountInfo extended_account_info =
+      identity_manager()->FindExtendedAccountInfo(account_info);
+
+  EXPECT_TRUE(!extended_account_info.IsEmpty());
+  EXPECT_EQ(account_info.gaia, extended_account_info.gaia);
+  EXPECT_EQ(account_info.email, extended_account_info.email);
+  EXPECT_EQ(account_info.account_id, extended_account_info.account_id);
+}
+
+// Checks that FindExtendedAccountInfoByAccountId() returns information about
+// the account if the account is found, or an empty account info.
+TEST_F(IdentityManagerTest, FindExtendedAccountInfoByAccountId) {
+  // Add an account (note: cannot use kTestEmail as it is already inserted
+  // by the fixture common code, so use a different address).
+  const AccountInfo foo_account_info =
+      MakeAccountAvailable(identity_manager(), "foo@bar.com");
+
+  AccountInfo maybe_account_info =
+      identity_manager()->FindExtendedAccountInfoByAccountId(
+          CoreAccountId("dummy_value"));
+  EXPECT_TRUE(maybe_account_info.IsEmpty());
+
   maybe_account_info = identity_manager()->FindExtendedAccountInfoByAccountId(
-      CoreAccountId("dummy_value"));
-  EXPECT_FALSE(maybe_account_info.has_value());
+      foo_account_info.account_id);
+  EXPECT_FALSE(maybe_account_info.IsEmpty());
+  EXPECT_EQ(foo_account_info.account_id, maybe_account_info.account_id);
+  EXPECT_EQ(foo_account_info.email, maybe_account_info.email);
+  EXPECT_EQ(foo_account_info.gaia, maybe_account_info.gaia);
+}
+
+// Checks that FindExtendedAccountInfoByEmailAddress() returns information about
+// the account if the account is found, or an empty account info.
+TEST_F(IdentityManagerTest, FindExtendedAccountInfoByEmailAddress) {
+  // Add an account (note: cannot use kTestEmail as it is already inserted
+  // by the fixture common code, so use a different address).
+  const AccountInfo foo_account_info =
+      MakeAccountAvailable(identity_manager(), "foo@bar.com");
+
+  AccountInfo maybe_account_info =
+      identity_manager()->FindExtendedAccountInfoByEmailAddress("dummy_value");
+  EXPECT_TRUE(maybe_account_info.IsEmpty());
 
   maybe_account_info =
-      identity_manager()->FindExtendedAccountInfoByAccountId(account_id);
-  EXPECT_TRUE(maybe_account_info.has_value());
-  EXPECT_EQ(account_id, maybe_account_info.value().account_id);
-  EXPECT_EQ(kTestEmail, maybe_account_info.value().email);
-  EXPECT_EQ(kTestGaiaId, maybe_account_info.value().gaia);
+      identity_manager()->FindExtendedAccountInfoByEmailAddress(
+          foo_account_info.email);
+  EXPECT_FALSE(maybe_account_info.IsEmpty());
+  EXPECT_EQ(foo_account_info.account_id, maybe_account_info.account_id);
+  EXPECT_EQ(foo_account_info.email, maybe_account_info.email);
+  EXPECT_EQ(foo_account_info.gaia, maybe_account_info.gaia);
+}
+
+// Checks that FindExtendedAccountInfoByGaiaId() returns information about the
+// account if the account is found, or an empty account info.
+TEST_F(IdentityManagerTest, FindExtendedAccountInfoByGaiaId) {
+  // Add an account (note: cannot use kTestEmail as it is already inserted
+  // by the fixture common code, so use a different address).
+  const AccountInfo foo_account_info =
+      MakeAccountAvailable(identity_manager(), "foo@bar.com");
+
+  AccountInfo maybe_account_info =
+      identity_manager()->FindExtendedAccountInfoByGaiaId("dummy_value");
+  EXPECT_TRUE(maybe_account_info.IsEmpty());
+
+  maybe_account_info = identity_manager()->FindExtendedAccountInfoByGaiaId(
+      foo_account_info.gaia);
+  EXPECT_FALSE(maybe_account_info.IsEmpty());
+  EXPECT_EQ(foo_account_info.account_id, maybe_account_info.account_id);
+  EXPECT_EQ(foo_account_info.email, maybe_account_info.email);
+  EXPECT_EQ(foo_account_info.gaia, maybe_account_info.gaia);
 }
 
 // Checks that FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId()
