@@ -1416,13 +1416,12 @@ void OverviewGrid::StartScroll() {
   total_bounds.Inset(GetGridInsetsImpl(total_bounds));
 
   float rightmost_window_right = 0;
-  items_scrolling_bounds_.resize(window_list_.size());
-  for (size_t i = 0; i < items_scrolling_bounds_.size(); ++i) {
-    const gfx::RectF bounds = window_list_[i]->target_bounds();
+  for (const auto& item : window_list_) {
+    const gfx::RectF bounds = item->target_bounds();
     if (rightmost_window_right < bounds.right())
       rightmost_window_right = bounds.right();
 
-    items_scrolling_bounds_[i] = bounds;
+    item->set_scrolling_bounds(bounds);
   }
 
   // |rightmost_window_right| may have been modified by an earlier scroll.
@@ -1449,14 +1448,17 @@ bool OverviewGrid::UpdateScrollOffset(float delta) {
     return in_range;
 
   // Update the bounds of the items which are currently visible on screen.
-  DCHECK_EQ(items_scrolling_bounds_.size(), window_list_.size());
-  for (size_t i = 0; i < items_scrolling_bounds_.size(); ++i) {
-    const gfx::RectF previous_bounds = items_scrolling_bounds_[i];
-    items_scrolling_bounds_[i].Offset(new_scroll_offset - scroll_offset_, 0.f);
-    const gfx::RectF new_bounds = items_scrolling_bounds_[i];
+  for (const auto& item : window_list_) {
+    absl::optional<gfx::RectF> scrolling_bounds_optional =
+        item->scrolling_bounds();
+    DCHECK(scrolling_bounds_optional);
+    const gfx::RectF previous_bounds = scrolling_bounds_optional.value();
+    gfx::RectF new_bounds = previous_bounds;
+    new_bounds.Offset(new_scroll_offset - scroll_offset_, 0.f);
+    item->set_scrolling_bounds(new_bounds);
     if (gfx::RectF(GetGridEffectiveBounds()).Intersects(new_bounds) ||
         gfx::RectF(GetGridEffectiveBounds()).Intersects(previous_bounds)) {
-      window_list_[i]->SetBounds(new_bounds, OVERVIEW_ANIMATION_NONE);
+      item->SetBounds(new_bounds, OVERVIEW_ANIMATION_NONE);
     }
   }
 
@@ -1470,7 +1472,8 @@ bool OverviewGrid::UpdateScrollOffset(float delta) {
 void OverviewGrid::EndScroll() {
   Shell::Get()->overview_controller()->UnpauseOcclusionTracker(
       kOcclusionUnpauseDurationForScroll);
-  items_scrolling_bounds_.clear();
+  for (const auto& item : window_list_)
+    item->set_scrolling_bounds(absl::nullopt);
   presentation_time_recorder_.reset();
 
   if (!overview_session_->is_shutting_down())

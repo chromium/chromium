@@ -498,10 +498,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // are visible in tablet overview mode.
   float scroll_offset_min_ = 0;
 
-  // Cached values of the item bounds so that they do not have to be calculated
-  // on each scroll update.
-  std::vector<gfx::RectF> items_scrolling_bounds_;
-
   // Handles events that are not handled by the OverviewItems.
   std::unique_ptr<OverviewGridEventHandler> grid_event_handler_;
 

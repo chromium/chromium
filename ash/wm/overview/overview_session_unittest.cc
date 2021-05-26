@@ -3451,6 +3451,50 @@ TEST_F(TabletModeOverviewSessionTest, CheckOverviewItemScrollingBounds) {
   EXPECT_EQ(right_bounds, rightmost_window->target_bounds());
 }
 
+// Tests that destroying a window does not cause a crash while scrolling the
+// overview grid. Regression test for https://crbug.com/1200605.
+TEST_F(TabletModeOverviewSessionTest, WindowDestroyWhileScrolling) {
+  auto windows = CreateTestWindows(8);
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  // Start a scroll sequence.
+  int x = 500;
+  const int y = 200;
+  base::TimeTicks timestamp = ui::EventTimeForNow();
+  auto* event_generator = GetEventGenerator();
+  ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::Point(x, y), timestamp,
+                       ui::PointerDetails());
+  event_generator->Dispatch(&press);
+
+  // Scroll a bit to the left, so the overview items that are offscreen on the
+  // right start to become visible.
+  const base::TimeDelta step_delay = base::TimeDelta::FromMilliseconds(5);
+  for (int i = 0; i < 10; ++i) {
+    timestamp += step_delay;
+    ui::TouchEvent move(ui::ET_TOUCH_MOVED, gfx::Point(x, y), timestamp,
+                        ui::PointerDetails());
+    event_generator->Dispatch(&move);
+    x -= 5;
+  }
+
+  // Delete one of the windows.
+  base::Erase(windows, windows[2]);
+
+  // Continue scrolling and then end the scroll. There should be no crash.
+  for (int i = 0; i < 10; ++i) {
+    timestamp += step_delay;
+    ui::TouchEvent move(ui::ET_TOUCH_MOVED, gfx::Point(x, y), timestamp,
+                        ui::PointerDetails());
+    event_generator->Dispatch(&move);
+    x -= 5;
+  }
+
+  ui::TouchEvent release(ui::ET_TOUCH_RELEASED, gfx::Point(x, y), timestamp,
+                         ui::PointerDetails());
+  event_generator->Dispatch(&release);
+}
+
 // Tests the windows are stacked correctly when entering or exiting splitview
 // while the new overivew layout is enabled.
 TEST_F(TabletModeOverviewSessionTest, StackingOrderSplitviewWindow) {

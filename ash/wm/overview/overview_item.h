@@ -247,6 +247,13 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
     unclipped_size_ = unclipped_size;
   }
 
+  void set_scrolling_bounds(absl::optional<gfx::RectF> scrolling_bounds) {
+    scrolling_bounds_ = scrolling_bounds;
+  }
+  absl::optional<gfx::RectF> scrolling_bounds() const {
+    return scrolling_bounds_;
+  }
+
   gfx::Rect GetShadowBoundsForTesting();
   RoundedLabelWidget* cannot_snap_widget_for_testing() {
     return cannot_snap_widget_.get();
@@ -414,6 +421,10 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   // |item_widget_|. Done here instead of on the original window because of the
   // rounded edges mask applied on entering overview window.
   std::unique_ptr<ui::Shadow> shadow_;
+
+  // Cached values of the item bounds so that they do not have to be calculated
+  // on each scroll update. Will be nullopt unless a grid scroll is underway.
+  absl::optional<gfx::RectF> scrolling_bounds_ = absl::nullopt;
 
   base::WeakPtrFactory<OverviewItem> weak_ptr_factory_{this};
 
