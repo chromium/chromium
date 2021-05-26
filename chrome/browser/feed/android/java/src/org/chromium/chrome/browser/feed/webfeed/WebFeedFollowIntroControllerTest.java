@@ -26,6 +26,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -34,6 +36,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
@@ -61,6 +64,8 @@ public final class WebFeedFollowIntroControllerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
     @Mock
     FeedLauncher mFeedLauncher;
     @Mock
@@ -68,9 +73,11 @@ public final class WebFeedFollowIntroControllerTest {
     @Mock
     private Tracker mTracker;
     @Mock
-    private WebFeedBridge mWebFeedBridge;
+    private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock
     private Tab mTab;
+    @Captor
+    private ArgumentCaptor<WebFeedBridge.WebFeedPageInformation> mPageInformationCaptor;
 
     private static final GURL sTestUrl = new GURL("https://www.example.com");
     private static final byte[] sWebFeedId = "webFeedId".getBytes();
@@ -89,6 +96,7 @@ public final class WebFeedFollowIntroControllerTest {
     public void setUp() {
         // TODO(harringtond): See if we can make this a robolectric test.
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
         mAppMenuHandler = mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler();
@@ -107,8 +115,7 @@ public final class WebFeedFollowIntroControllerTest {
             mWebFeedFollowIntroController =
                     new WebFeedFollowIntroController(mActivity, mAppMenuHandler, mTabSupplier,
                             mActivity.getToolbarManager().getMenuButtonView(), mFeedLauncher,
-                            mActivity.getModalDialogManager(), mActivity.getSnackbarManager(),
-                            mWebFeedBridge);
+                            mActivity.getModalDialogManager(), mActivity.getSnackbarManager());
         });
 
         mEmptyTabObserver = mWebFeedFollowIntroController.getEmptyTabObserverForTesting();
@@ -245,25 +252,27 @@ public final class WebFeedFollowIntroControllerTest {
 
     private void setRecommendableVisitCount(WebFeedBridge.VisitCounts visitCounts) {
         doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.VisitCounts>>getArgument(1).onResult(visitCounts);
+            invocation.<Callback<int[]>>getArgument(1).onResult(
+                    new int[] {visitCounts.visits, visitCounts.dailyVisits});
             return null;
         })
-                .when(mWebFeedBridge)
-                .getVisitCountsToHost(eq(sTestUrl), any(Callback.class));
+                .when(mWebFeedBridgeJniMock)
+                .getRecentVisitCountsToHost(eq(sTestUrl), any(Callback.class));
     }
 
     private void invokePageLoad(WebFeedBridge.WebFeedMetadata webFeedMetadata) {
         doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(2).onResult(
+            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(
                     webFeedMetadata);
             return null;
         })
-                .when(mWebFeedBridge)
-                .getWebFeedMetadataForPage(any(), eq(sTestUrl), any(Callback.class));
+                .when(mWebFeedBridgeJniMock)
+                .findWebFeedInfoForPage(mPageInformationCaptor.capture(), any(Callback.class));
 
         mEmptyTabObserver.onPageLoadStarted(mTab, sTestUrl);
         mEmptyTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
         mEmptyTabObserver.onPageLoadFinished(mTab, sTestUrl);
+        assertEquals(sTestUrl, mPageInformationCaptor.getValue().mUrl);
     }
 
     private void performScrollUpAfterDelay(long delay) {

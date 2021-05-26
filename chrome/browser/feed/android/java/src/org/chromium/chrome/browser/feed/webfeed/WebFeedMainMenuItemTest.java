@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -36,6 +35,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -60,11 +60,11 @@ import org.chromium.url.GURL;
 public final class WebFeedMainMenuItemTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
 
     @Mock
     private FeedLauncher mFeedLauncher;
-    @Mock
-    private WebFeedBridge mWebFeedBridge;
 
     private static final Bitmap ICON = Bitmap.createBitmap(48, 84, Bitmap.Config.ALPHA_8);
     private static final GURL TEST_URL = new GURL("http://www.example.com");
@@ -75,10 +75,13 @@ public final class WebFeedMainMenuItemTest {
     private SnackbarManager mSnackBarManager;
     private WebFeedMainMenuItem mWebFeedMainMenuItem;
     private Tab mTab;
+    @Mock
+    public WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
         mTab = spy(mActivityTestRule.getActivity().getActivityTab());
@@ -123,7 +126,7 @@ public final class WebFeedMainMenuItemTest {
     public void initialize_emptyUrl_removesIcon() {
         doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
         mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, new MockLargeIconBridge(null),
-                mFeedLauncher, mDialogManager, mSnackBarManager, mWebFeedBridge);
+                mFeedLauncher, mDialogManager, mSnackBarManager);
 
         ImageView imageView = mWebFeedMainMenuItem.findViewById(R.id.icon);
         assertEquals("Icon should be gone.", View.GONE, imageView.getVisibility());
@@ -261,7 +264,7 @@ public final class WebFeedMainMenuItemTest {
     private void initializeWebFeedMainMenuItem(Bitmap bitmap) {
         doReturn(TEST_URL).when(mTab).getOriginalUrl();
         mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, new MockLargeIconBridge(bitmap),
-                mFeedLauncher, mDialogManager, mSnackBarManager, mWebFeedBridge);
+                mFeedLauncher, mDialogManager, mSnackBarManager);
     }
 
     /**
@@ -277,11 +280,11 @@ public final class WebFeedMainMenuItemTest {
 
     private void setGetWebFeedMetadataForPageRepsonse(WebFeedBridge.WebFeedMetadata metadata) {
         doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(2).onResult(metadata);
+            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(metadata);
             return null;
         })
-                .when(mWebFeedBridge)
-                .getWebFeedMetadataForPage(eq(mTab), any(GURL.class), any(Callback.class));
+                .when(mWebFeedBridgeJniMock)
+                .findWebFeedInfoForPage(any(), any(Callback.class));
     }
 
     private static class MockLargeIconBridge extends LargeIconBridge {

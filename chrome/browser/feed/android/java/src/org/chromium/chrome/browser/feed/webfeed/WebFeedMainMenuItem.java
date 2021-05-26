@@ -47,7 +47,6 @@ public class WebFeedMainMenuItem extends FrameLayout {
     private ChipView mChipView;
     private ImageView mIcon;
     private LargeIconBridge mLargeIconBridge;
-    private WebFeedBridge mWebFeedBridge;
     private WebFeedSnackbarController mWebFeedSnackbarController;
 
     /**
@@ -73,21 +72,19 @@ public class WebFeedMainMenuItem extends FrameLayout {
      * @param largeIconBridge {@link LargeIconBridge} to get the favicon of the page.
      * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager {@link SnackbarManager} to display snackbars.
-     * @param webFeedBridge {@link WebFeedBridge} to display the menu item and follow/unfollow.
      */
     public void initialize(Tab tab, AppMenuHandler appMenuHandler, LargeIconBridge largeIconBridge,
             FeedLauncher feedLauncher, ModalDialogManager dialogManager,
-            SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
+            SnackbarManager snackbarManager) {
         mUrl = tab.getOriginalUrl();
         mTab = tab;
         mAppMenuHandler = appMenuHandler;
         mLargeIconBridge = largeIconBridge;
-        mWebFeedBridge = webFeedBridge;
         mWebFeedSnackbarController = new WebFeedSnackbarController(
-                mContext, feedLauncher, dialogManager, snackbarManager, webFeedBridge);
+                mContext, feedLauncher, dialogManager, snackbarManager);
 
         initializeFavicon();
-        mWebFeedBridge.getWebFeedMetadataForPage(mTab, mUrl, result -> {
+        WebFeedBridge.getWebFeedMetadataForPage(mTab, mUrl, result -> {
             initializeText(result);
             initializeChipView(result);
         });
@@ -157,7 +154,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mChipView = findViewById(R.id.follow_chip_view);
         showEnabledChipView(
                 mChipView, mContext.getText(R.string.menu_follow), R.drawable.ic_add, (view) -> {
-                    mWebFeedBridge.followFromUrl(mTab, mUrl, result -> {
+                    WebFeedBridge.followFromUrl(mTab, mUrl, result -> {
                         byte[] followId = result.metadata != null ? result.metadata.id : null;
                         mWebFeedSnackbarController.showPostFollowHelp(
                                 mTab, result, followId, mUrl, mTitle);
@@ -170,7 +167,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mChipView = findViewById(R.id.following_chip_view);
         showEnabledChipView(mChipView, mContext.getText(R.string.menu_following),
                 R.drawable.ic_check_googblue_24dp, (view) -> {
-                    mWebFeedBridge.unfollow(webFeedId,
+                    WebFeedBridge.unfollow(webFeedId,
                             (result)
                                     -> mWebFeedSnackbarController.showSnackbarForUnfollow(
                                             result.requestStatus
@@ -197,7 +194,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
             });
         }
         postDelayed(()
-                            -> mWebFeedBridge.getWebFeedMetadataForPage(
+                            -> WebFeedBridge.getWebFeedMetadataForPage(
                                     mTab, mUrl, this::initializeChipView),
                 LOADING_REFRESH_TIME_MS);
     }

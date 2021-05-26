@@ -88,7 +88,6 @@ import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1785,7 +1784,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                    .launchUrl(NewTabPageUtils.encodeNtpUrl(
                                                       NewTabPageLaunchOrigin.WEB_FEED),
                                            TabLaunchType.FROM_CHROME_UI),
-                getModalDialogManager(), getSnackbarManager(), new WebFeedBridge());
+                getModalDialogManager(), getSnackbarManager());
     }
 
     private TabDelegateFactory getTabDelegateFactory() {

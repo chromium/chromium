@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -142,8 +141,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     private SnackbarManager mSnackbarManager;
     @Mock
-    private WebFeedBridge mWebFeedBridge;
-    @Mock
     private OfflinePageUtils.Internal mOfflinePageUtils;
     @Mock
     private TabModelFilterProvider mTabModelFilterProvider;
@@ -196,11 +193,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         OfflinePageUtils.setInstanceForTesting(mOfflinePageUtils);
         FeatureList.setTestCanUseDefaultsForTesting();
 
-        mTabbedAppMenuPropertiesDelegate = Mockito.spy(new TabbedAppMenuPropertiesDelegate(
-                ContextUtils.getApplicationContext(), mActivityTabProvider,
-                mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
-                mAppMenuDelegate, mOverviewModeSupplier, mBookmarkBridgeSupplier, mFeedLauncher,
-                mDialogManager, mSnackbarManager, mWebFeedBridge));
+        mTabbedAppMenuPropertiesDelegate = Mockito.spy(
+                new TabbedAppMenuPropertiesDelegate(ContextUtils.getApplicationContext(),
+                        mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
+                        mToolbarManager, mDecorView, mAppMenuDelegate, mOverviewModeSupplier,
+                        mBookmarkBridgeSupplier, mFeedLauncher, mDialogManager, mSnackbarManager));
     }
 
     @Test

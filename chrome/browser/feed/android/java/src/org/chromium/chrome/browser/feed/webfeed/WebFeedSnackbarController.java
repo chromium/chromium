@@ -39,7 +39,6 @@ public class WebFeedSnackbarController {
     private final FeedLauncher mFeedLauncher;
     private final SnackbarManager mSnackbarManager;
     private final WebFeedDialogCoordinator mWebFeedDialogCoordinator;
-    private final WebFeedBridge mWebFeedBridge;
 
     /**
      * Constructs an instance of {@link WebFeedSnackbarController}.
@@ -48,16 +47,13 @@ public class WebFeedSnackbarController {
      * @param feedLauncher The {@link FeedLauncher} to launch the feed.
      * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager {@link SnackbarManager} to manage the snackbars.
-     * @param webFeedBridge {@link WebFeedBridge} to connect with the backend to follow/unfollow.
      */
     WebFeedSnackbarController(Context context, FeedLauncher feedLauncher,
-            ModalDialogManager dialogManager, SnackbarManager snackbarManager,
-            WebFeedBridge webFeedBridge) {
+            ModalDialogManager dialogManager, SnackbarManager snackbarManager) {
         mContext = context;
         mFeedLauncher = feedLauncher;
         mSnackbarManager = snackbarManager;
         mWebFeedDialogCoordinator = new WebFeedDialogCoordinator(dialogManager);
-        mWebFeedBridge = webFeedBridge;
     }
 
     /**
@@ -132,7 +128,7 @@ public class WebFeedSnackbarController {
         SnackbarController snackbarController = new SnackbarController() {
             @Override
             public void onAction(Object actionData) {
-                mWebFeedBridge.unfollow(followId, result -> {
+                WebFeedBridge.unfollow(followId, result -> {
                     if (result.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
                         showUnfollowSuccessSnackbar(followId, url, title);
                     } else {
@@ -216,12 +212,12 @@ public class WebFeedSnackbarController {
             assert canRetryFollow(mTab, mFollowId, mUrl);
 
             if (!isFollowIdValid(mFollowId)) {
-                mWebFeedBridge.followFromUrl(mTab, mUrl, result -> {
+                WebFeedBridge.followFromUrl(mTab, mUrl, result -> {
                     byte[] mFollowId = result.metadata != null ? result.metadata.id : null;
                     showPostFollowHelp(mTab, result, mFollowId, mUrl, mTitle);
                 });
             } else {
-                mWebFeedBridge.followFromId(mFollowId,
+                WebFeedBridge.followFromId(mFollowId,
                         result -> showPostFollowHelp(mTab, result, mFollowId, mUrl, mTitle));
             }
         }
