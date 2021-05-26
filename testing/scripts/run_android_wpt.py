@@ -382,6 +382,7 @@ class WPTWebviewAdapter(WPTAndroidAdapter):
     args.append(ANDROID_WEBVIEW)
     return args
 
+
 class WPTClankAdapter(WPTAndroidAdapter):
 
   @contextlib.contextmanager
@@ -472,6 +473,7 @@ def no_op():
 def main_compile_targets(args):
   json.dump([], args.output)
 
+
 @contextlib.contextmanager
 def get_device(args):
   instance = None
@@ -494,6 +496,7 @@ def get_device(args):
     if instance:
       instance.Stop()
 
+
 def add_emulator_args(parser):
   parser.add_argument(
       '--avd-config',
@@ -506,6 +509,7 @@ def add_emulator_args(parser):
       action='store_true',
       default=False,
       help='Enable graphical window display on the emulator.')
+
 
 def main():
   devil_chromium.Initialize()
