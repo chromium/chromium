@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @protocol GridDragDropHandler;
@@ -75,6 +76,8 @@
 @property(nonatomic, readonly, getter=isGridEmpty) BOOL gridEmpty;
 // The visual look of the grid.
 @property(nonatomic, assign) GridTheme theme;
+// The current mode (normal, selection) for the grid.
+@property(nonatomic, assign) TabGridMode mode;
 // Handler for reauth commands.
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
 // Handler for thumbstrip commands.

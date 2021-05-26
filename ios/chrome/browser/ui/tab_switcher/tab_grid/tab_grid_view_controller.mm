@@ -1809,6 +1809,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)selectButtonTapped:(id)sender {
   self.tabGridMode = TabGridModeSelection;
   self.bottomToolbar.mode = self.tabGridMode;
+  self.regularTabsViewController.mode = self.tabGridMode;
+  self.incognitoTabsViewController.mode = self.tabGridMode;
   base::RecordAction(base::UserMetricsAction("MobileTabGridSelectTabs"));
 }
 
