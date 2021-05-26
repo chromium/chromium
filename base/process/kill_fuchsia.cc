@@ -16,9 +16,9 @@ namespace base {
 TerminationStatus GetTerminationStatus(ProcessHandle handle, int* exit_code) {
   DCHECK(exit_code);
 
-  zx_info_process_v2_t process_info;
+  zx_info_process_t process_info;
   zx_status_t status =
-      zx_object_get_info(handle, ZX_INFO_PROCESS_V2, &process_info,
+      zx_object_get_info(handle, ZX_INFO_PROCESS, &process_info,
                          sizeof(process_info), nullptr, nullptr);
   if (status != ZX_OK) {
     DLOG(ERROR) << "unable to get termination status for " << handle;

@@ -21,10 +21,10 @@ namespace base {
 namespace debug {
 
 bool BeingDebugged() {
-  zx_info_process_v2_t info = {};
+  zx_info_process_t info = {};
   // Ignore failures. The 0-initialization above will result in "false" for
   // error cases.
-  zx::process::self()->get_info(ZX_INFO_PROCESS_V2, &info, sizeof(info),
+  zx::process::self()->get_info(ZX_INFO_PROCESS, &info, sizeof(info),
                                 nullptr, nullptr);
   return (info.flags & ZX_INFO_PROCESS_FLAG_DEBUGGER_ATTACHED) != 0;
 }

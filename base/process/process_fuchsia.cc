@@ -177,9 +177,9 @@ ProcessId Process::Pid() const {
 }
 
 Time Process::CreationTime() const {
-  zx_info_process_v2_t proc_info;
+  zx_info_process_t proc_info;
   zx_status_t status =
-      zx_object_get_info(Handle(), ZX_INFO_PROCESS_V2, &proc_info,
+      zx_object_get_info(Handle(), ZX_INFO_PROCESS, &proc_info,
                          sizeof(proc_info), nullptr, nullptr);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_process_get_info";
