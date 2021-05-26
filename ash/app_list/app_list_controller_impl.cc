@@ -255,7 +255,6 @@ GetTransitionFromMetricsAnimationInfo(
 
 AppListControllerImpl::AppListControllerImpl()
     : model_(std::make_unique<AppListModel>()),
-      color_provider_(AppListColorProviderImpl()),
       presenter_(this),
       is_notification_indicator_enabled_(
           ::features::IsNotificationIndicatorEnabled()) {
