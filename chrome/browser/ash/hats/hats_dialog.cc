@@ -34,8 +34,8 @@ namespace ash {
 namespace {
 
 // Default width/height ratio of screen size.
-const int kDefaultWidth = 340;
-const int kDefaultHeight = 260;
+const int kDefaultWidth = 384;
+const int kDefaultHeight = 428;
 
 constexpr char kCrOSHaTSURL[] =
     "https://storage.googleapis.com/chromeos-hats-web-stable/index.html";
