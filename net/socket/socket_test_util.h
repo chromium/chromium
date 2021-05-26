@@ -1020,6 +1020,7 @@ class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
   void RunConfirmHandshakeCallback(CompletionOnceCallback callback, int result);
 
   bool connected_ = false;
+  bool in_confirm_handshake_ = false;
   NetLogWithSource net_log_;
   std::unique_ptr<StreamSocket> stream_socket_;
   SSLSocketDataProvider* data_;

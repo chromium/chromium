@@ -1557,16 +1557,20 @@ void MockSSLClientSocket::Disconnect() {
 void MockSSLClientSocket::RunConfirmHandshakeCallback(
     CompletionOnceCallback callback,
     int result) {
+  DCHECK(in_confirm_handshake_);
+  in_confirm_handshake_ = false;
   data_->is_confirm_data_consumed = true;
   std::move(callback).Run(result);
 }
 
 int MockSSLClientSocket::ConfirmHandshake(CompletionOnceCallback callback) {
   DCHECK(stream_socket_->IsConnected());
+  DCHECK(!in_confirm_handshake_);
   if (data_->is_confirm_data_consumed)
     return data_->confirm.result;
   RunClosureIfNonNull(std::move(data_->confirm_callback));
   if (data_->confirm.mode == ASYNC) {
+    in_confirm_handshake_ = true;
     RunCallbackAsync(
         base::BindOnce(&MockSSLClientSocket::RunConfirmHandshakeCallback,
                        base::Unretained(this), std::move(callback)),
@@ -1574,6 +1578,11 @@ int MockSSLClientSocket::ConfirmHandshake(CompletionOnceCallback callback) {
     return ERR_IO_PENDING;
   }
   data_->is_confirm_data_consumed = true;
+  if (data_->confirm.result == ERR_IO_PENDING) {
+    // `MockConfirm(SYNCHRONOUS, ERR_IO_PENDING)` means `ConfirmHandshake()`
+    // never completes.
+    in_confirm_handshake_ = true;
+  }
   return data_->confirm.result;
 }
 
