@@ -332,10 +332,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, Disconnect) {
   run_loop.Run();
 }
 
-// TODO(crbug.com/1122806): Migrate this test to use kSignalEndOfTest and
-// re-enable it.
-IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
-                       DISABLED_PerformScrollToMakeVisible) {
+IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, PerformScrollToMakeVisible) {
   // Set the screen height to be small so that we can detect if we've
   // scrolled past our target, even if the max scroll is bounded.
   constexpr int kScreenWidth = 720;
@@ -344,7 +341,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
 
   LoadPage(kPage1Path, kPage1Title);
 
-  semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(kPage1NodeCount);
+  auto* semantic_tree = semantics_manager_.semantic_tree();
+  ASSERT_TRUE(semantic_tree);
+
+  semantic_tree->RunUntilNodeCountAtLeast(kPage1NodeCount);
 
   auto* content_view =
       frame_impl_->web_contents_for_test()->GetContentNativeView();
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
 
   // Get a node that is off the screen, and verify that it is off the screen.
   fuchsia::accessibility::semantics::Node* fuchsia_node =
-      semantics_manager_.semantic_tree()->GetNodeFromLabel(kOffscreenNodeName);
+      semantic_tree->GetNodeFromLabel(kOffscreenNodeName);
   ASSERT_TRUE(fuchsia_node);
 
   // Get the corresponding AXNode.
@@ -368,18 +368,22 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
   EXPECT_TRUE(is_offscreen);
 
   // Perform SHOW_ON_SCREEN on that node.
-  // The fuchsia root node should receive an update since the root node is
-  // scrolled. Wait for that update.
-  base::RunLoop run_loop;
-  semantics_manager_.semantic_tree()->SetNodeUpdatedCallback(
-      0u, run_loop.QuitClosure());
-
   semantics_manager_.RequestAccessibilityAction(
       fuchsia_node->node_id(),
       fuchsia::accessibility::semantics::Action::SHOW_ON_SCREEN);
   semantics_manager_.RunUntilNumActionsHandledEquals(1);
 
-  run_loop.Run();
+  semantic_tree->RunUntilConditionIsTrue(
+      base::BindLambdaForTesting([semantic_tree]() {
+        auto* root = semantic_tree->GetNodeWithId(0u);
+        if (!root)
+          return false;
+
+        // Once the scroll action has been handled, the root should have a
+        // non-zero y-scroll offset.
+        return root->has_states() && root->states().has_viewport_offset() &&
+               root->states().viewport_offset().y > 0;
+      }));
 
   // Verify that the AXNode we tried to make visible is now onscreen.
   // Initialize |is_offscreen| to false before calling GetTreeBounds as
