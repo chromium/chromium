@@ -4524,6 +4524,7 @@ void Document::LayoutViewportWasResized() {
   if (View()->DidFirstLayout() ||
       load_event_progress_ == kLoadEventInProgress) {
     EnqueueResizeEvent();
+    EnqueueVisualViewportResizeEvent();
   }
   if (!HasViewportUnits())
     return;
