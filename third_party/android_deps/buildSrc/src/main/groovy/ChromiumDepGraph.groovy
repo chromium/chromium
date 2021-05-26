@@ -330,11 +330,14 @@ class ChromiumDepGraph {
 
     // Local text versions of HTML licenses. This cannot replace PROPERTY_OVERRIDES because some
     // libraries refer to license templates such as https://opensource.org/licenses/MIT
+    //
+    // Keys should be 'https'. customizeLicenses() will normalize URLs to https.
     final def LICENSE_OVERRIDES = [
       'https://developer.android.com/studio/terms.html': 'licenses/Android_SDK_License-December_9_2016.txt',
-      'http://openjdk.java.net/legal/gplv2+ce.html': 'licenses/GNU_v2_with_Classpath_Exception_1991.txt',
-      'http://scripts.sil.org/cms/scripts/page.php?item_id=OFL_web': 'licenses/SIL_Open_Font.txt',
-      'http://www.unicode.org/copyright.html#License': 'licenses/Unicode.txt',
+      'https://openjdk.java.net/legal/gplv2+ce.html': 'licenses/GNU_v2_with_Classpath_Exception_1991.txt',
+      'https://scripts.sil.org/cms/scripts/page.php?item_id=OFL_web': 'licenses/SIL_Open_Font.txt',
+      'https://www.unicode.org/copyright.html#License': 'licenses/Unicode.txt',
+      'https://www.unicode.org/license.html': 'licenses/Unicode.txt',
     ]
 
     Project[] projects
@@ -572,7 +575,8 @@ class ChromiumDepGraph {
             if (!license.url) {
                 continue
             }
-            def licenseOverridePath = LICENSE_OVERRIDES[license.url]
+            def normalizedLicenseUrl = license.url.replace('http://', 'https://')
+            def licenseOverridePath = LICENSE_OVERRIDES[normalizedLicenseUrl]
             if (licenseOverridePath) {
                 license.url = ''
                 license.path = licenseOverridePath
