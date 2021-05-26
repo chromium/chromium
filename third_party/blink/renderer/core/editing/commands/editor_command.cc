@@ -1949,6 +1949,38 @@ bool EditorCommand::Execute(const String& parameter,
       if (frame_->GetDocument()->GetFrame() != frame_)
         return false;
     }
+
+    // If EditContext is active, we may return early and not execute the
+    // command.
+    if (auto* edit_context =
+            frame_->GetInputMethodController().GetActiveEditContext()) {
+      // From EditContext's point of view, there are 3 kinds of commands:
+      switch (command_->command_type) {
+        case EditingCommandType::kToggleBold:
+        case EditingCommandType::kToggleItalic:
+        case EditingCommandType::kToggleUnderline:
+        case EditingCommandType::kInsertTab:
+        case EditingCommandType::kInsertBacktab:
+        case EditingCommandType::kInsertNewline:
+        case EditingCommandType::kInsertLineBreak:
+        case EditingCommandType::kPaste:
+        case EditingCommandType::kPasteAndMatchStyle:
+        case EditingCommandType::kCut:
+          // 1) BeforeInput event only, ex ctrl+B or <enter>.
+          return true;
+        case EditingCommandType::kDeleteBackward:
+        case EditingCommandType::kDeleteForward:
+        case EditingCommandType::kDeleteWordBackward:
+        case EditingCommandType::kDeleteWordForward:
+          // 2) BeforeInput event + EditContext behavior, ex. backspace.
+          // TODO(shihken): update edit_context buffer
+          return true;
+        default:
+          // 3) BeforeInput event + default DOM behavior, ex. caret navigation.
+          // In this case, it's no-op for EditContext.
+          break;
+      }
+    }
   }
 
   GetFrame().GetDocument()->UpdateStyleAndLayout(

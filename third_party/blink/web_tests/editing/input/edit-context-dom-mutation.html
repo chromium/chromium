@@ -1,0 +1,47 @@
+<head>
+  <title>This tests the new EditContext APIs regarding DOM mutation</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+  let onMacPlatform = navigator.userAgent.search(/\bMac OS X\b/) != -1;
+  if (onMacPlatform) {
+    formatCommands = [{'modifier': 'metaKey', 'key': 'b', 'command': 'formatBold'},
+                      {'modifier': 'metaKey', 'key': 'i', 'command': 'formatItalic'},
+                      {'modifier': 'ctrlKey', 'key': 'u', 'command': 'formatUnderline'}];
+  } else {
+    formatCommands = [{'modifier': 'ctrlKey', 'key': 'b', 'command': 'formatBold'},
+                      {'modifier': 'ctrlKey', 'key': 'i', 'command': 'formatItalic'},
+                      {'modifier': 'ctrlKey', 'key': 'u', 'command': 'formatUnderline'}];
+  }
+
+  formatCommands.forEach( testcase => {
+    test(function () {
+      let editContext = new EditContext();
+      assert_not_equals(editContext, null);
+      let div = document.createElement("div");
+      document.body.appendChild(div);
+
+      div.innerHTML = "abc";
+      div.editContext = editContext;
+      div.focus();
+
+      let got_before_input_event = false;
+      div.addEventListener("beforeinput", (e) => {
+        if (e.inputType === testcase['command']) {
+          got_before_input_event = true;
+        }
+      });
+
+      window.getSelection().selectAllChildren(div);
+      eventSender.keyDown(testcase['key'], [testcase['modifier']]);
+      // There should be no <b> (or <i> or <u>) tag that wraps around the text node.
+      assert_equals(div.childNodes[0].nodeType, Node.TEXT_NODE);
+      assert_equals(got_before_input_event, true);
+
+      document.body.removeChild(div);
+    }, "EditContext should disable DOM mutation from " + testcase['command'] + " keyboard shortcuts");
+  });
+</script>
+</body>

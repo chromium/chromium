@@ -66,9 +66,8 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
 
   // If EditContext is active, redirect text to EditContext, otherwise, send
   // text to the focused element.
-  auto* edit_context =
-      GetFrame().GetInputMethodController().GetActiveEditContext();
-  if (edit_context) {
+  if (auto* edit_context =
+          GetFrame().GetInputMethodController().GetActiveEditContext()) {
     if (DispatchBeforeInputInsertText(evt->target()->ToNode(),
                                       key_event->text) !=
         DispatchEventResult::kNotCanceled)
