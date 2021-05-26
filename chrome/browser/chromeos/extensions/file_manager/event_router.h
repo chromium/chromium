@@ -33,6 +33,8 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 class PrefChangeRegistrar;
 class Profile;
@@ -54,10 +56,10 @@ class EventRouter
       public guest_os::GuestOsSharePath::Observer,
       public ash::TabletModeObserver {
  public:
-  using DispatchDirectoryChangeEventImplCallback = base::RepeatingCallback<void(
-      const base::FilePath& virtual_path,
-      bool got_error,
-      const std::vector<std::string>& extension_ids)>;
+  using DispatchDirectoryChangeEventImplCallback =
+      base::RepeatingCallback<void(const base::FilePath& virtual_path,
+                                   bool got_error,
+                                   const std::vector<url::Origin>& listeners)>;
 
   explicit EventRouter(Profile* profile);
   ~EventRouter() override;
@@ -72,7 +74,7 @@ class EventRouter
   using BoolCallback = base::OnceCallback<void(bool success)>;
 
   // Adds a file watch at |local_path|, associated with |virtual_path|, for
-  // an extension with |extension_id|.
+  // an listener with |listener_origin|.
   //
   // |callback| will be called with true on success, or false on failure.
   // |callback| must not be null.
@@ -81,15 +83,15 @@ class EventRouter
   // storage::WatcherManager interface.
   void AddFileWatch(const base::FilePath& local_path,
                     const base::FilePath& virtual_path,
-                    const std::string& extension_id,
+                    const url::Origin& listener_origin,
                     BoolCallback callback);
 
-  // Removes a file watch at |local_path| for an extension with |extension_id|.
+  // Removes a file watch at |local_path| for listener with |listener_origin|.
   //
   // Obsolete. Used as fallback for files which backends do not implement the
   // storage::WatcherManager interface.
   void RemoveFileWatch(const base::FilePath& local_path,
-                       const std::string& extension_id);
+                       const url::Origin& listener_origin);
 
   // Called when a copy task is completed.
   void OnCopyCompleted(
@@ -106,7 +108,7 @@ class EventRouter
   // Called when a notification from a watcher manager arrives.
   void OnWatcherManagerNotification(
       const storage::FileSystemURL& file_system_url,
-      const std::string& extension_id,
+      const url::Origin& listener_origin,
       storage::WatcherManager::ChangeType change_type);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver overrides.
@@ -187,21 +189,19 @@ class EventRouter
   void HandleFileWatchNotification(const base::FilePath& path, bool got_error);
 
   // Sends directory change event.
-  void DispatchDirectoryChangeEvent(
-      const base::FilePath& path,
-      bool got_error,
-      const std::vector<std::string>& extension_ids);
+  void DispatchDirectoryChangeEvent(const base::FilePath& path,
+                                    bool got_error,
+                                    const std::vector<url::Origin>& listeners);
 
   // Default implementation of DispatchDirectoryChangeEvent.
   void DispatchDirectoryChangeEventImpl(
       const base::FilePath& path,
       bool got_error,
-      const std::vector<std::string>& extension_ids);
+      const std::vector<url::Origin>& listeners);
 
   // Sends directory change event, after converting the file definition to entry
   // definition.
   void DispatchDirectoryChangeEventWithEntryDefinition(
-      const std::string* extension_id,
       bool watcher_error,
       const EntryDefinition& entry_definition);
 

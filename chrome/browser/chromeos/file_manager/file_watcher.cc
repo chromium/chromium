@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
@@ -118,37 +119,33 @@ FileWatcher::~FileWatcher() {
   sequenced_task_runner_->DeleteSoon(FROM_HERE, local_file_watcher_);
 }
 
-void FileWatcher::AddExtension(const std::string& extension_id) {
+void FileWatcher::AddListener(const url::Origin& listener) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  extensions_[extension_id]++;
+  origins_[listener]++;
 }
 
-void FileWatcher::RemoveExtension(const std::string& extension_id) {
+void FileWatcher::RemoveListener(const url::Origin& listener) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  ExtensionCountMap::iterator it = extensions_.find(extension_id);
-  if (it == extensions_.end()) {
-    LOG(ERROR) << " Extension [" << extension_id
-               << "] tries to unsubscribe from folder ["
-               << virtual_path_.value()
-               << "] it isn't subscribed";
+  auto it = origins_.find(listener);
+  if (it == origins_.end()) {
+    LOG(ERROR) << " Listener [" << listener
+               << "] tries to unsubscribe from virtual path ["
+               << virtual_path_.value() << "] it isn't subscribed";
     return;
   }
 
   // If entry found - decrease it's count and remove if necessary
   --it->second;
   if (it->second == 0)
-    extensions_.erase(it);
+    origins_.erase(it);
 }
 
-std::vector<std::string> FileWatcher::GetExtensionIds() const {
-  std::vector<std::string> extension_ids;
-  for (ExtensionCountMap::const_iterator iter = extensions_.begin();
-       iter != extensions_.end(); ++iter) {
-    extension_ids.push_back(iter->first);
+std::vector<url::Origin> FileWatcher::GetListeners() const {
+  std::vector<url::Origin> origins;
+  for (const auto& kv : origins_) {
+    origins.push_back(kv.first);
   }
-  return extension_ids;
+  return origins;
 }
 
 void FileWatcher::WatchLocalFile(

@@ -141,11 +141,11 @@ MountErrorToMountCompletedStatus(chromeos::MountError error) {
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_PATH_NOT_MOUNTED;
     case chromeos::MOUNT_ERROR_DIRECTORY_CREATION_FAILED:
-      return file_manager_private
-          ::MOUNT_COMPLETED_STATUS_ERROR_DIRECTORY_CREATION_FAILED;
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_DIRECTORY_CREATION_FAILED;
     case chromeos::MOUNT_ERROR_INVALID_MOUNT_OPTIONS:
-      return file_manager_private
-          ::MOUNT_COMPLETED_STATUS_ERROR_INVALID_MOUNT_OPTIONS;
+      return file_manager_private::
+          MOUNT_COMPLETED_STATUS_ERROR_INVALID_MOUNT_OPTIONS;
     case chromeos::MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_INVALID_UNMOUNT_OPTIONS;
@@ -574,7 +574,7 @@ void EventRouter::ObserveEvents() {
 // File watch setup routines.
 void EventRouter::AddFileWatch(const base::FilePath& local_path,
                                const base::FilePath& virtual_path,
-                               const std::string& extension_id,
+                               const url::Origin& listener_origin,
                                BoolCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
@@ -582,7 +582,7 @@ void EventRouter::AddFileWatch(const base::FilePath& local_path,
   auto iter = file_watchers_.find(local_path);
   if (iter == file_watchers_.end()) {
     std::unique_ptr<FileWatcher> watcher(new FileWatcher(virtual_path));
-    watcher->AddExtension(extension_id);
+    watcher->AddListener(listener_origin);
     watcher->WatchLocalFile(
         profile_, local_path,
         base::BindRepeating(&EventRouter::HandleFileWatchNotification,
@@ -591,22 +591,22 @@ void EventRouter::AddFileWatch(const base::FilePath& local_path,
 
     file_watchers_[local_path] = std::move(watcher);
   } else {
-    iter->second->AddExtension(extension_id);
+    iter->second->AddListener(listener_origin);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), true));
   }
 }
 
 void EventRouter::RemoveFileWatch(const base::FilePath& local_path,
-                                  const std::string& extension_id) {
+                                  const url::Origin& listener_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto iter = file_watchers_.find(local_path);
   if (iter == file_watchers_.end())
     return;
   // Remove the watcher if |local_path| is no longer watched by any extensions.
-  iter->second->RemoveExtension(extension_id);
-  if (iter->second->GetExtensionIds().empty())
+  iter->second->RemoveListener(listener_origin);
+  if (iter->second->GetListeners().empty())
     file_watchers_.erase(iter);
 }
 
@@ -685,13 +685,12 @@ void EventRouter::OnCopyProgress(
 
 void EventRouter::OnWatcherManagerNotification(
     const storage::FileSystemURL& file_system_url,
-    const std::string& extension_id,
+    const url::Origin& listener_origin,
     storage::WatcherManager::ChangeType /* change_type */) {
-  std::vector<std::string> extension_ids;
-  extension_ids.push_back(extension_id);
+  std::vector<url::Origin> listeners = {listener_origin};
 
   DispatchDirectoryChangeEvent(file_system_url.virtual_path(),
-                               false /* error */, extension_ids);
+                               false /* error */, listeners);
 }
 
 void EventRouter::OnConnectionChanged(network::mojom::ConnectionType type) {
@@ -733,47 +732,40 @@ void EventRouter::HandleFileWatchNotification(const base::FilePath& local_path,
     return;
   }
 
-  DispatchDirectoryChangeEvent(iter->second->virtual_path(),
-                               got_error,
-                               iter->second->GetExtensionIds());
+  DispatchDirectoryChangeEvent(iter->second->virtual_path(), got_error,
+                               iter->second->GetListeners());
 }
 
 void EventRouter::DispatchDirectoryChangeEvent(
     const base::FilePath& virtual_path,
     bool got_error,
-    const std::vector<std::string>& extension_ids) {
-  dispatch_directory_change_event_impl_.Run(virtual_path, got_error,
-                                            extension_ids);
+    const std::vector<url::Origin>& listeners) {
+  dispatch_directory_change_event_impl_.Run(virtual_path, got_error, listeners);
 }
 
 void EventRouter::DispatchDirectoryChangeEventImpl(
     const base::FilePath& virtual_path,
     bool got_error,
-    const std::vector<std::string>& extension_ids) {
+    const std::vector<url::Origin>& listeners) {
   DCHECK(profile_);
 
-  for (size_t i = 0; i < extension_ids.size(); ++i) {
-    std::string* extension_id = new std::string(extension_ids[i]);
-
+  for (const url::Origin& origin : listeners) {
     FileDefinition file_definition;
     file_definition.virtual_path = virtual_path;
     // TODO(mtomasz): Add support for watching files in File System Provider
     // API.
     file_definition.is_directory = true;
 
-    GURL listener_url =
-        extensions::Extension::GetBaseURLFromExtensionId(*extension_id);
     file_manager::util::ConvertFileDefinitionToEntryDefinition(
-        util::GetFileSystemContextForSourceURL(profile_, listener_url),
-        url::Origin::Create(listener_url), file_definition,
+        util::GetFileSystemContextForSourceURL(profile_, origin.GetURL()),
+        origin, file_definition,
         base::BindOnce(
             &EventRouter::DispatchDirectoryChangeEventWithEntryDefinition,
-            weak_factory_.GetWeakPtr(), base::Owned(extension_id), got_error));
+            weak_factory_.GetWeakPtr(), got_error));
   }
 }
 
 void EventRouter::DispatchDirectoryChangeEventWithEntryDefinition(
-    const std::string* extension_id,
     bool watcher_error,
     const EntryDefinition& entry_definition) {
   // TODO(mtomasz): Add support for watching files in File System Provider API.
@@ -786,8 +778,8 @@ void EventRouter::DispatchDirectoryChangeEventWithEntryDefinition(
 
   file_manager_private::FileWatchEvent event;
   event.event_type = watcher_error
-      ? file_manager_private::FILE_WATCH_EVENT_TYPE_ERROR
-      : file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
+                         ? file_manager_private::FILE_WATCH_EVENT_TYPE_ERROR
+                         : file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
 
   event.entry.additional_properties.SetString(
       "fileSystemName", entry_definition.file_system_name);
@@ -798,11 +790,10 @@ void EventRouter::DispatchDirectoryChangeEventWithEntryDefinition(
   event.entry.additional_properties.SetBoolean("fileIsDirectory",
                                                entry_definition.is_directory);
 
-  DispatchEventToExtension(
-      profile_, *extension_id,
-      extensions::events::FILE_MANAGER_PRIVATE_ON_DIRECTORY_CHANGED,
-      file_manager_private::OnDirectoryChanged::kEventName,
-      file_manager_private::OnDirectoryChanged::Create(event));
+  BroadcastEvent(profile_,
+                 extensions::events::FILE_MANAGER_PRIVATE_ON_DIRECTORY_CHANGED,
+                 file_manager_private::OnDirectoryChanged::kEventName,
+                 file_manager_private::OnDirectoryChanged::Create(event));
 }
 
 void EventRouter::OnDiskAdded(const Disk& disk, bool mounting) {

@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
+#include "url/origin.h"
 
 namespace file_manager {
 
@@ -39,23 +40,23 @@ class FileWatcher {
 
   ~FileWatcher();
 
-  // Remembers that the extension of |extension_id| is watching the virtual
-  // path.
+  // Remembers that a |listener| is watching the virtual path.
   //
-  // If this function is called more than once with the same extension ID,
-  // the class increments the counter internally, and RemoveExtension()
-  // decrements the counter, and forgets the extension when the counter
-  // becomes zero.
-  void AddExtension(const std::string& extension_id);
+  // If this method is called with a origin more than once, it just increments
+  // a counter, rather than adding additional listener. In the corresponding
+  // method, RemoveListener, the listener corresponding to that origin is only
+  // removed once the counter reaches 0.
+  void AddListener(const url::Origin& listener);
 
-  // Forgets that the extension of |extension_id| is watching the virtual path,
-  // or just decrements the internal counter for the extension ID. See the
-  // comment at AddExtension() for details.
-  void RemoveExtension(const std::string& extension_id);
+  // Unregisters |listener| as a watcher of the |virtual_path| for which this
+  // FileWatcher was created. The origin is used to decrement an internal
+  // counter. If the counter reaches 0, the listener with the given origin is
+  // completely removed.
+  void RemoveListener(const url::Origin& listener);
 
-  // Returns IDs of the extensions watching virtual_path. The returned list
+  // Returns listeners of the apps watching virtual_path. The returned list
   // is sorted in the alphabetical order and contains no duplicates.
-  std::vector<std::string> GetExtensionIds() const;
+  std::vector<url::Origin> GetListeners() const;
 
   // Returns the virtual path associated with the FileWatcher.
   const base::FilePath& virtual_path() const { return virtual_path_; }
@@ -83,10 +84,10 @@ class FileWatcher {
   base::FilePathWatcher* local_file_watcher_;
   std::unique_ptr<CrostiniFileWatcher> crostini_file_watcher_;
   base::FilePath virtual_path_;
-  // Map of extension-id to counter. See the comment at AddExtension() for
+  // Map of origin to counter. See the comment at AddListener() for
   // why we need to count.
-  typedef std::map<std::string, int> ExtensionCountMap;
-  ExtensionCountMap extensions_;
+  typedef std::map<url::Origin, int> OriginCountMap;
+  OriginCountMap origins_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.

@@ -22,7 +22,9 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace file_manager {
 namespace {
@@ -62,17 +64,20 @@ TEST_F(FileManagerFileWatcherTest, AddAndRemoveOneExtensionId) {
   const base::FilePath kVirtualPath =
       base::FilePath::FromUTF8Unsafe("foo/bar.txt");
   const char kExtensionId[] = "extension-id";
+  GURL source_url =
+      extensions::Extension::GetBaseURLFromExtensionId(kExtensionId);
+  url::Origin origin = url::Origin::Create(source_url);
 
   FileWatcher file_watcher(kVirtualPath);
-  file_watcher.AddExtension(kExtensionId);
-  std::vector<std::string> extension_ids = file_watcher.GetExtensionIds();
+  file_watcher.AddListener(origin);
+  std::vector<url::Origin> origins = file_watcher.GetListeners();
 
-  ASSERT_EQ(1U, extension_ids.size());
-  ASSERT_EQ(kExtensionId, extension_ids[0]);
+  ASSERT_EQ(1U, origins.size());
+  ASSERT_EQ(origin, origins[0]);
 
-  file_watcher.RemoveExtension(kExtensionId);
-  extension_ids = file_watcher.GetExtensionIds();
-  ASSERT_EQ(0U, extension_ids.size());
+  file_watcher.RemoveListener(origin);
+  origins = file_watcher.GetListeners();
+  ASSERT_EQ(0U, origins.size());
 }
 
 TEST_F(FileManagerFileWatcherTest, AddAndRemoveMultipleExtensionIds) {
@@ -80,64 +85,78 @@ TEST_F(FileManagerFileWatcherTest, AddAndRemoveMultipleExtensionIds) {
       base::FilePath::FromUTF8Unsafe("foo/bar.txt");
   const char kExtensionFooId[] = "extension-foo-id";
   const char kExtensionBarId[] = "extension-bar-id";
+  GURL foo_source_url =
+      extensions::Extension::GetBaseURLFromExtensionId(kExtensionFooId);
+  url::Origin foo_origin = url::Origin::Create(foo_source_url);
+  GURL bar_source_url =
+      extensions::Extension::GetBaseURLFromExtensionId(kExtensionBarId);
+  url::Origin bar_origin = url::Origin::Create(bar_source_url);
 
   FileWatcher file_watcher(kVirtualPath);
-  file_watcher.AddExtension(kExtensionFooId);
-  file_watcher.AddExtension(kExtensionBarId);
-  std::vector<std::string> extension_ids = file_watcher.GetExtensionIds();
+  file_watcher.AddListener(foo_origin);
+  file_watcher.AddListener(bar_origin);
+  std::vector<url::Origin> origins = file_watcher.GetListeners();
 
   // The list should be sorted.
-  ASSERT_EQ(2U, extension_ids.size());
-  ASSERT_EQ(kExtensionBarId, extension_ids[0]);
-  ASSERT_EQ(kExtensionFooId, extension_ids[1]);
+  ASSERT_EQ(2U, origins.size());
+  ASSERT_EQ(bar_origin, origins[0]);
+  ASSERT_EQ(foo_origin, origins[1]);
 
   // Remove Foo. Bar should remain.
-  file_watcher.RemoveExtension(kExtensionFooId);
-  extension_ids = file_watcher.GetExtensionIds();
-  ASSERT_EQ(1U, extension_ids.size());
-  ASSERT_EQ(kExtensionBarId, extension_ids[0]);
+  file_watcher.RemoveListener(foo_origin);
+  origins = file_watcher.GetListeners();
+  ASSERT_EQ(1U, origins.size());
+  ASSERT_EQ(bar_origin, origins[0]);
 
   // Remove Bar. Nothing should remain.
-  file_watcher.RemoveExtension(kExtensionBarId);
-  extension_ids = file_watcher.GetExtensionIds();
-  ASSERT_EQ(0U, extension_ids.size());
+  file_watcher.RemoveListener(bar_origin);
+  origins = file_watcher.GetListeners();
+  ASSERT_EQ(0U, origins.size());
 }
 
 TEST_F(FileManagerFileWatcherTest, AddSameExtensionMultipleTimes) {
   const base::FilePath kVirtualPath =
       base::FilePath::FromUTF8Unsafe("foo/bar.txt");
   const char kExtensionId[] = "extension-id";
+  GURL source_url =
+      extensions::Extension::GetBaseURLFromExtensionId(kExtensionId);
+  url::Origin origin_1 = url::Origin::Create(source_url.GetOrigin());
+  url::Origin origin_2 = url::Origin::Create(source_url);
 
   FileWatcher file_watcher(kVirtualPath);
   // Add three times.
-  file_watcher.AddExtension(kExtensionId);
-  file_watcher.AddExtension(kExtensionId);
-  file_watcher.AddExtension(kExtensionId);
+  file_watcher.AddListener(origin_1);
+  file_watcher.AddListener(origin_2);
+  file_watcher.AddListener(origin_1);
 
-  std::vector<std::string> extension_ids = file_watcher.GetExtensionIds();
-  ASSERT_EQ(1U, extension_ids.size());
-  ASSERT_EQ(kExtensionId, extension_ids[0]);
+  std::vector<url::Origin> origins = file_watcher.GetListeners();
+  ASSERT_EQ(1U, origins.size());
+  ASSERT_EQ(origin_1, origins[0]);
 
   // Remove 1st time.
-  file_watcher.RemoveExtension(kExtensionId);
-  extension_ids = file_watcher.GetExtensionIds();
-  ASSERT_EQ(1U, extension_ids.size());
+  file_watcher.RemoveListener(origin_2);
+  origins = file_watcher.GetListeners();
+  ASSERT_EQ(1U, origins.size());
+  ASSERT_EQ(origin_2, origins[0]);
 
   // Remove 2nd time.
-  file_watcher.RemoveExtension(kExtensionId);
-  extension_ids = file_watcher.GetExtensionIds();
-  ASSERT_EQ(1U, extension_ids.size());
+  file_watcher.RemoveListener(origin_2);
+  origins = file_watcher.GetListeners();
+  ASSERT_EQ(1U, origins.size());
+  ASSERT_EQ(origin_1, origins[0]);
 
   // Remove 3rd time. The extension ID should be gone now.
-  file_watcher.RemoveExtension(kExtensionId);
-  extension_ids = file_watcher.GetExtensionIds();
-  ASSERT_EQ(0U, extension_ids.size());
+  file_watcher.RemoveListener(origin_1);
+  origins = file_watcher.GetListeners();
+  ASSERT_EQ(0U, origins.size());
 }
 
 TEST_F(FileManagerFileWatcherTest, WatchLocalFile) {
   const base::FilePath kVirtualPath =
       base::FilePath::FromUTF8Unsafe("foo/bar.txt");
   const char kExtensionId[] = "extension-id";
+  GURL listener_url =
+      extensions::Extension::GetBaseURLFromExtensionId(kExtensionId);
 
   // Create a temporary directory.
   base::ScopedTempDir temp_dir;
@@ -165,7 +184,7 @@ TEST_F(FileManagerFileWatcherTest, WatchLocalFile) {
 
   // Start watching changes in the temporary directory.
   FileWatcher file_watcher(kVirtualPath);
-  file_watcher.AddExtension(kExtensionId);
+  file_watcher.AddListener(url::Origin::Create(listener_url));
   file_watcher.WatchLocalFile(profile(), temp_dir.GetPath(), change_callback,
                               std::move(start_callback));
   start_run_loop.Run();
@@ -192,6 +211,9 @@ TEST_F(FileManagerFileWatcherTest, WatchCrostiniFile) {
 
   const base::FilePath kVirtualPath("foo/bar.txt");
   const char kExtensionId[] = "extension-id";
+  GURL listener_url =
+      extensions::Extension::GetBaseURLFromExtensionId(kExtensionId);
+  url::Origin origin = url::Origin::Create(listener_url);
 
   // Create a callback that will run when a change is detected.
   bool on_change_error = false;
@@ -216,7 +238,7 @@ TEST_F(FileManagerFileWatcherTest, WatchCrostiniFile) {
   // Start watching changes in the crostini directory.
   base::FilePath crostini_dir = util::GetCrostiniMountDirectory(profile());
   FileWatcher file_watcher(kVirtualPath);
-  file_watcher.AddExtension(kExtensionId);
+  file_watcher.AddListener(origin);
   file_watcher.WatchLocalFile(profile(), crostini_dir, change_callback,
                               std::move(start_callback));
   start_run_loop.Run();

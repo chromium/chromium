@@ -524,7 +524,8 @@ void FileManagerPrivateInternalAddFileWatchFunction::
           &PostNotificationCallbackTaskToUIThread,
           base::BindRepeating(
               &file_manager::EventRouter::OnWatcherManagerNotification,
-              event_router, file_system_url, extension_id_or_file_app_id())));
+              event_router, file_system_url,
+              url::Origin::Create(source_url()))));
 }
 
 void FileManagerPrivateInternalAddFileWatchFunction::
@@ -537,7 +538,7 @@ void FileManagerPrivateInternalAddFileWatchFunction::
   // Obsolete. Fallback code if storage::WatcherManager is not implemented.
   event_router->AddFileWatch(
       file_system_url.path(), file_system_url.virtual_path(),
-      extension_id_or_file_app_id(),
+      url::Origin::Create(source_url()),
       base::BindOnce(&FileWatchFunctionBase::RespondWith, this));
 }
 
@@ -567,7 +568,7 @@ void FileManagerPrivateInternalRemoveFileWatchFunction::
 
   // Obsolete. Fallback code if storage::WatcherManager is not implemented.
   event_router->RemoveFileWatch(file_system_url.path(),
-                                extension_id_or_file_app_id());
+                                url::Origin::Create(source_url()));
   RespondWith(true);
 }
 
@@ -1102,7 +1103,7 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
   file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
       file_manager::util::GetFileSystemContextForSourceURL(profile,
                                                            source_url()),
-      url::Origin::Create(source_url().GetOrigin()),
+      url::Origin::Create(source_url()),
       file_definition_list,  // Safe, since copied internally.
       base::BindOnce(
           &FileManagerPrivateInternalResolveIsolatedEntriesFunction::
