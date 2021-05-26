@@ -1052,24 +1052,23 @@ net::ScopedCERTCertificate DecodePEMCertificate(
 bool ResolveServerCertRefsInNetworks(const CertPEMsByGUIDMap& certs_by_guid,
                                      base::ListValue* network_configs) {
   bool success = true;
-  for (auto it = network_configs->GetList().begin();
-       it != network_configs->GetList().end();) {
+  base::Value::ListStorage filtered_configs;
+  for (base::Value& config : network_configs->GetList()) {
     base::DictionaryValue* network = nullptr;
-    it->GetAsDictionary(&network);
+    config.GetAsDictionary(&network);
     if (!ResolveServerCertRefsInNetwork(certs_by_guid, network)) {
-      std::string guid;
-      network->GetStringWithoutPathExpansion(::onc::network_config::kGUID,
-                                             &guid);
+      std::string* guid = network->FindStringKey(::onc::network_config::kGUID);
       // This might happen even with correct validation, if the referenced
       // certificate couldn't be imported.
       LOG(ERROR) << "Couldn't resolve some certificate reference of network "
-                 << guid;
-      it = network_configs->Erase(it, nullptr);
+                 << (guid ? *guid : "(unable to find GUID)");
       success = false;
       continue;
     }
-    ++it;
+
+    filtered_configs.push_back(std::move(config));
   }
+  *network_configs = base::ListValue(std::move(filtered_configs));
   return success;
 }
 

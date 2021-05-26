@@ -36,73 +36,69 @@ void ManagedBookmarksPolicyHandler::ApplyPolicySettings(
   if (!CheckAndGetValue(policies, nullptr, &value))
     return;
 
-  base::ListValue* list = nullptr;
-  if (!value || !value->GetAsList(&list))
+  if (!value || !value->is_list())
     return;
 
-  prefs->SetString(prefs::kManagedBookmarksFolderName, GetFolderName(*list));
-  FilterBookmarks(list);
-  prefs->SetValue(prefs::kManagedBookmarks,
-                  base::Value::FromUniquePtrValue(std::move(value)));
+  prefs->SetString(prefs::kManagedBookmarksFolderName, GetFolderName(*value));
+  base::Value filtered(FilterBookmarks(value->TakeList()));
+  prefs->SetValue(prefs::kManagedBookmarks, std::move(filtered));
 }
 
 std::string ManagedBookmarksPolicyHandler::GetFolderName(
-    const base::ListValue& list) {
+    const base::Value& list) {
+  DCHECK(list.is_list());
   // Iterate over the list, and try to find the FolderName.
   for (const auto& el : list.GetList()) {
-    const base::DictionaryValue* dict = nullptr;
-    if (!el.GetAsDictionary(&dict))
+    if (!el.is_dict())
       continue;
 
-    std::string name;
-    if (dict->GetString(ManagedBookmarksTracker::kFolderName, &name)) {
-      return name;
-    }
+    const std::string* name =
+        el.FindStringKey(ManagedBookmarksTracker::kFolderName);
+    if (name)
+      return *name;
   }
 
   // FolderName not present.
   return std::string();
 }
 
-void ManagedBookmarksPolicyHandler::FilterBookmarks(base::ListValue* list) {
-  // Remove any non-conforming values found.
-  auto it = list->GetList().begin();
-  while (it != list->GetList().end()) {
-    base::DictionaryValue* dict = nullptr;
-    if (!it->GetAsDictionary(&dict)) {
-      it = list->Erase(it, nullptr);
-      continue;
-    }
+base::Value::ListStorage ManagedBookmarksPolicyHandler::FilterBookmarks(
+    base::Value::ListStorage list) {
+  // Move over conforming values found.
+  base::Value::ListStorage out;
 
-    std::string name;
-    std::string url;
-    base::ListValue* children = nullptr;
+  for (base::Value& item : list) {
+    if (!item.is_dict())
+      continue;
+
+    const std::string* name =
+        item.FindStringKey(ManagedBookmarksTracker::kName);
+    const std::string* url = item.FindStringKey(ManagedBookmarksTracker::kUrl);
+    base::Value* children =
+        item.FindListKey(ManagedBookmarksTracker::kChildren);
     // Every bookmark must have a name, and then either a URL of a list of
     // child bookmarks.
-    if (!dict->GetString(ManagedBookmarksTracker::kName, &name) ||
-        (!dict->GetList(ManagedBookmarksTracker::kChildren, &children) &&
-         !dict->GetString(ManagedBookmarksTracker::kUrl, &url))) {
-      it = list->Erase(it, nullptr);
+    if (!name || (!url && !children))
       continue;
-    }
 
     if (children) {
       // Ignore the URL if this bookmark has child nodes.
-      dict->Remove(ManagedBookmarksTracker::kUrl, nullptr);
-      FilterBookmarks(children);
+      item.RemoveKey(ManagedBookmarksTracker::kUrl);
+      *children = base::Value(FilterBookmarks(children->TakeList()));
     } else {
       // Make sure the URL is valid before passing a bookmark to the pref.
-      dict->Remove(ManagedBookmarksTracker::kChildren, nullptr);
-      GURL gurl = url_formatter::FixupURL(url, std::string());
+      item.RemoveKey(ManagedBookmarksTracker::kChildren);
+      GURL gurl = url_formatter::FixupURL(*url, std::string());
       if (!gurl.is_valid()) {
-        it = list->Erase(it, nullptr);
         continue;
       }
-      dict->SetString(ManagedBookmarksTracker::kUrl, gurl.spec());
+      item.SetStringKey(ManagedBookmarksTracker::kUrl, gurl.spec());
     }
 
-    ++it;
+    out.push_back(std::move(item));
   }
+  list.clear();
+  return out;
 }
 
 }  // namespace bookmarks

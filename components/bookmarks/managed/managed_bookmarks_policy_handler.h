@@ -6,11 +6,8 @@
 #define COMPONENTS_BOOKMARKS_MANAGED_MANAGED_BOOKMARKS_POLICY_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/values.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace bookmarks {
 
@@ -26,8 +23,8 @@ class ManagedBookmarksPolicyHandler
                            PrefValueMap* prefs) override;
 
  private:
-  std::string GetFolderName(const base::ListValue& list);
-  void FilterBookmarks(base::ListValue* bookmarks);
+  std::string GetFolderName(const base::Value& list);
+  base::Value::ListStorage FilterBookmarks(base::Value::ListStorage bookmarks);
 
   DISALLOW_COPY_AND_ASSIGN(ManagedBookmarksPolicyHandler);
 };

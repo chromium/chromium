@@ -1661,17 +1661,6 @@ bool ListValue::Remove(const Value& value, size_t* index) {
   return true;
 }
 
-ListValue::iterator ListValue::Erase(iterator iter,
-                                     std::unique_ptr<Value>* out_value) {
-  if (out_value)
-    *out_value = std::make_unique<Value>(std::move(*iter));
-
-  auto list_iter = list().begin() + (iter - GetList().begin());
-  CHECK(list_iter != list().end());
-  list_iter = list().erase(list_iter);
-  return GetList().begin() + (list_iter - list().begin());
-}
-
 void ListValue::Append(std::unique_ptr<Value> in_value) {
   list().push_back(std::move(*in_value));
 }

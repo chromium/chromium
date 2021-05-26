@@ -221,7 +221,7 @@ bool UpdateOverridesList(base::ListValue* overrides_list,
         FALLTHROUGH;
       }
       case UPDATE_REMOVE:
-        overrides_list->Erase(iter, nullptr);
+        overrides_list->EraseListIter(iter);
         break;
     }
     return true;

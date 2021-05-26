@@ -1011,7 +1011,7 @@ void MediaGalleriesPreferences::EraseOrBlacklistGalleryById(
           iter->SetIntKey(kMediaGalleriesScanVideoCountKey, 0);
         }
       } else {
-        list->Erase(iter, nullptr);
+        list->EraseListIter(iter);
       }
       update.reset();  // commits the update.
 
@@ -1213,7 +1213,7 @@ bool MediaGalleriesPreferences::UnsetGalleryPermissionInPrefs(
             &base::Value::AsDictionaryValue(*iter), &perm))
       continue;
     if (perm.pref_id == gallery_id) {
-      permissions->Erase(iter, nullptr);
+      permissions->EraseListIter(iter);
       return true;
     }
   }

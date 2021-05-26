@@ -906,13 +906,6 @@ class BASE_EXPORT ListValue : public Value {
   // DEPRECATED, use `GetList()::erase()` instead.
   bool Remove(const Value& value, size_t* index);
 
-  // Removes the element at `iter`. If `out_value` is NULL, the value will be
-  // deleted, otherwise ownership of the value is passed back to the caller.
-  // Returns an iterator pointing to the location of the element that
-  // followed the erased element.
-  // DEPRECATED, use `GetList()::erase()` instead.
-  iterator Erase(iterator iter, std::unique_ptr<Value>* out_value);
-
   using Value::Append;
   // Appends a Value to the end of the list.
   // DEPRECATED, use `Value::Append()` instead.
