@@ -383,9 +383,7 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean(
-      "useAttachApn",
-      base::FeatureList::IsEnabled(chromeos::features::kCellularUseAttachApn));
+  html_source->AddBoolean("useAttachApn", features::ShouldUseAttachApn());
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {

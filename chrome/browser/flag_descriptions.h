@@ -2263,6 +2263,9 @@ extern const char kCategoricalSearchDescription[];
 extern const char kCdmFactoryDaemonName[];
 extern const char kCdmFactoryDaemonDescription[];
 
+extern const char kCellularForbidAttachApnName[];
+extern const char kCellularForbidAttachApnDescription[];
+
 extern const char kCellularUseAttachApnName[];
 extern const char kCellularUseAttachApnDescription[];
 

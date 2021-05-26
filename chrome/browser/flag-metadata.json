@@ -506,6 +506,11 @@
     "expiry_milestone": 91
   },
   {
+    "name": "cellular-forbid-attach-apn",
+    "owners": [ "hsuregan", "cros-connectivity@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "cellular-use-attach-apn",
     "owners": [ "vpalatin", "ejcaruso", "chromeos-cellular-platform@google.com" ],
     "expiry_milestone": 95

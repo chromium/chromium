@@ -92,6 +92,8 @@ extern const base::Feature kPreferConstantFrameRate;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCdmFactoryDaemon;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kCellularForbidAttachApn;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularUseAttachApn;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularUseExternalEuicc;
@@ -421,6 +423,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseBrowserSyncConsent();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseQuickAnswersTextAnnotator();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV1DeviceSync();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV2DeviceSync();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseAttachApn();
 
 // Keep alphabetized.
 
