@@ -997,6 +997,7 @@
                   'chrome/test/data/extensions/api_test/file_system_provider|' \
                   'components/drive|' \
                   'google_apis/drive|' \
+                  'ash/content/file_manager|' \
                   'ui/file_manager'
     },
     'freetype_update': {
