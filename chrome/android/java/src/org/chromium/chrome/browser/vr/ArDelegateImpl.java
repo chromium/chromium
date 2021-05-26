@@ -21,4 +21,9 @@ public class ArDelegateImpl implements ArDelegate {
     public boolean onBackPressed() {
         return ArCoreJavaUtils.onBackPressed();
     }
+
+    @Override
+    public boolean hasActiveArSession() {
+        return ArCoreJavaUtils.hasActiveArSession();
+    }
 }

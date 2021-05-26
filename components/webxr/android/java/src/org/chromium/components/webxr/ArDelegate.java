@@ -13,4 +13,9 @@ public interface ArDelegate {
      * Used to let AR immersive mode intercept the Back button to exit immersive mode.
      */
     public boolean onBackPressed();
+
+    /**
+     * Used to query if there is an active immersive AR Session.
+     */
+    public boolean hasActiveArSession();
 }

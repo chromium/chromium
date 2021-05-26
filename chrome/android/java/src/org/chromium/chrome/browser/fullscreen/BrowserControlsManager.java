@@ -611,10 +611,8 @@ public class BrowserControlsManager
         }
     }
 
-    /**
-     * Restores the controls positions to the cached positions of the active Tab.
-     */
-    private void restoreControlsPositions() {
+    @Override
+    public void restoreControlsPositions() {
         resetControlsOffsetOverridden();
 
         // Make sure the dominant control offsets have been set.

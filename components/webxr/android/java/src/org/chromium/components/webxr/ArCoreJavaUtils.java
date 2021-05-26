@@ -112,6 +112,10 @@ public class ArCoreJavaUtils {
         return false;
     }
 
+    public static boolean hasActiveArSession() {
+        return sActiveSessionInstance != null;
+    }
+
     public void onDrawingSurfaceReady(
             Surface surface, WindowAndroid rootWindow, int rotation, int width, int height) {
         if (DEBUG_LOGS) Log.i(TAG, "onDrawingSurfaceReady");

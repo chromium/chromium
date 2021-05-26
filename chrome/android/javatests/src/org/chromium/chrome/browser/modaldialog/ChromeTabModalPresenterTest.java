@@ -189,7 +189,7 @@ public class ChromeTabModalPresenterTest {
 
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
-        checkBrowserControls(false);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
         // Add two tab modal dialogs available for showing.
@@ -199,7 +199,7 @@ public class ChromeTabModalPresenterTest {
         onViewWaiting(withId(R.id.tab_modal_dialog_container))
                 .check(matches(
                         allOf(hasDescendant(withText("1")), not(hasDescendant(withText("2"))))));
-        checkBrowserControls(true);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, true);
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
         //  Tab modal dialogs should be suspended on entering tab switcher.
@@ -208,7 +208,7 @@ public class ChromeTabModalPresenterTest {
         onView(withId(R.id.tab_modal_dialog_container))
                 .check(matches(allOf(
                         not(hasDescendant(withText("1"))), not(hasDescendant(withText("2"))))));
-        checkBrowserControls(false);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
         // An app modal dialog can be shown in tab switcher.
@@ -234,7 +234,7 @@ public class ChromeTabModalPresenterTest {
         onView(withId(R.id.tab_modal_dialog_container))
                 .check(matches(
                         allOf(hasDescendant(withText("1")), not(hasDescendant(withText("2"))))));
-        checkBrowserControls(true);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, true);
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
         // Dismiss the first dialog. The second dialog should be shown.
@@ -243,7 +243,7 @@ public class ChromeTabModalPresenterTest {
         onView(withId(R.id.tab_modal_dialog_container))
                 .check(matches(
                         allOf(not(hasDescendant(withText("1"))), hasDescendant(withText("2")))));
-        checkBrowserControls(true);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, true);
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
         // Reset states.
@@ -264,7 +264,7 @@ public class ChromeTabModalPresenterTest {
 
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
-        checkBrowserControls(false);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
         // Add a tab modal dialog available for showing.
@@ -273,20 +273,20 @@ public class ChromeTabModalPresenterTest {
         ensureDialogContainerVisible();
         onView(withId(R.id.tab_modal_dialog_container))
                 .check(matches(hasDescendant(withText("1"))));
-        checkBrowserControls(true);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, true);
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
         // Tab modal dialogs should be suspended on entering tab switcher.
         onView(withId(R.id.tab_switcher_button)).perform(click());
         checkPendingSize(mManager, ModalDialogType.TAB, 1);
-        checkBrowserControls(false);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
         // Close the only tab in the tab switcher. Verify that the queued tab modal dialogs are
         // cleared.
         ChromeTabUtils.closeCurrentTab(InstrumentationRegistry.getInstrumentation(), mActivity);
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
-        checkBrowserControls(false);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
     }
 
@@ -303,7 +303,7 @@ public class ChromeTabModalPresenterTest {
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
         checkPendingSize(mManager, ModalDialogType.APP, 0);
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
-        checkBrowserControls(false);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
         // Add a tab modal dialog available for showing.
@@ -313,28 +313,28 @@ public class ChromeTabModalPresenterTest {
         ensureDialogContainerVisible();
         onView(withId(R.id.tab_modal_dialog_container))
                 .check(matches(hasDescendant(withText("1"))));
-        checkBrowserControls(true);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, true);
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
         // Tab modal dialogs should be suspended on entering tab switcher.
         onView(withId(R.id.tab_switcher_button)).perform(click());
         checkPendingSize(mManager, ModalDialogType.APP, 0);
         checkPendingSize(mManager, ModalDialogType.TAB, 1);
-        checkBrowserControls(false);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
         // Close current tab in the tab switcher.
         ChromeTabUtils.closeCurrentTab(InstrumentationRegistry.getInstrumentation(), mActivity);
         checkPendingSize(mManager, ModalDialogType.APP, 0);
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
-        checkBrowserControls(false);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
         // Show a new tab modal dialog, and it should be suspended in tab switcher.
         showDialog(mManager, dialog2, ModalDialogType.TAB);
         checkPendingSize(mManager, ModalDialogType.APP, 0);
         checkPendingSize(mManager, ModalDialogType.TAB, 1);
-        checkBrowserControls(false);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
         // Show an app modal dialog. The app modal dialog should be shown.
@@ -358,7 +358,7 @@ public class ChromeTabModalPresenterTest {
 
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
-        checkBrowserControls(false);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
         // Add a tab modal dialog available for showing.
@@ -367,13 +367,13 @@ public class ChromeTabModalPresenterTest {
         ensureDialogContainerVisible();
         onView(withId(R.id.tab_modal_dialog_container))
                 .check(matches(hasDescendant(withText("1"))));
-        checkBrowserControls(true);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, true);
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
         // Dialog should be dismissed after switching to a different tab.
         ChromeTabUtils.switchTabInCurrentTabModel(mActivity, 1);
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
-        checkBrowserControls(false);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
         // Open a tab modal dialog in the current tab. The dialog should be shown.
@@ -382,7 +382,7 @@ public class ChromeTabModalPresenterTest {
         ensureDialogContainerVisible();
         onView(withId(R.id.tab_modal_dialog_container))
                 .check(matches(hasDescendant(withText("2"))));
-        checkBrowserControls(true);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, true);
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
     }
 
@@ -395,7 +395,7 @@ public class ChromeTabModalPresenterTest {
 
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
-        checkBrowserControls(false);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
         // Add two tab modal dialogs available for showing. The first dialog should be shown first.
@@ -412,7 +412,7 @@ public class ChromeTabModalPresenterTest {
         onView(withId(R.id.tab_modal_dialog_container))
                 .check(matches(
                         allOf(not(hasDescendant(withText("1"))), hasDescendant(withText("2")))));
-        checkBrowserControls(true);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, true);
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
         // Perform a second back press. The second tab modal dialog should be dismissed.
@@ -422,7 +422,7 @@ public class ChromeTabModalPresenterTest {
         onView(withId(R.id.tab_modal_dialog_container))
                 .check(matches(allOf(
                         not(hasDescendant(withText("1"))), not(hasDescendant(withText("2"))))));
-        checkBrowserControls(false);
+        ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
     }
 
@@ -564,24 +564,6 @@ public class ChromeTabModalPresenterTest {
     private int getBrowserControlsConstraints() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mTabModalPresenter.getBrowserControlsVisibilityDelegate().get());
-    }
-
-    private void checkBrowserControls(boolean restricted) {
-        boolean isViewObscuringAllTabs = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivity.getTabObscuringHandler().areAllTabsObscured());
-        boolean isMenuEnabled = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            View menu = mActivity.getToolbarManager().getMenuButtonView();
-            Assert.assertNotNull("Toolbar menu is incorrectly null.", menu);
-            return menu.isEnabled();
-        });
-
-        if (restricted) {
-            assertTrue("All tabs should be obscured", isViewObscuringAllTabs);
-            Assert.assertFalse("Menu is incorrectly enabled.", isMenuEnabled);
-        } else {
-            Assert.assertFalse("Tabs shouldn't be obscured", isViewObscuringAllTabs);
-            assertTrue("Menu is incorrectly disabled.", isMenuEnabled);
-        }
     }
 
     private void ensureDialogContainerVisible() {

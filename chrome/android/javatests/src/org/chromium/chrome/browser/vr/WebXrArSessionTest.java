@@ -11,6 +11,7 @@ import android.os.Build;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,14 +25,18 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.modaldialog.ChromeModalDialogTestUtils;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.ArTestRuleUtils;
+import org.chromium.chrome.browser.vr.util.PermissionUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.DOMUtils;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeoutException;
 
 /**
  * End-to-end tests for testing WebXR for AR's requestSession behavior.
@@ -115,6 +120,46 @@ public class WebXrArSessionTest {
             mWebXrArTestFramework.enterSessionWithUserGestureOrFail();
             mWebXrArTestFramework.endSession();
         }
+        mWebXrArTestFramework.assertNoJavaScriptErrors();
+    }
+
+    /**
+     * Tests that requesting a permission prompt during an AR Session shows the browser
+     * controls/greys out the screen and doesn't exit the AR Session.
+     */
+    @Test
+    @MediumTest
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.CTA})
+    public void testPermissionRequestDuringAr() throws TimeoutException {
+        mWebXrArTestFramework.loadFileAndAwaitInitialization(
+                "test_permission_request_during_ar", PAGE_LOAD_TIMEOUT_S);
+        WebContents contents = mWebXrArTestFramework.getCurrentWebContents();
+
+        // Start new session, accepting the consent prompt
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(contents);
+        mWebXrArTestFramework.assertNoJavaScriptErrors();
+
+        // Trigger a new permission prompt to show when tapping on the canvas, then tap on it.
+        mWebXrArTestFramework.runJavaScriptOrFail("setupCanvasClick()", POLL_TIMEOUT_SHORT_MS);
+        Assert.assertTrue(DOMUtils.clickNode(contents, "webgl-canvas"));
+        PermissionUtils.waitForPermissionPrompt();
+
+        // Now that the new permission prompt is showing, ensure that the browser controls have
+        // shown themselves and that we still have an AR Session.
+        ChromeModalDialogTestUtils.checkBrowserControls(mTestRule.getActivity(), true);
+        Assert.assertTrue(Boolean.valueOf(mWebXrArTestFramework.runJavaScriptOrFail(
+                "sessionInfos[sessionTypes.AR].currentSession != null", POLL_TIMEOUT_SHORT_MS)));
+
+        // Reject the permission prompt to hide it again.
+        PermissionUtils.denyPermissionPrompt();
+        PermissionUtils.waitForPermissionPromptDismissal();
+
+        // Now that the new permission prompt is dismissed, ensure that the browser controls have
+        // hidden themselves and that we still have an AR Session.
+        ChromeModalDialogTestUtils.checkBrowserControls(mTestRule.getActivity(), false);
+        Assert.assertTrue(Boolean.valueOf(mWebXrArTestFramework.runJavaScriptOrFail(
+                "sessionInfos[sessionTypes.AR].currentSession != null", POLL_TIMEOUT_SHORT_MS)));
+
         mWebXrArTestFramework.assertNoJavaScriptErrors();
     }
 }
