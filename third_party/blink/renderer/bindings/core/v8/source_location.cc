@@ -121,7 +121,7 @@ std::unique_ptr<SourceLocation> SourceLocation::CreateFromNonEmptyV8StackTrace(
   String url = ToCoreString(stack_trace->topSourceURL());
   unsigned line_number = stack_trace->topLineNumber();
   unsigned column_number = stack_trace->topColumnNumber();
-  int script_id = stack_trace->topScriptIdAsInteger();
+  int script_id = stack_trace->topScriptId();
   return base::WrapUnique(new SourceLocation(
       url, line_number, column_number, std::move(stack_trace), script_id));
 }
@@ -170,7 +170,7 @@ void SourceLocation::ToTracedValue(TracedValue* value, const char* name) const {
   value->BeginDictionary();
   value->SetString("functionName",
                    ToCoreString(stack_trace_->topFunctionName()));
-  value->SetInteger("scriptId", stack_trace_->topScriptIdAsInteger());
+  value->SetInteger("scriptId", stack_trace_->topScriptId());
   value->SetString("url", ToCoreString(stack_trace_->topSourceURL()));
   value->SetInteger("lineNumber", stack_trace_->topLineNumber());
   value->SetInteger("columnNumber", stack_trace_->topColumnNumber());
@@ -186,7 +186,7 @@ void SourceLocation::WriteIntoTrace(perfetto::TracedValue context) const {
   // TODO(altimin): Add TracedValue support to v8::StringView and remove
   // ToCoreString calls.
   dict.Add("functionName", ToCoreString(stack_trace_->topFunctionName()));
-  dict.Add("scriptId", stack_trace_->topScriptIdAsInteger());
+  dict.Add("scriptId", stack_trace_->topScriptId());
   dict.Add("url", ToCoreString(stack_trace_->topSourceURL()));
   dict.Add("lineNumber", stack_trace_->topLineNumber());
   dict.Add("columnNumber", stack_trace_->topColumnNumber());
