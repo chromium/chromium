@@ -2462,15 +2462,15 @@ class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest,
                        V8CacheOnCacheStorage) {
+  RenderProcessHostBadMojoMessageWaiter rph_kill_waiter(
+      shell()->web_contents()->GetMainFrame()->GetProcess());
+
   RegisterAndActivateServiceWorker();
 
   // First load: fetch_event_response_via_cache.js returns |cloned_response|.
   // The V8 code cache should not be stored in CacheStorage.
   NavigateToTestPage();
   WaitUntilSideDataSizeIs(0);
-
-  RenderProcessHostBadMojoMessageWaiter rph_kill_waiter(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
 
   // Second load: This will send an invalid origin for the code cache host and
   // should trigger a process crash.
