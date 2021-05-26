@@ -23,6 +23,7 @@ public final class LinkToTextMetricsHelper {
      * @param linkGenerationStatus The state of the link generation that ended up being shared.
      */
     public static void recordSharedHighlightStateMetrics(@LinkGeneration int linkGenerationStatus) {
+        if (linkGenerationStatus == LinkGeneration.MAX) return;
         switch (linkGenerationStatus) {
             case LinkGeneration.LINK:
                 RecordUserAction.record(

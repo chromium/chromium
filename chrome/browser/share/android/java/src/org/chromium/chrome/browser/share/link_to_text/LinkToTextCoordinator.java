@@ -116,7 +116,11 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                               .setText(String.format(SHARE_TEXT_TEMPLATE, mSelectedText))
                               .setLinkToTextSuccessful(true)
                               .build();
-
+            mShareTextParams =
+                    new ShareParams.Builder(mTab.getWindowAndroid(), /*title=*/"", /*url=*/"")
+                            .setText(mSelectedText)
+                            .setLinkToTextSuccessful(selector.isEmpty() ? false : true)
+                            .build();
             mChromeOptionShareCallback.showShareSheet(
                     getShareParams(
                             selector.isEmpty() ? LinkGeneration.FAILURE : LinkGeneration.LINK),
@@ -186,10 +190,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                     @Override
                     public void call(String[] matches) {
                         mSelectedText = String.join(",", matches);
-                        mShareTextParams =
-                                new ShareParams.Builder(mTab.getWindowAndroid(), /*title=*/"", "")
-                                        .setText(mSelectedText)
-                                        .build();
                         onSelectorReady(mVisibleUrl);
                     }
                 });
