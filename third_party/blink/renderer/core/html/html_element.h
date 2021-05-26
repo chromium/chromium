@@ -48,6 +48,13 @@ enum TranslateAttributeMode {
   kTranslateAttributeInherit
 };
 
+enum class ContentEditableType {
+  kInherit,
+  kContentEditable,
+  kNotContentEditable,
+  kPlaintextOnly,
+};
+
 class CORE_EXPORT HTMLElement : public Element {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -72,6 +79,7 @@ class CORE_EXPORT HTMLElement : public Element {
 
   virtual bool HasCustomFocusLogic() const;
 
+  ContentEditableType contentEditableNormalized() const;
   String contentEditable() const;
   void setContentEditable(const String&, ExceptionState&);
   // For HTMLElement.prototype.isContentEditable. This matches to neither

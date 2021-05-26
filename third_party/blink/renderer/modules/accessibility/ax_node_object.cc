@@ -2719,8 +2719,10 @@ bool AXNodeObject::HasContentEditableAttributeSet() const {
   if (!html_element)
     return false;
 
-  String normalized_value = html_element->contentEditable();
-  return normalized_value == "true" || normalized_value == "plaintext-only";
+  ContentEditableType normalized_value =
+      html_element->contentEditableNormalized();
+  return normalized_value == ContentEditableType::kContentEditable ||
+         normalized_value == ContentEditableType::kPlaintextOnly;
 }
 
 // Returns the nearest block-level LayoutBlockFlow ancestor
