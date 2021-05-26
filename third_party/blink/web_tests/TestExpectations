@@ -1126,12 +1126,6 @@ crbug.com/958381 fast/table/border-collapsing/composited-row-collapsed-border.ht
 # Rowspanned cell overflows TD visible rect.
 crbug.com/958381 external/wpt/css/css-tables/visibility-collapse-rowspan-005.html [ Failure ]
 
-# These tests are messy, not sure what they are testing. Lots of failures in Legacy and NG. Delete?
-crbug.com/958381 fast/table/table-all-rowspans-height-distribution-in-rows-except-overlapped.html [ Failure ]
-crbug.com/958381 fast/table/table-all-rowspans-height-distribution-in-rows.html [ Failure ]
-crbug.com/958381 fast/table/table-rowspan-height-distribution-in-rows-1.html [ Failure ]
-crbug.com/958381 fast/table/table-rowspan-height-distribution-in-rows-2.html [ Failure ]
-
 # Mac failures - antialiasing of ref
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-087.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-088.xht [ Failure ]

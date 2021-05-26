@@ -820,10 +820,6 @@ crbug.com/958381 virtual/text-antialias/international/bidi-layout-across-linebre
 
 ### Pass in Legacy, fail in NG
 crbug.com/958381 external/wpt/css/css-tables/visibility-collapse-rowspan-005.html [ Pass ]
-crbug.com/958381 fast/table/table-all-rowspans-height-distribution-in-rows-except-overlapped.html [ Pass ]
-crbug.com/958381 fast/table/table-all-rowspans-height-distribution-in-rows.html [ Pass ]
-crbug.com/958381 fast/table/table-rowspan-height-distribution-in-rows-1.html [ Pass ]
-crbug.com/958381 fast/table/table-rowspan-height-distribution-in-rows-2.html [ Pass ]
 crbug.com/958381 accessibility/inline-text-textarea.html [ Pass ]
 crbug.com/958381 accessibility/table-cells-with-colspan.html [ Pass ]
 crbug.com/958381 accessibility/table-with-hidden-head-section.html [ Pass ]
