@@ -8,6 +8,8 @@
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -33,10 +35,10 @@ void RecordModalDialogAccepted(bool accepted) {
 
 AccessibilityLabelsBubbleModel::AccessibilityLabelsBubbleModel(
     Profile* profile,
-    WebContents* web_contents,
+    content::WebContents* web_contents,
     bool enable_always)
-    : profile_(profile),
-      web_contents_(web_contents),
+    : WebContentsObserver(web_contents),
+      profile_(profile),
       enable_always_(enable_always) {}
 
 AccessibilityLabelsBubbleModel::~AccessibilityLabelsBubbleModel() {}
@@ -91,12 +93,16 @@ GURL AccessibilityLabelsBubbleModel::GetHelpPageURL() const {
 }
 
 void AccessibilityLabelsBubbleModel::OpenHelpPage() {
-  // TODO(katie): Link to a specific accessibility labels help page when
-  // there is one; check with the privacy team.
   OpenURLParams params(GetHelpPageURL(), Referrer(),
                        WindowOpenDisposition::NEW_FOREGROUND_TAB,
                        ui::PAGE_TRANSITION_LINK, false);
-  web_contents_->OpenURL(params);
+  if (web_contents()) {
+    web_contents()->OpenURL(params);
+    return;
+  }
+  // The web contents used to open this dialog have been destroyed.
+  Browser* browser = chrome::ScopedTabbedBrowserDisplayer(profile_).browser();
+  browser->OpenURL(params);
 }
 
 void AccessibilityLabelsBubbleModel::SetPref(bool enabled) {
