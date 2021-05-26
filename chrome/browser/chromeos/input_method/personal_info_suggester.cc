@@ -201,6 +201,10 @@ void PersonalInfoSuggester::OnBlur() {
   context_id_ = -1;
 }
 
+void PersonalInfoSuggester::OnSurroundingTextChanged(const std::u16string& text,
+                                                     int cursor_pos,
+                                                     int anchor_pos) {}
+
 void PersonalInfoSuggester::OnExternalSuggestionsUpdated(
     const std::vector<TextSuggestion>& suggestions) {
   // PersonalInfoSuggester doesn't utilize any suggestions produced externally,

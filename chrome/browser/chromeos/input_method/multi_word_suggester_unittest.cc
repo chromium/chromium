@@ -117,4 +117,45 @@ TEST(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnNonTabKeypress) {
   EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"hi there!");
 }
 
+TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthForOneWord) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+  int focused_context_id = 5;
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "how are you going"},
+  };
+
+  suggester.OnFocus(focused_context_id);
+  suggester.OnSurroundingTextChanged(u"ho", /*cursor_pos=*/2, /*anchor_pos=*/2);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"how are you going");
+  EXPECT_EQ(suggestion_handler.GetConfirmedLength(), 2);  // ho
+}
+
+TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthForManyWords) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+  int focused_context_id = 5;
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "where are you going"},
+  };
+
+  suggester.OnFocus(focused_context_id);
+  suggester.OnSurroundingTextChanged(u"hey there sam whe",
+                                     /*cursor_pos=*/17, /*anchor_pos=*/17);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"where are you going");
+  EXPECT_EQ(suggestion_handler.GetConfirmedLength(), 3);  // whe
+}
+
 }  // namespace chromeos

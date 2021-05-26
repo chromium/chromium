@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/base/ime/chromeos/ime_assistive_window_handler_interface.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/wm/core/window_util.h"
@@ -104,7 +105,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
   }
 };
 
-TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsSuggestionViewBound) {
+TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
   // Sets up suggestion_view with confirmed_length = 0.
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
@@ -126,7 +127,7 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsSuggestionViewBound) {
 }
 
 TEST_F(AssistiveWindowControllerTest,
-       ConfirmedLengthNot0DoesNotSetSuggestionViewBound) {
+       ConfirmedLengthNSetsBoundsToCompositionTextBounds) {
   // Sets up suggestion_view with confirmed_length = 1.
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
@@ -139,12 +140,44 @@ TEST_F(AssistiveWindowControllerTest,
       ui::IMEBridge::Get()->GetAssistiveWindowHandler()->GetConfirmedLength());
 
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
-  gfx::Rect new_caret_bounds(current_bounds.width() + 1,
-                             current_bounds.height());
+  gfx::Rect composition_text_bounds(current_bounds.width() - 5,
+                                    current_bounds.height());
+
   Bounds bounds;
-  bounds.caret = new_caret_bounds;
+  bounds.composition_text = composition_text_bounds;
   ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
-  EXPECT_EQ(current_bounds, suggestion_view->GetAnchorRect());
+  EXPECT_EQ(composition_text_bounds, suggestion_view->GetAnchorRect());
+}
+
+TEST_F(AssistiveWindowControllerTest,
+       ShowingSuggestionForFirstTimeShouldRepositionWindow) {
+  ui::ime::SuggestionDetails details;
+  details.text = suggestion_;
+  details.confirmed_length = 0;
+  IMEAssistiveWindowHandlerInterface* assistive_window =
+      ui::IMEBridge::Get()->GetAssistiveWindowHandler();
+  assistive_window->ShowSuggestion(details);
+  ui::ime::SuggestionWindowView* suggestion_view =
+      controller_->GetSuggestionWindowViewForTesting();
+
+  gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
+  gfx::Rect caret_bounds_after_one_key(current_bounds.width() + 1,
+                                       current_bounds.height());
+  gfx::Rect caret_bounds_after_two_key(current_bounds.width() + 2,
+                                       current_bounds.height());
+
+  // One char entered
+  assistive_window->SetBounds(Bounds{.caret = caret_bounds_after_one_key});
+
+  // Mimic tracking the last suggestion
+  details.confirmed_length = 1;
+  assistive_window->ShowSuggestion(details);
+
+  // Second char entered to text input
+  assistive_window->SetBounds(Bounds{.caret = caret_bounds_after_two_key});
+
+  // Second `SetBounds` should be ignored
+  EXPECT_EQ(caret_bounds_after_one_key, suggestion_view->GetAnchorRect());
 }
 
 TEST_F(AssistiveWindowControllerTest,

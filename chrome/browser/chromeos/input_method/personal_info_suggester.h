@@ -52,6 +52,9 @@ class PersonalInfoSuggester : public Suggester {
   // Suggester overrides:
   void OnFocus(int context_id) override;
   void OnBlur() override;
+  void OnSurroundingTextChanged(const std::u16string& text,
+                                int cursor_pos,
+                                int anchor_pos) override;
   void OnExternalSuggestionsUpdated(
       const std::vector<ime::TextSuggestion>& suggestions) override;
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;

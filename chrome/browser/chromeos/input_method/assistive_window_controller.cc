@@ -119,8 +119,10 @@ void AssistiveWindowController::SetBounds(const Bounds& bounds) {
   // position before showing.
   // TODO(crbug/1112982): Investigate getting bounds to suggester before sending
   // show suggestion request.
-  if (suggestion_window_view_ && confirmed_length_ == 0)
-    suggestion_window_view_->SetAnchorRect(bounds.caret);
+  if (suggestion_window_view_ && !tracking_last_suggestion_) {
+    suggestion_window_view_->SetAnchorRect(
+        confirmed_length_ == 0 ? bounds.caret : bounds.composition_text);
+  }
 }
 
 void AssistiveWindowController::FocusStateChanged() {
@@ -134,6 +136,7 @@ void AssistiveWindowController::ShowSuggestion(
     const ui::ime::SuggestionDetails& details) {
   if (!suggestion_window_view_)
     InitSuggestionWindow();
+  tracking_last_suggestion_ = suggestion_text_ == details.text;
   suggestion_text_ = details.text;
   confirmed_length_ = details.confirmed_length;
   suggestion_window_view_->Show(details);

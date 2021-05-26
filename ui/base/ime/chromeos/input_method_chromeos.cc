@@ -238,6 +238,7 @@ void InputMethodChromeOS::OnCaretBoundsChanged(const TextInputClient* client) {
     chromeos::Bounds bounds;
     bounds.caret = caret_rect;
     bounds.autocorrect = client->GetAutocorrectCharacterBounds();
+    client->GetCompositionCharacterBounds(0, &bounds.composition_text);
     assistive_window->SetBounds(bounds);
   }
 

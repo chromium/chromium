@@ -168,6 +168,10 @@ void EmojiSuggester::OnBlur() {
   context_id_ = -1;
 }
 
+void EmojiSuggester::OnSurroundingTextChanged(const std::u16string& text,
+                                              int cursor_pos,
+                                              int anchor_pos) {}
+
 void EmojiSuggester::OnExternalSuggestionsUpdated(
     const std::vector<TextSuggestion>& suggestions) {
   // EmojiSuggester doesn't utilize any suggestions produced externally, so

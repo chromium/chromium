@@ -73,6 +73,7 @@ class AssistiveWindowController : public views::WidgetObserver,
   std::u16string suggestion_text_;
   size_t confirmed_length_ = 0;
   Bounds bounds_;
+  bool tracking_last_suggestion_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(AssistiveWindowController);
 };

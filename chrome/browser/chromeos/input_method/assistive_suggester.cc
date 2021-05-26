@@ -453,6 +453,9 @@ bool AssistiveSuggester::OnSurroundingTextChanged(const std::u16string& text,
   if (context_id_ == -1)
     return false;
 
+  // Only multi word cares about tracking the current state of the text field
+  multi_word_suggester_.OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
+
   if (!Suggest(text, cursor_pos, anchor_pos)) {
     DismissSuggestion();
   }
