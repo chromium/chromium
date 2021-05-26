@@ -26,12 +26,23 @@ void EnableTerminationOnHeapCorruption() {
 }
 
 bool UncheckedMalloc(size_t size, void** result) {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // Unlike use_allocator="none", the default malloc zone is replaced with
+  // PartitionAlloc, so the allocator shim functions work best.
+  *result = allocator::UncheckedAlloc(size);
+  return *result != nullptr;
+#else   // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return allocator::UncheckedMallocMac(size, result);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
+// The standard version is defined in memory.cc in case of
+// USE_PARTITION_ALLOC_AS_MALLOC.
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
   return allocator::UncheckedCallocMac(num_items, size, result);
 }
+#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 void EnableTerminationOnOutOfMemory() {
   // Step 1: Enable OOM killer on C++ failures.
