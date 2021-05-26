@@ -7,7 +7,7 @@
  * audio_player_scripts.js
  */
 
-import {AudioPlayer, reload, unload} from './audio_player.m.js';
+import {AudioPlayer, reload, unload} from './audio_player.js';
 
 window.reload = reload;
 window.unload = unload;

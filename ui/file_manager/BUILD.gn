@@ -81,8 +81,13 @@ preprocess_if_expr("preprocess_static") {
 
   in_files = [
     # Audio Player:
+    "audio_player/js/audio_player.js",
+    "audio_player/js/background.js",
+    "audio_player/js/error_util.js",
     "audio_player/js/main.m.js",
     "audio_player/js/main_background.m.js",
+    "audio_player/js/metadata_worker.js",
+    "audio_player/js/test_util.js",
 
     # Files app:
     "file_manager/background/js/main_background.m.js",
@@ -99,8 +104,7 @@ preprocess_if_expr("preprocess_static") {
   ]
 
   deps = [
-    "//ui/file_manager/audio_player/js:main.m",
-    "//ui/file_manager/audio_player/js:main_background.m",
+    "//ui/file_manager/audio_player/js:js_modules",
     "//ui/file_manager/file_manager/background/js:main_background.m",
     "//ui/file_manager/file_manager/foreground/js:deferred_elements.m",
     "//ui/file_manager/file_manager/foreground/js:main.m",
@@ -118,11 +122,6 @@ preprocess_if_expr("preprocess_generated") {
 
   in_files = [
     # Audio Player:
-    "audio_player/js/error_util.m.js",
-    "audio_player/js/test_util.m.js",
-    "audio_player/js/background.m.js",
-    "audio_player/js/audio_player.m.js",
-    "audio_player/js/metadata_worker.m.js",
     "audio_player/elements/audio_player.js",
     "audio_player/elements/track_info_panel.js",
     "audio_player/elements/track_list.js",
@@ -371,7 +370,6 @@ preprocess_if_expr("preprocess_generated") {
 
   deps = [
     "//ui/file_manager/audio_player/elements:web_components",
-    "//ui/file_manager/audio_player/js:modulize",
     "//ui/file_manager/file_manager:gen_main_html",
     "//ui/file_manager/file_manager/background/js:modulize",
     "//ui/file_manager/file_manager/common/js:modulize",
@@ -414,7 +412,7 @@ generate_grd("build_grd") {
   input_files = [
     "audio_player/js/main.m.rollup.js",
     "audio_player/js/main_background.m.rollup.js",
-    "audio_player/js/metadata_worker.m.rollup.js",
+    "audio_player/js/metadata_worker.rollup.js",
 
     # Fix broken images:
     "file_manager/images/files/ui/arrow_right.svg",
@@ -426,7 +424,7 @@ generate_grd("build_grd") {
   resource_path_rewrites = [
     "audio_player/js/main.m.rollup.js|audio_player/js/main.m.js",
     "audio_player/js/main_background.m.rollup.js|audio_player/js/main_background.m.js",
-    "audio_player/js/metadata_worker.m.rollup.js|audio_player/js/metadata_worker.m.js",
+    "audio_player/js/metadata_worker.rollup.js|audio_player/js/metadata_worker.js",
   ]
 
   if (optimize_webui) {

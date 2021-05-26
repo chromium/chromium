@@ -4,7 +4,6 @@
 
 import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 
 group("closure_compile") {
   testonly = true
@@ -14,24 +13,40 @@ group("closure_compile") {
   ]
 }
 
+group("js_modules") {
+  deps = [
+    ":audio_player",
+    ":background",
+    ":error_util",
+    ":main.m",
+    ":main_background.m",
+    ":test_util",
+  ]
+}
+
 js_type_check("closure_compile_jsmodules") {
   deps = [
-    ":background.m",
-    ":error_util.m",
-    ":metadata_worker.m",
+    ":background",
+    ":error_util",
+    ":metadata_worker",
   ]
+  closure_flags = default_closure_args + [
+                    "js_module_root=gen/ui/file_manager/",
+                    "js_module_root=../../ui/file_manager/",
+                  ]
 }
 
 js_type_check("closure_compile_polymer") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
                     "js_module_root=gen/ui/file_manager/",
+                    "js_module_root=../../ui/file_manager/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
 
   deps = [
-    ":audio_player.m",
+    ":audio_player",
     ":main.m",
   ]
 }
@@ -48,21 +63,6 @@ js_library("closure_compile_externs") {
 
 js_library("audio_player") {
   deps = [
-    "//ui/file_manager/audio_player/elements:audio_player",
-    "//ui/file_manager/audio_player/elements:track_list",
-    "//ui/file_manager/file_manager/common/js:app_util",
-    "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
-    "//ui/file_manager/file_manager/common/js:mediasession_types",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/foreground/js/metadata:content_metadata_provider",
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-  ]
-}
-
-js_library("audio_player.m") {
-  sources =
-      [ "$root_gen_dir/ui/file_manager/audio_player/js/audio_player.m.js" ]
-  deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/file_manager/audio_player/elements:audio_player",
     "//ui/file_manager/file_manager/common/js:app_util.m",
@@ -74,100 +74,48 @@ js_library("audio_player.m") {
     "//ui/file_manager/file_manager/externs:volume_manager.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:content_metadata_provider.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model.m",
-    "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 
   externs_list = [
     "//ui/file_manager/file_manager/externs/audio_player_foreground.js",
     "$externs_path/mediasession.js",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("background") {
-  deps = [
-    "//ui/file_manager/file_manager/background/js:app_window_wrapper",
-    "//ui/file_manager/file_manager/background/js:background_base",
-    "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/common/js:util",
-  ]
-}
-
-js_library("background.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/audio_player/js/background.m.js" ]
   deps = [
     "//ui/file_manager/file_manager/background/js:app_window_wrapper.m",
     "//ui/file_manager/file_manager/background/js:background_base.m",
     "//ui/file_manager/file_manager/common/js:file_type.m",
     "//ui/file_manager/file_manager/common/js:util.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("error_util") {
 }
 
-js_library("error_util.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/audio_player/js/error_util.m.js" ]
-  extra_deps = [ ":modulize" ]
-}
-
 js_library("metadata_worker") {
-  deps = [
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_dispatcher",
-  ]
-}
-
-js_library("metadata_worker.m") {
-  sources =
-      [ "$root_gen_dir/ui/file_manager/audio_player/js/metadata_worker.m.js" ]
   deps = [ "//ui/file_manager/file_manager/foreground/js/metadata:metadata_dispatcher.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("test_util") {
-}
-
-js_library("test_util.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/audio_player/js/test_util.m.js" ]
   deps = [
-    ":background.m",
+    ":background",
     "//ui/file_manager/file_manager/background/js:test_util_base.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("main.m") {
-  deps = [ ":audio_player.m" ]
+  deps = [ ":audio_player" ]
 }
 
 js_library("main_background.m") {
   deps = [
-    ":background.m",
-    ":error_util.m",
-    ":test_util.m",
+    ":background",
+    ":error_util",
+    ":test_util",
   ]
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "audio_player.js",
-    "background.js",
-    "error_util.js",
-    "metadata_worker.js",
-    "test_util.js",
-  ]
-
-  namespace_rewrites = [
-    # initializeAudioPlayer uses HTMLImports, so rewriting to bypass it.
-    "initializeAudioPlayer|moduleInitializeAudioPlayer",
-
-    "Polymer.CaseMap.dashToCamelCase|dashToCamelCase",
-  ]
-
-  preserve_offsets = [ "True" ]
 }
 
 preprocess_folder =
@@ -205,9 +153,9 @@ optimize_webui("build_worker") {
   host = "audio_player"
 
   input = preprocess_folder
-  js_module_in_files = [ "metadata_worker.m.js" ]
+  js_module_in_files = [ "metadata_worker.js" ]
 
-  js_out_files = [ "metadata_worker.m.rollup.js" ]
+  js_out_files = [ "metadata_worker.rollup.js" ]
 
   external_paths = [
     "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
@@ -215,7 +163,6 @@ optimize_webui("build_worker") {
   ]
 
   deps = [
-    ":metadata_worker.m",
     "//ui/file_manager:preprocess_generated",
     "//ui/file_manager:preprocess_static",
     "//ui/webui/resources:preprocess",

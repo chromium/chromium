@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import '../elements/audio_player.js';
-// #import {dashToCamelCase} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {ExternallyUnmountedEvent} from '../../file_manager/externs/volume_manager.m.js';
-// #import {FilteredVolumeManager} from '../../file_manager/common/js/filtered_volume_manager.m.js';
-// #import {AllowedPaths} from '../../file_manager/common/js/volume_manager_types.m.js';
-// #import {MediaSessionPlaybackState} from '../../file_manager/common/js/mediasession_types.m.js';
-// #import * as appUtilWrapped from '../../file_manager/common/js/app_util.m.js'; const {appUtil} = appUtilWrapped;
-// #import * as wrappedAsyncUtil from '../../file_manager/common/js/async_util.m.js'; const {AsyncUtil} = wrappedAsyncUtil;
-// #import * as wrappedUtil from '../../file_manager/common/js/util.m.js'; const {util} = wrappedUtil;
-// #import {ContentMetadataProvider} from '../../file_manager/foreground/js/metadata/content_metadata_provider.m.js';
-// #import {MetadataModel} from '../../file_manager/foreground/js/metadata/metadata_model.m.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// clang-format on
+import '../elements/audio_player.js';
+
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {dashToCamelCase} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {appUtil} from '../../file_manager/common/js/app_util.m.js';
+import {AsyncUtil} from '../../file_manager/common/js/async_util.m.js';
+import {FilteredVolumeManager} from '../../file_manager/common/js/filtered_volume_manager.m.js';
+import {MediaSessionPlaybackState} from '../../file_manager/common/js/mediasession_types.m.js';
+import {util} from '../../file_manager/common/js/util.m.js';
+import {AllowedPaths} from '../../file_manager/common/js/volume_manager_types.m.js';
+import {ExternallyUnmountedEvent} from '../../file_manager/externs/volume_manager.m.js';
+import {ContentMetadataProvider} from '../../file_manager/foreground/js/metadata/content_metadata_provider.m.js';
+import {MetadataModel} from '../../file_manager/foreground/js/metadata/metadata_model.m.js';
 
 /**
  * @param {Element} container Container element.
  * @constructor
  */
-/* #export */ function AudioPlayer(container) {
+export function AudioPlayer(container) {
   this.container_ = container;
 
   this.volumeManager_ = new FilteredVolumeManager(
@@ -86,7 +86,7 @@
     // Update the UI by loaded state.
     for (const storageKey in results) {
       const key = storageKey.substr(STORAGE_PREFIX.length);
-      this.player_[Polymer.CaseMap.dashToCamelCase(key)] = results[storageKey];
+      this.player_[dashToCamelCase(key)] = results[storageKey];
     }
     // Start listening to UI changes to write back the states to local storage.
     for (let i = 0; i < KEYS_TO_SAVE_STATES.length; i++) {
@@ -144,7 +144,7 @@
 
       // Override metadata worker's path.
       ContentMetadataProvider.configure(
-          '/js/metadata_worker.m.js',
+          '/js/metadata_worker.js',
           /*isModule=*/ true);
 
       this.metadataModel_ = MetadataModel.create(this.volumeManager_);
@@ -182,7 +182,7 @@ AudioPlayer.load = function() {
 /**
  * Unloads the player.
  */
-/* #export */ function unload() {
+export function unload() {
   if (AudioPlayer.instance) {
     AudioPlayer.instance.onUnload();
   }
@@ -191,7 +191,7 @@ AudioPlayer.load = function() {
 /**
  * Reloads the player.
  */
-/* #export */ function reload() {
+export function reload() {
   AudioPlayer.instance.load(/** @type {Playlist} */ (window.appState));
 }
 
@@ -713,24 +713,4 @@ AudioPlayer.TrackInfo.prototype.setMetadata = function(
   this.artworkUrl = metadata.contentThumbnailUrl || "";
 };
 
-/**
- * initializeAudioPlayer: loads the audio player.
- */
-/* #ignore */ function initializeAudioPlayer() {
-  /* #ignore */ window.HTMLImports.whenReady(AudioPlayer.load);
-/* #ignore */ }
-
-/**
- * initializeAudioPlayer: loads the audio player.
- */
-function moduleInitializeAudioPlayer() {
-  AudioPlayer.load();
-}
-
-// clang-format off
-/* #ignore */ if (document.readyState === 'loading') {
-  /* #ignore */ document.addEventListener('DOMContentLoaded', initializeAudioPlayer);
-/* #ignore */ } else {
-  initializeAudioPlayer();
-/* #ignore */ }
-// clang-format on
+AudioPlayer.load();

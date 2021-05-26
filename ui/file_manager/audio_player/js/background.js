@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {BackgroundBaseImpl} from '../../file_manager/background/js/background_base.m.js';
-// #import {SingletonAppWindowWrapper} from '../../file_manager/background/js/app_window_wrapper.m.js';
-// #import * as wrappedUtil from '../../file_manager/common/js/util.m.js'; const {util} = wrappedUtil;
-// #import {FileType} from '../../file_manager/common/js/file_type.m.js';
-// clang-format on
+import {SingletonAppWindowWrapper} from '../../file_manager/background/js/app_window_wrapper.m.js';
+import {BackgroundBaseImpl} from '../../file_manager/background/js/background_base.m.js';
+import {FileType} from '../../file_manager/common/js/file_type.m.js';
+import {util} from '../../file_manager/common/js/util.m.js';
 
 /**
  * Icon of the audio player.
@@ -87,7 +85,7 @@ const getAudioPlayer = new Promise(async (resolve) => {
  *     playing.
  * @return {!Promise} Promise to be fulfilled on success, or rejected on error.
  */
-/* #export */ async function open(urls) {
+export async function open(urls) {
   let position = 0;
   const startUrl = (position < urls.length) ? urls[position] : '';
 
