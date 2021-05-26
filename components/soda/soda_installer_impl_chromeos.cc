@@ -47,9 +47,6 @@ base::FilePath SodaInstallerImplChromeOS::GetLanguagePath() const {
 }
 
 void SodaInstallerImplChromeOS::InstallSoda(PrefService* global_prefs) {
-  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
-    return;
-
   // Clear cached path in case this is a reinstallation (path could
   // change).
   SetSodaBinaryPath(base::FilePath());
@@ -69,9 +66,6 @@ void SodaInstallerImplChromeOS::InstallSoda(PrefService* global_prefs) {
 
 void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
                                                 PrefService* global_prefs) {
-  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
-    return;
-
   SodaInstaller::RegisterLanguage(language, global_prefs);
   // Clear cached path in case this is a reinstallation (path could
   // change).
@@ -95,7 +89,6 @@ void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
 }
 
 bool SodaInstallerImplChromeOS::IsSodaInstalled() const {
-  DCHECK(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
   return (soda_binary_installed_ && language_installed_) ||
          soda_installed_for_test_;
 }

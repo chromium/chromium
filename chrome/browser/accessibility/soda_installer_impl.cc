@@ -124,7 +124,6 @@ void SodaInstallerImpl::InstallLanguage(const std::string& language,
 }
 
 bool SodaInstallerImpl::IsSodaInstalled() const {
-  DCHECK(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
   return soda_binary_installed_ && language_installed_;
 }
 
@@ -202,10 +201,6 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
 void SodaInstallerImpl::OnSodaBinaryInstalled() {
   soda_binary_installed_ = true;
   if (language_installed_) {
-    if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-      component_updater_observation_.Reset();
-    }
-
     NotifyOnSodaInstalled();
   }
 }
@@ -216,10 +211,6 @@ void SodaInstallerImpl::OnSodaLanguagePackInstalled(
   NotifyOnSodaLanguagePackInstalled(language_code);
 
   if (soda_binary_installed_) {
-    if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-      component_updater_observation_.Reset();
-    }
-
     NotifyOnSodaInstalled();
   }
 }
