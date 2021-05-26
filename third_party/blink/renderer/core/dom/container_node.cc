@@ -485,7 +485,9 @@ bool ContainerNode::CheckParserAcceptChild(const Node& new_child) const {
 
 void ContainerNode::ParserInsertBefore(Node* new_child, Node& next_child) {
   DCHECK(new_child);
-  DCHECK_EQ(next_child.parentNode(), this);
+  DCHECK(next_child.parentNode() == this ||
+         (DynamicTo<DocumentFragment>(this) &&
+          DynamicTo<DocumentFragment>(this)->IsTemplateContent()));
   DCHECK(!new_child->IsDocumentFragment());
   DCHECK(!IsA<HTMLTemplateElement>(this));
 
@@ -502,6 +504,9 @@ void ContainerNode::ParserInsertBefore(Node* new_child, Node& next_child) {
   while (ContainerNode* parent = new_child->parentNode())
     parent->ParserRemoveChild(*new_child);
 
+  // This can happen if foster parenting moves nodes into a template
+  // content document, but next_child is still a "direct" child of the
+  // template.
   if (next_child.parentNode() != this)
     return;
 
