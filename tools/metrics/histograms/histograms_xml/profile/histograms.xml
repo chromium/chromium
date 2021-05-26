@@ -414,7 +414,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.NumberOfManagedProfiles" units="profiles"
-    expires_after="2021-03-12">
+    expires_after="2022-05-25">
   <owner>agawronska@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
   <owner>cros-families@google.com</owner>
@@ -423,6 +423,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     hours while Chrome is running, among cases with at least one profile.
 
     This counts only profiles that have been used in the last 28 days.
+
+    Might have incomplete data between 2021-03-12 and 2021-05-26.
   </summary>
 </histogram>
 
