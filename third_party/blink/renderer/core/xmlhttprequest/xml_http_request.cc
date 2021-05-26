@@ -1837,6 +1837,7 @@ void XMLHttpRequest::EndLoading() {
 
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
     LocalFrame* frame = window->GetFrame();
+    recordreplay::Assert("XMLHttpRequest::EndLoading #0 %d %d", !!frame, cors::IsOkStatus(status()));
     if (frame && cors::IsOkStatus(status())) {
       recordreplay::Assert("XMLHttpRequest::EndLoading #1");
       frame->GetPage()->GetChromeClient().AjaxSucceeded(frame);
