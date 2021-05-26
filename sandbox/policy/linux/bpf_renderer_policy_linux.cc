@@ -97,6 +97,9 @@ ResultExpr RendererProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_sysinfo:
     case __NR_times:
     case __NR_uname:
+      // V8 uses PKU (a.k.a. MPK / PKEY) for protecting code spaces.
+    case __NR_pkey_alloc:
+    case __NR_pkey_free:
       return Allow();
     case __NR_sched_getaffinity:
     case __NR_sched_getparam:
@@ -106,6 +109,10 @@ ResultExpr RendererProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_prlimit64:
       // See crbug.com/662450 and setrlimit comment above.
       return RestrictPrlimit(GetPolicyPid());
+      // V8 uses PKU (a.k.a. MPK / PKEY) for protecting code spaces.
+    case __NR_pkey_mprotect:
+      // Ignore the last parameter; others are identical to mprotect.
+      return RestrictMprotectFlags();
     default:
       // Default on the content baseline policy.
       return BPFBasePolicy::EvaluateSyscall(sysno);
