@@ -23,7 +23,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -643,61 +642,44 @@ bool CreatePlatformShortcuts(const base::FilePath& /*web_app_path*/,
                              const ShortcutLocations& creation_locations,
                              ShortcutCreationReason /*creation_reason*/,
                              const ShortcutInfo& shortcut_info) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   return CreateDesktopShortcut(env.get(), shortcut_info, creation_locations);
-#else
-  return false;
-#endif
 }
 
 ShortcutLocations GetAppExistingShortCutLocationImpl(
     const ShortcutInfo& shortcut_info) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   return GetExistingShortcutLocations(env.get(), shortcut_info.profile_path,
                                       shortcut_info.extension_id);
-#endif
-  return ShortcutLocations();
 }
 
 bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
                              const ShortcutInfo& shortcut_info) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   return DeleteDesktopShortcuts(env.get(), shortcut_info.profile_path,
                                 shortcut_info.extension_id);
-#endif
-  return true;
 }
 
 void UpdatePlatformShortcuts(const base::FilePath& /*web_app_path*/,
                              const std::u16string& /*old_app_title*/,
                              const ShortcutInfo& shortcut_info) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   UpdateDesktopShortcuts(env.get(), shortcut_info);
-#endif
 }
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   DeleteAllDesktopShortcuts(env.get(), profile_path);
-#endif
 }
 
 std::vector<base::FilePath> GetShortcutLocations(
     const ShortcutLocations& locations,
     const base::FilePath& profile_path,
     const std::string& app_id) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   return GetShortcutLocations(env.get(), locations, profile_path, app_id);
-#endif
-  return std::vector<base::FilePath>();
 }
 
 }  // namespace internals
