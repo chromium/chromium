@@ -10,10 +10,10 @@
 #include <algorithm>
 
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "media/gpu/vaapi/fuzzers/jpeg_decoder/jpeg_decoder_fuzzer_input.pb.h"
 #include "media/gpu/vaapi/vaapi_jpeg_decoder.h"
 #include "media/gpu/vaapi/vaapi_utils.h"

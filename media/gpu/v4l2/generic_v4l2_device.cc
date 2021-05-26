@@ -18,9 +18,9 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"

@@ -4,8 +4,8 @@
 
 #include "media/filters/vp9_compressed_header_parser.h"
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 
 namespace media {
 

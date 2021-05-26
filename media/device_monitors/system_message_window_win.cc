@@ -9,9 +9,9 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/system/system_monitor.h"
 #include "base/win/wrapped_window_proc.h"
 #include "media/audio/win/core_audio_util_win.h"

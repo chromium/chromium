@@ -11,9 +11,9 @@
 #include <string.h>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/parsers/jpeg_parser.h"

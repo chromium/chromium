@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
 #include "media/base/decoder_buffer.h"

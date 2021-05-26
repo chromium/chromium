@@ -5,7 +5,7 @@
 #include "media/audio/win/avrt_wrapper_win.h"
 
 #include "base/check.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace avrt {
 

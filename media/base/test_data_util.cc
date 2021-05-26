@@ -8,11 +8,11 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "media/base/decoder_buffer.h"
 
 namespace media {

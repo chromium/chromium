@@ -18,10 +18,10 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "media/formats/webm/webm_constants.h"
 
 namespace media {

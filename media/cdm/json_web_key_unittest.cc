@@ -9,7 +9,7 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "media/base/content_decryption_module.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

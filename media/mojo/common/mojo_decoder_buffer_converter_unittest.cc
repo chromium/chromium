@@ -8,8 +8,8 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "media/base/decoder_buffer.h"

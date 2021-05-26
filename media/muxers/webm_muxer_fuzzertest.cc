@@ -9,9 +9,9 @@
 #include <random>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_executor.h"
 #include "media/base/audio_parameters.h"

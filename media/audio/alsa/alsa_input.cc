@@ -7,10 +7,10 @@
 #include <stddef.h>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "media/audio/alsa/alsa_output.h"
 #include "media/audio/alsa/alsa_util.h"
 #include "media/audio/alsa/alsa_wrapper.h"

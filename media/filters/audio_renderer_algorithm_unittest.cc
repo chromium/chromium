@@ -20,7 +20,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"

@@ -5,8 +5,8 @@
 #include "media/capture/video/video_capture_device.h"
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/timezone.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"

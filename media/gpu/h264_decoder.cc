@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/video/h264_level_limits.h"

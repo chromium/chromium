@@ -5,7 +5,7 @@
 #include "media/capture/video_capture_types.h"
 
 #include "base/check.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/limits.h"
 

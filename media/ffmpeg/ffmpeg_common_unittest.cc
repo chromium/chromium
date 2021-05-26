@@ -8,9 +8,9 @@
 #include <cstring>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media.h"
 #include "media/base/media_util.h"

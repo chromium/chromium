@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/threading/thread_restrictions.h"
 #include "media/base/data_source.h"
 #include "media/ffmpeg/ffmpeg_common.h"

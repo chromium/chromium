@@ -7,8 +7,8 @@
 #include <math.h>
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "media/audio/audio_device_description.h"

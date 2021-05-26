@@ -12,11 +12,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/synchronization/lock.h"
 #include "base/test/gtest_util.h"
 #include "media/gpu/vaapi/vaapi_utils.h"

@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "media/video/h264_parser.h"
 #include "media/video/h264_poc.h"
 

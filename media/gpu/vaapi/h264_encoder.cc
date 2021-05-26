@@ -5,7 +5,7 @@
 #include "media/gpu/vaapi/h264_encoder.h"
 
 #include "base/bits.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "media/gpu/macros.h"
 #include "media/video/h264_level_limits.h"
 

@@ -4,8 +4,8 @@
 
 #include "media/formats/ac3/ac3_util.h"
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "media/base/bit_reader.h"
 
 namespace media {

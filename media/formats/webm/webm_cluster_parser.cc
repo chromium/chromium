@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
-#include "base/stl_util.h"
 #include "base/sys_byteorder.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/timestamp_constants.h"

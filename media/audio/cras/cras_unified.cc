@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
 

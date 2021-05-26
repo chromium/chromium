@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/timestamp_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"

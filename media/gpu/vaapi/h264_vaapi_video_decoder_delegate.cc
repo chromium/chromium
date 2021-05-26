@@ -6,8 +6,8 @@
 
 #include <va/va.h>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/aligned_memory.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/cdm_context.h"
 #include "media/gpu/decode_surface_handler.h"

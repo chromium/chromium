@@ -4,7 +4,7 @@
 
 #include "media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/cdm_context.h"
 #include "media/gpu/decode_surface_handler.h"

@@ -5,9 +5,9 @@
 #include "media/audio/android/opensles_output.h"
 
 #include "base/android/build_info.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"

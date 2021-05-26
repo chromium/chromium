@@ -7,8 +7,8 @@
 
 #include "media/base/audio_hash.h"
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/math_constants.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_bus.h"
 

@@ -9,9 +9,9 @@
 #include <linux/videodev2.h>
 #include <linux/media/vp8-ctrls-legacy.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
 #include "media/gpu/v4l2/v4l2_decode_surface_handler.h"

@@ -10,9 +10,9 @@
 #include <iostream>
 #include <type_traits>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_utils.h"

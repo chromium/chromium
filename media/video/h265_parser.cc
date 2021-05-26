@@ -10,9 +10,9 @@
 #include <cmath>
 
 #include "base/bits.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/video_codecs.h"
 #include "ui/gfx/geometry/rect.h"

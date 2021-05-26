@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/test_message_loop.h"
 #include "base/time/time.h"
 #include "media/base/cdm_config.h"

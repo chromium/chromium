@@ -10,9 +10,9 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/vaapi/vp9_rate_control.h"
 #include "media/gpu/vaapi/vp9_temporal_layers.h"

@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "media/formats/webm/cluster_builder.h"
 #include "media/formats/webm/webm_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
