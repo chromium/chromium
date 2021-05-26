@@ -122,8 +122,6 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // "scripting is disabled for settings's responsible browsing context"
   virtual bool IsScriptingDisabled() const = 0;
 
-  virtual bool ImportMapsEnabled() const = 0;
-
   // https://html.spec.whatwg.org/C/#fetch-a-module-script-tree
   // https://html.spec.whatwg.org/C/#fetch-a-module-worker-script-tree
   // Note that |this| is the "module map settings object" and

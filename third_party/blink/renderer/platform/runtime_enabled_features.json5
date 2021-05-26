@@ -1060,10 +1060,6 @@
       status: {"Android": "stable"},
     },
     {
-      name: "ImportMaps",
-      status: "stable"
-    },
-    {
       name: "InertAttribute",
       status: "experimental",
     },

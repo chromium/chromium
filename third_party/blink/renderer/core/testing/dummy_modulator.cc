@@ -61,10 +61,6 @@ bool DummyModulator::IsScriptingDisabled() const {
   return false;
 }
 
-bool DummyModulator::ImportMapsEnabled() const {
-  return false;
-}
-
 ModuleRecordResolver* DummyModulator::GetModuleRecordResolver() {
   return resolver_.Get();
 }

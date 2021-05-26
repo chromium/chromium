@@ -42,8 +42,6 @@ class ModulatorImplBase : public Modulator {
 
   bool IsScriptingDisabled() const override;
 
-  bool ImportMapsEnabled() const override;
-
   mojom::blink::V8CacheOptions GetV8CacheOptions() const final;
 
   ModuleRecordResolver* GetModuleRecordResolver() override {

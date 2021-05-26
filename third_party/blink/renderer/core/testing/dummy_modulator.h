@@ -37,8 +37,6 @@ class DummyModulator : public Modulator {
   mojom::blink::V8CacheOptions GetV8CacheOptions() const override;
   bool IsScriptingDisabled() const override;
 
-  bool ImportMapsEnabled() const override;
-
   void FetchTree(const KURL&,
                  ModuleType,
                  ResourceFetcher*,

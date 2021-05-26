@@ -193,21 +193,6 @@ enum class ShouldFireErrorEvent {
   kShouldFire,
 };
 
-bool IsImportMapEnabled(LocalDOMWindow* context_window) {
-  // When window/modulator is null, `true` is returned here, because
-  // PrepareScript() should fail at "scripting is disabled" checks, not here.
-
-  if (!context_window)
-    return true;
-
-  Modulator* modulator =
-      Modulator::From(ToScriptStateForMainWorld(context_window->GetFrame()));
-  if (!modulator)
-    return true;
-
-  return modulator->ImportMapsEnabled();
-}
-
 }  // namespace
 
 // <specdef href="https://html.spec.whatwg.org/C/#prepare-a-script">
@@ -350,11 +335,6 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
     case ScriptTypeAtPrepare::kInvalid:
       return false;
 
-    case ScriptTypeAtPrepare::kImportMap:
-      if (!IsImportMapEnabled(context_window))
-        return false;
-      break;
-
     case ScriptTypeAtPrepare::kSpeculationRules:
       if (!RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window))
         return false;
@@ -362,6 +342,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
 
     case ScriptTypeAtPrepare::kClassic:
     case ScriptTypeAtPrepare::kModule:
+    case ScriptTypeAtPrepare::kImportMap:
       break;
   }
 

@@ -54,10 +54,6 @@ bool ModulatorImplBase::IsScriptingDisabled() const {
   return !GetExecutionContext()->CanExecuteScripts(kAboutToExecuteScript);
 }
 
-bool ModulatorImplBase::ImportMapsEnabled() const {
-  return RuntimeEnabledFeatures::ImportMapsEnabled(GetExecutionContext());
-}
-
 mojom::blink::V8CacheOptions ModulatorImplBase::GetV8CacheOptions() const {
   return GetExecutionContext()->GetV8CacheOptions();
 }
@@ -194,7 +190,6 @@ ScriptValue ModulatorImplBase::CreateSyntaxError(const String& message) const {
 void ModulatorImplBase::RegisterImportMap(const ImportMap* import_map,
                                           ScriptValue error_to_rethrow) {
   DCHECK(import_map);
-  DCHECK(ImportMapsEnabled());
 
   // <spec step="7">If import map parse result’s error to rethrow is not null,
   // then:</spec>
