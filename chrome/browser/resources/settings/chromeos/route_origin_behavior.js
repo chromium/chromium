@@ -48,7 +48,7 @@ cr.define('settings', function() {
     /**
      * settings.RouteObserverBehavior
      * @param {!settings.Route} newRoute
-     * @param {!settings.Route} oldRoute
+     * @param {!settings.Route|undefined} oldRoute
      * @protected
      */
     currentRouteChanged(newRoute, oldRoute) {
@@ -57,13 +57,15 @@ cr.define('settings', function() {
       if (!settings.Router.getInstance().lastRouteChangeWasPopstate()) {
         return;
       }
-      const focusSelector = this.focusConfig_.get(oldRoute.path);
 
-      if (this.route_ !== newRoute || !focusSelector) {
+      if (this.route_ !== newRoute || !oldRoute) {
         return;
       }
 
-      this.$$(focusSelector).focus();
+      const focusSelector = this.focusConfig_.get(oldRoute.path);
+      if (focusSelector) {
+        this.$$(focusSelector).focus();
+      }
     },
   };
 
