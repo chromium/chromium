@@ -27,9 +27,14 @@
 namespace blink {
 namespace {
 
+// The default fps and default size are used when querying gpu_factories_ to see
+// if a codec profile is supported. 1280x720 at 30 fps corresponds to level 3.1
+// for both VP9 and H264. This matches the maximum H264 profile level that is
+// returned by the internal software decoder.
+// TODO(crbug.com/1213437): Query gpu_factories_ or decoder_factory_ to
+// determine the maximum resolution and frame rate.
 const int kDefaultFps = 30;
-// Any reasonable size, will be overridden by the decoder anyway.
-const gfx::Size kDefaultSize(640, 480);
+const gfx::Size kDefaultSize(1280, 720);
 
 struct CodecConfig {
   media::VideoCodec codec;
