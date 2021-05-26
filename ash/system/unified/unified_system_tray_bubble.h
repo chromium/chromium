@@ -99,6 +99,9 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   // Fire a notification that an accessibility event has occured on this object.
   void NotifyAccessibilityEvent(ax::mojom::Event event, bool send_native_event);
 
+  // Whether the bubble is currently showing audio details view.
+  bool ShowingAudioDetailedView() const;
+
   // TrayBubbleBase:
   TrayBackgroundView* GetTray() const override;
   TrayBubbleView* GetBubbleView() const override;

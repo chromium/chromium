@@ -349,4 +349,8 @@ void UnifiedSystemTrayBubble::NotifyAccessibilityEvent(ax::mojom::Event event,
   bubble_view_->NotifyAccessibilityEvent(event, send_native_event);
 }
 
+bool UnifiedSystemTrayBubble::ShowingAudioDetailedView() const {
+  return bubble_widget_ && controller_->showing_audio_detailed_view();
+}
+
 }  // namespace ash

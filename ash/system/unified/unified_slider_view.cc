@@ -15,6 +15,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -133,8 +134,6 @@ void UnifiedSliderButton::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 void UnifiedSliderButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (!GetEnabled())
-    return;
   views::ImageButton::GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kToggleButton;
   node_data->SetCheckedState(toggled_ ? ax::mojom::CheckedState::kTrue
@@ -216,5 +215,19 @@ const char* UnifiedSliderView::GetClassName() const {
 }
 
 UnifiedSliderView::~UnifiedSliderView() = default;
+
+void UnifiedSliderView::CreateToastLabel() {
+  toast_label_ = AddChildView(std::make_unique<views::Label>());
+  TrayPopupUtils::SetLabelFontList(toast_label_,
+                                   TrayPopupUtils::FontStyle::kPodMenuHeader);
+}
+
+void UnifiedSliderView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  if (toast_label_) {
+    toast_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+  }
+}
 
 }  // namespace ash

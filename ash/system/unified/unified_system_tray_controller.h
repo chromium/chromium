@@ -148,6 +148,10 @@ class ASH_EXPORT UnifiedSystemTrayController
     return detailed_view_controller_.get();
   }
 
+  bool showing_audio_detailed_view() const {
+    return showing_audio_detailed_view_;
+  }
+
  private:
   friend class SystemTrayTestApi;
   friend class UnifiedSystemTrayControllerTest;
@@ -247,6 +251,8 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   // Tracks the smoothness of collapse and expand animation.
   absl::optional<ui::ThroughputTracker> animation_tracker_;
+
+  bool showing_audio_detailed_view_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayController);
 };

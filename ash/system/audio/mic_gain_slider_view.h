@@ -7,7 +7,6 @@
 
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/system/unified/unified_slider_view.h"
-#include "ui/views/controls/label.h"
 
 namespace ash {
 
@@ -32,18 +31,18 @@ class MicGainSliderView : public UnifiedSliderView,
 
   // views::View:
   const char* GetClassName() const override;
-  void OnThemeChanged() override;
 
  private:
   void Update(bool by_user);
-
-  views::Label* toast_label_ = nullptr;
 
   // device id for the input device tied to this slider.
   const uint64_t device_id_;
 
   // True if the audio device this slider represents is internal.
   const bool internal_;
+
+  // View used for a11y alert when mute state changes.
+  views::View* announcement_view_ = nullptr;
 };
 
 }  // namespace ash

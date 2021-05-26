@@ -11,6 +11,10 @@
 #include "ui/views/controls/slider.h"
 #include "ui/views/view.h"
 
+namespace views {
+class Label;
+}
+
 namespace ash {
 
 class UnifiedSliderListener : public views::SliderListener {
@@ -68,6 +72,7 @@ class UnifiedSliderView : public views::View {
 
   UnifiedSliderButton* button() { return button_; }
   views::Slider* slider() { return slider_; }
+  views::Label* toast_label() { return toast_label_; }
 
   // Sets a slider value. If |by_user| is false, accessibility events will not
   // be triggered.
@@ -75,11 +80,16 @@ class UnifiedSliderView : public views::View {
 
   // views::View:
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
+
+ protected:
+  void CreateToastLabel();
 
  private:
   // Unowned. Owned by views hierarchy.
   UnifiedSliderButton* const button_;
   views::Slider* const slider_;
+  views::Label* toast_label_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(UnifiedSliderView);
 };
