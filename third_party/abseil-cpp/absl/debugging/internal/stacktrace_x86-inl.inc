@@ -132,9 +132,8 @@ static uintptr_t GetFP(const void *vuc) {
     const uintptr_t bp = 0;
     const uintptr_t sp = 0;
 #endif
-    // Sanity-check that the base pointer is valid.  It should be as long as
-    // SHRINK_WRAP_FRAME_POINTER is not set, but it's possible that some code in
-    // the process is compiled with --copt=-fomit-frame-pointer or
+    // Sanity-check that the base pointer is valid. It's possible that some
+    // code in the process is compiled with --copt=-fomit-frame-pointer or
     // --copt=-momit-leaf-frame-pointer.
     //
     // TODO(bcmills): -momit-leaf-frame-pointer is currently the default
@@ -247,7 +246,7 @@ static void **NextStackFrame(void **old_fp, const void *uc) {
   // using an alternate signal stack.
   //
   // TODO(bcmills): The GetFP call should be completely unnecessary when
-  // SHRINK_WRAP_FRAME_POINTER is set (because we should be back in the thread's
+  // ENABLE_COMBINED_UNWINDER is set (because we should be back in the thread's
   // stack by this point), but it is empirically still needed (e.g. when the
   // stack includes a call to abort).  unw_get_reg returns UNW_EBADREG for some
   // frames.  Figure out why GetValidFrameAddr and/or libunwind isn't doing what

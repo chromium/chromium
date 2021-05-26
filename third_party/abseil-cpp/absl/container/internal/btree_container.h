@@ -51,7 +51,7 @@ class btree_container {
   using value_type = typename Tree::value_type;
   using size_type = typename Tree::size_type;
   using difference_type = typename Tree::difference_type;
-  using key_compare = typename Tree::key_compare;
+  using key_compare = typename Tree::original_key_compare;
   using value_compare = typename Tree::value_compare;
   using allocator_type = typename Tree::allocator_type;
   using reference = typename Tree::reference;
@@ -214,7 +214,7 @@ class btree_container {
   allocator_type get_allocator() const { return tree_.get_allocator(); }
 
   // The key comparator used by the btree.
-  key_compare key_comp() const { return tree_.key_comp(); }
+  key_compare key_comp() const { return key_compare(tree_.key_comp()); }
   value_compare value_comp() const { return tree_.value_comp(); }
 
   // Support absl::Hash.
@@ -247,7 +247,7 @@ class btree_set_container : public btree_container<Tree> {
   using key_type = typename Tree::key_type;
   using value_type = typename Tree::value_type;
   using size_type = typename Tree::size_type;
-  using key_compare = typename Tree::key_compare;
+  using key_compare = typename Tree::original_key_compare;
   using allocator_type = typename Tree::allocator_type;
   using iterator = typename Tree::iterator;
   using const_iterator = typename Tree::const_iterator;
@@ -398,7 +398,7 @@ class btree_map_container : public btree_set_container<Tree> {
   using key_type = typename Tree::key_type;
   using mapped_type = typename params_type::mapped_type;
   using value_type = typename Tree::value_type;
-  using key_compare = typename Tree::key_compare;
+  using key_compare = typename Tree::original_key_compare;
   using allocator_type = typename Tree::allocator_type;
   using iterator = typename Tree::iterator;
   using const_iterator = typename Tree::const_iterator;
@@ -543,7 +543,7 @@ class btree_multiset_container : public btree_container<Tree> {
   using key_type = typename Tree::key_type;
   using value_type = typename Tree::value_type;
   using size_type = typename Tree::size_type;
-  using key_compare = typename Tree::key_compare;
+  using key_compare = typename Tree::original_key_compare;
   using allocator_type = typename Tree::allocator_type;
   using iterator = typename Tree::iterator;
   using const_iterator = typename Tree::const_iterator;

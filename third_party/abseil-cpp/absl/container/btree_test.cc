@@ -1708,10 +1708,25 @@ TEST(Btree, StrSplitCompatible) {
   EXPECT_EQ(split_set, expected_set);
 }
 
-// We can't use EXPECT_EQ/etc. to compare absl::weak_ordering because they
-// convert literal 0 to int and absl::weak_ordering can only be compared with
-// literal 0. Defining this function allows for avoiding ClangTidy warnings.
-bool Identity(const bool b) { return b; }
+TEST(Btree, KeyComp) {
+  absl::btree_set<int> s;
+  EXPECT_TRUE(s.key_comp()(1, 2));
+  EXPECT_FALSE(s.key_comp()(2, 2));
+  EXPECT_FALSE(s.key_comp()(2, 1));
+
+  absl::btree_map<int, int> m1;
+  EXPECT_TRUE(m1.key_comp()(1, 2));
+  EXPECT_FALSE(m1.key_comp()(2, 2));
+  EXPECT_FALSE(m1.key_comp()(2, 1));
+
+  // Even though we internally adapt the comparator of `m2` to be three-way and
+  // heterogeneous, the comparator we expose through key_comp() is the original
+  // unadapted comparator.
+  absl::btree_map<std::string, int> m2;
+  EXPECT_TRUE(m2.key_comp()("a", "b"));
+  EXPECT_FALSE(m2.key_comp()("b", "b"));
+  EXPECT_FALSE(m2.key_comp()("b", "a"));
+}
 
 TEST(Btree, ValueComp) {
   absl::btree_set<int> s;
@@ -1724,13 +1739,13 @@ TEST(Btree, ValueComp) {
   EXPECT_FALSE(m1.value_comp()(std::make_pair(2, 0), std::make_pair(2, 0)));
   EXPECT_FALSE(m1.value_comp()(std::make_pair(2, 0), std::make_pair(1, 0)));
 
+  // Even though we internally adapt the comparator of `m2` to be three-way and
+  // heterogeneous, the comparator we expose through value_comp() is based on
+  // the original unadapted comparator.
   absl::btree_map<std::string, int> m2;
-  EXPECT_TRUE(Identity(
-      m2.value_comp()(std::make_pair("a", 0), std::make_pair("b", 0)) < 0));
-  EXPECT_TRUE(Identity(
-      m2.value_comp()(std::make_pair("b", 0), std::make_pair("b", 0)) == 0));
-  EXPECT_TRUE(Identity(
-      m2.value_comp()(std::make_pair("b", 0), std::make_pair("a", 0)) > 0));
+  EXPECT_TRUE(m2.value_comp()(std::make_pair("a", 0), std::make_pair("b", 0)));
+  EXPECT_FALSE(m2.value_comp()(std::make_pair("b", 0), std::make_pair("b", 0)));
+  EXPECT_FALSE(m2.value_comp()(std::make_pair("b", 0), std::make_pair("a", 0)));
 }
 
 TEST(Btree, DefaultConstruction) {
@@ -2906,8 +2921,7 @@ TEST(Btree, SupportsFunctionPtrComparator) {
   map[1] = 1;
   EXPECT_THAT(map, ElementsAre(Pair(1, 1)));
   EXPECT_TRUE(map.key_comp()(1, 2));
-  // TODO(ezb): support value_comp() in this case and uncomment.
-  // EXPECT_TRUE(map.value_comp()(std::make_pair(1, 1), std::make_pair(2, 2)));
+  EXPECT_TRUE(map.value_comp()(std::make_pair(1, 1), std::make_pair(2, 2)));
 }
 
 template <typename Compare>

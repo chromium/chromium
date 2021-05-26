@@ -995,4 +995,17 @@ TEST(HashOf, MatchesHashOfTupleForMultipleArguments) {
             absl::HashOf(std::make_tuple(hello, world)));
 }
 
+template <typename T>
+std::true_type HashOfExplicitParameter(decltype(absl::HashOf<T>(0))) {
+  return {};
+}
+template <typename T>
+std::false_type HashOfExplicitParameter(size_t) {
+  return {};
+}
+
+TEST(HashOf, CantPassExplicitTemplateParameters) {
+  EXPECT_FALSE(HashOfExplicitParameter<int>(0));
+}
+
 }  // namespace
