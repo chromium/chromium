@@ -18,7 +18,7 @@ export {Polymer} from './lib/legacy/polymer-fn.js';
 export {dom, flush} from './lib/legacy/polymer.dom.js';
 export {Templatizer} from './lib/legacy/templatizer-behavior.js';
 export {calculateSplices} from './lib/utils/array-splice.js';
-export {animationFrame, idlePeriod, microTask} from './lib/utils/async.js';
+export {animationFrame, idlePeriod, microTask, timeOut} from './lib/utils/async.js';
 export {dashToCamelCase} from './lib/utils/case-map.js';
 export {Debouncer, enqueueDebouncer} from './lib/utils/debounce.js';
 export {html} from './lib/utils/html-tag.js';
