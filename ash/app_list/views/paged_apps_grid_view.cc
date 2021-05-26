@@ -7,7 +7,13 @@
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/pagination/pagination_controller.h"
+#include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/check.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace ash {
 
@@ -22,6 +28,16 @@ PagedAppsGridView::PagedAppsGridView(
 }
 
 PagedAppsGridView::~PagedAppsGridView() = default;
+
+void PagedAppsGridView::HandleScrollFromAppListView(const gfx::Vector2d& offset,
+                                                    ui::EventType type) {
+  // If |pagination_model_| is empty, don't handle scroll events.
+  if (pagination_model_.total_pages() <= 0)
+    return;
+
+  // Maybe switch pages.
+  pagination_controller_->OnScroll(offset, type);
+}
 
 gfx::Insets PagedAppsGridView::GetTilePadding() const {
   if (is_in_folder()) {

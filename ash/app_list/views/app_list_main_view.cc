@@ -18,6 +18,7 @@
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/app_list/views/search_result_page_view.h"

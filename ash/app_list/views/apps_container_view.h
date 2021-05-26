@@ -16,13 +16,13 @@
 
 namespace ash {
 
-class AppsGridView;
 class ApplicationDragAndDropHost;
 class AppListFolderItem;
 class AppListFolderView;
 class AppListModel;
 class ContentsView;
 class FolderBackgroundView;
+class PagedAppsGridView;
 class PageSwitcher;
 class SuggestionChipContainerView;
 
@@ -122,7 +122,7 @@ class ASH_EXPORT AppsContainerView : public AppListPage {
   SuggestionChipContainerView* suggestion_chip_container_view_for_test() {
     return suggestion_chip_container_view_;
   }
-  AppsGridView* apps_grid_view() { return apps_grid_view_; }
+  PagedAppsGridView* apps_grid_view() { return apps_grid_view_; }
   FolderBackgroundView* folder_background_view() {
     return folder_background_view_;
   }
@@ -194,7 +194,7 @@ class ASH_EXPORT AppsContainerView : public AppListPage {
 
   // The views below are owned by views hierarchy.
   SuggestionChipContainerView* suggestion_chip_container_view_ = nullptr;
-  AppsGridView* apps_grid_view_ = nullptr;
+  PagedAppsGridView* apps_grid_view_ = nullptr;
   AppListFolderView* app_list_folder_view_ = nullptr;
   PageSwitcher* page_switcher_ = nullptr;
   FolderBackgroundView* folder_background_view_ = nullptr;

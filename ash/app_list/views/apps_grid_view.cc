@@ -1418,15 +1418,6 @@ std::unique_ptr<AppListItemView> AppsGridView::CreateViewForItemAtIndex(
   return CreateViewForItem(item, item->IsInFolder());
 }
 
-bool AppsGridView::HandleScroll(const gfx::Vector2d& offset,
-                                ui::EventType type) {
-  // If |pagination_model_| is empty, don't handle scroll events.
-  if (pagination_model_.total_pages() <= 0)
-    return false;
-
-  return pagination_controller_->OnScroll(offset, type);
-}
-
 void AppsGridView::EnsureViewVisible(const GridIndex& index) {
   if (pagination_model_.has_transition())
     return;
@@ -2219,27 +2210,6 @@ void AppsGridView::UpdateOpacity(bool restore_opacity) {
         current_page[j]->layer()->SetOpacity(opacity);
     }
   }
-}
-
-// TODO(crbug.com/1211608): Move to PagedAppsGridView.
-bool AppsGridView::HandleScrollFromAppListView(const gfx::Point& location,
-                                               const gfx::Vector2d& offset,
-                                               ui::EventType type) {
-  const auto* root_apps_grid_view =
-      contents_view_->apps_container_view()->apps_grid_view();
-  gfx::Point root_apps_grid_view_location(location);
-  views::View::ConvertPointToTarget(this, root_apps_grid_view,
-                                    &root_apps_grid_view_location);
-
-  // Scroll up at first page in top level apps grid should close the launcher.
-  if (!folder_delegate_ && offset.y() > 0 &&
-      !pagination_model()->IsValidPageRelative(-1) &&
-      !root_apps_grid_view->bounds().Contains(root_apps_grid_view_location)) {
-    return false;
-  }
-
-  HandleScroll(offset, type);
-  return true;
 }
 
 void AppsGridView::HandleKeyboardReparent(AppListItemView* reparented_view,

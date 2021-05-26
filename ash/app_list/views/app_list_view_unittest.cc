@@ -28,6 +28,7 @@
 #include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/page_switcher.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_container_view.h"

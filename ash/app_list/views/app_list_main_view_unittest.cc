@@ -15,6 +15,7 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/page_switcher.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ui/compositor/layer.h"

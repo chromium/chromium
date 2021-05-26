@@ -7,6 +7,11 @@
 
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_export.h"
+#include "ui/events/types/event_type.h"
+
+namespace gfx {
+class Vector2d;
+}  // namespace gfx
 
 namespace ash {
 
@@ -22,6 +27,11 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView {
   PagedAppsGridView(const PagedAppsGridView&) = delete;
   PagedAppsGridView& operator=(const PagedAppsGridView&) = delete;
   ~PagedAppsGridView() override;
+
+  // Passes scroll information from AppListView to the PaginationController,
+  // which may switch pages.
+  void HandleScrollFromAppListView(const gfx::Vector2d& offset,
+                                   ui::EventType type);
 
   // AppsGridView:
   gfx::Insets GetTilePadding() const override;

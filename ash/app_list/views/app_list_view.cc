@@ -17,6 +17,7 @@
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -1342,11 +1343,11 @@ AppsContainerView* AppListView::GetAppsContainerView() {
   return app_list_main_view_->contents_view()->apps_container_view();
 }
 
-AppsGridView* AppListView::GetRootAppsGridView() {
+PagedAppsGridView* AppListView::GetRootAppsGridView() {
   return GetAppsContainerView()->apps_grid_view();
 }
 
-AppsGridView* AppListView::GetFolderAppsGridView() {
+PagedAppsGridView* AppListView::GetFolderAppsGridView() {
   return GetAppsContainerView()->app_list_folder_view()->items_grid_view();
 }
 
@@ -1658,9 +1659,9 @@ bool AppListView::HandleScroll(const gfx::Point& location,
   if ((offset.y() == 0 && offset.x() == 0) || ShouldIgnoreScrollEvents())
     return false;
 
-  AppsGridView* apps_grid_view = GetAppsContainerView()->IsInFolderView()
-                                     ? GetFolderAppsGridView()
-                                     : GetRootAppsGridView();
+  PagedAppsGridView* apps_grid_view = GetAppsContainerView()->IsInFolderView()
+                                          ? GetFolderAppsGridView()
+                                          : GetRootAppsGridView();
   gfx::Point apps_grid_location(location);
   views::View::ConvertPointToTarget(this, apps_grid_view, &apps_grid_location);
 
@@ -1702,8 +1703,7 @@ bool AppListView::HandleScroll(const gfx::Point& location,
     // folder's view.
     if ((!GetAppsContainerView()->IsInFolderView() && is_in_vertical_bounds) ||
         is_in_active_apps_grid) {
-      apps_grid_view->HandleScrollFromAppListView(apps_grid_location, offset,
-                                                  type);
+      apps_grid_view->HandleScrollFromAppListView(offset, type);
       return true;
     }
   }

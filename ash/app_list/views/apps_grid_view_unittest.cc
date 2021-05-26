@@ -27,6 +27,7 @@
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/folder_background_view.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_tile_item_view.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"

@@ -16,6 +16,7 @@
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"

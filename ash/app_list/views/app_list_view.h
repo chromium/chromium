@@ -45,10 +45,11 @@ class AppListConfig;
 class AppListMainView;
 class AppListModel;
 class AppsGridView;
-class StateTransitionNotifier;
+class PagedAppsGridView;
 class PaginationModel;
 class SearchBoxView;
 class SearchModel;
+class StateTransitionNotifier;
 
 FORWARD_DECLARE_TEST(AppListControllerImplTest,
                      CheckAppListViewBoundsWhenVKeyboardEnabled);
@@ -481,10 +482,10 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   AppsContainerView* GetAppsContainerView();
 
   // Gets the root apps grid view owned by this view.
-  AppsGridView* GetRootAppsGridView();
+  PagedAppsGridView* GetRootAppsGridView();
 
   // Gets the apps grid view within the folder view owned by this view.
-  AppsGridView* GetFolderAppsGridView();
+  PagedAppsGridView* GetFolderAppsGridView();
 
   // Gets the AppListStateTransitionSource for |app_list_state_| to
   // |target_state|. If we are not interested in recording a state transition

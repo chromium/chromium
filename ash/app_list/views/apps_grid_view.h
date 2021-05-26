@@ -270,12 +270,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Updates the opacity of all the items in the grid during dragging.
   void UpdateOpacity(bool restore_opacity);
 
-  // Passes scroll information from AppListView to the PaginationController,
-  // returns true if this scroll would change pages.
-  bool HandleScrollFromAppListView(const gfx::Point& location,
-                                   const gfx::Vector2d& offset,
-                                   ui::EventType type);
-
   // Moves |reparented_item| from its folder to the root AppsGridView in the
   // direction of |key_code|.
   void HandleKeyboardReparent(AppListItemView* reparented_view,
@@ -399,6 +393,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   int vertical_tile_padding() const { return vertical_tile_padding_; }
   int horizontal_tile_padding() const { return horizontal_tile_padding_; }
 
+  // TODO(crbug.com/1211608): Move these to PagedAppsGridView.
+  PaginationModel pagination_model_{this};
+  // Must appear after |pagination_model_|.
+  std::unique_ptr<PaginationController> pagination_controller_;
+
  private:
   class FadeoutLayerDelegate;
   friend class test::AppsGridViewTestApi;
@@ -430,9 +429,6 @@ class ASH_EXPORT AppsGridView : public views::View,
                                                      bool is_in_folder = false);
 
   std::unique_ptr<AppListItemView> CreateViewForItemAtIndex(size_t index);
-
-  // Returns true if the event was handled by the pagination controller.
-  bool HandleScroll(const gfx::Vector2d& offset, ui::EventType type);
 
   // Ensures the view is visible. Note that if there is a running page
   // transition, this does nothing.
@@ -800,11 +796,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // This can be nullptr. Only grid views inside folders have a folder delegate.
   AppsGridViewFolderDelegate* folder_delegate_ = nullptr;
-
-  // TODO(crbug.com/1211608): Move these to PagedAppsGridView.
-  PaginationModel pagination_model_{this};
-  // Must appear after |pagination_model_|.
-  std::unique_ptr<PaginationController> pagination_controller_;
 
   // Created by AppListMainView, owned by views hierarchy.
   // TODO(crbug.com/1211608): Remove this member.
