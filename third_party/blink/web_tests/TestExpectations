@@ -6873,6 +6873,8 @@ external/wpt/css/css-transforms/translate.html [ Failure ]
 external/wpt/css/css-transforms/ttwf-transform-skewx-001.html [ Failure ]
 external/wpt/css/css-transforms/ttwf-transform-skewy-001.html [ Failure ]
 external/wpt/css/css-transforms/ttwf-transform-translatex-001.html [ Failure ]
+# Started failing after rolling new version of check-layout-th.js
+css3/flexbox/perpendicular-writing-modes-inside-flex-item.html [ Failure ]
 
 # Sheriff 2021-05-18
 crbug.com/1210658 [ Mac10.14 ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failure ]
