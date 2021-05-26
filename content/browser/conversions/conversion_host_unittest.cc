@@ -167,7 +167,7 @@ TEST_F(ConversionHostTest,
       SetBrowserClientForTesting(&browser_client);
 
   browser_client.BlockConversionMeasurementInContext(
-      absl::nullopt /* impression_origin */,
+      /*impression_origin=*/absl::nullopt,
       absl::make_optional(
           url::Origin::Create(GURL("https://blocked-top.example"))),
       absl::make_optional(
@@ -296,7 +296,7 @@ TEST_F(ConversionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
       SetBrowserClientForTesting(&browser_client);
 
   browser_client.BlockConversionMeasurementInContext(
-      absl::nullopt /* impression_origin */,
+      /*impression_origin=*/absl::nullopt,
       absl::make_optional(url::Origin::Create(GURL("https://top.example"))),
       absl::make_optional(
           url::Origin::Create(GURL("https://embedded.example"))));
@@ -339,7 +339,7 @@ TEST_F(ConversionHostTest,
 
   browser_client.BlockConversionMeasurementInContext(
       absl::make_optional(url::Origin::Create(GURL("https://top.example"))),
-      absl::nullopt /* conversion_origin */,
+      /*conversion_origin=*/absl::nullopt,
       absl::make_optional(
           url::Origin::Create(GURL("https://embedded.example"))));
 
@@ -589,25 +589,30 @@ TEST_F(ConversionHostTest,
     std::string reporting_origin;
     bool impression_expected;
   } kTestCases[] = {
-      {kLocalHost /* impression_origin */, kLocalHost /* conversion_origin */,
-       kLocalHost /* reporting_origin */, true /* impression_expected */},
-      {"http://127.0.0.1" /* impression_origin */,
-       "http://127.0.0.1" /* conversion_origin */,
-       "http://127.0.0.1" /* reporting_origin */,
-       true /* impression_expected */},
-      {kLocalHost /* impression_origin */, kLocalHost /* conversion_origin */,
-       "http://insecure.com" /* reporting_origin */,
-       false /* impression_expected */},
-      {kLocalHost /* impression_origin */,
-       "http://insecure.com" /* conversion_origin */,
-       kLocalHost /* reporting_origin */, false /* impression_expected */},
-      {"http://insecure.com" /* impression_origin */,
-       kLocalHost /* conversion_origin */, kLocalHost /* reporting_origin */,
-       false /* impression_expected */},
-      {"https://secure.com" /* impression_origin */,
-       "https://secure.com" /* conversion_origin */,
-       "https://secure.com" /* reporting_origin */,
-       true /* impression_expected */},
+      {.impression_origin = kLocalHost,
+       .conversion_origin = kLocalHost,
+       .reporting_origin = kLocalHost,
+       .impression_expected = true},
+      {.impression_origin = "http://127.0.0.1",
+       .conversion_origin = "http://127.0.0.1",
+       .reporting_origin = "http://127.0.0.1",
+       .impression_expected = true},
+      {.impression_origin = kLocalHost,
+       .conversion_origin = kLocalHost,
+       .reporting_origin = "http://insecure.com",
+       .impression_expected = false},
+      {.impression_origin = kLocalHost,
+       .conversion_origin = "http://insecure.com",
+       .reporting_origin = kLocalHost,
+       .impression_expected = false},
+      {.impression_origin = "http://insecure.com",
+       .conversion_origin = kLocalHost,
+       .reporting_origin = kLocalHost,
+       .impression_expected = false},
+      {.impression_origin = "https://secure.com",
+       .conversion_origin = "https://secure.com",
+       .reporting_origin = "https://secure.com",
+       .impression_expected = true},
   };
 
   for (const auto& test_case : kTestCases) {

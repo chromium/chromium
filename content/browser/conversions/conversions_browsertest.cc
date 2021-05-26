@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-attribution"),
-      R"({"source_event_id":"1","trigger_data":7})" /* body */, https_server());
+      /*body=*/R"({"source_event_id":"1","trigger_data":7})", https_server());
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-attribution"),
-      "" /* body */, https_server());
+      /*body=*/"", https_server());
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-attribution"),
-      R"({"source_event_id":"1","trigger_data":7})" /* body */, https_server());
+      /*body=*/R"({"source_event_id":"1","trigger_data":7})", https_server());
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-attribution"),
-      R"({"source_event_id":"1","trigger_data":7})" /* body */, https_server());
+      /*body=*/R"({"source_event_id":"1","trigger_data":7})", https_server());
   ASSERT_TRUE(https_server()->Start());
 
   GURL page_url = https_server()->GetURL("a.test", "/page_with_iframe.html");
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-attribution"),
-      R"({"source_event_id":"1","trigger_data":7})" /* body */, https_server());
+      /*body=*/R"({"source_event_id":"1","trigger_data":7})", https_server());
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-attribution"),
-      R"({"source_event_id":"1","trigger_data":7})" /* body */, https_server());
+      /*body=*/R"({"source_event_id":"1","trigger_data":7})", https_server());
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-attribution"),
-      R"({"source_event_id":"1","trigger_data":7})" /* body */, https_server());
+      /*body=*/R"({"source_event_id":"1","trigger_data":7})", https_server());
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectedReportWaiter expected_report(
       GURL("https://d.test/.well-known/attribution-reporting/"
            "report-attribution"),
-      R"({"source_event_id":"2","trigger_data":7})" /* body */, https_server());
+      /*body=*/R"({"source_event_id":"2","trigger_data":7})", https_server());
   ASSERT_TRUE(https_server()->Start());
 
   GURL first_impression_url = https_server()->GetURL(
@@ -478,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectedReportWaiter expected_report(
       GURL("https://d.test/.well-known/attribution-reporting/"
            "report-attribution"),
-      R"({"source_event_id":"1","trigger_data":7})" /* body */, https_server());
+      /*body=*/R"({"source_event_id":"1","trigger_data":7})", https_server());
   ASSERT_TRUE(https_server()->Start());
 
   GURL first_impression_url = https_server()->GetURL(
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-attribution"),
-      "" /* body */, https_server());
+      /*body=*/"", https_server());
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(

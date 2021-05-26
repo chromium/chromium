@@ -175,7 +175,7 @@ void ConversionNetworkSenderImpl::SendReport(ConversionReport* report,
   // retry succeeds/fails.
   int retry_mode = network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
                    network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED;
-  simple_url_loader_ptr->SetRetryOptions(1 /* max_retries */, retry_mode);
+  simple_url_loader_ptr->SetRetryOptions(/*max_retries=*/1, retry_mode);
 
   // Unretained is safe because the URLLoader is owned by |this| and will be
   // deleted before |this|.

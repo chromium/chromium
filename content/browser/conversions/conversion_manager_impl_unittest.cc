@@ -224,7 +224,7 @@ TEST_F(ConversionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
       impression, conversion.conversion_data(),
       /*conversion_time=*/clock().Now(),
       /*report_time=*/clock().Now() + kFirstReportingWindow,
-      absl::nullopt /* conversion_id */);
+      /*conversion_id=*/absl::nullopt);
 
   base::RunLoop run_loop;
   auto reports_callback =

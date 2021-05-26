@@ -396,19 +396,24 @@ IN_PROC_BROWSER_TEST_F(
     std::string page_host;
     std::string redirect_host;
     bool expected_conversion;
-  } kTestCases[] = {
-      {"localhost" /* page_host */, "localhost" /* redirect_host */,
-       true /* conversion_expected */},
-      {"127.0.0.1" /* page_host */, "127.0.0.1" /* redirect_host */,
-       true /* conversion_expected */},
-      {"insecure.com" /* page_host */, "insecure.com" /* redirect_host */,
-       false /* conversion_expected */},
-      {kSecureHost /* page_host */, kSecureHost /* redirect_host */,
-       true /* conversion_expected */},
-      {"insecure.com" /* page_host */, kSecureHost /* redirect_host */,
-       false /* conversion_expected */},
-      {kSecureHost /* page_host */, "insecure.com" /* redirect_host */,
-       false /* conversion_expected */}};
+  } kTestCases[] = {{.page_host = "localhost",
+                     .redirect_host = "localhost",
+                     .expected_conversion = true},
+                    {.page_host = "127.0.0.1",
+                     .redirect_host = "127.0.0.1",
+                     .expected_conversion = true},
+                    {.page_host = "insecure.com",
+                     .redirect_host = "insecure.com",
+                     .expected_conversion = false},
+                    {.page_host = kSecureHost,
+                     .redirect_host = kSecureHost,
+                     .expected_conversion = true},
+                    {.page_host = "insecure.com",
+                     .redirect_host = kSecureHost,
+                     .expected_conversion = false},
+                    {.page_host = kSecureHost,
+                     .redirect_host = "insecure.com",
+                     .expected_conversion = false}};
 
   for (const auto& test_case : kTestCases) {
     std::unique_ptr<TestConversionHost> host =

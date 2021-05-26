@@ -267,16 +267,16 @@ StorableImpression ImpressionBuilder::Build() const {
   return StorableImpression(impression_data_, impression_origin_,
                             conversion_origin_, reporting_origin_,
                             impression_time_,
-                            impression_time_ + expiry_ /* expiry_time */,
+                            /*expiry_time=*/impression_time_ + expiry_,
                             source_type_, priority_, impression_id_);
 }
 
 StorableConversion DefaultConversion() {
   StorableConversion conversion(
-      "111" /* conversion_data */,
-      net::SchemefulSite(
-          GURL(kDefaultConversionDestination)) /* conversion_destination */,
-      url::Origin::Create(GURL(kDefaultReportOrigin)) /* reporting_origin */);
+      /*conversion_data=*/"111",
+      /*conversion_destination=*/
+      net::SchemefulSite(GURL(kDefaultConversionDestination)),
+      /*reporting_origin=*/url::Origin::Create(GURL(kDefaultReportOrigin)));
   return conversion;
 }
 

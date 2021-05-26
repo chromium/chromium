@@ -44,7 +44,7 @@ class ConversionInternalsWebUiBrowserTest : public ContentBrowserTest {
   // "eval()", which is what EvalJs uses under the hood.
   bool ExecJsInWebUI(const std::string& script) {
     return ExecJs(shell()->web_contents()->GetMainFrame(), script,
-                  EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */);
+                  EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1);
   }
 
   void OverrideWebUIConversionManager(ConversionManager* manager) {
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetMainFrame(),
                          "document.body.innerHTML.search('Conversion "
                          "Measurement API Internals') >= 0;",
-                         EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
+                         EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
@@ -335,15 +335,15 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   TestConversionManager manager;
   ConversionReport report(
       ImpressionBuilder(base::Time::Now()).SetData("100").Build(),
-      "7" /* conversion_data */, base::Time::Now() /* conversion_time */,
-      base::Time::Now() /* report_time */, 1 /* conversion_id */);
+      /*conversion_data=*/"7", /*conversion_time=*/base::Time::Now(),
+      /*report_time=*/base::Time::Now(), /*conversion_id=*/1);
   ConversionReport report2(
       ImpressionBuilder(base::Time::Now())
           .SetData("200")
           .SetSourceType(StorableImpression::SourceType::kEvent)
           .Build(),
-      "7" /* conversion_data */, base::Time::Now() /* conversion_time */,
-      base::Time::Now() /* report_time */, 1 /* conversion_id */);
+      /*conversion_data=*/"7", /*conversion_time=*/base::Time::Now(),
+      /*report_time=*/base::Time::Now(), /*conversion_id=*/1);
   manager.SetReportsForWebUI({report, report2});
   OverrideWebUIConversionManager(&manager);
 
@@ -372,8 +372,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   TestConversionManager manager;
   ConversionReport report(
       ImpressionBuilder(base::Time::Now()).SetData("100").Build(),
-      "7" /* conversion_data */, base::Time::Now() /* conversion_time */,
-      base::Time::Now() /* report_time */, 1 /* conversion_id */);
+      /*conversion_data=*/"7", /*conversion_time=*/base::Time::Now(),
+      /*report_time=*/base::Time::Now(), /*conversion_id=*/1);
   manager.SetReportsForWebUI({report});
   OverrideWebUIConversionManager(&manager);
 
@@ -412,8 +412,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   TestConversionManager manager;
   ConversionReport report(
       ImpressionBuilder(base::Time::Now()).SetData("100").Build(),
-      "7" /* conversion_data */, base::Time::Now() /* conversion_time */,
-      base::Time::Now() /* report_time */, 1 /* conversion_id */);
+      /*conversion_data=*/"7", /*conversion_time=*/base::Time::Now(),
+      /*report_time=*/base::Time::Now(), /*conversion_id=*/1);
   manager.SetReportsForWebUI({report});
   OverrideWebUIConversionManager(&manager);
 

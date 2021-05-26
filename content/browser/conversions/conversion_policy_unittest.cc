@@ -78,7 +78,7 @@ TEST_F(ConversionPolicyTest, DebugMode_ConversionDataNotNoised) {
   uint64_t conversion_data = 0UL;
   for (int i = 0; i < 100; i++) {
     EXPECT_EQ(base::NumberToString(conversion_data),
-              ConversionPolicy(true /* debug_mode */)
+              ConversionPolicy(/*debug_mode=*/true)
                   .GetSanitizedConversionData(conversion_data));
   }
 }

@@ -66,7 +66,7 @@ class ConversionStorageTest : public testing::Test {
                             /*conversion_time=*/clock_.Now(),
                             /*report_time=*/clock_.Now() +
                                 base::TimeDelta::FromMilliseconds(kReportTime),
-                            absl::nullopt /* conversion_id */);
+                            /*conversion_id=*/absl::nullopt);
     return report;
   }
 
