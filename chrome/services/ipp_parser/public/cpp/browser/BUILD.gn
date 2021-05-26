@@ -15,6 +15,7 @@ if (use_cups) {
     deps = [
       "//base",
       "//chrome:strings",
+      "//chrome/services:sandbox_types",
       "//chrome/services/ipp_parser/public/mojom",
       "//content/public/browser",
     ]

@@ -12,8 +12,7 @@
 #include "content/public/common/content_client.h"
 #include "sandbox/policy/sandbox_type.h"
 
-// This file maps service classes to sandbox types.  Services which
-// require a non-utility sandbox can be added here.  See
+// This file maps service classes to sandbox types. See
 // ServiceProcessHost::Launch() for how these templates are consumed.
 
 // auction_worklet::mojom::AuctionWorkletService
@@ -52,6 +51,22 @@ template <>
 inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<data_decoder::mojom::DataDecoderService>() {
   return sandbox::policy::SandboxType::kService;
+}
+
+// device::mojom::XRDeviceService
+namespace device {
+namespace mojom {
+class XRDeviceService;
+}
+}  // namespace device
+template <>
+inline sandbox::policy::SandboxType
+content::GetServiceSandboxType<device::mojom::XRDeviceService>() {
+#if defined(OS_WIN)
+  return sandbox::policy::SandboxType::kXrCompositing;
+#else
+  return sandbox::policy::SandboxType::kUtility;
+#endif  // !OS_WIN
 }
 
 // media::mojom::CdmService
@@ -93,19 +108,29 @@ content::GetServiceSandboxType<network::mojom::NetworkService>() {
                                    : sandbox::policy::SandboxType::kNoSandbox;
 }
 
-// device::mojom::XRDeviceService
-#if defined(OS_WIN)
-namespace device {
+// storage::mojom::StorageService
+namespace storage {
 namespace mojom {
-class XRDeviceService;
+class StorageService;
 }
-}  // namespace device
+}  // namespace storage
 template <>
 inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<device::mojom::XRDeviceService>() {
-  return sandbox::policy::SandboxType::kXrCompositing;
+content::GetServiceSandboxType<storage::mojom::StorageService>() {
+  return sandbox::policy::SandboxType::kUtility;
 }
-#endif  // OS_WIN
+
+// tracing::mojom::TracingService
+namespace tracing {
+namespace mojom {
+class TracingService;
+}
+}  // namespace tracing
+template <>
+inline sandbox::policy::SandboxType
+content::GetServiceSandboxType<tracing::mojom::TracingService>() {
+  return sandbox::policy::SandboxType::kUtility;
+}
 
 // video_capture::mojom::VideoCaptureService
 namespace video_capture {

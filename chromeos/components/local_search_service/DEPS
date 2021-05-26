@@ -5,4 +5,5 @@ include_rules = [
   "+components/prefs",
   "+content/public/browser",
   "+content/public/test",
+  "+sandbox/policy/sandbox_type.h",
 ]

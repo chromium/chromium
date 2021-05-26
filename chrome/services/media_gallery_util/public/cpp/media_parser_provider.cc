@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/services/service_sandbox_type.h"
 #include "content/public/browser/service_process_host.h"
 #include "media/media_buildflags.h"
 #include "third_party/libyuv/include/libyuv.h"

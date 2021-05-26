@@ -28,13 +28,10 @@
 namespace content {
 
 // Sandbox type for ServiceProcessHost::Launch<remote>() is found by
-// template matching on |remote|. This provides a safe default. For
-// services that use other sandbox types, consult
-// security-dev@chromium.org and add to an appropriate |service_sandbox_type.h|.
+// template matching on |remote|. Consult security-dev@chromium.org and
+// add to an appropriate |service_sandbox_type.h|.
 template <typename Interface>
-inline sandbox::policy::SandboxType GetServiceSandboxType() {
-  return sandbox::policy::SandboxType::kUtility;
-}
+inline sandbox::policy::SandboxType GetServiceSandboxType() = delete;
 
 // ServiceProcessHost is used to launch new service processes given basic
 // parameters like sandbox type, as well as a primordial Mojo interface to drive

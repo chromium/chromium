@@ -3,7 +3,8 @@ include_rules = [
   "+content/public/browser",
   "+content/public/test",
   "+mojo/public",
-  "+net",
+  "+net", 
+  "+components/services/service_sandbox_type.h",
   "+services/network",
   "+third_party/skia/include",
 ]

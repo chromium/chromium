@@ -5,13 +5,28 @@
 #ifndef CHROME_BROWSER_CHROMEOS_SERVICE_SANDBOX_TYPE_H_
 #define CHROME_BROWSER_CHROMEOS_SERVICE_SANDBOX_TYPE_H_
 
+#include "build/chromeos_buildflags.h"
 #include "chromeos/assistant/buildflags.h"
 #include "content/public/browser/service_process_host.h"
 #include "sandbox/policy/sandbox_type.h"
 
-// This file maps service classes to sandbox types.  Services which
-// require a non-utility sandbox can be added here.  See
+// This file maps service classes to sandbox types. See
 // ServiceProcessHost::Launch() for how these templates are consumed.
+
+// chromeos::assistant::mojom::AssistantAudioDecoderFactory
+namespace chromeos {
+namespace assistant {
+namespace mojom {
+class AssistantAudioDecoderFactory;
+}  // namespace mojom
+}  // namespace assistant
+}  // namespace chromeos
+
+template <>
+inline sandbox::policy::SandboxType content::GetServiceSandboxType<
+    chromeos::assistant::mojom::AssistantAudioDecoderFactory>() {
+  return sandbox::policy::SandboxType::kUtility;
+}
 
 // chromeos::ime::mojom::ImeService
 namespace chromeos {
@@ -58,5 +73,23 @@ inline sandbox::policy::SandboxType content::GetServiceSandboxType<
   return sandbox::policy::SandboxType::kLibassistant;
 }
 #endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// recording::mojom::RecordingService
+namespace recording {
+namespace mojom {
+class RecordingService;
+}  // namespace mojom
+}  // namespace recording
+
+// This is needed to prevent the service from crashing on a sandbox seccomp-bpf
+// failure when the audio capturer tries to open a stream.
+// TODO(https://crbug.com/1147991): Explore alternatives if any.
+template <>
+inline sandbox::policy::SandboxType
+content::GetServiceSandboxType<recording::mojom::RecordingService>() {
+  return sandbox::policy::SandboxType::kVideoCapture;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // CHROME_BROWSER_CHROMEOS_SERVICE_SANDBOX_TYPE_H_

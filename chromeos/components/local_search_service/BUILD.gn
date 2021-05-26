@@ -49,6 +49,7 @@ source_set("local_search_service_provider") {
     "local_search_service_provider_for_testing.h",
     "oop_local_search_service_provider.cc",
     "oop_local_search_service_provider.h",
+    "service_sandbox_type.h",
   ]
 
   deps = [

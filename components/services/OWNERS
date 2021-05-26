@@ -1,1 +1,4 @@
 file://services/OWNERS
+
+per-file service_sandbox_type.h=set noparent
+per-file service_sandbox_type.h=file://ipc/SECURITY_OWNERS

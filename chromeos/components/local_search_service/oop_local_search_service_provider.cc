@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/components/local_search_service/oop_local_search_service_provider.h"
+#include "chromeos/components/local_search_service/service_sandbox_type.h"
 #include "content/public/browser/service_process_host.h"
 
 namespace chromeos {

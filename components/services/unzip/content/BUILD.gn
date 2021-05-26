@@ -10,6 +10,7 @@ source_set("content") {
 
   deps = [
     "//base",
+    "//components/services:sandbox_types",
     "//components/strings",
     "//content/public/browser",
   ]
