@@ -12,7 +12,7 @@ goog.require('mojo.internal');
 {%- if interfaces %}
 goog.require('mojo.internal.interfaceSupport');
 {%- endif %}
-{% for kind in module.imported_kinds.values() %}
+{% for kind in module.imported_kinds.values()|sort %}
 goog.require('{{kind|lite_js_import_name}}');
 {%- endfor %}
 {% elif not for_bindings_internals  %}

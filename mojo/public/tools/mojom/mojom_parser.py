@@ -139,7 +139,7 @@ def _EnsureInputLoaded(mojom_abspath, module_path, abs_paths, asts,
     # Already done.
     return
 
-  for dep_abspath, dep_path in dependencies[mojom_abspath]:
+  for dep_abspath, dep_path in sorted(dependencies[mojom_abspath]):
     if dep_abspath not in loaded_modules:
       _EnsureInputLoaded(dep_abspath, dep_path, abs_paths, asts, dependencies,
                          loaded_modules, module_metadata)
@@ -274,7 +274,7 @@ def _ParseMojoms(mojom_files,
     loaded_mojom_asts[mojom_abspath] = ast
 
   logging.info('Processing dependencies')
-  for mojom_abspath, ast in loaded_mojom_asts.items():
+  for mojom_abspath, ast in sorted(loaded_mojom_asts.items()):
     invalid_imports = []
     for imp in ast.import_list:
       import_abspath = _ResolveRelativeImportPath(imp.import_filename,

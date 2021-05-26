@@ -6,9 +6,9 @@
 import {mojo} from '{{bindings_library_path}}';
 {%- endif %}
 
-{% for path, kinds in js_module_imports.items() -%}
+{% for path, kinds in js_module_imports.items()|sort -%}
 import {
-{%- for kind in kinds %}
+{%- for kind in kinds|sort %}
 {%-   for item in kind|imports_for_kind %}
   {{item.name}} as {{item.alias}}
 {%-     if not loop.last -%},{% endif -%}
