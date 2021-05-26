@@ -130,10 +130,12 @@
 
       <template is="dom-if" route-path="/networkDetail" no-search restamp>
         <settings-subpage page-title="$i18n{internetDetailPageTitle}">
-          <settings-internet-detail-menu
-              slot="subpage-title-extra"
-              device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
-          </settings-internet-detail-menu>
+          <template is="dom-if" if="[[isUpdatedCellularUiEnabled_]]" restamp>
+            <settings-internet-detail-menu
+                slot="subpage-title-extra"
+                device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
+            </settings-internet-detail-menu>
+          </template>
           <settings-internet-detail-page prefs="{{prefs}}"
               default-network="[[defaultNetwork]]"
               global-policy="[[globalPolicy_]]"
