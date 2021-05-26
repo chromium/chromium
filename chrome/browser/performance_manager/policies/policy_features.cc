@@ -29,7 +29,7 @@ const base::Feature kTrimOnMemoryPressure{"TrimOnMemoryPressure",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTrimArcOnMemoryPressure{"TrimArcOnMemoryPressure",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTrimOnFreeze{"TrimOnFreeze",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
@@ -38,10 +38,10 @@ const base::FeatureParam<int> kGraphWalkBackoffTimeSec = {
     &kTrimOnMemoryPressure, "GraphWalkBackoffTimeSec", 180};
 
 const base::FeatureParam<int> kArcProcessListFetchBackoffTimeSec = {
-    &kTrimArcOnMemoryPressure, "ArcProcessListFetchBackoffTimeSec", 180};
+    &kTrimArcOnMemoryPressure, "ArcProcessListFetchBackoffTimeSec", 600};
 
 const base::FeatureParam<int> kArcProcessTrimBackoffTimeSec = {
-    &kTrimArcOnMemoryPressure, "ArcProcessTrimBackoffTimeSec", 1800};
+    &kTrimArcOnMemoryPressure, "ArcProcessTrimBackoffTimeSec", 1200};
 
 const base::FeatureParam<bool> kTrimArcAppProcesses = {
     &kTrimArcOnMemoryPressure, "ArcTrimAppProcesses", true};
@@ -53,10 +53,10 @@ const base::FeatureParam<bool> kTrimArcAggressive = {
     &kTrimArcOnMemoryPressure, "ArcTrimAggressive", false};
 
 const base::FeatureParam<int> kArcMaxProcessesPerTrim = {
-    &kTrimArcOnMemoryPressure, "ArcMaxProcessesPerTrim", -1};
+    &kTrimArcOnMemoryPressure, "ArcMaxProcessesPerTrim", 10};
 
 const base::FeatureParam<int> kArcProcessInactivityTimeSec = {
-    &kTrimArcOnMemoryPressure, "ArcProcessInactivityTimeSec", 300};
+    &kTrimArcOnMemoryPressure, "ArcProcessInactivityTimeSec", 600};
 
 // Specifies the minimum amount of time a parent frame node must be invisible
 // before considering the process node for working set trim.
