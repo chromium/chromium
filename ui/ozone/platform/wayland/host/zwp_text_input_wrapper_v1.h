@@ -103,6 +103,10 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
 
   std::vector<ZWPTextInputWrapperClient::SpanStyle> spans_;
   int32_t preedit_cursor_ = -1;
+
+  // Stores the string in SetSurroundingText. This string is used in
+  // OnDeleteSurroundingText.
+  std::string text_for_surrounding_text_;
 };
 
 }  // namespace ui
