@@ -165,7 +165,7 @@ RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcChildLayoutOverflow() {
     if (fragment.HasItems()) {
       for (NGInlineCursor cursor(fragment); cursor; cursor.MoveToNext()) {
         if (const NGPhysicalBoxFragment* child =
-                cursor.Current().BoxFragment()) {
+                cursor.Current()->PostLayoutBoxFragment()) {
           if (child->GetLayoutObject()->IsBox()) {
             result.Unite(
                 child->MutableOwnerLayoutBox()->RecalcLayoutOverflow());
