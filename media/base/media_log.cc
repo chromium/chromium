@@ -73,11 +73,15 @@ void MediaLog::NotifyError(Status status) {
 
 void MediaLog::OnWebMediaPlayerDestroyedLocked() {}
 void MediaLog::OnWebMediaPlayerDestroyed() {
+  recordreplay::Assert("MediaLog::OnWebMediaPlayerDestroyed Start");
   AddEvent<MediaLogEvent::kWebMediaPlayerDestroyed>();
   base::AutoLock auto_lock(parent_log_record_->lock);
   // Forward to the parent log's implementation.
-  if (parent_log_record_->media_log)
+  if (parent_log_record_->media_log) {
+    recordreplay::Assert("MediaLog::OnWebMediaPlayerDestroyed #1");
     parent_log_record_->media_log->OnWebMediaPlayerDestroyedLocked();
+  }
+  recordreplay::Assert("MediaLog::OnWebMediaPlayerDestroyed Done");
 }
 
 std::string MediaLog::GetErrorMessage() {
