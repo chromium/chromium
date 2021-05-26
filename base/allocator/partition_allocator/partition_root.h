@@ -421,13 +421,14 @@ struct BASE_EXPORT PartitionRoot {
     return bits::AlignUp(raw_size, SystemPageSize());
   }
 
-  static ALWAYS_INLINE size_t GetDirectMapReservedSize(size_t raw_size) {
+  static ALWAYS_INLINE size_t GetDirectMapReservedSize(size_t padded_raw_size) {
     // Caller must check that the size is not above the MaxDirectMapped()
     // limit before calling. This also guards against integer overflow in the
     // calculation here.
-    PA_DCHECK(raw_size <= MaxDirectMapped());
-    return bits::AlignUp(raw_size + GetDirectMapMetadataAndGuardPagesSize(),
-                         DirectMapAllocationGranularity());
+    PA_DCHECK(padded_raw_size <= MaxDirectMapped());
+    return bits::AlignUp(
+        padded_raw_size + GetDirectMapMetadataAndGuardPagesSize(),
+        DirectMapAllocationGranularity());
   }
 
 // PartitionRefCount contains a cookie if slow checks are enabled or
@@ -1605,8 +1606,6 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocFlags(
   // Catch unsupported alignment requests early.
   PA_CHECK(alignment <= kMaxSupportedAlignment);
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
-  // TODO(bartekn): Support direct map. Until then, catch unsupported requests.
-  PA_CHECK(alignment <= PartitionPageSize() || raw_size <= kMaxBucketed);
 
   size_t adjusted_size = requested_size;
   if (alignment <= PartitionPageSize()) {

@@ -657,17 +657,22 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
   size_t current_slot_size = slot_span->bucket->slot_size;
   char* slot_start =
       static_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span));
+  // TODO(bartekn): Drop the alignment requirement of the existing allocation.
   if (new_slot_size == current_slot_size) {
     // No need to move any memory around, but update size and cookie below.
     // That's because raw_size may have changed.
   } else if (new_slot_size < current_slot_size) {
-    size_t current_map_size =
-        DirectMapExtent::FromSlotSpan(slot_span)->map_size;
-    size_t new_map_size = GetDirectMapReservedSize(raw_size) -
-                          GetDirectMapMetadataAndGuardPagesSize();
+    auto* extent = DirectMapExtent::FromSlotSpan(slot_span);
+    size_t current_map_size = extent->map_size;
+    // Calculate the new map size the way PartitionDirectMap() would, but
+    // assume keeping the same alignment.
+    size_t new_map_size =
+        GetDirectMapReservedSize(raw_size + extent->padding_for_alignment) -
+        extent->padding_for_alignment - GetDirectMapMetadataAndGuardPagesSize();
 
     // Don't reallocate in-place if new map size would be less than 80 % of the
     // current map size, to avoid holding on to too much unused address space.
+    // TODO(bartekn): Compare reserved size, to get the whole picture.
     if ((new_map_size / SystemPageSize()) * 5 <
         (current_map_size / SystemPageSize()) * 4)
       return false;
