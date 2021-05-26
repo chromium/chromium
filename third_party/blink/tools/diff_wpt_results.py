@@ -205,10 +205,18 @@ def main(args):
                         help='Name of the WPT product being compared')
     parser.add_argument('--csv-output', required=True,
                         help='Path to CSV output file')
+    parser.add_argument('--verbose', '-v', action='count', default=1,
+                        help='Verbosity level')
     args = parser.parse_args()
 
-    # TODO(rmhasan): Set the log level using a command line argument
-    logging.basicConfig(level=logging.INFO)
+    if args.verbose >= 3:
+        log_level = logging.DEBUG
+    elif args.verbose == 2:
+        log_level = logging.INFO
+    else:
+        log_level = logging.WARNING
+
+    logging.basicConfig(level=log_level)
 
     assert args.product_to_compare != args.baseline_product, (
         'Product to compare and the baseline product cannot be the same')
