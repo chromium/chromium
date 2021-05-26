@@ -472,27 +472,25 @@ void ShillToONCTranslator::TranslateCellularWithState() {
         nested_translator.CreateTranslatedONCObject();
     onc_object_->MergeDictionary(nested_object.get());
 
-    // Copy ICCID and IMSI from the Device dictionary only if not provied in the
-    // Service properties.
-    if (!onc_object_->FindKey(::onc::cellular::kICCID)) {
-      const base::Value* iccid =
-          device_dictionary->FindKey(shill::kIccidProperty);
-      if (iccid)
-        onc_object_->SetKey(::onc::cellular::kICCID, iccid->Clone());
-    }
-    if (!onc_object_->FindKey(::onc::cellular::kIMSI)) {
-      const base::Value* imsi =
-          device_dictionary->FindKey(shill::kImsiProperty);
-      if (imsi)
-        onc_object_->SetKey(::onc::cellular::kIMSI, imsi->Clone());
+    // The Scanning property is retrieved from the Device dictionary, but only
+    // if this is the active SIM, meaning that the service ICCID matches the
+    // device ICCID.
+    const std::string* service_iccid =
+        onc_object_->FindStringKey(::onc::cellular::kICCID);
+    if (service_iccid) {
+      const std::string* device_iccid =
+          device_dictionary->FindStringKey(shill::kIccidProperty);
+      if (device_iccid && *service_iccid == *device_iccid) {
+        scanning = device_dictionary->FindBoolKey(shill::kScanningProperty)
+                       .value_or(false);
+      }
     }
 
-    // Get requires_roaming and scanning from the Device dictionary.
+    // Get requires_roaming from the Device dictionary, even if this is not the
+    // active SIM.
     requires_roaming =
         device_dictionary->FindBoolKey(shill::kProviderRequiresRoamingProperty)
             .value_or(false);
-    scanning = device_dictionary->FindBoolKey(shill::kScanningProperty)
-                   .value_or(false);
   }
   if (requires_roaming) {
     onc_object_->SetKey(::onc::cellular::kRoamingState,

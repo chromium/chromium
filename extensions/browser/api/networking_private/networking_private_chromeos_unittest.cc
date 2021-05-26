@@ -230,6 +230,10 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     service_test()->SetServiceProperty(
         kCellularServicePath, shill::kAutoConnectProperty, base::Value(true));
     service_test()->SetServiceProperty(
+        kCellularServicePath, shill::kIccidProperty, base::Value("test_iccid"));
+    service_test()->SetServiceProperty(
+        kCellularServicePath, shill::kImsiProperty, base::Value("test_imsi"));
+    service_test()->SetServiceProperty(
         kCellularServicePath, shill::kNetworkTechnologyProperty,
         base::Value(shill::kNetworkTechnologyGsm));
     service_test()->SetServiceProperty(kCellularServicePath,

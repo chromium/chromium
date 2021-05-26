@@ -409,11 +409,7 @@ const FieldTranslationEntry kCellularDeviceTable[] = {
     {::onc::cellular::kHardwareRevision, shill::kHardwareRevisionProperty},
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::cellular::kHomeProvider, shill::kHomeProviderProperty},
-    // ICCID is only copied from the Device if not provided by the Service.
-    // {::onc::cellular::kICCID, shill::kIccidProperty},
     {::onc::cellular::kIMEI, shill::kImeiProperty},
-    // IMSI is only copied from the Device if not provided by the Service.
-    // {::onc::cellular::kIMSI, shill::kImsiProperty},
     {::onc::cellular::kManufacturer, shill::kManufacturerProperty},
     {::onc::cellular::kMDN, shill::kMdnProperty},
     {::onc::cellular::kMEID, shill::kMeidProperty},
