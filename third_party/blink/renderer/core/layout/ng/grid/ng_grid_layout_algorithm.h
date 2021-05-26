@@ -122,10 +122,10 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     absl::optional<AxisEdge> block_axis_alignment_fallback;
 
     ItemType item_type;
-    bool is_grid_containing_block : 1;
+    bool is_grid_containing_block;
 
-    bool is_inline_axis_stretched : 1;
-    bool is_block_axis_stretched : 1;
+    NGAutoBehavior inline_auto_behavior;
+    NGAutoBehavior block_auto_behavior;
 
     BaselineType row_baseline_type;
     BaselineType column_baseline_type;

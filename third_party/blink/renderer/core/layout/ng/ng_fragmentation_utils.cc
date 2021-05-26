@@ -801,7 +801,7 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
       parent_space, parent_space.GetWritingDirection(), /* is_new_fc */ true);
   space_builder.SetAvailableSize(column_size);
   space_builder.SetPercentageResolutionSize(percentage_resolution_size);
-  space_builder.SetStretchInlineSizeIfAuto(true);
+  space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
   space_builder.SetFragmentationType(kFragmentColumn);
   space_builder.SetFragmentainerBlockSize(column_size.block_size);
   space_builder.SetIsAnonymous(true);

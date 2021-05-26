@@ -70,7 +70,7 @@ void ComputeCaptionFragments(
     SetOrthogonalFallbackInlineSizeIfNeeded(table_style, caption, &builder);
     builder.SetAvailableSize(available_size);
     builder.SetPercentageResolutionSize(available_size);
-    builder.SetStretchInlineSizeIfAuto(true);
+    builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
     NGConstraintSpace caption_constraint_space = builder.ToConstraintSpace();
 
     scoped_refptr<const NGLayoutResult> caption_result =
@@ -119,7 +119,7 @@ LayoutUnit ComputeEmptyTableInlineSize(
     const bool has_collapsed_borders) {
   // If table has a css inline size, use that.
   if (space.IsFixedInlineSize() ||
-      (space.StretchInlineSizeIfAuto() &&
+      (space.IsInlineAutoBehaviorStretch() &&
        table_style.LogicalWidth().IsAuto()) ||
       !table_style.LogicalWidth().IsAuto() ||
       !table_style.LogicalMinWidth().IsAuto()) {

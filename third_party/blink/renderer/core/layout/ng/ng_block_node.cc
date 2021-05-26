@@ -277,9 +277,9 @@ void SetupBoxLayoutExtraInput(const NGConstraintSpace& space,
     input->is_override_block_size_definite =
         !space.IsFixedBlockSizeIndefinite();
   }
-  input->stretch_inline_size_if_auto = space.StretchInlineSizeIfAuto();
+  input->stretch_inline_size_if_auto = space.IsInlineAutoBehaviorStretch();
   input->stretch_block_size_if_auto =
-      space.StretchBlockSizeIfAuto() &&
+      space.IsBlockAutoBehaviorStretch() &&
       space.AvailableSize().block_size != kIndefiniteSize;
 }
 
@@ -814,7 +814,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
            Style().LogicalMinHeight().IsPercentOrCalc() ||
            Style().LogicalMaxHeight().IsPercentOrCalc() ||
            (Style().LogicalHeight().IsAuto() &&
-            constraint_space.StretchBlockSizeIfAuto());
+            constraint_space.IsBlockAutoBehaviorStretch());
   };
 
   if (!Style().AspectRatio().IsAuto() && !IsReplaced() &&

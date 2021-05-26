@@ -1722,7 +1722,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
       return NGLayoutResult::kBfcBlockOffsetResolved;
   }
 
-  // We have special behaviour for a self-collapsing child which gets pushed
+  // We have special behavior for a self-collapsing child which gets pushed
   // down due to clearance, see comment inside |ComputeInflowPosition|.
   bool self_collapsing_child_had_clearance =
       is_self_collapsing && has_clearance_past_adjoining_floats;
@@ -2044,7 +2044,7 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
 
   bool is_self_collapsing = layout_result.IsSelfCollapsing();
   if (is_self_collapsing) {
-    // The default behaviour for self-collapsing children is they just pass
+    // The default behavior for self-collapsing children is they just pass
     // through the previous inflow position.
     logical_block_offset = previous_inflow_position.logical_block_offset;
 
@@ -2551,7 +2551,7 @@ NGBoxStrut NGBlockLayoutAlgorithm::CalculateMargins(
                                      /* is_new_fc */ false);
     builder.SetAvailableSize(ChildAvailableSize());
     builder.SetPercentageResolutionSize(child_percentage_size_);
-    builder.SetStretchInlineSizeIfAuto(true);
+    builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
     NGConstraintSpace space = builder.ToConstraintSpace();
 
     const auto block_child = To<NGBlockNode>(child);
@@ -2590,7 +2590,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
                             child_writing_direction.GetWritingMode())) {
     if (!child.GetLayoutBox()->AutoWidthShouldFitContent() &&
         !child.IsReplaced() && !child.IsTable())
-      builder.SetStretchInlineSizeIfAuto(true);
+      builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
   }
 
   builder.SetAvailableSize(child_available_size);
@@ -2957,7 +2957,7 @@ void NGBlockLayoutAlgorithm::HandleRubyText(NGBlockNode ruby_text_child) {
   builder.SetAvailableSize(ChildAvailableSize());
   if (IsParallelWritingMode(ConstraintSpace().GetWritingMode(),
                             rt_style.GetWritingMode()))
-    builder.SetStretchInlineSizeIfAuto(true);
+    builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
 
   scoped_refptr<const NGLayoutResult> result =
       ruby_text_child.Layout(builder.ToConstraintSpace(), break_token.get());

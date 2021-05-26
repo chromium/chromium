@@ -457,7 +457,7 @@ NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
       /* is_new_fc */ true);
   builder.SetCacheSlot(slot);
   builder.SetAvailableSize(padding_box_size);
-  builder.SetStretchInlineSizeIfAuto(true);
+  builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
   // We pass the container's PercentageResolutionSize because percentage
   // padding for the fieldset content should be computed as they are in
   // the container.

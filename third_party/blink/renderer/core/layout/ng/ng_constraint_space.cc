@@ -128,7 +128,9 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
   bool shrink_to_fit =
       block.SizesLogicalWidthToFitContent(style.LogicalWidth()) ||
       (block.IsTable() && block.Parent() && block.Parent()->IsLayoutView());
-  builder.SetStretchInlineSizeIfAuto(!shrink_to_fit);
+  builder.SetInlineAutoBehavior(shrink_to_fit
+                                    ? NGAutoBehavior::kFitContent
+                                    : NGAutoBehavior::kStretchImplicit);
   return builder.ToConstraintSpace();
 }
 

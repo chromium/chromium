@@ -1232,10 +1232,11 @@ using AxisEdge = NGGridLayoutAlgorithm::AxisEdge;
 AxisEdge AxisEdgeFromItemPosition(const ComputedStyle& container_style,
                                   const ComputedStyle& style,
                                   const ItemPosition item_position,
-                                  bool is_inline_axis,
-                                  bool* is_stretched) {
-  DCHECK(is_stretched);
-  *is_stretched = false;
+                                  const bool is_replaced,
+                                  const bool is_inline_axis,
+                                  NGAutoBehavior* auto_behavior) {
+  DCHECK(auto_behavior);
+  *auto_behavior = NGAutoBehavior::kFitContent;
 
   // Auto-margins take precedence over any alignment properties.
   if (style.MayHaveMargin()) {
@@ -1291,7 +1292,7 @@ AxisEdge AxisEdgeFromItemPosition(const ComputedStyle& container_style,
     case ItemPosition::kEnd:
       return AxisEdge::kEnd;
     case ItemPosition::kStretch:
-      *is_stretched = true;
+      *auto_behavior = NGAutoBehavior::kStretchExplicit;
       return AxisEdge::kStart;
     case ItemPosition::kBaseline:
     case ItemPosition::kLastBaseline:
@@ -1304,9 +1305,12 @@ AxisEdge AxisEdgeFromItemPosition(const ComputedStyle& container_style,
       DCHECK(is_inline_axis);
       return container_writing_direction.IsRtl() ? AxisEdge::kStart
                                                  : AxisEdge::kEnd;
+    case ItemPosition::kNormal:
+      *auto_behavior = is_replaced ? NGAutoBehavior::kFitContent
+                                   : NGAutoBehavior::kStretchImplicit;
+      return AxisEdge::kStart;
     case ItemPosition::kLegacy:
     case ItemPosition::kAuto:
-    case ItemPosition::kNormal:
       NOTREACHED();
       break;
   }
@@ -1368,26 +1372,23 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
   // resolution.
   GridItemData item(node);
   const ComputedStyle& item_style = node.Style();
-
-  const ItemPosition normal_behaviour =
-      node.IsReplaced() ? ItemPosition::kStart : ItemPosition::kStretch;
+  const bool is_replaced = node.IsReplaced();
 
   // Determine the alignment for the grid-item ahead of time (we may need to
   // know if it stretches ahead of time to correctly determine any block-axis
   // contribution).
-  bool is_axis_stretched;
   item.inline_axis_alignment = AxisEdgeFromItemPosition(
       container_style, item_style,
-      item_style.ResolvedJustifySelf(normal_behaviour, &container_style)
+      item_style.ResolvedJustifySelf(ItemPosition::kNormal, &container_style)
           .GetPosition(),
-      /* is_inline_axis */ true, &is_axis_stretched);
-  item.is_inline_axis_stretched = is_axis_stretched;
+      is_replaced,
+      /* is_inline_axis */ true, &item.inline_auto_behavior);
   item.block_axis_alignment = AxisEdgeFromItemPosition(
       container_style, item_style,
-      item_style.ResolvedAlignSelf(normal_behaviour, &container_style)
+      item_style.ResolvedAlignSelf(ItemPosition::kNormal, &container_style)
           .GetPosition(),
-      /* is_inline_axis */ false, &is_axis_stretched);
-  item.is_block_axis_stretched = is_axis_stretched;
+      is_replaced,
+      /* is_inline_axis */ false, &item.block_auto_behavior);
 
   const auto item_writing_mode =
       item.node.Style().GetWritingDirection().GetWritingMode();
@@ -2744,7 +2745,7 @@ TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
       return geometry;
     }
     case ContentDistributionType::kSpaceAround: {
-      // Default behaviour for 'space-around' is to center content.
+      // Default behavior for 'space-around' is to center content.
       const wtf_size_t track_count = track_collection.NonCollapsedTrackCount();
       const LayoutUnit free_space = FreeSpace();
       if (track_count < 1 || free_space < LayoutUnit()) {
@@ -2758,7 +2759,7 @@ TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
       return geometry;
     }
     case ContentDistributionType::kSpaceEvenly: {
-      // Default behaviour for 'space-evenly' is to center content.
+      // Default behavior for 'space-evenly' is to center content.
       const wtf_size_t track_count = track_collection.NonCollapsedTrackCount();
       const LayoutUnit free_space = FreeSpace();
       if (free_space < LayoutUnit()) {
@@ -2987,12 +2988,8 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
     builder.SetAvailableSize(containing_grid_area_size);
   }
   builder.SetPercentageResolutionSize(containing_grid_area_size);
-  builder.SetStretchInlineSizeIfAuto(grid_item.is_inline_axis_stretched &&
-                                     containing_grid_area_size.inline_size !=
-                                         kIndefiniteSize);
-  builder.SetStretchBlockSizeIfAuto(grid_item.is_block_axis_stretched &&
-                                    containing_grid_area_size.block_size !=
-                                        kIndefiniteSize);
+  builder.SetInlineAutoBehavior(grid_item.inline_auto_behavior);
+  builder.SetBlockAutoBehavior(grid_item.block_auto_behavior);
   return builder.ToConstraintSpace();
 }
 

@@ -301,9 +301,9 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
 
   if (WillChildCrossSizeBeContainerCrossSize(flex_item)) {
     if (is_column_)
-      space_builder.SetStretchInlineSizeIfAuto(true);
+      space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchExplicit);
     else
-      space_builder.SetStretchBlockSizeIfAuto(true);
+      space_builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
   }
 
   // For determining the intrinsic block-size we make %-block-sizes resolve
@@ -977,7 +977,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
                                     flex_item.main_axis_border_padding_;
         space_builder.SetIsFixedBlockSize(true);
         if (WillChildCrossSizeBeContainerCrossSize(flex_item.ng_input_node_)) {
-          space_builder.SetStretchInlineSizeIfAuto(true);
+          space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchExplicit);
         } else if (fixed_aspect_ratio_cross_size != kIndefiniteSize) {
           space_builder.SetIsFixedInlineSize(true);
           available_size.inline_size = fixed_aspect_ratio_cross_size;
@@ -996,7 +996,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
         available_size.block_size = ChildAvailableSize().block_size;
         space_builder.SetIsFixedInlineSize(true);
         if (WillChildCrossSizeBeContainerCrossSize(flex_item.ng_input_node_)) {
-          space_builder.SetStretchBlockSizeIfAuto(true);
+          space_builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
         } else if (fixed_aspect_ratio_cross_size != kIndefiniteSize) {
           space_builder.SetIsFixedBlockSize(true);
           available_size.block_size = fixed_aspect_ratio_cross_size;
@@ -1341,7 +1341,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
     if (is_column_)
       builder.SetIsFixedBlockSizeIndefinite(true);
     else if (WillChildCrossSizeBeContainerCrossSize(child))
-      builder.SetStretchBlockSizeIfAuto(true);
+      builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
     const auto space = builder.ToConstraintSpace();
 
     MinMaxSizesResult child_result =

@@ -277,6 +277,7 @@ LayoutUnit BlockSizeFromAspectRatio(const NGBoxStrut& border_padding,
                                     const LogicalSize& aspect_ratio,
                                     EBoxSizing box_sizing,
                                     LayoutUnit inline_size) {
+  DCHECK_GE(inline_size, border_padding.InlineSum());
   if (box_sizing == EBoxSizing::kBorderBox) {
     return inline_size.MulDiv(aspect_ratio.block_size,
                               aspect_ratio.inline_size);
@@ -413,7 +414,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForReplaced(
       child_style.LogicalHeight().IsPercentOrCalc() ||
       child_style.LogicalMinHeight().IsPercentOrCalc() ||
       child_style.LogicalMaxHeight().IsPercentOrCalc() ||
-      (child_style.LogicalHeight().IsAuto() && space.StretchBlockSizeIfAuto());
+      (child_style.LogicalHeight().IsAuto() &&
+       space.IsBlockAutoBehaviorStretch());
   return MinMaxSizesResult(result, depends_on_block_constraints);
 }
 
@@ -520,19 +522,18 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
   };
 
   const ComputedStyle& style = node.Style();
+  const bool has_aspect_ratio = !style.AspectRatio().IsAuto();
   Length logical_width = style.LogicalWidth();
   Length min_length = style.LogicalMinWidth();
 
-  // TODO(ikilpatrick): If we are stretching in both the inline-axis, and
-  // block-axis, we shouldn't apply the aspect-ratio.
-  // TODO(cbiesinger): Should the if also check !node.IsReplaced()?
   LayoutUnit extent = kIndefiniteSize;
-  if (!style.AspectRatio().IsAuto()) {
-    if (logical_width.IsAuto() || logical_width.IsMinContent() ||
-        logical_width.IsMaxContent()) {
+  if (has_aspect_ratio) {
+    if ((logical_width.IsAuto() &&
+         space.InlineAutoBehavior() != NGAutoBehavior::kStretchExplicit) ||
+        logical_width.IsMinContent() || logical_width.IsMaxContent())
       extent = ComputeInlineSizeFromAspectRatio(space, style, border_padding);
-    }
-    if (UNLIKELY(extent != kIndefiniteSize)) {
+
+    if (extent != kIndefiniteSize) {
       // This means we successfully applied aspect-ratio and now need to check
       // if we need to apply the implied minimum size:
       // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
@@ -544,8 +545,10 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
 
   if (LIKELY(extent == kIndefiniteSize)) {
     if (logical_width.IsAuto()) {
-      logical_width = space.StretchInlineSizeIfAuto() ? Length::FillAvailable()
-                                                      : Length::FitContent();
+      logical_width = (space.IsInlineAutoBehaviorStretch() &&
+                       space.AvailableSize().inline_size != kIndefiniteSize)
+                          ? Length::FillAvailable()
+                          : Length::FitContent();
     }
     extent = ResolveMainInlineLength(space, style, border_padding,
                                      MinMaxSizesFunc, logical_width);
@@ -665,36 +668,54 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
   if (space.IsMeasuringRestrictedBlockSizeTableCellChild())
     return min_max.min_size;
 
+  const bool has_aspect_ratio = !style.AspectRatio().IsAuto();
   Length logical_height = style.LogicalHeight();
-  if (logical_height.IsAuto()) {
-    logical_height = space.StretchBlockSizeIfAuto() ? Length::FillAvailable()
-                                                    : Length::FitContent();
-  }
-  // TODO(cbiesinger): Audit callers of ResolveMainBlockLength to see whether
-  // they need to respect aspect ratio.
-  LayoutUnit extent =
-      ResolveMainBlockLength(space, style, border_padding, logical_height,
-                             intrinsic_size, available_block_size_adjustment,
-                             opt_percentage_resolution_block_size_for_min_max);
-  if (UNLIKELY(!style.AspectRatio().IsAuto() && inline_size &&
-               BlockLengthUnresolvable(
-                   space, logical_height,
-                   opt_percentage_resolution_block_size_for_min_max))) {
-    extent =
-        BlockSizeFromAspectRatio(border_padding, style.LogicalAspectRatio(),
-                                 style.BoxSizingForAspectRatio(), *inline_size);
-    // Apply the automatic minimum size for aspect ratio:
-    // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
-    // We also check for LayoutUnit::Max() because flexbox uses that as a
-    // "placeholder" to compute the flex line length while still respecting
-    // max-block-size.
-    if (style.LogicalMinHeight().IsAuto() &&
-        style.OverflowBlockDirection() == EOverflow::kVisible &&
-        intrinsic_size != kIndefiniteSize &&
-        intrinsic_size != LayoutUnit::Max()) {
-      min_max.min_size = intrinsic_size;
+
+  LayoutUnit extent = kIndefiniteSize;
+  if (has_aspect_ratio && inline_size) {
+    const bool has_explicit_stretch =
+        logical_height.IsAuto() &&
+        space.BlockAutoBehavior() == NGAutoBehavior::kStretchExplicit &&
+        space.AvailableSize().block_size != kIndefiniteSize;
+    if (BlockLengthUnresolvable(
+            space, logical_height,
+            opt_percentage_resolution_block_size_for_min_max) &&
+        !has_explicit_stretch) {
+      extent = BlockSizeFromAspectRatio(
+          border_padding, style.LogicalAspectRatio(),
+          style.BoxSizingForAspectRatio(), *inline_size);
+      DCHECK_NE(extent, kIndefiniteSize);
+
+      // Apply the automatic minimum size for aspect ratio:
+      // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
+      // We also check for LayoutUnit::Max() because flexbox uses that as a
+      // "placeholder" to compute the flex line length while still respecting
+      // max-block-size.
+      if (style.LogicalMinHeight().IsAuto() &&
+          style.OverflowBlockDirection() == EOverflow::kVisible &&
+          intrinsic_size != kIndefiniteSize &&
+          intrinsic_size != LayoutUnit::Max())
+        min_max.min_size = intrinsic_size;
     }
-  } else if (extent == kIndefiniteSize) {
+  }
+
+  if (extent == kIndefiniteSize) {
+    if (logical_height.IsAuto()) {
+      logical_height = (space.IsBlockAutoBehaviorStretch() &&
+                        space.AvailableSize().block_size != kIndefiniteSize)
+                           ? Length::FillAvailable()
+                           : Length::FitContent();
+    }
+
+    // TODO(cbiesinger): Audit callers of ResolveMainBlockLength to see whether
+    // they need to respect aspect ratio.
+    extent = ResolveMainBlockLength(
+        space, style, border_padding, logical_height, intrinsic_size,
+        available_block_size_adjustment,
+        opt_percentage_resolution_block_size_for_min_max);
+  }
+
+  if (extent == kIndefiniteSize) {
     DCHECK_EQ(intrinsic_size, kIndefiniteSize);
     return extent;
   }
@@ -843,8 +864,8 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
     // against a different size than the main size. See:
     //  - https://www.w3.org/TR/CSS21/visudet.html#min-max-heights
     //  - https://bugs.chromium.org/p/chromium/issues/detail?id=385877
-    // For the history on this behaviour. Fortunately if this is the case we
-    // can just use the given available size to resolve these sizes against.
+    // For the history on this behavior. Fortunately if this is the case we can
+    // just use the given available size to resolve these sizes against.
     const LayoutUnit min_max_percentage_resolution_size =
         node.GetDocument().InQuirksMode()
             ? space.AvailableSize().block_size
@@ -864,14 +885,14 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
       replaced_block = space.AvailableSize().block_size;
       DCHECK_GE(*replaced_block, 0);
     } else if (!block_length.IsAutoOrContentOrIntrinsic() ||
-               space.StretchBlockSizeIfAuto()) {
+               (space.IsBlockAutoBehaviorStretch() &&
+                space.AvailableSize().block_size != kIndefiniteSize)) {
       Length block_length_to_resolve = block_length;
       if (block_length_to_resolve.IsAuto()) {
         // TODO(dgrogan): This code block (and its corresponding inline version
         // below) didn't make any tests pass when written so it may be
         // unnecessary or untested. Check again when launching ReplacedNG.
-        DCHECK(space.StretchBlockSizeIfAuto());
-        DCHECK(space.AvailableSize().block_size != kIndefiniteSize);
+        DCHECK(space.IsBlockAutoBehaviorStretch());
         block_length_to_resolve = Length::FillAvailable();
       }
 
@@ -970,11 +991,12 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
     if (space.IsFixedInlineSize()) {
       replaced_inline = space.AvailableSize().inline_size;
       DCHECK_GE(*replaced_inline, 0);
-    } else if (!inline_length.IsAuto() || space.StretchInlineSizeIfAuto()) {
+    } else if (!inline_length.IsAuto() ||
+               (space.IsInlineAutoBehaviorStretch() &&
+                space.AvailableSize().inline_size != kIndefiniteSize)) {
       Length inline_length_to_resolve = inline_length;
       if (inline_length_to_resolve.IsAuto()) {
-        DCHECK(space.StretchInlineSizeIfAuto());
-        DCHECK(space.AvailableSize().inline_size != kIndefiniteSize);
+        DCHECK(space.IsInlineAutoBehaviorStretch());
         inline_length_to_resolve = Length::FillAvailable();
       }
 

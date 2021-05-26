@@ -35,7 +35,7 @@ enum NGFragmentationType {
 
 // "adjoining" objects (either floats or inline-level OOF-positioned nodes) are
 // used to indicate that a particular node might need a relayout once its BFC
-// block-offset is resvoled. E.g. their position depends on the final BFC
+// block-offset is resolved. E.g. their position depends on the final BFC
 // block-offset being known.
 enum NGAdjoiningObjectTypeValue {
   kAdjoiningNone = 0b000,
@@ -58,6 +58,20 @@ enum class NGBaselineAlgorithmType {
   // Compute the baseline(s) for when we are within an inline-block context. If
   // the child is block-flow it will produce both the first, and last baselines.
   kInlineBlock
+};
+
+// The behavior of the 'auto' keyword when used with a main-size.
+enum class NGAutoBehavior {
+  // We should shrink-to-fit within the available space.
+  kFitContent,
+  // We should stretch to the available space, but if there is an aspect-ratio
+  // with a definite size in the opposite axis, we should transfer the definite
+  // size through the aspect-ratio, and be the resulting size. This is a "weak"
+  // stretch constraint.
+  kStretchImplicit,
+  // We should *always* stretch to the available space, even if we have an
+  // aspect-ratio. This is a "strong" stretch constraint.
+  kStretchExplicit
 };
 
 // Some layout algorithms have multiple layout passes. Between passes they
@@ -380,7 +394,9 @@ class CORE_EXPORT NGConstraintSpace final {
   bool IsTableCell() const { return bitfields_.is_table_cell; }
 
   // True if node is either LayoutTableCell or LayoutNGTableCellLegacy
-  bool IsLegacyTableCell() const { return bitfields_.is_legacy_table_cell; }
+  bool IsLegacyTableCell() const {
+    return HasRareData() && rare_data_->is_legacy_table_cell;
+  }
 
   // Whether the table-cell fragment should be hidden (not painted) if it has
   // no children.
@@ -453,21 +469,26 @@ class CORE_EXPORT NGConstraintSpace final {
     return bitfields_.is_fixed_block_size_indefinite;
   }
 
-  // Return true if the respective size property when 'auto' should stretch to
-  // consume the available space. If false, it behaves as "shrink-to-fit".
-  bool StretchInlineSizeIfAuto() const {
-    return bitfields_.stretch_inline_size_if_auto;
+  // Returns the behavior of an 'auto' inline/block main-size.
+  NGAutoBehavior InlineAutoBehavior() const {
+    return static_cast<NGAutoBehavior>(bitfields_.inline_auto_behavior);
   }
-  bool StretchBlockSizeIfAuto() const {
-    return bitfields_.stretch_block_size_if_auto;
+  NGAutoBehavior BlockAutoBehavior() const {
+    return static_cast<NGAutoBehavior>(bitfields_.block_auto_behavior);
+  }
+  bool IsInlineAutoBehaviorStretch() const {
+    return InlineAutoBehavior() != NGAutoBehavior::kFitContent;
+  }
+  bool IsBlockAutoBehaviorStretch() const {
+    return BlockAutoBehavior() != NGAutoBehavior::kFitContent;
   }
 
   // If this is a child of a table-cell.
   bool IsTableCellChild() const { return bitfields_.is_table_cell_child; }
 
-  // If we should apply the restricted block-size measuring behaviour. See
-  // where this is set within |NGBlockLayoutAlgorithm| for the conditions when
-  // this applies.
+  // If we should apply the restricted block-size measuring behavior. See where
+  // this is set within |NGBlockLayoutAlgorithm| for the conditions when this
+  // applies.
   bool IsMeasuringRestrictedBlockSizeTableCellChild() const {
     return bitfields_.is_measuring_restricted_block_size_table_cell_child;
   }
@@ -615,7 +636,9 @@ class CORE_EXPORT NGConstraintSpace final {
   }
 
   // Return true if this is participating within a -webkit-line-clamp context.
-  bool IsLineClampContext() const { return bitfields_.is_line_clamp_context; }
+  bool IsLineClampContext() const {
+    return HasRareData() && rare_data_->is_line_clamp_context;
+  }
 
   absl::optional<int> LinesUntilClamp() const {
     return HasRareData() ? rare_data_->LinesUntilClamp() : absl::nullopt;
@@ -739,6 +762,8 @@ class CORE_EXPORT NGConstraintSpace final {
     explicit RareData(const NGBfcOffset bfc_offset)
         : bfc_offset(bfc_offset),
           data_union_type(static_cast<unsigned>(kNone)),
+          is_line_clamp_context(false),
+          is_legacy_table_cell(false),
           is_restricted_block_size_table_cell(false),
           hide_table_cell_if_empty(false),
           block_direction_fragmentation_type(
@@ -754,6 +779,8 @@ class CORE_EXPORT NGConstraintSpace final {
           fragmentainer_block_size(other.fragmentainer_block_size),
           fragmentainer_offset_at_bfc(other.fragmentainer_offset_at_bfc),
           data_union_type(other.data_union_type),
+          is_line_clamp_context(other.is_line_clamp_context),
+          is_legacy_table_cell(other.is_legacy_table_cell),
           is_restricted_block_size_table_cell(
               other.is_restricted_block_size_table_cell),
           hide_table_cell_if_empty(other.hide_table_cell_if_empty),
@@ -818,6 +845,8 @@ class CORE_EXPORT NGConstraintSpace final {
       if (fragmentainer_block_size != other.fragmentainer_block_size ||
           fragmentainer_offset_at_bfc != other.fragmentainer_offset_at_bfc ||
           data_union_type != other.data_union_type ||
+          is_line_clamp_context != other.is_line_clamp_context ||
+          is_legacy_table_cell != other.is_legacy_table_cell ||
           is_restricted_block_size_table_cell !=
               other.is_restricted_block_size_table_cell ||
           hide_table_cell_if_empty != other.hide_table_cell_if_empty ||
@@ -850,7 +879,8 @@ class CORE_EXPORT NGConstraintSpace final {
     // Must be kept in sync with members checked within |MaySkipLayout|.
     bool IsInitialForMaySkipLayout() const {
       if (fragmentainer_block_size != kIndefiniteSize ||
-          fragmentainer_offset_at_bfc || is_restricted_block_size_table_cell ||
+          fragmentainer_offset_at_bfc || is_line_clamp_context ||
+          is_legacy_table_cell || is_restricted_block_size_table_cell ||
           hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
           is_inside_balanced_columns || is_in_column_bfc)
@@ -1095,6 +1125,9 @@ class CORE_EXPORT NGConstraintSpace final {
 
     unsigned data_union_type : 3;
 
+    unsigned is_line_clamp_context : 1;
+
+    unsigned is_legacy_table_cell : 1;
     unsigned is_restricted_block_size_table_cell : 1;
     unsigned hide_table_cell_if_empty : 1;
 
@@ -1286,19 +1319,19 @@ class CORE_EXPORT NGConstraintSpace final {
               static_cast<unsigned>(writing_direction.GetWritingMode())),
           direction(static_cast<unsigned>(writing_direction.Direction())),
           is_table_cell(false),
-          is_legacy_table_cell(false),
           is_anonymous(false),
           is_new_formatting_context(false),
           is_orthogonal_writing_mode_root(false),
-          is_line_clamp_context(false),
           is_painted_atomically(false),
           use_first_line_style(false),
           ancestor_has_clearance_past_adjoining_floats(false),
           baseline_algorithm_type(
               static_cast<unsigned>(NGBaselineAlgorithmType::kFirstLine)),
           cache_slot(static_cast<unsigned>(NGCacheSlot::kLayout)),
-          stretch_inline_size_if_auto(false),
-          stretch_block_size_if_auto(false),
+          inline_auto_behavior(
+              static_cast<unsigned>(NGAutoBehavior::kFitContent)),
+          block_auto_behavior(
+              static_cast<unsigned>(NGAutoBehavior::kFitContent)),
           is_fixed_inline_size(false),
           is_fixed_block_size(false),
           is_fixed_block_size_indefinite(false),
@@ -1313,12 +1346,10 @@ class CORE_EXPORT NGConstraintSpace final {
              writing_mode == other.writing_mode &&
              direction == other.direction &&
              is_table_cell == other.is_table_cell &&
-             is_legacy_table_cell == other.is_legacy_table_cell &&
              is_anonymous == other.is_anonymous &&
              is_new_formatting_context == other.is_new_formatting_context &&
              is_orthogonal_writing_mode_root ==
                  other.is_orthogonal_writing_mode_root &&
-             is_line_clamp_context == other.is_line_clamp_context &&
              is_painted_atomically == other.is_painted_atomically &&
              use_first_line_style == other.use_first_line_style &&
              ancestor_has_clearance_past_adjoining_floats ==
@@ -1327,11 +1358,11 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     bool AreInlineSizeConstraintsEqual(const Bitfields& other) const {
-      return stretch_inline_size_if_auto == other.stretch_inline_size_if_auto &&
+      return inline_auto_behavior == other.inline_auto_behavior &&
              is_fixed_inline_size == other.is_fixed_inline_size;
     }
     bool AreBlockSizeConstraintsEqual(const Bitfields& other) const {
-      return stretch_block_size_if_auto == other.stretch_block_size_if_auto &&
+      return block_auto_behavior == other.block_auto_behavior &&
              is_fixed_block_size == other.is_fixed_block_size &&
              is_fixed_block_size_indefinite ==
                  other.is_fixed_block_size_indefinite &&
@@ -1346,12 +1377,10 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned direction : 1;
 
     unsigned is_table_cell : 1;
-    unsigned is_legacy_table_cell : 1;
 
     unsigned is_anonymous : 1;
     unsigned is_new_formatting_context : 1;
     unsigned is_orthogonal_writing_mode_root : 1;
-    unsigned is_line_clamp_context : 1;
 
     unsigned is_painted_atomically : 1;
     unsigned use_first_line_style : 1;
@@ -1362,8 +1391,8 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned cache_slot : 1;
 
     // Size constraints.
-    unsigned stretch_inline_size_if_auto : 1;
-    unsigned stretch_block_size_if_auto : 1;
+    unsigned inline_auto_behavior : 2;  // NGAutoBehavior
+    unsigned block_auto_behavior : 2;   // NGAutoBehavior
     unsigned is_fixed_inline_size : 1;
     unsigned is_fixed_block_size : 1;
     unsigned is_fixed_block_size_indefinite : 1;

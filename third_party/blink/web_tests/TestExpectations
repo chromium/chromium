@@ -3988,6 +3988,8 @@ virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-content-d
 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-001.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-002.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-003.html [ Pass ]
+virtual/layout-ng-grid/external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-018.html [ Pass ]
+virtual/layout-ng-grid/external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-019.html [ Pass ]
 virtual/layout-ng-grid/fast/css-grid-layout/maximize-tracks-definite-indefinite-height.html [ Pass ]
 
 ### Tests failing with LayoutNGGrid enabled:

@@ -326,6 +326,7 @@
   {
     "prefix": "layout-ng-grid",
     "bases": ["fast/css-grid-layout",
+              "external/wpt/css/css-sizing/aspect-ratio",
               "external/wpt/css/css-grid"],
     "args": ["--enable-blink-features=LayoutNGGrid"]
   },
