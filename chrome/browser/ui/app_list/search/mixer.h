@@ -26,7 +26,7 @@ FORWARD_DECLARE_TEST(MixerTest, Publish);
 }
 
 class ChipRanker;
-class SearchController;
+class SearchControllerImpl;
 class SearchProvider;
 class SearchResultRanker;
 enum class RankingItemType;
@@ -36,7 +36,8 @@ enum class RankingItemType;
 // result.
 class Mixer {
  public:
-  explicit Mixer(AppListModelUpdater* model_updater);
+  Mixer(AppListModelUpdater* model_updater,
+        SearchControllerImpl* search_controller);
   ~Mixer();
 
   // Adds a new mixer group. A "soft" maximum of |max_results| results will be
@@ -55,7 +56,7 @@ class Mixer {
   // published.
   void SetNonAppSearchResultRanker(std::unique_ptr<SearchResultRanker> ranker);
 
-  void InitializeRankers(Profile* profile, SearchController* search_controller);
+  void InitializeRankers(Profile* profile);
 
   SearchResultRanker* search_result_ranker() {
     if (!search_result_ranker_)
@@ -89,7 +90,8 @@ class Mixer {
 
   void FetchResults(const std::u16string& query);
 
-  AppListModelUpdater* const model_updater_;  // Not owned.
+  AppListModelUpdater* const model_updater_;       // Not owned.
+  SearchControllerImpl* const search_controller_;  // Not owned.
 
   Groups groups_;
 

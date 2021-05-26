@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -137,6 +138,8 @@ class MixerTest : public testing::Test {
   // testing::Test overrides:
   void SetUp() override {
     model_updater_ = std::make_unique<FakeAppListModelUpdater>();
+    search_controller_ = std::make_unique<SearchControllerImpl>(
+        nullptr, nullptr, nullptr, nullptr);
 
     providers_.push_back(std::make_unique<TestSearchProvider>(
         "app", SearchResultType::kInternalApp));
@@ -147,7 +150,8 @@ class MixerTest : public testing::Test {
   }
 
   void CreateMixer() {
-    mixer_ = std::make_unique<Mixer>(model_updater_.get());
+    mixer_ =
+        std::make_unique<Mixer>(model_updater_.get(), search_controller_.get());
 
     size_t apps_group_id = mixer_->AddGroup(kMaxAppsGroupResults);
     size_t omnibox_group_id = mixer_->AddGroup(kMaxOmniboxResults);
@@ -196,6 +200,7 @@ class MixerTest : public testing::Test {
 
   std::unique_ptr<Mixer> mixer_;
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
+  std::unique_ptr<SearchControllerImpl> search_controller_;
 
   std::vector<std::unique_ptr<TestSearchProvider>> providers_;
 

@@ -114,6 +114,9 @@ void SearchControllerImplNew::Start(const std::u16string& query) {
 
   last_query_ = query;
   results_.clear();
+  for (Observer& observer : observer_list_)
+    observer.OnResultsCleared();
+
   ranker_->Start(query);
   for (const auto& provider : providers_)
     provider->Start(query);
@@ -216,6 +219,8 @@ void SearchControllerImplNew::SetResults(
                << result->id();
   }
 
+  for (Observer& observer : observer_list_)
+    observer.OnResultsAdded(last_query_, all_results);
   model_updater_->PublishSearchResults(all_results);
 }
 
@@ -317,6 +322,14 @@ void SearchControllerImplNew::AppListShown() {
 void SearchControllerImplNew::ViewClosing() {
   for (const auto& provider : providers_)
     provider->ViewClosing();
+}
+
+void SearchControllerImplNew::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void SearchControllerImplNew::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 std::u16string SearchControllerImplNew::get_query() {

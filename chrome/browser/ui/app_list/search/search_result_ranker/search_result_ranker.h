@@ -29,6 +29,7 @@
 namespace app_list {
 
 class RecurrenceRanker;
+class SearchController;
 enum class RankingItemType;
 
 // SearchResultRanker re-ranks launcher search and zero-state results using a

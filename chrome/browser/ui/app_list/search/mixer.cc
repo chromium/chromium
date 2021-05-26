@@ -19,7 +19,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/chip_ranker.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
@@ -114,14 +114,14 @@ class Mixer::Group {
   DISALLOW_COPY_AND_ASSIGN(Group);
 };
 
-Mixer::Mixer(AppListModelUpdater* model_updater)
-    : model_updater_(model_updater) {}
+Mixer::Mixer(AppListModelUpdater* model_updater,
+             SearchControllerImpl* search_controller)
+    : model_updater_(model_updater), search_controller_(search_controller) {}
 Mixer::~Mixer() = default;
 
-void Mixer::InitializeRankers(Profile* profile,
-                              SearchController* search_controller) {
+void Mixer::InitializeRankers(Profile* profile) {
   search_result_ranker_ = std::make_unique<SearchResultRanker>(profile);
-  search_result_ranker_->InitializeRankers(search_controller);
+  search_result_ranker_->InitializeRankers(search_controller_);
 
   if (app_list_features::IsSuggestedFilesEnabled()) {
     chip_ranker_ = std::make_unique<ChipRanker>(profile);
@@ -187,6 +187,7 @@ void Mixer::MixAndPublish(size_t num_max_results, const std::u16string& query) {
     sort_data.result->SetDisplayScore(sort_data.score);
     new_results.push_back(sort_data.result);
   }
+  search_controller_->NotifyResultsAdded(new_results);
   model_updater_->PublishSearchResults(new_results);
 }
 

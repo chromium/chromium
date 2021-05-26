@@ -77,7 +77,7 @@ SearchControllerImpl::SearchControllerImpl(
     ash::AppListNotifier* notifier,
     Profile* profile)
     : profile_(profile),
-      mixer_(std::make_unique<Mixer>(model_updater)),
+      mixer_(std::make_unique<Mixer>(model_updater, this)),
       metrics_observer_(std::make_unique<SearchMetricsObserver>(notifier)),
       list_controller_(list_controller) {
   DCHECK(!app_list_features::IsCategoricalSearchEnabled());
@@ -86,7 +86,7 @@ SearchControllerImpl::SearchControllerImpl(
 SearchControllerImpl::~SearchControllerImpl() {}
 
 void SearchControllerImpl::InitializeRankers() {
-  mixer_->InitializeRankers(profile_, this);
+  mixer_->InitializeRankers(profile_);
 }
 
 void SearchControllerImpl::Start(const std::u16string& query) {
@@ -98,6 +98,9 @@ void SearchControllerImpl::Start(const std::u16string& query) {
                                 ? query.length() - last_query_.length()
                                 : last_query_.length() - query.length();
     UMA_HISTOGRAM_BOOLEAN(kLauncherSearchQueryLengthJumped, length_diff > 1);
+  }
+  for (Observer& observer : observer_list_) {
+    observer.OnResultsCleared();
   }
   for (const auto& provider : providers_) {
     provider->Start(query);
@@ -280,6 +283,21 @@ void SearchControllerImpl::Train(LaunchData&& launch_data) {
 void SearchControllerImpl::AppListShown() {
   for (const auto& provider : providers_)
     provider->AppListShown();
+}
+
+void SearchControllerImpl::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void SearchControllerImpl::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void SearchControllerImpl::NotifyResultsAdded(
+    const std::vector<ChromeSearchResult*>& results) {
+  for (Observer& observer : observer_list_) {
+    observer.OnResultsAdded(last_query_, results);
+  }
 }
 
 std::u16string SearchControllerImpl::get_query() {

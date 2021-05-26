@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 
@@ -51,6 +52,24 @@ class SearchController {
  public:
   using ResultsChangedCallback =
       base::RepeatingCallback<void(ash::AppListSearchResultType)>;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called whenever results are added to the launcher, as a result of
+    // zero-state or from a user query. This will be called multiple times per
+    // query because launcher results arrive incrementally.
+    //
+    // Observers should not store the ChromeSearchResult* pointers or post them
+    // to another sequence because they may be invalidated.
+    virtual void OnResultsAdded(
+        const std::u16string& query,
+        const std::vector<ChromeSearchResult*>& results);
+
+    // Called whenever old results are cleared. This occurs whenever a new
+    // search is started.
+    virtual void OnResultsCleared();
+  };
+
   virtual ~SearchController() {}
 
   virtual void InitializeRankers() = 0;
@@ -99,6 +118,9 @@ class SearchController {
       const std::u16string& trimmed_query,
       const ash::SearchResultIdWithPositionIndices& results,
       int launched_index) = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   virtual std::u16string get_query() = 0;
 

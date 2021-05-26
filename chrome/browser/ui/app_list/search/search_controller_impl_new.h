@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
@@ -75,6 +76,8 @@ class SearchControllerImplNew : public SearchController {
       const std::u16string& trimmed_query,
       const ash::SearchResultIdWithPositionIndices& results,
       int launched_index) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void set_results_changed_callback_for_test(
       ResultsChangedCallback callback) override;
   std::u16string get_query() override;
@@ -106,6 +109,7 @@ class SearchControllerImplNew : public SearchController {
   Providers providers_;
   AppListModelUpdater* const model_updater_;
   AppListControllerDelegate* const list_controller_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace app_list
