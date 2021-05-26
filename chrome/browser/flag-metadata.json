@@ -733,12 +733,12 @@
   {
     "name": "continuous-feeds",
     "owners": [ "//chrome/browser/continuous_search/OWNERS" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 94
   },
   {
     "name": "continuous-search",
     "owners": [ "//chrome/browser/continuous_search/OWNERS" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 94
   },
   {
     "name": "conversion-measurement-api",
