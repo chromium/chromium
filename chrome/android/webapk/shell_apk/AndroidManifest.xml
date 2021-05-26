@@ -24,7 +24,7 @@
 
     <uses-sdk
         android:minSdkVersion="21"
-        android:targetSdkVersion="29" />
+        android:targetSdkVersion="31" />
 
     <queries>
         <intent>
@@ -46,6 +46,7 @@
         <activity android:name="org.chromium.webapk.shell_apk.h2o.H2OTransparentLauncherActivity"
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
                   android:excludeFromRecents="true"
+                  android:exported="true"
                   android:relinquishTaskIdentity="true">
             {{#intent_filters}}
             <intent-filter>
@@ -71,6 +72,7 @@
                   android:theme="@style/SplashTheme"
                   android:relinquishTaskIdentity="true"
                   android:screenOrientation="{{{android_orientation}}}"
+                  android:exported="true"
                   android:enabled="[[#use_new_splash]]@bool/opaque_main_activity_enabled_default[[/use_new_splash]][[^use_new_splash]]false[[/use_new_splash]]">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -88,6 +90,7 @@
                   android:exported="true" />
         <activity android:name="org.chromium.webapk.shell_apk.h2o.H2OMainActivity"
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                  android:exported="true"
                   android:enabled="[[#use_new_splash]]@bool/transparent_main_activity_enabled_default[[/use_new_splash]][[^use_new_splash]]true[[/use_new_splash]]"
                   android:excludeFromRecents="true">
             <intent-filter>
@@ -100,6 +103,7 @@
         {{#share_template}}
         <activity-alias android:name="org.chromium.webapk.shell_apk.ShareActivity{{{index}}}"
                   android:label="{{{title}}}"
+                  android:exported="true"
                   android:targetActivity="org.chromium.webapk.shell_apk.h2o.H2OTransparentLauncherActivity">
           <meta-data android:name="org.chromium.webapk.shell_apk.shareAction" android:value="{{{action}}}" />
           <meta-data android:name="org.chromium.webapk.shell_apk.shareMethod" android:value="{{{method}}}" />
