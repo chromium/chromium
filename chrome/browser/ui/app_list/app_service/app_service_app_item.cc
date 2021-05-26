@@ -38,8 +38,8 @@ AppServiceAppItem::AppServiceAppItem(
   if (sync_item && sync_item->item_ordinal.IsValid()) {
     UpdateFromSync(sync_item);
   } else if (app_type_ == apps::mojom::AppType::kRemote) {
-    chromeos::RemoteAppsManager* remote_apps_manager =
-        chromeos::RemoteAppsManagerFactory::GetForProfile(profile);
+    ash::RemoteAppsManager* remote_apps_manager =
+        ash::RemoteAppsManagerFactory::GetForProfile(profile);
 
     if (remote_apps_manager->ShouldAddToFront(app_update.AppId())) {
       SetPosition(model_updater->GetPositionBeforeFirstItem());

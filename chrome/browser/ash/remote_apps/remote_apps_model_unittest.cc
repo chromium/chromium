@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -143,4 +143,4 @@ TEST_F(RemoteAppsModelUnittest, FolderWithMultipleApps) {
   EXPECT_EQ(std::string(), info2.folder_id);
 }
 
-}  // namespace chromeos
+}  // namespace ash

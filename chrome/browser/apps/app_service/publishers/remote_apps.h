@@ -35,7 +35,7 @@ class RemoteApps : public apps::PublisherBase {
    public:
     virtual ~Delegate() = default;
 
-    virtual const std::map<std::string, chromeos::RemoteAppsModel::AppInfo>&
+    virtual const std::map<std::string, ash::RemoteAppsModel::AppInfo>&
     GetApps() = 0;
 
     virtual gfx::ImageSkia GetIcon(const std::string& id) = 0;
@@ -53,14 +53,14 @@ class RemoteApps : public apps::PublisherBase {
   RemoteApps& operator=(const RemoteApps&) = delete;
   ~RemoteApps() override;
 
-  void AddApp(const chromeos::RemoteAppsModel::AppInfo& info);
+  void AddApp(const ash::RemoteAppsModel::AppInfo& info);
 
   void UpdateAppIcon(const std::string& app_id);
 
   void DeleteApp(const std::string& app_id);
 
  private:
-  apps::mojom::AppPtr Convert(const chromeos::RemoteAppsModel::AppInfo& info);
+  apps::mojom::AppPtr Convert(const ash::RemoteAppsModel::AppInfo& info);
 
   // apps::PublisherBase:
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

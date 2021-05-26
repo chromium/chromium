@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/remote_apps/remote_apps_model.h"
 
-namespace chromeos {
+namespace ash {
 
 RemoteAppsModel::AppInfo::AppInfo(const std::string& id,
                                   const std::string& name,
@@ -113,4 +113,4 @@ void RemoteAppsModel::DeleteFolder(const std::string& folder_id) {
   folder_map_.erase(it);
 }
 
-}  // namespace chromeos
+}  // namespace ash

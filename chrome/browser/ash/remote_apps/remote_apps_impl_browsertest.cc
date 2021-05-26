@@ -42,7 +42,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -69,8 +69,8 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
   // DevicePolicyCrosBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
-    command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(switches::kLoginManager);
+    command_line->AppendSwitch(switches::kForceLoginManagerInTests);
     command_line->AppendSwitchASCII(
         extensions::switches::kAllowlistedExtensionID, kExtensionId);
   }
@@ -153,7 +153,7 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
 
  private:
   base::DictionaryValue config_;
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddApp) {
@@ -217,4 +217,4 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, OnRemoteAppLaunched) {
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -16,7 +16,7 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 // Singleton that creates |RemoteAppsManager|s and associates them with a
 // |Profile|.
@@ -42,6 +42,6 @@ class RemoteAppsManagerFactory : public BrowserContextKeyedServiceFactory {
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_MANAGER_FACTORY_H_

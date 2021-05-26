@@ -6,7 +6,7 @@
 
 #include "base/guid.h"
 
-namespace chromeos {
+namespace ash {
 
 std::string GuidIdGenerator::GenerateId() {
   return base::GenerateGUID();
@@ -23,4 +23,4 @@ std::string FakeIdGenerator::GenerateId() {
   return id;
 }
 
-}  // namespace chromeos
+}  // namespace ash

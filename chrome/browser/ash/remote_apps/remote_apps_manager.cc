@@ -29,7 +29,7 @@
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -221,7 +221,7 @@ void RemoteAppsManager::RemoveObserver(Observer* observer) {
 }
 
 void RemoteAppsManager::BindInterface(
-    mojo::PendingReceiver<remote_apps::mojom::RemoteAppsFactory>
+    mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsFactory>
         pending_remote_apps_factory) {
   receivers_.Add(this, std::move(pending_remote_apps_factory));
 }
@@ -229,8 +229,9 @@ void RemoteAppsManager::BindInterface(
 void RemoteAppsManager::Shutdown() {}
 
 void RemoteAppsManager::Create(
-    mojo::PendingReceiver<remote_apps::mojom::RemoteApps> pending_remote_apps,
-    mojo::PendingRemote<remote_apps::mojom::RemoteAppLaunchObserver>
+    mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
+        pending_remote_apps,
+    mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
         pending_observer) {
   remote_apps_impl_.Bind(std::move(pending_remote_apps),
                          std::move(pending_observer));
@@ -362,4 +363,4 @@ void RemoteAppsManager::OnIconDownloaded(const std::string& id,
   remote_apps_->UpdateAppIcon(id);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -45,7 +45,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -153,8 +153,8 @@ class RemoteAppsManagerBrowsertest
   // DevicePolicyCrosBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
-    command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(switches::kLoginManager);
+    command_line->AppendSwitch(switches::kForceLoginManagerInTests);
   }
 
   // DevicePolicyCrosBrowserTest:
@@ -282,7 +282,7 @@ class RemoteAppsManagerBrowsertest
   RemoteAppsManager* manager_ = nullptr;
   MockImageDownloader* image_downloader_ = nullptr;
   Profile* profile_ = nullptr;
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
@@ -481,4 +481,4 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddToFront) {
   EXPECT_FALSE(manager_->ShouldAddToFront(kId4));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_TYPES_H_
 #define CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_TYPES_H_
 
-namespace chromeos {
+namespace ash {
 
 enum class RemoteAppsError {
   kNone = 0,
@@ -15,6 +15,6 @@ enum class RemoteAppsError {
   kNotReady,
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_TYPES_H_

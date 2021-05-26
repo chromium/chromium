@@ -30,7 +30,7 @@ RemoteApps::RemoteApps(Profile* profile, Delegate* delegate)
 
 RemoteApps::~RemoteApps() = default;
 
-void RemoteApps::AddApp(const chromeos::RemoteAppsModel::AppInfo& info) {
+void RemoteApps::AddApp(const ash::RemoteAppsModel::AppInfo& info) {
   mojom::AppPtr app = Convert(info);
   Publish(std::move(app), subscribers_);
 }
@@ -52,7 +52,7 @@ void RemoteApps::DeleteApp(const std::string& app_id) {
 }
 
 apps::mojom::AppPtr RemoteApps::Convert(
-    const chromeos::RemoteAppsModel::AppInfo& info) {
+    const ash::RemoteAppsModel::AppInfo& info) {
   apps::mojom::AppPtr app = PublisherBase::MakeApp(
       mojom::AppType::kRemote, info.id, mojom::Readiness::kReady, info.name,
       mojom::InstallSource::kUser);

@@ -13,7 +13,7 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 RemoteAppsManager* RemoteAppsManagerFactory::GetForProfile(Profile* profile) {
@@ -40,7 +40,7 @@ RemoteAppsManagerFactory::~RemoteAppsManagerFactory() = default;
 
 KeyedService* RemoteAppsManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  chromeos::ProfileHelper* profile_helper = chromeos::ProfileHelper::Get();
+  ProfileHelper* profile_helper = ProfileHelper::Get();
   if (!profile_helper)
     return nullptr;
 
@@ -56,7 +56,7 @@ content::BrowserContext* RemoteAppsManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile || profile->IsSystemProfile() ||
-      !chromeos::ProfileHelper::IsRegularProfile(profile)) {
+      !ProfileHelper::IsRegularProfile(profile)) {
     return nullptr;
   }
 
@@ -67,4 +67,4 @@ bool RemoteAppsManagerFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

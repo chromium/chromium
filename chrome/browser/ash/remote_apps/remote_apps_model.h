@@ -17,7 +17,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 // Class which stores the state of Remote Apps added by |RemoteAppsManager| and
 // maintains the association between the apps and folders.
@@ -106,6 +106,6 @@ class RemoteAppsModel {
   std::map<std::string, FolderInfo> folder_map_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_MODEL_H_

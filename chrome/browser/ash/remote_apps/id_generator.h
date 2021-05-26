@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace chromeos {
+namespace ash {
 
 // A class to generate IDs.
 class IdGenerator {
@@ -45,6 +45,6 @@ class FakeIdGenerator : public IdGenerator {
   int index_ = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_REMOTE_APPS_ID_GENERATOR_H_

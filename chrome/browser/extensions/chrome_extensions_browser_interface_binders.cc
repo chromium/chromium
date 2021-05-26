@@ -88,8 +88,8 @@ void BindRemoteAppsFactory(
         pending_receiver) {
   // |remote_apps_manager| will be null in non-managed guest sessions, but this
   // is already checked in |RemoteAppsImpl::IsAllowed()|.
-  chromeos::RemoteAppsManager* remote_apps_manager =
-      chromeos::RemoteAppsManagerFactory::GetForProfile(
+  ash::RemoteAppsManager* remote_apps_manager =
+      ash::RemoteAppsManagerFactory::GetForProfile(
           Profile::FromBrowserContext(render_frame_host->GetBrowserContext()));
   DCHECK(remote_apps_manager);
   remote_apps_manager->BindInterface(std::move(pending_receiver));
@@ -170,7 +170,7 @@ void PopulateChromeFrameBindersForExtension(
         base::BindRepeating(&BindGoogleTtsStream));
   }
 
-  if (chromeos::RemoteAppsImpl::IsAllowed(render_frame_host, extension)) {
+  if (ash::RemoteAppsImpl::IsAllowed(render_frame_host, extension)) {
     binder_map->Add<chromeos::remote_apps::mojom::RemoteAppsFactory>(
         base::BindRepeating(&BindRemoteAppsFactory));
   }

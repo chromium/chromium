@@ -19,7 +19,7 @@
 #include "extensions/common/features/feature_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -65,12 +65,13 @@ RemoteAppsImpl::RemoteAppsImpl(RemoteAppsManager* manager) : manager_(manager) {
 RemoteAppsImpl::~RemoteAppsImpl() = default;
 
 void RemoteAppsImpl::Bind(
-    mojo::PendingReceiver<remote_apps::mojom::RemoteApps> pending_remote_apps,
-    mojo::PendingRemote<remote_apps::mojom::RemoteAppLaunchObserver>
+    mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
+        pending_remote_apps,
+    mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
         pending_observer) {
   receivers_.Add(this, std::move(pending_remote_apps));
   app_launch_observers_.Add(
-      mojo::Remote<remote_apps::mojom::RemoteAppLaunchObserver>(
+      mojo::Remote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>(
           std::move(pending_observer)));
 }
 
@@ -120,4 +121,4 @@ void RemoteAppsImpl::OnAppAdded(AddAppCallback callback,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash
