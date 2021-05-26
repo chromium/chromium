@@ -17,6 +17,22 @@ import {ViewName} from '../type.js';
 import {View} from './view.js';
 
 /**
+ * A set of vid:pid of digital zoom cameras whose PT control is disabled when
+ * all zooming out.
+ * @const
+ */
+const digitalZoomCameras = new Set([
+  '046d:0809',
+  '046d:0823',
+  '046d:0825',
+  '046d:082d',
+  '046d:0843',
+  '046d:085c',
+  '046d:085e',
+  '046d:0893',
+]);
+
+/**
  * Detects hold gesture on UI and triggers corresponding handler.
  * @param {{
  *   button: !HTMLButtonElement,
@@ -183,6 +199,14 @@ export class PTZPanel extends View {
      * @private
      */
     this.defaultPTZ_ = {};
+
+    /**
+     * Whether the camera associated with current track is a digital zoom
+     * cameras whose PT control is disabled when all zooming out.
+     * @type {boolean}
+     * @private
+     */
+    this.isDigitalZoom_ = false;
 
     [this.panLeft_, this.panRight_, this.tiltUp_, this.tiltDown_, this.zoomIn_,
      this.zoomOut_]
@@ -369,17 +393,26 @@ export class PTZPanel extends View {
     if (capabilities.zoom !== undefined) {
       updateDisable(this.zoomIn_, this.zoomOut_, 'zoom');
     }
+    const allZoomOut = this.zoomOut_.disabled;
 
     if (capabilities.tilt !== undefined) {
-      updateDisable(this.tiltUp_, this.tiltDown_, 'tilt');
+      if (allZoomOut && this.isDigitalZoom_) {
+        this.tiltUp_.disabled = this.tiltDown_.disabled = true;
+      } else {
+        updateDisable(this.tiltUp_, this.tiltDown_, 'tilt');
+      }
     }
     if (capabilities.pan !== undefined) {
-      let incBtn = this.panRight_;
-      let decBtn = this.panLeft_;
-      if (state.get(state.State.MIRROR)) {
-        ([incBtn, decBtn] = [decBtn, incBtn]);
+      if (allZoomOut && this.isDigitalZoom_) {
+        this.panLeft_.disabled = this.panRight_.disabled = true;
+      } else {
+        let incBtn = this.panRight_;
+        let decBtn = this.panLeft_;
+        if (state.get(state.State.MIRROR)) {
+          ([incBtn, decBtn] = [decBtn, incBtn]);
+        }
+        updateDisable(incBtn, decBtn, 'pan');
       }
-      updateDisable(incBtn, decBtn, 'pan');
     }
   }
 
@@ -422,13 +455,14 @@ export class PTZPanel extends View {
   /**
    * @override
    */
-  entering(stream) {
+  entering({stream, vidPid}) {
     const {bottom, right} =
         dom.get('#open-ptz-panel', HTMLButtonElement).getBoundingClientRect();
     this.panel_.style.bottom = `${window.innerHeight - bottom}px`;
     this.panel_.style.left = `${right + 6}px`;
     const oldTrack = this.track_;
-    this.track_ = stream.getVideoTracks()[0];
+    this.track_ = assertInstanceof(stream, MediaStream).getVideoTracks()[0];
+    this.isDigitalZoom_ = digitalZoomCameras.has(vidPid);
 
     let updatingDefault = Promise.resolve();
     if (oldTrack === null ||
