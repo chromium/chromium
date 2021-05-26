@@ -526,7 +526,7 @@ MAC_M1_MINI_2020 = PerfPlatform(
     'mac-m1_mini_2020-perf',
     'Mac M1 Mini 2020',
     _MAC_M1_MINI_2020_BENCHMARK_CONFIGS,
-    8,
+    26,
     'mac',
     executables=_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS)
 
