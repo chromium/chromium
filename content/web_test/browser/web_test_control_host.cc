@@ -1851,6 +1851,7 @@ void WebTestControlHost::OnLeakDetectionDone(
     int pid,
     const LeakDetector::LeakDetectionReport& report) {
   if (report.leaked) {
+    printer_->StartStateDump();
     printer_->AddErrorMessage(base::StringPrintf("#LEAK - renderer pid %d (%s)",
                                                  pid, report.detail.c_str()));
     CHECK(!crash_when_leak_found_);
