@@ -150,5 +150,48 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsOneImageItemCrash) {
   EXPECT_EQ(devtools.lines.size(), 1u);
 }
 
+TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsColumnWrap) {
+  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+    <div style="display: flex; flex-flow: column wrap; width: 300px; height: 100px;" id=flexbox>
+      <div style="height: 200px">
+        <div style="height: 90%"></div>
+      </div>
+    </div>
+  )HTML");
+  EXPECT_EQ(devtools.lines.size(), 1u);
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsColumnWrapOrtho) {
+  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+    <div style="display: flex; flex-flow: column wrap; width: 300px; height: 100px;" id=flexbox>
+      <div style="height: 200px; writing-mode: vertical-lr;">
+        <div style="width: 90%"></div>
+      </div>
+    </div>
+  )HTML");
+  EXPECT_EQ(devtools.lines.size(), 1u);
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsRowWrapOrtho) {
+  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+    <div style="display: flex; flex-flow: wrap; width: 300px; height: 100px;" id=flexbox>
+      <div style="height: 200px; writing-mode: vertical-lr;">
+        <div style="width: 90%"></div>
+        <div style="height: 90%"></div>
+      </div>
+    </div>
+  )HTML");
+  EXPECT_EQ(devtools.lines.size(), 1u);
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, DISABLED_DevtoolsLegacyItem) {
+  DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
+    <div style="display: flex;" id=flexbox>
+      <div style="display: grid"></div>
+    </div>
+  )HTML");
+  EXPECT_EQ(devtools.lines.size(), 1u);
+}
+
 }  // namespace
 }  // namespace blink
