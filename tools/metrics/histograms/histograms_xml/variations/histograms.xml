@@ -212,7 +212,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Variations.PolicyRestriction"
-    enum="VariationsRestrictionPolicyValues" expires_after="2021-05-31">
+    enum="VariationsRestrictionPolicyValues" expires_after="2022-04-30">
   <owner>pastarmovj@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
