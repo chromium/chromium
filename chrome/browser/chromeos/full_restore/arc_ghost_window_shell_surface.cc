@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/full_restore/arc_ghost_window_shell_surface.h"
 
+#include "ash/public/cpp/window_properties.h"
 #include "ash/wm/desks/desks_util.h"
 #include "chrome/browser/chromeos/full_restore/arc_ghost_window_delegate.h"
 #include "chrome/browser/chromeos/full_restore/arc_ghost_window_view.h"
@@ -54,7 +55,7 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
       shell_surface.get(), window_handler, window_id, display_id, bounds));
   shell_surface->set_close_callback(std::move(close_callback));
 
-  shell_surface->SetApplicationId(app_id.c_str());
+  shell_surface->SetAppId(app_id.c_str());
   shell_surface->SetBounds(display_id, bounds);
 
   if (maximum_size.has_value())
@@ -73,10 +74,10 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
   shell_surface->SetFrameButtons(kAllButtonMask, kAllButtonMask);
   shell_surface->OnSetFrameColors(theme_color, theme_color);
 
+  shell_surface->controller_surface()->Commit();
   shell_surface->InitContentOverlay(app_id, theme_color);
 
   // Relayout overlay.
-  shell_surface->controller_surface()->Commit();
   shell_surface->GetWidget()->LayoutRootViewIfNecessary();
 
   return shell_surface;
@@ -100,7 +101,6 @@ ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
                                   gpu::kNullSurfaceHandle, nullptr));
   controller_surface_->Attach(buffer_.get());
   controller_surface_->SetFrame(exo::SurfaceFrameType::NORMAL);
-  controller_surface_->Commit();
   SetScale(scale_factor);
   CommitPendingScale();
 }
@@ -114,6 +114,12 @@ exo::Surface* ArcGhostWindowShellSurface::controller_surface() {
   return controller_surface_.get();
 }
 
+void ArcGhostWindowShellSurface::OverrideInitParams(
+    views::Widget::InitParams* params) {
+  ClientControlledShellSurface::OverrideInitParams(params);
+  SetShellAppId(&params->init_properties_container, app_id_);
+}
+
 void ArcGhostWindowShellSurface::InitContentOverlay(const std::string& app_id,
                                                     uint32_t theme_color) {
   exo::ShellSurfaceBase::OverlayParams overlay_params(
@@ -121,6 +127,23 @@ void ArcGhostWindowShellSurface::InitContentOverlay(const std::string& app_id,
   overlay_params.translucent = true;
   overlay_params.overlaps_frame = false;
   AddOverlay(std::move(overlay_params));
+}
+
+void ArcGhostWindowShellSurface::SetAppId(
+    const absl::optional<std::string>& id) {
+  app_id_ = id;
+  if (GetWidget() && GetWidget()->GetNativeWindow()) {
+    SetShellAppId(GetWidget()->GetNativeWindow(), app_id_);
+  }
+}
+
+void ArcGhostWindowShellSurface::SetShellAppId(
+    ui::PropertyHandler* property_handler,
+    const absl::optional<std::string>& id) {
+  if (id)
+    property_handler->SetProperty(ash::kAppIDKey, *id);
+  else
+    property_handler->ClearProperty(ash::kAppIDKey);
 }
 
 }  // namespace full_restore

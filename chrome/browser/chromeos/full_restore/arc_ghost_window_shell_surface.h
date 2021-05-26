@@ -38,11 +38,19 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
       delete;
   ~ArcGhostWindowShellSurface() override;
 
+  void OverrideInitParams(views::Widget::InitParams* params) override;
+
   void InitContentOverlay(const std::string& app_id, uint32_t theme_color);
+  void SetAppId(const absl::optional<std::string>& id);
 
   exo::Surface* controller_surface();
 
  private:
+  void SetShellAppId(ui::PropertyHandler* property_handler,
+                     const absl::optional<std::string>& id);
+
+  absl::optional<std::string> app_id_;
+
   std::unique_ptr<exo::Surface> controller_surface_;
   std::unique_ptr<exo::Buffer> buffer_;
 };
