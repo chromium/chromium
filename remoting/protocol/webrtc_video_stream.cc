@@ -52,16 +52,19 @@ std::string EncodeResultToString(WebrtcVideoEncoder::EncodeResult result) {
 
 }  // namespace
 
-struct WebrtcVideoStream::FrameStats {
-  // The following fields are non-null only for one frame after each incoming
-  // input event.
+struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
+  FrameStats() = default;
+  FrameStats(const FrameStats&) = default;
+  FrameStats& operator=(const FrameStats&) = default;
+  ~FrameStats() override = default;
+
+  // The input-event fields are non-null only for one frame after each
+  // incoming input event.
   InputEventTimestamps input_event_timestamps;
 
   base::TimeTicks capture_started_time;
   base::TimeTicks capture_ended_time;
   base::TimeDelta capture_delay;
-  base::TimeTicks encode_started_time;
-  base::TimeTicks encode_ended_time;
 
   uint32_t capturer_id = 0;
 };
@@ -308,9 +311,16 @@ void WebrtcVideoStream::OnFrameEncoded(
     return;
   }
 
+  // These next 3 lines are needed by
+  // WebrtcDummyVideoEncoderFactory::SendEncodedFrame(), which adds the
+  // timestamps to the frame sent to WebRTC.
+  // TODO(crbug.com/1192865): Remove them when standard encoding pipeline is
+  // implemented, as they will no longer be required by WebRTC.
   frame->capture_time = current_frame_stats_->capture_started_time;
   frame->encode_start = current_frame_stats_->encode_started_time;
   frame->encode_finish = current_frame_stats_->encode_ended_time;
+
+  frame->stats = std::move(current_frame_stats_);
   webrtc::EncodedImageCallback::Result result =
       webrtc_transport_->video_encoder_factory()->SendEncodedFrame(*frame);
 
@@ -331,6 +341,12 @@ void WebrtcVideoStream::OnEncodedFrameSent(
 
   // Send FrameStats message.
   if (video_stats_dispatcher_.is_connected()) {
+    // The down-cast is safe, because the |stats| object was originally created
+    // by this class and attached to the frame.
+    const auto* current_frame_stats =
+        static_cast<const FrameStats*>(frame.stats.get());
+    DCHECK(current_frame_stats);
+
     HostFrameStats stats;
 
     // Get bandwidth, RTT and send_pending_delay into |stats|.
@@ -338,29 +354,28 @@ void WebrtcVideoStream::OnEncodedFrameSent(
 
     stats.frame_size = frame.data.size();
 
-    if (!current_frame_stats_->input_event_timestamps.is_null()) {
+    if (!current_frame_stats->input_event_timestamps.is_null()) {
       stats.capture_pending_delay =
-          current_frame_stats_->capture_started_time -
-          current_frame_stats_->input_event_timestamps.host_timestamp;
+          current_frame_stats->capture_started_time -
+          current_frame_stats->input_event_timestamps.host_timestamp;
       stats.latest_event_timestamp =
-          current_frame_stats_->input_event_timestamps.client_timestamp;
+          current_frame_stats->input_event_timestamps.client_timestamp;
     }
 
-    stats.capture_delay = current_frame_stats_->capture_delay;
+    stats.capture_delay = current_frame_stats->capture_delay;
 
     // Total overhead time for IPC and threading when capturing frames.
-    stats.capture_overhead_delay =
-        (current_frame_stats_->capture_ended_time -
-         current_frame_stats_->capture_started_time) -
-        stats.capture_delay;
+    stats.capture_overhead_delay = (current_frame_stats->capture_ended_time -
+                                    current_frame_stats->capture_started_time) -
+                                   stats.capture_delay;
 
-    stats.encode_pending_delay = current_frame_stats_->encode_started_time -
-                                 current_frame_stats_->capture_ended_time;
+    stats.encode_pending_delay = current_frame_stats->encode_started_time -
+                                 current_frame_stats->capture_ended_time;
 
-    stats.encode_delay = current_frame_stats_->encode_ended_time -
-                         current_frame_stats_->encode_started_time;
+    stats.encode_delay = current_frame_stats->encode_ended_time -
+                         current_frame_stats->encode_started_time;
 
-    stats.capturer_id = current_frame_stats_->capturer_id;
+    stats.capturer_id = current_frame_stats->capturer_id;
 
     // Convert the frame quantizer to a measure of frame quality between 0 and
     // 100, for a simple visualization of quality over time. The quantizer from

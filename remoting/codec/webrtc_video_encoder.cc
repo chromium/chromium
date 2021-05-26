@@ -9,8 +9,8 @@ namespace remoting {
 WebrtcVideoEncoder::EncodedFrame::EncodedFrame() = default;
 WebrtcVideoEncoder::EncodedFrame::~EncodedFrame() = default;
 WebrtcVideoEncoder::EncodedFrame::EncodedFrame(
-    const WebrtcVideoEncoder::EncodedFrame&) = default;
+    WebrtcVideoEncoder::EncodedFrame&&) = default;
 WebrtcVideoEncoder::EncodedFrame& WebrtcVideoEncoder::EncodedFrame::operator=(
-    const WebrtcVideoEncoder::EncodedFrame&) = default;
+    WebrtcVideoEncoder::EncodedFrame&&) = default;
 
 }  // namespace remoting

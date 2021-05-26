@@ -13,23 +13,32 @@ namespace remoting {
 namespace protocol {
 
 WebrtcVideoFrameAdapter::WebrtcVideoFrameAdapter(
-    std::unique_ptr<webrtc::DesktopFrame> frame)
-    : frame_(std::move(frame)), frame_size_(frame_->size()) {}
+    std::unique_ptr<webrtc::DesktopFrame> frame,
+    std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats)
+    : frame_(std::move(frame)),
+      frame_size_(frame_->size()),
+      frame_stats_(std::move(frame_stats)) {}
 
 WebrtcVideoFrameAdapter::~WebrtcVideoFrameAdapter() = default;
 
 // static
 webrtc::VideoFrame WebrtcVideoFrameAdapter::CreateVideoFrame(
-    std::unique_ptr<webrtc::DesktopFrame> desktop_frame) {
+    std::unique_ptr<webrtc::DesktopFrame> desktop_frame,
+    std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats) {
   rtc::scoped_refptr<WebrtcVideoFrameAdapter> adapter =
       new rtc::RefCountedObject<WebrtcVideoFrameAdapter>(
-          std::move(desktop_frame));
+          std::move(desktop_frame), std::move(frame_stats));
   return webrtc::VideoFrame::Builder().set_video_frame_buffer(adapter).build();
 }
 
 std::unique_ptr<webrtc::DesktopFrame>
 WebrtcVideoFrameAdapter::TakeDesktopFrame() {
   return std::move(frame_);
+}
+
+std::unique_ptr<WebrtcVideoEncoder::FrameStats>
+WebrtcVideoFrameAdapter::TakeFrameStats() {
+  return std::move(frame_stats_);
 }
 
 webrtc::VideoFrameBuffer::Type WebrtcVideoFrameAdapter::type() const {

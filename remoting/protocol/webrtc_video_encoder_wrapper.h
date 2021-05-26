@@ -76,6 +76,10 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   // passes to Encode().
   uint32_t rtp_timestamp_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // FrameStats taken from the input VideoFrameAdapter, then added to the
+  // EncodedFrame when encoding is complete.
+  std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats_;
+
   // Bandwidth estimate from SetRates(), which is expected to be called before
   // Encode().
   int bitrate_kbps_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;

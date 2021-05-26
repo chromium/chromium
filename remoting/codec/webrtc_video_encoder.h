@@ -50,11 +50,26 @@ class WebrtcVideoEncoder {
     int vpx_max_quantizer = -1;
   };
 
+  // Information needed for sending video statistics for each encoded frame.
+  // The destructor is virtual so that implementations can derive from this
+  // class to attach more data to the frame.
+  struct FrameStats {
+    FrameStats() = default;
+    FrameStats(const FrameStats&) = default;
+    FrameStats& operator=(const FrameStats&) = default;
+    virtual ~FrameStats() = default;
+
+    base::TimeTicks encode_started_time;
+    base::TimeTicks encode_ended_time;
+  };
+
   struct EncodedFrame {
     EncodedFrame();
+    EncodedFrame(const EncodedFrame&) = delete;
+    EncodedFrame(EncodedFrame&&);
+    EncodedFrame& operator=(const EncodedFrame&) = delete;
+    EncodedFrame& operator=(EncodedFrame&&);
     ~EncodedFrame();
-    EncodedFrame(const EncodedFrame&);
-    EncodedFrame& operator=(const EncodedFrame&);
 
     webrtc::DesktopSize size;
     std::string data;
@@ -62,8 +77,12 @@ class WebrtcVideoEncoder {
     int quantizer;
     webrtc::VideoCodecType codec;
 
-    // Information provided to WebRTC when sending the frame via the
-    // webrtc::EncodedImageCallback.
+    std::unique_ptr<FrameStats> stats;
+
+    // These fields are needed by
+    // WebrtcDummyVideoEncoderFactory::SendEncodedFrame().
+    // TODO(crbug.com/1192865): Remove them when standard encoding pipeline is
+    // implemented.
     base::TimeTicks capture_time;
     base::TimeTicks encode_start;
     base::TimeTicks encode_finish;

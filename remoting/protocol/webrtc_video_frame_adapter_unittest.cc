@@ -27,10 +27,11 @@ namespace protocol {
 
 TEST(WebrtcVideoFrameAdapter, CreateVideoFrameWrapsDesktopFrame) {
   auto desktop_frame = MakeDesktopFrame(100, 200);
+  auto frame_stats = std::make_unique<WebrtcVideoEncoder::FrameStats>();
   DesktopFrame* desktop_frame_ptr = desktop_frame.get();
 
-  webrtc::VideoFrame video_frame =
-      WebrtcVideoFrameAdapter::CreateVideoFrame(std::move(desktop_frame));
+  webrtc::VideoFrame video_frame = WebrtcVideoFrameAdapter::CreateVideoFrame(
+      std::move(desktop_frame), std::move(frame_stats));
 
   auto* adapter = static_cast<WebrtcVideoFrameAdapter*>(
       video_frame.video_frame_buffer().get());
@@ -40,9 +41,10 @@ TEST(WebrtcVideoFrameAdapter, CreateVideoFrameWrapsDesktopFrame) {
 
 TEST(WebrtcVideoFrameAdapter, AdapterHasCorrectSize) {
   auto desktop_frame = MakeDesktopFrame(100, 200);
+  auto frame_stats = std::make_unique<WebrtcVideoEncoder::FrameStats>();
   rtc::scoped_refptr<WebrtcVideoFrameAdapter> adapter =
       new rtc::RefCountedObject<WebrtcVideoFrameAdapter>(
-          std::move(desktop_frame));
+          std::move(desktop_frame), std::move(frame_stats));
 
   EXPECT_EQ(100, adapter->width());
   EXPECT_EQ(200, adapter->height());

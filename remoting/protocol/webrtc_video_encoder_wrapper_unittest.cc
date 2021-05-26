@@ -79,8 +79,10 @@ VideoCodec GetVp9Codec() {
 VideoFrame MakeVideoFrame() {
   DesktopSize size(kInputFrameWidth, kInputFrameHeight);
   auto frame = std::make_unique<BasicDesktopFrame>(size);
+  auto stats = std::make_unique<WebrtcVideoEncoder::FrameStats>();
   frame->mutable_updated_region()->SetRect(webrtc::DesktopRect::MakeSize(size));
-  return WebrtcVideoFrameAdapter::CreateVideoFrame(std::move(frame));
+  return WebrtcVideoFrameAdapter::CreateVideoFrame(std::move(frame),
+                                                   std::move(stats));
 }
 
 class MockVideoChannelStateObserver : public VideoChannelStateObserver {

@@ -20,7 +20,7 @@ struct InputEventTimestamps {
   // Time when the event was processed by the host.
   base::TimeTicks host_timestamp;
 
-  bool is_null() { return client_timestamp.is_null(); }
+  bool is_null() const { return client_timestamp.is_null(); }
 };
 
 // InputEventTimestampsSource is used by VideoStream implementations to get

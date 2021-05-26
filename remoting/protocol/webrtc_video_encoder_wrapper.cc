@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -160,9 +161,19 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
   auto* video_frame_adapter =
       static_cast<WebrtcVideoFrameAdapter*>(frame.video_frame_buffer().get());
 
-  // Store timestamp so it can be added to the EncodedImage when encoding is
-  // complete.
+  // Store RTP timestamp and FrameStats so they can be added to the
+  // EncodedImage and EncodedFrame when encoding is complete.
   rtp_timestamp_ = frame.timestamp();
+  frame_stats_ = video_frame_adapter->TakeFrameStats();
+  if (!frame_stats_) {
+    // This could happen if WebRTC tried to encode the same frame twice.
+    // Taking the frame-stats twice from the same frame-adapter would return
+    // nullptr the second time.
+    LOG(ERROR) << "Frame provided with missing frame-stats.";
+    return WEBRTC_VIDEO_CODEC_ERROR;
+  }
+
+  frame_stats_->encode_started_time = base::TimeTicks::Now();
 
   // TODO(crbug.com/1192865): Implement large-frame detection for VP8, and
   // ensure VP9 is configured to do this automatically. If the frame has a
@@ -313,6 +324,16 @@ void WebrtcVideoEncoderWrapper::OnFrameEncoded(
   DCHECK(encode_pending_);
   encode_pending_ = false;
 
+  if (frame) {
+    // This is non-null because the |encode_pending_| flag ensures that
+    // frame-encodings are serialized. So there cannot be 2 consecutive calls to
+    // this method without an intervening call to Encode() which sets
+    // |frame_stats_| to non-null.
+    DCHECK(frame_stats_);
+    frame_stats_->encode_ended_time = base::TimeTicks::Now();
+    frame->stats = std::move(frame_stats_);
+  }
+
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoChannelStateObserver::OnFrameEncoded,
                                 video_channel_state_observer_, encode_result,
@@ -341,10 +362,15 @@ void WebrtcVideoEncoderWrapper::OnFrameEncoded(
   DCHECK(encoded_callback_);
 
   webrtc::EncodedImageCallback::Result send_result = ReturnEncodedFrame(*frame);
+
+  // std::ref() is used here because base::BindOnce() would otherwise try to
+  // copy the referenced frame object, which is move-only. This is safe because
+  // base::OnTaskRunnerDeleter posts the frame-deleter task to run after this
+  // task has executed.
   main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoChannelStateObserver::OnEncodedFrameSent,
-                     video_channel_state_observer_, send_result, *frame));
+      FROM_HERE, base::BindOnce(&VideoChannelStateObserver::OnEncodedFrameSent,
+                                video_channel_state_observer_, send_result,
+                                std::ref(*frame)));
 }
 
 void WebrtcVideoEncoderWrapper::NotifyFrameDropped() {

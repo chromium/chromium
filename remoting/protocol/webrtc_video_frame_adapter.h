@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "remoting/codec/webrtc_video_encoder.h"
 #include "third_party/webrtc/api/video/video_frame.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -19,18 +20,26 @@ namespace protocol {
 // captured DesktopFrame from VideoFrame::video_frame_buffer().
 class WebrtcVideoFrameAdapter : public webrtc::VideoFrameBuffer {
  public:
-  explicit WebrtcVideoFrameAdapter(std::unique_ptr<webrtc::DesktopFrame> frame);
+  WebrtcVideoFrameAdapter(
+      std::unique_ptr<webrtc::DesktopFrame> frame,
+      std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats);
   ~WebrtcVideoFrameAdapter() override;
   WebrtcVideoFrameAdapter(const WebrtcVideoFrameAdapter&) = delete;
   WebrtcVideoFrameAdapter& operator=(const WebrtcVideoFrameAdapter&) = delete;
 
   // Returns a VideoFrame that wraps the provided DesktopFrame.
   static webrtc::VideoFrame CreateVideoFrame(
-      std::unique_ptr<webrtc::DesktopFrame> desktop_frame);
+      std::unique_ptr<webrtc::DesktopFrame> desktop_frame,
+      std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats);
 
   // Used by the encoder. After this returns, the adapter no longer wraps a
   // DesktopFrame.
   std::unique_ptr<webrtc::DesktopFrame> TakeDesktopFrame();
+
+  // Called by the encoder to transfer the frame stats out of this adapter
+  // into the EncodedFrame. The encoder will also set the encode start/end
+  // times.
+  std::unique_ptr<WebrtcVideoEncoder::FrameStats> TakeFrameStats();
 
   // webrtc::VideoFrameBuffer overrides.
   Type type() const override;
@@ -41,6 +50,7 @@ class WebrtcVideoFrameAdapter : public webrtc::VideoFrameBuffer {
  private:
   std::unique_ptr<webrtc::DesktopFrame> frame_;
   webrtc::DesktopSize frame_size_;
+  std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats_;
 };
 
 }  // namespace protocol
