@@ -34,6 +34,10 @@ bool IsSupportedNetworkType(network_mojom::NetworkType type) {
   }
 }
 
+bool IsNetworkOnline(network_mojom::ConnectionStateType connection_state) {
+  return connection_state == network_mojom::ConnectionStateType::kOnline;
+}
+
 }  // namespace
 
 NetworkProperties::NetworkProperties(
@@ -72,16 +76,22 @@ void NetworkHealthProvider::OnNetworkCertificatesChanged() {}
 void NetworkHealthProvider::OnActiveNetworkStateListReceived(
     std::vector<network_mojom::NetworkStatePropertiesPtr> networks) {
   network_properties_map_.clear();
+  active_guid_.clear();
   for (auto& network : networks) {
     if (IsSupportedNetworkType(network->type)) {
       const std::string guid = mojo::Clone(network->guid);
+      network_mojom::ConnectionStateType connection_state =
+          mojo::Clone(network->connection_state);
       network_properties_map_.emplace(guid, std::move(network));
+      if (IsNetworkOnline(connection_state)) {
+        active_guid_ = guid;
+      }
       // This method depends on the |network_properties_map_| being populated
       // before being called.
       GetManagedPropertiesForNetwork(guid);
     }
   }
-  // TODO(michaelcheco): Call Mojo API here.
+  NotifyNetworkListObservers();
 }
 
 void NetworkHealthProvider::OnDeviceStateListReceived(
@@ -94,7 +104,7 @@ void NetworkHealthProvider::OnDeviceStateListReceived(
   }
 }
 
-std::vector<std::string> NetworkHealthProvider::GetNetworkGuidListForTesting() {
+std::vector<std::string> NetworkHealthProvider::GetNetworkGuidList() {
   std::vector<std::string> network_guids;
   network_guids.reserve(network_properties_map_.size());
   for (const auto& entry : network_properties_map_) {
@@ -130,6 +140,20 @@ void NetworkHealthProvider::OnManagedPropertiesReceived(
   DCHECK(base::Contains(network_properties_map_, guid));
   auto network_props_iter = network_properties_map_.find(guid);
   network_props_iter->second.managed_properties = std::move(managed_properties);
+}
+
+void NetworkHealthProvider::ObserveNetworkList(
+    mojo::PendingRemote<mojom::NetworkListObserver> observer) {
+  network_list_observers_.Add(std::move(observer));
+  NotifyNetworkListObservers();
+}
+
+void NetworkHealthProvider::NotifyNetworkListObservers() {
+  auto network_guid_list = GetNetworkGuidList();
+  for (auto& observer : network_list_observers_) {
+    observer->OnNetworkListChanged(mojo::Clone(network_guid_list),
+                                   active_guid_);
+  }
 }
 
 }  // namespace diagnostics

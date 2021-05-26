@@ -27,6 +27,7 @@
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -43,6 +44,28 @@ void ValidateManagedPropertiesSet(
       network_props_iter_wifi->second.managed_properties->guid;
   EXPECT_EQ(managed_properties_guid, guid);
 }
+
+struct FakeNetworkListObserver : public mojom::NetworkListObserver {
+  void OnNetworkListChanged(const std::vector<std::string>& network_guids,
+                            const std::string& active_guid) override {
+    fake_network_guids = std::move(network_guids);
+    fake_active_guid = active_guid;
+    network_list_changed_event_received_ = true;
+  }
+
+  mojo::PendingRemote<mojom::NetworkListObserver> pending_remote() {
+    return receiver.BindNewPipeAndPassRemote();
+  }
+
+  bool network_list_changed_event_received() {
+    return network_list_changed_event_received_;
+  }
+
+  std::vector<std::string> fake_network_guids;
+  std::string fake_active_guid;
+  bool network_list_changed_event_received_ = false;
+  mojo::Receiver<mojom::NetworkListObserver> receiver{this};
+};
 
 }  // namespace
 
@@ -170,7 +193,7 @@ TEST_F(NetworkHealthProviderTest, MultipleConnectedNetworksStoredInActiveList) {
   SetupEthernetNetwork();
 
   const std::vector<std::string>& network_guid_list =
-      network_health_provider_->GetNetworkGuidListForTesting();
+      network_health_provider_->GetNetworkGuidList();
   ASSERT_EQ(2u, network_guid_list.size());
   ASSERT_TRUE(base::Contains(network_guid_list, "wifi1_guid"));
   ASSERT_TRUE(base::Contains(network_guid_list, "eth_guid"));
@@ -181,7 +204,7 @@ TEST_F(NetworkHealthProviderTest, UnsupportedNetworkTypeIgnored) {
   SetupVPNNetwork();
 
   const std::vector<std::string>& network_guid_list =
-      network_health_provider_->GetNetworkGuidListForTesting();
+      network_health_provider_->GetNetworkGuidList();
   ASSERT_TRUE(network_guid_list.empty());
 }
 
@@ -248,6 +271,90 @@ TEST_F(NetworkHealthProviderTest, ManagedPropertiesSetForMultipleNetwork) {
   EXPECT_EQ(2U, network_properties_map.size());
   ValidateManagedPropertiesSet(network_properties_map, "wifi1_guid");
   ValidateManagedPropertiesSet(network_properties_map, "eth_guid");
+}
+
+TEST_F(NetworkHealthProviderTest, NetworkListObserverSingleNetwork) {
+  ResetDevicesAndServices();
+  FakeNetworkListObserver fake_network_list_observer;
+  network_health_provider_->ObserveNetworkList(
+      fake_network_list_observer.pending_remote());
+
+  SetupEthernetNetwork();
+
+  std::vector<std::string> expected = {"eth_guid"};
+  EXPECT_EQ(1U, fake_network_list_observer.fake_network_guids.size());
+  EXPECT_EQ(fake_network_list_observer.fake_network_guids, expected);
+  EXPECT_EQ(fake_network_list_observer.fake_active_guid, "eth_guid");
+  EXPECT_EQ(fake_network_list_observer.network_list_changed_event_received(),
+            true);
+}
+
+TEST_F(NetworkHealthProviderTest, NetworkListObserverNoActiveNetwork) {
+  ResetDevicesAndServices();
+  FakeNetworkListObserver fake_network_list_observer;
+  network_health_provider_->ObserveNetworkList(
+      fake_network_list_observer.pending_remote());
+
+  SetupWiFiNetwork();
+
+  std::vector<std::string> expected = {"wifi1_guid"};
+  EXPECT_EQ(1U, fake_network_list_observer.fake_network_guids.size());
+  EXPECT_EQ(fake_network_list_observer.fake_network_guids, expected);
+  EXPECT_EQ(0U, fake_network_list_observer.fake_active_guid.size());
+  EXPECT_EQ(fake_network_list_observer.fake_active_guid, "");
+  EXPECT_EQ(fake_network_list_observer.network_list_changed_event_received(),
+            true);
+}
+
+TEST_F(NetworkHealthProviderTest, NetworkListObserverMultipleNetworks) {
+  ResetDevicesAndServices();
+  FakeNetworkListObserver fake_network_list_observer;
+  network_health_provider_->ObserveNetworkList(
+      fake_network_list_observer.pending_remote());
+
+  SetupEthernetNetwork();
+  SetupWiFiNetwork();
+
+  std::vector<std::string> expected = {"eth_guid", "wifi1_guid"};
+  EXPECT_EQ(2U, fake_network_list_observer.fake_network_guids.size());
+  EXPECT_EQ(fake_network_list_observer.fake_network_guids, expected);
+  EXPECT_EQ(fake_network_list_observer.fake_active_guid, "eth_guid");
+  EXPECT_EQ(fake_network_list_observer.network_list_changed_event_received(),
+            true);
+}
+
+TEST_F(NetworkHealthProviderTest, NetworkListObserverNoNetworks) {
+  ResetDevicesAndServices();
+  FakeNetworkListObserver fake_network_list_observer;
+  network_health_provider_->ObserveNetworkList(
+      fake_network_list_observer.pending_remote());
+
+  std::vector<std::string> expected;
+  EXPECT_EQ(0U, fake_network_list_observer.fake_network_guids.size());
+  EXPECT_EQ(fake_network_list_observer.fake_network_guids, expected);
+  EXPECT_EQ(0U, fake_network_list_observer.fake_active_guid.size());
+  EXPECT_EQ(fake_network_list_observer.fake_active_guid, "");
+}
+
+TEST_F(NetworkHealthProviderTest, ActiveGuidResetsWhenConnectionStateChanges) {
+  ResetDevicesAndServices();
+  FakeNetworkListObserver fake_network_list_observer;
+  network_health_provider_->ObserveNetworkList(
+      fake_network_list_observer.pending_remote());
+
+  SetupEthernetNetwork();
+
+  std::vector<std::string> expected = {"eth_guid"};
+  EXPECT_EQ(1U, fake_network_list_observer.fake_network_guids.size());
+  EXPECT_EQ(fake_network_list_observer.fake_network_guids, expected);
+  EXPECT_EQ(fake_network_list_observer.fake_active_guid, "eth_guid");
+  EXPECT_EQ(fake_network_list_observer.network_list_changed_event_received(),
+            true);
+
+  ResetDevicesAndServices();
+
+  EXPECT_EQ(0U, fake_network_list_observer.fake_active_guid.size());
+  EXPECT_EQ(fake_network_list_observer.fake_active_guid, "");
 }
 
 }  // namespace diagnostics

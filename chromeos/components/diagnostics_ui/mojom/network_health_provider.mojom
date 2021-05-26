@@ -1,0 +1,24 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.diagnostics.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+
+// Implemented by clients that wish to receive a list of guids representing
+// active networks as well as the guid for the network that is currently
+// online.
+interface NetworkListObserver {
+  // Fired when the list of active networks provided by CrosNetworkConfig
+  // changes.
+  OnNetworkListChanged(array<string> network_guids, string active_guid);
+};
+
+// Enables clients to receive networking information for WiFi, Ethernet,
+// and Cellular connections. Implemented in the browser process and called
+// by the Diagnostics SWA (a renderer process).
+interface NetworkHealthProvider {
+  // Registers an observer to be notified on changes to active networks.
+  ObserveNetworkList(pending_remote<NetworkListObserver> observer);
+};
