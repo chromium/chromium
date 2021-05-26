@@ -4,5 +4,3 @@
 -SingleClientNigoriWithWebApiTest.ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared
 -SingleClientPollingSyncTest.ShouldPollWhenIntervalExpiredAcrossRestarts
 -SingleClientPollingSyncTest.ShouldUsePollIntervalFromPrefs
-# TODO(crbug.com/1197201): Enable test on Lacros.
--PasswordManagerSyncTest.OfferTo*
