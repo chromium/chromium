@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -184,6 +185,95 @@ TEST_F(NGPhysicalBoxFragmentTest, ReplacedBlock) {
   // crbug.com/567964
   EXPECT_FALSE(fragment.IsAtomicInline());
   EXPECT_EQ(fragment.BoxType(), NGPhysicalFragment::kBlockFlowRoot);
+}
+
+TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRoot) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="multicol" style="columns:3;">
+      <div id="child"></div>
+    </div>
+  )HTML");
+
+  const auto& multicol = GetPhysicalBoxFragmentByElementId("multicol");
+  EXPECT_TRUE(multicol.IsFragmentationContextRoot());
+
+  // There should be one column.
+  EXPECT_EQ(multicol.Children().size(), 1u);
+  const auto& column = To<NGPhysicalBoxFragment>(*multicol.Children()[0]);
+  EXPECT_TRUE(column.IsColumnBox());
+  EXPECT_FALSE(column.IsFragmentationContextRoot());
+
+  const auto& child = GetPhysicalBoxFragmentByElementId("child");
+  EXPECT_FALSE(child.IsFragmentationContextRoot());
+}
+
+TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootNested) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="outer" style="columns:3;">
+      <div id="foo">
+        <div id="inner" style="columns:3;">
+          <div id="bar"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  const auto& outer = GetPhysicalBoxFragmentByElementId("outer");
+  EXPECT_TRUE(outer.IsFragmentationContextRoot());
+
+  EXPECT_EQ(outer.Children().size(), 1u);
+  const auto& outer_column = To<NGPhysicalBoxFragment>(*outer.Children()[0]);
+  EXPECT_TRUE(outer_column.IsColumnBox());
+  EXPECT_FALSE(outer_column.IsFragmentationContextRoot());
+
+  const auto& foo = GetPhysicalBoxFragmentByElementId("foo");
+  EXPECT_FALSE(foo.IsFragmentationContextRoot());
+
+  const auto& inner = GetPhysicalBoxFragmentByElementId("inner");
+  EXPECT_TRUE(inner.IsFragmentationContextRoot());
+
+  EXPECT_EQ(inner.Children().size(), 1u);
+  const auto& inner_column = To<NGPhysicalBoxFragment>(*inner.Children()[0]);
+  EXPECT_TRUE(inner_column.IsColumnBox());
+  EXPECT_FALSE(inner_column.IsFragmentationContextRoot());
+
+  const auto& bar = GetPhysicalBoxFragmentByElementId("bar");
+  EXPECT_FALSE(bar.IsFragmentationContextRoot());
+}
+
+TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootFieldset) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
+  SetBodyInnerHTML(R"HTML(
+    <fieldset id="fieldset" style="columns:3;">
+      <legend id="legend"></legend>
+      <div id="child"></div>
+    </fieldset>
+  )HTML");
+
+  const auto& fieldset = GetPhysicalBoxFragmentByElementId("fieldset");
+  EXPECT_FALSE(fieldset.IsFragmentationContextRoot());
+
+  // There should be a legend and an anonymous fieldset wrapper fragment.
+  ASSERT_EQ(fieldset.Children().size(), 2u);
+
+  const auto& legend = To<NGPhysicalBoxFragment>(*fieldset.Children()[0]);
+  EXPECT_EQ(To<Element>(legend.GetNode())->GetIdAttribute(), "legend");
+  EXPECT_FALSE(legend.IsFragmentationContextRoot());
+
+  // The multicol container is established by the anonymous content wrapper, not
+  // the actual fieldset.
+  const auto& wrapper = To<NGPhysicalBoxFragment>(*fieldset.Children()[1]);
+  EXPECT_FALSE(wrapper.GetNode());
+  EXPECT_TRUE(wrapper.IsFragmentationContextRoot());
+
+  EXPECT_EQ(wrapper.Children().size(), 1u);
+  const auto& column = To<NGPhysicalBoxFragment>(*wrapper.Children()[0]);
+  EXPECT_TRUE(column.IsColumnBox());
+
+  const auto& child = GetPhysicalBoxFragmentByElementId("child");
+  EXPECT_FALSE(child.IsFragmentationContextRoot());
 }
 
 }  // namespace blink

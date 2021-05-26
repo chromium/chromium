@@ -273,6 +273,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
       const_has_fragment_items_(has_fragment_items),
       const_has_rare_data_(has_rare_data),
       has_descendants_for_table_part_(false),
+      is_fragmentation_context_root_(builder->is_fragmentation_context_root_),
       const_num_children_(builder->children_.size()) {
   DCHECK(layout_object_);
   DCHECK(layout_object_->IsBoxModelObject());
@@ -391,6 +392,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
       const_has_rare_data_(other.const_has_rare_data_),
       is_first_for_node_(other.is_first_for_node_),
       has_descendants_for_table_part_(other.has_descendants_for_table_part_),
+      is_fragmentation_context_root_(other.is_fragmentation_context_root_),
       const_num_children_(other.const_num_children_),
       baseline_(other.baseline_),
       last_baseline_(other.last_baseline_),
@@ -1540,6 +1542,8 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
             other.depends_on_percentage_block_size_);
   DCHECK_EQ(has_descendants_for_table_part_,
             other.has_descendants_for_table_part_);
+  DCHECK_EQ(is_fragmentation_context_root_,
+            other.is_fragmentation_context_root_);
 
   DCHECK_EQ(is_fieldset_container_, other.is_fieldset_container_);
   DCHECK_EQ(is_table_ng_part_, other.is_table_ng_part_);

@@ -371,6 +371,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return has_descendants_for_table_part_;
   }
 
+  bool IsFragmentationContextRoot() const {
+    return is_fragmentation_context_root_;
+  }
+
   // Returns true if we have a descendant within this formatting context, which
   // is potentially above our block-start edge.
   bool MayHaveDescendantAboveBlockStart() const {
@@ -550,6 +554,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   const unsigned const_has_rare_data_ : 1;
   unsigned is_first_for_node_ : 1;
   unsigned has_descendants_for_table_part_ : 1;
+  unsigned is_fragmentation_context_root_ : 1;
 
   const wtf_size_t const_num_children_;
 
