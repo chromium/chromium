@@ -161,7 +161,7 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
     return hwnd;
   }
 
-  HWND CreateTrackedAuraWindowWithBounds(MockWindowTreeHostObserver* observer,
+  void CreateTrackedAuraWindowWithBounds(MockWindowTreeHostObserver* observer,
                                          gfx::Rect bounds) {
     host()->Show();
     host()->SetBoundsInPixels(bounds);
@@ -171,31 +171,11 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
     window->SetBounds(bounds);
 
     Env::GetInstance()->GetWindowOcclusionTracker()->Track(window);
-
-    return window->GetHost()->GetAcceleratedWidget();
   }
 
   int GetNumVisibleRootWindows() {
     return NativeWindowOcclusionTrackerWin::GetOrCreateInstance()
         ->num_visible_root_windows_;
-  }
-
-  void MakeFullscreen(HWND hwnd) {
-    DWORD style = GetWindowLong(hwnd, GWL_STYLE);
-    DWORD ex_style = GetWindowLong(hwnd, GWL_STYLE);
-    SetWindowLong(hwnd, GWL_STYLE, style & ~(WS_CAPTION | WS_THICKFRAME));
-    SetWindowLong(hwnd, GWL_EXSTYLE,
-                  ex_style & ~(WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE |
-                               WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
-
-    MONITORINFO monitor_info;
-    monitor_info.cbSize = sizeof(monitor_info);
-    GetMonitorInfo(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST),
-                   &monitor_info);
-    gfx::Rect window_rect(monitor_info.rcMonitor);
-    SetWindowPos(hwnd, nullptr, window_rect.x(), window_rect.y(),
-                 window_rect.width(), window_rect.height(),
-                 SWP_FRAMECHANGED | SWP_ASYNCWINDOWPOS);
   }
 
  private:
@@ -448,31 +428,6 @@ TEST_F(NativeWindowOcclusionTrackerTest, DisplayOnOffHandling) {
   observer.set_quit_closure(run_loop3.QuitClosure());
   occlusion_tracker->OnDisplayStateChanged(/*display_on=*/true);
   run_loop3.Run();
-  EXPECT_FALSE(observer.is_expecting_call());
-  host()->RemoveObserver(&observer);
-}
-
-// Test that a maximized aura window that is covered by a fullscreen window is
-// marked as occluded.
-TEST_F(NativeWindowOcclusionTrackerTest, MaximizedOccludedByFullscreenWindow) {
-  // Create an aura window that is miximized.
-  base::RunLoop run_loop1;
-  MockWindowTreeHostObserver observer(run_loop1.QuitClosure());
-  HWND hwnd_aura_window_maximized =
-      CreateTrackedAuraWindowWithBounds(&observer, gfx::Rect(0, 0, 100, 100));
-  ShowWindow(hwnd_aura_window_maximized, SW_SHOWMAXIMIZED);
-  observer.set_expectation(Window::OcclusionState::VISIBLE);
-  run_loop1.Run();
-  EXPECT_FALSE(observer.is_expecting_call());
-
-  // Create a fullscreen native window that occludes the aura window.
-  base::RunLoop run_loop2;
-  observer.set_quit_closure(run_loop2.QuitClosure());
-  observer.set_expectation(Window::OcclusionState::OCCLUDED);
-  HWND hwnd_native_window =
-      CreateNativeWindowWithBounds(gfx::Rect(0, 0, 100, 100));
-  MakeFullscreen(hwnd_native_window);
-  run_loop2.Run();
   EXPECT_FALSE(observer.is_expecting_call());
   host()->RemoveObserver(&observer);
 }
