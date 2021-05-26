@@ -7013,8 +7013,6 @@ crbug.com/1209223 virtual/synchronous_html_parser/external/wpt/html/semantics/fo
 crbug.com/1209223 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure ]
 crbug.com/1209223 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-setLocalDescription-pranswer.html [ Failure ]
 
-crbug.com/1213120 [ Mac ] virtual/scalefactor200/css3/filters/effect-reference-zoom-hw.html [ Pass Failure ]
-
 # Sheriff on 2021-05-26
 crbug.com/1213322 [ Mac ] external/wpt/css/css-values/minmax-percentage-serialize.html [ Pass Failure ]
 crbug.com/1213322 [ Mac ] external/wpt/html/browsers/the-window-object/named-access-on-the-window-object/window-named-properties.html [ Pass Failure ]
