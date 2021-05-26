@@ -312,6 +312,16 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             convolve_matrix_operation->KernelMatrix());
         break;
       }
+      case FilterOperation::COMPONENT_TRANSFER: {
+        ComponentTransferFilterOperation* component_transfer_operation =
+            To<ComponentTransferFilterOperation>(filter_operation);
+        effect = MakeGarbageCollected<FEComponentTransfer>(
+            parent_filter, component_transfer_operation->RedFunc(),
+            component_transfer_operation->GreenFunc(),
+            component_transfer_operation->BlueFunc(),
+            component_transfer_operation->AlphaFunc());
+        break;
+      }
       default:
         break;
     }
@@ -385,6 +395,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
       }
       case FilterOperation::LUMINANCE_TO_ALPHA:
       case FilterOperation::CONVOLVE_MATRIX:
+      case FilterOperation::COMPONENT_TRANSFER:
         // These filter types only exist for Canvas filters.
         NOTREACHED();
         break;

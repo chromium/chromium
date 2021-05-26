@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/box_reflection.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/filters/fe_component_transfer.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_convolve_matrix.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -62,6 +63,7 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
     DROP_SHADOW,
     BOX_REFLECT,
     COLOR_MATRIX,
+    COMPONENT_TRANSFER,
     CONVOLVE_MATRIX,
     NONE
   };
@@ -82,6 +84,7 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
       case COLOR_MATRIX:
         return true;
       case REFERENCE:
+      case COMPONENT_TRANSFER:
       case CONVOLVE_MATRIX:
       case BOX_REFLECT:
         return false;
@@ -398,6 +401,47 @@ class CORE_EXPORT ConvolveMatrixFilterOperation : public FilterOperation {
 
 template <>
 struct DowncastTraits<ConvolveMatrixFilterOperation> {
+  static bool AllowFrom(const FilterOperation& op) {
+    return op.GetType() == FilterOperation::CONVOLVE_MATRIX;
+  }
+};
+
+class CORE_EXPORT ComponentTransferFilterOperation : public FilterOperation {
+ public:
+  ComponentTransferFilterOperation(const ComponentTransferFunction& red_func,
+                                   const ComponentTransferFunction& green_func,
+                                   const ComponentTransferFunction& blue_func,
+                                   const ComponentTransferFunction& alpha_func)
+      : FilterOperation(COMPONENT_TRANSFER),
+        red_func_(red_func),
+        green_func_(green_func),
+        blue_func_(blue_func),
+        alpha_func_(alpha_func) {}
+
+  ComponentTransferFunction RedFunc() const { return red_func_; }
+  ComponentTransferFunction GreenFunc() const { return green_func_; }
+  ComponentTransferFunction BlueFunc() const { return blue_func_; }
+  ComponentTransferFunction AlphaFunc() const { return alpha_func_; }
+
+ private:
+  bool operator==(const FilterOperation& o) const override {
+    if (!IsSameType(o))
+      return false;
+    const ComponentTransferFilterOperation* other =
+        static_cast<const ComponentTransferFilterOperation*>(&o);
+    return (
+        red_func_ == other->red_func_ && green_func_ == other->green_func_ &&
+        blue_func_ == other->blue_func_ && alpha_func_ == other->alpha_func_);
+  }
+
+  ComponentTransferFunction red_func_;
+  ComponentTransferFunction green_func_;
+  ComponentTransferFunction blue_func_;
+  ComponentTransferFunction alpha_func_;
+};
+
+template <>
+struct DowncastTraits<ComponentTransferFilterOperation> {
   static bool AllowFrom(const FilterOperation& op) {
     return op.GetType() == FilterOperation::CONVOLVE_MATRIX;
   }

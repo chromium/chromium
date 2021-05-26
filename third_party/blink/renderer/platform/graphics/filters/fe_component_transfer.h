@@ -49,6 +49,25 @@ struct ComponentTransferFunction {
 
   ComponentTransferType type;
 
+  bool operator==(const ComponentTransferFunction& o) const {
+    if (type != o.type)
+      return false;
+    switch (type) {
+      case FECOMPONENTTRANSFER_TYPE_IDENTITY:
+        return true;
+      case FECOMPONENTTRANSFER_TYPE_LINEAR:
+        return (slope == o.slope && intercept == o.intercept);
+      case FECOMPONENTTRANSFER_TYPE_GAMMA:
+        return (amplitude == o.amplitude && exponent == o.exponent &&
+                offset == o.offset);
+      case FECOMPONENTTRANSFER_TYPE_TABLE:
+      case FECOMPONENTTRANSFER_TYPE_DISCRETE:
+        return (table_values == o.table_values);
+      case FECOMPONENTTRANSFER_TYPE_UNKNOWN:
+        return false;
+    }
+  }
+
   float slope;
   float intercept;
   float amplitude;
