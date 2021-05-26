@@ -63,8 +63,6 @@ class ExtensionMessageFilter : public content::BrowserMessageFilter {
   bool OnMessageReceived(const IPC::Message& message) override;
 
   // Message handlers on the UI thread.
-  void OnExtensionRemoveLazyListener(const std::string& extension_id,
-                                     const std::string& event_name);
   void OnExtensionAddFilteredListener(
       const std::string& extension_id,
       const std::string& event_name,
