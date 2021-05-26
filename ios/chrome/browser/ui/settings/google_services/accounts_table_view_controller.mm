@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/resized_avatar_cache.h"
+#import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
@@ -92,7 +93,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @interface AccountsTableViewController () <
     ChromeIdentityServiceObserver,
     ChromeIdentityBrowserOpener,
-    IdentityManagerObserverBridgeDelegate> {
+    IdentityManagerObserverBridgeDelegate,
+    SignoutActionSheetCoordinatorDelegate> {
   Browser* _browser;
   BOOL _closeSettingsOnAddAccount;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
@@ -115,6 +117,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Modal alert for confirming account removal.
 @property(nonatomic, strong) AlertCoordinator* removeAccountCoordinator;
+
+// Modal alert for sign out in experiment kSimplifySignOutIOS.
+@property(nonatomic, strong) SignoutActionSheetCoordinator* signoutCoordinator;
 
 // If YES, the UI elements are disabled.
 @property(nonatomic, assign) BOOL uiDisabled;
@@ -175,6 +180,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)settingsWillBeDismissed {
   [_alertCoordinator stop];
   _alertCoordinator = nil;
+  [self.signoutCoordinator stop];
+  self.signoutCoordinator = nil;
   [self.removeAccountCoordinator stop];
   self.removeAccountCoordinator = nil;
   [self stopBrowserStateServiceObservers];
@@ -567,19 +574,28 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)showMICESignOutWithItemView:(UIView*)itemView {
-  DCHECK(!_alertCoordinator);
+  DCHECK(!self.signoutCoordinator);
   DCHECK(base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS));
   if (_authenticationOperationInProgress ||
       self != [self.navigationController topViewController]) {
     // An action is already in progress, ignore user's request.
     return;
   }
+  self.signoutCoordinator = [[SignoutActionSheetCoordinator alloc]
+      initWithBaseViewController:self
+                         browser:_browser
+                            rect:itemView.frame
+                            view:itemView];
   __weak AccountsTableViewController* weakSelf = self;
-  _alertCoordinator = SignoutActionSheetCoordinator(
-      self, _browser, itemView, ^(SignoutActionSheetCoordinatorResult result) {
-        [weakSelf handleSignoutActionCoordinatorWithResult:result];
-      });
-  [_alertCoordinator start];
+  self.signoutCoordinator.completion = ^(BOOL success) {
+    if (success) {
+      [weakSelf handleAuthenticationOperationDidFinish];
+    }
+    [weakSelf.signoutCoordinator stop];
+    weakSelf.signoutCoordinator = nil;
+  };
+  self.signoutCoordinator.delegate = self;
+  [self.signoutCoordinator start];
 }
 
 - (void)showSignOutWithClearData:(BOOL)forceClearData
@@ -633,27 +649,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [_alertCoordinator start];
 }
 
-- (void)handleSignoutActionCoordinatorWithResult:
-    (SignoutActionSheetCoordinatorResult)result {
-  DCHECK(_alertCoordinator);
-  switch (result) {
-    case SignoutActionSheetCoordinatorResultCanceled:
-      // |_alertCoordinator| should not be stopped, since the coordinator has
-      // been canceled.
-      _alertCoordinator = nil;
-      break;
-    case SignoutActionSheetCoordinatorResultClearFromDevice:
-      // |_alertCoordinator| is dropped by |handleSignOutWithForceClearData:|.
-      [self handleSignOutWithForceClearData:YES];
-      break;
-    case SignoutActionSheetCoordinatorResultKeepOnDevice:
-      // |_alertCoordinator| is dropped by |handleSignOutWithForceClearData:|.
-      [self handleSignOutWithForceClearData:NO];
-      break;
-  }
-  DCHECK(!_alertCoordinator);
-}
-
 - (void)handleSignOutWithForceClearData:(BOOL)forceClearData {
   if (!_browser)
     return;
@@ -667,24 +662,31 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (authService->IsAuthenticated()) {
     _authenticationOperationInProgress = YES;
     [self preventUserInteraction];
+    __weak AccountsTableViewController* weakSelf = self;
     authService->SignOut(
         signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, forceClearData, ^{
-          [self allowUserInteraction];
-          [self handleAuthenticationOperationDidFinish];
+          // Metrics logging must occur before dismissing the currently
+          // presented view controller from |handleSignoutDidFinish|.
+          [weakSelf logSignoutMetricsWithForceClearData:forceClearData];
+          [weakSelf allowUserInteraction];
+          [weakSelf handleAuthenticationOperationDidFinish];
         });
-    // Get UMA metrics on the usage of different options for signout available
-    // for users with non-managed accounts.
-    if (![self authService]->IsAuthenticatedIdentityManaged()) {
-      UMA_HISTOGRAM_BOOLEAN("Signin.UserRequestedWipeDataOnSignout",
-                            forceClearData);
-    }
-    if (forceClearData) {
-      base::RecordAction(base::UserMetricsAction(
-          "Signin_SignoutClearData_FromAccountListSettings"));
-    } else {
-      base::RecordAction(
-          base::UserMetricsAction("Signin_Signout_FromAccountListSettings"));
-    }
+  }
+}
+
+// Logs the UMA metrics to record the data retention option selected by the user
+// on signout. If the account is managed the data will always be cleared.
+- (void)logSignoutMetricsWithForceClearData:(BOOL)forceClearData {
+  if (![self authService]->IsAuthenticatedIdentityManaged()) {
+    UMA_HISTOGRAM_BOOLEAN("Signin.UserRequestedWipeDataOnSignout",
+                          forceClearData);
+  }
+  if (forceClearData) {
+    base::RecordAction(base::UserMetricsAction(
+        "Signin_SignoutClearData_FromAccountListSettings"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("Signin_Signout_FromAccountListSettings"));
   }
 }
 
@@ -784,6 +786,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
     (UIPresentationController*)presentationController {
   base::RecordAction(
       base::UserMetricsAction("IOSAccountsSettingsCloseWithSwipe"));
+}
+
+#pragma mark - SignoutActionSheetCoordinatorDelegate
+
+- (void)didSelectSignoutDataRetentionStrategy {
+  _authenticationOperationInProgress = YES;
 }
 
 @end

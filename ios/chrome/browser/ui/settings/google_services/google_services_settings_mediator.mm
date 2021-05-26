@@ -962,15 +962,10 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     case AllowChromeSigninItemType: {
       if (self.isAuthenticated) {
         __weak GoogleServicesSettingsMediator* weakSelf = self;
-        [self.commandHandler
-            showSignOut:^(SignoutActionSheetCoordinatorResult result) {
-              BOOL updatedValue = value;
-              if (result == SignoutActionSheetCoordinatorResultCanceled) {
-                updatedValue = !value;
-              }
-              weakSelf.allowChromeSigninPreference.value = updatedValue;
-              [weakSelf updateNonPersonalizedSectionWithNotification:YES];
-            }];
+        [self.commandHandler showSignOut:^(BOOL success) {
+          weakSelf.allowChromeSigninPreference.value = success ? value : !value;
+          [weakSelf updateNonPersonalizedSectionWithNotification:YES];
+        }];
       } else {
         self.allowChromeSigninPreference.value = value;
       }

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
+#import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -76,7 +77,7 @@ using signin_metrics::PromoAction;
 // Action sheets that provides options for sign out.
 @property(nonatomic, strong) ActionSheetCoordinator* signOutCoordinator;
 @property(nonatomic, strong)
-    ActionSheetCoordinator* dataRetentionStrategyCoordinator;
+    SignoutActionSheetCoordinator* dataRetentionStrategyCoordinator;
 @end
 
 @implementation GoogleServicesSettingsCoordinator
@@ -269,7 +270,8 @@ using signin_metrics::PromoAction;
         baseViewController:self.googleServicesSettingsViewController];
 }
 
-- (void)showSignOut:(SignoutActionSheetCoordinatorCompletion)completion {
+- (void)showSignOut:(signin_ui::CompletionCallback)completion {
+  DCHECK(completion);
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -296,9 +298,15 @@ using signin_metrics::PromoAction;
                            IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)
                 action:^{
                   weakSelf.dataRetentionStrategyCoordinator =
-                      SignoutActionSheetCoordinator(
-                          weakSelf.viewController, weakSelf.browser,
-                          weakSelf.viewController.view, completion);
+                      [[SignoutActionSheetCoordinator alloc]
+                          initWithBaseViewController:weakSelf.viewController
+                                             browser:weakSelf.browser
+                                                rect:weakSelf.viewController
+                                                         .view.frame
+                                                view:weakSelf.viewController
+                                                         .view];
+                  weakSelf.dataRetentionStrategyCoordinator.completion =
+                      completion;
                   [weakSelf.dataRetentionStrategyCoordinator start];
                 }
                  style:UIAlertActionStyleDestructive];
@@ -306,7 +314,7 @@ using signin_metrics::PromoAction;
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
                   weakSelf.signOutCoordinator = nil;
-                  completion(SignoutActionSheetCoordinatorResultCanceled);
+                  completion(NO);
                 }
                  style:UIAlertActionStyleCancel];
   [self.signOutCoordinator start];

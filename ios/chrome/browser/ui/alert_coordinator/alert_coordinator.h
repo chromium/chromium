@@ -18,6 +18,8 @@
 
 // Whether a cancel button has been added.
 @property(nonatomic, readonly) BOOL cancelButtonAdded;
+// Title of the alert.
+@property(nonatomic, copy, readonly) NSString* title;
 // Message of the alert.
 @property(nonatomic, copy) NSString* message;
 // Whether the alert is visible. This will be true after |-start| is called
