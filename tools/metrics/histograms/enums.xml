@@ -41591,6 +41591,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="InterstitialTypeEnum">
+  <obsolete>
+    Removed from the code May 2021.
+  </obsolete>
   <int value="0" label="Loud"/>
   <int value="1" label="Quiet small"/>
   <int value="2" label="Quiet giant"/>
@@ -69289,6 +69292,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SafeBrowsingUserOptIn">
+  <obsolete>
+    Removed from the code May 2021.
+  </obsolete>
   <int value="0" label="User has opted-out"/>
   <int value="1" label="User has opted-in"/>
   <int value="2" label="Unable to determine user opt-in"/>

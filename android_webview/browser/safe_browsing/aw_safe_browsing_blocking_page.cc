@@ -56,8 +56,6 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
                        display_options),
       threat_details_in_progress_(false),
       resource_request_(std::move(resource_request)) {
-  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.Interstitial.Type", errorUiType,
-                            ErrorUiType::COUNT);
   if (errorUiType == ErrorUiType::QUIET_SMALL ||
       errorUiType == ErrorUiType::QUIET_GIANT) {
     set_sb_error_ui(std::make_unique<SafeBrowsingQuietErrorUI>(

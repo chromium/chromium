@@ -15,7 +15,6 @@
 #include "android_webview/common/aw_paths.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "components/safe_browsing/content/base_ui_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_network_context.h"
@@ -40,11 +39,6 @@ namespace {
 std::string GetProtocolConfigClientName() {
   // Return a webview specific client name, see crbug.com/732373 for details.
   return "android_webview";
-}
-
-// UMA_HISTOGRAM_* macros expand to a lot of code, so wrap this in a helper.
-void RecordIsWebViewViewable(bool isViewable) {
-  UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.WebView.Viewable", isViewable);
 }
 
 network::mojom::NetworkContextParamsPtr CreateDefaultNetworkContextParams() {
@@ -83,13 +77,11 @@ void AwSafeBrowsingUIManager::DisplayBlockingPage(
   // Check the size of the view
   UIManagerClient* client = UIManagerClient::FromWebContents(web_contents);
   if (!client || !client->CanShowInterstitial()) {
-    RecordIsWebViewViewable(false);
     OnBlockingPageDone(std::vector<UnsafeResource>{resource}, false,
                        web_contents, resource.url.GetWithEmptyPath(),
                        false /* showed_interstitial */);
     return;
   }
-  RecordIsWebViewViewable(true);
   safe_browsing::BaseUIManager::DisplayBlockingPage(resource);
 }
 

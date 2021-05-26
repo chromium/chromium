@@ -45,25 +45,9 @@ public class AwSafeBrowsingConfigHelper {
         int COUNT = 3;
     }
 
-    // Used to record the UMA histogram SafeBrowsing.WebView.UserOptIn. Since these values are
-    // persisted to logs, they should never be renumbered or reused.
-    @IntDef({UserOptIn.UNABLE_TO_DETERMINE, UserOptIn.OPT_IN, UserOptIn.OPT_OUT})
-    @interface UserOptIn {
-        int OPT_OUT = 0;
-        int OPT_IN = 1;
-        int UNABLE_TO_DETERMINE = 2;
-
-        int COUNT = 3;
-    }
-
     private static void recordAppOptIn(@AppOptIn int value) {
         RecordHistogram.recordEnumeratedHistogram(
                 "SafeBrowsing.WebView.AppOptIn", value, AppOptIn.COUNT);
-    }
-
-    private static void recordUserOptIn(@UserOptIn int value) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "SafeBrowsing.WebView.UserOptIn", value, UserOptIn.COUNT);
     }
 
     public static void setSafeBrowsingEnabledByManifest(boolean enabled) {
@@ -95,14 +79,6 @@ public class AwSafeBrowsingConfigHelper {
             Callback<Boolean> cb = verifyAppsValue -> {
                 setSafeBrowsingUserOptIn(
                         verifyAppsValue == null ? DEFAULT_USER_OPT_IN : verifyAppsValue);
-
-                if (verifyAppsValue == null) {
-                    recordUserOptIn(UserOptIn.UNABLE_TO_DETERMINE);
-                } else if (verifyAppsValue) {
-                    recordUserOptIn(UserOptIn.OPT_IN);
-                } else {
-                    recordUserOptIn(UserOptIn.OPT_OUT);
-                }
             };
             PlatformServiceBridge.getInstance().querySafeBrowsingUserConsent(cb);
         }
