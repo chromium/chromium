@@ -115,18 +115,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // modified.
   bool SetBucketLastModifiedTime(BucketId bucket_id, base::Time last_modified);
 
-  bool GetOriginLastEvictionTime(const url::Origin& origin,
-                                 blink::mojom::StorageType type,
-                                 base::Time* last_eviction_time);
-
-  // Sets the time the origin was last evicted. Returns whether the operation
-  // succeeded.
-  bool SetOriginLastEvictionTime(const url::Origin& origin,
-                                 blink::mojom::StorageType type,
-                                 base::Time last_eviction_time);
-  bool DeleteOriginLastEvictionTime(const url::Origin& origin,
-                                    blink::mojom::StorageType type);
-
   // Register initial `origins` info `type` to the database.
   // This method is assumed to be called only after the installation or
   // the database schema reset.

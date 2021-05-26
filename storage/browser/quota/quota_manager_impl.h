@@ -322,8 +322,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   static constexpr int kThresholdRandomizationPercent = 5;
 
   static constexpr char kDatabaseName[] = "QuotaManager";
-  static constexpr char kDaysBetweenRepeatedOriginEvictionsHistogram[] =
-      "Quota.DaysBetweenRepeatedOriginEvictions";
   static constexpr char kEvictedOriginAccessedCountHistogram[] =
       "Quota.EvictedOriginAccessCount";
   static constexpr char kEvictedOriginDaysSinceAccessHistogram[] =

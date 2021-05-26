@@ -37,18 +37,18 @@ namespace {
 // razed.
 //
 // Version 1 - 2011-03-17 - http://crrev.com/78521 (unsupported)
-// Version 2 - 2010-04-25 - http://crrev.com/82847 (unsupported)
+// Version 2 - 2011-04-25 - http://crrev.com/82847 (unsupported)
 // Version 3 - 2011-07-08 - http://crrev.com/91835 (unsupported)
 // Version 4 - 2011-10-17 - http://crrev.com/105822 (unsupported)
 // Version 5 - 2015-10-19 - https://crrev.com/354932
 // Version 6 - 2021-04-27 - https://crrev.com/c/2757450
-const int kQuotaDatabaseCurrentSchemaVersion = 6;
-const int kQuotaDatabaseCompatibleVersion = 6;
+// Version 7 - 2021-05-20 - https://crrev.com/c/2910136
+const int kQuotaDatabaseCurrentSchemaVersion = 7;
+const int kQuotaDatabaseCompatibleVersion = 7;
 
 // Definitions for database schema.
 const char kHostQuotaTable[] = "quota";
 const char kBucketTable[] = "buckets";
-const char kEvictionInfoTable[] = "eviction_info";
 const char kIsOriginTableBootstrapped[] = "IsOriginTableBootstrapped";
 
 const int kCommitIntervalMs = 30000;
@@ -74,12 +74,7 @@ const QuotaDatabase::TableSchema QuotaDatabase::kTables[] = {
      " last_accessed INTEGER NOT NULL,"
      " last_modified INTEGER NOT NULL,"
      " expiration INTEGER NOT NULL,"
-     " quota INTEGER NOT NULL)"},
-    {kEvictionInfoTable,
-     "(origin TEXT NOT NULL,"
-     " type INTEGER NOT NULL,"
-     " last_eviction_time INTEGER NOT NULL,"
-     " PRIMARY KEY(origin, type))"}};
+     " quota INTEGER NOT NULL)"}};
 const size_t QuotaDatabase::kTableCount = base::size(QuotaDatabase::kTables);
 
 // static
@@ -384,74 +379,6 @@ bool QuotaDatabase::SetBucketLastModifiedTime(const BucketId bucket_id,
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindTime(0, last_modified);
   statement.BindInt64(1, bucket_id.value());
-
-  if (!statement.Run())
-    return false;
-
-  ScheduleCommit();
-  return true;
-}
-
-bool QuotaDatabase::GetOriginLastEvictionTime(const url::Origin& origin,
-                                              StorageType type,
-                                              base::Time* last_modified) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(last_modified);
-  if (!LazyOpen(false))
-    return false;
-
-  static constexpr char kSql[] =
-      // clang-format off
-      "SELECT last_eviction_time "
-        "FROM eviction_info "
-        "WHERE origin = ? AND type = ?";
-  // clang-format on
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, origin.GetURL().spec());
-  statement.BindInt(1, static_cast<int>(type));
-
-  if (!statement.Step())
-    return false;
-
-  *last_modified = statement.ColumnTime(0);
-  return true;
-}
-
-bool QuotaDatabase::SetOriginLastEvictionTime(const url::Origin& origin,
-                                              StorageType type,
-                                              base::Time last_modified) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!LazyOpen(true))
-    return false;
-
-  static constexpr char kSql[] =
-      // clang-format off
-      "INSERT OR REPLACE INTO eviction_info(last_eviction_time, origin, type) "
-        "VALUES (?, ?, ?)";
-  // clang-format on
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindTime(0, last_modified);
-  statement.BindString(1, origin.GetURL().spec());
-  statement.BindInt(2, static_cast<int>(type));
-
-  if (!statement.Run())
-    return false;
-
-  ScheduleCommit();
-  return true;
-}
-
-bool QuotaDatabase::DeleteOriginLastEvictionTime(const url::Origin& origin,
-                                                 StorageType type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!LazyOpen(false))
-    return false;
-
-  static constexpr char kSql[] =
-      "DELETE FROM eviction_info WHERE origin = ? AND type = ?";
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, origin.GetURL().spec());
-  statement.BindInt(1, static_cast<int>(type));
 
   if (!statement.Run())
     return false;

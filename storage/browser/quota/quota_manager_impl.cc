@@ -151,24 +151,7 @@ bool DeleteOriginInfoOnDBThread(const url::Origin& origin,
         (now - entry.last_accessed).InDays());
   }
 
-  if (!database->DeleteOriginInfo(origin, type))
-    return false;
-
-  // If the deletion is not due to an eviction, delete the entry in the eviction
-  // table as well due to privacy concerns.
-  if (!is_eviction)
-    return database->DeleteOriginLastEvictionTime(origin, type);
-
-  base::Time last_eviction_time;
-  database->GetOriginLastEvictionTime(origin, type, &last_eviction_time);
-
-  if (last_eviction_time != base::Time()) {
-    UMA_HISTOGRAM_COUNTS_1000(
-        QuotaManagerImpl::kDaysBetweenRepeatedOriginEvictionsHistogram,
-        (now - last_eviction_time).InDays());
-  }
-
-  return database->SetOriginLastEvictionTime(origin, type, now);
+  return database->DeleteOriginInfo(origin, type);
 }
 
 bool BootstrapDatabaseOnDBThread(std::set<url::Origin> origins,
@@ -229,7 +212,6 @@ constexpr int QuotaManagerImpl::kEvictionIntervalInMilliSeconds;
 constexpr int QuotaManagerImpl::kThresholdOfErrorsToBeDenylisted;
 constexpr int QuotaManagerImpl::kThresholdRandomizationPercent;
 constexpr char QuotaManagerImpl::kDatabaseName[];
-constexpr char QuotaManagerImpl::kDaysBetweenRepeatedOriginEvictionsHistogram[];
 constexpr char QuotaManagerImpl::kEvictedOriginAccessedCountHistogram[];
 constexpr char QuotaManagerImpl::kEvictedOriginDaysSinceAccessHistogram[];
 

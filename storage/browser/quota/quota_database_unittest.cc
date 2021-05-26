@@ -573,58 +573,6 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
   EXPECT_EQ(1U, bucket_ids.count(bucket4.bucket_id));
 }
 
-TEST_P(QuotaDatabaseTest, OriginLastEvicted) {
-  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
-  EXPECT_TRUE(LazyOpen(&db, /*create_if_needed=*/true));
-
-  const url::Origin kOrigin1 = ToOrigin("http://a/");
-  const url::Origin kOrigin2 = ToOrigin("http://b/");
-  const url::Origin kOrigin3 = ToOrigin("http://c/");
-
-  base::Time last_eviction_time;
-  EXPECT_FALSE(
-      db.GetOriginLastEvictionTime(kOrigin1, kTemp, &last_eviction_time));
-  EXPECT_EQ(base::Time(), last_eviction_time);
-
-  // Report last eviction time for the test origins.
-  EXPECT_TRUE(db.SetOriginLastEvictionTime(kOrigin1, kTemp,
-                                           base::Time::FromJavaTime(10)));
-  EXPECT_TRUE(db.SetOriginLastEvictionTime(kOrigin2, kTemp,
-                                           base::Time::FromJavaTime(20)));
-  EXPECT_TRUE(db.SetOriginLastEvictionTime(kOrigin3, kTemp,
-                                           base::Time::FromJavaTime(30)));
-
-  EXPECT_TRUE(
-      db.GetOriginLastEvictionTime(kOrigin1, kTemp, &last_eviction_time));
-  EXPECT_EQ(base::Time::FromJavaTime(10), last_eviction_time);
-  EXPECT_TRUE(
-      db.GetOriginLastEvictionTime(kOrigin2, kTemp, &last_eviction_time));
-  EXPECT_EQ(base::Time::FromJavaTime(20), last_eviction_time);
-  EXPECT_TRUE(
-      db.GetOriginLastEvictionTime(kOrigin3, kTemp, &last_eviction_time));
-  EXPECT_EQ(base::Time::FromJavaTime(30), last_eviction_time);
-
-  // Delete last eviction times for the test origins.
-  EXPECT_TRUE(db.DeleteOriginLastEvictionTime(kOrigin1, kTemp));
-  EXPECT_TRUE(db.DeleteOriginLastEvictionTime(kOrigin2, kTemp));
-  EXPECT_TRUE(db.DeleteOriginLastEvictionTime(kOrigin3, kTemp));
-
-  last_eviction_time = base::Time();
-  EXPECT_FALSE(
-      db.GetOriginLastEvictionTime(kOrigin1, kTemp, &last_eviction_time));
-  EXPECT_EQ(base::Time(), last_eviction_time);
-  EXPECT_FALSE(
-      db.GetOriginLastEvictionTime(kOrigin2, kTemp, &last_eviction_time));
-  EXPECT_EQ(base::Time(), last_eviction_time);
-  EXPECT_FALSE(
-      db.GetOriginLastEvictionTime(kOrigin3, kTemp, &last_eviction_time));
-  EXPECT_EQ(base::Time(), last_eviction_time);
-
-  // Deleting an origin that is not present should not fail.
-  EXPECT_TRUE(db.DeleteOriginLastEvictionTime(ToOrigin("http://notpresent.com"),
-                                              kTemp));
-}
-
 TEST_P(QuotaDatabaseTest, RegisterInitialOriginInfo) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
 

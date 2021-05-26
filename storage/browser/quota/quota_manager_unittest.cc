@@ -1779,7 +1779,7 @@ TEST_F(QuotaManagerImplTest, EvictOriginDataHistogram) {
   EvictOriginData(kOrigin, kTemp);
   task_environment_.RunUntilIdle();
 
-  // Ensure used count and time since access are recorded.
+  // Ensure use count and time since access are recorded.
   histograms.ExpectTotalCount(
       QuotaManagerImpl::kEvictedOriginAccessedCountHistogram, 1);
   histograms.ExpectBucketCount(
@@ -1787,13 +1787,9 @@ TEST_F(QuotaManagerImplTest, EvictOriginDataHistogram) {
   histograms.ExpectTotalCount(
       QuotaManagerImpl::kEvictedOriginDaysSinceAccessHistogram, 1);
 
-  // First eviction has no 'last' time to compare to.
-  histograms.ExpectTotalCount(
-      QuotaManagerImpl::kDaysBetweenRepeatedOriginEvictionsHistogram, 0);
-
   client->AddOriginAndNotify(kOrigin, kTemp, 100);
 
-  // Change the used count of the origin.
+  // Change the use count of the origin.
   quota_manager_impl()->NotifyStorageAccessed(kOrigin, kTemp,
                                               base::Time::Now());
   task_environment_.RunUntilIdle();
@@ -1804,28 +1800,13 @@ TEST_F(QuotaManagerImplTest, EvictOriginDataHistogram) {
   EvictOriginData(kOrigin, kTemp);
   task_environment_.RunUntilIdle();
 
-  // The new used count should be logged.
+  // The new use count should be logged.
   histograms.ExpectTotalCount(
       QuotaManagerImpl::kEvictedOriginAccessedCountHistogram, 2);
   histograms.ExpectBucketCount(
       QuotaManagerImpl::kEvictedOriginAccessedCountHistogram, 1, 1);
   histograms.ExpectTotalCount(
       QuotaManagerImpl::kEvictedOriginDaysSinceAccessHistogram, 2);
-
-  // Second eviction should log a 'time between repeated eviction' sample.
-  histograms.ExpectTotalCount(
-      QuotaManagerImpl::kDaysBetweenRepeatedOriginEvictionsHistogram, 1);
-
-  client->AddOriginAndNotify(kOrigin, kTemp, 100);
-
-  GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
-
-  DeleteOriginFromDatabase(kOrigin, kTemp);
-
-  // Deletion from non-eviction source should not log a histogram sample.
-  histograms.ExpectTotalCount(
-      QuotaManagerImpl::kDaysBetweenRepeatedOriginEvictionsHistogram, 1);
 }
 
 TEST_F(QuotaManagerImplTest, EvictOriginDataWithDeletionError) {

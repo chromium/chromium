@@ -23,14 +23,20 @@ bool QuotaDatabaseMigrations::UpgradeSchema(QuotaDatabase& quota_database) {
     return quota_database.ResetSchema();
 
   if (quota_database.meta_table_->GetVersionNumber() == 5) {
-    if (!MigrateToVersion6(quota_database))
+    if (!MigrateFromVersion5ToVersion7(quota_database))
       return false;
   }
 
-  return quota_database.meta_table_->GetVersionNumber() == 6;
+  if (quota_database.meta_table_->GetVersionNumber() == 6) {
+    if (!MigrateFromVersion6ToVersion7(quota_database))
+      return false;
+  }
+
+  return quota_database.meta_table_->GetVersionNumber() == 7;
 }
 
-bool QuotaDatabaseMigrations::MigrateToVersion6(QuotaDatabase& quota_database) {
+bool QuotaDatabaseMigrations::MigrateFromVersion5ToVersion7(
+    QuotaDatabase& quota_database) {
   sql::Database* db = quota_database.db_.get();
   sql::Transaction transaction(db);
   if (!transaction.Begin())
@@ -100,24 +106,30 @@ bool QuotaDatabaseMigrations::MigrateToVersion6(QuotaDatabase& quota_database) {
   if (!db->Execute(kDeleteQuotaHostTableSql))
     return false;
 
-  // Copy EvictionInfoTable data into the new eviction_info table.
-  const char kImportEvictionInfoSql[] =
-      // clang-format off
-      "INSERT INTO eviction_info(origin, type, last_eviction_time) "
-        "SELECT origin, type, last_eviction_time "
-        "FROM EvictionInfoTable";
-  // clang-format on
-  sql::Statement import_eviction_info_statement(
-      db->GetCachedStatement(SQL_FROM_HERE, kImportEvictionInfoSql));
-  if (!import_eviction_info_statement.Run())
-    return false;
-
   // Delete EvictionInfoTable.
   const char kDeleteEvictionInfoTableSql[] = "DROP TABLE EvictionInfoTable";
   if (!db->Execute(kDeleteEvictionInfoTableSql))
     return false;
 
-  quota_database.meta_table_->SetVersionNumber(6);
+  // Upgrade to version 7 since it already deletes EvictionInfoTable.
+  quota_database.meta_table_->SetVersionNumber(7);
+  quota_database.meta_table_->SetCompatibleVersionNumber(7);
+  return transaction.Commit();
+}
+
+bool QuotaDatabaseMigrations::MigrateFromVersion6ToVersion7(
+    QuotaDatabase& quota_database) {
+  sql::Database* db = quota_database.db_.get();
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  const char kDeleteEvictionInfoTableSql[] = "DROP TABLE eviction_info";
+  if (!db->Execute(kDeleteEvictionInfoTableSql))
+    return false;
+
+  quota_database.meta_table_->SetVersionNumber(7);
+  quota_database.meta_table_->SetCompatibleVersionNumber(7);
   return transaction.Commit();
 }
 
