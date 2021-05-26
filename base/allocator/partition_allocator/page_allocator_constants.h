@@ -36,11 +36,10 @@
 
 #endif
 
-namespace {
+namespace base {
 
-#if !defined(OS_APPLE)
-
-constexpr ALWAYS_INLINE int PageAllocationGranularityShift() {
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PageAllocationGranularityShift() {
 #if defined(OS_WIN) || defined(ARCH_CPU_PPC64)
   // Modern ppc64 systems support 4kB (shift = 12) and 64kB (shift = 16) page
   // sizes.  Since 64kB is the de facto standard on the platform and binaries
@@ -49,20 +48,18 @@ constexpr ALWAYS_INLINE int PageAllocationGranularityShift() {
   return 16;  // 64kB
 #elif defined(_MIPS_ARCH_LOONGSON)
   return 14;  // 16kB
+#elif defined(OS_APPLE)
+  return vm_page_shift;
 #else
   return 12;  // 4kB
 #endif
 }
 
-#endif
-
-}  // namespace
-
-namespace base {
-
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 PageAllocationGranularity() {
 #if defined(OS_APPLE)
+  // This is literally equivalent to |1 << PageAllocationGranularityShift()|
+  // below, but was separated out for OS_APPLE to avoid << on a non-constexpr.
   return vm_page_size;
 #else
   return 1 << PageAllocationGranularityShift();
@@ -79,22 +76,25 @@ PageAllocationGranularityBaseMask() {
   return ~PageAllocationGranularityOffsetMask();
 }
 
-#if !defined(OS_APPLE)
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 SystemPageShift() {
+  // On Windows allocation granularity is higher than the page size. This comes
+  // into play when reserving address space range (allocation granularity),
+  // compared to committing pages into memory (system page granularity).
 #if defined(OS_WIN)
   return 12;  // 4096=1<<12
 #else
   return PageAllocationGranularityShift();
 #endif
 }
-#endif
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 SystemPageSize() {
 #if !defined(OS_APPLE)
   return 1 << SystemPageShift();
 #else
+  // This is literally equivalent to |1 << SystemPageShift()| above, but was
+  // separated out for OS_APPLE to avoid << on a non-constexpr.
   return PageAllocationGranularity();
 #endif
 }
