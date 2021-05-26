@@ -145,12 +145,14 @@ checked_in_dts_files = [
   "cr_elements/cr_input/cr_input.m.d.ts",
   "cr_elements/cr_lazy_render/cr_lazy_render.m.d.ts",
   "cr_elements/cr_search_field/cr_search_field_behavior.d.ts",
+  "cr_elements/cr_toast/cr_toast_manager.m.d.ts",
   "cr_elements/cr_toast/cr_toast.m.d.ts",
   "cr_elements/cr_toolbar/cr_toolbar_search_field.d.ts",
   "cr_elements/cr_view_manager/cr_view_manager.d.ts",
   "cr_elements/find_shortcut_behavior.d.ts",
   "js/cr/ui/focus_row_behavior.m.d.ts",
   "js/i18n_behavior.m.d.ts",
+  "js/promise_resolver.m.d.ts",
   "js/web_ui_listener_behavior.m.d.ts",
 ]
 
@@ -179,9 +181,11 @@ ts_library("library") {
 
   definitions += [
     # Auto-generated .d.ts files.
+    "$root_dir/cr_elements/action_link_css.m.d.ts",
     "$root_dir/cr_elements/cr_grid/cr_grid.d.ts",
     "$root_dir/cr_elements/cr_input/cr_input_style_css.m.d.ts",
     "$root_dir/cr_elements/cr_menu_selector/cr_menu_selector.d.ts",
+    "$root_dir/cr_elements/cr_page_host_style_css.d.ts",
     "$root_dir/cr_elements/cr_splitter/cr_splitter.d.ts",
     "$root_dir/cr_elements/cr_toolbar/cr_toolbar.d.ts",
     "$root_dir/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.d.ts",
@@ -190,6 +194,7 @@ ts_library("library") {
     "$root_dir/cr_elements/md_select_css.m.d.ts",
     "$root_dir/cr_elements/shared_style_css.m.d.ts",
     "$root_dir/cr_elements/shared_vars_css.m.d.ts",
+    "$root_dir/js/action_link.d.ts",
     "$root_dir/js/assert.m.d.ts",
     "$root_dir/js/cr/event_target.m.d.ts",
     "$root_dir/js/cr.m.d.ts",
@@ -201,7 +206,6 @@ ts_library("library") {
     "$root_dir/js/event_tracker.m.d.ts",
     "$root_dir/js/load_time_data.m.d.ts",
     "$root_dir/js/parse_html_subset.m.d.ts",
-    "$root_dir/js/promise_resolver.m.d.ts",
     "$root_dir/js/icon.m.d.ts",
     "$root_dir/js/util.m.d.ts",
   ]
@@ -222,9 +226,11 @@ ts_definitions("generate_definitions") {
   root_dir = preprocessed_folder
   out_dir = preprocessed_folder
   js_files = [
+    "cr_elements/action_link_css.m.js",
     "cr_elements/cr_grid/cr_grid.js",
     "cr_elements/cr_input/cr_input_style_css.m.js",
     "cr_elements/cr_menu_selector/cr_menu_selector.js",
+    "cr_elements/cr_page_host_style_css.js",
     "cr_elements/cr_splitter/cr_splitter.js",
     "cr_elements/cr_toolbar/cr_toolbar.js",
     "cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js",
@@ -233,6 +239,7 @@ ts_definitions("generate_definitions") {
     "cr_elements/md_select_css.m.js",
     "cr_elements/shared_style_css.m.js",
     "cr_elements/shared_vars_css.m.js",
+    "js/action_link.js",
     "js/assert.m.js",
     "js/cr.m.js",
     "js/cr/event_target.m.js",
@@ -244,7 +251,6 @@ ts_definitions("generate_definitions") {
     "js/event_tracker.m.js",
     "js/load_time_data.m.js",
     "js/parse_html_subset.m.js",
-    "js/promise_resolver.m.js",
     "js/icon.m.js",
     "js/util.m.js",
   ]
