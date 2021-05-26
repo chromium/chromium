@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -21,7 +21,7 @@ def Minify(source):
   # write its output to the other.
   with tempfile.NamedTemporaryFile(suffix='.js') as infile, \
        tempfile.NamedTemporaryFile(suffix='.js') as outfile:
-    infile.write(source)
+    infile.write(source.encode())
     infile.flush();
     node.RunNode(
         [node_modules.PathToTerser(), infile.name, '--output', outfile.name])
