@@ -106,7 +106,9 @@ class CastStreamingSession::Internal
     }
 
     // We can use unretained pointers here because StreamConsumer is owned by
-    // this object and |client_| is guaranteed to outlive this object.
+    // this object and |client_| is guaranteed to outlive this object. Here,
+    // the duration is set to kNoTimestamp so the audio renderer does not block.
+    // Audio frames duration is not known ahead of time in mirroring.
     audio_consumer_ = std::make_unique<StreamConsumer>(
         audio_receiver, media::kNoTimestamp, std::move(data_pipe_producer),
         base::BindRepeating(
