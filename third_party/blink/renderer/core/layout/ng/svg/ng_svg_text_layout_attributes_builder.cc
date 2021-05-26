@@ -275,7 +275,7 @@ void NGSVGTextLayoutAttributesBuilder::Build(
         first_char_in_text_path = false;
         DCHECK(text_path_start);
         if (addressable_index != *text_path_start) {
-          text_path_range_list_.push_back(SVGTextContentRange{
+          text_path_range_list_.push_back(SvgTextContentRange{
               object, *text_path_start, addressable_index - 1});
         }
         text_path_start.reset();
@@ -283,7 +283,7 @@ void NGSVGTextLayoutAttributesBuilder::Build(
       if (text_length_stack.size() > 0u &&
           text_length_stack.back().layout_object == object) {
         text_length_range_list_.push_back(
-            SVGTextContentRange{object, text_length_stack.back().start_index,
+            SvgTextContentRange{object, text_length_stack.back().start_index,
                                 addressable_index - 1});
         text_length_stack.pop_back();
       }
@@ -376,7 +376,7 @@ void NGSVGTextLayoutAttributesBuilder::Build(
     DCHECK_EQ(text_length_stack.back().layout_object, block_flow_);
     DCHECK_EQ(text_length_stack.back().start_index, 0u);
     text_length_range_list_.push_back(
-        SVGTextContentRange{block_flow_, 0u, addressable_index - 1});
+        SvgTextContentRange{block_flow_, 0u, addressable_index - 1});
     text_length_stack.pop_back();
   }
   attr_stack.Pop();
@@ -387,12 +387,12 @@ NGSVGTextLayoutAttributesBuilder::CharacterDataList() {
   return std::move(resolved_);
 }
 
-Vector<SVGTextContentRange>
+Vector<SvgTextContentRange>
 NGSVGTextLayoutAttributesBuilder::TextLengthRangeList() {
   return std::move(text_length_range_list_);
 }
 
-Vector<SVGTextContentRange>
+Vector<SvgTextContentRange>
 NGSVGTextLayoutAttributesBuilder::TextPathRangeList() {
   return std::move(text_path_range_list_);
 }

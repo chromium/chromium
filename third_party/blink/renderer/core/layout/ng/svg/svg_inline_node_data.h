@@ -14,7 +14,7 @@ namespace blink {
 class LayoutObject;
 class LayoutText;
 
-struct SVGTextContentRange {
+struct SvgTextContentRange {
   DISALLOW_NEW();
 
   // This must be a LayoutSVGTextPath for |SVGInlineNodeData::
@@ -27,17 +27,17 @@ struct SVGTextContentRange {
 
 }  // namespace blink
 
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::SVGTextContentRange)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::SvgTextContentRange)
 
 namespace blink {
 
 using SvgTextChunkOffsets = HashMap<const LayoutText*, Vector<unsigned>>;
 
 // SVG-specific data stored in NGInlineNodeData.
-struct SVGInlineNodeData final {
+struct SvgInlineNodeData final {
   Vector<std::pair<unsigned, NGSVGCharacterData>> character_data_list;
-  Vector<SVGTextContentRange> text_length_range_list;
-  Vector<SVGTextContentRange> text_path_range_list;
+  Vector<SvgTextContentRange> text_length_range_list;
+  Vector<SvgTextContentRange> text_path_range_list;
   SvgTextChunkOffsets chunk_offsets;
 };
 

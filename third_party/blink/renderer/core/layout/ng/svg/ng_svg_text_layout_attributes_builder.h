@@ -38,9 +38,9 @@ class NGSVGTextLayoutAttributesBuilder final {
   // This function can be called just once after Build().
   Vector<std::pair<unsigned, NGSVGCharacterData>> CharacterDataList();
   // This function can be called just once after Build().
-  Vector<SVGTextContentRange> TextLengthRangeList();
+  Vector<SvgTextContentRange> TextLengthRangeList();
   // This function can be called just once after Build().
-  Vector<SVGTextContentRange> TextPathRangeList();
+  Vector<SvgTextContentRange> TextPathRangeList();
 
  private:
   LayoutBlockFlow* block_flow_;
@@ -56,13 +56,13 @@ class NGSVGTextLayoutAttributesBuilder final {
   // addressable character index (inclusive) for an SVGTextContentElement
   // with textLength.
   // This is used in "5. Apply ‘textLength’ attribute".
-  Vector<SVGTextContentRange> text_length_range_list_;
+  Vector<SvgTextContentRange> text_length_range_list_;
 
   // The result of Build().
   // A list of a pair of start addressable character index and end
   // addressable character index (inclusive) for a <textPath>.
   // This is used in "8. Position on path".
-  Vector<SVGTextContentRange> text_path_range_list_;
+  Vector<SvgTextContentRange> text_path_range_list_;
 };
 
 }  // namespace blink

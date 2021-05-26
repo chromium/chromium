@@ -10,7 +10,7 @@
 
 namespace blink {
 
-struct SVGTextContentRange;
+struct SvgTextContentRange;
 
 class NGSVGTextLayoutAlgorithm {
   STACK_ALLOCATED();
@@ -34,7 +34,7 @@ class NGSVGTextLayoutAlgorithm {
       const NGFragmentItemsBuilder::ItemWithOffsetList& items);
   void ResolveTextLength(
       const NGFragmentItemsBuilder::ItemWithOffsetList& items,
-      const SVGTextContentRange& range,
+      const SvgTextContentRange& range,
       Vector<wtf_size_t>& resolved_descendant_node_starts);
   void AdjustPositionsXY(
       const NGFragmentItemsBuilder::ItemWithOffsetList& items);

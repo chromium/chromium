@@ -302,7 +302,7 @@ void NGSVGTextLayoutAlgorithm::ApplyTextLengthAttribute(
   // Start indexes of the highest textLength elements which were already
   // handled by ResolveTextLength().
   Vector<wtf_size_t> resolved_descendant_node_starts;
-  for (const auto& range : inline_node_.SVGTextLengthRangeList())
+  for (const auto& range : inline_node_.SvgTextLengthRangeList())
     ResolveTextLength(items, range, resolved_descendant_node_starts);
 }
 
@@ -320,7 +320,7 @@ void NGSVGTextLayoutAlgorithm::ApplyTextLengthAttribute(
 //    3. Called for the <text>.
 void NGSVGTextLayoutAlgorithm::ResolveTextLength(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items,
-    const SVGTextContentRange& range,
+    const SvgTextContentRange& range,
     Vector<wtf_size_t>& resolved_descendant_node_starts) {
   const unsigned i = range.start_index;
   const unsigned j_plus_1 = range.end_index + 1;
@@ -510,7 +510,7 @@ void NGSVGTextLayoutAlgorithm::ApplyAnchoring(
                      [](const auto& info) { return info.anchored_chunk; });
     wtf_size_t j = std::distance(result_.begin(), next_anchor) - 1;
 
-    const auto& text_path_ranges = inline_node_.SVGTextPathRangeList();
+    const auto& text_path_ranges = inline_node_.SvgTextPathRangeList();
     const auto* text_path_iter =
         std::find_if(text_path_ranges.begin(), text_path_ranges.end(),
                      [i](const auto& range) {
@@ -596,7 +596,7 @@ void NGSVGTextLayoutAlgorithm::ApplyAnchoring(
 
 void NGSVGTextLayoutAlgorithm::PositionOnPath(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
-  const auto& ranges = inline_node_.SVGTextPathRangeList();
+  const auto& ranges = inline_node_.SvgTextPathRangeList();
   if (ranges.IsEmpty())
     return;
 
@@ -827,7 +827,7 @@ bool NGSVGTextLayoutAlgorithm::IsFirstCharacterInTextPath(
   // This implementation is O(N) where N is the number of <textPath>s in
   // a <text>. If this function is a performance bottleneck, we should add
   // |first_in_text_path| flag to NGSVGCharacterData.
-  const auto& text_path_ranges = inline_node_.SVGTextPathRangeList();
+  const auto& text_path_ranges = inline_node_.SvgTextPathRangeList();
   return std::find_if(text_path_ranges.begin(), text_path_ranges.end(),
                       [index](const auto& range) {
                         return range.start_index == index;

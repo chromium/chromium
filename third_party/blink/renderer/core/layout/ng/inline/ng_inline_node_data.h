@@ -54,7 +54,7 @@ struct CORE_EXPORT NGInlineNodeData : NGInlineItemsData {
   // different.
   std::unique_ptr<NGInlineItemsData> first_line_items_;
 
-  std::unique_ptr<SVGInlineNodeData> svg_node_data_;
+  std::unique_ptr<SvgInlineNodeData> svg_node_data_;
 
   unsigned is_bidi_enabled_ : 1;
   unsigned base_direction_ : 1;  // TextDirection

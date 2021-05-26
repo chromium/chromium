@@ -1014,7 +1014,7 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
     NGSVGTextLayoutAttributesBuilder svg_attr_builder(*this);
     svg_attr_builder.Build(ifc_text_content, items);
 
-    auto svg_data = std::make_unique<SVGInlineNodeData>();
+    auto svg_data = std::make_unique<SvgInlineNodeData>();
     svg_data->character_data_list = svg_attr_builder.CharacterDataList();
     svg_data->text_length_range_list = svg_attr_builder.TextLengthRangeList();
     svg_data->text_path_range_list = svg_attr_builder.TextPathRangeList();
@@ -1903,13 +1903,13 @@ NGInlineNode::SVGCharacterDataList() const {
   return Data().svg_node_data_->character_data_list;
 }
 
-const Vector<SVGTextContentRange>& NGInlineNode::SVGTextLengthRangeList()
+const Vector<SvgTextContentRange>& NGInlineNode::SvgTextLengthRangeList()
     const {
   DCHECK(IsSVGText());
   return Data().svg_node_data_->text_length_range_list;
 }
 
-const Vector<SVGTextContentRange>& NGInlineNode::SVGTextPathRangeList() const {
+const Vector<SvgTextContentRange>& NGInlineNode::SvgTextPathRangeList() const {
   DCHECK(IsSVGText());
   return Data().svg_node_data_->text_path_range_list;
 }
