@@ -32,10 +32,11 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
                            content::WebContents* web_contents,
                            SaveCardBubbleController* controller);
 
-  // BubbleDialogDelegateView:
+  // SaveCardBubbleViews:
   void Init() override;
   bool Accept() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  void AddedToWidget() override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,

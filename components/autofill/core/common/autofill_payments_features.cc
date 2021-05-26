@@ -167,6 +167,11 @@ const base::Feature kAutofillUpstream{"AutofillUpstream",
 const base::Feature kAutofillUpstreamAllowAllEmailDomains{
     "AutofillUpstreamAllowAllEmailDomains", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether we should use the new header images for the save card
+// bubble.
+const base::Feature kAutofillUseNewHeaderForSaveCardBubble{
+    "AutofillUseNewHeaderForSaveCardBubble", base::FEATURE_ENABLED_BY_DEFAULT};
+
 bool ShouldShowImprovedUserConsentForCreditCardSave() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

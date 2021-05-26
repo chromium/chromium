@@ -41,6 +41,8 @@ extern const base::Feature kReparseServerPredictionsFollowingFormChange;
 extern const base::Feature kSecondaryServerFieldPredictions;
 extern const base::Feature kSyncingCompromisedCredentials;
 extern const base::Feature kTreatNewPasswordHeuristicsAsReliable;
+extern const base::Feature kUseNewHeaderForLegacySavePasswordBubble;
+extern const base::Feature kUseNewHeaderForSavePasswordWithAccountStoreBubble;
 extern const base::Feature kUseOfHashAffiliationFetcher;
 extern const base::Feature kUsernameFirstFlow;
 

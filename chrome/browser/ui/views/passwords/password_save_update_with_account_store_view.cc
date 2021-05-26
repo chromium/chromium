@@ -636,6 +636,12 @@ void PasswordSaveUpdateWithAccountStoreView::UpdateBubbleUIElements() {
 }
 
 void PasswordSaveUpdateWithAccountStoreView::UpdateHeaderImage() {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUseNewHeaderForSavePasswordWithAccountStoreBubble)) {
+    SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
+    return;
+  }
   int light_image_id = controller_.IsCurrentStateAffectingTheAccountStore()
                            ? IDR_SAVE_PASSWORD_MULTI_DEVICE
                            : IDR_SAVE_PASSWORD_ONE_DEVICE;
