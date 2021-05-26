@@ -1127,6 +1127,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2179416702468739594">Mavjud profillar qidirilmoqda. Bunda mobil internetingiz vaqtincha uzilib qolishi mumkin.</translation>
 <translation id="2182058453334755893">Vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="2184515124301515068">Ovoz ijrosi Chromening o‘ziga havola (tavsiya etiladi)</translation>
+<translation id="2186711480981247270">Sahifa boshqa qurilmadan ulashildi</translation>
 <translation id="2187675480456493911">Hisobingizdagi boshqa qurilmalarga sinxronlandi. Boshqa foydalanuvchilar oʻzgartirgan sozlamalar sinxronlanmaydi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Server sertifikatini import qilishda xatolik yuz berdi</translation>
 <translation id="2187906491731510095">Kengaytmalar yangilandi</translation>
@@ -1991,7 +1992,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="310671807099593501">Sayt Bluetooth aloqasidan foydalanmoqda</translation>
 <translation id="3108931485517391283">Qabul qilinmadi</translation>
 <translation id="3109724472072898302">Yig‘ilgan</translation>
-<translation id="3113592018909187986">Sizda 1 ta urinish qoldi. Yangi PIN kod sozlamaguncha bu tarmoqdan foydalana olmaysiz.</translation>
+<translation id="3113592018909187986">Sizda 1 ta urinish qoldi. Yangi PIN kodni sozlamaguncha bu tarmoqdan foydalana olmaysiz.</translation>
 <translation id="311394601889664316">Saytlarga qurilmadagi fayl yoki jildlarni tahrirlashni taqiqlash</translation>
 <translation id="3115147772012638511">Kesh kutilmoqda...</translation>
 <translation id="3115580024857770654">Hammasini yigʻish</translation>
@@ -4609,7 +4610,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6032912588568283682">Fayl tizimi</translation>
 <translation id="603539183851330738">Avtomatik tuzatishni bekor qilish tugmasi. <ph name="TYPED_WORD" /> soʻzi qaytarildi.  Faollashtirish uchun enter, yopish uchun escape tugmasini bosing.</translation>
 <translation id="6038929619733116134">Saytda chiquvchi yoqimsiz yoki befoyda reklamalar bloklansin</translation>
-<translation id="603895874132768835">Yangi PIN kod sozlamaguncha bu tarmoqdan foydalana olmaysiz</translation>
+<translation id="603895874132768835">Yangi PIN kodni sozlamaguncha bu tarmoqdan foydalana olmaysiz</translation>
 <translation id="6039651071822577588">Tarmoq xususiyatlari lug‘ati shikastlangan</translation>
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6041046205544295907"><ph name="BEGIN_PARAGRAPH1" />Google joylashuvni aniqlash xizmati bu qurilmaning joylashuvini bilish uchun Wi-Fi, mobil tarmoqlar va sensorlar kabi manbalardan foydalanadi.<ph name="END_PARAGRAPH1" />
@@ -7613,7 +7614,7 @@ parollar va boshqa sozlamalaringiz Google hisobingizga sinxronlanadi.</translati
 <translation id="991413375315957741">harakat va yorugʻlik sensorlari</translation>
 <translation id="992032470292211616">Kengaytma, ilova va mavzular mobil qurilmangizga zararli bo‘lishi mumkin. Davom ettirilsinmi?</translation>
 <translation id="992256792861109788">Pushti</translation>
-<translation id="992401651319295351">Sizda <ph name="RETRIES" /> ta urinish qoldi. Yangi PIN kod sozlamaguncha bu tarmoqdan foydalana olmaysiz.</translation>
+<translation id="992401651319295351">Sizda <ph name="RETRIES" /> ta urinish qoldi. Yangi PIN kodni sozlamaguncha bu tarmoqdan foydalana olmaysiz.</translation>
 <translation id="992592832486024913">ChromeVox‘ni (ovozli ta’rif) o‘chirib qo‘yish</translation>
 <translation id="992778845837390402">Ayni vaqtda Linux fayllari zaxiralanmoqda</translation>
 <translation id="993540765962421562">O‘rnatilmoqda</translation>

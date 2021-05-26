@@ -456,6 +456,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5782227691023083829">Prevođenje je u toku...</translation>
 <translation id="5797070761912323120">Google može da koristi istoriju za personalizaciju Pretrage, oglasa i drugih Google usluga</translation>
 <translation id="5803566855766646066">Želite li stvarno da odbacite ovu novu karticu?</translation>
+<translation id="5812974770859303494">Dodajte u…</translation>
 <translation id="5816228676161003208">Ovo vam omogućava da brže pretražujte pomoću glasa.</translation>
 <translation id="581659025233126501">Uključi sinhronizaciju</translation>
 <translation id="5819208479324046259">Ovim upravlja <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -522,6 +523,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="634878792104344809">Sinhronizujte, lozinke, istoriju i drugo na svim uređajima</translation>
 <translation id="6362362396625799311">Nema kartica bez arhiviranja</translation>
 <translation id="6363526231572697780">Nema korisničkog imena</translation>
+<translation id="6366663624406569102">Odjavi me i isključi sinhronizaciju</translation>
 <translation id="6374469231428023295">Probaj ponovo</translation>
 <translation id="6377118281273296434">Bezbednost sajta</translation>
 <translation id="6380866119319257197">Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhronizaciju<ph name="END_LINK" /></translation>
@@ -765,6 +767,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8654802032646794042">Otkaži</translation>
 <translation id="8668210798914567634">Ova stranica je sačuvana na Listi za čitanje.</translation>
 <translation id="8680787084697685621">Detalji za prijavljivanje na nalog su zastareli.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Zatvori karticu}one{Zatvori kartice}few{Zatvori kartice}other{Zatvori kartice}}</translation>
 <translation id="8706588385081740091">Lozinke</translation>
 <translation id="8717864919010420084">Kopiraj link</translation>
 <translation id="8721297211384281569">Meni Alatke</translation>

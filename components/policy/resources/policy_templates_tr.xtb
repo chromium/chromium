@@ -40,6 +40,7 @@
       Politika, Devre Dışı değerine ayarlanırsa kullanıcılar kısa mesaj senkronizasyonunu ayarlayamazlar.
 
       Politika ayarlanmadan bırakılırsa bu özellik, varsayılan olarak yönetilen kullanıcılar için devre dışı bırakılır, diğer kullanıcılar için etkinleştirilir.</translation>
+<translation id="1035860095382451169">Güvenli bağlantılar için çok amaçlı adres çubuğundaki kilit simgesini etkinleştirin</translation>
 <translation id="1040446814317236570">PAC URL ayırmayı etkinleştir (https:// için)</translation>
 <translation id="1041450926450683286">İstemci bu verileri yorumlamadan, olduğu gibi yönlendirmelidir. DMServer, DMServer'ın politika görünümünün Chrome OS cihazın görünümüyle aynı olup olmadığını doğrulamak için policy_version'ı kullanır.</translation>
 <translation id="1041719059374171202">Politikayı ayarlamak, JavaScript çalıştıramayan siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
@@ -83,6 +84,7 @@
 <translation id="1095209545735032039">Bu sitelerde Serial API'sini engelle</translation>
 <translation id="1096105751829466145">Varsayılan arama sağlayıcı</translation>
 <translation id="1099282607296956954">Site İzolasyonu'nu her site için etkinleştirme</translation>
+<translation id="1105572260329131950">Güvenli bağlantılar için varsayılan simgeler kullanın</translation>
 <translation id="1117535567637097036">Bu politika aracılığıyla ayarlanan protokol işleyicileri, Android amaçları işlenirken kullanılmaz.</translation>
 <translation id="1118093128235245168">Sitelerin, bağlı bir USB cihazına erişmek için kullanıcıdan izin istemesine izin ver</translation>
 <translation id="111910763555783249">Bildirim ayarları</translation>
@@ -4747,6 +4749,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7207095846245296855">Google Güvenli Arama'yı zorla</translation>
 <translation id="7211368186050418507">Saat dilimini hiçbir zaman otomatik algılama</translation>
 <translation id="7216442368414164495">Kullanıcıların Güvenli Tarama genişletilmiş raporlamasını etkinleştirmesine izin ver</translation>
+<translation id="7221574724100909818">Güvenli bağlantılar için kilit simgesini kullanın</translation>
 <translation id="7229975860249300121"><ph name="PRODUCT_NAME" /> dahilinde hangi Google hesaplarının tarayıcı birincil hesapları (senkronizasyonu etkinleştirme akışında seçilen hesap) olarak ayarlanabileceğini belirlemek için kullanılan normal bir ifade içerir.
 
       Bir kullanıcı bu kalıba uymayan bir kullanıcı adıyla tarayıcı birincil hesabını ayarlamaya çalışırsa ilgili bir hata görüntülenir.
@@ -5753,6 +5756,10 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="8631437968147930597"><ph name="PRODUCT_OS_NAME" /> kilit ekranında izin verilen not alma uygulamaları listesi</translation>
 <translation id="8637566476051166626">Açıkça izin verilen ağ bağlantı noktaları</translation>
 <translation id="8643838501942693770">3. taraf çerezlere izin ver, ancak kullanıcının bu ayarı değiştirmesine olanak tanı</translation>
+<translation id="8648844602494595665">Bu politika, çok amaçlı adres çubuğundaki kilit simgesinin işlenme şeklini denetler.
+       Güvenli bağlantılar için Chrome M93'te yeni çok amaçlı adres çubuğu simgesi bulunuyor.
+       Politika Etkin olursa Chrome, güvenli bağlantılar için mevcut kilit simgesini kullanır.
+       Politika Devre Dışı veya ayarlanmamış olursa Chrome, güvenli bağlantılar için varsayılan simgeyi kullanır.</translation>
 <translation id="8650974590712548439">Windows istemcileri için Windows kayıt defteri konumu:</translation>
 <translation id="8653085952260859632">Bellek bilgisini bildir</translation>
 <translation id="8653561013005884087">Politikayı True (Doğru) değerine ayarlamak, sözlü geri bildirimi açık tutar. Politikayı False (Yanlış) değerine ayarlamak, sözlü geri bildirimi kapalı tutar.

@@ -245,6 +245,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">installere apper, utvidelser og temaer</translation>
 <translation id="2977598380246111477">Neste nummer</translation>
+<translation id="2992327365391326550">Enhetens mikrofonknapp er slått av.</translation>
 <translation id="2995447421581609334">Vis Cast-enheter.</translation>
 <translation id="2996462380875591307">Dokket lupe er slått på. Trykk på Ctrl + Søk + D igjen for å slå det av.</translation>
 <translation id="3000461861112256445">Monolyd</translation>
@@ -255,6 +256,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3038571455154067151">For å logge på, skriv inn koden din for foreldretilgang til Family Link</translation>
 <translation id="3039939407102840004">Pekepennen har <ph name="PERCENTAGE" /> prosent batteri.</translation>
 <translation id="3045488863354895414">God ettermiddag</translation>
+<translation id="3051189971848907985">Gir profilen nytt navn. Vent i noen minutter.</translation>
 <translation id="3055162170959710888">Du har brukt denne enheten i <ph name="USED_TIME" /> i dag</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Vis menyen</translation>
@@ -295,6 +297,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3368922792935385530">Tilkoblet</translation>
 <translation id="3371140690572404006">USB-C-enhet (porten foran på høyre side)</translation>
 <translation id="3375634426936648815">Tilkoblet</translation>
+<translation id="3378442621503952303">Kobler til profilen. Vent i noen minutter.</translation>
 <translation id="3386978599540877378">fullskjermlupen</translation>
 <translation id="3400357268283240774">Flere innstillinger</translation>
 <translation id="3410336247007142655">Vis innstillinger for mørkt tema</translation>
@@ -351,6 +354,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="380165613292957338">Hei! Hva kan jeg hjelpe deg med?</translation>
 <translation id="3826099427150913765">Bytt til passord</translation>
 <translation id="383058930331066723">Batterisparing er på</translation>
+<translation id="3835880383832568924">Åpne Snarveier-appen for å se oppdateringene</translation>
 <translation id="383629559565718788">Vis tastaturinnstillinger</translation>
 <translation id="3846214748874656680">Avslutt fullskjermmodus</translation>
 <translation id="3846575436967432996">Ingen nettverksinformasjon tilgjengelig</translation>
@@ -471,6 +475,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4705716602320768426">Send tilbakemelding</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
 <translation id="4734965478015604180">Horisontal</translation>
+<translation id="4735498845456076464">Hurtigtasten <ph name="LAUNCHER_KEY_NAME" /> + tall er endret. For å bruke funksjonstastene, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + en tast på øverste rad.</translation>
 <translation id="4744944742468440486">Informasjon om det du har markert</translation>
 <translation id="4759238208242260848">Nedlastinger</translation>
 <translation id="4774338217796918551">Kom tilbake i morgen <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6910714959251846841">Denne oppdateringen krever en powerwash av enheten din. Finn ut mer om den nyeste <ph name="SYSTEM_APP_NAME" />-oppdateringen.</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
+<translation id="6921188888306725546">Tastatursnarveier er forbedret</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6961121602502368900">Demp telefonen er ikke tilgjengelig for jobbprofiler</translation>
 <translation id="6961840794482373852">Hurtigtasten Alt + oppoverpil er endret. For å bruke Page Up-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + oppoverpilen.</translation>
@@ -934,6 +940,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8631727435199967028">Tilgjengelighetsinnstillinger</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> igjen</translation>
+<translation id="8641805545866562088">Oppdaterer profillisten. Vent i noen minutter.</translation>
 <translation id="8646417893960517480">Nedtelling på <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">For å legge til en person, skriv inn koden din for foreldretilgang til Family Link</translation>
 <translation id="8649101189709089199">Tekstopplesing</translation>
@@ -961,6 +968,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Innstillinger for inndatametoder</translation>
+<translation id="8818320199597151042">Fjerner profilen. Vent i noen minutter.</translation>
 <translation id="8825863694328519386">Sveip fra venstre for å gå tilbake</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Tilbakeknapp</translation>
@@ -1006,6 +1014,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="9091626656156419976">Fjernet skjermen <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Demp telefonen</translation>
 <translation id="9099154003160514616">Lacros-oppdatering er tilgjengelig</translation>
+<translation id="9100887602489003640">Legger til profil. Vent i noen minutter.</translation>
 <translation id="9105450214093926548">Pålogging med en bruker til støttes ikke mens Lacros-nettleseren kjører. Bruk en nettleserprofil til i Lacros i stedet, eller lukk Lacros og prøv igjen.</translation>
 <translation id="9133335900048457298">Kan ikke ta opp beskyttet innhold</translation>
 <translation id="9151726767154816831">Start på nytt, og kjør Powerwash for å oppdatere</translation>

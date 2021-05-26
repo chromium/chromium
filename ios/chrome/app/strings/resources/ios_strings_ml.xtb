@@ -456,6 +456,7 @@
 <translation id="5782227691023083829">വിവര്‍‌ത്തനം ചെയ്യുന്നു...</translation>
 <translation id="5797070761912323120">തിരയലും പരസ്യവും മറ്റ് Google സേവനങ്ങളും വ്യക്തിപരമാക്കാൻ Google നിങ്ങളുടെ ചരിത്രം ഉപയോഗിച്ചേക്കാം</translation>
 <translation id="5803566855766646066">ഈ പുതിയ കാർഡ് റദ്ദാക്കണമെന്ന് തീർച്ചയാണോ?</translation>
+<translation id="5812974770859303494">ഇതിലേക്ക് ചേർക്കുക…</translation>
 <translation id="5816228676161003208">നിങ്ങളുടെ ശബ്‌ദം ഉപയോഗിച്ച് കൂടുതൽ വേഗത്തിൽ തിരയാൻ ഇത് നിങ്ങളെ അനുവദിക്കുന്നു.</translation>
 <translation id="581659025233126501">സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> മാനേജ് ചെയ്യുന്നത്. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
@@ -765,6 +766,7 @@
 <translation id="8654802032646794042">റദ്ദാക്കുക</translation>
 <translation id="8668210798914567634">ഈ പേജ് നിങ്ങളുടെ വായന ലിസ്‌റ്റിൽ സംരക്ഷിച്ചു</translation>
 <translation id="8680787084697685621">അക്കൗണ്ട് പ്രവേശന വിവരങ്ങള്‍ കാലഹരണപ്പെട്ടതാണ്.</translation>
+<translation id="8693663554456874301">{count,plural, =1{ടാബ് അടയ്‌ക്കുക}other{ടാബുകള്‍ അടയ്ക്കുക}}</translation>
 <translation id="8706588385081740091">പാസ്‌വേഡുകൾ</translation>
 <translation id="8717864919010420084">ലിങ്ക് പകർത്തുക</translation>
 <translation id="8721297211384281569">ഉപകരണ മെനു</translation>

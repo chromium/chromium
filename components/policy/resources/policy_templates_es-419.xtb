@@ -40,6 +40,7 @@
       Si inhabilitas la política, los usuarios no podrán configurar la sincronización de mensajes de texto.
 
       Si no la estableces, de forma predeterminada los usuarios administrados no podrán usar la función, pero sí podrán usarla otros usuarios.</translation>
+<translation id="1035860095382451169">Habilitar el ícono de bloqueo en el cuadro multifunción para conexiones seguras</translation>
 <translation id="1040446814317236570">Habilitar la eliminación de URL de PAC (para https://)</translation>
 <translation id="1041450926450683286">El cliente no debe interpretar estos datos, sino reenviarlos exactamente como los recibió. El DMServer usa policy_version para verificar que sus definiciones de las políticas coincidan con las del dispositivo con Chrome OS.</translation>
 <translation id="1041719059374171202">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden ejecutar JavaScript.
@@ -83,6 +84,7 @@
 <translation id="1095209545735032039">Bloquea la API de Serial en estos sitios</translation>
 <translation id="1096105751829466145">Proveedor de búsqueda predeterminado</translation>
 <translation id="1099282607296956954">Permite el aislamiento de todos los sitios</translation>
+<translation id="1105572260329131950">Usar los íconos predeterminados para conexiones seguras</translation>
 <translation id="1117535567637097036">Los controladores de protocolo establecidos mediante esta política no se usan cuando se controlan intents en Android.</translation>
 <translation id="1118093128235245168">Permite que los sitios soliciten al usuario que otorgue acceso a un dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configuración de notificaciones</translation>
@@ -4787,6 +4789,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7207095846245296855">Forzar Google SafeSearch</translation>
 <translation id="7211368186050418507">Nunca detectar de forma automática la zona horaria</translation>
 <translation id="7216442368414164495">Permitir que los usuarios acepten informes extendidos de navegación segura</translation>
+<translation id="7221574724100909818">Usar el ícono de bloqueo para conexiones seguras</translation>
 <translation id="7229975860249300121">Contiene una expresión regular que se usa para determinar qué Cuentas de Google se pueden establecer como las principales del navegador en <ph name="PRODUCT_NAME" /> (es decir, la cuenta que se elige en el proceso de aceptación de la sincronización).
 
       Si un usuario intenta establecer una cuenta principal en el navegador con un nombre de usuario que no coincida con este patrón, se mostrará un error.
@@ -5813,6 +5816,10 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8631437968147930597">Lista de apps para tomar notas permitidas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8637566476051166626">Puertos de red habilitados de forma explícita</translation>
 <translation id="8643838501942693770">Permite las cookies de terceros, pero también que el usuario cambie esta configuración</translation>
+<translation id="8648844602494595665">Esta política controla el tratamiento para el ícono de bloqueo en el cuadro multifunción.
+       A partir de la versión Chrome M93, hay un nuevo ícono en el cuadro multifunción para conexiones seguras.
+       Si habilitas la política, Chrome usará el ícono de bloqueo existente para conexiones seguras.
+       Si la inhabilitas o no la estableces, Chrome usará el ícono predeterminado para conexiones seguras.</translation>
 <translation id="8650974590712548439">Ubicación del registro de Windows para clientes de Windows:</translation>
 <translation id="8653085952260859632">Enviar información sobre la memoria</translation>
 <translation id="8653561013005884087">Si estableces el valor "True" para la política, se activarán los comentarios por voz. Si estableces el valor "False", se desactivarán estos comentarios.

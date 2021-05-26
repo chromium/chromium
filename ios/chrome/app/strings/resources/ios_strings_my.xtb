@@ -455,6 +455,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="5782227691023083829">ဘာသာပြန်နေသည်...</translation>
 <translation id="5797070761912323120">Search၊ ကြော်ငြာနှင့် အခြား Google ဝန်ဆောင်မှုများအား ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် Google က သင့်မှတ်တမ်းကို သုံးနိုင်သည်</translation>
 <translation id="5803566855766646066">ဤကတ်အသစ်ကို ဖယ်ပစ်လိုသည်မှာ သေချာသလား။</translation>
+<translation id="5812974770859303494">ထည့်မည့်နေရာ...</translation>
 <translation id="5816228676161003208">၎င်းသည် သင့်အသံကို အသုံးပြု၍ ရှာဖွေရာတွင် ပိုမိုမြန်ဆန်စေပါသည်။</translation>
 <translation id="581659025233126501">စင့်ခ်လုပ်ခြင်းကို ဖွင့်ရန်</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> က စီမံခန့်ခွဲထားသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
@@ -521,6 +522,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="634878792104344809">သင့်စက်ပစ္စည်းများအားလုံးတွင် သင်၏ စကားဝှက်၊ မှတ်တမ်းစသည်တို့ကို စင့်ခ်လုပ်ပါ</translation>
 <translation id="6362362396625799311">ရုပ်ဖျက်တဘ်များ မရှိပါ</translation>
 <translation id="6363526231572697780">အသုံးပြုသူအမည် မရှိပါ</translation>
+<translation id="6366663624406569102">ထွက်ပြီး စင့်ခ်လုပ်ခြင်းကို ပိတ်ရန်</translation>
 <translation id="6374469231428023295">ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="6377118281273296434">ဝဘ်ဆိုက်လုံခြုံရေး</translation>
 <translation id="6380866119319257197">သင့်စကားဝှက်ကို မေ့သွားလျှင် သို့မဟုတ် ဤဆက်တင်ကို ပြောင်းလဲလိုလျှင်၊ <ph name="BEGIN_LINK" />စင့်ခ်ပြုလုပ်ခြင်းကို ပြန်လည်သတ်မှတ်ပါ<ph name="END_LINK" /></translation>
@@ -764,6 +766,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8654802032646794042">မလုပ်တော့</translation>
 <translation id="8668210798914567634">ဤစာမျက်နှာကို သင်၏ဖတ်ရန်စာရင်းတွင် သိမ်းဆည်းလိုက်ပါပြီ။</translation>
 <translation id="8680787084697685621">အကောင့် ဝင်ရောက်မှု အသေးစိတ်များ အသစ်မဖြစ်တော့ပါ။</translation>
+<translation id="8693663554456874301">{count,plural, =1{တဘ် ပိတ်ရန်}other{တဘ်များ ပိတ်ရန်}}</translation>
 <translation id="8706588385081740091">စကားဝှက်များ</translation>
 <translation id="8717864919010420084">လင့်ခ်မိတ္တူကူးရန်</translation>
 <translation id="8721297211384281569">ကိရိယာမီနျူး</translation>

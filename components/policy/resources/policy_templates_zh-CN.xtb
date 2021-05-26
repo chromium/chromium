@@ -40,6 +40,7 @@
       如果此政策已停用，用户将无法设置短信同步功能。
 
       如果您未设置此政策，默认情况下，受管用户将无法使用这项功能，但其他用户可以使用这项功能。</translation>
+<translation id="1035860095382451169">在多功能框中使用锁形图标表示安全连接</translation>
 <translation id="1040446814317236570">启用 PAC 网址剔除功能（适用于 https:// 类网址）</translation>
 <translation id="1041450926450683286">客户端不应解释此数据，而应一字不差地转发它。DMServer 使用 policy_version 验证 DMServer 的政策视图是否与 Chrome 操作系统设备的视图匹配。</translation>
 <translation id="1041719059374171202">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站无法运行 JavaScript。
@@ -83,6 +84,7 @@
 <translation id="1095209545735032039">禁止在这些网站上使用 Serial API</translation>
 <translation id="1096105751829466145">默认搜索服务提供商</translation>
 <translation id="1099282607296956954">为所有网站启用网站隔离功能</translation>
+<translation id="1105572260329131950">使用默认图标表示安全连接</translation>
 <translation id="1117535567637097036">通过此政策设置的协议处理程序不会被用于处理 Android intent。</translation>
 <translation id="1118093128235245168">允许网站请求用户授权其访问所连接的 USB 设备</translation>
 <translation id="111910763555783249">通知设置</translation>
@@ -4725,6 +4727,7 @@
 <translation id="7207095846245296855">强制启用 Google 安全搜索功能</translation>
 <translation id="7211368186050418507">一律不自动检测时区</translation>
 <translation id="7216442368414164495">允许用户启用安全浏览扩展报告功能</translation>
+<translation id="7221574724100909818">使用锁形图标表示安全连接</translation>
 <translation id="7229975860249300121">这项政策包含一个正则表达式，用于决定哪些 Google 帐号可以设定为 <ph name="PRODUCT_NAME" /> 中的浏览器主帐号（也就是在同步功能启用流程中所选的帐号）。
 
       如果用户尝试使用与此格式不匹配的用户名设置浏览器主帐号，就会显示相应错误。
@@ -5729,6 +5732,10 @@
 <translation id="8631437968147930597">可在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中显示的笔记应用的列表。</translation>
 <translation id="8637566476051166626">明确允许使用的网络端口</translation>
 <translation id="8643838501942693770">允许使用第三方 Cookie，但用户可以更改相关设置</translation>
+<translation id="8648844602494595665">此政策旨在控制多功能框中的锁形图标处理方式。
+       自 Chrome M93 起，多功能框中会有一个新的“安全连接”图标。
+       如果此政策已启用，Chrome 会使用现有的锁形图标表示安全连接。
+       如果此政策已停用或未设置，Chrome 会使用默认图标表示安全连接。</translation>
 <translation id="8650974590712548439">Windows 客户端的 Windows 注册表位置：</translation>
 <translation id="8653085952260859632">报告内存信息</translation>
 <translation id="8653561013005884087">将此政策设为 True 会使语音反馈保持开启状态。将此政策设为 False 会使语音反馈保持关闭状态。

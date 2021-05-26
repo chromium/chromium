@@ -522,6 +522,7 @@
 <translation id="634878792104344809">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
 <translation id="6362362396625799311">シークレット タブはありません</translation>
 <translation id="6363526231572697780">ユーザー名が指定されていません</translation>
+<translation id="6366663624406569102">ログアウトして同期をオフにする</translation>
 <translation id="6374469231428023295">再試行</translation>
 <translation id="6377118281273296434">サイトのセキュリティ</translation>
 <translation id="6380866119319257197">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />します</translation>

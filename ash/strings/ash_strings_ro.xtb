@@ -245,6 +245,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">să instaleze aplicații, extensii și teme;</translation>
 <translation id="2977598380246111477">Următorul număr</translation>
+<translation id="2992327365391326550">Butonul pentru microfonul dispozitivului este dezactivat.</translation>
 <translation id="2995447421581609334">Afișează dispozitivele de proiecție.</translation>
 <translation id="2996462380875591307">Lupa andocată este activată. Apasă din nou pe Ctrl + tasta de căutare + D pentru a o dezactiva.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
@@ -255,6 +256,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3038571455154067151">Pentru a te conecta, introdu codul de acces pentru părinte Family Link</translation>
 <translation id="3039939407102840004">Bateria creionului este la <ph name="PERCENTAGE" /> %.</translation>
 <translation id="3045488863354895414">Bună!</translation>
+<translation id="3051189971848907985">Se redenumește profilul. Așteaptă câteva minute.</translation>
 <translation id="3055162170959710888">Ai folosit acest dispozitiv <ph name="USED_TIME" /> astăzi</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Extinde meniul</translation>
@@ -295,6 +297,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3368922792935385530">Conectat</translation>
 <translation id="3371140690572404006">Dispozitiv USB-C (portul din dreapta față)</translation>
 <translation id="3375634426936648815">S-a conectat</translation>
+<translation id="3378442621503952303">Se conectează la profil. Așteaptă câteva minute.</translation>
 <translation id="3386978599540877378">lupa de ecran complet</translation>
 <translation id="3400357268283240774">Setări suplimentare</translation>
 <translation id="3410336247007142655">Afișează setările pentru tema întunecată</translation>
@@ -351,6 +354,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="380165613292957338">Bună ziua, cu ce vă pot ajuta?</translation>
 <translation id="3826099427150913765">Comută la parolă</translation>
 <translation id="383058930331066723">Modul Economisirea bateriei este activat</translation>
+<translation id="3835880383832568924">Pentru a vedea actualizările, deschide aplicația Legături directe</translation>
 <translation id="383629559565718788">Afișează setările pentru tastatură</translation>
 <translation id="3846214748874656680">Ieși din ecranul complet</translation>
 <translation id="3846575436967432996">Nu sunt disponibile informații despre rețele</translation>
@@ -471,6 +475,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4705716602320768426">Feedback pentru fișiere</translation>
 <translation id="4731797938093519117">Acces pentru părinți</translation>
 <translation id="4734965478015604180">Orizontal</translation>
+<translation id="4735498845456076464">Comanda rapidă de la tastatură <ph name="LAUNCHER_KEY_NAME" /> + număr s-a schimbat. Pentru a folosi tastele pentru funcții, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + o tastă de pe rândul de sus.</translation>
 <translation id="4744944742468440486">Informații legate de selecția ta</translation>
 <translation id="4759238208242260848">Descărcări</translation>
 <translation id="4774338217796918551">Revino mâine la <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6896758677409633944">Copiază</translation>
 <translation id="6910714959251846841">Această actualizare necesită rularea funcției Powerwash a dispozitivului. Află mai multe despre cea mai recentă actualizare <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Nu s-a recunoscut cardul inteligent. Încearcă din nou.</translation>
+<translation id="6921188888306725546">Comenzile rapide de la tastatură au fost îmbunătățite</translation>
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6961121602502368900">Dezactivarea sunetului telefonului nu este disponibilă în profilul de serviciu</translation>
 <translation id="6961840794482373852">Comanda rapidă de la tastatură Alt + săgeată în sus s-a schimbat. Ca să folosești tasta Page Up, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata în sus.</translation>
@@ -934,6 +940,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8631727435199967028">Setări de accesibilitate</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
 <translation id="8639760480004882931">Nivelul bateriei: <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">Se actualizează lista de profiluri. Așteaptă câteva minute.</translation>
 <translation id="8646417893960517480">Temporizator de <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Pentru a adăuga o persoană, introdu codul de acces pentru părinte Family Link</translation>
 <translation id="8649101189709089199">Selectează și ascultă</translation>
@@ -961,6 +968,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Setări pentru metode de introducere a textului</translation>
+<translation id="8818320199597151042">Se elimină profilul. Așteaptă câteva minute.</translation>
 <translation id="8825863694328519386">Glisează dinspre stânga pentru a reveni</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Butonul Înapoi</translation>
@@ -1006,6 +1014,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="9091626656156419976">S-a eliminat afișajul <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Dezactivează sunetul telefonului</translation>
 <translation id="9099154003160514616">Este disponibilă o actualizare pentru Lacros</translation>
+<translation id="9100887602489003640">Se adaugă profilul. Așteaptă câteva minute.</translation>
 <translation id="9105450214093926548">Nu este acceptată conectarea unui al doilea utilizator în timp ce browserul Lacros rulează. Folosește un al doilea profil de browser în Lacros sau închide Lacros și încearcă din nou.</translation>
 <translation id="9133335900048457298">Nu se poate înregistra conținut protejat</translation>
 <translation id="9151726767154816831">Pentru a actualiza, repornește și folosește Powerwash</translation>

@@ -456,6 +456,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5782227691023083829">Превођење је у току...</translation>
 <translation id="5797070761912323120">Google може да користи историју за персонализацију Претраге, огласа и других Google услуга</translation>
 <translation id="5803566855766646066">Желите ли стварно да одбаците ову нову картицу?</translation>
+<translation id="5812974770859303494">Додајте у…</translation>
 <translation id="5816228676161003208">Ово вам омогућава да брже претражујте помоћу гласа.</translation>
 <translation id="581659025233126501">Укључи синхронизацију</translation>
 <translation id="5819208479324046259">Овим управља <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -522,6 +523,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="634878792104344809">Синхронизујте, лозинке, историју и друго на свим уређајима</translation>
 <translation id="6362362396625799311">Нема картица без архивирања</translation>
 <translation id="6363526231572697780">Нема корисничког имена</translation>
+<translation id="6366663624406569102">Одјави ме и искључи синхронизацију</translation>
 <translation id="6374469231428023295">Пробај поново</translation>
 <translation id="6377118281273296434">Безбедност сајта</translation>
 <translation id="6380866119319257197">Ако заборавите приступну фразу или желите да промените ово подешавање, <ph name="BEGIN_LINK" />ресетујте синхронизацију<ph name="END_LINK" /></translation>
@@ -765,6 +767,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8654802032646794042">Откажи</translation>
 <translation id="8668210798914567634">Ова страница је сачувана на Листи за читање.</translation>
 <translation id="8680787084697685621">Детаљи за пријављивање на налог су застарели.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Затвори картицу}one{Затвори картице}few{Затвори картице}other{Затвори картице}}</translation>
 <translation id="8706588385081740091">Лозинке</translation>
 <translation id="8717864919010420084">Копирај линк</translation>
 <translation id="8721297211384281569">Мени Алатке</translation>

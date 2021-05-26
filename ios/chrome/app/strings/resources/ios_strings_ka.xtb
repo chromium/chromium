@@ -456,6 +456,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5782227691023083829">მიმდინარეობს თარგმნა...</translation>
 <translation id="5797070761912323120">Google-მა შეიძლება გამოიყენოს თქვენი ისტორია Search-ის, რეკლამისა და Google-ის სხვა სერვისების თქვენზე მოსარგებად</translation>
 <translation id="5803566855766646066">ნამდვილად გსურთ ამ ახალი ბარათის გაუქმება?</translation>
+<translation id="5812974770859303494">დამატება...</translation>
 <translation id="5816228676161003208">საშუალებას გაძლევთ, უფრო სწრაფად განახორციელოთ ძიება ხმის მეშვეობით.</translation>
 <translation id="581659025233126501">სინქრონიზაციის ჩართვა</translation>
 <translation id="5819208479324046259">მართავს <ph name="MANAGER" />. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -522,6 +523,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="634878792104344809">შეასრულეთ თქვენი პაროლების, ისტორიისა და სხვა კონტენტის სინქრონიზაცია თქვენს ყველა მოწყობილობას შორის</translation>
 <translation id="6362362396625799311">ინკოგნიტო ჩანართები არ არის</translation>
 <translation id="6363526231572697780">მომხმარებლის სახელის გარეშე</translation>
+<translation id="6366663624406569102">გასვლა და სინქრონიზაციის გამორთვა</translation>
 <translation id="6374469231428023295">ხელახლა ცდა</translation>
 <translation id="6377118281273296434">საიტის უსაფრთხოება</translation>
 <translation id="6380866119319257197">საიდუმლო ფრაზის დავიწყების ან ამ პარამეტრის შეცვლის სურვილის შემთხვევაში, <ph name="BEGIN_LINK" />გადააყენეთ სინქრონიზაცია<ph name="END_LINK" /></translation>
@@ -765,6 +767,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8654802032646794042">გაუქმება</translation>
 <translation id="8668210798914567634">ეს გვერდი შენახულია თქვენს საკითხავ სიაში.</translation>
 <translation id="8680787084697685621">ანგარიშზე შესვლის დეტალები მოძველებულია.</translation>
+<translation id="8693663554456874301">{count,plural, =1{ჩანართის დახურვა}other{ჩანართების დახურვა}}</translation>
 <translation id="8706588385081740091">პაროლები</translation>
 <translation id="8717864919010420084">ბმულის კოპირება</translation>
 <translation id="8721297211384281569">ხელსაწყოების მენიუ</translation>

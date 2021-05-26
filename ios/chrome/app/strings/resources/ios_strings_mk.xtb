@@ -456,6 +456,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5782227691023083829">Се преведува…</translation>
 <translation id="5797070761912323120">Google може да ја користи вашата историја за да го персонализира „Пребарувањето“, рекламите и другите услуги на Google</translation>
 <translation id="5803566855766646066">Дали сигурно сакате да ја отфрлите новава картичка?</translation>
+<translation id="5812974770859303494">Додај во…</translation>
 <translation id="5816228676161003208">Ова ви овозможува да пребарувате побрзо со глас.</translation>
 <translation id="581659025233126501">Вклучи синхронизација</translation>
 <translation id="5819208479324046259">Управувано од <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -522,6 +523,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="634878792104344809">Синхронизирајте ги вашите лозинки, историја и друго на сите ваши уреди</translation>
 <translation id="6362362396625799311">Нема инкогнито картички</translation>
 <translation id="6363526231572697780">Нема корисничко име</translation>
+<translation id="6366663624406569102">Одјавете се и исклучете ја синхронизација</translation>
 <translation id="6374469231428023295">Обидете се повторно</translation>
 <translation id="6377118281273296434">Безбедност на сајтот</translation>
 <translation id="6380866119319257197">Ако ја заборавите лозинката или сакате да ја измените поставкава, <ph name="BEGIN_LINK" />ресетирајте ја синхронизацијата<ph name="END_LINK" /></translation>
@@ -765,6 +767,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8654802032646794042">Откажи</translation>
 <translation id="8668210798914567634">Страницава е зачувана во вашиот „Список за читање“.</translation>
 <translation id="8680787084697685621">Деталите за најавување на сметка се застарени.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Затвори ја картичката}one{Затвори ги картичките}other{Затвори ги картичките}}</translation>
 <translation id="8706588385081740091">Лозинки</translation>
 <translation id="8717864919010420084">Копирај го линкот</translation>
 <translation id="8721297211384281569">Мени со алатки</translation>

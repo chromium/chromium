@@ -712,6 +712,7 @@
 <translation id="173628468822554835">ठीक है. डिफ़ॉल्ट रूप से, आप जिन नई साइटों पर जाएंगे वे आपको सूचनाएं नहीं दिखाएंगी.</translation>
 <translation id="1736419249208073774">बेहतर जानें</translation>
 <translation id="1737968601308870607">गड़बड़ी की सूचना दें</translation>
+<translation id="1739684185846730053">निजता सैंडबॉक्स को मुफ़्त में आज़माने की सुविधाएं अब भी डेवलप की जा रही हैं. ये चुनिंदा क्षेत्रों में उपलब्ध हैं. फ़िलहाल, साइटें मौजूदा वेब टेक्नोलॉजी (जैसे, तीसरे पक्ष की कुकी) का इस्तेमाल जारी रखते हुए, निजता सैंडबॉक्स को आज़मा सकती हैं.</translation>
 <translation id="174123615272205933">कस्टम</translation>
 <translation id="1741314857973421784">जारी रखें</translation>
 <translation id="1743570585616704562">उंगली की पहचान नहीं हो सकी</translation>
@@ -1136,8 +1137,10 @@
 <translation id="217576141146192373">प्रिंटर जोड़ा नहीं जा सका. अपने प्रिंटर के कॉन्फ़िगरेशन की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="2177950615300672361">गुप्त टैब: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA समझौता</translation>
+<translation id="2179416702468739594">उपलब्ध प्रोफ़ाइलें खोजी जा रही हैं. इसकी वजह से, थोड़ी देर के लिए आपका मोबाइल नेटवर्क डिसकनेक्ट हो सकता है.</translation>
 <translation id="2182058453334755893">आपके क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="2184515124301515068">Chrome को चुनने दें कि साइटें कब आवाज़ चला सकती हैं (सुझाव)</translation>
+<translation id="2186711480981247270">पेज को किसी दूसरे डिवाइस से शेयर किया गया</translation>
 <translation id="2187675480456493911">आपके खाते पर अन्य डिवाइस से सिंक किया गया. अन्य उपयोगकर्ताओं के सेटिंग में किए गए बदलाव सिंक नहीं होंगे. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">सर्वर प्रमाणपत्र आयात गड़बड़ी</translation>
 <translation id="2187906491731510095">एक्सटेंशन अपडेट किए गए</translation>
@@ -1403,6 +1406,7 @@
 <translation id="2469375675106140201">वर्तनी जांचने की सुविधा को पसंद के मुताबिक बनाएं</translation>
 <translation id="247051149076336810">फ़ाइल शेयर यूआरएल</translation>
 <translation id="2470702053775288986">असमर्थित एक्‍सटेंशन अक्षम</translation>
+<translation id="2470939964922472929">बार-बार गलत पिन डाला गया. नया पिन सेट अप करने के लिए, मोबाइल नेटवर्क सेवा देने वाली कंपनी से मिली आठ अंकों वाली निजी अनब्लॉकिंग कुंजी (PUK) डालें.</translation>
 <translation id="2471469610750100598">काला (डिफ़ॉल्ट)</translation>
 <translation id="2471506181342525583">जगह की जानकारी का ऐक्सेस दिया गया है</translation>
 <translation id="2473195200299095979">इस पेज का अनुवाद करें</translation>
@@ -1698,6 +1702,7 @@
 <translation id="2785873697295365461">फ़ाइल वर्णनकर्ता</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
+<translation id="2788468313014644040">ग्रुप नंबर</translation>
 <translation id="2789486458103222910">ठीक है</translation>
 <translation id="2791529110887957050">Linux हटाएं</translation>
 <translation id="2791952154587244007">एक गड़बड़ी हुई. किओस्क ऐप्लिकेशन इस डिवाइस परअपने-आपलॉन्च नहीं हो सकेंगे.</translation>
@@ -1999,6 +2004,7 @@
 <translation id="310671807099593501">साइट ब्लूटूथ का इस्तेमाल कर रही है</translation>
 <translation id="3108931485517391283">फ़ाइल नहीं मिल सकी</translation>
 <translation id="3109724472072898302">संक्षिप्त</translation>
+<translation id="3113592018909187986">आप एक बार और कोशिश कर सकते हैं. नया पिन सेट अप करने तक, आप यह नेटवर्क इस्तेमाल नहीं कर पाएंगे.</translation>
 <translation id="311394601889664316">साइटों को अपने डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति न दें</translation>
 <translation id="3115147772012638511">कैश मेमोरी का इंतज़ार कर रहे हैं...</translation>
 <translation id="3115580024857770654">सभी छिपाएं</translation>
@@ -2287,6 +2293,7 @@
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> के लिए और कार्रवाइयां</translation>
 <translation id="3441653493275994384">स्क्रीन</translation>
 <translation id="3441663102605358937">इस खाते की पुष्टि करने के लिए, <ph name="ACCOUNT" /> में फिर से साइन इन करें</translation>
+<translation id="3444641828375597683">विज्ञापन देने वाले और प्रकाशक, इस पेज पर बाद में बताई गई FLoC टेक्नोलॉजी का इस्तेमाल कर सकते हैं.</translation>
 <translation id="3445047461171030979">Google Assistant में तुरंत जवाब की सुविधा</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनट</translation>
 <translation id="3445925074670675829">USB-C डिवाइस</translation>
@@ -2869,6 +2876,7 @@
 <translation id="4036778507053569103">सर्वर से डाउनलोड की गई नीति गलत है.</translation>
 <translation id="4037084878352560732">घोड़ा</translation>
 <translation id="4037889604535939429">व्यक्ति की जानकारी बदलें</translation>
+<translation id="4040753847560036377">PUK गलत है</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{पेज से बाहर निकलें}one{पेज से बाहर निकलें}other{पेज से बाहर निकलें}}</translation>
 <translation id="4044612648082411741">अपना प्रमाणपत्र पासवर्ड डालें</translation>
 <translation id="4044708573046946214">स्क्रीन लॉक का पासवर्ड</translation>
@@ -3077,6 +3085,7 @@
 <translation id="4297813521149011456">डिसप्ले का घुमाव</translation>
 <translation id="4299022904780065004">नई गुप्त विंडो</translation>
 <translation id="4301671483919369635">इस पेज को फ़ाइलों में बदलाव करने की अनुमति है</translation>
+<translation id="4302605047395093221">यह डिवाइस इस्तेमाल करने वाले सभी लोगों को, इस मोबाइल नेटवर्क से जुड़ने के लिए यह पिन डालना होगा</translation>
 <translation id="4303079906735388947">अपनी 'सुरक्षा कुंजी' के लिए नया पिन सेट अप करें</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> में कॉपी करें</translation>
 <translation id="4305817255990598646">बदलें</translation>
@@ -3262,6 +3271,7 @@
 <translation id="4510479820467554003">अभिभावक के खातों की सूची</translation>
 <translation id="4510614391273086606">Linux फ़ाइलों और ऐप्लिकेशन को उनकी बैक अप की गई स्थिति में वापस लाया जा रहा है.</translation>
 <translation id="451102079304155829">कार्ट</translation>
+<translation id="4513275008300099962">विंडो को ऊपर लाने की सुविधा बंद करें</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> के उपयोग से</translation>
 <translation id="4514610446763173167">वीडियो को 'चलाएं' या 'रोकें' पर टॉगल करें</translation>
@@ -4606,10 +4616,12 @@
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB डिवाइस कनेक्ट है</translation>
 <translation id="6028117231645531007">फ़िंगरप्रिंट जोड़ें</translation>
 <translation id="6031600495088157824">टूलबार में इनपुट के विकल्प</translation>
+<translation id="6032091552407840792">मुफ़्त में आज़माने की यह सुविधा सिर्फ़ <ph name="BEGIN_LINK" />कुछ क्षेत्रों<ph name="END_LINK" /> में चालू है.</translation>
 <translation id="6032715498678347852">किसी एक्सटेंशन को इस साइट का ऐक्सेस देने के लिए, उस पर क्लिक करें.</translation>
 <translation id="6032912588568283682">फ़ाइल सिस्टम</translation>
 <translation id="603539183851330738">ऑटो करेक्ट को पहले जैसा करने का बटन. <ph name="TYPED_WORD" /> को वापस लाएं.  चालू करने के लिए enter, खारिज करने के लिए escape दबाएं.</translation>
 <translation id="6038929619733116134">अगर साइट में तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई दें तो उन्हें ब्लॉक करें</translation>
+<translation id="603895874132768835">नया पिन सेट अप करने तक, आप यह नेटवर्क इस्तेमाल नहीं कर पाएंगे</translation>
 <translation id="6039651071822577588">नेटवर्क गुण शब्‍दकोश दूषित</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6041046205544295907"><ph name="BEGIN_PARAGRAPH1" />Google की जगह की जानकारी सेवा, आपके डिवाइस की जगह का पता लगाने के लिए वाई-फ़ाई, मोबाइल नेटवर्क और सेंसर जैसे स्रोतों का इस्तेमाल करती है.<ph name="END_PARAGRAPH1" />
@@ -4857,6 +4869,7 @@
 <translation id="6292699686837272722">टैब की चौड़ाई मध्यम हो जाती है</translation>
 <translation id="6295158916970320988">सभी साइटें</translation>
 <translation id="6295855836753816081">सहेज रहा है...</translation>
+<translation id="6296410173147755564">PUK अमान्य है</translation>
 <translation id="6298962879096096191">Android ऐप्लिकेशन इंस्टॉल करने के लिए Google Play का उपयोग करें</translation>
 <translation id="6300177430812514606">डेटा भेजने या पाने की अनुमति नहीं है</translation>
 <translation id="630065524203833229">&amp;बाहर निकलें</translation>
@@ -4903,6 +4916,7 @@
 <translation id="6340526405444716530">मनमुताबिक बनाना</translation>
 <translation id="6341850831632289108">अपने भौतिक स्थान का पता लगाएं</translation>
 <translation id="6342069812937806050">अभी</translation>
+<translation id="6343003829431264373">सिर्फ़ सम संख्या वाले पेज प्रिंट करें</translation>
 <translation id="6344170822609224263">नेटवर्क कनेक्शन की सूची एक्सेस करें</translation>
 <translation id="6344576354370880196">सेव किए गए प्रिंटर</translation>
 <translation id="6345418402353744910">प्रॉक्सी <ph name="PROXY" /> से कनेक्ट करने के लिए आपका उपयोगकर्ता नाम और पासवर्ड ज़रूरी है, ताकि एडमिन आपके नेटवर्क को कॉन्फ़िगर कर सके</translation>
@@ -5151,6 +5165,7 @@
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> में संवेदनशील या खतरनाक सामग्री है. इसके मालिक से इसे ठीक करने के लिए कहें.</translation>
 <translation id="6624687053722465643">स्वीटनेस</translation>
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> पर अपलोड किया गया</translation>
+<translation id="6629518321609546825">कम से कम चार अंक डालें</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> को आपकी ओर से अपनी पुष्टि करने के लिए प्रमाणपत्र का स्थायी ऐक्सेस चाहिए.</translation>
 <translation id="6635362468090274700">जब तक आपके डिवाइस की सेटिंग 'दिखे' पर नहीं सेट होती, तब तक कोई आपके साथ शेयर नहीं कर सकता.<ph name="BR" /><ph name="BR" />अपना डिवाइस थोड़ी देर दिखाने के लिए स्टेटस एरिया खोलें, फिर आस-पास दिखने की सुविधा चालू करें.</translation>
 <translation id="6635944431854494329">इस सुविधा को नियंत्रित करने के लिए मालिक सेटिंग &gt; बेहतर &gt; Google को गड़बड़ी और इस्तेमाल से जुड़ा डेटा अपने-आप भेजें, पर जा सकते हैं.</translation>
@@ -5189,6 +5204,7 @@
 <translation id="6664774537677393800">आपकी प्रोफ़ाइल खोलते समय कुछ गलत हुआ है. कृपया साइन आउट करके फिर से साइन इन करें.</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> अब उपलब्ध है</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{एक पता}one{# पता}other{# पते}}</translation>
+<translation id="6671497123040790595"><ph name="MANAGER" />, मैनेजमेंट को सेट अप कर रहा है</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">इसे चालू करने के लिए, अपना लंबा पासवर्ड डालें</translation>
 <translation id="6675665718701918026">सूचक डिवाइस कनेक्ट किया गया</translation>
@@ -5197,6 +5213,7 @@
 <translation id="6680442031740878064">उपलब्ध: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">दर</translation>
 <translation id="6681668084120808868">फ़ोटो लें</translation>
+<translation id="6683087162435654533">सभी टैब पहले जैसे करें</translation>
 <translation id="6683948477137300040">डिवाइस का ईआईडी और क्यूआर कोड पॉप-अप दिखाएं</translation>
 <translation id="6684827949542560880">नए अपडेट को डाउनलोड किया जा रहा है</translation>
 <translation id="668599234725812620">Google Play खोलें</translation>
@@ -5766,6 +5783,7 @@
 <translation id="7308643132139167865">वेबसाइट की भाषाएं</translation>
 <translation id="7309257895202129721">&amp;नियंत्रण दिखाएं</translation>
 <translation id="7310598146671372464">लॉगिन नहीं कर पाए. सर्वर पर बताए गए केर्बेरोस सुरक्षा प्रकार काम नहीं करते हैं. कृपया अपने एडमिन से संपर्क करें.</translation>
+<translation id="7315168816273861089">विंडो को ऊपर लाने की सुविधा चालू करें</translation>
 <translation id="7320213904474460808">नेटवर्क चुनें</translation>
 <translation id="7321545336522791733">सर्वर पहुंच योग्य नहीं है</translation>
 <translation id="7324297612904500502">बीटा फ़ोरम</translation>
@@ -5942,7 +5960,9 @@
 <translation id="7506541170099744506">आपका <ph name="DEVICE_TYPE" /> एंटरप्राइज़ प्रबंधन के लिए सफलतापूर्वक नामांकित हो गया है.</translation>
 <translation id="7507207699631365376">इस सेवा देने वाले की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> देखें</translation>
 <translation id="7507930499305566459">स्थिति प्रतिसादी प्रमाणपत्र</translation>
+<translation id="7509097596023256288">मैनेजमेंट सेट अप किया जा रहा है</translation>
 <translation id="7509246181739783082">अपनी पहचान की पुष्टि करें</translation>
+<translation id="7511415964832680006">इसे चालू करने पर, साइटें अपना कॉन्टेंट और सेवाएं उपलब्ध कराने के लिए, यहां दिखाई गई 'निजता की सुरक्षा से जुड़ी तकनीकें' इस्तेमाल कर सकती हैं. इनमें ऐसे तरीके शामिल हैं जिन्हें क्रॉस-साइट ट्रैकिंग की जगह इस्तेमाल किया जा सकता है. बाद में, मुफ़्त में आज़माने की सुविधा ज़्यादा बार दी जा सकती है.</translation>
 <translation id="7513029293694390567">स्टोर किए गए क्रेडेंशियल के ज़रिए वेबसाइट में अपने आप साइन इन करें. बंद होने पर, आपसे किसी वेबसाइट में साइन इन करने से पहले हर बार पुष्टि करने के लिए कहा जाएगा.</translation>
 <translation id="7514239104543605883">अपने डिवाइस में कॉपी करें</translation>
 <translation id="7514365320538308">डाउनलोड करें</translation>
@@ -6302,6 +6322,8 @@
 <translation id="7876027585589532670">शॉर्टकट में बदलाव नहीं किया जा सकता</translation>
 <translation id="7877451762676714207">अज्ञात सर्वर गड़बड़ी. कृपया फिर से प्रयास करें, या सर्वर व्यवस्थापक से संपर्क करें.</translation>
 <translation id="7879631849810108578">शॉर्टकट सेट हो गया: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
+<translation id="7880685873361171388">चालू होने और ऐक्टिव स्टेटस होने पर, Chrome आपके सात दिनों के ब्राउज़िंग इतिहास का इस्तेमाल करके, यह तय करता है कि आप कौनसे ग्रुप या “एक जैसे उपयोगकर्ताओं के ग्रुप” में हैं. विज्ञापन देने वाले, ग्रुप के लिए विज्ञापन चुन सकते हैं. आपका ब्राउज़िंग इतिहास, आपके डिवाइस पर गोपनीय रखा जाता है. मुफ़्त में आज़माने की यह सुविधा सिर्फ़
+    <ph name="BEGIN_LINK" />कुछ क्षेत्रों<ph name="END_LINK" /> में चालू है.</translation>
 <translation id="7880823633812189969">जब आप रीस्टार्ट करेंगे, तो स्थानीय डेटा मिटा दिया जाएगा</translation>
 <translation id="7881066108824108340">डीएनएस</translation>
 <translation id="7881483672146086348">खाता देखें</translation>
@@ -6461,6 +6483,7 @@
 <translation id="804786196054284061">असली उपयोगकर्ता के लाइसेंस का समझौता</translation>
 <translation id="8048977114738515028">इस प्रोफ़ाइल को सीधे ऐक्सेस करने के लिए, अपने डिवाइस पर एक डेस्कटॉप शॉर्टकट बनाएं</translation>
 <translation id="8049029041626250638">कोई कीबोर्ड या माउस कनेक्ट करें. अगर आप ब्लूटूथ डिवाइसों का इस्तेमाल कर रहे हैं, तो यह पक्का करें कि वे दूसरे डिवाइसों से जोड़े जाने के लिए तैयार हों.</translation>
+<translation id="8049184478152619004">निजी अनब्लॉकिंग कुंजी (PUK) डालें</translation>
 <translation id="8049705080247101012">Google ने <ph name="EXTENSION_NAME" /> को नुकसान पहुंचाने वाले के रूप में फ़्लैग किया है और इंस्टॉलेशन रोक दिया गया है</translation>
 <translation id="8049948037269924837">टचपैड से उल्टा स्क्रोल करने की रफ़्तार</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>
@@ -6497,6 +6520,7 @@
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" से जोड़ना चाहते हैं?</translation>
 <translation id="8082390128630131497">ADB डीबग करने की सुविधा बंद करने से यह <ph name="DEVICE_TYPE" /> फ़ैक्ट्री सेटिंग पर रीसेट हो जाएगा. सभी उपयोगकर्ता खातों और स्थानीय डेटा को हमेशा के लिए मिटा दिया जाएगा.</translation>
 <translation id="8084114998886531721">सेव किया गया पासवर्ड</translation>
+<translation id="8084510406207562688">सभी टैब पहले जैसे करें</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> कॉन्फ़िगर किया जा रहा है ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> सेट अप करें</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{यह फ़ाइल सुरक्षित की गई है. इसके मालिक से इसे सबकी पहुंच में लाने के लिए कहें.}one{इनमें से कुछ फ़ाइलें सुरक्षित की गई हैं. इनके मालिक से इन्हें सबकी पहुंच में लाने के लिए कहें.}other{इनमें से कुछ फ़ाइलें सुरक्षित की गई हैं. इनके मालिक से इन्हें सबकी पहुंच में लाने के लिए कहें.}}</translation>
@@ -6538,6 +6562,7 @@
 <translation id="8119438628456698432">लॉग फ़ाइलें जनरेट की जा रही हैं...</translation>
 <translation id="811994229154425014">पीरियड टाइप करने के लिए दो बार स्पेस बटन दबाएं</translation>
 <translation id="8120505434908124087">ई-सिम प्रोफ़ाइल इंस्टॉल करें</translation>
+<translation id="812260729110117038">प्रकाशक और विज्ञापन देने वाले, सभी साइटों पर आपको ट्रैक किए बिना, किसी खास तरीके से अपने विज्ञापनों के असर का अध्ययन कर सकते हैं.</translation>
 <translation id="8123590694679414600">आपका डेटा आपके सिंक लंबे पासवर्ड से <ph name="TIME" /> पर सुरक्षित किया गया था.
 इसमें Google Pay से भुगतान करने के तरीके और पते शामिल नहीं हैं.</translation>
 <translation id="81238879832906896">पीला और सफ़ेद फूल</translation>
@@ -6575,6 +6600,7 @@
 <translation id="816055135686411707">प्रमाणपत्र विश्‍वास सेट करने में गड़बड़ी</translation>
 <translation id="8160775796528709999">सेटिंग में लाइव कैप्शन की सुविधा चालू करके, अपने ऑडियो और वीडियो के लिए कैप्शन पाएं</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
+<translation id="81610453212785426"><ph name="BEGIN_LINK" />निजता सैंडबॉक्स<ph name="END_LINK" /> की मदद से Chrome एक नई टेक्नोलॉजी डेवलप कर रहा है. यह टेक्नोलॉजी ओपन वेब को सुरक्षित रखते हुए, आपको क्रॉस-साइट ट्रैकिंग से बचाने में मदद करेगी.</translation>
 <translation id="8161293209665121583">वेब पेजों के लिए रीडर मोड</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{टैब को नई विंडो पर ले जाएं}one{टैब को नई विंडो पर ले जाएं}other{टैब को नई विंडो पर ले जाएं}}</translation>
 <translation id="8165997195302308593">Crostini में पोर्ट फ़ॉरवर्डिंग की सेटिंग</translation>
@@ -7369,6 +7395,7 @@
 <translation id="9031549947500880805">'Google डिस्क' में बैक अप लें. अपना डेटा आसानी से वापस लाएं या किसी भी समय डिवाइस बदलें. आपके बैक अप में ऐप्लिकेशन डेटा शामिल होता है.</translation>
 <translation id="9033765790910064284">फिर भी जारी रखें</translation>
 <translation id="9033857511263905942">&amp;चिपकाएं</translation>
+<translation id="9035689366572880647">मौजूदा पिन डालें</translation>
 <translation id="9037640663275993951">इस डिवाइस पर वीएम मशीन चलाने की अनुमति नहीं है</translation>
 <translation id="9037818663270399707">सभी नेटवर्क ट्रैफ़िक के लिए, आपका कनेक्शन निजी नहीं है</translation>
 <translation id="9037965129289936994">मूल दिखाएं</translation>
@@ -7444,6 +7471,7 @@
 <translation id="9112748030372401671">अपना वॉलपेपर बदलें</translation>
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> खतरनाक हो सकती है. क्या इसे स्कैन करने के लिए Google को भेजें?</translation>
 <translation id="9112987648460918699">ढूंढें ...</translation>
+<translation id="9113240369465613386">सिर्फ़ विषम संख्या वाले पेज प्रिंट करें</translation>
 <translation id="9114663181201435112">आसानी से साइन इन करें</translation>
 <translation id="9115675100829699941">&amp;बुकमार्क</translation>
 <translation id="9116465289595958864">पिछली बार संशोधित</translation>
@@ -7598,6 +7626,7 @@
 <translation id="991413375315957741">मोशन या लाइट सेंसर</translation>
 <translation id="992032470292211616">एक्‍सटेंशन, ऐप्स , और थीम आपके डिवाइस को हानि पहुंचा सकते हैं. क्‍या आप वाकई जारी रखना चाहते हैं?</translation>
 <translation id="992256792861109788">गुलाबी</translation>
+<translation id="992401651319295351">आप <ph name="RETRIES" /> बार और कोशिश कर सकते हैं. नया पिन सेट अप करने तक, आप यह नेटवर्क इस्तेमाल नहीं कर पाएंगे.</translation>
 <translation id="992592832486024913">ChromeVox (बोला गया फ़ीडबैक) बंद करें</translation>
 <translation id="992778845837390402">फ़िलहाल, Linux की बैकअप की प्रक्रिया जारी है</translation>
 <translation id="993540765962421562">इंस्टॉल किया जा रहा है</translation>

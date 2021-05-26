@@ -245,6 +245,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Cài đặt ứng dụng, tiện ích và chủ đề</translation>
 <translation id="2977598380246111477">Số tiếp theo</translation>
+<translation id="2992327365391326550">Nút micrô trên thiết bị đang tắt.</translation>
 <translation id="2995447421581609334">Hiển thị các thiết bị truyền.</translation>
 <translation id="2996462380875591307">Đã bật tính năng Phóng to ở vị trí cố định. Hãy nhấn lại tổ hợp phím Ctrl+Search+D để tắt tính năng này.</translation>
 <translation id="3000461861112256445">Đơn âm</translation>
@@ -255,6 +256,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3038571455154067151">Để đăng nhập, hãy nhập mã truy cập dành cho cha mẹ của Family Link</translation>
 <translation id="3039939407102840004">Bút cảm ứng còn <ph name="PERCENTAGE" />% pin.</translation>
 <translation id="3045488863354895414">Xin chào!</translation>
+<translation id="3051189971848907985">Đang đổi tên hồ sơ. Hãy chờ ít phút.</translation>
 <translation id="3055162170959710888">Bạn đã dùng thiết bị này trong <ph name="USED_TIME" /> hôm nay</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Mở rộng menu</translation>
@@ -295,6 +297,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3368922792935385530">Đã kết nối</translation>
 <translation id="3371140690572404006">Thiết bị USB-C (cổng phía trước, bên phải)</translation>
 <translation id="3375634426936648815">Đã kết nối</translation>
+<translation id="3378442621503952303">Đang kết nối với hồ sơ. Hãy chờ ít phút.</translation>
 <translation id="3386978599540877378">tính năng phóng to toàn màn hình</translation>
 <translation id="3400357268283240774">Tùy chọn cài đặt bổ sung</translation>
 <translation id="3410336247007142655">Hiển thị các tùy chọn cài đặt giao diện tối</translation>
@@ -351,6 +354,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="380165613292957338">Xin chào, tôi có thể trợ giúp gì?</translation>
 <translation id="3826099427150913765">Chuyển sang mật khẩu</translation>
 <translation id="383058930331066723">Chế độ trình tiết kiệm pin đang bật</translation>
+<translation id="3835880383832568924">Để xem những điểm cập nhật, hãy mở ứng dụng Phím tắt</translation>
 <translation id="383629559565718788">Hiển thị các tùy chọn cài đặt bàn phím</translation>
 <translation id="3846214748874656680">Thoát chế độ toàn màn hình</translation>
 <translation id="3846575436967432996">Không có thông tin mạng</translation>
@@ -471,6 +475,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4705716602320768426">Gửi ý kiến phản hồi</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
 <translation id="4734965478015604180">Ngang</translation>
+<translation id="4735498845456076464">Phím tắt <ph name="LAUNCHER_KEY_NAME" /> + Số đã thay đổi. Để sử dụng các phím chức năng, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + một phím ở hàng trên cùng.</translation>
 <translation id="4744944742468440486">Thông tin liên quan đến nội dung bạn chọn</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
 <translation id="4774338217796918551">Hãy quay lại lúc <ph name="COME_BACK_TIME" /> ngày mai.</translation>
@@ -728,6 +733,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6896758677409633944">Sao chép</translation>
 <translation id="6910714959251846841">Bản cập nhật này yêu cầu phải powerwash (đặt lại toàn bộ) thiết bị của bạn. Hãy tìm hiểu thêm về bản cập nhật <ph name="SYSTEM_APP_NAME" /> mới nhất.</translation>
 <translation id="6919251195245069855">Không nhận dạng được thẻ thông minh của bạn. Vui lòng thử lại.</translation>
+<translation id="6921188888306725546">Các phím tắt đã được cải thiện</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6961121602502368900">Bạn không dùng được tính năng Tắt tiếng điện thoại trên hồ sơ công việc</translation>
 <translation id="6961840794482373852">Phím tắt Alt + Mũi tên lên đã thay đổi. Để sử dụng phím Page Up, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên lên.</translation>
@@ -934,6 +940,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8631727435199967028">Cài đặt hỗ trợ tiếp cận</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="8639760480004882931">Còn <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">Đang làm mới danh sách hồ sơ. Hãy chờ ít phút.</translation>
 <translation id="8646417893960517480">Đồng hồ hẹn giờ <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Để thêm người, hãy nhập mã truy cập dành cho cha mẹ của Family Link</translation>
 <translation id="8649101189709089199">Chọn để nói</translation>
@@ -961,6 +968,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Tùy chọn cài đặt phương thức nhập</translation>
+<translation id="8818320199597151042">Đang xóa hồ sơ. Hãy chờ ít phút.</translation>
 <translation id="8825863694328519386">Vuốt từ trái sang để quay lại</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Nút quay lại</translation>
@@ -1006,6 +1014,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="9091626656156419976">Đã xóa màn hình <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Tắt tiếng điện thoại</translation>
 <translation id="9099154003160514616">Đã có bản cập nhật dành cho trình duyệt Lacros</translation>
+<translation id="9100887602489003640">Đang thêm hồ sơ. Hãy chờ ít phút.</translation>
 <translation id="9105450214093926548">Không đăng nhập được người dùng thứ hai khi trình duyệt Lacros đang chạy. Vui lòng dùng một hồ sơ trình duyệt thứ hai trong Lacros hoặc đóng Lacros rồi thử lại.</translation>
 <translation id="9133335900048457298">Không thể ghi nội dung được bảo vệ</translation>
 <translation id="9151726767154816831">Khởi động lại và powerwash để cập nhật</translation>

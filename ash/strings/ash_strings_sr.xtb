@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Инсталирајте апликације, додатке и теме</translation>
 <translation id="2977598380246111477">Следећи број</translation>
+<translation id="2992327365391326550">Дугме за микрофон на уређају је искључено.</translation>
 <translation id="2995447421581609334">Прегледајте уређаје за пребацивање.</translation>
 <translation id="2996462380875591307">Монтирана лупа екрана је омогућена. Притисните Ctrl + тастер за претрагу + D поново да бисте је искључили.</translation>
 <translation id="3000461861112256445">Моно звук</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">Да бисте се пријавили, унесите приступни кôд родитеља за Family Link</translation>
 <translation id="3039939407102840004">Батерија писаљке је на <ph name="PERCENTAGE" /> посто.</translation>
 <translation id="3045488863354895414">Добар дан,</translation>
+<translation id="3051189971848907985">Мења се име профила. Сачекајте неколико минута.</translation>
 <translation id="3055162170959710888">Данас користите овај уређај већ <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Прошири мени</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">Повезан</translation>
 <translation id="3371140690572404006">Уређај са USB прикључком типа C (десни предњи порт)</translation>
 <translation id="3375634426936648815">Повезано</translation>
+<translation id="3378442621503952303">Повезује се са профилом. Сачекајте неколико минута.</translation>
 <translation id="3386978599540877378">лупа преко целог екрана</translation>
 <translation id="3400357268283240774">Додатна подешавања</translation>
 <translation id="3410336247007142655">Прикажите подешавања тамне теме</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">Здраво, како могу да помогнем?</translation>
 <translation id="3826099427150913765">Пређи на лозинку</translation>
 <translation id="383058930331066723">Режим уштеде батерије је укључен</translation>
+<translation id="3835880383832568924">Да бисте видели ажурирања, отворите апликацију Пречице</translation>
 <translation id="383629559565718788">Прегледајте подешавања тастатуре</translation>
 <translation id="3846214748874656680">Изађи из целог екрана</translation>
 <translation id="3846575436967432996">Нису доступне информације о мрежи</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">Пошаљите повратне информације</translation>
 <translation id="4731797938093519117">Родитељски приступ</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
+<translation id="4735498845456076464">Тастерска пречица <ph name="LAUNCHER_KEY_NAME" /> + број је промењена. Да бисте користили функцијске тастере, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + тастер у горњем реду.</translation>
 <translation id="4744944742468440486">Информације везане за ваш избор</translation>
 <translation id="4759238208242260848">Преузимања</translation>
 <translation id="4774338217796918551">Вратите се сутра у <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6910714959251846841">Ово ажурирање захтева да обавите powerwash на уређају. Сазнајте више о најновијем ажурирању за: <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Нисмо успели да препознамо паметну картицу. Пробајте поново.</translation>
+<translation id="6921188888306725546">Тастерске пречице су побољшане</translation>
 <translation id="6945221475159498467">Изабери</translation>
 <translation id="6961121602502368900">Искључивање звука телефона није доступно на пословном профилу</translation>
 <translation id="6961840794482373852">Тастерска пречица Ctrl + стрелица нагоре је промењена. Да бисте користили тастер Page Up, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица нагоре.</translation>
@@ -934,6 +940,7 @@
 <translation id="8631727435199967028">Подешавања приступачности</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
 <translation id="8639760480004882931">Преостало је <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">Листа профила се освежава. Сачекајте неколико минута.</translation>
 <translation id="8646417893960517480">Тајмер за <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Да бисте додали особу, унесите приступни кôд родитеља за Family Link</translation>
 <translation id="8649101189709089199">Изаберите за говор</translation>
@@ -961,6 +968,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="881757059229893486">Подешавања метода уноса</translation>
+<translation id="8818320199597151042">Профил се уклања. Сачекајте неколико минута.</translation>
 <translation id="8825863694328519386">Превуците са леве стране да бисте се вратили</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Дугме Назад</translation>
@@ -1006,6 +1014,7 @@
 <translation id="9091626656156419976">Уклоњен је приказ <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Искључи звук телефона</translation>
 <translation id="9099154003160514616">Доступно је ажурирање за Lacros</translation>
+<translation id="9100887602489003640">Додаје се профил. Сачекајте неколико минута.</translation>
 <translation id="9105450214093926548">Пријављивање другог корисника није подржано док је Lacros прегледач активан. Боље да користите други профил за прегледач у Lacros-у или да затворите Lacros и пробате поново.</translation>
 <translation id="9133335900048457298">Снимање заштићеног садржаја није успело</translation>
 <translation id="9151726767154816831">Поново покрените и обавите Powerwash да бисте ажурирали</translation>

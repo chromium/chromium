@@ -40,6 +40,7 @@
       Se a política for definida como "Desativada", os usuários não poderão configurar a sincronização de mensagens.
 
       Se essa política não for definida, o recurso não será permitido por padrão para usuários gerenciados, mas será permitido para outros usuários.</translation>
+<translation id="1035860095382451169">Ativar o ícone de bloqueio na omnibox para conexões seguras</translation>
 <translation id="1040446814317236570">Ativar a retirada de URL PAC (para https://)</translation>
 <translation id="1041450926450683286">O cliente não deve interpretar esses dados e precisa encaminhá-los sem qualquer alteração. O DMServer usa policy_version para verificar se a visualização da política do DMServer corresponde à visualização do dispositivo Chrome OS.</translation>
 <translation id="1041719059374171202">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica sites que não podem executar JavaScript.
@@ -83,6 +84,7 @@
 <translation id="1095209545735032039">Bloquear a API Serial nesses sites</translation>
 <translation id="1096105751829466145">Provedor de pesquisa padrão</translation>
 <translation id="1099282607296956954">Ativar o isolamento de todos os sites</translation>
+<translation id="1105572260329131950">Usar os ícones padrão em conexões seguras</translation>
 <translation id="1117535567637097036">Os gerenciadores de protocolo definidos por esta política não são usados na manipulação de intents do Android.</translation>
 <translation id="1118093128235245168">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configurações de notificação</translation>
@@ -4776,6 +4778,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7207095846245296855">Forçar o Google SafeSearch</translation>
 <translation id="7211368186050418507">Nunca detectar o fuso horário automaticamente</translation>
 <translation id="7216442368414164495">Permitir que os usuários ativem os relatórios estendidos do Navegação segura</translation>
+<translation id="7221574724100909818">Usar o ícone de bloqueio em conexões seguras</translation>
 <translation id="7229975860249300121">Contém uma expressão regular que é usada para determinar quais Contas do Google podem ser definidas como contas principais do navegador no <ph name="PRODUCT_NAME" /> (isto é, a conta escolhida durante o fluxo de ativação de sincronização).
 
       Se o usuário tentar configurar uma conta principal com um nome de usuário que não corresponde a esse padrão, o erro correspondente será exibido.
@@ -5785,6 +5788,10 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8631437968147930597">A lista de apps de anotação permitidos na tela de bloqueio do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8637566476051166626">Portas de rede explicitamente permitidas</translation>
 <translation id="8643838501942693770">Permitir cookies de terceiros, mas deixar os usuários mudarem essa configuração</translation>
+<translation id="8648844602494595665">Esta política controla o uso do ícone de bloqueio na omnibox.
+       A partir do Chrome M93, um novo ícone para conexões seguras aparecerá na omnibox.
+       Se a política for ativada, o Chrome usará o ícone de bloqueio já existente em conexões seguras.
+       Se a política for desativada ou não for definida, o Chrome usará o ícone padrão em conexões seguras.</translation>
 <translation id="8650974590712548439">Local do registro do Windows para clientes do Windows:</translation>
 <translation id="8653085952260859632">Envia informações sobre a memória</translation>
 <translation id="8653561013005884087">Se esta política for definida como verdadeira, o feedback falado será ativado. Se esta política for definida como falsa, o feedback falado será desativado.

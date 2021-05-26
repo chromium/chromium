@@ -202,6 +202,7 @@
 <ph name="BEGIN_LIST_ITEM1" />இசை நிகழ்ச்சி போன்ற ஒரே ஆர்வத்தை ஆயிரக்கணக்கான பயனர்கள் பகிரும்போது விளம்பரதாரர்கள் அதை அறிந்துகொண்டு ஒரு தனிநபருக்காக அல்லாமல் பல பயனர்களுக்கு ஏற்ற விளம்பரங்களைத் தேர்ந்தெடுக்கலாம்.<ph name="END_LIST_ITEM1" />
 
 <ph name="BEGIN_LIST_ITEM2" />தளங்களில் உலாவும்போது உங்களைக் கண்காணிக்காத வகையில் விளம்பரங்களின் செயல்திறனை விளம்பரதாரர்கள் அறிந்துகொள்ளலாம்.<ph name="END_LIST_ITEM2" /></translation>
+<translation id="2337236196941929873">நீங்கள் பார்க்கக்கூடும் என நினைக்கும் பக்கங்களை Chrome முன்கூட்டியே ஏற்றும். குக்கீகளை நீங்கள் அனுமதித்தால் இதைச் செய்ய Chrome அவற்றைப் பயன்படுத்தக்கூடும், மேலும் தளங்களிலிருந்து உங்கள் அடையாளத்தை மறைக்க, பக்கங்களை என்கிரிப்ட் செய்து Google வழியாக அனுப்பக்கூடும்.</translation>
 <translation id="234265804618409743">கேமராவைத் திறக்க முடியவில்லை. ஏதோ தவறாகிவிட்டது.</translation>
 <translation id="2345671828921229300">தேட, சொல்லைத் தொட்டுப் பிடிக்கவும்</translation>
 <translation id="2349710944427398404">கணக்குகள், புக்மார்க்குகள், சேமித்த அமைப்புகள் உள்பட Chrome பயன்படுத்தும் மொத்தத் தரவு</translation>
@@ -990,6 +991,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (புதுப்பித்தது: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">சேமித்த டேட்டா</translation>
 <translation id="7498271377022651285">காத்திருக்கவும்…</translation>
+<translation id="750228856503700085">அறிவிப்புகள் எதுவுமில்லை</translation>
 <translation id="7507207699631365376">இந்த வழங்குநரின் <ph name="BEGIN_LINK" />தனியுரிமைக் கொள்கையைக்<ph name="END_LINK" /> காட்டு</translation>
 <translation id="7514365320538308">பதிவிறக்கு</translation>
 <translation id="751961395872307827">தளத்துடன் இணைக்க முடியவில்லை</translation>
@@ -1092,6 +1094,7 @@
 <translation id="8076492880354921740">தாவல்கள்</translation>
 <translation id="8078096376109663956">உரையை மட்டும் பகிரவும்</translation>
 <translation id="8084114998886531721">சேமித்த கடவுச்சொல்</translation>
+<translation id="8084285576995584326">உங்கள் Google கணக்கின் தரவைக் கட்டுப்படுத்தலாம்</translation>
 <translation id="808747664143081553">சாதனத்துடன் இணைக்கப்பட்டது</translation>
 <translation id="8103578431304235997">மறைநிலைத் தாவல்</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1187,6 +1190,7 @@
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8725066075913043281">மீண்டும் முயற்சிக்கவும்</translation>
 <translation id="8730621377337864115">முடிந்தது</translation>
+<translation id="8746155870861185046">ஹைலைட் செய்த உரையைப் பகிர்</translation>
 <translation id="8748850008226585750">மறைந்துள்ள உள்ளடக்கம்</translation>
 <translation id="8773160212632396039">கோரிக்கையைச் செயலாக்குகிறது</translation>
 <translation id="8788265440806329501">வழிசெலுத்தல் வரலாறு மூடப்பட்டுள்ளது</translation>

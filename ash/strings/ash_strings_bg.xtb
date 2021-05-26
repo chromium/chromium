@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">да инсталира приложения, разширения и теми;</translation>
 <translation id="2977598380246111477">Следваща цифра</translation>
+<translation id="2992327365391326550">Бутонът за микрофона на устройството е изключен.</translation>
 <translation id="2995447421581609334">Показване на устройствата за предаване.</translation>
 <translation id="2996462380875591307">Лупата в прикрепен режим е активирана. За да я изключите, натиснете отново Ctrl + клавиш „Търсене“ + D.</translation>
 <translation id="3000461861112256445">Монозвук</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">За да влезете в профила си, въведете кода си за достъп на родител от Family Link</translation>
 <translation id="3039939407102840004">Батерията на писалката е на <ph name="PERCENTAGE" />%.</translation>
 <translation id="3045488863354895414">Добър ден,</translation>
+<translation id="3051189971848907985">Профилът за мобилна мрежа се преименува. Изчакайте няколко минути.</translation>
 <translation id="3055162170959710888">Днес използвахте това устройство <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Разгъване на менюто</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">Има връзка</translation>
 <translation id="3371140690572404006">устройство с USB-C (предният десен порт)</translation>
 <translation id="3375634426936648815">Свързано</translation>
+<translation id="3378442621503952303">Установява се връзка с профил за мобилна мрежа. Изчакайте няколко минути.</translation>
 <translation id="3386978599540877378">Лупата за увеличаване на целия екран</translation>
 <translation id="3400357268283240774">Допълнителни настройки</translation>
 <translation id="3410336247007142655">Показване на настройките за тъмната тема</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">Здравейте, как мога да помогна?</translation>
 <translation id="3826099427150913765">Превключване към парола</translation>
 <translation id="383058930331066723">Режимът за запазване на батерията е включен</translation>
+<translation id="3835880383832568924">За да видите актуализациите, отворете приложението за преки пътища</translation>
 <translation id="383629559565718788">Показване на настройките на клавиатурата</translation>
 <translation id="3846214748874656680">Изход от цял екран</translation>
 <translation id="3846575436967432996">Не е налице информация за мрежата</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">Изпращане на отзиви</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
+<translation id="4735498845456076464">Клавишната комбинация клавиш „<ph name="LAUNCHER_KEY_NAME" />“ + цифра се промени. За да използвате функционалните клавиши, натиснете „<ph name="LAUNCHER_KEY_NAME" />“ + клавиш от най-горния ред.</translation>
 <translation id="4744944742468440486">Информация за избраното от вас</translation>
 <translation id="4759238208242260848">Изтегляния</translation>
 <translation id="4774338217796918551">Заповядайте отново утре в <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">Копиране</translation>
 <translation id="6910714959251846841">Тази актуализация изисква Powerwash на устройството ви. Научете повече за най-новата актуализация на <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Смарткартата ви не бе разпозната. Опитайте отново.</translation>
+<translation id="6921188888306725546">Клавишните комбинации са подобрени</translation>
 <translation id="6945221475159498467">Избиране</translation>
 <translation id="6961121602502368900">Функцията за заглушаване на телефона не е налице в служебни потребителски профили</translation>
 <translation id="6961840794482373852">Клавишната комбинация Alt + стрелка нагоре се промени. За да използвате клавиша Page Up, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката нагоре.</translation>
@@ -934,6 +940,7 @@
 <translation id="8631727435199967028">Настройки за достъпност</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
 <translation id="8639760480004882931">Батерия: <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">Списъкът с профили за мобилни мрежи се опреснява. Изчакайте няколко минути.</translation>
 <translation id="8646417893960517480">Таймер за <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">За да добавите човек, въведете кода си за достъп на родител от Family Link</translation>
 <translation id="8649101189709089199">Прочитане на глас</translation>
@@ -961,6 +968,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Настройки на методите на въвеждане</translation>
+<translation id="8818320199597151042">Профилът за мобилна мрежа се премахва. Изчакайте няколко минути.</translation>
 <translation id="8825863694328519386">Прекарайте пръст от ляво, за да се върнете назад</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Бутон за връщане назад</translation>
@@ -1006,6 +1014,7 @@
 <translation id="9091626656156419976">Екранът „<ph name="DISPLAY_NAME" />“ бе премахнат</translation>
 <translation id="9098969848082897657">Заглушаване на телефона</translation>
 <translation id="9099154003160514616">Налице е актуализация за Lacros</translation>
+<translation id="9100887602489003640">Профилът за мобилна мрежа се добавя. Изчакайте няколко минути.</translation>
 <translation id="9105450214093926548">Не се поддържа вход в профил на втори потребител, докато браузърът Lacros се изпълнява. Моля, използвайте втори потребителски профил в Lacros или затворете браузъра и опитайте отново.</translation>
 <translation id="9133335900048457298">Не е възможно записване на защитено съдържание</translation>
 <translation id="9151726767154816831">Рестартирайте и извършете Powerwash, за да актуализирате</translation>

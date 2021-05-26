@@ -245,6 +245,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Instalatu aplikazioak, luzapenak eta gaiak</translation>
 <translation id="2977598380246111477">Hurrengo zenbakia</translation>
+<translation id="2992327365391326550">Gailuaren mikrofonoaren botoia desaktibatuta dago.</translation>
 <translation id="2995447421581609334">Erakutsi igorpen-gailuak.</translation>
 <translation id="2996462380875591307">Gaituta dago lupa ainguratua. Desaktibatzeko, sakatu berriro Ktrl + Bilatu + D.</translation>
 <translation id="3000461861112256445">Audio monofonikoa</translation>
@@ -255,6 +256,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3038571455154067151">Saioa hasteko, idatzi Family Link-eko gurasoen sarbide-kodea</translation>
 <translation id="3039939407102840004">Arkatzaren bateriari <ph name="PERCENTAGE" /> gelditzen zaio.</translation>
 <translation id="3045488863354895414">Arratsalde on:</translation>
+<translation id="3051189971848907985">Profilaren izena aldatzen. Itxaron minutu batzuk.</translation>
 <translation id="3055162170959710888">Gailua erabiltzen emandako denbora, gaur: <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">maius</translation>
 <translation id="3081696990447829002">Zabaldu menua</translation>
@@ -295,6 +297,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3368922792935385530">Konektatuta</translation>
 <translation id="3371140690572404006">USB-C gailua (eskuinaldeko aurreko ataka)</translation>
 <translation id="3375634426936648815">Konektatuta</translation>
+<translation id="3378442621503952303">Profilera konektatzen. Itxaron minutu batzuk.</translation>
 <translation id="3386978599540877378">pantaila osoko lupa</translation>
 <translation id="3400357268283240774">Ezarpen gehigarriak</translation>
 <translation id="3410336247007142655">Erakutsi gai ilunaren ezarpenak</translation>
@@ -352,6 +355,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="380165613292957338">Kaixo! Zertan lagun zaitzaket?</translation>
 <translation id="3826099427150913765">Aldatu pasahitzera</translation>
 <translation id="383058930331066723">Bateria-aurrezlea aktibatuta dago</translation>
+<translation id="3835880383832568924">Berritasunak ikusteko, ireki Lasterbideak aplikazioa</translation>
 <translation id="383629559565718788">Erakutsi teklatuaren ezarpenak</translation>
 <translation id="3846214748874656680">Irten pantaila osotik</translation>
 <translation id="3846575436967432996">Ez dago sare-informazio erabilgarririk</translation>
@@ -472,6 +476,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4705716602320768426">Bidali oharrak</translation>
 <translation id="4731797938093519117">Gurasoen sarbidea</translation>
 <translation id="4734965478015604180">Horizontala</translation>
+<translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + zenbakia lasterbidea aldatu egin da. Funtzio-teklak erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + goiko errenkadako tekla bat.</translation>
 <translation id="4744944742468440486">Zure hautapenarekin erlazionatutako informazioa</translation>
 <translation id="4759238208242260848">Deskargak</translation>
 <translation id="4774338217796918551">Itzuli bihar ordu honetan: <ph name="COME_BACK_TIME" />.</translation>
@@ -729,6 +734,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6896758677409633944">Kopiatu</translation>
 <translation id="6910714959251846841">Eguneratu ahal izateko, gailuaren fabrikako ezarpenak berrezarri behar dira. Lortu informazio gehiago <ph name="SYSTEM_APP_NAME" /> aplikazioaren azken eguneratzeari buruz.</translation>
 <translation id="6919251195245069855">Ezin izan da hauteman txartel adimenduna. Saiatu berriro.</translation>
+<translation id="6921188888306725546">Hobetu egin dira lasterbideak</translation>
 <translation id="6945221475159498467">Hautatu</translation>
 <translation id="6961121602502368900">Telefonoa isilarazteko aukera ez dago erabilgarri laneko profilean</translation>
 <translation id="6961840794482373852">Alt + gora egiteko gezi-tekla lasterbidea aldatu egin da. Orrian gora egiteko tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + gora egiteko gezi-tekla.</translation>
@@ -935,6 +941,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8631727435199967028">Erabilerraztasun-ezarpenak</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> geratzen da</translation>
+<translation id="8641805545866562088">Profilen zerrenda freskatzen. Itxaron minutu batzuk.</translation>
 <translation id="8646417893960517480">Tenporizadorea: <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Pertsona bat gehitzeko, idatzi Family Link-eko gurasoen sarbide-kodea</translation>
 <translation id="8649101189709089199">Hautatu ozen irakurtzeko</translation>
@@ -962,6 +969,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi konexioa</translation>
 <translation id="881757059229893486">Idazketa-metodoen ezarpenak</translation>
+<translation id="8818320199597151042">Profila kentzen. Itxaron minutu batzuk.</translation>
 <translation id="8825863694328519386">Atzera egiteko, pasatu hatza ezkerretik eskuinera</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Atzera botoia</translation>
@@ -1007,6 +1015,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="9091626656156419976">Kendu da <ph name="DISPLAY_NAME" /> pantaila</translation>
 <translation id="9098969848082897657">Isilarazi telefonoa</translation>
 <translation id="9099154003160514616">Lacros-en eguneratze bat dago</translation>
+<translation id="9100887602489003640">Profila gehitzen. Itxaron minutu batzuk.</translation>
 <translation id="9105450214093926548">Lacros arakatzailea abian den bitartean ezin da hasi saiorik beste erabiltzaile batekin. Horren ordez, erabili beste erabiltzaile-profil bat Lacros-en bertan, edo itxi arakatzailea eta saiatu berriro.</translation>
 <translation id="9133335900048457298">Ezin da kapturatu eduki babestua</translation>
 <translation id="9151726767154816831">Berrabiarazi eta berrezarri Powerwash bidez fabrikako ezarpenak eguneratzeko</translation>

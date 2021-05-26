@@ -456,6 +456,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5782227691023083829">Թարգմանվում է...</translation>
 <translation id="5797070761912323120">Google-ը կարող է ձեր այցելությունների պատմությունն օգտագործել` Որոնումը, գովազդն ու Google-ի մյուս ծառայություններն անհատականացնելու համար</translation>
 <translation id="5803566855766646066">Հեռացնե՞լ նոր քարտը</translation>
+<translation id="5812974770859303494">Ավելացնել…</translation>
 <translation id="5816228676161003208">Թույլ է տալիս արագ որոնել ձայնի միջոցով:</translation>
 <translation id="581659025233126501">Միացնել համաժամացումը</translation>
 <translation id="5819208479324046259">Կառավարվում է <ph name="MANAGER" />-ի կողմից։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -522,6 +523,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="634878792104344809">Համաժամացրեք ձեր գաղտնաբառերը, պատմությունը և մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
 <translation id="6362362396625799311">Ինկոգնիտո ներդիրներ չկան</translation>
 <translation id="6363526231572697780">Օգտանունը նշված չէ</translation>
+<translation id="6366663624406569102">Դուրս գալ և անջատել համաժամացումը</translation>
 <translation id="6374469231428023295">Փորձել կրկին</translation>
 <translation id="6377118281273296434">Կայքի անվտանգություն</translation>
 <translation id="6380866119319257197">Եթե մոռանաք ձեր անցաբառը կամ ցանկանաք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" /></translation>
@@ -765,6 +767,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8654802032646794042">Չեղարկել</translation>
 <translation id="8668210798914567634">Այս էջը պահվեց ձեր ընթերցանության ցանկում:</translation>
 <translation id="8680787084697685621">Հաշվի մուտքի տվյալները հնացած են:</translation>
+<translation id="8693663554456874301">{count,plural, =1{Փակել ներդիրը}one{Փակել ներդիրները}other{Փակել ներդիրները}}</translation>
 <translation id="8706588385081740091">Գաղտնաբառեր</translation>
 <translation id="8717864919010420084">Պատճենել հղումը</translation>
 <translation id="8721297211384281569">Գործիքների ընտրացանկ</translation>

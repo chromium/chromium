@@ -304,12 +304,14 @@
 <translation id="2042213636306070719">트레이 7</translation>
 <translation id="204357726431741734">Google 계정에 저장된 비밀번호를 사용하여 로그인</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />로 된 페이지를 번역하지 않습니다.</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{이 컨트롤이 사용 설정되어 있고 상태가 활성이면 Chrome이 최근 탐색 활동과 가장 유사한 대규모의 사용자 그룹, 즉 '사용자 집단'을 확인합니다. 광고주는 해당 그룹에 게재할 광고를 선택할 수 있으며 탐색 활동은 사용자 기기에서 비공개로 유지됩니다. 그룹은 매일 업데이트됩니다.}=1{이 컨트롤이 사용 설정되어 있고 상태가 활성이면 Chrome이 최근 탐색 활동과 가장 유사한 대규모의 사용자 그룹, 즉 '사용자 집단'을 확인합니다. 광고주는 해당 그룹에 게재할 광고를 선택할 수 있으며 탐색 활동은 사용자 기기에서 비공개로 유지됩니다. 그룹은 매일 업데이트됩니다.}other{이 컨트롤이 사용 설정되어 있고 상태가 활성이면 Chrome이 최근 탐색 활동과 가장 유사한 대규모의 사용자 그룹, 즉 '사용자 집단'을 확인합니다. 광고주는 해당 그룹에 게재할 광고를 선택할 수 있으며 탐색 활동은 사용자 기기에서 비공개로 유지됩니다. 그룹은 {NUM_DAYS}일마다 업데이트됩니다.}}</translation>
 <translation id="2053553514270667976">우편번호</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{제안 1개}other{제안 #개}}</translation>
 <translation id="2071692954027939183">알림을 평소에 허용하지 않았기 때문에 알림이 자동으로 차단되었습니다.</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="20817612488360358">시스템 프록시 설정이 사용하도록 설정되었지만 명시적 프록시 설정도 지정되어 있습니다.</translation>
 <translation id="2082238445998314030">전체 결과 <ph name="TOTAL_RESULTS" />개 중 <ph name="RESULT_NUMBER" />개</translation>
+<translation id="2085876078937250610">저장…</translation>
 <translation id="2088086323192747268">동기화 관리 버튼, Enter를 눌러 Chrome 설정에서 내가 동기화하는 정보 관리</translation>
 <translation id="2091887806945687916">소리</translation>
 <translation id="2094505752054353250">도메인이 일치하지 않음</translation>
@@ -390,6 +392,7 @@
 <translation id="2355395290879513365">공격자는 사용자가 이 사이트에서 보고 있는 이미지를 볼 수 있으며 이미지를 수정하여 사용자를 속일 수 있습니다.</translation>
 <translation id="2356070529366658676">확인</translation>
 <translation id="2357481397660644965">내 기기는 <ph name="DEVICE_MANAGER" />에서 관리하며 내 계정은 <ph name="ACCOUNT_MANAGER" />에서 관리합니다.</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{1일 이내}=1{1일 후}other{{NUM_DAYS}일 후}}</translation>
 <translation id="2359629602545592467">복수</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2359961752320758691">가상 카드 번호가 적용되었습니다.</translation>
@@ -530,6 +533,7 @@
 <translation id="2941952326391522266">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서가 <ph name="DOMAIN2" />에서 제공한 것입니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="2943895734390379394">업로드 시간:</translation>
 <translation id="2948083400971632585">설정 페이지의 연결을 구성하는 프록시를 사용 중지할 수 있습니다.</translation>
+<translation id="2949183777371959169">Chrome 브라우저 클라우드 관리에 등록되지 않은 컴퓨터이므로 무시되었습니다.</translation>
 <translation id="2951588413176968965">내 메일박스</translation>
 <translation id="295526156371527179">경고: 이 정책은 사전이 아니므로 정책에 명시된 대로 사전으로 병합되지 않았습니다.</translation>
 <translation id="2955913368246107853">검색 바 닫기</translation>
@@ -709,6 +713,7 @@
 <translation id="3590643883886679995">시크릿 모드를 종료한 후 로그인 데이터가 기기에 저장됩니다.</translation>
 <translation id="359126217934908072">월/연도:</translation>
 <translation id="3592413004129370115">Italian(봉투)</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 하루 정도가 소요됩니다.}=1{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 하루 정도가 소요됩니다.}other{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 {NUM_DAYS}일이 소요됩니다.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">관리자가 차단한 애플리케이션</translation>
 <translation id="3608932978122581043">종이 공급 방향</translation>
@@ -1191,6 +1196,7 @@
 <translation id="5332219387342487447">배송 방법</translation>
 <translation id="5333022057423422993">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
 <translation id="5334013548165032829">세부 시스템 로그</translation>
+<translation id="5334145288572353250">주소를 저장하시겠습니까?</translation>
 <translation id="5340250774223869109">애플리케이션이 차단됨</translation>
 <translation id="534295439873310000">NFC 기기</translation>
 <translation id="5344579389779391559">이 페이지에서 금액을 청구할 수 있습니다.</translation>
@@ -1530,6 +1536,7 @@
 <translation id="6671697161687535275">Chromium에서 자동완성 항목 추천을 삭제하시겠습니까?</translation>
 <translation id="6685834062052613830">로그아웃 후 설정 완료</translation>
 <translation id="6687335167692595844">글꼴 크기 요청됨</translation>
+<translation id="6688743156324860098">업데이트…</translation>
 <translation id="6689249931105087298">상대적이며 흑점 보정 포함</translation>
 <translation id="6689271823431384964">Google 계정에 로그인되어 있기 때문에 Chrome에서 계정에 카드를 저장할지 묻는 메시지가 표시됩니다. 설정에서 이 동작을 변경할 수 있습니다. 카드 소지자 이름은 계정에서 가져온 것입니다.</translation>
 <translation id="6698381487523150993">생성됨:</translation>
@@ -1545,6 +1552,7 @@
 <translation id="6744009308914054259">연결을 기다리는 동안 다운로드에서 오프라인 기사를 읽을 수 있습니다.</translation>
 <translation id="6753269504797312559">정책 값</translation>
 <translation id="6757797048963528358">기기가 절전 모드 상태입니다.</translation>
+<translation id="6767985426384634228">주소를 업데이트하시겠습니까?</translation>
 <translation id="6768213884286397650">Hagaki(엽서)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">보라색</translation>
@@ -1704,6 +1712,7 @@
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">해당 사항 없음</translation>
 <translation id="7390545607259442187">카드 확인</translation>
+<translation id="7392089738299859607">주소 업데이트</translation>
 <translation id="7399802613464275309">안전 확인</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> 기기는 관리 대상 기기입니다</translation>
@@ -1841,6 +1850,7 @@
 <translation id="7865448901209910068">최고 속도</translation>
 <translation id="7874263914261512992">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> 등 동일한 비밀번호를 사용한 사이트에 저장된 비밀번호를 확인하는 것이 좋습니다.</translation>
 <translation id="7878562273885520351">비밀번호가 도용될 수도 있음</translation>
+<translation id="7880146494886811634">주소 저장</translation>
 <translation id="7882421473871500483">갈색</translation>
 <translation id="7887683347370398519">CVC를 확인한 후 다시 시도하세요.</translation>
 <translation id="7887885240995164102">PIP 모드 시작</translation>

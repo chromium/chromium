@@ -245,6 +245,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Installera appar, tillägg och teman</translation>
 <translation id="2977598380246111477">Nästa nummer</translation>
+<translation id="2992327365391326550">Enhetens mikrofon är avstängd.</translation>
 <translation id="2995447421581609334">Visa cast-enheter</translation>
 <translation id="2996462380875591307">Dockad skärmförstoring har aktiverats. Tryck på Ctrl + Sök + D igen om du vill inaktivera funktionen.</translation>
 <translation id="3000461861112256445">Monoljud</translation>
@@ -255,6 +256,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3038571455154067151">Ange föräldraåtkomstkoden för Family Link om du vill logga in</translation>
 <translation id="3039939407102840004">E-pennan har <ph name="PERCENTAGE" /> procent batteri.</translation>
 <translation id="3045488863354895414">Hej!</translation>
+<translation id="3051189971848907985">Byter namn på profilen. Vänta några minuter.</translation>
 <translation id="3055162170959710888">Du har använt den här enheten i <ph name="USED_TIME" /> i dag</translation>
 <translation id="3077734595579995578">skift</translation>
 <translation id="3081696990447829002">Utöka menyn</translation>
@@ -295,6 +297,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3368922792935385530">Ansluten</translation>
 <translation id="3371140690572404006">USB-C-enhet (främre porten på högra sidan)</translation>
 <translation id="3375634426936648815">Ansluten</translation>
+<translation id="3378442621503952303">Ansluter till profilen. Vänta några minuter.</translation>
 <translation id="3386978599540877378">helskärmsförstoraren</translation>
 <translation id="3400357268283240774">Ytterligare inställningar</translation>
 <translation id="3410336247007142655">Visa inställningarna för mörkt tema</translation>
@@ -351,6 +354,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="380165613292957338">Hej. Hur kan jag hjälpa dig?</translation>
 <translation id="3826099427150913765">Byt till lösenord</translation>
 <translation id="383058930331066723">Batterisparläget är aktiverat</translation>
+<translation id="3835880383832568924">Öppna appen Genvägar om du vill se vad som uppdaterats</translation>
 <translation id="383629559565718788">Visa tangentbordsinställningar</translation>
 <translation id="3846214748874656680">Avsluta helskärmsläge</translation>
 <translation id="3846575436967432996">Det finns ingen nätverksinformation</translation>
@@ -471,6 +475,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4705716602320768426">Skicka feedback</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4734965478015604180">Horisontell</translation>
+<translation id="4735498845456076464">Kortkommandot <ph name="LAUNCHER_KEY_NAME" /> + siffra har ändrats. Nu används <ph name="LAUNCHER_KEY_NAME" />-tangenten + en tangent i översta raden som funktionstangenter.</translation>
 <translation id="4744944742468440486">Information om det som är markerat</translation>
 <translation id="4759238208242260848">Nedladdningar</translation>
 <translation id="4774338217796918551">Prova igen i morgon klockan <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6896758677409633944">Kopiera</translation>
 <translation id="6910714959251846841">Den här uppdateringen kräver att en Powerwash görs av enheten. Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Det smarta kortet kändes inte igen. Försök igen.</translation>
+<translation id="6921188888306725546">Förbättrade kortkommandon</translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6961121602502368900">Funktionen Inga telefonljud är inte tillgänglig i jobbprofilen</translation>
 <translation id="6961840794482373852">Kortkommandot Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + uppåtpil för att använda Page Up-tangenten.</translation>
@@ -934,6 +940,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8631727435199967028">Tillgänglighetsinställningar</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> återstår</translation>
+<translation id="8641805545866562088">Uppdaterar listan över profiler. Vänta några minuter.</translation>
 <translation id="8646417893960517480">Timer på <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Ange föräldraåtkomstkoden för Family Link om du vill lägga till en person</translation>
 <translation id="8649101189709089199">Textuppläsning</translation>
@@ -961,6 +968,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">wifi</translation>
 <translation id="881757059229893486">Inmatningsinställningar</translation>
+<translation id="8818320199597151042">Tar bort profilen. Vänta några minuter.</translation>
 <translation id="8825863694328519386">Återgå genom att svepa från vänster</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Bakåtknapp</translation>
@@ -1006,6 +1014,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="9091626656156419976">Skärmen <ph name="DISPLAY_NAME" /> har tagits bort</translation>
 <translation id="9098969848082897657">Inga telefonljud</translation>
 <translation id="9099154003160514616">Det finns en uppdatering av Lacros</translation>
+<translation id="9100887602489003640">Lägger till profil. Vänta några minuter.</translation>
 <translation id="9105450214093926548">Det finns inte stöd för inloggning av en andra användare medan Lacros-webbläsaren körs. Använd i stället en annan webbläsarprofil i Lacros eller stäng Lacros och försök igen.</translation>
 <translation id="9133335900048457298">Det går inte att spela in skyddat innehåll</translation>
 <translation id="9151726767154816831">Starta om och utför en Powerwash-återställning för att uppdatera</translation>

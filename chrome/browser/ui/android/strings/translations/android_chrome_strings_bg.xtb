@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1016498331642356377">Бързо търсене с гласа ви. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="1028699632127661925">Изпраща се до <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Изчиств. и на данните от тези сайтове и прил.?</translation>
 <translation id="1036348656032585052">Изключване</translation>
@@ -157,6 +158,7 @@
 <translation id="2067805253194386918">текст</translation>
 <translation id="2068748236079642969">Гледане на следващия видеоклип</translation>
 <translation id="2074143993849053708">Потребителският интерфейс за даване на съгласие за ползване на Асистент при гласови търсения е затворен</translation>
+<translation id="2075835334924942448">Материалите ще се показват тук</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> от <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Синхронизиране и персонализиране на всички устройства</translation>
 <translation id="2100273922101894616">Автоматичен вход</translation>
@@ -170,6 +172,7 @@
 <translation id="2131665479022868825">Спестихте <ph name="DATA" /></translation>
 <translation id="213279576345780926">Затворихте „<ph name="TAB_TITLE" />“</translation>
 <translation id="2139186145475833000">Добавяне към началния екран</translation>
+<translation id="2141396931810938595">Въз основа на използването</translation>
 <translation id="214888715418183969">Изберете какви данни сте готови да споделяте с Chrome. Показателите, които споделяте, ще се използват за подобряване на функциите, производителността и стабилността на Chrome.</translation>
 <translation id="2154484045852737596">Редактиране на картата</translation>
 <translation id="2154710561487035718">Копиране на URL адреса</translation>
@@ -227,6 +230,7 @@
 <translation id="247737702124049222">Функцията за описания на изображенията е включена</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2485422356828889247">Деинсталиране</translation>
+<translation id="2489545061398461256">Когато сме готови, ще изключим функцията</translation>
 <translation id="2494974097748878569">Google Асистент в Chrome</translation>
 <translation id="2496180316473517155">История на сърфирането</translation>
 <translation id="2497852260688568942">Синхронизирането е деактивирано от администратора ви</translation>
@@ -257,6 +261,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиофайл}other{# аудиофайла}}</translation>
 <translation id="2656405586795711023">Уеб приложения</translation>
 <translation id="2689830683995595741">С използването на Chrome приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Съобщението за поверителност за профилите в Google, управлявани чрез Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2702516483241149200">Ново: споделяне на връзка, която превърта до този текст</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2707726405694321444">Опресняване на страницата</translation>
 <translation id="271033894570825754">Създаване</translation>
@@ -304,6 +309,7 @@
 <translation id="2956410042958133412">Този профил се управлява от <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочетена страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочетени страници}}</translation>
 <translation id="2979025552038692506">Избран раздел в режим „инкогнито“</translation>
+<translation id="2979448359891869301">Екранната снимка не може да се разшири. Опитайте отново, когато телефонът не се използва за други цели.</translation>
 <translation id="2987620471460279764">Текст, споделен от друго устройство</translation>
 <translation id="2989523299700148168">Наскоро посетени</translation>
 <translation id="2992473221983447149">Описания на изображенията</translation>
@@ -345,6 +351,7 @@
 <translation id="3265534588625245297">Управление на следените от вас сайтове</translation>
 <translation id="3269093882174072735">Зареждане на изображението</translation>
 <translation id="3269956123044984603">Включете „Авт. синхронизиране на данните“ от „Профили“ в настройките на Android, за да получите разделите си от другите си устройства.</translation>
+<translation id="3280562213547448728">Гласово търсене</translation>
 <translation id="3282568296779691940">Вход в Chrome</translation>
 <translation id="3284510035090979597">Превантивна помощ</translation>
 <translation id="3285080554353377245">Видеоклипове за използването на Chrome</translation>
@@ -395,6 +402,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="3563767357928833671">Съдържанието на буферната памет е показано</translation>
 <translation id="3566923219790363270">Chrome все още се подготвя за VR. Рестартирайте браузъра по-късно.</translation>
 <translation id="3568688522516854065">Влезте в профила си и включете синхронизирането, за да получите разделите си от другите си устройства</translation>
+<translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
 <translation id="3587482841069643663">Всички</translation>
 <translation id="3587596251841506391">Помогнете за по-сигурна мрежа</translation>
 <translation id="3602290021589620013">Визуализация</translation>
@@ -480,6 +488,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
 <translation id="4198423547019359126">Няма местоположения за изтегляне</translation>
 <translation id="4209895695669353772">Включете синхронизирането, за да получавате персонализирано съдържание, предлагано от Google</translation>
+<translation id="4225895483398857530">Пряк път в лентата с инструменти</translation>
 <translation id="4242533952199664413">Отваряне на настройките</translation>
 <translation id="4248098802131000011">Защитете паролите си от нарушения на сигурността на данните и други подобни проблеми</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
@@ -535,6 +544,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4583164079174244168">{MINUTES,plural, =1{преди # минута}other{преди # минути}}</translation>
 <translation id="4587589328781138893">Сайтове</translation>
 <translation id="4594952190837476234">Тази офлайн страница е от <ph name="CREATION_TIME" /> и може да се различава от онлайн версията.</translation>
+<translation id="4608360466722749036">Bluetooth се включва…</translation>
 <translation id="4616150815774728855">Отваряне на <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Потвърдете, че сте вие</translation>
 <translation id="4634124774493850572">Използване на паролата</translation>
@@ -746,12 +756,14 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5864419784173784555">Изчаква се друго изтегляне…</translation>
 <translation id="5865733239029070421">Автоматично изпраща до Google статистически данни за използването на Chrome и сигнали за сривове</translation>
 <translation id="5869522115854928033">Запазени пароли</translation>
+<translation id="587735546353481577">За да последвате даден сайт, посетете го, отворете менюто на Chrome и докоснете съответната опция.</translation>
 <translation id="5880748256563468367">Към емисията</translation>
 <translation id="5884076754568147479">За да ви помага да изпълнявате задачи, Google ще получава URL адресите и съдържанието на сайтовете, в които използвате Асистент, както и данните, които изпращате чрез услугата</translation>
 <translation id="5919204609460789179">Актуализирайте <ph name="PRODUCT_NAME" />, за да стартира синхронизирането</translation>
 <translation id="5937580074298050696">Спестени: <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Нулиране</translation>
 <translation id="5942872142862698679">За търсене ще се използва Google</translation>
+<translation id="5945035219773565305">Текуща препоръка: <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Показва се активната страница</translation>
 <translation id="5952764234151283551">Изпраща до Google URL адреса на страницата, която искате да посетите</translation>
 <translation id="5956665950594638604">Отваряне на Помощния център на Chrome в нов раздел</translation>
@@ -765,6 +777,10 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6000203700195075278">Повторно следене</translation>
 <translation id="6002623704405939939">За да изчистите историята на <ph name="BEGIN_LINK1" />търсенията<ph name="END_LINK1" /> или друг вид история, посетете <ph name="BEGIN_LINK2" />Моята активност в Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Предложена парола</translation>
+<translation id="6032091552407840792">Този експеримент е активен само в <ph name="BEGIN_LINK" />някои региони<ph name="END_LINK" />.</translation>
+<translation id="6033245666633565791">Чрез <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> Chrome разработва нови технологии, за да ви предпазва от проследяване в различни сайтове, съхранявайки отворената мрежа.
+
+Експериментите за Privacy Sandbox продължават да се разработват активно и са налице в избрани региони. Засега сайтовете може да изпробват Privacy Sandbox и да продължат да използват настоящите уеб технологии, като „бисквитките“ на трети страни.</translation>
 <translation id="6036057147555329831">допълнителният ICU модул</translation>
 <translation id="6039379616847168523">Преминаване към следващия раздел</translation>
 <translation id="6040143037577758943">Затваряне</translation>
@@ -830,6 +846,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6407224748847589805">Не може да се установи връзка с компютъра ви. Опитайте с друга опция за потвърждаване.</translation>
 <translation id="6410404864818553978">Основни данни за употребата</translation>
 <translation id="6410883413783534063">Отворете няколко раздела, за да посетите различни страници едновременно</translation>
+<translation id="6411219469806822692">Придвижването по-нагоре не е възможно. Започнете от по-горна част на страницата.</translation>
 <translation id="6412673304250309937">Проверка на URL адресите в съхраняван в Chrome списък с опасни сайтове. Ако сайт се опита да открадне паролата ви или изтеглите опасен файл от сайт, Chrome може също така да изпрати до „Безопасно сърфиране“ URL адресите и част от съдържанието на страницата.</translation>
 <translation id="641643625718530986">Печат…</translation>
 <translation id="6427112570124116297">Превод на всичко в мрежата</translation>
@@ -892,10 +909,12 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="671481426037969117">Таймерът ви за <ph name="FQDN" /> изтече и ще се стартира отново утре.</translation>
 <translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="6738867403308150051">Изтегля се…</translation>
+<translation id="6751521182688001123">Бързо отваряне на нов раздел. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="6767294960381293877">Списъкът с устройства, с които да се сподели даден раздел, е отворен на половин височина.</translation>
 <translation id="6783942555455976443">Запазване на тази страница за по-късно и получаване на напомняне</translation>
 <translation id="6811034713472274749">Страницата е готова за преглед</translation>
 <translation id="6813446258015311409">Вход в Chrome – отворено.</translation>
+<translation id="6817747507826986771">Бързо споделяне на страницата. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="6820686453637990663">Код за сигурност</translation>
 <translation id="6824899148643461612">Избрахте раздела <ph name="TAB_TITLE" /></translation>
 <translation id="6846298663435243399">Зарежда се…</translation>
@@ -966,6 +985,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7333031090786104871">Още се добавя предишният сайт</translation>
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="7340958967809483333">Опции за Discover</translation>
+<translation id="7352339641508007922">Плъзнете, за да направите дълга екранна снимка</translation>
 <translation id="7352651011704765696">Нещо се обърка</translation>
 <translation id="7352939065658542140">ВИДЕОКЛИП</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Споделяне на 1 избран елемент}other{Споделяне на # избрани елемента}}</translation>
@@ -1058,6 +1078,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7876243839304621966">Премахване на всички</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> непрочетена страница}other{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочетени страници}}</translation>
 <translation id="7882131421121961860">Няма намерена история</translation>
+<translation id="7884346424584885269">Chrome има нужда от разрешение да сканира за устройства в близост. <ph name="BEGIN_LINK" />Актуализиране на разрешенията<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">Изпълнява се в Chrome</translation>
 <translation id="789763218334337857">Начин на използване на Chrome</translation>
 <translation id="7903184275147100332">Това може да отнеме известно време</translation>
@@ -1151,6 +1172,11 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8461694314515752532">Шифроване на синхронизираните данни със собствения ви пропуск за синхронизиране</translation>
 <translation id="8466613982764129868">Уверете се, че устройството <ph name="TARGET_DEVICE_NAME" /> е свързано с интернет</translation>
 <translation id="8473863474539038330">Адреси и др.</translation>
+<translation id="8481921391193215807">Когато настройката е включена, сайтовете може да използват описаните тук техники за защита на поверителността, за да предоставят съдържанието и услугите си. Техниките съдържат алтернативи на проследяването в различни сайтове. С течение на времето може да бъдат добавени други експерименти.
+
+<ph name="BEGIN_LIST_ITEM1" />Рекламодателите и издателите могат да използват техниката FLoC.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Те могат да проучват ефективността на рекламите по начин, който не проследява действията ви в различните сайтове.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Функциите за изпробване са включени</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /><ph name="SEPARATOR" /><ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Отваряне на страницата „История“</translation>
@@ -1262,6 +1288,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="9204836675896933765">Остава 1 файл</translation>
 <translation id="9206873250291191720">А</translation>
 <translation id="9209888181064652401">Не могат да се извършват обаждания</translation>
+<translation id="9212845824145208577">Придвижването по-надолу не е възможно. Започнете от по-долна част на страницата.</translation>
 <translation id="9219103736887031265">Изображения</translation>
 <translation id="926205370408745186">Премахване на активността ви в Chrome от „Дигитално благополучие“</translation>
 <translation id="927968626442779827">Използване на олекотения режим в Google Chrome</translation>

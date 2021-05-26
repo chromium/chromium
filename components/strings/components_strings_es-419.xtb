@@ -530,6 +530,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2941952326391522266">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el certificado de seguridad proviene de <ph name="DOMAIN2" />. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="2943895734390379394">Hora de carga:</translation>
 <translation id="2948083400971632585">Puedes inhabilitar los servidores proxy configurados para una conexión desde la página de configuración.</translation>
+<translation id="2949183777371959169">Se ignoró porque la máquina no está inscrita en la Administración en la nube para el navegador Chrome.</translation>
 <translation id="2951588413176968965">Mi buzón</translation>
 <translation id="295526156371527179">Advertencia: Esta política no se combinó como diccionario según la política porque no es un diccionario.</translation>
 <translation id="2955913368246107853">Cerrar la barra de búsqueda</translation>

@@ -456,6 +456,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5782227691023083829">Traducindo…</translation>
 <translation id="5797070761912323120">Google pode utilizar o teu historial para personalizar a Busca, os anuncios e outros servizos seus.</translation>
 <translation id="5803566855766646066">Seguro que queres descartar esta tarxeta nova?</translation>
+<translation id="5812974770859303494">Engadir a…</translation>
 <translation id="5816228676161003208">Permite que busques de forma máis rápida usando a voz.</translation>
 <translation id="581659025233126501">Activar sincronización</translation>
 <translation id="5819208479324046259">Xestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -522,6 +523,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="634878792104344809">Sincroniza os contrasinais, o historial e máis datos en todos os teus dispositivos</translation>
 <translation id="6362362396625799311">Non hai pestanas do modo de incógnito</translation>
 <translation id="6363526231572697780">Sen nome de usuario</translation>
+<translation id="6366663624406569102">Pechar sesión e desactivar sincronización</translation>
 <translation id="6374469231428023295">Tentar de novo</translation>
 <translation id="6377118281273296434">Seguranza do sitio</translation>
 <translation id="6380866119319257197">Se esqueciches o contrasinal ou queres cambiar esta configuración, <ph name="BEGIN_LINK" />restablece a sincronización<ph name="END_LINK" /></translation>
@@ -765,6 +767,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8668210798914567634">Gardouse esta páxina na túa lista de lectura.</translation>
 <translation id="8680787084697685621">Os detalles de inicio de sesión da conta están caducados.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Pechar pestana}other{Pechar pestanas}}</translation>
 <translation id="8706588385081740091">Contrasinais</translation>
 <translation id="8717864919010420084">Copiar ligazón</translation>
 <translation id="8721297211384281569">Menú Ferramentas</translation>

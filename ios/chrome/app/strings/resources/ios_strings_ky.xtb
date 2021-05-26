@@ -456,6 +456,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="5782227691023083829">Которулууда...</translation>
 <translation id="5797070761912323120">Издөө, жарнама жана башка Google кызматтарын жекечелештирүү үчүн, Google таржымалыңызды колдонушу мүмкүн</translation>
 <translation id="5803566855766646066">Бул жаңы картаны чын эле өчүрөсүзбү?</translation>
+<translation id="5812974770859303494">Төмөнкүгө кошуу...</translation>
 <translation id="5816228676161003208">Бул үнүңүз менен издөөнү тездетүүгө жол ачат.</translation>
 <translation id="581659025233126501">Шайкештирүүнү күйгүзүү</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> тарабынан башкарылат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -522,6 +523,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="634878792104344809">Бардык түзмөктөрүңүздөгү сырсөздөрдү, таржымалыңызды жана башкаларды шайкештириңиз</translation>
 <translation id="6362362396625799311">Жашыруун өтмөктөр жок</translation>
 <translation id="6363526231572697780">Колдонуучунун аты жок</translation>
+<translation id="6366663624406569102">Аккаунттан чыгып, шайкештирүүнү өчүрүү</translation>
 <translation id="6374469231428023295">Кайталап көрүңүз</translation>
 <translation id="6377118281273296434">Сайттын коопсуздугу</translation>
 <translation id="6380866119319257197">Эгер купуя сөз айкашыңызды унутуп калсаңыз же бул жөндөөнү өзгөрткүңүз келсе, <ph name="BEGIN_LINK" />шайкештирүүнү баштапкы абалга келтириңиз<ph name="END_LINK" /></translation>
@@ -765,6 +767,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8654802032646794042">Жокко чыгаруу</translation>
 <translation id="8668210798914567634">Бул барак Окуу тизмеңизге сакталды.</translation>
 <translation id="8680787084697685621">Аккаунтка кирүү чоо-жайлары эскирип калды.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Өтмөктү жабуу}other{Өтмөктөрдү жабуу}}</translation>
 <translation id="8706588385081740091">Сырсөздөр</translation>
 <translation id="8717864919010420084">Шилтемени көчүрүү</translation>
 <translation id="8721297211384281569">Куралдар менюсу</translation>

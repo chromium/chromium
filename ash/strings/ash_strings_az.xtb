@@ -245,6 +245,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Tətbiq, artırma və temaları quraşdırın</translation>
 <translation id="2977598380246111477">Növbəti nömrə</translation>
+<translation id="2992327365391326550">Cihazın mikrofon düyməsi deaktivdir.</translation>
 <translation id="2995447421581609334">Yayım cihazlarını göstərin.</translation>
 <translation id="2996462380875591307">Yüksək Kontrast Rejimi aktiv edildi. Rejimi deaktiv etmək üçün Ctrl+Search+D düymələrini basın.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
@@ -255,6 +256,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3038571455154067151">Daxil olmaq üçün Family Link valideyn giriş kodunuzu daxil edin</translation>
 <translation id="3039939407102840004">Qələmin enerjisi <ph name="PERCENTAGE" /> faizdir.</translation>
 <translation id="3045488863354895414">Günortanız xeyir,</translation>
+<translation id="3051189971848907985">Profilin adı dəyişdirilir. Bir neçə dəqiqə gözləyin.</translation>
 <translation id="3055162170959710888">Bugün <ph name="USED_TIME" /> bu cihazdan istifadə etdiniz</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Menyunu genişləndirin</translation>
@@ -295,6 +297,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3368922792935385530">Qoşuludur</translation>
 <translation id="3371140690572404006">USB-C cihazı (ön sağ port)</translation>
 <translation id="3375634426936648815">Qoşulub</translation>
+<translation id="3378442621503952303">Profilə qoşulur. Bir neçə dəqiqə gözləyin.</translation>
 <translation id="3386978599540877378">tam ekranlı böyüdücü</translation>
 <translation id="3400357268283240774">Əlavə ayarlar</translation>
 <translation id="3410336247007142655">Tünd tema ayarlarını göstərin</translation>
@@ -351,6 +354,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="380165613292957338">Salam, necə kömək edə bilərəm?</translation>
 <translation id="3826099427150913765">Parola keçin</translation>
 <translation id="383058930331066723">Enerjiyə qənaət rejimi aktivdir</translation>
+<translation id="3835880383832568924">Güncəlləmələri görmək üçün Qısayollar tətbiqini açın</translation>
 <translation id="383629559565718788">Klaviatura ayarlarını göstərin</translation>
 <translation id="3846214748874656680">Tam ekrandan çıxın</translation>
 <translation id="3846575436967432996">Heç bir şəbəkə məlumatı yoxdur</translation>
@@ -471,6 +475,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4705716602320768426">Rəy göndərin</translation>
 <translation id="4731797938093519117">Valideyn girişi</translation>
 <translation id="4734965478015604180">Üfüqi</translation>
+<translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Rəqəm klaviaturası qısayolu dəyişib. Funksiya düymələrindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + üst sıradakı bir düyməyə basın.</translation>
 <translation id="4744944742468440486">Seçiminizlə əlaqəli məlumat</translation>
 <translation id="4759238208242260848">Endirmələr</translation>
 <translation id="4774338217796918551">Sabah <ph name="COME_BACK_TIME" /> olduqda yenidən davam edin.</translation>
@@ -728,6 +733,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
 <translation id="6910714959251846841">Bu güncəlləmə cihazın sıfırlanmasını tələb edir. Ən son <ph name="SYSTEM_APP_NAME" /> güncəlləməsi haqqında ətraflı məlumat əldə edin.</translation>
 <translation id="6919251195245069855">Smart kartınız tanınmadı. Yenidən sınayın.</translation>
+<translation id="6921188888306725546">Klaviatura qısayolları təkmilləşdirilib</translation>
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="6961121602502368900">İş profilində telefonun səssiz edilməsi əlçatan deyil</translation>
 <translation id="6961840794482373852">Alt + Yuxarı Ox klaviatura qısayolu dəyişib. Səhifənin Yuxarısına Keç düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + Yuxarı Ox düyməsini basın.</translation>
@@ -934,6 +940,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8631727435199967028">Əlçatımlılıq Ayarları</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Administratorunuz tərəfindən idarə olunur</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> qalıb</translation>
+<translation id="8641805545866562088">Profil siyahısı təzələnir. Bir neçə dəqiqə gözləyin.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> taymeri</translation>
 <translation id="8647931990447795414">Şəxs əlavə etmək üçün Family Link valideyn giriş kodunuzu daxil edin</translation>
 <translation id="8649101189709089199">Səsləndirmək üçün seçim</translation>
@@ -961,6 +968,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Daxiletmə Metodları Ayarları</translation>
+<translation id="8818320199597151042">Profil silinir. Bir neçə dəqiqə gözləyin.</translation>
 <translation id="8825863694328519386">Geri qayıtmaq üçün soldan sürüşdürün</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">"Geri" düyməsi</translation>
@@ -1006,6 +1014,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> silindi</translation>
 <translation id="9098969848082897657">Telefonu səssiz edin</translation>
 <translation id="9099154003160514616">Lacros güncəlləməsi əlçatandır</translation>
+<translation id="9100887602489003640">Profil əlavə edilir. Bir neçə dəqiqə gözləyin.</translation>
 <translation id="9105450214093926548">Lacros brauzeri işləyərkən ikinci bir istifadəçinin daxil olması dəstəklənmir. Bunun əvəzinə Lacros'da ikinci bir brauzer profili istifadə edin və ya Lacros'u bağlayıb yenidən cəhd edin.</translation>
 <translation id="9133335900048457298">Qorunan məzmunu yazmaq olmur</translation>
 <translation id="9151726767154816831">Güncəlləşdirmək üçün yenidən başladaraq silin</translation>

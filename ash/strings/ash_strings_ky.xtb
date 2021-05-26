@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Колдонмолорду, кеңейтүүлөрдү жана темаларды жүктөп алат</translation>
 <translation id="2977598380246111477">Кийинки номер</translation>
+<translation id="2992327365391326550">Түзмөктүн микрофон баскычы өчүк.</translation>
 <translation id="2995447421581609334">Тышкы экранга чыгаруучу түзмөктөрдү көрсөтүү.</translation>
 <translation id="2996462380875591307">Жалгаштырылган лупа иштетилди. Аны өчүрүү үчүн Ctrl+Search+D баскычтарын кайра басыңыз.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">Кирүү үчүн, Family Link'теги ата-эненин кирүү кодун териңиз</translation>
 <translation id="3039939407102840004">Стилус батареясынын кубаты <ph name="PERCENTAGE" /> пайыз.</translation>
 <translation id="3045488863354895414">Кутман күнүңүз менен,</translation>
+<translation id="3051189971848907985">Профилдин аталышы өзгөрүүдө. Бир нече мүнөт күтө туруңуз.</translation>
 <translation id="3055162170959710888">Бүгүн бул түзмөктү <ph name="USED_TIME" /> колдондуңуз</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Менюну жайып көрсөтүү</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">Туташты</translation>
 <translation id="3371140690572404006">USB-C түзмөгү (оң жактагы маңдайкы оюкча)</translation>
 <translation id="3375634426936648815">Туташты</translation>
+<translation id="3378442621503952303">Профилге туташууда. Бир нече мүнөт күтө туруңуз.</translation>
 <translation id="3386978599540877378">толук экран режиминдеги лупа</translation>
 <translation id="3400357268283240774">Кошумча жөндөөлөр</translation>
 <translation id="3410336247007142655">Караңгы теманын жөндөөлөрүн көрсөтүү</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">Салам, кандай жардам керек?</translation>
 <translation id="3826099427150913765">Сырсөзгө которулуу</translation>
 <translation id="383058930331066723">Батареяны үнөмдөгүч режими күйүк</translation>
+<translation id="3835880383832568924">Жаңыртууларды көрүү үчүн Ыкчам баскычтар колдонмосун ачыңыз</translation>
 <translation id="383629559565718788">Баскычтоптун жөндөөлөрүн көрсөтүү</translation>
 <translation id="3846214748874656680">Толук экран режиминен чыгуу</translation>
 <translation id="3846575436967432996">Бир дагы тармак маалыматы жок</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">Пикир билдирүү</translation>
 <translation id="4731797938093519117">Ата-эненин кирүү уруксаты</translation>
 <translation id="4734965478015604180">Туурасынан</translation>
+<translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Номер ыкчам баскычы өзгөртүлдү. Функциялык баскычтарды колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + жогорку саптагы баскычты басыңыз.</translation>
 <translation id="4744944742468440486">Тандаган нерсеңизге тиешелүү маалымат</translation>
 <translation id="4759238208242260848">Жүктөлүп алынгандар</translation>
 <translation id="4774338217796918551">Эртең саат <ph name="COME_BACK_TIME" /> болгондо кайтып келиңиз.</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">Көчүрүү</translation>
 <translation id="6910714959251846841">Бул жаңыртууну орнотуу үчүн түзмөгүңүздү жууп салуу талап кылынат. <ph name="SYSTEM_APP_NAME" /> колдонмосундагы акыркы жаңыртуу жөнүндө кененирээк маалымат алуу.</translation>
 <translation id="6919251195245069855">Акылдуу картаңыз таанылган жок. Кайталап көрүңүз.</translation>
+<translation id="6921188888306725546">Ыкчам баскычтар жакшыртылды</translation>
 <translation id="6945221475159498467">Тандаңыз</translation>
 <translation id="6961121602502368900">Жумуш профилинде телефондун үнүн басууга болбойт</translation>
 <translation id="6961840794482373852">Alt + өйдө жебе ыкчам баскычы өзгөртүлдү. Барактын өйдө жагына жылдыруу баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + өйдө жебени басыңыз.</translation>
@@ -934,6 +940,7 @@
 <translation id="8631727435199967028">Атайын мүмкүнчүлүктөрдүн жөндөөлөрү</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Администраторуңуз башкарат</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> калды</translation>
+<translation id="8641805545866562088">Профилдин тизмеси жаңыртылууда. Бир нече мүнөт күтө туруңуз.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> таймер</translation>
 <translation id="8647931990447795414">Бирөөнү кошуу үчүн, Family Link'теги ата-эненин кирүү кодун териңиз</translation>
 <translation id="8649101189709089199">Басып туруп угуңуз</translation>
@@ -961,6 +968,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Киргизүү ыкмаларынын жөндөөлөрү</translation>
+<translation id="8818320199597151042">Профиль өчүрүлүүдө. Бир нече мүнөт күтө туруңуз.</translation>
 <translation id="8825863694328519386">Артка кайтуу үчүн экраныңыздын сол четинен сүрүп коюңуз</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Артка баскычы</translation>
@@ -1006,6 +1014,7 @@
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> дисплейи өчүрүлдү</translation>
 <translation id="9098969848082897657">Телефондун үнүн өчүрүү</translation>
 <translation id="9099154003160514616">Lacros жаңыртуусу жеткиликтүү</translation>
+<translation id="9100887602489003640">Профиль кошулууда. Бир нече мүнөт күтө туруңуз.</translation>
 <translation id="9105450214093926548">Lacros серепчиси иштеп жатканда экинчи колдонуучу кире албайт. Анын ордуна Lacros'то экинчи профилди колдонуңуз же Lacros'ту жаап, кайра аракет кылыңыз.</translation>
 <translation id="9133335900048457298">Корголгон мазмунду жаздырууга болбойт</translation>
 <translation id="9151726767154816831">Жаңыртуу үчүн өчүрүп күйгүзүп, "жууп салыңыз".</translation>

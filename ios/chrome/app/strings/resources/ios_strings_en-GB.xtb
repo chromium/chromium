@@ -456,6 +456,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5782227691023083829">Translating...</translation>
 <translation id="5797070761912323120">Google may use your history to personalise Search, ads and other Google services</translation>
 <translation id="5803566855766646066">Are you sure that you want to discard this new card?</translation>
+<translation id="5812974770859303494">Add to…</translation>
 <translation id="5816228676161003208">This lets you search faster using your voice.</translation>
 <translation id="581659025233126501">Turn on Sync</translation>
 <translation id="5819208479324046259">Managed by <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -522,6 +523,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="634878792104344809">Sync your passwords, history and more on all of your devices</translation>
 <translation id="6362362396625799311">No Incognito Tabs</translation>
 <translation id="6363526231572697780">No username</translation>
+<translation id="6366663624406569102">Sign out and turn off sync</translation>
 <translation id="6374469231428023295">Try Again</translation>
 <translation id="6377118281273296434">Site security</translation>
 <translation id="6380866119319257197">If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
@@ -765,6 +767,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8654802032646794042">Cancel</translation>
 <translation id="8668210798914567634">This page has been saved to your Reading List.</translation>
 <translation id="8680787084697685621">Account sign-in details are out of date.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Close tab}other{Close tabs}}</translation>
 <translation id="8706588385081740091">Passwords</translation>
 <translation id="8717864919010420084">Copy link</translation>
 <translation id="8721297211384281569">Tools Menu</translation>

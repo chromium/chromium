@@ -456,6 +456,7 @@
 <translation id="5782227691023083829">Превежда се...</translation>
 <translation id="5797070761912323120">Възможно е да използваме историята ви, за да персонализираме търсенето, рекламите и други услуги на Google</translation>
 <translation id="5803566855766646066">Наистина ли искате да отхвърлите тази нова карта?</translation>
+<translation id="5812974770859303494">Добавяне към...</translation>
 <translation id="5816228676161003208">Това ви позволява да търсите по-бързо посредством гласа си.</translation>
 <translation id="581659025233126501">Включване на синхронизирането</translation>
 <translation id="5819208479324046259">Управлява се от <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -522,6 +523,7 @@
 <translation id="634878792104344809">Синхронизиране на вашите пароли, история и др. на всичките ви устройства</translation>
 <translation id="6362362396625799311">Няма раздели в режим „инкогнито“</translation>
 <translation id="6363526231572697780">Няма потребителско име</translation>
+<translation id="6366663624406569102">Излизане от профила и изключване на синхронизирането</translation>
 <translation id="6374469231428023295">Нов опит</translation>
 <translation id="6377118281273296434">Сигурност на сайта</translation>
 <translation id="6380866119319257197">Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" /></translation>
@@ -765,6 +767,7 @@
 <translation id="8654802032646794042">Отказ</translation>
 <translation id="8668210798914567634">Тази страница е запазена в списъка ви за четене.</translation>
 <translation id="8680787084697685621">Данните за вход в профила ви не са актуални.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Затваряне на раздела}other{Затваряне на разделите}}</translation>
 <translation id="8706588385081740091">Пароли</translation>
 <translation id="8717864919010420084">Копиране на връзката</translation>
 <translation id="8721297211384281569">Меню „Инструменти“</translation>

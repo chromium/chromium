@@ -40,6 +40,7 @@
       Als je het beleid niet toepast, kunnen gebruikers sms-synchronisatie niet instellen.
 
       Als je dit beleid niet instelt, is de functie standaard niet toegestaan voor beheerde gebruikers maar wel toegestaan voor andere gebruikers.</translation>
+<translation id="1035860095382451169">Hangsloticoon in de omnibox aanzetten voor beveiligde verbindingen</translation>
 <translation id="1040446814317236570">Verwijderen van gegevens uit PAC-URL's toestaan (voor https://)</translation>
 <translation id="1041450926450683286">De client moet deze gegevens niet interpreteren, maar woord voor woord doorsturen. De DMServer gebruikt policy_version om te verifiëren dat de beleidsweergave van DMServer overeenkomt met de weergave van het Chrome OS-apparaat.</translation>
 <translation id="1041719059374171202">Als je het beleid instelt, kun je een lijst met URL-patronen instellen om op te geven welke sites JavaScript niet mogen uitvoeren.
@@ -83,6 +84,7 @@
 <translation id="1095209545735032039">De Serial API op deze sites blokkeren</translation>
 <translation id="1096105751829466145">Standaardzoekprovider</translation>
 <translation id="1099282607296956954">Elke site isoleren</translation>
+<translation id="1105572260329131950">Standaardiconen gebruiken voor beveiligde verbindingen</translation>
 <translation id="1117535567637097036">De protocolhandlers die via dit beleid zijn ingesteld, worden niet gebruikt bij de verwerking van Android-intenties.</translation>
 <translation id="1118093128235245168">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een aangesloten USB-apparaat</translation>
 <translation id="111910763555783249">Instellingen voor meldingen</translation>
@@ -214,6 +216,7 @@
 <translation id="1294263471858445589">Ambient-verificatie in normale en incognitosessies aanzetten.</translation>
 <translation id="1295737447968372331">Dicteren op het inlogscherm aanzetten</translation>
 <translation id="1297182715641689552">Een PAC-script voor de proxy gebruiken</translation>
+<translation id="1297827666345629703">Een beheerd account moet een primair account zijn</translation>
 <translation id="1297961932043741908">Een limiet instellen voor het aantal megabytes geheugen dat door één Chrome-instantie kan worden gebruikt.</translation>
 <translation id="1304973015437969093">ID's voor extensies/apps en URL's voor updates die op de achtergrond moeten worden geïnstalleerd</translation>
 <translation id="1305400589435476516">Als je het beleid toepast, is dataroaming toegestaan voor het apparaat.
@@ -579,6 +582,13 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="1755310913456007816">Bestaande instellingen voor online intrekkingscontrole gebruiken</translation>
 <translation id="1760951637494635692">De Serial API toestaan op deze sites</translation>
+<translation id="1765503534110351026">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+       Als je het beleid instelt, omzeilt <ph name="PRODUCT_NAME" /> elke proxy voor de lijst met hosts die hier is opgegeven. Dit beleid wordt alleen van kracht als het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> niet is opgegeven en je <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> of <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> hebt opgegeven voor <ph name="PROXY_MODE_POLICY_NAME" />.
+
+       Stel dit beleid niet in als je een andere modus hebt geselecteerd om proxybeleid in te stellen.
+
+       Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="1767673020408652620">App-aanbevelingen aanzetten voor de nulstatus van het zoekvak</translation>
 <translation id="1780323582106687813">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid '<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />'.
 
@@ -801,6 +811,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="2082205219176343977">Configureer de minimaal toegestane Chrome-versie voor het apparaat.</translation>
 <translation id="208566302163036794">Uitgezette functies blokkeren</translation>
 <translation id="208623333578980446">Wake locks voor het scherm toestaan voor stroombeheer</translation>
+<translation id="2086944573376916479">Een beheerd account moet een primair account zijn en mag geen secundaire accounts hebben</translation>
 <translation id="2090939118981888335">Als je dit beleid toepast, wordt de proxy voor gegevenscompressie toegestaan. Als je het beleid niet toepast, wordt de proxy niet toegestaan.
 
       Als je het beleid instelt, kunnen gebruikers het niet aanpassen. Als je het beleid niet instelt, kunnen gebruikers ervoor kiezen de functie te gebruiken.</translation>
@@ -854,6 +865,17 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 
       Als dit beleid niet is ingesteld, begint de browser pas met het besparen van geheugen nadat is gedetecteerd dat er nog maar een kleine hoeveelheid fysiek geheugen op de machine beschikbaar is.</translation>
 <translation id="2166472654199325139">Sites niet filteren op content voor volwassenen</translation>
+<translation id="2168060657210442816">
+      Dit beleid vereist dat <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> wordt ingesteld op True om het van kracht te laten zijn.
+
+      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> op machineniveau, wordt afgedwongen dat alle beheerde accounts primaire accounts moeten zijn.
+      Als dit beleid voor een account is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, is dat account altijd een primair account maar kan het secundaire accounts in het profiel hebben.
+
+      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> op machineniveau, wordt afgedwongen dat alle beheerde accounts primaire accounts moeten zijn.
+      Als dit beleid voor een account is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />, is dat account altijd een primair account en heeft het geen secundaire accounts in het profiel.
+
+      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_NONE" /> of niet is ingesteld, gelden er voor beheerde accounts geen beperkingen. Dit kan ertoe leiden dat een beheerd account een secundair account is, waardoor het niet mogelijk is om beleid te krijgen dat door de beheerder voor het account is ingesteld.
+    </translation>
 <translation id="2168397434410358693">Inactieve vertraging wanneer op netstroom wordt gewerkt</translation>
 <translation id="217013996107840632">Opdrachtregelparameters voor overschakeling vanaf de alternatieve browser.</translation>
 <translation id="2170233653554726857">WPAD-optimalisatie aanzetten</translation>
@@ -1759,6 +1781,11 @@ en 3 optionele leden:
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="3261592499545947104">Aantal seconden vóór het verlopen van een certificaat wanneer de verlenging moet worden geactiveerd</translation>
+<translation id="3264706118366247207">Hiermee stel je een lijst met typen browsergegevens in die moeten worden verwijderd als de gebruiker alle browservensters sluit. De beschikbare gegevenstypen zijn browsegeschiedenis (<ph name="DATA_TYPE_BROWSING_HISTORY" />), downloadgeschiedenis (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cachegeheugen (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), automatisch invullen (<ph name="DATA_TYPE_AUTOFILL" />), wachtwoorden (<ph name="DATA_TYPE_PASSWORD" />), site-instellingen (<ph name="DATA_TYPE_SITE_SETTINGS" />) en gegevens van gehoste apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Dit beleid krijgt geen voorrang op <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+      Dit beleid vereist dat het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> is ingesteld op True, anders wordt dit beleid genegeerd. Als je dit beleid instelt op platformniveau, moet je synchronisatie uitzetten op platformniveau. Als je dit beleid instelt op gebruikersniveau, heeft dit beleid alleen effect als je synchronisatie uitzet voor die gebruiker.
+
+      Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als de browser of het besturingssysteem crasht), worden de browsegegevens gewist wanneer het profiel weer wordt geladen.</translation>
 <translation id="3264793472749429012">Coderingen voor standaardzoekprovider</translation>
 <translation id="3273221114520206906">Standaardinstelling voor JavaScript</translation>
 <translation id="328347261792478720">De browser toont standaard media-aanbevelingen die zijn gepersonaliseerd voor de gebruiker. Als je dit beleid niet toepast, ziet de gebruiker deze aanbevelingen niet. Als je dit beleid toepast of niet instelt, ziet de gebruiker de media-aanbevelingen.</translation>
@@ -1816,6 +1843,7 @@ en 3 optionele leden:
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner dan of gelijk zijn aan de inactieve vertraging.
 
           Het waarschuwingsbericht wordt alleen getoond als de inactieve actie 'uitloggen' of 'afsluiten' is.</translation>
+<translation id="3363360928811201045">Beperkingen op beheerde accounts beheren</translation>
 <translation id="3367868895271989224">Als je dit beleid toepast, worden alle sites geïsoleerd. (Elke site wordt in een eigen proces uitgevoerd.) Als je het beleid niet toepast of niet instelt, wordt site-isolatie niet uitgezet maar kunnen gebruikers zich voor deze functie afmelden (bijvoorbeeld door site-isolatie uit te zetten in chrome://flags).
 
       <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> kan ook handig zijn voor fijnafstemming van oorsprongen. In <ph name="PRODUCT_OS_NAME" /> versie 76 en eerder stel je het apparaatbeleid van <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> in op dezelfde waarde. (Omdat er een vertraging kan optreden als de waarden niet overeenkomen bij het starten van een gebruikerssessie.)
@@ -2993,6 +3021,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als een beleid niet in de lijst staat en er een conflict tussen bronnen, bereik of niveau is, wordt het beleid met de hoogste prioriteit toegepast.</translation>
 <translation id="5056708224511062314">Vergrootglas staat uit</translation>
 <translation id="5058573563327660283">De strategie selecteren die wordt gebruikt om schijfruimte vrij te maken tijdens het automatisch opschonen (verouderd)</translation>
+<translation id="5059201920681374653">Beheerde accounts moeten op een aangesloten beheerd apparaat staan</translation>
 <translation id="5061114193960158745">Met dit beleid wordt de lijst met websites bepaald die nooit een schakeling tussen browsers veroorzaken. Elk item wordt als regel behandeld. Bij overeenkomende regels wordt er geen alternatieve browser geopend. Anders dan bij het beleid <ph name="URL_LIST_POLICY_NAME" /> zijn de regels in beide richtingen van toepassing. Als de add-in van <ph name="IE_PRODUCT_NAME" /> aanstaat, bepaalt deze ook of <ph name="IE_PRODUCT_NAME" /> deze URL's moet openen in <ph name="PRODUCT_NAME" />.
 
       Als je het beleid niet instelt, worden er geen websites aan de lijst toegevoegd.
@@ -3179,6 +3208,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 
       Als je het beleid niet instelt, kunnen gebruikers de game niet spelen op ingeschreven <ph name="PRODUCT_OS_NAME" />, maar wel onder andere omstandigheden.</translation>
 <translation id="529457411593078576">Servicevoorwaarden aanzetten tijdens eerste uitvoering voor CCT</translation>
+<translation id="5298949392804966105">Geen beperkingen voor beheerde accounts</translation>
 <translation id="530134925949808452">De tijd van de dag in lokale tijd wanneer het gebruiksquotum wordt vernieuwd.</translation>
 <translation id="5303080953475303561">Met dit beleid stel je in hoe vaak het vergrendelscherm om het wachtwoord voor snel ontgrendelen vraagt. Elke keer dat het vergrendelscherm wordt weergegeven en de laatste wachtwoordinvoer plaatsvond vóór de periode die is gespecificeerd door de gekozen waarde, is snel ontgrendelen niet beschikbaar. Als gebruikers na deze periode op het vergrendelscherm blijven, worden ze de volgende keer dat ze een verkeerde code opgeven of het vergrendelscherm opnieuw openen (afhankelijk van wat als eerste gebeurt) om het wachtwoord gevraagd.
 
@@ -4318,6 +4348,26 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 
           Opmerking: <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> overschrijft dit beleid als het is opgegeven.</translation>
 <translation id="6833988859168635883">Startpagina, homepage en pagina 'Nieuw tabblad'</translation>
+<translation id="6834298774555537368">Als je het beleid instelt, bepaal je de proxyinstellingen voor Chrome en ARC-apps, die alle proxygerelateerde opties negeren die via de opdrachtregel worden opgegeven.
+
+       Als je het beleid niet instelt, kunnen gebruikers hun proxyinstellingen kiezen.
+
+       Als je het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> instelt, worden de volgende velden geaccepteerd:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Hiermee kun je de proxyserver opgeven die Chrome gebruikt en voorkomen dat gebruikers de proxyinstellingen wijzigen.
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: Een URL naar een pac-bestand van de proxy.
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: Een URL van de proxyserver.
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: Een lijst met proxyhosts die de proxy omzeilen.
+
+Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten gunste van het veld <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Als je voor <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> de volgende waarde kiest:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />: Er wordt nooit een proxy gebruikt en alle andere velden worden genegeerd.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: De proxy van het systeem wordt gebruikt en alle andere velden worden genegeerd.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: Alle andere velden worden genegeerd.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: De velden <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: De velden <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
+
+      Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="6835883744948188639">Toon de gebruiker een terugkerende prompt om aan te geven dat opnieuw opstarten wordt aanbevolen</translation>
 <translation id="683688607121170501">Deze instelling biedt gebruikers de mogelijkheid om in het contentgedeelte van hun browservenster tussen Google-accounts te schakelen nadat ze zijn ingelogd bij hun <ph name="PRODUCT_OS_NAME" />-apparaat.
 
@@ -4728,6 +4778,7 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 <translation id="7207095846245296855">Google SafeSearch afdwingen</translation>
 <translation id="7211368186050418507">Tijdzone nooit automatisch detecteren</translation>
 <translation id="7216442368414164495">Hiermee kunnen gebruikers zich aanmelden voor uitgebreide rapportage van Safe Browsing</translation>
+<translation id="7221574724100909818">Hangsloticoon gebruiken voor beveiligde verbindingen</translation>
 <translation id="7229975860249300121">Bevat een reguliere expressie die wordt gebruikt om te bepalen welke Google-accounts kunnen worden ingesteld als primair browseraccount in <ph name="PRODUCT_NAME" /> (oftewel het account dat wordt gekozen als de gebruiker synchronisatie toestaat).
 
       Er wordt een fout weergegeven als een gebruiker probeert een primair browseraccount in te stellen met een gebruikersnaam die niet met dit patroon overeenkomt.
@@ -5738,6 +5789,10 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="8631437968147930597">De lijst met notitie-apps die zijn toegestaan op het <ph name="PRODUCT_OS_NAME" />-vergrendelscherm</translation>
 <translation id="8637566476051166626">Expliciet toegestane netwerkpoorten</translation>
 <translation id="8643838501942693770">Cookies van derden toestaan, maar toestaan dat gebruikers deze instelling wijzigen</translation>
+<translation id="8648844602494595665">Dit beleid bepaalt hoe er wordt omgegaan met het hangsloticoon in de omnibox.
+       Vanaf Chrome M93 is er een nieuw omnibox-icoon voor beveiligde verbindingen.
+       Als je het beleid toepast, gebruikt Chrome het bestaande hangsloticoon voor beveiligde verbindingen.
+       Als je het beleid niet toepast of niet instelt, gebruikt Chrome het standaardicoon voor beveiligde verbindingen.</translation>
 <translation id="8650974590712548439">Locatie van Windows-register voor Windows-clients:</translation>
 <translation id="8653085952260859632">Informatie over geheugen rapporteren</translation>
 <translation id="8653561013005884087">Als het beleid is ingesteld op True, blijft gesproken feedback aan. Als het beleid is ingesteld op False, blijft gesproken feedback uit.

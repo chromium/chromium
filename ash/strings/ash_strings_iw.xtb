@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">התקנת אפליקציות, תוספים ועיצובים</translation>
 <translation id="2977598380246111477">המספר הבא</translation>
+<translation id="2992327365391326550">לחצן המיקרופן של המכשיר כבוי.</translation>
 <translation id="2995447421581609334">צפייה במכשירי העברה.</translation>
 <translation id="2996462380875591307">‏הזכוכית המגדלת במצב עגינה הופעלה. כדי לכבות אותה, יש להקיש שוב על Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">אודיו במונו</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">‏כדי להיכנס יש להזין את קוד הגישה להורים (הקוד מ-Family Link)</translation>
 <translation id="3039939407102840004">רמת הטעינה של סוללת הסטיילוס: <ph name="PERCENTAGE" />.</translation>
 <translation id="3045488863354895414">אחה"צ טובים,</translation>
+<translation id="3051189971848907985">שינוי שם הפרופיל מתבצע. יש להמתין מספר דקות.</translation>
 <translation id="3055162170959710888">השתמשת היום במכשיר הזה במשך <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">הרחבת התפריט</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3371140690572404006">‏מכשיר עם יציאת USB-C (יציאה ימנית-קדמית)</translation>
 <translation id="3375634426936648815">מחובר</translation>
+<translation id="3378442621503952303">מתבצע חיבור לפרופיל. יש להמתין מספר דקות.</translation>
 <translation id="3386978599540877378">הזכוכית המגדלת במסך מלא</translation>
 <translation id="3400357268283240774">הגדרות נוספות</translation>
 <translation id="3410336247007142655">הגדרות של הצגת עיצוב כהה</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">היי, איך אפשר לעזור?</translation>
 <translation id="3826099427150913765">מעבר לסיסמה</translation>
 <translation id="383058930331066723">מצב חיסכון בסוללה מופעל</translation>
+<translation id="3835880383832568924">לעיון בעדכונים, יש לפתוח את האפליקציה 'קיצורים'</translation>
 <translation id="383629559565718788">צפייה בהגדרות המקלדת</translation>
 <translation id="3846214748874656680">יציאה ממסך מלא</translation>
 <translation id="3846575436967432996">אין מידע רשת זמין</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">מילוי משוב</translation>
 <translation id="4731797938093519117">גישת הורים</translation>
 <translation id="4734965478015604180">אופקי</translation>
+<translation id="4735498845456076464">מקשי הקיצור <ph name="LAUNCHER_KEY_NAME" /> + ספרה הוחלפו. כדי לדמות את הפעולה של מקשי הפונקציה, יש להקיש על המקש <ph name="LAUNCHER_KEY_NAME" /> + מקש כלשהו בשורה העליונה של המקלדת.</translation>
 <translation id="4744944742468440486">מידע בקשר לבחירה שלך</translation>
 <translation id="4759238208242260848">הורדות</translation>
 <translation id="4774338217796918551">אפשר לחזור מחר בשעה <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6910714959251846841">‏כדי להתקין את העדכון הזה צריך לבצע Powerwash של המכשיר. אפשר לקרוא מידע נוסף על העדכון האחרון של <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">לא ניתן היה לזהות את הכרטיס החכם שלך. יש לנסות שוב.</translation>
+<translation id="6921188888306725546">מקשי הקיצור השתפרו</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6961121602502368900">השתקת הטלפון לא זמינה בפרופיל העבודה</translation>
 <translation id="6961840794482373852">‏מקשי הקיצור Alt + חץ למעלה הוחלפו. כדי לדמות את הפעולה של המקש Page Up, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ למעלה.</translation>
@@ -936,6 +942,7 @@
 <translation id="8631727435199967028">הגדרות נגישות</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת</translation>
 <translation id="8639760480004882931">שיעור טעינה נותר - <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">רענון רשימת הפרופילים מתבצע. יש להמתין מספר דקות.</translation>
 <translation id="8646417893960517480">טיימר של <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">‏כדי להוסיף משתמש, יש להזין קוד גישה להורים ב-Family Link</translation>
 <translation id="8649101189709089199">הקראה</translation>
@@ -963,6 +970,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">הגדרות של שיטת הקלט</translation>
+<translation id="8818320199597151042">הסרת הפרופיל מתבצעת. יש להמתין מספר דקות.</translation>
 <translation id="8825863694328519386">יש להחליק מצד ימין כדי לחזור אחורה</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">לחצן 'הקודם'</translation>
@@ -1008,6 +1016,7 @@
 <translation id="9091626656156419976">הוסרה התצוגה של <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">השתקת הטלפון</translation>
 <translation id="9099154003160514616">‏יש עדכון ל-Lacros</translation>
+<translation id="9100887602489003640">הוספת הפרופיל מתבצעת. יש להמתין מספר דקות.</translation>
 <translation id="9105450214093926548">‏אי אפשר להיכנס לחשבון של משתמש נוסף בזמן שדפדפן Lacros פועל. במקום זאת, יש להשתמש בפרופיל דפדפן שני ב-Lacros או לסגור את Lacros ולנסות שוב.</translation>
 <translation id="9133335900048457298">לא ניתן להקליט תוכן מוגן</translation>
 <translation id="9151726767154816831">‏כדי לעדכן את המערכת, יש להפעיל את המכשיר מחדש ולבצע Powerwash</translation>

@@ -24,6 +24,7 @@
 <translation id="2695886661449553974">Chrome-এ আপডেট চেক করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="2732745070297234559">Chrome সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করে দেখুন।</translation>
 <translation id="2740105938841089077">Chrome ব্যবহার করে লিঙ্ক খুলুন</translation>
+<translation id="2869959624320573933">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="2919738076569633423">Chrome ব্যবহার করে আপনি <ph name="BEGIN_LINK_TOS" />পরিষেবার শর্তাবলী<ph name="END_LINK_TOS" />তে সম্মতি জানাচ্ছেন।</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> দ্বারা ম্যানেজ করা একটি অ্যাকাউন্ট থেকে আপনি সাইন-আউট করছেন বলে, এই ডিভাইস থেকে আপনার Chrome ডেটা মুছে যাবে। আপনার Google অ্যাকাউন্টে এই ডেটা থেকে যাবে।</translation>
 <translation id="3167189358072330585">আপনার অ্যাকাউন্ট Google Chrome-এ কাজ করে না৷ সাইন-ইন করার জন্য আপনার ডোমেন অ্যাডমিনিস্ট্রেটরের সঙ্গে যোগাযোগ করুন বা কোন সাধারণ Google অ্যাকাউন্ট ব্যবহার করুন৷</translation>
@@ -88,6 +89,7 @@
 <translation id="7855730255114109580">Google Chrome আপ টু ডেট আছে</translation>
 <translation id="8022947259858476807">লিঙ্ক খুলতে, উইজেট থেকে সার্চ করতে এবং অন্যান্য অ্যাপে পাসওয়ার্ড অটোফিল করতে ডিফল্ট হিসেবে Chrome ব্যবহার করুন</translation>
 <translation id="8160472928944011082">Chrome আপডেট করা যাচ্ছে না</translation>
+<translation id="8263079278049777200">এই সাইট, আপনার Google অ্যাকাউন্ট ও Chrome-এ সাইন-ইন করুন। আপনি পরে সিঙ্ক করার সুবিধা চালু করতে পারবেন।</translation>
 <translation id="8357607116237445042">এই ডিভাইস থেকে আপনার Chrome ডেটা মুছবেন না রাখবেন তা বেছে নিন</translation>
 <translation id="8370517070665726704">কপিরাইট <ph name="YEAR" /> Google LLC সব স্বত্ব সংরক্ষিত আছে।</translation>
 <translation id="840168496893712993">কিছু অ্যাড-অনের কারণে Chrome ক্র্যাশ করতে পারে৷ দয়া করে সেগুলিকে আনইনস্টল করার চেষ্টা করুন৷</translation>

@@ -308,12 +308,14 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2042213636306070719">Pladenj 7</translation>
 <translation id="204357726431741734">Prijavite se, če želite uporabljati gesla, shranjena v računu Google</translation>
 <translation id="2053111141626950936">Strani v jeziku <ph name="LANGUAGE" /> ne bodo prevedene.</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Če je ta kontrolnik vklopljen in stanje aktivno, Chrome določi, kateri veliki skupini oseb ali »kohorti« je vaša nedavna dejavnost brskanja najbolj podobna. Izdajatelji lahko izberejo oglase za skupino in vaša dejavnost brskanja je zasebna v napravi. Skupina se posodobi vsak dan.}=1{Če je ta kontrolnik vklopljen in stanje aktivno, Chrome določi, kateri veliki skupini oseb ali »kohorti« je vaša nedavna dejavnost brskanja najbolj podobna. Izdajatelji lahko izberejo oglase za skupino in vaša dejavnost brskanja je zasebna v napravi. Skupina se posodobi vsak dan.}one{Če je ta kontrolnik vklopljen in stanje aktivno, Chrome določi, kateri veliki skupini oseb ali »kohorti« je vaša nedavna dejavnost brskanja najbolj podobna. Izdajatelji lahko izberejo oglase za skupino in vaša dejavnost brskanja je zasebna v napravi. Skupina se posodobi vsak {NUM_DAYS} dan.}two{Če je ta kontrolnik vklopljen in stanje aktivno, Chrome določi, kateri veliki skupini oseb ali »kohorti« je vaša nedavna dejavnost brskanja najbolj podobna. Izdajatelji lahko izberejo oglase za skupino in vaša dejavnost brskanja je zasebna v napravi. Skupina se posodobi vsak {NUM_DAYS} dneva.}few{Če je ta kontrolnik vklopljen in stanje aktivno, Chrome določi, kateri veliki skupini oseb ali »kohorti« je vaša nedavna dejavnost brskanja najbolj podobna. Izdajatelji lahko izberejo oglase za skupino in vaša dejavnost brskanja je zasebna v napravi. Skupina se posodobi vsak {NUM_DAYS} dni.}other{Če je ta kontrolnik vklopljen in stanje aktivno, Chrome določi, kateri veliki skupini oseb ali »kohorti« je vaša nedavna dejavnost brskanja najbolj podobna. Izdajatelji lahko izberejo oglase za skupino in vaša dejavnost brskanja je zasebna v napravi. Skupina se posodobi vsak {NUM_DAYS} dni.}}</translation>
 <translation id="2053553514270667976">Poštna številka</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 predlog}one{# predlog}two{# predloga}few{# predlogi}other{# predlogov}}</translation>
 <translation id="2071692954027939183">Obvestila so bila samodejno blokirana, ker jih običajno ne dovolite.</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
 <translation id="20817612488360358">Za uporabo so nastavljene sistemske nastavitve strežnika proxy, vendar je navedena tudi izrecna konfiguracija proxyja.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. rezultat od <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2085876078937250610">Shrani …</translation>
 <translation id="2088086323192747268">Gumb za upravljanje sinhronizacije, pritisnite Enter, če želite upravljati, kateri podatki se sinhronizirajo v Chromovih nastavitvah.</translation>
 <translation id="2091887806945687916">Zvok</translation>
 <translation id="2094505752054353250">Neujemanje domen</translation>
@@ -394,6 +396,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2355395290879513365">Napadalci morda vidijo slike, ki si jih ogledujete na tem spletnem mestu, in vas ukanijo, tako da jih spremenijo.</translation>
 <translation id="2356070529366658676">Vprašaj</translation>
 <translation id="2357481397660644965">Vašo napravo upravlja domena <ph name="DEVICE_MANAGER" /> in vaš račun upravlja domena <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Čez manj kot en dan}=1{Čez en dan}one{Čez {NUM_DAYS} dan}two{Čez {NUM_DAYS} dneva}few{Čez {NUM_DAYS} dni}other{Čez {NUM_DAYS} dni}}</translation>
 <translation id="2359629602545592467">Več valut</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2359961752320758691">Številka virtualne kartice je uporabljena.</translation>
@@ -536,6 +539,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2941952326391522266">Strežniku ni uspelo dokazati, da je res <ph name="DOMAIN" />; njegovo varnostno potrdilo je od <ph name="DOMAIN2" />. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="2943895734390379394">Čas nalaganja:</translation>
 <translation id="2948083400971632585">Namestniške strežnike, konfigurirane za povezavo, lahko onemogočite na strani z nastavitvami.</translation>
+<translation id="2949183777371959169">Prezrto, ker računalnik ni včlanjen v upravljanje v oblaku za brskalnik Chrome.</translation>
 <translation id="2951588413176968965">Moj nabiralnik</translation>
 <translation id="295526156371527179">Opozorilo: ta pravilnik ni bil združen kot slovar, kot je določeno v pravilniku, ker ni slovar.</translation>
 <translation id="2955913368246107853">Zapri vrstico za iskanje</translation>
@@ -715,6 +719,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3590643883886679995">Podatki za prijavo se bodo shranili v tej napravi, ko zaprete anonimni način.</translation>
 <translation id="359126217934908072">Mesec/leto:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Skupino lahko kadar koli ponastavite. Pridružitev novi skupini traja približno en dan.}=1{Skupino lahko kadar koli ponastavite. Pridružitev novi skupini traja približno en dan.}one{Skupino lahko kadar koli ponastavite. Pridružitev novi skupini traja približno {NUM_DAYS} dan.}two{Skupino lahko kadar koli ponastavite. Pridružitev novi skupini traja približno {NUM_DAYS} dneva.}few{Skupino lahko kadar koli ponastavite. Pridružitev novi skupini traja približno {NUM_DAYS} dni.}other{Skupino lahko kadar koli ponastavite. Pridružitev novi skupini traja približno {NUM_DAYS} dni.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplikacijo je blokiral skrbnik</translation>
 <translation id="3608932978122581043">Usmerjenost podajanja</translation>
@@ -1202,6 +1207,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5332219387342487447">Način pošiljanja</translation>
 <translation id="5333022057423422993">Chrome je geslo, ki ste ga pravkar uporabili, našel v podatkovni kršitvi. Zaradi zavarovanja računov priporočamo, da preverite shranjena gesla.</translation>
 <translation id="5334013548165032829">Podrobni sistemski dnevniki</translation>
+<translation id="5334145288572353250">Želite shraniti naslov?</translation>
 <translation id="5340250774223869109">Aplikacija je blokirana</translation>
 <translation id="534295439873310000">Naprave s tehnologijo NFC</translation>
 <translation id="5344579389779391559">Ta stran vam bo morda poskusila kaj zaračunati</translation>
@@ -1541,6 +1547,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6671697161687535275">Želite predlog obrazca odstraniti iz Chromiuma?</translation>
 <translation id="6685834062052613830">Odjavite se in dokončajte nastavitev</translation>
 <translation id="6687335167692595844">Zahtevana je velikost besedila</translation>
+<translation id="6688743156324860098">Posodobi …</translation>
 <translation id="6689249931105087298">Relativno s stiskanjem črnih pik</translation>
 <translation id="6689271823431384964">Chrome ponuja shranjevanje kartic v račun za Google, ker ste prijavljeni. To lahko spremenite v nastavitvah. Ime imetnika računa je iz vašega računa.</translation>
 <translation id="6698381487523150993">Ustvarjeno:</translation>
@@ -1556,6 +1563,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6744009308914054259">Med čakanjem na povezavo lahko berete članke za branje brez povezave med prenosi.</translation>
 <translation id="6753269504797312559">Vrednost pravilnika</translation>
 <translation id="6757797048963528358">Naprava je preklopila v stanje pripravljenosti.</translation>
+<translation id="6767985426384634228">Želite posodobiti naslov?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Vijoličnomodra</translation>
@@ -1715,6 +1723,7 @@ Dodatne podrobnosti:
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Se ne uporablja</translation>
 <translation id="7390545607259442187">Potrditev kartice</translation>
+<translation id="7392089738299859607">Posodobitev naslova</translation>
 <translation id="7399802613464275309">Varnostno preverjanje</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120">Naprava <ph name="DEVICE_NAME" /> je upravljana</translation>
@@ -1853,6 +1862,7 @@ Dodatne podrobnosti:
 <translation id="7865448901209910068">Najboljša hitrost</translation>
 <translation id="7874263914261512992">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chrome priporoča, da takoj preverite shranjena gesla za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> in druga spletna mesta, na katerih uporabljate to geslo.</translation>
 <translation id="7878562273885520351">Geslo je morda ogroženo</translation>
+<translation id="7880146494886811634">Shranjevanje naslova</translation>
 <translation id="7882421473871500483">Rjava</translation>
 <translation id="7887683347370398519">Preverite CVC in poskusite znova</translation>
 <translation id="7887885240995164102">Odpri način slike v sliki</translation>

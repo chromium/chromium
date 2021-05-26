@@ -245,6 +245,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">instalować aplikacje, rozszerzenia i motywy;</translation>
 <translation id="2977598380246111477">Następny numer</translation>
+<translation id="2992327365391326550">Przycisk mikrofonu urządzenia jest wyłączony.</translation>
 <translation id="2995447421581609334">Pokaż urządzenia przesyłające.</translation>
 <translation id="2996462380875591307">Lupa zadokowana została włączona. Aby ją wyłączyć, naciśnij ponownie Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">Dźwięk mono</translation>
@@ -255,6 +256,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3038571455154067151">Aby się zalogować, wpisz kod dostępu Family Link rodzica</translation>
 <translation id="3039939407102840004">Poziom baterii rysika wynosi <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="3045488863354895414">Dzień dobry,</translation>
+<translation id="3051189971848907985">Zmieniam nazwę profilu. Odczekaj kilka minut.</translation>
 <translation id="3055162170959710888">Urządzenie było dziś przez Ciebie używane przez <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Rozwiń menu</translation>
@@ -295,6 +297,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3368922792935385530">Połączone</translation>
 <translation id="3371140690572404006">Urządzenie USB-C (przedni port na prawym boku)</translation>
 <translation id="3375634426936648815">Połączono</translation>
+<translation id="3378442621503952303">Łączę z profilem. Odczekaj kilka minut.</translation>
 <translation id="3386978599540877378">Lupa pełnoekranowa</translation>
 <translation id="3400357268283240774">Ustawienia dodatkowe</translation>
 <translation id="3410336247007142655">Pokaż ustawienia ciemnego motywu</translation>
@@ -351,6 +354,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="380165613292957338">Cześć, w czym mogę pomóc?</translation>
 <translation id="3826099427150913765">Zmień na hasło</translation>
 <translation id="383058930331066723">Włączone jest oszczędzanie baterii.</translation>
+<translation id="3835880383832568924">Aby zobaczyć zmiany, otwórz aplikację Skróty</translation>
 <translation id="383629559565718788">Pokaż ustawienia klawiatury</translation>
 <translation id="3846214748874656680">Zamknij pełny ekran</translation>
 <translation id="3846575436967432996">Brak informacji o sieciach</translation>
@@ -471,6 +475,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4705716602320768426">Zgłoś opinię</translation>
 <translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="4734965478015604180">Poziomo</translation>
+<translation id="4735498845456076464">Skrót klawiszowy <ph name="LAUNCHER_KEY_NAME" /> + cyfra został zmieniony. Aby użyć klawiszy funkcyjnych, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + klawisz w górnym rzędzie.</translation>
 <translation id="4744944742468440486">Informacje związane z zaznaczoną treścią</translation>
 <translation id="4759238208242260848">Pobrane pliki</translation>
 <translation id="4774338217796918551">Możesz wrócić jutro o <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6910714959251846841">Ta aktualizacja wymaga usunięcia wszystkich danych z urządzenia za pomocą funkcji Powerwash. Dowiedz się więcej o najnowszej aktualizacji <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Nie udało się rozpoznać karty elektronicznej. Spróbuj ponownie.</translation>
+<translation id="6921188888306725546">Skróty klawiszowe zostały ulepszone</translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6961121602502368900">Funkcja Wyciszenie telefonu jest niedostępna w profilu służbowym</translation>
 <translation id="6961840794482373852">Skrót klawiszowy Alt + strzałka w górę został zmieniony. Aby użyć klawisza Page Up, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w górę.</translation>
@@ -934,6 +940,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8631727435199967028">Ustawienia ułatwień dostępu</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="8639760480004882931">Pozostało <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">Odświeżam listę profili. Odczekaj kilka minut.</translation>
 <translation id="8646417893960517480">Minutnik <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Aby dodać osobę, wpisz kod dostępu Family Link rodzica</translation>
 <translation id="8649101189709089199">Przeczytaj na głos</translation>
@@ -961,6 +968,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Ustawienia metod wprowadzania</translation>
+<translation id="8818320199597151042">Usuwam profil. Odczekaj kilka minut.</translation>
 <translation id="8825863694328519386">Aby wrócić, przesuń palcem od lewej strony</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Przycisk Wstecz</translation>
@@ -1006,6 +1014,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="9091626656156419976">Wyświetlacz <ph name="DISPLAY_NAME" /> został usunięty</translation>
 <translation id="9098969848082897657">Wycisz telefon</translation>
 <translation id="9099154003160514616">Dostępna jest aktualizacja Lacros</translation>
+<translation id="9100887602489003640">Dodaję profil. Odczekaj kilka minut.</translation>
 <translation id="9105450214093926548">Gdy uruchomiona jest przeglądarka Lacros, logowanie 2 użytkownika nie jest obsługiwane. Użyj 2 profilu przeglądarki w Lacros lub zamknij Lacros i spróbuj ponownie.</translation>
 <translation id="9133335900048457298">Nie można nagrać treści chronionej</translation>
 <translation id="9151726767154816831">Uruchom ponownie i wykonaj Powerwash, by zaktualizować</translation>

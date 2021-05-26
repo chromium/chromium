@@ -245,6 +245,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Mag-install ng mga app, extension, at tema</translation>
 <translation id="2977598380246111477">Susunod na numero</translation>
+<translation id="2992327365391326550">Naka-off ang button ng mikropono ng device.</translation>
 <translation id="2995447421581609334">Ipakita ang mga cast device.</translation>
 <translation id="2996462380875591307">Na-enable ang Naka-dock na Magnifier. Pinduting muli ang Ctrl+Search+D para i-off ito.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
@@ -255,6 +256,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3038571455154067151">Para mag-sign in, ilagay ang iyong access code ng magulang sa Family Link</translation>
 <translation id="3039939407102840004">Nasa <ph name="PERCENTAGE" /> (na) porsyento ang baterya ng stylus.</translation>
 <translation id="3045488863354895414">Magandang hapon,</translation>
+<translation id="3051189971848907985">Nire-rename ang profile. Maghintay nang ilang minuto.</translation>
 <translation id="3055162170959710888">Ginamit mo ang device na ito nang <ph name="USED_TIME" /> ngayong araw</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">I-expand ang menu</translation>
@@ -295,6 +297,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3368922792935385530">Nakakonekta</translation>
 <translation id="3371140690572404006">USB-C device (port sa kanang bahagi sa harap)</translation>
 <translation id="3375634426936648815">Nakakonekta</translation>
+<translation id="3378442621503952303">Kumokonekta sa profile. Maghintay nang ilang minuto.</translation>
 <translation id="3386978599540877378">ang full-screen magnifier</translation>
 <translation id="3400357268283240774">Mga karagdagang setting</translation>
 <translation id="3410336247007142655">Ipakita ang mga setting ng madilim na tema</translation>
@@ -351,6 +354,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="380165613292957338">Kumusta, ano ang maitutulong ko?</translation>
 <translation id="3826099427150913765">Lumipat sa password</translation>
 <translation id="383058930331066723">Naka-on ang battery saver mode</translation>
+<translation id="3835880383832568924">Para makita ang mga update, buksan ang Shortcuts app</translation>
 <translation id="383629559565718788">Ipakita ang mga setting ng keyboard</translation>
 <translation id="3846214748874656680">Lumabas sa fullscreen</translation>
 <translation id="3846575436967432996">Walang available na impormasyon sa network</translation>
@@ -471,6 +475,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4705716602320768426">Magbigay ng feedback</translation>
 <translation id="4731797938093519117">Pangunahing access</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735498845456076464">Nagbago ang keyboard shortcut na <ph name="LAUNCHER_KEY_NAME" /> + Numero. Para magamit ang mga function key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + isang key sa itaas na row.</translation>
 <translation id="4744944742468440486">Impormasyong nauugnay sa iyong pinili</translation>
 <translation id="4759238208242260848">Mga Download </translation>
 <translation id="4774338217796918551">Bumalik nang <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6910714959251846841">Kinakailangang i-powerwash ang iyong device para sa update na ito. Matuto pa tungkol sa pinakabagong update sa <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Hindi makilala ang iyong smart card. Subukan ulit.</translation>
+<translation id="6921188888306725546">Pinahusay ang mga keyboard shortcut</translation>
 <translation id="6945221475159498467">Pumili</translation>
 <translation id="6961121602502368900">Hindi available ang Pag-silent ng telepono sa profile sa trabaho</translation>
 <translation id="6961840794482373852">Nagbago ang keyboard shortcut na Alt + Pataas na Arrow. Para magamit ang Page Up key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pataas na Arrow.</translation>
@@ -934,6 +940,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8631727435199967028">Mga Setting ng Pagiging Accessible</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> na lang ang natitira</translation>
+<translation id="8641805545866562088">Nire-refresh ang listahan ng profile. Maghintay nang ilang minuto.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> timer</translation>
 <translation id="8647931990447795414">Para magdagdag ng tao, ilagay ang iyong access code ng magulang sa Family Link</translation>
 <translation id="8649101189709089199">Select-to-Speak</translation>
@@ -961,6 +968,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Mga Setting ng Mga Pamamaraan ng Pag-input</translation>
+<translation id="8818320199597151042">Inaalis ang profile. Maghintay nang ilang minuto.</translation>
 <translation id="8825863694328519386">Mag-swipe mula sa kaliwa para bumalik</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Button na Bumalik</translation>
@@ -1006,6 +1014,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="9091626656156419976">Naalis ang display na <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">I-silent ang telepono</translation>
 <translation id="9099154003160514616">Available ang update sa Lacros</translation>
+<translation id="9100887602489003640">Idinaragdag ang profile. Maghintay nang ilang minuto.</translation>
 <translation id="9105450214093926548">Hindi sinusuportahan ang pag-sign in ng pangalawang user habang tumatakbo ang Lacros browser. Gumamit na lang ng pangalawang profile ng browser sa Lacros o isara ang Lacros at subukan ulit.</translation>
 <translation id="9133335900048457298">Hindi puwedeng mag-record ng protektadong content</translation>
 <translation id="9151726767154816831">I-restart at i-powerwash upang i-update</translation>

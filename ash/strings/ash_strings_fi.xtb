@@ -245,6 +245,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">asentaa sovelluksia, laajennuksia ja teemoja</translation>
 <translation id="2977598380246111477">Seuraava numero</translation>
+<translation id="2992327365391326550">Laitteen mikrofonipainike ei ole päällä.</translation>
 <translation id="2995447421581609334">Näytä Cast-laitteet.</translation>
 <translation id="2996462380875591307">Kiinnitetty suurennus on käytössä. Poista se käytöstä painamalla uudelleen Ctrl + haku + D.</translation>
 <translation id="3000461861112256445">Monoääni</translation>
@@ -255,6 +256,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3038571455154067151">Voit kirjautua sisään vanhemman Family Link ‑käyttökoodilla</translation>
 <translation id="3039939407102840004">Näyttökynän akun varaus on <ph name="PERCENTAGE" /> prosenttia.</translation>
 <translation id="3045488863354895414">Hyvää päivää</translation>
+<translation id="3051189971848907985">Nimetään profiilia uudelleen. Odota muutama minuutti.</translation>
 <translation id="3055162170959710888">Olet käyttänyt tätä laitetta tänään <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Laajenna valikko</translation>
@@ -295,6 +297,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3371140690572404006">C-tyypin USB-laite (oikean sivun etummainen portti)</translation>
 <translation id="3375634426936648815">Yhdistetty</translation>
+<translation id="3378442621503952303">Muodostetaan yhteyttä profiiliin. Odota muutama minuutti.</translation>
 <translation id="3386978599540877378">koko näytön suurentaja</translation>
 <translation id="3400357268283240774">Lisäasetukset</translation>
 <translation id="3410336247007142655">Näytä tumman teeman asetukset</translation>
@@ -351,6 +354,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="380165613292957338">Hei. Kuinka voin auttaa?</translation>
 <translation id="3826099427150913765">Vaihda salasanan käyttöön</translation>
 <translation id="383058930331066723">Virransäästötila on päällä</translation>
+<translation id="3835880383832568924">Avaa Shortcuts-sovellus, niin voit nähdä päivitykset</translation>
 <translation id="383629559565718788">Näytä näppäimistöasetukset</translation>
 <translation id="3846214748874656680">Sulje koko näytön tila.</translation>
 <translation id="3846575436967432996">Verkon tietoja ei saatavilla</translation>
@@ -471,6 +475,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4705716602320768426">Tiedostopalaute</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
 <translation id="4734965478015604180">Vaakasuora</translation>
+<translation id="4735498845456076464">Pikanäppäinyhdistelmä <ph name="LAUNCHER_KEY_NAME" /> + numeronäppäin on muuttunut. Jos haluat käyttää toimintonäppäimiä, paina <ph name="LAUNCHER_KEY_NAME" /> + ylärivin näppäin.</translation>
 <translation id="4744944742468440486">Valintaasi liittyviä tietoja</translation>
 <translation id="4759238208242260848">Lataukset</translation>
 <translation id="4774338217796918551">Palaa huomenna kello <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6896758677409633944">Kopioi</translation>
 <translation id="6910714959251846841">Tämän päivityksen asennus edellyttää laitteen powerwashia. Lue lisää uusimmasta <ph name="SYSTEM_APP_NAME" /> ‑päivityksestä.</translation>
 <translation id="6919251195245069855">Älykorttia ei tunnistettu. Yritä uudelleen.</translation>
+<translation id="6921188888306725546">Pikanäppäimiä on parannettu</translation>
 <translation id="6945221475159498467">Valitse</translation>
 <translation id="6961121602502368900">Puhelimen hiljentäminen ei ole käytettävissä työprofiililla</translation>
 <translation id="6961840794482373852">Pikanäppäinyhdistelmä Alt + ylänuoli on muuttunut. Jos haluat käyttää Page Up ‑näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + ylänuoli.</translation>
@@ -934,6 +940,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8631727435199967028">Esteettömyysasetukset</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> jäljellä</translation>
+<translation id="8641805545866562088">Päivitetään profiililistaa. Odota muutama minuutti.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> ajastin</translation>
 <translation id="8647931990447795414">Voit lisätä henkilön vanhemman Family Link ‑käyttökoodilla</translation>
 <translation id="8649101189709089199">Teksti puhuttuna</translation>
@@ -961,6 +968,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Syöttötapojen asetukset</translation>
+<translation id="8818320199597151042">Poistetaan profiilia. Odota muutama minuutti.</translation>
 <translation id="8825863694328519386">Palaa takaisin pyyhkäisemällä vasemmasta reunasta</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Takaisin-painike</translation>
@@ -1006,6 +1014,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="9091626656156419976">Näyttö <ph name="DISPLAY_NAME" /> poistettu</translation>
 <translation id="9098969848082897657">Mykistä puhelin</translation>
 <translation id="9099154003160514616">Lacros-päivitys saatavilla</translation>
+<translation id="9100887602489003640">Lisätään profiilia. Odota muutama minuutti.</translation>
 <translation id="9105450214093926548">Toisen käyttäjän sisäänkirjaamista ei tueta, kun Lacros-selain on käynnissä. Käytä toista selainprofiilia Lacrosissa tai sulje Lacros ja yritä uudelleen.</translation>
 <translation id="9133335900048457298">Suojattua sisältöä ei voi kuvata</translation>
 <translation id="9151726767154816831">Käynnistä laite uudelleen ja suorita powerwash asentaaksesi päivitykset</translation>

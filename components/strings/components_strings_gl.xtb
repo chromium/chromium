@@ -307,12 +307,14 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2042213636306070719">Bandexa 7</translation>
 <translation id="204357726431741734">Iniciar sesión para utilizar contrasinais gardados na túa Conta de Google</translation>
 <translation id="2053111141626950936">Non se traducirán as páxinas en <ph name="LANGUAGE" />.</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Cando este control está habilitado e co estado activo, Chrome determina con que grupo grande de persoas ou "cohorte" concorda máis a túa actividade de navegación recente. Os anunciantes poden seleccionar anuncios para o grupo, e a túa actividade de navegación mantense privada no dispositivo. O teu grupo actualízase a diario.}=1{Cando este control está habilitado e co estado activo, Chrome determina con que grupo grande de persoas ou "cohorte" concorda máis a túa actividade de navegación recente. Os anunciantes poden seleccionar anuncios para o grupo, e a túa actividade de navegación mantense privada no dispositivo. O teu grupo actualízase a diario.}other{Cando este control está habilitado e co estado activo, Chrome determina con que grupo grande de persoas ou "cohorte" concorda máis a túa actividade de navegación recente. Os anunciantes poden seleccionar anuncios para o grupo, e a túa actividade de navegación mantense privada no dispositivo. O teu grupo actualízase cada {NUM_DAYS} días.}}</translation>
 <translation id="2053553514270667976">Código postal</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suxestión}other{# suxestións}}</translation>
 <translation id="2071692954027939183">As notificacións bloqueáronse automaticamente porque non adoitas permitilas</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="20817612488360358">Estableceuse a configuración do proxy do sistema que debe utilizarse, pero tamén se especificou unha configuración de proxy explícita.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2085876078937250610">Gardar…</translation>
 <translation id="2088086323192747268">Botón Xestionar sincronización. Para xestionar na configuración de Chrome a información que se sincroniza, preme Introducir</translation>
 <translation id="2091887806945687916">Son</translation>
 <translation id="2094505752054353250">Os dominios non coinciden</translation>
@@ -393,6 +395,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2355395290879513365">É posible que os atacantes poidan ver as imaxes que estás observando neste sitio e enganarte modificándoas.</translation>
 <translation id="2356070529366658676">Preguntar</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> xestiona o teu dispositivo e <ph name="ACCOUNT_MANAGER" /> xestiona a túa conta.</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{En menos dun día}=1{Nun día}other{En {NUM_DAYS} días}}</translation>
 <translation id="2359629602545592467">Varias divisas</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2359961752320758691">Completouse o teu número de tarxeta virtual.</translation>
@@ -533,6 +536,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2941952326391522266">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza é de <ph name="DOMAIN2" />. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="2943895734390379394">Momento da carga:</translation>
 <translation id="2948083400971632585">Podes desactivar os proxies configurados para unha conexión desde a páxina de configuración.</translation>
+<translation id="2949183777371959169">Ignorouse porque o dispositivo non está inscrito con Chrome Browser Cloud Management.</translation>
 <translation id="2951588413176968965">A miña caixa de correo</translation>
 <translation id="295526156371527179">Advertencia: Esta política non se combinou como un dicionario do xeito especificado na política porque non é un dicionario.</translation>
 <translation id="2955913368246107853">Pecha a barra de busca</translation>
@@ -712,6 +716,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3590643883886679995">Os datos de inicio de sesión almacenaranse neste dispositivo cando saias do modo de incógnito.</translation>
 <translation id="359126217934908072">Mes/Ano:</translation>
 <translation id="3592413004129370115">Italian (sobre)</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Podes restablecer o teu grupo cando queiras. Tardarás máis ou menos un día en unirte a un grupo novo.}=1{Podes restablecer o teu grupo cando queiras. Tardarás máis ou menos un día en unirte a un grupo novo.}other{Podes restablecer o teu grupo cando queiras. Tardarás {NUM_DAYS} días en unirte a un grupo novo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">O administrador bloqueou a aplicación</translation>
 <translation id="3608932978122581043">Orientación da alimentación</translation>
@@ -1199,6 +1204,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5332219387342487447">Método de envío</translation>
 <translation id="5333022057423422993">Chrome atopou o contrasinal que acabas de utilizar entre os datos dunha violación da seguranza dos datos. Para protexer as túas contas, recomendámosche que revises os contrasinais que tes gardados.</translation>
 <translation id="5334013548165032829">Rexistros do sistema detallados</translation>
+<translation id="5334145288572353250">Queres gardar este enderezo?</translation>
 <translation id="5340250774223869109">A aplicación está bloqueada</translation>
 <translation id="534295439873310000">Dispositivos con NFC</translation>
 <translation id="5344579389779391559">Esta páxina pode tentar aplicar cargos</translation>
@@ -1538,6 +1544,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6671697161687535275">Queres eliminar a túa suxestión de formulario de Chromium?</translation>
 <translation id="6685834062052613830">Pecha sesión e finaliza o proceso de configuración</translation>
 <translation id="6687335167692595844">Tamaño do tipo de letra solicitado</translation>
+<translation id="6688743156324860098">Actualizar…</translation>
 <translation id="6689249931105087298">Relativo con compresión de puntos negros</translation>
 <translation id="6689271823431384964">Chrome permíteche gardar as túas tarxetas na túa Conta de Google porque tes a sesión iniciada. Podes cambiar esta opción na configuración cando queiras. O nome do titular da tarxeta procede da túa conta.</translation>
 <translation id="6698381487523150993">Creada:</translation>
@@ -1553,6 +1560,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6744009308914054259">Mentres esperas a que se recupere a conexión, podes ler artigos sen conexión en Descargas.</translation>
 <translation id="6753269504797312559">Valor de política</translation>
 <translation id="6757797048963528358">O teu dispositivo entrou no modo de suspensión.</translation>
+<translation id="6767985426384634228">Queres actualizar este enderezo?</translation>
 <translation id="6768213884286397650">Hagaki (postal)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
@@ -1712,6 +1720,7 @@ Detalles adicionais:
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Non aplicable</translation>
 <translation id="7390545607259442187">Confirmar tarxeta</translation>
+<translation id="7392089738299859607">Actualizar enderezo</translation>
 <translation id="7399802613464275309">Revisión de seguranza</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120">O teu <ph name="DEVICE_NAME" /> está xestionado</translation>
@@ -1850,6 +1859,7 @@ Detalles adicionais:
 <translation id="7865448901209910068">A mellor velocidade</translation>
 <translation id="7874263914261512992">Acabas de escribir o teu contrasinal nun sitio enganoso. Chrome recomenda comprobar os contrasinais gardados para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sitios nos que esteas a utilizar este contrasinal neste momento.</translation>
 <translation id="7878562273885520351">Pode que o teu contrasinal estea en perigo</translation>
+<translation id="7880146494886811634">Gardar enderezo</translation>
 <translation id="7882421473871500483">Marrón</translation>
 <translation id="7887683347370398519">Comproba o CVC e téntao de novo</translation>
 <translation id="7887885240995164102">Acceder ao modo de pantalla superposta</translation>

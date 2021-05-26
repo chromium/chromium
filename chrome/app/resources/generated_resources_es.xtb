@@ -903,7 +903,7 @@
 <translation id="1938351510777341717">Tecla Comando externa</translation>
 <translation id="1940546824932169984">Dispositivos conectados</translation>
 <translation id="1942600407708803723">Apagar cuando se cierre la tapa</translation>
-<translation id="1944528062465413897">Código de sincronización por Bluetooth:</translation>
+<translation id="1944528062465413897">Código de emparejamiento por Bluetooth:</translation>
 <translation id="1944921356641260203">Actualización encontrada</translation>
 <translation id="1946577776959096882">Ver cuentas</translation>
 <translation id="1949584741547056205">Respuestas rápidas</translation>
@@ -1125,6 +1125,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2178614541317717477">Compromiso de entidad emisora de certificados</translation>
 <translation id="2182058453334755893">Se ha copiado en tu portapapeles</translation>
 <translation id="2184515124301515068">Permitir que Chrome elija cuándo los sitios pueden reproducir sonidos (recomendado)</translation>
+<translation id="2186711480981247270">Página compartida desde otro dispositivo</translation>
 <translation id="2187675480456493911">La red está sincronizada con otros dispositivos de tu cuenta. Los ajustes modificados por otros usuarios no se sincronizarán. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Error de importación del certificado de servidor</translation>
 <translation id="2187906491731510095">Se han actualizado las extensiones</translation>
@@ -7107,7 +7108,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="878069093594050299">Este certificado se ha verificado para los siguientes usos:</translation>
 <translation id="8781834595282316166">Nueva pestaña en el grupo</translation>
 <translation id="8782565991310229362">Se ha cancelado el inicio de la aplicación del kiosco.</translation>
-<translation id="8783834180813871000">Escribe el código de sincronización por Bluetooth y, a continuación, pulsa Intro.</translation>
+<translation id="8783834180813871000">Escribe el código de emparejamiento por Bluetooth y, a continuación, pulsa Intro.</translation>
 <translation id="8784626084144195648">Media de datos agrupados</translation>
 <translation id="8785622406424941542">Lápiz óptico</translation>
 <translation id="8787254343425541995">Permitir servidores proxy en redes compartidas</translation>

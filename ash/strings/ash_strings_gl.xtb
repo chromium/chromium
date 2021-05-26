@@ -245,6 +245,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Instalar aplicacións, extensións e temas</translation>
 <translation id="2977598380246111477">Número seguinte</translation>
+<translation id="2992327365391326550">O botón do micrófono do dispositivo está desactivado.</translation>
 <translation id="2995447421581609334">Mostrar os dispositivos de emisión.</translation>
 <translation id="2996462380875591307">Activouse a Lupa ancorada. Preme Ctrl+Buscar+D de novo para desactivala.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
@@ -255,6 +256,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3038571455154067151">Para iniciar sesión, escribe o teu código de acceso parental de Family Link</translation>
 <translation id="3039939407102840004">Batería do lapis óptico ao <ph name="PERCENTAGE" /> %.</translation>
 <translation id="3045488863354895414">Boas tardes!</translation>
+<translation id="3051189971848907985">Cambiando nome de perfil. Agarda uns minutos.</translation>
 <translation id="3055162170959710888">Hoxe utilizaches este dispositivo durante <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">maiús</translation>
 <translation id="3081696990447829002">Despregar menú</translation>
@@ -295,6 +297,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3368922792935385530">Conectada</translation>
 <translation id="3371140690572404006">Dispositivo USB‑C (porto dereito frontal)</translation>
 <translation id="3375634426936648815">Función conectada</translation>
+<translation id="3378442621503952303">Conectando co perfil. Agarda uns minutos.</translation>
 <translation id="3386978599540877378">a lupa de pantalla completa</translation>
 <translation id="3400357268283240774">Configuración adicional</translation>
 <translation id="3410336247007142655">Mostrar configuración do tema escuro</translation>
@@ -352,6 +355,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="380165613292957338">Ola! Como podo axudarche?</translation>
 <translation id="3826099427150913765">Cambiar ao contrasinal</translation>
 <translation id="383058930331066723">Está activado o modo de aforro de batería</translation>
+<translation id="3835880383832568924">Para ver as novidades, abre a aplicación Atallos</translation>
 <translation id="383629559565718788">Mostrar a configuración do teclado</translation>
 <translation id="3846214748874656680">Saír da pantalla completa</translation>
 <translation id="3846575436967432996">Non hai información de rede dispoñible</translation>
@@ -402,7 +406,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicación instalada, en pausa</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
-<translation id="425364040945105958">Sen SIM</translation>
+<translation id="425364040945105958">Non hai SIM</translation>
 <translation id="4261870227682513959">Mostrar a configuración de notificacións. Están desactivadas</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode facer o seguinte:</translation>
 <translation id="4274537685965975248">O atallo Control + Alt + Frecha abaixo cambiou. Para usar a tecla Fin, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha dereita.</translation>
@@ -472,6 +476,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4705716602320768426">Enviar comentarios</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735498845456076464">O atallo de teclado <ph name="LAUNCHER_KEY_NAME" /> + número cambiou. Para usar as teclas de función, preme <ph name="LAUNCHER_KEY_NAME" /> + unha das teclas da fila superior.</translation>
 <translation id="4744944742468440486">Información relacionada coa túa selección</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4774338217796918551">Volve mañá á seguinte hora: <ph name="COME_BACK_TIME" />.</translation>
@@ -729,6 +734,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6910714959251846841">Esta actualización require executar a función Powerwash do dispositivo. Consulta máis información sobre a última actualización de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Non se puido recoñecer a tarxeta intelixente. Téntao de novo.</translation>
+<translation id="6921188888306725546">Melloráronse os atallos de teclado</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6961121602502368900">A opción Silenciar teléfono non está dispoñible no perfil de traballo</translation>
 <translation id="6961840794482373852">O atallo Alt + Frecha arriba cambiou. Para usar a tecla Retroceder páxina, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha arriba.</translation>
@@ -935,6 +941,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8631727435199967028">Configuración de accesibilidade</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restante</translation>
+<translation id="8641805545866562088">Actualizando lista de perfís. Agarda uns minutos.</translation>
 <translation id="8646417893960517480">Temporizador de <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Para engadir unha persoa, escribe o código de acceso parental de Family Link</translation>
 <translation id="8649101189709089199">Escoitar selección</translation>
@@ -962,6 +969,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="881757059229893486">Configuración dos métodos de introdución de texto</translation>
+<translation id="8818320199597151042">Quitando perfil. Agarda uns minutos.</translation>
 <translation id="8825863694328519386">Pasa o dedo desde a esquerda para volver</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
@@ -1007,6 +1015,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="9091626656156419976">Quitouse a pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>
 <translation id="9099154003160514616">Hai unha actualización de Lacros dispoñible</translation>
+<translation id="9100887602489003640">Engadindo perfil. Agarda uns minutos.</translation>
 <translation id="9105450214093926548">Non se pode iniciar sesión cun segundo usuario mentres se executa o navegador Lacros. Utiliza un segundo perfil de navegador en Lacros ou ben pecha o navegador e téntao de novo.</translation>
 <translation id="9133335900048457298">Non se pode gravar contido protexido</translation>
 <translation id="9151726767154816831">Reinicia e fai un powerwash para actualizar</translation>

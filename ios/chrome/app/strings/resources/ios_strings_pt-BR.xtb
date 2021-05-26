@@ -522,6 +522,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="634878792104344809">Sincronize senhas, histórico e muito mais em todos os seus dispositivos</translation>
 <translation id="6362362396625799311">Não há guias anônimas</translation>
 <translation id="6363526231572697780">Sem nome de usuário</translation>
+<translation id="6366663624406569102">Sair e desativar a sincronização</translation>
 <translation id="6374469231428023295">Repetir</translation>
 <translation id="6377118281273296434">Segurança do site</translation>
 <translation id="6380866119319257197">Se você esquecer a senha longa ou quiser alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincronização<ph name="END_LINK" /></translation>

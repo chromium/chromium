@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Аппууд, өргөтгөлүүд болон загваруудыг суулгах</translation>
 <translation id="2977598380246111477">Дараагийн тоо</translation>
+<translation id="2992327365391326550">Төхөөрөмжийн микрофоны товчлуур унтраалттай байна.</translation>
 <translation id="2995447421581609334">Дамжуулагч төхөөрөмжийг харуулна уу.</translation>
 <translation id="2996462380875591307">Суурилуулсан томруулагчийг идэвхжүүлсэн. Үүнийг асаах/унтраахын тулд Ctrl+Search+D-г дахин дарна уу.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">Нэвтрэхийн тулд Family Link-н эцэг эхийн хандалтын кодоо оруулна уу</translation>
 <translation id="3039939407102840004">Мэдрэгч үзгийн батарей <ph name="PERCENTAGE" /> хувьтай байна.</translation>
 <translation id="3045488863354895414">Өдрийн мэнд,</translation>
+<translation id="3051189971848907985">Профайлын нэрийг өөрчилж байна. Цөөн хэдэн минут хүлээнэ үү.</translation>
 <translation id="3055162170959710888">Та энэ төхөөрөмжийг өнөөдөр <ph name="USED_TIME" /> ашигласан</translation>
 <translation id="3077734595579995578">Шилжүүлэх</translation>
 <translation id="3081696990447829002">Цэсийг дэлгэх</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">Холбогдсон</translation>
 <translation id="3371140690572404006">USB-C төхөөрөмж (урд талын портын баруун тал)</translation>
 <translation id="3375634426936648815">Холбогдсон</translation>
+<translation id="3378442621503952303">Профайлд холбогдож байна. Цөөн хэдэн минут хүлээнэ үү.</translation>
 <translation id="3386978599540877378">бүтэн дэлгэцийн томруулагч</translation>
 <translation id="3400357268283240774">Нэмэлт тохиргоо</translation>
 <translation id="3410336247007142655">Бараан загварын тохиргоог харуулах</translation>
@@ -352,6 +355,7 @@
 <translation id="380165613292957338">Сайн байна уу, танд хэрхэн туслах вэ?</translation>
 <translation id="3826099427150913765">Нууц үг рүү сэлгэх</translation>
 <translation id="383058930331066723">Батарей хэмнэгчийн горим асаалттай байна</translation>
+<translation id="3835880383832568924">Шинэчлэлтийг харахын тулд Товчлол аппыг нээнэ үү</translation>
 <translation id="383629559565718788">Гарын тохиргоог харуулах</translation>
 <translation id="3846214748874656680">Бүтэн дэлгэцийг хумих</translation>
 <translation id="3846575436967432996">Сүлжээтэй холбоотой мэдээлэл байхгүй байна</translation>
@@ -472,6 +476,7 @@
 <translation id="4705716602320768426">Cанал хүсэлт илгээх</translation>
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
 <translation id="4734965478015604180">Хөндлөн</translation>
+<translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Тоон товчлуурын шууд холбоосыг өөрчилсөн байна. Функцийн товчлууруудыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + дээд мөрд байх товчлуурыг дарна уу.</translation>
 <translation id="4744944742468440486">Таны сонголттой холбоотой мэдээлэл</translation>
 <translation id="4759238208242260848">Таталтууд:</translation>
 <translation id="4774338217796918551">Маргааш <ph name="COME_BACK_TIME" />-д буцаж ирнэ үү.</translation>
@@ -729,6 +734,7 @@
 <translation id="6896758677409633944">Хуулах</translation>
 <translation id="6910714959251846841">Тус шинэчлэлт нь таны төхөөрөмжийг үйлдвэрийн тохиргоонд буцааж оруулахыг шаарддаг. Хамгийн сүүлийн үеийн <ph name="SYSTEM_APP_NAME" /> шинэчлэлтийн талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="6919251195245069855">Таны ухаалаг картыг таньж чадсангүй. Дахин оролдоно уу.</translation>
+<translation id="6921188888306725546">Товчлуурын шууд холбооснуудыг сайжруулсан</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6961121602502368900">Ажлын профайл дээр утсыг чимээгүй болгох боломжгүй</translation>
 <translation id="6961840794482373852">Alt + Дээш сумны товчлуурын шууд холбоосыг өөрчилсөн байна. Page Up товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Дээш сумыг дарна уу.</translation>
@@ -936,6 +942,7 @@
 <translation id="8631727435199967028">Хандалтын тохиргоо</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> үлдсэн</translation>
+<translation id="8641805545866562088">Профайлын жагсаалтыг сэргээж байна. Цөөн хэдэн минут хүлээнэ үү.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> цаг хэмжигч</translation>
 <translation id="8647931990447795414">Хүн нэмэхийн тулд Family Link-н эцэг эхийн хандалтын кодоо оруулна уу</translation>
 <translation id="8649101189709089199">Ярихаар сонгох</translation>
@@ -963,6 +970,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Утасгүй интернет</translation>
 <translation id="881757059229893486">Оруулах аргын тохиргоо</translation>
+<translation id="8818320199597151042">Профайлыг хасаж байна. Цөөн хэдэн минут хүлээнэ үү.</translation>
 <translation id="8825863694328519386">Буцахын тулд зүүн талаас шударна уу</translation>
 <translation id="8828714802988429505">90 °</translation>
 <translation id="8841375032071747811">Буцах товчлуур</translation>
@@ -1008,6 +1016,7 @@
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> дэлгэцийг хассан</translation>
 <translation id="9098969848082897657">Утасны дууг хаах</translation>
 <translation id="9099154003160514616">Lacros-н шинэчлэлт боломжтой байна</translation>
+<translation id="9100887602489003640">Профайл нэмж байна. Цөөн хэдэн минут хүлээнэ үү.</translation>
 <translation id="9105450214093926548">Lacros хөтчийг ажиллуулж байх үед хоёр дахь хэрэглэгч нэвтрэхийг дэмждэггүй. Оронд нь Lacros-н хоёр дахь хөтчийн профайлыг ашиглах эсвэл Lacros-г хаагаад дахин оролдоно уу.</translation>
 <translation id="9133335900048457298">Хамгаалалттай контентыг бичих боломжгүй</translation>
 <translation id="9151726767154816831">Шинэчлэхийн тулд дахин эхлүүлээд, цэвэрлэнэ үү.</translation>

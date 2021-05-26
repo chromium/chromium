@@ -245,6 +245,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Instalovat aplikace, rozšíření a motivy</translation>
 <translation id="2977598380246111477">Další číslo</translation>
+<translation id="2992327365391326550">Mikrofon zařízení je vypnutý.</translation>
 <translation id="2995447421581609334">Zobrazit zařízení pro streamování obsahu.</translation>
 <translation id="2996462380875591307">Zabudovaná lupa je zapnutá. Vypnete ji opětovným stisknutím kombinace kláves Ctrl+Hledat+D.</translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
@@ -255,6 +256,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3038571455154067151">Pokud se chcete přihlásit, zadejte rodičovský přístupový kód Family Link</translation>
 <translation id="3039939407102840004">Baterie dotykového pera je na <ph name="PERCENTAGE" /> procentech.</translation>
 <translation id="3045488863354895414">Dobré odpoledne,</translation>
+<translation id="3051189971848907985">Probíhá přejmenování profilu. Několik minut počkejte.</translation>
 <translation id="3055162170959710888">Toto zařízení jsi dnes používal(a) <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Rozbalit nabídku</translation>
@@ -295,6 +297,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3371140690572404006">Zařízení USB Type-C (pravý přední port)</translation>
 <translation id="3375634426936648815">Připojeno</translation>
+<translation id="3378442621503952303">Připojování k profilu. Několik minut počkejte.</translation>
 <translation id="3386978599540877378">celoobrazovková lupa</translation>
 <translation id="3400357268283240774">Další nastavení</translation>
 <translation id="3410336247007142655">Zobrazit nastavení tmavého motivu</translation>
@@ -351,6 +354,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="380165613292957338">Jak vám mohu pomoci?</translation>
 <translation id="3826099427150913765">Přepnout na heslo</translation>
 <translation id="383058930331066723">Režim spořiče baterie je zapnutý</translation>
+<translation id="3835880383832568924">Pokud chcete zobrazit aktualizace, otevřete aplikaci Zkratky</translation>
 <translation id="383629559565718788">Zobrazit nastavení klávesnice</translation>
 <translation id="3846214748874656680">Ukončit režim na celou obrazovku</translation>
 <translation id="3846575436967432996">Informace o síti nejsou k dispozici</translation>
@@ -471,6 +475,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4705716602320768426">Poslat zpětnou vazbu</translation>
 <translation id="4731797938093519117">Rodičovský přístup</translation>
 <translation id="4734965478015604180">Na šířku</translation>
+<translation id="4735498845456076464">Klávesová zkratka <ph name="LAUNCHER_KEY_NAME" /> + číslo se změnila. Pokud chcete použít funkční klávesy, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + klávesu na horním řádku.</translation>
 <translation id="4744944742468440486">Informace související s vaším výběrem</translation>
 <translation id="4759238208242260848">Stažené soubory</translation>
 <translation id="4774338217796918551">Vrať se v <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
 <translation id="6910714959251846841">Kvůli této aktualizaci je potřeba zařízení pomocí funkce Powerwash obnovit do továrního nastavení. Viz další informace o nejnovější aktualizaci systému <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Chytrou kartu se nepodařilo rozpoznat. Zkuste to znovu.</translation>
+<translation id="6921188888306725546">Klávesové zkratky byly vylepšeny</translation>
 <translation id="6945221475159498467">Vybrat</translation>
 <translation id="6961121602502368900">Ztlumení telefonu v pracovním profilu není k dispozici</translation>
 <translation id="6961840794482373852">Klávesová zkratka Alt + šipka nahoru se změnila. Pokud chcete použít klávesu Page Up, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku nahoru.</translation>
@@ -934,6 +940,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8631727435199967028">Nastavení usnadnění přístupu</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno administrátorem</translation>
 <translation id="8639760480004882931">Zbývá <ph name="PERCENTAGE" /> %</translation>
+<translation id="8641805545866562088">Obnovování seznamu profilů. Několik minut počkejte.</translation>
 <translation id="8646417893960517480">Časovač na <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Pokud chcete přidat uživatele, zadejte rodičovský přístupový kód Family Link</translation>
 <translation id="8649101189709089199">Poslech vybraného textu</translation>
@@ -961,6 +968,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Nastavení metody zadávání</translation>
+<translation id="8818320199597151042">Odstraňování profilu. Několik minut počkejte.</translation>
 <translation id="8825863694328519386">Chcete-li se vrátit, přejeďte prstem zleva</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Tlačítko Zpět</translation>
@@ -1006,6 +1014,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="9091626656156419976">Obrazovka <ph name="DISPLAY_NAME" /> byla odebrána</translation>
 <translation id="9098969848082897657">Ztlumit telefon</translation>
 <translation id="9099154003160514616">Je k dispozici aktualizace prohlížeče Lacros</translation>
+<translation id="9100887602489003640">Přidávání profilu. Několik minut počkejte.</translation>
 <translation id="9105450214093926548">Když běží prohlížeč Lacros, přihlašení druhého uživatele není podporováno. Použijte druhý profil v prohlížeči Lacros nebo Lacros zavřete.</translation>
 <translation id="9133335900048457298">Chráněný obsah zaznamenat nelze</translation>
 <translation id="9151726767154816831">Chcete-li zařízení aktualizovat, restartujte je a resetujte pomocí funkce Powerwash</translation>

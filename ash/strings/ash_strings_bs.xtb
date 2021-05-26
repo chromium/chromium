@@ -245,6 +245,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Instaliranje aplikacija, proširenja i tema</translation>
 <translation id="2977598380246111477">Sljedeći broj</translation>
+<translation id="2992327365391326550">Dugme za mikrofon uređaja je isključeno.</translation>
 <translation id="2995447421581609334">Prikaz uređaja za emitiranje.</translation>
 <translation id="2996462380875591307">Omogućeno je priključeno uvećalo. Pritisnite ponovo Ctrl + tipku za pretraživanje + D da ga isključite.</translation>
 <translation id="3000461861112256445">Mono zvuk</translation>
@@ -255,6 +256,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3038571455154067151">Da se prijavite, unesite kôd za pristup roditelja za Family Link</translation>
 <translation id="3039939407102840004">Postotak baterije olovke je <ph name="PERCENTAGE" />.</translation>
 <translation id="3045488863354895414">Dobar dan,</translation>
+<translation id="3051189971848907985">Promjena naziva profila. Pričekajte nekoliko minuta.</translation>
 <translation id="3055162170959710888">Danas je uređaj korišten <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Proširivanje menija</translation>
@@ -295,6 +297,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3371140690572404006">USB-C uređaj (prednji priključak na desnoj strani)</translation>
 <translation id="3375634426936648815">Povezano</translation>
+<translation id="3378442621503952303">Povezivanje s profilom. Pričekajte nekoliko minuta.</translation>
 <translation id="3386978599540877378">povećalo preko cijelog ekrana</translation>
 <translation id="3400357268283240774">Dodatne postavke</translation>
 <translation id="3410336247007142655">Pogledajte postavke tamne teme</translation>
@@ -351,6 +354,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="380165613292957338">Zdravo, kako vam mogu pomoći?</translation>
 <translation id="3826099427150913765">Prebaci na lozinku</translation>
 <translation id="383058930331066723">Način rada uštede baterije je uključen</translation>
+<translation id="3835880383832568924">Da vidite ažuriranja, otvorite aplikaciju Prečice</translation>
 <translation id="383629559565718788">Prikaži postavke tastature</translation>
 <translation id="3846214748874656680">Izađi iz prikaza cijelog ekrana</translation>
 <translation id="3846575436967432996">Informacije o mreži nisu dostupne</translation>
@@ -471,6 +475,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4705716602320768426">Pošaljite povratne informacije</translation>
 <translation id="4731797938093519117">Pristup roditelja</translation>
 <translation id="4734965478015604180">Horizontalno</translation>
+<translation id="4735498845456076464">Prečica na tastaturi <ph name="LAUNCHER_KEY_NAME" /> + broj je promijenjena. Da koristite funkcijske tipke, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + tipku u gornjem redu.</translation>
 <translation id="4744944742468440486">Informacije u vezi s vašim odabirom</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
 <translation id="4774338217796918551">Vratite se sutra u <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6910714959251846841">Za ovo ažuriranje na uređaju je potrebno izvršiti Powerwash. Saznajte više o najnovijem ažuriranju za aplikaciju <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Prepoznavanje pametne kartice nije uspjelo. Ponovite.</translation>
+<translation id="6921188888306725546">Prečice tastature su poboljšane</translation>
 <translation id="6945221475159498467">Odaberi</translation>
 <translation id="6961121602502368900">Utišavanje telefona nije dostupno na radnom profilu</translation>
 <translation id="6961840794482373852">Prečica na tastaturi Alt + strelica nagore je promijenjena. Da koristite tipku Page Up, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu nagore.</translation>
@@ -934,6 +940,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8631727435199967028">Postavke pristupačnosti</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="8639760480004882931">Preostalo <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">Osvježavanje liste profila. Pričekajte nekoliko minuta.</translation>
 <translation id="8646417893960517480">Tajmer od <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Da dodate osobu, unesite kôd za pristup roditelja za Family Link</translation>
 <translation id="8649101189709089199">Odaberite za govor</translation>
@@ -961,6 +968,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="881757059229893486">Postavke načina unosa</translation>
+<translation id="8818320199597151042">Uklanjanje profila. Pričekajte nekoliko minuta.</translation>
 <translation id="8825863694328519386">Prevucite prstom slijeva nadesno da se vratite</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Dugme Nazad</translation>
@@ -1006,6 +1014,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="9091626656156419976">Uklonjen je ekran <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Utišavanje telefona</translation>
 <translation id="9099154003160514616">Dostupno je ažuriranje za Lacros</translation>
+<translation id="9100887602489003640">Dodavanje profila. Pričekajte nekoliko minuta.</translation>
 <translation id="9105450214093926548">Prijavljivanje drugog korisnika nije podržano dok je preglednik Lacros pokrenut. Umjesto toga, koristite profil drugog preglednika u Lacrosu ili zatvorite Lacros i pokušajte ponovo.</translation>
 <translation id="9133335900048457298">Nije moguće snimiti zaštićeni sadržaj</translation>
 <translation id="9151726767154816831">Ponovo pokrenite i izvršite powerwash da ažurirate</translation>

@@ -245,6 +245,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Instalēt lietotnes, paplašinājumus un motīvus</translation>
 <translation id="2977598380246111477">Nākamais cipars</translation>
+<translation id="2992327365391326550">Ierīces mikrofona poga ir izslēgta</translation>
 <translation id="2995447421581609334">Rādīt apraides ierīces</translation>
 <translation id="2996462380875591307">Dokotās lupas režīms ir iespējots. Lai to izslēgtu, nospiediet taustiņu kombināciju Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
@@ -255,6 +256,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3038571455154067151">Lai pierakstītos, ievadiet Family Link vecāku piekļuves kodu</translation>
 <translation id="3039939407102840004">Skārienekrāna pildspalvas akumulatora uzlādes līmenis: <ph name="PERCENTAGE" /> procenti.</translation>
 <translation id="3045488863354895414">Labdien!</translation>
+<translation id="3051189971848907985">Notiek profila pārdēvēšana. Uzgaidiet dažas minūtes.</translation>
 <translation id="3055162170959710888">Šodien jūs izmantojāt šo ierīci: <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Izvērst izvēlni</translation>
@@ -295,6 +297,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3368922792935385530">pievienots</translation>
 <translation id="3371140690572404006">USB-C ierīce (pieslēgvieta labajā pusē priekšā)</translation>
 <translation id="3375634426936648815">Izveidots savienojums</translation>
+<translation id="3378442621503952303">Notiek savienojuma izveide ar profilu. Uzgaidiet dažas minūtes.</translation>
 <translation id="3386978599540877378">pilnekrāna režīma lupa</translation>
 <translation id="3400357268283240774">Papildu iestatījumi</translation>
 <translation id="3410336247007142655">Rādīt tumšā motīva iestatījumus</translation>
@@ -351,6 +354,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="380165613292957338">Sveicināti! Kā varu palīdzēt?</translation>
 <translation id="3826099427150913765">Izmantot paroli</translation>
 <translation id="383058930331066723">Ir ieslēgts akumulatora enerģijas taupīšanas režīms</translation>
+<translation id="3835880383832568924">Lai skatītu jaunākās izmaiņas, atveriet lietotni Īsinājumtaustiņi</translation>
 <translation id="383629559565718788">Rādīt tastatūras iestatījumus</translation>
 <translation id="3846214748874656680">Aizvērt pilnekrāna režīmu</translation>
 <translation id="3846575436967432996">Tīkla informācija nav pieejama.</translation>
@@ -471,6 +475,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4705716602320768426">Iesniegt atsauksmi</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
 <translation id="4734965478015604180">Horizontāli</translation>
+<translation id="4735498845456076464">Šis īsinājumtaustiņš ir mainījies: <ph name="LAUNCHER_KEY_NAME" /> + cipars. Lai izmantotu funkciju taustiņus, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + jebkurš augšējās rindas taustiņš.</translation>
 <translation id="4744944742468440486">Ar atlasīto saturu saistīta informācija</translation>
 <translation id="4759238208242260848">Lejupielādes</translation>
 <translation id="4774338217796918551">Atgriezieties plkst. <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6896758677409633944">Kopēt</translation>
 <translation id="6910714959251846841">Lai atjauninātu sistēmu, ierīcē jāizmanto funkcija Powerwash. Uzziniet vairāk par pēdējo <ph name="SYSTEM_APP_NAME" /> atjauninājumu.</translation>
 <translation id="6919251195245069855">Nevarēja atpazīt jūsu viedkarti. Mēģiniet vēlreiz.</translation>
+<translation id="6921188888306725546">Uzlaboti īsinājumtaustiņi</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
 <translation id="6961121602502368900">Darba profilā tālruņa skaņu nevar izslēgt.</translation>
 <translation id="6961840794482373852">Šie īsinājumtaustiņi ir mainījušies: Alt + augšupvērstais bulttaustiņš. Lai izmantotu augšupšķiršanas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + augšupvērstais bulttaustiņš.</translation>
@@ -934,6 +940,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="8631727435199967028">Pieejamības iestatījumi</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators</translation>
 <translation id="8639760480004882931">Atlicis: <ph name="PERCENTAGE" />%</translation>
+<translation id="8641805545866562088">Notiek profilu saraksta atsvaidzināšana. Uzgaidiet dažas minūtes.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> taimeris</translation>
 <translation id="8647931990447795414">Lai pievienotu personu, ievadiet Family Link vecāku piekļuves kodu.</translation>
 <translation id="8649101189709089199">Atlasīt, lai izrunātu</translation>
@@ -961,6 +968,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Ievades metožu iestatījumi</translation>
+<translation id="8818320199597151042">Notiek profila noņemšana. Uzgaidiet dažas minūtes.</translation>
 <translation id="8825863694328519386">Lai atgrieztos, velciet no kreisās malas.</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Poga Atpakaļ</translation>
@@ -1006,6 +1014,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="9091626656156419976">Displejs <ph name="DISPLAY_NAME" /> tika noņemts.</translation>
 <translation id="9098969848082897657">Izslēgt tālruņa skaņu</translation>
 <translation id="9099154003160514616">Pieejams Lacros atjauninājums</translation>
+<translation id="9100887602489003640">Notiek profila pievienošana. Uzgaidiet dažas minūtes.</translation>
 <translation id="9105450214093926548">Pārlūka Lacros izmantošanas laikā netiek atbalstīta otra lietotāja pierakstīšanās. Lūdzu, tā vietā izmantojiet otru pārlūka profilu vai aizveriet pārlūku Lacros un mēģiniet vēlreiz.</translation>
 <translation id="9133335900048457298">Aizsargātu saturu nevar ierakstīt</translation>
 <translation id="9151726767154816831">Lai atjauninātu, restartējiet ierīci un izmantojiet funkciju Powerwash.</translation>

@@ -245,6 +245,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Apps, extensies en thema's installeren</translation>
 <translation id="2977598380246111477">Volgend cijfer</translation>
+<translation id="2992327365391326550">De microfoonknop van het apparaat staat uit.</translation>
 <translation id="2995447421581609334">Cast-apparaten tonen.</translation>
 <translation id="2996462380875591307">Vastgezet vergrootglas staat aan. Druk nogmaals op Ctrl+Zoeken+D om dit uit te zetten.</translation>
 <translation id="3000461861112256445">Monogeluid</translation>
@@ -255,6 +256,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3038571455154067151">Voer je Family Link-toegangscode voor ouders in om in te loggen</translation>
 <translation id="3039939407102840004">Batterij van stylus op <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="3045488863354895414">Goedemiddag,</translation>
+<translation id="3051189971848907985">Naam van profiel wijzigen. Wacht een paar minuten.</translation>
 <translation id="3055162170959710888">Je hebt dit apparaat vandaag <ph name="USED_TIME" /> gebruikt</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Menu uitvouwen</translation>
@@ -295,6 +297,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3371140690572404006">USB-C-apparaat (poort rechts aan de voorkant)</translation>
 <translation id="3375634426936648815">Verbonden</translation>
+<translation id="3378442621503952303">Verbinding maken met profiel. Wacht een paar minuten.</translation>
 <translation id="3386978599540877378">het vergrootglas op volledige schermgrootte</translation>
 <translation id="3400357268283240774">Aanvullende instellingen</translation>
 <translation id="3410336247007142655">Instellingen voor donker thema tonen</translation>
@@ -351,6 +354,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="380165613292957338">Hoi, wat kan ik voor je doen?</translation>
 <translation id="3826099427150913765">Overschakelen naar wachtwoord</translation>
 <translation id="383058930331066723">Batterijbesparing staat aan</translation>
+<translation id="3835880383832568924">Open de app Snelkoppelingen om de updates te bekijken</translation>
 <translation id="383629559565718788">Toetsenbordinstellingen tonen</translation>
 <translation id="3846214748874656680">Volledig scherm sluiten</translation>
 <translation id="3846575436967432996">Geen netwerkinformatie beschikbaar</translation>
@@ -471,6 +475,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4705716602320768426">Feedback geven</translation>
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="4734965478015604180">Horizontaal</translation>
+<translation id="4735498845456076464">De sneltoets <ph name="LAUNCHER_KEY_NAME" /> + cijfer is veranderd. Als je functietoetsen wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + een toets op de bovenste rij.</translation>
 <translation id="4744944742468440486">Informatie met betrekking tot je selectie</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4774338217796918551">Kom morgen terug om <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6896758677409633944">Kopieer</translation>
 <translation id="6910714959251846841">Deze update vereist een powerwash van je apparaat. Meer informatie over de laatste update van <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
+<translation id="6921188888306725546">Sneltoetsen zijn verbeterd</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6961121602502368900">Geluid van telefoon kan niet worden uitgezet in je werkprofiel</translation>
 <translation id="6961840794482373852">De sneltoets Alt + pijl-omhoog is veranderd. Als je de toets Page Up wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-omhoog.</translation>
@@ -934,6 +940,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8631727435199967028">Instellingen voor toegankelijkheid</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> resterend</translation>
+<translation id="8641805545866562088">Lijst met profielen vernieuwen. Wacht een paar minuten.</translation>
 <translation id="8646417893960517480">Timer van <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Voer de Family Link-toegangscode voor ouders in om iemand toe te voegen</translation>
 <translation id="8649101189709089199">Selecteer om uitgesproken te worden</translation>
@@ -961,6 +968,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="881757059229893486">Instellingen voor invoermethoden</translation>
+<translation id="8818320199597151042">Profiel verwijderen. Wacht een paar minuten.</translation>
 <translation id="8825863694328519386">Swipe vanaf de linkerkant om terug te gaan</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Knop Terug</translation>
@@ -1006,6 +1014,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="9091626656156419976">Scherm <ph name="DISPLAY_NAME" /> is verwijderd</translation>
 <translation id="9098969848082897657">Geluid van telefoon uitzetten</translation>
 <translation id="9099154003160514616">Lacros-update beschikbaar</translation>
+<translation id="9100887602489003640">Profiel toevoegen. Wacht een paar minuten.</translation>
 <translation id="9105450214093926548">Een tweede gebruiker inloggen wordt niet ondersteund als de Lacros-browser actief is. Gebruik in plaats daarvan een tweede browserprofiel in Lacros of sluit Lacros en probeer het opnieuw.</translation>
 <translation id="9133335900048457298">Kan geen beschermde content opnemen</translation>
 <translation id="9151726767154816831">Opnieuw opstarten en de functie Powerwash gebruiken om bij te werken</translation>

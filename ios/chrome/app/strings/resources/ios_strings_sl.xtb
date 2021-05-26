@@ -456,6 +456,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5782227691023083829">Prevajanje ...</translation>
 <translation id="5797070761912323120">Google lahko vašo zgodovino uporabi za prilagajanje Iskanja Google, oglasov in drugih Googlovih storitev</translation>
 <translation id="5803566855766646066">Ali ste prepričani, da želite zavreči to novo kartico?</translation>
+<translation id="5812974770859303494">Dodaj v …</translation>
 <translation id="5816228676161003208">S tem je mogoče hitreje iskati z glasom.</translation>
 <translation id="581659025233126501">Vklopi sinhronizacijo</translation>
 <translation id="5819208479324046259">Brskalnik upravlja podjetje <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -522,6 +523,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="634878792104344809">Sinhronizirajte gesla, zgodovino in druge podatke v vseh svojih napravah.</translation>
 <translation id="6362362396625799311">No Incognito Tabs</translation>
 <translation id="6363526231572697780">Ni uporabniškega imena</translation>
+<translation id="6366663624406569102">Odjava in izklop sinhronizacije</translation>
 <translation id="6374469231428023295">Vnovični poskus</translation>
 <translation id="6377118281273296434">Varnost spletnega mesta</translation>
 <translation id="6380866119319257197">Če pozabite geslo ali želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />ponastavite sinhronizacijo<ph name="END_LINK" /></translation>
@@ -765,6 +767,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8654802032646794042">Prekliči</translation>
 <translation id="8668210798914567634">Ta stran je shranjena na bralni seznam.</translation>
 <translation id="8680787084697685621">Podrobnosti prijave v račun so zastarele.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Zapiranje zavihka}one{Zapiranje zavihkov}two{Zapiranje zavihkov}few{Zapiranje zavihkov}other{Zapiranje zavihkov}}</translation>
 <translation id="8706588385081740091">Gesla</translation>
 <translation id="8717864919010420084">Kopiraj povezavo</translation>
 <translation id="8721297211384281569">Meni »Orodja«</translation>

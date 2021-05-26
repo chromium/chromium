@@ -245,6 +245,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Install apps, extensions and themes</translation>
 <translation id="2977598380246111477">Next number</translation>
+<translation id="2992327365391326550">Device's microphone button is turned off.</translation>
 <translation id="2995447421581609334">Show cast devices.</translation>
 <translation id="2996462380875591307">Docked Magnifier enabled. Press Ctrl+Search+D again to toggle it off.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
@@ -255,6 +256,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3038571455154067151">To sign in, enter your Family Link parental access code</translation>
 <translation id="3039939407102840004">Stylus battery at <ph name="PERCENTAGE" /> per cent.</translation>
 <translation id="3045488863354895414">Good afternoon,</translation>
+<translation id="3051189971848907985">Renaming profile. Wait a few minutes.</translation>
 <translation id="3055162170959710888">You used this device for <ph name="USED_TIME" /> today</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Expand menu</translation>
@@ -295,6 +297,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3368922792935385530">Connected</translation>
 <translation id="3371140690572404006">USB-C device (right-hand-side front port)</translation>
 <translation id="3375634426936648815">Connected</translation>
+<translation id="3378442621503952303">Connecting to profile. Wait a few minutes.</translation>
 <translation id="3386978599540877378">the full-screen magnifier</translation>
 <translation id="3400357268283240774">Additional settings</translation>
 <translation id="3410336247007142655">Show Dark theme settings</translation>
@@ -351,6 +354,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="380165613292957338">Hi, how can I help?</translation>
 <translation id="3826099427150913765">Switch to password</translation>
 <translation id="383058930331066723">Battery saver mode is on</translation>
+<translation id="3835880383832568924">To see the updates, open the Shortcuts app</translation>
 <translation id="383629559565718788">Show keyboard settings</translation>
 <translation id="3846214748874656680">Exit full screen</translation>
 <translation id="3846575436967432996">No network information available</translation>
@@ -471,6 +475,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4705716602320768426">File feedback</translation>
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735498845456076464">The <ph name="LAUNCHER_KEY_NAME" /> + number keyboard shortcut has changed. To use function keys, press the <ph name="LAUNCHER_KEY_NAME" /> key + a key on the top row.</translation>
 <translation id="4744944742468440486">Info related to your selection</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4774338217796918551">Come back tomorrow at <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6910714959251846841">This update requires powerwashing of your device. Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update.</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
+<translation id="6921188888306725546">Keyboard shortcuts have been improved</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6961121602502368900">Silence phone is not available on work profile</translation>
 <translation id="6961840794482373852">The Alt + up arrow keyboard shortcut has changed. To use the page up key, press the <ph name="LAUNCHER_KEY_NAME" /> key + up arrow.</translation>
@@ -934,6 +940,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8631727435199967028">Accessibility settings</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> remaining</translation>
+<translation id="8641805545866562088">Refreshing profile list. Wait a few minutes.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> timer</translation>
 <translation id="8647931990447795414">To add a person, enter your Family Link parental access code</translation>
 <translation id="8649101189709089199">Select to Speak</translation>
@@ -961,6 +968,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Input methods settings</translation>
+<translation id="8818320199597151042">Removing profile. Wait a few minutes.</translation>
 <translation id="8825863694328519386">Swipe from the left to go back</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Back button</translation>
@@ -1006,6 +1014,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="9091626656156419976">Removed display <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silence phone</translation>
 <translation id="9099154003160514616">Lacros update available</translation>
+<translation id="9100887602489003640">Adding profile. Wait a few minutes.</translation>
 <translation id="9105450214093926548">Signing in a second user is not supported while the Lacros browser is running. Please use a second browser profile in Lacros instead, or close Lacros and try again.</translation>
 <translation id="9133335900048457298">Can't record protected content</translation>
 <translation id="9151726767154816831">Restart and powerwash to update</translation>

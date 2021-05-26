@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">ایپس، ایکسٹینشنز اور تھیمز انسٹال کریں</translation>
 <translation id="2977598380246111477">اگلا نمبر</translation>
+<translation id="2992327365391326550">آلے کا مائیکروفون بٹن آف ہے۔</translation>
 <translation id="2995447421581609334">کاسٹ آلات دکھائیں۔</translation>
 <translation id="2996462380875591307">‏ڈاک کردہ میگنیفائر فعال ہے۔ اسے ٹوگل کر کے بند کرنے کیلئے Ctrl+Search+D کو دوبارہ دبائیں۔</translation>
 <translation id="3000461861112256445">مونو آڈیو</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">‏سائن ان کرنے کے لیے، اپنی Family Link کا والدین کا رسائی کوڈ درج کریں</translation>
 <translation id="3039939407102840004">اسٹائلس بیٹری <ph name="PERCENTAGE" /> فیصد پر ہے۔</translation>
 <translation id="3045488863354895414">سہ پہر بخیر،</translation>
+<translation id="3051189971848907985">پروفائل کا نام تبدیل ہو رہا ہے۔ کچھ منٹ انتظار کریں۔</translation>
 <translation id="3055162170959710888">آپ نے اس آلہ کو آج <ph name="USED_TIME" /> تک استعمال کیا ہے</translation>
 <translation id="3077734595579995578">شفٹ</translation>
 <translation id="3081696990447829002">مینو کو پھیلائیں</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">منسلک</translation>
 <translation id="3371140690572404006">‏USB-C آلہ (دائیں طرف کا اگلا پورٹ)</translation>
 <translation id="3375634426936648815">منسلک ہے</translation>
+<translation id="3378442621503952303">پروفائل سے منسلک ہو رہا ہے۔ کچھ منٹ انتظار کریں۔</translation>
 <translation id="3386978599540877378">پوری اسکرین کا مکبّر</translation>
 <translation id="3400357268283240774">اضافی ترتیبات</translation>
 <translation id="3410336247007142655">گہری تھیم کی ترتیبات دکھائیں</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">آداب، میں کیسے مدد کر سکتا ہوں؟</translation>
 <translation id="3826099427150913765">پاس ورڈ پر سوئچ کریں</translation>
 <translation id="383058930331066723">بیٹری سیور موڈ آن ہے</translation>
+<translation id="3835880383832568924">اپ ڈیٹس دیکھنے کے لیے، شارٹ کٹس کی ایپ کھولیں</translation>
 <translation id="383629559565718788">کی بورڈ کی ترتیبات دکھائیں</translation>
 <translation id="3846214748874656680">پوری اسکرین سے باہر نکلیں</translation>
 <translation id="3846575436967432996">نیٹ ورک کی کوئی معلومات دستیاب نہیں ہے</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">تاثرات فائل کریں</translation>
 <translation id="4731797938093519117">والدین کی رسائی</translation>
 <translation id="4734965478015604180">افقی</translation>
+<translation id="4735498845456076464">‏Number + <ph name="LAUNCHER_KEY_NAME" /> کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ فنکشن کلیدوں کا استعمال کرنے کے لیے <ph name="LAUNCHER_KEY_NAME" /> کلید + سب سے اوپر کی قطار پر ایک کلید کو دبائیں۔</translation>
 <translation id="4744944742468440486">آپ کے انتخاب سے متعلقہ معلومات</translation>
 <translation id="4759238208242260848">ڈاؤن لوڈز</translation>
 <translation id="4774338217796918551">کل <ph name="COME_BACK_TIME" /> پر پھر استعمال کریں۔</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6910714959251846841">اس اپ ڈیٹ کیلئے آپ کے آلے کی پاور واشنگ درکار ہے۔ تازہ ترین <ph name="SYSTEM_APP_NAME" /> اپ ڈیٹ کے بارے میں مزید جانیں۔</translation>
 <translation id="6919251195245069855">آپ کے اسمارٹ کارڈ کی شناخت نہیں کی جا سکی۔ پھر آزمائيں۔</translation>
+<translation id="6921188888306725546">کی بورڈ شارٹ کٹس کو بہتر بنایا گیا ہے</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6961121602502368900">دفتری پروفائل پر فون کو خاموش کرنے کی خصوصیت دستیاب نہیں ہے</translation>
 <translation id="6961840794482373852">‏Alt + 'اوپر تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا۔ Page Up کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'اوپر تیر کا نشان' کو دبائیں۔</translation>
@@ -934,6 +940,7 @@
 <translation id="8631727435199967028">ایکسیسبیلٹی کی ترتیبات</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> باقی</translation>
+<translation id="8641805545866562088">پروفائل کی فہرست ریفریش ہو رہی ہے۔ کچھ منٹ انتظار کریں۔</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> ٹائمر</translation>
 <translation id="8647931990447795414">‏کسی فرد کو شامل کرنے کے لیے، اپنی Family Link کا والدین کا رسائی کا کوڈ درج کریں</translation>
 <translation id="8649101189709089199">سننے کے لیے منتخب کریں</translation>
@@ -961,6 +968,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />۔ <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">اندراج کے طریقے کی ترتیبات</translation>
+<translation id="8818320199597151042">پروفائل ہٹائی جا رہی ہے۔ کچھ منٹ انتظار کریں۔</translation>
 <translation id="8825863694328519386">پیچھے جانے کیلئے بائیں سے سوائپ کریں</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">'پیچھے' بٹن</translation>
@@ -1006,6 +1014,7 @@
 <translation id="9091626656156419976">ڈسپلے <ph name="DISPLAY_NAME" /> کو ہٹا دیا گیا</translation>
 <translation id="9098969848082897657">فون کو خاموش کریں</translation>
 <translation id="9099154003160514616">‏Lacros اپ ڈیٹ دستیاب ہے</translation>
+<translation id="9100887602489003640">پروفائل شامل کی جا رہی ہے۔ کچھ منٹ انتظار کریں۔</translation>
 <translation id="9105450214093926548">‏Lacros براؤزر چلانے کے دوران دوسرے صارف میں سائن ان کرنا تعاون یافتہ نہیں ہے۔ براہ کرم اس کی بجائے Lacros میں دوسرا براؤزر پروفائل استعمال کریں یا Lacros کو بند کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="9133335900048457298">تحفظ یافتہ مواد کو ریکارڈ نہیں کیا جا سکتا</translation>
 <translation id="9151726767154816831">اپ ڈیٹ کرنے کیلئے ری اسٹارٹ اور پاور واش کریں</translation>

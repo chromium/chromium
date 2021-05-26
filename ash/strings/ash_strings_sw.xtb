@@ -245,6 +245,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Kusakinisha programu, viendelezi na mandhari</translation>
 <translation id="2977598380246111477">Nambari inayofuata</translation>
+<translation id="2992327365391326550">Kitufe cha maikrofoni ya kifaa kimezimwa.</translation>
 <translation id="2995447421581609334">Onyesha vifaa vinavyotuma maudhui.</translation>
 <translation id="2996462380875591307">Umewasha Kikuzaji Kilichoambatishwa. Bonyeza Ctrl+Search+D tena ili ukizime.</translation>
 <translation id="3000461861112256445">Kipengele cha sauti moja</translation>
@@ -255,6 +256,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3038571455154067151">Ili uingie katika akaunti, weka msimbo wako wa mzazi wa kufikia Family Link</translation>
 <translation id="3039939407102840004">Chaji ya betri ya stylus ni asilimia <ph name="PERCENTAGE" />.</translation>
 <translation id="3045488863354895414">Habari za mchana,</translation>
+<translation id="3051189971848907985">Inabadilisha jina la wasifu. Subiri dakika kadhaa.</translation>
 <translation id="3055162170959710888">Leo umetumia kifaa hiki kwa <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Panua menyu</translation>
@@ -295,6 +297,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3368922792935385530">Umeunganishwa</translation>
 <translation id="3371140690572404006">Kifaa cha USB-C (mlango wa upande wa kulia mbele)</translation>
 <translation id="3375634426936648815">Imeunganishwa</translation>
+<translation id="3378442621503952303">Inaunganisha kwenye wasifu. Subiri dakika kadhaa.</translation>
 <translation id="3386978599540877378">Kikuza skrini nzima</translation>
 <translation id="3400357268283240774">Mipangilio ya ziada</translation>
 <translation id="3410336247007142655">Onyesha mipangilio ya mandhari meusi</translation>
@@ -351,6 +354,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="380165613292957338">Hujambo, ungependa nikusaidie vipi?</translation>
 <translation id="3826099427150913765">Tumia nenosiri</translation>
 <translation id="383058930331066723">Hali ya kuokoa betri imewashwa</translation>
+<translation id="3835880383832568924">Ili uone masasisho, fungua programu ya Njia za mkato</translation>
 <translation id="383629559565718788">Onyesha mipangilio ya kibodi</translation>
 <translation id="3846214748874656680">Ondoka kwenye skrini nzima</translation>
 <translation id="3846575436967432996">Hakuna maelezo ya mtandao yanayopatikana</translation>
@@ -471,6 +475,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4705716602320768426">Tuma maoni</translation>
 <translation id="4731797938093519117">Idhini ya mzazi</translation>
 <translation id="4734965478015604180">Kimlalo</translation>
+<translation id="4735498845456076464">Mikato ya kibodi ya <ph name="LAUNCHER_KEY_NAME" /> + Nambari imebadilika. Ili utumie vitufe vya kukokotoa, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na kitufe kwenye safu mlalo ya juu.</translation>
 <translation id="4744944742468440486">Maelezo yanayohusiana na chaguo lako</translation>
 <translation id="4759238208242260848">Vipakuliwa</translation>
 <translation id="4774338217796918551">Rejea kesho saa <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6896758677409633944">Nakili</translation>
 <translation id="6910714959251846841">Sasisho hili linahitaji powerwash kwenye kifaa chako. Pata maelezo zaidi kuhusu sasisho jipya la <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Imeshindwa kutambua kadi yako mahiri. Jaribu tena.</translation>
+<translation id="6921188888306725546">Mikato ya kibodi imeboreshwa</translation>
 <translation id="6945221475159498467">Chagua</translation>
 <translation id="6961121602502368900">Kipengele cha kuzima mlio wa simu hakipatikani kwenye wasifu wa kazini</translation>
 <translation id="6961840794482373852">Mikato ya kibodi ya Alt + Kishale cha Juu imebadilika. Ili utumie kitufe cha Page Up, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Juu.</translation>
@@ -935,6 +941,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8631727435199967028">Mipangilio ya Ufikivu</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Unadhibitiwa na Msimamizi wako</translation>
 <translation id="8639760480004882931">Imebaki <ph name="PERCENTAGE" />%</translation>
+<translation id="8641805545866562088">Inaonyesha upya orodha ya wasifu. Subiri dakika kadhaa.</translation>
 <translation id="8646417893960517480">Kipima muda cha <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Ili uongeze mtu, weka msimbo wako wa mzazi wa kufikia Family Link</translation>
 <translation id="8649101189709089199">Chagua ili Izungumze</translation>
@@ -962,6 +969,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Mipangilio ya Mbinu za Kuingiza Data</translation>
+<translation id="8818320199597151042">Inaondoa wasifu. Subiri dakika kadhaa.</translation>
 <translation id="8825863694328519386">Telezesha kidole kutoka kushoto ili urudi nyuma</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Kitufe cha Nyuma</translation>
@@ -1007,6 +1015,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9091626656156419976">Imeondoa onyesho la <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Kuzima mlio wa simu</translation>
 <translation id="9099154003160514616">Sasisho la Lacros linapatikana</translation>
+<translation id="9100887602489003640">Inaweka wasifu. Subiri dakika kadhaa.</translation>
 <translation id="9105450214093926548">Mtumiaji wa pili hawezi kuingia katika akaunti wakati kivinjari cha Lacros kinatumika. Tafadhali tumia wasifu mwingine wa kivinjari katika Lacros badala yake au ufunge Lacros kisha ujaribu tena.</translation>
 <translation id="9133335900048457298">Huwezi kurekodi maudhui yanayolindwa</translation>
 <translation id="9151726767154816831">Zima na uwashe na utumie powerwash ili kusasisha</translation>

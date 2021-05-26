@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">යෙදුම්, දිගු, සහ තේමා ස්ථාපනය කරන්න</translation>
 <translation id="2977598380246111477">මීළඟ අංකය</translation>
+<translation id="2992327365391326550">උපාංගයේ මයික්‍රෆෝන බොත්තම ක්‍රියාවිරහිතයි.</translation>
 <translation id="2995447421581609334">විකාශ උපාංග පෙන්වන්න.</translation>
 <translation id="2996462380875591307">ඈඳන ලද විශාලකය සබලයි. එය ක්‍රියාවිරහිත කිරීම ටොගල කිරීමට නැවත Ctrl+Search+H ඔබන්න.</translation>
 <translation id="3000461861112256445">ඒකල ශ්‍රව්‍යය</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">පිරීමට, ඔබගේ Family Link මාපිය ප්‍රවේශ කේතය ඇතුළත් කරන්න</translation>
 <translation id="3039939407102840004">පන්හිඳ බැටරිය සියයට <ph name="PERCENTAGE" />කි.</translation>
 <translation id="3045488863354895414">සුබ අපරභාගයක්,</translation>
+<translation id="3051189971848907985">පැතිකඩ යළි නම් කරමින්. මිනිත්තු කිහිපයක් රැඳී සිටින්න.</translation>
 <translation id="3055162170959710888">ඔබ මෙම උපාංගය අද <ph name="USED_TIME" />කට භාවිත කළා</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">මෙනුව දිග හරින්න</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">සම්බන්ධ කළ</translation>
 <translation id="3371140690572404006">USB-C උපාංගය (දකුණුපස ඉදිරි තොට)</translation>
 <translation id="3375634426936648815">සම්බන්ධයි</translation>
+<translation id="3378442621503952303">පැතිකඩ වෙත සම්බන්ධ වෙමින්. මිනිත්තු කිහිපයක් රැඳී සිටින්න.</translation>
 <translation id="3386978599540877378">පූර්ණ තිර විශාලකය</translation>
 <translation id="3400357268283240774">අතිරේක සැකසීම්</translation>
 <translation id="3410336247007142655">අඳුරු තේමා සැකසීම් පෙන්වන්න</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">ආයුබෝවන්, මට ඔබට උදවු විය හැක්කේ කෙසේද?</translation>
 <translation id="3826099427150913765">මුරපදයට මාරු වන්න</translation>
 <translation id="383058930331066723">බැටරි සුරැකුම් ප්‍රකාරය ක්‍රියාත්මකයි</translation>
+<translation id="3835880383832568924">යාවත්කාලීන බැලීමට, කෙටිමං යෙදුම විවෘත කරන්න</translation>
 <translation id="383629559565718788">යතුරුපුවරු සැකසීම් පෙන්වන්න</translation>
 <translation id="3846214748874656680">පූර්ණ තිරයෙන් ඉවත් වන්න</translation>
 <translation id="3846575436967432996">ජාල තොරතුරු ලද නොහැක</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">ප්‍රතිපෝෂණය ගොනු කරන්න</translation>
 <translation id="4731797938093519117">මාපිය ප්‍රවේශය</translation>
 <translation id="4734965478015604180">තිරස්</translation>
+<translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + අංකය යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. කාර්ය යතුරු භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + ඉහළම පේළියේ ඇති යතුරක් ඔබන්න.</translation>
 <translation id="4744944742468440486">ඔබගේ තේරීමට අදාළ තොරතුරු</translation>
 <translation id="4759238208242260848">බාගැනීම්</translation>
 <translation id="4774338217796918551">හෙට <ph name="COME_BACK_TIME" />ට ආපසු එන්න.</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">පිටපත්</translation>
 <translation id="6910714959251846841">මෙම යාවත්කාලීන කිරීම සඳහා ඔබේ උපාංගය බල ගැන්වීම අවශ්‍යය. <ph name="SYSTEM_APP_NAME" /> යාවත්කාලීන කිරීම ගැන නවතම තොරතුරු දැන ගන්න.</translation>
 <translation id="6919251195245069855">ඔබේ ස්මාර්ට් කාඩ්පත හඳුනා ගැනීමට නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
+<translation id="6921188888306725546">යතුරුපුවරු කෙටිමං වැඩි දියුණු කර ඇත</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
 <translation id="6961121602502368900">කාර්යාල පැතිකඩෙහි දුරකථනය නිහඬ කිරීම ලබා ගත නොහැකිය</translation>
 <translation id="6961840794482373852">Alt + ඉහළට ඊතලය යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. Page Up යතුර භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + ඉහළට ඊතලය ඔබන්න.</translation>
@@ -934,6 +940,7 @@
 <translation id="8631727435199967028">ප්‍රවේශ්‍යතා සැකසීම්</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> ඉතිරිව ඇත</translation>
+<translation id="8641805545866562088">පැතිකඩ ලැයිස්තුව නැවුම් කරමින්. මිනිත්තු කිහිපයක් රැඳී සිටින්න.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> කාල ගණකය</translation>
 <translation id="8647931990447795414">පුද්ගලයකු එක් කිරීමට, ඔබගේ Family Link මාපිය ප්‍රවේශ කේතය ඇතුළත් කරන්න</translation>
 <translation id="8649101189709089199">කීමට-තේරීම</translation>
@@ -961,6 +968,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">ආදාන ක්‍රම සැකසීම්</translation>
+<translation id="8818320199597151042">පැතිකඩ ඉවත් කරමින්. මිනිත්තු කිහිපයක් රැඳී සිටින්න.</translation>
 <translation id="8825863694328519386">ආපසු යාමට වමින් ස්වයිප් කරන්න</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">ආපසු බොත්තම</translation>
@@ -1006,6 +1014,7 @@
 <translation id="9091626656156419976">සංදර්ශකය <ph name="DISPLAY_NAME" /> ඉවත් කරන්න</translation>
 <translation id="9098969848082897657">දුරකථනය නිහඬ කරන්න</translation>
 <translation id="9099154003160514616">Lacros යාවත්කාලීනය ලබා ගත හැකිය</translation>
+<translation id="9100887602489003640">පැතිකඩ එක් කිරීම. මිනිත්තු කිහිපයක් රැඳී සිටින්න.</translation>
 <translation id="9105450214093926548">Lacros බ්‍රව්සරය ධාවනය වන විට දෙවන පරිශීලකයෙකු පිරීමට සහාය නොදක්වයි. කරුණාකර ඒ වෙනුවට Lacros හි දෙවන බ්‍රව්සර පැතිකඩක් භාවිත කරන්න හෝ Lacros වසා නැවත උත්සාහ කරන්න.</translation>
 <translation id="9133335900048457298">ආරක්ෂිත අන්තර්ගතය පටිගත කළ නොහැකිය</translation>
 <translation id="9151726767154816831">යාවත් කිරීමට යළි අරඹා powerwash කරන්න</translation>

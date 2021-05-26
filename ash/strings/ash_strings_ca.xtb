@@ -245,6 +245,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Instal·lar aplicacions, extensions i temes.</translation>
 <translation id="2977598380246111477">Número següent</translation>
+<translation id="2992327365391326550">El botó del micròfon del dispositiu està desactivat.</translation>
 <translation id="2995447421581609334">Mostra els dispositius d'emissió</translation>
 <translation id="2996462380875591307">La lupa acoblada està activada. Torna a prémer Ctrl+Cerca+D per desactivar-la.</translation>
 <translation id="3000461861112256445">Àudio mono</translation>
@@ -255,6 +256,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3038571455154067151">Per iniciar la sessió, introdueix el codi d'accés parental de Family Link</translation>
 <translation id="3039939407102840004">El llapis òptic té un <ph name="PERCENTAGE" /> de bateria.</translation>
 <translation id="3045488863354895414">Bona tarda,</translation>
+<translation id="3051189971848907985">S'està canviant el nom del perfil. Espera uns minuts.</translation>
 <translation id="3055162170959710888">Avui has fet servir aquest dispositiu durant <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">maj</translation>
 <translation id="3081696990447829002">Desplega el menú</translation>
@@ -295,6 +297,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3371140690572404006">Dispositiu USB-C (port frontal dret)</translation>
 <translation id="3375634426936648815">Connectat</translation>
+<translation id="3378442621503952303">S'està connectant a un perfil. Espera uns minuts.</translation>
 <translation id="3386978599540877378">la lupa de pantalla completa</translation>
 <translation id="3400357268283240774">Configuració addicional</translation>
 <translation id="3410336247007142655">Mostra la configuració del tema fosc</translation>
@@ -351,6 +354,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="380165613292957338">Hola, en què et puc ajudar?</translation>
 <translation id="3826099427150913765">Canvia a contrasenya</translation>
 <translation id="383058930331066723">El mode d'estalvi de bateria està activat</translation>
+<translation id="3835880383832568924">Per veure les actualitzacions, obre l'aplicació Dreceres</translation>
 <translation id="383629559565718788">Mostra la configuració del teclat</translation>
 <translation id="3846214748874656680">Surt de la pantalla completa</translation>
 <translation id="3846575436967432996">No hi ha informació de xarxa disponible</translation>
@@ -471,6 +475,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4705716602320768426">Envia suggeriments</translation>
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="4734965478015604180">Horitzontal</translation>
+<translation id="4735498845456076464">La tecla de drecera <ph name="LAUNCHER_KEY_NAME" />+número ha canviat. Per fer servir les tecles de funció, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+una tecla de la fila superior.</translation>
 <translation id="4744944742468440486">Informació relacionada amb la teva selecció</translation>
 <translation id="4759238208242260848">Baixades</translation>
 <translation id="4774338217796918551">Pots tornar demà a les <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6910714959251846841">Aquesta actualització requereix executar la funció Powerwash al dispositiu. Obtén més informació sobre l'última actualització de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>
+<translation id="6921188888306725546">S'han millorat les tecles de drecera</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6961121602502368900">Silencia el telèfon no està disponible al perfil de treball</translation>
 <translation id="6961840794482373852">La tecla de drecera Alt+fletxa amunt ha canviat. Per fer servir la tecla de retrocedir pàgina, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa amunt.</translation>
@@ -934,6 +940,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8631727435199967028">Configuració d'accessibilitat</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
 <translation id="8639760480004882931">Queda un <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">S'està actualitzant la llista de perfils. Espera uns minuts.</translation>
 <translation id="8646417893960517480">Temporitzador de: <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Per afegir una persona, introdueix el codi d'accés parental de Family Link</translation>
 <translation id="8649101189709089199">Escolta la selecció</translation>
@@ -961,6 +968,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Configuració dels mètodes d'introducció de text</translation>
+<translation id="8818320199597151042">S'està suprimint el perfil. Espera uns minuts.</translation>
 <translation id="8825863694328519386">Llisca des de l'esquerra per tornar enrere</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Botó Enrere</translation>
@@ -1006,6 +1014,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="9091626656156419976">S'ha suprimit la pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silencia el telèfon</translation>
 <translation id="9099154003160514616">Hi ha una actualització de Lacros disponible</translation>
+<translation id="9100887602489003640">S'està afegint el perfil. Espera uns minuts.</translation>
 <translation id="9105450214093926548">Mentre s'executa el navegador Lacros, no s'admet l'inici de sessió amb un segon usuari. Utilitza un altre perfil del navegador o tanca Lacros i torna-ho a provar.</translation>
 <translation id="9133335900048457298">No es pot gravar contingut protegit</translation>
 <translation id="9151726767154816831">Reinicieu i feu un Powerwash per actualitzar.</translation>

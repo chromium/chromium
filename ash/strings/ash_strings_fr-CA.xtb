@@ -245,6 +245,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Installer des applications, des extensions et des thèmes</translation>
 <translation id="2977598380246111477">Prochain numéro</translation>
+<translation id="2992327365391326550">Le bouton du microphone de l'appareil est désactivé.</translation>
 <translation id="2995447421581609334">Afficher les appareils de diffusion.</translation>
 <translation id="2996462380875591307">Loupe en mode ancré activée. Appuyez à nouveau sur Ctrl+Recherche+D pour la désactiver.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
@@ -255,6 +256,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3038571455154067151">Pour vous connecter, entrez votre code d'accès parental Family Link</translation>
 <translation id="3039939407102840004">La pile du stylet est chargée à <ph name="PERCENTAGE" /> pour cent.</translation>
 <translation id="3045488863354895414">Bon après-midi,</translation>
+<translation id="3051189971848907985">Modification du nom du profil en cours… Patientez quelques minutes.</translation>
 <translation id="3055162170959710888">Tu as utilisé cet appareil pendant <ph name="USED_TIME" /> aujourd'hui</translation>
 <translation id="3077734595579995578">majuscule</translation>
 <translation id="3081696990447829002">Développer le menu</translation>
@@ -295,6 +297,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3371140690572404006">Appareil USB-C (port avant-droit)</translation>
 <translation id="3375634426936648815">Fonctionnalité connectée</translation>
+<translation id="3378442621503952303">Connexion au profil en cours… Patientez quelques minutes.</translation>
 <translation id="3386978599540877378">la loupe plein écran</translation>
 <translation id="3400357268283240774">Autres paramètres</translation>
 <translation id="3410336247007142655">Afficher les paramètres du thème sombre</translation>
@@ -351,6 +354,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="380165613292957338">Bonjour, comment puis-je vous aider?</translation>
 <translation id="3826099427150913765">Passer au mot de passe</translation>
 <translation id="383058930331066723">Le mode Économiseur de pile est activé</translation>
+<translation id="3835880383832568924">Pour voir les mises à jour, ouvrez l'application Raccourcis</translation>
 <translation id="383629559565718788">Afficher les paramètres du clavier</translation>
 <translation id="3846214748874656680">Quitter le mode Plein écran</translation>
 <translation id="3846575436967432996">Aucune information concernant le réseau</translation>
@@ -470,6 +474,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4705716602320768426">Classer le commentaire</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735498845456076464">Le raccourci-clavier <ph name="LAUNCHER_KEY_NAME" /> plus un chiffre a été modifié. Pour utiliser les touches de fonction, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" /> ainsi que sur une touche de la rangée du haut.</translation>
 <translation id="4744944742468440486">Renseignements concernant votre sélection</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4774338217796918551">Reviens demain à <ph name="COME_BACK_TIME" />.</translation>
@@ -727,6 +732,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6910714959251846841">Cette mise à jour nécessite une réinitialisation de votre appareil. En savoir plus sur la dernière mise à jour de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Votre carte à puce n'a pas été reconnue. Réessayez.</translation>
+<translation id="6921188888306725546">Les raccourcis-clavier ont été améliorés</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6961121602502368900">Le mode silencieux du téléphone n'est pas accessible dans le profil professionnel</translation>
 <translation id="6961840794482373852">Le raccourci-clavier Alt+flèche vers le haut a changé. Pour utiliser la touche Page précédente, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers le haut.</translation>
@@ -933,6 +939,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8631727435199967028">Paramètres d'accessibilité</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> géré par votre administrateur</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restant</translation>
+<translation id="8641805545866562088">Actualisation de la liste de profils en cours… Patientez quelques minutes.</translation>
 <translation id="8646417893960517480">Minuterie de <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Pour ajouter une personne, entrez votre code d'accès parental Family Link</translation>
 <translation id="8649101189709089199">Sélectionner pour énoncer</translation>
@@ -960,6 +967,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Paramètres des méthodes d'entrée</translation>
+<translation id="8818320199597151042">Retrait du profil en cours… Patientez quelques minutes.</translation>
 <translation id="8825863694328519386">Balayez l'écran de gauche à droite pour revenir en arrière</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Bouton Précédent</translation>
@@ -1005,6 +1013,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="9091626656156419976">Affichage <ph name="DISPLAY_NAME" /> supprimé</translation>
 <translation id="9098969848082897657">Téléphone silencieux</translation>
 <translation id="9099154003160514616">Une mise à jour de Lacros est proposée</translation>
+<translation id="9100887602489003640">Ajout du profil en cours… Patientez quelques minutes.</translation>
 <translation id="9105450214093926548">Un second utilisateur ne peut pas se connecter lorsque le navigateur Lacros est en cours d'exécution. Veuillez utiliser un second profil de navigateur dans Lacros ou fermer ce dernier, puis réessayer.</translation>
 <translation id="9133335900048457298">Impossible d'enregistrer le contenu protégé</translation>
 <translation id="9151726767154816831">Redémarrer et utiliser PowerWash afin de mettre à jour</translation>

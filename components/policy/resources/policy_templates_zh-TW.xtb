@@ -40,6 +40,7 @@
       如果將這項政策設為停用，使用者將無法設定簡訊同步處理功能。
 
       如果未設定這項政策，系統預設會為受管理的使用者停用這項功能，但其他使用者仍可使用。</translation>
+<translation id="1035860095382451169">在網址列中啟用鎖頭圖示代表安全連線</translation>
 <translation id="1040446814317236570">啟用 PAC 網址分解功能 (適用於 https://)</translation>
 <translation id="1041450926450683286">用戶端不得解譯這項資料，應將資料原封不動地轉送。DMServer 會使用 policy_version 驗證其政策系統是否符合 Chrome 作業系統裝置。</translation>
 <translation id="1041719059374171202">你可以透過這項政策設定網址模式清單，用於指定無法執行 JavaScript 的網站。
@@ -83,6 +84,7 @@
 <translation id="1095209545735032039">封鎖這些網站上的 Serial API</translation>
 <translation id="1096105751829466145">預設搜尋引擎</translation>
 <translation id="1099282607296956954">為所有網站啟用網站隔離</translation>
+<translation id="1105572260329131950">使用預設圖示代表安全連線</translation>
 <translation id="1117535567637097036">處理 Android 意圖時，系統不會使用透過這項政策設定的通訊協定處理常式。</translation>
 <translation id="1118093128235245168">允許網站要求使用者授權存取已連線的 USB 裝置</translation>
 <translation id="111910763555783249">通知設定</translation>
@@ -4711,6 +4713,7 @@
 <translation id="7207095846245296855">強制啟用 Google 安全搜尋模式</translation>
 <translation id="7211368186050418507">一律不自動偵測時區</translation>
 <translation id="7216442368414164495">允許使用者採用安全瀏覽模式的進階回報功能</translation>
+<translation id="7221574724100909818">使用鎖頭圖示代表安全連線</translation>
 <translation id="7229975860249300121">這項政策包含一個規則運算式，用來決定哪些 Google 帳戶可以設定為 <ph name="PRODUCT_NAME" /> 中的瀏覽器主要帳戶 (也就是在同步功能啟用流程中所選的帳戶)。
 
       如果使用者在設定瀏覽器主要帳戶時，試圖使用不符合這個模式的使用者名稱，系統會顯示相關錯誤訊息。
@@ -5709,6 +5712,10 @@
 <translation id="8631437968147930597"><ph name="PRODUCT_OS_NAME" />螢幕鎖定畫面上允許的筆記應用程式清單</translation>
 <translation id="8637566476051166626">明確允許的網路通訊埠</translation>
 <translation id="8643838501942693770">允許第三方 Cookie，但使用者可以變更這項設定</translation>
+<translation id="8648844602494595665">這項政策可控管網址列中鎖頭圖示的處理方式。
+       Chrome M93 以上版本新增了代表安全連線的網址列圖示。
+       如果啟用這項政策，Chrome 會使用現有的鎖頭圖示代表安全連線。
+       如果停用或不設定這項政策，Chrome 則會使用預設圖示代表安全連線。</translation>
 <translation id="8650974590712548439">Windows 用戶端的 Windows 登錄檔位置：</translation>
 <translation id="8653085952260859632">回報記憶體資訊</translation>
 <translation id="8653561013005884087">將這項政策設為 True 時，系統會讓互動朗讀功能保持在啟用狀態。將這項政策設為 False 時，系統會讓互動朗讀功能保持在停用狀態。
