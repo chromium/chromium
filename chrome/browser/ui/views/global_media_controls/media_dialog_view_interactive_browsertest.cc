@@ -827,7 +827,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
   WaitForNotificationCount(1);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, PictureInPicture) {
+// Test is flaky crbug.com/1213256.
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, DISABLED_PictureInPicture) {
   // Open a tab and play media.
   OpenTestURL();
   StartPlayback();
