@@ -3437,12 +3437,6 @@ static_library("browser") {
       "apps/app_service/publishers/extension_apps.h",
       "apps/app_service/publishers/extension_apps_base.cc",
       "apps/app_service/publishers/extension_apps_base.h",
-      "apps/app_service/publishers/web_apps.cc",
-      "apps/app_service/publishers/web_apps.h",
-      "apps/app_service/publishers/web_apps_base.cc",
-      "apps/app_service/publishers/web_apps_base.h",
-      "apps/app_service/web_apps_utils.cc",
-      "apps/app_service/web_apps_utils.h",
       "apps/intent_helper/apps_navigation_throttle.cc",
       "apps/intent_helper/apps_navigation_throttle.h",
       "apps/intent_helper/apps_navigation_types.cc",
@@ -4350,8 +4344,6 @@ static_library("browser") {
       "apps/app_service/publishers/remote_apps.h",
       "apps/app_service/publishers/standalone_browser_apps.cc",
       "apps/app_service/publishers/standalone_browser_apps.h",
-      "apps/app_service/publishers/web_apps_chromeos.cc",
-      "apps/app_service/publishers/web_apps_chromeos.h",
       "apps/app_service/publishers/web_apps_crosapi.cc",
       "apps/app_service/publishers/web_apps_crosapi.h",
       "apps/app_service/publishers/web_apps_crosapi_factory.cc",
@@ -4726,8 +4718,6 @@ static_library("browser") {
     sources += [
       "apps/app_service/fake_lacros_web_apps_host.cc",
       "apps/app_service/fake_lacros_web_apps_host.h",
-      "apps/app_service/web_apps_publisher_host.cc",
-      "apps/app_service/web_apps_publisher_host.h",
       "chrome_browser_main_parts_lacros.cc",
       "chrome_browser_main_parts_lacros.h",
       "feedback/show_feedback_page_lacros.cc",
@@ -5937,6 +5927,7 @@ static_library("browser") {
 
       # TODO(crbug.com/1200215): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/app_service",
       "//chrome/browser/web_applications/components",
       "//chrome/browser/web_applications/extensions",
     ]
@@ -5944,6 +5935,7 @@ static_library("browser") {
       "//apps",
       "//chrome/browser/sync_file_system/drive_backend:sync_file_system_drive_proto",
       "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/app_service",
       "//chrome/browser/web_applications/components",
       "//chrome/browser/web_applications/extensions",
       "//chrome/common/extensions/api",

@@ -15,7 +15,6 @@
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
 #include "chrome/browser/apps/app_service/publishers/plugin_vm_apps.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
-#include "chrome/browser/apps/app_service/publishers/web_apps_chromeos.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/grit/supervised_user_unscaled_resources.h"
+#include "chrome/browser/web_applications/app_service/web_apps_chromeos.h"
 #include "chrome/common/chrome_features.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/app_service_impl.h"
@@ -100,8 +100,8 @@ void AppServiceProxyChromeOs::Initialize() {
     standalone_browser_apps_ =
         std::make_unique<StandaloneBrowserApps>(app_service_, profile_);
   }
-  web_apps_ = std::make_unique<WebAppsChromeOs>(app_service_, profile_,
-                                                &instance_registry_);
+  web_apps_ = std::make_unique<web_app::WebAppsChromeOs>(app_service_, profile_,
+                                                         &instance_registry_);
 
   if (!profile_->AsTestingProfile()) {
     app_platform_metrics_service_ =

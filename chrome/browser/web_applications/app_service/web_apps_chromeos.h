@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CHROMEOS_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CHROMEOS_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_CHROMEOS_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_CHROMEOS_H_
 
 #include <string>
 
@@ -14,13 +14,13 @@
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
-#include "chrome/browser/apps/app_service/publishers/web_apps_base.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/web_applications/app_service/web_apps_base.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -31,17 +31,15 @@
 class Profile;
 
 namespace web_app {
-class WebApp;
-}  // namespace web_app
 
-namespace apps {
+class WebApp;
 
 // An app publisher (in the App Service sense) of Web Apps.
 class WebAppsChromeOs : public WebAppsBase,
                         public ArcAppListPrefs::Observer,
                         public NotificationDisplayService::Observer,
                         public MediaCaptureDevicesDispatcher::Observer,
-                        public AppWebContentsData::Client {
+                        public apps::AppWebContentsData::Client {
  public:
   WebAppsChromeOs(const mojo::Remote<apps::mojom::AppService>& app_service,
                   Profile* profile,
@@ -66,7 +64,7 @@ class WebAppsChromeOs : public WebAppsBase,
 
     ~BadgeManagerDelegate() override;
 
-    void OnAppBadgeUpdated(const web_app::AppId& app_id) override;
+    void OnAppBadgeUpdated(const AppId& app_id) override;
 
    private:
     base::WeakPtr<WebAppsChromeOs> web_apps_chrome_os_;
@@ -96,10 +94,10 @@ class WebAppsChromeOs : public WebAppsBase,
                                  const std::string& shortcut_id,
                                  int64_t display_id) override;
 
-  // web_app::AppRegistrarObserver:
-  void OnWebAppInstalled(const web_app::AppId& app_id) override;
-  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
-  void OnWebAppDisabledStateChanged(const web_app::AppId& app_id,
+  // AppRegistrarObserver:
+  void OnWebAppInstalled(const AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
+  void OnWebAppDisabledStateChanged(const AppId& app_id,
                                     bool is_disabled) override;
   void OnWebAppsDisabledModeChanged() override;
 
@@ -120,7 +118,7 @@ class WebAppsChromeOs : public WebAppsBase,
                        blink::mojom::MediaStreamType stream_type,
                        const content::MediaRequestState state) override;
 
-  // AppWebContentsData::Observer:
+  // apps::AppWebContentsData::Observer:
   void OnWebContentsDestroyed(content::WebContents* contents) override;
 
   // NotificationDisplayService::Observer overrides.
@@ -144,16 +142,16 @@ class WebAppsChromeOs : public WebAppsBase,
       const message_center::Notification& notification,
       const NotificationCommon::Metadata* const metadata);
 
-  apps::mojom::AppPtr Convert(const web_app::WebApp* web_app,
+  apps::mojom::AppPtr Convert(const WebApp* web_app,
                               apps::mojom::Readiness readiness) override;
   void ConvertWebApps(apps::mojom::Readiness readiness,
                       std::vector<apps::mojom::AppPtr>* apps_out);
   void StartPublishingWebApps(
       mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote);
 
-  IconEffects GetIconEffects(const web_app::WebApp* web_app,
-                             bool paused,
-                             bool is_disabled);
+  apps::IconEffects GetIconEffects(const WebApp* web_app,
+                                   bool paused,
+                                   bool is_disabled);
 
   // Get the equivalent Chrome app from |arc_package_name| and set the Chrome
   // app badge on the icon effects for the equivalent Chrome apps. If the
@@ -165,7 +163,8 @@ class WebAppsChromeOs : public WebAppsBase,
 
   // Launches an app in a way specified by |params|. If the app is a system web
   // app, or not opened in tabs, saves the launch parameters.
-  content::WebContents* LaunchAppWithParams(AppLaunchParams params) override;
+  content::WebContents* LaunchAppWithParams(
+      apps::AppLaunchParams params) override;
 
   bool Accepts(const std::string& app_id) override;
 
@@ -179,7 +178,7 @@ class WebAppsChromeOs : public WebAppsBase,
 
   apps::InstanceRegistry* instance_registry_;
 
-  PausedApps paused_apps_;
+  apps::PausedApps paused_apps_;
 
   ArcAppListPrefs* arc_prefs_ = nullptr;
 
@@ -187,19 +186,19 @@ class WebAppsChromeOs : public WebAppsBase,
                           MediaCaptureDevicesDispatcher::Observer>
       media_dispatcher_{this};
 
-  MediaRequests media_requests_;
+  apps::MediaRequests media_requests_;
 
   base::ScopedObservation<NotificationDisplayService,
                           NotificationDisplayService::Observer>
       notification_display_service_{this};
 
-  AppNotifications app_notifications_;
+  apps::AppNotifications app_notifications_;
 
   badging::BadgeManager* badge_manager_ = nullptr;
 
   base::WeakPtrFactory<WebAppsChromeOs> weak_ptr_factory_{this};
 };
 
-}  // namespace apps
+}  // namespace web_app
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CHROMEOS_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_CHROMEOS_H_

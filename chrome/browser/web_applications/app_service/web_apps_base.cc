@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/publishers/web_apps_base.h"
+#include "chrome/browser/web_applications/app_service/web_apps_base.h"
 
 #include <utility>
 #include <vector>
@@ -14,13 +14,13 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/apps/app_service/web_apps_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
+#include "chrome/browser/web_applications/app_service/web_apps_utils.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -39,7 +39,9 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #endif
 
-namespace apps {
+using apps::IconEffects;
+
+namespace web_app {
 
 WebAppsBase::WebAppsBase(
     const mojo::Remote<apps::mojom::AppService>& app_service,
@@ -70,31 +72,29 @@ void WebAppsBase::Shutdown() {
   }
 }
 
-const web_app::WebApp* WebAppsBase::GetWebApp(
-    const web_app::AppId& app_id) const {
+const WebApp* WebAppsBase::GetWebApp(const AppId& app_id) const {
   // GetRegistrar() might return nullptr if the legacy bookmark apps registry is
   // enabled. This may happen in migration browser tests.
   return GetRegistrar() ? GetRegistrar()->GetAppById(app_id) : nullptr;
 }
 
-void WebAppsBase::OnWebAppInstalled(const web_app::AppId& app_id) {
-  const web_app::WebApp* web_app = GetWebApp(app_id);
+void WebAppsBase::OnWebAppInstalled(const AppId& app_id) {
+  const WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
     Publish(Convert(web_app, apps::mojom::Readiness::kReady), subscribers_);
   }
 }
 
-void WebAppsBase::OnWebAppWillBeUninstalled(const web_app::AppId& app_id) {
-  const web_app::WebApp* web_app = GetWebApp(app_id);
+void WebAppsBase::OnWebAppWillBeUninstalled(const AppId& app_id) {
+  const WebApp* web_app = GetWebApp(app_id);
   if (!web_app || !Accepts(app_id)) {
     return;
   }
 
-  Publish(apps_util::ConvertUninstalledWebApp(web_app, app_type_),
-          subscribers_);
+  Publish(ConvertUninstalledWebApp(web_app, app_type_), subscribers_);
 }
 
-IconEffects WebAppsBase::GetIconEffects(const web_app::WebApp* web_app) {
+IconEffects WebAppsBase::GetIconEffects(const WebApp* web_app) {
   IconEffects icon_effects = IconEffects::kNone;
   if (!web_app->is_locally_installed()) {
     icon_effects =
@@ -115,7 +115,7 @@ content::WebContents* WebAppsBase::LaunchAppWithIntentImpl(
     return nullptr;
   }
 
-  const web_app::WebAppRegistrar& registrar = *WebAppsBase::GetRegistrar();
+  const WebAppRegistrar& registrar = *WebAppsBase::GetRegistrar();
   if (registrar.GetAppById(app_id)->capture_links() ==
       blink::mojom::CaptureLinks::kExistingClientNavigate) {
     content::WebContents* web_contents =
@@ -128,39 +128,39 @@ content::WebContents* WebAppsBase::LaunchAppWithIntentImpl(
   }
 
   auto params = apps::CreateAppLaunchParamsForIntent(
-      app_id, event_flags, GetAppLaunchSource(launch_source), display_id,
-      web_app::ConvertDisplayModeToAppLaunchContainer(
+      app_id, event_flags, apps::GetAppLaunchSource(launch_source), display_id,
+      ConvertDisplayModeToAppLaunchContainer(
           registrar.GetAppEffectiveDisplayMode(app_id)),
       std::move(intent));
   return LaunchAppWithParams(std::move(params));
 }
 
-content::WebContents* WebAppsBase::LaunchAppWithParams(AppLaunchParams params) {
+content::WebContents* WebAppsBase::LaunchAppWithParams(
+    apps::AppLaunchParams params) {
   return web_app_launch_manager_->OpenApplication(std::move(params));
 }
 
 void WebAppsBase::Initialize(
     const mojo::Remote<apps::mojom::AppService>& app_service) {
   DCHECK(profile_);
-  if (!web_app::AreWebAppsEnabled(profile_)) {
+  if (!AreWebAppsEnabled(profile_)) {
     return;
   }
 
-  provider_ = web_app::WebAppProvider::Get(profile_);
+  provider_ = WebAppProvider::Get(profile_);
   DCHECK(provider_);
 
   registrar_observation_.Observe(&provider_->registrar());
   content_settings_observation_.Observe(
       HostContentSettingsMapFactory::GetForProfile(profile_));
 
-  web_app_launch_manager_ =
-      std::make_unique<web_app::WebAppLaunchManager>(profile_);
+  web_app_launch_manager_ = std::make_unique<WebAppLaunchManager>(profile_);
 
   PublisherBase::Initialize(app_service, app_type_);
   app_service_ = app_service.get();
 }
 
-const web_app::WebAppRegistrar* WebAppsBase::GetRegistrar() const {
+const WebAppRegistrar* WebAppsBase::GetRegistrar() const {
   DCHECK(provider_);
   return provider_->registrar().AsWebAppRegistrar();
 }
@@ -201,7 +201,7 @@ void WebAppsBase::Launch(const std::string& app_id,
     return;
   }
 
-  const web_app::WebApp* web_app = GetWebApp(app_id);
+  const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     return;
   }
@@ -243,14 +243,13 @@ void WebAppsBase::Launch(const std::string& app_id,
       break;
   }
 
-  web_app::DisplayMode display_mode =
-      GetRegistrar()->GetAppEffectiveDisplayMode(app_id);
+  DisplayMode display_mode = GetRegistrar()->GetAppEffectiveDisplayMode(app_id);
 
-  AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
-      web_app->app_id(), event_flags, GetAppLaunchSource(launch_source),
+  apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
+      web_app->app_id(), event_flags, apps::GetAppLaunchSource(launch_source),
       window_info ? window_info->display_id : display::kInvalidDisplayId,
       /*fallback_container=*/
-      web_app::ConvertDisplayModeToAppLaunchContainer(display_mode));
+      ConvertDisplayModeToAppLaunchContainer(display_mode));
 
   // The app will be launched for the currently active profile.
   LaunchAppWithParams(std::move(params));
@@ -263,7 +262,7 @@ void WebAppsBase::LaunchAppWithFiles(const std::string& app_id,
                                      apps::mojom::FilePathsPtr file_paths) {
   apps::AppLaunchParams params(
       app_id, container, ui::DispositionFromEventFlags(event_flags),
-      GetAppLaunchSource(launch_source), display::kDefaultDisplayId);
+      apps::GetAppLaunchSource(launch_source), display::kDefaultDisplayId);
   for (const auto& file_path : file_paths->file_paths) {
     params.launch_files.push_back(file_path);
   }
@@ -288,7 +287,7 @@ void WebAppsBase::SetPermission(const std::string& app_id,
     return;
   }
 
-  const web_app::WebApp* web_app = GetWebApp(app_id);
+  const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     return;
   }
@@ -301,7 +300,7 @@ void WebAppsBase::SetPermission(const std::string& app_id,
 
   ContentSettingsType permission_type =
       static_cast<ContentSettingsType>(permission->permission_id);
-  if (!apps_util::IsSupportedWebAppPermissionType(permission_type)) {
+  if (!IsSupportedWebAppPermissionType(permission_type)) {
     return;
   }
 
@@ -331,7 +330,7 @@ void WebAppsBase::OpenNativeSettings(const std::string& app_id) {
     return;
   }
 
-  const web_app::WebApp* web_app = GetWebApp(app_id);
+  const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     return;
   }
@@ -344,7 +343,7 @@ void WebAppsBase::OnContentSettingChanged(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
   // If content_type is not one of the supported permissions, do nothing.
-  if (!apps_util::IsSupportedWebAppPermissionType(content_type)) {
+  if (!IsSupportedWebAppPermissionType(content_type)) {
     return;
   }
 
@@ -352,20 +351,19 @@ void WebAppsBase::OnContentSettingChanged(
     return;
   }
 
-  const web_app::WebAppRegistrar* registrar = GetRegistrar();
+  const WebAppRegistrar* registrar = GetRegistrar();
   // Can be nullptr in tests.
   if (!registrar) {
     return;
   }
 
-  for (const web_app::WebApp& web_app : registrar->GetApps()) {
+  for (const WebApp& web_app : registrar->GetApps()) {
     if (primary_pattern.Matches(web_app.start_url()) &&
         Accepts(web_app.app_id())) {
       apps::mojom::AppPtr app = apps::mojom::App::New();
       app->app_type = app_type_;
       app->app_id = web_app.app_id();
-      apps_util::PopulateWebAppPermissions(profile_, &web_app,
-                                           &app->permissions);
+      PopulateWebAppPermissions(profile_, &web_app, &app->permissions);
 
       Publish(std::move(app), subscribers_);
     }
@@ -375,15 +373,15 @@ void WebAppsBase::OnContentSettingChanged(
 void WebAppsBase::OnWebAppLastLaunchTimeChanged(
     const std::string& app_id,
     const base::Time& last_launch_time) {
-  const web_app::WebApp* web_app = GetWebApp(app_id);
+  const WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
-    Publish(apps_util::ConvertLaunchedWebApp(web_app, app_type_), subscribers_);
+    Publish(ConvertLaunchedWebApp(web_app, app_type_), subscribers_);
   }
 }
 
-void WebAppsBase::OnWebAppManifestUpdated(const web_app::AppId& app_id,
+void WebAppsBase::OnWebAppManifestUpdated(const AppId& app_id,
                                           base::StringPiece old_name) {
-  const web_app::WebApp* web_app = GetWebApp(app_id);
+  const WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
     Publish(Convert(web_app, apps::mojom::Readiness::kReady), subscribers_);
   }
@@ -394,9 +392,9 @@ void WebAppsBase::OnAppRegistrarDestroyed() {
 }
 
 void WebAppsBase::OnWebAppLocallyInstalledStateChanged(
-    const web_app::AppId& app_id,
+    const AppId& app_id,
     bool is_locally_installed) {
-  const web_app::WebApp* web_app = GetWebApp(app_id);
+  const WebApp* web_app = GetWebApp(app_id);
   if (!web_app)
     return;
   auto app = apps::mojom::App::New();
@@ -408,12 +406,12 @@ void WebAppsBase::OnWebAppLocallyInstalledStateChanged(
 
 void WebAppsBase::ConvertWebApps(apps::mojom::Readiness readiness,
                                  std::vector<apps::mojom::AppPtr>* apps_out) {
-  const web_app::WebAppRegistrar* registrar = GetRegistrar();
+  const WebAppRegistrar* registrar = GetRegistrar();
   // Can be nullptr in tests.
   if (!registrar)
     return;
 
-  for (const web_app::WebApp& web_app : registrar->GetApps()) {
+  for (const WebApp& web_app : registrar->GetApps()) {
     if (Accepts(web_app.app_id())) {
       apps_out->push_back(Convert(&web_app, readiness));
     }
@@ -433,4 +431,4 @@ void WebAppsBase::StartPublishingWebApps(
   subscribers_.Add(std::move(subscriber));
 }
 
-}  // namespace apps
+}  // namespace web_app

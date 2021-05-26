@@ -5,12 +5,12 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_desktop.h"
 
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
-#include "chrome/browser/apps/app_service/publishers/web_apps.h"
+#include "chrome/browser/web_applications/app_service/web_apps.h"
 #include "components/services/app_service/app_service_impl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/apps/app_service/fake_lacros_web_apps_host.h"
-#include "chrome/browser/apps/app_service/web_apps_publisher_host.h"
+#include "chrome/browser/web_applications/app_service/web_apps_publisher_host.h"
 #endif
 
 namespace apps {
@@ -39,7 +39,7 @@ void AppServiceProxy::Initialize() {
     return;
   }
 
-  web_apps_ = std::make_unique<WebApps>(app_service_, profile_);
+  web_apps_ = std::make_unique<web_app::WebApps>(app_service_, profile_);
   extension_apps_ = std::make_unique<ExtensionApps>(app_service_, profile_);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -50,7 +50,8 @@ void AppServiceProxy::Initialize() {
     fake_lacros_web_apps_host_ = std::make_unique<FakeLacrosWebAppsHost>();
     fake_lacros_web_apps_host_->Init();
   } else {
-    web_apps_publisher_host_ = std::make_unique<WebAppsPublisherHost>(profile_);
+    web_apps_publisher_host_ =
+        std::make_unique<web_app::WebAppsPublisherHost>(profile_);
     web_apps_publisher_host_->Init();
   }
 #endif
@@ -68,7 +69,8 @@ void AppServiceProxy::Uninstall(const std::string& app_id,
   // On non-ChromeOS, publishers run the remove dialog.
   apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
   if (app_type == apps::mojom::AppType::kWeb) {
-    WebApps::UninstallImpl(profile_, app_id, uninstall_source, parent_window);
+    web_app::WebApps::UninstallImpl(profile_, app_id, uninstall_source,
+                                    parent_window);
   }
 }
 

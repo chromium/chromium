@@ -1929,8 +1929,6 @@ if (!is_android) {
         "../browser/apps/app_service/intent_util_browsertest.cc",
         "../browser/apps/app_service/media_access_browsertest.cc",
         "../browser/apps/app_service/notifications_browsertest.cc",
-        "../browser/apps/app_service/publishers/web_apps_base_browsertest.cc",
-        "../browser/apps/app_service/publishers/web_apps_chromeos_browsertest.cc",
         "../browser/apps/icon_standardizer_unittest.cc",
         "../browser/policy/login_policy_test_base_browsertest.cc",
         "../browser/policy/test/accessibility_policy_browsertest.cc",
@@ -1945,6 +1943,8 @@ if (!is_android) {
         "../browser/renderer_context_menu/quick_answers_menu_observer_browsertest.cc",
         "../browser/ui/webui/nearby_share/nearby_share_dialog_ui_browsertest.cc",
         "../browser/ui/webui/signin/inline_login_dialog_chromeos_browsertest.cc",
+        "../browser/web_applications/app_service/web_apps_base_browsertest.cc",
+        "../browser/web_applications/app_service/web_apps_chromeos_browsertest.cc",
         "../browser/webshare/chromeos/sharesheet_client_browsertest.cc",
       ]
     }
@@ -1958,9 +1958,7 @@ if (!is_android) {
     }
 
     if (is_chromeos_lacros) {
-      sources += [
-        "../browser/apps/app_service/web_apps_publisher_host_browsertest.cc",
-      ]
+      sources += [ "../browser/web_applications/app_service/web_apps_publisher_host_browsertest.cc" ]
     }
 
     if (!is_chromeos) {

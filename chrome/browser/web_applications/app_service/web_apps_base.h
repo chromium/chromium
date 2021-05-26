@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_BASE_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_BASE_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_BASE_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_BASE_H_
 
 #include <memory>
 #include <string>
@@ -27,29 +27,29 @@
 
 class Profile;
 
+namespace apps {
+struct AppLaunchParams;
+}  // namespace apps
+
 namespace content {
 class WebContents;
 }
-
-namespace web_app {
-class WebApp;
-class WebAppLaunchManager;
-class WebAppProvider;
-class WebAppRegistrar;
-}  // namespace web_app
 
 namespace webapps {
 enum class WebappUninstallSource;
 }  // namespace webapps
 
-namespace apps {
+namespace web_app {
 
-struct AppLaunchParams;
+class WebApp;
+class WebAppLaunchManager;
+class WebAppProvider;
+class WebAppRegistrar;
 
 // An app publisher (in the App Service sense) of Web Apps.
 class WebAppsBase : public apps::PublisherBase,
                     public base::SupportsWeakPtr<WebAppsBase>,
-                    public web_app::AppRegistrarObserver,
+                    public AppRegistrarObserver,
                     public content_settings::Observer {
  public:
   WebAppsBase(const mojo::Remote<apps::mojom::AppService>& app_service,
@@ -61,16 +61,16 @@ class WebAppsBase : public apps::PublisherBase,
   virtual void Shutdown();
 
  protected:
-  const web_app::WebApp* GetWebApp(const web_app::AppId& app_id) const;
+  const WebApp* GetWebApp(const AppId& app_id) const;
 
-  // web_app::AppRegistrarObserver:
-  void OnWebAppInstalled(const web_app::AppId& app_id) override;
-  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
+  // AppRegistrarObserver:
+  void OnWebAppInstalled(const AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
   void OnWebAppLastLaunchTimeChanged(
       const std::string& app_id,
       const base::Time& last_launch_time) override;
 
-  IconEffects GetIconEffects(const web_app::WebApp* web_app);
+  apps::IconEffects GetIconEffects(const WebApp* web_app);
 
   content::WebContents* LaunchAppWithIntentImpl(
       const std::string& app_id,
@@ -79,21 +79,22 @@ class WebAppsBase : public apps::PublisherBase,
       apps::mojom::LaunchSource launch_source,
       int64_t display_id);
 
-  virtual content::WebContents* LaunchAppWithParams(AppLaunchParams params);
+  virtual content::WebContents* LaunchAppWithParams(
+      apps::AppLaunchParams params);
 
   const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers() const {
     return subscribers_;
   }
 
   Profile* profile() const { return profile_; }
-  web_app::WebAppProvider* provider() const { return provider_; }
+  WebAppProvider* provider() const { return provider_; }
 
   apps_util::IncrementingIconKeyFactory& icon_key_factory() {
     return icon_key_factory_;
   }
 
   // Can return nullptr in tests.
-  const web_app::WebAppRegistrar* GetRegistrar() const;
+  const WebAppRegistrar* GetRegistrar() const;
 
   apps::mojom::AppType app_type() { return app_type_; }
 
@@ -132,14 +133,14 @@ class WebAppsBase : public apps::PublisherBase,
                                const ContentSettingsPattern& secondary_pattern,
                                ContentSettingsType content_type) override;
 
-  // web_app::AppRegistrarObserver:
-  void OnWebAppManifestUpdated(const web_app::AppId& app_id,
+  // AppRegistrarObserver:
+  void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override;
   void OnAppRegistrarDestroyed() override;
-  void OnWebAppLocallyInstalledStateChanged(const web_app::AppId& app_id,
+  void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
                                             bool is_locally_installed) override;
 
-  virtual apps::mojom::AppPtr Convert(const web_app::WebApp* web_app,
+  virtual apps::mojom::AppPtr Convert(const WebApp* web_app,
                                       apps::mojom::Readiness readiness) = 0;
   void ConvertWebApps(apps::mojom::Readiness readiness,
                       std::vector<apps::mojom::AppPtr>* apps_out);
@@ -154,15 +155,15 @@ class WebAppsBase : public apps::PublisherBase,
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
-  base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
+  base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
 
-  web_app::WebAppProvider* provider_ = nullptr;
+  WebAppProvider* provider_ = nullptr;
 
-  std::unique_ptr<web_app::WebAppLaunchManager> web_app_launch_manager_;
+  std::unique_ptr<WebAppLaunchManager> web_app_launch_manager_;
 
   // app_service_ is owned by the object that owns this object.
   apps::mojom::AppService* app_service_;
@@ -172,6 +173,6 @@ class WebAppsBase : public apps::PublisherBase,
   apps::mojom::AppType app_type_;
 };
 
-}  // namespace apps
+}  // namespace web_app
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_BASE_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_BASE_H_

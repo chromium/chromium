@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/publishers/web_apps_base.h"
+#include "chrome/browser/web_applications/app_service/web_apps_base.h"
 
 #include <vector>
 
@@ -32,7 +32,7 @@
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
-namespace apps {
+namespace web_app {
 
 class WebAppsBaseBrowserTest : public InProcessBrowserTest {
  public:
@@ -50,11 +50,10 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchWithIntent) {
   const GURL app_url(
       embedded_test_server()->GetURL("/web_share_target/charts.html"));
   Profile* const profile = browser()->profile();
-  const web_app::AppId app_id =
-      web_app::InstallWebAppFromManifest(browser(), app_url);
+  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
   base::RunLoop run_loop;
-  web_app::WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
+  WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
           [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
             EXPECT_EQ(*params.intent->action, apps_util::kIntentActionSend);
@@ -86,11 +85,10 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, IntentWithoutFiles) {
   const GURL app_url(
       embedded_test_server()->GetURL("/web_share_target/poster.html"));
   Profile* const profile = browser()->profile();
-  const web_app::AppId app_id =
-      web_app::InstallWebAppFromManifest(browser(), app_url);
+  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
   base::RunLoop run_loop;
-  web_app::WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
+  WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
           [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
             EXPECT_EQ(*params.intent->action,
@@ -123,13 +121,11 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, ExposeAppServicePublisherId) {
   const GURL app_url(embedded_test_server()->GetURL("/web_apps/basic.html"));
 
   // Install file handling web app.
-  const web_app::AppId app_id =
-      web_app::InstallWebAppFromManifest(browser(), app_url);
-  const web_app::WebAppRegistrar* registrar =
-      web_app::WebAppProvider::Get(browser()->profile())
-          ->registrar()
-          .AsWebAppRegistrar();
-  const web_app::WebApp* web_app = registrar->GetAppById(app_id);
+  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  const WebAppRegistrar* registrar = WebAppProvider::Get(browser()->profile())
+                                         ->registrar()
+                                         .AsWebAppRegistrar();
+  const WebApp* web_app = registrar->GetAppById(app_id);
   ASSERT_TRUE(web_app);
 
   // Check the publisher_id is the app's start url.
@@ -143,8 +139,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, ExposeAppServicePublisherId) {
 IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchAppIconKeyUnchanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(embedded_test_server()->GetURL("/web_apps/basic.html"));
-  const web_app::AppId app_id =
-      web_app::InstallWebAppFromManifest(browser(), app_url);
+  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   auto* proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
 
@@ -168,4 +163,4 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchAppIconKeyUnchanged) {
       });
 }
 
-}  // namespace apps
+}  // namespace web_app

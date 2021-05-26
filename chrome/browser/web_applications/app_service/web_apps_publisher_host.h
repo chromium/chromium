@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_WEB_APPS_PUBLISHER_HOST_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_WEB_APPS_PUBLISHER_HOST_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_PUBLISHER_HOST_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_PUBLISHER_HOST_H_
 
 #include <string>
 #include <vector>
@@ -35,20 +35,18 @@ class WebContents;
 }  // namespace content
 
 namespace web_app {
+
 class WebApp;
 class WebAppProvider;
 class WebAppRegistrar;
-}  // namespace web_app
-
-namespace apps {
 
 // This WebAppsPublisherHost observes AppRegistrar on Lacros, and calls
 // WebAppsCrosapi to inform the Ash browser of the current set of web apps.
 class WebAppsPublisherHost : public crosapi::mojom::AppController,
-                             public web_app::AppRegistrarObserver,
+                             public AppRegistrarObserver,
                              public content_settings::Observer,
                              public MediaCaptureDevicesDispatcher::Observer,
-                             public AppWebContentsData::Client {
+                             public apps::AppWebContentsData::Client {
  public:
   explicit WebAppsPublisherHost(Profile* profile);
   WebAppsPublisherHost(const WebAppsPublisherHost&) = delete;
@@ -58,7 +56,7 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void Init();
 
   Profile* profile() { return profile_; }
-  web_app::WebAppRegistrar& registrar() const;
+  WebAppRegistrar& registrar() const;
 
   void SetPublisherForTesting(crosapi::mojom::AppPublisher* publisher);
 
@@ -71,13 +69,13 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                  bool clear_site_data,
                  bool report_abuse) override;
 
-  // web_app::AppRegistrarObserver:
-  void OnWebAppInstalled(const web_app::AppId& app_id) override;
-  void OnWebAppManifestUpdated(const web_app::AppId& app_id,
+  // AppRegistrarObserver:
+  void OnWebAppInstalled(const AppId& app_id) override;
+  void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override;
-  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
-  void OnWebAppLocallyInstalledStateChanged(const web_app::AppId& app_id,
+  void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
                                             bool is_locally_installed) override;
   void OnWebAppLastLaunchTimeChanged(
       const std::string& app_id,
@@ -96,11 +94,11 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                        blink::mojom::MediaStreamType stream_type,
                        const content::MediaRequestState state) override;
 
-  // AppWebContentsData::Client:
+  // apps::AppWebContentsData::Client:
   void OnWebContentsDestroyed(content::WebContents* contents) override;
 
-  const web_app::WebApp* GetWebApp(const web_app::AppId& app_id) const;
-  apps::mojom::AppPtr Convert(const web_app::WebApp* web_app,
+  const WebApp* GetWebApp(const AppId& app_id) const;
+  apps::mojom::AppPtr Convert(const WebApp* web_app,
                               apps::mojom::Readiness readiness);
   void Publish(apps::mojom::AppPtr app);
 
@@ -109,14 +107,14 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                               absl::optional<bool> accessing_microphone);
 
   Profile* const profile_;
-  web_app::WebAppProvider* const provider_;
+  WebAppProvider* const provider_;
   crosapi::mojom::AppPublisher* remote_publisher_ = nullptr;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   mojo::Receiver<crosapi::mojom::AppController> receiver_{this};
 
-  base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
+  base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
@@ -126,11 +124,11 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                           MediaCaptureDevicesDispatcher::Observer>
       media_dispatcher_{this};
 
-  MediaRequests media_requests_;
+  apps::MediaRequests media_requests_;
 
   base::WeakPtrFactory<WebAppsPublisherHost> weak_ptr_factory_{this};
 };
 
-}  // namespace apps
+}  // namespace web_app
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_WEB_APPS_PUBLISHER_HOST_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_PUBLISHER_HOST_H_

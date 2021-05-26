@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/web_apps_publisher_host.h"
+#include "chrome/browser/web_applications/app_service/web_apps_publisher_host.h"
 
 #include <algorithm>
 #include <iterator>
@@ -48,7 +48,9 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
-namespace apps {
+using apps::IconEffects;
+
+namespace web_app {
 
 class MockAppPublisher : public crosapi::mojom::AppPublisher {
  public:
@@ -96,8 +98,7 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-class WebAppsPublisherHostBrowserTest
-    : public web_app::WebAppControllerBrowserTest {
+class WebAppsPublisherHostBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppsPublisherHostBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kAppServiceAdaptiveIcon);
@@ -110,11 +111,10 @@ class WebAppsPublisherHostBrowserTest
 
 IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  web_app::InstallWebAppFromManifest(
+  InstallWebAppFromManifest(
       browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
-  web_app::InstallWebAppFromManifest(
-      browser(),
-      embedded_test_server()->GetURL("/web_share_target/charts.html"));
+  InstallWebAppFromManifest(browser(), embedded_test_server()->GetURL(
+                                           "/web_share_target/charts.html"));
 
   MockAppPublisher mock_app_publisher;
   WebAppsPublisherHost web_apps_publisher_host(profile());
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 2U);
 
-  web_app::AppId app_id = web_app::InstallWebAppFromManifest(
+  AppId app_id = InstallWebAppFromManifest(
       browser(),
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
   mock_app_publisher.Wait();
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {
 
   {
     base::RunLoop run_loop;
-    web_app::UninstallWebAppWithCallback(
+    UninstallWebAppWithCallback(
         profile(), app_id,
         base::BindLambdaForTesting([&run_loop](bool uninstalled) {
           EXPECT_TRUE(uninstalled);
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {
 
 IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, LaunchTime) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  web_app::AppId app_id = web_app::InstallWebAppFromManifest(
+  AppId app_id = InstallWebAppFromManifest(
       browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
 
   MockAppPublisher mock_app_publisher;
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ManifestUpdate) {
   web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
   web_apps_publisher_host.Init();
 
-  web_app::AppId app_id;
+  AppId app_id;
   {
     const std::u16string original_description = u"Original Web App";
     auto web_app_info = std::make_unique<WebApplicationInfo>();
@@ -213,8 +213,9 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ManifestUpdate) {
         app_id, std::move(web_app_info),
         /*redownload_app_icons=*/false,
         base::BindLambdaForTesting(
-            [&run_loop](const web_app::AppId& app_id,
-                        web_app::InstallResultCode code) { run_loop.Quit(); }));
+            [&run_loop](const AppId& app_id, InstallResultCode code) {
+              run_loop.Quit();
+            }));
 
     run_loop.Run();
     mock_app_publisher.Wait();
@@ -228,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, LocallyInstalledState) {
   const GURL app_url =
       embedded_test_server()->GetURL("app.site.com", "/simple.html");
 
-  web_app::AppId app_id;
+  AppId app_id;
   {
     const std::u16string description = u"Web App";
     auto web_app_info = std::make_unique<WebApplicationInfo>();
@@ -268,8 +269,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, LocallyInstalledState) {
 IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ContentSettings) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  web_app::AppId app_id =
-      web_app::InstallWebAppFromManifest(browser(), app_url);
+  AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
   // Install an additional app from a different host.
   {
@@ -316,8 +316,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ContentSettings) {
 IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, MediaRequest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  web_app::AppId app_id =
-      web_app::InstallWebAppFromManifest(browser(), app_url);
+  AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   Browser* browser = LaunchWebAppBrowserAndWait(app_id);
   content::RenderFrameHost* render_frame_host =
       browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
@@ -363,4 +362,4 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, MediaRequest) {
       apps::mojom::OptionalBool::kFalse);
 }
 
-}  // namespace apps
+}  // namespace web_app

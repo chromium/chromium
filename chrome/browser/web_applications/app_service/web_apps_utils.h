@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_WEB_APPS_UTILS_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_WEB_APPS_UTILS_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_UTILS_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_UTILS_H_
 
 #include <vector>
 
@@ -14,37 +14,34 @@
 class Profile;
 
 namespace web_app {
-class WebApp;
-}  // namespace web_app
 
-namespace apps_util {
+class WebApp;
 
 // Indicates if |permission_type| is supported by Web Applications.
 bool IsSupportedWebAppPermissionType(ContentSettingsType permission_type);
 
 // Populates the various show_in_* fields of |app|.
-void SetWebAppShowInFields(apps::mojom::AppPtr& app,
-                           const web_app::WebApp* web_app);
+void SetWebAppShowInFields(apps::mojom::AppPtr& app, const WebApp* web_app);
 
 // Appends |web_app| permissions to |target|.
 void PopulateWebAppPermissions(Profile* profile,
-                               const web_app::WebApp* web_app,
+                               const WebApp* web_app,
                                std::vector<apps::mojom::PermissionPtr>* target);
 
 // Creates an |apps::mojom::App| describing |web_app|.
 apps::mojom::AppPtr ConvertWebApp(Profile* profile,
-                                  const web_app::WebApp* web_app,
+                                  const WebApp* web_app,
                                   apps::mojom::AppType app_type,
                                   apps::mojom::Readiness readiness);
 
 // Constructs an App with only the information required to identify an
 // uninstallation.
-apps::mojom::AppPtr ConvertUninstalledWebApp(const web_app::WebApp* web_app,
+apps::mojom::AppPtr ConvertUninstalledWebApp(const WebApp* web_app,
                                              apps::mojom::AppType app_type);
 
 // Constructs an App with only the information required to update
 // last launch time.
-apps::mojom::AppPtr ConvertLaunchedWebApp(const web_app::WebApp* web_app,
+apps::mojom::AppPtr ConvertLaunchedWebApp(const WebApp* web_app,
                                           apps::mojom::AppType app_type);
 
 // Converts |uninstall_source| to a |WebappUninstallSource|.
@@ -57,11 +54,11 @@ webapps::WebappUninstallSource ConvertUninstallSourceToWebAppUninstallSource(
 // If |report_abuse| is true, the app will be reported for abuse to the Web
 // Store.
 void UninstallWebApp(Profile* profile,
-                     const web_app::WebApp* web_app,
+                     const WebApp* web_app,
                      apps::mojom::UninstallSource uninstall_source,
                      bool clear_site_data,
                      bool report_abuse);
 
-}  // namespace apps_util
+}  // namespace web_app
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_WEB_APPS_UTILS_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APPS_UTILS_H_
