@@ -3415,6 +3415,9 @@ if (!is_android) {
         ]
 
         deps += [
+          "//ash/assistant/model",
+          "//ash/assistant/ui",
+          "//ash/assistant/ui:constants",
           "//chrome/browser/ui/ash/assistant/test_support",
           "//chromeos/assistant/internal:internal",
           "//chromeos/assistant/test_support",
