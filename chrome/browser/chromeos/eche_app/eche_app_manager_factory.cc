@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
@@ -62,8 +63,12 @@ enum class NotificationInteraction {
 };
 
 void LaunchEcheApp(Profile* profile, int64_t notification_id) {
+  double now_seconds = base::Time::Now().ToDoubleT();
+  int64_t now_ms = static_cast<int64_t>(now_seconds * 1000);
   std::string url = "chrome://eche-app/#notification_id=";
   url.append(base::NumberToString(notification_id));
+  url.append("&timestamp=");
+  url.append(base::NumberToString(now_ms));
   web_app::SystemAppLaunchParams params;
   params.url = GURL(url);
   web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::ECHE,
