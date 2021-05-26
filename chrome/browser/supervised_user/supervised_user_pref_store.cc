@@ -129,8 +129,8 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
 
     // Copy supervised user settings to prefs.
     for (const auto& entry : kSupervisedUserSettingsPrefMapping) {
-      const base::Value* value = NULL;
-      if (settings->GetWithoutPathExpansion(entry.settings_name, &value))
+      const base::Value* value = settings->FindKey(entry.settings_name);
+      if (value)
         prefs_->SetValue(entry.pref_name, value->Clone());
     }
 

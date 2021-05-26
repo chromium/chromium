@@ -62,7 +62,7 @@ void StateStore::Transaction::Clear(IncidentType type, const std::string& key) {
   const base::DictionaryValue* const_type_dict = nullptr;
   if (store_->incidents_sent_->GetDictionaryWithoutPathExpansion(
           type_string, &const_type_dict) &&
-      const_type_dict->GetWithoutPathExpansion(key, nullptr)) {
+      const_type_dict->FindKey(key)) {
     base::DictionaryValue* type_dict = nullptr;
     GetPrefDict()->GetDictionaryWithoutPathExpansion(type_string, &type_dict);
     type_dict->RemoveKey(key);

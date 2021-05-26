@@ -43,7 +43,7 @@ void JSONFeatureProviderSource::LoadJSON(int resource_id) {
   // Ensure there are no key collisions.
   for (base::DictionaryValue::Iterator iter(*value_as_dict); !iter.IsAtEnd();
        iter.Advance()) {
-    if (dictionary_.GetWithoutPathExpansion(iter.key(), NULL))
+    if (dictionary_.FindKey(iter.key()))
       LOG(FATAL) << "Key " << iter.key() << " is defined in " << name_
                  << " JSON feature files more than once.";
   }

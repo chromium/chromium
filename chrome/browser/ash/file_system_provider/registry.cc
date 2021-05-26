@@ -144,10 +144,9 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
   for (base::DictionaryValue::Iterator it(*file_systems_per_extension);
        !it.IsAtEnd();
        it.Advance()) {
-    const base::Value* file_system_value = NULL;
     const base::DictionaryValue* file_system = NULL;
-    file_systems_per_extension->GetWithoutPathExpansion(it.key(),
-                                                        &file_system_value);
+    const base::Value* file_system_value =
+        file_systems_per_extension->FindKey(it.key());
     DCHECK(file_system_value);
 
     std::string file_system_id;
@@ -194,10 +193,9 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
                                                        &watchers)) {
       for (base::DictionaryValue::Iterator it(*watchers); !it.IsAtEnd();
            it.Advance()) {
-        const base::Value* watcher_value = NULL;
         const base::DictionaryValue* watcher = NULL;
-        watchers->GetWithoutPathExpansion(it.key(), &watcher_value);
-        DCHECK(file_system_value);
+        const base::Value* watcher_value = watchers->FindKey(it.key());
+        DCHECK(watcher_value);
 
         std::string entry_path;
         bool recursive = false;

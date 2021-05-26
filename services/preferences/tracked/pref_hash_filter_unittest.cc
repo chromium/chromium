@@ -429,8 +429,8 @@ class MockHashStoreContents : public HashStoreContents {
 };
 
 std::string MockHashStoreContents::GetStoredMac(const std::string& path) const {
-  const base::Value* out_value;
-  if (dictionary_.GetWithoutPathExpansion(path, &out_value)) {
+  const base::Value* out_value = dictionary_.FindKey(path);
+  if (out_value) {
     const base::Value* value_as_string;
     EXPECT_TRUE(out_value->GetAsString(&value_as_string));
 
@@ -443,12 +443,13 @@ std::string MockHashStoreContents::GetStoredMac(const std::string& path) const {
 std::string MockHashStoreContents::GetStoredSplitMac(
     const std::string& path,
     const std::string& split_path) const {
-  const base::Value* out_value;
-  if (dictionary_.GetWithoutPathExpansion(path, &out_value)) {
+  const base::Value* out_value = dictionary_.FindKey(path);
+  if (out_value) {
     const base::DictionaryValue* value_as_dict;
     EXPECT_TRUE(out_value->GetAsDictionary(&value_as_dict));
 
-    if (value_as_dict->GetWithoutPathExpansion(split_path, &out_value)) {
+    out_value = dictionary_.FindKey(split_path);
+    if (out_value) {
       const base::Value* value_as_string;
       EXPECT_TRUE(out_value->GetAsString(&value_as_string));
 

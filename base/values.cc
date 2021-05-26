@@ -1353,8 +1353,8 @@ bool DictionaryValue::GetWithoutPathExpansion(StringPiece key,
 
 bool DictionaryValue::GetBooleanWithoutPathExpansion(StringPiece key,
                                                      bool* out_value) const {
-  const Value* value;
-  if (!GetWithoutPathExpansion(key, &value))
+  const Value* value = FindKey(key);
+  if (!value)
     return false;
 
   return value->GetAsBoolean(out_value);
@@ -1362,8 +1362,8 @@ bool DictionaryValue::GetBooleanWithoutPathExpansion(StringPiece key,
 
 bool DictionaryValue::GetIntegerWithoutPathExpansion(StringPiece key,
                                                      int* out_value) const {
-  const Value* value;
-  if (!GetWithoutPathExpansion(key, &value))
+  const Value* value = FindKey(key);
+  if (!value)
     return false;
 
   return value->GetAsInteger(out_value);
@@ -1371,8 +1371,8 @@ bool DictionaryValue::GetIntegerWithoutPathExpansion(StringPiece key,
 
 bool DictionaryValue::GetDoubleWithoutPathExpansion(StringPiece key,
                                                     double* out_value) const {
-  const Value* value;
-  if (!GetWithoutPathExpansion(key, &value))
+  const Value* value = FindKey(key);
+  if (!value)
     return false;
 
   return value->GetAsDouble(out_value);
@@ -1381,8 +1381,8 @@ bool DictionaryValue::GetDoubleWithoutPathExpansion(StringPiece key,
 bool DictionaryValue::GetStringWithoutPathExpansion(
     StringPiece key,
     std::string* out_value) const {
-  const Value* value;
-  if (!GetWithoutPathExpansion(key, &value))
+  const Value* value = FindKey(key);
+  if (!value)
     return false;
 
   return value->GetAsString(out_value);
@@ -1391,8 +1391,8 @@ bool DictionaryValue::GetStringWithoutPathExpansion(
 bool DictionaryValue::GetStringWithoutPathExpansion(
     StringPiece key,
     std::u16string* out_value) const {
-  const Value* value;
-  if (!GetWithoutPathExpansion(key, &value))
+  const Value* value = FindKey(key);
+  if (!value)
     return false;
 
   return value->GetAsString(out_value);
@@ -1401,9 +1401,8 @@ bool DictionaryValue::GetStringWithoutPathExpansion(
 bool DictionaryValue::GetDictionaryWithoutPathExpansion(
     StringPiece key,
     const DictionaryValue** out_value) const {
-  const Value* value;
-  bool result = GetWithoutPathExpansion(key, &value);
-  if (!result || !value->is_dict())
+  const Value* value = FindKey(key);
+  if (!value || !value->is_dict())
     return false;
 
   if (out_value)
@@ -1422,9 +1421,8 @@ bool DictionaryValue::GetDictionaryWithoutPathExpansion(
 bool DictionaryValue::GetListWithoutPathExpansion(
     StringPiece key,
     const ListValue** out_value) const {
-  const Value* value;
-  bool result = GetWithoutPathExpansion(key, &value);
-  if (!result || !value->is_list())
+  const Value* value = FindKey(key);
+  if (!value || !value->is_list())
     return false;
 
   if (out_value)

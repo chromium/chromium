@@ -193,9 +193,8 @@ bool IsValidUrlSpec(const base::Value& url_spec,
     return false;
   }
   // Verify the correct types of the fields if they exist.
-  const base::Value* url = nullptr;
   // URL was already verified above by IsValidDictionary to be required.
-  url_dict->GetWithoutPathExpansion(kUrlKey, &url);
+  const base::Value* url = url_dict->FindKey(kUrlKey);
   DCHECK(url);
   if (!url->is_string()) {
     std::stringstream error_stream;
@@ -206,8 +205,7 @@ bool IsValidUrlSpec(const base::Value& url_spec,
     return false;
   }
   if (url_dict->HasKey(kOptLevelKey)) {
-    const base::Value* opt_level = nullptr;
-    url_dict->GetWithoutPathExpansion(kOptLevelKey, &opt_level);
+    const base::Value* opt_level = url_dict->FindKey(kOptLevelKey);
     DCHECK(opt_level);
     if (!opt_level->is_int()) {
       std::stringstream error_stream;
@@ -250,8 +248,7 @@ bool IsValidPnaclTranslateSpec(const base::Value& pnacl_spec,
     return false;
   }
   // kPnaclTranslateKey checked to be required above.
-  const base::Value* url_spec = nullptr;
-  pnacl_dict->GetWithoutPathExpansion(kPnaclTranslateKey, &url_spec);
+  const base::Value* url_spec = pnacl_dict->FindKey(kPnaclTranslateKey);
   DCHECK(url_spec);
   return IsValidUrlSpec(*url_spec, kPnaclTranslateKey, container_key,
                         sandbox_isa, error_string);

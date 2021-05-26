@@ -109,9 +109,8 @@ void DictionaryValueUpdate::SetKey(base::StringPiece key, base::Value value) {
 void DictionaryValueUpdate::SetWithoutPathExpansion(
     base::StringPiece key,
     std::unique_ptr<base::Value> in_value) {
-  const base::Value* old_value = nullptr;
-  if (value_->GetWithoutPathExpansion(key, &old_value) &&
-      *old_value == *in_value) {
+  const base::Value* old_value = value_->FindKey(key);
+  if (old_value && *old_value == *in_value) {
     return;
   }
   RecordKey(key);

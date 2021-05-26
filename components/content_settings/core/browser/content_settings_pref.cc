@@ -320,8 +320,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
       continue;
     }
 
-    const base::Value* value = nullptr;
-    settings_dictionary->GetWithoutPathExpansion(kSettingPath, &value);
+    const base::Value* value = settings_dictionary->FindKey(kSettingPath);
     if (value) {
       base::Time last_modified = GetTimeStamp(settings_dictionary);
       DCHECK(IsValueAllowedForType(value, content_type_));

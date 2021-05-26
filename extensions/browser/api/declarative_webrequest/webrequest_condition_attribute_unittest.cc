@@ -256,9 +256,9 @@ std::unique_ptr<base::DictionaryValue> GetDictionaryFromArray(
     const std::string* name = array[i];
     const std::string* value = array[i+1];
     if (dictionary->HasKey(*name)) {
-      base::Value* entry = NULL;
       std::unique_ptr<base::Value> entry_owned;
-      if (!dictionary->GetWithoutPathExpansion(*name, &entry))
+      base::Value* entry = dictionary->FindKey(*name);
+      if (!entry)
         return nullptr;
       switch (entry->type()) {
         case base::Value::Type::STRING: {

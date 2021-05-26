@@ -86,17 +86,17 @@ bool DeviceState::PropertyChanged(const std::string& key,
     sim_lock_enabled_ = false;
 
     const base::Value* out_value = nullptr;
-    if (dict->GetWithoutPathExpansion(shill::kSIMLockTypeProperty,
-                                      &out_value)) {
+    out_value = dict->FindKey(shill::kSIMLockTypeProperty);
+    if (out_value) {
       GetStringValue(shill::kSIMLockTypeProperty, *out_value, &sim_lock_type_);
     }
-    if (dict->GetWithoutPathExpansion(shill::kSIMLockRetriesLeftProperty,
-                                      &out_value)) {
+    out_value = dict->FindKey(shill::kSIMLockRetriesLeftProperty);
+    if (out_value) {
       GetIntegerValue(shill::kSIMLockRetriesLeftProperty, *out_value,
                       &sim_retries_left_);
     }
-    if (dict->GetWithoutPathExpansion(shill::kSIMLockEnabledProperty,
-                                      &out_value)) {
+    out_value = dict->FindKey(shill::kSIMLockEnabledProperty);
+    if (out_value) {
       GetBooleanValue(shill::kSIMLockEnabledProperty, *out_value,
                       &sim_lock_enabled_);
     }

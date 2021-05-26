@@ -187,10 +187,9 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
       kProviderId.ToString(), &file_systems));
   EXPECT_EQ(1u, file_systems->DictSize());
 
-  const base::Value* file_system_value = NULL;
+  const base::Value* file_system_value = file_systems->FindKey(kFileSystemId);
+  ASSERT_TRUE(file_system_value);
   const base::DictionaryValue* file_system = NULL;
-  ASSERT_TRUE(
-      file_systems->GetWithoutPathExpansion(kFileSystemId, &file_system_value));
   ASSERT_TRUE(file_system_value->GetAsDictionary(&file_system));
 
   std::string file_system_id;
@@ -307,10 +306,9 @@ TEST_F(FileSystemProviderRegistryTest, UpdateWatcherTag) {
       kProviderId.ToString(), &file_systems));
   EXPECT_EQ(1u, file_systems->DictSize());
 
-  const base::Value* file_system_value = NULL;
+  const base::Value* file_system_value = file_systems->FindKey(kFileSystemId);
+  ASSERT_TRUE(file_system_value);
   const base::DictionaryValue* file_system = NULL;
-  ASSERT_TRUE(
-      file_systems->GetWithoutPathExpansion(kFileSystemId, &file_system_value));
   ASSERT_TRUE(file_system_value->GetAsDictionary(&file_system));
 
   const base::DictionaryValue* watchers_value = NULL;

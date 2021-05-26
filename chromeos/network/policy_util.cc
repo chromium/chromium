@@ -37,11 +37,10 @@ void RemoveFakeCredentials(const onc::OncValueSignature& signature,
   std::vector<std::string> entries_to_remove;
   for (base::DictionaryValue::Iterator it(*onc_object); !it.IsAtEnd();
        it.Advance()) {
-    base::Value* value = nullptr;
     std::string field_name = it.key();
     // We need the non-const entry to remove nested values but DictionaryValue
     // has no non-const iterator.
-    onc_object->GetWithoutPathExpansion(field_name, &value);
+    base::Value* value = onc_object->FindKey(field_name);
 
     // If |value| is a dictionary, recurse.
     base::DictionaryValue* nested_object = nullptr;

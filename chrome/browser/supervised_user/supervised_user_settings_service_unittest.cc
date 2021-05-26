@@ -105,7 +105,8 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
                                    base::CompareCase::SENSITIVE));
       std::string key =
           supervised_user_setting.name().substr(strlen(kSplitItemName) + 1);
-      EXPECT_TRUE(split_items_.GetWithoutPathExpansion(key, &expected_value));
+      expected_value = split_items_.FindKey(key);
+      EXPECT_TRUE(expected_value);
     }
 
     std::unique_ptr<base::Value> value =
@@ -150,7 +151,8 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessAtomicSetting) {
   StartSyncing(syncer::SyncDataList());
   ASSERT_TRUE(settings_);
   const base::Value* value = nullptr;
-  EXPECT_FALSE(settings_->GetWithoutPathExpansion(kSettingsName, &value));
+  value = settings_->FindKey(kSettingsName);
+  EXPECT_FALSE(value);
 
   settings_.reset();
   syncer::SyncData data =
@@ -163,7 +165,8 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessAtomicSetting) {
       settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.has_value()) << error.value().ToString();
   ASSERT_TRUE(settings_);
-  ASSERT_TRUE(settings_->GetWithoutPathExpansion(kSettingsName, &value));
+  value = settings_->FindKey(kSettingsName);
+  ASSERT_TRUE(value);
   std::string string_value;
   EXPECT_TRUE(value->GetAsString(&string_value));
   EXPECT_EQ(kSettingsValue, string_value);
@@ -173,7 +176,8 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
   StartSyncing(syncer::SyncDataList());
   ASSERT_TRUE(settings_);
   const base::Value* value = nullptr;
-  EXPECT_FALSE(settings_->GetWithoutPathExpansion(kSettingsName, &value));
+  value = settings_->FindKey(kSettingsName);
+  EXPECT_FALSE(value);
 
   base::DictionaryValue dict;
   dict.SetString("foo", "bar");
@@ -195,7 +199,8 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
       settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.has_value()) << error.value().ToString();
   ASSERT_TRUE(settings_);
-  ASSERT_TRUE(settings_->GetWithoutPathExpansion(kSettingsName, &value));
+  value = settings_->FindKey(kSettingsName);
+  ASSERT_TRUE(value);
   const base::DictionaryValue* dict_value = nullptr;
   ASSERT_TRUE(value->GetAsDictionary(&dict_value));
   EXPECT_TRUE(dict_value->Equals(&dict));
@@ -208,8 +213,7 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
                   .empty());
 
   ASSERT_TRUE(settings_);
-  const base::Value* value = nullptr;
-  EXPECT_FALSE(settings_->GetWithoutPathExpansion(kSettingsName, &value));
+  EXPECT_FALSE(settings_->FindKey(kSettingsName));
 
   settings_.reset();
 
@@ -269,13 +273,15 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
 
 TEST_F(SupervisedUserSettingsServiceTest, SetLocalSetting) {
   const base::Value* value = nullptr;
-  EXPECT_FALSE(settings_->GetWithoutPathExpansion(kSettingsName, &value));
+  value = settings_->FindKey(kSettingsName);
+  EXPECT_FALSE(value);
 
   settings_.reset();
   settings_service_.SetLocalSetting(
       kSettingsName, std::make_unique<base::Value>(kSettingsValue));
   ASSERT_TRUE(settings_);
-  ASSERT_TRUE(settings_->GetWithoutPathExpansion(kSettingsName, &value));
+  value = settings_->FindKey(kSettingsName);
+  ASSERT_TRUE(value);
   std::string string_value;
   EXPECT_TRUE(value->GetAsString(&string_value));
   EXPECT_EQ(kSettingsValue, string_value);
@@ -348,9 +354,8 @@ TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
     VerifySyncDataItem(sync_data_item);
 
   // The uploaded items should not show up as settings.
-  const base::Value* value = nullptr;
-  EXPECT_FALSE(settings_->GetWithoutPathExpansion(kAtomicItemName, &value));
-  EXPECT_FALSE(settings_->GetWithoutPathExpansion(kSplitItemName, &value));
+  EXPECT_FALSE(settings_->FindKey(kAtomicItemName));
+  EXPECT_FALSE(settings_->FindKey(kSplitItemName));
 
   // Restarting sync should not create any new changes.
   settings_service_.StopSyncing(syncer::SUPERVISED_USER_SETTINGS);

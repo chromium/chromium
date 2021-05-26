@@ -204,9 +204,8 @@ std::unique_ptr<NetworkUIData> GetUIDataFromValue(
 
 std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
     const base::DictionaryValue& shill_dictionary) {
-  const base::Value* ui_data_value = NULL;
-  shill_dictionary.GetWithoutPathExpansion(shill::kUIDataProperty,
-                                           &ui_data_value);
+  const base::Value* ui_data_value =
+      shill_dictionary.FindKey(shill::kUIDataProperty);
   if (!ui_data_value) {
     VLOG(2) << "Dictionary has no UIData entry.";
     return nullptr;

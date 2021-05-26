@@ -436,8 +436,8 @@ bool Validator::FieldExistsAndIsNotInRange(const base::DictionaryValue& object,
 
 bool Validator::FieldExistsAndIsEmpty(const base::DictionaryValue& object,
                                       const std::string& field_name) {
-  const base::Value* value = NULL;
-  if (!object.GetWithoutPathExpansion(field_name, &value))
+  const base::Value* value = object.FindKey(field_name);
+  if (!value)
     return false;
 
   std::string str;

@@ -130,7 +130,7 @@ class MergeListOfDictionaries {
                it_inner != dicts.end(); ++it_inner) {
             const base::Value* value = NULL;
             if (*it_inner)
-              (*it_inner)->GetWithoutPathExpansion(key, &value);
+              value = (*it_inner)->FindKey(key);
             values.push_back(value);
           }
           merged_value = MergeListOfValues(key, values);
