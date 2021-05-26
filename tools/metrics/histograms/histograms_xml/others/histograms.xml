@@ -19495,7 +19495,7 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="XR.RuntimeUsed" enum="XRDeviceId" expires_after="2021-07-01">
+<histogram name="XR.RuntimeUsed" enum="XRDeviceId" expires_after="2022-01-07">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
