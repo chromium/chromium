@@ -218,6 +218,14 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /** @private */
+    isUpdatedCellularUiEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('updatedCellularActivationUi');
+      }
+    },
   },
 
   /**
@@ -322,7 +330,7 @@ Polymer({
       this.pendingShowSimLockDialog_ = !oldRoute &&
           !!queryParams.get('showSimLockDialog') &&
           this.subpageType_ === mojom.NetworkType.kCellular &&
-          loadTimeData.getBoolean('updatedCellularActivationUi');
+          this.isUpdatedCellularUiEnabled_;
     } else if (route === settings.routes.KNOWN_NETWORKS) {
       // Handle direct navigation to the known networks page,
       // e.g. chrome://settings/internet/knownNetworks?type=WiFi

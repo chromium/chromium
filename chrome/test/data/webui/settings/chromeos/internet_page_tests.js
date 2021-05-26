@@ -31,21 +31,6 @@ suite('InternetPage', function() {
   let eSimManagerRemote;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      internetAddConnection: 'internetAddConnection',
-      internetAddConnectionExpandA11yLabel:
-          'internetAddConnectionExpandA11yLabel',
-      internetAddConnectionNotAllowed: 'internetAddConnectionNotAllowed',
-      internetAddThirdPartyVPN: 'internetAddThirdPartyVPN',
-      internetAddVPN: 'internetAddVPN',
-      internetAddWiFi: 'internetAddWiFi',
-      internetDetailPageTitle: 'internetDetailPageTitle',
-      internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
-    });
-
-    mojoApi_ = new FakeNetworkConfig();
-    network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
-
     // Disable animations so sub-pages open within one event loop.
     testing.Test.disableAnimationsAndTransitions();
   });
@@ -131,11 +116,22 @@ suite('InternetPage', function() {
     assertFalse(warningMessage.hidden);
   }
 
-  setup(function() {
-    eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
-    cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
+  async function navigateToCellularDetailPage() {
+    await init();
 
-    PolymerTest.clearBody();
+    const mojom = chromeos.networkConfig.mojom;
+    const cellularNetwork = OncMojo.getDefaultManagedProperties(
+        mojom.NetworkType.kCellular, 'cellular1');
+    mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+
+    const params = new URLSearchParams;
+    params.append('guid', cellularNetwork.guid);
+    settings.Router.getInstance().navigateTo(
+        settings.routes.NETWORK_DETAIL, params);
+    return flushAsync();
+  }
+
+  function init() {
     internetPage = document.createElement('settings-internet-page');
     assertTrue(!!internetPage);
     mojoApi_.resetForTest();
@@ -148,6 +144,28 @@ suite('InternetPage', function() {
         mojoApi_.whenCalled('getDeviceStateList'),
       ]);
     });
+  }
+
+  setup(function() {
+    loadTimeData.overrideValues({
+      internetAddConnection: 'internetAddConnection',
+      internetAddConnectionExpandA11yLabel:
+          'internetAddConnectionExpandA11yLabel',
+      internetAddConnectionNotAllowed: 'internetAddConnectionNotAllowed',
+      internetAddThirdPartyVPN: 'internetAddThirdPartyVPN',
+      internetAddVPN: 'internetAddVPN',
+      internetAddWiFi: 'internetAddWiFi',
+      internetDetailPageTitle: 'internetDetailPageTitle',
+      internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
+      updatedCellularActivationUi: false,
+    });
+
+    mojoApi_ = new FakeNetworkConfig();
+    network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
+    cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
+
+    PolymerTest.clearBody();
   });
 
   teardown(function() {
@@ -165,7 +183,8 @@ suite('InternetPage', function() {
   });
 
   suite('MainPage', function() {
-    test('Ethernet', function() {
+    test('Ethernet', async function() {
+      await init();
       // Default fake device state is Ethernet enabled only.
       const ethernet = networkSummary_.$$('#Ethernet');
       assertTrue(!!ethernet);
@@ -175,7 +194,8 @@ suite('InternetPage', function() {
       assertEquals(null, networkSummary_.$$('#WiFi'));
     });
 
-    test('WiFi', function() {
+    test('WiFi', async function() {
+      await init();
       const mojom = chromeos.networkConfig.mojom;
       setNetworksForTest([
         OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi1'),
@@ -189,7 +209,8 @@ suite('InternetPage', function() {
       });
     });
 
-    test('WiFiToggle', function() {
+    test('WiFiToggle', async function() {
+      await init();
       const mojom = chromeos.networkConfig.mojom;
       // Make WiFi an available but disabled technology.
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, false);
@@ -221,6 +242,7 @@ suite('InternetPage', function() {
     });
 
     test('Deep link to WiFiToggle', async () => {
+      await init();
       const mojom = chromeos.networkConfig.mojom;
       // Make WiFi an available but disabled technology.
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, false);
@@ -242,7 +264,8 @@ suite('InternetPage', function() {
     });
 
     suite('VPN', function() {
-      test('VpnProviders', function() {
+      test('VpnProviders', async function() {
+        await init();
         const mojom = chromeos.networkConfig.mojom;
         mojoApi_.setVpnProvidersForTest([
           {
@@ -285,29 +308,33 @@ suite('InternetPage', function() {
         button.expanded = true;
       }
 
-      test('should show VPN policy indicator when VPN is disabled', function() {
-        clickAddConnectionsButton();
+      test(
+          'should show VPN policy indicator when VPN is disabled',
+          async function() {
+            await init();
+            clickAddConnectionsButton();
 
-        const mojom = chromeos.networkConfig.mojom;
-        setNetworksForTest([
-          OncMojo.getDefaultNetworkState(mojom.NetworkType.kVPN, 'vpn'),
-        ]);
-        mojoApi_.setDeviceStateForTest({
-          type: mojom.NetworkType.kVPN,
-          deviceState: mojom.DeviceStateType.kProhibited
-        });
+            const mojom = chromeos.networkConfig.mojom;
+            setNetworksForTest([
+              OncMojo.getDefaultNetworkState(mojom.NetworkType.kVPN, 'vpn'),
+            ]);
+            mojoApi_.setDeviceStateForTest({
+              type: mojom.NetworkType.kVPN,
+              deviceState: mojom.DeviceStateType.kProhibited
+            });
 
-        return flushAsync().then(() => {
-          assertTrue(
-              test_util.isVisible(internetPage.$$('#vpnPolicyIndicator')));
-          assertTrue(test_util.isVisible(
-              networkSummary_.$$('#VPN').$$('#policyIndicator')));
-        });
-      });
+            return flushAsync().then(() => {
+              assertTrue(
+                  test_util.isVisible(internetPage.$$('#vpnPolicyIndicator')));
+              assertTrue(test_util.isVisible(
+                  networkSummary_.$$('#VPN').$$('#policyIndicator')));
+            });
+          });
 
       test(
           'should not show VPN policy indicator when VPN is enabled',
-          function() {
+          async function() {
+            await init();
             clickAddConnectionsButton();
 
             const mojom = chromeos.networkConfig.mojom;
@@ -329,6 +356,7 @@ suite('InternetPage', function() {
     });
 
     test('Deep link to mobile on/off toggle', async () => {
+      await init();
       const mojom = chromeos.networkConfig.mojom;
       // Make WiFi an available but disabled technology.
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, false);
@@ -350,6 +378,7 @@ suite('InternetPage', function() {
     });
 
     test('Show rename esim profile dialog', async function() {
+      await init();
       eSimManagerRemote.addEuiccForTest(1);
       await flushAsync();
 
@@ -368,6 +397,7 @@ suite('InternetPage', function() {
     });
 
     test('Show remove esim profile dialog', async function() {
+      await init();
       eSimManagerRemote.addEuiccForTest(1);
       await flushAsync();
 
@@ -393,7 +423,7 @@ suite('InternetPage', function() {
         loadTimeData.overrideValues({
           updatedCellularActivationUi: true,
         });
-        await flushAsync();
+        await init();
 
         let cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
         assertFalse(!!cellularSetupDialog);
@@ -417,6 +447,7 @@ suite('InternetPage', function() {
         loadTimeData.overrideValues({
           updatedCellularActivationUi: true,
         });
+        await init();
         eSimManagerRemote.addEuiccForTest(1);
 
         const mojom = chromeos.networkConfig.mojom;
@@ -448,6 +479,7 @@ suite('InternetPage', function() {
         loadTimeData.overrideValues({
           updatedCellularActivationUi: true,
         });
+        await init();
         eSimManagerRemote.addEuiccForTest(1);
 
         assertFalse(!!internetPage.$$('#cellularSetupDialog'));
@@ -470,6 +502,7 @@ suite('InternetPage', function() {
         loadTimeData.overrideValues({
           updatedCellularActivationUi: true,
         });
+        await init();
         eSimManagerRemote.addEuiccForTest(1);
 
         const mojom = chromeos.networkConfig.mojom;
@@ -500,6 +533,7 @@ suite('InternetPage', function() {
         loadTimeData.overrideValues({
           updatedCellularActivationUi: true,
         });
+        await init();
         eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 5);
 
         const mojom = chromeos.networkConfig.mojom;
@@ -526,6 +560,7 @@ suite('InternetPage', function() {
     loadTimeData.overrideValues({
       updatedCellularActivationUi: true,
     });
+    await init();
 
     const mojom = chromeos.networkConfig.mojom;
     const params = new URLSearchParams;
@@ -560,6 +595,7 @@ suite('InternetPage', function() {
       'Show no connection toast if receive show-cellular-setup' +
           'event and not connected to non-cellular network',
       async function() {
+        await init();
         eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
         mojoApi_.setNetworkTypeEnabledState(
             chromeos.networkConfig.mojom.NetworkType.kCellular, true);
@@ -599,6 +635,7 @@ suite('InternetPage', function() {
       });
 
   test('Show toast on show-error-toast event', async function() {
+    await init();
     assertFalse(internetPage.$.errorToast.open);
 
     const message = 'Toast message';
@@ -607,6 +644,26 @@ suite('InternetPage', function() {
     await flushAsync();
     assertTrue(internetPage.$.errorToast.open);
     assertEquals(internetPage.$.errorToastMessage.innerHTML, message);
+  });
+
+  test(
+      'Internet detail menu does not render with cellular flag off',
+      async () => {
+        await navigateToCellularDetailPage();
+
+        const internetDetailMenu =
+            internetPage.$$('settings-internet-detail-menu');
+        assertFalse(!!internetDetailMenu);
+      });
+
+  test('Internet detail menu renders with cellular flag on', async () => {
+    loadTimeData.overrideValues({
+      updatedCellularActivationUi: true,
+    });
+    await navigateToCellularDetailPage();
+
+    const internetDetailMenu = internetPage.$$('settings-internet-detail-menu');
+    assertTrue(!!internetDetailMenu);
   });
 
   // TODO(stevenjb): Figure out a way to reliably test navigation. Currently
