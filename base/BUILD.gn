@@ -64,30 +64,6 @@ declare_args() {
   # LockImpl::PriorityInheritanceAvailable() in lock_impl_posix.cc for the
   # platform requirements to safely enable priority inheritance.
   enable_mutex_priority_inheritance = false
-
-  # Set to true to use BackupRefPtr as the implementation of CheckedPtr.
-  # Optionally can be controlled (partially disabled) at run-time.
-  # Optionally can place ref count at the end of the previous slot (or in
-  # metadata if a slot starts at the page boundary).
-  # The _fake option doesn't enable BackupRefPtr, but pretends it's enabled for
-  # syntethic field trial (for testing purposes only).
-  use_backup_ref_ptr = false
-  use_backup_ref_ptr_fake = false
-  enable_runtime_backup_ref_ptr_control = false
-  put_ref_count_in_previous_slot = false
-  enable_brp_directmap_support = false
-
-  # Enable additional safety checks for BackupRefPtr that are too expensive to
-  # have on by default.
-  enable_backup_ref_ptr_slow_checks = false
-
-  # Ensure that a non-BRP memory region can't be reused for the BRP pool while
-  # there are associated CheckedPtr instances left.
-  use_brp_pool_blocklist = false
-
-  # Never remove super-pages from the block list. This lets us replace an
-  # expensive CAS operations with relaxed stores (or even no-ops).
-  never_remove_from_brp_pool_blocklist = false
 }
 
 # Mutex priority inheritance is disabled by default due to security
@@ -97,46 +73,6 @@ declare_args() {
 # so it is safe to use mutex priority inheritance on Chromecast platform.
 assert(!enable_mutex_priority_inheritance || is_chromecast,
        "Do not enable PI mutexes without consulting the security team")
-
-# Prevent using BackupRefPtr when PartitionAlloc-Everywhere isn't used.
-# In theory, such a configuration is possible, but its scope would be limited to
-# only Blink partitions, which is currently not tested. Better to trigger an
-# error, than have BackupRefPtr silently disabled while believing it is enabled.
-if (!is_nacl) {
-  assert(!use_backup_ref_ptr || use_allocator == "partition",
-         "Can't use BackupRefPtr without PartitionAlloc-Everywhere")
-}
-
-# enable_runtime_backup_ref_ptr_control can only be used if use_backup_ref_ptr
-# is true.
-assert(use_backup_ref_ptr || !enable_runtime_backup_ref_ptr_control,
-       "Can't control BackupRefPtr at run-time if it isn't enabled at all")
-
-# enable_backup_ref_ptr_slow_checks can only be used if use_backup_ref_ptr
-# is true.
-assert(use_backup_ref_ptr || !enable_backup_ref_ptr_slow_checks,
-       "Can't enable additional BackupRefPtr checks if it isn't enabled at all")
-
-# use_brp_pool_blocklist can only be used if use_backup_ref_ptr
-# is true.
-assert(use_backup_ref_ptr || !use_brp_pool_blocklist,
-       "The BRP pool blocklist is a BackupRefPtr-specific feature")
-
-# never_remove_from_brp_pool_blocklist can only be used if use_brp_pool_blocklist
-# is true.
-assert(
-    use_brp_pool_blocklist || !never_remove_from_brp_pool_blocklist,
-    "never_remove_from_brp_pool_blocklist requires the BRP pool block-list to be enabled")
-
-# put_ref_count_in_previous_slot can only be used if use_backup_ref_ptr
-# is true.
-assert(
-    use_backup_ref_ptr || !put_ref_count_in_previous_slot,
-    "Can't put ref count in the previous slot if BackupRefPtr isn't enabled at all")
-
-assert(
-    use_backup_ref_ptr || !enable_brp_directmap_support,
-    "Can't enable backup ref ptr directmap support if BackupRefPtr isn't enabled at all")
 
 # Determines whether libevent should be dep.
 dep_libevent =
@@ -1381,7 +1317,6 @@ component("base") {
     ":debugging_buildflags",
     ":logging_buildflags",
     ":orderfile_buildflags",
-    ":partition_alloc_buildflags",
     ":profiler_buildflags",
     ":sanitizer_buildflags",
     ":synchronization_buildflags",
@@ -2492,52 +2427,6 @@ buildflag_header("anchor_functions_buildflags") {
   flags = [
     "USE_LLD=$use_lld",
     "SUPPORTS_CODE_ORDERING=$_supports_code_ordering",
-  ]
-}
-
-should_use_backup_ref_ptr =
-    use_backup_ref_ptr && use_partition_alloc && !is_nacl
-should_use_backup_ref_ptr_fake =
-    use_backup_ref_ptr_fake && use_partition_alloc && !is_nacl
-should_enable_runtime_backup_ref_ptr_control =
-    enable_runtime_backup_ref_ptr_control && should_use_backup_ref_ptr
-should_enable_backup_ref_ptr_slow_checks =
-    enable_backup_ref_ptr_slow_checks && should_use_backup_ref_ptr
-should_put_ref_count_in_previous_slot =
-    put_ref_count_in_previous_slot && should_use_backup_ref_ptr
-should_enable_brp_directmap_support =
-    enable_brp_directmap_support && should_use_backup_ref_ptr
-should_use_brp_pool_blocklist =
-    use_brp_pool_blocklist && should_use_backup_ref_ptr
-should_never_remove_from_brp_pool_from_blocklist =
-    never_remove_from_brp_pool_blocklist && should_use_backup_ref_ptr
-
-# AlignedAlloc relies on natural alignment offered by the allocator (see the
-# comment inside PartitionRoot::AlignedAllocFlags). Any extras in front of the
-# allocation will mess up that alignment. Such extras are used when DCHECK is
-# on or when BackupRefPtr is on (but not when ref-count is at the end of the
-# previous slot). In these cases, we have to create a separate, small
-# partition, dedicated to handle only aligned allocations, where those extras
-# are disabled.
-use_dedicated_partition_for_aligned_alloc =
-    dcheck_always_on ||
-    (should_use_backup_ref_ptr && !should_put_ref_count_in_previous_slot)
-
-buildflag_header("partition_alloc_buildflags") {
-  header = "partition_alloc_buildflags.h"
-  header_dir = "base"
-
-  flags = [
-    "USE_PARTITION_ALLOC=$use_partition_alloc",
-    "USE_BACKUP_REF_PTR=$should_use_backup_ref_ptr",
-    "USE_BACKUP_REF_PTR_FAKE=$should_use_backup_ref_ptr_fake",
-    "ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL=$should_enable_runtime_backup_ref_ptr_control",
-    "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$should_enable_backup_ref_ptr_slow_checks",
-    "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$should_put_ref_count_in_previous_slot",
-    "ENABLE_BRP_DIRECTMAP_SUPPORT=$should_enable_brp_directmap_support",
-    "USE_BRP_POOL_BLOCKLIST=$should_use_brp_pool_blocklist",
-    "NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST=$should_never_remove_from_brp_pool_from_blocklist",
-    "USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC=$use_dedicated_partition_for_aligned_alloc",
   ]
 }
 

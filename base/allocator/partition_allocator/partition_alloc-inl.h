@@ -10,7 +10,6 @@
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/random.h"
-#include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)

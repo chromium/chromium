@@ -4,8 +4,8 @@
 
 #include "base/memory/checked_ptr.h"
 
+#include "base/allocator/buildflags.h"
 #include "base/check.h"
-#include "base/partition_alloc_buildflags.h"
 
 // USE_BACKUP_REF_PTR implies USE_PARTITION_ALLOC, needed for code under
 // allocator/partition_allocator/ to be built.

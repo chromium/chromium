@@ -51,7 +51,6 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
-#include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
 // We use this to make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max

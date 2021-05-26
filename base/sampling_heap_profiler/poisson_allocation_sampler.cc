@@ -14,7 +14,6 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/partition_alloc_buildflags.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"

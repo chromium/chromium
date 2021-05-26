@@ -9,7 +9,6 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/compiler_specific.h"
-#include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

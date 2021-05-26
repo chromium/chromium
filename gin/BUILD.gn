@@ -79,6 +79,7 @@ component("gin") {
 
   public_deps = [
     "//base",
+    "//base/allocator:buildflags",
     "//v8",
   ]
   deps = [ "//base/third_party/dynamic_annotations" ]

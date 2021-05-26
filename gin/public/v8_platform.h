@@ -5,9 +5,9 @@
 #ifndef GIN_PUBLIC_V8_PLATFORM_H_
 #define GIN_PUBLIC_V8_PLATFORM_H_
 
+#include "base/allocator/buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
-#include "base/partition_alloc_buildflags.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8-platform.h"
 

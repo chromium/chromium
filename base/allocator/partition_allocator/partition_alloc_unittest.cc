@@ -13,6 +13,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -24,7 +25,6 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/bits.h"
 #include "base/logging.h"
-#include "base/partition_alloc_buildflags.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/system/sys_info.h"

@@ -18,7 +18,6 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 

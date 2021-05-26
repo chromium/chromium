@@ -5,6 +5,7 @@
 import("//base/allocator/allocator.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/dcheck_always_on.gni")
 
 declare_args() {
   # Provide a way to force disable debugallocation in Debug builds,
@@ -287,15 +288,53 @@ if (use_allocator == "tcmalloc") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  _use_partition_alloc = use_allocator == "partition"
-  _use_tcmalloc = use_allocator == "tcmalloc"
-  assert(use_allocator_shim || !_use_partition_alloc,
+  _use_partition_alloc_as_malloc = use_allocator == "partition"
+  _use_tcmalloc_as_malloc = use_allocator == "tcmalloc"
+  assert(use_allocator_shim || !_use_partition_alloc_as_malloc,
          "Partition alloc requires the allocator shim")
+
+  # BackupRefPtr(BRP) build flags.
+  _use_backup_ref_ptr = use_backup_ref_ptr && use_partition_alloc && !is_nacl
+  _use_backup_ref_ptr_fake =
+      use_backup_ref_ptr_fake && use_partition_alloc && !is_nacl
+  _enable_runtime_backup_ref_ptr_control =
+      enable_runtime_backup_ref_ptr_control && _use_backup_ref_ptr
+  _put_ref_count_in_previous_slot =
+      put_ref_count_in_previous_slot && _use_backup_ref_ptr
+  _enable_brp_directmap_support =
+      enable_brp_directmap_support && _use_backup_ref_ptr
+  _use_brp_pool_blocklist = use_brp_pool_blocklist && _use_backup_ref_ptr
+  _never_remove_from_brp_pool_from_blocklist =
+      never_remove_from_brp_pool_blocklist && _use_backup_ref_ptr
+  _enable_backup_ref_ptr_slow_checks =
+      enable_backup_ref_ptr_slow_checks && _use_backup_ref_ptr
+
+  # AlignedAlloc relies on natural alignment offered by the allocator (see the
+  # comment inside PartitionRoot::AlignedAllocFlags). Any extras in front of the
+  # allocation will mess up that alignment. Such extras are used when DCHECK is
+  # on or when BackupRefPtr is on (but not when ref-count is at the end of the
+  # previous slot). In these cases, we have to create a separate, small
+  # partition, dedicated to handle only aligned allocations, where those extras
+  # are disabled.
+  _use_dedicated_partition_for_aligned_alloc =
+      dcheck_always_on ||
+      (_use_backup_ref_ptr && !_put_ref_count_in_previous_slot)
 
   flags = [
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
-    "USE_TCMALLOC=$_use_tcmalloc",
-    "USE_PARTITION_ALLOC_AS_MALLOC=$_use_partition_alloc",
+    "USE_TCMALLOC=$_use_tcmalloc_as_malloc",
+    "USE_PARTITION_ALLOC=$use_partition_alloc",
+    "USE_PARTITION_ALLOC_AS_MALLOC=$_use_partition_alloc_as_malloc",
+
+    "USE_BACKUP_REF_PTR=$_use_backup_ref_ptr",
+    "USE_BACKUP_REF_PTR_FAKE=$_use_backup_ref_ptr_fake",
+    "ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL=$_enable_runtime_backup_ref_ptr_control",
+    "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
+    "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
+    "ENABLE_BRP_DIRECTMAP_SUPPORT=$_enable_brp_directmap_support",
+    "USE_BRP_POOL_BLOCKLIST=$_use_brp_pool_blocklist",
+    "NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST=$_never_remove_from_brp_pool_from_blocklist",
+    "USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC=$_use_dedicated_partition_for_aligned_alloc",
   ]
 }
 

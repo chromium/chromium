@@ -11,9 +11,9 @@
 #include <cstddef>
 #include <utility>
 
+#include "base/allocator/buildflags.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 

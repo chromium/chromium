@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -14,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/immediate_crash.h"
-#include "base/partition_alloc_buildflags.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 
