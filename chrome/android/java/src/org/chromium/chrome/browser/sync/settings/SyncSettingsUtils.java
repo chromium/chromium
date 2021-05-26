@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
@@ -38,7 +37,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.KeyRetrievalTriggerForUMA;
 import org.chromium.components.sync.StopSource;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
@@ -143,10 +141,7 @@ public class SyncSettingsUtils {
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
                 return context.getString(R.string.hint_sync_retrieve_keys_for_passwords);
             case SyncError.SYNC_SETUP_INCOMPLETE:
-                return context.getString(
-                        ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                                ? R.string.hint_sync_settings_not_confirmed_description
-                                : R.string.hint_sync_settings_not_confirmed_description_legacy);
+                return context.getString(R.string.hint_sync_settings_not_confirmed_description);
             case SyncError.NO_ERROR:
             default:
                 return null;
@@ -186,11 +181,8 @@ public class SyncSettingsUtils {
         if (!IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount()) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-                // There is no account with sync consent available.
-                return context.getString(R.string.sync_is_disabled);
-            }
-            return "";
+            // There is no account with sync consent available.
+            return context.getString(R.string.sync_is_disabled);
         }
 
         ProfileSyncService profileSyncService = ProfileSyncService.get();
@@ -207,9 +199,7 @@ public class SyncSettingsUtils {
         }
 
         if (!profileSyncService.isFirstSetupComplete()) {
-            return ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                    ? context.getString(R.string.sync_settings_not_confirmed)
-                    : context.getString(R.string.sync_settings_not_confirmed_legacy);
+            return context.getString(R.string.sync_settings_not_confirmed);
         }
 
         if (profileSyncService.getAuthError() != GoogleServiceAuthError.State.NONE) {
@@ -226,9 +216,7 @@ public class SyncSettingsUtils {
         }
 
         if (!profileSyncService.isSyncRequested()) {
-            return ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                    ? context.getString(R.string.sync_data_types_off)
-                    : context.getString(R.string.sync_is_disabled);
+            return context.getString(R.string.sync_data_types_off);
         }
 
         if (!profileSyncService.isSyncFeatureActive()) {
@@ -279,40 +267,25 @@ public class SyncSettingsUtils {
      * Returns an icon that represents the current sync state.
      */
     public static @Nullable Drawable getSyncStatusIcon(Context context) {
-        boolean useNewIcon =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY);
-
         if (!IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount()) {
-            return useNewIcon ? AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp)
-                              : null;
+            return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
         }
 
         ProfileSyncService profileSyncService = ProfileSyncService.get();
         if (profileSyncService == null || !profileSyncService.isSyncRequested()) {
-            return useNewIcon
-                    ? AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp)
-                    : UiUtils.getTintedDrawable(context, R.drawable.ic_sync_green_legacy_40dp,
-                            R.color.default_icon_color);
+            return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
         }
         if (profileSyncService.isSyncDisabledByEnterprisePolicy()) {
-            return useNewIcon
-                    ? AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp)
-                    : UiUtils.getTintedDrawable(context, R.drawable.ic_sync_error_legacy_40dp,
-                            R.color.default_icon_color);
+            return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
         }
 
         if (getSyncError() != SyncError.NO_ERROR) {
-            return useNewIcon
-                    ? AppCompatResources.getDrawable(context, R.drawable.ic_sync_error_48dp)
-                    : UiUtils.getTintedDrawable(
-                            context, R.drawable.ic_sync_error_legacy_40dp, R.color.default_red);
+            return AppCompatResources.getDrawable(context, R.drawable.ic_sync_error_48dp);
         }
 
-        return useNewIcon ? AppCompatResources.getDrawable(context, R.drawable.ic_sync_on_48dp)
-                          : UiUtils.getTintedDrawable(context, R.drawable.ic_sync_green_legacy_40dp,
-                                  R.color.default_green);
+        return AppCompatResources.getDrawable(context, R.drawable.ic_sync_on_48dp);
     }
 
     /**
