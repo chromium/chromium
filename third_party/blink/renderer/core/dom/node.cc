@@ -878,7 +878,7 @@ void Node::Prepend(
 
   if (Node* node =
           ConvertNodesIntoNode(this, nodes, GetDocument(), exception_state))
-    this_node->InsertBefore(node, firstChild(), exception_state);
+    this_node->InsertBefore(node, this_node->firstChild(), exception_state);
 }
 
 void Node::Append(
@@ -969,13 +969,13 @@ void Node::ReplaceChildren(
 
   // 3. Replace all with node within this.
   ChildListMutationScope mutation(*this);
-  while (Node* first_child = firstChild()) {
-    removeChild(first_child, exception_state);
+  while (Node* first_child = this_node->firstChild()) {
+    this_node->RemoveChild(first_child, exception_state);
     if (exception_state.HadException())
       return;
   }
 
-  appendChild(node, exception_state);
+  this_node->AppendChild(node, exception_state);
 }
 
 void Node::remove(ExceptionState& exception_state) {

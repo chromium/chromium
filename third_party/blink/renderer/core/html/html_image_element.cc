@@ -400,13 +400,13 @@ bool HTMLImageElement::SupportedImageType(
 // http://picture.responsiveimages.org/#update-source-set
 ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
   DCHECK(IsMainThread());
-  Node* parent = parentNode();
   source_ = nullptr;
-  if (!parent || !IsA<HTMLPictureElement>(*parent))
+  auto* picture_parent = DynamicTo<HTMLPictureElement>(parentNode());
+  if (!picture_parent)
     return ImageCandidate();
   HashSet<String> disabled_image_types;
   probe::GetDisabledImageTypes(GetExecutionContext(), &disabled_image_types);
-  for (Node* child = parent->firstChild(); child;
+  for (Node* child = picture_parent->firstChild(); child;
        child = child->nextSibling()) {
     if (child == this)
       return ImageCandidate();
