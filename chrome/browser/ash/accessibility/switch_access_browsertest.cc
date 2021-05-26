@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -19,6 +20,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
+#include "ui/aura/client/cursor_client.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -96,6 +100,16 @@ class SwitchAccessTest : public InProcessBrowserTest {
     ASSERT_EQ("ready", result);
   }
 
+  // Run js snippet and wait for it to finish.
+  void WaitForJS(const std::string& js_to_eval) {
+    std::string result =
+        extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+            browser()->profile(), extension_misc::kSwitchAccessExtensionId,
+            js_to_eval,
+            extensions::browsertest_util::ScriptUserActivation::kDontActivate);
+    ASSERT_EQ(result, "ok");
+  }
+
   // Waits for a focus ring of type |type| (primary or preview) with a
   // role of |role| and a name of |name| to appear and then returns.
   void WaitForFocusRing(const std::string& type,
@@ -109,13 +123,76 @@ class SwitchAccessTest : public InProcessBrowserTest {
           });
         )JS",
         type.c_str(), role.c_str(), name.c_str());
+    WaitForJS(script);
+  }
 
-    std::string result =
-        extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-            browser()->profile(), extension_misc::kSwitchAccessExtensionId,
-            script,
-            extensions::browsertest_util::ScriptUserActivation::kDontActivate);
-    ASSERT_EQ(result, "ok");
+  // Performs default action on node with |name|.
+  void DoDefault(const std::string& name) {
+    std::string script = base::StringPrintf(
+        R"JS(
+          doDefault("%s", () => {
+            window.domAutomationController.send('ok');
+          });
+        )JS",
+        name.c_str());
+    WaitForJS(script);
+  }
+
+  // Returns cursor client for root window at location (in DIPs) |x| and |y|.
+  aura::client::CursorClient* GetCursorClient(const int x, const int y) {
+    gfx::Point location_in_screen(x, y);
+    const display::Display& display =
+        display::Screen::GetScreen()->GetDisplayNearestPoint(
+            location_in_screen);
+    auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+    CHECK(host);
+
+    aura::Window* root_window = host->window();
+    CHECK(root_window);
+
+    return aura::client::GetCursorClient(root_window);
+  }
+
+  // Enables mouse events for root window at location (in DIPs) |x| and |y|.
+  void EnableMouseEvents(const int x, const int y) {
+    GetCursorClient(x, y)->EnableMouseEvents();
+  }
+
+  // Disables mouse events for root window at location (in DIPs) |x| and |y|.
+  void DisableMouseEvents(const int x, const int y) {
+    GetCursorClient(x, y)->DisableMouseEvents();
+  }
+
+  // Checks if mouse events are enabled for root window at location (in DIPs)
+  // |x| and |y|.
+  bool IsMouseEventsEnabled(const int x, const int y) {
+    return GetCursorClient(x, y)->IsMouseEventsEnabled();
+  }
+
+  // Clicks at location (in DIPs) |x| and |y| using point scanning.
+  void PointScanClick(const int x, const int y) {
+    std::string script = base::StringPrintf(
+        R"JS(
+          pointScanClick("%d", "%d", () => {
+            window.domAutomationController.send('ok');
+          });
+        )JS",
+        x, y);
+    WaitForJS(script);
+  }
+
+  // Waits for an automation event of type |eventType| on an automation node
+  // with a name of |name| to occur and then returns.
+  void WaitForEventOnAutomationNode(const std::string& eventType,
+                                    const std::string& name) {
+    std::string script = base::StringPrintf(
+        R"JS(
+          waitForEventOnAutomationNode("%s", "%s", () => {
+            window.domAutomationController.send('ok');
+          });
+        )JS",
+        eventType.c_str(), name.c_str());
+    WaitForJS(script);
   }
 
  private:
@@ -284,6 +361,63 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, TypeIntoVirtualKeyboard) {
 
   // Actually typing and verifying text field value should be covered by
   // js-based tests that have the ability to ask the text field for its value.
+}
+
+IN_PROC_BROWSER_TEST_F(SwitchAccessTest, PointScanClickWhenMouseEventsEnabled) {
+  EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
+                     {'3', 'C'} /* previous */);
+
+  // Load a webpage with a checkbox.
+  ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<input type=checkbox title='checkbox'"
+                      "style='width: 800px; height: 800px;'>"));
+
+  // Enable mouse events (within root window containing checkbox).
+  EnableMouseEvents(600, 600);
+
+  // Perform default action on the checkbox.
+  DoDefault("checkbox");
+
+  // Verify checkbox state changes.
+  WaitForEventOnAutomationNode("checkedStateChanged", "checkbox");
+
+  // Use Point Scan to click on the checkbox.
+  PointScanClick(600, 600);
+
+  // Verify checkbox state changes.
+  WaitForEventOnAutomationNode("checkedStateChanged", "checkbox");
+
+  // Verify mouse events are still enabled.
+  ASSERT_TRUE(IsMouseEventsEnabled(600, 600));
+}
+
+IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
+                       PointScanClickWhenMouseEventsDisabled) {
+  EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
+                     {'3', 'C'} /* previous */);
+
+  // Load a webpage with a checkbox.
+  ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<input type=checkbox title='checkbox'"
+                      "style='width: 800px; height: 800px;'>"));
+
+  // Disable mouse events (within root window containing checkbox).
+  DisableMouseEvents(600, 600);
+
+  // Perform default action on the checkbox.
+  DoDefault("checkbox");
+
+  // Verify checkbox state changes.
+  WaitForEventOnAutomationNode("checkedStateChanged", "checkbox");
+
+  // Use Point Scan to click on the checkbox.
+  PointScanClick(600, 600);
+
+  // Verify checkbox state changes.
+  WaitForEventOnAutomationNode("checkedStateChanged", "checkbox");
+
+  // Verify mouse events are not enabled.
+  ASSERT_FALSE(IsMouseEventsEnabled(600, 600));
 }
 
 }  // namespace ash
