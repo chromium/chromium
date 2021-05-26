@@ -122,6 +122,24 @@ void BackForwardCacheMetrics::DidCommitNavigation(
 
   if (IsHistoryNavigation(navigation)) {
     UpdateNotRestoredReasonsForNavigation(navigation);
+
+    // Check that the reasons we are about to record are consistent.
+    DCHECK_EQ(navigation->IsServedFromBackForwardCache(),
+              page_store_result_->not_stored_reasons().to_ullong() == 0ULL)
+        << page_store_result_->ToString();
+    DCHECK_EQ(page_store_result_->HasNotStoredReason(
+                  NotRestoredReason::kBrowsingInstanceNotSwapped),
+              !DidSwapBrowsingInstance())
+        << page_store_result_->ToString();
+    DCHECK_EQ(page_store_result_->HasNotStoredReason(
+                  NotRestoredReason::kDisableForRenderFrameHostCalled),
+              page_store_result_->disabled_reasons().size() != 0)
+        << page_store_result_->ToString();
+    DCHECK_EQ(page_store_result_->HasNotStoredReason(
+                  NotRestoredReason::kBlocklistedFeatures),
+              page_store_result_->blocklisted_features() != 0ULL)
+        << page_store_result_->ToString();
+
     TRACE_EVENT1("navigation", "HistoryNavigationOutcome", "outcome",
                  page_store_result_->ToString());
     RecordMetricsForHistoryNavigationCommit(navigation,
@@ -290,10 +308,6 @@ void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
 void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(
     NavigationRequest* navigation,
     bool back_forward_cache_allowed) const {
-  DCHECK(!navigation->IsServedFromBackForwardCache() ||
-         page_store_result_->not_stored_reasons().none())
-      << "If the navigation is served from bfcache, no not restored reasons "
-         "should be recorded";
   HistoryNavigationOutcome outcome = HistoryNavigationOutcome::kNotRestored;
   if (navigation->IsServedFromBackForwardCache()) {
     outcome = HistoryNavigationOutcome::kRestored;

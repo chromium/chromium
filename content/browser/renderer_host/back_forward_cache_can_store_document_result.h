@@ -59,6 +59,7 @@ class BackForwardCacheCanStoreDocumentResult {
   std::string ToString() const;
 
  private:
+  void AddNotStoredReason(BackForwardCacheMetrics::NotRestoredReason reason);
   std::string NotRestoredReasonToString(
       BackForwardCacheMetrics::NotRestoredReason reason) const;
 
