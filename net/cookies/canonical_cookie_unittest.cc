@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
+#include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
@@ -32,63 +33,6 @@ void MatchCookieLineToVector(
   for (const auto& cookie : cookies)
     list.push_back(*cookie);
   EXPECT_EQ(line, CanonicalCookie::BuildCookieLine(list));
-}
-
-// Helper for checking CookieAccessResults. Should be called with matchers (or
-// values) for each of the fields of a CookieAccessResult.
-MATCHER_P4(MatchesCookieAccessResult,
-           status,
-           effective_same_site,
-           access_semantics,
-           is_allowed_to_access_secure_cookies,
-           "") {
-  return testing::ExplainMatchResult(
-      testing::AllOf(
-          testing::Field(&CookieAccessResult::status, status),
-          testing::Field(&CookieAccessResult::effective_same_site,
-                         effective_same_site),
-          testing::Field(&CookieAccessResult::access_semantics,
-                         access_semantics),
-          testing::Field(
-              &CookieAccessResult::is_allowed_to_access_secure_cookies,
-              is_allowed_to_access_secure_cookies)),
-      arg, result_listener);
-}
-
-// Helper for checking that status.HasDowngradeWarning() == true.
-MATCHER(HasDowngradeWarning, "") {
-  CookieInclusionStatus status = arg;
-  return testing::ExplainMatchResult(true, status.HasDowngradeWarning(),
-                                     result_listener);
-}
-
-// Helper for checking that status.HasWarningReason(reason) == true.
-MATCHER_P(HasWarningReason, reason, "") {
-  CookieInclusionStatus status = arg;
-  return testing::ExplainMatchResult(true, status.HasWarningReason(reason),
-                                     result_listener);
-}
-
-// Helper for checking that status.HasExclusionReason(reason) == true.
-MATCHER_P(HasExclusionReason, reason, "") {
-  CookieInclusionStatus status = arg;
-  return testing::ExplainMatchResult(true, status.HasExclusionReason(reason),
-                                     result_listener);
-}
-
-// Helper for checking that status.HasExactlyExclusionReasonsForTesting(reasons)
-// == true.
-MATCHER_P(HasExactlyExclusionReasonsForTesting, reasons, "") {
-  CookieInclusionStatus status = arg;
-  return testing::ExplainMatchResult(
-      true, status.HasExactlyExclusionReasonsForTesting(reasons),
-      result_listener);
-}
-
-// Helper for checking that status.IsInclude() == true.
-MATCHER(IsInclude, "") {
-  CookieInclusionStatus status = arg;
-  return testing::ExplainMatchResult(true, status.IsInclude(), result_listener);
 }
 
 }  // namespace

@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
+#include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
@@ -70,16 +71,6 @@ const base::FilePath::CharType kTestCookiesFilename[] =
 constexpr char kCookieDomain[] = "foo_host.com";
 constexpr char kCookieURL[] = "http://foo_host.com";
 constexpr char kCookieHttpsURL[] = "https://foo_host.com";
-
-MATCHER_P(CookieWithName, name, "") {
-  return testing::ExplainMatchResult(testing::Eq(name), arg.Name(),
-                                     result_listener);
-}
-
-MATCHER_P(CookieAccessWithName, name, "") {
-  return testing::ExplainMatchResult(CookieWithName(name), arg.cookie,
-                                     result_listener);
-}
 
 // Wraps a mojom::CookieManager in synchronous, blocking calls to make
 // it easier to test.
@@ -904,16 +895,18 @@ TEST_F(CookieManagerTest, GetCookieListSameParty) {
 
     // Retrieve only unrestricted cookies. SameParty cookies are excluded, and
     // non-SameSite=None cookies are excluded.
-    EXPECT_THAT(service_wrapper()->GetCookieList(cookie_url, options),
-                UnorderedElementsAre(CookieWithName("nonSameParty-None")));
+    EXPECT_THAT(
+        service_wrapper()->GetCookieList(cookie_url, options),
+        UnorderedElementsAre(net::MatchesCookieWithName("nonSameParty-None")));
 
     EXPECT_THAT(
         service_wrapper()->GetExcludedCookieList(cookie_url, options),
-        UnorderedElementsAre(CookieAccessWithName("SameParty-Unspecified"),
-                             CookieAccessWithName("SameParty-None"),
-                             CookieAccessWithName("SameParty-Lax"),
-                             CookieAccessWithName("nonSameParty-Unspecified"),
-                             CookieAccessWithName("nonSameParty-Lax")));
+        UnorderedElementsAre(
+            net::MatchesCookieAccessWithName("SameParty-Unspecified"),
+            net::MatchesCookieAccessWithName("SameParty-None"),
+            net::MatchesCookieAccessWithName("SameParty-Lax"),
+            net::MatchesCookieAccessWithName("nonSameParty-Unspecified"),
+            net::MatchesCookieAccessWithName("nonSameParty-Lax")));
 
     // In a same-party, cross-site context, SameParty cookies should be
     // included, and non-SameParty cookies should be excluded based on SameSite
@@ -921,25 +914,28 @@ TEST_F(CookieManagerTest, GetCookieListSameParty) {
     options.set_same_party_cookie_context_type(
         net::CookieOptions::SamePartyCookieContextType::kSameParty);
     EXPECT_THAT(service_wrapper()->GetCookieList(cookie_url, options),
-                UnorderedElementsAre(CookieWithName("SameParty-Unspecified"),
-                                     CookieWithName("SameParty-None"),
-                                     CookieWithName("SameParty-Lax"),
-                                     CookieWithName("nonSameParty-None")));
+                UnorderedElementsAre(
+                    net::MatchesCookieWithName("SameParty-Unspecified"),
+                    net::MatchesCookieWithName("SameParty-None"),
+                    net::MatchesCookieWithName("SameParty-Lax"),
+                    net::MatchesCookieWithName("nonSameParty-None")));
     EXPECT_THAT(
         service_wrapper()->GetExcludedCookieList(cookie_url, options),
-        UnorderedElementsAre(CookieAccessWithName("nonSameParty-Unspecified"),
-                             CookieAccessWithName("nonSameParty-Lax")));
+        UnorderedElementsAre(
+            net::MatchesCookieAccessWithName("nonSameParty-Unspecified"),
+            net::MatchesCookieAccessWithName("nonSameParty-Lax")));
 
     // In a same-party, same-site context, all cookies should be included.
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
     EXPECT_THAT(service_wrapper()->GetCookieList(cookie_url, options),
-                UnorderedElementsAre(CookieWithName("SameParty-Unspecified"),
-                                     CookieWithName("SameParty-None"),
-                                     CookieWithName("SameParty-Lax"),
-                                     CookieWithName("nonSameParty-Unspecified"),
-                                     CookieWithName("nonSameParty-None"),
-                                     CookieWithName("nonSameParty-Lax")));
+                UnorderedElementsAre(
+                    net::MatchesCookieWithName("SameParty-Unspecified"),
+                    net::MatchesCookieWithName("SameParty-None"),
+                    net::MatchesCookieWithName("SameParty-Lax"),
+                    net::MatchesCookieWithName("nonSameParty-Unspecified"),
+                    net::MatchesCookieWithName("nonSameParty-None"),
+                    net::MatchesCookieWithName("nonSameParty-Lax")));
     EXPECT_THAT(service_wrapper()->GetExcludedCookieList(cookie_url, options),
                 IsEmpty());
   }
@@ -959,40 +955,45 @@ TEST_F(CookieManagerTest, GetCookieListSameParty) {
         options.same_site_cookie_context());
 
     // Cross-party, cross-site.
-    EXPECT_THAT(service_wrapper()->GetCookieList(cookie_url, options),
-                UnorderedElementsAre(CookieWithName("SameParty-None"),
-                                     CookieWithName("nonSameParty-None")));
+    EXPECT_THAT(
+        service_wrapper()->GetCookieList(cookie_url, options),
+        UnorderedElementsAre(net::MatchesCookieWithName("SameParty-None"),
+                             net::MatchesCookieWithName("nonSameParty-None")));
 
     EXPECT_THAT(
         service_wrapper()->GetExcludedCookieList(cookie_url, options),
-        UnorderedElementsAre(CookieAccessWithName("SameParty-Unspecified"),
-                             CookieAccessWithName("SameParty-Lax"),
-                             CookieAccessWithName("nonSameParty-Unspecified"),
-                             CookieAccessWithName("nonSameParty-Lax")));
+        UnorderedElementsAre(
+            net::MatchesCookieAccessWithName("SameParty-Unspecified"),
+            net::MatchesCookieAccessWithName("SameParty-Lax"),
+            net::MatchesCookieAccessWithName("nonSameParty-Unspecified"),
+            net::MatchesCookieAccessWithName("nonSameParty-Lax")));
 
     // Same-party, cross-site.
     options.set_same_party_cookie_context_type(
         net::CookieOptions::SamePartyCookieContextType::kSameParty);
-    EXPECT_THAT(service_wrapper()->GetCookieList(cookie_url, options),
-                UnorderedElementsAre(CookieWithName("SameParty-None"),
-                                     CookieWithName("nonSameParty-None")));
+    EXPECT_THAT(
+        service_wrapper()->GetCookieList(cookie_url, options),
+        UnorderedElementsAre(net::MatchesCookieWithName("SameParty-None"),
+                             net::MatchesCookieWithName("nonSameParty-None")));
     EXPECT_THAT(
         service_wrapper()->GetExcludedCookieList(cookie_url, options),
-        UnorderedElementsAre(CookieAccessWithName("SameParty-Unspecified"),
-                             CookieAccessWithName("SameParty-Lax"),
-                             CookieAccessWithName("nonSameParty-Unspecified"),
-                             CookieAccessWithName("nonSameParty-Lax")));
+        UnorderedElementsAre(
+            net::MatchesCookieAccessWithName("SameParty-Unspecified"),
+            net::MatchesCookieAccessWithName("SameParty-Lax"),
+            net::MatchesCookieAccessWithName("nonSameParty-Unspecified"),
+            net::MatchesCookieAccessWithName("nonSameParty-Lax")));
 
     // Same-party, same-site.
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
     EXPECT_THAT(service_wrapper()->GetCookieList(cookie_url, options),
-                UnorderedElementsAre(CookieWithName("SameParty-Unspecified"),
-                                     CookieWithName("SameParty-None"),
-                                     CookieWithName("SameParty-Lax"),
-                                     CookieWithName("nonSameParty-Unspecified"),
-                                     CookieWithName("nonSameParty-None"),
-                                     CookieWithName("nonSameParty-Lax")));
+                UnorderedElementsAre(
+                    net::MatchesCookieWithName("SameParty-Unspecified"),
+                    net::MatchesCookieWithName("SameParty-None"),
+                    net::MatchesCookieWithName("SameParty-Lax"),
+                    net::MatchesCookieWithName("nonSameParty-Unspecified"),
+                    net::MatchesCookieWithName("nonSameParty-None"),
+                    net::MatchesCookieWithName("nonSameParty-Lax")));
     EXPECT_THAT(service_wrapper()->GetExcludedCookieList(cookie_url, options),
                 IsEmpty());
   }
