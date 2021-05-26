@@ -33,6 +33,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true"
+    name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"
+    units="microseconds" expires_after="2021-10-10">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>schenney@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Time spent computing IntersectionObserver observations in the Blink document
+    lifecycle where the observation is for gathering information about anchor
+    elements within the visible viewport. Recorded when an intersection
+    observation attributed to anchor element metrics is updated.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.Animate.UpdateTime" units="microseconds"
     expires_after="2021-10-04">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->

@@ -2044,6 +2044,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" separator=".">
   <suffix name="AggregatedPreFCP"
       label="All the time spent Pre First Contentful Paint in this component"/>
+  <affected-histogram
+      name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Animate.UpdateTime"/>
   <affected-histogram name="Blink.Compositing.UpdateTime"/>
   <affected-histogram name="Blink.CompositingAssignments.UpdateTime"/>
@@ -2077,6 +2079,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" separator=".">
   <suffix name="PostFCP" label="Update occurred after First Contentful Paint."/>
+  <affected-histogram
+      name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Animate.UpdateTime"/>
   <affected-histogram name="Blink.Compositing.UpdateTime"/>
   <affected-histogram name="Blink.CompositingAssignments.UpdateTime"/>
@@ -2110,6 +2114,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" separator=".">
   <suffix name="PreFCP" label="Update occurred before First Contentful Paint."/>
+  <affected-histogram
+      name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Animate.UpdateTime"/>
   <affected-histogram name="Blink.Compositing.UpdateTime"/>
   <affected-histogram name="Blink.CompositingAssignments.UpdateTime"/>
