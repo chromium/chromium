@@ -199,38 +199,40 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     }
   }
 
-  if (navigation_handle()->IsInMainFrame()) {
-    guest_view::GuestViewBase* guest =
-        guest_view::GuestViewBase::FromWebContents(web_contents);
-    if (url_has_extension_scheme && guest) {
-      // This only handles top-level navigations. For subresources, is is done
-      // in url_request_util::AllowCrossRendererResourceLoad.
-      const std::string& owner_extension_id = guest->owner_host();
-      const Extension* owner_extension =
-          registry->enabled_extensions().GetByID(owner_extension_id);
+  guest_view::GuestViewBase* guest =
+      guest_view::GuestViewBase::FromWebContents(web_contents);
+  if (url_has_extension_scheme && guest) {
+    // Check whether the guest is allowed to load the extension URL. This is
+    // usually allowed only for the guest's owner extension resources, and only
+    // if those resources are marked as webview-accessible. This check is
+    // needed for both navigations and subresources. The code below handles
+    // navigations, and url_request_util::AllowCrossRendererResourceLoad()
+    // handles subresources.
+    const std::string& owner_extension_id = guest->owner_host();
+    const Extension* owner_extension =
+        registry->enabled_extensions().GetByID(owner_extension_id);
 
-      content::StoragePartitionConfig storage_partition_config =
-          content::StoragePartitionConfig::CreateDefault(browser_context);
-      bool is_guest = navigation_handle()->GetStartingSiteInstance()->IsGuest();
-      if (is_guest) {
-        is_guest = WebViewGuest::GetGuestPartitionConfigForSite(
-            browser_context,
-            navigation_handle()->GetStartingSiteInstance()->GetSiteURL(),
-            &storage_partition_config);
-      }
-      CHECK_EQ(is_guest,
-               navigation_handle()->GetStartingSiteInstance()->IsGuest());
+    content::StoragePartitionConfig storage_partition_config =
+        content::StoragePartitionConfig::CreateDefault(browser_context);
+    bool is_guest = navigation_handle()->GetStartingSiteInstance()->IsGuest();
+    if (is_guest) {
+      is_guest = WebViewGuest::GetGuestPartitionConfigForSite(
+          browser_context,
+          navigation_handle()->GetStartingSiteInstance()->GetSiteURL(),
+          &storage_partition_config);
+    }
+    CHECK_EQ(is_guest,
+             navigation_handle()->GetStartingSiteInstance()->IsGuest());
 
-      bool allowed = true;
-      url_request_util::AllowCrossRendererResourceLoadHelper(
-          is_guest, target_extension, owner_extension,
-          storage_partition_config.partition_name(), url.path(),
-          navigation_handle()->GetPageTransition(), &allowed);
-      if (!allowed) {
-        RecordExtensionResourceAccessResult(
-            source_id, url, ExtensionResourceAccessResult::kFailure);
-        return content::NavigationThrottle::BLOCK_REQUEST;
-      }
+    bool allowed = true;
+    url_request_util::AllowCrossRendererResourceLoadHelper(
+        is_guest, target_extension, owner_extension,
+        storage_partition_config.partition_name(), url.path(),
+        navigation_handle()->GetPageTransition(), &allowed);
+    if (!allowed) {
+      RecordExtensionResourceAccessResult(
+          source_id, url, ExtensionResourceAccessResult::kFailure);
+      return content::NavigationThrottle::BLOCK_REQUEST;
     }
   }
 

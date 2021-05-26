@@ -36,6 +36,7 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/extensions/identifiability_metrics_test_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
@@ -102,6 +103,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/identifiability_metrics.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -534,6 +536,7 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
     }
 
     host_resolver()->AddRule("*", "127.0.0.1");
+    identifiability_metrics_test_helper_.SetUpOnMainThread();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -865,6 +868,9 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
   }
 
   ~WebViewTest() override {}
+
+  extensions::IdentifiabilityMetricsTestHelper
+      identifiability_metrics_test_helper_;
 
  private:
   bool UsesFakeSpeech() {
@@ -4788,4 +4794,69 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
                                   content::JsReplace(
                                       "fetch($1).then(response => response.ok)",
                                       fetch_url)));
+}
+
+// Verify that navigating a <webview> subframe to a disallowed extension
+// resource (where the extension ID doesn't match the <webview> owner) doesn't
+// result in a renderer kill.  See https://crbug.com/1204094.
+IN_PROC_BROWSER_TEST_F(WebViewTest, LoadDisallowedExtensionURLInSubframe) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  base::RunLoop run_loop;
+  identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
+
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* guest = GetGuestWebContents();
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("web_accessible_resources"));
+  ASSERT_TRUE(extension);
+  GURL extension_url = extension->GetResourceURL("web_accessible_page.html");
+
+  GURL iframe_url(embedded_test_server()->GetURL("/title1.html"));
+
+  std::string setup_iframe_script = base::StringPrintf(
+      R"(
+          var iframe = document.createElement('iframe');
+          iframe.id = 'subframe';
+          iframe.src = '%s';
+          document.body.appendChild(iframe);
+      )",
+      iframe_url.spec().c_str());
+
+  EXPECT_TRUE(content::ExecuteScript(guest, setup_iframe_script));
+  EXPECT_TRUE(content::WaitForLoadStop(guest));
+
+  // Navigate the subframe to an unrelated extension URL.  This shouldn't
+  // terminate the renderer. If it does, this test will fail via
+  // content::NoRendererCrashesAssertion().
+  content::TestNavigationObserver load_observer(guest);
+  EXPECT_TRUE(BeginNavigateIframeToURL(guest, "subframe", extension_url));
+  load_observer.Wait();
+
+  // The navigation should be aborted and the iframe should be left at its old
+  // URL.
+  EXPECT_FALSE(load_observer.last_navigation_succeeded());
+  content::RenderFrameHost* webview_subframe =
+      ChildFrameAt(guest->GetMainFrame(), 0);
+  EXPECT_EQ(webview_subframe->GetLastCommittedURL(), iframe_url);
+
+  // Check that a proper UKM event was logged for failed extension file access.
+  // First, find the source ID corresponding to the logged event, then make
+  // sure that the corresponding metric contains a failed
+  // ExtensionResourceAccessResult.
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
+          guest, &run_loop);
+  std::set<ukm::SourceId> source_ids = extensions::
+      IdentifiabilityMetricsTestHelper::GetSourceIDsForSurfaceAndExtension(
+          merged_entries,
+          blink::IdentifiableSurface::Type::kExtensionFileAccess,
+          extension->id());
+  ASSERT_EQ(1u, source_ids.size());
+
+  const auto& entry = merged_entries[*source_ids.begin()];
+  ASSERT_EQ(1u, entry->metrics.size());
+  EXPECT_EQ(blink::IdentifiableToken(
+                extensions::ExtensionResourceAccessResult::kFailure),
+            entry->metrics.begin()->second);
 }
