@@ -62,6 +62,7 @@ const char kPinDisabledByPolicy[] = "PIN unlock has been disabled by policy";
 
 const char kInvalidPIN[] = "Invalid PIN.";
 const char kInvalidCredential[] = "Invalid credential.";
+const char kInternalError[] = "Internal error.";
 const char kWeakCredential[] = "Weak credential.";
 
 const char kPasswordIncorrect[] = "Incorrect Password.";
@@ -606,14 +607,13 @@ void QuickUnlockPrivateSetModesFunction::OnGetActiveModes(
       chromeos::quick_unlock::PinBackend::GetInstance()->Remove(
           user->GetAccountId(), params_->token,
           base::BindOnce(
-              &QuickUnlockPrivateSetModesFunction::PinBackendCallComplete,
+              &QuickUnlockPrivateSetModesFunction::PinRemoveCallComplete,
               this));
     } else {
       chromeos::quick_unlock::PinBackend::GetInstance()->Set(
           user->GetAccountId(), params_->token, pin_credential,
           base::BindOnce(
-              &QuickUnlockPrivateSetModesFunction::PinBackendCallComplete,
-              this));
+              &QuickUnlockPrivateSetModesFunction::PinSetCallComplete, this));
     }
   } else {
     // No changes to apply. Call result directly.
@@ -621,7 +621,18 @@ void QuickUnlockPrivateSetModesFunction::OnGetActiveModes(
   }
 }
 
-void QuickUnlockPrivateSetModesFunction::PinBackendCallComplete(bool result) {
+void QuickUnlockPrivateSetModesFunction::PinSetCallComplete(bool result) {
+  if (!result) {
+    Respond(Error(kInternalError));
+    return;
+  }
+  ComputeActiveModes(
+      GetActiveProfile(browser_context()),
+      base::BindOnce(&QuickUnlockPrivateSetModesFunction::ModeChangeComplete,
+                     this));
+}
+
+void QuickUnlockPrivateSetModesFunction::PinRemoveCallComplete(bool result) {
   ComputeActiveModes(
       GetActiveProfile(browser_context()),
       base::BindOnce(&QuickUnlockPrivateSetModesFunction::ModeChangeComplete,

@@ -18,7 +18,8 @@ const MessageType = {
   TOO_SHORT: 'configurePinTooShort',
   TOO_LONG: 'configurePinTooLong',
   TOO_WEAK: 'configurePinWeakPin',
-  MISMATCH: 'configurePinMismatched'
+  MISMATCH: 'configurePinMismatched',
+  INTERNAL_ERROR: 'internalError',
 };
 
 /** @enum {string} */
@@ -198,6 +199,7 @@ Polymer({
         break;
       case MessageType.TOO_WEAK:
       case MessageType.MISMATCH:
+      case MessageType.INTERNAL_ERROR:
         break;
       default:
         assertNotReached();
@@ -315,6 +317,7 @@ Polymer({
     this.isSetModesCallPending_ = false;
     if (!didSet) {
       console.error('Failed to update pin');
+      this.showProblem_(MessageType.INTERNAL_ERROR, ProblemType.ERROR);
       this.enableSubmit = true;
       return;
     }

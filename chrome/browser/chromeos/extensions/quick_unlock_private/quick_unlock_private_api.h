@@ -217,7 +217,8 @@ class QuickUnlockPrivateSetModesFunction : public ExtensionFunction {
   // Continuation of OnAuthSuccess after active modes have been fetched.
   void OnGetActiveModes(const std::vector<QuickUnlockMode>& modes);
 
-  void PinBackendCallComplete(bool result);
+  void PinSetCallComplete(bool result);
+  void PinRemoveCallComplete(bool result);
 
   // Apply any changes specified in |params_|. Returns the new active modes.
   void ModeChangeComplete(const std::vector<QuickUnlockMode>& updated_modes);

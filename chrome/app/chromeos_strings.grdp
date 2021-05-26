@@ -5864,6 +5864,9 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_WEAK_PIN" desc="Message shown below the title that warns the user they have entered a PIN that is easy to guess.">
     PIN may be easy to guess
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_INTERNAL_ERROR" desc="Message shown below the title that warns the user that internal error occured.">
+    Internal error
+  </message>
   <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_TOO_SHORT" desc="Message shown below the title that tells the user that the PIN they entered needs to be at least minimum digits long.">
     PIN must be at least <ph name="MINIMUM">$1<ex>4</ex></ph> digits
   </message>
