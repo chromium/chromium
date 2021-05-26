@@ -114,8 +114,8 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     return;
 
   origins_to_display_bubble_.clear();
-  for (auto origin : offer->merchant_domain)
-    origins_to_display_bubble_.emplace_back(origin);
+  for (auto merchant_origin : offer->merchant_origins)
+    origins_to_display_bubble_.emplace_back(merchant_origin);
 
   if (card)
     card_ = *card;

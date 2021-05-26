@@ -578,7 +578,7 @@ void AutofillMetricsTest::AddMaskedServerCreditCardWithOffer(
   } else {
     offer_data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(2);
   }
-  offer_data.merchant_domain = {url};
+  offer_data.merchant_origins = {url};
   offer_data.eligible_instrument_id = {
       masked_server_credit_card.instrument_id()};
   personal_data_->AddAutofillOfferData(offer_data);
@@ -3907,7 +3907,7 @@ TEST_F(AutofillMetricsTest, LogStoredOfferMetrics) {
   AutofillOfferData offer2 = test::GetCardLinkedOfferData2();
   offer2.eligible_instrument_id.emplace_back(999999);
   offer2.eligible_instrument_id.emplace_back(888888);
-  offer2.merchant_domain.emplace_back("www.example3.com");
+  offer2.merchant_origins.emplace_back("https://www.example3.com/");
   offers.push_back(std::make_unique<AutofillOfferData>(offer1));
   offers.push_back(std::make_unique<AutofillOfferData>(offer2));
 

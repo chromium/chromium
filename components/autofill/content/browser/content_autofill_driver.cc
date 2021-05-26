@@ -583,7 +583,7 @@ void ContentAutofillDriver::ShowOfferNotificationIfApplicable(
   //   bubble will end up being shown (due to not yet being implemented).
   AutofillOfferData* offer = offer_manager->GetOfferForUrl(url);
 
-  if (!offer || offer->merchant_domain.empty() ||
+  if (!offer || offer->merchant_origins.empty() ||
       (offer->IsCardLinkedOffer() && offer->eligible_instrument_id.empty()) ||
       (offer->IsPromoCodeOffer() && offer->promo_code.empty())) {
     return;

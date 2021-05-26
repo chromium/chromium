@@ -30,7 +30,7 @@ bool IsOfferEligible(const AutofillOfferData& offer,
                      const GURL& last_committed_url_origin) {
   bool is_eligible = (offer.expiry > AutofillClock::Now());
   is_eligible &=
-      base::ranges::count(offer.merchant_domain, last_committed_url_origin);
+      base::ranges::count(offer.merchant_origins, last_committed_url_origin);
   return is_eligible;
 }
 }  // namespace
@@ -106,9 +106,8 @@ void AutofillOfferManager::UpdateEligibleMerchantDomains() {
   std::vector<AutofillOfferData*> offers = personal_data_->GetAutofillOffers();
 
   for (auto* offer : offers) {
-    for (auto& domain : offer->merchant_domain) {
-      eligible_merchant_domains_.emplace(domain);
-    }
+    eligible_merchant_domains_.insert(offer->merchant_origins.begin(),
+                                      offer->merchant_origins.end());
   }
 }
 

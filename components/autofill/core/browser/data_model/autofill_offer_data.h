@@ -29,7 +29,7 @@ struct DisplayStrings {
 // Represents an offer for certain merchants. Card-linked offers are redeemable
 // with certain cards, and the unique ids of those cards are stored in
 // |eligible_instrument_id|. Promo code offers are redeemable with autofillable
-// promo codes. Merchants are determined by |merchant_domain|.
+// promo codes. Merchants are determined by |merchant_origins|.
 struct AutofillOfferData {
  public:
   AutofillOfferData();
@@ -60,8 +60,9 @@ struct AutofillOfferData {
   // The URL that contains the offer details.
   GURL offer_details_url;
 
-  // The merchants' URLs where this offer can be redeemed.
-  std::vector<GURL> merchant_domain;
+  // The merchants' URL origins (path not included) where this offer can be
+  // redeemed.
+  std::vector<GURL> merchant_origins;
 
   // Optional server-driven strings for certain offer elements. Generally most
   // useful for promo code offers, but could potentially apply to card-linked

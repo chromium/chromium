@@ -2173,7 +2173,7 @@ void AutofillTable::SetAutofillOffers(
       insert_offer_eligible_instruments.Reset(true);
     }
 
-    for (const GURL& merchant_domain : data.merchant_domain) {
+    for (const GURL& merchant_origin : data.merchant_origins) {
       // Insert new offer_merchant_domain values.
       sql::Statement insert_offer_merchant_domains(
           db_->GetUniqueStatement("INSERT INTO offer_merchant_domain("
@@ -2181,8 +2181,7 @@ void AutofillTable::SetAutofillOffers(
                                   "merchant_domain) "  // 1
                                   "VALUES (?,?)"));
       insert_offer_merchant_domains.BindInt64(0, data.offer_id);
-      insert_offer_merchant_domains.BindString(
-          1, merchant_domain.GetOrigin().spec());
+      insert_offer_merchant_domains.BindString(1, merchant_origin.spec());
       insert_offer_merchant_domains.Run();
       insert_offer_merchant_domains.Reset(true);
     }
@@ -2245,7 +2244,7 @@ bool AutofillTable::GetAutofillOffers(
       const std::string merchant_domain =
           s_offer_merchant_domain.ColumnString(1);
       if (!merchant_domain.empty()) {
-        data->merchant_domain.emplace_back(merchant_domain);
+        data->merchant_origins.emplace_back(merchant_domain);
       }
     }
 

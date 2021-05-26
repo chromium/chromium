@@ -48,15 +48,15 @@ int AutofillOfferData::Compare(
   if (comparison != 0)
     return comparison;
 
-  std::vector<GURL> merchant_domain_copy = merchant_domain;
-  std::vector<GURL> other_merchant_domain_copy =
-      other_offer_data.merchant_domain;
-  std::sort(merchant_domain_copy.begin(), merchant_domain_copy.end());
-  std::sort(other_merchant_domain_copy.begin(),
-            other_merchant_domain_copy.end());
-  if (merchant_domain_copy < other_merchant_domain_copy)
+  std::vector<GURL> merchant_origins_copy = merchant_origins;
+  std::vector<GURL> other_merchant_origins_copy =
+      other_offer_data.merchant_origins;
+  std::sort(merchant_origins_copy.begin(), merchant_origins_copy.end());
+  std::sort(other_merchant_origins_copy.begin(),
+            other_merchant_origins_copy.end());
+  if (merchant_origins_copy < other_merchant_origins_copy)
     return -1;
-  if (merchant_domain_copy > other_merchant_domain_copy)
+  if (merchant_origins_copy > other_merchant_origins_copy)
     return 1;
 
   std::vector<int64_t> eligible_instrument_id_copy = eligible_instrument_id;

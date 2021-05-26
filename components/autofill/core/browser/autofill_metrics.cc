@@ -1978,7 +1978,7 @@ void AutofillMetrics::LogStoredOfferMetrics(
   for (const std::unique_ptr<AutofillOfferData>& offer : offers) {
     base::UmaHistogramCounts1000(
         "Autofill.Offer.StoredOfferRelatedMerchantCount",
-        offer->merchant_domain.size());
+        offer->merchant_origins.size());
     base::UmaHistogramCounts1000("Autofill.Offer.StoredOfferRelatedCardCount",
                                  offer->eligible_instrument_id.size());
   }

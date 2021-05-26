@@ -76,7 +76,7 @@ class AutofillOfferManagerTest : public testing::Test {
       const CreditCard& card,
       std::string offer_reward_amount,
       bool expired = false,
-      std::vector<GURL> domains = {GURL(kTestUrl)}) {
+      std::vector<GURL> merchant_origins = {GURL(kTestUrl)}) {
     AutofillOfferData offer_data;
     offer_data.offer_id = 4444;
     offer_data.offer_reward_amount = offer_reward_amount;
@@ -85,18 +85,18 @@ class AutofillOfferManagerTest : public testing::Test {
     } else {
       offer_data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(2);
     }
-    offer_data.merchant_domain = std::move(domains);
+    offer_data.merchant_origins = std::move(merchant_origins);
     offer_data.eligible_instrument_id = {card.instrument_id()};
     offer_data.offer_details_url = GURL(kOfferDetailsUrl);
     return offer_data;
   }
 
-  AutofillOfferData CreatePromoCodeOffer(std::vector<GURL> domains = {
+  AutofillOfferData CreatePromoCodeOffer(std::vector<GURL> merchant_origins = {
                                              GURL(kTestUrl)}) {
     AutofillOfferData offer_data;
     offer_data.offer_id = 5555;
     offer_data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(2);
-    offer_data.merchant_domain = std::move(domains);
+    offer_data.merchant_origins = std::move(merchant_origins);
     offer_data.offer_details_url = GURL(kOfferDetailsUrl);
     offer_data.promo_code = "5PCTOFFSHOES";
     offer_data.display_strings.value_prop_text = "5% off on shoes. Up to $50.";
@@ -258,11 +258,11 @@ TEST_F(AutofillOfferManagerTest,
 
   AutofillOfferData offer1 = CreateCreditCardOfferForCard(
       card1, "5%", /*expired=*/false,
-      /*domains=*/
+      /*merchant_origins=*/
       {GURL("http://www.google.com"), GURL("http://www.youtube.com")});
   AutofillOfferData offer2 = CreateCreditCardOfferForCard(
       card2, "10%", /*expired=*/false,
-      /*domains=*/
+      /*merchant_origins=*/
       {GURL("http://www.example.com"), GURL("http://www.example2.com")});
   personal_data_manager_.AddAutofillOfferData(offer1);
   personal_data_manager_.AddAutofillOfferData(offer2);
@@ -279,14 +279,14 @@ TEST_F(AutofillOfferManagerTest,
 
   AutofillOfferData offer1 = CreateCreditCardOfferForCard(
       card1, "5%", /*expired=*/false,
-      /*domains=*/
+      /*merchant_origins=*/
       {GURL("http://www.google.com"), GURL("http://www.youtube.com")});
   AutofillOfferData offer2 = CreateCreditCardOfferForCard(
       card2, "10%", /*expired=*/false,
-      /*domains=*/
+      /*merchant_origins=*/
       {GURL("http://www.example.com"), GURL("http://www.example2.com")});
   AutofillOfferData offer3 =
-      CreatePromoCodeOffer(/*domains=*/
+      CreatePromoCodeOffer(/*merchant_origins=*/
                            {GURL("http://www.example.com"),
                             GURL("http://www.example2.com")});
   personal_data_manager_.AddAutofillOfferData(offer1);

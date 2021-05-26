@@ -57,9 +57,9 @@ OfferNotificationBubbleViewsTestBase::CreateCardLinkedOfferDataWithDomains(
   offer_data_entry->offer_reward_amount = "5%";
   offer_data_entry->expiry =
       AutofillClock::Now() + base::TimeDelta::FromDays(2);
-  offer_data_entry->merchant_domain = {};
+  offer_data_entry->merchant_origins = {};
   for (auto url : domains)
-    offer_data_entry->merchant_domain.emplace_back(url.GetOrigin());
+    offer_data_entry->merchant_origins.emplace_back(url.GetOrigin());
   offer_data_entry->eligible_instrument_id = {kCreditCardInstrumentId};
 
   return offer_data_entry;
@@ -73,9 +73,9 @@ OfferNotificationBubbleViewsTestBase::CreatePromoCodeOfferDataWithDomains(
   offer_data_entry->offer_id = 5555;
   offer_data_entry->expiry =
       AutofillClock::Now() + base::TimeDelta::FromDays(2);
-  offer_data_entry->merchant_domain = {};
+  offer_data_entry->merchant_origins = {};
   for (auto url : domains)
-    offer_data_entry->merchant_domain.emplace_back(url.GetOrigin());
+    offer_data_entry->merchant_origins.emplace_back(url.GetOrigin());
   offer_data_entry->offer_details_url = GURL("https://www.google.com/");
   offer_data_entry->promo_code = "5PCTOFFSHOES";
   offer_data_entry->display_strings.value_prop_text =

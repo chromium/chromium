@@ -91,7 +91,7 @@ class OfferNotificationBubbleControllerImplTest
     // Only adding what the tests need to pass. Feel free to add more populated
     // fields as necessary.
     AutofillOfferData offer;
-    offer.merchant_domain = merchant_origins;
+    offer.merchant_origins = merchant_origins;
     return offer;
   }
 

@@ -350,8 +350,8 @@ void SetAutofillOfferSpecificsFromOfferData(
   // General offer data:
   offer_specifics->set_id(offer_data.offer_id);
   offer_specifics->set_offer_details_url(offer_data.offer_details_url.spec());
-  for (const GURL& domain : offer_data.merchant_domain) {
-    offer_specifics->add_merchant_domain(domain.GetOrigin().spec());
+  for (const GURL& merchant_origin : offer_data.merchant_origins) {
+    offer_specifics->add_merchant_domain(merchant_origin.spec());
   }
   offer_specifics->set_offer_expiry_date(
       (offer_data.expiry - base::Time::UnixEpoch()).InSeconds());
@@ -406,8 +406,9 @@ AutofillOfferData AutofillOfferDataFromOfferSpecifics(
       base::TimeDelta::FromSeconds(offer_specifics.offer_expiry_date());
   offer_data.offer_details_url = GURL(offer_specifics.offer_details_url());
   for (const std::string& domain : offer_specifics.merchant_domain()) {
-    if (GURL(domain).is_valid())
-      offer_data.merchant_domain.emplace_back(domain);
+    const GURL gurl_domain = GURL(domain);
+    if (gurl_domain.is_valid())
+      offer_data.merchant_origins.emplace_back(gurl_domain.GetOrigin());
   }
   offer_data.display_strings.value_prop_text =
       offer_specifics.display_strings().value_prop_text();

@@ -29,7 +29,7 @@ void OfferNotificationInfoBarControllerImpl::ShowIfNecessary(
   if (offer_notification_helper->OfferNotificationHasAlreadyBeenShown())
     return;
 
-  std::vector<GURL> origins_to_display_infobar = offer->merchant_domain;
+  std::vector<GURL> origins_to_display_infobar = offer->merchant_origins;
   if (card) {
     infobars::ContentInfoBarManager::FromWebContents(web_contents_)
         ->AddInfoBar(std::make_unique<AutofillOfferNotificationInfoBar>(
