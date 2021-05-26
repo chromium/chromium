@@ -55,6 +55,10 @@ const DELEGATE = {
     await parentMessagePipe.sendMessage(
         Message.UPDATE_LAUNCHER_SEARCH_INDEX, data);
   },
+  async maybeShowDiscoverNotification() {
+    await parentMessagePipe.sendMessage(
+        Message.MAYBE_SHOW_DISCOVER_NOTIFICATION);
+  }
 };
 
 window.customLaunchData = {

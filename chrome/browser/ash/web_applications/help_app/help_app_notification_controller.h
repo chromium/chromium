@@ -36,6 +36,11 @@ class HelpAppNotificationController {
   // never show more than 1 notification, to avoid spamming the user.
   void MaybeShowNotification();
 
+  // Determines if the discover notification should be shown to the user and
+  // shows it if so. Will produce an additional notification on top of
+  // |MaybeShowNotification|.
+  void MaybeShowDiscoverNotification();
+
  private:
   Profile* const profile_;
   std::unique_ptr<HelpAppDiscoverTabNotification> discover_tab_notification_;

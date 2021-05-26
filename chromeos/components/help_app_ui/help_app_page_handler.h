@@ -31,6 +31,7 @@ class HelpAppPageHandler : public help_app_ui::mojom::PageHandler {
   void IsLssEnabled(IsLssEnabledCallback callback) override;
   void IsLauncherSearchEnabled(
       IsLauncherSearchEnabledCallback callback) override;
+  void MaybeShowDiscoverNotification() override;
 
  private:
   mojo::Receiver<help_app_ui::mojom::PageHandler> receiver_;

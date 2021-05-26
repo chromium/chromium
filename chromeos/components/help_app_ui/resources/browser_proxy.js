@@ -267,6 +267,11 @@ guestMessagePipe.registerHandler(
       return searchHandlerRemote.update(dataFiltered);
     });
 
+guestMessagePipe.registerHandler(
+    Message.MAYBE_SHOW_DISCOVER_NOTIFICATION, () => {
+      help_app.handler.maybeShowDiscoverNotification();
+    });
+
 /**
  * Compare two positions by their start index. Use for sorting.
  *

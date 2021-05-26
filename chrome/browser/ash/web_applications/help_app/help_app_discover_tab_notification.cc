@@ -52,7 +52,6 @@ void HelpAppDiscoverTabNotification::Show() {
 void HelpAppDiscoverTabNotification::OnClick(absl::optional<int> button_index) {
   SystemNotificationHelper::GetInstance()->Close(
       kShowHelpAppDiscoverTabNotificationId);
-
   web_app::SystemAppLaunchParams params;
   params.url = GURL("chrome://help-app/discover");
   params.launch_source =

@@ -25,4 +25,8 @@ interface PageHandler {
 
   // Returns true if the Help App Launcher Search feature is enabled.
   IsLauncherSearchEnabled() => (bool enabled);
+
+  // Requests that the help app discover notification is shown if the required
+  // heuristics are present.
+  MaybeShowDiscoverNotification();
 };

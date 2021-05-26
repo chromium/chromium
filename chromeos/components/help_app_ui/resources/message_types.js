@@ -19,4 +19,5 @@ const Message = {
   FIND_IN_SEARCH_INDEX: 'find-in-search-index',
   CLOSE_BACKGROUND_PAGE: 'close-background-page',
   UPDATE_LAUNCHER_SEARCH_INDEX: 'update-launcher-search-index',
+  MAYBE_SHOW_DISCOVER_NOTIFICATION: 'maybe-show-discover-notification'
 };
