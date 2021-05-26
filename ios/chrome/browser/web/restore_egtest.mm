@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -134,6 +135,12 @@ bool WaitForOmniboxContaining(std::string text) {
 
 @implementation RestoreTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(kStartSurface);
+  return config;
+}
+
 - (net::EmbeddedTestServer*)secondTestServer {
   if (!_secondTestServer) {
     _secondTestServer = std::make_unique<net::EmbeddedTestServer>();
@@ -235,9 +242,10 @@ bool WaitForOmniboxContaining(std::string text) {
 
 - (void)triggerRestore {
   [ChromeEarlGrey saveSessionImmediately];
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
-      disabled:{}
-      relaunchPolicy:ForceRelaunchByCleanShutdown];
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithFeaturesEnabled:{}
+                                  disabled:{kStartSurface}
+                            relaunchPolicy:ForceRelaunchByCleanShutdown];
 }
 
 - (void)loadTestPages {

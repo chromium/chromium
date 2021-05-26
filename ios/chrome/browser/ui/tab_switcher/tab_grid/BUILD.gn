@@ -221,6 +221,7 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
+    "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",

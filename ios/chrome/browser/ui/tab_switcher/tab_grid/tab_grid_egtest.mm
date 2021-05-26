@@ -6,6 +6,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
@@ -97,6 +98,9 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
           isRunningTest:@selector(testTabGridItemContextMenuAddToBookmarks)]) {
     config.features_enabled.push_back(kTabGridContextMenu);
   }
+
+  config.features_disabled.push_back(kStartSurface);
+
   return config;
 }
 
