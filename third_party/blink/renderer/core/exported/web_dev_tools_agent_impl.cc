@@ -281,7 +281,8 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
       &inspected_frames->Root()->GetPage()->GetInspectorIssueStorage(),
       inspected_frames));
 
-  session->Append(MakeGarbageCollected<InspectorMediaAgent>(inspected_frames));
+  session->Append(MakeGarbageCollected<InspectorMediaAgent>(
+      inspected_frames, /*worker_global_scope=*/nullptr));
 
   // TODO(dgozman): we should actually pass the view instead of frame, but
   // during remote->local transition we cannot access mainFrameImpl() yet, so

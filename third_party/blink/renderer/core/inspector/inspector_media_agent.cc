@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 
 namespace blink {
 
@@ -80,11 +81,20 @@ std::unique_ptr<protocol::Array<To>> ConvertVector(const Vector<From>& from) {
 
 }  // namespace
 
-InspectorMediaAgent::InspectorMediaAgent(InspectedFrames* inspected_frames)
-    : frame_(inspected_frames->Root()),
-      enabled_(&agent_state_, /*default_value = */ false) {}
+InspectorMediaAgent::InspectorMediaAgent(InspectedFrames* inspected_frames,
+                                         WorkerGlobalScope* worker_global_scope)
+    : inspected_frames_(inspected_frames),
+      worker_global_scope_(worker_global_scope),
+      enabled_(&agent_state_, /* default_value = */ false) {}
 
 InspectorMediaAgent::~InspectorMediaAgent() = default;
+
+ExecutionContext* InspectorMediaAgent::GetTargetExecutionContext() const {
+  if (worker_global_scope_)
+    return worker_global_scope_;
+  DCHECK(inspected_frames_);
+  return inspected_frames_->Root()->DomWindow()->GetExecutionContext();
+}
 
 void InspectorMediaAgent::Restore() {
   if (!enabled_.Get())
@@ -94,8 +104,7 @@ void InspectorMediaAgent::Restore() {
 
 void InspectorMediaAgent::RegisterAgent() {
   instrumenting_agents_->AddInspectorMediaAgent(this);
-  auto* cache = MediaInspectorContextImpl::From(
-      *frame_->DomWindow()->GetExecutionContext());
+  auto* cache = MediaInspectorContextImpl::From(*GetTargetExecutionContext());
   Vector<WebString> players = cache->AllPlayerIdsAndMarkSent();
   PlayersCreated(players);
   for (const auto& player_id : players) {
@@ -165,7 +174,8 @@ void InspectorMediaAgent::PlayersCreated(const Vector<WebString>& player_ids) {
 }
 
 void InspectorMediaAgent::Trace(Visitor* visitor) const {
-  visitor->Trace(frame_);
+  visitor->Trace(inspected_frames_);
+  visitor->Trace(worker_global_scope_);
   InspectorBaseAgent::Trace(visitor);
 }
 

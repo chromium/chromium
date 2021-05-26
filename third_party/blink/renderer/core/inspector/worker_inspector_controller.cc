@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_emulation_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_reporter.h"
 #include "third_party/blink/renderer/core/inspector/inspector_log_agent.h"
+#include "third_party/blink/renderer/core/inspector/inspector_media_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/protocol/Protocol.h"
@@ -125,6 +126,8 @@ void WorkerInspectorController::AttachSession(DevToolsSession* session,
     session->Append(MakeGarbageCollected<InspectorEmulationAgent>(nullptr));
     session->Append(MakeGarbageCollected<InspectorAuditsAgent>(
         network_agent, thread_->GetInspectorIssueStorage(), nullptr));
+    session->Append(MakeGarbageCollected<InspectorMediaAgent>(
+        inspected_frames_.Get(), scope));
   }
   ++session_count_;
 }
