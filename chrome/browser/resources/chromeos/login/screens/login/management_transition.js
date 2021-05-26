@@ -33,14 +33,9 @@ Polymer({
 
   properties: {
     /**
-     * Flag that determines whether management is being removed or added.
+     * Property that determines transition direction.
      */
-    isRemovingManagement_: Boolean,
-    /**
-     * Flag that determines whether this is enterprise management or child
-     * supervision transition.
-     */
-    isChildTransition_: Boolean,
+    arcTransition_: Number,
     /**
      * String that represents management entity for the user. Can be domain or
      * admin name.
@@ -68,16 +63,9 @@ Polymer({
   setArcTransition(arc_transition) {
     switch (arc_transition) {
       case ARC_SUPERVISION_TRANSITION.CHILD_TO_REGULAR:
-        this.isChildTransition_ = true;
-        this.isRemovingManagement_ = true;
-        break;
       case ARC_SUPERVISION_TRANSITION.REGULAR_TO_CHILD:
-        this.isChildTransition_ = true;
-        this.isRemovingManagement_ = false;
-        break;
       case ARC_SUPERVISION_TRANSITION.UNMANAGED_TO_MANAGED:
-        this.isChildTransition_ = false;
-        this.isRemovingManagement_ = false;
+        this.arcTransition_ = arc_transition;
         break;
       case ARC_SUPERVISION_TRANSITION.NO_TRANSITION:
         console.error(
@@ -100,16 +88,24 @@ Polymer({
   },
 
   /** @private */
-  getDialogTitle_(
-      locale, isRemovingManagement, isChildTransition, managementEntity) {
-    if (isChildTransition) {
-      return isRemovingManagement ? this.i18n('removingSupervisionTitle') :
-                                    this.i18n('addingSupervisionTitle');
-    } else if (managementEntity) {
-      return this.i18n('addingManagementTitle', managementEntity);
-    } else {
-      return this.i18n('addingManagementTitleUnknownAdmin');
+  getDialogTitle_(locale, arcTransition, managementEntity) {
+    switch (arcTransition) {
+      case ARC_SUPERVISION_TRANSITION.CHILD_TO_REGULAR:
+        return this.i18n('removingSupervisionTitle');
+      case ARC_SUPERVISION_TRANSITION.REGULAR_TO_CHILD:
+        return this.i18n('addingSupervisionTitle');
+      case ARC_SUPERVISION_TRANSITION.UNMANAGED_TO_MANAGED:
+        if (managementEntity) {
+          return this.i18n('addingManagementTitle', managementEntity);
+        } else {
+          return this.i18n('addingManagementTitleUnknownAdmin');
+        }
     }
+  },
+
+  /** @private */
+  isChildTransition_(arcTransition) {
+    return arcTransition != ARC_SUPERVISION_TRANSITION.UNMANAGED_TO_MANAGED;
   },
 
   /** @private */
