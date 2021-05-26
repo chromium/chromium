@@ -51,6 +51,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -349,6 +350,7 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1209286")
     public void testNotShowIPHInMultiWindowMode() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
