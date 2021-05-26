@@ -203,8 +203,6 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
     }
   }
   metadata_populated_ = true;
-  // TODO(crbug/1152592): Test that the index is populated once there's an API
-  // to access the data.
   web_feed_subscription_coordinator_->Populate(result.web_feed_startup_data);
 
   for (const feedstore::StreamData& stream_data :

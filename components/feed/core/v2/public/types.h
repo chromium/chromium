@@ -119,7 +119,6 @@ class WebFeedPageInformation {
  private:
   GURL url_;
   std::vector<GURL> rss_urls_;
-  // TODO(crbug/1152592): There will be additional optional information.
 };
 std::ostream& operator<<(std::ostream& os, const WebFeedPageInformation& value);
 

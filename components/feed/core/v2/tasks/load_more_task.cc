@@ -47,7 +47,6 @@ void LoadMoreTask::Run() {
     return;
   }
   // Check prerequisites.
-  // TODO(crbug/1152592): Parameterize stream loading by stream type.
   StreamModel* model = stream_->GetModel(stream_type_);
   if (!model)
     return Done(LoadStreamStatus::kLoadMoreModelIsNotLoaded);
@@ -64,7 +63,6 @@ void LoadMoreTask::Run() {
 }
 
 void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
-  // TODO(crbug/1152592): Parameterize stream loading by stream type.
   StreamModel* model = stream_->GetModel(stream_type_);
   DCHECK(model) << "Model was unloaded outside of a Task";
 
