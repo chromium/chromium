@@ -37,7 +37,8 @@
 namespace blink {
 
 template <>
-const SVGEnumerationMap& GetEnumerationMap<FEConvolveMatrix::EdgeModeType>() {
+CORE_EXPORT const SVGEnumerationMap&
+GetEnumerationMap<FEConvolveMatrix::EdgeModeType>() {
   static const SVGEnumerationMap::Entry enum_items[] = {
       {FEConvolveMatrix::EDGEMODE_DUPLICATE, "duplicate"},
       {FEConvolveMatrix::EDGEMODE_WRAP, "wrap"},

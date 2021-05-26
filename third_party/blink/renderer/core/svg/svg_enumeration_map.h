@@ -7,6 +7,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -20,7 +21,7 @@ namespace blink {
 // |max_exposed_value| should be set to the last old value. From this also
 // follow that the new values should sort last - after the |max_exposed_value|.
 // (This is currently always the case in the spec too.)
-class SVGEnumerationMap {
+class CORE_EXPORT SVGEnumerationMap {
  public:
   struct Entry {
     const uint16_t value;

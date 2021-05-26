@@ -6,6 +6,6 @@
     Exposed=(Window,Worker), RuntimeEnabled=NewCanvas2DAPI
 ] interface CanvasFilter {
 
-    [CallWith=(ScriptState), RaisesException] constructor((CanvasFilterDictionary or FrozenArray<CanvasFilterDictionary>) init);
+    [RaisesException] constructor((CanvasFilterDictionary or FrozenArray<CanvasFilterDictionary>) init);
 
 };

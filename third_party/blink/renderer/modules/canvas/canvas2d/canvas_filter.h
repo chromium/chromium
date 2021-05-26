@@ -22,7 +22,6 @@ class MODULES_EXPORT CanvasFilter final : public ScriptWrappable {
 
  public:
   static CanvasFilter* Create(
-      ScriptState* script_state,
       const V8UnionCanvasFilterDictionaryOrCanvasFilterDictionaryArray* init,
       ExceptionState& exception_state);
 

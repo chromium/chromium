@@ -90,6 +90,9 @@
     @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, "a"], [0]]}});
     @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, 0], 0]}});
     @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, 0], [0, Infinity]]}});
+    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: []}});
+    // This should not throw an error
+    ctx.filter = new CanvasFilter({convolveMatrix: {kernelMatrix: [[]]}});
     t.done();
 
 - name: 2d.filter.canvasFilterObject.componentTransfer.linear

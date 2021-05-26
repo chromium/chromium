@@ -14,7 +14,6 @@ CanvasFilter::CanvasFilter(FilterOperations filter_operations)
     : filter_operations_(filter_operations) {}
 
 CanvasFilter* CanvasFilter::Create(
-    ScriptState* script_state,
     const V8UnionCanvasFilterDictionaryOrCanvasFilterDictionaryArray* init,
     ExceptionState& exception_state) {
   HeapVector<Member<CanvasFilterDictionary>> filter_array;
@@ -31,8 +30,8 @@ CanvasFilter* CanvasFilter::Create(
   }
 
   FilterOperations filter_operations =
-      CanvasFilterOperationResolver::CreateFilterOperations(
-          script_state, filter_array, exception_state);
+      CanvasFilterOperationResolver::CreateFilterOperations(filter_array,
+                                                            exception_state);
 
   return MakeGarbageCollected<CanvasFilter>(filter_operations);
 }

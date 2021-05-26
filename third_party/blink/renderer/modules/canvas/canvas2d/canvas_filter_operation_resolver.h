@@ -27,7 +27,6 @@ class MODULES_EXPORT CanvasFilterOperationResolver {
 
  public:
   static FilterOperations CreateFilterOperations(
-      ScriptState*,
       HeapVector<Member<CanvasFilterDictionary>>,
       ExceptionState&);
 };
