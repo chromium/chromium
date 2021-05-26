@@ -66,6 +66,7 @@ class ASH_EXPORT QuickAnswersView : public views::Button {
   void InitLayout();
   void InitWidget();
   void AddDogfoodButton();
+  void AddSettingsButton();
   void AddAssistantIcon();
   void ResetContentView();
   void SetBackgroundState(bool highlight);
@@ -91,6 +92,7 @@ class ASH_EXPORT QuickAnswersView : public views::Button {
   views::Label* first_answer_label_ = nullptr;
   views::LabelButton* retry_label_ = nullptr;
   views::ImageButton* dogfood_button_ = nullptr;
+  views::ImageButton* settings_button_ = nullptr;
 
   std::unique_ptr<QuickAnswersPreTargetHandler> quick_answers_view_handler_;
   std::unique_ptr<QuickAnswersFocusSearch> focus_search_;

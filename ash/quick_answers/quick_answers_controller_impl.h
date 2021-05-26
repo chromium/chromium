@@ -84,6 +84,9 @@ class ASH_EXPORT QuickAnswersControllerImpl
   // Open Quick-Answers dogfood URL.
   void OpenQuickAnswersDogfoodLink();
 
+  // Open Quick-Answers settings.
+  void OpenQuickAnswersSettings();
+
   QuickAnswersUiController* quick_answers_ui_controller() {
     return quick_answers_ui_controller_.get();
   }

@@ -87,6 +87,10 @@ class ASH_EXPORT QuickAnswersUiController {
   // Invoked when user clicks the Dogfood button on Quick-Answers related views.
   void OnDogfoodButtonPressed();
 
+  // Invoked when user clicks the settings button on Quick-Answers related
+  // views.
+  void OnSettingsButtonPressed();
+
   const QuickAnswersView* quick_answers_view_for_testing() const {
     return quick_answers_view_;
   }

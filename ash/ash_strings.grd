@@ -3123,6 +3123,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_QUICK_ANSWERS_DOGFOOD_BUTTON_TOOLTIP_TEXT" desc="Tooltip text for the dogfood-button within Quick-Answers related views to help users file bugs easily.">
         File feedback
       </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the settings-button in Quick-Answers related views.">
+        Settings
+      </message>
       <message name="IDS_ASH_QUICK_ANSWERS_DEFINITION_INTENT" desc="Display text of definition intent. This is used in the title of Quick Answers user consent dialog.">
         definition
       </message>

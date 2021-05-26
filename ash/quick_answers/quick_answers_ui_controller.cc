@@ -142,4 +142,11 @@ void QuickAnswersUiController::OnDogfoodButtonPressed() {
   controller_->OpenQuickAnswersDogfoodLink();
 }
 
+void QuickAnswersUiController::OnSettingsButtonPressed() {
+  // Route dismissal through |controller_| for logging impressions.
+  controller_->DismissQuickAnswers(/*is_active=*/true);
+
+  controller_->OpenQuickAnswersSettings();
+}
+
 }  // namespace ash

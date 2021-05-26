@@ -24,6 +24,8 @@ using chromeos::quick_answers::ResultType;
 
 constexpr char kAssistantRelatedInfoUrl[] =
     "chrome://os-settings/googleAssistant";
+constexpr char kQuickAnswersSettingsUrl[] =
+    "chrome://os-settings/osSearch/search";
 constexpr char kDogfoodUrl[] =
     "https://goto.google.com/quick-answers-dogfood-bugs";
 
@@ -244,6 +246,11 @@ void QuickAnswersControllerImpl::OnNoticeSettingsRequestedByUser() {
 void QuickAnswersControllerImpl::OpenQuickAnswersDogfoodLink() {
   NewWindowDelegate::GetInstance()->NewTabWithUrl(
       GURL(kDogfoodUrl), /*from_user_interaction=*/true);
+}
+
+void QuickAnswersControllerImpl::OpenQuickAnswersSettings() {
+  NewWindowDelegate::GetInstance()->NewTabWithUrl(
+      GURL(kQuickAnswersSettingsUrl), /*from_user_interaction=*/true);
 }
 
 void QuickAnswersControllerImpl::MaybeDismissQuickAnswersNotice() {
