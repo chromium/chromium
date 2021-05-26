@@ -559,35 +559,46 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   </summary>
 </histogram>
 
-<histogram name="Power.ForegroundBatteryDrain.30SecondsAvg" units="uAh"
-    expires_after="2021-11-07">
-  <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
-  <summary>
-    Periodically samples the battery capacity drained while Chrome is the
-    foreground app and the device is on battery power. Sampled every 30 seconds
-    and when Chrome is backgrounded or the device connects to a charger. Sample
-    values are reported in microampere-hours and averaged over successive
-    sampling points without a change in capacity counter values.
-
-    Only supported on Android.
-  </summary>
-</histogram>
-
-<histogram name="Power.ForegroundBatteryDrain.30SecondsAvg.Exclusive"
+<histogram
+    name="Power.ForegroundBatteryDrain.30SecondsAvg{Exclusive}{DarkeningType}"
     units="uAh" expires_after="2021-11-07">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
     Periodically samples the battery capacity drained while Chrome is the
-    foreground app and the device is on battery power. Sampled every 30 seconds
-    and when Chrome is backgrounded or the device connects to a charger. Sample
-    values are reported in microampere-hours and averaged over successive
-    sampling points without a change in capacity counter values. Only time
-    intervals where Chrome was the only foreground app are reported.
+    foreground app and the device is on battery power {DarkeningType}. Sampled
+    every 30 seconds and when Chrome is backgrounded or the device connects to a
+    charger. Sample values are reported in microampere-hours and averaged over
+    successive sampling points without a change in capacity counter values.
+    Since the capacity counter resolution differs between device models,
+    averaging the values allows us to make comparisons between frequent small
+    capacity drops and infrequent large drops. For example, a 20 mAh drop over
+    two successive periods of 30 seconds will be reported as two samples of 10
+    mAh. {Exclusive}
 
     Only supported on Android.
   </summary>
+  <token key="Exclusive">
+    <variant name="" summary=""/>
+    <variant name=".Exclusive"
+        summary="Only time intervals where Chrome was the only foreground app
+                 are reported."/>
+  </token>
+  <token key="DarkeningType">
+    <variant name="" summary=""/>
+    <variant name=".DarkMode"
+        summary="and the browser has dark theme preferred (web page darkening
+                 only) for all WebContents"/>
+    <variant name=".ForcedDarkMode"
+        summary="and the browser has forced dark mode (user-agent darkening)
+                 enabled for all WebContents"/>
+    <variant name=".LightMode"
+        summary="and the browser has forced dark mode disabled and light
+                 theme preferred for all WebContents"/>
+    <variant name=".MixedMode"
+        summary="and there is a mix of WebContents that have forced dark mode
+                 enabled, dark theme preferred, or light theme preferred"/>
+  </token>
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.Exclusive" units="0.1 mAh"
