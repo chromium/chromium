@@ -8,7 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../shared_style.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {StreamArgItem, StreamItem} from './activity_log_stream_item.js';
 
@@ -58,70 +58,79 @@ function processActivityForStream(activity) {
                              }));
 }
 
-Polymer({
-  is: 'activity-log-stream',
+/** @polymer */
+class ActivityLogStreamElement extends PolymerElement {
+  static get is() {
+    return 'activity-log-stream';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {string} */
-    extensionId: String,
+  static get properties() {
+    return {
+      /** @type {string} */
+      extensionId: String,
 
-    /** @type {!ActivityLogEventDelegate} */
-    delegate: Object,
+      /** @type {!ActivityLogEventDelegate} */
+      delegate: Object,
 
-    /** @private */
-    isStreamOn_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      isStreamOn_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {!Array<!StreamItem>} */
-    activityStream_: {
-      type: Array,
-      value: () => [],
-    },
+      /** @private {!Array<!StreamItem>} */
+      activityStream_: {
+        type: Array,
+        value: () => [],
+      },
 
-    /** @private {!Array<!StreamItem>} */
-    filteredActivityStream_: {
-      type: Array,
-      computed:
-          'computeFilteredActivityStream_(activityStream_.*, lastSearch_)',
-    },
+      /** @private {!Array<!StreamItem>} */
+      filteredActivityStream_: {
+        type: Array,
+        computed:
+            'computeFilteredActivityStream_(activityStream_.*, lastSearch_)',
+      },
 
-    /** @private */
-    lastSearch_: {
-      type: String,
-      value: '',
-    },
-  },
+      /** @private */
+      lastSearch_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
-  listeners: {
-    'resize-stream': 'onResizeStream_',
-  },
+  constructor() {
+    super();
 
-  /**
-   * Instance of |extensionActivityListener_| bound to |this|.
-   * @private {!Function}
-   */
-  listenerInstance_: () => {},
+    /**
+     * Instance of |extensionActivityListener_| bound to |this|.
+     * @private {!Function}
+     */
+    this.listenerInstance_ = () => {};
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     // Since this component is not restamped, this will only be called once
     // in its lifecycle.
     this.listenerInstance_ = this.extensionActivityListener_.bind(this);
     this.startStream();
-  },
+  }
 
   /** @private */
   onResizeStream_(e) {
-    this.$$('iron-list').notifyResize();
-  },
+    this.shadowRoot.querySelector('iron-list').notifyResize();
+  }
 
   clearStream() {
     this.splice('activityStream_', 0, this.activityStream_.length);
-  },
+  }
 
   startStream() {
     if (this.isStreamOn_) {
@@ -130,7 +139,7 @@ Polymer({
 
     this.isStreamOn_ = true;
     this.delegate.getOnExtensionActivity().addListener(this.listenerInstance_);
-  },
+  }
 
   pauseStream() {
     if (!this.isStreamOn_) {
@@ -140,7 +149,7 @@ Polymer({
     this.delegate.getOnExtensionActivity().removeListener(
         this.listenerInstance_);
     this.isStreamOn_ = false;
-  },
+  }
 
   /** @private */
   onToggleButtonClick_() {
@@ -149,7 +158,7 @@ Polymer({
     } else {
       this.startStream();
     }
-  },
+  }
 
   /**
    * @private
@@ -157,7 +166,7 @@ Polymer({
    */
   isStreamEmpty_() {
     return this.activityStream_.length === 0;
-  },
+  }
 
   /**
    * @private
@@ -165,7 +174,7 @@ Polymer({
    */
   isFilteredStreamEmpty_() {
     return this.filteredActivityStream_.length === 0;
-  },
+  }
 
   /**
    * @private
@@ -173,7 +182,7 @@ Polymer({
    */
   shouldShowEmptySearchMessage_() {
     return !this.isStreamEmpty_() && this.isFilteredStreamEmpty_();
-  },
+  }
 
   /**
    * @private
@@ -189,8 +198,8 @@ Polymer({
         ...processActivityForStream(activity));
 
     // Used to update the scrollbar.
-    this.$$('iron-list').notifyResize();
-  },
+    this.shadowRoot.querySelector('iron-list').notifyResize();
+  }
 
   /**
    * @private
@@ -206,7 +215,7 @@ Polymer({
     }
 
     this.lastSearch_ = searchTerm;
-  },
+  }
 
   /**
    * @private
@@ -229,5 +238,7 @@ Polymer({
         return act[prop] && act[prop].toLowerCase().includes(this.lastSearch_);
       });
     });
-  },
-});
+  }
+}
+
+customElements.define(ActivityLogStreamElement.is, ActivityLogStreamElement);

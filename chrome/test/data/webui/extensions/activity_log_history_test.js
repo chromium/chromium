@@ -164,7 +164,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
   // We know an item is expanded if its page-url-list is not hidden.
   function getExpandedItems() {
     return Array.from(getHistoryItems()).filter(item => {
-      return item.$$('#page-url-list:not([hidden])');
+      return item.shadowRoot.querySelector('#page-url-list:not([hidden])');
     });
   }
 
@@ -186,24 +186,39 @@ suite('ExtensionsActivityLogHistoryTest', function() {
     // file because the logic to group activity log items by their API call
     // is in activity_log_history.js.
     expectEquals(
-        activityLogItems[0].$$('#activity-key').innerText,
+        activityLogItems[0].shadowRoot.querySelector('#activity-key').innerText,
         'i18n.getUILanguage');
-    expectEquals(activityLogItems[0].$$('#activity-count').innerText, '40');
+    expectEquals(
+        activityLogItems[0]
+            .shadowRoot.querySelector('#activity-count')
+            .innerText,
+        '40');
 
     expectEquals(
-        activityLogItems[1].$$('#activity-key').innerText, 'Storage.getItem');
-    expectEquals(activityLogItems[1].$$('#activity-count').innerText, '35');
+        activityLogItems[1].shadowRoot.querySelector('#activity-key').innerText,
+        'Storage.getItem');
+    expectEquals(
+        activityLogItems[1]
+            .shadowRoot.querySelector('#activity-count')
+            .innerText,
+        '35');
 
     expectEquals(
-        activityLogItems[2].$$('#activity-key').innerText, 'Storage.setItem');
-    expectEquals(activityLogItems[2].$$('#activity-count').innerText, '10');
+        activityLogItems[2].shadowRoot.querySelector('#activity-key').innerText,
+        'Storage.setItem');
+    expectEquals(
+        activityLogItems[2]
+            .shadowRoot.querySelector('#activity-count')
+            .innerText,
+        '10');
   });
 
   test('activities shown match search query', async function() {
     proxyDelegate.testActivities = testActivities;
     await setupActivityLogHistory();
 
-    const search = activityLogHistory.$$('cr-search-field');
+    const search =
+        activityLogHistory.shadowRoot.querySelector('cr-search-field');
     assertTrue(!!search);
 
     // Partial, case insensitive search for i18n.getUILanguage. Whitespace is
@@ -218,7 +233,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
     // activity log entries are grouped by their API call.
     expectEquals(activityLogItems.length, 1);
     expectEquals(
-        activityLogItems[0].$$('#activity-key').innerText,
+        activityLogItems[0].shadowRoot.querySelector('#activity-key').innerText,
         'i18n.getUILanguage');
 
     // Change search query so no results match.
@@ -238,7 +253,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
 
     // Finally, we clear the search query via the #clearSearch button.
     // We should see all the activities displayed.
-    search.$$('#clearSearch').click();
+    search.shadowRoot.querySelector('#clearSearch').click();
 
     await proxyDelegate.whenCalled('getExtensionActivityLog');
 
@@ -257,9 +272,11 @@ suite('ExtensionsActivityLogHistoryTest', function() {
     expectEquals(activityLogItems.length, 2);
 
     expectEquals(
-        activityLogItems[0].$$('#activity-key').innerText, 'script1.js');
+        activityLogItems[0].shadowRoot.querySelector('#activity-key').innerText,
+        'script1.js');
     expectEquals(
-        activityLogItems[1].$$('#activity-key').innerText, 'script2.js');
+        activityLogItems[1].shadowRoot.querySelector('#activity-key').innerText,
+        'script2.js');
   });
 
   test(
@@ -287,7 +304,9 @@ suite('ExtensionsActivityLogHistoryTest', function() {
 
         for (let i = 0; i < expectedNumItems; ++i) {
           expectEquals(
-              activityLogItems[i].$$('#activity-key').innerText,
+              activityLogItems[i]
+                  .shadowRoot.querySelector('#activity-key')
+                  .innerText,
               expectedItemKeys[i]);
         }
       });
@@ -298,24 +317,25 @@ suite('ExtensionsActivityLogHistoryTest', function() {
 
     flush();
 
-    const expandableItems =
-        Array.from(getHistoryItems())
-            .filter(item => item.$$('cr-expand-button:not([hidden])'));
+    const expandableItems = Array.from(getHistoryItems())
+                                .filter(
+                                    item => item.shadowRoot.querySelector(
+                                        'cr-expand-button:not([hidden])'));
     expectEquals(2, expandableItems.length);
 
     // All items should be collapsed by default.
     expectEquals(0, getExpandedItems().length);
 
     // Click the dropdown toggle, then expand all.
-    activityLogHistory.$$('#more-actions').click();
-    activityLogHistory.$$('#expand-all-button').click();
+    activityLogHistory.shadowRoot.querySelector('#more-actions').click();
+    activityLogHistory.shadowRoot.querySelector('#expand-all-button').click();
 
     flush();
     expectEquals(2, getExpandedItems().length);
 
     // Collapse all items.
-    activityLogHistory.$$('#more-actions').click();
-    activityLogHistory.$$('#collapse-all-button').click();
+    activityLogHistory.shadowRoot.querySelector('#more-actions').click();
+    activityLogHistory.shadowRoot.querySelector('#collapse-all-button').click();
 
     flush();
     expectEquals(0, getExpandedItems().length);
@@ -337,8 +357,8 @@ suite('ExtensionsActivityLogHistoryTest', function() {
     await setupActivityLogHistory();
     flush();
 
-    activityLogHistory.$$('#more-actions').click();
-    activityLogHistory.$$('#export-button').click();
+    activityLogHistory.shadowRoot.querySelector('#more-actions').click();
+    activityLogHistory.shadowRoot.querySelector('#export-button').click();
 
     const [actualRawActivityData, actualFileName] =
         await proxyDelegate.whenCalled('downloadActivities');
@@ -358,7 +378,9 @@ suite('ExtensionsActivityLogHistoryTest', function() {
 
         expectEquals(activityLogItems.length, 3);
         proxyDelegate.resetResolver('getExtensionActivityLog');
-        activityLogItems[0].$$('#activity-delete').click();
+        activityLogItems[0]
+            .shadowRoot.querySelector('#activity-delete')
+            .click();
 
         // We delete the first item so we should only have one item left. This
         // chaining reflects the API calls made from activity_log.js.
@@ -408,7 +430,8 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         flush();
 
         expectEquals(3, getHistoryItems().length);
-        activityLogHistory.$$('.clear-activities-button').click();
+        activityLogHistory.shadowRoot.querySelector('.clear-activities-button')
+            .click();
 
         await proxyDelegate.whenCalled('deleteActivitiesFromExtension');
 

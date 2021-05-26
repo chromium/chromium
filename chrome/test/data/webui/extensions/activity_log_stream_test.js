@@ -85,7 +85,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
     boundTestVisible('#empty-stream-message', true);
     boundTestVisible('#stream-started-message', true);
 
-    activityLogStream.$$('#toggle-stream-button').click();
+    activityLogStream.shadowRoot.querySelector('#toggle-stream-button').click();
     boundTestVisible('#stream-stopped-message', true);
   });
 
@@ -102,7 +102,8 @@ suite('ExtensionsActivityLogStreamTest', function() {
         expectEquals(1, streamItems.length);
 
         // Pause the stream.
-        activityLogStream.$$('#toggle-stream-button').click();
+        activityLogStream.shadowRoot.querySelector('#toggle-stream-button')
+            .click();
         proxyDelegate.getOnExtensionActivity().callListeners(
             contentScriptActivity);
 
@@ -113,7 +114,8 @@ suite('ExtensionsActivityLogStreamTest', function() {
         expectEquals(1, streamItems.length);
 
         // Resume the stream.
-        activityLogStream.$$('#toggle-stream-button').click();
+        activityLogStream.shadowRoot.querySelector('#toggle-stream-button')
+            .click();
         proxyDelegate.getOnExtensionActivity().callListeners(activity2);
 
         flush();
@@ -121,10 +123,11 @@ suite('ExtensionsActivityLogStreamTest', function() {
         expectEquals(2, streamItems.length);
 
         expectEquals(
-            streamItems[0].$$('#activity-name').innerText,
+            streamItems[0].shadowRoot.querySelector('#activity-name').innerText,
             'testAPI.testMethod');
         expectEquals(
-            streamItems[1].$$('#activity-name').innerText, 'testAPI.DOMMethod');
+            streamItems[1].shadowRoot.querySelector('#activity-name').innerText,
+            'testAPI.DOMMethod');
       });
 
   test('activities shown match search query', function() {
@@ -137,7 +140,8 @@ suite('ExtensionsActivityLogStreamTest', function() {
     flush();
     expectEquals(2, getStreamItems().length);
 
-    const search = activityLogStream.$$('cr-search-field');
+    const search =
+        activityLogStream.shadowRoot.querySelector('cr-search-field');
     assertTrue(!!search);
 
     // Search for the apiCall of |activity1|.
@@ -147,7 +151,9 @@ suite('ExtensionsActivityLogStreamTest', function() {
     const filteredStreamItems = getStreamItems();
     expectEquals(1, getStreamItems().length);
     expectEquals(
-        filteredStreamItems[0].$$('#activity-name').innerText,
+        filteredStreamItems[0]
+            .shadowRoot.querySelector('#activity-name')
+            .innerText,
         'testAPI.testMethod');
 
     // search again, expect none
@@ -162,7 +168,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
     // returns no results.
     proxyDelegate.getOnExtensionActivity().callListeners(contentScriptActivity);
 
-    search.$$('#clearSearch').click();
+    search.shadowRoot.querySelector('#clearSearch').click();
     flush();
 
     // We expect 4 activities to appear as |contentScriptActivity| (which is
@@ -179,8 +185,12 @@ suite('ExtensionsActivityLogStreamTest', function() {
     expectEquals(2, streamItems.length);
 
     // We should see two items: one for every script called.
-    expectEquals(streamItems[0].$$('#activity-name').innerText, 'script1.js');
-    expectEquals(streamItems[1].$$('#activity-name').innerText, 'script2.js');
+    expectEquals(
+        streamItems[0].shadowRoot.querySelector('#activity-name').innerText,
+        'script1.js');
+    expectEquals(
+        streamItems[1].shadowRoot.querySelector('#activity-name').innerText,
+        'script2.js');
   });
 
   test('clicking on clear button clears the activity log stream', function() {
@@ -189,7 +199,8 @@ suite('ExtensionsActivityLogStreamTest', function() {
     flush();
     expectEquals(1, getStreamItems().length);
     boundTestVisible('.activity-table-headings', true);
-    activityLogStream.$$('.clear-activities-button').click();
+    activityLogStream.shadowRoot.querySelector('.clear-activities-button')
+        .click();
 
     flush();
     expectEquals(0, getStreamItems().length);

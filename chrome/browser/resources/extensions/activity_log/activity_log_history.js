@@ -10,7 +10,7 @@ import '../shared_style.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActivityGroup} from './activity_log_history_item.js';
 
@@ -192,61 +192,77 @@ function sortActivitiesByCallCount(groupedActivities) {
   });
 }
 
-Polymer({
-  is: 'activity-log-history',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ActivityLogHistoryElement extends PolymerElement {
+  static get is() {
+    return 'activity-log-history';
+  }
 
-  properties: {
-    /** @type {!string} */
-    extensionId: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!ActivityLogDelegate} */
-    delegate: Object,
+  static get properties() {
+    return {
+      /** @type {!string} */
+      extensionId: String,
+
+      /** @type {!ActivityLogDelegate} */
+      delegate: Object,
+
+      /**
+       * An array representing the activity log. Stores activities grouped by
+       * API call or content script name sorted in descending order of the call
+       * count.
+       * @private {!Array<!ActivityGroup>}
+       */
+      activityData_: {
+        type: Array,
+        value: () => [],
+      },
+
+      /** @private {ActivityLogPageState} */
+      pageState_: {
+        type: String,
+        value: ActivityLogPageState.LOADING,
+      },
+
+      /** @private */
+      lastSearch_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
+
+  constructor() {
+    super();
 
     /**
-     * An array representing the activity log. Stores activities grouped by
-     * API call or content script name sorted in descending order of the call
-     * count.
-     * @private {!Array<!ActivityGroup>}
+     * A promise resolver for any external files waiting for the
+     * GetExtensionActivity API call to finish.
+     * Currently only used for extension_settings_browsertest.cc
+     * @private {PromiseResolver}
      */
-    activityData_: {
-      type: Array,
-      value: () => [],
-    },
+    this.dataFetchedResolver_ = null;
 
-    /** @private {ActivityLogPageState} */
-    pageState_: {
-      type: String,
-      value: ActivityLogPageState.LOADING,
-    },
+    /**
+     * The stringified API response from the activityLogPrivate API with
+     * individual activities sorted in ascending order by timestamp; used for
+     * exporting the activity log.
+     * @private {string}
+     */
+    this.rawActivities_ = '';
+  }
 
-    /** @private */
-    lastSearch_: {
-      type: String,
-      value: '',
-    },
-  },
-
-  listeners: {
-    'delete-activity-log-item': 'deleteItem_',
-  },
-
-  /**
-   * A promise resolver for any external files waiting for the
-   * GetExtensionActivity API call to finish.
-   * Currently only used for extension_settings_browsertest.cc
-   * @private {PromiseResolver}
-   */
-  dataFetchedResolver_: null,
-
-  /**
-   * The stringified API response from the activityLogPrivate API with
-   * individual activities sorted in ascending order by timestamp; used for
-   * exporting the activity log.
-   * @private {string}
-   */
-  rawActivities_: '',
+  /** @override */
+  ready() {
+    super.ready();
+    this.addEventListener(
+        'delete-activity-log-item',
+        e => this.deleteItem_(/** @type {!CustomEvent<!Array<string>>} */ (e)));
+  }
 
   /**
    * Expose only the promise of dataFetchedResolver_.
@@ -254,13 +270,14 @@ Polymer({
    */
   whenDataFetched() {
     return this.dataFetchedResolver_.promise;
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     this.dataFetchedResolver_ = new PromiseResolver();
     this.refreshActivities_();
-  },
+  }
 
   /**
    * @private
@@ -269,7 +286,7 @@ Polymer({
   shouldShowEmptyActivityLogMessage_() {
     return this.pageState_ === ActivityLogPageState.LOADED &&
         this.activityData_.length === 0;
-  },
+  }
 
   /**
    * @private
@@ -277,7 +294,7 @@ Polymer({
    */
   shouldShowLoadingMessage_() {
     return this.pageState_ === ActivityLogPageState.LOADING;
-  },
+  }
 
   /**
    * @private
@@ -286,19 +303,20 @@ Polymer({
   shouldShowActivities_() {
     return this.pageState_ === ActivityLogPageState.LOADED &&
         this.activityData_.length > 0;
-  },
+  }
 
   /** @private */
   onClearActivitiesClick_() {
     this.delegate.deleteActivitiesFromExtension(this.extensionId).then(() => {
       this.processActivities_([]);
     });
-  },
+  }
 
   /** @private */
   onMoreActionsClick_() {
-    this.$$('cr-action-menu').showAt(assert(this.$$('cr-icon-button')));
-  },
+    this.shadowRoot.querySelector('cr-action-menu')
+        .showAt(assert(this.shadowRoot.querySelector('cr-icon-button')));
+  }
 
   /**
    * @private
@@ -312,24 +330,24 @@ Polymer({
         this.set(`activityData_.${index}.expanded`, expanded);
       }
     });
-    this.$$('cr-action-menu').close();
-  },
+    this.shadowRoot.querySelector('cr-action-menu').close();
+  }
 
   /** @private */
   onExpandAllClick_() {
     this.expandItems_(true);
-  },
+  }
 
   /** @private */
   onCollapseAllClick_() {
     this.expandItems_(false);
-  },
+  }
 
   /** @private */
   onExportClick_() {
     const fileName = `exported_activity_log_${this.extensionId}.json`;
     this.delegate.downloadActivities(this.rawActivities_, fileName);
-  },
+  }
 
   /**
    * @private
@@ -344,7 +362,7 @@ Polymer({
       // consistency, we will re-fetch the activity log.
       this.refreshActivities_();
     });
-  },
+  }
 
   /**
    * @private
@@ -364,7 +382,7 @@ Polymer({
     if (!this.dataFetchedResolver_.isFulfilled) {
       this.dataFetchedResolver_.resolve();
     }
-  },
+  }
 
   /**
    * @private
@@ -376,7 +394,7 @@ Polymer({
     }
 
     return this.getFilteredActivityLog_(this.lastSearch_);
-  },
+  }
 
   /**
    * @private
@@ -388,7 +406,7 @@ Polymer({
         .then(result => {
           this.processActivities_(result.activities);
         });
-  },
+  }
 
   /**
    * @private
@@ -402,7 +420,7 @@ Polymer({
         .then(result => {
           this.processActivities_(result.activities);
         });
-  },
+  }
 
   /**
    * @private
@@ -419,5 +437,7 @@ Polymer({
 
     this.lastSearch_ = searchTerm;
     this.refreshActivities_();
-  },
-});
+  }
+}
+
+customElements.define(ActivityLogHistoryElement.is, ActivityLogHistoryElement);

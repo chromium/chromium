@@ -172,7 +172,7 @@ export function testVisible(
   const visible = isChildVisible(parentEl, selector);
   expectEquals(expectedVisible, visible, selector);
   if (expectedVisible && visible && opt_expectedText) {
-    const element = parentEl.$$(selector);
+    const element = parentEl.shadowRoot.querySelector(selector);
     expectEquals(opt_expectedText, element.textContent.trim(), selector);
   }
 }

@@ -15,9 +15,9 @@ import '../shared_vars.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigation, Page} from '../navigation_helper.js';
 
@@ -47,48 +47,60 @@ const ActivityLogSubpage = {
  */
 export let ActivityLogExtensionPlaceholder;
 
-Polymer({
-  is: 'extensions-activity-log',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ExtensionsActivityLogElementBase =
+    mixinBehaviors([CrContainerShadowBehavior, I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ExtensionsActivityLogElement extends ExtensionsActivityLogElementBase {
+  static get is() {
+    return 'extensions-activity-log';
+  }
 
-  behaviors: [
-    CrContainerShadowBehavior,
-    I18nBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * The underlying ExtensionInfo for the details being displayed.
-     * @type {!chrome.developerPrivate.ExtensionInfo|
-     *        !ActivityLogExtensionPlaceholder}
-     */
-    extensionInfo: Object,
+  static get properties() {
+    return {
+      /**
+       * The underlying ExtensionInfo for the details being displayed.
+       * @type {!chrome.developerPrivate.ExtensionInfo|
+       *        !ActivityLogExtensionPlaceholder}
+       */
+      extensionInfo: Object,
 
-    /** @type {!ActivityLogDelegate} */
-    delegate: Object,
+      /** @type {!ActivityLogDelegate} */
+      delegate: Object,
 
-    /** @private {!ActivityLogSubpage} */
-    selectedSubpage_: {
-      type: Number,
-      value: ActivityLogSubpage.NONE,
-      observer: 'onSelectedSubpageChanged_',
-    },
+      /** @private {!ActivityLogSubpage} */
+      selectedSubpage_: {
+        type: Number,
+        value: ActivityLogSubpage.NONE,
+        observer: 'onSelectedSubpageChanged_',
+      },
 
-    /** @private {Array<string>} */
-    tabNames_: {
-      type: Array,
-      value: () => ([
-        loadTimeData.getString('activityLogHistoryTabHeading'),
-        loadTimeData.getString('activityLogStreamTabHeading'),
-      ]),
-    }
-  },
+      /** @private {Array<string>} */
+      tabNames_: {
+        type: Array,
+        value: () => ([
+          loadTimeData.getString('activityLogHistoryTabHeading'),
+          loadTimeData.getString('activityLogStreamTabHeading'),
+        ]),
+      }
+    };
+  }
 
-  listeners: {
-    'view-enter-start': 'onViewEnterStart_',
-    'view-exit-finish': 'onViewExitFinish_',
-  },
+  /** @override */
+  ready() {
+    super.ready();
+    this.addEventListener('view-enter-start', this.onViewEnterStart_);
+    this.addEventListener('view-exit-finish', this.onViewExitFinish_);
+  }
 
   /**
    * Focuses the back button when page is loaded and set the activie view to
@@ -98,7 +110,7 @@ Polymer({
   onViewEnterStart_() {
     this.selectedSubpage_ = ActivityLogSubpage.HISTORY;
     afterNextRender(this, () => focusWithoutInk(this.$.closeButton));
-  },
+  }
 
   /**
    * Set |selectedSubpage_| to NONE to remove the active view from the DOM.
@@ -107,11 +119,12 @@ Polymer({
   onViewExitFinish_() {
     this.selectedSubpage_ = ActivityLogSubpage.NONE;
     // clear the stream if the user is exiting the activity log page.
-    const activityLogStream = this.$$('activity-log-stream');
+    const activityLogStream =
+        this.shadowRoot.querySelector('activity-log-stream');
     if (activityLogStream) {
       activityLogStream.clearStream();
     }
-  },
+  }
 
   /**
    * @private
@@ -122,7 +135,7 @@ Polymer({
         this.i18n('missingOrUninstalledExtension') :
         this.extensionInfo.name;
     return this.i18n('activityLogPageHeading', headingName);
-  },
+  }
 
   /**
    * @private
@@ -130,7 +143,7 @@ Polymer({
    */
   isHistoryTabSelected_() {
     return this.selectedSubpage_ === ActivityLogSubpage.HISTORY;
-  },
+  }
 
   /**
    * @private
@@ -138,7 +151,7 @@ Polymer({
    */
   isStreamTabSelected_() {
     return this.selectedSubpage_ === ActivityLogSubpage.STREAM;
-  },
+  }
 
   /**
    * @private
@@ -146,13 +159,14 @@ Polymer({
    * @param {!ActivityLogSubpage} oldTab
    */
   onSelectedSubpageChanged_(newTab, oldTab) {
-    const activityLogStream = this.$$('activity-log-stream');
+    const activityLogStream =
+        this.shadowRoot.querySelector('activity-log-stream');
     if (activityLogStream) {
       if (newTab === ActivityLogSubpage.STREAM) {
         // Start the stream if the user is switching to the real-time tab.
         // This will not handle the first tab switch to the real-time tab as
         // the stream has not been attached to the DOM yet, and is handled
-        // instead by the stream's |attached| method.
+        // instead by the stream's |connectedCallback| method.
         activityLogStream.startStream();
       } else if (oldTab === ActivityLogSubpage.STREAM) {
         // Pause the stream if the user is navigating away from the real-time
@@ -160,7 +174,7 @@ Polymer({
         activityLogStream.pauseStream();
       }
     }
-  },
+  }
 
   /** @private */
   onCloseButtonTap_() {
@@ -170,5 +184,8 @@ Polymer({
       navigation.navigateTo(
           {page: Page.DETAILS, extensionId: this.extensionInfo.id});
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    ExtensionsActivityLogElement.is, ExtensionsActivityLogElement);

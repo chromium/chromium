@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../shared_style.js';
 import '../shared_vars.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @typedef {{
@@ -33,25 +33,32 @@ export let ActivityGroup;
  */
 let PageUrlItem;
 
-Polymer({
-  is: 'activity-log-history-item',
+/** @polymer */
+class ActivityLogHistoryItemElement extends PolymerElement {
+  static get is() {
+    return 'activity-log-history-item';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * The underlying ActivityGroup that provides data for the
-     * ActivityLogItem displayed.
-     * @type {!ActivityGroup}
-     */
-    data: Object,
+  static get properties() {
+    return {
+      /**
+       * The underlying ActivityGroup that provides data for the
+       * ActivityLogItem displayed.
+       * @type {!ActivityGroup}
+       */
+      data: Object,
 
-    /** @private */
-    isExpandable_: {
-      type: Boolean,
-      computed: 'computeIsExpandable_(data.countsByUrl)',
-    },
-  },
+      /** @private */
+      isExpandable_: {
+        type: Boolean,
+        computed: 'computeIsExpandable_(data.countsByUrl)',
+      },
+    };
+  }
 
   /**
    * @private
@@ -59,7 +66,7 @@ Polymer({
    */
   computeIsExpandable_() {
     return this.data.countsByUrl.size > 0;
-  },
+  }
 
   /**
    * Sort the page URLs by the number of times it was associated with the key
@@ -77,21 +84,24 @@ Polymer({
           }
           return a.page < b.page ? -1 : (a.page > b.page ? 1 : 0);
         });
-  },
+  }
 
   /** @private */
   onDeleteTap_(e) {
     e.stopPropagation();
-    this.fire(
-        'delete-activity-log-item', Array.from(this.data.activityIds.values()));
-  },
+    this.dispatchEvent(new CustomEvent('delete-activity-log-item', {
+      bubbles: true,
+      composed: true,
+      detail: Array.from(this.data.activityIds.values())
+    }));
+  }
 
   /** @private */
   onExpandTap_() {
     if (this.isExpandable_) {
       this.set('data.expanded', !this.data.expanded);
     }
-  },
+  }
 
   /**
    * Show the call count for a particular page URL if more than one page
@@ -101,5 +111,8 @@ Polymer({
    */
   shouldShowPageUrlCount_() {
     return this.data.countsByUrl.size > 1;
-  },
-});
+  }
+}
+
+customElements.define(
+    ActivityLogHistoryItemElement.is, ActivityLogHistoryItemElement);

@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../shared_style.js';
 import '../shared_vars.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @typedef {{
@@ -52,31 +52,38 @@ export const ARG_URL_PLACEHOLDER = '<arg_url>';
  */
 const ARG_URL_PLACEHOLDER_REGEX = /"<arg_url>"/g;
 
-Polymer({
-  is: 'activity-log-stream-item',
+/** @polymer */
+class ActivityLogStreamItemElement extends PolymerElement {
+  static get is() {
+    return 'activity-log-stream-item';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * The underlying ActivityGroup that provides data for the
-     * ActivityLogItem displayed.
-     * @type {!StreamItem}
-     */
-    data: Object,
+  static get properties() {
+    return {
+      /**
+       * The underlying ActivityGroup that provides data for the
+       * ActivityLogItem displayed.
+       * @type {!StreamItem}
+       */
+      data: Object,
 
-    /** @private {!Array<!StreamArgItem>} */
-    argsList_: {
-      type: Array,
-      computed: 'computeArgsList_(data.args)',
-    },
+      /** @private {!Array<!StreamArgItem>} */
+      argsList_: {
+        type: Array,
+        computed: 'computeArgsList_(data.args)',
+      },
 
-    /** @private */
-    isExpandable_: {
-      type: Boolean,
-      computed: 'computeIsExpandable_(data)',
-    },
-  },
+      /** @private */
+      isExpandable_: {
+        type: Boolean,
+        computed: 'computeIsExpandable_(data)',
+      },
+    };
+  }
 
   /**
    * @private
@@ -84,7 +91,7 @@ Polymer({
    */
   computeIsExpandable_() {
     return this.hasPageUrl_() || this.hasArgs_() || this.hasWebRequestInfo_();
-  },
+  }
 
   /**
    * @private
@@ -103,7 +110,7 @@ Polymer({
 
     const ms = activityDate.getMilliseconds().toString().padStart(3, '0');
     return `${timeString}.${ms}`;
-  },
+  }
 
   /**
    * @private
@@ -111,7 +118,7 @@ Polymer({
    */
   hasPageUrl_() {
     return !!this.data.pageUrl;
-  },
+  }
 
   /**
    * @private
@@ -119,7 +126,7 @@ Polymer({
    */
   hasArgs_() {
     return this.argsList_.length > 0;
-  },
+  }
 
   /**
    * @private
@@ -127,7 +134,7 @@ Polymer({
    */
   hasWebRequestInfo_() {
     return !!this.data.webRequestInfo && this.data.webRequestInfo !== '{}';
-  },
+  }
 
   /**
    * @private
@@ -149,13 +156,16 @@ Polymer({
               ARG_URL_PLACEHOLDER_REGEX, `"${this.data.argUrl}"`),
           index: i + 1,
         }));
-  },
+  }
 
   /** @private */
   onExpandClick_() {
     if (this.isExpandable_) {
       this.set('data.expanded', !this.data.expanded);
-      this.fire('resize-stream');
+      this.dispatchEvent(new CustomEvent('resize-stream'));
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    ActivityLogStreamItemElement.is, ActivityLogStreamItemElement);

@@ -74,7 +74,8 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
 
         flush();
         boundTestVisible('cr-expand-button', true);
-        activityLogStreamItem.$$('cr-expand-button').click();
+        activityLogStreamItem.shadowRoot.querySelector('cr-expand-button')
+            .click();
 
         flush();
         boundTestVisible('#page-url-link', true);
@@ -108,7 +109,7 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
 
     flush();
     boundTestVisible('cr-expand-button', true);
-    activityLogStreamItem.$$('cr-expand-button').click();
+    activityLogStreamItem.shadowRoot.querySelector('cr-expand-button').click();
 
     flush();
     boundTestVisible('#args-list', true);

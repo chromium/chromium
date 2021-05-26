@@ -155,9 +155,9 @@ cr.define('test_util', function() {
    * @return {boolean}
    */
   /* #export */ function isChildVisible(parentEl, selector, checkLightDom) {
-    const element = (checkLightDom ? parentEl.querySelector : parentEl.$$)
-                        .call(parentEl, selector);
-    return isVisible(element);
+    const element = checkLightDom ? parentEl.querySelector(selector) :
+                                    parentEl.shadowRoot.querySelector(selector);
+    return isVisible(/** @type {!HTMLElement} */ (element));
   }
 
   // #cr_define_end

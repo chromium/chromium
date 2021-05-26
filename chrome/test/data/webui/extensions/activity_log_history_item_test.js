@@ -71,7 +71,8 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     boundTestVisible('#activity-item-main-row', true);
     boundTestVisible('#page-url-list', false);
 
-    activityLogHistoryItem.$$('#activity-item-main-row').click();
+    activityLogHistoryItem.shadowRoot.querySelector('#activity-item-main-row')
+        .click();
     boundTestVisible('#page-url-list', true);
   });
 
@@ -88,7 +89,8 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     };
 
     activityLogHistoryItem.set('data', testActivityGroup);
-    activityLogHistoryItem.$$('#activity-item-main-row').click();
+    activityLogHistoryItem.shadowRoot.querySelector('#activity-item-main-row')
+        .click();
 
     flush();
 
@@ -110,7 +112,8 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
       countsByUrl
     };
     activityLogHistoryItem.set('data', testActivityGroup);
-    activityLogHistoryItem.$$('#activity-item-main-row').click();
+    activityLogHistoryItem.shadowRoot.querySelector('#activity-item-main-row')
+        .click();
 
     flush();
 
