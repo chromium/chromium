@@ -108,6 +108,11 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
         return sInstance;
     }
 
+    @VisibleForTesting
+    protected static void resetInstanceForTesting() {
+        sInstance = null;
+    }
+
     @Override
     public void onConnectionStateChanged(
             @ConnectivityDetector.ConnectionState int connectionState) {

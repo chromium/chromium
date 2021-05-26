@@ -531,13 +531,28 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     }
 
     @VisibleForTesting
+    static void resetDefaultProbeUrlForTesting() {
+        sDefaultProbeUrl = DEFAULT_PROBE_URL;
+    }
+
+    @VisibleForTesting
     static void overrideFallbackProbeUrlForTesting(String url) {
         sFallbackProbeUrl = url;
     }
 
     @VisibleForTesting
+    static void resetFallbackProbeUrlForTesting() {
+        sFallbackProbeUrl = FALLBACK_PROBE_URL;
+    }
+
+    @VisibleForTesting
     static void overrideProbeMethodForTesting(String method) {
         sProbeMethod = method;
+    }
+
+    @VisibleForTesting
+    static void resetProbeMethodForTesting() {
+        sProbeMethod = PROBE_METHOD;
     }
 
     @VisibleForTesting
