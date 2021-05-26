@@ -11,7 +11,7 @@ Note: Another name for static initializers is "global constructors".
 # How Static Initializers are Checked
 
 * For Linux and Mac:
-  * The expected count is stored in [//infra/scripts/legacy/scripts/slave/chromium/sizes.py](https://cs.chromium.org/chromium/src/infra/scripts/legacy/scripts/slave/chromium/sizes.py)
+  * The expected count is stored in [//testing/scripts/check_static_initializers.py](https://source.chromium.org/chromium/chromium/src/+/main:testing/scripts/check_static_initializers.py)
 * For Android:
   * The expected count is stored in the build target [//chrome/android:monochrome_static_initializers](https://cs.chromium.org/chromium/src/chrome/android/BUILD.gn)
 
