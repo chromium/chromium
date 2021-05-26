@@ -433,6 +433,13 @@ class NET_EXPORT TransportSecurityState {
   // occurs first.
   void SetRequireCTDelegate(RequireCTDelegate* delegate);
 
+  // If |emergency_disable| is set to true, will stop requiring CT
+  // compliance on any further requests regardless of host or certificate
+  // status.
+  void SetCTEmergencyDisabled(bool emergency_disable) {
+    ct_emergency_disable_ = emergency_disable;
+  }
+
   // Clears all dynamic data (e.g. HSTS and HPKP data).
   //
   // Does NOT persist changes using the Delegate, as this function is only
@@ -726,6 +733,8 @@ class NET_EXPORT TransportSecurityState {
   base::Time earliest_next_prune_expect_ct_time_;
 
   std::set<std::string> hsts_host_bypass_list_;
+
+  bool ct_emergency_disable_ = false;
 
   THREAD_CHECKER(thread_checker_);
 

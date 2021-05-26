@@ -482,6 +482,10 @@ TransportSecurityState::CheckCTRequirements(
   using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
   std::string hostname = host_port_pair.host();
 
+  // If CT emergency disable flag is set, we don't require CT for any host.
+  if (ct_emergency_disable_)
+    return CT_NOT_REQUIRED;
+
   // CT is not required if the certificate does not chain to a publicly
   // trusted root certificate. Testing can override this, as certain tests
   // rely on using a non-publicly-trusted root.

@@ -733,10 +733,14 @@ void NetworkService::UpdateCtLogList(
 }
 
 void NetworkService::SetCtEnforcementEnabled(bool enabled) {
-  // TODO(crbug.com/1211535): Implement Certificate Transparency killswitch.
   DCHECK(base::FeatureList::IsEnabled(
       certificate_transparency::features::
           kCertificateTransparencyComponentUpdater));
+  for (auto* context : network_contexts_) {
+    context->url_request_context()
+        ->transport_security_state()
+        ->SetCTEmergencyDisabled(!enabled);
+  }
 }
 
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
