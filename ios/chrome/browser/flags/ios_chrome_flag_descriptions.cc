@@ -299,6 +299,10 @@ const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "
     "into fullscreen mode.";
 
+const char kMICEWebSignInName[] = "MICE Web Sign-in";
+const char kMICEWebSignInDescription[] =
+    "Enables MICE web sign-in. Requires #mobile-identity-consistency.";
+
 const char kMobileGoogleSRPName[] = "Mobile version of Google SRP by default";
 const char kMobileGoogleSRPDescription[] =
     "Request the Mobile version of Google SRP by default when the desktop mode "

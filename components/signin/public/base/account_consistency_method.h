@@ -30,7 +30,16 @@ extern const base::Feature kMobileIdentityConsistencyFRE;
 
 // Feature flag for promo-related changes of `kMobileIdentityConsistency`.
 extern const base::Feature kMobileIdentityConsistencyPromos;
-#endif
+#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+
+#if defined(OS_IOS)
+// Feature flag for promo-related changes of `kMobileIdentityConsistency`.
+extern const base::Feature kMICEWebSignIn;
+
+// Returns true if the flags |kMICEWebSignInEnabled| and
+// |kMobileIdentityConsistency| are enabled for the platform.
+bool IsMICEWebSignInEnabled();
+#endif  // defined(OS_IOS)
 
 enum class AccountConsistencyMethod : int {
   // No account consistency.

@@ -558,6 +558,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScreenTimeIntegrationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kScreenTimeIntegration)},
 #endif
+    {"mice-web-signin", flag_descriptions::kMICEWebSignInName,
+     flag_descriptions::kMICEWebSignInDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(signin::kMICEWebSignIn)},
     {"mobile-identity-consistency",
      flag_descriptions::kMobileIdentityConsistencyName,
      flag_descriptions::kMobileIdentityConsistencyDescription, flags_ui::kOsIos,
