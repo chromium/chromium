@@ -720,6 +720,16 @@ TEST(TrustTokenKeyCommitmentParser,
             mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb);
 }
 
+TEST(TrustTokenKeyCommitmentParser, RejectsBadVersionCommitmentType) {
+  std::string input = R"({ "TrustTokenV3PMB": 3})";
+  // Make sure the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  mojom::TrustTokenKeyCommitmentResultPtr result =
+      TrustTokenKeyCommitmentParser().Parse(input);
+  EXPECT_FALSE(result);
+}
+
 TEST(TrustTokenKeyCommitmentParser, RejectsMissingProtocolVersion) {
   std::string input =
       R"({ "TrustTokenV3PMB": {
