@@ -27,6 +27,7 @@
   }
 
   function step3() {
+    TestRunner.debuggerModel.removeEventListener(SDK.DebuggerModel.Events.DebuggerWasDisabled, step3, this);
     TestRunner.addResult('Debugger disabled.');
     TestRunner.addResult('Evaluating test function.');
     TestRunner.evaluateInPage('testFunction()', step4);
@@ -40,6 +41,7 @@
 
   function step5() {
     TestRunner.addResult('Debugger was enabled');
+    TestRunner.debuggerModel.removeEventListener(SDK.DebuggerModel.Events.DebuggerWasEnabled, step5, this);
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(step6);
   }
 

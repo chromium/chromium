@@ -53,6 +53,8 @@
 
   function step7() {
     TestRunner.addResult('Debugger disabled');
+    TestRunner.debuggerModel.removeEventListener(
+      SDK.DebuggerModel.Events.DebuggerWasDisabled, step7, this);
     SourcesTestRunner.removeBreakpoint(testSourceFrame, 3);
     TestRunner.addResult('Breakpoint removed');
     TestRunner.debuggerModel.addEventListener(
@@ -61,6 +63,8 @@
   }
 
   function step8() {
+    TestRunner.debuggerModel.removeEventListener(
+      SDK.DebuggerModel.Events.DebuggerWasEnabled, step8, this);
     TestRunner.addResult('Debugger enabled');
     TestRunner.addResult('Evaluating test function.');
     TestRunner.evaluateInPage('testFunction()', step9);
