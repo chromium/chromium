@@ -94,6 +94,7 @@ class HashSet {
   iterator begin() const;
   iterator end() const;
 
+  // Returns an iterator to the found element, or end() if not found.
   iterator find(ValuePeekInType) const;
   bool Contains(ValuePeekInType) const;
 
@@ -122,6 +123,7 @@ class HashSet {
   template <typename HashTranslator, typename T>
   AddResult AddWithTranslator(T&&);
 
+  // Does nothing if the value is not found.
   void erase(ValuePeekInType);
   void erase(iterator);
   void clear();

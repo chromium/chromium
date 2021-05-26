@@ -79,6 +79,37 @@ TEST(HashSetTest, Iteration) {
   EXPECT_EQ((1 << 10) - 1, encountered_keys);
 }
 
+TEST(HashSetTest, FindAndErase) {
+  HashSet<int> set;
+  set.insert(12);
+  set.insert(4);
+  EXPECT_EQ(2U, set.size());
+
+  auto it = set.find(12);
+  EXPECT_NE(set.end(), it);
+  EXPECT_EQ(12, *it);
+
+  it = set.find(4);
+  EXPECT_NE(set.end(), it);
+  EXPECT_EQ(4, *it);
+
+  EXPECT_EQ(set.end(), set.find(6));
+
+  // Now erase a key in the set, and test again.
+  set.erase(12);
+  EXPECT_EQ(1U, set.size());
+
+  EXPECT_EQ(set.end(), set.find(12));
+
+  it = set.find(4);
+  EXPECT_NE(set.end(), it);
+  EXPECT_EQ(4, *it);
+
+  // Erase a key not in the set; should be a no-op.
+  set.erase(6);
+  EXPECT_EQ(1U, set.size());
+}
+
 template <unsigned size>
 void TestReserveCapacity();
 template <>
