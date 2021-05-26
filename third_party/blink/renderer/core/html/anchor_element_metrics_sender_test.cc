@@ -11,6 +11,7 @@
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -76,7 +77,15 @@ class AnchorElementMetricsSenderTest : public SimTest {
 
   void SetUp() override {
     SimTest::SetUp();
-    feature_list_.InitAndEnableFeature(features::kNavigationPredictor);
+    // Report all anchors to avoid non-deterministic behavior.
+    std::map<std::string, std::string> params;
+    params["random_anchor_sampling_period"] = "1";
+
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kNavigationPredictor, params);
+
+    IntersectionObserver::SetThrottleDelayEnabledForTesting(false);
+
     WebView().MainFrameWidget()->Resize(
         gfx::Size(kViewportWidth, kViewportHeight));
 
@@ -90,6 +99,7 @@ class AnchorElementMetricsSenderTest : public SimTest {
     MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::AnchorElementMetricsHost::Name_, {});
     hosts_.clear();
+    IntersectionObserver::SetThrottleDelayEnabledForTesting(true);
     SimTest::TearDown();
   }
 

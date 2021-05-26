@@ -125,7 +125,9 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
       {}, {INTERSECTION_RATIO_THRESHOLD}, &document,
       WTF::BindRepeating(&AnchorElementMetricsSender::UpdateVisibleAnchors,
                          WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver);
+      LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver,
+      IntersectionObserver::kDeliverDuringPostLifecycleSteps,
+      IntersectionObserver::kFractionOfTarget, 100 /* delay in ms */);
 }
 
 void AnchorElementMetricsSender::UpdateVisibleAnchors(
@@ -190,8 +192,15 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
         anchor_element.GetLayoutObject()->AbsoluteBoundingBoxRect().IsEmpty()) {
       continue;
     }
+    int sampling_period = base::GetFieldTrialParamByFeatureAsInt(
+        blink::features::kNavigationPredictor, "random_anchor_sampling_period",
+        100);
+    int random = base::RandInt(1, sampling_period);
+    if (random == 1) {
+      // This anchor element is sampled in.
+      intersection_observer_->observe(&anchor_element);
+    }
 
-    intersection_observer_->observe(&anchor_element);
     metrics.push_back(CreateAnchorElementMetrics(anchor_element));
   }
   // Remove all anchors, including the ones that did not qualify. This means
