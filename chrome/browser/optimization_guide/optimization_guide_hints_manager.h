@@ -23,6 +23,7 @@
 #include "components/optimization_guide/core/hints_component_info.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
 #include "components/optimization_guide/core/optimization_hints_component_observer.h"
+#include "components/optimization_guide/core/push_notification_manager.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "net/nqe/effective_connection_type.h"
@@ -56,6 +57,7 @@ class Profile;
 
 class OptimizationGuideHintsManager
     : public optimization_guide::OptimizationHintsComponentObserver,
+      public optimization_guide::PushNotificationManager::Delegate,
       public network::NetworkQualityTracker::EffectiveConnectionTypeObserver,
       public NavigationPredictorKeyedService::Observer {
  public:
@@ -162,8 +164,21 @@ class OptimizationGuideHintsManager
   // Fetch the hints for the given predicted URLs.
   void FetchHintsForPredictions(std::vector<GURL> target_urls);
 
+  // optimization_guide::PushNotificationManager::Delegate:
+  void RemoveFetchedEntriesByHintKeys(
+      base::OnceClosure on_success,
+      optimization_guide::proto::KeyRepresentation key_representation,
+      const base::flat_set<std::string>& hint_keys) override;
+  void PurgeFetchedEntries(base::OnceClosure on_success) override;
+
+  // Returns the hint cache for |this|.
+  optimization_guide::HintCache* hint_cache();
+
   // Returns the persistent store for |this|.
   optimization_guide::OptimizationGuideStore* hint_store();
+
+  // Returns the push notification manager for |this|. May be nullptr;
+  optimization_guide::PushNotificationManager* push_notification_manager();
 
   // Add hints to the cache with the provided metadata. For testing only.
   void AddHintForTesting(
@@ -421,6 +436,11 @@ class OptimizationGuideHintsManager
   // The timer used to schedule fetching hints from the remote Optimization
   // Guide Service.
   base::OneShotTimer active_tabs_hints_fetch_timer_;
+
+  // The class that handles push notification processing and informs |this| of
+  // what to do through the implemented Delegate above.
+  std::unique_ptr<optimization_guide::PushNotificationManager>
+      push_notification_manager_;
 
   // The clock used to schedule fetching from the remote Optimization Guide
   // Service.

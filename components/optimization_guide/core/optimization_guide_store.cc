@@ -338,6 +338,53 @@ void OptimizationGuideStore::OnLoadEntriesToPurgeExpired(
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing::Once()));
 }
 
+void OptimizationGuideStore::RemoveFetchedHintsByKey(
+    base::OnceClosure on_success,
+    const base::flat_set<std::string>& hint_keys) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  EntryKeySet keys_to_remove;
+  for (const std::string& key : hint_keys) {
+    EntryKey store_key;
+    if (FindEntryKeyForHostWithPrefix(key, &store_key,
+                                      GetFetchedHintEntryKeyPrefix())) {
+      keys_to_remove.insert(store_key);
+    }
+  }
+
+  if (keys_to_remove.empty()) {
+    std::move(on_success).Run();
+    return;
+  }
+
+  for (const EntryKey& key : keys_to_remove) {
+    entry_keys_->erase(key);
+  }
+
+  database_->UpdateEntriesWithRemoveFilter(
+      std::make_unique<EntryVector>(),
+      base::BindRepeating(&KeySetFilter, keys_to_remove),
+      base::BindOnce(&OptimizationGuideStore::OnFetchedEntriesRemoved,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(on_success),
+                     keys_to_remove));
+}
+
+void OptimizationGuideStore::OnFetchedEntriesRemoved(
+    base::OnceClosure on_success,
+    const EntryKeySet& keys,
+    bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!success) {
+    UpdateStatus(Status::kFailed);
+    // |on_success| is intentionally not run here since the operation did not
+    // succeed.
+    return;
+  }
+
+  std::move(on_success).Run();
+}
+
 bool OptimizationGuideStore::FindHintEntryKey(
     const std::string& host,
     EntryKey* out_hint_entry_key) const {
@@ -355,8 +402,9 @@ bool OptimizationGuideStore::FindHintEntryKey(
          component_hint_entry_key_prefix_ ==
              GetComponentHintEntryKeyPrefix(component_version_.value()));
   if (FindEntryKeyForHostWithPrefix(host, out_hint_entry_key,
-                                    component_hint_entry_key_prefix_))
+                                    component_hint_entry_key_prefix_)) {
     return true;
+  }
 
   return false;
 }

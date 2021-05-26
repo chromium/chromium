@@ -146,6 +146,25 @@ bool HintsFetcher::WasHostCoveredByFetch(PrefService* pref_service,
   return host_valid_time > time_clock->Now();
 }
 
+// static
+void HintsFetcher::ClearSingleFetchedHost(PrefService* pref_service,
+                                          const std::string& host) {
+  DictionaryPrefUpdate hosts_fetched_list(
+      pref_service, prefs::kHintsFetcherHostsSuccessfullyFetched);
+  hosts_fetched_list->Remove(HashHostForDictionary(host), nullptr);
+}
+
+// static
+void HintsFetcher::AddFetchedHostForTesting(PrefService* pref_service,
+                                            const std::string& host,
+                                            base::Time time) {
+  DictionaryPrefUpdate hosts_fetched_list(
+      pref_service, prefs::kHintsFetcherHostsSuccessfullyFetched);
+  hosts_fetched_list->SetDoubleKey(
+      HashHostForDictionary(host),
+      time.ToDeltaSinceWindowsEpoch().InSecondsF());
+}
+
 bool HintsFetcher::FetchOptimizationGuideServiceHints(
     const std::vector<std::string>& hosts,
     const std::vector<GURL>& urls,

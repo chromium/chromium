@@ -1509,6 +1509,117 @@ TEST_F(OptimizationGuideStoreTest,
   EXPECT_EQ(hint_entry_key, "2_2.0.0_domain1.org");
 }
 
+TEST_F(OptimizationGuideStoreTest, SuccessfulRemovedFetchedHintsByKey) {
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, 10);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  std::unique_ptr<StoreUpdateData> component_update_data =
+      guide_store()->MaybeCreateUpdateDataForComponentHints(
+          base::Version(kUpdateComponentVersion));
+  ASSERT_TRUE(component_update_data);
+
+  proto::Hint hint1;
+  hint1.set_key("domain1.org");
+  hint1.set_key_representation(proto::HOST);
+  component_update_data->MoveHintIntoUpdateData(std::move(hint1));
+  proto::Hint hint2;
+  hint2.set_key("domain2.org");
+  hint2.set_key_representation(proto::HOST);
+  component_update_data->MoveHintIntoUpdateData(std::move(hint2));
+  UpdateComponentHints(std::move(component_update_data));
+
+  std::unique_ptr<StoreUpdateData> fetched_update_data =
+      guide_store()->CreateUpdateDataForFetchedHints(base::Time().Now());
+
+  proto::Hint fetched_hint1;
+  fetched_hint1.set_key("domain2.org");
+  fetched_hint1.set_key_representation(proto::HOST);
+  fetched_update_data->MoveHintIntoUpdateData(std::move(fetched_hint1));
+  proto::Hint fetched_hint2;
+  fetched_hint2.set_key("domain3.org");
+  fetched_hint2.set_key_representation(proto::HOST);
+  fetched_update_data->MoveHintIntoUpdateData(std::move(fetched_hint2));
+  UpdateFetchedHints(std::move(fetched_update_data));
+
+  base::RunLoop run_loop;
+  guide_store()->RemoveFetchedHintsByKey(run_loop.QuitClosure(),
+                                         {
+                                             "domain1.org",
+                                             "domain2.org",
+                                             "domain3.org",
+                                             "domain4.org",
+                                         });
+  db()->UpdateCallback(/*success=*/true);
+  run_loop.Run();
+
+  OptimizationGuideStore::EntryKey hint_entry_key;
+
+  // Check for keys that should exist.
+  EXPECT_TRUE(guide_store()->FindHintEntryKey("domain1.org", &hint_entry_key));
+  EXPECT_EQ("2_2.0.0_domain1.org", hint_entry_key);
+  EXPECT_TRUE(guide_store()->FindHintEntryKey("domain2.org", &hint_entry_key));
+  EXPECT_EQ("2_2.0.0_domain2.org", hint_entry_key);
+
+  // Check for keys that should not exist.
+  EXPECT_FALSE(guide_store()->FindHintEntryKey("domain3.org", &hint_entry_key));
+}
+
+TEST_F(OptimizationGuideStoreTest, FailedRemovedFetchedHintsByKey) {
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, 10);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  std::unique_ptr<StoreUpdateData> component_update_data =
+      guide_store()->MaybeCreateUpdateDataForComponentHints(
+          base::Version(kUpdateComponentVersion));
+  ASSERT_TRUE(component_update_data);
+
+  proto::Hint hint1;
+  hint1.set_key("domain1.org");
+  hint1.set_key_representation(proto::HOST);
+  component_update_data->MoveHintIntoUpdateData(std::move(hint1));
+  proto::Hint hint2;
+  hint2.set_key("domain2.org");
+  hint2.set_key_representation(proto::HOST);
+  component_update_data->MoveHintIntoUpdateData(std::move(hint2));
+  UpdateComponentHints(std::move(component_update_data));
+
+  std::unique_ptr<StoreUpdateData> fetched_update_data =
+      guide_store()->CreateUpdateDataForFetchedHints(base::Time().Now());
+  ASSERT_TRUE(fetched_update_data);
+
+  proto::Hint fetched_hint1;
+  fetched_hint1.set_key("domain2.org");
+  fetched_hint1.set_key_representation(proto::HOST);
+  fetched_update_data->MoveHintIntoUpdateData(std::move(fetched_hint1));
+  proto::Hint fetched_hint2;
+  fetched_hint2.set_key("domain3.org");
+  fetched_hint2.set_key_representation(proto::HOST);
+  fetched_update_data->MoveHintIntoUpdateData(std::move(fetched_hint2));
+  UpdateFetchedHints(std::move(fetched_update_data));
+
+  bool did_callback_run = false;
+  base::OnceClosure callback = base::BindOnce(
+      [](bool* set_when_run) { *set_when_run = true; }, &did_callback_run);
+  guide_store()->RemoveFetchedHintsByKey(std::move(callback), {
+                                                                  "domain1.org",
+                                                                  "domain2.org",
+                                                                  "domain3.org",
+                                                                  "domain4.org",
+                                                              });
+  RunUntilIdle();
+  db()->UpdateCallback(/*success=*/false);
+  RunUntilIdle();
+  EXPECT_FALSE(did_callback_run);
+
+  // The callback did not succeed, so the store should no longer be available.
+  EXPECT_EQ(0U, GetStoreEntryKeyCount());
+  EXPECT_FALSE(guide_store()->IsAvailable());
+}
+
 TEST_F(OptimizationGuideStoreTest, ClearFetchedHints) {
   base::HistogramTester histogram_tester;
   MetadataSchemaState schema_state = MetadataSchemaState::kValid;

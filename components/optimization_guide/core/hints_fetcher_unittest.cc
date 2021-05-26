@@ -451,6 +451,33 @@ TEST_P(HintsFetcherTest, HintsFetchClearHostsSuccessfullyFetched) {
   }
 }
 
+TEST_P(HintsFetcherTest, HintsFetchClearSingleFetchedHost) {
+  std::vector<std::string> hosts{"host1.com", "host2.com"};
+  std::string response_content;
+
+  EXPECT_TRUE(FetchHints(hosts, {} /* urls */));
+  VerifyHasPendingFetchRequests();
+  EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
+  EXPECT_TRUE(hints_fetched());
+
+  if (!ShouldPersistHintsToDisk())
+    return;
+
+  const base::DictionaryValue* hosts_fetched = pref_service()->GetDictionary(
+      prefs::kHintsFetcherHostsSuccessfullyFetched);
+  for (const std::string& host : hosts) {
+    EXPECT_TRUE(hosts_fetched->FindDoubleKey(HashHostForDictionary(host)));
+  }
+
+  HintsFetcher::ClearSingleFetchedHost(pref_service(), "host1.com");
+  hosts_fetched = pref_service()->GetDictionary(
+      prefs::kHintsFetcherHostsSuccessfullyFetched);
+
+  EXPECT_FALSE(
+      hosts_fetched->FindDoubleKey(HashHostForDictionary("host1.com")));
+  EXPECT_TRUE(hosts_fetched->FindDoubleKey(HashHostForDictionary("host2.com")));
+}
+
 TEST_P(HintsFetcherTest, HintsFetcherHostsCovered) {
   if (!ShouldPersistHintsToDisk())
     return;

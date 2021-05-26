@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -203,6 +204,10 @@ bool IsOptimizationHintsEnabled() {
 
 bool IsRemoteFetchingEnabled() {
   return base::FeatureList::IsEnabled(kRemoteOptimizationGuideFetching);
+}
+
+bool IsPushNotificationsEnabled() {
+  return base::FeatureList::IsEnabled(kPushNotifications);
 }
 
 bool IsRemoteFetchingForAnonymousDataConsentEnabled() {

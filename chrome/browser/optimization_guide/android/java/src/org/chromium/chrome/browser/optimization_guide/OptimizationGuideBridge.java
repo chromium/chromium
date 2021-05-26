@@ -14,6 +14,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
+import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.url.GURL;
 
@@ -123,6 +124,66 @@ public class OptimizationGuideBridge {
                 optimizationGuideDecision, deserializeAnyMetadata(serializedAnyMetadata));
     }
 
+    /**
+     * Clears all cached push notifications for the given optimization type.
+     */
+    @CalledByNative
+    private static void clearCachedPushNotifications(int optimizationTypeInt) {
+        OptimizationType optimizationType = OptimizationType.forNumber(optimizationTypeInt);
+        if (optimizationType == null) return;
+
+        OptimizationGuidePushNotificationManager.clearCacheForOptimizationType(optimizationType);
+    }
+
+    /**
+     * Returns whether or not the given optimization type's push notifications overflowed the
+     * maximum cache size.
+     */
+    @CalledByNative
+    private static boolean didPushNotificationCacheOverflow(int optimizationTypeInt) {
+        OptimizationType optimizationType = OptimizationType.forNumber(optimizationTypeInt);
+        if (optimizationType == null) return false;
+
+        return OptimizationGuidePushNotificationManager
+                .didNotificationCacheOverflowForOptimizationType(optimizationType);
+    }
+
+    /**
+     * Returns a 2D byte array of all cached push notifications for the given optimization type.
+     */
+    @CalledByNative
+    private static byte[][] getEncodedPushNotifications(int optimizationTypeInt) {
+        OptimizationType optimizationType = OptimizationType.forNumber(optimizationTypeInt);
+        if (optimizationType == null) return null;
+
+        HintNotificationPayload[] notifications =
+                OptimizationGuidePushNotificationManager.getNotificationCacheForOptimizationType(
+                        optimizationType);
+        if (notifications == null) return null;
+
+        byte[][] encoded_notifications = new byte[notifications.length][];
+        for (int i = 0; i < notifications.length; i++) {
+            encoded_notifications[i] = notifications[i].toByteArray();
+        }
+
+        return encoded_notifications;
+    }
+
+    /**
+     * Called when a push notification that was passed to native immediately (without having been
+     * cached) is unable to be stored right now, so it should be cached.
+     */
+    @CalledByNative
+    private static void onPushNotificationNotHandledByNative(byte[] encodedNotification) {
+        HintNotificationPayload notification;
+        try {
+            notification = HintNotificationPayload.parseFrom(encodedNotification);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            return;
+        }
+        OptimizationGuidePushNotificationManager.onPushNotificationNotHandledByNative(notification);
+    }
+
     @Nullable
     private static Any deserializeAnyMetadata(@Nullable byte[] serializedAnyMetadata) {
         if (serializedAnyMetadata == null) {
@@ -146,5 +207,6 @@ public class OptimizationGuideBridge {
         void registerOptimizationTypes(long nativeOptimizationGuideBridge, int[] optimizationTypes);
         void canApplyOptimization(long nativeOptimizationGuideBridge, GURL url,
                 int optimizationType, OptimizationGuideCallback callback);
+        void onNewPushNotification(long nativeOptimizationGuideBridge, byte[] encodedNotification);
     }
 }

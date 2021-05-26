@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -95,6 +96,9 @@ bool IsRemoteFetchingForAnonymousDataConsentEnabled();
 // Returns true if a feature that explicitly allows remote fetching has been
 // enabled.
 bool IsRemoteFetchingExplicitlyAllowedForPerformanceInfo();
+
+// Returns true if the feature to use push notifications is enabled.
+bool IsPushNotificationsEnabled();
 
 // The maximum data byte size for a server-provided bloom filter. This is
 // a client-side safety limit for RAM use in case server sends too large of
