@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
@@ -89,6 +90,10 @@ class MenuScrollButton : public View {
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event) override {
     return ui::mojom::DragOperation::kNone;
+  }
+
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
+    return base::DoNothing();
   }
 
   void OnPaint(gfx::Canvas* canvas) override {
