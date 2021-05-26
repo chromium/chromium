@@ -770,7 +770,7 @@ void SharedContextState::RestoreTextureUnitBindings(unsigned unit) const {
 }
 
 void SharedContextState::RestoreVertexAttribArray(unsigned index) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void SharedContextState::RestoreAllExternalTextureBindingsIfNeeded() {
