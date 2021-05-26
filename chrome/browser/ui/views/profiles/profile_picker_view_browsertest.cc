@@ -862,19 +862,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
       base::TimeDelta::FromSeconds(0));
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Create a second profile.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::FilePath other_path =
-      profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      other_path,
-      base::BindLambdaForTesting(
-          [&run_loop](Profile* profile, Profile::CreateStatus status) {
-            if (status == Profile::CREATE_STATUS_INITIALIZED) {
-              run_loop.Quit();
-            }
-          }));
-  run_loop.Run();
+  base::FilePath other_path = CreateNewProfileWithoutBrowser();
   // Open the picker.
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
   WaitForLayoutWithoutToolbar();
@@ -1363,21 +1351,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
 
   // Create a pre-existing profile syncing with the same account as the profile
   // being created.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::FilePath other_path =
-      profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      other_path,
-      base::BindLambdaForTesting(
-          [&run_loop](Profile* profile, Profile::CreateStatus status) {
-            if (status == Profile::CREATE_STATUS_INITIALIZED) {
-              run_loop.Quit();
-            }
-          }));
-  run_loop.Run();
+  base::FilePath other_path = CreateNewProfileWithoutBrowser();
   ProfileAttributesStorage& storage =
-      profile_manager->GetProfileAttributesStorage();
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
   ProfileAttributesEntry* other_entry =
       storage.GetProfileAttributesWithPath(other_path);
   ASSERT_NE(other_entry, nullptr);
@@ -1429,21 +1405,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
 
   // Create a pre-existing profile syncing with the same account as the profile
   // being created.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::FilePath other_path =
-      profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      other_path,
-      base::BindLambdaForTesting(
-          [&run_loop](Profile* profile, Profile::CreateStatus status) {
-            if (status == Profile::CREATE_STATUS_INITIALIZED) {
-              run_loop.Quit();
-            }
-          }));
-  run_loop.Run();
+  base::FilePath other_path = CreateNewProfileWithoutBrowser();
   ProfileAttributesStorage& storage =
-      profile_manager->GetProfileAttributesStorage();
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
   ProfileAttributesEntry* other_entry =
       storage.GetProfileAttributesWithPath(other_path);
   ASSERT_NE(other_entry, nullptr);
