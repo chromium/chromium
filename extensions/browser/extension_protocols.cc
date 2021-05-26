@@ -397,6 +397,47 @@ bool IsBackgroundPageURL(const GURL& url) {
          path_piece.substr(1) == kGeneratedBackgroundPageFilename;
 }
 
+scoped_refptr<net::HttpResponseHeaders> BuildHttpHeaders(
+    const std::string& content_security_policy,
+    bool send_cors_header) {
+  std::string raw_headers;
+  raw_headers.append("HTTP/1.1 200 OK");
+  if (!content_security_policy.empty()) {
+    raw_headers.append(1, '\0');
+    raw_headers.append("Content-Security-Policy: ");
+    raw_headers.append(content_security_policy);
+  }
+
+  if (send_cors_header) {
+    raw_headers.append(1, '\0');
+    raw_headers.append("Access-Control-Allow-Origin: *");
+    raw_headers.append(1, '\0');
+    raw_headers.append("Cross-Origin-Resource-Policy: cross-origin");
+  }
+
+  raw_headers.append(2, '\0');
+  return base::MakeRefCounted<net::HttpResponseHeaders>(raw_headers);
+}
+
+void AddCacheHeaders(net::HttpResponseHeaders& headers,
+                     base::Time last_modified_time) {
+  if (last_modified_time.is_null())
+    return;
+
+  // Hash the time and make an etag to avoid exposing the exact
+  // user installation time of the extension.
+  std::string hash =
+      base::StringPrintf("%" PRId64, last_modified_time.ToInternalValue());
+  hash = base::SHA1HashString(hash);
+  std::string etag;
+  base::Base64Encode(hash, &etag);
+  etag = "\"" + etag + "\"";
+  headers.SetHeader("ETag", etag);
+
+  // Also force revalidation.
+  headers.SetHeader("cache-control", "no-cache");
+}
+
 class FileLoaderObserver : public content::FileURLLoaderObserver {
  public:
   explicit FileLoaderObserver(scoped_refptr<ContentVerifyJob> verify_job)
@@ -613,9 +654,8 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
 
       // Leave cache headers out of generated background page jobs.
       auto head = network::mojom::URLResponseHead::New();
-      const bool send_cors_headers = false;
       head->headers = BuildHttpHeaders(content_security_policy,
-                                       send_cors_headers, base::Time());
+                                       false /* send_cors_headers */);
       std::string contents;
       GenerateBackgroundPageContents(extension.get(), &head->mime_type,
                                      &head->charset, &contents);
@@ -654,7 +694,8 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     if (!bundle_resource_path.empty()) {
       ExtensionsBrowserClient::Get()->LoadResourceFromResourceBundle(
           request, std::move(loader), bundle_resource_path, resource_id,
-          content_security_policy, std::move(client), send_cors_header);
+          BuildHttpHeaders(content_security_policy, send_cors_header),
+          std::move(client));
       return;
     }
 
@@ -719,7 +760,7 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
             &OnFilePathAndLastModifiedTimeRead, base::Owned(read_file_path),
             base::Owned(last_modified_time), request, std::move(loader),
             std::move(client), std::move(content_verifier), resource,
-            content_security_policy, send_cors_header));
+            BuildHttpHeaders(content_security_policy, send_cors_header)));
   }
 
   static void OnFilePathAndLastModifiedTimeRead(
@@ -730,17 +771,15 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       scoped_refptr<ContentVerifier> content_verifier,
       const extensions::ExtensionResource& resource,
-      const std::string& content_security_policy,
-      bool send_cors_header) {
+      scoped_refptr<net::HttpResponseHeaders> headers) {
     request.url = net::FilePathToFileURL(*read_file_path);
 
+    AddCacheHeaders(*headers, *last_modified_time);
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &StartVerifyJob, std::move(request), std::move(loader),
-            std::move(client), std::move(content_verifier), resource,
-            BuildHttpHeaders(content_security_policy, send_cors_header,
-                             *last_modified_time)));
+        base::BindOnce(&StartVerifyJob, std::move(request), std::move(loader),
+                       std::move(client), std::move(content_verifier), resource,
+                       std::move(headers)));
   }
 
   static void StartVerifyJob(
@@ -811,46 +850,6 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
 };
 
 }  // namespace
-
-scoped_refptr<net::HttpResponseHeaders> BuildHttpHeaders(
-    const std::string& content_security_policy,
-    bool send_cors_header,
-    const base::Time& last_modified_time) {
-  std::string raw_headers;
-  raw_headers.append("HTTP/1.1 200 OK");
-  if (!content_security_policy.empty()) {
-    raw_headers.append(1, '\0');
-    raw_headers.append("Content-Security-Policy: ");
-    raw_headers.append(content_security_policy);
-  }
-
-  if (send_cors_header) {
-    raw_headers.append(1, '\0');
-    raw_headers.append("Access-Control-Allow-Origin: *");
-    raw_headers.append(1, '\0');
-    raw_headers.append("Cross-Origin-Resource-Policy: cross-origin");
-  }
-
-  if (!last_modified_time.is_null()) {
-    // Hash the time and make an etag to avoid exposing the exact
-    // user installation time of the extension.
-    std::string hash =
-        base::StringPrintf("%" PRId64, last_modified_time.ToInternalValue());
-    hash = base::SHA1HashString(hash);
-    std::string etag;
-    base::Base64Encode(hash, &etag);
-    raw_headers.append(1, '\0');
-    raw_headers.append("ETag: \"");
-    raw_headers.append(etag);
-    raw_headers.append("\"");
-    // Also force revalidation.
-    raw_headers.append(1, '\0');
-    raw_headers.append("cache-control: no-cache");
-  }
-
-  raw_headers.append(2, '\0');
-  return new net::HttpResponseHeaders(raw_headers);
-}
 
 void SetExtensionProtocolTestHandler(ExtensionProtocolTestHandler* handler) {
   g_test_handler = handler;

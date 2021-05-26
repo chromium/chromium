@@ -87,13 +87,11 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client_info,
       const base::FilePath& filename,
       int resource_id,
-      const std::string& content_security_policy,
-      bool send_cors_header) {
+      scoped_refptr<net::HttpResponseHeaders> headers) {
     // Owns itself. Will live as long as its URLLoader and URLLoaderClient
     // bindings are alive - essentially until either the client gives up or all
     // file data has been sent to it.
-    auto* bundle_loader =
-        new ResourceBundleFileLoader(content_security_policy, send_cors_header);
+    auto* bundle_loader = new ResourceBundleFileLoader(std::move(headers));
     bundle_loader->Start(request, std::move(loader), std::move(client_info),
                          filename, resource_id);
   }
@@ -114,11 +112,9 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
   void ResumeReadingBodyFromNet() override {}
 
  private:
-  ResourceBundleFileLoader(const std::string& content_security_policy,
-                           bool send_cors_header) {
-    response_headers_ = extensions::BuildHttpHeaders(
-        content_security_policy, send_cors_header, base::Time());
-  }
+  explicit ResourceBundleFileLoader(
+      scoped_refptr<net::HttpResponseHeaders> headers)
+      : response_headers_(std::move(headers)) {}
   ~ResourceBundleFileLoader() override = default;
 
   void Start(
@@ -291,13 +287,12 @@ void LoadResourceFromResourceBundle(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
     const base::FilePath& resource_relative_path,
     int resource_id,
-    const std::string& content_security_policy,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-    bool send_cors_header) {
+    scoped_refptr<net::HttpResponseHeaders> headers,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   DCHECK(!resource_relative_path.empty());
   ResourceBundleFileLoader::CreateAndStart(
       request, std::move(loader), std::move(client), resource_relative_path,
-      resource_id, content_security_policy, send_cors_header);
+      resource_id, std::move(headers));
 }
 
 }  // namespace chrome_url_request_util

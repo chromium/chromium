@@ -41,6 +41,10 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
+namespace net {
+class HttpResponseHeaders;
+}  // namespace net
+
 namespace network {
 struct ResourceRequest;
 namespace mojom {
@@ -167,9 +171,8 @@ class ExtensionsBrowserClient {
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       const base::FilePath& resource_relative_path,
       int resource_id,
-      const std::string& content_security_policy,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      bool send_cors_header) = 0;
+      scoped_refptr<net::HttpResponseHeaders> headers,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client) = 0;
 
   // Returns true if the embedder wants to allow a chrome-extension:// resource
   // request coming from renderer A to access a resource in an extension running

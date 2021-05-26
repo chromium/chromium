@@ -15,7 +15,6 @@
 
 namespace base {
 class FilePath;
-class Time;
 }
 
 namespace content {
@@ -31,13 +30,6 @@ namespace extensions {
 using ExtensionProtocolTestHandler =
     base::RepeatingCallback<void(base::FilePath* directory_path,
                                  base::FilePath* relative_path)>;
-
-// Builds HTTP headers for an extension request. Hashes the time to avoid
-// exposing the exact user installation time of the extension.
-scoped_refptr<net::HttpResponseHeaders> BuildHttpHeaders(
-    const std::string& content_security_policy,
-    bool send_cors_header,
-    const base::Time& last_modified_time);
 
 // Allows tests to set a special handler for chrome-extension:// urls. Note
 // that this goes through all the normal security checks; it's essentially a
