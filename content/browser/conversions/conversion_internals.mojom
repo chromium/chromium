@@ -16,8 +16,8 @@ enum SourceType {
 // Struct containing stored data that will be sent in a future conversion
 // report.
 struct WebUIConversionReport {
-  string impression_data;
-  string conversion_data;
+  uint64 impression_data;
+  uint64 conversion_data;
   url.mojom.Origin conversion_origin;
   url.mojom.Origin reporting_origin;
   double report_time;
@@ -26,14 +26,14 @@ struct WebUIConversionReport {
 
 // Struct representing a stored impression that will be displayed by WebUI.
 struct WebUIImpression {
-  string impression_data;
+  uint64 impression_data;
   url.mojom.Origin impression_origin;
   url.mojom.Origin conversion_destination;
   url.mojom.Origin reporting_origin;
   double impression_time;
   double expiry_time;
   SourceType source_type;
-  string priority;
+  int64 priority;
 };
 
 // Struct containing info for reports sent in this session.

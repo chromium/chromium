@@ -29,6 +29,9 @@ const char kConversionInternalsUrl[] = "chrome://conversion-internals/";
 
 const std::u16string kCompleteTitle = u"Complete";
 
+const std::u16string kMaxInt64String = u"9223372036854775807";
+const std::u16string kMaxUint64String = u"18446744073709551615";
+
 }  // namespace
 
 class ConversionInternalsWebUiBrowserTest : public ContentBrowserTest {
@@ -173,12 +176,18 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                        WebUIShownWithActiveImpression_ImpressionsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
+  // We use the max values of `uint64_t` and `int64_t` here to ensure that they
+  // are properly handled as `bigint` values in JS and don't run into issues
+  // with `Number.MAX_SAFE_INTEGER`.
+
   TestConversionManager manager;
   manager.SetActiveImpressionsForWebUI(
-      {ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
+      {ImpressionBuilder(base::Time::Now())
+           .SetData(std::numeric_limits<uint64_t>::max())
+           .Build(),
        ImpressionBuilder(base::Time::Now())
            .SetSourceType(StorableImpression::SourceType::kEvent)
-           .SetPriority(10)
+           .SetPriority(std::numeric_limits<int64_t>::max())
            .Build()});
   OverrideWebUIConversionManager(&manager);
 
@@ -186,16 +195,17 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     let table = document.getElementById("impression-table-body");
     let obs = new MutationObserver(() => {
       if (table.children.length === 2 &&
-          table.children[0].children[0].innerText === "100" &&
+          table.children[0].children[0].innerText === $1 &&
           table.children[0].children[6].innerText === "Navigation" &&
           table.children[1].children[6].innerText === "Event" &&
           table.children[0].children[7].innerText === "0" &&
-          table.children[1].children[7].innerText === "10") {
-        document.title = $1;
+          table.children[1].children[7].innerText === $2) {
+        document.title = $3;
       }
     });
     obs.observe(table, {'childList': true});)";
-  EXPECT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
+  EXPECT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kMaxUint64String,
+                                      kMaxInt64String, kCompleteTitle)));
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   ClickRefreshButton();
@@ -332,10 +342,15 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                        WebUIShownWithPendingReports_ReportsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
+  // We use the max value of `uint64_t` here to ensure that it is properly
+  // handled as a `bigint` value in JS and doesn't run into issues with
+  // `Number.MAX_SAFE_INTEGER`.
+
   TestConversionManager manager;
   ConversionReport report(
       ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
-      /*conversion_data=*/7, /*conversion_time=*/base::Time::Now(),
+      /*conversion_data=*/std::numeric_limits<uint64_t>::max(),
+      /*conversion_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now(), /*conversion_id=*/1);
   ConversionReport report2(
       ImpressionBuilder(base::Time::Now())
@@ -351,14 +366,15 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     let table = document.getElementById("report-table-body");
     let obs = new MutationObserver(() => {
       if (table.children.length === 2 &&
-          table.children[0].children[1].innerText === "7" &&
+          table.children[0].children[1].innerText === $1 &&
           table.children[0].children[5].innerText === "Navigation" &&
           table.children[1].children[5].innerText === "Event") {
-        document.title = $1;
+        document.title = $2;
       }
     });
     obs.observe(table, {'childList': true});)";
-  EXPECT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
+  EXPECT_TRUE(
+      ExecJsInWebUI(JsReplace(wait_script, kMaxUint64String, kCompleteTitle)));
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   ClickRefreshButton();

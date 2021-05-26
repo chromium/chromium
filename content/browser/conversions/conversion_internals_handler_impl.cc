@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_report.h"
@@ -45,16 +44,13 @@ void ForwardImpressionsToWebUI(
   std::vector<::mojom::WebUIImpressionPtr> web_ui_impressions;
   web_ui_impressions.reserve(stored_impressions.size());
 
-  // Convert impression_data and priority to a string; an int64 or uint64 would
-  // potentially run into Number.MAX_SAFE_INTEGER if sent as a numeric type.
   for (const StorableImpression& impression : stored_impressions) {
     web_ui_impressions.push_back(::mojom::WebUIImpression::New(
-        base::NumberToString(impression.impression_data()),
-        impression.impression_origin(), impression.conversion_origin(),
-        impression.reporting_origin(), impression.impression_time().ToJsTime(),
+        impression.impression_data(), impression.impression_origin(),
+        impression.conversion_origin(), impression.reporting_origin(),
+        impression.impression_time().ToJsTime(),
         impression.expiry_time().ToJsTime(),
-        SourceTypeToMojoType(impression.source_type()),
-        base::NumberToString(impression.priority())));
+        SourceTypeToMojoType(impression.source_type()), impression.priority()));
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_impressions));
@@ -67,13 +63,9 @@ void ForwardReportsToWebUI(
   std::vector<::mojom::WebUIConversionReportPtr> web_ui_reports;
   web_ui_reports.reserve(stored_reports.size());
 
-  // Convert impression_data and conversion_data to a string; an int64 or uint64
-  // would potentially run into Number.MAX_SAFE_INTEGER if sent as a numeric
-  // type.
   for (const ConversionReport& report : stored_reports) {
     web_ui_reports.push_back(::mojom::WebUIConversionReport::New(
-        base::NumberToString(report.impression.impression_data()),
-        base::NumberToString(report.conversion_data),
+        report.impression.impression_data(), report.conversion_data,
         report.impression.conversion_origin(),
         report.impression.reporting_origin(), report.report_time.ToJsTime(),
         SourceTypeToMojoType(report.impression.source_type())));
