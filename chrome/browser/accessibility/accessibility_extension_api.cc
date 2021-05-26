@@ -35,6 +35,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
+#include "ui/aura/client/cursor_client.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -399,6 +400,14 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
   if (!root_window)
     return RespondNow(NoArguments());
 
+  aura::client::CursorClient* cursor_client =
+      aura::client::GetCursorClient(root_window);
+
+  bool is_mouse_events_enabled = cursor_client->IsMouseEventsEnabled();
+  if (!is_mouse_events_enabled) {
+    cursor_client->EnableMouseEvents();
+  }
+
   ::wm::ConvertPointFromScreen(root_window, &location_in_screen);
 
   std::unique_ptr<ui::MouseEvent> synthetic_mouse_event =
@@ -413,6 +422,10 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
       host->GetRootTransformForLocalEventCoordinates());
   // This skips rewriters.
   host->DeliverEventToSink(synthetic_mouse_event.get());
+
+  if (!is_mouse_events_enabled) {
+    cursor_client->DisableMouseEvents();
+  }
 
   return RespondNow(NoArguments());
 }

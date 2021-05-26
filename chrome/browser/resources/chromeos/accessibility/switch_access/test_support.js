@@ -13,6 +13,16 @@
   module = await import('./focus_ring_manager.js');
   window.FocusRingManager = module.FocusRingManager;
 
+  module = await import('./navigator.js');
+  window.Navigator = module.Navigator;
+
+  module = await import('./switch_access_constants.js');
+  window.SAConstants = module.SAConstants;
+  window.SwitchAccessMenuAction = module.SwitchAccessMenuAction;
+
+  module = await import('./switch_access.js');
+  window.SwitchAccess = module.SwitchAccess;
+
   const focusRingState = {
     'primary': {'role': '', 'name': ''},
     'preview': {'role': '', 'name': ''}
@@ -37,6 +47,25 @@
     }
   }
 
+  function findAutomationNodeByName(name) {
+    return Navigator.byItem.desktopNode.find({attributes: {name}});
+  }
+
+  window.doDefault = function(name, callback) {
+    transcript.push(`Performing default action on node with name=${name}`);
+    const node = findAutomationNodeByName(name);
+    node.doDefault();
+    callback();
+  };
+
+  window.pointScanClick = function(x, y, callback) {
+    transcript.push(`Clicking with point scanning at location x=${x} y=${y}`);
+    SwitchAccess.mode = SAConstants.Mode.POINT_SCAN;
+    Navigator.byPoint.point_ = {x, y};
+    Navigator.byPoint.performMouseAction(SwitchAccessMenuAction.LEFT_CLICK);
+    callback();
+  };
+
   window.waitForFocusRing = function(type, role, name, callback) {
     transcript.push(`Waiting for type=${type} role=${role} name=${name}`);
     expectedType = type;
@@ -44,6 +73,16 @@
     expectedName = name;
     successCallback = callback;
     checkFocusRingState();
+  };
+
+  window.waitForEventOnAutomationNode = function(eventType, name, callback) {
+    transcript.push(`Waiting for eventType=${eventType} name=${name}`);
+    const node = findAutomationNodeByName(name);
+    const listener = () => {
+      node.removeEventListener(eventType, listener);
+      callback();
+    };
+    node.addEventListener(eventType, listener);
   };
 
   FocusRingManager.setObserver((primary, preview) => {
