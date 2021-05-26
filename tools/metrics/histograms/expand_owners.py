@@ -264,38 +264,6 @@ def _ExtractComponentViaDirmd(path):
   return _ComponentFromDirmd(json_out, subpath)
 
 
-# TODO(crbug/1102997): remove once metadata migration is complete
-def _ExtractComponentFromOWNERS(path):
-  """Returns the string component associated with the file at the given path.
-
-  Examples are 'Blink>Storage>FileAPI' and 'UI'.
-
-  Returns an empty string if no component can be extracted from the OWNERS file
-  located at path or OWNERS files in higher level directories.
-
-  Args:
-    path: The path to an OWNERS file, e.g. 'src/storage/OWNERS'.
-  """
-  with open(path, 'r') as owners_file:
-    for line in [line.lstrip()
-                 for line in owners_file.read().splitlines() if line]:
-      if line.startswith('# COMPONENT: '):
-        # A typical line is '# COMPONENT: UI>Browser>Bubbles''. The colon is
-        # always followed by exactly one space. And the symbol >, if present,
-        # is never preceded or followed by any spaces.
-        words = line.split(': ')
-        if len(words) == 2:
-          return words[1].rstrip()
-        raise Error('The component info in {} is poorly formatted.'
-                    .format(path))
-
-    higher_level_owners_file_path = _GetHigherLevelOwnersFilePath(path)
-    if higher_level_owners_file_path:
-      return _ExtractComponentFromOWNERS(higher_level_owners_file_path)
-
-  return ''
-
-
 def _MakeOwners(document, path, emails_with_dom_elements):
   """Makes DOM Elements for owners and returns the elements.
 
@@ -434,8 +402,6 @@ def ExpandHistogramsOWNERS(histograms):
       _UpdateHistogramOwners(histogram, owner, owners_to_add)
 
       component = _ExtractComponentViaDirmd(os.path.dirname(path))
-      if not component:
-        component = _ExtractComponentFromOWNERS(path)
       if component and component not in components_with_dom_elements:
         components_with_dom_elements.add(component)
         _AddHistogramComponent(histogram, component)
