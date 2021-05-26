@@ -2826,7 +2826,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.CustomDefaultVideoPoster" enum="Boolean"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3377,7 +3377,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.Startup.InitType"
-    enum="AndroidWebViewInitType" expires_after="2021-07-01">
+    enum="AndroidWebViewInitType" expires_after="2021-09-21">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

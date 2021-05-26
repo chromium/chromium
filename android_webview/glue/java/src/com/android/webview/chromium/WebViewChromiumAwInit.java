@@ -166,7 +166,7 @@ public class WebViewChromiumAwInit {
             }
 
             RecordHistogram.recordEnumeratedHistogram(
-                    "Android.WebView.Start.InitType", type, WebViewInitType.COUNT);
+                    "Android.WebView.Startup.InitType", type, WebViewInitType.COUNT);
 
             final Context context = ContextUtils.getApplicationContext();
 
