@@ -393,6 +393,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @see AutocompleteController#onVoiceResults(List)
      */
     void onVoiceResults(@Nullable List<VoiceRecognitionHandler.VoiceResult> results) {
+        if (!mNativeInitialized || mAutocomplete == null) return;
         mAutocomplete.onVoiceResults(results);
     }
 
@@ -438,7 +439,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     @Override
     public void onSuggestionClicked(
             @NonNull AutocompleteMatch suggestion, int position, @NonNull GURL url) {
-        if (mAutocompleteResult.isFromCachedResult() && !mNativeInitialized) {
+        if (mAutocompleteResult.isFromCachedResult()
+                && (!mNativeInitialized || mAutocomplete == null)) {
             // clang-format off
             mDeferredLoadAction = () -> loadUrlForOmniboxMatch(
                             position, suggestion, url, mLastActionUpTimestamp, true);
@@ -584,10 +586,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      */
     private GURL updateSuggestionUrlIfNeeded(@NonNull AutocompleteMatch suggestion,
             int selectedIndex, @NonNull GURL url, boolean skipCheck) {
-        // Only called once we have suggestions, and don't have a listener though which we can
-        // receive suggestions until the native side is ready, so this is safe
-        assert mNativeInitialized
-            : "updateSuggestionUrlIfNeeded called before native initialization";
+        if (!mNativeInitialized || mAutocomplete == null) return url;
         if (suggestion.getType() == OmniboxSuggestionType.VOICE_SUGGEST
                 || suggestion.getType() == OmniboxSuggestionType.TILE_SUGGESTION
                 || suggestion.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST) {
@@ -651,7 +650,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mIgnoreOmniboxItemSelection = true;
         cancelAutocompleteRequests();
 
-        if (mEditSessionState == EditSessionState.INACTIVE && mNativeInitialized) {
+        if (mEditSessionState == EditSessionState.INACTIVE && mNativeInitialized
+                && mAutocomplete != null) {
             mAutocomplete.resetSession();
             mNewOmniboxEditSessionTimestamp = SystemClock.elapsedRealtime();
             mEditSessionState = EditSessionState.ACTIVATED_BY_USER_INPUT;
@@ -742,7 +742,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     void loadTypedOmniboxText(long eventTime) {
         final String urlText = mUrlBarEditingTextProvider.getTextWithAutocomplete();
         cancelAutocompleteRequests();
-        if (mNativeInitialized) {
+        if (mNativeInitialized && mAutocomplete != null) {
             findMatchAndLoadUrl(urlText, eventTime);
         } else {
             mDeferredLoadAction = () -> findMatchAndLoadUrl(urlText, eventTime);
@@ -769,6 +769,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             // user tapped the URL bar to dismiss the suggestions, then pressed enter. This can
             // also happen if the user presses enter before any suggestions have been received
             // from the autocomplete controller.
+            if (!mNativeInitialized || mAutocomplete == null) return;
             suggestionMatch = mAutocomplete.classify(urlText, mDelegate.didFocusUrlFromFakebox());
             // Classify matches don't propagate to java, so skip the OOB check.
             inSuggestionList = false;
@@ -886,8 +887,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @see AutocompleteController#stop(boolean)
      */
     private void hideSuggestions() {
-        if (mAutocomplete == null || !mNativeInitialized) return;
-
+        if (!mNativeInitialized || mAutocomplete == null) return;
         stopAutocomplete(true);
 
         mDropdownViewInfoListManager.clear();
@@ -902,7 +902,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * @param clear Whether to clear the most recent autocomplete results.
      */
     private void stopAutocomplete(boolean clear) {
-        if (mAutocomplete != null) mAutocomplete.stop(clear);
+        if (mNativeInitialized && mAutocomplete != null) mAutocomplete.stop(clear);
         cancelAutocompleteRequests();
     }
 
@@ -910,6 +910,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * Trigger autocomplete for the given query.
      */
     void startAutocompleteForQuery(String query) {
+        if (!mNativeInitialized || mAutocomplete == null) return;
         stopAutocomplete(false);
         if (mDataProvider.hasTab()) {
             mAutocomplete.start(mDataProvider.getProfile(), mDataProvider.getCurrentUrl(),
