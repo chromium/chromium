@@ -28,7 +28,7 @@
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
 #include "chrome/updater/updater_branding.h"
-#include "chrome/updater/win/util.h"
+#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 

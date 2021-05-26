@@ -13,7 +13,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/updater/mac/installer.h"
+#include "chrome/updater/mac/installer_dmg.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater_setup {

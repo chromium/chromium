@@ -29,7 +29,7 @@
 #include "chrome/updater/win/net/proxy_info.h"
 #include "chrome/updater/win/net/scoped_hinternet.h"
 #include "chrome/updater/win/net/scoped_winttp_proxy_info.h"
-#include "chrome/updater/win/util.h"
+#include "chrome/updater/win/win_util.h"
 #include "url/url_constants.h"
 
 namespace updater {

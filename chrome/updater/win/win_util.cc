@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/win/util.h"
+#include "chrome/updater/win/win_util.h"
 
 #include <aclapi.h>
 #include <shlobj.h>
@@ -23,8 +23,8 @@
 #include "base/win/registry.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/win/constants.h"
 #include "chrome/updater/win/user_info.h"
+#include "chrome/updater/win/win_constants.h"
 
 namespace updater {
 namespace {

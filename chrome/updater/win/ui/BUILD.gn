@@ -39,10 +39,7 @@ source_set("ui") {
     ":ui_resources",
     "//base",
     "//base:i18n",
-    "//chrome/updater:base",
     "//chrome/updater:branding_header",
-    "//chrome/updater:lib",
-    "//chrome/updater/win:install_progress_observer",
     "//third_party/wtl",
   ]
 

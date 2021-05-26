@@ -13,7 +13,7 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "chrome/updater/win/util.h"
+#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 

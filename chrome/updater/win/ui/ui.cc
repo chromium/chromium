@@ -11,7 +11,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/ui/constants.h"
 #include "chrome/updater/win/ui/util.h"
-#include "chrome/updater/win/util.h"
+#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 namespace ui {

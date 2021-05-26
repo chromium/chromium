@@ -11,7 +11,7 @@
 #include "base/test/test_suite.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/win/task_scheduler.h"
-#include "chrome/updater/win/util.h"
+#include "chrome/updater/win/win_util.h"
 
 int main(int argc, char** argv) {
   auto scoped_com_initializer =

@@ -9,7 +9,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/policy/manager.h"
-#include "chrome/updater/win/constants.h"
+#include "chrome/updater/win/win_constants.h"
 
 namespace updater {
 

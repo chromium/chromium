@@ -4,7 +4,7 @@
 
 #include <windows.h>
 
-#include "chrome/updater/win/util.h"
+#include "chrome/updater/win/win_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {

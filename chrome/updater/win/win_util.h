@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_UTIL_H_
-#define CHROME_UPDATER_WIN_UTIL_H_
+#ifndef CHROME_UPDATER_WIN_WIN_UTIL_H_
+#define CHROME_UPDATER_WIN_WIN_UTIL_H_
 
 #include <winerror.h>
 
@@ -105,10 +105,9 @@ std::wstring GetRegistryKeyClientStateUpdater();
 // be computed.
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
 
-
 // Returns a logged on user token handle from the current session.
 base::win::ScopedHandle GetUserTokenFromCurrentSessionId();
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_WIN_UTIL_H_
+#endif  // CHROME_UPDATER_WIN_WIN_UTIL_H_

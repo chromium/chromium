@@ -16,7 +16,7 @@
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
 #include "chrome/updater/app/server/win/server.h"
-#include "chrome/updater/win/constants.h"
+#include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/wrl_module.h"
 
 namespace updater {

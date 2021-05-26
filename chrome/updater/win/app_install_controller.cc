@@ -32,7 +32,7 @@
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/splash_screen.h"
 #include "chrome/updater/win/ui/util.h"
-#include "chrome/updater/win/util.h"
+#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 namespace {

@@ -26,8 +26,6 @@ source_set("test_common") {
   deps = [
     "//base",
     "//chrome/updater:base",
-    "//chrome/updater:lib",
-    "//chrome/updater/win:app_install_controller",
   ]
 }
 
@@ -60,7 +58,6 @@ executable("updater_test_process") {
     "//base",
     "//base/test:test_support",
     "//build/win:default_exe_manifest",
-    "//chrome/updater:lib",
     "//chrome/updater:updater_version_cc",
   ]
 }

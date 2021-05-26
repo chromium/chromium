@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/mac/installer.h"
+#include "chrome/updater/mac/installer_dmg.h"
 
 namespace updater {
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_MAC_INSTALLER_H_
-#define CHROME_UPDATER_MAC_INSTALLER_H_
+#ifndef CHROME_UPDATER_MAC_INSTALLER_DMG_H_
+#define CHROME_UPDATER_MAC_INSTALLER_DMG_H_
 
 #include <string>
 
@@ -41,4 +41,4 @@ int InstallFromDMG(const base::FilePath& dmg_file_path,
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_MAC_INSTALLER_H_
+#endif  // CHROME_UPDATER_MAC_INSTALLER_DMG_H_

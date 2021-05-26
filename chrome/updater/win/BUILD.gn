@@ -34,10 +34,9 @@ executable("updater") {
   configs += [ "//build/config/win:windowed" ]
 
   deps = [
-    ":app_install_controller",
     ":version_resources",
     "//build/win:default_exe_manifest",
-    "//chrome/updater:lib",
+    "//chrome/updater:base",
     "//chrome/updater:updater_version_cc",
     "//chrome/updater/win/ui:ui_resources",
   ]
@@ -55,10 +54,9 @@ executable("updater_exe_test_v2") {
   configs += [ "//build/config/win:windowed" ]
 
   deps = [
-    ":app_install_controller",
     ":version_resources",
     "//build/win:default_exe_manifest",
-    "//chrome/updater:lib",
+    "//chrome/updater:base",
     "//chrome/updater:updater_version_cc_offset",
     "//chrome/updater/win/ui:ui_resources",
   ]
@@ -83,119 +81,19 @@ process_version_rc_template("version_resources") {
   output = "$target_gen_dir/updater_exe.rc"
 }
 
-source_set("constants") {
-  sources = [
-    "constants.cc",
-    "constants.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/updater:branding_header",
-  ]
-}
-
-source_set("lib") {
-  # This build target and "//chrome/updater:lib" act as a unit. Depending
-  # targets must use "//chrome/updater:lib" as a dependency.
-  visibility = [ "//chrome/updater:lib" ]
-
-  sources = [
-    "action_handler.cc",
-    "installer.cc",
-    "installer.h",
-    "net/net_util.cc",
-    "net/net_util.h",
-    "net/network.h",
-    "net/network_fetcher.cc",
-    "net/network_fetcher.h",
-    "net/network_winhttp.cc",
-    "net/network_winhttp.h",
-    "net/proxy_configuration.cc",
-    "net/proxy_configuration.h",
-    "net/proxy_info.cc",
-    "net/proxy_info.h",
-    "net/scoped_hinternet.h",
-    "net/scoped_winttp_proxy_info.h",
-    "scoped_handle.h",
-    "scoped_impersonation.cc",
-    "scoped_impersonation.h",
-    "setup/setup.cc",
-    "setup/setup.h",
-    "setup/setup_util.cc",
-    "setup/setup_util.h",
-    "setup/uninstall.cc",
-    "setup/uninstall.h",
-    "task_scheduler.cc",
-    "task_scheduler.h",
-    "update_service_internal_proxy.cc",
-    "update_service_internal_proxy.h",
-    "update_service_proxy.cc",
-    "update_service_proxy.h",
-    "user_info.cc",
-    "user_info.h",
-    "util.cc",
-    "util.h",
-  ]
-
-  configs -= [ "//build/config/win:winver" ]
-  configs += [ "//chrome/updater/app/server/win:winver" ]
-
-  defines = [ "SECURITY_WIN32" ]
-
-  libs = [
-    "secur32.lib",
-    "taskschd.lib",
-    "winhttp.lib",
-  ]
-
-  deps = [
-    ":constants",
-    "//base",
-    "//chrome/installer/util:with_no_strings",
-    "//chrome/updater:base",
-    "//chrome/updater:branding_header",
-    "//chrome/updater:version_header",
-    "//chrome/updater/app/server/win:updater_idl_idl",
-    "//chrome/updater/app/server/win:updater_internal_idl_idl",
-    "//chrome/updater/app/server/win:updater_legacy_idl_idl",
-    "//chrome/updater/policy",
-    "//components/update_client",
-    "//url:url",
-  ]
-}
-
-source_set("install_progress_observer") {
-  sources = [
-    "install_progress_observer.cc",
-    "install_progress_observer.h",
-  ]
-
-  deps = [ "//base" ]
-}
-
 # This build target is defined to minimize the impact of -Wno-missing-braces
 # compiler switch. In the future it might be possible to isolate the
 # dependency of ATL in the UI so ATL headers are not visible in the
 # compilation units outside the UI itself.
 # TODO(sorin): https://crbug.com/1014311
 source_set("app_install_controller") {
-  visibility = [
-    "//chrome/updater/test/test_app:app_sources",
-    "//chrome/updater/win/*",
-  ]
-
   cflags_cc = [ "-Wno-missing-braces" ]
 
   sources = [ "app_install_controller.cc" ]
 
-  allow_circular_includes_from = [ "//chrome/updater:lib" ]
   deps = [
-    ":install_progress_observer",
     "//base",
     "//base:i18n",
-    "//chrome/updater:base",
-    "//chrome/updater:lib",
     "//chrome/updater:version_header",
     "//chrome/updater/win/ui",
   ]
@@ -210,7 +108,7 @@ source_set("tag_extractor") {
   ]
 
   friend = [
-    ":updater_tests",
+    "//chrome/updater:updater_test_sources",
     ":updater_fuzzer",
   ]
 
@@ -218,45 +116,6 @@ source_set("tag_extractor") {
   # PeImageReader directly, but right now that isn't possible due to the
   # visibility of the lib, so we depend on the entire base temporarily.
   deps = [ "//base" ]
-}
-
-source_set("updater_tests") {
-  testonly = true
-
-  sources = [
-    "installer_unittest.cc",
-    "net/network_unittest.cc",
-    "net/proxy_configuration_unittest.cc",
-    "net/proxy_info_unittest.cc",
-    "setup/setup_util_unittest.cc",
-    "tag_extractor_unittest.cc",
-    "task_scheduler_unittest.cc",
-    "util_unittest.cc",
-  ]
-
-  deps = [
-    ":app_install_controller",
-    ":constants",
-    ":tag_extractor",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/updater:branding_header",
-    "//chrome/updater:lib",
-    "//chrome/updater/win/test:test_executables",
-    "//chrome/updater/win/test:test_strings",
-    "//testing/gtest",
-    "//url:url",
-  ]
-
-  data_deps = [ "//chrome/updater/win/installer:installer_unittest" ]
-
-  data = [
-    "../test/data/signed.exe",
-    "../test/data/signed.exe.gz",
-    "../test/data/tagged_encode_utf8.exe",
-    "../test/data/tagged_magic_utf16.exe",
-    "../test/data/updater.runtime_deps",
-  ]
 }
 
 fuzzer_test("updater_fuzzer") {

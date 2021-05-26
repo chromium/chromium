@@ -8,7 +8,7 @@
 
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
-#include "chrome/updater/win/constants.h"
+#include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {

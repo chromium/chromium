@@ -17,37 +17,6 @@ group("mac") {
   ]
 }
 
-source_set("network_fetcher_sources") {
-  sources = [
-    "net/network.h",
-    "net/network_fetcher.h",
-    "net/network_fetcher.mm",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/updater:base",
-    "//components/crash/core/common:crash_key_lib",
-    "//components/update_client",
-    "//net",
-  ]
-}
-
-source_set("updater_tests") {
-  testonly = true
-
-  sources = [ "net/network_unittest.cc" ]
-
-  deps = [
-    ":network_fetcher_sources",
-    ":updater_setup_sources",
-    "//base/test:test_support",
-    "//net:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
 tweak_info_plist("updater_plist") {
   info_plist = "Info.plist"
 }
@@ -60,9 +29,7 @@ mac_app_bundle("updater_bundle") {
 
   sources = [ "main.cc" ]
   deps = [
-    ":network_fetcher_sources",
-    ":updater_setup_sources",
-    "//chrome/updater:lib",
+    "//chrome/updater:base",
     "//chrome/updater:updater_version_cc",
   ]
 }
@@ -75,52 +42,8 @@ mac_app_bundle("updater_bundle_test_v2") {
 
   sources = [ "main.cc" ]
   deps = [
-    ":network_fetcher_sources",
-    ":updater_setup_sources",
-    "//chrome/updater:lib",
-    "//chrome/updater:updater_version_cc_offset",
-  ]
-}
-
-source_set("xpc_names") {
-  sources = [
-    "xpc_service_names.h",
-    "xpc_service_names.mm",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/updater:branding_header",
-    "//chrome/updater:version_header",
-  ]
-
-  frameworks = [ "Foundation.framework" ]
-}
-
-source_set("updater_setup_sources") {
-  sources = [
-    "setup/setup.h",
-    "setup/setup.mm",
-  ]
-
-  deps = [
-    ":network_fetcher_sources",
-    ":xpc_names",
-    "//base",
-    "//chrome/common/mac:launchd",
     "//chrome/updater:base",
-    "//chrome/updater:branding_header",
-    "//chrome/updater:version_header",
-    "//components/crash/core/common:crash_key_lib",
-    "//mojo/public/cpp/platform",
-  ]
-
-  allow_circular_includes_from = [ "//chrome/updater:base" ]
-
-  frameworks = [
-    "AppKit.framework",
-    "CoreServices.framework",
-    "ServiceManagement.framework",
+    "//chrome/updater:updater_version_cc_offset",
   ]
 }
 
@@ -162,31 +85,5 @@ action("browser_install_script") {
         root_out_dir + "/$browser_product_name Packaging/updater/.install"),
     "-v",
     chrome_version_full,
-  ]
-}
-
-source_set("installer_sources") {
-  sources = [
-    "installer.h",
-    "installer.mm",
-  ]
-
-  deps = [ "//base" ]
-}
-
-source_set("updater_setup_tests") {
-  testonly = true
-
-  sources = [ "setup/setup_unittest.mm" ]
-
-  data = [ "//chrome/test/data/updater/updater_setup_test_dmg.dmg" ]
-
-  deps = [
-    ":installer_sources",
-    ":updater_setup_sources",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/common:constants",
-    "//testing/gtest",
   ]
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_CONSTANTS_H_
-#define CHROME_UPDATER_WIN_CONSTANTS_H_
+#ifndef CHROME_UPDATER_WIN_WIN_CONSTANTS_H_
+#define CHROME_UPDATER_WIN_WIN_CONSTANTS_H_
 
 #include <windows.h>
 
@@ -56,4 +56,4 @@ extern const wchar_t kWindowsServiceName[];
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_WIN_CONSTANTS_H_
+#endif  // CHROME_UPDATER_WIN_WIN_CONSTANTS_H_

@@ -29,8 +29,8 @@
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util.h"
-#include "chrome/updater/win/constants.h"
 #include "chrome/updater/win/task_scheduler.h"
+#include "chrome/updater/win/win_constants.h"
 
 // Specialization for std::hash so that IID instances can be stored in an
 // associative container. This implementation of the hash function adds

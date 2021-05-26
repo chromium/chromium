@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/installer.h"
+#include "chrome/updater/win/installer_api.h"
 
 #include <algorithm>
 #include <iterator>
@@ -21,8 +21,7 @@
 #include "base/win/registry.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/enum_traits.h"
-#include "chrome/updater/win/constants.h"
-#include "chrome/updater/win/installer.h"
+#include "chrome/updater/win/win_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {

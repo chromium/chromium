@@ -41,62 +41,9 @@ group("all") {
 # Conditional build is needed, otherwise the analyze script on Linux
 # requires all targets and it is going to include the targets below.
 if (is_win || is_mac) {
-  # This target must only have platform-neutral sources. Generally speaking,
-  # these sources are related to common, cross-platfrom aspects of the code,
-  # such as crash handling, or interfaces to cross platform dependencies from
-  # Chromium. If the sources are in platform-specific directories or their
-  # names contain platform-specific suffixes, they must go into the :lib
-  # target, or to targets in their platform directories.
   source_set("base") {
     sources = [
       "action_handler.h",
-      "constants.cc",
-      "constants.h",
-      "crash_client.cc",
-      "crash_client.h",
-      "crash_reporter.cc",
-      "crash_reporter.h",
-      "enum_traits.h",
-      "persisted_data.cc",
-      "persisted_data.h",
-      "registration_data.cc",
-      "registration_data.h",
-      "splash_screen.h",
-      "update_service.cc",
-      "update_service.h",
-      "update_service_internal.h",
-      "updater_scope.h",
-      "util.cc",
-      "util.h",
-    ]
-
-    deps = [
-      ":branding_header",
-      ":version_header",
-      "//base",
-      "//components/crash/core/common:crash_key_lib",
-      "//components/prefs",
-      "//components/update_client",
-      "//third_party/crashpad/crashpad/client",
-      "//third_party/crashpad/crashpad/handler",
-      "//url",
-    ]
-
-    if (is_mac) {
-      sources += [
-        "mac/mac_util.h",
-        "mac/mac_util.mm",
-      ]
-
-      deps += [ "//chrome/common/mac:launchd" ]
-
-      frameworks = [ "Foundation.framework" ]
-    }
-  }
-
-  # Use this source set for code which has platform-specific modules.
-  source_set("lib") {
-    sources = [
       "activity.cc",
       "activity.h",
       "activity_impl.h",
@@ -116,7 +63,14 @@ if (is_win || is_mac) {
       "check_for_updates_task.h",
       "configurator.cc",
       "configurator.h",
+      "constants.cc",
+      "constants.h",
+      "crash_client.cc",
+      "crash_client.h",
+      "crash_reporter.cc",
+      "crash_reporter.h",
       "crx_downloader_factory.h",
+      "enum_traits.h",
       "external_constants.cc",
       "external_constants.h",
       "external_constants_builder.cc",
@@ -126,22 +80,60 @@ if (is_win || is_mac) {
       "installer.cc",
       "installer.h",
       "lib_util.h",
+      "persisted_data.cc",
+      "persisted_data.h",
+      "policy/dm_policy_manager.cc",
+      "policy/dm_policy_manager.h",
+      "policy/manager.cc",
+      "policy/manager.h",
+      "policy/service.cc",
+      "policy/service.h",
       "prefs.cc",
       "prefs.h",
       "prefs_impl.h",
+      "registration_data.cc",
+      "registration_data.h",
       "setup.h",
+      "splash_screen.h",
       "tag.cc",
       "tag.h",
+      "update_service.cc",
+      "update_service.h",
       "update_service_impl.cc",
       "update_service_impl.h",
       "update_service_impl_inactive.cc",
       "update_service_impl_inactive.h",
+      "update_service_internal.h",
       "update_service_internal_impl.cc",
       "update_service_internal_impl.h",
       "update_service_internal_impl_inactive.cc",
       "update_service_internal_impl_inactive.h",
       "updater.cc",
       "updater.h",
+      "updater_scope.h",
+      "util.cc",
+      "util.h",
+    ]
+
+    deps = [
+      ":branding_header",
+      ":version_header",
+      "//base",
+      "//base:i18n",
+      "//chrome/updater/protos:omaha_proto",
+      "//components/crash/core/common:crash_key",
+      "//components/crash/core/common:crash_key_lib",
+      "//components/crx_file:crx_file",
+      "//components/policy/proto",
+      "//components/prefs",
+      "//components/update_client",
+      "//components/update_client:in_process_patcher",
+      "//components/update_client:in_process_unzipper",
+      "//components/version_info",
+      "//third_party/boringssl",
+      "//third_party/crashpad/crashpad/client",
+      "//third_party/crashpad/crashpad/handler",
+      "//url",
     ]
 
     if (is_mac) {
@@ -153,6 +145,7 @@ if (is_win || is_mac) {
         "app/server/mac/server.mm",
         "app/server/mac/service_delegate.h",
         "app/server/mac/service_delegate.mm",
+        "app/server/mac/service_protocol.h",
         "app/server/mac/service_protocol.mm",
         "app/server/mac/update_service_wrappers.h",
         "app/server/mac/update_service_wrappers.mm",
@@ -160,17 +153,49 @@ if (is_win || is_mac) {
         "launchd_util.cc",
         "launchd_util.h",
         "lib_util_mac.mm",
+        "mac/installer_dmg.h",
+        "mac/installer_dmg.mm",
+        "mac/mac_util.h",
+        "mac/mac_util.mm",
+        "mac/net/network.h",
+        "mac/net/network_fetcher.h",
+        "mac/net/network_fetcher.mm",
+        "mac/setup/setup.h",
+        "mac/setup/setup.mm",
         "mac/update_service_internal_proxy.h",
         "mac/update_service_internal_proxy.mm",
         "mac/update_service_proxy.h",
         "mac/update_service_proxy.mm",
+        "mac/xpc_service_names.h",
+        "mac/xpc_service_names.mm",
+        "policy/mac/managed_preference_policy_manager.h",
+        "policy/mac/managed_preference_policy_manager.mm",
+        "policy/mac/managed_preference_policy_manager_impl.h",
+        "policy/mac/managed_preference_policy_manager_impl.mm",
         "prefs_mac.mm",
         "service_factory_mac.mm",
         "setup_mac.mm",
       ]
+
+      deps += [
+        "//chrome/common/mac:launchd",
+        "//mojo/public/cpp/platform",
+        "//net",
+      ]
+
+      frameworks = [
+        "AppKit.framework",
+        "CoreServices.framework",
+        "Foundation.framework",
+        "ServiceManagement.framework",
+      ]
     }
 
     if (is_win) {
+      allow_circular_includes_from = [
+        "//chrome/updater/win:app_install_controller",
+        "//chrome/updater/win/ui",
+      ]
       sources += [
         "activity_impl_win.cc",
         "app/app_install_win.cc",
@@ -183,65 +208,73 @@ if (is_win || is_mac) {
         "app/server/win/service_main.cc",
         "app/server/win/service_main.h",
         "lib_util_win.cc",
+        "policy/win/group_policy_manager.cc",
+        "policy/win/group_policy_manager.h",
         "prefs_win.cc",
         "service_factory_win.cc",
         "setup_win.cc",
+        "win/action_handler.cc",
+        "win/install_progress_observer.cc",
+        "win/install_progress_observer.h",
+        "win/installer_api.cc",
+        "win/installer_api.h",
+        "win/net/net_util.cc",
+        "win/net/net_util.h",
+        "win/net/network.h",
+        "win/net/network_fetcher.cc",
+        "win/net/network_fetcher.h",
+        "win/net/network_winhttp.cc",
+        "win/net/network_winhttp.h",
+        "win/net/proxy_configuration.cc",
+        "win/net/proxy_configuration.h",
+        "win/net/proxy_info.cc",
+        "win/net/proxy_info.h",
+        "win/net/scoped_hinternet.h",
+        "win/net/scoped_winttp_proxy_info.h",
+        "win/scoped_handle.h",
+        "win/scoped_impersonation.cc",
+        "win/scoped_impersonation.h",
+        "win/setup/setup.cc",
+        "win/setup/setup.h",
+        "win/setup/setup_util.cc",
+        "win/setup/setup_util.h",
+        "win/setup/uninstall.cc",
+        "win/setup/uninstall.h",
+        "win/task_scheduler.cc",
+        "win/task_scheduler.h",
+        "win/update_service_internal_proxy.cc",
+        "win/update_service_internal_proxy.h",
+        "win/update_service_proxy.cc",
+        "win/update_service_proxy.h",
+        "win/user_info.cc",
+        "win/user_info.h",
+        "win/win_constants.cc",
+        "win/win_constants.h",
+        "win/win_util.cc",
+        "win/win_util.h",
         "win/wrl_module.h",
       ]
-    }
-
-    deps = [
-      ":base",
-      ":branding_header",
-      ":version_header",
-      "//base",
-      "//base:i18n",
-      "//chrome/updater/policy",
-      "//components/crash/core/common:crash_key",
-      "//components/crx_file:crx_file",
-      "//components/prefs",
-      "//components/update_client",
-      "//components/update_client:in_process_patcher",
-      "//components/update_client:in_process_unzipper",
-      "//components/version_info",
-      "//third_party/boringssl",
-      "//url",
-    ]
-
-    if (is_win) {
-      # //chrome/updater:lib and //chrome/updater/win:lib behave as one unit
-      # for linking purposes. Targets depending on the latter must use
-      # the former as a dependency.
-      allow_circular_includes_from = [ "//chrome/updater/win:lib" ]
       deps += [
         "//chrome/installer/util:with_no_strings",
         "//chrome/updater/app/server/win:updater_idl_idl",
         "//chrome/updater/app/server/win:updater_internal_idl_idl",
         "//chrome/updater/app/server/win:updater_legacy_idl_idl",
-        "//chrome/updater/win:constants",
+        "//chrome/updater/win:app_install_controller",
+        "//chrome/updater/win/ui",
       ]
-      public_deps = [ "//chrome/updater/win:lib" ]
-    }
 
-    if (is_mac) {
-      deps += [
-        "//chrome/updater/app/server/mac:protocol",
-        "//chrome/updater/mac:installer_sources",
-        "//chrome/updater/mac:network_fetcher_sources",
-        "//chrome/updater/mac:updater_setup_sources",
-        "//chrome/updater/mac:xpc_names",
-      ]
-    }
-
-    if (is_mac) {
-      frameworks = [ "Foundation.framework" ]
-    }
-
-    if (is_win) {
       configs -= [ "//build/config/win:winver" ]
       configs += [
         "//chrome/updater/app/server/win:winver",
         "//chrome/updater/win:wrl_strict",
+      ]
+
+      defines = [ "SECURITY_WIN32" ]
+
+      libs = [
+        "secur32.lib",
+        "taskschd.lib",
+        "winhttp.lib",
       ]
     }
   }
@@ -304,7 +337,6 @@ if (is_win || is_mac) {
 
     deps = [
       ":base",
-      ":lib",
       "//base",
     ]
   }
@@ -357,6 +389,9 @@ if (is_win || is_mac) {
       "external_constants_override_unittest.cc",
       "lib_util_unittest.cc",
       "persisted_data_unittest.cc",
+      "policy/dm_policy_manager_unittest.cc",
+      "policy/manager_unittest.cc",
+      "policy/service_unittest.cc",
       "prefs_unittest.cc",
       "tag_unittest.cc",
       "test/integration_test_commands.h",
@@ -376,7 +411,6 @@ if (is_win || is_mac) {
     deps = [
       ":base",
       ":branding_header",
-      ":lib",
       ":updater",
       ":updater_tests_support",
       ":updater_version_cc",
@@ -385,10 +419,11 @@ if (is_win || is_mac) {
       "//base/test:test_support",
       "//chrome/common:constants",
       "//chrome/updater/device_management:unittest",
-      "//chrome/updater/policy:unittest",
+      "//chrome/updater/protos:omaha_proto",
       "//chrome/updater/test/test_app:constants",
       "//chrome/updater/test/test_app:version_header",
       "//chrome/updater/tools:unittest",
+      "//components/policy/proto",
       "//components/prefs:test_support",
       "//components/update_client",
       "//net:test_support",
@@ -398,40 +433,67 @@ if (is_win || is_mac) {
     ]
 
     if (is_win) {
-      sources += [ "test/integration_tests_win.cc" ]
+      sources += [
+        "policy/win/group_policy_manager_unittest.cc",
+        "test/integration_tests_win.cc",
+        "win/installer_api_unittest.cc",
+        "win/net/network_unittest.cc",
+        "win/net/proxy_configuration_unittest.cc",
+        "win/net/proxy_info_unittest.cc",
+        "win/setup/setup_util_unittest.cc",
+        "win/tag_extractor_unittest.cc",
+        "win/task_scheduler_unittest.cc",
+        "win/win_util_unittest.cc",
+      ]
 
       deps += [
         "//chrome/updater/app/server/win:updater_idl_idl",
         "//chrome/updater/app/server/win:updater_internal_idl_idl",
         "//chrome/updater/app/server/win:updater_legacy_idl_idl",
-        "//chrome/updater/win:constants",
-        "//chrome/updater/win:updater_tests",
+        "//chrome/updater/win:tag_extractor",
+        "//chrome/updater/win/test:test_executables",
+        "//chrome/updater/win/test:test_strings",
       ]
 
       data_deps = [
         "//chrome/updater/win:updater",
         "//chrome/updater/win/installer",
+        "//chrome/updater/win/installer:installer_unittest",
+      ]
+
+      data = [
+        "test/data/signed.exe",
+        "test/data/signed.exe.gz",
+        "test/data/tagged_encode_utf8.exe",
+        "test/data/tagged_magic_utf16.exe",
+        "test/data/updater.runtime_deps",
       ]
     }
 
     if (is_mac) {
       sources += [
+        "mac/net/network_unittest.cc",
         "mac/scoped_xpc_service_mock.h",
         "mac/scoped_xpc_service_mock.mm",
+        "mac/setup/setup_unittest.mm",
         "mac/update_service_proxy_test.mm",
+        "policy/mac/managed_preference_policy_manager_impl_unittest.mm",
+        "policy/mac/managed_preference_policy_manager_unittest.cc",
         "test/integration_tests_mac.mm",
       ]
 
       deps += [
+        "//base",
+        "//base/test:test_support",
+        "//chrome/common:constants",
         "//chrome/common/mac:launchd",
-        "//chrome/updater/app/server/mac:protocol",
-        "//chrome/updater/mac:network_fetcher_sources",
-        "//chrome/updater/mac:updater_bundle",
-        "//chrome/updater/mac:updater_setup_tests",
-        "//chrome/updater/mac:updater_tests",
-        "//chrome/updater/mac:xpc_names",
+        "//net:test_support",
+        "//testing/gmock",
+        "//testing/gtest",
         "//third_party/ocmock",
       ]
+
+      data = [ "//chrome/test/data/updater/updater_setup_test_dmg.dmg" ]
 
       data_deps = [
         "//chrome/updater/mac:updater_bundle",
@@ -455,9 +517,6 @@ if (is_win || is_mac) {
       "//chrome/common:constants",
       "//testing/gtest",
     ]
-    if (is_win) {
-      deps += [ "//chrome/updater/win:updater_tests" ]
-    }
 
     data_deps = [ "//chrome/updater/test/test_app" ]
     if (is_mac) {
@@ -479,9 +538,6 @@ if (is_win || is_mac) {
       "//chrome/common:constants",
       "//testing/gtest",
     ]
-    if (is_win) {
-      deps += [ "//chrome/updater/win:updater_tests" ]
-    }
 
     data_deps = [ ":updater_integration_tests_helper" ]
     if (is_mac) {
@@ -502,7 +558,6 @@ if (is_win || is_mac) {
 
     deps = [
       ":base",
-      ":lib",
       ":updater_test_sources",
       "//base",
       "//base/test:test_support",

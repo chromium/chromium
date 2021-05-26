@@ -12,7 +12,7 @@
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/win/constants.h"
+#include "chrome/updater/win/win_constants.h"
 
 namespace updater {
 namespace {
