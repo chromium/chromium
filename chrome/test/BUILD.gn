@@ -883,6 +883,10 @@ static_library("browser_tests_runner") {
   if (is_win) {
     deps += [ "//chrome/installer/util:strings" ]
   }
+
+  if (is_android) {
+    deps += [ "//ui/compositor" ]
+  }
 }
 
 if (!is_android) {
