@@ -13,10 +13,21 @@
 // clients (Chromium, other downstream repos) later.
 // Use //chromeos/services/machine_learning/public/mojom/roll_mojom.sh to help
 // replicate Chrome OS-side changes over to Chromium.
-
+// Versions list:
+// Version 0: Initial
+// Version 1: Include HypothesisPart Info in Final result.
+// Version 2: Include enable formatting in request config.
 module chromeos.machine_learning.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+
+// Augments a bool to include an 'unknown' value.
+[Stable, Extensible]
+enum OptionalBool {
+  [Default] kUnknown = 0,
+  kFalse,
+  kTrue,
+};
 
 // The configuration used to load Soda recognizer.
 [Stable]
@@ -31,6 +42,9 @@ struct SodaConfig {
   string library_dlc_path;
   // Path to already-installed SODA language pack to use.
   string language_dlc_path;
+  // Whether to enable automated punctuation. Defaults to true as this
+  // is the default in the underlying protocol buffer.
+  [MinVersion=2] OptionalBool enable_formatting = kTrue;
 };
 
 // From the endpointer, What kind of endpointer event to record.
