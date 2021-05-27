@@ -34,7 +34,10 @@ ResourceStatus CSSURLImageValue::Status() const {
 
 scoped_refptr<Image> CSSURLImageValue::GetSourceImageForCanvas(
     SourceImageStatus*,
-    const FloatSize&) {
+    const FloatSize&,
+    const AlphaDisposition alpha_disposition) {
+  // UnpremultiplyAlpha is not implemented yet.
+  DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
   return GetImage();
 }
 

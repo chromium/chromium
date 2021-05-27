@@ -1,4 +1,7 @@
 specific_include_rules = {
+    "canvas_image_source.cc": [
+        "+gpu/command_buffer/client/shared_image_interface.h",
+    ],
     "canvas_rendering_context.cc": [
         "+services/metrics/public/cpp/ukm_builders.h",
     ],

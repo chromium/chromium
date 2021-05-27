@@ -201,8 +201,10 @@ class CORE_EXPORT HTMLCanvasElement final
   void PageVisibilityChanged() override;
 
   // CanvasImageSource implementation
-  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
-                                               const FloatSize&) override;
+  scoped_refptr<Image> GetSourceImageForCanvas(
+      SourceImageStatus*,
+      const FloatSize&,
+      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
   bool WouldTaintOrigin() const override;
   FloatSize ElementSize(const FloatSize&,
                         const RespectImageOrientationEnum) const override;
@@ -376,7 +378,8 @@ class CORE_EXPORT HTMLCanvasElement final
       const CanvasContextCreationAttributesCore&);
 
   scoped_refptr<StaticBitmapImage> GetSourceImageForCanvasInternal(
-      SourceImageStatus*);
+      SourceImageStatus*,
+      const AlphaDisposition alpha_disposition = kPremultiplyAlpha);
 
   void OnContentsCcLayerChanged();
 

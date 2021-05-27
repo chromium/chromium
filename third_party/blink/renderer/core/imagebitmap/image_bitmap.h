@@ -88,7 +88,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   unsigned height() const;
   IntSize Size() const;
 
-  bool IsNeutered() const { return is_neutered_; }
+  bool IsNeutered() const override { return is_neutered_; }
   bool OriginClean() const { return image_->OriginClean(); }
   bool IsPremultiplied() const { return image_->IsPremultiplied(); }
   scoped_refptr<StaticBitmapImage> Transfer();
@@ -97,8 +97,10 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   ~ImageBitmap() override;
 
   // CanvasImageSource implementation
-  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
-                                               const FloatSize&) override;
+  scoped_refptr<Image> GetSourceImageForCanvas(
+      SourceImageStatus*,
+      const FloatSize&,
+      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
   bool WouldTaintOrigin() const override { return !image_->OriginClean(); }
   FloatSize ElementSize(const FloatSize&,
                         const RespectImageOrientationEnum) const override;

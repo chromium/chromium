@@ -24,8 +24,12 @@ class FakeCSSStyleImageValue : public CSSStyleImageValue {
   }
 
   // CanvasImageSource
-  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
-                                               const FloatSize&) final {
+  scoped_refptr<Image> GetSourceImageForCanvas(
+      SourceImageStatus*,
+      const FloatSize&,
+      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) final {
+    // Only cover premultiply alpha cases.
+    DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
     return nullptr;
   }
   ResourceStatus Status() const final {

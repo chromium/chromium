@@ -16,6 +16,7 @@ blink_core_sources_html = [
   "canvas/canvas_draw_listener.h",
   "canvas/canvas_font_cache.cc",
   "canvas/canvas_font_cache.h",
+  "canvas/canvas_image_source.cc",
   "canvas/canvas_image_source.h",
   "canvas/canvas_performance_monitor.cc",
   "canvas/canvas_performance_monitor.h",

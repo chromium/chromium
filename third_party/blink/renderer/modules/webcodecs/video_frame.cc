@@ -941,7 +941,11 @@ VideoFrame* VideoFrame::clone(ExceptionState& exception_state) {
 
 scoped_refptr<Image> VideoFrame::GetSourceImageForCanvas(
     SourceImageStatus* status,
-    const FloatSize&) {
+    const FloatSize&,
+    const AlphaDisposition alpha_disposition) {
+  // UnpremultiplyAlpha is not implemented yet.
+  DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
+
   const auto local_handle = handle_->CloneForInternalUse();
   if (!local_handle) {
     DLOG(ERROR) << "GetSourceImageForCanvas() called for closed frame.";

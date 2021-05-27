@@ -111,8 +111,10 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
  private:
   // CanvasImageSource implementation
-  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
-                                               const FloatSize&) override;
+  scoped_refptr<Image> GetSourceImageForCanvas(
+      SourceImageStatus*,
+      const FloatSize&,
+      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
   bool WouldTaintOrigin() const override;
   FloatSize ElementSize(const FloatSize&,
                         const RespectImageOrientationEnum) const override;

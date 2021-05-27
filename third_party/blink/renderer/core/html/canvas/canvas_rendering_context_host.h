@@ -76,8 +76,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
 
   virtual bool ShouldAccelerate2dContext() const = 0;
 
-  virtual bool IsNeutered() const { return false; }
-
   virtual void Commit(scoped_refptr<CanvasResource> canvas_resource,
                       const SkIRect& damage_rect);
 

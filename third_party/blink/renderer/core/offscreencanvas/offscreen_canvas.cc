@@ -237,7 +237,10 @@ void OffscreenCanvas::RecordIdentifiabilityMetric(
 
 scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     SourceImageStatus* status,
-    const FloatSize& size) {
+    const FloatSize& size,
+    const AlphaDisposition alpha_disposition) {
+  DCHECK_NE(alpha_disposition, kDontChangeAlpha);
+
   if (!context_) {
     *status = kInvalidSourceImageStatus;
     sk_sp<SkSurface> surface =
@@ -250,11 +253,14 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     *status = kZeroSizeCanvasSourceImageStatus;
     return nullptr;
   }
-  scoped_refptr<Image> image = context_->GetImage();
+  scoped_refptr<StaticBitmapImage> image = context_->GetImage();
   if (!image)
     image = CreateTransparentImage(Size());
+
   *status = image ? kNormalSourceImageStatus : kInvalidSourceImageStatus;
-  return image;
+
+  // If the alpha_disposition is already correct, this is a no-op.
+  return GetImageWithAlphaDisposition(std::move(image), alpha_disposition);
 }
 
 IntSize OffscreenCanvas::BitmapSourceSize() const {

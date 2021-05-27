@@ -68,7 +68,8 @@ class FakeImageSource : public CanvasImageSource {
   FakeImageSource(IntSize, BitmapOpacity);
 
   scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
-                                               const FloatSize&) override;
+                                               const FloatSize&,
+                                               const AlphaDisposition) override;
 
   bool WouldTaintOrigin() const override { return false; }
   FloatSize ElementSize(const FloatSize&,
@@ -97,7 +98,11 @@ FakeImageSource::FakeImageSource(IntSize size, BitmapOpacity opacity)
 
 scoped_refptr<Image> FakeImageSource::GetSourceImageForCanvas(
     SourceImageStatus* status,
-    const FloatSize&) {
+    const FloatSize&,
+    const AlphaDisposition alpha_disposition = kPremultiplyAlpha) {
+  // Only cover premultiply alpha cases.
+  DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
+
   if (status)
     *status = kNormalSourceImageStatus;
   return image_;

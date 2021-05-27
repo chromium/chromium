@@ -47,7 +47,11 @@ bool ImageElementBase::IsImageElement() const {
 
 scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
     SourceImageStatus* status,
-    const FloatSize& default_object_size) {
+    const FloatSize& default_object_size,
+    const AlphaDisposition alpha_disposition) {
+  // UnpremultiplyAlpha is not implemented yet.
+  DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
+
   ImageResourceContent* image_content = CachedImage();
   if (!GetImageLoader().ImageComplete() || !image_content) {
     *status = kIncompleteSourceImageStatus;

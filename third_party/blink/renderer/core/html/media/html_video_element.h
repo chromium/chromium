@@ -110,8 +110,10 @@ class CORE_EXPORT HTMLVideoElement final
       bool allow_accelerated_images = true);
 
   // CanvasImageSource implementation
-  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
-                                               const FloatSize&) override;
+  scoped_refptr<Image> GetSourceImageForCanvas(
+      SourceImageStatus*,
+      const FloatSize&,
+      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
   bool IsVideoElement() const override { return true; }
   bool WouldTaintOrigin() const override;
   FloatSize ElementSize(const FloatSize&,

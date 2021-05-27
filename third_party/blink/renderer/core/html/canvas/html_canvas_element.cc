@@ -1307,12 +1307,19 @@ void HTMLCanvasElement::WillDrawImageTo2DContext(CanvasImageSource* source) {
 
 scoped_refptr<Image> HTMLCanvasElement::GetSourceImageForCanvas(
     SourceImageStatus* status,
-    const FloatSize&) {
-  return GetSourceImageForCanvasInternal(status);
+    const FloatSize&,
+    const AlphaDisposition alpha_disposition) {
+  DCHECK_NE(alpha_disposition, kDontChangeAlpha);
+
+  return GetSourceImageForCanvasInternal(status, alpha_disposition);
 }
 
 scoped_refptr<StaticBitmapImage>
-HTMLCanvasElement::GetSourceImageForCanvasInternal(SourceImageStatus* status) {
+HTMLCanvasElement::GetSourceImageForCanvasInternal(
+    SourceImageStatus* status,
+    const AlphaDisposition alpha_disposition) {
+  DCHECK(alpha_disposition != kDontChangeAlpha);
+
   if (!width() || !height()) {
     *status = kZeroSizeCanvasSourceImageStatus;
     return nullptr;
@@ -1323,34 +1330,25 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(SourceImageStatus* status) {
     return nullptr;
   }
 
+  scoped_refptr<StaticBitmapImage> image;
+
   if (OffscreenCanvasFrame()) {
-    // This may be false even if this HTMLCanvasElement has been transferred
+    // This may be false to set status to normal if a valid image can be got
+    // even if this HTMLCanvasElement has been transferred
     // control to an offscreenCanvas. As offscreencanvas with the
     // TransferControlToOffscreen is asynchronous, this will need to finish the
     // first Frame in order to have a first OffscreenCanvasFrame.
-    *status = kNormalSourceImageStatus;
-    return OffscreenCanvasFrame()->Bitmap();
-  }
+    image = OffscreenCanvasFrame()->Bitmap();
+  } else if (!context_) {
+    image = GetTransparentImage();
+  } else if (HasImageBitmapContext()) {
+    image = context_->GetImage();
 
-  if (!context_) {
-    scoped_refptr<StaticBitmapImage> result = GetTransparentImage();
-    *status = result ? kNormalSourceImageStatus : kInvalidSourceImageStatus;
-    return result;
-  }
-
-  if (HasImageBitmapContext()) {
-    *status = kNormalSourceImageStatus;
-    scoped_refptr<StaticBitmapImage> result = context_->GetImage();
-    if (!result)
-      result = GetTransparentImage();
-    *status = result ? kNormalSourceImageStatus : kInvalidSourceImageStatus;
-    return result;
-  }
-
-  scoped_refptr<StaticBitmapImage> image;
-  // TODO(ccameron): Canvas should produce sRGB images.
-  // https://crbug.com/672299
-  if (Is3d()) {
+    if (!image)
+      image = GetTransparentImage();
+  } else if (Is3d()) {
+    // TODO(ccameron): Canvas should produce sRGB images.
+    // https://crbug.com/672299
     // Because WebGL sources always require making a copy of the back buffer, we
     // use paintRenderingResultsToCanvas instead of getImage in order to keep a
     // cached copy of the backing in the canvas's resource provider.
@@ -1365,11 +1363,15 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(SourceImageStatus* status) {
       image = GetTransparentImage();
   }
 
-  if (image)
-    *status = kNormalSourceImageStatus;
-  else
+  if (!image) {
+    // All other possible error statuses were checked earlier.
     *status = kInvalidSourceImageStatus;
-  return image;
+    return image;
+  }
+
+  *status = kNormalSourceImageStatus;
+  // If the alpha_disposition is already correct, this is a no-op.
+  return GetImageWithAlphaDisposition(std::move(image), alpha_disposition);
 }
 
 bool HTMLCanvasElement::WouldTaintOrigin() const {
