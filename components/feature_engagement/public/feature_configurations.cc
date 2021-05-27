@@ -189,7 +189,17 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     k10YearsInDays, k10YearsInDays);
     return config;
   }
-
+  if (kIPHTabSwitcherButtonFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(GREATER_THAN_OR_EQUAL, 14);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger =
+        EventConfig("tab_switcher_iph_triggered", Comparator(EQUAL, 0), 90, 90);
+    config->used = EventConfig("tab_switcher_button_clicked",
+                               Comparator(EQUAL, 0), 14, 90);
+    return config;
+  }
   if (kIPHWebFeedFollowFeature.name == feature->name) {
     // A config that allows the WebFeed follow intro to be shown up to 5x per
     // week.
