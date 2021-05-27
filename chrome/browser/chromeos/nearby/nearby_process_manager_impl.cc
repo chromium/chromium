@@ -251,21 +251,22 @@ void NearbyProcessManagerImpl::ShutDownProcess(
   // Prevent the Remotes' disconnect handler callbacks from firing.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (sharing_) {
-    // Start the asynchronous shutdown flow, and pass ownership of the existing
-    // Remote and SharedRemotes to the callback. These instance fields will stay
-    // alive until ShutDown() is complete, at which time they will go out of
-    // scope and become disconnected in OnSharingShutDownComplete().
-    sharing::mojom::Sharing* sharing = sharing_.get();
-    sharing->ShutDown(
-        base::BindOnce(&OnSharingShutDownComplete, std::move(sharing_),
-                       std::move(connections_), std::move(decoder_)));
+  if (!sharing_) {
+    sharing_.reset();
+    connections_.reset();
+    decoder_.reset();
+    return;
   }
 
+  // Start the asynchronous shutdown flow, and pass ownership of the existing
+  // Remote and SharedRemotes to the callback. These instance fields will stay
+  // alive until ShutDown() is complete, at which time they will go out of
+  // scope and become disconnected in OnSharingShutDownComplete().
+  sharing::mojom::Sharing* sharing = sharing_.get();
+  sharing->ShutDown(base::BindOnce(&OnSharingShutDownComplete,
+                                   std::move(sharing_), std::move(connections_),
+                                   std::move(decoder_)));
   nearby_connections_dependencies_provider_->PrepareForShutdown();
-  sharing_.reset();
-  connections_.reset();
-  decoder_.reset();
 }
 
 void NearbyProcessManagerImpl::NotifyProcessStopped(
