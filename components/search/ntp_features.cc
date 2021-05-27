@@ -97,8 +97,9 @@ const base::Feature kNtpDriveModule{"NtpDriveModule",
 
 const char kNtpModulesLoadTimeoutMillisecondsParam[] =
     "NtpModulesLoadTimeoutMillisecondsParam";
-const char kNtpStatefulTasksModuleDataParam[] =
-    "NtpStatefulTasksModuleDataParam";
+const char kNtpShoppingTasksModuleDataParam[] =
+    "NtpShoppingTasksModuleDataParam";
+const char kNtpRecipeTasksModuleDataParam[] = "NtpRecipeTasksModuleDataParam";
 const char kNtpChromeCartModuleDataParam[] = "NtpChromeCartModuleDataParam";
 const char kNtpChromeCartModuleAbandonedCartDiscountParam[] =
     "NtpChromeCartModuleAbandonedCartDiscountParam";

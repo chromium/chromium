@@ -1488,14 +1488,14 @@ const FeatureEntry::FeatureVariation kNtpChromeCartModuleVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleFakeData[] = {
-    {ntp_features::kNtpStatefulTasksModuleDataParam, "fake"}};
+    {ntp_features::kNtpRecipeTasksModuleDataParam, "fake"}};
 const FeatureEntry::FeatureVariation kNtpRecipeTasksModuleVariations[] = {
     {"- Fake Data", kNtpRecipeTasksModuleFakeData,
      base::size(kNtpRecipeTasksModuleFakeData), nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpShoppingTasksModuleFakeData[] = {
-    {ntp_features::kNtpStatefulTasksModuleDataParam, "fake"}};
+    {ntp_features::kNtpShoppingTasksModuleDataParam, "fake"}};
 const FeatureEntry::FeatureVariation kNtpShoppingTasksModuleVariations[] = {
     {"- Fake Data", kNtpShoppingTasksModuleFakeData,
      base::size(kNtpShoppingTasksModuleFakeData),

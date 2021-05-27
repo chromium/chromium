@@ -46,6 +46,15 @@ const base::Feature& GetFeature(
   }
 }
 
+const char* GetDataParam(task_module::mojom::TaskModuleType task_module_type) {
+  switch (task_module_type) {
+    case task_module::mojom::TaskModuleType::kRecipe:
+      return ntp_features::kNtpRecipeTasksModuleDataParam;
+    case task_module::mojom::TaskModuleType::kShopping:
+      return ntp_features::kNtpShoppingTasksModuleDataParam;
+  }
+}
+
 GURL GetApiUrl(task_module::mojom::TaskModuleType task_module_type,
                const std::string& application_locale) {
   GURL google_base_url = google_util::CommandLineGoogleBaseURL();
@@ -55,9 +64,9 @@ GURL GetApiUrl(task_module::mojom::TaskModuleType task_module_type,
   auto url = net::AppendQueryParameter(
       google_base_url.Resolve(GetPath(task_module_type)), "hl",
       application_locale);
-  if (base::GetFieldTrialParamValueByFeature(
-          GetFeature(task_module_type),
-          ntp_features::kNtpStatefulTasksModuleDataParam) == "fake") {
+  if (base::GetFieldTrialParamValueByFeature(GetFeature(task_module_type),
+                                             GetDataParam(task_module_type)) ==
+      "fake") {
     url = google_util::AppendToAsyncQueryParam(url, "fake_data", "1");
   }
   return url;

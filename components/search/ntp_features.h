@@ -40,8 +40,10 @@ extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly;
 
 // Parameter determining the module load timeout.
 extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
-// Parameter determining the type of stateful data to request.
-extern const char kNtpStatefulTasksModuleDataParam[];
+// Parameter determining the type of shopping data to request.
+extern const char kNtpShoppingTasksModuleDataParam[];
+// Parameter determining the type of recipe data to request.
+extern const char kNtpRecipeTasksModuleDataParam[];
 // Parameter determining the type of cart data used to render module.
 extern const char kNtpChromeCartModuleDataParam[];
 // Parameter for enabling the abandoned cart discount.
