@@ -67,7 +67,6 @@ android_library("util_java") {
     "java/src/org/chromium/chrome/browser/lens/LensMetrics.java",
     "java/src/org/chromium/chrome/browser/lens/LensQueryParams.java",
     "java/src/org/chromium/chrome/browser/lens/LensQueryResult.java",
-    "java/src/org/chromium/chrome/browser/lens/LensUma.java",
   ]
   deps = [
     "//base:base_java",

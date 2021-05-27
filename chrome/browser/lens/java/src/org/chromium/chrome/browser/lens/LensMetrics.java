@@ -16,7 +16,6 @@ import java.lang.annotation.RetentionPolicy;
  * Static utility methods to support user action logging for Lens entry points.
  */
 public class LensMetrics {
-    // TODO(b/188430840): Must be keep in sync with LensUma.LensSupportStatus.
     // Note: these values must match the LensSupportStatus enum in enums.xml.
     // Only add new values at the end, right before NUM_ENTRIES.
     @IntDef({LensSupportStatus.LENS_SEARCH_SUPPORTED, LensSupportStatus.NON_GOOGLE_SEARCH_ENGINE,

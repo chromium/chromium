@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
-import org.chromium.chrome.browser.lens.LensUma;
+import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -545,8 +545,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     }
                 } else if (ChromeFeatureList.isEnabled(
                                    ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS)) {
-                    LensUma.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
-                            LensUma.LensSupportStatus.SEARCH_BY_IMAGE_UNAVAILABLE);
+                    LensMetrics.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
+                            LensMetrics.LensSupportStatus.SEARCH_BY_IMAGE_UNAVAILABLE);
                 }
             }
 
@@ -1043,8 +1043,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         final TemplateUrlService templateUrlServiceInstance = getTemplateUrlService();
         String versionName = LensUtils.getLensActivityVersionNameIfAvailable(mContext);
         if (!templateUrlServiceInstance.isDefaultSearchEngineGoogle()) {
-            LensUma.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
-                    LensUma.LensSupportStatus.NON_GOOGLE_SEARCH_ENGINE);
+            LensMetrics.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
+                    LensMetrics.LensSupportStatus.NON_GOOGLE_SEARCH_ENGINE);
 
             return Collections.unmodifiableMap(new HashMap<String, Boolean>() {
                 {
@@ -1055,8 +1055,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             });
         }
         if (TextUtils.isEmpty(versionName)) {
-            LensUma.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
-                    LensUma.LensSupportStatus.ACTIVITY_NOT_ACCESSIBLE);
+            LensMetrics.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
+                    LensMetrics.LensSupportStatus.ACTIVITY_NOT_ACCESSIBLE);
             return Collections.unmodifiableMap(new HashMap<String, Boolean>() {
                 {
                     put(LENS_SEARCH_MENU_ITEM_KEY, false);
@@ -1067,8 +1067,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         }
         if (GSAState.getInstance(mContext).isAgsaVersionBelowMinimum(
                     versionName, LensUtils.getMinimumAgsaVersionForLensSupport())) {
-            LensUma.recordLensSupportStatus(
-                    LENS_SUPPORT_STATUS_HISTOGRAM_NAME, LensUma.LensSupportStatus.OUT_OF_DATE);
+            LensMetrics.recordLensSupportStatus(
+                    LENS_SUPPORT_STATUS_HISTOGRAM_NAME, LensMetrics.LensSupportStatus.OUT_OF_DATE);
             return Collections.unmodifiableMap(new HashMap<String, Boolean>() {
                 {
                     put(LENS_SEARCH_MENU_ITEM_KEY, false);
@@ -1079,8 +1079,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         }
 
         if (LensUtils.isDeviceOsBelowMinimum()) {
-            LensUma.recordLensSupportStatus(
-                    LENS_SUPPORT_STATUS_HISTOGRAM_NAME, LensUma.LensSupportStatus.LEGACY_OS);
+            LensMetrics.recordLensSupportStatus(
+                    LENS_SUPPORT_STATUS_HISTOGRAM_NAME, LensMetrics.LensSupportStatus.LEGACY_OS);
             return Collections.unmodifiableMap(new HashMap<String, Boolean>() {
                 {
                     put(LENS_SEARCH_MENU_ITEM_KEY, false);
@@ -1091,8 +1091,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         }
 
         if (!LensUtils.isValidAgsaPackage(mExternalAuthUtils)) {
-            LensUma.recordLensSupportStatus(
-                    LENS_SUPPORT_STATUS_HISTOGRAM_NAME, LensUma.LensSupportStatus.INVALID_PACKAGE);
+            LensMetrics.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
+                    LensMetrics.LensSupportStatus.INVALID_PACKAGE);
             return Collections.unmodifiableMap(new HashMap<String, Boolean>() {
                 {
                     put(LENS_SEARCH_MENU_ITEM_KEY, false);
@@ -1112,8 +1112,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 // Hide Search With Google Lens menu item when experiment only with Lens Shopping
                 // menu items.
                 if (!LensUtils.showBothSearchAndShopImageWithLens()) {
-                    LensUma.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
-                            LensUma.LensSupportStatus.LENS_SHOP_SUPPORTED);
+                    LensMetrics.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
+                            LensMetrics.LensSupportStatus.LENS_SHOP_SUPPORTED);
                     return Collections.unmodifiableMap(new HashMap<String, Boolean>() {
                         {
                             put(LENS_SEARCH_MENU_ITEM_KEY, false);
@@ -1122,8 +1122,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         }
                     });
                 }
-                LensUma.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
-                        LensUma.LensSupportStatus.LENS_SHOP_AND_SEARCH_SUPPORTED);
+                LensMetrics.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
+                        LensMetrics.LensSupportStatus.LENS_SHOP_AND_SEARCH_SUPPORTED);
                 return Collections.unmodifiableMap(new HashMap<String, Boolean>() {
                     {
                         put(LENS_SEARCH_MENU_ITEM_KEY, true);
@@ -1134,8 +1134,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
         }
 
-        LensUma.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
-                LensUma.LensSupportStatus.LENS_SEARCH_SUPPORTED);
+        LensMetrics.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
+                LensMetrics.LensSupportStatus.LENS_SEARCH_SUPPORTED);
         return Collections.unmodifiableMap(new HashMap<String, Boolean>() {
             {
                 put(LENS_SEARCH_MENU_ITEM_KEY, true);
