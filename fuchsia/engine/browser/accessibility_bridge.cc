@@ -109,8 +109,17 @@ AccessibilityBridge::~AccessibilityBridge() {
   ax_trees_.clear();
 }
 
+void AccessibilityBridge::AddNodeToOffsetMapping(
+    const ui::AXTree* tree,
+    const ui::AXNodeData& node_data) {
+  auto ax_tree_id = tree->GetAXTreeID();
+  auto offset_container_id = GetOffsetContainerId(tree, node_data);
+  offset_container_children_[std::make_pair(ax_tree_id, offset_container_id)]
+      .insert(std::make_pair(ax_tree_id, node_data.id));
+}
+
 void AccessibilityBridge::RemoveNodeFromOffsetMapping(
-    ui::AXTree* tree,
+    const ui::AXTree* tree,
     const ui::AXNodeData& node_data) {
   auto offset_container_children_it =
       offset_container_children_.find(std::make_pair(
@@ -324,8 +333,18 @@ void AccessibilityBridge::OnSemanticsModeChanged(
   callback();
 }
 
+void AccessibilityBridge::OnNodeCreated(ui::AXTree* tree, ui::AXNode* node) {
+  DCHECK(tree);
+  DCHECK(node);
+
+  AddNodeToOffsetMapping(tree, node->data());
+}
+
 void AccessibilityBridge::OnNodeWillBeDeleted(ui::AXTree* tree,
                                               ui::AXNode* node) {
+  DCHECK(tree);
+  DCHECK(node);
+
   // Remove the node from its offset container's list of children.
   RemoveNodeFromOffsetMapping(tree, node->data());
 
@@ -335,6 +354,8 @@ void AccessibilityBridge::OnNodeWillBeDeleted(ui::AXTree* tree,
 }
 
 void AccessibilityBridge::OnNodeDeleted(ui::AXTree* tree, int32_t node_id) {
+  DCHECK(tree);
+
   to_delete_.push_back(
       id_mapper_->ToFuchsiaNodeID(tree->GetAXTreeID(), node_id, false));
 }
@@ -343,38 +364,50 @@ void AccessibilityBridge::OnNodeDataChanged(
     ui::AXTree* tree,
     const ui::AXNodeData& old_node_data,
     const ui::AXNodeData& new_node_data) {
-  if (!tree)
-    return;
-
-  // If this node's bounds have changed, then we should update its offset
-  // children's transforms to reflect the new bounds.
-  auto offset_container_children_it = offset_container_children_.find(
-      std::make_pair(tree->GetAXTreeID(), old_node_data.id));
-
-  // If any descendants have this node as their offset containers, and this
-  // node's bounds have changed, then we need to update those descendants'
-  // transforms to reflect the new bounds.
-  if (offset_container_children_it != offset_container_children_.end() &&
-      old_node_data.relative_bounds.bounds !=
-          new_node_data.relative_bounds.bounds) {
-    for (auto offset_child_id : offset_container_children_it->second) {
-      auto* child_node = tree->GetFromId(offset_child_id.second);
-      if (!child_node) {
-        continue;
-      }
-
-      auto child_node_data = child_node->data();
-      to_update_.push_back(AXNodeDataToSemanticNode(
-          child_node_data, new_node_data, tree->GetAXTreeID(), false,
-          id_mapper_.get()));
-    }
-  }
+  DCHECK(tree);
 
   // If this node's offset container has changed, then we should remove it from
-  // its old offset container's offset children.
+  // its old offset container's offset children and add it to its new offset
+  // container's children.
   if (old_node_data.relative_bounds.offset_container_id !=
       new_node_data.relative_bounds.offset_container_id) {
     RemoveNodeFromOffsetMapping(tree, old_node_data);
+    AddNodeToOffsetMapping(tree, new_node_data);
+  }
+
+  // If this node's bounds have changed, then we should update its offset
+  // children's transforms to reflect the new bounds.
+  if (old_node_data.relative_bounds.bounds ==
+      new_node_data.relative_bounds.bounds) {
+    return;
+  }
+
+  auto offset_container_children_it = offset_container_children_.find(
+      std::make_pair(tree->GetAXTreeID(), old_node_data.id));
+
+  if (offset_container_children_it == offset_container_children_.end())
+    return;
+
+  for (auto offset_child_id : offset_container_children_it->second) {
+    auto* child_node = tree->GetFromId(offset_child_id.second);
+    if (!child_node)
+      continue;
+
+    auto child_node_data = child_node->data();
+
+    // If the offset container for |child_node| does NOT change during this
+    // atomic update, then the update produced here will be correct.
+    //
+    // If the offset container for |child_node| DOES change during this atomic
+    // update, then depending on the order of the individual node updates, the
+    // update we produce here could be incorrect. However, in that case,
+    // OnAtomicUpdateFinished() will see a change for |child_node|. By the time
+    // that OnAtomicUpdateFinished() is called, offset_container_children_ will
+    // be correct, so we can simply overwrite the existing update.
+    auto* fuchsia_node =
+        GetUpdatedNode(tree->GetAXTreeID(), child_node->data().id,
+                       /*replace_existing=*/true);
+    DCHECK(fuchsia_node);
   }
 }
 
@@ -382,6 +415,8 @@ void AccessibilityBridge::OnAtomicUpdateFinished(
     ui::AXTree* tree,
     bool root_changed,
     const std::vector<ui::AXTreeObserver::Change>& changes) {
+  DCHECK(tree);
+
   if (root_changed)
     MaybeDisconnectTreeFromParentTree(tree);
 
@@ -398,25 +433,21 @@ void AccessibilityBridge::OnAtomicUpdateFinished(
   for (const ui::AXTreeObserver::Change& change : changes) {
     const auto& node = change.node->data();
 
-    int32_t offset_container_id =
-        GetOffsetContainerId(tree, change.node->data());
-    const auto* container = tree->GetFromId(offset_container_id);
-    DCHECK(container);
+    // Get the updated fuchsia representation of the node. It's possible that
+    // there's an existing update for this node from OnNodeDataChanged(). This
+    // update may not have the correct offset container and/or transform, so we
+    // should replace it.
+    auto* fuchsia_node = GetUpdatedNode(tree->GetAXTreeID(), node.id,
+                                        /*replace_existing=*/true);
+    DCHECK(fuchsia_node);
 
-    offset_container_children_[std::make_pair(tree->GetAXTreeID(),
-                                              offset_container_id)]
-        .insert(std::make_pair(tree->GetAXTreeID(), node.id));
-
-    const bool is_root = is_main_frame_tree ? node.id == root_id_ : false;
-    to_update_.push_back(AXNodeDataToSemanticNode(node, container->data(),
-                                                  tree->GetAXTreeID(), is_root,
-                                                  id_mapper_.get()));
     if (node.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
       const auto child_tree_id = ui::AXTreeID::FromString(
           node.GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
       tree_connections_[child_tree_id] = {node.id, tree->GetAXTreeID(), false};
     }
   }
+
   UpdateTreeConnections();
   UpdateFocus();
   // TODO(https://crbug.com/1134737): Separate updates of atomic updates and
@@ -492,7 +523,8 @@ void AccessibilityBridge::UpdateTreeConnections() {
     if (kv.second.is_connected)
       continue;  // No work to do, trees connected and present.
 
-    auto* fuchsia_node = GetUpdatedNode(parent_ax_tree_id, ax_node->id());
+    auto* fuchsia_node = GetUpdatedNode(parent_ax_tree_id, ax_node->id(),
+                                        /*replace_existing=*/false);
     DCHECK(fuchsia_node);
     // Now, the connection really happens:
     // This node, from the parent tree, will have a child that points to the
@@ -523,7 +555,8 @@ void AccessibilityBridge::UpdateFocus() {
     // as it is redundant.
     auto* node =
         focus_changed
-            ? GetUpdatedNode(new_focused_node->first, new_focused_node->second)
+            ? GetUpdatedNode(new_focused_node->first, new_focused_node->second,
+                             /*replace_existing=*/false)
             : GetNodeIfChangingInUpdate(new_focused_node->first,
                                         new_focused_node->second);
     if (node)
@@ -532,7 +565,8 @@ void AccessibilityBridge::UpdateFocus() {
 
   if (last_focused_node_id_) {
     auto* node = focus_changed ? GetUpdatedNode(last_focused_node_id_->first,
-                                                last_focused_node_id_->second)
+                                                last_focused_node_id_->second,
+                                                /*replace_existing=*/false)
                                : nullptr /*already updated above*/;
     if (node)
       node->mutable_states()->set_has_input_focus(false);
@@ -697,9 +731,10 @@ AccessibilityBridge::GetNodeIfChangingInUpdate(const ui::AXTreeID& tree_id,
 
 fuchsia::accessibility::semantics::Node* AccessibilityBridge::GetUpdatedNode(
     const ui::AXTreeID& tree_id,
-    ui::AXNodeID node_id) {
+    ui::AXNodeID node_id,
+    bool replace_existing) {
   auto* fuchsia_node = GetNodeIfChangingInUpdate(tree_id, node_id);
-  if (fuchsia_node)
+  if (fuchsia_node && !replace_existing)
     return fuchsia_node;
 
   auto ax_tree_it = ax_trees_.find(tree_id);
@@ -715,8 +750,17 @@ fuchsia::accessibility::semantics::Node* AccessibilityBridge::GetUpdatedNode(
   const auto* container = tree->GetFromId(offset_container_id);
   DCHECK(container);
 
+  const bool is_main_frame_tree =
+      tree->GetAXTreeID() == web_contents_->GetMainFrame()->GetAXTreeID();
+  const bool is_root = is_main_frame_tree ? node_id == root_id_ : false;
   auto new_fuchsia_node = AXNodeDataToSemanticNode(
-      ax_node->data(), container->data(), tree_id, false, id_mapper_.get());
+      ax_node->data(), container->data(), tree_id, is_root, id_mapper_.get());
+
+  if (replace_existing && fuchsia_node) {
+    *fuchsia_node = std::move(new_fuchsia_node);
+    return fuchsia_node;
+  }
+
   to_update_.push_back(std::move(new_fuchsia_node));
   return &to_update_.back();
 }

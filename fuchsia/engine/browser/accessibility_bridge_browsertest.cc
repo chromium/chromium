@@ -957,6 +957,93 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
   EXPECT_EQ(fuchsia_node->transform().matrix[13], 3);
 }
 
+// This test ensures that fuchsia only receives one update per node.
+IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OneUpdatePerNode) {
+  // Loads a page, so a real frame is created for this test. Then, several tree
+  // operations are applied on top of it, using the AXTreeID that corresponds to
+  // that frame.
+  LoadPage(kPage1Path, kPage1Title);
+  semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(kPage1NodeCount);
+
+  // Fetch the AXTreeID of the main frame (the page just loaded). This ID will
+  // be used in the operations that follow to simulate new data coming in.
+  auto tree_id =
+      frame_impl_->web_contents_for_test()->GetMainFrame()->GetAXTreeID();
+
+  AccessibilityBridge* bridge = frame_impl_->accessibility_bridge_for_test();
+  size_t tree_size = 5;
+
+  // The tree has the following form: (1 (2 (3 (4 (5)))))
+  auto tree_accessibility_event = CreateTreeAccessibilityEvent(tree_size);
+  tree_accessibility_event.ax_tree_id = tree_id;
+
+  // The root of this tree needs to be cleared (because it holds the page just
+  // loaded, and we are loading something completely new).
+  tree_accessibility_event.updates[0].node_id_to_clear =
+      bridge->ax_tree_for_test()->root()->id();
+
+  // Set a name in a node so we can wait for this node to appear. This pattern
+  // is used throughout this test to ensure that the new data we are waiting for
+  // arrived.
+  tree_accessibility_event.updates[0].nodes[0].SetName(kUpdate1Name);
+
+  bridge->AccessibilityEventReceived(tree_accessibility_event);
+
+  semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(
+      kUpdate1Name);
+
+  // Mark node 2 as node 3's offset container. Below, we will send an update to
+  // change node 3's offset container to node 1, so that we can verify that the
+  // fuchsia node produced reflects that update.
+  bridge->offset_container_children_[std::make_pair(tree_id, 2)].insert(
+      std::make_pair(tree_id, 3));
+
+  // Send three updates:
+  // 1. Change bounds for node 1.
+  // 2. Change bounds for node 2. Since node 3 is marked as node 2's offset
+  // child (above), OnNodeDataChanged() should produce an update for node 3 that
+  // includes a transform accounting for node 2's new bounds.
+  // 3. Change offset container for node 3 from node 2 to node 1.
+  // OnAtomicUpdateFinished() should replace the now-incorrect update from step
+  // (2) with a new update that includes a transform accounting for node 1's
+  // bounds.
+  const char kNodeName[] = "transform should update";
+  // Changes the bounds of node 1.
+  // (1 (2 (3 (4 (5)))))
+  ui::AXTreeUpdate update;
+  update.root_id = 1;
+  update.nodes.resize(3);
+  update.nodes[0].id = 1;
+  // Update the relative bounds of node 1, which is node 2's offset container.
+  auto new_root_bounds = gfx::RectF(2, 3, 4, 5);
+  update.nodes[0].relative_bounds.bounds = new_root_bounds;
+  update.nodes[0].child_ids = {2};
+  update.nodes[0].SetName(kUpdate2Name);
+  update.nodes[1].id = 2;
+  update.nodes[1].relative_bounds.bounds = gfx::RectF(20, 30, 40, 50);
+  update.nodes[1].child_ids = {3};
+  update.nodes[2].id = 3;
+  update.nodes[2].relative_bounds.offset_container_id = 1u;
+  update.nodes[2].SetName(kNodeName);
+
+  bridge->AccessibilityEventReceived(
+      CreateAccessibilityEventWithUpdate(std::move(update), tree_id));
+  semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(kNodeName);
+
+  // Verify that the transform for the Fuchsia semantic node corresponding to
+  // node 3 reflects the new bounds of node 1.
+  fuchsia::accessibility::semantics::Node* fuchsia_node =
+      semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName);
+
+  // A Fuchsia node's semantic transform should include an offset for its parent
+  // node as a post-translation on top of its existing transform. Therefore, the
+  // x, y, and z scale (indices 0, 5, and 10, respectively) should remain
+  // unchanged, and the x and y bounds of the offset container should be added
+  // to the node's existing translation entries (indices 12 and 13).
+  EXPECT_EQ(fuchsia_node->transform().matrix[12], new_root_bounds.x());
+  EXPECT_EQ(fuchsia_node->transform().matrix[13], new_root_bounds.y());
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
   constexpr int64_t kBindingsId = 1234;
 
