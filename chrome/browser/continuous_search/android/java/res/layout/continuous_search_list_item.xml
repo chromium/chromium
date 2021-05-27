@@ -26,6 +26,7 @@
         android:ellipsize="start"
         android:singleLine="true"
         android:maxWidth="150dp"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:textDirection="ltr" />
 
 </LinearLayout>

@@ -10,7 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.url_formatter.SchemeDisplay;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -33,11 +34,17 @@ class ContinuousSearchListViewBinder {
             TextView textView = view.findViewById(R.id.continuous_search_list_item_description);
             if (textView == null) return;
 
-            String domain = "";
+            String safeUrl = "";
             if (url != null) {
-                domain = UrlUtilities.getDomainAndRegistry(url.getSpec(), true);
+                // Schemes are omitted as these are pre-navigation URLs and we have very limited UI
+                // surface.
+                //
+                // NOTE: the Google SRP does show schemes so consider revisiting this in future.
+                safeUrl = UrlFormatter.formatUrlForSecurityDisplay(
+                        url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
             }
-            textView.setText(domain);
+            textView.setTextDirection(View.TEXT_DIRECTION_LTR);
+            textView.setText(safeUrl);
         } else if (ContinuousSearchListProperties.IS_SELECTED == propertyKey) {
             setBorder(model, view);
         } else if (ContinuousSearchListProperties.BORDER_COLOR == propertyKey) {
