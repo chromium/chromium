@@ -21,7 +21,6 @@
 namespace content {
 
 class DevToolsAgentHostImpl;
-class DevToolsRendererChannel;
 class DevToolsSession;
 class NavigationHandle;
 class NavigationThrottle;
@@ -46,7 +45,7 @@ class TargetHandler : public DevToolsDomainHandler,
   };
   TargetHandler(AccessMode access_mode,
                 const std::string& owner_target_id,
-                DevToolsRendererChannel* renderer_channel,
+                std::unique_ptr<TargetAutoAttacher> auto_attacher,
                 DevToolsSession* root_session);
   ~TargetHandler() override;
 
@@ -145,7 +144,7 @@ class TargetHandler : public DevToolsDomainHandler,
                                 base::TerminationStatus status) override;
 
   std::unique_ptr<Target::Frontend> frontend_;
-  TargetAutoAttacher auto_attacher_;
+  std::unique_ptr<TargetAutoAttacher> auto_attacher_;
   bool flatten_auto_attach_ = false;
   bool discover_;
   bool observing_agent_hosts_ = false;

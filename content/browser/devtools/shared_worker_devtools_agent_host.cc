@@ -98,7 +98,8 @@ bool SharedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->AddHandler(std::make_unique<protocol::SchemaHandler>());
   session->AddHandler(std::make_unique<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      GetRendererChannel(), session->GetRootSession()));
+      protocol::TargetAutoAttacher::CreateForWorker(GetRendererChannel()),
+      session->GetRootSession()));
   return true;
 }
 

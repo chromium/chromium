@@ -336,7 +336,9 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       may_attach_to_brower
           ? protocol::TargetHandler::AccessMode::kRegular
           : protocol::TargetHandler::AccessMode::kAutoAttachOnly,
-      GetId(), GetRendererChannel(), session->GetRootSession()));
+      GetId(),
+      protocol::TargetAutoAttacher::CreateForFrame(GetRendererChannel()),
+      session->GetRootSession()));
   session->AddHandler(std::make_unique<protocol::PageHandler>(
       emulation_handler_ptr, browser_handler_ptr,
       session->GetClient()->MayReadLocalFiles()));

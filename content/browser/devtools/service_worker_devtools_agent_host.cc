@@ -135,7 +135,9 @@ bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->AddHandler(std::make_unique<protocol::SchemaHandler>());
   session->AddHandler(std::make_unique<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      GetRendererChannel(), session->GetRootSession()));
+      protocol::TargetAutoAttacher::CreateForServiceWorker(
+          GetRendererChannel()),
+      session->GetRootSession()));
   if (state_ == WORKER_READY && sessions().empty())
     UpdateIsAttached(true);
   return true;
