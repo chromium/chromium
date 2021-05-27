@@ -77521,6 +77521,11 @@ would be helpful to identify which type is being sent.
   <int value="28" label="Price Drop Alerts"/>
 </enum>
 
+<enum name="TabActivationTypes">
+  <int value="0" label="Activate a tab"/>
+  <int value="1" label="Activate the context menu of a tab"/>
+</enum>
+
 <enum name="TabBackgroundLoadStatus">
   <int value="0" label="Loaded on creation and shown"/>
   <int value="1" label="Loaded on creation and lost"/>

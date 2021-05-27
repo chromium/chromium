@@ -38,7 +38,10 @@ const char kWebUITabIdDataType[] = "application/vnd.chromium.tab";
 const char kWebUITabGroupIdDataType[] = "application/vnd.chromium.tabgroup";
 
 TabStripUI::TabStripUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : content::WebUIController(web_ui),
+      webui_load_timer_(web_ui->GetWebContents(),
+                        "WebUITabStrip.LoadDocumentTime",
+                        "WebUITabStrip.LoadCompletedTime") {
   content::HostZoomMap::Get(web_ui->GetWebContents()->GetSiteInstance())
       ->SetZoomLevelForHostAndScheme(content::kChromeUIScheme,
                                      chrome::kChromeUITabStripHost, 0);

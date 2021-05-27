@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
@@ -446,6 +447,9 @@ void BrowserTabStripController::ShowContextMenuForTab(
   context_menu_contents_ = std::make_unique<TabContextMenuContents>(
       tab, this, browser_view_->feature_promo_controller());
   context_menu_contents_->RunMenuAt(p, source_type);
+  base::UmaHistogramEnumeration(
+      "TabStrip.Tab.Views.ActivationAction",
+      TabStripModel::TabActivationTypes::kContextMenu);
 }
 
 int BrowserTabStripController::HasAvailableDragActions() const {

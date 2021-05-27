@@ -19152,6 +19152,34 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebUITabStrip.LoadCompletedTime" units="ms"
+    expires_after="2022-05-21">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    The amount of time between the render frame host StartProvisionalLoad event
+    and the render frame DocumentOnLoadCompleted event for the WebUI tab strip
+    page. This happens once when a browser window with WebUI tab strip enabled
+    is created. WebUITabStrip.LoadDocumentTime should be smaller or equal to
+    WebUITabStrip.LoadCoimpletedTime.
+  </summary>
+</histogram>
+
+<histogram name="WebUITabStrip.LoadDocumentTime" units="ms"
+    expires_after="2022-05-21">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    The amount of time between the render frame host StartProvisionalLoad and
+    DidFinishDocumentLoad events for the WebUI tab strip page. This happens once
+    when a browser window with WebUI tab strip enabled is created.
+    WebUITabStrip.LoadDocumentTime should be smaller or equal to
+    WebUITabStrip.LoadCoimpletedTime.
+  </summary>
+</histogram>
+
 <histogram name="WebUITabStrip.OpenAction" enum="WebUITabStripOpenActions"
     expires_after="2021-10-25">
   <owner>collinbaker@chromium.org</owner>

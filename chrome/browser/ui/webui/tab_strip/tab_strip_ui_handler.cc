@@ -911,6 +911,9 @@ void TabStripUIHandler::HandleShowTabContextMenu(const base::ListValue* args) {
           browser, embedder_->GetAcceleratorProvider(), tab_index),
       base::BindRepeating(&TabStripUIHandler::NotifyContextMenuClosed,
                           weak_ptr_factory_.GetWeakPtr()));
+  base::UmaHistogramEnumeration(
+      "TabStrip.Tab.WebUI.ActivationAction",
+      TabStripModel::TabActivationTypes::kContextMenu);
 }
 
 void TabStripUIHandler::HandleGetLayout(const base::ListValue* args) {
@@ -949,6 +952,8 @@ void TabStripUIHandler::HandleReportTabActivationDuration(
   int duration_ms = args->GetList()[0].GetInt();
   UMA_HISTOGRAM_TIMES("WebUITabStrip.TabActivation",
                       base::TimeDelta::FromMilliseconds(duration_ms));
+  base::UmaHistogramEnumeration("TabStrip.Tab.WebUI.ActivationAction",
+                                TabStripModel::TabActivationTypes::kTab);
 }
 
 void TabStripUIHandler::HandleReportTabDataReceivedDuration(

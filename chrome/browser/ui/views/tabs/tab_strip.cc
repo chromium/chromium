@@ -1905,6 +1905,8 @@ void TabStrip::SelectTab(Tab* tab, const ui::Event& event) {
                                model_index);
       base::UmaHistogramSparse("Tabs.DesktopTabOffsetFromRightOfSwitch",
                                GetModelCount() - model_index - 1);
+      base::UmaHistogramEnumeration("TabStrip.Tab.Views.ActivationAction",
+                                    TabStripModel::TabActivationTypes::kTab);
 
       if (tab->group().has_value()) {
         base::RecordAction(
