@@ -62,12 +62,8 @@ struct SystemEventTimes;
 // request is carried out the moment none of the inhibiting criteria apply
 // anymore (e.g. the user becomes idle on the login screen, the user logs exits
 // a session, the user suspends the device). If reboots remain inhibited for the
-// entire grace period, a reboot is unconditionally performed at its end.
-//
-// Note: Currently, automatic reboots are only enabled while the login screen is
-// being shown or a kiosk app session is in progress. This will change in the
-// future and the policy will always apply, regardless of whether a session of
-// any particular type is in progress or not. http://crbug.com/244972
+// entire grace period, a reboot is performed at its end, unless a non-kiosk
+// session is active.
 //
 // Reboots may be scheduled and canceled at any time. This causes the time at
 // which a reboot should be requested and the grace period that follows it to
@@ -138,7 +134,7 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
   // If |ignore_session|, a session in progress does not inhibit reboots.
   void MaybeReboot(bool ignore_session);
 
-  // Reboots immediately.
+  // Reboots immediately unless a non-kiosk session is active.
   void Reboot();
 
   // Event that is signaled when Init() runs.
