@@ -96,6 +96,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDevice {
   // for a FIDO Bluetooth device.
   virtual bool RequiresBlePairingPin() const;
 
+  // NoSilentRequests returns true if this device does not support up=false
+  // requests.
+  bool NoSilentRequests() const;
+
   virtual base::WeakPtr<FidoDevice> GetWeakPtr() = 0;
 
   // Sends a speculative AuthenticatorGetInfo request to determine whether the

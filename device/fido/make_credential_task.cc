@@ -221,9 +221,11 @@ void MakeCredentialTask::MakeCredential() {
   // Handling appidExclude requires that the |HandleResponseToSilentSignRequest|
   // path be used below, so this is only valid if either there's no
   // appidExclude, or the single batch is empty and thus there are no excluded
-  // credentials.
+  // credentials. If the device doesn't support silent requests then
+  // appidExclude is ignored because it cannot be supported.
   if (exclude_list_batches_.size() == 1 &&
-      (!request_.app_id || exclude_list_batches_.front().empty())) {
+      (device()->NoSilentRequests() || !request_.app_id ||
+       exclude_list_batches_.front().empty())) {
     auto request = request_;
     request.exclude_list = exclude_list_batches_.front();
     register_operation_ = std::make_unique<Ctap2DeviceOperation<
@@ -378,9 +380,7 @@ FilterAndBatchCredentialDescriptors(
   DCHECK_EQ(device.supported_protocol(), ProtocolVersion::kCtap2);
   DCHECK(device.device_info().has_value());
 
-  const auto transport = device.DeviceTransport();
-  if (transport == FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy ||
-      transport == FidoTransportProtocol::kAndroidAccessory) {
+  if (device.NoSilentRequests()) {
     // caBLE devices might not support silent probing, so just put everything
     // into one batch that can will be sent in a non-probing request.
     return {in};
