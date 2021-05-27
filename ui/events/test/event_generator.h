@@ -456,6 +456,7 @@ class EventGenerator {
                         int flags,
                         int source_device_id);
 
+  void SetCurrentScreenLocation(const gfx::Point& point);
   void UpdateCurrentDispatcher(const gfx::Point& point);
   void PressButton(int flag);
   void ReleaseButton(int flag);
