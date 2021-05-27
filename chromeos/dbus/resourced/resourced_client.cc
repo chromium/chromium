@@ -5,6 +5,9 @@
 #include "chromeos/dbus/resourced/resourced_client.h"
 
 #include "base/check_op.h"
+#include "base/logging.h"
+#include "base/observer_list.h"
+#include "base/process/process_metrics.h"
 #include "chromeos/dbus/resourced/fake_resourced_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -22,7 +25,7 @@ ResourcedClient* g_instance = nullptr;
 
 class ResourcedClientImpl : public ResourcedClient {
  public:
-  ResourcedClientImpl() = default;
+  ResourcedClientImpl();
   ~ResourcedClientImpl() override = default;
   ResourcedClientImpl(const ResourcedClientImpl&) = delete;
   ResourcedClientImpl& operator=(const ResourcedClientImpl&) = delete;
@@ -31,72 +34,98 @@ class ResourcedClientImpl : public ResourcedClient {
     proxy_ = bus->GetObjectProxy(
         resource_manager::kResourceManagerServiceName,
         dbus::ObjectPath(resource_manager::kResourceManagerServicePath));
+    proxy_->ConnectToSignal(
+        resource_manager::kResourceManagerInterface,
+        resource_manager::kMemoryPressureChrome,
+        base::BindRepeating(&ResourcedClientImpl::MemoryPressureReceived,
+                            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&ResourcedClientImpl::MemoryPressureConnected,
+                       weak_factory_.GetWeakPtr()));
   }
 
-  // ResourcedClient interface:
-  void GetAvailableMemoryKB(DBusMethodCallback<uint64_t> callback) override;
-
-  void GetMemoryMarginsKB(
-      DBusMethodCallback<MemoryMarginsKB> callback) override;
-
+  // ResourcedClient interface.
   void SetGameMode(bool state, DBusMethodCallback<bool> callback) override;
 
+  void AddObserver(Observer* observer) override;
+
+  void RemoveObserver(Observer* observer) override;
+
  private:
-  // D-Bus response handlers:
-  void HandleAvailableResponse(DBusMethodCallback<uint64_t> callback,
-                               dbus::Response* response);
-  void HandleMarginsResponse(DBusMethodCallback<MemoryMarginsKB> callback,
-                             dbus::Response* response);
+  // D-Bus response handlers.
   void HandleSetGameModeResponse(DBusMethodCallback<bool> callback,
                                  bool status,
                                  dbus::Response* response);
 
+  // D-Bus signal handlers.
+  void MemoryPressureReceived(dbus::Signal* signal);
+  void MemoryPressureConnected(const std::string& interface_name,
+                               const std::string& signal_name,
+                               bool success);
+
   // Member variables.
+
   dbus::ObjectProxy* proxy_ = nullptr;
+
+  // Caches the total memory for reclaim_target_kb sanity check. The default
+  // value is 32 GiB in case reading total memory failed.
+  uint64_t total_memory_kb_ = 32 * 1024 * 1024;
+
+  // A list of observers that are listening on state changes, etc.
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<ResourcedClientImpl> weak_factory_{this};
 };
 
-void ResourcedClientImpl::HandleAvailableResponse(
-    DBusMethodCallback<uint64_t> callback,
-    dbus::Response* response) {
-  if (!response) {
-    std::move(callback).Run(absl::nullopt);
-    return;
+ResourcedClientImpl::ResourcedClientImpl() {
+  base::SystemMemoryInfoKB info;
+  if (base::GetSystemMemoryInfo(&info)) {
+    total_memory_kb_ = static_cast<uint64_t>(info.total);
+  } else {
+    PLOG(ERROR) << "Error reading total memory.";
   }
-
-  dbus::MessageReader reader(response);
-  uint64_t result;
-  if (!reader.PopUint64(&result)) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  std::move(callback).Run(std::move(result));
 }
 
-void ResourcedClientImpl::HandleMarginsResponse(
-    DBusMethodCallback<MemoryMarginsKB> callback,
-    dbus::Response* response) {
-  if (!response) {
-    std::move(callback).Run(absl::nullopt);
+void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
+  dbus::MessageReader signal_reader(signal);
+
+  uint8_t pressure_level_byte;
+  PressureLevel pressure_level;
+  uint64_t reclaim_target_kb;
+
+  if (!signal_reader.PopByte(&pressure_level_byte) ||
+      !signal_reader.PopUint64(&reclaim_target_kb)) {
+    LOG(ERROR) << "Error reading signal from resourced: " << signal->ToString();
     return;
   }
 
-  dbus::MessageReader reader(response);
-  uint64_t critical;
-  if (!reader.PopUint64(&critical)) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-  uint64_t moderate;
-  if (!reader.PopUint64(&moderate)) {
-    std::move(callback).Run(absl::nullopt);
+  if (pressure_level_byte == resource_manager::PressureLevelChrome::NONE) {
+    pressure_level = PressureLevel::NONE;
+  } else if (pressure_level_byte ==
+             resource_manager::PressureLevelChrome::MODERATE) {
+    pressure_level = PressureLevel::MODERATE;
+  } else if (pressure_level_byte ==
+             resource_manager::PressureLevelChrome::CRITICAL) {
+    pressure_level = PressureLevel::CRITICAL;
+  } else {
+    LOG(ERROR) << "Unknown memory pressure level: " << pressure_level_byte;
     return;
   }
 
-  std::move(callback).Run(
-      MemoryMarginsKB{.critical = critical, .moderate = moderate});
+  if (reclaim_target_kb > total_memory_kb_) {
+    LOG(ERROR) << "reclaim_target_kb is too large: " << reclaim_target_kb;
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnMemoryPressure(pressure_level, reclaim_target_kb);
+  }
+}
+
+void ResourcedClientImpl::MemoryPressureConnected(
+    const std::string& interface_name,
+    const std::string& signal_name,
+    bool success) {
+  PLOG_IF(ERROR, !success) << "Failed to connect to signal: " << signal_name;
 }
 
 // Response will be true if entering game mode, false if exiting.
@@ -111,26 +140,6 @@ void ResourcedClientImpl::HandleSetGameModeResponse(
   std::move(callback).Run(status);
 }
 
-void ResourcedClientImpl::GetAvailableMemoryKB(
-    DBusMethodCallback<uint64_t> callback) {
-  dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
-                               resource_manager::kGetAvailableMemoryKBMethod);
-  proxy_->CallMethod(
-      &method_call, kResourcedDBusTimeoutMilliseconds,
-      base::BindOnce(&ResourcedClientImpl::HandleAvailableResponse,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ResourcedClientImpl::GetMemoryMarginsKB(
-    DBusMethodCallback<MemoryMarginsKB> callback) {
-  dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
-                               resource_manager::kGetMemoryMarginsKBMethod);
-  proxy_->CallMethod(
-      &method_call, kResourcedDBusTimeoutMilliseconds,
-      base::BindOnce(&ResourcedClientImpl::HandleMarginsResponse,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 void ResourcedClientImpl::SetGameMode(bool status,
                                       DBusMethodCallback<bool> callback) {
   dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
@@ -142,6 +151,14 @@ void ResourcedClientImpl::SetGameMode(bool status,
       &method_call, kResourcedDBusTimeoutMilliseconds,
       base::BindOnce(&ResourcedClientImpl::HandleSetGameModeResponse,
                      weak_factory_.GetWeakPtr(), std::move(callback), status));
+}
+
+void ResourcedClientImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ResourcedClientImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace

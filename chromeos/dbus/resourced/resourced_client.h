@@ -6,6 +6,7 @@
 #define CHROMEOS_DBUS_RESOURCED_RESOURCED_CLIENT_H_
 
 #include "base/component_export.h"
+#include "base/observer_list_types.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 
 namespace dbus {
@@ -19,13 +20,23 @@ namespace chromeos {
 // status.
 class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
  public:
-  // Memory margins. When available is below critical, it's memory pressure
-  // level critical. When available is below moderate, it's memory pressure
-  // level moderate. See base/memory/memory_pressure_listener.h enum
-  // MemoryPressureLevel for the details.
-  struct MemoryMarginsKB {
-    uint64_t critical;
-    uint64_t moderate;
+  enum PressureLevel {
+    // There is enough memory to use.
+    NONE = 0,
+    // Chrome is advised to free buffers that are cheap to re-allocate and not
+    // immediately needed.
+    MODERATE = 1,
+    // Chrome is advised to free all possible memory.
+    CRITICAL = 2,
+  };
+
+  // Observer class for memory pressure signal.
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    virtual void OnMemoryPressure(PressureLevel level,
+                                  uint64_t reclaim_target_kb) = 0;
   };
 
   ResourcedClient(const ResourcedClient&) = delete;
@@ -43,15 +54,14 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
   // Returns the global instance which may be null if not initialized.
   static ResourcedClient* Get();
 
-  // Get available memory.
-  virtual void GetAvailableMemoryKB(DBusMethodCallback<uint64_t> callback) = 0;
-
-  // Get memory margins.
-  virtual void GetMemoryMarginsKB(
-      DBusMethodCallback<MemoryMarginsKB> callback) = 0;
-
-  // Attempt to enter game mode is state is true, exit if state is false.
+  // Attempts to enter game mode if state is true, exit if state is false.
   virtual void SetGameMode(bool state, DBusMethodCallback<bool> callback) = 0;
+
+  // Adds an observer to the observer list to listen on memory pressure events.
+  virtual void AddObserver(Observer* observer) = 0;
+
+  // Removes an observer from observer list.
+  virtual void RemoveObserver(Observer* observer) = 0;
 
  protected:
   ResourcedClient();

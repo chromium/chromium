@@ -12,18 +12,6 @@ namespace chromeos {
 FakeResourcedClient::FakeResourcedClient() = default;
 FakeResourcedClient::~FakeResourcedClient() = default;
 
-void FakeResourcedClient::GetAvailableMemoryKB(
-    DBusMethodCallback<uint64_t> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
-}
-
-void FakeResourcedClient::GetMemoryMarginsKB(
-    DBusMethodCallback<ResourcedClient::MemoryMarginsKB> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
-}
-
 void FakeResourcedClient::SetGameMode(bool status,
                                       DBusMethodCallback<bool> callback) {
   if (status) {
@@ -33,6 +21,14 @@ void FakeResourcedClient::SetGameMode(bool status,
   }
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), set_game_mode_response_));
+}
+
+void FakeResourcedClient::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FakeResourcedClient::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace chromeos
