@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_save_card_coordinator.h"
 
 #include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "ios/chrome/browser/infobars/infobar_controller_delegate.h"
@@ -197,6 +198,13 @@
   BOOL supportsEditing =
       self.saveCardInfoBarDelegate->upload() && !self.infobarAccepted;
 
+  // Convert gfx::Image to UIImage. The NSDictionary below doesn't support nil,
+  // so NSNull must be used.
+  const gfx::Image& avatar_gfx =
+      self.saveCardInfoBarDelegate->displayed_target_account_avatar();
+  NSObject* avatar =
+      avatar_gfx.IsEmpty() ? [NSNull null] : avatar_gfx.ToUIImage();
+
   NSDictionary* prefs = @{
     kCardholderNamePrefKey : self.cardholderName,
     kCardIssuerIconNamePrefKey :
@@ -206,7 +214,10 @@
     kExpirationYearPrefKey : self.expirationYear,
     kLegalMessagesPrefKey : [self legalMessagesForModal],
     kCurrentCardSavedPrefKey : @(self.infobarAccepted),
-    kSupportsEditingPrefKey : @(supportsEditing)
+    kSupportsEditingPrefKey : @(supportsEditing),
+    kDisplayedTargetAccountEmailPrefKey : base::SysUTF16ToNSString(
+        self.saveCardInfoBarDelegate->displayed_target_account_email()),
+    kDisplayedTargetAccountAvatarPrefKey : avatar,
   };
   [self.modalConsumer setupModalViewControllerWithPrefs:prefs];
 

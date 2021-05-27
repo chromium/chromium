@@ -27,6 +27,7 @@ source_set("save_card") {
     "//ios/chrome/browser/ui/overlays/infobar_modal:mediators",
     "//ios/chrome/browser/ui/util",
     "//ui/base",
+    "//ui/gfx",
   ]
 }
 
@@ -42,6 +43,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/infobars/core",
     "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/overlays",

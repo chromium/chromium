@@ -37,5 +37,6 @@ source_set("infobar_modal") {
     "//ios/chrome/browser/passwords:infobar_delegates",
     "//ios/chrome/browser/ui/autofill:autofill_message",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
+    "//ui/gfx",
   ]
 }

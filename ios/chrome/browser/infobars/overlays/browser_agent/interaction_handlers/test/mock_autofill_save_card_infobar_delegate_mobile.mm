@@ -11,6 +11,7 @@
 #import "base/bind.h"
 #include "base/guid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 MockAutofillSaveCardInfoBarDelegateMobile::
     MockAutofillSaveCardInfoBarDelegateMobile(
@@ -22,7 +23,8 @@ MockAutofillSaveCardInfoBarDelegateMobile::
             upload_save_card_prompt_callback,
         autofill::AutofillClient::LocalSaveCardPromptCallback
             local_save_card_prompt_callback,
-        PrefService* pref_service)
+        PrefService* pref_service,
+        const AccountInfo& displayed_target_account)
     : AutofillSaveCardInfoBarDelegateMobile(
           upload,
           options,
@@ -30,7 +32,8 @@ MockAutofillSaveCardInfoBarDelegateMobile::
           legal_message_lines,
           std::move(upload_save_card_prompt_callback),
           std::move(local_save_card_prompt_callback),
-          pref_service) {}
+          pref_service,
+          displayed_target_account) {}
 
 MockAutofillSaveCardInfoBarDelegateMobile::
     ~MockAutofillSaveCardInfoBarDelegateMobile() = default;
@@ -58,5 +61,5 @@ MockAutofillSaveCardInfoBarDelegateMobileFactory::
       base::BindOnce(
           ^(autofill::AutofillClient::SaveCardOfferUserDecision user_decision){
           }),
-      prefs);
+      prefs, AccountInfo());
 }

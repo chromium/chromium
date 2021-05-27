@@ -71,6 +71,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/ssl_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if defined(OS_ANDROID)
@@ -435,10 +436,9 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
       ->AddInfoBar(CreateSaveCardInfoBarMobile(
           std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
               /*upload=*/false, options, card, LegalMessageLines(),
-              /*upload_save_card_callback=*/
               AutofillClient::UploadSaveCardPromptCallback(),
-              /*local_save_card_callback=*/std::move(callback), GetPrefs()),
-          absl::nullopt));
+              /*local_save_card_callback=*/std::move(callback), GetPrefs(),
+              AccountInfo())));
 #else
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
@@ -455,18 +455,11 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
 #if defined(OS_ANDROID)
   DCHECK(options.show_prompt);
-  std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile>
-      save_card_info_bar_delegate_mobile =
-          std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
-              /*upload=*/true, options, card, legal_message_lines,
-              /*upload_save_card_callback=*/std::move(callback),
-              /*local_save_card_callback=*/
-              AutofillClient::LocalSaveCardPromptCallback(), GetPrefs());
   bool sync_disabled_wallet_transport_enabled =
       GetPersonalDataManager()->GetSyncSigninState() ==
       autofill::AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled;
 
-  absl::optional<AccountInfo> account_info;
+  AccountInfo account_info;
   // AccountInfo data should be passed down only if the following conditions are
   // satisfied:
   // 1) Sync is off or the
@@ -481,11 +474,18 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
        base::FeatureList::IsEnabled(
            features::
                kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers))) {
-    account_info = GetAccountInfo();
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(GetProfile());
+    account_info = identity_manager->FindExtendedAccountInfo(
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   }
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->AddInfoBar(CreateSaveCardInfoBarMobile(
-          std::move(save_card_info_bar_delegate_mobile), account_info));
+          std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
+              /*upload=*/true, options, card, legal_message_lines,
+              /*upload_save_card_callback=*/std::move(callback),
+              AutofillClient::LocalSaveCardPromptCallback(), GetPrefs(),
+              account_info)));
 #else
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
@@ -849,16 +849,6 @@ Profile* ChromeAutofillClient::GetProfile() const {
   if (!web_contents())
     return nullptr;
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-}
-
-absl::optional<AccountInfo> ChromeAutofillClient::GetAccountInfo() {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-  CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  return identity_manager
-      ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-          account_id);
 }
 
 bool ChromeAutofillClient::IsMultipleAccountUser() {

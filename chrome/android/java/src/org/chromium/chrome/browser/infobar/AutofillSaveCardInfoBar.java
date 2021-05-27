@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
@@ -23,7 +25,6 @@ import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBarControlLayout;
 import org.chromium.components.infobars.InfoBarLayout;
-import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.ui.UiUtils;
 
 import java.util.ArrayList;
@@ -91,7 +92,8 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
         }
     }
 
-    private final AccountInfo mAccountInfo;
+    private final @Nullable String mAccountFooterEmail;
+    private final @Nullable Bitmap mAccountFooterAvatar;
     private final long mNativeAutofillSaveCardInfoBar;
     private final List<CardDetail> mCardDetails = new ArrayList<>();
     private int mIconDrawableId = -1;
@@ -111,11 +113,15 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
      * @param linkText Link text to display in addition to the message.
      * @param buttonOk String to display on the OK button.
      * @param buttonCancel String to display on the Cancel button.
-     * @param accountInfo AccountInfo which includes user's email address and profile picture.
+     * @param accountFooterEmail The email to be shown on the footer, or null. The footer is
+     * only shown if both this and |accountFooterAvatar| are provided.
+     * @param accountFooterAvatar The avatar to be shown on the footer, or null. The footer is
+     * only shown if both this and |accountFooterEmail| are provided.
      */
     private AutofillSaveCardInfoBar(long nativeAutofillSaveCardInfoBar, int iconId,
             Bitmap iconBitmap, String message, String linkText, String buttonOk,
-            String buttonCancel, boolean isGooglePayBrandingEnabled, AccountInfo accountInfo) {
+            String buttonCancel, boolean isGooglePayBrandingEnabled,
+            @Nullable String accountFooterEmail, @Nullable Bitmap accountFooterAvatar) {
         // If Google Pay branding is enabled, no icon is specified here; it is rather added in
         // |createContent|. This hides the ImageView that normally shows the icon and gets rid of
         // the left padding of the infobar content.
@@ -126,7 +132,8 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
         mTitleText = message;
         mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
         mNativeAutofillSaveCardInfoBar = nativeAutofillSaveCardInfoBar;
-        mAccountInfo = accountInfo;
+        mAccountFooterEmail = accountFooterEmail;
+        mAccountFooterAvatar = accountFooterAvatar;
     }
 
     /**
@@ -139,15 +146,20 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
      * @param linkText Link text to display in addition to the message.
      * @param buttonOk String to display on the OK button.
      * @param buttonCancel String to display on the Cancel button.
-     * @param accountInfo AccountInfo which includes user's email address and profile picture.
+     * @param accountFooterEmail The email to be shown on the footer, or null. The footer is
+     * only shown if both this and |accountFooterAvatar| are provided.
+     * @param accountFooterAvatar The avatar to be shown on the footer, or null. The footer is
+     * only shown if both this and |accountFooterEmail| are provided.
      * @return A new instance of the infobar.
      */
     @CalledByNative
     private static AutofillSaveCardInfoBar create(long nativeAutofillSaveCardInfoBar, int iconId,
             Bitmap iconBitmap, String message, String linkText, String buttonOk,
-            String buttonCancel, boolean isGooglePayBrandingEnabled, AccountInfo accountInfo) {
+            String buttonCancel, boolean isGooglePayBrandingEnabled,
+            @Nullable String accountFooterEmail, @Nullable Bitmap accountFooterAvatar) {
         return new AutofillSaveCardInfoBar(nativeAutofillSaveCardInfoBar, iconId, iconBitmap,
-                message, linkText, buttonOk, buttonCancel, isGooglePayBrandingEnabled, accountInfo);
+                message, linkText, buttonOk, buttonCancel, isGooglePayBrandingEnabled,
+                accountFooterEmail, accountFooterAvatar);
     }
 
     /**
@@ -233,8 +245,7 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
 
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_INFO_BAR_ACCOUNT_INDICATION_FOOTER)
-                && mAccountInfo != null && !TextUtils.isEmpty(mAccountInfo.getEmail())
-                && mAccountInfo.getAccountImage() != null) {
+                && mAccountFooterEmail != null && mAccountFooterAvatar != null) {
             Resources res = layout.getResources();
             int smallIconSize = res.getDimensionPixelSize(R.dimen.infobar_small_icon_size);
             int padding = res.getDimensionPixelOffset(R.dimen.infobar_padding);
@@ -243,12 +254,12 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
                                           .inflate(R.layout.infobar_footer, null, false);
 
             TextView emailView = (TextView) footer.findViewById(R.id.infobar_footer_email);
-            emailView.setText(mAccountInfo.getEmail());
+            emailView.setText(mAccountFooterEmail);
 
             RoundedCornerImageView profilePicView =
                     (RoundedCornerImageView) footer.findViewById(R.id.infobar_footer_profile_pic);
             Bitmap resizedProfilePic = Bitmap.createScaledBitmap(
-                    mAccountInfo.getAccountImage(), smallIconSize, smallIconSize, false);
+                    mAccountFooterAvatar, smallIconSize, smallIconSize, false);
             profilePicView.setRoundedCorners(
                     smallIconSize / 2, smallIconSize / 2, smallIconSize / 2, smallIconSize / 2);
             profilePicView.setImageBitmap(resizedProfilePic);

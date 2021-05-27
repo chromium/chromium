@@ -18,12 +18,9 @@ namespace autofill {
 
 class AutofillSaveCardInfoBarDelegateMobile;
 
-// Creates an Infobar for saving a credit card on a mobile device. If
-// AccountInfo contains the user's data, an account indication footer will be
-// shown at the bottom of the Infobar.
+// Creates an Infobar for saving a credit card on a mobile device.
 std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
-    std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate,
-    absl::optional<AccountInfo> accountInfo);
+    std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate);
 
 }  // namespace autofill
 

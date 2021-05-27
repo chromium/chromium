@@ -30,7 +30,8 @@ class MockAutofillSaveCardInfoBarDelegateMobile
           upload_save_card_prompt_callback,
       autofill::AutofillClient::LocalSaveCardPromptCallback
           local_save_card_prompt_callback,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      const AccountInfo& displayed_target_account);
   ~MockAutofillSaveCardInfoBarDelegateMobile() override;
 
   MOCK_METHOD3(UpdateAndAccept,

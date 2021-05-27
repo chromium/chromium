@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_responses.h"
@@ -96,7 +97,7 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
                       user_provided_card_details){
                 }),
             autofill::AutofillClient::LocalSaveCardPromptCallback(),
-            prefs_.get());
+            prefs_.get(), AccountInfo());
     delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
                                             std::move(delegate));

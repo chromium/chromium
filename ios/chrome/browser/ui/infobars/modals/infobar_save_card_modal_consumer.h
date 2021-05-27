@@ -17,6 +17,9 @@ NSString* kExpirationYearPrefKey = @"expirationYear";
 NSString* kLegalMessagesPrefKey = @"legalMessages";
 NSString* kCurrentCardSavedPrefKey = @"currentCardSaved";
 NSString* kSupportsEditingPrefKey = @"supportsEditing";
+NSString* kDisplayedTargetAccountEmailPrefKey = @"displayedTargetAccountEmail";
+NSString* kDisplayedTargetAccountAvatarPrefKey =
+    @"displayedTargetAccountAvatar";
 }  // namespace
 
 // Consumer for model to push configurations to the SaveCard UI.

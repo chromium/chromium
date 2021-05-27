@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#include "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -53,6 +54,12 @@ using save_card_infobar_overlays::SaveCardMainAction;
   BOOL supportsEditing =
       config->should_upload_credentials() && !config->current_card_saved();
 
+  // Convert gfx::Image to UIImage. The NSDictionary below doesn't support nil,
+  // so NSNull must be used.
+  const gfx::Image& avatar_gfx = config->displayed_target_account_avatar();
+  NSObject* avatar =
+      avatar_gfx.IsEmpty() ? [NSNull null] : avatar_gfx.ToUIImage();
+
   NSDictionary* prefs = @{
     kCardholderNamePrefKey :
         base::SysUTF16ToNSString(config->cardholder_name()),
@@ -64,7 +71,10 @@ using save_card_infobar_overlays::SaveCardMainAction;
         base::SysUTF16ToNSString(config->expiration_date_year()),
     kLegalMessagesPrefKey : config->legal_message_lines(),
     kCurrentCardSavedPrefKey : @(config->current_card_saved()),
-    kSupportsEditingPrefKey : @(supportsEditing)
+    kSupportsEditingPrefKey : @(supportsEditing),
+    kDisplayedTargetAccountEmailPrefKey :
+        base::SysUTF16ToNSString(config->displayed_target_account_email()),
+    kDisplayedTargetAccountAvatarPrefKey : avatar,
   };
   [_consumer setupModalViewControllerWithPrefs:prefs];
 }

@@ -34,6 +34,9 @@ SaveCardModalRequestConfig::SaveCardModalRequestConfig(InfoBarIOS* infobar)
   legal_message_lines_ = LegalMessagesForModal(delegate);
   current_card_saved_ = infobar->accepted();
   should_upload_credentials_ = delegate->upload();
+  displayed_target_account_email_ = delegate->displayed_target_account_email();
+  displayed_target_account_avatar_ =
+      delegate->displayed_target_account_avatar();
 }
 
 SaveCardModalRequestConfig::~SaveCardModalRequestConfig() = default;

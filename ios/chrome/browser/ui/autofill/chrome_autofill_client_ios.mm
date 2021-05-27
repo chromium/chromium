@@ -252,7 +252,8 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardLocally(
       std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
           /*upload=*/false, options, card, LegalMessageLines(),
           /*upload_save_card_callback=*/UploadSaveCardPromptCallback(),
-          /*local_save_card_callback=*/std::move(callback), GetPrefs())));
+          /*local_save_card_callback=*/std::move(callback), GetPrefs(),
+          AccountInfo())));
 }
 
 void ChromeAutofillClientIOS::ConfirmAccountNameFixFlow(
@@ -292,15 +293,17 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
   DCHECK(options.show_prompt);
 
-  auto save_card_info_bar_delegate_mobile =
+  AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
       std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
           /*upload=*/true, options, card, legal_message_lines,
           /*upload_save_card_callback=*/std::move(callback),
-          /*local_save_card_callback=*/LocalSaveCardPromptCallback(),
-          GetPrefs());
-
-  infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
-      std::move(save_card_info_bar_delegate_mobile)));
+          LocalSaveCardPromptCallback(), GetPrefs(),
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillEnableAccountWalletStorage)
+              ? account_info
+              : AccountInfo())));
 }
 
 void ChromeAutofillClientIOS::CreditCardUploadCompleted(bool card_saved) {

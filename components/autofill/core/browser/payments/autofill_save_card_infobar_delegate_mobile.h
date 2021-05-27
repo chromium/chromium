@@ -15,7 +15,9 @@
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "ui/gfx/image/image.h"
 
+struct AccountInfo;
 class PrefService;
 
 namespace autofill {
@@ -26,6 +28,16 @@ class CreditCard;
 // card information gathered from a form submission. Only used on mobile.
 class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
  public:
+  // |upload| must be true iff the infobar should offer to save the card in the
+  // cloud, as opposed to saving locally. Only one of
+  // |upload_save_card_prompt_callback| and |local_save_card_prompt_callback|
+  // will be executed.
+  // If |upload| is true, |displayed_target_account| must either be the account
+  // where the card will be saved, or empty if no target account should be
+  // shown.
+  // TODO(crbug.com/1206190): Split into 2 static constructors (local/cloud),
+  // each with the minimum set of required parameters. Also consider merging
+  // the 2 callbacks into one.
   AutofillSaveCardInfoBarDelegateMobile(
       bool upload,
       AutofillClient::SaveCreditCardOptions options,
@@ -35,7 +47,8 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
           upload_save_card_prompt_callback,
       AutofillClient::LocalSaveCardPromptCallback
           local_save_card_prompt_callback,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      const AccountInfo& displayed_target_account);
 
   ~AutofillSaveCardInfoBarDelegateMobile() override;
 
@@ -60,6 +73,12 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   }
   const std::u16string& expiration_date_year() const {
     return expiration_date_year_;
+  }
+  const std::u16string& displayed_target_account_email() const {
+    return displayed_target_account_email_;
+  }
+  const gfx::Image& displayed_target_account_avatar() const {
+    return displayed_target_account_avatar_;
   }
 
   // Called when a link in the legal message text was clicked.
@@ -151,6 +170,13 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
 
   // The legal message lines to show in the content of the infobar.
   const LegalMessageLines& legal_message_lines_;
+
+  // Information the infobar should display about the account where the card
+  // will be saved. Both the email and avatar can be empty, e.g. if the card
+  // won't be saved to any account (just locally) or the target account
+  // shouldn't appear.
+  std::u16string displayed_target_account_email_;
+  gfx::Image displayed_target_account_avatar_;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillSaveCardInfoBarDelegateMobile);
 };

@@ -17,6 +17,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 using base::android::ScopedJavaLocalRef;
@@ -24,22 +25,17 @@ using base::android::ScopedJavaLocalRef;
 namespace autofill {
 
 std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
-    std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate,
-    absl::optional<AccountInfo> account_info) {
-  return std::make_unique<AutofillSaveCardInfoBar>(std::move(delegate),
-                                                   account_info);
+    std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate) {
+  return std::make_unique<AutofillSaveCardInfoBar>(std::move(delegate));
 }
 
 }  // namespace autofill
 
 AutofillSaveCardInfoBar::AutofillSaveCardInfoBar(
-    std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile> delegate,
-    absl::optional<AccountInfo> account_info)
-    : infobars::ConfirmInfoBar(std::move(delegate)) {
-  account_info_ = account_info;
-}
+    std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile> delegate)
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
-AutofillSaveCardInfoBar::~AutofillSaveCardInfoBar() {}
+AutofillSaveCardInfoBar::~AutofillSaveCardInfoBar() = default;
 
 void AutofillSaveCardInfoBar::OnLegalMessageLinkClicked(JNIEnv* env,
                                                         jobject obj,
@@ -68,9 +64,16 @@ AutofillSaveCardInfoBar::CreateRenderInfoBar(
           base::android::ConvertUTF16ToJavaString(
               env, GetTextFor(ConfirmInfoBarDelegate::BUTTON_CANCEL)),
           delegate->IsGooglePayBrandingEnabled(),
-          account_info_.has_value()
-              ? ConvertToJavaAccountInfo(env, account_info_.value())
-              : nullptr);
+          delegate->displayed_target_account_email().empty()
+              ? nullptr
+              : base::android::ConvertUTF16ToJavaString(
+                    env, delegate->displayed_target_account_email()),
+          delegate->displayed_target_account_avatar().IsEmpty()
+              ? nullptr
+              : gfx::ConvertToJavaBitmap(
+                    *delegate->displayed_target_account_avatar()
+                         .AsImageSkia()
+                         .bitmap()));
 
   Java_AutofillSaveCardInfoBar_setDescriptionText(
       env, java_delegate,
