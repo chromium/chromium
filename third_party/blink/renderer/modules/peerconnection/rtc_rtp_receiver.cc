@@ -126,6 +126,10 @@ RTCRtpReceiver::getSynchronizationSources(ScriptState* script_state,
       synchronization_source->setCaptureTimestamp(
           web_source->CaptureTimestamp().value());
     }
+    if (web_source->SenderCaptureTimeOffset().has_value()) {
+      synchronization_source->setSenderCaptureTimeOffset(
+          web_source->SenderCaptureTimeOffset().value());
+    }
     synchronization_source->setRtpTimestamp(web_source->RtpTimestamp());
     synchronization_sources.push_back(synchronization_source);
   }
@@ -163,6 +167,10 @@ RTCRtpReceiver::getContributingSources(ScriptState* script_state,
     if (web_source->CaptureTimestamp().has_value()) {
       contributing_source->setCaptureTimestamp(
           web_source->CaptureTimestamp().value());
+    }
+    if (web_source->SenderCaptureTimeOffset().has_value()) {
+      contributing_source->setSenderCaptureTimeOffset(
+          web_source->SenderCaptureTimeOffset().value());
     }
     contributing_source->setRtpTimestamp(web_source->RtpTimestamp());
     contributing_sources.push_back(contributing_source);
