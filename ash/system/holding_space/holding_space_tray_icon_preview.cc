@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"

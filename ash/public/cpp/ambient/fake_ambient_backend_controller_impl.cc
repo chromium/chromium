@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

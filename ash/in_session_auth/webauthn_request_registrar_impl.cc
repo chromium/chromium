@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "base/bind.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
 

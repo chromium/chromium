@@ -15,6 +15,7 @@
 #include "ash/system/phonehub/phone_disconnected_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/tether_connection_pending_view.h"
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "chromeos/components/phonehub/browser_tabs_model_provider.h"

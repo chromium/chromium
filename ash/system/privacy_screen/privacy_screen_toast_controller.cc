@@ -13,6 +13,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_view.h"
+#include "base/bind.h"
 
 namespace ash {
 

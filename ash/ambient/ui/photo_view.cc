@@ -14,6 +14,7 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/public/cpp/metrics_util.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"

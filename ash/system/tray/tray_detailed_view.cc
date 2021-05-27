@@ -15,6 +15,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/strings/string_number_conversions.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"

@@ -13,6 +13,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"

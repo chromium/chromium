@@ -17,6 +17,7 @@
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"

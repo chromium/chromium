@@ -30,6 +30,7 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_preview_view.h"
+#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"

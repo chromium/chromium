@@ -12,6 +12,7 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_toggle_button.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/vector_icon_types.h"

@@ -34,6 +34,7 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
+#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"

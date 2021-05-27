@@ -25,6 +25,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/unified/rounded_label_button.h"
+#include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "chromeos/components/phonehub/onboarding_ui_tracker.h"
 #include "ui/base/l10n/l10n_util.h"

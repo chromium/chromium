@@ -36,6 +36,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"

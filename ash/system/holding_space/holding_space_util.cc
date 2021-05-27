@@ -5,6 +5,7 @@
 #include "ash/system/holding_space/holding_space_util.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "base/bind.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"

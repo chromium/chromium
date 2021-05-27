@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/content/scanning/scanning_app_delegate.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"

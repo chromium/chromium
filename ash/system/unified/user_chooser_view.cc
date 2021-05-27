@@ -23,6 +23,7 @@
 #include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/top_shortcuts_view.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"

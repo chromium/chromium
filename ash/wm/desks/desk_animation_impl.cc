@@ -15,6 +15,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_util.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 
 namespace ash {

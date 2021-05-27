@@ -10,6 +10,7 @@
 #include "ash/system/media/unified_media_controls_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "components/media_message_center/media_notification_util.h"
 #include "components/vector_icons/vector_icons.h"

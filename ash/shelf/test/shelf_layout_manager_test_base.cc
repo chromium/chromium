@@ -12,6 +12,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/workspace_controller.h"
+#include "base/bind.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"

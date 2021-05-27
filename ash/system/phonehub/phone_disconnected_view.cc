@@ -15,6 +15,7 @@
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
+#include "base/bind.h"
 #include "chromeos/components/phonehub/connection_scheduler.h"
 #include "chromeos/components/phonehub/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"

@@ -11,6 +11,7 @@
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/auto_reset.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "ui/compositor/callback_layer_animation_observer.h"

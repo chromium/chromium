@@ -16,6 +16,7 @@
 #include "ash/system/holding_space/holding_space_tray_icon_preview.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/barrier_closure.h"
+#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"

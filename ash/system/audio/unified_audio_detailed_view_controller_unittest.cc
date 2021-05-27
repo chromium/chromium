@@ -12,6 +12,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"

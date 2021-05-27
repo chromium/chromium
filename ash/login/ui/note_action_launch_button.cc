@@ -10,6 +10,7 @@
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"

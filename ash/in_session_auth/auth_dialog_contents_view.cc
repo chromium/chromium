@@ -17,6 +17,7 @@
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"

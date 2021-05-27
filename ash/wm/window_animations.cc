@@ -16,6 +16,7 @@
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace_controller.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"

@@ -23,6 +23,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/search_box/search_box_constants.h"
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"

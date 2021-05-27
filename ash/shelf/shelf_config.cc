@@ -15,6 +15,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/color_analysis.h"

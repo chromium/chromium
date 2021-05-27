@@ -11,6 +11,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"

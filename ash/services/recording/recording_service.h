@@ -12,6 +12,7 @@
 #include "ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "ash/services/recording/recording_encoder_muxer.h"
 #include "ash/services/recording/video_capture_params.h"
+#include "base/bind.h"
 #include "base/bind_post_task.h"
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"

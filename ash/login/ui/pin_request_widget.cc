@@ -11,6 +11,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/window_dimmer.h"
+#include "base/bind.h"
 #include "base/no_destructor.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/views/widget/widget.h"

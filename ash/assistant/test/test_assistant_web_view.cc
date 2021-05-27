@@ -4,6 +4,7 @@
 
 #include "ash/assistant/test/test_assistant_web_view.h"
 
+#include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace ash {

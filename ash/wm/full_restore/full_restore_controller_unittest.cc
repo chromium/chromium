@@ -18,6 +18,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
+#include "base/bind.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"

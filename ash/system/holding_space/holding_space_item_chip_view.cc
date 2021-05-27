@@ -13,6 +13,7 @@
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
+#include "base/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"

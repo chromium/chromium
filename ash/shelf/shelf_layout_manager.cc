@@ -52,6 +52,7 @@
 #include "ash/wm/workspace/workspace_types.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/auto_reset.h"
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"

@@ -7,6 +7,7 @@
 #include "ash/display/display_alignment_indicator.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/timer/timer.h"
 #include "ui/events/event.h"

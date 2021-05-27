@@ -4,6 +4,7 @@
 
 #include "ash/assistant/test/test_assistant_client.h"
 
+#include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"

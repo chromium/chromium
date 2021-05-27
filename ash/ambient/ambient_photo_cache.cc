@@ -6,6 +6,7 @@
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
+#include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"

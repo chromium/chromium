@@ -21,6 +21,7 @@
 #include "ash/shell.h"
 #include "ash/style/scoped_light_mode_as_default.h"
 #include "ash/wm/window_util.h"
+#include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

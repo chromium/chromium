@@ -54,6 +54,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/barrier_closure.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"

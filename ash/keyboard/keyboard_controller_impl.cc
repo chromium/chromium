@@ -19,6 +19,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/wm/window_util.h"
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"

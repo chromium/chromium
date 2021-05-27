@@ -11,6 +11,7 @@
 #include "ash/assistant/assistant_notification_controller_impl.h"
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"

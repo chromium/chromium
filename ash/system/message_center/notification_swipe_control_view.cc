@@ -6,6 +6,7 @@
 
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/metrics_utils.h"
+#include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"

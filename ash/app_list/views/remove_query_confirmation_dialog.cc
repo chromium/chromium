@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/app_list/views/search_box_view.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/label.h"

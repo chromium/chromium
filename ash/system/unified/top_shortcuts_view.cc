@@ -23,6 +23,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/system/unified/user_chooser_view.h"
+#include "base/bind.h"
 #include "base/numerics/ranges.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

@@ -13,6 +13,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "ui/views/view.h"

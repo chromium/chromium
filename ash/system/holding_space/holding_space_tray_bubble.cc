@@ -21,6 +21,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"

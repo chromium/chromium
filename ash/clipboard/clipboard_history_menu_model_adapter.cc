@@ -9,6 +9,7 @@
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/wm/window_util.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/clipboard/clipboard.h"

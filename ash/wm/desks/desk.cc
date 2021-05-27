@@ -22,6 +22,7 @@
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
+#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/macros.h"

@@ -20,6 +20,7 @@
 #include "ash/system/tray/tray_info_label.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_toggle_button.h"
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"

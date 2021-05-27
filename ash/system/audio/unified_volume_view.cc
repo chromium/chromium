@@ -16,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/stl_util.h"
 #include "components/live_caption/pref_names.h"

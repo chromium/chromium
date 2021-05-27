@@ -10,6 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
+#include "base/bind.h"
 #include "base/scoped_observation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

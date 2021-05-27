@@ -12,6 +12,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/auto_reset.h"
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"

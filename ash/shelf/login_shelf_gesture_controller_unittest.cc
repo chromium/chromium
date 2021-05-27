@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"

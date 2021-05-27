@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "ash/public/cpp/test/test_image_downloader.h"
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "ui/gfx/image/image_skia.h"

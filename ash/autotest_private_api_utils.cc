@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

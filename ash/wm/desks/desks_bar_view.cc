@@ -29,6 +29,7 @@
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"

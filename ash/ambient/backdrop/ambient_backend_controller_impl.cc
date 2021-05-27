@@ -22,6 +22,7 @@
 #include "ash/shell.h"
 #include "base/barrier_closure.h"
 #include "base/base64.h"
+#include "base/bind.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/time/time.h"

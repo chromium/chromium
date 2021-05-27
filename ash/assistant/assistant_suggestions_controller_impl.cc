@@ -18,6 +18,7 @@
 #include "ash/public/cpp/assistant/conversation_starters_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/bind.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/unguessable_token.h"
