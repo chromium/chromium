@@ -34,6 +34,7 @@
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/database/database_util.h"
 #include "storage/browser/file_system/file_stream_reader.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -231,8 +232,9 @@ IndexedDBDispatcherHost::CreateCursorBinding(
     const url::Origin& origin,
     std::unique_ptr<IndexedDBCursor> cursor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto cursor_impl = std::make_unique<CursorImpl>(std::move(cursor), origin,
-                                                  this, IDBTaskRunner());
+  auto cursor_impl = std::make_unique<CursorImpl>(
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      std::move(cursor), blink::StorageKey(origin), this, IDBTaskRunner());
   auto* cursor_impl_ptr = cursor_impl.get();
   mojo::PendingAssociatedRemote<blink::mojom::IDBCursor> remote;
   mojo::ReceiverId receiver_id = cursor_receivers_.Add(
