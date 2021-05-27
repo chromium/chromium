@@ -8,6 +8,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/system/holding_space/holding_space_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
@@ -25,6 +27,8 @@ BubbleSearchPage::BubbleSearchPage() {
   scroll->SetDrawOverflowIndicator(false);
   scroll->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
+  // Don't paint a background. The bubble already has one.
+  scroll->SetBackgroundColor(absl::nullopt);
 
   auto scroll_contents = std::make_unique<views::View>();
   scroll_contents->SetLayoutManager(
@@ -38,7 +42,11 @@ BubbleSearchPage::BubbleSearchPage() {
   results->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), kSpacing));
   for (int i = 0; i < 20; ++i) {
-    results->AddChildView(std::make_unique<views::Label>(u"Result"));
+    auto label = std::make_unique<views::Label>(u"Result");
+    // TODO(crbug.com/1199925): Move this method to ash::bubble_utils.
+    holding_space_util::ApplyStyle(label.get(),
+                                   holding_space_util::LabelStyle::kBody);
+    results->AddChildView(std::move(label));
   }
 
   scroll->SetContents(std::move(scroll_contents));

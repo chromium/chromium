@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/ash_export.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets_f.h"
@@ -37,7 +38,7 @@ void AnimateOut(views::View* view,
                 base::TimeDelta duration,
                 ui::LayerAnimationObserver* observer);
 
-// TODO(crbug.com/1199925): Move to ash typography.
+// TODO(crbug.com/1199925): Move to ash::bubble_utils.
 // Enumeration of supported label styles.
 enum class LabelStyle {
   kBadge,
@@ -47,7 +48,7 @@ enum class LabelStyle {
 };
 
 // Applies the specified `style` to the given `label`.
-void ApplyStyle(views::Label* label, LabelStyle style);
+ASH_EXPORT void ApplyStyle(views::Label* label, LabelStyle style);
 
 // Creates a label with optional `text` matching the specified `style`.
 std::unique_ptr<views::Label> CreateLabel(

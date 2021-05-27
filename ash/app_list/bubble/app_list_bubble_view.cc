@@ -13,6 +13,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/ui_base_types.h"
@@ -77,6 +78,11 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_parent_window(
       Shell::GetContainer(root_window, kShellWindowId_AppListContainer));
+
+  // TODO(https://crbug.com/1204551): Add transparency and rounded corners.
+  // See TrayBubbleView and BubbleBorder.
+  set_color(AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kOpaque));
 
   auto* layout = SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
