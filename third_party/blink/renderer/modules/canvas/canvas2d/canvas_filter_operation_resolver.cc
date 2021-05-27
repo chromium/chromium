@@ -116,6 +116,56 @@ ConvolveMatrixFilterOperation* ResolveConvolveMatrix(
       kernel_size, divisor, bias, target_offset, edge_mode, preserve_alpha,
       kernel_matrix->values);
 }
+
+ComponentTransferFunction GetComponentTransferFunction(
+    const StringView& key,
+    const Dictionary& filter,
+    ExceptionState& exception_state) {
+  Dictionary transfer_dict;
+  filter.Get(key, transfer_dict);
+
+  ComponentTransferFunction result;
+  result.slope =
+      transfer_dict.Get<IDLDouble>("slope", exception_state).value_or(1);
+  result.intercept =
+      transfer_dict.Get<IDLDouble>("intercept", exception_state).value_or(0);
+  result.amplitude =
+      transfer_dict.Get<IDLDouble>("amplitude", exception_state).value_or(1);
+  result.exponent =
+      transfer_dict.Get<IDLDouble>("exponent", exception_state).value_or(1);
+  result.offset =
+      transfer_dict.Get<IDLDouble>("offset", exception_state).value_or(0);
+
+  absl::optional<Vector<float>> table_values =
+      transfer_dict.Get<IDLSequence<IDLFloat>>("tableValues", exception_state);
+  if (table_values)
+    result.table_values.AppendVector(table_values.value());
+
+  String type = transfer_dict.Get<IDLString>("type", exception_state)
+                    .value_or("identity");
+  if (type == "identity")
+    result.type = FECOMPONENTTRANSFER_TYPE_IDENTITY;
+  else if (type == "linear")
+    result.type = FECOMPONENTTRANSFER_TYPE_LINEAR;
+  else if (type == "gamma")
+    result.type = FECOMPONENTTRANSFER_TYPE_GAMMA;
+  else if (type == "table")
+    result.type = FECOMPONENTTRANSFER_TYPE_TABLE;
+  else if (type == "discrete")
+    result.type = FECOMPONENTTRANSFER_TYPE_DISCRETE;
+
+  return result;
+}
+
+ComponentTransferFilterOperation* ResolveComponentTransfer(
+    const Dictionary& dict,
+    ExceptionState& exception_state) {
+  return MakeGarbageCollected<ComponentTransferFilterOperation>(
+      GetComponentTransferFunction("funcR", dict, exception_state),
+      GetComponentTransferFunction("funcG", dict, exception_state),
+      GetComponentTransferFunction("funcB", dict, exception_state),
+      GetComponentTransferFunction("funcA", dict, exception_state));
+}
 }  // namespace
 
 FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
@@ -124,11 +174,11 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
   FilterOperations operations;
 
   for (auto filter : filters) {
-    v8::Local<v8::Object> v8_object;
     if (filter->hasBlur()) {
-      Dictionary blur_dict(filter->blur());
-      if (auto* blur_operation = ResolveBlur(blur_dict, exception_state))
+      if (auto* blur_operation =
+              ResolveBlur(Dictionary(filter->blur()), exception_state)) {
         operations.Operations().push_back(blur_operation);
+      }
     }
     if (filter->hasColorMatrix()) {
       Dictionary colormatrix_dict(filter->colorMatrix());
@@ -158,10 +208,15 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
       }
     }
     if (filter->hasConvolveMatrix()) {
-      Dictionary convolve_dict(filter->convolveMatrix());
-      if (auto* convolve_operation =
-              ResolveConvolveMatrix(convolve_dict, exception_state)) {
+      if (auto* convolve_operation = ResolveConvolveMatrix(
+              Dictionary(filter->convolveMatrix()), exception_state)) {
         operations.Operations().push_back(convolve_operation);
+      }
+    }
+    if (filter->hasComponentTransfer()) {
+      if (auto* component_transfer_operation = ResolveComponentTransfer(
+              Dictionary(filter->componentTransfer()), exception_state)) {
+        operations.Operations().push_back(component_transfer_operation);
       }
     }
   }

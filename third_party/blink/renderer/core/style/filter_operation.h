@@ -443,7 +443,7 @@ class CORE_EXPORT ComponentTransferFilterOperation : public FilterOperation {
 template <>
 struct DowncastTraits<ComponentTransferFilterOperation> {
   static bool AllowFrom(const FilterOperation& op) {
-    return op.GetType() == FilterOperation::CONVOLVE_MATRIX;
+    return op.GetType() == FilterOperation::COMPONENT_TRANSFER;
   }
 };
 

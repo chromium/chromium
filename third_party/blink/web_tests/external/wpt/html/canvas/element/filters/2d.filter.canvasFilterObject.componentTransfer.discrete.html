@@ -22,7 +22,7 @@ _addTest(function(canvas, ctx) {
 // From https://www.w3.org/TR/SVG11/filters.html#feComponentTransferElement
 function getTransformedValue(C, V) {
     // Get the right interval
-    const n = V.length - 1;
+    const n = V.length;
     const k = C == 1 ? n - 1 : Math.floor(C * n);
     return V[k];
 }

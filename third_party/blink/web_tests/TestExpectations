@@ -426,21 +426,6 @@ crbug.com/1155161 svg/masking/mask-of-root.html [ Failure ]
 # Failures due to pointerMove building synthetic events without button information (main thread only).
 crbug.com/1056778 fast/scrolling/scrollbars/scrollbar-thumb-snapping.html [ Failure ]
 
-# Awaiting implementation of FeComponentTransfer for CanvasFilter
-crbug.com/1169216 external/wpt/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.discrete.html [ Failure ]
-crbug.com/1169216 external/wpt/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.discrete.worker.html [ Failure ]
-crbug.com/1169216 external/wpt/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.gamma.html [ Failure ]
-crbug.com/1169216 external/wpt/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.gamma.worker.html [ Failure ]
-crbug.com/1169216 external/wpt/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.linear.html [ Failure ]
-crbug.com/1169216 external/wpt/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.linear.worker.html [ Failure ]
-crbug.com/1169216 external/wpt/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.table.html [ Failure ]
-crbug.com/1169216 external/wpt/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.componentTransfer.table.worker.html [ Failure ]
-crbug.com/1169216 external/wpt/html/canvas/element/filters/2d.filter.canvasFilterObject.componentTransfer.discrete.html [ Failure ]
-crbug.com/1169216 external/wpt/html/canvas/element/filters/2d.filter.canvasFilterObject.componentTransfer.gamma.html [ Failure ]
-crbug.com/1169216 external/wpt/html/canvas/element/filters/2d.filter.canvasFilterObject.componentTransfer.linear.html [ Failure ]
-crbug.com/1169216 external/wpt/html/canvas/element/filters/2d.filter.canvasFilterObject.componentTransfer.table.html [ Failure ]
-crbug.com/1169216 external/wpt/html/canvas/element/manual/filters/canvas-filter-object-component-transfer.html [ Failure ]
-
 # Most of these fail due to subpixel differences, but a couple are real failures.
 crbug.com/1044742 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-animation.html [ Failure ]
 crbug.com/1044742 [ Linux ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-canvas-parent.html [ Failure ]
