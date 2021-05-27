@@ -123,6 +123,8 @@ const char kInfobarTranslateBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarTranslateBannerEventHistogram, event);
       break;
     case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
+      // TODO(crbug.com/1195978): Add metrics.
+    case InfobarType::kInfobarTypeAddToReadingList:
       // TODO(crbug.com/1167062): Add metrics.
       break;
   }
@@ -151,6 +153,7 @@ const char kInfobarTranslateBadgeTappedHistogram[] =
                                 dismissType);
       break;
     case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
+    case InfobarType::kInfobarTypeAddToReadingList:
       // TODO(crbug.com/1167062): Add metrics.
       break;
   }
@@ -180,6 +183,7 @@ const char kInfobarTranslateBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarTranslateModalEventHistogram, event);
       break;
     case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
+    case InfobarType::kInfobarTypeAddToReadingList:
       // TODO(crbug.com/1167062): Add metrics.
       break;
   }
@@ -205,6 +209,7 @@ const char kInfobarTranslateBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarTranslateBadgeTappedHistogram, state);
       break;
     case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
+    case InfobarType::kInfobarTypeAddToReadingList:
       // TODO(crbug.com/1167062): Add metrics.
       break;
   }
