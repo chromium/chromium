@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gl/gl_helper.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/scoped_binders.h"
 
@@ -158,17 +159,23 @@ YUVToRGBConverter::YUVToRGBConverter(const GLVersionInfo& gl_version_info,
 
   glGenFramebuffersEXT(1, &framebuffer_);
 
-  vertex_buffer_ = GLHelper::SetupQuadVertexBuffer();
-  vertex_shader_ = GLHelper::LoadShader(
-      GL_VERTEX_SHADER,
-      base::StringPrintf("%s\n%s", vertex_header, kVertexShader).c_str());
-  fragment_shader_ = GLHelper::LoadShader(
-      GL_FRAGMENT_SHADER,
-      base::StringPrintf("%s\n%s\n%s", fragment_header,
-                         do_color_conversion.c_str(),
-                         (is_rect ? kFragmentShaderRect : kFragmentShader2D))
-          .c_str());
-  program_ = GLHelper::SetupProgram(vertex_shader_, fragment_shader_);
+  {
+    ScopedEnableTextureRectangleInShaderCompiler enable(
+        g_current_gl_driver->ext.b_GL_ANGLE_texture_rectangle
+            ? g_current_gl_context
+            : nullptr);
+    vertex_buffer_ = GLHelper::SetupQuadVertexBuffer();
+    vertex_shader_ = GLHelper::LoadShader(
+        GL_VERTEX_SHADER,
+        base::StringPrintf("%s\n%s", vertex_header, kVertexShader).c_str());
+    fragment_shader_ = GLHelper::LoadShader(
+        GL_FRAGMENT_SHADER,
+        base::StringPrintf("%s\n%s\n%s", fragment_header,
+                           do_color_conversion.c_str(),
+                           (is_rect ? kFragmentShaderRect : kFragmentShader2D))
+            .c_str());
+    program_ = GLHelper::SetupProgram(vertex_shader_, fragment_shader_);
+  }
 
   ScopedUseProgram use_program(program_);
   size_location_ = glGetUniformLocation(program_, "a_texScale");
