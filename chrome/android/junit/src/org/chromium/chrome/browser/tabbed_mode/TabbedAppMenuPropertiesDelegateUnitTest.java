@@ -50,6 +50,8 @@ import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettingsJni;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -59,6 +61,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content.browser.ContentFeatureListImpl;
 import org.chromium.content.browser.ContentFeatureListImplJni;
@@ -143,6 +146,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     private OfflinePageUtils.Internal mOfflinePageUtils;
     @Mock
+    private SigninManager mSigninManager;
+    @Mock
+    private IdentityManager mIdentityManager;
+    @Mock
+    private IdentityServicesProvider mIdentityService;
+    @Mock
     private TabModelFilterProvider mTabModelFilterProvider;
     @Mock
     private TabModelFilter mTabModelFilter;
@@ -191,6 +200,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                      ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS))
                 .thenReturn(false);
         OfflinePageUtils.setInstanceForTesting(mOfflinePageUtils);
+        when(mIdentityService.getSigninManager(any(Profile.class))).thenReturn(mSigninManager);
+        when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
+        IdentityServicesProvider.setInstanceForTests(mIdentityService);
         FeatureList.setTestCanUseDefaultsForTesting();
 
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(
@@ -306,6 +318,16 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    public void getFooterResourceId_signedOutUser_doesNotReturnWebFeedMenuItem() {
+        setUpMocksForWebFeedFooter();
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+
+        assertNotEquals("Footer Resource ID should not be web_feed_main_menu_item.",
+                R.layout.web_feed_main_menu_item,
+                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+    }
+
+    @Test
     public void getFooterResourceId_httpsUrl_returnsWebFeedMenuItem() {
         setUpMocksForWebFeedFooter();
 
@@ -319,6 +341,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
         when(mOfflinePageUtils.isOfflinePage(mTab)).thenReturn(false);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
     }
 
     private void setUpMocksForPageMenu() {

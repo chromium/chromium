@@ -10,6 +10,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -29,10 +30,15 @@ public final class FeedFeatures {
     }
 
     /**
-     * @return Whether the WebFeed UI is enabled.
+     * @return Whether the WebFeed UI should be enabled. Checks for both the WEB_FEED flag and if
+     *         the user is signed in.
      */
     public static boolean isWebFeedUIEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
+                && IdentityServicesProvider.get()
+                           .getSigninManager(Profile.getLastUsedRegularProfile())
+                           .getIdentityManager()
+                           .hasPrimaryAccount();
     }
 
     /**

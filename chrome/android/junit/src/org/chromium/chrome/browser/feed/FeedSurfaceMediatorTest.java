@@ -53,7 +53,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ChromeFeatureList.WEB_FEED})
+@Features.EnableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.INTEREST_FEED_V2_HEARTS})
 public class FeedSurfaceMediatorTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -103,6 +103,7 @@ public class FeedSurfaceMediatorTest {
         when(mWebFeedBridgeJniMock.isWebFeedSubscriber()).thenReturn(true);
         when(mIdentityService.getSigninManager(any(Profile.class))).thenReturn(mSigninManager);
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
         when(mFeedSurfaceCoordinator.getRecyclerView()).thenReturn(new RecyclerView(mActivity));
         when(mFeedSurfaceCoordinator.getStream()).thenReturn(null, mStream);
         when(mFeedSurfaceCoordinator.createFeedStream(anyBoolean())).thenReturn(mStream);
