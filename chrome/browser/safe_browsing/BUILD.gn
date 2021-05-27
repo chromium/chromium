@@ -141,6 +141,7 @@ static_library("safe_browsing") {
       ":metrics_collector",
       ":verdict_cache_manager_factory",
       "//build:branding_buildflags",
+      "//build:chromeos_buildflags",
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
       "//chrome/common/safe_browsing:proto",

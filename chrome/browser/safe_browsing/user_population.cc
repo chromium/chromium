@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/user_population.h"
 
 #include "base/feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -74,8 +75,12 @@ ChromeUserPopulation GetUserPopulation(Profile* profile) {
       population.set_number_of_profiles(profile_manager->GetNumberOfProfiles());
       population.set_number_of_loaded_profiles(
           profile_manager->GetLoadedProfiles().size());
+// On ChromeOS multiple profiles doesn't apply, and GetLastOpenedProfiles causes
+// crashes on ChromeOS. See https://crbug.com/1211793.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
       population.set_number_of_open_profiles(
           profile_manager->GetLastOpenedProfiles().size());
+#endif
     }
   }
 
