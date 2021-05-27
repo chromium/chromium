@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
 #include "base/command_line.h"
@@ -349,7 +351,56 @@ TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
+  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+            info.safe_browsing_protection_level);
 }
+
+class EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest
+    : public EnterpriseReportingPrivateGetContextInfoTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {};
+
+TEST_P(EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest, Test) {
+  std::tuple<bool, bool> params = GetParam();
+
+  bool safe_browsing_enabled = std::get<0>(params);
+  bool safe_browsing_enhanced_enabled = std::get<1>(params);
+
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                    safe_browsing_enabled);
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
+                                    safe_browsing_enhanced_enabled);
+
+  enterprise_reporting_private::ContextInfo info = GetContextInfo();
+
+  EXPECT_TRUE(info.browser_affiliation_ids.empty());
+  EXPECT_TRUE(info.profile_affiliation_ids.empty());
+  EXPECT_TRUE(info.on_file_attached_providers.empty());
+  EXPECT_TRUE(info.on_file_downloaded_providers.empty());
+  EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
+  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+            info.realtime_url_check_mode);
+  EXPECT_TRUE(info.on_security_event_providers.empty());
+  EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
+
+  if (safe_browsing_enabled) {
+    if (safe_browsing_enhanced_enabled)
+      EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_ENHANCED,
+                info.safe_browsing_protection_level);
+    else
+      EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+                info.safe_browsing_protection_level);
+  } else {
+    EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_DISABLED,
+              info.safe_browsing_protection_level);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest,
+    testing::Values(std::make_tuple(false, false),
+                    std::make_tuple(true, false),
+                    std::make_tuple(true, true)));
 
 class EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest
     : public EnterpriseReportingPrivateGetContextInfoTest,
@@ -395,6 +446,8 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest, Test) {
   EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
+  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+            info.safe_browsing_protection_level);
 }
 
 }  // namespace extensions

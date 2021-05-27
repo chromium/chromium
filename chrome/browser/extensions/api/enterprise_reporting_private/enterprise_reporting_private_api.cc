@@ -84,6 +84,20 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
       break;
   }
   info.browser_version = signals.browser_version;
+  switch (signals.safe_browsing_protection_level) {
+    case safe_browsing::NO_SAFE_BROWSING:
+      info.safe_browsing_protection_level = extensions::api::
+          enterprise_reporting_private::SAFE_BROWSING_LEVEL_DISABLED;
+      break;
+    case safe_browsing::STANDARD_PROTECTION:
+      info.safe_browsing_protection_level = extensions::api::
+          enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD;
+      break;
+    case safe_browsing::ENHANCED_PROTECTION:
+      info.safe_browsing_protection_level = extensions::api::
+          enterprise_reporting_private::SAFE_BROWSING_LEVEL_ENHANCED;
+      break;
+  }
 
   return info;
 }

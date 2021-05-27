@@ -37,6 +37,7 @@ struct ContextInfo {
   std::vector<std::string> on_security_event_providers;
   safe_browsing::EnterpriseRealTimeUrlCheckMode realtime_url_check_mode;
   std::string browser_version;
+  safe_browsing::SafeBrowsingState safe_browsing_protection_level;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getContextInfo()
@@ -79,6 +80,8 @@ class ContextInfoFetcher {
   safe_browsing::EnterpriseRealTimeUrlCheckMode GetRealtimeUrlCheckMode();
 
   std::vector<std::string> GetOnSecurityEventProviders();
+
+  safe_browsing::SafeBrowsingState GetSafeBrowsingProtectionLevel();
 
   content::BrowserContext* browser_context_;
 

@@ -56,6 +56,7 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
   info.realtime_url_check_mode = GetRealtimeUrlCheckMode();
   info.on_security_event_providers = GetOnSecurityEventProviders();
   info.browser_version = version_info::GetVersionNumber();
+  info.safe_browsing_protection_level = GetSafeBrowsingProtectionLevel();
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(info)));
@@ -87,6 +88,25 @@ ContextInfoFetcher::GetRealtimeUrlCheckMode() {
 std::vector<std::string> ContextInfoFetcher::GetOnSecurityEventProviders() {
   return connectors_service_->GetReportingServiceProviderNames(
       enterprise_connectors::ReportingConnector::SECURITY_EVENT);
+}
+
+safe_browsing::SafeBrowsingState
+ContextInfoFetcher::GetSafeBrowsingProtectionLevel() {
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+
+  bool safe_browsing_enabled =
+      profile->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnabled);
+  bool safe_browsing_enhanced_enabled =
+      profile->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnhanced);
+
+  if (safe_browsing_enabled) {
+    if (safe_browsing_enhanced_enabled)
+      return safe_browsing::ENHANCED_PROTECTION;
+    else
+      return safe_browsing::STANDARD_PROTECTION;
+  } else {
+    return safe_browsing::NO_SAFE_BROWSING;
+  }
 }
 
 }  // namespace enterprise_signals

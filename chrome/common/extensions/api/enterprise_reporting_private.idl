@@ -47,6 +47,9 @@ namespace enterprise.reportingPrivate {
   // Possible states for the EnterpriseRealTimeUrlCheckMode policy.
   enum RealtimeUrlCheckMode { DISABLED, ENABLED_MAIN_FRAME };
 
+  // Possible states for the SafeBrowsingProtectionLevel policy.
+  enum SafeBrowsingLevel { DISABLED, STANDARD, ENHANCED };
+
   // Context info fields returned by the getContextInfo API.
   dictionary ContextInfo {
     DOMString[] browserAffiliationIds;
@@ -57,6 +60,7 @@ namespace enterprise.reportingPrivate {
     RealtimeUrlCheckMode realtimeUrlCheckMode;
     DOMString[] onSecurityEventProviders;
     DOMString browserVersion;
+    SafeBrowsingLevel safeBrowsingProtectionLevel;
   };
 
   // Invoked by <code>getContextInfo</code> to return context information.
