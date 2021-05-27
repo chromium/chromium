@@ -426,6 +426,22 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       LiveTabContext* current_context = context;
       auto& window = static_cast<Window&>(entry);
 
+      // Relabel group IDs to prevent duplicating groups, e.g. if the same
+      // window is restored twice or a tab of the same ID is restored
+      // elsewhere. See crbug.com/1202102.
+      base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupId>
+          new_group_ids;
+      new_group_ids.reserve(window.tab_groups.size());
+      for (const auto& tab_group : window.tab_groups) {
+        auto new_id = tab_groups::TabGroupId::GenerateNew();
+        new_group_ids.emplace(tab_group.first, new_id);
+        // Ensure the new ID does not collide with an existing group, failing
+        // silently if it does. This is extremely unlikely, given group IDs are
+        // 128 bit randomly generated numbers.
+        if (client_->FindLiveTabContextWithGroup(new_id))
+          return std::vector<LiveTab*>();
+      }
+
       // When restoring a window, either the entire window can be restored, or a
       // single tab within it. If the entry's ID matches the one to restore,
       // then the entire window will be restored.
@@ -433,11 +449,17 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
         context = client_->CreateLiveTabContext(
             window.app_name, window.bounds, window.show_state, window.workspace,
             window.user_title);
+
         for (size_t tab_i = 0; tab_i < window.tabs.size(); ++tab_i) {
           const Tab& tab = *window.tabs[tab_i];
+
+          absl::optional<tab_groups::TabGroupId> new_group;
+          if (tab.group)
+            new_group = new_group_ids.at(*tab.group);
+
           LiveTab* restored_tab = context->AddRestoredTab(
               tab.navigations, context->GetTabCount(),
-              tab.current_navigation_index, tab.extension_app_id, tab.group,
+              tab.current_navigation_index, tab.extension_app_id, new_group,
               tab.group_visual_data.value_or(tab_groups::TabGroupVisualData()),
               static_cast<int>(tab_i) == window.selected_tab_index, tab.pinned,
               tab.platform_data.get(), tab.user_agent_override, nullptr);
@@ -449,7 +471,8 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
         }
 
         for (const auto& tab_group : window.tab_groups) {
-          context->SetVisualDataForGroup(tab_group.first, tab_group.second);
+          context->SetVisualDataForGroup(new_group_ids.at(tab_group.first),
+                                         tab_group.second);
         }
 
         // All the window's tabs had the same former browser_id.
