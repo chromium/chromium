@@ -52,8 +52,6 @@ class MediaSessionControllersManagerTest
   static const int kIsAudioFocusEnabled = 1;
 
   void SetUp() override {
-    RenderViewHostImplTestHarness::SetUp();
-
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
 
@@ -78,6 +76,8 @@ class MediaSessionControllersManagerTest
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
+    RenderViewHostImplTestHarness::SetUp();
 
     GlobalFrameRoutingId frame_routing_id =
         contents()->GetMainFrame()->GetGlobalFrameRoutingId();
