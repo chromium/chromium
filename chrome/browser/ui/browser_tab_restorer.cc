@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -49,8 +50,8 @@ class BrowserTabRestorer : public sessions::TabRestoreServiceObserver,
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override;
 
-  Browser* browser_;
-  sessions::TabRestoreService* tab_restore_service_;
+  CheckedPtr<Browser> browser_;
+  CheckedPtr<sessions::TabRestoreService> tab_restore_service_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserTabRestorer);
 };

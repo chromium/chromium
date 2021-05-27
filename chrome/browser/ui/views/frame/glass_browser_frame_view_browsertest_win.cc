@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -77,10 +78,10 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
   }
 
   absl::optional<SkColor> theme_color_ = SK_ColorBLUE;
-  Browser* app_browser_ = nullptr;
-  BrowserView* browser_view_ = nullptr;
-  GlassBrowserFrameView* glass_frame_view_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  CheckedPtr<Browser> app_browser_ = nullptr;
+  CheckedPtr<BrowserView> browser_view_ = nullptr;
+  CheckedPtr<GlassBrowserFrameView> glass_frame_view_ = nullptr;
+  CheckedPtr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, ThemeColor) {
@@ -223,10 +224,10 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     return true;
   }
 
-  Browser* app_browser_ = nullptr;
-  BrowserView* browser_view_ = nullptr;
-  GlassBrowserFrameView* glass_frame_view_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  CheckedPtr<Browser> app_browser_ = nullptr;
+  CheckedPtr<BrowserView> browser_view_ = nullptr;
+  CheckedPtr<GlassBrowserFrameView> glass_frame_view_ = nullptr;
+  CheckedPtr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

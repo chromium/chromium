@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
@@ -167,7 +168,7 @@ class FramebufferInfoTestBase : public GpuServiceTest {
   ContextType context_type_;
   FramebufferCompletenessCache framebuffer_completeness_cache_;
   FramebufferManager manager_;
-  Framebuffer* framebuffer_;
+  CheckedPtr<Framebuffer> framebuffer_;
   scoped_refptr<FeatureInfo> feature_info_;
   ServiceDiscardableManager discardable_manager_;
   std::unique_ptr<TextureManager> texture_manager_;

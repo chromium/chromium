@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace sql {
 
@@ -46,7 +47,7 @@ class COMPONENT_EXPORT(SQL) Transaction {
   bool Commit();
 
  private:
-  Database* database_;
+  CheckedPtr<Database> database_;
 
   // True when the transaction is open, false when it's already been committed
   // or rolled back.

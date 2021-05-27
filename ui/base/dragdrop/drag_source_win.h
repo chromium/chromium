@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 
 namespace ui {
@@ -65,7 +66,7 @@ class DragSourceWin
   // Set to true if we want to cancel the drag operation.
   bool cancel_drag_;
 
-  const OSExchangeData* data_;
+  CheckedPtr<const OSExchangeData> data_;
 
   // The number of times for this drag that Windows asked if the drag should
   // continue. This is used in DesktopDragDropClientWin::StartDragAndDrop to

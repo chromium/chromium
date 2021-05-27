@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -93,9 +94,9 @@ class PrintBackendServiceManager {
   base::flat_set<std::string> drivers_requiring_elevated_privilege_;
 
   // Override of service to use for testing.
-  mojo::Remote<printing::mojom::PrintBackendService>*
+  CheckedPtr<mojo::Remote<printing::mojom::PrintBackendService>>
       sandboxed_service_remote_for_test_ = nullptr;
-  mojo::Remote<printing::mojom::PrintBackendService>*
+  CheckedPtr<mojo::Remote<printing::mojom::PrintBackendService>>
       unsandboxed_service_remote_for_test_ = nullptr;
 };
 

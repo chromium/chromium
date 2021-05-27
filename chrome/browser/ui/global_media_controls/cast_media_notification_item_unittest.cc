@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/media_message_center/media_notification_controller.h"
@@ -152,7 +153,7 @@ class CastMediaNotificationItemTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   MockMediaNotificationController notification_controller_;
-  MockSessionController* session_controller_ = nullptr;
+  CheckedPtr<MockSessionController> session_controller_ = nullptr;
   MockMediaNotificationView view_;
   std::unique_ptr<CastMediaNotificationItem> item_;
 };

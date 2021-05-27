@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -116,7 +117,8 @@ class PopupPageLoadMetricsWaiterInitializer : public TabStripModelObserver {
   }
 
  private:
-  std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>* waiter_;
+  CheckedPtr<std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>>
+      waiter_;
 
   DISALLOW_COPY_AND_ASSIGN(PopupPageLoadMetricsWaiterInitializer);
 };
@@ -281,7 +283,7 @@ class DownloadFramePolicyBrowserTest
   std::unique_ptr<content::DownloadTestObserver> download_observer_;
   std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
       web_feature_waiter_;
-  content::RenderFrameHost* subframe_rfh_ = nullptr;
+  CheckedPtr<content::RenderFrameHost> subframe_rfh_ = nullptr;
   size_t expected_num_downloads_ = 0;
 };
 

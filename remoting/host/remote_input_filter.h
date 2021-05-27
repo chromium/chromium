@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "remoting/protocol/input_event_tracker.h"
 #include "remoting/protocol/input_stub.h"
@@ -50,7 +51,7 @@ class RemoteInputFilter : public protocol::InputStub {
   bool ShouldIgnoreInput() const;
   void LocalInputDetected();
 
-  protocol::InputEventTracker* event_tracker_;
+  CheckedPtr<protocol::InputEventTracker> event_tracker_;
 
   // Queue of recently-injected mouse positions and keypresses used to
   // distinguish echoes of injected events from movements from a local

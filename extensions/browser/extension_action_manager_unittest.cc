@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
@@ -34,8 +35,8 @@ class ExtensionActionManagerTest
   ExtensionRegistry* registry() { return registry_; }
 
  private:
-  ExtensionRegistry* registry_;
-  ExtensionActionManager* manager_;
+  CheckedPtr<ExtensionRegistry> registry_;
+  CheckedPtr<ExtensionActionManager> manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionActionManagerTest);
 };

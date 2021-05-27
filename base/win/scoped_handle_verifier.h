@@ -5,6 +5,7 @@
 #ifndef BASE_WIN_SCOPED_HANDLE_VERIFIER_H_
 #define BASE_WIN_SCOPED_HANDLE_VERIFIER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/win/windows_types.h"
 
 #include <memory>
@@ -39,9 +40,9 @@ struct ScopedHandleVerifierInfo {
   ScopedHandleVerifierInfo(ScopedHandleVerifierInfo&&) noexcept;
   ScopedHandleVerifierInfo& operator=(ScopedHandleVerifierInfo&&) noexcept;
 
-  const void* owner;
-  const void* pc1;
-  const void* pc2;
+  CheckedPtr<const void> owner;
+  CheckedPtr<const void> pc1;
+  CheckedPtr<const void> pc2;
   std::unique_ptr<debug::StackTrace> stack;
   DWORD thread_id;
 };

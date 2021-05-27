@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/checked_ptr.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
 namespace optimization_guide {
@@ -63,7 +64,7 @@ class GenericModelExecutionTask
 
  private:
   // Guaranteed to outlive this.
-  InferenceDelegate<OutputType, InputTypes...>* delegate_;
+  CheckedPtr<InferenceDelegate<OutputType, InputTypes...>> delegate_;
 };
 
 }  // namespace optimization_guide

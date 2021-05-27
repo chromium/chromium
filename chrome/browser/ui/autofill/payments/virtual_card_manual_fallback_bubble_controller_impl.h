@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CONTROLLER_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller.h"
 
 #include "base/macros.h"
@@ -81,7 +82,7 @@ class VirtualCardManualFallbackBubbleControllerImpl
   // Whether the omnibox icon for the bubble should be visible.
   bool should_icon_be_visible_ = false;
 
-  ObserverForTest* observer_for_test_ = nullptr;
+  CheckedPtr<ObserverForTest> observer_for_test_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

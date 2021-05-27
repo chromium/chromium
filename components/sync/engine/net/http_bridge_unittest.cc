@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -108,7 +109,7 @@ class MAYBE_SyncHttpBridgeTest : public testing::Test {
     }
   };
 
-  HttpBridge* bridge_for_race_test_;
+  CheckedPtr<HttpBridge> bridge_for_race_test_;
 
   base::test::TaskEnvironment task_environment_;
   // Separate thread for IO used by the HttpBridge.

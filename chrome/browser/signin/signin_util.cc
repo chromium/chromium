@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -99,9 +100,9 @@ class DeleteProfileDialogManager : public BrowserListObserver {
   }
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   std::string primary_account_email_;
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(DeleteProfileDialogManager);
 };

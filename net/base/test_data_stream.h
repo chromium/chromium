@@ -6,6 +6,7 @@
 #define NET_BASE_TEST_DATA_STREAM_H_
 
 #include <string.h>  // for memcpy().
+#include "base/memory/checked_ptr.h"
 #include "net/base/net_export.h"
 
 // This is a class for generating an infinite stream of data which can be
@@ -38,7 +39,7 @@ class NET_EXPORT TestDataStream {
   int index_;
   int bytes_remaining_;
   char buffer_[16];
-  char* buffer_ptr_;
+  CheckedPtr<char> buffer_ptr_;
 };
 
 }  // namespace net

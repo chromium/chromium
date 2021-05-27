@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/performance_manager/embedder/graph_features_helper.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -165,7 +166,7 @@ class TestNodeWrapper<SystemNodeImpl> {
   void reset() { impl_ = nullptr; }
 
  private:
-  SystemNodeImpl* impl_;
+  CheckedPtr<SystemNodeImpl> impl_;
 
   DISALLOW_COPY_AND_ASSIGN(TestNodeWrapper);
 };

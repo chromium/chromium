@@ -8,6 +8,7 @@
 #include <iterator>
 
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 
 namespace url_pattern_index {
@@ -67,7 +68,7 @@ class StringSplitter {
       current_ = base::StringPiece(begin, end - begin);
     }
 
-    const StringSplitter* splitter_;
+    CheckedPtr<const StringSplitter<IsSeparator>> splitter_;
 
     // Contains the token currently pointed to by the iterator.
     base::StringPiece current_;

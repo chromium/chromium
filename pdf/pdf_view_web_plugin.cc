@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/i18n/string_search.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
@@ -158,7 +159,7 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
   blink::WebPluginContainer* Container() override { return container_; }
 
  private:
-  blink::WebPluginContainer* const container_;
+  const CheckedPtr<blink::WebPluginContainer> container_;
 };
 
 }  // namespace

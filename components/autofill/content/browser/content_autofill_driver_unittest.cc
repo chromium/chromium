@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
@@ -294,7 +295,7 @@ class ContentAutofillDriverTestApi {
   }
 
  private:
-  ContentAutofillDriver* driver_;
+  CheckedPtr<ContentAutofillDriver> driver_;
 };
 
 class MockBrowserAutofillManager : public BrowserAutofillManager {

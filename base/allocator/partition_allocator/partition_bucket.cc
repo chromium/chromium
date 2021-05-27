@@ -95,11 +95,7 @@ template <bool thread_safe>
 SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     PartitionRoot<thread_safe>* root,
     int flags,
-    size_t raw_size,
-    size_t slot_span_alignment) {
-  PA_DCHECK(slot_span_alignment &&
-            !(slot_span_alignment & PartitionPageOffsetMask()));
-
+    size_t raw_size) {
   // No static EXCLUSIVE_LOCKS_REQUIRED(), as the checker doesn't understand
   // scoped unlocking.
   root->lock_.AssertAcquired();
@@ -159,17 +155,10 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
     const size_t slot_size =
         PartitionRoot<thread_safe>::GetDirectMapSlotSize(raw_size);
-    // The super page starts with a partition page worth of metadata and guard
-    // pages, hence alignment requests ==PartitionPageSize() will be
-    // automatically satisfied. Padding is needed for higher-order alignment
-    // requests. Note, |slot_span_alignment| is at least 1 partition page.
-    const size_t padding_for_alignment =
-        slot_span_alignment - PartitionPageSize();
     const size_t reserved_size =
-        PartitionRoot<thread_safe>::GetDirectMapReservedSize(
-            raw_size + padding_for_alignment);
+        PartitionRoot<thread_safe>::GetDirectMapReservedSize(raw_size);
     const size_t map_size =
-        reserved_size - padding_for_alignment -
+        reserved_size -
         PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
     PA_DCHECK(slot_size <= map_size);
 
@@ -215,8 +204,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     root->total_size_of_direct_mapped_pages.fetch_add(
         reserved_size, std::memory_order_relaxed);
 
-    // Shift by 1 partition page (metadata + guard pages) and alignment padding.
-    char* const slot_start = ptr + PartitionPageSize() + padding_for_alignment;
+    char* const slot = ptr + PartitionPageSize();
     RecommitSystemPages(
         ptr + SystemPageSize(),
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
@@ -238,7 +226,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // Note that we didn't check above, because if we cannot even commit a
     // single page, then this is likely hopeless anyway, and we will crash very
     // soon.
-    const bool ok = root->TryRecommitSystemPagesForData(slot_start, slot_size,
+    const bool ok = root->TryRecommitSystemPagesForData(slot, slot_size,
                                                         PageUpdatePermissions);
     if (!ok) {
       if (!return_null) {
@@ -271,29 +259,18 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     }
 #endif  // BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
 
-    auto* super_page_extent =
-        reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
-            PartitionSuperPageToMetadataArea(ptr));
-    super_page_extent->root = root;
+    auto* metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
+        PartitionSuperPageToMetadataArea(ptr));
+    metadata->extent.root = root;
     // The new structures are all located inside a fresh system page so they
     // will all be zeroed out. These DCHECKs are for documentation and to assert
     // our expectations of the kernel.
-    PA_DCHECK(!super_page_extent->super_page_base);
-    PA_DCHECK(!super_page_extent->super_pages_end);
-    PA_DCHECK(!super_page_extent->next);
+    PA_DCHECK(!metadata->extent.super_page_base);
+    PA_DCHECK(!metadata->extent.super_pages_end);
+    PA_DCHECK(!metadata->extent.next);
+    PA_DCHECK(PartitionPage<thread_safe>::FromPtr(slot) == &metadata->page);
 
-    page = PartitionPage<thread_safe>::FromPtr(slot_start);
-    auto* metadata =
-        reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(page);
-    // Since direct map metadata is larger than PartitionPage, make sure the
-    // first and the last bytes are on the same system page, i.e. within the
-    // super page metadata region.
-    PA_DCHECK(
-        bits::AlignDown(reinterpret_cast<char*>(metadata), SystemPageSize()) ==
-        bits::AlignDown(reinterpret_cast<char*>(metadata) +
-                            sizeof(PartitionDirectMapMetadata<thread_safe>) - 1,
-                        SystemPageSize()));
-    PA_DCHECK(page == &metadata->page);
+    page = &metadata->page;
     page->is_valid = true;
     PA_DCHECK(!page->has_valid_span_after_this);
     PA_DCHECK(!page->slot_span_metadata_offset);
@@ -315,12 +292,11 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
     new (&page->slot_span_metadata)
         SlotSpanMetadata<thread_safe>(&metadata->bucket);
-    auto* next_entry = new (slot_start) PartitionFreelistEntry();
+    auto* next_entry = new (slot) PartitionFreelistEntry();
     page->slot_span_metadata.SetFreelistHead(next_entry);
 
     map_extent = &metadata->direct_map_extent;
     map_extent->map_size = map_size;
-    map_extent->padding_for_alignment = padding_for_alignment;
     map_extent->bucket = &metadata->bucket;
   }
 
@@ -837,13 +813,13 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     PA_DCHECK(this == &root->sentinel_bucket);
     PA_DCHECK(active_slot_spans_head ==
               SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
+    PA_DCHECK(!allocate_aligned_slot_span);  // not supported for direct map
 
     // No fast path for direct-mapped allocations.
     if (flags & PartitionAllocFastPathOrReturnNull)
       return nullptr;
 
-    new_slot_span =
-        PartitionDirectMap(root, flags, raw_size, slot_span_alignment);
+    new_slot_span = PartitionDirectMap(root, flags, raw_size);
     if (new_slot_span)
       new_bucket = new_slot_span->bucket;
     // Memory from PageAllocator is always zeroed.

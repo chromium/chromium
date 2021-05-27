@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -118,7 +119,7 @@ class MockProxyResolverV8Tracing : public ProxyResolverV8Tracing {
   struct Job {
     GURL url;
     net::NetworkIsolationKey network_isolation_key;
-    net::ProxyInfo* results;
+    CheckedPtr<net::ProxyInfo> results;
     bool cancelled = false;
 
     void Complete(int result) {
@@ -154,8 +155,8 @@ class MockProxyResolverV8Tracing : public ProxyResolverV8Tracing {
     }
 
    private:
-    Job* job_;
-    MockProxyResolverV8Tracing* resolver_;
+    CheckedPtr<Job> job_;
+    CheckedPtr<MockProxyResolverV8Tracing> resolver_;
   };
 
   MockProxyResolverV8Tracing() {}
@@ -223,10 +224,10 @@ class ProxyResolverImplTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  MockProxyResolverV8Tracing* mock_proxy_resolver_;
+  CheckedPtr<MockProxyResolverV8Tracing> mock_proxy_resolver_;
 
   std::unique_ptr<ProxyResolverImpl> resolver_impl_;
-  mojom::ProxyResolver* resolver_;
+  CheckedPtr<mojom::ProxyResolver> resolver_;
 };
 
 TEST_F(ProxyResolverImplTest, GetProxyForUrl) {

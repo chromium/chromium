@@ -12,6 +12,7 @@
 #include "base/base_export.h"
 #include "base/json/json_common.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace base {
 
@@ -71,7 +72,7 @@ class BASE_EXPORT JSONWriter {
   bool pretty_print_;
 
   // Where we write JSON data as we generate it.
-  std::string* json_string_;
+  CheckedPtr<std::string> json_string_;
 
   // Maximum depth to write.
   const size_t max_depth_;

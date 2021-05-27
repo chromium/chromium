@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -345,7 +346,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
   // expectations and return behavior.
   MOCK_METHOD0(GetPipelineStatsCB, PipelineStatistics());
 
-  base::test::TaskEnvironment* task_environment_ =
+  CheckedPtr<base::test::TaskEnvironment> task_environment_ =
       BlinkPlatformWithTaskEnvironment::GetTaskEnvironment();
 
   // These track the last values returned by MakeAdvancingDecodeStats(). See

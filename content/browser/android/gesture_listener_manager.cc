@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "content/browser/android/gesture_listener_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
@@ -79,7 +80,7 @@ class GestureListenerManager::ResetScrollObserver : public WebContentsObserver {
   void RenderProcessGone(base::TerminationStatus status) override;
 
  private:
-  GestureListenerManager* const manager_;
+  const CheckedPtr<GestureListenerManager> manager_;
   DISALLOW_COPY_AND_ASSIGN(ResetScrollObserver);
 };
 

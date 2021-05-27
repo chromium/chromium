@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "media/cast/common/rtp_time.h"
@@ -25,7 +26,7 @@ class ReceiverStats {
   void UpdateStatistics(const RtpCastHeader& header, int rtp_timebase);
 
  private:
-  const base::TickClock* const clock_;  // Not owned by this class.
+  const CheckedPtr<const base::TickClock> clock_;  // Not owned by this class.
 
   // Global metrics.
   uint16_t min_sequence_number_;

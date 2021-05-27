@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -310,7 +311,7 @@ class GPU_EXPORT Scheduler {
     // running. Updated in |SetScheduled| and |UpdateRunningPriority|.
     SchedulingState scheduling_state_;
 
-    Scheduler* const scheduler_;
+    const CheckedPtr<Scheduler> scheduler_;
     const SequenceId sequence_id_;
     const base::PlatformThreadId thread_id_;
 
@@ -357,7 +358,7 @@ class GPU_EXPORT Scheduler {
 
   void RunNextTask();
 
-  SyncPointManager* const sync_point_manager_;
+  const CheckedPtr<SyncPointManager> sync_point_manager_;
   mutable base::Lock lock_;
   base::flat_map<SequenceId, std::unique_ptr<Sequence>> sequence_map_
       GUARDED_BY(lock_);
