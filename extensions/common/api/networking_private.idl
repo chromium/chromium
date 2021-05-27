@@ -578,6 +578,8 @@ namespace networkingPrivate {
 
   dictionary CellularStateProperties {
     ActivationStateType? ActivationState;
+    DOMString? EID;
+    DOMString? ICCID;
     DOMString? NetworkTechnology;
     DOMString? RoamingState;
     boolean? Scanning;

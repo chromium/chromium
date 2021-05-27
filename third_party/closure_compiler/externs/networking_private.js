@@ -7,7 +7,7 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.networkingPrivate.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 /** @fileoverview Externs generated from namespace: networkingPrivate */
 
@@ -694,6 +694,8 @@ chrome.networkingPrivate.ManagedCellularProperties;
 /**
  * @typedef {{
  *   ActivationState: (!chrome.networkingPrivate.ActivationStateType|undefined),
+ *   EID: (string|undefined),
+ *   ICCID: (string|undefined),
  *   NetworkTechnology: (string|undefined),
  *   RoamingState: (string|undefined),
  *   Scanning: (boolean|undefined),
