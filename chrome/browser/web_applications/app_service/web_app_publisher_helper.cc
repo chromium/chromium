@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/app_service/web_apps_utils.h"
+#include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -51,11 +51,20 @@ apps::mojom::InstallSource GetHighestPriorityInstallSource(
 
 }  // namespace
 
-bool IsSupportedWebAppPermissionType(ContentSettingsType permission_type) {
+WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
+                                             apps::mojom::AppType app_type)
+    : profile_(profile), app_type_(app_type) {}
+
+WebAppPublisherHelper::~WebAppPublisherHelper() = default;
+
+// static
+bool WebAppPublisherHelper::IsSupportedWebAppPermissionType(
+    ContentSettingsType permission_type) {
   return base::Contains(kSupportedPermissionTypes, permission_type);
 }
 
-void SetWebAppShowInFields(apps::mojom::AppPtr& app, const WebApp* web_app) {
+void WebAppPublisherHelper::SetWebAppShowInFields(apps::mojom::AppPtr& app,
+                                                  const WebApp* web_app) {
   if (web_app->chromeos_data().has_value()) {
     auto& chromeos_data = web_app->chromeos_data().value();
     app->show_in_launcher = chromeos_data.show_in_launcher
@@ -78,14 +87,13 @@ void SetWebAppShowInFields(apps::mojom::AppPtr& app, const WebApp* web_app) {
   app->show_in_management = show;
 }
 
-void PopulateWebAppPermissions(
-    Profile* profile,
+void WebAppPublisherHelper::PopulateWebAppPermissions(
     const WebApp* web_app,
     std::vector<apps::mojom::PermissionPtr>* target) {
   const GURL url = web_app->start_url();
 
   auto* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
+      HostContentSettingsMapFactory::GetForProfile(profile());
   DCHECK(host_content_settings_map);
 
   for (ContentSettingsType type : kSupportedPermissionTypes) {
@@ -122,12 +130,11 @@ void PopulateWebAppPermissions(
   }
 }
 
-apps::mojom::AppPtr ConvertWebApp(Profile* profile,
-                                  const WebApp* web_app,
-                                  apps::mojom::AppType app_type,
-                                  apps::mojom::Readiness readiness) {
+apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
+    const WebApp* web_app,
+    apps::mojom::Readiness readiness) {
   apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
-      app_type, web_app->app_id(), readiness, web_app->name(),
+      app_type(), web_app->app_id(), readiness, web_app->name(),
       GetHighestPriorityInstallSource(web_app));
 
   app->description = web_app->description();
@@ -139,7 +146,7 @@ apps::mojom::AppPtr ConvertWebApp(Profile* profile,
   app->publisher_id = web_app->start_url().spec();
 
   // app->version is left empty here.
-  PopulateWebAppPermissions(profile, web_app, &app->permissions);
+  PopulateWebAppPermissions(web_app, &app->permissions);
 
   SetWebAppShowInFields(app, web_app);
 
@@ -149,10 +156,10 @@ apps::mojom::AppPtr ConvertWebApp(Profile* profile,
   return app;
 }
 
-apps::mojom::AppPtr ConvertUninstalledWebApp(const WebApp* web_app,
-                                             apps::mojom::AppType app_type) {
+apps::mojom::AppPtr WebAppPublisherHelper::ConvertUninstalledWebApp(
+    const WebApp* web_app) {
   apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = app_type;
+  app->app_type = app_type();
   app->app_id = web_app->app_id();
   // TODO(loyso): Plumb uninstall source (reason) here.
   app->readiness = apps::mojom::Readiness::kUninstalledByUser;
@@ -161,16 +168,18 @@ apps::mojom::AppPtr ConvertUninstalledWebApp(const WebApp* web_app,
   return app;
 }
 
-apps::mojom::AppPtr ConvertLaunchedWebApp(const WebApp* web_app,
-                                          apps::mojom::AppType app_type) {
+apps::mojom::AppPtr WebAppPublisherHelper::ConvertLaunchedWebApp(
+    const WebApp* web_app) {
   apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = app_type;
+  app->app_type = app_type();
   app->app_id = web_app->app_id();
   app->last_launch_time = web_app->last_launch_time();
   return app;
 }
 
-webapps::WebappUninstallSource ConvertUninstallSourceToWebAppUninstallSource(
+// static
+webapps::WebappUninstallSource
+WebAppPublisherHelper::ConvertUninstallSourceToWebAppUninstallSource(
     apps::mojom::UninstallSource uninstall_source) {
   switch (uninstall_source) {
     case apps::mojom::UninstallSource::kAppList:
@@ -186,14 +195,14 @@ webapps::WebappUninstallSource ConvertUninstallSourceToWebAppUninstallSource(
   }
 }
 
-void UninstallWebApp(Profile* profile,
-                     const WebApp* web_app,
-                     apps::mojom::UninstallSource uninstall_source,
-                     bool clear_site_data,
-                     bool report_abuse) {
+void WebAppPublisherHelper::UninstallWebApp(
+    const WebApp* web_app,
+    apps::mojom::UninstallSource uninstall_source,
+    bool clear_site_data,
+    bool report_abuse) {
   auto origin = url::Origin::Create(web_app->start_url());
 
-  WebAppProvider* provider = WebAppProvider::Get(profile);
+  WebAppProvider* provider = WebAppProvider::Get(profile());
   DCHECK(provider);
   DCHECK(
       provider->install_finalizer().CanUserUninstallWebApp(web_app->app_id()));
@@ -218,7 +227,7 @@ void UninstallWebApp(Profile* profile,
                              [](content::BrowserContext* browser_context) {
                                return browser_context;
                              },
-                             base::Unretained(profile)),
+                             base::Unretained(profile())),
                          origin, kClearCookies, kClearStorage, kClearCache,
                          kAvoidClosingConnections, base::DoNothing());
 }

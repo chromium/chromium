@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
-#include "chrome/browser/web_applications/app_service/web_apps_utils.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -43,12 +42,9 @@ using apps::IconEffects;
 
 namespace web_app {
 
-WebAppsBase::WebAppsBase(
-    const mojo::Remote<apps::mojom::AppService>& app_service,
-    Profile* profile)
-    : profile_(profile),
-      app_service_(nullptr),
-      app_type_(apps::mojom::AppType::kWeb) {
+namespace {
+
+apps::mojom::AppType GetWebAppType() {
 // After moving the ordinary Web Apps to Lacros chrome, the remaining web
 // apps in ash Chrome will be only System Web Apps. Change the app type
 // to kSystemWeb for this case and the kWeb app type will be published from
@@ -56,10 +52,22 @@ WebAppsBase::WebAppsBase(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (crosapi::browser_util::IsLacrosEnabled() &&
       base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
-    app_type_ = apps::mojom::AppType::kSystemWeb;
+    return apps::mojom::AppType::kSystemWeb;
   }
 #endif
 
+  return apps::mojom::AppType::kWeb;
+}
+
+}  // namespace
+
+WebAppsBase::WebAppsBase(
+    const mojo::Remote<apps::mojom::AppService>& app_service,
+    Profile* profile)
+    : profile_(profile),
+      app_service_(nullptr),
+      app_type_(GetWebAppType()),
+      publisher_helper_(profile_, app_type_) {
   Initialize(app_service);
 }
 
@@ -91,7 +99,7 @@ void WebAppsBase::OnWebAppWillBeUninstalled(const AppId& app_id) {
     return;
   }
 
-  Publish(ConvertUninstalledWebApp(web_app, app_type_), subscribers_);
+  Publish(publisher_helper().ConvertUninstalledWebApp(web_app), subscribers_);
 }
 
 IconEffects WebAppsBase::GetIconEffects(const WebApp* web_app) {
@@ -300,7 +308,8 @@ void WebAppsBase::SetPermission(const std::string& app_id,
 
   ContentSettingsType permission_type =
       static_cast<ContentSettingsType>(permission->permission_id);
-  if (!IsSupportedWebAppPermissionType(permission_type)) {
+  if (!WebAppPublisherHelper::IsSupportedWebAppPermissionType(
+          permission_type)) {
     return;
   }
 
@@ -343,7 +352,7 @@ void WebAppsBase::OnContentSettingChanged(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
   // If content_type is not one of the supported permissions, do nothing.
-  if (!IsSupportedWebAppPermissionType(content_type)) {
+  if (!WebAppPublisherHelper::IsSupportedWebAppPermissionType(content_type)) {
     return;
   }
 
@@ -363,7 +372,7 @@ void WebAppsBase::OnContentSettingChanged(
       apps::mojom::AppPtr app = apps::mojom::App::New();
       app->app_type = app_type_;
       app->app_id = web_app.app_id();
-      PopulateWebAppPermissions(profile_, &web_app, &app->permissions);
+      publisher_helper().PopulateWebAppPermissions(&web_app, &app->permissions);
 
       Publish(std::move(app), subscribers_);
     }
@@ -375,7 +384,7 @@ void WebAppsBase::OnWebAppLastLaunchTimeChanged(
     const base::Time& last_launch_time) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
-    Publish(ConvertLaunchedWebApp(web_app, app_type_), subscribers_);
+    Publish(publisher_helper().ConvertLaunchedWebApp(web_app), subscribers_);
   }
 }
 

@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -108,6 +109,7 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
 
   Profile* const profile_;
   WebAppProvider* const provider_;
+  WebAppPublisherHelper publisher_helper_;
   crosapi::mojom::AppPublisher* remote_publisher_ = nullptr;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;

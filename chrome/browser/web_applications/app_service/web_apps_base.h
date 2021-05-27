@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -98,6 +99,10 @@ class WebAppsBase : public apps::PublisherBase,
 
   apps::mojom::AppType app_type() { return app_type_; }
 
+  web_app::WebAppPublisherHelper& publisher_helper() {
+    return publisher_helper_;
+  }
+
  private:
   void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
 
@@ -171,6 +176,8 @@ class WebAppsBase : public apps::PublisherBase,
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.
   apps::mojom::AppType app_type_;
+
+  WebAppPublisherHelper publisher_helper_;
 };
 
 }  // namespace web_app

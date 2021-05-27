@@ -8,7 +8,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
-#include "chrome/browser/web_applications/app_service/web_apps_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -36,7 +35,8 @@ void WebApps::UninstallImpl(Profile* profile,
       web_app_ui_manager->dialog_manager();
   if (web_app_dialog_manager.CanUserUninstallWebApp(app_id)) {
     webapps::WebappUninstallSource webapp_uninstall_source =
-        ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
+        WebAppPublisherHelper::ConvertUninstallSourceToWebAppUninstallSource(
+            uninstall_source);
     web_app_dialog_manager.UninstallWebApp(app_id, webapp_uninstall_source,
                                            parent_window, base::DoNothing());
   }
@@ -45,7 +45,7 @@ void WebApps::UninstallImpl(Profile* profile,
 apps::mojom::AppPtr WebApps::Convert(const WebApp* web_app,
                                      apps::mojom::Readiness readiness) {
   apps::mojom::AppPtr app =
-      ConvertWebApp(profile(), web_app, app_type(), readiness);
+      publisher_helper().ConvertWebApp(web_app, readiness);
 
   app->icon_key = icon_key_factory().MakeIconKey(GetIconEffects(web_app));
 

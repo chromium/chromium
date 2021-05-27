@@ -10,7 +10,6 @@
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/app_service/web_apps_utils.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -51,7 +50,9 @@ IconEffects GetIconEffects(const WebApp* web_app) {
 }  // namespace
 
 WebAppsPublisherHost::WebAppsPublisherHost(Profile* profile)
-    : profile_(profile), provider_(WebAppProvider::Get(profile)) {}
+    : profile_(profile),
+      provider_(WebAppProvider::Get(profile)),
+      publisher_helper_(profile, apps::mojom::AppType::kWeb) {}
 
 WebAppsPublisherHost::~WebAppsPublisherHost() = default;
 
@@ -120,8 +121,8 @@ void WebAppsPublisherHost::Uninstall(
     return;
   }
 
-  UninstallWebApp(profile(), web_app, uninstall_source, clear_site_data,
-                  report_abuse);
+  publisher_helper_.UninstallWebApp(web_app, uninstall_source, clear_site_data,
+                                    report_abuse);
 }
 
 void WebAppsPublisherHost::OnWebAppInstalled(const AppId& app_id) {
@@ -155,7 +156,7 @@ void WebAppsPublisherHost::OnWebAppWillBeUninstalled(const AppId& app_id) {
   auto result = media_requests_.RemoveRequests(app_id);
   ModifyCapabilityAccess(app_id, result.camera, result.microphone);
 
-  Publish(ConvertUninstalledWebApp(web_app, apps::mojom::AppType::kWeb));
+  Publish(publisher_helper_.ConvertUninstalledWebApp(web_app));
 }
 
 void WebAppsPublisherHost::OnAppRegistrarDestroyed() {
@@ -185,7 +186,7 @@ void WebAppsPublisherHost::OnWebAppLastLaunchTimeChanged(
     return;
   }
 
-  Publish(ConvertLaunchedWebApp(web_app, apps::mojom::AppType::kWeb));
+  Publish(publisher_helper_.ConvertLaunchedWebApp(web_app));
 }
 
 void WebAppsPublisherHost::OnContentSettingChanged(
@@ -193,7 +194,7 @@ void WebAppsPublisherHost::OnContentSettingChanged(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
   // If content_type is not one of the supported permissions, do nothing.
-  if (!IsSupportedWebAppPermissionType(content_type)) {
+  if (!WebAppPublisherHelper::IsSupportedWebAppPermissionType(content_type)) {
     return;
   }
 
@@ -202,7 +203,7 @@ void WebAppsPublisherHost::OnContentSettingChanged(
       apps::mojom::AppPtr app = apps::mojom::App::New();
       app->app_type = apps::mojom::AppType::kWeb;
       app->app_id = web_app.app_id();
-      PopulateWebAppPermissions(profile(), &web_app, &app->permissions);
+      publisher_helper_.PopulateWebAppPermissions(&web_app, &app->permissions);
 
       Publish(std::move(app));
     }
@@ -272,8 +273,7 @@ const WebApp* WebAppsPublisherHost::GetWebApp(const AppId& app_id) const {
 apps::mojom::AppPtr WebAppsPublisherHost::Convert(
     const WebApp* web_app,
     apps::mojom::Readiness readiness) {
-  apps::mojom::AppPtr app =
-      ConvertWebApp(profile(), web_app, apps::mojom::AppType::kWeb, readiness);
+  apps::mojom::AppPtr app = publisher_helper_.ConvertWebApp(web_app, readiness);
   app->icon_key = icon_key_factory_.MakeIconKey(GetIconEffects(web_app));
   return app;
 }

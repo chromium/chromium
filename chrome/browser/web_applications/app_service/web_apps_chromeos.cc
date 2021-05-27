@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
-#include "chrome/browser/web_applications/app_service/web_apps_utils.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -180,8 +179,8 @@ void WebAppsChromeOs::Uninstall(const std::string& app_id,
     return;
   }
 
-  UninstallWebApp(profile(), web_app, uninstall_source, clear_site_data,
-                  report_abuse);
+  publisher_helper().UninstallWebApp(web_app, uninstall_source, clear_site_data,
+                                     report_abuse);
 }
 
 void WebAppsChromeOs::PauseApp(const std::string& app_id) {
@@ -402,7 +401,7 @@ void WebAppsChromeOs::OnWebAppDisabledStateChanged(const AppId& app_id,
       is_disabled ? apps::mojom::Readiness::kDisabledByPolicy
                   : apps::mojom::Readiness::kReady;
   apps::mojom::AppPtr app =
-      ConvertWebApp(profile(), web_app, app_type(), readiness);
+      publisher_helper().ConvertWebApp(web_app, readiness);
   app->icon_key = icon_key_factory().MakeIconKey(
       GetIconEffects(web_app, paused_apps_.IsPaused(app_id), is_disabled));
 
@@ -649,8 +648,8 @@ apps::mojom::AppPtr WebAppsChromeOs::Convert(const WebApp* web_app,
                                              apps::mojom::Readiness readiness) {
   DCHECK(web_app->chromeos_data().has_value());
   bool is_disabled = web_app->chromeos_data()->is_disabled;
-  apps::mojom::AppPtr app = ConvertWebApp(
-      profile(), web_app, app_type(),
+  apps::mojom::AppPtr app = publisher_helper().ConvertWebApp(
+      web_app,
       is_disabled ? apps::mojom::Readiness::kDisabledByPolicy : readiness);
   if (is_disabled) {
     UpdateAppDisabledMode(app);
