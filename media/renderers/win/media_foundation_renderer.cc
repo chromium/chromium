@@ -11,6 +11,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
+#include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_bstr.h"
@@ -421,7 +422,19 @@ void MediaFoundationRenderer::GetDCompSurface(GetDCompSurfaceCB callback) {
   HANDLE surface_handle = INVALID_HANDLE_VALUE;
   HRESULT hr = GetDCompSurfaceInternal(&surface_handle);
   DVLOG_IF(1, FAILED(hr)) << "Failed to get DComp surface: " << PrintHr(hr);
-  std::move(callback).Run(std::move(surface_handle));
+
+  // Only need read & execute access right for the handle to be duplicated
+  // without breaking in sandbox_win.cc!CheckDuplicateHandle().
+  const base::ProcessHandle process = ::GetCurrentProcess();
+  HANDLE duplicated_handle = INVALID_HANDLE_VALUE;
+  const BOOL result = ::DuplicateHandle(
+      process, surface_handle, process, &duplicated_handle,
+      GENERIC_READ | GENERIC_EXECUTE, false, DUPLICATE_CLOSE_SOURCE);
+  if (!result) {
+    DLOG(ERROR) << "Duplicate surface_handle failed: " << ::GetLastError();
+  }
+
+  std::move(callback).Run(std::move(duplicated_handle));
 }
 
 // TODO(crbug.com/1070030): Investigate if we need to add
