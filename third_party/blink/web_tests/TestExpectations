@@ -384,6 +384,8 @@ crbug.com/1024151 http/tests/devtools/tracing/timeline-style/timeline-style-reca
 crbug.com/997202 compositing/overflow/scaled-overflow.html [ Failure ]
 # Flaky subpixel AA difference (not necessarily incorrect, but flaky)
 crbug.com/997202 virtual/threaded-no-composited-antialiasing/animations/skew-notsequential-compositor.html [ Failure Pass ]
+# Only one pixel difference (187,187,187) vs (188,188,188) occasionally.
+crbug.com/1207960 [ Linux ] compositing/perspective-interest-rect.html [ Failure Pass ]
 
 crbug.com/954591 external/wpt/css/css-transforms/composited-under-rotateY-180deg.html [ Failure ]
 crbug.com/954591 external/wpt/css/css-transforms/composited-under-rotateY-180deg-clip.html [ Failure ]
