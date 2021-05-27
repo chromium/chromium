@@ -67,8 +67,7 @@ std::string GetFlatBufferString() {
   flatbuffers::Offset<flatbuffers::Vector<uint32_t>> page_word_flat =
       builder.CreateVector(page_words_vector);
 
-  std::vector<
-      flatbuffers::Offset<safe_browsing::flat::TfLiteModelMetadata_::Threshold>>
+  std::vector<flatbuffers::Offset<flat::TfLiteModelMetadata_::Threshold>>
       thresholds_vector = {};
   flatbuffers::Offset<flat::TfLiteModelMetadata> tflite_metadata_flat =
       flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector, 0,

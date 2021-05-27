@@ -693,6 +693,21 @@ if (is_android) {
       "base/android/android_browser_test_browsertest_android.cc",
     ]
 
+    sources += [
+      "../renderer/safe_browsing/phishing_classifier_browsertest.cc",
+      "../test/base/chrome_render_view_test.cc",
+      "../test/base/chrome_render_view_test.h",
+    ]
+
+    deps += [
+      "//components/autofill/content/renderer:test_support",
+      "//components/safe_browsing/content/renderer/phishing_classifier:phishing_classifier",
+      "//components/safe_browsing/core:client_model_proto",
+      "//components/safe_browsing/core/fbs:client_model",
+      "//components/spellcheck:buildflags",
+      "//components/spellcheck/renderer:renderer",
+    ]
+
     # Add unwind tables in android_browsertests apk to support enabling
     # sampling profiler. The unwind tables are generated from debug info in the
     # binary. Removing "default_symbols" and adding symbols config removes the
@@ -3493,6 +3508,7 @@ if (!is_android) {
       ]
       deps += [ "//components/safe_browsing/core/fbs:client_model" ]
     }
+
     if (enable_captive_portal_detection) {
       sources += [ "../browser/captive_portal/captive_portal_browsertest.cc" ]
     }
