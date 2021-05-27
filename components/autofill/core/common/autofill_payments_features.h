@@ -20,7 +20,6 @@ extern const base::Feature kAutofillAlwaysReturnCloudTokenizedCard;
 extern const base::Feature kAutofillAutoTriggerManualFallbackForCards;
 extern const base::Feature kAutofillCreditCardAuthentication;
 extern const base::Feature kAutofillCreditCardUploadFeedback;
-extern const base::Feature kAutofillDownstreamCvcPromptUseGooglePayLogo;
 extern const base::Feature kAutofillEnableGoogleIssuedCard;
 extern const base::Feature kAutofillEnableMerchantBoundVirtualCards;
 extern const base::Feature kAutofillEnableOfferNotification;

@@ -6562,15 +6562,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAImageReader)},
 #endif  // OS_ANDROID
 
-#if defined(OS_ANDROID)
-    {"enable-autofill-credit-card-cvc-prompt-google-logo",
-     flag_descriptions::kEnableAutofillCreditCardCvcPromptGoogleLogoName,
-     flag_descriptions::kEnableAutofillCreditCardCvcPromptGoogleLogoDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillDownstreamCvcPromptUseGooglePayLogo)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-auto-select", flag_descriptions::kEnableAutoSelectName,
      flag_descriptions::kEnableAutoSelectDescription, kOsCrOS,

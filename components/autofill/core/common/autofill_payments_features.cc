@@ -54,11 +54,6 @@ const base::Feature kAutofillCreditCardAuthentication{
 const base::Feature kAutofillCreditCardUploadFeedback{
     "AutofillCreditCardUploadFeedback", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, shows the Google Pay logo on CVC prompt on Android.
-const base::Feature kAutofillDownstreamCvcPromptUseGooglePayLogo{
-    "AutofillDownstreamCvcPromptUseGooglePayLogo",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether we show a Google-issued card in the suggestions list.
 const base::Feature kAutofillEnableGoogleIssuedCard{
     "AutofillEnableGoogleIssuedCard", base::FEATURE_DISABLED_BY_DEFAULT};

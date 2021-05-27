@@ -632,11 +632,6 @@ const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterDescription[] =
     "When enabled, a footer indicating user's e-mail address will appear at "
     "the bottom of SaveCardInfoBar.";
 
-const char kEnableAutofillCreditCardCvcPromptGoogleLogoName[] =
-    "Enable Google Pay branding on CVC prompt on Android";
-const char kEnableAutofillCreditCardCvcPromptGoogleLogoDescription[] =
-    "If enabled, show the Google Pay logo on CVC prompt on Android.";
-
 const char kEnableAutofillCreditCardUploadFeedbackName[] =
     "Enable feedback for credit card upload flow";
 const char kEnableAutofillCreditCardUploadFeedbackDescription[] =

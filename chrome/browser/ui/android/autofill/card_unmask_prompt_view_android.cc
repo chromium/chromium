@@ -154,11 +154,8 @@ CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
              env, reinterpret_cast<intptr_t>(this), dialog_title, instructions,
              confirm,
              ResourceMapper::MapToJavaDrawableId(controller_->GetCvcImageRid()),
-             base::FeatureList::IsEnabled(
-                 features::kAutofillDownstreamCvcPromptUseGooglePayLogo)
-                 ? ResourceMapper::MapToJavaDrawableId(
-                       controller_->GetGooglePayImageRid())
-                 : -1,
+             ResourceMapper::MapToJavaDrawableId(
+                 controller_->GetGooglePayImageRid()),
              controller_->IsCardLocal(),
              controller_->ShouldRequestExpirationDate(),
              controller_->GetStoreLocallyStartState(),

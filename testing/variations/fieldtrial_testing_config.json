@@ -969,21 +969,6 @@
             ]
         }
     ],
-    "AutofillDownstreamCvcPromptUseGooglePayLogo": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "AutofillDownstreamCvcPromptUseGooglePayLogo",
-                    "enable_features": [
-                        "AutofillDownstreamCvcPromptUseGooglePayLogo"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableAugmentedPhoneCountryCode": [
         {
             "platforms": [

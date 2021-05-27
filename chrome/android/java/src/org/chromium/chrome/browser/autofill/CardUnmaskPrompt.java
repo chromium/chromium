@@ -38,7 +38,6 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -192,7 +191,7 @@ public class CardUnmaskPrompt
 
         Resources resources = context.getResources();
         String modalDialogTitle = null;
-        if (isGooglePayLogoEnabled() && !isCardLocal) {
+        if (!isCardLocal) {
             Drawable mInlineTitleIcon = resources.getDrawable(googlePayDrawableId);
             // The first character will be replaced by the logo, and the consecutive spaces after
             // are used as padding.
@@ -534,11 +533,6 @@ public class CardUnmaskPrompt
      */
     private boolean isCvcValid() {
         return mDelegate.checkUserInputValidity(mCardUnmaskInput.getText().toString());
-    }
-
-    private boolean isGooglePayLogoEnabled() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_DOWNSTREAM_CVC_PROMPT_USE_GOOGLE_LOGO);
     }
 
     /**

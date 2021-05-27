@@ -1346,11 +1346,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "enable-autofill-credit-card-cvc-prompt-google-logo",
-    "owners": [ "treib", "jsaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-autofill-credit-card-upload",
     "owners": [ "jsaul@google.com" ],
     // This flag is heavily used by the testing team that can't easily use the
