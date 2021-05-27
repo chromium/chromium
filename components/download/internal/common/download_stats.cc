@@ -84,11 +84,6 @@ int64_t CalculateBandwidthBytesPerSecond(size_t length,
   return 1000 * static_cast<int64_t>(length) / elapsed_time_ms;
 }
 
-// Helper method to record the bandwidth for a given metric.
-void RecordBandwidthMetric(const std::string& metric, int bandwidth) {
-  base::UmaHistogramCustomCounts(metric, bandwidth, 1, 50 * 1000 * 1000, 50);
-}
-
 // Records a histogram with download source suffix.
 std::string CreateHistogramNameWithSuffix(const std::string& name,
                                           DownloadSource download_source) {
@@ -582,8 +577,10 @@ void RecordOpensOutstanding(int size) {
 
 void RecordFileBandwidth(size_t length,
                          base::TimeDelta elapsed_time) {
-  RecordBandwidthMetric("Download.BandwidthOverallBytesPerSecond",
-                        CalculateBandwidthBytesPerSecond(length, elapsed_time));
+  base::UmaHistogramCustomCounts(
+      "Download.BandwidthOverallBytesPerSecond2",
+      CalculateBandwidthBytesPerSecond(length, elapsed_time), 1,
+      200 * 1000 * 1000, 50);
 }
 
 void RecordParallelizableDownloadCount(DownloadCountTypes type,
@@ -621,30 +618,10 @@ void RecordParallelizableDownloadStats(
     bandwidth_without_parallel_streams = CalculateBandwidthBytesPerSecond(
         bytes_downloaded_without_parallel_streams,
         time_without_parallel_streams);
-    if (uses_parallel_requests) {
-      RecordBandwidthMetric(
-          "Download.ParallelizableDownloadBandwidth."
-          "WithParallelRequestsSingleStream",
-          bandwidth_without_parallel_streams);
-    } else {
-      RecordBandwidthMetric(
-          "Download.ParallelizableDownloadBandwidth."
-          "WithoutParallelRequests",
-          bandwidth_without_parallel_streams);
-    }
   }
 
   if (!uses_parallel_requests)
     return;
-
-  if (bytes_downloaded_with_parallel_streams > 0) {
-    int64_t bandwidth_with_parallel_streams = CalculateBandwidthBytesPerSecond(
-        bytes_downloaded_with_parallel_streams, time_with_parallel_streams);
-    RecordBandwidthMetric(
-        "Download.ParallelizableDownloadBandwidth."
-        "WithParallelRequestsMultipleStreams",
-        bandwidth_with_parallel_streams);
-  }
 }
 
 void RecordParallelizableDownloadAverageStats(
@@ -656,8 +633,6 @@ void RecordParallelizableDownloadAverageStats(
   int64_t average_bandwidth =
       CalculateBandwidthBytesPerSecond(bytes_downloaded, time_span);
   int64_t file_size_kb = bytes_downloaded / 1024;
-  RecordBandwidthMetric("Download.ParallelizableDownloadBandwidth",
-                        average_bandwidth);
   UMA_HISTOGRAM_CUSTOM_COUNTS("Download.Parallelizable.FileSize", file_size_kb,
                               1, kMaxFileSizeKb, 50);
   if (average_bandwidth > kHighBandwidthBytesPerSecond) {

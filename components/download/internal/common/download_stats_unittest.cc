@@ -11,29 +11,6 @@
 using ConnectionType = net::NetworkChangeNotifier::ConnectionType;
 
 namespace download {
-namespace {
-
-void VerfiyParallelizableAverageStats(int64_t bytes_downloaded,
-                                      const base::TimeDelta& time_span) {
-  base::HistogramTester histogram_tester;
-  int64_t expected_bandwidth = bytes_downloaded / time_span.InSeconds();
-
-  RecordParallelizableDownloadAverageStats(bytes_downloaded, time_span);
-  histogram_tester.ExpectBucketCount("Download.ParallelizableDownloadBandwidth",
-                                     expected_bandwidth, 1);
-  histogram_tester.ExpectBucketCount("Download.Parallelizable.FileSize",
-                                     bytes_downloaded / 1024, 1);
-}
-
-}  // namespace
-
-TEST(DownloadStatsTest, ParallelizableAverageStats) {
-  VerfiyParallelizableAverageStats(1, base::TimeDelta::FromSeconds(1));
-  VerfiyParallelizableAverageStats(1024 * 1024 * 20,
-                                   base::TimeDelta::FromSeconds(10));
-  VerfiyParallelizableAverageStats(1024 * 1024 * 1024,
-                                   base::TimeDelta::FromSeconds(1));
-}
 
 TEST(DownloadStatsTest, RecordNewDownloadStarted) {
   base::HistogramTester histogram_tester;

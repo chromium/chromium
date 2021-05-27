@@ -38,12 +38,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.BandwidthOverallBytesPerSecond" units="units"
     expires_after="2021-08-15">
+  <obsolete>
+    Deprecated as of 05/2021. Use Download.BandwidthOverallBytesPerSecond2
+    instead as it has higher bucket range.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <summary>
     Overall bandwidth seen for the download. Note that this is measured at the
     point at which the file is written, and so will not take into account the
     time costs of activities that occur after file write is completed (e.g. safe
     browsing scanning).
+  </summary>
+</histogram>
+
+<histogram name="Download.BandwidthOverallBytesPerSecond2" units="bytes/second"
+    expires_after="2021-12-31">
+  <owner>qinmin@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    Overall bandwidth seen for a completed download. This includes all file
+    downloads going through the download subsystem, but excludes all the page
+    saves. Note that this is measured at the point at which the file is written,
+    and so will not take into account the time costs of activities that occur
+    after file write is completed (e.g. safe browsing scanning). The maximum
+    bucket range is 200Mbps.
   </summary>
 </histogram>
 
@@ -611,6 +629,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Download.ParallelizableDownloadBandwidth"
     units="bytes/second" expires_after="2020-12-13">
+  <obsolete>
+    Deprecated as of 12/2020.
+  </obsolete>
   <owner>qinmin@chromium.org</owner>
   <summary>
     For parallelizable download, average disk bandwidth seen for different
