@@ -69,6 +69,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/download/download_stats.h"
 #include "components/safe_browsing/core/file_type_policies.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
 #include "components/services/quarantine/quarantine_impl.h"
@@ -1583,6 +1584,9 @@ void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadOpenedReport(
                                                     show_download_in_folder);
   }
 #endif
+  safe_browsing::RecordDownloadOpened(download->GetDangerType(),
+                                      base::Time::Now(), download->GetEndTime(),
+                                      show_download_in_folder);
 }
 
 void ChromeDownloadManagerDelegate::CheckDownloadAllowed(
