@@ -156,6 +156,13 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   void ExecuteAction(const std::string& action_string);
 
   // Automated Testing Actions
+  //
+  // Actions are defined in the following spreadsheet:
+  // https://docs.google.com/spreadsheets/d/1d3iAOAnojp4_WrPky9exz1-mjkeulOJVUav5QYG99MQ/edit#gid=2008870403
+  //
+  // Internal actions are actions that do not test the entire user-action-flow,
+  // but give partial coverage (as close to complete as possible) of said code
+  // paths.
   void AddPolicyAppInternal(const std::string& action_param,
                             base::Value default_launch_container,
                             const bool create_shortcut);
@@ -179,6 +186,7 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   void UserSigninInternal();
 
   // Assert Actions
+  void AssertAppLocallyInstalledInternal();
   void AssertAppNotLocallyInstalledInternal();
   void AssertAppNotInList(const std::string& action_param);
   void AssertInstallable();

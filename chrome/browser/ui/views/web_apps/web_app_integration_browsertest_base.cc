@@ -483,6 +483,8 @@ void WebAppIntegrationBrowserTestBase::ExecuteAction(
     ManifestUpdateDisplay(action_param, blink::mojom::DisplayMode::kMinimalUi);
   } else if (action_base == "user_signin_internal") {
     UserSigninInternal();
+  } else if (action_base == "assert_app_locally_installed_internal") {
+    AssertAppLocallyInstalledInternal();
   } else if (action_base == "assert_app_not_locally_installed_internal") {
     AssertAppNotLocallyInstalledInternal();
   } else if (action_base == "assert_app_not_in_list") {
@@ -499,6 +501,8 @@ void WebAppIntegrationBrowserTestBase::ExecuteAction(
     AssertLaunchIconNotShown();
   } else if (action_base == "assert_manifest_display_mode_browser_internal") {
     AssertManifestDisplayModeInternal(DisplayMode::kBrowser);
+  } else if (action_base == "assert_manifest_display_mode_minimal_internal") {
+    AssertManifestDisplayModeInternal(DisplayMode::kMinimalUi);
   } else if (action_base ==
              "assert_manifest_display_mode_standalone_internal") {
     AssertManifestDisplayModeInternal(DisplayMode::kStandalone);
@@ -814,6 +818,14 @@ void WebAppIntegrationBrowserTestBase::UserSigninInternal() {
 }
 
 // Assert Actions
+void WebAppIntegrationBrowserTestBase::AssertAppLocallyInstalledInternal() {
+  DCHECK(after_action_state_);
+  absl::optional<AppState> app_state =
+      GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
+  ASSERT_TRUE(app_state.has_value());
+  EXPECT_TRUE(app_state->is_installed_locally);
+}
+
 void WebAppIntegrationBrowserTestBase::AssertAppNotLocallyInstalledInternal() {
   DCHECK(after_action_state_);
   absl::optional<AppState> app_state =
