@@ -205,11 +205,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
       (Style().RowGap() && Style().RowGap()->IsPercentOrCalc()) ||
       row_track_collection.DependsOnAvailableSize();
 
-  // If we have any rows, gaps which will resolve differently if we have a
-  // definite |grid_available_size_| re-compute the grid using the |block_size|
-  // calculated above.
-  if (grid_available_size_.block_size == kIndefiniteSize &&
-      depends_on_block_constraints) {
+  if (grid_available_size_.block_size == kIndefiniteSize) {
     const LayoutUnit resolved_available_block_size =
         (block_size - BorderScrollbarPadding().BlockSum())
             .ClampNegativeToZero();
@@ -217,7 +213,18 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
     grid_available_size_.block_size = grid_min_available_size_.block_size =
         grid_max_available_size_.block_size = resolved_available_block_size;
 
-    ComputeGrid();
+    // Re-compute the row geometry now that we have the resolved available
+    // block-size. "align-content: space-evenly" etc, require the resolved size.
+    if (Style().AlignContent() !=
+        ComputedStyleInitialValues::InitialAlignContent()) {
+      grid_geometry.row_geometry = ComputeSetGeometry(row_track_collection);
+    }
+
+    // If we have any rows, gaps which will resolve differently if we have a
+    // definite |grid_available_size_| re-compute the grid using the
+    // |block_size| calculated above.
+    if (depends_on_block_constraints)
+      ComputeGrid();
   }
 
   PlaceGridItems(grid_items, grid_geometry, block_size);
