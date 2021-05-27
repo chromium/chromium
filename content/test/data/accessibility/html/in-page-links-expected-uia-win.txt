@@ -17,7 +17,7 @@ Document
 ++Hyperlink Name='Paragraph with content'
 ++++Text Name='Paragraph with content' IsControlElement=false
 ++Group IsControlElement=false
-++++Hyperlink
+++++Hyperlink IsControlElement=false
 ++++Text Name='After empty anchor'
 ++Group IsControlElement=false
 ++++Hyperlink Name='Anchor with content'

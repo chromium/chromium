@@ -133,7 +133,6 @@ class WebAXObject {
   BLINK_EXPORT void Serialize(ui::AXNodeData* node_data,
                               ui::AXMode accessibility_mode) const;
 
-  BLINK_EXPORT bool IsAnchor() const;
   BLINK_EXPORT ax::mojom::CheckedState CheckedState() const;
   BLINK_EXPORT bool IsCheckable() const;
   BLINK_EXPORT bool IsClickable() const;

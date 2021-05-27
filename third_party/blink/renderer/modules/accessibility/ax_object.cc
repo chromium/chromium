@@ -1627,10 +1627,6 @@ ax::mojom::blink::Role AXObject::RoleValue() const {
   return role_;
 }
 
-bool AXObject::IsAnchor() const {
-  return IsLink() && !IsNativeImage();
-}
-
 bool AXObject::IsARIATextField() const {
   if (IsAtomicTextField())
     return false;  // Native role supercedes the ARIA one.

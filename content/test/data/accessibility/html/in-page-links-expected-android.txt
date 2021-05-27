@@ -17,12 +17,12 @@ android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='link' clickable focusable link name='Paragraph with content'
 ++++android.widget.TextView name='Paragraph with content'
 ++android.view.View
-++++android.view.View clickable
+++++android.view.View
 ++++android.widget.TextView name='After empty anchor'
 ++android.view.View
-++++android.view.View clickable name='Anchor with content'
+++++android.view.View name='Anchor with content'
 ++android.view.View
-++++android.view.View clickable name='Anchor with ID'
+++++android.view.View name='Anchor with ID'
 ++android.view.View
 ++++android.view.View
 ++++android.widget.TextView name='After empty span'

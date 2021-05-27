@@ -1418,6 +1418,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DISABLED_AccessibilityAudio) {
   RunHtmlTest(FILE_PATH_LITERAL("audio.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAWithBefore) {
+  RunHtmlTest(FILE_PATH_LITERAL("a-with-before.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAWithImg) {
   RunHtmlTest(FILE_PATH_LITERAL("a-with-img.html"));
 }

@@ -246,13 +246,6 @@ void WebAXObject::Serialize(ui::AXNodeData* node_data,
   private_->Serialize(node_data, accessibility_mode);
 }
 
-bool WebAXObject::IsAnchor() const {
-  if (IsDetached())
-    return false;
-
-  return private_->IsAnchor();
-}
-
 WebString WebAXObject::AutoComplete() const {
   if (IsDetached())
     return WebString();

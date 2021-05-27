@@ -1171,49 +1171,6 @@ Document* AXLayoutObject::GetDocument() const {
   return &GetLayoutObject()->GetDocument();
 }
 
-Element* AXLayoutObject::AnchorElement() const {
-  if (!layout_object_)
-    return nullptr;
-
-  AXObjectCacheImpl& cache = AXObjectCache();
-  LayoutObject* curr_layout_object;
-
-  // Search up the layout tree for a LayoutObject with a DOM node. Defer to an
-  // earlier continuation, though.
-  for (curr_layout_object = layout_object_;
-       curr_layout_object && !curr_layout_object->GetNode();
-       curr_layout_object = curr_layout_object->Parent()) {
-    auto* curr_block_flow = DynamicTo<LayoutBlockFlow>(curr_layout_object);
-    if (!curr_block_flow || !curr_block_flow->IsAnonymousBlock())
-      continue;
-
-    if (LayoutObject* continuation = curr_block_flow->Continuation())
-      return cache.GetOrCreate(continuation)->AnchorElement();
-  }
-  // bail if none found
-  if (!curr_layout_object)
-    return nullptr;
-
-  // Search up the DOM tree for an anchor element.
-  // NOTE: this assumes that any non-image with an anchor is an
-  // HTMLAnchorElement
-  Node* node = curr_layout_object->GetNode();
-  if (!node)
-    return nullptr;
-  for (Node& runner : NodeTraversal::InclusiveAncestorsOf(*node)) {
-    if (IsA<HTMLAnchorElement>(runner))
-      return To<Element>(&runner);
-
-    if (LayoutObject* layout_object = runner.GetLayoutObject()) {
-      AXObject* ax_object = cache.GetOrCreate(layout_object);
-      if (ax_object && ax_object->IsAnchor())
-        return To<Element>(&runner);
-    }
-  }
-
-  return nullptr;
-}
-
 void AXLayoutObject::HandleAutofillStateChanged(WebAXAutofillState state) {
   // Autofill state is stored in AXObjectCache.
   AXObjectCache().SetAutofillState(AXObjectID(), state);

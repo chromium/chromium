@@ -438,7 +438,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Check object role or purpose.
   ax::mojom::blink::Role RoleValue() const;
-  bool IsAnchor() const;
 
   // Returns true if this object is an ARIA text field, i.e. it is neither an
   // <input> nor a <textarea>, but it has an ARIA role of textbox, searchbox or
@@ -673,6 +672,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual String ImageDataUrl(const IntSize& max_size) const {
     return g_null_atom;
   }
+  // If this element points to another element in the same page, e.g.
+  // <a href="#foo">, this will return the AXObject for the target.
+  // The object returned should be unignored. If necessary, it will return
+  // a descendant of the actual target.
   virtual AXObject* InPageLinkTarget() const { return nullptr; }
   virtual AccessibilityOrientation Orientation() const;
   virtual ax::mojom::blink::ListStyle GetListStyle() const {
