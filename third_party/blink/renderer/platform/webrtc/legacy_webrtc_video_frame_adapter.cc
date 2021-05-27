@@ -207,8 +207,7 @@ scoped_refptr<media::VideoFrame> MakeScaledI420VideoFrame(
                          dst_frame->data(media::VideoFrame::kAPlane),
                          dst_frame->stride(media::VideoFrame::kAPlane),
                          dst_frame->coded_size().width(),
-                         dst_frame->coded_size().height(),
-                         libyuv::kFilterBilinear);
+                         dst_frame->coded_size().height(), libyuv::kFilterBox);
       // Fallthrough to I420 in order to scale the YUV planes as well.
       ABSL_FALLTHROUGH_INTENDED;
     case media::PIXEL_FORMAT_I420:
@@ -227,8 +226,7 @@ scoped_refptr<media::VideoFrame> MakeScaledI420VideoFrame(
                         dst_frame->data(media::VideoFrame::kVPlane),
                         dst_frame->stride(media::VideoFrame::kVPlane),
                         dst_frame->coded_size().width(),
-                        dst_frame->coded_size().height(),
-                        libyuv::kFilterBilinear);
+                        dst_frame->coded_size().height(), libyuv::kFilterBox);
       break;
     case media::PIXEL_FORMAT_NV12: {
       webrtc::NV12ToI420Scaler scaler;
@@ -276,21 +274,21 @@ scoped_refptr<media::VideoFrame> MakeScaledI420VideoFrame(
             tmp_frame->data(media::VideoFrame::kVPlane),
             tmp_frame->stride(media::VideoFrame::kVPlane), visible_size.width(),
             visible_size.height());
-        libyuv::I420Scale(
-            tmp_frame->data(media::VideoFrame::kYPlane),
-            tmp_frame->stride(media::VideoFrame::kYPlane),
-            tmp_frame->data(media::VideoFrame::kUPlane),
-            tmp_frame->stride(media::VideoFrame::kUPlane),
-            tmp_frame->data(media::VideoFrame::kVPlane),
-            tmp_frame->stride(media::VideoFrame::kVPlane), visible_size.width(),
-            visible_size.height(), dst_frame->data(media::VideoFrame::kYPlane),
-            dst_frame->stride(media::VideoFrame::kYPlane),
-            dst_frame->data(media::VideoFrame::kUPlane),
-            dst_frame->stride(media::VideoFrame::kUPlane),
-            dst_frame->data(media::VideoFrame::kVPlane),
-            dst_frame->stride(media::VideoFrame::kVPlane),
-            dst_frame->coded_size().width(), dst_frame->coded_size().height(),
-            libyuv::kFilterBilinear);
+        libyuv::I420Scale(tmp_frame->data(media::VideoFrame::kYPlane),
+                          tmp_frame->stride(media::VideoFrame::kYPlane),
+                          tmp_frame->data(media::VideoFrame::kUPlane),
+                          tmp_frame->stride(media::VideoFrame::kUPlane),
+                          tmp_frame->data(media::VideoFrame::kVPlane),
+                          tmp_frame->stride(media::VideoFrame::kVPlane),
+                          visible_size.width(), visible_size.height(),
+                          dst_frame->data(media::VideoFrame::kYPlane),
+                          dst_frame->stride(media::VideoFrame::kYPlane),
+                          dst_frame->data(media::VideoFrame::kUPlane),
+                          dst_frame->stride(media::VideoFrame::kUPlane),
+                          dst_frame->data(media::VideoFrame::kVPlane),
+                          dst_frame->stride(media::VideoFrame::kVPlane),
+                          dst_frame->coded_size().width(),
+                          dst_frame->coded_size().height(), libyuv::kFilterBox);
       }
     } break;
     default:
@@ -321,7 +319,7 @@ scoped_refptr<media::VideoFrame> MakeScaledNV12VideoFrame(
                     dst_frame->data(media::VideoFrame::kUVPlane),
                     nv12_planes[media::VideoFrame::kUVPlane].stride,
                     dst_frame->coded_size().width(),
-                    dst_frame->coded_size().height(), libyuv::kFilterBilinear);
+                    dst_frame->coded_size().height(), libyuv::kFilterBox);
   return dst_frame;
 }
 

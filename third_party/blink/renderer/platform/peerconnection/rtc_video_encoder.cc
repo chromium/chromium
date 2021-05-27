@@ -1148,7 +1148,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
                             frame->stride(media::VideoFrame::kVPlane),
                             frame->visible_rect().width(),
                             frame->visible_rect().height(),
-                            libyuv::kFilterBilinear)) {
+                            libyuv::kFilterBox)) {
         LogAndNotifyError(FROM_HERE, "Failed to copy buffer",
                           media::VideoEncodeAccelerator::kPlatformFailureError);
         async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
