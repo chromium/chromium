@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_switches.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/test/hid_controller_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -44,14 +45,13 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiTest, OobeAPI) {
 
 class OobeTestApiTestChromebox : public OobeTestApiTest {
  public:
-  OobeTestApiTestChromebox() {
-    base::SysInfo::SetChromeOSVersionInfoForTest("DEVICETYPE=CHROMEBASE",
-                                                 base::Time::Now());
-  }
-  ~OobeTestApiTestChromebox() override {}
+  OobeTestApiTestChromebox() = default;
+  ~OobeTestApiTestChromebox() override = default;
 
  protected:
   test::HIDControllerMixin hid_controller_{&mixin_host_};
+  base::test::ScopedChromeOSVersionInfo version_{"DEVICETYPE=CHROMEBASE",
+                                                 base::Time::Now()};
 };
 
 IN_PROC_BROWSER_TEST_F(OobeTestApiTestChromebox, HIDDetectionScreen) {

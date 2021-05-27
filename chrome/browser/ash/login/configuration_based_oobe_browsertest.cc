@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_switches.h"
-#include "base/system/sys_info.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
@@ -145,19 +145,17 @@ class OobeConfigurationTest : public OobeBaseTest {
 // EnterpriseEnrollmentConfigurationTest with no input devices.
 class OobeConfigurationTestNoHID : public OobeConfigurationTest {
  public:
-  OobeConfigurationTestNoHID() {
-    // HID detection screen only appears for Chromebases, Chromebits, and
-    // Chromeboxes.
-    base::SysInfo::SetChromeOSVersionInfoForTest("DEVICETYPE=CHROMEBOX",
-                                                 base::Time::Now());
-  }
-
+  OobeConfigurationTestNoHID() = default;
   ~OobeConfigurationTestNoHID() override = default;
 
  protected:
   test::HIDControllerMixin hid_controller_{&mixin_host_};
 
  private:
+  // HID detection screen only appears for Chromebases, Chromebits, and
+  // Chromeboxes.
+  base::test::ScopedChromeOSVersionInfo version_{"DEVICETYPE=CHROMEBOX",
+                                                 base::Time::Now()};
   DISALLOW_COPY_AND_ASSIGN(OobeConfigurationTestNoHID);
 };
 

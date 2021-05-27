@@ -13,9 +13,9 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
@@ -197,7 +197,7 @@ TEST_F(CfmDeviceInfoServiceTest, TestPolicyInfo) {
 TEST_F(CfmDeviceInfoServiceTest, TestSysInfo) {
   base::RunLoop run_loop;
 
-  base::SysInfo::SetChromeOSVersionInfoForTest(
+  base::test::ScopedChromeOSVersionInfo version(
       base::StringPrintf("CHROMEOS_RELEASE_VERSION=%s\n", kReleaseVersion),
       base::Time::Now());
 

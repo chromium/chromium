@@ -8,8 +8,8 @@
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
@@ -366,8 +366,8 @@ TEST_F(UpdateRequiredNotificationTest, LastHourEolNotifications) {
 }
 
 TEST_F(UpdateRequiredNotificationTest, ChromeboxNotifications) {
-  base::SysInfo::SetChromeOSVersionInfoForTest("DEVICETYPE=CHROMEBOX",
-                                               base::Time::Now());
+  base::test::ScopedChromeOSVersionInfo version("DEVICETYPE=CHROMEBOX",
+                                                base::Time::Now());
   // Set device state to end of life reached.
   update_engine()->set_eol_date(base::DefaultClock::GetInstance()->Now() -
                                 base::TimeDelta::FromDays(kLongWarningInDays));

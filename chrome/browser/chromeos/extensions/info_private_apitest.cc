@@ -5,7 +5,7 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/stylus_utils.h"
-#include "base/system/sys_info.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
@@ -24,6 +24,8 @@
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/test/event_generator.h"
 
+using base::test::ScopedChromeOSVersionInfo;
+
 namespace {
 
 const char kTestAppId[] = "ljoammodoonkhnehlncldjelhidljdpi";
@@ -41,12 +43,6 @@ class ChromeOSInfoPrivateTest : public extensions::ExtensionApiTest {
         switches::kForceAppMode);
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(switches::kAppId,
                                                               kTestAppId);
-  }
-
-  void SetDeviceType(const std::string& device_type) {
-    const std::string lsb_release = std::string("DEVICETYPE=") + device_type;
-    base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release,
-                                                 base::Time::Now());
   }
 };
 
@@ -132,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, ArcNotAvailable) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, Chromebase) {
-  SetDeviceType("CHROMEBASE");
+  ScopedChromeOSVersionInfo version("DEVICETYPE=CHROMEBASE", base::Time::Now());
   ASSERT_TRUE(RunExtensionTest(
       "chromeos_info_private/extended",
       {.custom_arg = "chromebase", .launch_as_platform_app = true}))
@@ -140,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, Chromebase) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, Chromebit) {
-  SetDeviceType("CHROMEBIT");
+  ScopedChromeOSVersionInfo version("DEVICETYPE=CHROMEBIT", base::Time::Now());
   ASSERT_TRUE(RunExtensionTest(
       "chromeos_info_private/extended",
       {.custom_arg = "chromebit", .launch_as_platform_app = true}))
@@ -148,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, Chromebit) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, Chromebook) {
-  SetDeviceType("CHROMEBOOK");
+  ScopedChromeOSVersionInfo version("DEVICETYPE=CHROMEBOOK", base::Time::Now());
   ASSERT_TRUE(RunExtensionTest(
       "chromeos_info_private/extended",
       {.custom_arg = "chromebook", .launch_as_platform_app = true}))
@@ -156,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, Chromebook) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, Chromebox) {
-  SetDeviceType("CHROMEBOX");
+  ScopedChromeOSVersionInfo version("DEVICETYPE=CHROMEBOX", base::Time::Now());
   ASSERT_TRUE(RunExtensionTest(
       "chromeos_info_private/extended",
       {.custom_arg = "chromebox", .launch_as_platform_app = true}))
@@ -164,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, Chromebox) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, UnknownDeviceType) {
-  SetDeviceType("UNKNOWN");
+  ScopedChromeOSVersionInfo version("DEVICETYPE=UNKNOWN", base::Time::Now());
   ASSERT_TRUE(RunExtensionTest(
       "chromeos_info_private/extended",
       {.custom_arg = "unknown device type", .launch_as_platform_app = true}))

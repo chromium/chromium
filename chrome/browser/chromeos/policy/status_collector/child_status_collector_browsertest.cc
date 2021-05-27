@@ -15,9 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -380,12 +378,6 @@ class ChildStatusCollectorTest : public testing::Test {
                                    false);
     EXPECT_CALL(*user_manager_, IsLoggedInAsChildUser())
         .WillRepeatedly(Return(true));
-  }
-
-  void MockPlatformVersion(const std::string& platform_version) {
-    const std::string lsb_release = base::StringPrintf(
-        "CHROMEOS_RELEASE_VERSION=%s", platform_version.c_str());
-    base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release, Time::Now());
   }
 
   // Convenience method.

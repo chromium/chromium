@@ -29,7 +29,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/app_mode/app_session.h"
@@ -293,12 +293,6 @@ extensions::Manifest::Type GetAppType(const std::string& app_id) {
           ->GetInstalledExtension(app_id);
   DCHECK(app);
   return app->GetType();
-}
-
-void SetPlatformVersion(const std::string& platform_version) {
-  const std::string lsb_release = base::StringPrintf(
-      "CHROMEOS_RELEASE_VERSION=%s", platform_version.c_str());
-  base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release, base::Time::Now());
 }
 
 class KioskFakeDiskMountManager : public file_manager::FakeDiskMountManager {
@@ -2245,7 +2239,8 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_IncompliantPlatformDelayInstall) {
-  SetPlatformVersion("1233.0.0");
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_RELEASE_VERSION=1234.0.0", base::Time::Now());
 
   set_test_app_id(kTestOfflineEnabledKioskApp);
   set_test_app_version("2.0.0");
@@ -2266,7 +2261,8 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_IncompliantPlatformDelayInstall) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskUpdateTest, IncompliantPlatformDelayInstall) {
-  SetPlatformVersion("1234.0.0");
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_RELEASE_VERSION=1234.0.0", base::Time::Now());
 
   set_test_app_id(kTestOfflineEnabledKioskApp);
   set_test_app_version("2.0.0");
@@ -2290,7 +2286,8 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, IncompliantPlatformDelayInstall) {
 // Tests that app is installed for the first time even on an incompliant
 // platform.
 IN_PROC_BROWSER_TEST_F(KioskUpdateTest, IncompliantPlatformFirstInstall) {
-  SetPlatformVersion("1233.0.0");
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_RELEASE_VERSION=1234.0.0", base::Time::Now());
 
   set_test_app_id(kTestOfflineEnabledKioskApp);
   set_test_app_version("2.0.0");

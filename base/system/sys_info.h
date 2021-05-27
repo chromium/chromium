@@ -160,6 +160,7 @@ class BASE_EXPORT SysInfo {
 
   // Overrides |lsb_release| and |lsb_release_time|. Overrides cannot be nested.
   // Call ResetChromeOSVersionInfoForTest() to restore the previous values.
+  // Prefer base::test::ScopedChromeOSVersionInfo to calling this function.
   static void SetChromeOSVersionInfoForTest(const std::string& lsb_release,
                                             const Time& lsb_release_time);
 

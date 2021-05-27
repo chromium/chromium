@@ -17,8 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -122,12 +121,6 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
       extensions::Extension::WAS_INSTALLED_BY_DEFAULT, id, &err);
   EXPECT_EQ(err, "");
   return app;
-}
-
-void SetPlatformVersion(const std::string& platform_version) {
-  const std::string lsb_release = base::StringPrintf(
-      "CHROMEOS_RELEASE_VERSION=%s", platform_version.c_str());
-  base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release, base::Time::Now());
 }
 
 class AppDataLoadWaiter : public KioskAppManagerObserver {
@@ -999,7 +992,8 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, IsPlatformCompliant) {
-  SetPlatformVersion("1234.1.2");
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_RELEASE_VERSION=1234.1.2", base::Time::Now());
 
   EXPECT_TRUE(manager()->IsPlatformCompliant(""));
   EXPECT_TRUE(manager()->IsPlatformCompliant("1234"));
@@ -1016,7 +1010,8 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, IsPlatformCompliant) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, IsPlatformCompliantWithApp) {
-  SetPlatformVersion("1234.1.2");
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_RELEASE_VERSION=1234.1.2", base::Time::Now());
 
   const char kAppId[] = "app_id";
   SetExistingApp(kAppId, "App Name", "red16x16.png", "");

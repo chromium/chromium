@@ -7,7 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/system/sys_info.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
@@ -45,12 +45,8 @@ const test::UIPath kHidKeyboardTick = {"hid-detection", "keyboard-tick"};
 // chromebox, chromebase, chromebit
 class HIDDetectionScreenChromeboxTest : public OobeBaseTest {
  public:
-  HIDDetectionScreenChromeboxTest() {
-    // HID detection screen only appears for Chromebases, Chromebits, and
-    // Chromeboxes.
-    base::SysInfo::SetChromeOSVersionInfoForTest("DEVICETYPE=CHROMEBOX",
-                                                 base::Time::Now());
-  }
+  HIDDetectionScreenChromeboxTest() = default;
+  ~HIDDetectionScreenChromeboxTest() override = default;
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(WizardController::default_controller());
@@ -89,6 +85,11 @@ class HIDDetectionScreenChromeboxTest : public OobeBaseTest {
 
  private:
   HIDDetectionScreen* hid_detection_screen_;
+
+  // HID detection screen only appears for Chromebases, Chromebits, and
+  // Chromeboxes.
+  base::test::ScopedChromeOSVersionInfo version_{"DEVICETYPE=CHROMEBOX",
+                                                 base::Time::Now()};
 
   DISALLOW_COPY_AND_ASSIGN(HIDDetectionScreenChromeboxTest);
 };
@@ -265,12 +266,10 @@ class HIDDetectionScreenDisabledAfterRestartTest
 };
 
 class HIDDetectionScreenChromebookTest : public OobeBaseTest {
- public:
-  HIDDetectionScreenChromebookTest() {
-    // Set device type to one that should not invoke HIDDetectionScreen logic.
-    base::SysInfo::SetChromeOSVersionInfoForTest("DEVICETYPE=CHROMEBOOK",
-                                                 base::Time::Now());
-  }
+ private:
+  // Set device type to one that should not invoke HIDDetectionScreen logic.
+  base::test::ScopedChromeOSVersionInfo version_{"DEVICETYPE=CHROMEBOOK",
+                                                 base::Time::Now()};
 };
 
 IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromebookTest,
@@ -285,18 +284,20 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromebookTest,
 class HIDDetectionScreenChromebaseTest : public OobeBaseTest {
  public:
   HIDDetectionScreenChromebaseTest() {
-    // Set device type to a Chromebase with a touch screen.
-    // This should show the HIDDetectionScreen with the continue button
-    // always enabled, since the user can complete all of OOBE steps
-    // with only a touchscreen.
-    base::SysInfo::SetChromeOSVersionInfoForTest("DEVICETYPE=CHROMEBASE",
-                                                 base::Time::Now());
     hid_controller_.set_wait_until_idle_after_device_update(false);
     hid_controller_.AddTouchscreen();
   }
 
  protected:
   test::HIDControllerMixin hid_controller_{&mixin_host_};
+
+ private:
+  // Set device type to a Chromebase with a touch screen.
+  // This should show the HIDDetectionScreen with the continue button
+  // always enabled, since the user can complete all of OOBE steps
+  // with only a touchscreen.
+  base::test::ScopedChromeOSVersionInfo version_{"DEVICETYPE=CHROMEBASE",
+                                                 base::Time::Now()};
 };
 
 IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromebaseTest, TouchscreenDetected) {

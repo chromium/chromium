@@ -27,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/simple_test_clock.h"
@@ -110,6 +111,7 @@
 
 using base::Time;
 using base::TimeDelta;
+using base::test::ScopedChromeOSVersionInfo;
 using chromeos::disks::DiskMountManager;
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -1026,11 +1028,12 @@ class DeviceStatusCollectorTest : public testing::Test {
     SetDeviceLocalAccounts(&owner_settings_service_, accounts);
   }
 
-  void MockPlatformVersion(const std::string& platform_version) {
+  std::unique_ptr<ScopedChromeOSVersionInfo> MockPlatformVersion(
+      const std::string& platform_version) {
     const std::string lsb_release = base::StringPrintf(
         "CHROMEOS_RELEASE_VERSION=%s", platform_version.c_str());
-    base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release,
-                                                 base::Time::Now());
+    return std::make_unique<ScopedChromeOSVersionInfo>(lsb_release,
+                                                       base::Time::Now());
   }
 
   void MockAutoLaunchKioskAppWithRequiredPlatformVersion(
@@ -2557,7 +2560,7 @@ TEST_F(DeviceStatusCollectorTest, ReportWebKioskSessionStatus) {
 }
 
 TEST_F(DeviceStatusCollectorTest, NoOsUpdateStatusByDefault) {
-  MockPlatformVersion(kDefaultPlatformVersion);
+  auto scoped_version = MockPlatformVersion(kDefaultPlatformVersion);
   MockAutoLaunchKioskAppWithRequiredPlatformVersion(
       fake_kiosk_device_local_account_, kDefaultPlatformVersion);
 
@@ -2566,7 +2569,7 @@ TEST_F(DeviceStatusCollectorTest, NoOsUpdateStatusByDefault) {
 }
 
 TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatusUpToDate) {
-  MockPlatformVersion(kDefaultPlatformVersion);
+  auto scoped_version = MockPlatformVersion(kDefaultPlatformVersion);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportOsUpdateStatus, true);
 
@@ -2589,7 +2592,7 @@ TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatusUpToDate) {
 }
 
 TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatusUpToDate_NonKiosk) {
-  MockPlatformVersion(kDefaultPlatformVersion);
+  auto scoped_version = MockPlatformVersion(kDefaultPlatformVersion);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportOsUpdateStatus, true);
   GetStatus();
@@ -2602,7 +2605,7 @@ TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatusUpToDate_NonKiosk) {
 }
 
 TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatus) {
-  MockPlatformVersion(kDefaultPlatformVersion);
+  auto scoped_version = MockPlatformVersion(kDefaultPlatformVersion);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportOsUpdateStatus, true);
   MockAutoLaunchKioskAppWithRequiredPlatformVersion(
@@ -2648,7 +2651,7 @@ TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatus) {
 }
 
 TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatus_NonKiosk) {
-  MockPlatformVersion(kDefaultPlatformVersion);
+  auto scoped_version = MockPlatformVersion(kDefaultPlatformVersion);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportOsUpdateStatus, true);
 
@@ -2701,7 +2704,7 @@ TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatus_NonKiosk) {
 }
 
 TEST_F(DeviceStatusCollectorTest, NoLastCheckedTimestampByDefault) {
-  MockPlatformVersion(kDefaultPlatformVersion);
+  auto scoped_version = MockPlatformVersion(kDefaultPlatformVersion);
   MockAutoLaunchKioskAppWithRequiredPlatformVersion(
       fake_kiosk_device_local_account_, kDefaultPlatformVersion);
 
@@ -2710,7 +2713,7 @@ TEST_F(DeviceStatusCollectorTest, NoLastCheckedTimestampByDefault) {
 }
 
 TEST_F(DeviceStatusCollectorTest, ReportLastCheckedTimestamp) {
-  MockPlatformVersion(kDefaultPlatformVersion);
+  auto scoped_version = MockPlatformVersion(kDefaultPlatformVersion);
   MockAutoLaunchKioskAppWithRequiredPlatformVersion(
       fake_kiosk_device_local_account_, kDefaultPlatformVersion);
 
@@ -2739,7 +2742,7 @@ TEST_F(DeviceStatusCollectorTest, ReportLastCheckedTimestamp) {
 }
 
 TEST_F(DeviceStatusCollectorTest, NoLastRebootTimestampByDefault) {
-  MockPlatformVersion(kDefaultPlatformVersion);
+  auto scoped_version = MockPlatformVersion(kDefaultPlatformVersion);
   MockAutoLaunchKioskAppWithRequiredPlatformVersion(
       fake_kiosk_device_local_account_, kDefaultPlatformVersion);
 
@@ -2748,7 +2751,7 @@ TEST_F(DeviceStatusCollectorTest, NoLastRebootTimestampByDefault) {
 }
 
 TEST_F(DeviceStatusCollectorTest, ReportLastRebootTimestamp) {
-  MockPlatformVersion(kDefaultPlatformVersion);
+  auto scoped_version = MockPlatformVersion(kDefaultPlatformVersion);
   MockAutoLaunchKioskAppWithRequiredPlatformVersion(
       fake_kiosk_device_local_account_, kDefaultPlatformVersion);
 
@@ -2767,7 +2770,7 @@ TEST_F(DeviceStatusCollectorTest, ReportLastRebootTimestamp) {
 }
 
 TEST_F(DeviceStatusCollectorTest, NoRunningKioskAppByDefault) {
-  MockPlatformVersion(kDefaultPlatformVersion);
+  auto scoped_version = MockPlatformVersion(kDefaultPlatformVersion);
   MockAutoLaunchKioskAppWithRequiredPlatformVersion(
       fake_kiosk_device_local_account_, kDefaultPlatformVersion);
   status_collector_->set_kiosk_account(
@@ -2783,7 +2786,7 @@ TEST_F(DeviceStatusCollectorTest, NoRunningKioskAppByDefault) {
 TEST_F(DeviceStatusCollectorTest, NoRunningKioskAppWhenNotInKioskSession) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportRunningKioskApp, true);
-  MockPlatformVersion(kDefaultPlatformVersion);
+  auto scoped_version = MockPlatformVersion(kDefaultPlatformVersion);
   MockAutoLaunchKioskAppWithRequiredPlatformVersion(
       fake_kiosk_device_local_account_, kDefaultPlatformVersion);
 
@@ -2794,7 +2797,7 @@ TEST_F(DeviceStatusCollectorTest, NoRunningKioskAppWhenNotInKioskSession) {
 TEST_F(DeviceStatusCollectorTest, ReportRunningKioskApp) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportRunningKioskApp, true);
-  MockPlatformVersion(kDefaultPlatformVersion);
+  auto scoped_version = MockPlatformVersion(kDefaultPlatformVersion);
   MockAutoLaunchKioskAppWithRequiredPlatformVersion(
       fake_kiosk_device_local_account_, "1235");
 

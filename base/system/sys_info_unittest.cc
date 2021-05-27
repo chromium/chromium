@@ -378,6 +378,19 @@ TEST_F(SysInfoTest, IsRunningOnChromeOS) {
   }
 }
 
+// Regression test for https://crbug.com/1148904.
+TEST_F(SysInfoTest, ScopedChromeOSVersionInfoDoesNotChangeEnvironment) {
+  std::unique_ptr<Environment> environment = Environment::Create();
+  ASSERT_FALSE(environment->HasVar("LSB_RELEASE"));
+  {
+    const char kLsbRelease[] =
+        "CHROMEOS_RELEASE_NAME=Chrome OS\n"
+        "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
+    test::ScopedChromeOSVersionInfo version(kLsbRelease, Time());
+  }
+  EXPECT_FALSE(environment->HasVar("LSB_RELEASE"));
+}
+
 TEST_F(SysInfoTest, CrashOnBaseImage) {
   const char kLsbRelease[] =
       "CHROMEOS_RELEASE_NAME=Chrome OS\n"

@@ -11,7 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -62,6 +62,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace em = enterprise_management;
@@ -99,12 +100,6 @@ policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
       ->GetMinimumVersionPolicyHandler();
 }
 
-void SetPlatformVersion(const std::string& platform_version) {
-  const std::string lsb_release = base::StringPrintf(
-      "CHROMEOS_RELEASE_VERSION=%s", platform_version.c_str());
-  base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release, base::Time::Now());
-}
-
 }  //  namespace
 
 class MinimumVersionPolicyTestBase : public chromeos::LoginManagerTest {
@@ -120,7 +115,9 @@ class MinimumVersionPolicyTestBase : public chromeos::LoginManagerTest {
     fake_update_engine_client_ = fake_update_engine_client.get();
     chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         std::move(fake_update_engine_client));
-    SetPlatformVersion(kCurrentVersion);
+    const std::string lsb_release =
+        base::StringPrintf("CHROMEOS_RELEASE_VERSION=%s", kCurrentVersion);
+    version_info_.emplace(lsb_release, base::Time::Now());
   }
 
   // Set new value for policy and wait till setting is changed.
@@ -140,6 +137,7 @@ class MinimumVersionPolicyTestBase : public chromeos::LoginManagerTest {
   chromeos::DeviceStateMixin device_state_{
       &mixin_host_,
       chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  absl::optional<base::test::ScopedChromeOSVersionInfo> version_info_;
 };
 
 MinimumVersionPolicyTestBase::MinimumVersionPolicyTestBase() {
