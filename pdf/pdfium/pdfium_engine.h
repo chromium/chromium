@@ -80,6 +80,9 @@ class PDFiumEngine : public PDFEngine,
   // HandleDocumentLoad().
   void SetDocumentLoaderForTesting(std::unique_ptr<DocumentLoader> loader);
 
+  // Returns the FontMappingMode set during PDFium SDK initialization.
+  static FontMappingMode GetFontMappingMode();
+
   // PDFEngine:
   bool New(const char* url, const char* headers) override;
   void PageOffsetUpdated(const gfx::Vector2d& page_offset) override;

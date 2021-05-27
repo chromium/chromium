@@ -50,7 +50,7 @@ pp::Instance* PDFModule::CreateInstance(PP_Instance instance) {
       v8::V8::SetSnapshotDataBlob(&snapshot);
     }
 
-    InitializeSDK(/*enable_v8=*/true);
+    InitializeSDK(/*enable_v8=*/true, FontMappingMode::kPepper);
     SetIsSDKInitializedViaPlugin(true);
   }
 

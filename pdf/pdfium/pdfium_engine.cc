@@ -140,6 +140,8 @@ constexpr base::TimeDelta kMaxProgressivePaintTime =
 constexpr base::TimeDelta kMaxInitialProgressivePaintTime =
     base::TimeDelta::FromMilliseconds(250);
 
+FontMappingMode g_font_mapping_mode = FontMappingMode::kNoMapping;
+
 template <class S>
 bool IsAboveOrDirectlyLeftOf(const S& lhs, const S& rhs) {
   return lhs.y() < rhs.y() || (lhs.y() == rhs.y() && lhs.x() < rhs.x());
@@ -494,7 +496,7 @@ void ParamsTransformPageToScreen(unsigned long view_fit_type,
 
 }  // namespace
 
-void InitializeSDK(bool enable_v8) {
+void InitializeSDK(bool enable_v8, FontMappingMode font_mapping_mode) {
   FPDF_LIBRARY_CONFIG config;
   config.version = 3;
   config.m_pUserFontPaths = nullptr;
@@ -516,6 +518,7 @@ void InitializeSDK(bool enable_v8) {
   FPDF_InitLibraryWithConfig(&config);
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  g_font_mapping_mode = font_mapping_mode;
   InitializeLinuxFontMapper();
 #endif
 
@@ -564,6 +567,11 @@ void PDFiumEngine::SetDocumentLoaderForTesting(
   DCHECK(!doc_loader_);
   doc_loader_ = std::move(loader);
   doc_loader_set_for_testing_ = true;
+}
+
+// static
+FontMappingMode PDFiumEngine::GetFontMappingMode() {
+  return g_font_mapping_mode;
 }
 
 bool PDFiumEngine::New(const char* url, const char* headers) {

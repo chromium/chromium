@@ -22,7 +22,7 @@ class ScopedSdkInitializer {
  public:
   explicit ScopedSdkInitializer(bool enable_v8) {
     if (!IsSDKInitializedViaPlugin())
-      InitializeSDK(enable_v8);
+      InitializeSDK(enable_v8, FontMappingMode::kNoMapping);
   }
 
   ScopedSdkInitializer(const ScopedSdkInitializer&) = delete;

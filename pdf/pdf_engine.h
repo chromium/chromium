@@ -75,10 +75,20 @@ struct DocumentMetadata;
 
 using SendThumbnailCallback = base::OnceCallback<void(Thumbnail)>;
 
+enum class FontMappingMode {
+  // Do not perform font mapping.
+  kNoMapping,
+  // Perform font mapping in renderer processes using Blink/content APIs.
+  kBlink,
+  // Perform font mapping in plugin processes using PPAPI.
+  // TODO(crbug.com/702993): Remove when PPAPI is gone.
+  kPepper,
+};
+
 // Do one time initialization of the SDK.
 // If `enable_v8` is false, then the PDFEngine will not be able to run
 // JavaScript.
-void InitializeSDK(bool enable_v8);
+void InitializeSDK(bool enable_v8, FontMappingMode font_mapping_mode);
 // Tells the SDK that we're shutting down.
 void ShutdownSDK();
 

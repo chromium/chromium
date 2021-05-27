@@ -91,7 +91,7 @@ class PerProcessInitializer final {
 
     DCHECK(!IsSDKInitializedViaPlugin());
     // TODO(crbug.com/1111024): Support JavaScript.
-    InitializeSDK(/*enable_v8=*/false);
+    InitializeSDK(/*enable_v8=*/false, FontMappingMode::kBlink);
     SetIsSDKInitializedViaPlugin(true);
   }
 

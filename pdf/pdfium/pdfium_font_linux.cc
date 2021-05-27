@@ -13,6 +13,7 @@
 #include "base/numerics/ranges.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/pdfium_font_linux.h"
 #include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/pdfium/public/fpdf_sysfontinfo.h"
@@ -20,6 +21,10 @@
 namespace chrome_pdf {
 
 namespace {
+
+bool UsePepperMapping() {
+  return PDFiumEngine::GetFontMappingMode() != FontMappingMode::kBlink;
+}
 
 blink::WebFontDescription::Weight WeightToBlinkWeight(int weight) {
   static_assert(blink::WebFontDescription::kWeight100 == 0, "Blink Weight min");
@@ -145,7 +150,11 @@ void* MapFont(FPDF_SYSFONTINFO*,
     desc.italic = italic > 0;
   }
 
-  return MapPepperFont(desc, charset);
+  if (UsePepperMapping())
+    return MapPepperFont(desc, charset);
+
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 unsigned long GetFontData(FPDF_SYSFONTINFO*,
@@ -153,11 +162,20 @@ unsigned long GetFontData(FPDF_SYSFONTINFO*,
                           unsigned int table,
                           unsigned char* buffer,
                           unsigned long buf_size) {
-  return GetPepperFontData(font_id, table, buffer, buf_size);
+  if (UsePepperMapping())
+    return GetPepperFontData(font_id, table, buffer, buf_size);
+
+  NOTIMPLEMENTED();
+  return 0;
 }
 
 void DeleteFont(FPDF_SYSFONTINFO*, void* font_id) {
-  DeletePepperFont(font_id);
+  if (UsePepperMapping()) {
+    DeletePepperFont(font_id);
+    return;
+  }
+
+  NOTIMPLEMENTED();
 }
 
 FPDF_SYSFONTINFO g_font_info = {1,           0, EnumFonts, MapFont,   0,
