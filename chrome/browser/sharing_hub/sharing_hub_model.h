@@ -5,9 +5,14 @@
 #ifndef CHROME_BROWSER_SHARING_HUB_SHARING_HUB_MODEL_H_
 #define CHROME_BROWSER_SHARING_HUB_SHARING_HUB_MODEL_H_
 
+#include <map>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
+
+class GURL;
+class Profile;
 
 namespace content {
 class BrowserContext;
@@ -22,7 +27,7 @@ namespace sharing_hub {
 
 struct SharingHubAction {
   int command_id;
-  int title;
+  std::u16string title;
   const gfx::VectorIcon& icon;
   bool is_first_party;
 };
@@ -35,11 +40,19 @@ class SharingHubModel {
   explicit SharingHubModel(content::BrowserContext* context);
   ~SharingHubModel();
 
-  // Populates the vector with Sharing Hub actions, ordered by appearance in the
-  // dialog. Some actions (i.e. send tab to self) may not be shown for some
-  // URLs.
-  void GetActionList(content::WebContents* web_contents,
-                     std::vector<SharingHubAction>* list);
+  // Populates the vector with first party Sharing Hub actions, ordered by
+  // appearance in the dialog. Some actions (i.e. send tab to self) may not be
+  // shown for some URLs.
+  void GetFirstPartyActionList(content::WebContents* web_contents,
+                               std::vector<SharingHubAction>* list);
+  // Populates the vector with third party Sharing Hub actions, ordered by
+  // appearance in the dialog.
+  void GetThirdPartyActionList(content::WebContents* web_contents,
+                               std::vector<SharingHubAction>* list);
+
+  // Executes the third party action indicated by |id|, i.e. opens a new tab to
+  // the corresponding webpage.
+  void ExecuteThirdPartyAction(Profile* profile, int id);
 
  private:
   void PopulateFirstPartyActions();
@@ -47,8 +60,13 @@ class SharingHubModel {
 
   bool DoShowSendTabToSelfForWebContents(content::WebContents* web_contents);
 
-  // A list of Sharing Hub actions in order in which they appear.
-  std::vector<SharingHubAction> action_list_;
+  // A list of Sharing Hub first party actions in order in which they appear.
+  std::vector<SharingHubAction> first_party_action_list_;
+  // A list of Sharing Hub third party actions in order in which they appear.
+  std::vector<SharingHubAction> third_party_action_list_;
+
+  // A list of third party action URLs mapped to action id.
+  std::map<int, GURL> third_party_action_urls_;
 
   content::BrowserContext* context_;
 

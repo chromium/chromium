@@ -111,23 +111,27 @@ void SharingHubBubbleViewImpl::Init() {
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->ClipHeightTo(0, kActionButtonHeight * kMaximumButtons);
 
-  PopulateScrollView(controller_->GetActions());
+  PopulateScrollView(controller_->GetFirstPartyActions(),
+                     controller_->GetThirdPartyActions());
 }
 
 void SharingHubBubbleViewImpl::PopulateScrollView(
-    const std::vector<SharingHubAction>& actions) {
+    const std::vector<SharingHubAction>& first_party_actions,
+    const std::vector<SharingHubAction>& third_party_actions) {
   auto* action_list_view =
       scroll_view_->SetContents(std::make_unique<views::View>());
   action_list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  bool separator_added = false;
-  for (const auto& action : actions) {
-    if (!separator_added && !action.is_first_party) {
-      action_list_view->AddChildView(GetSeparator());
-      separator_added = true;
-    }
+  for (const auto& action : first_party_actions) {
+    auto* view = action_list_view->AddChildView(
+        std::make_unique<SharingHubBubbleActionButton>(this, action));
+    view->SetGroup(kActionButtonGroup);
+  }
 
+  action_list_view->AddChildView(GetSeparator());
+
+  for (const auto& action : third_party_actions) {
     auto* view = action_list_view->AddChildView(
         std::make_unique<SharingHubBubbleActionButton>(this, action));
     view->SetGroup(kActionButtonGroup);

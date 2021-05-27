@@ -21,33 +21,70 @@
 
 namespace sharing_hub {
 
-SharingHubSubMenuModel::SharingHubSubMenuModel(
-    ui::SimpleMenuModel::Delegate* delegate,
-    content::WebContents* web_contents)
-    : SimpleMenuModel(delegate) {
-  Build(web_contents);
+SharingHubSubMenuModel::SharingHubSubMenuModel(Browser* browser)
+    : SimpleMenuModel(this), browser_(browser) {
+  Build(browser_->tab_strip_model()->GetActiveWebContents());
+}
+
+SharingHubSubMenuModel::~SharingHubSubMenuModel() = default;
+
+bool SharingHubSubMenuModel::IsCommandIdEnabled(int command_id) const {
+  return true;
+}
+
+void SharingHubSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
+  if (IsThirdPartyAction(command_id)) {
+    SharingHubModel* const model = GetSharingHubModel();
+    if (!model)
+      return;
+    model->ExecuteThirdPartyAction(browser_->profile(), command_id);
+  } else {
+    GlobalError* error =
+        GlobalErrorServiceFactory::GetForProfile(browser_->profile())
+            ->GetGlobalErrorByMenuItemCommandID(command_id);
+    if (error) {
+      error->ExecuteMenuItem(browser_);
+      return;
+    }
+    // TODO crbug.com/1186848  Log metrics per command_id;
+    chrome::ExecuteCommand(browser_, command_id);
+  }
+}
+
+SharingHubModel* SharingHubSubMenuModel::GetSharingHubModel() const {
+  SharingHubService* const service =
+      SharingHubServiceFactory::GetForProfile(browser_->profile());
+  return service ? service->GetSharingHubModel() : nullptr;
 }
 
 void SharingHubSubMenuModel::Build(content::WebContents* web_contents) {
   if (!web_contents)
     return;
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  SharingHubService* const service =
-      SharingHubServiceFactory::GetForProfile(profile);
-  SharingHubModel* const model =
-      service ? service->GetSharingHubModel() : nullptr;
-  std::vector<SharingHubAction> actions;
-  if (model) {
-    model->GetActionList(web_contents, &actions);
+  SharingHubModel* const model = GetSharingHubModel();
+  if (!model)
+    return;
 
-    for (std::vector<SharingHubAction>::const_iterator it = actions.begin();
-         it != actions.end(); ++it) {
-      AddItemWithStringId(it->command_id, it->title);
-    }
+  std::vector<SharingHubAction> first_party_actions;
+  std::vector<SharingHubAction> third_party_actions;
+  model->GetFirstPartyActionList(web_contents, &first_party_actions);
+  model->GetThirdPartyActionList(web_contents, &third_party_actions);
+
+  for (auto action : first_party_actions) {
+    AddItem(action.command_id, action.title);
   }
   AddSeparator(ui::NORMAL_SEPARATOR);
+  for (auto action : third_party_actions) {
+    AddItemWithIcon(action.command_id, action.title,
+                    ui::ImageModel::FromVectorIcon(action.icon));
+    third_party_action_ids_.push_back(action.command_id);
+  }
+}
+
+bool SharingHubSubMenuModel::IsThirdPartyAction(int id) {
+  return std::find(third_party_action_ids_.begin(),
+                   third_party_action_ids_.end(),
+                   id) != third_party_action_ids_.end();
 }
 
 }  // namespace sharing_hub

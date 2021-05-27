@@ -36,7 +36,7 @@ SharingHubBubbleActionButton::SharingHubBubbleActionButton(
                               base::Unretained(bubble),
                               base::Unretained(this)),
           CreateIcon(action_info.icon),
-          l10n_util::GetStringUTF16(action_info.title)) {
+          action_info.title) {
   action_command_id_ = action_info.command_id;
   action_is_first_party_ = action_info.is_first_party;
   SetEnabled(true);

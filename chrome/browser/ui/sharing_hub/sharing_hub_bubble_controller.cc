@@ -117,15 +117,24 @@ bool SharingHubBubbleController::ShouldOfferOmniboxIcon() {
   return true;
 }
 
-std::vector<SharingHubAction> SharingHubBubbleController::GetActions() const {
-  SharingHubService* const service =
-      SharingHubServiceFactory::GetForProfile(GetProfile());
-  SharingHubModel* const model =
-      service ? service->GetSharingHubModel() : nullptr;
-
+std::vector<SharingHubAction>
+SharingHubBubbleController::GetFirstPartyActions() {
   std::vector<SharingHubAction> actions;
+
+  SharingHubModel* model = GetSharingHubModel();
   if (model)
-    model->GetActionList(web_contents_, &actions);
+    model->GetFirstPartyActionList(web_contents_, &actions);
+
+  return actions;
+}
+
+std::vector<SharingHubAction>
+SharingHubBubbleController::GetThirdPartyActions() {
+  std::vector<SharingHubAction> actions;
+
+  SharingHubModel* model = GetSharingHubModel();
+  if (model)
+    model->GetThirdPartyActionList(web_contents_, &actions);
 
   return actions;
 }
@@ -140,12 +149,25 @@ void SharingHubBubbleController::OnActionSelected(int command_id,
   if (is_first_party) {
     chrome::ExecuteCommand(browser, command_id);
   } else {
-    // TODO(1186833): execute 3p action
+    SharingHubModel* model = GetSharingHubModel();
+    DCHECK(model);
+    model->ExecuteThirdPartyAction(GetProfile(), command_id);
   }
 }
 
 void SharingHubBubbleController::OnBubbleClosed() {
   sharing_hub_bubble_view_ = nullptr;
+}
+
+SharingHubModel* SharingHubBubbleController::GetSharingHubModel() {
+  if (!sharing_hub_model_) {
+    SharingHubService* const service =
+        SharingHubServiceFactory::GetForProfile(GetProfile());
+    if (!service)
+      return nullptr;
+    sharing_hub_model_ = service->GetSharingHubModel();
+  }
+  return sharing_hub_model_;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
