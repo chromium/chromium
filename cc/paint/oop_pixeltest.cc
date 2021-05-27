@@ -1994,9 +1994,12 @@ class OopTextBlobPixelTest
   }
 };
 
+// Broken on emulators: https://crbug.com/1189284
+#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
 TEST_P(OopTextBlobPixelTest, Config) {
   RunTest();
 }
+#endif
 
 INSTANTIATE_TEST_SUITE_P(
     P,
