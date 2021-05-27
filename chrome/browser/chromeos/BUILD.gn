@@ -3645,6 +3645,7 @@ source_set("unit_tests") {
     "../ash/borealis/borealis_app_uninstaller_unittest.cc",
     "../ash/borealis/borealis_context_manager_unittest.cc",
     "../ash/borealis/borealis_context_unittest.cc",
+    "../ash/borealis/borealis_disk_manager_dispatcher_unittest.cc",
     "../ash/borealis/borealis_disk_manager_unittest.cc",
     "../ash/borealis/borealis_features_unittest.cc",
     "../ash/borealis/borealis_game_mode_controller_unittest.cc",
