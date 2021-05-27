@@ -127,6 +127,27 @@ executable("cast_runner_exe") {
   visibility = [ ":*" ]
 }
 
+# web_instance_host's deps, especially //content/public/common, adds these.
+# TODO(crbug.com/1212191): Moving flag parsing to web_instance should
+# eliminate the dependencies that cause these files to be added. Remove them
+# and add the targets that generate these to assert_no_deps in
+# cast_runner_core and web_runner_exe.
+_web_instance_host_deps_files_to_exclude = [
+  "angle/angle_commit.h",
+  "data/vulkan/explicit_layer.d/VkLayer_image_pipe_swapchain.json",
+  "lib/VkLayer_image_pipe_swapchain.so",
+  "lib/libEGL.so",
+  "lib/libGLESv2.so",
+  "lib/libfuchsia_egl.so",
+  "lib/libtrace-engine.so",
+  "lib/libvulkan.so",
+  "ui/webui/resources/js/load_time_data.js",
+
+  # TODO(crbug.com/1022542): Swiftshader is never used under Fuchsia.
+  "lib/libswiftshader_libEGL.so",
+  "lib/libswiftshader_libGLESv2.so",
+]
+
 cr_fuchsia_package("cast_runner_pkg") {
   binary = ":cast_runner_exe"
   package_name_override = "cast_runner"
@@ -134,6 +155,7 @@ cr_fuchsia_package("cast_runner_pkg") {
 
   # Required by web_instance_host.
   additional_manifests = [ "//fuchsia/engine/web_instance.cmx" ]
+  excluded_files = _web_instance_host_deps_files_to_exclude
 }
 
 fuchsia_package_runner("cast_runner") {
@@ -266,6 +288,7 @@ cr_fuchsia_package("web_runner_pkg") {
 
   # Required by web_instance_host.
   additional_manifests = [ "//fuchsia/engine/web_instance.cmx" ]
+  excluded_files = _web_instance_host_deps_files_to_exclude
 }
 
 fuchsia_package_runner("web_runner") {
