@@ -298,13 +298,6 @@ void TerminalPrivateOpenTerminalProcessFunction::OnCrostiniRestarted(
     const std::string& user_id_hash,
     base::CommandLine cmdline,
     crostini::CrostiniResult result) {
-  if (crostini::MaybeShowCrostiniDialogBeforeLaunch(
-          Profile::FromBrowserContext(browser_context()), result)) {
-    const std::string msg = "Waiting for component update dialog response";
-    LOG(ERROR) << msg;
-    Respond(Error(msg));
-    return;
-  }
   startup_status_->OnCrostiniRestarted(result);
   if (result == crostini::CrostiniResult::SUCCESS) {
     OpenVmshellProcess(user_id_hash, std::move(cmdline));

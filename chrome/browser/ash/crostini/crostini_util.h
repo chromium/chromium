@@ -102,10 +102,6 @@ bool ShouldAllowContainerUpgrade(Profile* profile);
 // the configuration specified by CrostiniAnsiblePlaybook user policy.
 bool ShouldConfigureDefaultContainer(Profile* profile);
 
-// Returns whether a dialog from Crostini is blocking the immediate launch.
-bool MaybeShowCrostiniDialogBeforeLaunch(Profile* profile,
-                                         CrostiniResult result);
-
 using LaunchArg = absl::variant<storage::FileSystemURL, std::string>;
 
 // Launch a Crostini App with a given set of files, given as absolute paths in

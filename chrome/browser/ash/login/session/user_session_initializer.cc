@@ -209,7 +209,7 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
   crostini::CrostiniManager* crostini_manager =
       crostini::CrostiniManager::GetForProfile(profile);
   if (crostini_manager)
-    crostini_manager->MaybeUpdateCrostini();
+    crostini_manager->RunSessionStartTasks();
 
   if (features::IsClipboardHistoryEnabled()) {
     clipboard_image_model_factory_impl_ =
