@@ -1283,7 +1283,8 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux-rel-orchestrator",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = True,
+    builderless = False,
+    cores = 4,
     executable = "recipe:chromium/orchestrator",
     main_list_view = "try",
     use_clang_coverage = True,
@@ -1296,7 +1297,8 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = True,
+    builderless = False,
+    cores = 16,
     executable = "recipe:chromium/compilator",
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
