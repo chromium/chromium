@@ -391,6 +391,13 @@
       ],
     },
   },
+  'fuchsia-femu': {
+    '$mixin_append': {
+      'args': [
+        '--device=aemu',
+      ],
+    },
+  },
   'fuchsia_runner_logs': {
     '$mixin_append': {
       'args': [
@@ -543,6 +550,13 @@
     'swarming': {
       'dimensions': {
         'os': 'Ubuntu-18.04',
+      },
+    },
+  },
+  'linux-focal': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu-20.04',
       },
     },
   },

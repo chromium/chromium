@@ -157,12 +157,8 @@ template("fuchsia_package_runner") {
         "${boot_image_root}/qemu/storage-full.blk",
         "${boot_image_root}/qemu/zircon-a.zbi",
         "//third_party/qemu-${host_os}-${test_host_cpu}/",
+        "${aemu_root}/",
       ]
-
-      # Include AEMU for x64 emulator hosts and for arm64 hosts.
-      if (test_host_cpu == "x64" || test_host_cpu == "arm64") {
-        data += [ "${aemu_root}/" ]
-      }
     }
 
     foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {

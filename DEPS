@@ -1430,7 +1430,7 @@ deps = {
               'version': 'r2LsKQPbfi0NYEO8tfocwaJ1MMACXPDLkgCI0IjJq-YC'
           },
       ],
-      'condition': 'host_os == "linux" and checkout_fuchsia',
+      'condition': 'host_os == "linux" and checkout_fuchsia_for_arm64_host',
       'dep_type': 'cipd',
   },
 

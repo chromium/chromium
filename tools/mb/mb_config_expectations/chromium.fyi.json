@@ -492,6 +492,15 @@
       "use_goma": true
     }
   },
+  "fuchsia-fyi-arm64-femu": {
+    "gn_args": {
+      "is_component_build": false,
+      "is_debug": false,
+      "target_cpu": "arm64",
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
   "fuchsia-fyi-arm64-rel": {
     "gn_args": {
       "is_component_build": false,

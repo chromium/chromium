@@ -2795,6 +2795,21 @@
           'linux-xenial',
         ],
       },
+      'fuchsia-fyi-arm64-femu': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
+        },
+        'mixins': [
+          'arm64',
+          'docker',
+          'fuchsia-femu',
+          'linux-focal',
+        ],
+      },
       'fuchsia-fyi-arm64-rel': {
         'additional_compile_targets': [
           'all',
