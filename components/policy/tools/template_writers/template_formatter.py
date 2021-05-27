@@ -14,6 +14,13 @@ import os
 import re
 import sys
 
+sys.path.insert(
+    0,
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
+                 os.pardir, 'third_party', 'six', 'src'))
+
+import six
+
 import writer_configuration
 import policy_template_generator
 
@@ -118,20 +125,19 @@ def _ParseVersionFile(version_path):
       elif key.strip() == 'PATCH':
         version['patch'] = value.strip()
 
-    version_found = version.has_key('major') and version.has_key(
-        'minor') and version.has_key('build') and version.has_key('patch')
+    version_found = len(version) == 4
   return version if version_found else None
 
 
 def _JsonToUtf8Encoding(data, ignore_dicts=False):
-  if isinstance(data, unicode):
+  if six.PY2 and isinstance(data, unicode):
     return data.encode('utf-8')
   elif isinstance(data, list):
     return [_JsonToUtf8Encoding(item, False) for item in data]
   elif isinstance(data, dict):
     return {
         _JsonToUtf8Encoding(key): _JsonToUtf8Encoding(value)
-        for key, value in data.iteritems()
+        for key, value in data.items()
     }
   return data
 
@@ -177,11 +183,10 @@ def main():
   parser.add_argument('--doc', action='append', dest='doc')
   parser.add_argument(
       '--doc_atomic_groups', action='append', dest='doc_atomic_groups')
-  parser.add_argument(
-      '--local',
-      action='store_true',
-      help='If set, the documentation will be built so \
-            that links work locally in the generated path.')
+  parser.add_argument('--local',
+                      action='store_true',
+                      help='If set, the documentation will be built so '
+                      'that links work locally in the generated path.')
   parser.add_argument('--json', action='append', dest='json')
   parser.add_argument('--plist', action='append', dest='plist')
   parser.add_argument('--plist_strings', action='append', dest='plist_strings')

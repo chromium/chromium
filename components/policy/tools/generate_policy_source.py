@@ -16,6 +16,7 @@ from argparse import ArgumentParser
 from collections import namedtuple
 from collections import OrderedDict
 from functools import partial
+import codecs
 import json
 import re
 import sys
@@ -461,7 +462,7 @@ def _OutputComment(f, comment):
 
 
 def _LoadJSONFile(json_file):
-  with open(json_file, 'r') as f:
+  with codecs.open(json_file, 'r', encoding='utf-8') as f:
     text = f.read()
   return eval(text)
 
@@ -869,7 +870,7 @@ class SchemaNodesGenerator:
             'Extra  IsSensitiveValue HasSensitiveChildren\n')
     for schema_node in self.schema_nodes:
       assert schema_node.extra >= MIN_INDEX and schema_node.extra <= MAX_INDEX
-      comment = ('\n' + ' ' * 69 + '// ').join(schema_node.comments)
+      comment = ('\n' + ' ' * 69 + '// ').join(sorted(schema_node.comments))
       f.write('  { base::Value::%-19s %4s %-16s %-5s },  // %s\n' %
               (schema_node.schema_type + ',', str(schema_node.extra) + ',',
                str(schema_node.is_sensitive_value).lower() + ',',
@@ -1560,9 +1561,9 @@ def _GetSupportedChromeOSPolicies(policies, type):
   return filter(partial(_IsSupportedChromeOSPolicy, type), policies)
 
 
-# Returns the set of all policy.policy_protobuf_type strings from |policies|.
+# Returns the list of all policy.policy_protobuf_type strings from |policies|.
 def _GetProtobufTypes(policies):
-  return set(['Integer', 'Boolean', 'String', 'StringList'])
+  return sorted(['Integer', 'Boolean', 'String', 'StringList'])
 
 
 # Writes the definition of an array that contains the pointers to the mutable

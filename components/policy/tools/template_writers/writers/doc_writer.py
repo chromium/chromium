@@ -141,7 +141,7 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
     '''
     features = []
     # The sorting is to make the order well-defined for testing.
-    keys = policy['features'].keys()
+    keys = list(policy['features'].keys())
     keys.sort()
     for key in keys:
       key_name = self._FEATURE_MAP[key]
@@ -224,7 +224,7 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
         '[\n%s\n]' % ',\n'.join('  "%s"' % item for item in example_value))
 
   def _AddListExample(self, parent, policy):
-    '''Adds the example value of a 'list' policy to a DOM node. Example output:
+    r'''Adds the example value of a 'list' policy to a DOM node. Example output:
     <dl>
       <dt>Windows (Windows clients):</dt>
       <dd>
