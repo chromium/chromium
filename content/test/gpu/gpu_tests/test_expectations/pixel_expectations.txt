@@ -397,6 +397,11 @@ crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPUImportWebGLCanvas [
 crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPUImport2DCanvas [ Skip ]
 crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Skip ]
 
+# WebGPU experimentalImportTexture pixel tests fail on Win10+SkiaRenderer+Dawn.
+crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPUImportWebGLCanvas [ Failure ]
+crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPUImport2DCanvas [ Failure ]
+crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
+
 # WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
 crbug.com/976495 [ linux skia-renderer-gl ] Pixel_WebGPUImportWebGLCanvas [ Skip ]
 crbug.com/976495 [ linux skia-renderer-gl ] Pixel_WebGPUImport2DCanvas [ Skip ]
