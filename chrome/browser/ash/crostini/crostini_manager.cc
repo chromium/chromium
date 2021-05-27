@@ -412,8 +412,8 @@ class CrostiniManager::CrostiniRestarter
     // try mounting sshfs in that case.
     auto info = crostini_manager_->GetContainerInfo(container_id_);
     if (container_id_ == ContainerId::GetDefault() && info) {
-      crostini_manager_->MountCrostiniFiles(container_id_, base::DoNothing());
-      // TODO(crbug/1142321): Metrics
+      crostini_manager_->MountCrostiniFiles(container_id_, base::DoNothing(),
+                                            true);
     }
     FinishRestart(result);
   }
@@ -3573,15 +3573,18 @@ void CrostiniManager::EmitVmDiskTypeMetric(const std::string vm_name) {
 }
 
 void CrostiniManager::MountCrostiniFiles(ContainerId container_id,
-                                         CrostiniResultCallback callback) {
+                                         CrostiniResultCallback callback,
+                                         bool background) {
   crostini_sshfs_->MountCrostiniFiles(
-      container_id, base::BindOnce(
-                        [](CrostiniResultCallback callback, bool success) {
-                          std::move(callback).Run(
-                              success ? CrostiniResult::SUCCESS
-                                      : CrostiniResult::SSHFS_MOUNT_ERROR);
-                        },
-                        std::move(callback)));
+      container_id,
+      base::BindOnce(
+          [](CrostiniResultCallback callback, bool success) {
+            std::move(callback).Run(success
+                                        ? CrostiniResult::SUCCESS
+                                        : CrostiniResult::SSHFS_MOUNT_ERROR);
+          },
+          std::move(callback)),
+      background);
 }
 
 void CrostiniManager::CallRestarterStartLxdContainerFinishedForTesting(

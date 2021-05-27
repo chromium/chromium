@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -43,6 +44,14 @@
 using chromeos::disks::DiskMountManager;
 
 namespace {
+const char* kCrostiniMetricMountResultBackground =
+    "Crostini.Sshfs.Mount.Result.Background";
+const char* kCrostiniMetricMountResultUserVisible =
+    "Crostini.Sshfs.Mount.Result.UserVisible";
+const char* kCrostiniMetricMountTimeTaken = "Crostini.Sshfs.Mount.TimeTaken";
+const char* kCrostiniMetricUnmount = "Crostini.Sshfs.Unmount.Result";
+const char* kCrostiniMetricUnmountTimeTaken =
+    "Crostini.Sshfs.Unmount.TimeTaken";
 // Creates a new VolumeManager for tests.
 // By default, VolumeManager KeyedService is null for testing.
 std::unique_ptr<KeyedService> BuildVolumeManager(
@@ -139,6 +148,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
   std::unique_ptr<file_manager::VolumeManager> volume_manager_;
   std::unique_ptr<CrostiniSshfs> crostini_sshfs_;
   CrostiniManager* crostini_manager_;
+  base::HistogramTester histogram_tester{};
 
   DISALLOW_COPY_AND_ASSIGN(CrostiniSshfsHelperTest);
 };
@@ -154,7 +164,7 @@ TEST_F(CrostiniSshfsHelperTest, MountDiskMountsDisk) {
 
   crostini_sshfs_->MountCrostiniFiles(
       ContainerId::GetDefault(),
-      base::BindLambdaForTesting([&result](bool res) { result = res; }));
+      base::BindLambdaForTesting([&result](bool res) { result = res; }), true);
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(result);
@@ -163,6 +173,10 @@ TEST_F(CrostiniSshfsHelperTest, MountDiskMountsDisk) {
       storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
           kMountName, &path));
   EXPECT_EQ(base::FilePath("/media/fuse/" + kMountName), path);
+  histogram_tester.ExpectUniqueSample(
+      kCrostiniMetricMountResultBackground,
+      CrostiniSshfs::CrostiniSshfsResult::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(kCrostiniMetricMountTimeTaken, 1);
 }
 
 TEST_F(CrostiniSshfsHelperTest, FailsIfContainerNotRunning) {
@@ -171,11 +185,15 @@ TEST_F(CrostiniSshfsHelperTest, FailsIfContainerNotRunning) {
 
   crostini_sshfs_->MountCrostiniFiles(
       ContainerId::GetDefault(),
-      base::BindLambdaForTesting([&result](bool res) { result = res; }));
+      base::BindLambdaForTesting([&result](bool res) { result = res; }), false);
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(result);
   EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
+  histogram_tester.ExpectUniqueSample(
+      kCrostiniMetricMountResultUserVisible,
+      CrostiniSshfs::CrostiniSshfsResult::kContainerNotRunning, 1);
+  histogram_tester.ExpectTotalCount(kCrostiniMetricMountTimeTaken, 1);
 }
 
 TEST_F(CrostiniSshfsHelperTest, OnlyDefaultContainerSupported) {
@@ -186,10 +204,30 @@ TEST_F(CrostiniSshfsHelperTest, OnlyDefaultContainerSupported) {
   bool result = false;
   crostini_sshfs_->MountCrostiniFiles(
       not_default,
-      base::BindLambdaForTesting([&result](bool res) { result = res; }));
+      base::BindLambdaForTesting([&result](bool res) { result = res; }), false);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(result);
   EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
+  histogram_tester.ExpectUniqueSample(
+      kCrostiniMetricMountResultUserVisible,
+      CrostiniSshfs::CrostiniSshfsResult::kNotDefaultContainer, 1);
+  histogram_tester.ExpectTotalCount(kCrostiniMetricMountTimeTaken, 1);
+}
+
+TEST_F(CrostiniSshfsHelperTest, RecordBackgroundMetricIfBackground) {
+  auto not_default = ContainerId("vm_name", "container_name");
+  SetContainerRunning(not_default);
+  EXPECT_CALL(*disk_manager_, MountPath).Times(0);
+
+  bool result = false;
+  crostini_sshfs_->MountCrostiniFiles(not_default, base::DoNothing(), true);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(result);
+  EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 0);
+  histogram_tester.ExpectUniqueSample(
+      kCrostiniMetricMountResultBackground,
+      CrostiniSshfs::CrostiniSshfsResult::kNotDefaultContainer, 1);
+  histogram_tester.ExpectTotalCount(kCrostiniMetricMountResultUserVisible, 0);
 }
 
 TEST_F(CrostiniSshfsHelperTest, MultipleCallsAreQueuedAndOnlyMountOnce) {
@@ -205,11 +243,13 @@ TEST_F(CrostiniSshfsHelperTest, MultipleCallsAreQueuedAndOnlyMountOnce) {
   crostini_sshfs_->MountCrostiniFiles(
       ContainerId::GetDefault(),
       base::BindLambdaForTesting(
-          [&successes](bool result) { successes += result; }));
+          [&successes](bool result) { successes += result; }),
+      false);
   crostini_sshfs_->MountCrostiniFiles(
       ContainerId::GetDefault(),
       base::BindLambdaForTesting(
-          [&successes](bool result) { successes += result; }));
+          [&successes](bool result) { successes += result; }),
+      false);
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(successes, 2);
@@ -219,6 +259,10 @@ TEST_F(CrostiniSshfsHelperTest, MultipleCallsAreQueuedAndOnlyMountOnce) {
           kMountName, &path));
   EXPECT_EQ(base::FilePath("/media/fuse/" + kMountName), path);
   EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 1);
+  histogram_tester.ExpectUniqueSample(
+      kCrostiniMetricMountResultUserVisible,
+      CrostiniSshfs::CrostiniSshfsResult::kSuccess, 2);
+  histogram_tester.ExpectTotalCount(kCrostiniMetricMountTimeTaken, 2);
 }
 
 TEST_F(CrostiniSshfsHelperTest, CanRemountAfterUnmount) {
@@ -239,7 +283,7 @@ TEST_F(CrostiniSshfsHelperTest, CanRemountAfterUnmount) {
 
   crostini_sshfs_->MountCrostiniFiles(
       ContainerId::GetDefault(),
-      base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }));
+      base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }), false);
   task_environment_.RunUntilIdle();
   crostini_sshfs_->UnmountCrostiniFiles(
       ContainerId::GetDefault(),
@@ -247,7 +291,7 @@ TEST_F(CrostiniSshfsHelperTest, CanRemountAfterUnmount) {
   task_environment_.RunUntilIdle();
   crostini_sshfs_->MountCrostiniFiles(
       ContainerId::GetDefault(),
-      base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }));
+      base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }), false);
   task_environment_.RunUntilIdle();
 
   base::FilePath path;
@@ -256,9 +300,15 @@ TEST_F(CrostiniSshfsHelperTest, CanRemountAfterUnmount) {
           kMountName, &path));
   EXPECT_EQ(base::FilePath("/media/fuse/" + kMountName), path);
   EXPECT_EQ(fake_concierge_client_->get_container_ssh_keys_call_count(), 2);
+  histogram_tester.ExpectUniqueSample(
+      kCrostiniMetricMountResultUserVisible,
+      CrostiniSshfs::CrostiniSshfsResult::kSuccess, 2);
+  histogram_tester.ExpectTotalCount(kCrostiniMetricMountTimeTaken, 2);
+  histogram_tester.ExpectUniqueSample(kCrostiniMetricUnmount, true, 1);
+  histogram_tester.ExpectTotalCount(kCrostiniMetricUnmountTimeTaken, 1);
 }
 
-TEST_F(CrostiniSshfsHelperTest, ContainerShutdownRemovesMount) {
+TEST_F(CrostiniSshfsHelperTest, ContainerShutdownClearsMountStatus) {
   SetContainerRunning(ContainerId::GetDefault());
   EXPECT_CALL(*disk_manager_, MountPath("sshfs://username@hostname:", "",
                                         kMountName, default_mount_options_,
@@ -269,13 +319,13 @@ TEST_F(CrostiniSshfsHelperTest, ContainerShutdownRemovesMount) {
 
   crostini_sshfs_->MountCrostiniFiles(
       ContainerId::GetDefault(),
-      base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }));
+      base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }), false);
   task_environment_.RunUntilIdle();
   crostini_sshfs_->OnContainerShutdown(ContainerId::GetDefault());
   task_environment_.RunUntilIdle();
   crostini_sshfs_->MountCrostiniFiles(
       ContainerId::GetDefault(),
-      base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }));
+      base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }), true);
   task_environment_.RunUntilIdle();
 
   base::FilePath path;

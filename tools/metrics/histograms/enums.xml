@@ -16096,6 +16096,17 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="29" label="Need Update"/>
 </enum>
 
+<enum name="CrostiniSshfsResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="NotDefaultContainer"/>
+  <int value="2" label="ContainerNotRunning"/>
+  <int value="3" label="GetSshKeysFailed"/>
+  <int value="4" label="GetContainerInfoFailed"/>
+  <int value="5" label="MountErrorInternal"/>
+  <int value="6" label="MountErrorProgramFailed"/>
+  <int value="7" label="MountErrorOther"/>
+</enum>
+
 <enum name="CrostiniTerminalSetting">
   <int value="0" label="unknown"/>
   <int value="1" label="alt-gr-mode"/>

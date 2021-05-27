@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -636,9 +637,12 @@ class CrostiniManager : public KeyedService,
 
   // Mounts the user's Crostini home directory so it's accessible from the host.
   // Must be called from the UI thread, no-op if the home directory is already
-  // mounted.
+  // mounted. If this is something running in the background set background to
+  // true, if failures are user-visible set it to false. If you're setting
+  // base::DoNothing as the callback then background should be true.
   void MountCrostiniFiles(ContainerId container_id,
-                          CrostiniResultCallback callback);
+                          CrostiniResultCallback callback,
+                          bool background);
 
  private:
   class CrostiniRestarter;

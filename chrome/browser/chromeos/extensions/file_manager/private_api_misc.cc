@@ -761,7 +761,8 @@ void FileManagerPrivateMountCrostiniFunction::RestartCallback(
   crostini::CrostiniManager::GetForProfile(profile)->MountCrostiniFiles(
       crostini::ContainerId::GetDefault(),
       base::BindOnce(&FileManagerPrivateMountCrostiniFunction::MountCallback,
-                     this));
+                     this),
+      false);
 }
 
 void FileManagerPrivateMountCrostiniFunction::MountCallback(

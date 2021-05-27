@@ -421,6 +421,55 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Crostini.Sshfs.Mount.Result.{Visibility}"
+    enum="CrostiniSshfsResult" expires_after="2022-02-14">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of mounting sshfs {Visibility}. Recorded when mounting a Crostini
+    directory using sshfs.
+  </summary>
+  <token key="Visibility">
+    <variant name="Background"
+        summary="in the background, where failures aren't visible to users
+                 (e.g. when premounting at launch to reduce latency if the
+                 user accesses their Linux files)"/>
+    <variant name="UserVisibile"
+        summary="where success is required to complete the user action e.g.
+                 viewing Linux files"/>
+  </token>
+</histogram>
+
+<histogram name="Crostini.Sshfs.Mount.TimeTaken" units="ms"
+    expires_after="2022-02-14">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The time taken to mount sshfs (successfully or not, UserVisible or
+    Background). Recorded when mounting a Crostini directory using sshfs.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.Sshfs.Unmount.Result" enum="BooleanSuccess"
+    expires_after="2022-02-14">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of unmounting sshfs. Recorded when removing a Crostini sshfs
+    mount.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.Sshfs.Unmount.TimeTaken" units="ms"
+    expires_after="2022-02-14">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The time taken to unmount sshfs (either successfully or failing). Recorded
+    when removing a Crostini sshfs mount.
+  </summary>
+</histogram>
+
 <histogram name="Crostini.Stability" enum="GuestOsFailureClasses"
     expires_after="2022-01-06">
   <owner>clumptini@google.com</owner>

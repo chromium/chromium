@@ -24,11 +24,15 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
   explicit CrostiniSshfs(Profile* profile);
   ~CrostiniSshfs() override;
   using MountCrostiniFilesCallback = base::OnceCallback<void(bool succeeded)>;
+
   // Mounts the user's Crostini home directory so it's accessible from the host.
   // Must be called from the UI thread, no-op if the home directory is already
-  // mounted.
+  // mounted. If this is something running in the background set background to
+  // true, if failures are user-visible set it to false. If you're setting
+  // base::DoNothing as the callback then background should be true.
   void MountCrostiniFiles(const ContainerId& container_id,
-                          MountCrostiniFilesCallback callback);
+                          MountCrostiniFilesCallback callback,
+                          bool background);
 
   // Unmounts the user's Crostini home directory. Must be called from the UI
   // thread.
@@ -47,12 +51,29 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
   // Returns true if sshfs is mounted for the specified container, else false.
   bool IsSshfsMounted(const ContainerId& container);
 
+  // Only public so unit tests can reference them without needing to FRIEND_TEST
+  // every single test case.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CrostiniSshfsResult {
+    kSuccess = 0,
+    kNotDefaultContainer = 1,
+    kContainerNotRunning = 2,
+    kGetSshKeysFailed = 3,
+    kGetContainerInfoFailed = 4,
+    kMountErrorInternal = 5,
+    kMountErrorProgramFailed = 6,
+    kMountErrorOther = 7,
+    kMaxValue = kMountErrorOther,
+  };
+
  private:
   void SetSshfsMounted(const ContainerId& container, bool mounted);
-  void Finish(bool success);
+  void Finish(CrostiniSshfsResult result);
 
   void OnRemoveSshfsCrostiniVolume(const ContainerId& container_id,
                                    MountCrostiniFilesCallback callback,
+                                   base::Time started,
                                    bool success);
 
   void OnGetContainerSshKeys(bool success,
@@ -65,9 +86,25 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
     ContainerId container_id;
     base::FilePath container_homedir;
     MountCrostiniFilesCallback callback;
+    base::Time started;
+    bool background;
     InProgressMount(const ContainerId& container,
-                    MountCrostiniFilesCallback callback);
+                    MountCrostiniFilesCallback callback,
+                    bool background);
+    InProgressMount(InProgressMount&& other) noexcept;
+    InProgressMount& operator=(InProgressMount&& other) noexcept;
     ~InProgressMount();
+  };
+  struct PendingRequest {
+    ContainerId container_id;
+    MountCrostiniFilesCallback callback;
+    bool background;
+    PendingRequest(const ContainerId& container_id,
+                   MountCrostiniFilesCallback callback,
+                   bool background);
+    PendingRequest(PendingRequest&& other) noexcept;
+    PendingRequest& operator=(PendingRequest&& other) noexcept;
+    ~PendingRequest();
   };
   Profile* profile_;
 
@@ -83,8 +120,7 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
   std::unique_ptr<InProgressMount> in_progress_mount_;
 
   std::set<ContainerId> sshfs_mounted_;
-  std::queue<std::pair<ContainerId, MountCrostiniFilesCallback>>
-      pending_requests_;
+  std::queue<PendingRequest> pending_requests_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
