@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -97,7 +98,12 @@ void RendererURLLoaderThrottle::WillProcessResponse(
   // shouldn't be such a notification.
   DCHECK(!blocked_);
 
-  if (pending_checks_ == 0)
+  bool check_completed = (pending_checks_ == 0);
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.RendererThrottle.IsCheckCompletedOnProcessResponse",
+      check_completed);
+
+  if (check_completed)
     return;
 
   DCHECK(!deferred_);
@@ -177,6 +183,8 @@ void RendererURLLoaderThrottle::OnCompleteCheckInternal(
     if (pending_checks_ == 0 && deferred_) {
       deferred_ = false;
       TRACE_EVENT_ASYNC_END0("safe_browsing", "Deferred", this);
+      base::UmaHistogramTimes("SafeBrowsing.RendererThrottle.TotalDelay",
+                              total_delay_);
       delegate_->Resume();
     }
   } else {
