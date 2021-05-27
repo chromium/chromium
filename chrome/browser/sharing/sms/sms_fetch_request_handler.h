@@ -85,6 +85,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
 
   void RemoveRequest(Request* Request);
   Request* GetRequest(const std::u16string& origin);
+  base::WeakPtr<SmsFetchRequestHandler> GetWeakPtr();
 
   // |device_source_| is owned by |SharingService| which also transitively owns
   // this class via |SharingHandlerRegistry|.

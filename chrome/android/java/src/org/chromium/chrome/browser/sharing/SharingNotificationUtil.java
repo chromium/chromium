@@ -63,6 +63,7 @@ public final class SharingNotificationUtil {
                                 new NotificationMetadata(type, group, id))
                         .setContentTitle(contentTitle)
                         .setContentText(contentText)
+                        .setBigTextStyle(contentText)
                         .setColor(ApiCompatibilityUtils.getColor(context.getResources(), color))
                         .setGroup(group)
                         .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)

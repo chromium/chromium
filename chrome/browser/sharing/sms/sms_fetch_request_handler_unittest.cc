@@ -66,12 +66,19 @@ class MockSmsFetchRequestHandler : public SmsFetchRequestHandler {
                void(const content::OriginList&,
                     const std::string& one_time_code,
                     const std::string& remote_os));
+
+  content::BrowserTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
   MockSmsFetchRequestHandler(const MockSmsFetchRequestHandler&) = delete;
   MockSmsFetchRequestHandler& operator=(const MockSmsFetchRequestHandler&) =
       delete;
 
  private:
   MockSharingDeviceSource device_source_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 SharingMessage CreateRequest(const std::string& origin) {
@@ -83,7 +90,6 @@ SharingMessage CreateRequest(const std::string& origin) {
 }  // namespace
 
 TEST(SmsFetchRequestHandlerTest, Basic) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   StrictMock<MockSmsFetcher> fetcher;
   MockSmsFetchRequestHandler handler(&fetcher);
   const std::string origin = "https://a.com";
@@ -117,7 +123,6 @@ TEST(SmsFetchRequestHandlerTest, Basic) {
 }
 
 TEST(SmsFetchRequestHandlerTest, OutOfOrder) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   StrictMock<MockSmsFetcher> fetcher;
   MockSmsFetchRequestHandler handler(&fetcher);
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -178,7 +183,6 @@ TEST(SmsFetchRequestHandlerTest, OutOfOrder) {
 }
 
 TEST(SmsFetchRequestHandlerTest, HangingRequestUnsubscribedUponDestruction) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   StrictMock<MockSmsFetcher> fetcher;
 
   MockSmsFetchRequestHandler handler(&fetcher);
@@ -198,25 +202,27 @@ TEST(SmsFetchRequestHandlerTest, HangingRequestUnsubscribedUponDestruction) {
 }
 
 TEST(SmsFetchRequestHandlerTest, AskUserPermissionOnReceive) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   StrictMock<MockSmsFetcher> fetcher;
   MockSmsFetchRequestHandler handler(&fetcher);
   SharingMessage message = CreateRequest("https://a.com");
 
   SmsFetcher::Subscriber* subscriber;
   EXPECT_CALL(fetcher, Subscribe(_, _)).WillOnce(SaveArg<1>(&subscriber));
-  EXPECT_CALL(handler, AskUserPermission);
   EXPECT_CALL(fetcher, Unsubscribe);
 
   handler.OnMessage(message, base::DoNothing());
 
+  EXPECT_CALL(handler, AskUserPermission).Times(0);
   subscriber->OnReceive(
       content::OriginList{url::Origin::Create(GURL("https://a.com"))}, "123",
       SmsFetcher::UserConsent::kNotObtained);
+
+  testing::Mock::VerifyAndClear(&handler);
+  EXPECT_CALL(handler, AskUserPermission);
+  handler.task_environment().FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
 TEST(SmsFetchRequestHandlerTest, SendSuccessMessageOnConfirm) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   StrictMock<MockSmsFetcher> fetcher;
   MockSmsFetchRequestHandler handler(&fetcher);
   const std::string origin = "https://a.com";
@@ -250,7 +256,6 @@ TEST(SmsFetchRequestHandlerTest, SendSuccessMessageOnConfirm) {
 }
 
 TEST(SmsFetchRequestHandlerTest, SendFailureMessageOnDismiss) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   StrictMock<MockSmsFetcher> fetcher;
   MockSmsFetchRequestHandler handler(&fetcher);
   const std::string origin = "https://a.com";
