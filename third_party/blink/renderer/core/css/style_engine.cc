@@ -1978,6 +1978,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
                                                       physical_axes));
   }
 
+  NthIndexCache nth_index_cache(GetDocument());
   style_recalc_root_.Update(nullptr, &container);
   RecalcStyle({StyleRecalcChange::kRecalcContainerQueryDependent},
               StyleRecalcContext());
