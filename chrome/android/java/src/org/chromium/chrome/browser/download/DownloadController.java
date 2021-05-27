@@ -136,8 +136,9 @@ public class DownloadController {
     private static boolean hasFileAccess() {
         if (DownloadCollectionBridge.supportsDownloadCollection()) return true;
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        AndroidPermissionDelegate delegate =
-                sAndroidPermissionDelegateSupplier.getDelegate(activity);
+        AndroidPermissionDelegate delegate = sAndroidPermissionDelegateSupplier == null
+                ? null
+                : sAndroidPermissionDelegateSupplier.getDelegate(activity);
         return delegate == null ? false : delegate.hasPermission(permission.WRITE_EXTERNAL_STORAGE);
     }
 
