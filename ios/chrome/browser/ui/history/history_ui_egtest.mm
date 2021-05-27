@@ -334,6 +334,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [self openHistoryPanel];
 
   [ChromeEarlGreyUI openAndClearBrowsingDataFromHistory];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(kHistoryTableViewIdentifier)];
   [ChromeEarlGreyUI assertHistoryHasNoEntries];
 }
 
