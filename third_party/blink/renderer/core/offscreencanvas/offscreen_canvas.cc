@@ -239,8 +239,6 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     SourceImageStatus* status,
     const FloatSize& size,
     const AlphaDisposition alpha_disposition) {
-  DCHECK_NE(alpha_disposition, kDontChangeAlpha);
-
   if (!context_) {
     *status = kInvalidSourceImageStatus;
     sk_sp<SkSurface> surface =

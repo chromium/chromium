@@ -47,15 +47,18 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
 scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
     scoped_refptr<StaticBitmapImage>&& image,
     const AlphaDisposition alpha_disposition) {
-  DCHECK(alpha_disposition != kDontChangeAlpha);
-
   SkAlphaType alpha_type = (alpha_disposition == kPremultiplyAlpha)
                                ? kPremul_SkAlphaType
                                : kUnpremul_SkAlphaType;
   PaintImage paint_image = image->PaintImageForCurrentFrame();
   if (!paint_image)
     return nullptr;
-  if (paint_image.GetAlphaType() == alpha_type)
+
+  // Only if the content alphaType is not important or it will be recorded and
+  // be handled in following step, kDontChangeAlpha could be provided to save
+  // the conversion here.
+  if (paint_image.GetAlphaType() == alpha_type ||
+      alpha_disposition == kDontChangeAlpha)
     return std::move(image);
 
   SkImageInfo info =

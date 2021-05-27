@@ -1028,8 +1028,6 @@ scoped_refptr<Image> ImageBitmap::GetSourceImageForCanvas(
     SourceImageStatus* status,
     const FloatSize&,
     const AlphaDisposition alpha_disposition) {
-  DCHECK_NE(alpha_disposition, kDontChangeAlpha);
-
   *status = kNormalSourceImageStatus;
   if (!image_)
     return nullptr;

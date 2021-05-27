@@ -1318,8 +1318,6 @@ scoped_refptr<StaticBitmapImage>
 HTMLCanvasElement::GetSourceImageForCanvasInternal(
     SourceImageStatus* status,
     const AlphaDisposition alpha_disposition) {
-  DCHECK(alpha_disposition != kDontChangeAlpha);
-
   if (!width() || !height()) {
     *status = kZeroSizeCanvasSourceImageStatus;
     return nullptr;
