@@ -36,7 +36,9 @@ void X11EventWatcherFdWatch::StopWatching() {
 }
 
 void X11EventWatcherFdWatch::OnFileCanReadWithoutBlocking(int fd) {
-  event_source_->DispatchXEvent();
+  // We must dispatch all events, otherwise we may deadlock polling for new
+  // events when we already have events queued.
+  event_source_->connection()->DispatchAll();
 }
 
 void X11EventWatcherFdWatch::OnFileCanWriteWithoutBlocking(int fd) {

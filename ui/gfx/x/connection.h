@@ -140,8 +140,15 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // If |synchronous| is true, this makes all requests Sync().
   void SynchronizeForTest(bool synchronous);
 
-  // Read all responses from the socket without blocking.
+  // Read all responses from the socket without blocking.  This function will
+  // make non-blocking read() syscalls.
   void ReadResponses();
+
+  // Read a single response.  If |queued| is true, no read() will be done; a
+  // response may only be translated from buffered socket data.  If |queued| is
+  // false, a non-blocking read() will only be done if no response is buffered.
+  // Returns true if an event was read.
+  bool ReadResponse(bool queued);
 
   Event WaitForNextEvent();
 

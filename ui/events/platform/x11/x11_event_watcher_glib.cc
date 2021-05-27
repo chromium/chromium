@@ -6,7 +6,6 @@
 
 #include <glib.h>
 
-
 namespace ui {
 
 namespace {
@@ -19,28 +18,50 @@ struct GLibX11Source : public GSource {
 };
 
 gboolean XSourcePrepare(GSource* source, gint* timeout_ms) {
-  GLibX11Source* gxsource = static_cast<GLibX11Source*>(source);
-  gxsource->connection->Flush();
-  gxsource->connection->ReadResponses();
-  if (gxsource->connection->HasPendingResponses())
-    return TRUE;
+  // Set an infinite timeout.
   *timeout_ms = -1;
-  return FALSE;
+
+  // This function is called before polling the FD, so a flush is mandatory
+  // in case:
+  //   1. This is the first message loop iteration and we have unflushed
+  //      requests.
+  //   2. A request was made after XSourceDispatch() when running tasks from
+  //      the task queue.
+  auto* connection = static_cast<GLibX11Source*>(source)->connection;
+  connection->Flush();
+
+  // Read a pre-buffered response if available to prevent a deadlock where we
+  // poll() for data that will never arrive since we already have data in our
+  // read buffer.
+  connection->ReadResponse(true);
+
+  // Return true if we can determine that event processing is necessary without
+  // polling the FD.
+  return connection->HasPendingResponses();
 }
 
 gboolean XSourceCheck(GSource* source) {
+  // Only read a response if poll() determined the FD is readable.
   GLibX11Source* gxsource = static_cast<GLibX11Source*>(source);
-  gxsource->connection->Flush();
-  gxsource->connection->ReadResponses();
+  if (gxsource->poll_fd->revents & G_IO_IN)
+    gxsource->connection->ReadResponse(false);
   return gxsource->connection->HasPendingResponses();
 }
 
 gboolean XSourceDispatch(GSource* source,
                          GSourceFunc unused_func,
                          gpointer data) {
-  X11EventSource* x11_source = static_cast<X11EventSource*>(data);
-  x11_source->DispatchXEvent();
-  return TRUE;
+  auto* connection = static_cast<GLibX11Source*>(source)->connection;
+  connection->Dispatch();
+
+  // Flushing here is not strictly required, but when this function returns,
+  // tasks from the task queue will be run, which may take some time.  Flushing
+  // now will ensure screen updates occur right away.  Fortunately, this won't
+  // do any syscalls if it's not necessary.
+  connection->Flush();
+
+  // Don't remove the GLibX11Source from the main loop.
+  return G_SOURCE_CONTINUE;
 }
 
 GSourceFuncs XSourceFuncs = {XSourcePrepare, XSourceCheck, XSourceDispatch,

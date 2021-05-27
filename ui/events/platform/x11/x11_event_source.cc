@@ -148,12 +148,6 @@ X11EventSource* X11EventSource::GetInstance() {
 ////////////////////////////////////////////////////////////////////////////////
 // X11EventSource, public
 
-void X11EventSource::DispatchXEvent() {
-  connection_->Flush();
-  connection_->ReadResponses();
-  connection_->Dispatch();
-}
-
 x11::Time X11EventSource::GetCurrentServerTime() {
   DCHECK(connection_);
 
