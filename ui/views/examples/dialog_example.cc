@@ -93,14 +93,11 @@ class DialogExample::Bubble : public Delegate<BubbleDialogDelegateView> {
 
 class DialogExample::Dialog : public Delegate<DialogDelegateView> {
  public:
-  explicit Dialog(DialogExample* parent) : Delegate(parent) {}
-
-  // WidgetDelegate:
-  bool CanResize() const override {
+  explicit Dialog(DialogExample* parent) : Delegate(parent) {
     // Mac supports resizing of modal dialogs (parent or window-modal). On other
     // platforms this will be weird unless the modal type is "none", but helps
     // test layout.
-    return true;
+    SetCanResize(true);
   }
 
  private:

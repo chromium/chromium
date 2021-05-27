@@ -163,7 +163,7 @@ class VIEWS_EXPORT WidgetDelegate {
   virtual DialogDelegate* AsDialogDelegate();
 
   // Returns true if the window can be resized.
-  virtual bool CanResize() const;
+  bool CanResize() const;
 
   // Returns true if the window can be maximized.
   virtual bool CanMaximize() const;

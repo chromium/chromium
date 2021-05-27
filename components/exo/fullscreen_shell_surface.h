@@ -63,7 +63,6 @@ class FullscreenShellSurface : public SurfaceTreeHost,
   void OnSurfaceDestroying(Surface* surface) override;
 
   // views::WidgetDelegate:
-  bool CanResize() const override;
   bool CanMaximize() const override;
   bool CanMinimize() const override;
   bool ShouldShowWindowTitle() const override;

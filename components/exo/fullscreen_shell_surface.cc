@@ -47,6 +47,7 @@ END_METADATA
 FullscreenShellSurface::FullscreenShellSurface()
     : SurfaceTreeHost("FullscreenShellSurfaceHost") {
   CreateFullscreenShellSurfaceWidget(ui::SHOW_STATE_FULLSCREEN);
+  SetCanResize(false);
   widget_->SetFullscreen(true);
 }
 
@@ -170,10 +171,6 @@ void FullscreenShellSurface::OnSurfaceDestroying(Surface* surface) {
   // destroyed callback may destroy the ShellSurface instance. This call needs
   // to be last so that the instance can be destroyed.
   std::move(surface_destroyed_callback_).Run();
-}
-
-bool FullscreenShellSurface::CanResize() const {
-  return false;
 }
 
 bool FullscreenShellSurface::CanMaximize() const {
