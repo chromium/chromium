@@ -543,7 +543,9 @@ void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
       return;
     }
 
-    last_packet_timestamp_ = buffer->timestamp() + buffer->duration();
+    last_packet_timestamp_ = buffer->timestamp();
+    if (buffer->duration() != kNoTimestamp)
+      last_packet_timestamp_ += buffer->duration();
   }
 
   sysmem_buffer_stream_->EnqueueBuffer(std::move(buffer));
