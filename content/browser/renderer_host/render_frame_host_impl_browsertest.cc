@@ -59,6 +59,7 @@
 #include "content/test/frame_host_test_interface.mojom.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_render_frame_host_factory.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"

@@ -89,9 +89,8 @@ class CONTENT_EXPORT ServiceWorkerHost {
 
   BrowserInterfaceBrokerImpl<ServiceWorkerHost,
                              const ServiceWorkerVersionBaseInfo&>
-      broker_{this};
-  mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
-      &broker_};
+      broker_;
+  mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_;
 
   std::unique_ptr<ServiceWorkerContainerHost> container_host_;
 

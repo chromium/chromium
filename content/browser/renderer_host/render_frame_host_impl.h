@@ -185,6 +185,7 @@ class UkmRecorder;
 }
 
 namespace content {
+class ServiceWorkerContainerHost;
 class AgentSchedulingGroupHost;
 class AppCacheNavigationHandle;
 class CrossOriginEmbedderPolicyReporter;

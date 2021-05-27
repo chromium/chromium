@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_BROWSER_INTERFACE_BINDERS_H_
 #define CONTENT_BROWSER_BROWSER_INTERFACE_BINDERS_H_
 
-#include "content/browser/service_worker/service_worker_info.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "services/device/public/mojom/battery_monitor.mojom-forward.h"
@@ -20,6 +19,7 @@ class RenderFrameHostImpl;
 class DedicatedWorkerHost;
 class SharedWorkerHost;
 class ServiceWorkerHost;
+struct ServiceWorkerVersionInfo;
 struct ServiceWorkerVersionBaseInfo;
 
 namespace internal {

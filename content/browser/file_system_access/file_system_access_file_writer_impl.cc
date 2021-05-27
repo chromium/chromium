@@ -18,6 +18,7 @@
 #include "content/public/common/content_client.h"
 #include "crypto/secure_hash.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "net/base/io_buffer.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"

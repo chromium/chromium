@@ -53,6 +53,8 @@ ServiceWorkerHost::ServiceWorkerHost(
     ServiceWorkerVersion* version,
     base::WeakPtr<ServiceWorkerContextCore> context)
     : version_(version),
+      broker_(this),
+      broker_receiver_(&broker_),
       container_host_(std::make_unique<content::ServiceWorkerContainerHost>(
           std::move(context))),
       host_receiver_(container_host_.get(), std::move(host_receiver)) {
