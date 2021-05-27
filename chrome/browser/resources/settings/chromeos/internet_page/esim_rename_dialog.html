@@ -25,7 +25,7 @@
         --iron-icon-height: 16px;
         --iron-icon-width: 16px;
         font-size: smaller;
-        margin-bottom: 24px;
+        padding-bottom: 12px;
       }
 
       #warningMessage iron-icon {
@@ -39,6 +39,10 @@
 
       #warningMessage div {
         overflow: hidden;
+      }
+
+      #inputContainer {
+        margin-top: 12px;
       }
 
       #inputInfo {
@@ -85,7 +89,7 @@
           <div>$i18n{eSimDialogConnectionWarning}</div>
         </div>
         <template is="dom-if" if="[[!errorMessage_]]" restamp>
-          <div class="relative">
+          <div id="inputContainer" class="relative">
             <!-- Set error-message so then it is read out by ChromeVox
               when cr-input is invalid. Since we already display the error
               message in #inputInfo, this is visually hidden by #inputInfo. -->
