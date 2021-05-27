@@ -104,6 +104,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/compression",
     "//third_party/blink/renderer/modules/delegated_ink",
     "//third_party/blink/renderer/modules/device_orientation",
+    "//third_party/blink/renderer/modules/device_posture",
     "//third_party/blink/renderer/modules/document_metadata",
     "//third_party/blink/renderer/modules/donottrack",
     "//third_party/blink/renderer/modules/encoding",

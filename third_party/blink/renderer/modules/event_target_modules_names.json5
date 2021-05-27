@@ -17,6 +17,7 @@
     "DelegatedInkTrail",
     "EyeDropper",
     "NavigatorManagedData",
+    "DevicePosture",
     "MediaKeySession",
     "FileWriter",
     "GPUDevice",

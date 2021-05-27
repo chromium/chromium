@@ -1695,6 +1695,12 @@ interface DeviceOrientationEvent : Event
     getter beta
     getter gamma
     method constructor
+interface DevicePosture : EventTarget
+    attribute @@toStringTag
+    getter onchange
+    getter type
+    method constructor
+    setter onchange
 interface Document : Node
     attribute @@toStringTag
     attribute @@unscopables
@@ -5674,6 +5680,7 @@ interface Navigator
     getter cookieEnabled
     getter credentials
     getter deviceMemory
+    getter devicePosture
     getter doNotTrack
     getter geolocation
     getter hardwareConcurrency
