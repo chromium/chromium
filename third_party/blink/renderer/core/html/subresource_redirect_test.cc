@@ -33,23 +33,34 @@ Vector<char> ReadTestImage() {
 }
 
 class SubresourceRedirectSimTest
-    : public ::testing::WithParamInterface<std::tuple<bool, bool, bool>>,
+    : public ::testing::WithParamInterface<std::tuple<bool, bool, bool, bool>>,
       public SimTest {
  protected:
   SubresourceRedirectSimTest()
       : scoped_lazy_image_loading_for_test_(is_lazyload_image_enabled()),
         scoped_automatic_lazy_image_loading_for_test_(
             is_lazyload_image_enabled()) {
-    if (is_subresource_redirect_enabled())
-      scoped_feature_list_.InitAndEnableFeature(features::kSubresourceRedirect);
+    if (is_subresource_redirect_enabled()) {
+      base::FieldTrialParams params;
+      if (allow_javascript_crossorigin_images())
+        params["allow_javascript_crossorigin_images"] = "true";
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{features::kSubresourceRedirect, params}}, {});
+    }
     GetNetworkStateNotifier().SetSaveDataEnabled(is_save_data_enabled());
   }
 
-  bool is_subresource_redirect_enabled() { return std::get<0>(GetParam()); }
+  bool is_subresource_redirect_enabled() const {
+    return std::get<0>(GetParam());
+  }
 
-  bool is_lazyload_image_enabled() { return std::get<1>(GetParam()); }
+  bool is_lazyload_image_enabled() const { return std::get<1>(GetParam()); }
 
-  bool is_save_data_enabled() { return std::get<2>(GetParam()); }
+  bool is_save_data_enabled() const { return std::get<2>(GetParam()); }
+
+  bool allow_javascript_crossorigin_images() const {
+    return std::get<3>(GetParam());
+  }
 
   void LoadMainResource(const String& html_body) {
     SimRequest main_resource("https://example.com/", "text/html");
@@ -182,10 +193,13 @@ TEST_P(SubresourceRedirectSimTest, JavascriptCreatedCrossOriginImage) {
       )HTML",
                            "https://differentorigin.com/img.png");
 
-  VerifySubresourceRedirectPreviewsState("https://differentorigin.com/img.png",
-                                         false);
+  VerifySubresourceRedirectPreviewsState(
+      "https://differentorigin.com/img.png",
+      is_save_data_enabled() && is_subresource_redirect_enabled() &&
+          allow_javascript_crossorigin_images());
 
-  if (is_save_data_enabled() && is_subresource_redirect_enabled()) {
+  if (is_save_data_enabled() && is_subresource_redirect_enabled() &&
+      !allow_javascript_crossorigin_images()) {
     histogram_tester_.ExpectUniqueSample(
         "SubresourceRedirect.Blink.Ineligibility",
         BlinkSubresourceRedirectIneligibility::kJavascriptCreatedCrossOrigin,
@@ -271,9 +285,11 @@ TEST_P(SubresourceRedirectSimTest, RestrictedByContentSecurityPolicyImgSrc) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     SubresourceRedirectSimTest,
-    ::testing::Combine(::testing::Bool(), /* is_subresource_redirect_enabled */
-                       ::testing::Bool(), /* is_lazyload_image_enabled */
-                       ::testing::Bool()) /* is_save_data_enabled_*/);
+    ::testing::Combine(
+        ::testing::Bool(), /* is_subresource_redirect_enabled */
+        ::testing::Bool(), /* is_lazyload_image_enabled */
+        ::testing::Bool(), /* is_save_data_enabled_*/
+        ::testing::Bool() /* allow_javascript_crossorigin_images */));
 
 }  // namespace
 
