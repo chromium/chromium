@@ -33,8 +33,12 @@ table ClientSideModel {
   shingle_size:int = 4;
   threshold_probability:float = 0.5;
   vision_model:safe_browsing.flat.VisionModel;
-  tflite_model_version:int;
-  tflite_thresholds:[safe_browsing.flat.ClientSideModel_.Threshold];
+  tflite_model_version:int (deprecated);
+  tflite_thresholds:[safe_browsing.flat.ClientSideModel_.Threshold]
+  (deprecated);
+  tflite_model_input_width: int (deprecated);
+  tflite_model_input_height: int (deprecated);
+  tflite_metadata:safe_browsing.flat.TfLiteModelMetadata;
 }
 
 root_type ClientSideModel;
@@ -57,6 +61,13 @@ table Threshold {
 }
 
 namespace safe_browsing.flat;
+
+table TfLiteModelMetadata {
+  version:int;
+  thresholds:[safe_browsing.flat.ClientSideModel_.Threshold];
+  input_width: int;
+  input_height: int;
+}
 
 table VisionModel {
   targets:[safe_browsing.flat.VisualTarget];

@@ -286,8 +286,8 @@ void Scorer::ApplyVisualTfLiteModel(
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&ApplyVisualTfLiteModelHelper, bitmap,
-                       model_.tflite_model_input_width(),
-                       model_.tflite_model_input_height(),
+                       model_.tflite_metadata().input_width(),
+                       model_.tflite_metadata().input_height(),
                        std::string(reinterpret_cast<const char*>(
                                        visual_tflite_model_.data()),
                                    visual_tflite_model_.length())),
@@ -334,12 +334,12 @@ float Scorer::threshold_probability() const {
 }
 
 int Scorer::tflite_model_version() const {
-  return model_.tflite_model_version();
+  return model_.tflite_metadata().model_version();
 }
 
-const google::protobuf::RepeatedPtrField<ClientSideModel::Threshold>&
+const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&
 Scorer::tflite_thresholds() const {
-  return model_.tflite_thresholds();
+  return model_.tflite_metadata().thresholds();
 }
 
 double Scorer::ComputeRuleScore(const ClientSideModel::Rule& rule,
