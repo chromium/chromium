@@ -35,6 +35,7 @@
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
@@ -1037,15 +1038,22 @@ Response InterceptionJob::ProcessResponseOverride(
         base::MakeRefCounted<net::HttpResponseHeaders>(kDummyHeaders);
   }
   head->headers->GetMimeTypeAndCharset(&head->mime_type, &head->charset);
-  if (head->mime_type.empty() && body_size) {
-    size_t bytes_to_sniff =
-        std::min(body_size, static_cast<size_t>(net::kMaxBytesToSniff));
-    net::SniffMimeType(
-        base::StringPiece(body->front_as<const char>() + response_body_offset,
-                          bytes_to_sniff),
-        create_loader_params_->request.url, "",
-        net::ForceSniffFileUrlsForHtml::kDisabled, &head->mime_type);
-    head->did_mime_sniff = true;
+  const GURL& url = create_loader_params_->request.url;
+  if (create_loader_params_->options &
+      network::mojom::kURLLoadOptionSniffMimeType) {
+    if (body_size && network::ShouldSniffContent(url, *head)) {
+      size_t bytes_to_sniff =
+          std::min(body_size, static_cast<size_t>(net::kMaxBytesToSniff));
+      const std::string hint = head->mime_type;
+      net::SniffMimeType(
+          base::StringPiece(body->front_as<const char>() + response_body_offset,
+                            bytes_to_sniff),
+          url, hint, net::ForceSniffFileUrlsForHtml::kDisabled,
+          &head->mime_type);
+      head->did_mime_sniff = true;
+    } else if (head->mime_type.empty()) {
+      head->mime_type.assign("text/plain");
+    }
   }
   // TODO(caseq): we're cheating here a bit, raw_headers() have \0's
   // where real headers would have \r\n, but the sizes here
@@ -1067,7 +1075,7 @@ Response InterceptionJob::ProcessResponseOverride(
   base::OnceClosure continue_after_cookies_set;
   std::string location;
   if (head->headers->IsRedirect(&location)) {
-    GURL redirect_url = create_loader_params_->request.url.Resolve(location);
+    GURL redirect_url = url.Resolve(location);
     if (redirect_url.is_valid()) {
       continue_after_cookies_set =
           base::BindOnce(&InterceptionJob::ProcessRedirectByClient,

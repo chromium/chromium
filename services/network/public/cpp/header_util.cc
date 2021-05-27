@@ -5,7 +5,10 @@
 #include "services/network/public/cpp/header_util.h"
 
 #include "base/strings/string_util.h"
+#include "net/base/mime_sniffer.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "url/gurl.h"
 
 namespace network {
 
@@ -91,6 +94,21 @@ bool AreRequestHeadersSafe(const net::HttpRequestHeaders& request_headers) {
   }
 
   return true;
+}
+
+bool ShouldSniffContent(const GURL& url,
+                        const mojom::URLResponseHead& response) {
+  std::string content_type_options;
+  if (response.headers) {
+    response.headers->GetNormalizedHeader("x-content-type-options",
+                                          &content_type_options);
+  }
+  bool sniffing_blocked =
+      base::LowerCaseEqualsASCII(content_type_options, "nosniff");
+  bool we_would_like_to_sniff =
+      net::ShouldSniffMimeType(url, response.mime_type);
+
+  return !sniffing_blocked && we_would_like_to_sniff;
 }
 
 }  // namespace network
