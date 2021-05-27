@@ -1223,6 +1223,11 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
     const destPath = await fileOperationUtil.deduplicatePath(
         this.targetDirEntry, destName + '.zip');
 
+    this.cancelCallback_ = () => {
+      console.log('Cancelling ZIP task...');
+      chrome.fileManagerPrivate.cancelZip(this.zipBaseDirEntry, destPath);
+    };
+
     const success = await new Promise(
         resolve => chrome.fileManagerPrivate.zipSelection(
             assert(this.sourceEntries), this.zipBaseDirEntry, destPath,

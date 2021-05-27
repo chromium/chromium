@@ -95,6 +95,7 @@ namespace fileManagerPrivateInternal {
                              DOMString[] urls,
                              DOMString destName,
                              ZipSelectionCallback callback);
+    static void cancelZip(DOMString parentUrl, DOMString destName);
     static void validatePathNameLength(
         DOMString parentUrl,
         DOMString name,

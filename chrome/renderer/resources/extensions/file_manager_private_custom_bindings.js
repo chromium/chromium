@@ -230,15 +230,17 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
         url, parentUrl, newName, callback);
   });
 
-  apiFunctions.setHandleRequest('zipSelection', function(
-        entries, parentEntry, destName, callback) {
-    var parentUrl = getEntryURL(parentEntry);
-    var urls = entries.map(function(entry) {
-      return getEntryURL(entry);
-    });
-    fileManagerPrivateInternal.zipSelection(
-        parentUrl, urls, destName, callback);
-  });
+  apiFunctions.setHandleRequest(
+      'zipSelection',
+      (entries, parentEntry, destName, callback) =>
+          fileManagerPrivateInternal.zipSelection(
+              getEntryURL(parentEntry), entries.map(getEntryURL), destName,
+              callback));
+
+  apiFunctions.setHandleRequest(
+      'cancelZip',
+      (parentEntry, destName) => fileManagerPrivateInternal.cancelZip(
+          getEntryURL(parentEntry), destName));
 
   apiFunctions.setHandleRequest('validatePathNameLength', function(
         entry, name, callback) {

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/chromeos/extensions/file_manager/files_extension_function.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
@@ -84,7 +85,7 @@ class FileManagerPrivateSetPreferencesFunction : public ExtensionFunction {
 };
 
 // Implements the chrome.fileManagerPrivate.zipSelection method.
-// Creates a zip file for the selected files.
+// Creates a ZIP file for the selected files and folders.
 class FileManagerPrivateInternalZipSelectionFunction
     : public LoggedExtensionFunction {
  public:
@@ -100,7 +101,24 @@ class FileManagerPrivateInternalZipSelectionFunction
   ResponseAction Run() override;
 
   // Receives the result from ZipFileCreator.
-  void OnZipDone(const std::string& dest_file, bool success);
+  void OnZipDone(const base::FilePath& dest_file, bool success);
+};
+
+// Implements the chrome.fileManagerPrivate.cancelZip method.
+// Cancels an ongoing ZIP operation.
+class FileManagerPrivateInternalCancelZipFunction
+    : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.cancelZip",
+                             FILEMANAGERPRIVATEINTERNAL_CANCELZIP)
+
+  FileManagerPrivateInternalCancelZipFunction();
+
+ protected:
+  ~FileManagerPrivateInternalCancelZipFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
 };
 
 // Implements the chrome.fileManagerPrivate.zoom method.

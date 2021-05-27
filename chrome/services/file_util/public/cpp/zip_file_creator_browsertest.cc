@@ -68,10 +68,11 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, FailZipForAbsentFile) {
 
   std::vector<base::FilePath> paths;
   paths.push_back(base::FilePath(FILE_PATH_LITERAL("not.exist")));
-  (new ZipFileCreator(
-       base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
-       zip_base_dir(), paths, zip_archive_path()))
-      ->Start(LaunchService());
+
+  ZipFileCreator creator(
+      base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
+      zip_base_dir(), paths, zip_archive_path());
+  creator.Start(LaunchService());
 
   run_loop.Run();
   EXPECT_FALSE(success);
@@ -95,10 +96,10 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, SomeFilesZip) {
   bool success = false;
   base::RunLoop run_loop;
 
-  (new ZipFileCreator(
-       base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
-       zip_base_dir(), {kDir1, kFile2}, zip_archive_path()))
-      ->Start(LaunchService());
+  ZipFileCreator creator(
+      base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
+      zip_base_dir(), {kDir1, kFile2}, zip_archive_path());
+  creator.Start(LaunchService());
 
   run_loop.Run();
   EXPECT_TRUE(success);
@@ -189,11 +190,11 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
 
   bool success = false;
   base::RunLoop run_loop;
-  (new ZipFileCreator(
-       base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
-       root_dir, {},  // Empty means zip everything in root_dir.
-       zip_archive_path()))
-      ->Start(LaunchService());
+  ZipFileCreator creator(
+      base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()), root_dir,
+      {},  // Empty means zip everything in root_dir.
+      zip_archive_path());
+  creator.Start(LaunchService());
 
   run_loop.Run();
   EXPECT_TRUE(success);

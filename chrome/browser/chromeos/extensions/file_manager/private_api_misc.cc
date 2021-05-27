@@ -15,9 +15,9 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/files/file_path.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -270,6 +270,11 @@ FileManagerPrivateSetPreferencesFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+// Collection of active ZipFileCreator objects, indexed by ZIP file path.
+using ZipCreators =
+    std::unordered_map<base::FilePath, std::unique_ptr<ZipFileCreator>>;
+static base::NoDestructor<ZipCreators> zip_creators;
+
 FileManagerPrivateInternalZipSelectionFunction::
     FileManagerPrivateInternalZipSelectionFunction() = default;
 
@@ -330,18 +335,22 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
   VLOG(0) << "Creating ZIP archive " << Redact(dest_file) << " with "
           << src_files.size() << " items...";
 
-  // Start a ZipFileCreator service.
-  ZipFileCreator* const creator = new ZipFileCreator(
+  // Create a ZipFileCreator.
+  std::unique_ptr<ZipFileCreator>& creator = (*zip_creators)[dest_file];
+  DCHECK(!creator);
+  creator = std::make_unique<ZipFileCreator>(
       base::BindOnce(&FileManagerPrivateInternalZipSelectionFunction::OnZipDone,
-                     this, dest_file.value()),
+                     this, dest_file),
       parent_dir, src_files, dest_file);
+
+  // Start the ZipFileCreator.
   creator->Start(LaunchFileUtilService());
 
   return RespondLater();
 }
 
 void FileManagerPrivateInternalZipSelectionFunction::OnZipDone(
-    const std::string& dest_file,
+    const base::FilePath& dest_file,
     bool success) {
   if (success) {
     VLOG(0) << "Created ZIP archive " << Redact(dest_file);
@@ -350,6 +359,57 @@ void FileManagerPrivateInternalZipSelectionFunction::OnZipDone(
   }
 
   Respond(OneArgument(base::Value(success)));
+
+  // Remove the matching ZipFileCreator from the list of active ones.
+  const size_t n = zip_creators->erase(dest_file);
+  DCHECK_GT(n, 0);
+}
+
+FileManagerPrivateInternalCancelZipFunction::
+    FileManagerPrivateInternalCancelZipFunction() = default;
+
+FileManagerPrivateInternalCancelZipFunction::
+    ~FileManagerPrivateInternalCancelZipFunction() = default;
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateInternalCancelZipFunction::Run() {
+  using extensions::api::file_manager_private_internal::CancelZip::Params;
+  const std::unique_ptr<Params> params(Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+
+  // Convert parent directory URL to absolute path.
+  if (params->parent_url.empty())
+    return RespondNow(Error("Empty parent URL"));
+
+  const base::FilePath parent_dir = file_manager::util::GetLocalPathFromURL(
+      render_frame_host(), profile, GURL(params->parent_url));
+  if (parent_dir.empty())
+    return RespondNow(
+        Error(base::StrCat({"Cannot convert parent URL ",
+                            Redact(params->parent_url), " to absolute path"})));
+
+  // Convert destination filename to absolute path.
+  if (params->dest_name.empty())
+    return RespondNow(Error("Empty destination file name"));
+
+  const base::FilePath dest_file = parent_dir.Append(params->dest_name);
+
+  // Retrieve matching ZipFileCreator from the collection of active ones.
+  const auto it = zip_creators->find(dest_file);
+  if (it == zip_creators->end())
+    return RespondNow(Error(base::StrCat(
+        {"No ZIP operation currently running for ", Redact(dest_file)})));
+
+  ZipFileCreator* const creator = it->second.get();
+  DCHECK(creator);
+
+  // Tell the ZipFileCreator to stop.
+  creator->Stop();
+  DCHECK_EQ(zip_creators->count(dest_file), 0);
+
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateZoomFunction::Run() {

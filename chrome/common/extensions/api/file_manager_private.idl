@@ -1229,18 +1229,29 @@ interface Functions {
   static void searchFiles(SearchMetadataParams searchParams,
                           SearchFilesCallback callback);
 
-  // Create a zip file for the selected files.
-  // |parentEntry| Entry of the directory containing the selected files.
-  // |entries| Entries of the selected files. The files must be under the
-  //     directory specified by |parentEntry|.
-  // |destName| Name of the destination zip file. The zip file will be created
-  //     under the directory specified by |parentEntry|.
-  // |callback|
+  // Creates a ZIP file for the selected files and folders. Folders are
+  // recursively explored and zipped. Hidden files and folders (with names
+  // starting with a dot) found during recursive exploration are included too.
+  // |entries| Entries of the selected files and folders to zip. They must be
+  //     under the |parentEntry| directory.
+  // |parentEntry| Entry of the directory containing the selected files and
+  //     folders. This is where the ZIP file will be created, too.
+  // |destName| Name of the destination ZIP file. The ZIP file will be created
+  //     in the directory specified by |parentEntry|.
+  // |callback| Callback called on completion.
   [nocompile]
   static void zipSelection([instanceof=Entry] object[] entries,
                            [instanceof=DirectoryEntry] object parentEntry,
                            DOMString destName,
                            ZipSelectionCallback callback);
+
+  // Cancels an ongoing ZIP operation.
+  // Does nothing if there is no matching ongoing ZIP operation.
+  // |parentEntry| Entry of the directory where the ZIP file is being created.
+  // |destName| Name of the ZIP file to cancel.
+  [nocompile]
+  static void cancelZip([instanceof=DirectoryEntry] object parentEntry,
+                        DOMString destName);
 
   // Retrieves the state of the current drive connection.
   // |callback|

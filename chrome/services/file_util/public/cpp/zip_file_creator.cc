@@ -42,7 +42,10 @@ ZipFileCreator::ZipFileCreator(ResultCallback callback,
   DCHECK(callback_);
 }
 
-ZipFileCreator::~ZipFileCreator() = default;
+ZipFileCreator::~ZipFileCreator() {
+  DCHECK(!callback_);
+  DCHECK(!remote_zip_file_creator_);
+}
 
 void ZipFileCreator::Start(
     mojo::PendingRemote<chrome::mojom::FileUtilService> service) {
@@ -57,6 +60,11 @@ void ZipFileCreator::Start(
                      std::move(service)));
 }
 
+void ZipFileCreator::Stop() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  ReportDone(false);
+}
+
 void ZipFileCreator::CreateZipFile(
     mojo::PendingRemote<chrome::mojom::FileUtilService> service,
     base::File file) {
@@ -64,7 +72,7 @@ void ZipFileCreator::CreateZipFile(
   DCHECK(!remote_zip_file_creator_);
 
   if (!file.IsValid()) {
-    LOG(ERROR) << "Failed to create dest zip file " << dest_file_.value();
+    LOG(ERROR) << "Cannot create ZIP file '" << dest_file_ << "'";
     ReportDone(false);
     return;
   }
@@ -96,7 +104,6 @@ void ZipFileCreator::ReportDone(bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   remote_zip_file_creator_.reset();
-  std::move(callback_).Run(success);
-
-  delete this;
+  if (callback_)
+    std::move(callback_).Run(success);
 }

@@ -930,18 +930,29 @@ chrome.fileManagerPrivate.searchFilesByHashes = function(volumeId, hashes,
 chrome.fileManagerPrivate.searchFiles = function(searchParams, callback) {};
 
 /**
- * Create a zip file for the selected files. |parentEntry| Entry of the
- * directory containing the selected files. |entries| Selected entries.
- * The files must be under the directory specified by |parentEntry|. |destName|
- * Name of the destination zip file. The zip file will be created under the
- * directory specified by |parentEntry|.
- * @param {!Array<!Entry>} entries
- * @param {!DirectoryEntry} parentEntry
- * @param {string} destName
- * @param {function((boolean|undefined))} callback
+ * Creates a ZIP file for the selected files and folders. Folders are
+ * recursively explored and zipped. Hidden files and folders (with names
+ * starting with a dot) found during recursive exploration are included too.
+ * @param {!Array<!Entry>} entries Entries of the selected files and folders to
+ *     zip. They must be under the |parentEntry| directory.
+ * @param {!DirectoryEntry} parentEntry Entry of the directory containing the
+ *     selected files and folders. This is where the ZIP file will be created,
+ *     too.
+ * @param {string} destName Name of the destination ZIP file. The ZIP file will
+ *     be created in the directory specified by |parentEntry|.
+ * @param {function((boolean|undefined))} callback Called on completion.
  */
-chrome.fileManagerPrivate.zipSelection = function(entries, parentEntry,
-    destName, callback) {};
+chrome.fileManagerPrivate.zipSelection = function(
+    entries, parentEntry, destName, callback) {};
+
+/**
+ * Cancels an ongoing ZIP operation.
+ * Does nothing if there is no matching ongoing ZIP operation.
+ * @param {!DirectoryEntry} parentEntry Entry of the directory where the ZIP
+ *     file is being created.
+ * @param {string} destName Name of the ZIP file to cancel.
+ */
+chrome.fileManagerPrivate.cancelZip = function(parentEntry, destName) {};
 
 /**
  * Retrieves the state of the current drive connection. |callback|

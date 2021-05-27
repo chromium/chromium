@@ -104,4 +104,5 @@
   restoreDeleted() {}
   emptyTrash() {}
   zipSelection() {}
+  cancelZip() {}
 }
