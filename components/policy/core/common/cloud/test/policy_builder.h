@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POLICY_CORE_COMMON_CLOUD_POLICY_BUILDER_H_
-#define COMPONENTS_POLICY_CORE_COMMON_CLOUD_POLICY_BUILDER_H_
+#ifndef COMPONENTS_POLICY_CORE_COMMON_CLOUD_TEST_POLICY_BUILDER_H_
+#define COMPONENTS_POLICY_CORE_COMMON_CLOUD_TEST_POLICY_BUILDER_H_
 
 #include <stdint.h>
 
@@ -30,7 +30,6 @@ namespace policy {
 // A helper class for testing that provides a straightforward interface for
 // constructing policy blobs for use in testing. NB: This uses fake data and
 // hard-coded signing keys by default, so should not be used in production code.
-// TODO: Add "ForTesting" suffix to trigger presubmit checks.
 class PolicyBuilder {
  public:
   // Constants used as dummy data for filling the PolicyData protobuf.
@@ -48,6 +47,8 @@ class PolicyBuilder {
   // Creates a policy builder. The builder will have all |policy_data_| fields
   // initialized to dummy values and use the test signing keys.
   PolicyBuilder();
+  PolicyBuilder(const PolicyBuilder&) = delete;
+  PolicyBuilder& operator=(const PolicyBuilder&) = delete;
   virtual ~PolicyBuilder();
 
   // Returns a reference to the policy data protobuf being built. Note that an
@@ -147,8 +148,6 @@ class PolicyBuilder {
   std::vector<uint8_t> raw_signing_key_;
   std::vector<uint8_t> raw_new_signing_key_;
   std::string raw_new_signing_key_signature_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyBuilder);
 };
 
 // Type-parameterized PolicyBuilder extension that allows for building policy
@@ -157,6 +156,8 @@ template <typename PayloadProto>
 class TypedPolicyBuilder : public PolicyBuilder {
  public:
   TypedPolicyBuilder();
+  TypedPolicyBuilder(const TypedPolicyBuilder&) = delete;
+  TypedPolicyBuilder& operator=(const TypedPolicyBuilder&) = delete;
 
   // Returns a reference to the payload protobuf being built. Note that an
   // initial payload protobuf is created in the constructor.
@@ -175,8 +176,6 @@ class TypedPolicyBuilder : public PolicyBuilder {
 
  private:
   std::unique_ptr<PayloadProto> payload_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypedPolicyBuilder);
 };
 
 // PolicyBuilder extension that allows for building policy blobs carrying string
@@ -184,6 +183,9 @@ class TypedPolicyBuilder : public PolicyBuilder {
 class StringPolicyBuilder : public PolicyBuilder {
  public:
   StringPolicyBuilder();
+  StringPolicyBuilder(const StringPolicyBuilder&) = delete;
+  StringPolicyBuilder& operator=(const StringPolicyBuilder&) = delete;
+
   void set_payload(std::string payload) { payload_ = std::move(payload); }
   const std::string& payload() const { return payload_; }
   void clear_payload() { payload_.clear(); }
@@ -193,12 +195,10 @@ class StringPolicyBuilder : public PolicyBuilder {
 
  private:
   std::string payload_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringPolicyBuilder);
 };
 
-typedef TypedPolicyBuilder<enterprise_management::CloudPolicySettings>
-    UserPolicyBuilder;
+using UserPolicyBuilder =
+    TypedPolicyBuilder<enterprise_management::CloudPolicySettings>;
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
 using ComponentCloudPolicyBuilder =
@@ -211,4 +211,4 @@ using ComponentActiveDirectoryPolicyBuilder = StringPolicyBuilder;
 
 }  // namespace policy
 
-#endif  // COMPONENTS_POLICY_CORE_COMMON_CLOUD_POLICY_BUILDER_H_
+#endif  // COMPONENTS_POLICY_CORE_COMMON_CLOUD_TEST_POLICY_BUILDER_H_

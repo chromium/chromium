@@ -7,7 +7,6 @@
 #include "ash/display/display_configuration_controller.h"
 #include "ash/shell.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/common/cloud/policy_builder.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 
 #include "base/cxx17_backports.h"
 #include "build/build_config.h"
@@ -216,8 +216,7 @@ void PolicyBuilder::UnsetSigningKey() {
 std::unique_ptr<crypto::RSAPrivateKey> PolicyBuilder::GetNewSigningKey() const {
   if (raw_new_signing_key_.empty())
     return nullptr;
-  return std::unique_ptr<crypto::RSAPrivateKey>(
-      crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(raw_new_signing_key_));
+  return crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(raw_new_signing_key_);
 }
 
 void PolicyBuilder::SetDefaultNewSigningKey() {

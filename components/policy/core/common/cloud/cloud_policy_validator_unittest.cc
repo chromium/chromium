@@ -20,7 +20,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/policy/core/common/cloud/policy_builder.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/rsa_private_key.h"
@@ -106,8 +106,8 @@ class CloudPolicyValidatorTest : public testing::Test {
         std::move(policy_response), base::ThreadTaskRunnerHandle::Get());
     validator->ValidateTimestamp(timestamp_, timestamp_option_);
     if (validate_by_gaia_id_) {
-      validator->ValidateUsernameAndGaiaId(/*username=*/std::string(),
-                                           PolicyBuilder::kFakeGaiaId);
+      validator->ValidateUsernameAndGaiaId(
+          /*expected_user=*/std::string(), PolicyBuilder::kFakeGaiaId);
     } else {
       validator->ValidateUsername(PolicyBuilder::kFakeUsername);
     }

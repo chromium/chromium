@@ -40,7 +40,6 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/login/auth/user_context.h"
-#include "components/policy/core/common/cloud/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/browser_task_traits.h"

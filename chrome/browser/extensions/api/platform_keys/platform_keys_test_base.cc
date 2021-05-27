@@ -16,7 +16,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/cloud/policy_builder.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

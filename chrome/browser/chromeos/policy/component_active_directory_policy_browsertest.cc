@@ -18,7 +18,7 @@
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/policy/core/common/cloud/policy_builder.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"

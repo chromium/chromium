@@ -48,6 +48,7 @@
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_resource/web_resource_pref_names.h"
 #include "content/public/test/browser_test.h"

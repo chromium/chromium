@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/http_request.h"

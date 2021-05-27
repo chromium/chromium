@@ -8,7 +8,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/policy/core/common/cloud/policy_builder.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_test_utils.h"
