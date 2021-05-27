@@ -649,16 +649,30 @@ void PaintLayerScrollableArea::InvalidatePaintForScrollOffsetChange() {
     bool background_paint_in_scrolling_contents =
         background_paint_location & kBackgroundPaintInScrollingContents;
 
-    // Both local attachment background painted in graphics layer and normal
-    // attachment background painted in scrolling contents require paint
-    // invalidation. Fixed attachment background has been dealt with in
+    // Invalidate background on scroll if needed.
+    // Fixed attachment background has been dealt with in
     // frame_view->InvalidateBackgroundAttachmentFixedDescendantsOnScroll().
-    auto background_layers = box->StyleRef().BackgroundLayers();
-    if ((background_layers.AnyLayerHasLocalAttachmentImage() &&
-         background_paint_in_graphics_layer) ||
-        (background_layers.AnyLayerHasDefaultAttachmentImage() &&
-         background_paint_in_scrolling_contents))
+    const auto& background_layers = box->StyleRef().BackgroundLayers();
+    if (background_layers.AnyLayerHasLocalAttachmentImage() &&
+        background_paint_in_graphics_layer) {
+      // Local-attachment background image scrolls, so needs invalidation if it
+      // paints in non-scrolling space.
       box->SetBackgroundNeedsFullPaintInvalidation();
+    } else if (background_layers.AnyLayerHasDefaultAttachmentImage() &&
+               background_paint_in_scrolling_contents) {
+      // Normal attachment background image doesn't scroll, so needs
+      // invalidation if it paints in scrolling contents.
+      box->SetBackgroundNeedsFullPaintInvalidation();
+    } else if (background_layers.AnyLayerHasLocalAttachment() &&
+               background_layers.AnyLayerUsesContentBox() &&
+               background_paint_in_graphics_layer &&
+               (box->PaddingLeft() || box->PaddingTop() ||
+                box->PaddingRight() || box->PaddingBottom())) {
+      // Local attachment content box background needs invalidation if there is
+      // padding because the content area can change on scroll (e.g. the top
+      // padding can disappear when the box scrolls to the bottom).
+      box->SetBackgroundNeedsFullPaintInvalidation();
+    }
   }
 
   // If any scrolling content might have been clipped by a cull rect, then
