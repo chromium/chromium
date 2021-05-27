@@ -159,10 +159,11 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
   std::vector<std::string> codec_vector;
   SplitCodecs(codecs, &codec_vector);
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  // EME HEVC is supported on CrOS under these build flags, but it is not
-  // supported for clear playback. Remove the HEVC codec strings to avoid asking
-  // IsSupported*MediaFormat() about HEVC. EME support for HEVC profiles
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
+    (BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA) || defined(OS_WIN))
+  // EME HEVC is supported on CrOS and Windows under these build flags, but it
+  // is not supported for clear playback. Remove the HEVC codec strings to avoid
+  // asking IsSupported*MediaFormat() about HEVC. EME support for HEVC profiles
   // is described via KeySystemProperties::GetSupportedCodecs().
   // TODO(1156282): Decouple the rest of clear vs EME codec support.
   if (base::ToLowerASCII(container_mime_type) == "video/mp4" &&
@@ -183,7 +184,7 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
     if (codec_vector.empty())
       return true;
   }
-#endif
+#endif  // ENABLE_PLATFORM_HEVC && (USE_CHROMEOS_PROTECTED_MEDIA || OS_WIN)
 
   // AesDecryptor decrypts the stream in the demuxer before it reaches the
   // decoder so check whether the media format is supported when clear.

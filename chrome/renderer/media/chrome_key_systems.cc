@@ -250,7 +250,12 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability,
                              chromeos::features::kCdmFactoryDaemon)) {
           supported_codecs |= GetHevcCodecs(codec.second);
         }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#elif defined(OS_WIN)
+        if (is_secure) {
+          supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN;
+          supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN10;
+        }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
         break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
       default:

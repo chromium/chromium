@@ -69,6 +69,8 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
       video_codecs[media::VideoCodec::kCodecVP9] = {};
     else if (codec == "avc1")
       video_codecs[media::VideoCodec::kCodecH264] = {};
+    else if (codec == "hevc")
+      video_codecs[media::VideoCodec::kCodecHEVC] = {};
     else if (codec == "vorbis")
       audio_codecs.push_back(media::AudioCodec::kCodecVorbis);
     else

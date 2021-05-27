@@ -544,15 +544,17 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // HTMLMediaElement knows it cannot play.
   String codecs = content_type.Parameter("codecs");
   MIMETypeRegistry::SupportsType get_supports_type_result;
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  // Here, we special-case for HEVC on ChromeOS, which is only supported if
-  // encrypted. isTypeSupported(fully qualified type with hevc codec) should say
-  // false on such platform (except if kEnableClearHevcForTesting cmdline switch
-  // is used, enabling GetSupportsType success), but addSourceBuffer(same) and
-  // changeType(same) shouldn't fail just due to having HEVC codec. We use
-  // |enforce_codec_specificity| to understand if we are servicing iTS (if true)
-  // versus aSB (if false). If servicing aSB or cT, we'll remove any detected
-  // hevc codec from the codecs we use in the GetSupportsType() query.
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
+    (BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA) || defined(OS_WIN))
+  // Here, we special-case for HEVC on ChromeOS and Windows, which is only
+  // supported if encrypted. isTypeSupported(fully qualified type with hevc
+  // codec) should say false on such platform (except if
+  // kEnableClearHevcForTesting cmdline switch is used, enabling GetSupportsType
+  // success), but addSourceBuffer(same) and changeType(same) shouldn't fail
+  // just due to having HEVC codec. We use |enforce_codec_specificity| to
+  // understand if we are servicing iTS (if true) versus aSB (if false). If
+  // servicing aSB or cT, we'll remove any detected hevc codec from the codecs
+  // we use in the GetSupportsType() query.
   if (!enforce_codec_specificity) {
     // Remove any detected HEVC codec from the query to GetSupportsType.
     std::string filtered_codecs;
@@ -584,14 +586,14 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
     get_supports_type_result = HTMLMediaElement::GetSupportsType(
         ContentType(String::FromUTF8(filtered_type.c_str())));
   } else {
-    // Even on ChromeOS with HEVC support, don't filter out HEVC codec when
+    // Even on platforms with HEVC support, don't filter out HEVC codec when
     // servicing isTypeSupported().
     get_supports_type_result = HTMLMediaElement::GetSupportsType(content_type);
   }
 #else
   get_supports_type_result = HTMLMediaElement::GetSupportsType(content_type);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
-        // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+        // (BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA) || defined(OS_WIN))
 
   if (get_supports_type_result == MIMETypeRegistry::kIsNotSupported) {
     DVLOG(1) << __func__ << "(" << type << ", "
