@@ -1756,6 +1756,11 @@
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="3261592499545947104">应在证书还差多少秒到期时触发续订操作</translation>
+<translation id="3264706118366247207">以列表形式配置在用户关闭所有浏览器窗口后应删除哪些类型的浏览数据。可用的数据类型包括浏览记录 (<ph name="DATA_TYPE_BROWSING_HISTORY" />)、下载记录 (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />)、Cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />)、缓存 <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、自动填充 (<ph name="DATA_TYPE_AUTOFILL" />)、密码 (<ph name="DATA_TYPE_PASSWORD" />)、网站设置 (<ph name="DATA_TYPE_SITE_SETTINGS" />) 和托管的应用数据 (<ph name="DATA_TYPE_HOSTED_APP_DATA" />)。此政策不会优先于 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />。
+
+      仅当 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策设为 true 时，此政策才不会被忽略。如果在平台级别设置了此政策，则应在平台级别停用同步功能。如果在用户级别设置了此政策，则应为该用户停用同步功能，才能使此政策生效。
+
+      如果用户未彻底退出 <ph name="PRODUCT_NAME" />（例如，浏览器或操作系统崩溃时），系统将在下次加载配置文件时清除浏览数据。</translation>
 <translation id="3264793472749429012">默认搜索服务提供商的编码</translation>
 <translation id="3273221114520206906">默认 JavaScript 设置</translation>
 <translation id="328347261792478720">默认情况下，浏览器会显示为用户量身定制的媒体推荐内容。如果此政策已停用，系统将对用户隐藏这些推荐内容。如果此政策已启用或未设置，系统则会向用户显示媒体推荐内容。</translation>

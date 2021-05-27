@@ -457,6 +457,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="5782227691023083829">Wird übersetzt...</translation>
 <translation id="5797070761912323120">Anhand Ihres Verlaufs kann Google die Google Suche, Werbung und andere Google-Dienste personalisieren</translation>
 <translation id="5803566855766646066">Möchten Sie diese neue Karte wirklich verwerfen?</translation>
+<translation id="5812974770859303494">Hinzufügen zu…</translation>
 <translation id="5816228676161003208">Per Spracheingabe können Sie noch schneller suchen.</translation>
 <translation id="581659025233126501">Synchronisierung aktivieren</translation>
 <translation id="5819208479324046259">Verwaltet von <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -768,6 +769,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8654802032646794042">Abbrechen</translation>
 <translation id="8668210798914567634">Diese Seite wurde in Ihrer Leseliste gespeichert.</translation>
 <translation id="8680787084697685621">Die Anmeldeinformationen für dieses Konto sind veraltet.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Tab schließen}other{Tabs schließen}}</translation>
 <translation id="8706588385081740091">Passwörter</translation>
 <translation id="8717864919010420084">Link kopieren</translation>
 <translation id="8721297211384281569">Menü "Tools"</translation>

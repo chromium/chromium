@@ -239,6 +239,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">ஆப்ஸ், நீட்டிப்புகள் மற்றும் தீம்களை நிறுவுதல்</translation>
 <translation id="2977598380246111477">அடுத்த எண்</translation>
+<translation id="2992327365391326550">சாதனத்தின் மைக்ரோஃபோன் பட்டன் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="2995447421581609334">அனுப்பும் சாதனங்களைக் காண்பிக்கும்.</translation>
 <translation id="2996462380875591307">டாக் செய்யப்பட்ட பெரிதாக்கி இயக்கப்பட்டது. அதை முடக்க, Ctrl+Search+Dயை மீண்டும் அழுத்தவும்.</translation>
 <translation id="3000461861112256445">மோனோ ஆடியோ</translation>
@@ -249,6 +250,7 @@
 <translation id="3038571455154067151">உள்நுழைய உங்கள் Family Link பெற்றோர் அணுகல் குறியீட்டை உள்ளிடவும்</translation>
 <translation id="3039939407102840004">ஸ்டைலஸ் பேட்டரி: <ph name="PERCENTAGE" /> சதவீதம்.</translation>
 <translation id="3045488863354895414">மதிய வணக்கம்,</translation>
+<translation id="3051189971848907985">நெட்வொர்க் சுயவிவரத்தின் பெயரை மாற்றுகிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>
 <translation id="3055162170959710888">இந்தச் சாதனத்தை இன்று <ph name="USED_TIME" /> பயன்படுத்தியுள்ளீர்கள்</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">மெனுவை விரி</translation>
@@ -289,6 +291,7 @@
 <translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
 <translation id="3371140690572404006">USB-C சாதனம் (வலது பக்கம் முன்னே இருக்கும் போர்ட்)</translation>
 <translation id="3375634426936648815">இணைக்கப்பட்டுள்ளது</translation>
+<translation id="3378442621503952303">நெட்வொர்க் சுயவிவரத்துடன் இணைக்கிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>
 <translation id="3386978599540877378">முழுத்திரை பெரிதாக்கி</translation>
 <translation id="3400357268283240774">கூடுதல் அமைப்புகள்</translation>
 <translation id="3410336247007142655">டார்க் தீம் அமைப்புகளைக் காட்டும்</translation>
@@ -460,6 +463,7 @@
 <translation id="4705716602320768426">கருத்தைப் பதிவுசெய்க</translation>
 <translation id="4731797938093519117">பெற்றோர் அணுகல்</translation>
 <translation id="4734965478015604180">கிடைமட்டம்</translation>
+<translation id="4735498845456076464">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: <ph name="LAUNCHER_KEY_NAME" /> + எண். செயல்பாட்டு பட்டன்களைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + மேல் வரிசையில் உள்ள ஒரு பட்டனை அழுத்தவும்.</translation>
 <translation id="4744944742468440486">உங்கள் தேர்வுடன் தொடர்புடைய தகவல்கள்</translation>
 <translation id="4759238208242260848">பதிவிறக்கங்கள்</translation>
 <translation id="4774338217796918551">நாளை <ph name="COME_BACK_TIME" />க்கு சாதனத்தை மீண்டும் பயன்படுத்தலாம்.</translation>
@@ -914,6 +918,7 @@
 <translation id="8631727435199967028">அணுகல்தன்மை அமைப்புகள்</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> மீதமுள்ளது</translation>
+<translation id="8641805545866562088">நெட்வொர்க் சுயவிவரப் பட்டியலை ரெஃப்ரெஷ் செய்கிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> டைமர்</translation>
 <translation id="8647931990447795414">ஒரு நபரைச் சேர்க்க, Family Link பெற்றோர் அணுகல் குறியீட்டை உள்ளிடவும்</translation>
 <translation id="8649101189709089199">பேசும் திரை</translation>
@@ -941,6 +946,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">வைஃபை</translation>
 <translation id="881757059229893486">உள்ளீட்டு முறைகளுக்கான அமைப்புகள்</translation>
+<translation id="8818320199597151042">நெட்வொர்க் சுயவிவரத்தை அகற்றுகிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>
 <translation id="8825863694328519386">முந்தையதற்குச் செல்ல இடது பக்கத்திலிருந்து ஸ்வைப் செய்யவும்</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">முந்தையது பொத்தான்</translation>
@@ -986,6 +992,7 @@
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> டிஸ்ப்ளே அகற்றப்பட்டது</translation>
 <translation id="9098969848082897657">மொபைலை நிசப்தமாக்குதல்</translation>
 <translation id="9099154003160514616">Lacros புதுப்பிப்பு உள்ளது</translation>
+<translation id="9100887602489003640">நெட்வொர்க் சுயவிவரத்தைச் சேர்க்கிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>
 <translation id="9105450214093926548">Lacros உலாவியைப் பயன்படுத்திக் கொண்டிருக்கும்போது இரண்டாவது பயனராக உள்நுழைய முடியாது. இதற்குப் பதிலாக Lacros உலாவியில் இரண்டாவது உலாவி சுயவிவரத்தைப் பயன்படுத்தவும் அல்லது Lacros உலாவியை மூடிவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="9133335900048457298">பாதுகாக்கப்பட்ட உள்ளடக்கம் இருப்பதால் ரெக்கார்டு செய்ய முடியாது</translation>
 <translation id="9151726767154816831">புதுப்பிக்க, மறுதுவக்கம் செய்து பவர்வாஷ் செய்யவும்</translation>

@@ -1720,6 +1720,11 @@
 
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="3261592499545947104">更新が必要となる、証明書の有効期限が切れるまでの時間（秒）</translation>
+<translation id="3264706118366247207">ユーザーがすべてのブラウザ ウィンドウを終了したときに削除する閲覧データの種類のリストを設定します。指定できるデータの種類は、閲覧履歴（<ph name="DATA_TYPE_BROWSING_HISTORY" />）、ダウンロード履歴（<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />）、Cookie（<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />）、キャッシュ（<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />）、自動入力（<ph name="DATA_TYPE_AUTOFILL" />）、パスワード（<ph name="DATA_TYPE_PASSWORD" />）、サイトの設定（<ph name="DATA_TYPE_SITE_SETTINGS" />）、ホストされているアプリデータ（<ph name="DATA_TYPE_HOSTED_APP_DATA" />）です。ただし、このポリシーよりも <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> が優先されます。
+
+      このポリシーを適用するには、<ph name="SYNC_DISABLED_POLICY_NAME" /> ポリシーを true に設定する必要があります。設定していない場合、このポリシーは無視されます。このポリシーをプラットフォーム レベルで設定する場合は、プラットフォーム レベルで同期を無効にする必要があります。このポリシーをユーザーレベルで設定する場合は、そのユーザーに対して同期を無効にする必要があります。
+
+      <ph name="PRODUCT_NAME" /> が正常に終了しなかった場合（ブラウザや OS がクラッシュした場合など）は、次回プロファイルが読み込まれたときに閲覧データが削除されます。</translation>
 <translation id="3264793472749429012">デフォルトの検索プロバイダのエンコード</translation>
 <translation id="3273221114520206906">デフォルトのJavaScript 設定</translation>
 <translation id="328347261792478720">デフォルトでは、ブラウザはユーザーに合わせてパーソナライズされたおすすめメディアを表示します。このポリシーを無効に設定すると、ユーザーに対するおすすめは表示されません。このポリシーを有効にするか、未設定のままにすると、おすすめメディアがユーザーに表示されます。</translation>

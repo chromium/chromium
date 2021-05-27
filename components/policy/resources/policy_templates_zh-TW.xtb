@@ -1756,6 +1756,11 @@
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="3261592499545947104">憑證過期之前提早觸發更新程序的秒數</translation>
+<translation id="3264706118366247207">設定當使用者關閉所有瀏覽器視窗時要刪除的瀏覽資料類型清單。可用的資料類型有瀏覽記錄 (<ph name="DATA_TYPE_BROWSING_HISTORY" />)、下載記錄 (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />)、Cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />)、快取內容<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、自動填入內容 (<ph name="DATA_TYPE_AUTOFILL" />)、密碼 (<ph name="DATA_TYPE_PASSWORD" />)、網站設定 (<ph name="DATA_TYPE_SITE_SETTINGS" />) 和代管的應用程式資料 (<ph name="DATA_TYPE_HOSTED_APP_DATA" />)。這項政策的優先順序低於 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />。
+
+      如要使用這項政策，必須將 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策設為 True，否則系統會予以忽略。如果是在平台層級設定這項政策，必須在平台層級停用同步功能。如果是在使用者層級設定這項政策，則必須為該使用者停用同步功能，這樣這項政策才會生效。
+
+      如果未正常關閉 <ph name="PRODUCT_NAME" /> (例如瀏覽器或作業系統當機時)，系統會在下次載入設定檔時清除瀏覽資料。</translation>
 <translation id="3264793472749429012">預設搜尋引擎編碼</translation>
 <translation id="3273221114520206906">預設 JavaScript 設定</translation>
 <translation id="328347261792478720">在預設狀態下，瀏覽器會根據使用者顯示個人化的媒體推薦內容。如果將這項政策設為停用，瀏覽器會向使用者隱藏這類推薦內容。如果將這項政策設為啟用或不設定，瀏覽器會向使用者顯示媒體推薦內容。</translation>

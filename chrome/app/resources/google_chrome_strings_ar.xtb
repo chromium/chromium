@@ -171,6 +171,7 @@
 <translation id="5394833366792865639">‏مشاركة علامة تبويب Chrome</translation>
 <translation id="5430073640787465221">‏ملف الإعدادات المفضّلة تالف أو غير صالح. يتعذر على Google Chrome استرداد إعداداتك.</translation>
 <translation id="5434383153637353914">‏تتيح لك هذه الصفحة إدارة حساباتك على Google التي تم تسجيل الدخول إليها. وستكون هذه الحسابات متوفّرة في متصفِّح Chrome وتطبيقات "متجر Play"، بالإضافة إلى خدمات مثل Gmail وDrive وYouTube. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
+<translation id="5486618155264784386">‏تثبيت نظام التشغيل Chrome</translation>
 <translation id="556024056938947818">‏يحاول Google Chrome إظهار كلمات المرور.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">‏في حال عدم عرض إعداد على هذه الصفحة، انتقل إلى <ph name="LINK_BEGIN" />
@@ -253,6 +254,7 @@
 <translation id="7890208801193284374">‏إذا كنت تشارك الكمبيوتر مع أصدقائك وعائلتك، فبإمكانهم التصفح على حدة وإعداد Chrome على النحو الذي يريدونه.</translation>
 <translation id="7896673875602241923">‏سجّل شخص ما الدخول من قبل إلى Chrome على جهاز الكمبيوتر هذا باسم <ph name="ACCOUNT_EMAIL_LAST" />. يُرجى إنشاء حساب مستخدم جديد في Chrome للإبقاء على معلوماتك بشكلٍ منفصل.</translation>
 <translation id="7930071585467473040">‏يحاول Google Chrome نسخ كلمات المرور.</translation>
+<translation id="7951988079884443914">‏ينصح Chrome بعدم تنزيل هذا الملف أو فتحه.</translation>
 <translation id="7962410387636238736">‏لن يستلم جهاز الكمبيوتر هذا تحديثات Google Chrome لأن Windows XP وWindows Vista أصبحا غير مدعومين.</translation>
 <translation id="79947657522496226">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير أدوات Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">‏إعادة تثبيت Chrome</translation>

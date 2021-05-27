@@ -1534,7 +1534,7 @@
 <translation id="2610780100389066815">Microsoft ယုံကြည်မှု စာရင်းထက်မှတ်ထိုး</translation>
 <translation id="2612676031748830579">ကဒ်နံပါတ်</translation>
 <translation id="2616366145935564096">သင်၏ ဒေတာကို<ph name="WEBSITE_1" />မှာ ဖတ်ပါ၊ ပြောင်းလဲပါ</translation>
-<translation id="2617342710774726426">ဆင်းမ်ကဒ် လော့ခ်ကျနေပါသည်</translation>
+<translation id="2617342710774726426">ဆင်းမ်ကတ် လော့ခ်ကျနေပါသည်</translation>
 <translation id="2618797463720777311">'အနီးတစ်ဝိုက် မျှဝေခြင်း' ကို စနစ်ထည့်သွင်းခြင်း</translation>
 <translation id="2619761439309613843">နေ့စဉ် ပြန်လည်စတင်ရန်</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ကို လုံခြုံစွာ ဒေါင်းလုဒ်လုပ်၍မရပါ။</translation>
@@ -3843,7 +3843,7 @@
 <translation id="5158983316805876233">ပရိုတိုကော အားလုံး အတွက် တစ်ခုတည်းသော ပရော့က်စီကို သုံးရန်</translation>
 <translation id="5159094275429367735">Crostini စနစ် ထည့်သွင်းရန်</translation>
 <translation id="5159419673777902220">နောက်ဆက်တွဲခွင့်ပြုချက်များကို သင့်မိဘက ပိတ်ထားသည်</translation>
-<translation id="5160634252433617617">လက်ကွက် ခလုတ်ခုံ</translation>
+<translation id="5160634252433617617">စက်၏ ကီးဘုတ်</translation>
 <translation id="5160857336552977725">သင့်<ph name="DEVICE_TYPE" /> သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> မှ USB ကိရိယာများ</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ကို ပိတ်ထားလိုက်ပါပြီ</translation>
@@ -6821,7 +6821,7 @@
 <translation id="8428634594422941299">ရပါပြီ</translation>
 <translation id="84297032718407999">သင်သည် <ph name="LOGOUT_TIME_LEFT" /> အတွင်း ထွက်သွားပါမည်</translation>
 <translation id="8431190899827883166">တို့ရန်များကို ပြခြင်း</translation>
-<translation id="8431909052837336408">ဆင်းမ်ကဒ် ပင်နံပါတ်ပြောင်းရန်</translation>
+<translation id="8431909052837336408">ဆင်းမ်ကတ် ပင်နံပါတ်ပြောင်းရန်</translation>
 <translation id="8434480141477525001">NaCl အမှားရှာပြင်ခြင်း ပို့တ်</translation>
 <translation id="8435395510592618362">သင်မည်သူမည်ဝါဖြစ်ကြောင်း <ph name="APP_NAME" /> နှင့် အတည်ပြုပါ</translation>
 <translation id="8437209419043462667">US</translation>
@@ -6834,7 +6834,7 @@
 <translation id="8448729345478502352">သင်၏ မျက်နှာပြင်ပေါ်ရှိ အရာများကို ပိုသေးအောင် သို့မဟုတ် ပိုကြီးအောင် ပြုလုပ်ပါ</translation>
 <translation id="8449008133205184768">ကပ်ပေးရန် နှင့် စတိုင် ညှိပေ</translation>
 <translation id="8449036207308062757">သိုလှောင်ခန်းကို စီမံခန့်ခွဲပါ</translation>
-<translation id="8452135315243592079">ဆင်းမ်ကဒ် မရှိပါ</translation>
+<translation id="8452135315243592079">ဆင်းမ်ကတ် မရှိပါ</translation>
 <translation id="8455026683977728932">ADB သရုပ်ဖော်ပုံကို ဖွင့်၍မရပါ</translation>
 <translation id="8456512334795994339">အလုပ်နှင့် ဖျော်ဖြေရေးအတွက် အက်ပ်များ ရှာဖွေပါ</translation>
 <translation id="845702320058262034">ချိတ်ဆက်၍ မရပါ။ သင့်ဖုန်း၏ ဘလူးတုသ်ကို ဖွင့်ထားပါ။</translation>
