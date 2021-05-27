@@ -29,9 +29,6 @@ class ChooserResourceLoader {
   // Returns the suggestion picker stylesheet as a string.
   static Vector<char> GetCalendarPickerStyleSheet();
 
-  // Returns the calendar picker refresh stylesheet as a string.
-  static Vector<char> GetCalendarPickerRefreshStyleSheet();
-
   // Returns the suggestion picker javascript as a string.
   static Vector<char> GetCalendarPickerJS();
 

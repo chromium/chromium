@@ -41,7 +41,6 @@
         <include name="IDR_PICKER_COMMON_JS" file="../renderer/core/html/forms/resources/pickerCommon.js" type="BINDATA" compress="gzip"/>
         <include name="IDR_PICKER_COMMON_CSS" file="../renderer/core/html/forms/resources/pickerCommon.css" type="BINDATA" compress="gzip"/>
         <include name="IDR_CALENDAR_PICKER_CSS" file="../renderer/core/html/forms/resources/calendarPicker.css" type="BINDATA" compress="gzip"/>
-        <include name="IDR_CALENDAR_PICKER_REFRESH_CSS" file="../renderer/core/html/forms/resources/calendar_picker_refresh.css" type="BINDATA" compress="gzip"/>
         <include name="IDR_CALENDAR_PICKER_JS" file="../renderer/core/html/forms/resources/calendarPicker.js" type="BINDATA" compress="gzip"/>
         <include name="IDR_MONTH_PICKER_JS" file="../renderer/core/html/forms/resources/month_picker.js" type="BINDATA" compress="gzip"/>
         <include name="IDR_TIME_PICKER_CSS" file="../renderer/core/html/forms/resources/time_picker.css" type="BINDATA" compress="gzip"/>

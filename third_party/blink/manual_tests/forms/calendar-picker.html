@@ -277,35 +277,33 @@ function createParam() {
     }
 };
 
+function includeFile(file, isJs) {
+  const doc = document.getElementsByTagName('iframe')[0].contentDocument;
+  file = '../../renderer/core/html/forms/resources/' + file + '?' + (new Date()).getTime();
+  var element;
+  if (isJs) {
+    element = doc.createElement('script');
+    element.src = file;
+  } else {
+    element = doc.createElement('link');
+    element.rel = 'stylesheet';
+    element.href = file;
+  }
+  doc.head.appendChild(element);
+}
+
 function openCalendar() {
     var frame = document.getElementsByTagName('iframe')[0];
-    var doc = frame.contentDocument;
-    doc.documentElement.innerHTML = '<head></head><body><div id=main>Loading...</div></body>';
-    var commonCssLink = doc.createElement('link');
-    commonCssLink.rel = 'stylesheet';
-    commonCssLink.href = '../../renderer/core/html/forms/resources/pickerCommon.css?' + (new Date()).getTime();
-    doc.head.appendChild(commonCssLink);
-    var buttonCssLink = doc.createElement('link');
-    buttonCssLink.rel = 'stylesheet';
-    buttonCssLink.href = '../../renderer/core/html/forms/resources/pickerButton.css?' + (new Date()).getTime();
-    doc.head.appendChild(buttonCssLink);
-    var suggestionPickerCssLink = doc.createElement('link');
-    suggestionPickerCssLink.rel = 'stylesheet';
-    suggestionPickerCssLink.href = '../../renderer/core/html/forms/resources/suggestionPicker.css?' + (new Date()).getTime();
-    doc.head.appendChild(suggestionPickerCssLink);
-    var link = doc.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = '../../renderer/core/html/forms/resources/calendarPicker.css?' + (new Date()).getTime();
-    doc.head.appendChild(link);
-    var commonJsScript = doc.createElement('script');
-    commonJsScript.src = '../../renderer/core/html/forms/resources/pickerCommon.js?' + (new Date()).getTime();
-    doc.body.appendChild(commonJsScript);
-    var suggestionPickerJsScript = doc.createElement('script');
-    suggestionPickerJsScript.src = '../../renderer/core/html/forms/resources/suggestionPicker.js?' + (new Date()).getTime();
-    doc.body.appendChild(suggestionPickerJsScript);
-    var script = doc.createElement('script');
-    script.src = '../../renderer/core/html/forms/resources/calendarPicker.js?' + (new Date()).getTime();
-    doc.body.appendChild(script);
+    frame.contentDocument.documentElement.innerHTML = '<head></head><body><div id=main>Loading...</div></body>';
+
+    includeFile('pickerCommon.css', /*isJs=*/false);
+    includeFile('suggestionPicker.css', /*isJs=*/false);
+    includeFile('calendarPicker.css', /*isJs=*/false);
+
+    includeFile('pickerCommon.js', /*isJs=*/true);
+    includeFile('suggestionPicker.js', /*isJs=*/true);
+    includeFile('month_picker.js', /*isJs=*/true);
+    includeFile('calendarPicker.js', /*isJs=*/true);
 
     var pagePopupController = {
         setValueAndClosePopup: function(numValue, stringValue) {

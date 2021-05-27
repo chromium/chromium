@@ -128,15 +128,6 @@ Vector<char> ChooserResourceLoader::GetColorPickerStyleSheet() {
 #endif
 }
 
-Vector<char> ChooserResourceLoader::GetCalendarPickerRefreshStyleSheet() {
-#if !defined(OS_ANDROID)
-  return UncompressResourceAsBinary(IDR_CALENDAR_PICKER_REFRESH_CSS);
-#else
-  NOTREACHED();
-  return Vector<char>();
-#endif
-}
-
 Vector<char> ChooserResourceLoader::GetColorPickerJS() {
 #if !defined(OS_ANDROID)
   return UncompressResourceAsBinary(IDR_COLOR_PICKER_JS);
