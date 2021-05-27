@@ -106,7 +106,11 @@ String CSSValueList::CustomCSSText() const {
   for (unsigned i = 0; i < size; i++) {
     if (!result.IsEmpty())
       result.Append(separator);
-    result.Append(values_[i]->CssText());
+    // TODO(crbug.com/1213338): value_[i] can be null by CSSMathExpressionNode
+    // which is implemented by css-values-3. Until fully implement the
+    // css-values-4 features, we should append empty string to remove
+    // null-pointer exception.
+    result.Append(values_[i] ? values_[i]->CssText() : " ");
   }
 
   return result.ToString();
