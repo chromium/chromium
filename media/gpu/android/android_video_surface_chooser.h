@@ -42,10 +42,9 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooser {
     // Are we expecting a relayout soon?
     bool is_expecting_relayout = false;
 
-    // If true,  then we will default to promoting to overlay if it's power-
-    // efficient even if not otherwise required.  Otherwise, we'll require other
-    // signals, like fs or secure, before we promote.
-    bool promote_aggressively = false;
+    // If true, then we will promote to overlay only if it's required for secure
+    // video playback.
+    bool promote_secure_only = false;
 
     // Default orientation for the video.
     VideoRotation video_rotation = VIDEO_ROTATION_0;

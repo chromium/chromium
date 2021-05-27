@@ -162,7 +162,16 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
   // This also turns off Push messaging.
   cl->AppendSwitch(::switches::kDisableNotifications);
 
-  std::vector<base::Feature> enabled_features = {};
+  std::vector<base::Feature> enabled_features = {
+#if defined(OS_ANDROID)
+    // Overlay promotion requires some guarantees we don't have on WebLayer
+    // (e.g. ensuring fullscreen, no movement of the parent view). Given that
+    // we're unsure about the benefits when used embedded in a parent app, we
+    // will only promote to overlays if needed for secure videos.
+    media::kUseAndroidOverlayForSecureOnly,
+#endif
+  };
+
   std::vector<base::Feature> disabled_features = {
     // TODO(crbug.com/1177948): enable WebAR.
     ::features::kWebXr,

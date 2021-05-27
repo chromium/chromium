@@ -32,7 +32,7 @@ constexpr base::TimeDelta RetryChooserTimeout = base::TimeDelta::FromSeconds(5);
 SurfaceChooserHelper::SurfaceChooserHelper(
     std::unique_ptr<AndroidVideoSurfaceChooser> surface_chooser,
     bool is_overlay_required,
-    bool promote_aggressively,
+    bool promote_secure_only,
     bool always_use_texture_owner,
     std::unique_ptr<PromotionHintAggregator> promotion_hint_aggregator,
     const base::TickClock* tick_clock)
@@ -45,7 +45,7 @@ SurfaceChooserHelper::SurfaceChooserHelper(
       tick_clock_(tick_clock ? tick_clock
                              : base::DefaultTickClock::GetInstance()) {
   surface_chooser_state_.is_required = is_overlay_required_;
-  surface_chooser_state_.promote_aggressively = promote_aggressively;
+  surface_chooser_state_.promote_secure_only = promote_secure_only;
   surface_chooser_state_.always_use_texture_owner = always_use_texture_owner;
 }
 

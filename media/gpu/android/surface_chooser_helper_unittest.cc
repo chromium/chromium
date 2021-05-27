@@ -33,7 +33,7 @@ class SurfaceChooserHelperTest : public testing::Test {
   void TearDown() override {}
 
   void ReplaceHelper(bool is_overlay_required,
-                     bool promote_aggressively,
+                     bool promote_secure_only,
                      bool always_use_texture_owner = false) {
     // Advance the clock so that time 0 isn't recent.
     tick_clock_.Advance(TimeDelta::FromSeconds(10000));
@@ -45,7 +45,7 @@ class SurfaceChooserHelperTest : public testing::Test {
         std::make_unique<MockPromotionHintAggregator>();
     aggregator_ = aggregator.get();
     helper_ = std::make_unique<SurfaceChooserHelper>(
-        std::move(chooser), is_overlay_required, promote_aggressively,
+        std::move(chooser), is_overlay_required, promote_secure_only,
         always_use_texture_owner, std::move(aggregator), &tick_clock_);
   }
 
@@ -152,13 +152,13 @@ TEST_F(SurfaceChooserHelperTest, StillRequiredAfterClearingSecure) {
   ASSERT_TRUE(chooser_->current_state_.is_required);
 }
 
-TEST_F(SurfaceChooserHelperTest, SetPromoteAggressively) {
+TEST_F(SurfaceChooserHelperTest, SetPromoteSecureOnly) {
   UpdateChooserState();
-  ASSERT_FALSE(chooser_->current_state_.promote_aggressively);
+  ASSERT_FALSE(chooser_->current_state_.promote_secure_only);
 
   ReplaceHelper(false, true);
   UpdateChooserState();
-  ASSERT_TRUE(chooser_->current_state_.promote_aggressively);
+  ASSERT_TRUE(chooser_->current_state_.promote_secure_only);
 }
 
 TEST_F(SurfaceChooserHelperTest, SetAlwaysUseTextureOwner) {

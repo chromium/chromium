@@ -233,7 +233,7 @@ MediaCodecVideoDecoder::MediaCodecVideoDecoder(
           std::move(surface_chooser),
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kForceVideoOverlays),
-          base::FeatureList::IsEnabled(media::kUseAndroidOverlayAggressively),
+          base::FeatureList::IsEnabled(media::kUseAndroidOverlayForSecureOnly),
           is_surface_control_enabled_),
       video_frame_factory_(std::move(video_frame_factory)),
       overlay_factory_cb_(std::move(overlay_factory_cb)),
