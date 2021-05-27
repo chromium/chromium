@@ -162,6 +162,20 @@ TEST_F(HelpAppNotificationControllerTest,
 }
 
 TEST_F(HelpAppNotificationControllerTest,
+       DoesNotShowReleaseNotificationIfAlreadyShownInCurrentMilestone) {
+  std::unique_ptr<Profile> profile = CreateRegularProfile();
+  profile->GetPrefs()->SetInteger(
+      prefs::kDiscoverTabNotificationLastShownMilestone, CurrentMilestone());
+  std::unique_ptr<HelpAppNotificationController> controller =
+      std::make_unique<HelpAppNotificationController>(profile.get());
+
+  controller->MaybeShowNotification();
+
+  EXPECT_EQ(0, notification_count_);
+  EXPECT_EQ(false, HasDiscoverTabNotification());
+}
+
+TEST_F(HelpAppNotificationControllerTest,
        DoesNotShowDiscoverNotificationIfNotChildProfile) {
   std::unique_ptr<Profile> profile = CreateRegularProfile();
   std::unique_ptr<HelpAppNotificationController> controller =

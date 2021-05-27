@@ -313,12 +313,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // production with a background page. This helps us ensure that our
   // notification shows up and can be interacted with even after the web ui
   // that triggered it has died.
+  auto original_browser_count = chrome::GetTotalBrowserCount();
   web_contents->Close();
   // Wait until the web contents closes.
   // TODO(b/186819234): Add a way to wait for the task instead of polling.
   base::RunLoop run_loop;
   base::RepeatingTimer check_timer;
-  auto original_browser_count = chrome::GetTotalBrowserCount();
   check_timer.Start(
       FROM_HERE, base::TimeDelta::FromMilliseconds(10),
       base::BindLambdaForTesting([&]() {

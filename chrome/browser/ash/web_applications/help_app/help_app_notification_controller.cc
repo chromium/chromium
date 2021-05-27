@@ -34,12 +34,12 @@ bool ShouldShowDiscoverTabNotification(Profile* profile) {
     return false;
   }
 
-  bool shouldShowForCurrentChannel =
+  bool should_show_for_current_channel =
       chrome::GetChannel() == version_info::Channel::STABLE ||
       base::FeatureList::IsEnabled(
           ash::features::kHelpAppDiscoverTabNotificationAllChannels);
 
-  if (!shouldShowForCurrentChannel) {
+  if (!should_show_for_current_channel) {
     return false;
   }
 
