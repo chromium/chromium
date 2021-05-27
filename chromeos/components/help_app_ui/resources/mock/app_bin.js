@@ -25,17 +25,15 @@ document.addEventListener('DOMContentLoaded', () => {
  * version.
  */
 async function doBackgroundTasks() {
-  if (window.customLaunchData.delegate) {
-    await window.customLaunchData.delegate.updateLauncherSearchIndex([{
-      id: 'mock-app-test-id',
-      title: 'Title',
-      mainCategoryName: 'Help',
-      tags: ['verycomplicatedsearchquery'],
-      urlPathWithParameters: 'help/sub/3399763/',
-      locale: ''
-    }]);
-    window.customLaunchData.delegate.closeBackgroundPage();
-  }
+  await window.customLaunchData.delegate.updateLauncherSearchIndex([{
+    id: 'mock-app-test-id',
+    title: 'Title',
+    mainCategoryName: 'Help',
+    tags: ['verycomplicatedsearchquery'],
+    urlPathWithParameters: 'help/sub/3399763/',
+    locale: ''
+  }]);
+  window.customLaunchData.delegate.closeBackgroundPage();
 }
 
 /**
@@ -45,16 +43,14 @@ async function doBackgroundTasks() {
  * the internal version.
  */
  async function initInAppSearchIndex() {
-  if (window.customLaunchData.delegate) {
-    await window.customLaunchData.delegate.clearSearchIndex();
-    await window.customLaunchData.delegate.addOrUpdateSearchIndex([
-      {
-        id: 'mock-app-test-id',
-        title: 'Get help with Chrome',
-        body: 'Test body',
-        mainCategoryName: 'Help',
-        locale: 'en-US',
-      }
-    ]);
-  }
+  await window.customLaunchData.delegate.clearSearchIndex();
+  await window.customLaunchData.delegate.addOrUpdateSearchIndex([
+    {
+      id: 'mock-app-test-id',
+      title: 'Get help with Chrome',
+      body: 'Test body',
+      mainCategoryName: 'Help',
+      locale: 'en-US',
+    }
+  ]);
 }

@@ -213,7 +213,7 @@ helpApp.ClientApiDelegate.prototype.updateLauncherSearchIndex
 /**
  * Launch data that can be read by the app when it first loads.
  * @type {{
- *     delegate: (!helpApp.ClientApiDelegate | undefined),
+ *     delegate: !helpApp.ClientApiDelegate,
  * }}
  */
 window.customLaunchData;
