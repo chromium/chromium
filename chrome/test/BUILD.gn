@@ -7023,6 +7023,7 @@ if (!is_android) {
       "//components/captive_portal/core:buildflags",
       "//components/content_settings/core/browser",
       "//components/embedder_support",
+      "//components/feature_engagement",
       "//components/find_in_page",
       "//components/google/core/common",
       "//components/history/core/browser",
