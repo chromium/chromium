@@ -54,10 +54,10 @@ Components **can** depend on the lower layers of the Chromium codebase:
 Components **can** depend on each other. This must be made explicit in the
 `DEPS` file of the component.
 
-Components **can** depend on `//content/public` and `//ipc`. This must be made
-explicit in the `DEPS` file of the component. If such a component is used by
-Chrome for iOS (which does not use content or IPC), the component will have to
-be in the form of a [layered
+Components **can** depend on `//content/public`, `//ipc`, and
+`//third_party/blink/public`. This must be made explicit in the `DEPS` file of
+the component. If such a component is used by Chrome for iOS (which does not
+use content or IPC), the component will have to be in the form of a [layered
 component](http://www.chromium.org/developers/design-documents/layered-components-design).
 
 `//chrome`, `//ios/chrome`, `//content` and `//ios/web` **can** depend on
@@ -68,8 +68,8 @@ component cannot depend on  `//content/public`, directly or indirectly.
 
 ## Structure of a component
 
-As mentioned above, components that depend on `//content/public` or `//ipc`
-might have to be in the form of a [layered
+As mentioned above, components that depend on `//content/public`, `//ipc`, or
+`third_party/blink/public` might have to be in the form of a [layered
 component](http://www.chromium.org/developers/design-documents/layered-components-design).
 
 Components that have bits of code that need to live in different processes (e.g.
@@ -85,7 +85,9 @@ not used by iOS and thus does not need to be a layered component):
 
 These subdirectories should have DEPS files with the relevant restrictions in
 place, i.e. only `components/foo/browser` should be allowed to #include from
-`content/public/browser`.
+`content/public/browser`. Note that `third_party/blink/public` is a
+renderer process directory except for `third_party/blink/public/common` which
+can be used by all processes.
 
 Note that there may also be an `android` subdir, with a Java source code
 structure underneath it where the package name is org.chromium.components.foo,
