@@ -34,7 +34,8 @@ ChannelProxy::Context::Context(
     Listener* listener,
     const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
     const scoped_refptr<base::SingleThreadTaskRunner>& listener_task_runner)
-    : default_listener_task_runner_(listener_task_runner),
+    : listener_thread_task_runners_lock_("ChannelProxy::Context.listener_thread_task_runners_lock_"),
+      default_listener_task_runner_(listener_task_runner),
       listener_(listener),
       ipc_task_runner_(ipc_task_runner),
       channel_connected_called_(false),
