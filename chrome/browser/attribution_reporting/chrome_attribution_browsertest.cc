@@ -4,14 +4,12 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -26,9 +24,7 @@
 // content shell.
 class ChromeAttributionBrowserTest : public InProcessBrowserTest {
  public:
-  ChromeAttributionBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kConversionMeasurement);
-  }
+  ChromeAttributionBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Sets up the blink runtime feature for ConversionMeasurement.
@@ -47,9 +43,6 @@ class ChromeAttributionBrowserTest : public InProcessBrowserTest {
 
  protected:
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,

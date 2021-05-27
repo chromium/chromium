@@ -16,7 +16,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -27,6 +26,7 @@
 #include "content/shell/browser/shell.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -35,9 +35,9 @@ namespace {
 constexpr char kBaseDataDir[] = "content/test/data/conversions/";
 }
 
-class ConversionsOriginTrialBrowserTestBase : public ContentBrowserTest {
+class ConversionsOriginTrialBrowserTest : public ContentBrowserTest {
  public:
-  ConversionsOriginTrialBrowserTestBase() = default;
+  ConversionsOriginTrialBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -62,17 +62,6 @@ class ConversionsOriginTrialBrowserTestBase : public ContentBrowserTest {
 
  private:
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
-};
-
-class ConversionsOriginTrialBrowserTest
-    : public ConversionsOriginTrialBrowserTestBase {
- public:
-  ConversionsOriginTrialBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kConversionMeasurement);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
@@ -132,10 +121,11 @@ IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
 // UrlLoadInterceptor cannot properly redirect the conversion pings.
 
 class ConversionsOriginTrialNoBrowserFeatureBrowserTest
-    : public ConversionsOriginTrialBrowserTestBase {
+    : public ConversionsOriginTrialBrowserTest {
  public:
   ConversionsOriginTrialNoBrowserFeatureBrowserTest() {
-    feature_list_.InitAndDisableFeature(features::kConversionMeasurement);
+    feature_list_.InitAndDisableFeature(
+        blink::features::kConversionMeasurement);
   }
 
  private:

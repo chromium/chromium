@@ -227,8 +227,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableClickPointerEvent, features::kClickPointerEvent},
     {wf::EnableCompositeBGColorAnimation, features::kCompositeBGColorAnimation},
     {wf::EnableConsolidatedMovementXY, features::kConsolidatedMovementXY},
-    {wf::EnableConversionMeasurementInfraSupport,
-     features::kConversionMeasurement},
     {wf::EnableCookiesWithoutSameSiteMustBeSecure,
      net::features::kCookiesWithoutSameSiteMustBeSecure},
     {wf::EnableCooperativeScheduling, features::kCooperativeScheduling},

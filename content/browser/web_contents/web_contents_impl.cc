@@ -926,7 +926,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
 
   // ConversionHost takes a weak ref on |this|, so it must be created outside of
   // the initializer list.
-  if (base::FeatureList::IsEnabled(features::kConversionMeasurement)) {
+  if (base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {
     ConversionHost::CreateForWebContents(this);
   }
 }

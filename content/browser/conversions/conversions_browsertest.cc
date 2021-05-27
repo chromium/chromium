@@ -7,12 +7,10 @@
 #include "base/command_line.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_test_utils.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -91,7 +89,6 @@ struct ExpectedReportWaiter {
 class ConversionsBrowserTest : public ContentBrowserTest {
  public:
   ConversionsBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kConversionMeasurement);
     ConversionManagerImpl::RunInMemoryForTesting();
   }
 
@@ -122,7 +119,6 @@ class ConversionsBrowserTest : public ContentBrowserTest {
   ConversionDisallowingContentBrowserClient disallowed_browser_client_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 

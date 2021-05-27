@@ -24,7 +24,7 @@ var PrivacySandboxTest = class extends PolymerTest {
     return {
       enabled: [
         'blink::features::kInterestCohortAPIOriginTrial',
-        'features::kConversionMeasurement',
+        'blink::features::kConversionMeasurement',
         'features::kPrivacySandboxSettings',
       ]
     };

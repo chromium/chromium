@@ -45,7 +45,8 @@ class PrivacySandboxSettingsBrowserTest : public InProcessBrowserTest {
  public:
   PrivacySandboxSettingsBrowserTest() {
     feature_list()->InitWithFeatures(
-        {features::kPrivacySandboxSettings, features::kConversionMeasurement,
+        {features::kPrivacySandboxSettings,
+         blink::features::kConversionMeasurement,
          blink::features::kInterestCohortAPIOriginTrial},
         {});
   }

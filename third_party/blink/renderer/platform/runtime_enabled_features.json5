@@ -424,12 +424,6 @@
       origin_trial_feature_name: "ConversionMeasurement",
       origin_trial_allows_third_party: true,
       status: "experimental",
-      depends_on: ["ConversionMeasurementInfraSupport"],
-    },
-    {
-      // Feature to explicitly disable/enable the Conversion
-      // Measurement API when there is not browser process side infra.
-      name: "ConversionMeasurementInfraSupport",
     },
     {
       name: "CookiesWithoutSameSiteMustBeSecure",

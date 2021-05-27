@@ -161,7 +161,8 @@ class PrivacySandboxSettingsTest : public testing::Test {
     feature_list()->Reset();
     if (privacy_sandbox_available) {
       feature_list()->InitWithFeatures(
-          {features::kPrivacySandboxSettings, features::kConversionMeasurement,
+          {features::kPrivacySandboxSettings,
+           blink::features::kConversionMeasurement,
            blink::features::kInterestCohortAPIOriginTrial},
           {});
     } else {
@@ -198,7 +199,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
 
 TEST_F(PrivacySandboxSettingsTest, PrivacySandboxSettingsFunctional) {
   feature_list()->InitWithFeatures(
-      {features::kConversionMeasurement,
+      {blink::features::kConversionMeasurement,
        blink::features::kInterestCohortAPIOriginTrial},
       {features::kPrivacySandboxSettings});
   EXPECT_FALSE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
@@ -206,7 +207,7 @@ TEST_F(PrivacySandboxSettingsTest, PrivacySandboxSettingsFunctional) {
 
   feature_list()->InitWithFeatures(
       {features::kPrivacySandboxSettings},
-      {features::kConversionMeasurement,
+      {blink::features::kConversionMeasurement,
        blink::features::kInterestCohortAPIOriginTrial});
   EXPECT_TRUE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
 }

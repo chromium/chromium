@@ -11,7 +11,6 @@
 #include "content/browser/conversions/conversion_test_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/fake_mojo_message_dispatch_context.h"
 #include "content/test/navigation_simulator_impl.h"

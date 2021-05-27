@@ -6,11 +6,9 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/conversions/conversion_host.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -88,7 +86,6 @@ class ConversionDisabledBrowserTest : public ContentBrowserTest {
  public:
   ConversionDisabledBrowserTest() {
     ConversionManagerImpl::RunInMemoryForTesting();
-    feature_list_.InitAndEnableFeature(features::kConversionMeasurement);
   }
 
   void SetUpOnMainThread() override {
@@ -111,9 +108,6 @@ class ConversionDisabledBrowserTest : public ContentBrowserTest {
   WebContents* web_contents() { return shell()->web_contents(); }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;

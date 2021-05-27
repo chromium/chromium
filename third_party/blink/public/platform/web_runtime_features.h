@@ -236,8 +236,6 @@ class WebRuntimeFeatures {
       bool);
   BLINK_PLATFORM_EXPORT static void EnableContentIndex(bool);
   BLINK_PLATFORM_EXPORT static void EnableRestrictGamepadAccess(bool);
-  BLINK_PLATFORM_EXPORT static void EnableConversionMeasurementInfraSupport(
-      bool);
 
   BLINK_PLATFORM_EXPORT static void EnableTargetBlankImpliesNoOpener(bool);
 

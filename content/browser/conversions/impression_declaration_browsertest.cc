@@ -8,14 +8,12 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/conversions/conversion_host.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -140,7 +138,6 @@ class TestConversionHost : public ConversionHost {
 class ImpressionDisabledBrowserTest : public ContentBrowserTest {
  public:
   ImpressionDisabledBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kConversionMeasurement);
     ConversionManagerImpl::RunInMemoryForTesting();
   }
 
@@ -168,7 +165,6 @@ class ImpressionDisabledBrowserTest : public ContentBrowserTest {
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 

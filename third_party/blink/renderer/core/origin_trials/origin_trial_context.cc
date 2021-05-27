@@ -460,6 +460,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
       !base::FeatureList::IsEnabled(features::kSpeculationRulesPrefetchProxy)) {
     return false;
   }
+  if (trial_name == "ConversionMeasurement" &&
+      !base::FeatureList::IsEnabled(features::kConversionMeasurement)) {
+    return false;
+  }
   return true;
 }
 
