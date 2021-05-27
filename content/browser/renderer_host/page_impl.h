@@ -6,6 +6,10 @@
 #define CONTENT_BROWSER_RENDERER_HOST_PAGE_IMPL_H_
 
 #include <memory>
+#include <vector>
+
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -51,7 +55,34 @@ class PageImpl {
 
   RenderFrameHostImpl* main_document() { return &main_document_; }
 
+  bool is_on_load_completed() const { return is_on_load_completed_; }
+  void set_is_on_load_completed(bool completed) {
+    is_on_load_completed_ = completed;
+  }
+
+  void update_manifest_url(GURL url) { manifest_url_ = url; }
+  const GURL& manifest_url() const { return manifest_url_; }
+
+  const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls() const {
+    return favicon_urls_;
+  }
+  void set_favicon_urls(std::vector<blink::mojom::FaviconURLPtr> favicon_urls) {
+    favicon_urls_ = std::move(favicon_urls);
+  }
+
  private:
+  // True if we've received a notification that the onload() handler has
+  // run.
+  bool is_on_load_completed_ = false;
+
+  // Web application manifest URL (or empty URL if none) for this page.
+  // See https://w3c.github.io/manifest/#web-application-manifest
+  GURL manifest_url_;
+
+  // Candidate favicon URLs. Each page may have a collection and will be
+  // displayed when active (i.e., upon activation for prerendering).
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls_;
+
   // This class is owned by the main RenderFrameHostImpl and it's safe to keep a
   // reference to it.
   RenderFrameHostImpl& main_document_;

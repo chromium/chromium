@@ -3595,18 +3595,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     DocumentAssociatedData(const DocumentAssociatedData&) = delete;
     DocumentAssociatedData& operator=(const DocumentAssociatedData&) = delete;
 
-    // True if we've received a notification that the onload() handler has
-    // run in the main frame.
-    bool is_on_load_completed = false;
-
-    // Web application manifest URL (or empty URL if none) for this main frame.
-    // See https://w3c.github.io/manifest/#web-application-manifest
-    GURL manifest_url;
-
-    // Candidate favicon URLs. Each main frame may have a collection and will
-    // be displayed when active (i.e., upon activation for prerendering).
-    std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
-
     // The Page object associated with the main document. It is nullptr for
     // subframes.
     std::unique_ptr<PageImpl> owned_page;

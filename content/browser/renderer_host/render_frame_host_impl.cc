@@ -4294,11 +4294,12 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
                                     std::move(dialog_closed_callback));
 }
 
+// TODO(crbug.com/1213863): Move this method to content::PageImpl.
 void RenderFrameHostImpl::UpdateFaviconURL(
     std::vector<blink::mojom::FaviconURLPtr> favicon_urls) {
   DCHECK(!GetParent());
-  document_associated_data_->favicon_urls = std::move(favicon_urls);
-  delegate_->UpdateFaviconURL(this, document_associated_data_->favicon_urls);
+  GetPage()->set_favicon_urls(std::move(favicon_urls));
+  delegate_->UpdateFaviconURL(this, GetPage()->favicon_urls());
 }
 
 void RenderFrameHostImpl::ScaleFactorChanged(float scale) {
@@ -4367,10 +4368,11 @@ void RenderFrameHostImpl::SetWindowRect(const gfx::Rect& bounds,
   std::move(callback).Run();
 }
 
+// TODO(crbug.com/1213863): Move this method to content::PageImpl.
 void RenderFrameHostImpl::UpdateManifestURL(
     const absl::optional<GURL>& manifest_url) {
   DCHECK(!GetParent());
-  document_associated_data_->manifest_url = manifest_url.value_or(GURL());
+  GetPage()->update_manifest_url(manifest_url.value_or(GURL()));
 }
 
 void RenderFrameHostImpl::DownloadURL(
@@ -5079,8 +5081,9 @@ void RenderFrameHostImpl::HandleAccessibilityFindInPageTermination() {
   }
 }
 
+// TODO(crbug.com/1213863): Move this method to content::PageImpl.
 void RenderFrameHostImpl::DocumentOnLoadCompleted() {
-  document_associated_data_->is_on_load_completed = true;
+  GetPage()->set_is_on_load_completed(true);
   // This message is only sent for top-level frames.
   //
   // TODO(avi): when frame tree mirroring works correctly, add a check here
@@ -11314,19 +11317,18 @@ void RenderFrameHostImpl::DisableWebRtcEventLogOutput(int lid) {
 }
 
 bool RenderFrameHostImpl::IsDocumentOnLoadCompletedInMainFrame() {
-  auto* main_frame = GetMainFrame();
-  return main_frame->document_associated_data_->is_on_load_completed;
+  return GetPage()->is_on_load_completed();
 }
 
+// TODO(crbug.com/1192003): Move this method to content::Page when available.
 const GURL& RenderFrameHostImpl::ManifestURL() {
-  auto* main_frame = GetMainFrame();
-  return main_frame->document_associated_data_->manifest_url;
+  return GetPage()->manifest_url();
 }
 
+// TODO(crbug.com/1192003): Move this method to content::Page when available.
 const std::vector<blink::mojom::FaviconURLPtr>&
 RenderFrameHostImpl::FaviconURLs() {
-  auto* main_frame = GetMainFrame();
-  return main_frame->document_associated_data_->favicon_urls;
+  return GetPage()->favicon_urls();
 }
 
 mojo::PendingRemote<network::mojom::CookieAccessObserver>
