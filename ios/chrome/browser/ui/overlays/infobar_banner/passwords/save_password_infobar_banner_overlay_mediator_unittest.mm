@@ -63,7 +63,7 @@ TEST_F(SavePasswordInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   NSString* subtitle =
       [NSString stringWithFormat:@"%@ %@", kUsername, password];
   NSString* bannerAccessibilityLabel =
-      [NSString stringWithFormat:@"%@, %@, %@", title, kUsername,
+      [NSString stringWithFormat:@"%@,%@, %@", title, kUsername,
                                  l10n_util::GetNSString(
                                      IDS_IOS_SETTINGS_PASSWORD_HIDDEN_LABEL)];
   EXPECT_NSEQ(bannerAccessibilityLabel, consumer.bannerAccessibilityLabel);

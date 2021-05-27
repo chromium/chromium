@@ -52,7 +52,7 @@
                                          withString:@"•"
                                     startingAtIndex:0];
   NSString* bannerAccessibilityLabel =
-      [NSString stringWithFormat:@"%@, %@, %@", title, username,
+      [NSString stringWithFormat:@"%@,%@, %@", title, username,
                                  l10n_util::GetNSString(
                                      IDS_IOS_SETTINGS_PASSWORD_HIDDEN_LABEL)];
   [self.consumer setBannerAccessibilityLabel:bannerAccessibilityLabel];

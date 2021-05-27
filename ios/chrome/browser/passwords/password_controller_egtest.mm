@@ -52,7 +52,7 @@ using chrome_test_util::UseSuggestedPasswordMatcher;
 
 id<GREYMatcher> PasswordInfobar(int prompt_id) {
   NSString* bannerLabel =
-      [NSString stringWithFormat:@"%@, %@", l10n_util::GetNSString(prompt_id),
+      [NSString stringWithFormat:@"%@,%@", l10n_util::GetNSString(prompt_id),
                                  kSavedCredentialLabel];
   return grey_allOf(grey_accessibilityID(kInfobarBannerViewIdentifier),
                     grey_accessibilityLabel(bannerLabel), nil);
