@@ -9,13 +9,8 @@
 
 #include "base/strings/string_piece_forward.h"
 
-class GURL;
-
 // Returns true if Cast Streaming is enabled for this process.
 bool IsCastStreamingEnabled();
-
-// Returns true if |url| is the Cast Streaming media source URL.
-bool IsCastStreamingMediaSourceUrl(const GURL& url);
 
 // TODO(crbug.com/1082821): Remove these 2 functions below once the Cast
 // Streaming Receiver is implemented as a separate component from WebEngine.

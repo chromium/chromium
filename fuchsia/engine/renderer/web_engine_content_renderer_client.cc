@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
-#include "components/cast_streaming/renderer/cast_streaming_demuxer.h"
 #include "components/cdm/renderer/widevine_key_system_properties.h"
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
@@ -19,6 +18,7 @@
 #include "fuchsia/engine/features.h"
 #include "fuchsia/engine/renderer/web_engine_url_loader_throttle_provider.h"
 #include "fuchsia/engine/switches.h"
+#include "media/base/demuxer.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
@@ -158,6 +158,9 @@ void WebEngineContentRendererClient::RenderFrameCreated(
       render_frame_id, std::move(render_frame_observer));
   DCHECK(render_frame_observer_iter.second);
 
+  // Call into the cast_streaming-specific frame creation logic.
+  cast_streaming_demuxer_provider_.RenderFrameCreated(render_frame);
+
   // Lifetime is tied to |render_frame| via content::RenderFrameObserver.
   new media_control::MediaPlaybackOptions(render_frame);
 }
@@ -259,23 +262,12 @@ WebEngineContentRendererClient::OverrideDemuxerForUrl(
     content::RenderFrame* render_frame,
     const GURL& url,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner) {
-  if (IsCastStreamingEnabled() && IsCastStreamingMediaSourceUrl(url)) {
-    auto iter =
-        render_frame_id_to_observer_map_.find(render_frame->GetRoutingID());
-    DCHECK(iter != render_frame_id_to_observer_map_.end());
-    // Do not create a CastStreamingDemuxer if the Cast Streaming MessagePort
-    // was not set in the browser process. This will manifest as an unbound
-    // CastStreamingReceiver object in the renderer process.
-    // TODO(crbug.com/1082821): Simplify the instantiation conditions for the
-    // CastStreamingDemuxer once the CastStreamingReceiver Component has been
-    // implemented.
-    if (iter->second->cast_streaming_receiver()->IsBound()) {
-      return std::make_unique<cast_streaming::CastStreamingDemuxer>(
-          iter->second->cast_streaming_receiver(), media_task_runner);
-    }
+  if (!IsCastStreamingEnabled()) {
+    return nullptr;
   }
 
-  return nullptr;
+  return cast_streaming_demuxer_provider_.OverrideDemuxerForUrl(
+      render_frame, url, std::move(media_task_runner));
 }
 
 bool WebEngineContentRendererClient::RunClosureWhenInForeground(

@@ -4,9 +4,24 @@
 
 import("//testing/test.gni")
 
-# TODO(crbug.com/1208195): Move code to correct place with respect to the
-# /public folder to only expose publicly needed headers.
 source_set("renderer") {
+  deps = [
+    ":demuxer",
+    "//base",
+    "//components/cast_streaming/public",
+    "//content/public/renderer",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public/common",
+  ]
+  public = [ "public/demuxer_provider.h " ]
+  sources = [
+    "cast_streaming_render_frame_observer.cc",
+    "cast_streaming_render_frame_observer.h",
+    "demuxer_provider.cc",
+  ]
+}
+
+source_set("demuxer") {
   deps = [
     "//base",
     "//components/cast_streaming/public/mojom",
@@ -20,6 +35,7 @@ source_set("renderer") {
     "cast_streaming_receiver.cc",
     "cast_streaming_receiver.h",
   ]
+  visibility = [ ":*" ]
 }
 
 # NOTE: This source set is intentionally empty. It is used to force the building

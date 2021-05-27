@@ -11,7 +11,6 @@
 
 namespace {
 
-constexpr char kCastStreamingReceiverUrl[] = "data:cast_streaming_receiver";
 constexpr char kCastStreamingMessagePortOrigin[] = "cast-streaming:receiver";
 
 }  // namespace
@@ -21,10 +20,6 @@ bool IsCastStreamingEnabled() {
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableCastStreamingReceiver);
   return is_cast_streaming_enabled;
-}
-
-bool IsCastStreamingMediaSourceUrl(const GURL& url) {
-  return url == kCastStreamingReceiverUrl;
 }
 
 bool IsCastStreamingAppOrigin(base::StringPiece origin) {

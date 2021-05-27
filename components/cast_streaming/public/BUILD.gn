@@ -1,0 +1,22 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+source_set("public") {
+  deps = [ "//url" ]
+  sources = [
+    "cast_streaming_url.cc",
+    "cast_streaming_url.h",
+  ]
+}
+
+# NOTE: This source set is intentionally empty. It is used to force the building
+# of the code defined in this directory, as it is production code which must
+# be validated as part of the CQ.
+source_set("unit_tests") {
+  testonly = true
+  deps = [ ":public" ]
+  sources = []
+}
