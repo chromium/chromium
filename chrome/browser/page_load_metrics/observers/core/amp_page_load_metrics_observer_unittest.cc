@@ -507,20 +507,10 @@ TEST_F(AMPPageLoadMetricsObserverTest,
       "SubFrame.LayoutInstability.MaxCumulativeShiftScore.SlidingWindow."
       "Duration300ms",
       25);
-  tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(),
-      "SubFrame.LayoutInstability.MaxCumulativeShiftScore."
-      "SessionWindowByInputs."
-      "Gap1000ms.Max5000ms",
-      25);
   tester()->histogram_tester().ExpectUniqueSample(
       "PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore."
       "Subframe.SessionWindow.Gap1000ms.Max5000ms",
       4, 1);
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore."
-      "Subframe.SessionWindowByInputs.Gap1000ms.Max5000ms",
-      3, 1);
 }
 
 TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetricsFullNavigation) {

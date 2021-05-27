@@ -736,13 +736,9 @@ void PageLoadMetricsUpdateDispatcher::UpdateMobileFriendliness(
 void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(
     const mojom::FrameRenderDataUpdate& render_data) {
   page_render_data_.layout_shift_score += render_data.layout_shift_delta;
-  // Should add input timestamps before layout shifts.
-  layout_shift_normalization_.AddInputTimeStamps(render_data.input_timestamps);
   layout_shift_normalization_.AddNewLayoutShifts(
       render_data.new_layout_shifts, base::TimeTicks::Now(),
       page_render_data_.layout_shift_score);
-  layout_shift_normalization_for_bfcache_.AddInputTimeStamps(
-      render_data.input_timestamps);
   layout_shift_normalization_for_bfcache_.AddNewLayoutShifts(
       render_data.new_layout_shifts, base::TimeTicks::Now(),
       page_render_data_.layout_shift_score -

@@ -200,9 +200,6 @@ void AMPPageLoadMetricsObserver::OnSubFrameRenderDataUpdate(
   it->second.render_data.layout_shift_score_before_input_or_scroll +=
       render_data.layout_shift_delta_before_input_or_scroll;
 
-  // Should add input timestamps before layout shifts.
-  it->second.layout_shift_normalization.AddInputTimeStamps(
-      render_data.input_timestamps);
   it->second.layout_shift_normalization.AddNewLayoutShifts(
       render_data.new_layout_shifts, base::TimeTicks::Now(),
       it->second.render_data.layout_shift_score);
@@ -481,11 +478,7 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
                 normalized_cls_data.sliding_windows_duration300ms_max_cls))
         .SetSubFrame_LayoutInstability_MaxCumulativeShiftScore_SlidingWindow_Duration1000ms(
             page_load_metrics::LayoutShiftUkmValue(
-                normalized_cls_data.sliding_windows_duration1000ms_max_cls))
-        .SetSubFrame_LayoutInstability_MaxCumulativeShiftScore_SessionWindowByInputs_Gap1000ms_Max5000ms(
-            page_load_metrics::LayoutShiftUkmValue(
-                normalized_cls_data
-                    .session_windows_by_inputs_gap1000ms_max5000ms_max_cls));
+                normalized_cls_data.sliding_windows_duration1000ms_max_cls));
   }
 
   // For UMA, report (shift_score * 10) an an int in the range [0,100].
@@ -501,12 +494,6 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
           "Subframe.SessionWindow.Gap1000ms.Max5000ms",
           page_load_metrics::LayoutShiftUmaValue(
               normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls));
-      base::UmaHistogramCounts100(
-          "PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore."
-          "Subframe.SessionWindowByInputs.Gap1000ms.Max5000ms",
-          page_load_metrics::LayoutShiftUmaValue(
-              normalized_cls_data
-                  .session_windows_by_inputs_gap1000ms_max5000ms_max_cls));
     }
   } else {
     UMA_HISTOGRAM_COUNTS_100(
@@ -520,12 +507,6 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
           "Subframe.FullNavigation.SessionWindow.Gap1000ms.Max5000ms",
           page_load_metrics::LayoutShiftUmaValue(
               normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls));
-      base::UmaHistogramCounts100(
-          "PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore."
-          "Subframe.FullNavigation.SessionWindowByInputs.Gap1000ms.Max5000ms",
-          page_load_metrics::LayoutShiftUmaValue(
-              normalized_cls_data
-                  .session_windows_by_inputs_gap1000ms_max5000ms_max_cls));
     }
   }
 
