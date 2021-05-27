@@ -799,7 +799,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    Records how long it took to extract visual features. This is recorded on
+    Records how long it took to extract visual features on the main thread. Work
+    performed off-thread is not recorded in this histogram. This is recorded on
     every phishing classification.
   </summary>
 </histogram>

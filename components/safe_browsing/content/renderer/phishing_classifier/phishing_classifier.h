@@ -115,6 +115,10 @@ class PhishingClassifier {
   // Called to extract the visual features of the current page.
   void ExtractVisualFeatures();
 
+  // Callback when off-thread playback of the recorded paint operations is
+  // complete.
+  void OnPlaybackDone(std::unique_ptr<SkBitmap> bitmap);
+
   // Callback when visual feature extraction is complete.
   // If it was successful, computes a score and runs the DoneCallback.
   // If extraction was unsuccessful, runs the DoneCallback with a

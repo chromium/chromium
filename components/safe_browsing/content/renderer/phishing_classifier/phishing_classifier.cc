@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/paint/paint_recorder.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "components/safe_browsing/buildflags.h"
@@ -43,6 +44,29 @@
 #include "url/gurl.h"
 
 namespace safe_browsing {
+
+namespace {
+
+std::unique_ptr<SkBitmap> PlaybackOnBackgroundThread(
+    sk_sp<cc::PaintRecord> paint_record,
+    gfx::Rect bounds) {
+  // Use the Rec. 2020 color space, in case the user input is wide-gamut.
+  std::unique_ptr<SkBitmap> bitmap = std::make_unique<SkBitmap>();
+  sk_sp<SkColorSpace> rec2020 = SkColorSpace::MakeRGB(
+      {2.22222f, 0.909672f, 0.0903276f, 0.222222f, 0.0812429f, 0, 0},
+      SkNamedGamut::kRec2020);
+  SkImageInfo bitmap_info = SkImageInfo::Make(
+      bounds.width(), bounds.height(), SkColorType::kN32_SkColorType,
+      SkAlphaType::kUnpremul_SkAlphaType, rec2020);
+  if (!bitmap->tryAllocPixels(bitmap_info))
+    return nullptr;
+
+  SkCanvas sk_canvas(*bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
+  paint_record->Playback(&sk_canvas);
+  return bitmap;
+}
+
+}  // namespace
 
 const float PhishingClassifier::kInvalidScore = -1.0;
 const float PhishingClassifier::kPhishyThreshold = 0.5;
@@ -188,27 +212,41 @@ void PhishingClassifier::ExtractVisualFeatures() {
   blink::WebLocalFrame* frame = render_frame_->GetWebFrame();
   gfx::SizeF viewport_size = frame->View()->VisualViewportSize();
   gfx::Rect bounds = ToEnclosingRect(gfx::RectF(viewport_size));
-  bitmap_ = std::make_unique<SkBitmap>();
-  // Use the Rec. 2020 color space, in case the user input is wide-gamut.
-  sk_sp<SkColorSpace> rec2020 = SkColorSpace::MakeRGB(
-      {2.22222f, 0.909672f, 0.0903276f, 0.222222f, 0.0812429f, 0, 0},
-      SkNamedGamut::kRec2020);
-  SkImageInfo bitmap_info = SkImageInfo::Make(
-      bounds.width(), bounds.height(), SkColorType::kN32_SkColorType,
-      SkAlphaType::kUnpremul_SkAlphaType, rec2020);
-  if (!bitmap_->tryAllocPixels(bitmap_info))
-    return VisualExtractionFinished(/*success=*/false);
-  SkCanvas sk_canvas(*bitmap_, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
-  cc::SkiaPaintCanvas cc_canvas(&sk_canvas);
+
   auto tracker = std::make_unique<paint_preview::PaintPreviewTracker>(
       base::UnguessableToken::Create(), frame->GetEmbeddingToken(),
       /*is_main_frame=*/true);
-  cc_canvas.SetPaintPreviewTracker(tracker.get());
-  VisualExtractionFinished(frame->CapturePaintPreview(
-      bounds, &cc_canvas, /*include_linked_destinations=*/false,
-      /*skip_accelerated_content=*/false));
+  cc::PaintRecorder recorder;
+  cc::PaintCanvas* canvas =
+      recorder.beginRecording(bounds.width(), bounds.height());
+  canvas->SetPaintPreviewTracker(tracker.get());
+
+  if (!frame->CapturePaintPreview(bounds, canvas,
+                                  /*include_linked_destinations=*/false,
+                                  /*skip_accelerated_content=*/true)) {
+    VisualExtractionFinished(/*success=*/false);
+  }
+
+  sk_sp<cc::PaintRecord> paint_record = recorder.finishRecordingAsPicture();
+
   base::UmaHistogramTimes("SBClientPhishing.VisualFeatureTime",
                           base::TimeTicks::Now() - start_time);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::WithBaseSyncPrimitives()},
+      base::BindOnce(&PlaybackOnBackgroundThread, std::move(paint_record),
+                     bounds),
+      base::BindOnce(&PhishingClassifier::OnPlaybackDone,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void PhishingClassifier::OnPlaybackDone(std::unique_ptr<SkBitmap> bitmap) {
+  if (bitmap) {
+    bitmap_ = std::move(bitmap);
+    VisualExtractionFinished(/*success=*/true);
+  } else {
+    VisualExtractionFinished(/*success=*/false);
+  }
 }
 
 void PhishingClassifier::VisualExtractionFinished(bool success) {
