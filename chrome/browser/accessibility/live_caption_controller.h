@@ -75,6 +75,7 @@ class LiveCaptionController : public KeyedService,
  private:
   friend class LiveCaptionControllerFactory;
   friend class LiveCaptionControllerTest;
+  friend class LiveCaptionSpeechRecognitionHostTest;
 
   // SodaInstaller::Observer:
   void OnSodaInstalled() override;

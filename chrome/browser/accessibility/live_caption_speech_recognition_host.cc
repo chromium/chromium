@@ -70,8 +70,12 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionError() {
 
 void LiveCaptionSpeechRecognitionHost::RenderFrameDeleted(
     content::RenderFrameHost* frame_host) {
-  if (frame_host == frame_host_)
+  if (frame_host == frame_host_) {
+    LiveCaptionController* live_caption_controller = GetLiveCaptionController();
+    if (live_caption_controller)
+      live_caption_controller->OnAudioStreamEnd(this);
     frame_host_ = nullptr;
+  }
 }
 
 content::WebContents* LiveCaptionSpeechRecognitionHost::GetWebContents() {
