@@ -21,11 +21,13 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.util.Coordinates;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.UseZoomForDSFPolicy;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for the implementation of onProvideVirtualStructure in
@@ -39,9 +41,15 @@ public class AssistViewStructureTest {
     /**
      * Helper to call onProvideVirtualStructure and block until the results are received.
      */
-    private TestViewStructureInterface getViewStructureFromHtml(String htmlContent) {
+    private TestViewStructureInterface getViewStructureFromHtml(String htmlContent, String js)
+            throws TimeoutException {
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(htmlContent));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
+
+        if (js != null) {
+            JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                    mActivityTestRule.getWebContents(), js);
+        }
 
         final WebContentsAccessibilityImpl wcax = mActivityTestRule.getWebContentsAccessibility();
 
@@ -55,6 +63,14 @@ public class AssistViewStructureTest {
                                             -> testViewStructure.isDone(),
                 "Timed out waiting for onProvideVirtualStructure");
         return testViewStructure;
+    }
+
+    /**
+     * Call getViewStructureFromHtml without the js parameter.
+     */
+    private TestViewStructureInterface getViewStructureFromHtml(String htmlContent)
+            throws TimeoutException {
+        return getViewStructureFromHtml(htmlContent, null);
     }
 
     private double cssToPixel(double css) {
@@ -71,6 +87,19 @@ public class AssistViewStructureTest {
             Assert.fail("Unexpected ExecutionException");
             return 0.0;
         }
+    }
+
+    private String getSelectionScript(String node1, int start, String node2, int end) {
+        return "var element1 = document.getElementById('" + node1 + "');"
+                + "var node1 = element1.childNodes.item(0);"
+                + "var range=document.createRange();"
+                + "range.setStart(node1," + start + ");"
+                + "var element2 = document.getElementById('" + node2 + "');"
+                + "var node2 = element2.childNodes.item(0);"
+                + "range.setEnd(node2," + end + ");"
+                + "var selection=window.getSelection();"
+                + "selection.removeAllRanges();"
+                + "selection.addRange(range);";
     }
 
     /**
@@ -380,5 +409,147 @@ public class AssistViewStructureTest {
         TestViewStructureInterface grandchild = child.getChild(0);
         int style = grandchild.getStyle();
         Assert.assertTrue(0 != (style & ViewNode.TEXT_STYLE_BOLD));
+    }
+
+    /**
+     * Test selection is propagated when it spans one character.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testOneCharacterSelection() throws Throwable {
+        final String data = "<html><body><b id='node' role='none'>foo</b></body></html>";
+        final String js = getSelectionScript("node", 0, "node", 1);
+        TestViewStructureInterface root = getViewStructureFromHtml(data, js).getChild(0);
+
+        Assert.assertEquals(1, root.getChildCount());
+        Assert.assertEquals("", root.getText());
+        TestViewStructureInterface child = root.getChild(0);
+        TestViewStructureInterface grandchild = child.getChild(0);
+        Assert.assertEquals("foo", grandchild.getText());
+        Assert.assertEquals(0, grandchild.getTextSelectionStart());
+        Assert.assertEquals(1, grandchild.getTextSelectionEnd());
+    }
+
+    /**
+     * Test selection is propagated when it spans one node.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testOneNodeSelection() throws Throwable {
+        final String data = "<html><body><b id='node' role='none'>foo</b></body></html>";
+        final String js = getSelectionScript("node", 0, "node", 3);
+        TestViewStructureInterface root = getViewStructureFromHtml(data, js).getChild(0);
+
+        Assert.assertEquals(1, root.getChildCount());
+        Assert.assertEquals("", root.getText());
+        TestViewStructureInterface child = root.getChild(0);
+        TestViewStructureInterface grandchild = child.getChild(0);
+        Assert.assertEquals("foo", grandchild.getText());
+        Assert.assertEquals(0, grandchild.getTextSelectionStart());
+        Assert.assertEquals(3, grandchild.getTextSelectionEnd());
+    }
+
+    /**
+     * Test selection is propagated when it spans to the beginning of the next node.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testSubsequentNodeSelection() throws Throwable {
+        final String data = "<html><body><b id='node1' role='none'>foo</b>"
+                + "<b id='node2' role='none'>bar</b></body></html>";
+        final String js = getSelectionScript("node1", 1, "node2", 1);
+        TestViewStructureInterface root = getViewStructureFromHtml(data, js).getChild(0);
+
+        Assert.assertEquals(1, root.getChildCount());
+        Assert.assertEquals("", root.getText());
+        TestViewStructureInterface child = root.getChild(0);
+        TestViewStructureInterface grandchild = child.getChild(0);
+        Assert.assertEquals("foo", grandchild.getText());
+        Assert.assertEquals(1, grandchild.getTextSelectionStart());
+        Assert.assertEquals(3, grandchild.getTextSelectionEnd());
+        grandchild = child.getChild(1);
+        Assert.assertEquals("bar", grandchild.getText());
+        Assert.assertEquals(0, grandchild.getTextSelectionStart());
+        Assert.assertEquals(1, grandchild.getTextSelectionEnd());
+    }
+
+    /**
+     * Test selection is propagated across multiple nodes.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testMultiNodeSelection() throws Throwable {
+        final String data = "<html><body><b id='node1' role='none'>foo</b><b>middle</b>"
+                + "<b id='node2' role='none'>bar</b></body></html>";
+        final String js = getSelectionScript("node1", 1, "node2", 1);
+        TestViewStructureInterface root = getViewStructureFromHtml(data, js).getChild(0);
+
+        Assert.assertEquals(1, root.getChildCount());
+        Assert.assertEquals("", root.getText());
+        TestViewStructureInterface child = root.getChild(0);
+        TestViewStructureInterface grandchild = child.getChild(0);
+        Assert.assertEquals("foo", grandchild.getText());
+        Assert.assertEquals(1, grandchild.getTextSelectionStart());
+        Assert.assertEquals(3, grandchild.getTextSelectionEnd());
+        grandchild = child.getChild(1);
+        Assert.assertEquals("middle", grandchild.getText());
+        Assert.assertEquals(0, grandchild.getTextSelectionStart());
+        Assert.assertEquals(6, grandchild.getTextSelectionEnd());
+        grandchild = child.getChild(2);
+        Assert.assertEquals("bar", grandchild.getText());
+        Assert.assertEquals(0, grandchild.getTextSelectionStart());
+        Assert.assertEquals(1, grandchild.getTextSelectionEnd());
+    }
+
+    /**
+     * Test selection is propagated from an HTML input element.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testRequestAccessibilitySnapshotInputSelection() throws Throwable {
+        final String data = "<html><body><input id='input' value='Hello, world'></body></html>";
+        final String js = "var input = document.getElementById('input');"
+                + "input.select();"
+                + "input.selectionStart = 0;"
+                + "input.selectionEnd = 5;";
+
+        TestViewStructureInterface root = getViewStructureFromHtml(data, js).getChild(0);
+
+        Assert.assertEquals(1, root.getChildCount());
+        Assert.assertEquals("", root.getText());
+        TestViewStructureInterface child = root.getChild(0);
+        TestViewStructureInterface grandchild = child.getChild(0);
+        Assert.assertEquals("Hello, world", grandchild.getText());
+        Assert.assertEquals(0, grandchild.getTextSelectionStart());
+        Assert.assertEquals(5, grandchild.getTextSelectionEnd());
+    }
+
+    /**
+     * Test that the value is propagated from an HTML password field.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testRequestAccessibilitySnapshotPasswordField() throws Throwable {
+        final String data =
+                "<html><body><input id='input' type='password' value='foo'></body></html>";
+        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+
+        Assert.assertEquals(1, root.getChildCount());
+        Assert.assertEquals("", root.getText());
+        TestViewStructureInterface child = root.getChild(0);
+        TestViewStructureInterface grandchild = child.getChild(0);
+        Assert.assertEquals("•••", grandchild.getText());
     }
 }

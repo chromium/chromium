@@ -584,7 +584,6 @@ android_library("content_javatests") {
     "javatests/src/org/chromium/content/browser/remoteobjects/RemoteObjectHostImplTest.java",
     "javatests/src/org/chromium/content/browser/scheduler/NativePostTaskTest.java",
     "javatests/src/org/chromium/content/browser/scheduler/UiThreadSchedulerTest.java",
-    "javatests/src/org/chromium/content/browser/webcontents/AccessibilitySnapshotTest.java",
     "javatests/src/org/chromium/content/browser/webcontents/WebContentsTest.java",
   ]
 

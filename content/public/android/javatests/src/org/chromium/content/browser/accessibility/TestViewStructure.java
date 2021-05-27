@@ -30,6 +30,8 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
     private int mFgColor;
     private int mBgColor;
     private int mStyle;
+    private int mSelectionStart;
+    private int mSelectionEnd;
 
     public TestViewStructure() {}
 
@@ -129,12 +131,12 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
 
     @Override
     public int getTextSelectionStart() {
-        return 0;
+        return mSelectionStart;
     }
 
     @Override
     public int getTextSelectionEnd() {
-        return 0;
+        return mSelectionEnd;
     }
 
     @Override
@@ -301,7 +303,11 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
     }
 
     @Override
-    public void setText(CharSequence text, int selectionStart, int selectionEnd) {}
+    public void setText(CharSequence text, int selectionStart, int selectionEnd) {
+        mText = text;
+        mSelectionStart = selectionStart;
+        mSelectionEnd = selectionEnd;
+    }
 
     @Override
     public void setTextStyle(float size, int fgColor, int bgColor, int style) {

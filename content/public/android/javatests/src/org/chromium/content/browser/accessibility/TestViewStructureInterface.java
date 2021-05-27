@@ -62,4 +62,10 @@ interface TestViewStructureInterface {
 
     /** @see android.view.ViewStructure#getText */
     public CharSequence getText();
+
+    /** @see android.view.ViewStructure#getTextSelectionStart */
+    public int getTextSelectionStart();
+
+    /** @see android.view.ViewStructure#getTextSelectionEnd */
+    public int getTextSelectionEnd();
 }
