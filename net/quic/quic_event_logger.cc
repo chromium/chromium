@@ -274,60 +274,14 @@ base::Value NetLogQuicTransportParametersParams(
 
 base::Value NetLogQuicZeroRttRejectReason(int reason) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  std::string reason_detail = "";
-  switch (reason) {
-    case ssl_early_data_unknown:
-      reason_detail = "The handshake has not progressed far enough";
-      break;
-    case ssl_early_data_disabled:
-      reason_detail = "0-RTT is disabled for this connection.";
-      break;
-    case ssl_early_data_accepted:
-      reason_detail = "0-RTT was accepted";
-      break;
-    case ssl_early_data_protocol_version:
-      reason_detail = "The negotiated protocol doesn't support 0-RTT.";
-      break;
-    case ssl_early_data_peer_declined:
-      reason_detail =
-          "The peer declined to offer or accept 0-RTT for an unknown reason.";
-      break;
-    case ssl_early_data_no_session_offered:
-      reason_detail = "The client did not offer a session.";
-      break;
-    case ssl_early_data_session_not_resumed:
-      reason_detail = "The server declined to resume the session.";
-      break;
-    case ssl_early_data_unsupported_for_session:
-      reason_detail = "The session does not support 0-RTT.";
-      break;
-    case ssl_early_data_hello_retry_request:
-      reason_detail = "The server sent a HelloRetryRequest.";
-      break;
-    case ssl_early_data_alpn_mismatch:
-      reason_detail = "The negotiated ALPN protocol did not match the session.";
-      break;
-    case ssl_early_data_channel_id:
-      reason_detail =
-          "The connection negotiated Channel ID, which is incompatible with "
-          "0-RTT.";
-      break;
-    case ssl_early_data_token_binding:
-      reason_detail =
-          "The connection negotiated token binding, which is incompatible with "
-          "0-RTT.";
-      break;
-    case ssl_early_data_ticket_age_skew:
-      reason_detail = "The client and server ticket age were too far apart.";
-      break;
-    case ssl_early_data_quic_parameter_mismatch:
-      reason_detail =
-          "QUIC parameters differ between this connection and the original.";
-      break;
-    default:
-      reason_detail = "Unknown reason " + base::NumberToString(reason);
+  const char* reason_detail = SSL_early_data_reason_string(
+      static_cast<ssl_early_data_reason_t>(reason));
+  if (reason_detail) {
+    dict.SetStringKey("reason", reason_detail);
+  } else {
+    dict.SetStringKey("reason",
+                      "Unknown reason " + base::NumberToString(reason));
   }
-  dict.SetStringKey("reason", reason_detail);
   return dict;
 }
 
