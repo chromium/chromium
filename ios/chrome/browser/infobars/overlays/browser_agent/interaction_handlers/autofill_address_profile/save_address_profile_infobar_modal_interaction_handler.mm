@@ -26,9 +26,6 @@ SaveAddressProfileInfobarModalInteractionHandler::
 void SaveAddressProfileInfobarModalInteractionHandler::PerformMainAction(
     InfoBarIOS* infobar) {
   infobar->set_accepted(GetInfoBarDelegate(infobar)->Accept());
-  // Post save, the infobar should not be brought back from the omnibox
-  // icon.
-  infobar->RemoveSelf();
 }
 
 void SaveAddressProfileInfobarModalInteractionHandler::SaveEditedProfile(
@@ -41,9 +38,6 @@ void SaveAddressProfileInfobarModalInteractionHandler::SaveEditedProfile(
     GetInfoBarDelegate(infobar)->SetProfileInfo(type, data);
   }
   infobar->set_accepted(GetInfoBarDelegate(infobar)->EditAccepted());
-  // On post-edit save, the infobar should not be brought back from the omnibox
-  // icon.
-  infobar->RemoveSelf();
 }
 
 #pragma mark - Private

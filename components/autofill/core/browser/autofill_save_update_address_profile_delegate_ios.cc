@@ -34,7 +34,8 @@ AutofillSaveUpdateAddressProfileDelegateIOS::
   // If the user has navigated away without saving the modal, then the
   // |address_profile_save_prompt_callback_| is run here.
   if (!address_profile_save_prompt_callback_.is_null()) {
-    modal_was_shown_ = false;
+    // TODO(crbug.com/1167062): Record last action on the infobar and send
+    // callback accordingly.
     InfoBarDismissed();
   }
 }
@@ -146,11 +147,6 @@ bool AutofillSaveUpdateAddressProfileDelegateIOS::Accept() {
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::InfoBarDismissed() {
-  // If the address profile modal dialog is presented, InfoBarDismissed is
-  // called due to BannerVisibilityChanged.
-  if (modal_was_shown_)
-    return;
-
   RunSaveAddressProfilePromptCallback(
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
 }
@@ -182,7 +178,9 @@ bool AutofillSaveUpdateAddressProfileDelegateIOS::ShouldExpire(
     const NavigationDetails& details) const {
   // Expire the Infobar unless the navigation was triggered by the form that
   // presented the Infobar, or the navigation is a redirect.
-  return !details.is_form_submission && !details.is_redirect;
+  // Also, expire the infobar if the navigation is to a different page.
+  return !details.is_form_submission && !details.is_redirect &&
+         ConfirmInfoBarDelegate::ShouldExpire(details);
 }
 
 int AutofillSaveUpdateAddressProfileDelegateIOS::GetButtons() const {
@@ -200,9 +198,6 @@ void AutofillSaveUpdateAddressProfileDelegateIOS::
     RunSaveAddressProfilePromptCallback(
         AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   std::move(address_profile_save_prompt_callback_).Run(decision, profile_);
-
-  // Reset the modal dialog flags.
-  modal_was_shown_ = false;
 }
 
 }  // namespace autofill

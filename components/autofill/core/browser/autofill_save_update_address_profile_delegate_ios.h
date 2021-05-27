@@ -70,8 +70,6 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
 
   const autofill::AutofillProfile* GetProfile() const;
   const autofill::AutofillProfile* GetOriginalProfile() const;
-  bool modal_was_shown() { return modal_was_shown_; }
-  void set_modal_was_shown_to_true() { modal_was_shown_ = true; }
 
   // ConfirmInfoBarDelegate
   int GetIconId() const override;
@@ -102,9 +100,6 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   // The callback to run once the user makes a decision.
   AutofillClient::AddressProfileSavePromptCallback
       address_profile_save_prompt_callback_;
-
-  // True if the AddressProfile modal dialog was shown.
-  bool modal_was_shown_ = false;
 };
 
 }  // namespace autofill
