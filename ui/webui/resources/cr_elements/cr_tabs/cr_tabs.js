@@ -22,55 +22,68 @@
 import '../hidden_style_css.m.js';
 import '../shared_vars_css.m.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'cr-tabs',
+/** @polymer */
+export class CrTabsElement extends PolymerElement {
+  static get is() {
+    return 'cr-tabs';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * Tab names displayed in each tab.
-     * @type {!Array<string>}
-     */
-    tabNames: {
-      type: Array,
-      value: () => [],
-    },
+  static get properties() {
+    return {
+      /**
+       * Tab names displayed in each tab.
+       * @type {!Array<string>}
+       */
+      tabNames: {
+        type: Array,
+        value: () => [],
+      },
 
-    /** Index of the selected tab. */
-    selected: {
-      type: Number,
-      notify: true,
-      observer: 'updateUi_',
-    },
-  },
+      /** Index of the selected tab. */
+      selected: {
+        type: Number,
+        notify: true,
+        observer: 'updateUi_',
+      },
+    };
+  }
 
-  hostAttributes: {
-    role: 'tablist',
-  },
+  constructor() {
+    super();
 
-  listeners: {
-    keydown: 'onKeyDown_',
-    mousedown: 'onMouseDown_',
-  },
+    /** @private {boolean} */
+    this.isRtl_ = false;
 
-  /** @private {boolean} */
-  isRtl_: false,
-
-  /** @private {?number} */
-  lastSelected_: null,
+    /** @private {?number} */
+    this.lastSelected_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     this.isRtl_ = this.matches(':host-context([dir=rtl]) cr-tabs');
-  },
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    this.setAttribute('role', 'tablist');
+    this.addEventListener(
+        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener('mousedown', this.onMouseDown_);
+  }
 
   /** @private */
   onMouseDown_() {
     this.classList.remove('keyboard-focus');
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -94,18 +107,19 @@ Polymer({
     e.preventDefault();
     e.stopPropagation();
     this.selected = newSelection;
-  },
+  }
 
   /** @private */
   onSelectionBarTransitionEnd_() {
     this.$.selectionBar.classList.replace('expand', 'contract');
-    const tab = this.$$(`.tab:nth-of-type(${this.selected + 1})`);
+    const tab =
+        this.shadowRoot.querySelector(`.tab:nth-of-type(${this.selected + 1})`);
     if (!tab) {
       this.$.selectionBar.style.transform = 'scaleX(0)';
       return;
     }
     this.updateSelectionBar_(tab.offsetLeft, tab.offsetWidth);
-  },
+  }
 
   /**
    * @param {!{model: !{index: number}}} _
@@ -113,7 +127,7 @@ Polymer({
    */
   onTabClick_({model: {index}}) {
     this.selected = index;
-  },
+  }
 
   /**
    * @param {number} left
@@ -152,7 +166,7 @@ Polymer({
 
     this.$.selectionBar.style.transform =
         `translateX(${leftPercent}%) scaleX(${widthRatio})`;
-  },
+  }
 
   /** @private */
   updateUi_() {
@@ -213,5 +227,7 @@ Polymer({
     const left = Math.min(newLeft, oldLeft);
     const right = Math.max(newLeft + newWidth, oldLeft + oldWidth);
     this.updateSelectionBar_(left, right - left);
-  },
-});
+  }
+}
+
+customElements.define(CrTabsElement.is, CrTabsElement);

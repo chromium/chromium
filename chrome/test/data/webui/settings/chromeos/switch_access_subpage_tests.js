@@ -118,7 +118,9 @@ suite('ManageAccessibilityPageTests', function() {
       previous: []
     });
 
-    return page.$$('#selectLinkRow').$$('#subLabel').textContent.trim();
+    return page.$$('#selectLinkRow')
+        .shadowRoot.querySelector('#subLabel')
+        .textContent.trim();
   }
 
 

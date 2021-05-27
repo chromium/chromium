@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
+import {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -30,7 +30,7 @@ suite('cr_tabs_test', function() {
    */
   function getTabElement(index) {
     return /** @type {!HTMLElement} */ (
-        tabs.$$(`.tab:nth-of-type(${index + 1})`));
+        tabs.shadowRoot.querySelector(`.tab:nth-of-type(${index + 1})`));
   }
 
   /**
@@ -128,7 +128,7 @@ suite('cr_tabs_test', function() {
   });
 
   test('selection underline does not freeze with two tabs', async () => {
-    const underline = tabs.$$('#selectionBar');
+    const underline = tabs.shadowRoot.querySelector('#selectionBar');
     const fullyExpanded = 'translateX(0%) scaleX(1)';
     tabs.tabNames = ['tab1', 'tab2'];
     assertEquals(undefined, tabs.selected);

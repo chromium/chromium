@@ -99,7 +99,8 @@ suite('PersonalizationHandler', function() {
     settings.Router.getInstance().navigateTo(
         settings.routes.PERSONALIZATION, params);
 
-    const deepLinkElement = personalizationPage.$.wallpaperButton.$$('#icon');
+    const deepLinkElement =
+        personalizationPage.$.wallpaperButton.shadowRoot.querySelector('#icon');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

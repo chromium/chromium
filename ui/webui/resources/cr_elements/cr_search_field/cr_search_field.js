@@ -15,28 +15,41 @@ import '../shared_style_css.m.js';
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrSearchFieldBehavior} from './cr_search_field_behavior.js';
+import {CrSearchFieldBehavior, CrSearchFieldBehaviorInterface} from './cr_search_field_behavior.js';
 
-Polymer({
-  is: 'cr-search-field',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrSearchFieldBehaviorInterface}
+ */
+const CrSearchFieldElementBase =
+    mixinBehaviors([CrSearchFieldBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class CrSearchFieldElement extends CrSearchFieldElementBase {
+  static get is() {
+    return 'cr-search-field';
+  }
 
-  behaviors: [CrSearchFieldBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    autofocus: {
-      type: Boolean,
-      value: false,
-    },
-  },
+  static get properties() {
+    return {
+      autofocus: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  /** @return {!CrInputElement} */
+  /** @return {!HTMLInputElement} */
   getSearchInput() {
-    return /** @type {!CrInputElement} */ (this.$.searchInput);
-  },
+    return /** @type {!HTMLInputElement} */ (this.$.searchInput);
+  }
 
   /** @private */
   onTapClear_() {
@@ -44,5 +57,7 @@ Polymer({
     setTimeout(() => {
       this.$.searchInput.focus();
     });
-  },
-});
+  }
+}
+
+customElements.define(CrSearchFieldElement.is, CrSearchFieldElement);

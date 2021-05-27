@@ -52,8 +52,8 @@ suite('PrintingPageTests', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement =
-        printingPage.$$('#printManagement').$$('cr-icon-button');
+    const deepLinkElement = printingPage.$$('#printManagement')
+                                .shadowRoot.querySelector('cr-icon-button');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -72,8 +72,8 @@ suite('PrintingPageTests', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement =
-        printingPage.$$('#scanningApp').$$('cr-icon-button');
+    const deepLinkElement = printingPage.$$('#scanningApp')
+                                .shadowRoot.querySelector('cr-icon-button');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

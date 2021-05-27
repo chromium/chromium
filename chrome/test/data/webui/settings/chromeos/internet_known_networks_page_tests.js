@@ -99,7 +99,8 @@ suite('InternetKnownNetworksPage', function() {
       const preferredElems = preferredList.querySelectorAll('cr-link-row');
       assertEquals(preferredElems.length, 1);
 
-      const deepLinkElement = preferredElems[0].$$('#icon');
+      const deepLinkElement =
+          preferredElems[0].shadowRoot.querySelector('#icon');
       assertTrue(!!deepLinkElement);
       await test_util.waitAfterNextRender();
       assertEquals(

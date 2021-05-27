@@ -185,9 +185,11 @@ suite('SettingsSubpageSearch', function() {
     element.setAttribute('autofocus', true);
     document.body.appendChild(element);
 
-    assertTrue(element.$$('cr-input').hasAttribute('autofocus'));
+    assertTrue(
+        element.shadowRoot.querySelector('cr-input').hasAttribute('autofocus'));
 
     element.removeAttribute('autofocus');
-    assertFalse(element.$$('cr-input').hasAttribute('autofocus'));
+    assertFalse(
+        element.shadowRoot.querySelector('cr-input').hasAttribute('autofocus'));
   });
 });

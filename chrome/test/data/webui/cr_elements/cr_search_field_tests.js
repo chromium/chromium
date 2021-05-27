@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
+import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -21,7 +21,7 @@ suite('cr-search-field', function() {
 
   /** @param {string} term */
   function simulateSearch(term) {
-    field.$$('#searchInput').value = term;
+    field.shadowRoot.querySelector('#searchInput').value = term;
     field.onSearchTermInput();
     field.onSearchTermSearch();
   }
@@ -68,10 +68,12 @@ suite('cr-search-field', function() {
     flush();
     assertTrue(field.hasSearchText);
 
-    field.$$('#clearSearch').click();
+    field.shadowRoot.querySelector('#clearSearch').click();
     assertEquals('', field.getValue());
     await flushTasks();
-    assertEquals(field.$$('#searchInput'), field.root.activeElement);
+    assertEquals(
+        field.shadowRoot.querySelector('#searchInput'),
+        field.root.activeElement);
     assertFalse(field.hasSearchText);
   });
 
@@ -82,10 +84,12 @@ suite('cr-search-field', function() {
     flush();
     assertTrue(field.hasSearchText);
 
-    field.$$('#clearSearch').click();
+    field.shadowRoot.querySelector('#clearSearch').click();
     assertEquals('', field.getValue());
     await flushTasks();
-    assertEquals(field.$$('#searchInput'), field.root.activeElement);
+    assertEquals(
+        field.shadowRoot.querySelector('#searchInput'),
+        field.root.activeElement);
     assertFalse(field.hasSearchText);
   });
 
@@ -95,7 +99,7 @@ suite('cr-search-field', function() {
     flush();
     assertEquals('query1', field.getValue());
 
-    field.$$('#clearSearch').click();
+    field.shadowRoot.querySelector('#clearSearch').click();
     assertEquals('', field.getValue());
 
     simulateSearch('query2');

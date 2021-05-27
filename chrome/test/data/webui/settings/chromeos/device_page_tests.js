@@ -987,7 +987,8 @@ cr.define('device_page_tests', function() {
       test('Deep link to keyboard shortcuts', async () => {
         return checkDeepLink(
             settings.routes.KEYBOARD, '413',
-            keyboardPage.$$('#keyboardShortcutViewer').$$('cr-icon-button'),
+            keyboardPage.$$('#keyboardShortcutViewer')
+                .shadowRoot.querySelector('cr-icon-button'),
             'Keyboard shortcuts button');
       });
     });

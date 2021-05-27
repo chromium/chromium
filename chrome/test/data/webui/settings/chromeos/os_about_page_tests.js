@@ -351,8 +351,8 @@ cr.define('settings_about_page', function() {
 
       Polymer.dom.flush();
 
-      const deepLinkElement =
-          page.$$('#releaseNotesOffline').$$('cr-icon-button');
+      const deepLinkElement = page.$$('#releaseNotesOffline')
+                                  .shadowRoot.querySelector('cr-icon-button');
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -549,7 +549,8 @@ cr.define('settings_about_page', function() {
 
       Polymer.dom.flush();
 
-      const deepLinkElement = page.$$('#diagnostics').$$('cr-icon-button');
+      const deepLinkElement =
+          page.$$('#diagnostics').shadowRoot.querySelector('cr-icon-button');
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),

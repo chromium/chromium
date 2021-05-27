@@ -101,7 +101,8 @@ suite('AppsPageTests', function() {
       params.append('settingId', '700');
       settings.Router.getInstance().navigateTo(settings.routes.APPS, params);
 
-      const deepLinkElement = appsPage.$$('#manageApps').$$('cr-icon-button');
+      const deepLinkElement =
+          appsPage.$$('#manageApps').shadowRoot.querySelector('cr-icon-button');
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -262,7 +263,8 @@ suite('AppsPageTests', function() {
       settings.Router.getInstance().navigateTo(
           settings.routes.ANDROID_APPS_DETAILS, params);
 
-      const deepLinkElement = subpage.$$('#manageApps').$$('cr-icon-button');
+      const deepLinkElement =
+          subpage.$$('#manageApps').shadowRoot.querySelector('cr-icon-button');
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),

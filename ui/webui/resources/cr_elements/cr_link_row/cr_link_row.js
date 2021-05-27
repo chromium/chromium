@@ -17,67 +17,74 @@ import '../shared_style_css.m.js';
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'cr-link-row',
+/** @polymer */
+export class CrLinkRowElement extends PolymerElement {
+  static get is() {
+    return 'cr-link-row';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    startIcon: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      startIcon: {
+        type: String,
+        value: '',
+      },
 
-    label: {
-      type: String,
-      value: '',
-    },
+      label: {
+        type: String,
+        value: '',
+      },
 
-    subLabel: {
-      type: String,
-      /* Value used for noSubLabel attribute. */
-      value: '',
-    },
+      subLabel: {
+        type: String,
+        /* Value used for noSubLabel attribute. */
+        value: '',
+      },
 
-    disabled: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+      disabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-    external: {
-      type: Boolean,
-      value: false,
-    },
+      external: {
+        type: Boolean,
+        value: false,
+      },
 
-    usingSlottedLabel: {
-      type: Boolean,
-      value: false,
-    },
+      usingSlottedLabel: {
+        type: Boolean,
+        value: false,
+      },
 
-    roleDescription: String,
+      roleDescription: String,
 
-    /** @private */
-    hideLabelWrapper_: {
-      type: Boolean,
-      computed: 'computeHideLabelWrapper_(label, usingSlottedLabel)',
-    },
-  },
+      /** @private */
+      hideLabelWrapper_: {
+        type: Boolean,
+        computed: 'computeHideLabelWrapper_(label, usingSlottedLabel)',
+      },
+    };
+  }
 
   /** @type {boolean} */
   get noink() {
     return this.$.icon.noink;
-  },
+  }
 
   /** @type {boolean} */
   set noink(value) {
     this.$.icon.noink = value;
-  },
+  }
 
   focus() {
     this.$.icon.focus();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -85,7 +92,7 @@ Polymer({
    */
   computeHideLabelWrapper_() {
     return !(this.label || this.usingSlottedLabel);
-  },
+  }
 
   /**
    * @return {string}
@@ -93,5 +100,7 @@ Polymer({
    */
   getIcon_() {
     return this.external ? 'cr:open-in-new' : 'cr:arrow-right';
-  },
-});
+  }
+}
+
+customElements.define(CrLinkRowElement.is, CrLinkRowElement);
