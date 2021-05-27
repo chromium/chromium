@@ -6872,24 +6872,6 @@
             ]
         }
     ],
-    "SafetyCheckWeakPasswords": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafetyCheckWeakPasswords"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScrollResamplingRollout": [
         {
             "platforms": [
