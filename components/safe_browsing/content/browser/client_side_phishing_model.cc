@@ -135,6 +135,9 @@ void ClientSidePhishingModel::PopulateFromDynamicUpdate(
         } else {
           model_valid = false;
         }
+        base::UmaHistogramBoolean(
+            "SBClientPhishing.FlatBufferMappedRegionValid",
+            mapped_region_.IsValid());
       }
     } else {
       ClientSideModel model_proto;
