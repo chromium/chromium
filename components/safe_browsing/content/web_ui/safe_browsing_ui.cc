@@ -955,7 +955,61 @@ std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr) {
 std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
   base::DictionaryValue report_request;
   if (report.has_type()) {
-    report_request.SetInteger("type", static_cast<int>(report.type()));
+    std::string report_type;
+    switch (report.type()) {
+      case ClientSafeBrowsingReportRequest::UNKNOWN:
+        report_type = "UNKNOWN";
+        break;
+      case ClientSafeBrowsingReportRequest::URL_PHISHING:
+        report_type = "URL_PHISHING";
+        break;
+      case ClientSafeBrowsingReportRequest::URL_MALWARE:
+        report_type = "URL_MALWARE";
+        break;
+      case ClientSafeBrowsingReportRequest::URL_UNWANTED:
+        report_type = "URL_UNWANTED ";
+        break;
+      case ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING:
+        report_type = "URL_CLIENT_SIDE_PHISHING";
+        break;
+      case ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_MALWARE:
+        report_type = "URL_CLIENT_SIDE_MALWARE";
+        break;
+      case ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY:
+        report_type = "DANGEROUS_DOWNLOAD_RECOVERY";
+        break;
+      case ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_WARNING:
+        report_type = "DANGEROUS_DOWNLOAD_WARNING";
+        break;
+      case ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API:
+        report_type = "DANGEROUS_DOWNLOAD_BY_API";
+        break;
+      case ClientSafeBrowsingReportRequest::URL_PASSWORD_PROTECTION_PHISHING:
+        report_type = "URL_PASSWORD_PROTECTION_PHISHING";
+        break;
+      case ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED:
+        report_type = "DANGEROUS_DOWNLOAD_OPENED";
+        break;
+      case ClientSafeBrowsingReportRequest::AD_SAMPLE:
+        report_type = "AD_SAMPLE";
+        break;
+      case ClientSafeBrowsingReportRequest::URL_SUSPICIOUS:
+        report_type = "URL_SUSPICIOUS";
+        break;
+      case ClientSafeBrowsingReportRequest::BILLING:
+        report_type = "BILLING";
+        break;
+      case ClientSafeBrowsingReportRequest::APK_DOWNLOAD:
+        report_type = "APK_DOWNLOAD";
+        break;
+      case ClientSafeBrowsingReportRequest::BLOCKED_AD_REDIRECT:
+        report_type = "BLOCKED_AD_REDIRECT";
+        break;
+      case ClientSafeBrowsingReportRequest::BLOCKED_AD_POPUP:
+        report_type = "BLOCKED_AD_POPUP";
+        break;
+    }
+    report_request.SetString("type", report_type);
   }
   if (report.has_page_url())
     report_request.SetString("page_url", report.page_url());
