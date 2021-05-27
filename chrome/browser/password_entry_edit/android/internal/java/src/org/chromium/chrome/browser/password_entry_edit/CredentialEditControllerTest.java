@@ -216,11 +216,25 @@ public class CredentialEditControllerTest {
     }
 
     @Test
+    public void testUsernameTextChangedIgnoredIfNotInitialized() {
+        assertEquals(null, mModel.get(USERNAME));
+        mMediator.onUsernameTextChanged(NEW_TEST_USERNAME);
+        assertEquals(null, mModel.get(USERNAME));
+    }
+
+    @Test
     public void testUsernameTextChangedUpdatesModel() {
         mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD, false);
         mMediator.setExistingUsernames(new String[] {TEST_USERNAME});
         mMediator.onUsernameTextChanged(NEW_TEST_USERNAME);
         assertEquals(NEW_TEST_USERNAME, mModel.get(USERNAME));
+    }
+
+    @Test
+    public void testPasswordTextChangedIgnoredIfNotInitialized() {
+        assertEquals(null, mModel.get(PASSWORD));
+        mMediator.onPasswordTextChanged(NEW_TEST_PASSWORD);
+        assertEquals(null, mModel.get(PASSWORD));
     }
 
     @Test

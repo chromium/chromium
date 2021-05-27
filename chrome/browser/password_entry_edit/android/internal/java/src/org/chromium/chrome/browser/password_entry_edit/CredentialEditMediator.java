@@ -206,6 +206,8 @@ public class CredentialEditMediator implements UiActionHandler {
 
     @Override
     public void onUsernameTextChanged(String username) {
+        // Ignore events before the UI is fully initialized.
+        if (mModel.get(USERNAME) == null) return;
         mModel.set(USERNAME, username);
         boolean hasError =
                 !mOriginalUsername.equals(username) && mExistingUsernames.contains(username);
@@ -218,6 +220,8 @@ public class CredentialEditMediator implements UiActionHandler {
 
     @Override
     public void onPasswordTextChanged(String password) {
+        // Ignore events before the UI is fully initialized.
+        if (mModel.get(PASSWORD) == null) return;
         mModel.set(PASSWORD, password);
         mModel.set(EMPTY_PASSWORD_ERROR, password.isEmpty());
         if (password.isEmpty()) {
