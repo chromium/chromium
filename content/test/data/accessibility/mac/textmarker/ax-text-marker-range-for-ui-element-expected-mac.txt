@@ -1,0 +1,1 @@
+textarea.AXTextMarkerRangeForUIElement(:3)={anchor: {:3, 0, down}, focus: {:3, 45, down}}

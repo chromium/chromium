@@ -92,6 +92,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXStartTextMarker) {
   RunMacTextMarkerTest(FILE_PATH_LITERAL("ax_start_text_marker.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AXTextMarkerRangeForUIElement) {
+  RunMacTextMarkerTest(
+      FILE_PATH_LITERAL("ax-text-marker-range-for-ui-element.html"));
+}
+
 #endif
 
 }  // namespace content
