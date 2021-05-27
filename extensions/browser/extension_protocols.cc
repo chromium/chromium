@@ -399,7 +399,8 @@ bool IsBackgroundPageURL(const GURL& url) {
 
 scoped_refptr<net::HttpResponseHeaders> BuildHttpHeaders(
     const std::string& content_security_policy,
-    bool send_cors_header) {
+    bool send_cors_header,
+    bool include_allow_service_worker_header) {
   std::string raw_headers;
   raw_headers.append("HTTP/1.1 200 OK");
   if (!content_security_policy.empty()) {
@@ -413,6 +414,11 @@ scoped_refptr<net::HttpResponseHeaders> BuildHttpHeaders(
     raw_headers.append("Access-Control-Allow-Origin: *");
     raw_headers.append(1, '\0');
     raw_headers.append("Cross-Origin-Resource-Policy: cross-origin");
+  }
+
+  if (include_allow_service_worker_header) {
+    raw_headers.append(1, '\0');
+    raw_headers.append("Service-Worker-Allowed: /");
   }
 
   raw_headers.append(2, '\0');
@@ -628,10 +634,20 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     std::string content_security_policy;
     bool send_cors_header = false;
     bool follow_symlinks_anywhere = false;
+    bool include_allow_service_worker_header = false;
+
     if (extension) {
       GetSecurityPolicyForURL(request, extension.get(), is_web_view_request_,
                               &content_security_policy, &send_cors_header,
                               &follow_symlinks_anywhere);
+      if (BackgroundInfo::IsServiceWorkerBased(extension.get())) {
+        include_allow_service_worker_header =
+            request.destination ==
+                network::mojom::RequestDestination::kServiceWorker &&
+            request.url == extension->GetResourceURL(
+                               BackgroundInfo::GetBackgroundServiceWorkerScript(
+                                   extension.get()));
+      }
     }
 
     // If the extension is the Media Router Component Extension used to support
@@ -655,7 +671,8 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       // Leave cache headers out of generated background page jobs.
       auto head = network::mojom::URLResponseHead::New();
       head->headers = BuildHttpHeaders(content_security_policy,
-                                       false /* send_cors_headers */);
+                                       false /* send_cors_headers */,
+                                       include_allow_service_worker_header);
       std::string contents;
       GenerateBackgroundPageContents(extension.get(), &head->mime_type,
                                      &head->charset, &contents);
@@ -694,7 +711,8 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     if (!bundle_resource_path.empty()) {
       ExtensionsBrowserClient::Get()->LoadResourceFromResourceBundle(
           request, std::move(loader), bundle_resource_path, resource_id,
-          BuildHttpHeaders(content_security_policy, send_cors_header),
+          BuildHttpHeaders(content_security_policy, send_cors_header,
+                           include_allow_service_worker_header),
           std::move(client));
       return;
     }
@@ -760,7 +778,8 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
             &OnFilePathAndLastModifiedTimeRead, base::Owned(read_file_path),
             base::Owned(last_modified_time), request, std::move(loader),
             std::move(client), std::move(content_verifier), resource,
-            BuildHttpHeaders(content_security_policy, send_cors_header)));
+            BuildHttpHeaders(content_security_policy, send_cors_header,
+                             include_allow_service_worker_header)));
   }
 
   static void OnFilePathAndLastModifiedTimeRead(
