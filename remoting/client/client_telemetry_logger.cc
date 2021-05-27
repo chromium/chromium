@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "remoting/base/telemetry_log_writer.h"
 

@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "remoting/base/rate_counter.h"
 #include "testing/gtest/include/gtest/gtest.h"

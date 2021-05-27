@@ -4,7 +4,7 @@
 
 #include "remoting/host/it2me/it2me_native_messaging_host_allowed_origins.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace remoting {
 

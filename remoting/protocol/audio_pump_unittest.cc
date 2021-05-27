@@ -10,9 +10,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "remoting/codec/audio_encoder.h"
 #include "remoting/proto/audio.pb.h"

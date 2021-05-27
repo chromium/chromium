@@ -7,9 +7,9 @@
 #include <limits>
 
 #include "base/callback.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/util.h"

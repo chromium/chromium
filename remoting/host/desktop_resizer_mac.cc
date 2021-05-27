@@ -7,11 +7,11 @@
 #include <Carbon/Carbon.h>
 #include <stdint.h>
 
+#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "remoting/base/logging.h"
 
 namespace {

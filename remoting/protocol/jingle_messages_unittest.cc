@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "remoting/protocol/content_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
