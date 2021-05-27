@@ -34,7 +34,7 @@ table ClientSideModel {
   threshold_probability:float = 0.5;
   vision_model:safe_browsing.flat.VisionModel;
   tflite_model_version:int (deprecated);
-  tflite_thresholds:[safe_browsing.flat.ClientSideModel_.Threshold]
+  tflite_thresholds:[safe_browsing.flat.TfLiteModelMetadata_.Threshold]
   (deprecated);
   tflite_model_input_width: int (deprecated);
   tflite_model_input_height: int (deprecated);
@@ -55,19 +55,23 @@ table IPSubnet {
   size:int = 128;
 }
 
+namespace safe_browsing.flat;
+
+table TfLiteModelMetadata {
+  version:int;
+  thresholds:[safe_browsing.flat.TfLiteModelMetadata_.Threshold];
+  input_width: int;
+  input_height: int;
+}
+
+namespace safe_browsing.flat.TfLiteModelMetadata_;
+
 table Threshold {
   label:string;
   threshold:float;
 }
 
 namespace safe_browsing.flat;
-
-table TfLiteModelMetadata {
-  version:int;
-  thresholds:[safe_browsing.flat.ClientSideModel_.Threshold];
-  input_width: int;
-  input_height: int;
-}
 
 table VisionModel {
   targets:[safe_browsing.flat.VisualTarget];

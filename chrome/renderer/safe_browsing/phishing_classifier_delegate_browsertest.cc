@@ -15,6 +15,7 @@
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
+#include "components/safe_browsing/core/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
@@ -34,6 +35,64 @@ using ::testing::StrictMock;
 namespace safe_browsing {
 
 namespace {
+
+std::string GetFlatBufferString() {
+  flatbuffers::FlatBufferBuilder builder(1024);
+  std::vector<flatbuffers::Offset<flat::Hash>> hashes;
+  // Make sure this is sorted.
+  std::vector<std::string> hashes_vector = {"feature1", "feature2", "feature3",
+                                            "token one", "token two"};
+  for (std::string& feature : hashes_vector) {
+    std::vector<uint8_t> hash_data(feature.begin(), feature.end());
+    hashes.push_back(flat::CreateHashDirect(builder, &hash_data));
+  }
+  flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flat::Hash>>>
+      hashes_flat = builder.CreateVector(hashes);
+
+  std::vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>> rules;
+  std::vector<int32_t> rule_feature1 = {};
+  std::vector<int32_t> rule_feature2 = {0};
+  std::vector<int32_t> rule_feature3 = {0, 1};
+  rules.push_back(
+      flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature1, 0.5));
+  rules.push_back(
+      flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature2, 2));
+  rules.push_back(
+      flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature3, 3));
+  flatbuffers::Offset<
+      flatbuffers::Vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>>>
+      rules_flat = builder.CreateVector(rules);
+
+  std::vector<int32_t> page_terms_vector = {3, 4};
+  flatbuffers::Offset<flatbuffers::Vector<int32_t>> page_term_flat =
+      builder.CreateVector(page_terms_vector);
+
+  std::vector<uint32_t> page_words_vector = {1000U, 2000U, 3000U};
+  flatbuffers::Offset<flatbuffers::Vector<uint32_t>> page_word_flat =
+      builder.CreateVector(page_words_vector);
+
+  std::vector<
+      flatbuffers::Offset<safe_browsing::flat::TfLiteModelMetadata_::Threshold>>
+      thresholds_vector = {};
+  flatbuffers::Offset<flat::TfLiteModelMetadata> tflite_metadata_flat =
+      flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector, 0,
+                                            0);
+
+  flat::ClientSideModelBuilder csd_model_builder(builder);
+  csd_model_builder.add_hashes(hashes_flat);
+  csd_model_builder.add_rule(rules_flat);
+  csd_model_builder.add_page_term(page_term_flat);
+  csd_model_builder.add_page_word(page_word_flat);
+  csd_model_builder.add_max_words_per_term(2);
+  csd_model_builder.add_murmur_hash_seed(12345U);
+  csd_model_builder.add_max_shingles_per_page(10);
+  csd_model_builder.add_shingle_size(3);
+  csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
+
+  builder.Finish(csd_model_builder.Finish());
+  return std::string(reinterpret_cast<char*>(builder.GetBufferPointer()),
+                     builder.GetSize());
+}
 
 class MockPhishingClassifier : public PhishingClassifier {
  public:
@@ -55,6 +114,32 @@ class MockScorer : public Scorer {
   ~MockScorer() override {}
 
   MOCK_CONST_METHOD1(ComputeScore, double(const FeatureMap&));
+  MOCK_CONST_METHOD3(
+      GetMatchingVisualTargets,
+      void(const SkBitmap& bitmap,
+           std::unique_ptr<ClientPhishingRequest> request,
+           base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)>
+               callback));
+
+  MOCK_CONST_METHOD2(
+      ApplyVisualTfLiteModel,
+      void(const SkBitmap& bitmap,
+           base::OnceCallback<void(std::vector<double>)> callback));
+  MOCK_CONST_METHOD0(model_version, int());
+  MOCK_CONST_METHOD0(HasVisualTfLiteModel, bool());
+  MOCK_CONST_METHOD0(find_page_word_callback,
+                     base::RepeatingCallback<bool(uint32_t)>());
+  MOCK_CONST_METHOD0(find_page_term_callback,
+                     base::RepeatingCallback<bool(const std::string&)>());
+  MOCK_CONST_METHOD0(max_words_per_term, size_t());
+  MOCK_CONST_METHOD0(murmurhash3_seed, uint32_t());
+  MOCK_CONST_METHOD0(max_shingles_per_page, size_t());
+  MOCK_CONST_METHOD0(shingle_size, size_t());
+  MOCK_CONST_METHOD0(threshold_probability, float());
+  MOCK_CONST_METHOD0(tflite_model_version, int());
+  MOCK_CONST_METHOD0(tflite_thresholds,
+                     const google::protobuf::RepeatedPtrField<
+                         TfLiteModelMetadata::Threshold>&());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockScorer);
@@ -252,11 +337,7 @@ TEST_F(PhishingClassifierDelegateTest, HasPhishingModel) {
 TEST_F(PhishingClassifierDelegateTest, HasFlatBufferModel) {
   ASSERT_FALSE(classifier_->is_ready());
 
-  flatbuffers::FlatBufferBuilder builder(1024);
-  flat::ClientSideModelBuilder csd_model_builder(builder);
-  builder.Finish(csd_model_builder.Finish());
-  std::string model_str(reinterpret_cast<char*>(builder.GetBufferPointer()),
-                        builder.GetSize());
+  std::string model_str = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       base::ReadOnlySharedMemoryRegion::Create(model_str.length());
   memcpy(mapped_region.mapping.memory(), model_str.data(), model_str.length());

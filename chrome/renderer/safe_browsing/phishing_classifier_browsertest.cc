@@ -17,7 +17,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/murmurhash3_util.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/protobuf_scorer.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
@@ -104,7 +104,8 @@ class PhishingClassifierTest : public ChromeRenderViewTest {
     // Add an empty visual target to ensure visual detection runs.
     model.mutable_vision_model()->add_targets();
 
-    scorer_.reset(Scorer::Create(model.SerializeAsString(), base::File()));
+    scorer_.reset(
+        ProtobufModelScorer::Create(model.SerializeAsString(), base::File()));
     ASSERT_TRUE(scorer_.get());
   }
 
