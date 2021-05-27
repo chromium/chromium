@@ -269,11 +269,8 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,depth:depth_compar
 crbug.com/dawn/721 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,buffer_texture_copies:depth_stencil_format,copy_buffer_offset:format="depth24plus-stencil8";* [ Failure Crash ]
 crbug.com/dawn/721 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,buffer_texture_copies:depth_stencil_format,copy_buffer_size:format="depth24plus-stencil8";* [ Failure Crash ]
 
-# WebGPU decoder fatal error when unsupported extensions are requested.
-crbug.com/1175091 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,queries,general:* [ Crash Timeout ]
-crbug.com/1175091 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,queue,destroyed,query_set:* [ Crash Timeout ]
-crbug.com/1175091 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,capability_checks,features,query_types:createQuerySet:* [ Crash Timeout ]
-crbug.com/1175091 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,query_set,create:* [ Failure Crash Timeout ]
+# Zero-sized query set is not implemented.
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,query_set,create:count:* [ Failure Crash ]
 
 # Unimplemented validation in Tint. Skipped because it causes test timeouts
 crbug.com/tint/480 wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0033:* [ Skip ]

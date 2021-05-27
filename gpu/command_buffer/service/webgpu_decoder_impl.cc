@@ -398,7 +398,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       int32_t requested_adapter_index,
       uint32_t device_id,
       uint32_t device_generation,
-      const WGPUDeviceProperties& requested_device_properties);
+      const WGPUDeviceProperties& requested_device_properties,
+      bool* creation_succeeded);
 
   void SendAdapterProperties(DawnRequestAdapterSerial request_adapter_serial,
                              int32_t adapter_service_id,
@@ -530,11 +531,14 @@ error::Error WebGPUDecoderImpl::InitDawnDevice(
     int32_t requested_adapter_index,
     uint32_t device_id,
     uint32_t device_generation,
-    const WGPUDeviceProperties& request_device_properties) {
+    const WGPUDeviceProperties& request_device_properties,
+    bool* creation_succeeded) {
   DCHECK_LE(0, requested_adapter_index);
 
   DCHECK_LT(static_cast<size_t>(requested_adapter_index),
             dawn_adapters_.size());
+
+  *creation_succeeded = false;
 
   dawn_native::DeviceDescriptor device_descriptor;
   if (request_device_properties.textureCompressionBC) {
@@ -553,6 +557,13 @@ error::Error WebGPUDecoderImpl::InitDawnDevice(
     device_descriptor.requiredExtensions.push_back("depth_clamping");
   }
 
+  // Enabled by WebGPUDecoder::MockUnsupportedExtensionForTest() for testing
+  // create device failed with unsupported extension
+  if (mock_unsupported_extension_for_test) {
+    device_descriptor.requiredExtensions.push_back(
+        "not_supported_extension_for_test");
+  }
+
   for (const std::string& toggles : force_enabled_toggles_) {
     device_descriptor.forceEnabledToggles.push_back(toggles.c_str());
   }
@@ -563,7 +574,9 @@ error::Error WebGPUDecoderImpl::InitDawnDevice(
   WGPUDevice wgpu_device =
       dawn_adapters_[requested_adapter_index].CreateDevice(&device_descriptor);
   if (wgpu_device == nullptr) {
-    return error::kInvalidArguments;
+    // Device creation failed, but it's not a fatal error that needs to trigger
+    // GPU process lost
+    return error::kNoError;
   }
 
   if (!wire_server_->InjectDevice(wgpu_device, device_id, device_generation)) {
@@ -579,6 +592,7 @@ error::Error WebGPUDecoderImpl::InitDawnDevice(
   // the dead ones.
   known_devices_.emplace_back(device_id, device_generation);
 
+  *creation_succeeded = true;
   return error::kNoError;
 }
 
@@ -885,10 +899,11 @@ error::Error WebGPUDecoderImpl::HandleRequestDevice(
     }
   }
 
-  error::Error init_device_error = InitDawnDevice(
-      adapter_service_id, device_id, device_generation, device_properties);
-  SendRequestedDeviceInfo(request_device_serial,
-                          !error::IsError(init_device_error));
+  bool creation_succeeded;
+  error::Error init_device_error =
+      InitDawnDevice(adapter_service_id, device_id, device_generation,
+                     device_properties, &creation_succeeded);
+  SendRequestedDeviceInfo(request_device_serial, creation_succeeded);
   return init_device_error;
 }
 

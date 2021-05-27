@@ -47,5 +47,9 @@ ContextResult WebGPUDecoder::Initialize(
   return ContextResult::kSuccess;
 }
 
+void WebGPUDecoder::MockUnsupportedExtensionForTest(bool enabled) {
+  mock_unsupported_extension_for_test = enabled;
+}
+
 }  // namespace webgpu
 }  // namespace gpu
