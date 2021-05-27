@@ -347,6 +347,9 @@ class _Session(object):
       tool_prefix = path_util.ToolPrefixFinder(
           output_directory=output_directory_finder.Finalized(),
           linker_name='ld').Finalized()
+      # Running objdump from an output directory means that objdump can
+      # interleave source file lines in the disassembly.
+      objdump_pwd = output_directory_finder.Finalized()
     else:
       # Output directory is not set, so we cannot load tool_prefix from
       # build_vars.json, nor resolve the output directory-relative path stored
@@ -360,20 +363,29 @@ class _Session(object):
       # Hardcode path for arm32.
       if is_android and arch == 'arm':
         tool_prefix = path_util.ANDROID_ARM_NDK_TOOL_PREFIX
+      # If we do not know/guess the output directory, run from any directory 2
+      # levels below src since it is better than a random cwd (because usually
+      # source file paths are relative to an output directory two levels below
+      # src and start with ../../).
+      objdump_pwd = os.path.join(path_util.TOOLS_SRC_ROOT, 'tools',
+                                 'binary_size')
 
     args = [
-        path_util.GetObjDumpPath(tool_prefix),
+        os.path.relpath(path_util.GetObjDumpPath(tool_prefix), objdump_pwd),
         '--disassemble',
         '--source',
         '--line-numbers',
         '--demangle',
         '--start-address=0x%x' % symbol.address,
         '--stop-address=0x%x' % symbol.end_address,
-        elf_path,
+        os.path.relpath(elf_path, objdump_pwd),
     ]
 
     # pylint: disable=unexpected-keyword-arg
-    proc = subprocess.Popen(args, stdout=subprocess.PIPE, encoding='utf-8')
+    proc = subprocess.Popen(args,
+                            stdout=subprocess.PIPE,
+                            encoding='utf-8',
+                            cwd=objdump_pwd)
     lines = itertools.chain(('Showing disassembly for %r' % symbol,
                              'Command: %s' % ' '.join(args)),
                             (l.rstrip() for l in proc.stdout))
