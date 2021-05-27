@@ -24,6 +24,9 @@
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  config.additional_args.push_back(
+      std::string("--enable-features=StartSurface:"
+                  "ReturnToStartSurfaceInactiveDurationInSeconds/0"));
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
 }
