@@ -20,6 +20,11 @@ public class DeprecatedChromePreferenceKeys {
         // clang-format off
         return Arrays.asList(
                 "Chrome.Flags.PaintPreviewTestEnabled",
+                "Chrome.OfflineMeasurements.HttpProbeResultsList",
+                "Chrome.OfflineMeasurements.IsAirplaneModeEnabledList",
+                "Chrome.OfflineMeasurements.IsRoaming",
+                "Chrome.OfflineMeasurements.TimeBetweenChecksMillisList",
+                "Chrome.OfflineMeasurements.UserStateList",
                 "Chrome.PriceTracking.PriceDropAlerts",
                 "PersistedNotificationId",
                 "PhysicalWeb.ActivityReferral",

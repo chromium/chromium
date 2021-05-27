@@ -89,10 +89,12 @@ public class OfflineMeasurementsBackgroundTaskTest {
     public static class FakeClock extends OfflineMeasurementsBackgroundTask.Clock {
         private long mCurrentTimeMillis;
         private long mElapsedRealtime;
+        private int mLocalHourOfDay;
 
         public FakeClock() {
             mCurrentTimeMillis = 0;
             mElapsedRealtime = 0;
+            mLocalHourOfDay = 0;
         }
 
         @Override
@@ -103,6 +105,11 @@ public class OfflineMeasurementsBackgroundTaskTest {
         @Override
         public long elapsedRealtime() {
             return mElapsedRealtime;
+        }
+
+        @Override
+        public int getLocalHourOfDay() {
+            return mLocalHourOfDay;
         }
 
         public void setCurrentTimeMillis(long currentTimeMillis) {
@@ -116,6 +123,10 @@ public class OfflineMeasurementsBackgroundTaskTest {
         public void advanceCurrentTimeMillis(long millis) {
             mCurrentTimeMillis += millis;
             mElapsedRealtime += millis;
+        }
+
+        public void setLocalHourOfDay(int localHourOfDay) {
+            mLocalHourOfDay = localHourOfDay;
         }
     }
 
@@ -729,7 +740,9 @@ public class OfflineMeasurementsBackgroundTaskTest {
         // Set the task parameters.
         TaskParameters testParameters =
                 TaskParameters.create(TaskIds.OFFLINE_MEASUREMENT_JOB_ID).build();
-        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {};
+        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {
+            mSemaphore.release();
+        };
 
         // Runs the task with airplane mode disabled, then runs it again with airplane mode enabled.
         OfflineMeasurementsBackgroundTask.setIsAirplaneModeEnabledForTesting(false);
@@ -737,12 +750,14 @@ public class OfflineMeasurementsBackgroundTaskTest {
             OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
             task.onStartTask(null, testParameters, testCallback);
         });
+        assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         OfflineMeasurementsBackgroundTask.setIsAirplaneModeEnabledForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
             task.onStartTask(null, testParameters, testCallback);
         });
+        assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
         maybeScheduleTaskAndReportMetrics();
@@ -778,7 +793,9 @@ public class OfflineMeasurementsBackgroundTaskTest {
         // Set the task parameters.
         TaskParameters testParameters =
                 TaskParameters.create(TaskIds.OFFLINE_MEASUREMENT_JOB_ID).build();
-        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {};
+        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {
+            mSemaphore.release();
+        };
 
         // Runs the task while not roaming, then runs it again while roaming.
         OfflineMeasurementsBackgroundTask.setIsRoamingForTesting(false);
@@ -786,12 +803,14 @@ public class OfflineMeasurementsBackgroundTaskTest {
             OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
             task.onStartTask(null, testParameters, testCallback);
         });
+        assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         OfflineMeasurementsBackgroundTask.setIsRoamingForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
             task.onStartTask(null, testParameters, testCallback);
         });
+        assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
         maybeScheduleTaskAndReportMetrics();
@@ -824,7 +843,9 @@ public class OfflineMeasurementsBackgroundTaskTest {
         // Set the task parameters.
         TaskParameters testParameters =
                 TaskParameters.create(TaskIds.OFFLINE_MEASUREMENT_JOB_ID).build();
-        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {};
+        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {
+            mSemaphore.release();
+        };
 
         // Tests running the background task when the screen is not interactive. This should record
         // a value of UserState.NOT_USING_PHONE regardless of whehter Chrome is in the foreground or
@@ -835,12 +856,14 @@ public class OfflineMeasurementsBackgroundTaskTest {
             OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
             task.onStartTask(null, testParameters, testCallback);
         });
+        assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         OfflineMeasurementsBackgroundTask.setIsApplicationForegroundForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
             task.onStartTask(null, testParameters, testCallback);
         });
+        assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
         maybeScheduleTaskAndReportMetrics();
@@ -869,7 +892,9 @@ public class OfflineMeasurementsBackgroundTaskTest {
         // Set the task parameters.
         TaskParameters testParameters =
                 TaskParameters.create(TaskIds.OFFLINE_MEASUREMENT_JOB_ID).build();
-        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {};
+        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {
+            mSemaphore.release();
+        };
 
         // Tests running the background task when the screen is on and Chrome is not in the
         // foreground. This should record a value of UserState.USING_PHONE_NOT_CHROME.
@@ -879,6 +904,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
             OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
             task.onStartTask(null, testParameters, testCallback);
         });
+        assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
         maybeScheduleTaskAndReportMetrics();
@@ -906,7 +932,9 @@ public class OfflineMeasurementsBackgroundTaskTest {
         // Set the task parameters.
         TaskParameters testParameters =
                 TaskParameters.create(TaskIds.OFFLINE_MEASUREMENT_JOB_ID).build();
-        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {};
+        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {
+            mSemaphore.release();
+        };
 
         // Tests running the background task when the screen is on and Chrome is in the foreground.
         // This should record a value of UserState.USING_CHROME.
@@ -916,6 +944,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
             OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
             task.onStartTask(null, testParameters, testCallback);
         });
+        assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
         maybeScheduleTaskAndReportMetrics();
@@ -946,7 +975,9 @@ public class OfflineMeasurementsBackgroundTaskTest {
         // Set the task parameters.
         TaskParameters testParameters =
                 TaskParameters.create(TaskIds.OFFLINE_MEASUREMENT_JOB_ID).build();
-        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {};
+        BackgroundTask.TaskFinishedCallback testCallback = needsReschedule -> {
+            mSemaphore.release();
+        };
 
         OfflineMeasurementsBackgroundTask.setIsInteractiveForTesting(true);
         OfflineMeasurementsBackgroundTask.setIsApplicationForegroundForTesting(true);
@@ -963,6 +994,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
             OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
             task.onStartTask(null, testParameters, testCallback);
         });
+        assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
         maybeScheduleTaskAndReportMetrics();
@@ -987,6 +1019,7 @@ public class OfflineMeasurementsBackgroundTaskTest {
             OfflineMeasurementsBackgroundTask task = new OfflineMeasurementsBackgroundTask();
             task.onStartTask(null, testParameters, testCallback);
         });
+        assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Reports the metrics stored in Prefs.
         maybeScheduleTaskAndReportMetrics();

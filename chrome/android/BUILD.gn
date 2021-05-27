@@ -343,6 +343,7 @@ android_library("chrome_java") {
     "//chrome/browser/metrics_settings/android:java",
     "//chrome/browser/notifications/chime/android:java",
     "//chrome/browser/offline_pages/android:java",
+    "//chrome/browser/offline_pages/measurements/proto:offline_measurements_proto_java",
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/optimization_guide/android:java",
     "//chrome/browser/page_annotations/android:java",

@@ -11,6 +11,7 @@ import android.net.NetworkCapabilities;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.util.Base64;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -24,6 +25,8 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.offline_pages.measurements.proto.OfflineMeasurementsProto.SystemState;
+import org.chromium.chrome.browser.offline_pages.measurements.proto.OfflineMeasurementsProto.SystemStateList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
@@ -37,6 +40,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -135,6 +139,10 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
         long elapsedRealtime() {
             return SystemClock.elapsedRealtime();
         }
+
+        int getLocalHourOfDay() {
+            return Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        }
     }
     private static Clock sClock = new Clock();
 
@@ -158,45 +166,41 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
     }
 
     private static void reportMetrics() {
-        // Log all stored values in Prefs, then clear prefs.
-        long[] timeBetweenChecksMillisList = getTimeBetweenChecksFromPrefs();
-        for (long timeBetweenChecksMillis : timeBetweenChecksMillisList) {
-            if (timeBetweenChecksMillis >= 0) {
+        // Record the data in the system state list to UMA.
+        SystemStateList systemStateList = getSystemStateListFromPrefs();
+        for (SystemState systemState : systemStateList.getSystemStatesList()) {
+            if (systemState.hasTimeSinceLastCheckMillis()) {
                 RecordHistogram.recordCustomTimesHistogram(OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS,
-                        timeBetweenChecksMillis, TimeUnit.MINUTES.toMillis(1),
+                        systemState.getTimeSinceLastCheckMillis(), TimeUnit.MINUTES.toMillis(1),
                         TimeUnit.DAYS.toMillis(1), 50);
+            }
+
+            if (systemState.hasUserState()) {
+                RecordHistogram.recordEnumeratedHistogram(OFFLINE_MEASUREMENTS_USER_STATE,
+                        systemState.getUserState().getNumber(), UserState.RESULT_COUNT);
+            }
+
+            if (systemState.hasProbeResult()) {
+                RecordHistogram.recordEnumeratedHistogram(OFFLINE_MEASUREMENTS_HTTP_PROBE_RESULT,
+                        systemState.getProbeResult().getNumber(), ProbeResult.RESULT_COUNT);
+            }
+
+            if (systemState.hasIsRoaming()) {
+                RecordHistogram.recordBooleanHistogram(
+                        OFFLINE_MEASUREMENTS_IS_ROAMING, systemState.getIsRoaming());
+            }
+
+            if (systemState.hasIsAirplaneModeEnabled()) {
+                RecordHistogram.recordBooleanHistogram(
+                        OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED,
+                        systemState.getIsAirplaneModeEnabled());
             }
         }
 
-        int[] httpProbeResultList = getHttpProbeResultsFromPrefs();
-        for (int httpProbeResult : httpProbeResultList) {
-            RecordHistogram.recordEnumeratedHistogram(OFFLINE_MEASUREMENTS_HTTP_PROBE_RESULT,
-                    httpProbeResult, ProbeResult.RESULT_COUNT);
-        }
-
-        boolean[] isAirplaneModeEnabledList = getIsAirplaneModeEnabledListFromPrefs();
-        for (boolean isAirplaneModeEnabled : isAirplaneModeEnabledList) {
-            RecordHistogram.recordBooleanHistogram(
-                    OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED, isAirplaneModeEnabled);
-        }
-
-        boolean[] isRoamingList = getIsRoamingListFromPrefs();
-        for (boolean isRoaming : isRoamingList) {
-            RecordHistogram.recordBooleanHistogram(OFFLINE_MEASUREMENTS_IS_ROAMING, isRoaming);
-        }
-
-        long[] userStateList = getUserStatesFromPrefs();
-        for (long userState : userStateList) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    OFFLINE_MEASUREMENTS_USER_STATE, (int) userState, UserState.RESULT_COUNT);
-        }
+        // TODO(1131600): Report the values in system state list in prefs to UKM.
 
         // After logging the data to UMA, clear the data from prefs so it isn't logged again.
-        clearTimeBetweenChecksFromPrefs();
-        clearHttpProbeResultsFromPrefs();
-        clearIsAirplaneModeEnabledListFromPrefs();
-        clearIsRoamingListFromPrefs();
-        clearUserStatesFromPrefs();
+        clearSystemStateListFromPrefs();
     }
 
     private static void scheduleTask() {
@@ -390,13 +394,17 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
         setLastCheckMillis(currentCheckMillis);
 
         boolean didSystemBootSinceLastCheck = false;
+        SystemState.Builder partialSystemState = SystemState.newBuilder();
         if (lastCheckMillis > 0) {
-            long timeBetweenChecksMillis = currentCheckMillis - lastCheckMillis;
-            addTimeBetweenChecksToPrefs(timeBetweenChecksMillis);
+            long timeSinceLastChecksMillis = currentCheckMillis - lastCheckMillis;
 
             long timeSinceBootMillis = sClock.elapsedRealtime();
-            didSystemBootSinceLastCheck = timeSinceBootMillis < timeBetweenChecksMillis;
+            didSystemBootSinceLastCheck = timeSinceBootMillis < timeSinceLastChecksMillis;
+
+            partialSystemState.setTimeSinceLastCheckMillis(timeSinceLastChecksMillis);
         }
+
+        int localHourOfDay = sClock.getLocalHourOfDay();
 
         // Gets whether airplane mode is enabled or disabled.
         boolean isAirplaneModeEnabled = isAirplaneModeEnabled(context);
@@ -407,12 +415,15 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
         int userState = convertToUserState(
                 didSystemBootSinceLastCheck, isInteractive, isApplicationForeground);
 
-        addIsAirplaneModeEnabledToPrefs(isAirplaneModeEnabled);
-        addIsRoamingToPrefs(isRoaming);
-        addUserStateToPrefs(userState);
+        partialSystemState.setUserState(SystemState.UserState.forNumber(userState))
+                .setIsRoaming(isRoaming)
+                .setIsAirplaneModeEnabled(isAirplaneModeEnabled)
+                .setLocalHourOfDayStart(localHourOfDay);
 
         // Starts the HTTP probe.
-        sendHttpProbe((Integer result) -> { processResult(result, callback); });
+        sendHttpProbe((Integer probeResult) -> {
+            processResult(partialSystemState, probeResult, callback);
+        });
 
         return true;
     }
@@ -420,17 +431,18 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
     /**
      * Saves the result of the HTTP probe to Prefs, and informs the task scheduler that the task is
      * finished.
-     * @param result The result of the HTTP probe as a |ProbeResult|.
+     * @param partialSystemState The portion of the system state that has already been determined.
+     * @param probeResult The result of the HTTP probe as a |ProbeResult|.
      * @param callback The callback used to inform the background task scheduler that the task has
      * finished.
      */
-    private void processResult(Integer result, TaskFinishedCallback callback) {
-        // Save the result of the HTTP probe to Prefs, so that it can be recorded to UMA
-        // later.
-        addHttpProbeResultToPrefs(result);
-
-        // TODO(curranmax): Convert the result to a boolean of whether the system is online or
-        // offline, then write this (along with other information) to UKM. https://crbug.com/1131600
+    private void processResult(SystemState.Builder partialSystemState, Integer probeResult,
+            TaskFinishedCallback callback) {
+        // Adds the result of the HTTP probe to the system state proto, then write the full proto to
+        // Prefs.
+        addSystemStateToListInPrefs(
+                partialSystemState.setProbeResult(SystemState.ProbeResult.forNumber(probeResult))
+                        .build());
 
         // Informs scheduler that the background task has finished.
         callback.taskFinished(false);
@@ -441,7 +453,9 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
         // Cancels the HTTP probe if it is still running.
         if (mHttpProbeAsyncTask != null) {
             mHttpProbeAsyncTask.cancel(true);
-            addHttpProbeResultToPrefs(ProbeResult.CANCELLED);
+            addSystemStateToListInPrefs(SystemState.newBuilder()
+                                                .setProbeResult(SystemState.ProbeResult.CANCELLED)
+                                                .build());
         }
 
         // Informs the scheduler that the task does not need to be rescheduled.
@@ -617,194 +631,38 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
         return UserState.USING_PHONE_NOT_CHROME;
     }
 
-    private static String getTimeBetweenChecksFromPrefsAsString() {
+    private static String getSystemStateListFromPrefsAsString() {
         return SharedPreferencesManager.getInstance().readString(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST, "");
+                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_SYSTEM_STATE_LIST, "");
     }
 
-    private static void addTimeBetweenChecksToPrefs(long newValue) {
-        // Add new value to comma separate list currently in Prefs.
-        String existingList = getTimeBetweenChecksFromPrefsAsString();
-        String newList = addValueToStringList(newValue, existingList);
-
-        // Write the new list to Prefs.
+    private static void addSystemStateToListInPrefs(SystemState systemState) {
+        SystemStateList systemStateList = getSystemStateListFromPrefs();
+        systemStateList =
+                SystemStateList.newBuilder(systemStateList).addSystemStates(systemState).build();
         SharedPreferencesManager.getInstance().writeString(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST, newList);
+                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_SYSTEM_STATE_LIST,
+                Base64.encodeToString(systemStateList.toByteArray(), Base64.DEFAULT));
     }
 
-    private static long[] getTimeBetweenChecksFromPrefs() {
-        String rawList = getTimeBetweenChecksFromPrefsAsString();
-        return getValuesFromStringList(rawList, -1);
+    private static SystemStateList getSystemStateListFromPrefs() {
+        String rawList = getSystemStateListFromPrefsAsString();
+        try {
+            return SystemStateList.parseFrom(Base64.decode(rawList, Base64.DEFAULT));
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            // If we can't parse the system state list from prefs, return a list with one invalid
+            // entry.
+            SystemState invalidSystemState =
+                    SystemState.newBuilder()
+                            .setUserState(SystemState.UserState.INVALID_USER_STATE)
+                            .setProbeResult(SystemState.ProbeResult.INVALID_PROBE_RESULT)
+                            .build();
+            return SystemStateList.newBuilder().addSystemStates(invalidSystemState).build();
+        }
     }
 
-    private static void clearTimeBetweenChecksFromPrefs() {
+    private static void clearSystemStateListFromPrefs() {
         SharedPreferencesManager.getInstance().removeKey(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST);
-    }
-
-    private static String getHttpProbeResultsFromPrefsAsString() {
-        return SharedPreferencesManager.getInstance().readString(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_HTTP_PROBE_RESULTS_LIST, "");
-    }
-
-    private static void addHttpProbeResultToPrefs(int newValue) {
-        // Add new value to comma separate list currently in Prefs.
-        String existingList = getHttpProbeResultsFromPrefsAsString();
-        String newList = addValueToStringList(newValue, existingList);
-
-        // Write the new list to Prefs.
-        SharedPreferencesManager.getInstance().writeString(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_HTTP_PROBE_RESULTS_LIST, newList);
-    }
-
-    private static int[] getHttpProbeResultsFromPrefs() {
-        // Get values as an array of longs.
-        String rawList = getHttpProbeResultsFromPrefsAsString();
-        long[] valuesAsLongs = getValuesFromStringList(rawList, ProbeResult.INVALID);
-
-        // Convert each element to ints.
-        int[] valuesAsInts = new int[valuesAsLongs.length];
-        for (int i = 0; i < valuesAsLongs.length; i++) {
-            valuesAsInts[i] = (int) valuesAsLongs[i];
-        }
-        return valuesAsInts;
-    }
-
-    private static void clearHttpProbeResultsFromPrefs() {
-        SharedPreferencesManager.getInstance().removeKey(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_HTTP_PROBE_RESULTS_LIST);
-    }
-
-    private static String getIsAirplaneModeEnabledListFromPrefsAsString() {
-        return SharedPreferencesManager.getInstance().readString(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED_LIST, "");
-    }
-
-    private static void addIsAirplaneModeEnabledToPrefs(boolean isAirplaneModeEnabled) {
-        // Add the value to the list.
-        String existingList = getIsAirplaneModeEnabledListFromPrefsAsString();
-        String newList = addValueToStringList(isAirplaneModeEnabled ? 1 : 0, existingList);
-
-        // Write the new list to Prefs
-        SharedPreferencesManager.getInstance().writeString(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED_LIST, newList);
-    }
-
-    private static boolean[] getIsAirplaneModeEnabledListFromPrefs() {
-        // Get values as an array of longs.
-        String rawList = getIsAirplaneModeEnabledListFromPrefsAsString();
-        long[] valuesAsLongs = getValuesFromStringList(rawList, 0);
-
-        // Convert each element to boolean.
-        boolean[] valuesAsBools = new boolean[valuesAsLongs.length];
-        for (int i = 0; i < valuesAsLongs.length; i++) {
-            valuesAsBools[i] = valuesAsLongs[i] != 0;
-        }
-        return valuesAsBools;
-    }
-
-    private static void clearIsAirplaneModeEnabledListFromPrefs() {
-        SharedPreferencesManager.getInstance().removeKey(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_IS_AIRPLANE_MODE_ENABLED_LIST);
-    }
-
-    private static String getIsRoamingListFromPrefsAsString() {
-        return SharedPreferencesManager.getInstance().readString(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_IS_ROAMING_LIST, "");
-    }
-
-    private static void addIsRoamingToPrefs(boolean isRoaming) {
-        // Add the value to the list.
-        String existingList = getIsRoamingListFromPrefsAsString();
-        String newList = addValueToStringList(isRoaming ? 1 : 0, existingList);
-
-        // Write the new list to Prefs
-        SharedPreferencesManager.getInstance().writeString(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_IS_ROAMING_LIST, newList);
-    }
-
-    private static boolean[] getIsRoamingListFromPrefs() {
-        // Get values as an array of longs.
-        String rawList = getIsRoamingListFromPrefsAsString();
-        long[] valuesAsLongs = getValuesFromStringList(rawList, 0);
-
-        // Convert each element to boolean.
-        boolean[] valuesAsBools = new boolean[valuesAsLongs.length];
-        for (int i = 0; i < valuesAsLongs.length; i++) {
-            valuesAsBools[i] = valuesAsLongs[i] != 0;
-        }
-        return valuesAsBools;
-    }
-
-    private static void clearIsRoamingListFromPrefs() {
-        SharedPreferencesManager.getInstance().removeKey(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_IS_ROAMING_LIST);
-    }
-
-    private static String getUserStatesFromPrefsAsString() {
-        return SharedPreferencesManager.getInstance().readString(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_USER_STATE_LIST, "");
-    }
-
-    private static void addUserStateToPrefs(int newValue) {
-        // Add new value to comma separate list currently in Prefs.
-        String existingList = getUserStatesFromPrefsAsString();
-        String newList = addValueToStringList(newValue, existingList);
-
-        // Write the new list to Prefs.
-        SharedPreferencesManager.getInstance().writeString(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_USER_STATE_LIST, newList);
-    }
-
-    private static long[] getUserStatesFromPrefs() {
-        // Get values as an array of longs.
-        String rawList = getUserStatesFromPrefsAsString();
-        return getValuesFromStringList(rawList, UserState.INVALID);
-    }
-
-    private static void clearUserStatesFromPrefs() {
-        SharedPreferencesManager.getInstance().removeKey(
-                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_USER_STATE_LIST);
-    }
-
-    /**
-     * Adds the given value to the end of the comma separated list.
-     * @param newValue Value to be added to the end of the list.
-     * @param rawList Comma separated list.
-     * @return A comma separated list made up of |rawList| with |newValue| appended to the end.
-     */
-    private static String addValueToStringList(long newValue, String rawList) {
-        StringBuilder strBuilder = new StringBuilder(rawList);
-        if (strBuilder.length() > 0) {
-            strBuilder.append(",");
-        }
-        strBuilder.append(newValue);
-
-        return strBuilder.toString();
-    }
-
-    /**
-     * Parses the given comma separated list and converts the elements to longs.
-     * @param rawList Comma separated list.
-     * @param defaultValue The value used if an element cannot be parsed to a long.
-     * @return The input array split by commas and converted to longs.
-     */
-    private static long[] getValuesFromStringList(String rawList, long defaultValue) {
-        if (rawList.equals("")) {
-            return new long[0];
-        }
-
-        // Split list by "," and then convert to long. Any values that cannot be converted will
-        // return a value of -1.
-        String[] longAsStrings = rawList.split(",");
-        long[] longAsLongs = new long[longAsStrings.length];
-        for (int i = 0; i < longAsStrings.length; i++) {
-            try {
-                longAsLongs[i] = Long.parseLong(longAsStrings[i]);
-            } catch (NumberFormatException e) {
-                longAsLongs[i] = defaultValue;
-            }
-        }
-        return longAsLongs;
+                ChromePreferenceKeys.OFFLINE_MEASUREMENTS_SYSTEM_STATE_LIST);
     }
 }
