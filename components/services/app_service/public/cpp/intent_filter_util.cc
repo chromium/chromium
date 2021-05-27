@@ -171,6 +171,7 @@ bool IsBrowserFilter(const apps::mojom::IntentFilterPtr& filter) {
 std::set<std::string> AppManagementGetSupportedLinks(
     const apps::mojom::IntentFilterPtr& intent_filter) {
   std::set<std::string> hosts;
+  std::set<std::string> paths;
   bool is_http_or_https = false;
 
   for (auto& condition : intent_filter->conditions) {
@@ -201,9 +202,36 @@ std::set<std::string> AppManagementGetSupportedLinks(
         hosts.insert(condition_value->value);
       }
     }
+
+    // For path conditions we add each value to the the |paths| set.
+    if (condition->condition_type == apps::mojom::ConditionType::kPattern) {
+      for (auto& condition_value : condition->condition_values) {
+        std::string value = condition_value->value;
+        // Glob and literal patterns can be printed exactly, but prefix
+        // patterns must have be appended with "*" to indicate that
+        // anything with that prefix can be matched.
+        if (condition_value->match_type ==
+            apps::mojom::PatternMatchType::kPrefix) {
+          value.append("*");
+        }
+        paths.insert(value);
+      }
+    }
   }
 
-  return is_http_or_https ? hosts : std::set<std::string>();
+  // We only care about http and https schemes.
+  if (!is_http_or_https) {
+    return std::set<std::string>();
+  }
+
+  std::set<std::string> supported_links;
+  for (auto& host : hosts) {
+    for (auto& path : paths) {
+      supported_links.insert(host + path);
+    }
+  }
+
+  return supported_links;
 }
 
 }  // namespace apps_util
