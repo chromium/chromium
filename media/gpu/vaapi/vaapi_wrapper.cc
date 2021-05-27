@@ -833,10 +833,14 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
       return false;
     }
 
-    if (attrib.value != VA_ENC_PACKED_HEADER_NONE) {
+    const uint32_t packed_header_attributes =
+        (VA_ENC_PACKED_HEADER_SEQUENCE | VA_ENC_PACKED_HEADER_PICTURE);
+    if ((packed_header_attributes & attrib.value) == packed_header_attributes) {
       required_attribs->push_back(
-          {VAConfigAttribEncPackedHeaders,
-           VA_ENC_PACKED_HEADER_SEQUENCE | VA_ENC_PACKED_HEADER_PICTURE});
+          {VAConfigAttribEncPackedHeaders, packed_header_attributes});
+    } else {
+      required_attribs->push_back(
+          {VAConfigAttribEncPackedHeaders, VA_ENC_PACKED_HEADER_NONE});
     }
   }
   return true;
