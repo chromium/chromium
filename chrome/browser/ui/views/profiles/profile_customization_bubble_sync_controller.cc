@@ -109,11 +109,11 @@ ProfileCustomizationBubbleSyncController::
       show_bubble_callback_(std::move(show_bubble_callback)),
       suggested_profile_color_(suggested_profile_color),
       observation_start_time_(base::TimeTicks::Now()) {
-  DCHECK(profile);
-  DCHECK(anchor_view);
-  DCHECK(sync_service_);
-  DCHECK(theme_service_);
-  DCHECK(show_bubble_callback_);
+  CHECK(profile);
+  CHECK(anchor_view);
+  CHECK(sync_service_);
+  CHECK(theme_service_);
+  CHECK(show_bubble_callback_);
 
   profile_observation_.Observe(profile);
   view_observation_.Observe(anchor_view);
@@ -214,7 +214,7 @@ void ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
   views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
                                  ->toolbar_button_provider()
                                  ->GetAvatarToolbarButton();
-  DCHECK(anchor_view);
+  CHECK(anchor_view);
   ProfileCustomizationBubbleSyncController::
       ApplyColorAndShowBubbleWhenNoValueSynced(browser->profile(), anchor_view,
                                                suggested_profile_color);

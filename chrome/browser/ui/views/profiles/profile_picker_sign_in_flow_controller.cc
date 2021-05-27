@@ -53,7 +53,7 @@ void ShowCustomizationBubble(SkColor new_profile_color, Browser* browser) {
     return;
   views::View* anchor_view =
       browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
-  DCHECK(anchor_view);
+  CHECK(anchor_view);
 
   // Don't show the customization bubble if a valid policy theme is set.
   if (ThemeServiceFactory::GetForProfile(browser->profile())
@@ -518,7 +518,7 @@ void ProfilePickerSignInFlowController::OnBrowserOpened(
     BrowserOpenedCallback finish_flow_callback,
     Profile* profile,
     Profile::CreateStatus profile_create_status) {
-  DCHECK_EQ(profile, profile_);
+  CHECK_EQ(profile, profile_);
 
   // Hide the flow window. This posts a task on the message loop to destroy the
   // window incl. this view.
@@ -528,6 +528,6 @@ void ProfilePickerSignInFlowController::OnBrowserOpened(
     return;
 
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
-  DCHECK(browser);
+  CHECK(browser);
   std::move(finish_flow_callback).Run(browser);
 }
