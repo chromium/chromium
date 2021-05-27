@@ -156,21 +156,21 @@ def load_gpu_driver_bug_workarounds(workaround_type_filename):
 
 def get_feature_set(features, total_feature_set):
   assert len(features) > 0
-  feature_set = set([])
+  feature_set = dict()
   for feature in features:
     if feature == 'all':
-      feature_set = set(total_feature_set)
+      feature_set = {k:1 for k in total_feature_set}
     elif isinstance(feature, dict):
       for key in feature:
         if key == 'exceptions':
           for exception in feature['exceptions']:
             assert exception in feature_set
-            feature_set.remove(exception)
+            del feature_set[exception]
         else:
           raise KeyError('only exceptions are allowed')
     else:
       assert feature in total_feature_set
-      feature_set.add(feature)
+      feature_set[feature] = 1
   return feature_set
 
 
@@ -178,7 +178,7 @@ def write_features(feature_set, feature_name_prefix, var_name,
                    data_helper_file):
   data_helper_file.write('const int %s[%d] = {\n' %
                          (var_name, len(feature_set)))
-  for feature in feature_set:
+  for feature in feature_set.keys():
     data_helper_file.write(feature_name_prefix + feature.upper())
     data_helper_file.write(',\n')
   data_helper_file.write('};\n\n')
@@ -606,7 +606,7 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
                   'Intel' in driver_vendor)
       assert is_intel, 'Intel driver schema is only for Intel GPUs'
       valid_version = check_intel_driver_version(driver_version['value'])
-      if driver_version.has_key('value2'):
+      if 'value2' in driver_version:
         valid_version = (valid_version and
                          check_intel_driver_version(driver_version['value2']))
       assert valid_version, INTEL_DRIVER_VERSION_SCHEMA
@@ -616,7 +616,7 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
       is_nvidia = (format(vendor_id, '#04x') == '0x10de')
       assert is_nvidia, 'Nvidia driver schema is only for Nvidia GPUs'
       valid_version = check_nvidia_driver_version(driver_version['value'])
-      if driver_version.has_key('value2'):
+      if 'value2' in driver_version:
         valid_version = (valid_version and
                          check_nvidia_driver_version(driver_version['value2']))
       assert valid_version, NVIDIA_DRIVER_VERSION_SCHEMA
