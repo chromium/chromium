@@ -7,8 +7,12 @@
 
 #include "base/callback.h"
 #include "base/sequenced_task_runner.h"
+#include "remoting/codec/webrtc_video_encoder.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/api/notifier.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
+
+#include <memory>
 
 namespace remoting {
 namespace protocol {
@@ -39,7 +43,15 @@ class WebrtcVideoTrackSource
   void RemoveEncodedSink(
       rtc::VideoSinkInterface<webrtc::RecordableEncodedFrame>* sink) override;
 
+  // Sends a captured frame to the sink if one was added. The |frame_stats|
+  // will be associated with the frame and will be attached to the output
+  // EncodedFrame.
+  void SendCapturedFrame(
+      std::unique_ptr<webrtc::DesktopFrame> desktop_frame,
+      std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats);
+
  private:
+  rtc::VideoSinkInterface<webrtc::VideoFrame>* sink_ = nullptr;
   base::RepeatingClosure add_sink_callback_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 };
