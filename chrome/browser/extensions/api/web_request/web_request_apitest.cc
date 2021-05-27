@@ -646,8 +646,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestChangeCSPHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "webrequest", .page_url = "test_change_csp_headers.html"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest",
+                               {.page_url = "test_change_csp_headers.html"}))
       << message_;
 }
 

@@ -257,8 +257,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_IncognitoSplitMode) {
   catcher_incognito.RestrictToBrowserContext(
       profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "omnibox"}, {.allow_in_incognito = true}))
+  ASSERT_TRUE(RunExtensionTest("omnibox", {}, {.allow_in_incognito = true}))
       << message_;
 
   // Open an incognito window and wait for the incognito extension process to

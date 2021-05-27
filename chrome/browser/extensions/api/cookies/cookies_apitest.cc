@@ -25,7 +25,7 @@ class CookiesApiTest : public ExtensionApiTest,
                bool allow_in_incognito = false,
                const char* custom_arg = nullptr) {
     return RunExtensionTest(
-        {.name = extension_name, .custom_arg = custom_arg},
+        extension_name, {.custom_arg = custom_arg},
         {.allow_in_incognito = allow_in_incognito,
          .load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }

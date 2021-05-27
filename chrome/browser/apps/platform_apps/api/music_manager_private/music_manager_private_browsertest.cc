@@ -15,8 +15,8 @@ using MusicManagerPrivateTest = extensions::PlatformAppBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(MusicManagerPrivateTest, DeviceIdValueReturned) {
   ASSERT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/music_manager_private/device_id_value_returned",
-       .launch_as_platform_app = true}))
+      "platform_apps/music_manager_private/device_id_value_returned",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 

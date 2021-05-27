@@ -129,8 +129,8 @@ INSTANTIATE_TEST_SUITE_P(AffiliationCheck,
 IN_PROC_BROWSER_TEST_F(
     ExtensionApiTest,
     EnterpriseDeviceAttributesIsRestrictedToPolicyExtension) {
-  ASSERT_TRUE(RunExtensionTest({.name = "enterprise_device_attributes",
-                                .page_url = "api_not_available.html"},
+  ASSERT_TRUE(RunExtensionTest("enterprise_device_attributes",
+                               {.page_url = "api_not_available.html"},
                                {.ignore_manifest_warnings = true}));
 
   base::FilePath extension_path =

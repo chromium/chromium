@@ -39,9 +39,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_Stubs) {
 // can be used in an app. For example, this test will fail if a developer adds
 // an API feature without providing a schema. http://crbug.com/369318
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, StubsApp) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "stubs_app", .launch_as_platform_app = true},
-                       {.ignore_manifest_warnings = true}))
+  ASSERT_TRUE(RunExtensionTest("stubs_app", {.launch_as_platform_app = true},
+                               {.ignore_manifest_warnings = true}))
       << message_;
 }
 

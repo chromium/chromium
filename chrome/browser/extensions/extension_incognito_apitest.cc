@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoYesScript) {
 // accidentally create an incognito profile.
 IN_PROC_BROWSER_TEST_F(IncognitoApiTest, DontCreateIncognitoProfile) {
   ASSERT_FALSE(browser()->profile()->HasPrimaryOTRProfile());
-  ASSERT_TRUE(RunExtensionTest({.name = "incognito/dont_create_profile"},
+  ASSERT_TRUE(RunExtensionTest("incognito/dont_create_profile", {},
                                {.allow_in_incognito = true}))
       << message_;
   ASSERT_FALSE(browser()->profile()->HasPrimaryOTRProfile());

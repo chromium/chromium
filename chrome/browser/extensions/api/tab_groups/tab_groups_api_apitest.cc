@@ -27,8 +27,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupsWorks) {
   return;
 #endif
 
-  ASSERT_TRUE(RunExtensionTest({.name = "tab_groups"},
-                               {.ignore_manifest_warnings = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("tab_groups", {}, {.ignore_manifest_warnings = true}))
       << message_;
 }
 

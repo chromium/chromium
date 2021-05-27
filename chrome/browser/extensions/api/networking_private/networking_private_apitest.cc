@@ -308,9 +308,9 @@ class NetworkingPrivateApiTest : public ExtensionApiTest {
  protected:
   bool RunNetworkingSubtest(const std::string& subtest) {
     const std::string page_url = "main.html?" + subtest;
-    return RunExtensionTest(
-        {.name = "networking_private", .page_url = page_url.c_str()},
-        {.load_as_component = true});
+    return RunExtensionTest("networking_private",
+                            {.page_url = page_url.c_str()},
+                            {.load_as_component = true});
   }
 
  private:

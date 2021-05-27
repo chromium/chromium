@@ -92,7 +92,7 @@ class ExtensionPageCaptureApiTest
   bool RunTest(const char* extension_name,
                const char* custom_arg = nullptr,
                bool allow_file_access = false) {
-    return RunExtensionTest({.name = extension_name, .custom_arg = custom_arg},
+    return RunExtensionTest(extension_name, {.custom_arg = custom_arg},
                             {.allow_file_access = allow_file_access});
   }
   void WaitForFileCleanup(PageCaptureSaveAsMHTMLDelegate* delegate) {

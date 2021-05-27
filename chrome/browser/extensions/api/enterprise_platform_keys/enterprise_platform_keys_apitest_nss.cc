@@ -322,8 +322,8 @@ INSTANTIATE_TEST_SUITE_P(
 // chrome.enterprise.platformKeys namespace.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
                        EnterprisePlatformKeysIsRestrictedToPolicyExtension) {
-  ASSERT_TRUE(RunExtensionTest({.name = "enterprise_platform_keys",
-                                .page_url = "api_not_available.html"},
+  ASSERT_TRUE(RunExtensionTest("enterprise_platform_keys",
+                               {.page_url = "api_not_available.html"},
                                {.ignore_manifest_warnings = true}));
 
   base::FilePath extension_path =

@@ -21,7 +21,7 @@ IN_PROC_BROWSER_TEST_F(WallPaperPrivateApiTest, WallpaperPrivateApiTest) {
   chromeos::SystemSaltGetter::Get()->SetRawSaltForTesting(
       chromeos::SystemSaltGetter::RawSalt({1, 2, 3, 4, 5, 6, 7, 8}));
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest({.name = "wallpaper_manager"},
-                               {.load_as_component = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("wallpaper_manager", {}, {.load_as_component = true}))
       << message_;
 }

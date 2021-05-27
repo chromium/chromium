@@ -86,7 +86,7 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(devlin): This test name should be more descriptive.
 IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, ApiTest) {
   ASSERT_TRUE(RunExtensionTest(
-      {.name = "apitest"},
+      "apitest", {},
       {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
       << message_;
 }

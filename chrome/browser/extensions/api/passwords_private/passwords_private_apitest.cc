@@ -59,9 +59,8 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
  protected:
   bool RunPasswordsSubtest(const std::string& subtest) {
     const std::string page_url = "main.html?" + subtest;
-    return RunExtensionTest(
-        {.name = "passwords_private", .page_url = page_url.c_str()},
-        {.load_as_component = true});
+    return RunExtensionTest("passwords_private", {.page_url = page_url.c_str()},
+                            {.load_as_component = true});
   }
 
   bool importPasswordsWasTriggered() {

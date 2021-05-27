@@ -244,7 +244,7 @@ class WebNavigationApiTestWithContextType
   bool RunTest(const char* name,
                bool allow_in_incognito = false) WARN_UNUSED_RESULT {
     return RunExtensionTest(
-        {.name = name},
+        name, {},
         {.allow_in_incognito = allow_in_incognito,
          .load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }

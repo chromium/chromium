@@ -139,7 +139,7 @@ class ExtensionMetricsApiTest
  public:
   bool RunComponentTest(const char* extension_name) {
     return RunExtensionTest(
-        {.name = extension_name},
+        extension_name, {},
         {.load_as_service_worker = GetParam() == ContextType::kServiceWorker,
          .load_as_component = true});
   }

@@ -55,7 +55,7 @@ class SystemCpuApiTest : public ExtensionApiTest,
  protected:
   bool RunTest(const char* name) {
     return RunExtensionTest(
-        {.name = name},
+        name, {},
         {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
 };

@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(InstanceIDApiTest, Incognito) {
   incognito_catcher.RestrictToBrowserContext(
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
-  ASSERT_TRUE(RunExtensionTest({.name = "instance_id/incognito"},
+  ASSERT_TRUE(RunExtensionTest("instance_id/incognito", {},
                                {.allow_in_incognito = true}));
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();

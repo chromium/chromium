@@ -8,7 +8,7 @@
 using ServiceWorkerAppTest = extensions::PlatformAppBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerAppTest, RegisterAndPostMessage) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "platform_apps/service_worker", .launch_as_platform_app = true}))
+  ASSERT_TRUE(RunExtensionTest("platform_apps/service_worker",
+                               {.launch_as_platform_app = true}))
       << message_;
 }

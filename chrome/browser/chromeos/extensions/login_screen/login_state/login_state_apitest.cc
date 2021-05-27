@@ -15,9 +15,8 @@ using LoginStateApitest = ExtensionApiTest;
 // Test that |loginState.getProfileType()| returns |USER_PROFILE| for
 // extensions not running in the signin profile.
 IN_PROC_BROWSER_TEST_F(LoginStateApitest, GetProfileType_UserProfile) {
-  EXPECT_TRUE(RunExtensionTest(
-      {.name = "login_screen_apis/login_state/get_profile_type",
-       .custom_arg = "USER_PROFILE"}));
+  EXPECT_TRUE(RunExtensionTest("login_screen_apis/login_state/get_profile_type",
+                               {.custom_arg = "USER_PROFILE"}));
 }
 
 }  // namespace extensions
