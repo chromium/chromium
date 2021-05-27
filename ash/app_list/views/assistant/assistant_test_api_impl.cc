@@ -5,6 +5,7 @@
 #include "ash/app_list/views/assistant/assistant_test_api_impl.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/app_list/views/app_list_view.h"

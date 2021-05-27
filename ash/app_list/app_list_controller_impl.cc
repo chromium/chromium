@@ -9,6 +9,7 @@
 
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -257,7 +258,7 @@ GetTransitionFromMetricsAnimationInfo(
 
 AppListControllerImpl::AppListControllerImpl()
     : model_(std::make_unique<AppListModel>()),
-      presenter_(this),
+      fullscreen_presenter_(std::make_unique<AppListPresenterImpl>(this)),
       is_notification_indicator_enabled_(
           ::features::IsNotificationIndicatorEnabled()) {
   if (features::IsAppListBubbleEnabled())
@@ -298,6 +299,10 @@ AppListControllerImpl::~AppListControllerImpl() {
 
   if (client_)
     client_->OnAppListControllerDestroyed();
+
+  // Dismiss the window before `fullscreen_presenter_` is reset, because
+  // Dimiss() may call back into this object and access `fullscreen_presenter_`.
+  fullscreen_presenter_->Dismiss(base::TimeTicks());
 }
 
 // static
@@ -527,7 +532,7 @@ void AppListControllerImpl::NotifyProcessSyncChangesFinished() {
   // at the end of the overflowed page. Therefore, after the sync service has
   // finished processing sync change, SaveToMetaData should be called to insert
   // page break items if there are any missing at the end of full pages.
-  AppListView* const app_list_view = presenter_.GetView();
+  AppListView* const app_list_view = fullscreen_presenter_->GetView();
   if (app_list_view) {
     app_list_view->app_list_main_view()
         ->contents_view()
@@ -548,12 +553,12 @@ void AppListControllerImpl::DismissAppList() {
   if (features::IsAppListBubbleEnabled())
     bubble_presenter_->Dismiss();
 
-  presenter_.Dismiss(base::TimeTicks());
+  fullscreen_presenter_->Dismiss(base::TimeTicks());
 }
 
 void AppListControllerImpl::GetAppInfoDialogBounds(
     GetAppInfoDialogBoundsCallback callback) {
-  AppListView* app_list_view = presenter_.GetView();
+  AppListView* app_list_view = fullscreen_presenter_->GetView();
   gfx::Rect bounds = gfx::Rect();
   if (app_list_view)
     bounds = app_list_view->GetAppInfoDialogBounds();
@@ -562,18 +567,19 @@ void AppListControllerImpl::GetAppInfoDialogBounds(
 
 void AppListControllerImpl::ShowAppList() {
   if (features::IsAppListBubbleEnabled() && !IsTabletMode()) {
-    DCHECK(!presenter_.GetTargetVisibility());
+    DCHECK(!fullscreen_presenter_->GetTargetVisibility());
     bubble_presenter_->Show(GetDisplayIdToShowAppListOn());
     return;
   }
   DCHECK(!features::IsAppListBubbleEnabled() ||
          !bubble_presenter_->IsShowing());
-  presenter_.Show(AppListViewState::kPeeking, GetDisplayIdToShowAppListOn(),
-                  base::TimeTicks(), /*show_source=*/absl::nullopt);
+  fullscreen_presenter_->Show(AppListViewState::kPeeking,
+                              GetDisplayIdToShowAppListOn(), base::TimeTicks(),
+                              /*show_source=*/absl::nullopt);
 }
 
 aura::Window* AppListControllerImpl::GetWindow() {
-  return presenter_.GetWindow();
+  return fullscreen_presenter_->GetWindow();
 }
 
 bool AppListControllerImpl::IsVisible(
@@ -634,9 +640,9 @@ void AppListControllerImpl::OnActiveUserPrefServiceChanged(
   // The app list is not dismissed before switching user, suggestion chips will
   // not be shown. So reset app list state and trigger an initial search here to
   // update the suggestion results.
-  if (presenter_.GetView()) {
-    presenter_.GetView()->CloseOpenedPage();
-    presenter_.GetView()->search_box_view()->ClearSearch();
+  if (fullscreen_presenter_->GetView()) {
+    fullscreen_presenter_->GetView()->CloseOpenedPage();
+    fullscreen_presenter_->GetView()->search_box_view()->ClearSearch();
   }
 }
 
@@ -651,13 +657,13 @@ void AppListControllerImpl::OnSessionStateChanged(
   // Show the app list after signing in in tablet mode. For metrics, the app
   // list is not considered shown since the browser window is shown over app
   // list upon login.
-  if (!presenter_.GetTargetVisibility())
+  if (!fullscreen_presenter_->GetTargetVisibility())
     ShowHomeScreen();
 
   // Hide app list UI initially to prevent app list from flashing in background
   // while the initial app window is being shown.
   if (!last_target_visible_ && !ShouldHomeLauncherBeVisible())
-    presenter_.SetViewVisibility(false);
+    fullscreen_presenter_->SetViewVisibility(false);
   else
     OnVisibilityChanged(true, last_visible_display_id_);
 }
@@ -714,8 +720,8 @@ void AppListControllerImpl::Show(int64_t display_id,
     bubble_presenter_->Show(display_id);
     return;
   }
-  presenter_.Show(AppListViewState::kPeeking, display_id, event_time_stamp,
-                  show_source);
+  fullscreen_presenter_->Show(AppListViewState::kPeeking, display_id,
+                              event_time_stamp, show_source);
 }
 
 void AppListControllerImpl::UpdateYPositionAndOpacity(
@@ -724,25 +730,26 @@ void AppListControllerImpl::UpdateYPositionAndOpacity(
   // Avoid changing app list opacity and position when homecher is enabled.
   if (IsTabletMode())
     return;
-  presenter_.UpdateYPositionAndOpacity(y_position_in_screen,
-                                       background_opacity);
+  fullscreen_presenter_->UpdateYPositionAndOpacity(y_position_in_screen,
+                                                   background_opacity);
 }
 
 void AppListControllerImpl::EndDragFromShelf(AppListViewState app_list_state) {
   // Avoid dragging app list when homecher is enabled.
   if (IsTabletMode())
     return;
-  presenter_.EndDragFromShelf(app_list_state);
+  fullscreen_presenter_->EndDragFromShelf(app_list_state);
 }
 
 void AppListControllerImpl::ProcessMouseWheelEvent(
     const ui::MouseWheelEvent& event) {
-  presenter_.ProcessMouseWheelOffset(event.location(), event.offset());
+  fullscreen_presenter_->ProcessMouseWheelOffset(event.location(),
+                                                 event.offset());
 }
 
 void AppListControllerImpl::ProcessScrollEvent(const ui::ScrollEvent& event) {
   gfx::Vector2d offset(event.x_offset(), event.y_offset());
-  presenter_.ProcessScrollOffset(event.location(), offset);
+  fullscreen_presenter_->ProcessScrollOffset(event.location(), offset);
 }
 
 ShelfAction AppListControllerImpl::ToggleAppList(
@@ -770,8 +777,8 @@ ShelfAction AppListControllerImpl::ToggleAppList(
 
   base::AutoReset<bool> auto_reset(&should_dismiss_immediately_,
                                    display_id != last_visible_display_id_);
-  ShelfAction action =
-      presenter_.ToggleAppList(display_id, show_source, event_time_stamp);
+  ShelfAction action = fullscreen_presenter_->ToggleAppList(
+      display_id, show_source, event_time_stamp);
   if (action == SHELF_ACTION_APP_LIST_SHOWN)
     LogAppListShowSource(show_source);
   return action;
@@ -1011,7 +1018,7 @@ void AppListControllerImpl::OnSplitViewStateChanged(
 }
 
 void AppListControllerImpl::OnTabletModeStarted() {
-  const AppListView* app_list_view = presenter_.GetView();
+  const AppListView* app_list_view = fullscreen_presenter_->GetView();
   // In tablet mode shelf orientation is always "bottom". Dismiss app list if
   // switching to tablet mode from side shelf app list, to ensure the app list
   // is re-shown and laid out with correct "side shelf" value.
@@ -1022,7 +1029,7 @@ void AppListControllerImpl::OnTabletModeStarted() {
   if (features::IsAppListBubbleEnabled())
     DismissAppList();
 
-  presenter_.OnTabletModeChanged(true);
+  fullscreen_presenter_->OnTabletModeChanged(true);
 
   // Show the app list if the tablet mode starts.
   if (Shell::Get()->session_controller()->GetSessionState() ==
@@ -1048,13 +1055,13 @@ void AppListControllerImpl::OnTabletModeStarted() {
 }
 
 void AppListControllerImpl::OnTabletModeEnded() {
-  aura::Window* window = presenter_.GetWindow();
+  aura::Window* window = fullscreen_presenter_->GetWindow();
   base::AutoReset<bool> auto_reset(
       &should_dismiss_immediately_,
       window && RootWindowController::ForWindow(window)
                     ->GetShelfLayoutManager()
                     ->HasVisibleWindow());
-  presenter_.OnTabletModeChanged(false);
+  fullscreen_presenter_->OnTabletModeChanged(false);
   UpdateLauncherContainer();
 
   // Dismiss the app list if the tablet mode ends.
@@ -1063,7 +1070,7 @@ void AppListControllerImpl::OnTabletModeEnded() {
 
 void AppListControllerImpl::OnWallpaperColorsChanged() {
   if (IsVisible(last_visible_display_id_))
-    presenter_.GetView()->OnWallpaperColorsChanged();
+    fullscreen_presenter_->GetView()->OnWallpaperColorsChanged();
 }
 
 void AppListControllerImpl::OnWallpaperPreviewStarted() {
@@ -1078,7 +1085,7 @@ void AppListControllerImpl::OnWallpaperPreviewEnded() {
 
 void AppListControllerImpl::OnKeyboardVisibilityChanged(const bool is_visible) {
   onscreen_keyboard_shown_ = is_visible;
-  AppListView* app_list_view = presenter_.GetView();
+  AppListView* app_list_view = fullscreen_presenter_->GetView();
   if (app_list_view)
     app_list_view->OnScreenKeyboardShown(is_visible);
 }
@@ -1112,9 +1119,10 @@ void AppListControllerImpl::OnDisplayConfigurationChanged() {
       IsTabletMode() && Shell::Get()->session_controller()->GetSessionState() ==
                             session_manager::SessionState::ACTIVE;
 
-  if (!should_be_shown || should_be_shown == presenter_.GetTargetVisibility())
+  if (!should_be_shown ||
+      should_be_shown == fullscreen_presenter_->GetTargetVisibility()) {
     return;
-
+  }
   ShowHomeScreen();
 }
 
@@ -1135,12 +1143,12 @@ void AppListControllerImpl::OnUiVisibilityChanged(
       }
 
       if (!IsShowingEmbeddedAssistantUI())
-        presenter_.ShowEmbeddedAssistantUI(true);
+        fullscreen_presenter_->ShowEmbeddedAssistantUI(true);
 
       // Make sure that app list views are visible - they might get hidden
       // during session startup, and the app list visibility might not have yet
       // changed to visible by this point.
-      presenter_.SetViewVisibility(true);
+      fullscreen_presenter_->SetViewVisibility(true);
       break;
     case AssistantVisibility::kClosed:
       if (!IsShowingEmbeddedAssistantUI())
@@ -1161,13 +1169,15 @@ void AppListControllerImpl::OnUiVisibilityChanged(
         // |ClearSearchAndDeactivateSearchBox()|.
         if (exit_point == AssistantExitPoint::kScreenshot) {
           set_active_state_animation_disabler.emplace(
-              presenter_.GetView()->app_list_main_view()->contents_view());
+              fullscreen_presenter_->GetView()
+                  ->app_list_main_view()
+                  ->contents_view());
         }
 
-        presenter_.ShowEmbeddedAssistantUI(false);
+        fullscreen_presenter_->ShowEmbeddedAssistantUI(false);
 
         if (exit_point != AssistantExitPoint::kBackInLauncher) {
-          presenter_.GetView()
+          fullscreen_presenter_->GetView()
               ->search_box_view()
               ->ClearSearchAndDeactivateSearchBox();
         }
@@ -1187,7 +1197,7 @@ void AppListControllerImpl::OnUiVisibilityChanged(
 
 base::ScopedClosureRunner
 AppListControllerImpl::DisableHomeScreenBackgroundBlur() {
-  AppListView* const app_list_view = presenter_.GetView();
+  AppListView* const app_list_view = fullscreen_presenter_->GetView();
   if (!app_list_view)
     return base::ScopedClosureRunner(base::DoNothing());
   return app_list_view->app_list_main_view()
@@ -1230,7 +1240,7 @@ void AppListControllerImpl::OnHomeLauncherPositionChanged(int percent_shown,
 }
 
 aura::Window* AppListControllerImpl::GetHomeScreenWindow() const {
-  return presenter_.GetWindow();
+  return fullscreen_presenter_->GetWindow();
 }
 
 void AppListControllerImpl::UpdateScaleAndOpacityForHomeLauncher(
@@ -1240,14 +1250,14 @@ void AppListControllerImpl::UpdateScaleAndOpacityForHomeLauncher(
     UpdateAnimationSettingsCallback callback) {
   DCHECK(!animation_info.has_value() || !callback.is_null());
 
-  presenter_.UpdateScaleAndOpacityForHomeLauncher(
+  fullscreen_presenter_->UpdateScaleAndOpacityForHomeLauncher(
       scale, opacity,
       GetTransitionFromMetricsAnimationInfo(std::move(animation_info)),
       std::move(callback));
 }
 
 void AppListControllerImpl::Back() {
-  presenter_.GetView()->Back();
+  fullscreen_presenter_->GetView()->Back();
 }
 
 void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
@@ -1257,29 +1267,32 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
   keyboard_traversal_engaged_ = engaged;
 
   views::View* focused_view =
-      presenter_.GetView()->GetFocusManager()->GetFocusedView();
+      fullscreen_presenter_->GetView()->GetFocusManager()->GetFocusedView();
 
   if (!focused_view)
     return;
 
   // When the search box has focus, it is actually the textfield that has focus.
   // As such, the |SearchBoxView| must be told to repaint directly.
-  if (focused_view == presenter_.GetView()->search_box_view()->search_box())
-    presenter_.GetView()->search_box_view()->SchedulePaint();
-  else
+  if (focused_view ==
+      fullscreen_presenter_->GetView()->search_box_view()->search_box()) {
+    fullscreen_presenter_->GetView()->search_box_view()->SchedulePaint();
+  } else {
     focused_view->SchedulePaint();
+  }
 }
 
 bool AppListControllerImpl::IsShowingEmbeddedAssistantUI() const {
-  return presenter_.IsShowingEmbeddedAssistantUI();
+  return fullscreen_presenter_->IsShowingEmbeddedAssistantUI();
 }
 
 AppListViewState AppListControllerImpl::CalculateStateAfterShelfDrag(
     const ui::LocatedEvent& event_in_screen,
     float launcher_above_shelf_bottom_amount) const {
-  if (presenter_.GetView())
-    return presenter_.GetView()->CalculateStateAfterShelfDrag(
+  if (fullscreen_presenter_->GetView()) {
+    return fullscreen_presenter_->GetView()->CalculateStateAfterShelfDrag(
         event_in_screen, launcher_above_shelf_bottom_amount);
+  }
   return AppListViewState::kClosed;
 }
 
@@ -1433,7 +1446,9 @@ bool AppListControllerImpl::AppListTargetVisibility() const {
 }
 
 void AppListControllerImpl::ViewClosing() {
-  if (presenter_.GetView()->search_box_view()->is_search_box_active()) {
+  if (fullscreen_presenter_->GetView()
+          ->search_box_view()
+          ->is_search_box_active()) {
     // Close the virtual keyboard before the app list view is dismissed.
     // Otherwise if the browser is behind the app list view, after the latter is
     // closed, IME is updated because of the changed focus. Consequently,
@@ -1478,7 +1493,7 @@ ui::ImplicitAnimationObserver* AppListControllerImpl::GetAnimationObserver(
     AppListViewState target_state) {
   // |presenter_| observes the close animation only.
   if (target_state == AppListViewState::kClosed)
-    return &presenter_;
+    return fullscreen_presenter_.get();
   return nullptr;
 }
 
@@ -1510,12 +1525,16 @@ bool AppListControllerImpl::ShouldDismissImmediately() {
 
   DCHECK(Shell::HasInstance());
   const int ideal_shelf_y =
-      Shelf::ForWindow(presenter_.GetView()->GetWidget()->GetNativeView())
+      Shelf::ForWindow(
+          fullscreen_presenter_->GetView()->GetWidget()->GetNativeView())
           ->GetIdealBounds()
           .y();
 
-  const int current_y =
-      presenter_.GetView()->GetWidget()->GetNativeWindow()->bounds().y();
+  const int current_y = fullscreen_presenter_->GetView()
+                            ->GetWidget()
+                            ->GetNativeWindow()
+                            ->bounds()
+                            .y();
   return current_y > ideal_shelf_y;
 }
 
@@ -1603,8 +1622,8 @@ void AppListControllerImpl::OnViewStateChanged(AppListViewState state) {
 
 int AppListControllerImpl::AdjustAppListViewScrollOffset(int offset,
                                                          ui::EventType type) {
-  Shelf* shelf =
-      Shelf::ForWindow(presenter_.GetView()->GetWidget()->GetNativeView());
+  Shelf* shelf = Shelf::ForWindow(
+      fullscreen_presenter_->GetView()->GetWidget()->GetNativeView());
 
   // When Natural/Reverse Scrolling is turned on, the events we receive have had
   // their offsets inverted to make that feature work. Certain behaviors, like
@@ -1635,7 +1654,7 @@ void AppListControllerImpl::GetAppLaunchedMetricParams(
 
 gfx::Rect AppListControllerImpl::SnapBoundsToDisplayEdge(
     const gfx::Rect& bounds) {
-  AppListView* app_list_view = presenter_.GetView();
+  AppListView* app_list_view = fullscreen_presenter_->GetView();
   DCHECK(app_list_view && app_list_view->GetWidget());
   aura::Window* window = app_list_view->GetWidget()->GetNativeView();
   return screen_util::SnapBoundsToDisplayEdge(bounds, window);
@@ -1705,7 +1724,7 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
 
   last_visible_display_id_ = display_id;
 
-  AppListView* const app_list_view = presenter_.GetView();
+  AppListView* const app_list_view = fullscreen_presenter_->GetView();
   app_list_view->UpdatePageResetTimer(real_visibility);
 
   if (!real_visibility) {
@@ -1782,8 +1801,8 @@ void AppListControllerImpl::OnVisibilityWillChange(bool visible,
     last_target_visible_ = real_target_visibility;
     last_target_visible_display_id_ = display_id;
 
-    if (real_target_visibility && presenter_.GetView())
-      presenter_.SetViewVisibility(true);
+    if (real_target_visibility && fullscreen_presenter_->GetView())
+      fullscreen_presenter_->SetViewVisibility(true);
 
     if (client_)
       client_->OnAppListVisibilityWillChange(real_target_visibility);
@@ -1875,13 +1894,13 @@ int64_t AppListControllerImpl::GetDisplayIdToShowAppListOn() {
 }
 
 void AppListControllerImpl::ResetHomeLauncherIfShown() {
-  if (!IsTabletMode() || !presenter_.IsVisibleDeprecated())
+  if (!IsTabletMode() || !fullscreen_presenter_->IsVisibleDeprecated())
     return;
 
   auto* const keyboard_controller = keyboard::KeyboardUIController::Get();
   if (keyboard_controller->IsKeyboardVisible())
     keyboard_controller->HideKeyboardByUser();
-  presenter_.GetView()->CloseOpenedPage();
+  fullscreen_presenter_->GetView()->CloseOpenedPage();
 
   // Refresh the suggestion chips with empty query.
   StartSearch(std::u16string());
@@ -1986,7 +2005,7 @@ void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
 
 void AppListControllerImpl::UpdateLauncherContainer(
     absl::optional<int64_t> display_id) {
-  aura::Window* window = presenter_.GetWindow();
+  aura::Window* window = fullscreen_presenter_->GetWindow();
   if (!window)
     return;
 
@@ -2014,8 +2033,8 @@ aura::Window* AppListControllerImpl::GetContainerForDisplayId(
   aura::Window* root_window = nullptr;
   if (display_id.has_value()) {
     root_window = Shell::GetRootWindowForDisplayId(display_id.value());
-  } else if (presenter_.GetWindow()) {
-    root_window = presenter_.GetWindow()->GetRootWindow();
+  } else if (fullscreen_presenter_->GetWindow()) {
+    root_window = fullscreen_presenter_->GetWindow()->GetRootWindow();
   }
 
   return root_window ? root_window->GetChildById(GetContainerId()) : nullptr;
@@ -2057,10 +2076,10 @@ bool AppListControllerImpl::IsHomeScreenVisible() {
 
 gfx::Rect AppListControllerImpl::GetInitialAppListItemScreenBoundsForWindow(
     aura::Window* window) {
-  if (!presenter_.GetView())
+  if (!fullscreen_presenter_->GetView())
     return gfx::Rect();
   std::string* app_id = window->GetProperty(kAppIDKey);
-  return presenter_.GetView()->GetItemScreenBoundsInFirstGridPage(
+  return fullscreen_presenter_->GetView()->GetItemScreenBoundsInFirstGridPage(
       app_id ? *app_id : std::string());
 }
 
@@ -2070,7 +2089,7 @@ void AppListControllerImpl::OnWindowDragStarted() {
 
   // Dismiss Assistant if it's running when a window drag starts.
   if (IsShowingEmbeddedAssistantUI())
-    presenter_.ShowEmbeddedAssistantUI(false);
+    fullscreen_presenter_->ShowEmbeddedAssistantUI(false);
 }
 
 void AppListControllerImpl::OnWindowDragEnded(bool animate) {

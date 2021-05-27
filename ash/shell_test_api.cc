@@ -11,6 +11,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/keyboard/keyboard_controller_impl.h"

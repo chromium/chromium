@@ -33,6 +33,7 @@
 #include "base/check.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"

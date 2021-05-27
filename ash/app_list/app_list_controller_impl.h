@@ -12,7 +12,6 @@
 
 #include "ash/app_list/app_list_color_provider_impl.h"
 #include "ash/app_list/app_list_metrics.h"
-#include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/home_launcher_animation_info.h"
 #include "ash/app_list/model/app_list_model.h"
@@ -54,6 +53,7 @@ namespace ash {
 
 class AppListBubblePresenter;
 class AppListControllerObserver;
+class AppListPresenterImpl;
 
 // Ash's AppListController owns the AppListModel and implements interface
 // functions that allow Chrome to modify and observe the Shelf and AppListModel
@@ -87,7 +87,8 @@ class ASH_EXPORT AppListControllerImpl
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  AppListPresenterImpl* presenter() { return &presenter_; }
+  // TODO(crbug.com/1204554): Rename to fullscreen_presenter().
+  AppListPresenterImpl* presenter() { return fullscreen_presenter_.get(); }
 
   // AppListController:
   void SetClient(AppListClient* client) override;
@@ -474,9 +475,10 @@ class ASH_EXPORT AppListControllerImpl
   // |presenter_| and UI.
   AppListColorProviderImpl color_provider_;
 
+  // Manages the fullscreen/peeking launcher and the tablet mode home launcher.
   // |presenter_| should be put below |client_| and |model_| to prevent a crash
   // in destruction.
-  AppListPresenterImpl presenter_;
+  std::unique_ptr<AppListPresenterImpl> fullscreen_presenter_;
 
   // Manages the clamshell launcher bubble. Null when the feature AppListBubble
   // is disabled.

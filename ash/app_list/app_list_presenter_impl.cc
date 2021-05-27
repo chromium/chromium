@@ -131,7 +131,6 @@ AppListPresenterImpl::AppListPresenterImpl(AppListControllerImpl* controller)
 }
 
 AppListPresenterImpl::~AppListPresenterImpl() {
-  Dismiss(base::TimeTicks());
   // Ensures app list view goes before the controller since pagination model
   // lives in the controller and app list view would access it on destruction.
   if (view_) {

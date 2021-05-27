@@ -5,6 +5,7 @@
 #include "ash/public/cpp/autotest_private_api_utils.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
