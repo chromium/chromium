@@ -637,6 +637,20 @@ specific:
      strong guarantees about only Chrome being able to access its storage. See
      [Issue 520437](https://crbug.com/520437) to follow this migration.
 
+<a name="TOC-If-theres-a-way-to-see-stored-passwords-without-entering-a-password--is-this-a-security-bug-"></a>
+## If there's a way to see stored passwords without entering a password, is this a security bug?
+
+No. If an attacker has control of your login on your device, they can get to
+your passwords by inspecting Chrome disk files or memory. (See
+[why aren't physically-local attacks in Chrome's threat
+model](#TOC-Why-aren-t-physically-local-attacks-in-Chrome-s-threat-model-)).
+
+On some platforms we ask for a password before revealing stored passwords,
+but this is not considered a robust defense. It’s historically to stop
+users inadvertently revealing their passwords on screen, for example if
+they’re screen sharing. We don’t do this on all platforms because we consider
+such risks greater on some than on others.
+
 <a name="TOC-I-found-a-phishing-or-malware-site-not-blocked-by-Safe-Browsing.-Is-this-a-security-vulnerability-"></a>
 ## I found a phishing or malware site not blocked by Safe Browsing. Is this a security vulnerability?
 
