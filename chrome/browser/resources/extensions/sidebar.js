@@ -7,24 +7,33 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigation, Page} from './navigation_helper.js';
 
-Polymer({
-  is: 'extensions-sidebar',
+/** @polymer */
+class ExtensionsSidebarElement extends PolymerElement {
+  static get is() {
+    return 'extensions-sidebar';
+  }
 
-  _template: html`{__html_template__}`,
-
-  hostAttributes: {
-    role: 'navigation',
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   /** @override */
-  attached() {
+  ready() {
+    super.ready();
+    this.setAttribute('role', 'navigation');
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
     this.$.sectionMenu.select(
         navigation.getCurrentPage().page === Page.SHORTCUTS ? 1 : 0);
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -33,11 +42,14 @@ Polymer({
   onLinkTap_(e) {
     e.preventDefault();
     navigation.navigateTo({page: e.target.dataset.path});
-    this.fire('close-drawer');
-  },
+    this.dispatchEvent(
+        new CustomEvent('close-drawer', {bubbles: true, composed: true}));
+  }
 
   /** @private */
   onMoreExtensionsTap_() {
     chrome.metricsPrivate.recordUserAction('Options_GetMoreExtensions');
-  },
-});
+  }
+}
+
+customElements.define(ExtensionsSidebarElement.is, ExtensionsSidebarElement);

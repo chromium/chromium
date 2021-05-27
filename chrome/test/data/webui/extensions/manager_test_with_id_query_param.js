@@ -51,7 +51,8 @@ suite(extension_manager_tests.suiteName, function() {
       assert(extension_manager_tests.TestNames.UrlNavigationToDetails),
       function() {
         assertViewActive('extensions-detail-view');
-        const detailsView = manager.$$('extensions-detail-view');
+        const detailsView =
+            manager.shadowRoot.querySelector('extensions-detail-view');
         expectEquals('ldnnhddmnhbkjipkidpdiheffobcpfmf', detailsView.data.id);
 
         // Try to open detail view for invalid ID.
@@ -85,7 +86,8 @@ suite(extension_manager_tests.suiteName, function() {
         // Should be re-routed to details page with showActivityLog set to
         // false.
         assertViewActive('extensions-detail-view');
-        const detailsView = manager.$$('extensions-detail-view');
+        const detailsView =
+            manager.shadowRoot.querySelector('extensions-detail-view');
         expectFalse(detailsView.showActivityLog);
 
         // Try to open activity log with an invalid ID.

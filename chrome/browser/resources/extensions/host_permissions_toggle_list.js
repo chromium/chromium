@@ -10,29 +10,36 @@ import './toggle_row.js';
 import './shared_style.js';
 import './strings.m.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemDelegate} from './item.js';
 import {UserAction} from './item_util.js';
 
-Polymer({
-  is: 'extensions-host-permissions-toggle-list',
+/** @polymer */
+class ExtensionsHostPermissionsToggleListElement extends PolymerElement {
+  static get is() {
+    return 'extensions-host-permissions-toggle-list';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * The underlying permissions data.
-     * @type {chrome.developerPrivate.RuntimeHostPermissions}
-     */
-    permissions: Object,
+  static get properties() {
+    return {
+      /**
+       * The underlying permissions data.
+       * @type {chrome.developerPrivate.RuntimeHostPermissions}
+       */
+      permissions: Object,
 
-    /** @private */
-    itemId: String,
+      /** @private */
+      itemId: String,
 
-    /** @type {!ItemDelegate} */
-    delegate: Object,
-  },
+      /** @type {!ItemDelegate} */
+      delegate: Object,
+    };
+  }
 
   /**
    * @return {boolean} Whether the item is allowed to execute on all of its
@@ -42,7 +49,7 @@ Polymer({
   allowedOnAllHosts_() {
     return this.permissions.hostAccess ===
         chrome.developerPrivate.HostAccess.ON_ALL_SITES;
-  },
+  }
 
   /**
    * Returns a lexicographically-sorted list of the hosts associated with this
@@ -60,7 +67,7 @@ Polymer({
       }
       return 0;
     });
-  },
+  }
 
   /**
    * @param {!CustomEvent<boolean>} e
@@ -85,7 +92,7 @@ Polymer({
           this.itemId, chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES);
       this.delegate.recordUserAction(UserAction.ALL_TOGGLED_OFF);
     }
-  },
+  }
 
   /**
    * @param {!CustomEvent<boolean>} e
@@ -102,10 +109,14 @@ Polymer({
       this.delegate.removeRuntimeHostPermission(this.itemId, host);
       this.delegate.recordUserAction(UserAction.SPECIFIC_TOGGLED_OFF);
     }
-  },
+  }
 
   /** @private */
   onLearnMoreClick_() {
     this.delegate.recordUserAction(UserAction.LEARN_MORE);
   }
-});
+}
+
+customElements.define(
+    ExtensionsHostPermissionsToggleListElement.is,
+    ExtensionsHostPermissionsToggleListElement);

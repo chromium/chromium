@@ -133,10 +133,12 @@ suite(extension_toolbar_tests.suiteName, function() {
         })
         .then(function() {
           assertEquals(1, mockDelegate.getCallCount('updateAllExtensions'));
-          assertFalse(!!toolbar.$$('extensions-pack-dialog'));
+          assertFalse(
+              !!toolbar.shadowRoot.querySelector('extensions-pack-dialog'));
           toolbar.$.packExtensions.click();
           flush();
-          const dialog = toolbar.$$('extensions-pack-dialog');
+          const dialog =
+              toolbar.shadowRoot.querySelector('extensions-pack-dialog');
           assertTrue(!!dialog);
 
           if (!isMac) {

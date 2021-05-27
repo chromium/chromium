@@ -32,7 +32,7 @@ suite('RuntimeHostsDialog', function() {
   });
 
   test('valid input', function() {
-    const input = dialog.$$('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     const site = 'http://www.example.com';
     input.value = site;
     input.fire('input');
@@ -52,7 +52,7 @@ suite('RuntimeHostsDialog', function() {
   test('invalid input', function() {
     // Initially the action button should be disabled, but the error warning
     // should not be shown for an empty input.
-    const input = dialog.$$('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     assertFalse(input.invalid);
     const submit = dialog.$.submit;
     assertTrue(submit.disabled);
@@ -74,7 +74,7 @@ suite('RuntimeHostsDialog', function() {
   test('delegate indicates invalid input', function() {
     delegate.acceptRuntimeHostPermission = false;
 
-    const input = dialog.$$('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     const site = 'http://....a';
     input.value = site;
     input.fire('input');
@@ -94,7 +94,7 @@ suite('RuntimeHostsDialog', function() {
     const newPattern = 'http://chromium.org/*';
 
     dialog.currentSite = oldPattern;
-    const input = dialog.$$('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     input.value = newPattern;
     input.fire('input');
     const submit = dialog.$.submit;
@@ -140,7 +140,7 @@ suite('RuntimeHostsDialog', function() {
 
   test('update site access', function() {
     dialog.updateHostAccess = true;
-    const input = dialog.$$('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     const site = 'http://www.example.com';
     input.value = site;
     input.fire('input');

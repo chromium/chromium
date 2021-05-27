@@ -76,7 +76,7 @@ suite(extension_detail_view_tests.suiteName, function() {
       {key: 'fileAccess', id: '#allow-on-file-urls'},
       {key: 'errorCollection', id: '#collect-errors'},
     ];
-    const isChecked = id => item.$$(id).checked;
+    const isChecked = id => item.shadowRoot.querySelector(id).checked;
     for (let option of accessOptions) {
       expectTrue(isChildVisible(item, option.id));
       expectFalse(isChecked(option.id), option.id);
@@ -97,7 +97,10 @@ suite(extension_detail_view_tests.suiteName, function() {
     flush();
     expectTrue(testIsVisible('#dependent-extensions-list'));
     expectEquals(
-        2, item.$$('#dependent-extensions-list').querySelectorAll('li').length);
+        2,
+        item.shadowRoot.querySelector('#dependent-extensions-list')
+            .querySelectorAll('li')
+            .length);
 
     expectFalse(testIsVisible('#permissions-list'));
     expectFalse(testIsVisible('#host-access'));
@@ -109,7 +112,11 @@ suite(extension_detail_view_tests.suiteName, function() {
         {simplePermissions: ['Permission 1', 'Permission 2']});
     flush();
     expectTrue(testIsVisible('#permissions-list'));
-    expectEquals(2, item.$$('#permissions-list').querySelectorAll('li').length);
+    expectEquals(
+        2,
+        item.shadowRoot.querySelector('#permissions-list')
+            .querySelectorAll('li')
+            .length);
     expectFalse(testIsVisible('#no-permissions'));
     expectFalse(testIsVisible('#host-access'));
     expectFalse(testIsVisible('extensions-runtime-host-permissions'));
@@ -161,7 +168,8 @@ suite(extension_detail_view_tests.suiteName, function() {
 
     // Ensure that the "Extension options" button is disabled when the item
     // itself is disabled.
-    const extensionOptions = item.$$('#extensions-options');
+    const extensionOptions =
+        item.shadowRoot.querySelector('#extensions-options');
     assertFalse(extensionOptions.disabled);
     item.set('data.state', chrome.developerPrivate.ExtensionState.DISABLED);
     flush();
@@ -262,8 +270,9 @@ suite(extension_detail_view_tests.suiteName, function() {
           extension_detail_view_tests.TestNames.SupervisedUserDisableReasons),
       function() {
         flush();
-        const toggle = item.$$('#enableToggle');
-        const tooltip = item.$$('#parentDisabledPermissionsToolTip');
+        const toggle = item.shadowRoot.querySelector('#enableToggle');
+        const tooltip =
+            item.shadowRoot.querySelector('#parentDisabledPermissionsToolTip');
         expectTrue(isVisible(toggle));
         expectFalse(isVisible(tooltip));
 
@@ -313,7 +322,7 @@ suite(extension_detail_view_tests.suiteName, function() {
         // to redirect the page back to the details view is in manager.js. Since
         // this behavior does not happen in the testing environment, we test the
         // behavior in manager_test.js.
-        item.$$('#extensionsActivityLogLink').click();
+        item.shadowRoot.querySelector('#extensionsActivityLogLink').click();
         expectDeepEquals(
             currentPage,
             {page: Page.ACTIVITY_LOG, extensionId: extensionData.id});
@@ -324,37 +333,38 @@ suite(extension_detail_view_tests.suiteName, function() {
         currentPage = null;
 
         mockDelegate.testClickingCalls(
-            item.$$('#allow-incognito').getLabel(), 'setItemAllowedIncognito',
-            [extensionData.id, true]);
+            item.shadowRoot.querySelector('#allow-incognito').getLabel(),
+            'setItemAllowedIncognito', [extensionData.id, true]);
         mockDelegate.testClickingCalls(
-            item.$$('#allow-on-file-urls').getLabel(),
+            item.shadowRoot.querySelector('#allow-on-file-urls').getLabel(),
             'setItemAllowedOnFileUrls', [extensionData.id, true]);
         mockDelegate.testClickingCalls(
-            item.$$('#collect-errors').getLabel(), 'setItemCollectsErrors',
-            [extensionData.id, true]);
+            item.shadowRoot.querySelector('#collect-errors').getLabel(),
+            'setItemCollectsErrors', [extensionData.id, true]);
         mockDelegate.testClickingCalls(
-            item.$$('#extensions-options'), 'showItemOptionsPage',
-            [extensionData]);
+            item.shadowRoot.querySelector('#extensions-options'),
+            'showItemOptionsPage', [extensionData]);
         mockDelegate.testClickingCalls(
-            item.$$('#remove-extension'), 'deleteItem', [extensionData.id]);
-        mockDelegate.testClickingCalls(
-            item.$$('#load-path > a[is=\'action-link\']'), 'showInFolder',
+            item.shadowRoot.querySelector('#remove-extension'), 'deleteItem',
             [extensionData.id]);
         mockDelegate.testClickingCalls(
-            item.$$('#warnings-reload-button'), 'reloadItem',
-            [extensionData.id], Promise.resolve());
+            item.shadowRoot.querySelector('#load-path > a[is=\'action-link\']'),
+            'showInFolder', [extensionData.id]);
+        mockDelegate.testClickingCalls(
+            item.shadowRoot.querySelector('#warnings-reload-button'),
+            'reloadItem', [extensionData.id], Promise.resolve());
 
         // Terminate the extension so the reload button appears.
         item.set(
             'data.state', chrome.developerPrivate.ExtensionState.TERMINATED);
         flush();
         mockDelegate.testClickingCalls(
-            item.$$('#terminated-reload-button'), 'reloadItem',
-            [extensionData.id], Promise.resolve());
+            item.shadowRoot.querySelector('#terminated-reload-button'),
+            'reloadItem', [extensionData.id], Promise.resolve());
       });
 
   test(assert(extension_detail_view_tests.TestNames.Indicator), function() {
-    const indicator = item.$$('cr-tooltip-icon');
+    const indicator = item.shadowRoot.querySelector('cr-tooltip-icon');
     expectTrue(indicator.hidden);
     item.set('data.controlledInfo', {text: 'policy'});
     flush();

@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './pack_dialog_alert.js';
 import './strings.m.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @interface */
 export class PackDialogDelegate {
@@ -39,32 +39,40 @@ export class PackDialogDelegate {
   packExtension(rootPath, keyPath, flag, callback) {}
 }
 
-Polymer({
-  is: 'extensions-pack-dialog',
+/** @polymer */
+class ExtensionsPackDialogElement extends PolymerElement {
+  static get is() {
+    return 'extensions-pack-dialog';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {PackDialogDelegate} */
-    delegate: Object,
+  static get properties() {
+    return {
+      /** @type {PackDialogDelegate} */
+      delegate: Object,
 
-    /** @private */
-    packDirectory_: {
-      type: String,
-      value: '',  // Initialized to trigger binding when attached.
-    },
+      /** @private */
+      packDirectory_: {
+        type: String,
+        value: '',  // Initialized to trigger binding when attached.
+      },
 
-    /** @private */
-    keyFile_: String,
+      /** @private */
+      keyFile_: String,
 
-    /** @private {?chrome.developerPrivate.PackDirectoryResponse} */
-    lastResponse_: Object,
-  },
+      /** @private {?chrome.developerPrivate.PackDirectoryResponse} */
+      lastResponse_: Object,
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     this.$.dialog.showModal();
-  },
+  }
 
   /** @private */
   onRootBrowse_() {
@@ -73,7 +81,7 @@ Polymer({
         this.set('packDirectory_', path);
       }
     });
-  },
+  }
 
   /** @private */
   onKeyBrowse_() {
@@ -82,18 +90,18 @@ Polymer({
         this.set('keyFile_', path);
       }
     });
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.$.dialog.cancel();
-  },
+  }
 
   /** @private */
   onConfirmTap_() {
     this.delegate.packExtension(
         this.packDirectory_, this.keyFile_, 0, this.onPackResponse_.bind(this));
-  },
+  }
 
   /**
    * @param {chrome.developerPrivate.PackDirectoryResponse} response the
@@ -102,7 +110,7 @@ Polymer({
    */
   onPackResponse_(response) {
     this.lastResponse_ = response;
-  },
+  }
 
   /**
    * In the case that the alert dialog was a success message, the entire
@@ -122,12 +130,16 @@ Polymer({
     }
 
     // This is only possible for a warning dialog.
-    if (this.$$('extensions-pack-dialog-alert').returnValue === 'success') {
+    if (this.shadowRoot.querySelector('extensions-pack-dialog-alert')
+            .returnValue === 'success') {
       this.delegate.packExtension(
           this.lastResponse_.item_path, this.lastResponse_.pem_path,
           this.lastResponse_.override_flags, this.onPackResponse_.bind(this));
     }
 
     this.lastResponse_ = null;
-  },
-});
+  }
+}
+
+customElements.define(
+    ExtensionsPackDialogElement.is, ExtensionsPackDialogElement);

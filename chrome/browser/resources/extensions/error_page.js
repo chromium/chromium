@@ -19,7 +19,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigation, Page} from './navigation_helper.js';
 
@@ -82,68 +82,78 @@ function getErrorSeverityText_(item, log, warn, error) {
   return warn;
 }
 
-Polymer({
-  is: 'extensions-error-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ */
+const ExtensionsErrorPageElementBase =
+    mixinBehaviors([CrContainerShadowBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
+  static get is() {
+    return 'extensions-error-page';
+  }
 
-  behaviors: [CrContainerShadowBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {!chrome.developerPrivate.ExtensionInfo|undefined} */
-    data: Object,
+  static get properties() {
+    return {
+      /** @type {!chrome.developerPrivate.ExtensionInfo|undefined} */
+      data: Object,
 
-    /** @type {!ErrorPageDelegate|undefined} */
-    delegate: Object,
+      /** @type {!ErrorPageDelegate|undefined} */
+      delegate: Object,
 
-    // Whether or not dev mode is enabled.
-    inDevMode: {
-      type: Boolean,
-      value: false,
-      observer: 'onInDevModeChanged_',
-    },
-
-    /** @private {!Array<!(ManifestError|RuntimeError)>} */
-    entries_: Array,
-
-    /** @private {?chrome.developerPrivate.RequestFileSourceResponse} */
-    code_: Object,
-
-    /**
-     * Index into |entries_|.
-     * @private
-     */
-    selectedEntry_: {
-      type: Number,
-      observer: 'onSelectedErrorChanged_',
-    },
-
-    /** @private {?chrome.developerPrivate.StackFrame}*/
-    selectedStackFrame_: {
-      type: Object,
-      value() {
-        return null;
+      // Whether or not dev mode is enabled.
+      inDevMode: {
+        type: Boolean,
+        value: false,
+        observer: 'onInDevModeChanged_',
       },
-    },
-  },
 
-  observers: [
-    'observeDataChanges_(data.*)',
-  ],
+      /** @private {!Array<!(ManifestError|RuntimeError)>} */
+      entries_: Array,
 
-  listeners: {
-    'view-enter-start': 'onViewEnterStart_',
-  },
+      /** @private {?chrome.developerPrivate.RequestFileSourceResponse} */
+      code_: Object,
+
+      /**
+       * Index into |entries_|.
+       * @private
+       */
+      selectedEntry_: {
+        type: Number,
+        observer: 'onSelectedErrorChanged_',
+      },
+
+      /** @private {?chrome.developerPrivate.StackFrame}*/
+      selectedStackFrame_: {
+        type: Object,
+        value() {
+          return null;
+        },
+      },
+    };
+  }
+
+  static get observers() {
+    return ['observeDataChanges_(data.*)'];
+  }
 
   /** @override */
   ready() {
+    super.ready();
+    this.addEventListener('view-enter-start', this.onViewEnterStart_);
     FocusOutlineManager.forDocument(document);
-  },
+  }
 
   /** @return {!ManifestError|!RuntimeError} */
   getSelectedError() {
     return this.entries_[this.selectedEntry_];
-  },
+  }
 
   /**
    * Focuses the back button when page is loaded.
@@ -152,7 +162,7 @@ Polymer({
   onViewEnterStart_() {
     afterNextRender(this, () => focusWithoutInk(this.$.closeButton));
     chrome.metricsPrivate.recordUserAction('Options_ViewExtensionErrors');
-  },
+  }
 
   /**
    * @param {!ManifestError|!RuntimeError} error
@@ -162,7 +172,7 @@ Polymer({
    */
   getContextUrl_(error, unknown) {
     return error.contextUrl ? getRelativeUrl(error.contextUrl, error) : unknown;
-  },
+  }
 
   /**
    * Watches for changes to |data| in order to fetch the corresponding
@@ -176,18 +186,18 @@ Polymer({
     if (this.entries_.length) {
       this.selectedEntry_ = 0;
     }
-  },
+  }
 
   /** @private */
   onCloseButtonTap_() {
     navigation.navigateTo({page: Page.LIST});
-  },
+  }
 
   /** @private */
   onClearAllTap_() {
     const ids = this.entries_.map(entry => entry.id);
     this.delegate.deleteErrors(this.data.id, ids);
-  },
+  }
 
   /**
    * @param {!ManifestError|!RuntimeError} error
@@ -197,7 +207,7 @@ Polymer({
   computeErrorIcon_(error) {
     // Do not i18n these strings, they're CSS classes.
     return getErrorSeverityText_(error, 'info', 'warning', 'error');
-  },
+  }
 
   /**
    * @param {!ManifestError|!RuntimeError} error
@@ -209,7 +219,7 @@ Polymer({
         error, loadTimeData.getString('logLevel'),
         loadTimeData.getString('warnLevel'),
         loadTimeData.getString('errorLevel'));
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -219,17 +229,17 @@ Polymer({
     this.delegate.deleteErrors(
         this.data.id, [(/** @type {!{model:Object}} */ (e)).model.item.id]);
     e.stopPropagation();
-  },
+  }
 
   /** private */
   onInDevModeChanged_() {
     if (!this.inDevMode) {
       // Wait until next render cycle in case error page is loading.
-      this.async(() => {
+      setTimeout(() => {
         this.onCloseButtonTap_();
-      });
+      }, 0);
     }
-  },
+  }
 
   /**
    * Fetches the source for the selected error and populates the code section.
@@ -265,7 +275,7 @@ Polymer({
         break;
     }
     this.delegate.requestFileSource(args).then(code => this.code_ = code);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -273,7 +283,7 @@ Polymer({
    */
   computeIsRuntimeError_(item) {
     return item.type === chrome.developerPrivate.ErrorType.RUNTIME;
-  },
+  }
 
   /**
    * The description is a human-readable summation of the frame, in the
@@ -295,7 +305,7 @@ Polymer({
     }
 
     return description;
-  },
+  }
 
   /**
    * @param {chrome.developerPrivate.StackFrame} frame
@@ -304,7 +314,7 @@ Polymer({
    */
   getStackFrameClass_(frame) {
     return frame === this.selectedStackFrame_ ? 'selected' : '';
-  },
+  }
 
   /**
    * @param {!chrome.developerPrivate.StackFrame} frame
@@ -313,7 +323,7 @@ Polymer({
    */
   getStackFrameTabIndex_(frame) {
     return frame === this.selectedStackFrame_ ? 0 : -1;
-  },
+  }
 
   /**
    * This function is used to determine whether or not we want to show a
@@ -325,7 +335,7 @@ Polymer({
   shouldDisplayFrame_(url) {
     // All our internal scripts are in the 'extensions::' namespace.
     return !/^extensions::/.test(url);
-  },
+  }
 
   /**
    * @param {!chrome.developerPrivate.StackFrame} frame
@@ -343,7 +353,7 @@ Polymer({
           lineNumber: frame.lineNumber,
         })
         .then(code => this.code_ = code);
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -352,7 +362,7 @@ Polymer({
   onStackFrameTap_(e) {
     const frame = /** @type {!{model:Object}} */ (e).model.item;
     this.updateSelected_(frame);
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -384,7 +394,7 @@ Polymer({
         return;
       }
     }
-  },
+  }
 
   /**
    * Computes the class name for the error item depending on whether its
@@ -395,13 +405,13 @@ Polymer({
    */
   computeErrorClass_(index) {
     return index === this.selectedEntry_ ? 'selected' : '';
-  },
+  }
 
   /** @private */
   iconName_(index) {
     return index === this.selectedEntry_ ? 'icon-expand-less' :
                                            'icon-expand-more';
-  },
+  }
 
   /**
    * Determine if the iron-collapse should be opened (expanded).
@@ -411,7 +421,7 @@ Polymer({
    */
   isOpened_(index) {
     return index === this.selectedEntry_;
-  },
+  }
 
 
   /**
@@ -421,7 +431,7 @@ Polymer({
    */
   isAriaExpanded_(index) {
     return this.isOpened_(index).toString();
-  },
+  }
 
   /**
    * @param {!{type: string, code: string, model: !{index: number}}} e
@@ -437,5 +447,8 @@ Polymer({
     e.preventDefault();
     this.selectedEntry_ =
         this.selectedEntry_ === e.model.index ? -1 : e.model.index;
-  },
-});
+  }
+}
+
+customElements.define(
+    ExtensionsErrorPageElement.is, ExtensionsErrorPageElement);

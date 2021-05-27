@@ -159,7 +159,8 @@ suite('HostPermissionsToggleList', function() {
     element.permissions = permissions;
     flush();
 
-    const learnMoreButton = element.$$('#link-icon-button');
+    const learnMoreButton =
+        element.shadowRoot.querySelector('#link-icon-button');
     // Prevent triggering the navigation, which could interfere with tests.
     learnMoreButton.href = '#';
     learnMoreButton.target = '_self';

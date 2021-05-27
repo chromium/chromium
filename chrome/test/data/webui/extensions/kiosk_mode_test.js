@@ -111,7 +111,7 @@ suite(extension_kiosk_mode_tests.suiteName, function() {
           expectTrue(items[1].querySelector('cr-button').hidden);
           // Bailout checkbox should be hidden when auto-launch editing
           // disabled.
-          expectTrue(dialog.$$('cr-checkbox').hidden);
+          expectTrue(dialog.shadowRoot.querySelector('cr-checkbox').hidden);
 
           items[0].querySelector('.icon-delete-gray').click();
           flush();
@@ -161,7 +161,7 @@ suite(extension_kiosk_mode_tests.suiteName, function() {
     let bailoutCheckbox;
     return initPage()
         .then(() => {
-          bailoutCheckbox = dialog.$$('cr-checkbox');
+          bailoutCheckbox = dialog.shadowRoot.querySelector('cr-checkbox');
           // Bailout checkbox should be usable when auto-launching.
           expectFalse(bailoutCheckbox.hidden);
           expectFalse(bailoutCheckbox.disabled);

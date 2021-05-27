@@ -8,25 +8,33 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {DragWrapper} from 'chrome://resources/js/cr/ui/drag_wrapper.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DragAndDropHandler} from './drag_and_drop_handler.js';
 
-Polymer({
-  is: 'extensions-drop-overlay',
+/** @polymer */
+class ExtensionsDropOverlayElement extends PolymerElement {
+  static get is() {
+    return 'extensions-drop-overlay';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private {boolean} */
-    dragEnabled: {
-      type: Boolean,
-      observer: 'dragEnabledChanged_',
-    }
-  },
+  static get properties() {
+    return {
+      /** @private {boolean} */
+      dragEnabled: {
+        type: Boolean,
+        observer: 'dragEnabledChanged_',
+      }
+    };
+  }
 
-  /** @override */
-  created() {
+  constructor() {
+    super();
+
     this.hidden = true;
     const dragTarget = document.documentElement;
     this.dragWrapperHandler_ = new DragAndDropHandler(true, dragTarget);
@@ -40,10 +48,11 @@ Polymer({
       this.hidden = true;
     });
     dragTarget.addEventListener('drag-and-drop-load-error', (e) => {
-      this.fire('load-error', e.detail);
+      this.dispatchEvent(new CustomEvent(
+          'load-error', {bubbles: true, composed: true, detail: e.detail}));
     });
     this.dragWrapper_ = new DragWrapper(dragTarget, this.dragWrapperHandler_);
-  },
+  }
 
   /**
    * @param {boolean} dragEnabled
@@ -51,5 +60,8 @@ Polymer({
    */
   dragEnabledChanged_(dragEnabled) {
     this.dragWrapperHandler_.dragEnabled = dragEnabled;
-  },
-});
+  }
+}
+
+customElements.define(
+    ExtensionsDropOverlayElement.is, ExtensionsDropOverlayElement);

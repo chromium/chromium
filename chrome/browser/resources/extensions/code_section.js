@@ -7,9 +7,9 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 
 /**
@@ -25,63 +25,76 @@ function visibleLineCount(totalCount, oppositeCount) {
   return Math.min(max, totalCount);
 }
 
-Polymer({
-  is: 'extensions-code-section',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ExtensionsCodeSectionElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ExtensionsCodeSectionElement extends ExtensionsCodeSectionElementBase {
+  static get is() {
+    return 'extensions-code-section';
+  }
 
-  behaviors: [I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * The code this object is displaying.
-     * @type {?chrome.developerPrivate.RequestFileSourceResponse}
-     */
-    code: {
-      type: Object,
-      value: null,
-    },
+  static get properties() {
+    return {
+      /**
+       * The code this object is displaying.
+       * @type {?chrome.developerPrivate.RequestFileSourceResponse}
+       */
+      code: {
+        type: Object,
+        value: null,
+      },
 
-    isActive: Boolean,
+      isActive: Boolean,
 
-    /** @private Highlighted code. */
-    highlighted_: String,
+      /** @private Highlighted code. */
+      highlighted_: String,
 
-    /** @private Code before the highlighted section. */
-    before_: String,
+      /** @private Code before the highlighted section. */
+      before_: String,
 
-    /** @private Code after the highlighted section. */
-    after_: String,
+      /** @private Code after the highlighted section. */
+      after_: String,
 
-    /** @private */
-    showNoCode_: {
-      type: Boolean,
-      computed: 'computeShowNoCode_(isActive, highlighted_)',
-    },
+      /** @private */
+      showNoCode_: {
+        type: Boolean,
+        computed: 'computeShowNoCode_(isActive, highlighted_)',
+      },
 
-    /** @private Description for the highlighted section. */
-    highlightDescription_: String,
+      /** @private Description for the highlighted section. */
+      highlightDescription_: String,
 
-    /** @private */
-    lineNumbers_: String,
+      /** @private */
+      lineNumbers_: String,
 
-    /** @private */
-    truncatedBefore_: Number,
+      /** @private */
+      truncatedBefore_: Number,
 
-    /** @private */
-    truncatedAfter_: Number,
+      /** @private */
+      truncatedAfter_: Number,
 
-    /**
-     * The string to display if no |code| is set (e.g. because we couldn't
-     * load the relevant source file).
-     * @type {string}
-     */
-    couldNotDisplayCode: String,
-  },
+      /**
+       * The string to display if no |code| is set (e.g. because we couldn't
+       * load the relevant source file).
+       * @type {string}
+       */
+      couldNotDisplayCode: String,
+    };
+  }
 
-  observers: [
-    'onCodeChanged_(code.*)',
-  ],
+  static get observers() {
+    return ['onCodeChanged_(code.*)'];
+  }
 
   /**
    * @private
@@ -132,7 +145,7 @@ Polymer({
         this.truncatedBefore_ + 1,
         this.truncatedBefore_ + visibleCode.split('\n').length);
     this.scrollToHighlight_(visibleLineCountBefore);
-  },
+  }
 
   /**
    * @param {number} lineCount
@@ -145,7 +158,7 @@ Polymer({
     return lineCount === 1 ?
         stringSingular :
         loadTimeData.substituteString(stringPluralTemplate, lineCount);
-  },
+  }
 
   /**
    * @param {number} start
@@ -159,7 +172,7 @@ Polymer({
     }
 
     this.lineNumbers_ = lineNumbers;
-  },
+  }
 
   /**
    * @param {number} linesBeforeHighlight
@@ -175,7 +188,7 @@ Polymer({
     const targetTop = highlightTop - this.clientHeight * 0.5;
 
     this.$['scroll-container'].scrollTo({top: targetTop});
-  },
+  }
 
   /**
    * @param {number} lineStart
@@ -191,7 +204,7 @@ Polymer({
     } else {
       return this.i18n('accessibilityErrorLine', lineStart.toString());
     }
-  },
+  }
 
   /**
    * @private
@@ -199,5 +212,8 @@ Polymer({
    */
   computeShowNoCode_() {
     return this.isActive && !this.highlighted_;
-  },
-});
+  }
+}
+
+customElements.define(
+    ExtensionsCodeSectionElement.is, ExtensionsCodeSectionElement);

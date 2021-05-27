@@ -22,8 +22,8 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemBehavior} from './item_behavior.js';
 import {computeInspectableViewLabel, EnableControl, getEnableControl, getItemSource, getItemSourceString, isEnabled, SourceType, userCanChangeEnablement} from './item_util.js';
@@ -116,66 +116,94 @@ export class ItemDelegate {
   recordUserAction(metricName) {}
 }
 
-Polymer({
-  is: 'extensions-item',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ExtensionsItemElementBase =
+    mixinBehaviors([I18nBehavior, ItemBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ExtensionsItemElement extends ExtensionsItemElementBase {
+  static get is() {
+    return 'extensions-item';
+  }
 
-  behaviors: [I18nBehavior, ItemBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    // The item's delegate, or null.
-    delegate: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      // The item's delegate, or null.
+      delegate: {
+        type: Object,
+      },
 
-    // Whether or not dev mode is enabled.
-    inDevMode: {
-      type: Boolean,
-      value: false,
-    },
+      // Whether or not dev mode is enabled.
+      inDevMode: {
+        type: Boolean,
+        value: false,
+      },
 
-    // The underlying ExtensionInfo itself. Public for use in declarative
-    // bindings.
-    /** @type {chrome.developerPrivate.ExtensionInfo} */
-    data: {
-      type: Object,
-    },
+      // The underlying ExtensionInfo itself. Public for use in declarative
+      // bindings.
+      /** @type {chrome.developerPrivate.ExtensionInfo} */
+      data: {
+        type: Object,
+      },
 
-    // Whether or not the expanded view of the item is shown.
-    /** @private */
-    showingDetails_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      // Whether or not the expanded view of the item is shown.
+      /** @private */
+      showingDetails_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  /** Prevents reloading the same item while it's already being reloaded. */
-  isReloading_: false,
+  static get observers() {
+    return ['observeIdVisibility_(inDevMode, showingDetails_, data.id)'];
+  }
 
-  observers: [
-    'observeIdVisibility_(inDevMode, showingDetails_, data.id)',
-  ],
+  constructor() {
+    super();
+
+    /** Prevents reloading the same item while it's already being reloaded. */
+    this.isReloading_ = false;
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /** @return {!HTMLElement} The "Details" button. */
   getDetailsButton() {
     return /** @type {!HTMLElement} */ (this.$.detailsButton);
-  },
+  }
 
   /** @return {?HTMLElement} The "Errors" button, if it exists. */
   getErrorsButton() {
-    return /** @type {?HTMLElement} */ (this.$$('#errors-button'));
-  },
+    return /** @type {?HTMLElement} */ (
+        this.shadowRoot.querySelector('#errors-button'));
+  }
 
   /** @private */
   observeIdVisibility_(inDevMode, showingDetails, id) {
     flush();
-    const idElement = this.$$('#extension-id');
+    const idElement = this.shadowRoot.querySelector('#extension-id');
     if (idElement) {
       assert(this.data);
       idElement.innerHTML = this.i18n('itemId', this.data.id);
     }
-  },
+  }
 
   /**
    * @return {boolean}
@@ -193,33 +221,33 @@ Polymer({
     // Instead |manifestErrors| and |runtimeErrors| are used.
     return this.data.manifestErrors.length > 0 ||
         this.data.runtimeErrors.length > 0;
-  },
+  }
 
   /** @private */
   onRemoveTap_() {
     this.delegate.deleteItem(this.data.id);
-  },
+  }
 
   /** @private */
   onEnableToggleChange_() {
     this.delegate.setItemEnabled(this.data.id, this.$.enableToggle.checked);
     this.$.enableToggle.checked = this.isEnabled_();
-  },
+  }
 
   /** @private */
   onErrorsTap_() {
     if (this.data.installWarnings && this.data.installWarnings.length > 0) {
-      this.fire('show-install-warnings', this.data.installWarnings);
+      this.fire_('show-install-warnings', this.data.installWarnings);
       return;
     }
 
     navigation.navigateTo({page: Page.ERRORS, extensionId: this.data.id});
-  },
+  }
 
   /** @private */
   onDetailsTap_() {
     navigation.navigateTo({page: Page.DETAILS, extensionId: this.data.id});
-  },
+  }
 
   /**
    * @param {!{model: !{item: !chrome.developerPrivate.ExtensionView}}} e
@@ -227,12 +255,12 @@ Polymer({
    */
   onInspectTap_(e) {
     this.delegate.inspectItemView(this.data.id, this.data.views[0]);
-  },
+  }
 
   /** @private */
   onExtraInspectTap_() {
     navigation.navigateTo({page: Page.DETAILS, extensionId: this.data.id});
-  },
+  }
 
   /** @private */
   onReloadTap_() {
@@ -256,16 +284,16 @@ Polymer({
               this.isReloading_ = false;
             },
             loadError => {
-              this.fire('load-error', loadError);
+              this.fire_('load-error', loadError);
               toastManager.hide();
               this.isReloading_ = false;
             });
-  },
+  }
 
   /** @private */
   onRepairTap_() {
     this.delegate.repairItem(this.data.id);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -273,7 +301,7 @@ Polymer({
    */
   isEnabled_() {
     return isEnabled(this.data.state);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -281,7 +309,7 @@ Polymer({
    */
   isEnableToggleEnabled_() {
     return userCanChangeEnablement(this.data);
-  },
+  }
 
   /**
    * Returns true if the reload button should be shown.
@@ -290,7 +318,7 @@ Polymer({
    */
   showReloadButton_() {
     return getEnableControl(this.data) === EnableControl.RELOAD;
-  },
+  }
 
   /**
    * Returns true if the repair button should be shown.
@@ -299,7 +327,7 @@ Polymer({
    */
   showRepairButton_() {
     return getEnableControl(this.data) === EnableControl.REPAIR;
-  },
+  }
 
 
   /**
@@ -309,7 +337,7 @@ Polymer({
    */
   showEnableToggle_() {
     return getEnableControl(this.data) === EnableControl.ENABLE_TOGGLE;
-  },
+  }
 
   /**
    * return {string}
@@ -321,7 +349,7 @@ Polymer({
       classes += ' dev-mode';
     }
     return classes;
-  },
+  }
 
   /**
    * @return {string}
@@ -342,7 +370,7 @@ Polymer({
         return '';
     }
     assertNotReached();
-  },
+  }
 
   /**
    * @return {string}
@@ -356,7 +384,7 @@ Polymer({
     const sourceType = getItemSource(this.data);
     return sourceType === SourceType.WEBSTORE ? '' :
                                                 getItemSourceString(sourceType);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -364,7 +392,7 @@ Polymer({
    */
   computeInspectViewsHidden_() {
     return !this.data.views || this.data.views.length === 0;
-  },
+  }
 
   /**
    * @return {string}
@@ -379,7 +407,7 @@ Polymer({
     return this.data.views.length > 0 ?
         computeInspectableViewLabel(this.data.views[0]) :
         '';
-  },
+  }
 
   /**
    * @return {string}
@@ -388,7 +416,7 @@ Polymer({
   computeFirstInspectLabel_() {
     const label = this.computeFirstInspectTitle_();
     return label && this.data.views.length > 1 ? label + ',' : label;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -396,7 +424,7 @@ Polymer({
    */
   computeExtraViewsHidden_() {
     return this.data.views.length <= 1;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -417,7 +445,7 @@ Polymer({
         (this.data.state === chrome.developerPrivate.ExtensionState.ENABLED ||
          this.data.disableReasons.reloading);
     return !showIcon;
-  },
+  }
 
   /**
    * @return {string}
@@ -426,7 +454,7 @@ Polymer({
   computeExtraInspectLabel_() {
     return this.i18n(
         'itemInspectViewsExtra', (this.data.views.length - 1).toString());
-  },
+  }
 
   /**
    * @return {boolean}
@@ -436,7 +464,7 @@ Polymer({
     return this.data.disableReasons.corruptInstall ||
         this.data.disableReasons.suspiciousInstall ||
         this.data.runtimeWarnings.length > 0 || !!this.data.blacklistText;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -445,7 +473,7 @@ Polymer({
   showDescription_() {
     return !this.hasSevereWarnings_() &&
         !this.data.showSafeBrowsingAllowlistWarning;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -458,5 +486,7 @@ Polymer({
     // warning will still be shown in the item detail view.
     return this.data.showSafeBrowsingAllowlistWarning &&
         !this.hasSevereWarnings_();
-  },
-});
+  }
+}
+
+customElements.define(ExtensionsItemElement.is, ExtensionsItemElement);

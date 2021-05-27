@@ -7,45 +7,54 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'extensions-pack-dialog-alert',
+/** @polymer */
+class ExtensionsPackDialogAlertElement extends PolymerElement {
+  static get is() {
+    return 'extensions-pack-dialog-alert';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private {chrome.developerPrivate.PackDirectoryResponse} */
-    model: Object,
+  static get properties() {
+    return {
+      /** @private {chrome.developerPrivate.PackDirectoryResponse} */
+      model: Object,
 
-    /** @private */
-    title_: String,
+      /** @private */
+      title_: String,
 
-    /** @private */
-    message_: String,
+      /** @private */
+      message_: String,
 
-    /** @private {?string} */
-    cancelLabel_: String,
+      /** @private {?string} */
+      cancelLabel_: String,
 
-    /**
-     * This needs to be initialized to trigger data-binding.
-     * @private {?string}
-     */
-    confirmLabel_: {
-      type: String,
-      value: '',
-    }
-  },
+      /**
+       * This needs to be initialized to trigger data-binding.
+       * @private {?string}
+       */
+      confirmLabel_: {
+        type: String,
+        value: '',
+      }
+    };
+  }
 
   /** @return {string} */
   get returnValue() {
     return /** @type {!CrDialogElement} */ (this.$.dialog)
         .getNative()
         .returnValue;
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     // Initialize button label values for initial html binding.
     this.cancelLabel_ = null;
     this.confirmLabel_ = null;
@@ -68,12 +77,13 @@ Polymer({
         assertNotReached();
         return;
     }
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     this.$.dialog.showModal();
-  },
+  }
 
   /**
    * @return {string}
@@ -81,12 +91,12 @@ Polymer({
    */
   getCancelButtonClass_() {
     return this.confirmLabel_ ? 'cancel-button' : 'action-button';
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.$.dialog.cancel();
-  },
+  }
 
   /** @private */
   onConfirmTap_() {
@@ -94,4 +104,7 @@ Polymer({
     assert(this.model.status === chrome.developerPrivate.PackStatus.WARNING);
     this.$.dialog.close();
   }
-});
+}
+
+customElements.define(
+    ExtensionsPackDialogAlertElement.is, ExtensionsPackDialogAlertElement);

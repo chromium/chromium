@@ -167,8 +167,8 @@ suite(extension_item_tests.suiteName, function() {
     mockDelegate.testClickingCalls(
         item.$['enableToggle'], 'setItemEnabled', [item.data.id, false]);
     mockDelegate.testClickingCalls(
-        item.$$('#inspect-views a[is="action-link"]'), 'inspectItemView',
-        [item.data.id, item.data.views[0]]);
+        item.shadowRoot.querySelector('#inspect-views a[is="action-link"]'),
+        'inspectItemView', [item.data.id, item.data.views[0]]);
 
     // Setup for testing navigation buttons.
     let currentPage = null;
@@ -176,21 +176,24 @@ suite(extension_item_tests.suiteName, function() {
       currentPage = newPage;
     });
 
-    item.$$('#detailsButton').click();
+    item.shadowRoot.querySelector('#detailsButton').click();
     expectDeepEquals(
         currentPage, {page: Page.DETAILS, extensionId: item.data.id});
 
     // Reset current page and test inspect-view navigation.
     navigation.navigateTo({page: Page.LIST});
     currentPage = null;
-    item.$$('#inspect-views a[is="action-link"]:nth-of-type(2)').click();
+    item.shadowRoot
+        .querySelector('#inspect-views a[is="action-link"]:nth-of-type(2)')
+        .click();
     expectDeepEquals(
         currentPage, {page: Page.DETAILS, extensionId: item.data.id});
 
     item.set('data.disableReasons.corruptInstall', true);
     flush();
     mockDelegate.testClickingCalls(
-        item.$$('#repair-button'), 'repairItem', [item.data.id]);
+        item.shadowRoot.querySelector('#repair-button'), 'repairItem',
+        [item.data.id]);
     testVisible(item, '#enableToggle', false);
     item.set('data.disableReasons.corruptInstall', false);
     flush();
@@ -198,8 +201,8 @@ suite(extension_item_tests.suiteName, function() {
     item.set('data.state', chrome.developerPrivate.ExtensionState.TERMINATED);
     flush();
     mockDelegate.testClickingCalls(
-        item.$$('#terminated-reload-button'), 'reloadItem', [item.data.id],
-        Promise.resolve());
+        item.shadowRoot.querySelector('#terminated-reload-button'),
+        'reloadItem', [item.data.id], Promise.resolve());
 
     item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
     item.set('data.state', chrome.developerPrivate.ExtensionState.ENABLED);
@@ -238,13 +241,13 @@ suite(extension_item_tests.suiteName, function() {
           });
         };
 
-        item.$$('#dev-reload-button').click();
+        item.shadowRoot.querySelector('#dev-reload-button').click();
         let id = await proxyDelegate.whenCalled('reloadItem');
         expectEquals(item.data.id, id);
         await verifyEventPromise(false);
         proxyDelegate.resetResolver('reloadItem');
         proxyDelegate.setForceReloadItemError(true);
-        item.$$('#dev-reload-button').click();
+        item.shadowRoot.querySelector('#dev-reload-button').click();
         id = await proxyDelegate.whenCalled('reloadItem');
         expectEquals(item.data.id, id);
         return verifyEventPromise(true);
@@ -316,7 +319,7 @@ suite(extension_item_tests.suiteName, function() {
     item.set('data.location', 'UNPACKED');
     flush();
     expectTrue(isChildVisible(item, '#source-indicator'));
-    const icon = item.$$('#source-indicator iron-icon');
+    const icon = item.shadowRoot.querySelector('#source-indicator iron-icon');
     assertTrue(!!icon);
     expectEquals('extensions-icons:unpacked', icon.icon);
 
@@ -382,7 +385,7 @@ suite(extension_item_tests.suiteName, function() {
     item.set('data.disableReasons.custodianApprovalRequired', true);
     flush();
     testVisible(item, '#enableToggle', true);
-    expectFalse(item.$$('#enableToggle').disabled);
+    expectFalse(item.shadowRoot.querySelector('#enableToggle').disabled);
     item.set('data.disableReasons.custodianApprovalRequired', false);
     flush();
   });

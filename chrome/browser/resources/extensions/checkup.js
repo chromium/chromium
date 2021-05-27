@@ -6,11 +6,17 @@ import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './shared_style.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'extensions-checkup',
+/** @polymer */
+class ExtensionsCheckupElement extends PolymerElement {
+  static get is() {
+    return 'extensions-checkup';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
+}
 
-});
+customElements.define(ExtensionsCheckupElement.is, ExtensionsCheckupElement);

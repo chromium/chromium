@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, html, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigation, Page} from './navigation_helper.js';
 
@@ -34,28 +34,42 @@ export const OptionsDialogMinWidth = 400;
 // The maximum height in pixels for the options dialog.
 export const OptionsDialogMaxHeight = 640;
 
-Polymer({
-  is: 'extensions-options-dialog',
+/** @polymer */
+class ExtensionsOptionsDialogElement extends PolymerElement {
+  static get is() {
+    return 'extensions-options-dialog';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private {Object} */
-    extensionOptions_: Object,
+  static get properties() {
+    return {
+      /** @private {Object} */
+      extensionOptions_: Object,
 
-    /** @private {chrome.developerPrivate.ExtensionInfo} */
-    data_: Object,
-  },
+      /** @private {chrome.developerPrivate.ExtensionInfo} */
+      data_: Object,
+    };
+  }
 
-  /** @private {?Function} */
-  boundUpdateDialogSize_: null,
+  constructor() {
+    super();
 
-  /** @private {?{height: number, width: number}} */
-  preferredSize_: null,
+    /** @private {?Function} */
+    this.boundUpdateDialogSize_ = null;
+
+    /** @private {?{height: number, width: number}} */
+    this.preferredSize_ = null;
+
+    /** @private {Debouncer} */
+    this.debouncer_;
+  }
 
   get open() {
     return this.$.dialog.open;
-  },
+  }
 
   /**
    * Resizes the dialog to the width/height stored in |preferredSize_|, taking
@@ -74,7 +88,7 @@ Polymer({
     this.$.dialog.style.setProperty('--dialog-height', `${effectiveHeight}px`);
     this.$.dialog.style.setProperty('--dialog-width', `${effectiveWidth}px`);
     this.$.dialog.style.setProperty('--dialog-opacity', '1');
-  },
+  }
 
   /** @param {chrome.developerPrivate.ExtensionInfo} data */
   show(data) {
@@ -93,7 +107,8 @@ Polymer({
           this.$.dialog.showModal();
         }
         this.preferredSize_ = e;
-        this.debounce('updateDialogSize_', boundUpdateDialogSize, 50);
+        this.debouncer_ = Debouncer.debounce(
+            this.debouncer_, timeOut.after(50), boundUpdateDialogSize);
       };
 
       // Add a 'resize' such that the dialog is resized when window size
@@ -101,7 +116,7 @@ Polymer({
       window.addEventListener('resize', this.boundUpdateDialogSize_);
       this.$.body.appendChild(/** @type {Node} */ (this.extensionOptions_));
     });
-  },
+  }
 
   /** @private */
   onClose_() {
@@ -124,5 +139,8 @@ Polymer({
       navigation.navigateTo(
           {page: Page.DETAILS, extensionId: currentPage.extensionId});
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    ExtensionsOptionsDialogElement.is, ExtensionsOptionsDialogElement);

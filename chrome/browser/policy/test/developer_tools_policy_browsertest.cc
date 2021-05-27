@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DeveloperToolsDisabledExtensionsDevMode) {
   const char define_helpers_js[] =
       R"(function getToolbar() {
            const manager = document.querySelector('extensions-manager');
-           return manager.$$('extensions-toolbar');
+           return manager.shadowRoot.querySelector('extensions-toolbar');
          }
 
          function getToggle() {

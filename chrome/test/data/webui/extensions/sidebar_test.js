@@ -32,7 +32,7 @@ suite(extension_sidebar_tests.suiteName, function() {
 
   test(assert(extension_sidebar_tests.TestNames.SetSelected), function() {
     const selector = '.section-item.iron-selected';
-    expectFalse(!!sidebar.$$(selector));
+    expectFalse(!!sidebar.shadowRoot.querySelector(selector));
 
     window.history.replaceState(undefined, '', '/shortcuts');
     document.body.innerHTML = '';
@@ -42,7 +42,9 @@ suite(extension_sidebar_tests.suiteName, function() {
     flush();
     return whenSelected
         .then(function() {
-          expectEquals(sidebar.$$(selector).id, 'sections-shortcuts');
+          expectEquals(
+              sidebar.shadowRoot.querySelector(selector).id,
+              'sections-shortcuts');
 
           window.history.replaceState(undefined, '', '/');
           document.body.innerHTML = '';
@@ -54,7 +56,9 @@ suite(extension_sidebar_tests.suiteName, function() {
           return whenSelected;
         })
         .then(function() {
-          expectEquals(sidebar.$$(selector).id, 'sections-extensions');
+          expectEquals(
+              sidebar.shadowRoot.querySelector(selector).id,
+              'sections-extensions');
         });
   });
 
@@ -71,14 +75,14 @@ suite(extension_sidebar_tests.suiteName, function() {
           currentPage = newPage;
         });
 
-        sidebar.$$('#sections-shortcuts').click();
+        sidebar.shadowRoot.querySelector('#sections-shortcuts').click();
         expectDeepEquals(currentPage, {page: Page.SHORTCUTS});
 
-        sidebar.$$('#sections-extensions').click();
+        sidebar.shadowRoot.querySelector('#sections-extensions').click();
         expectDeepEquals(currentPage, {page: Page.LIST});
 
         // Clicking on the link for the current page should close the dialog.
         sidebar.addEventListener('close-drawer', () => done());
-        sidebar.$$('#sections-extensions').click();
+        sidebar.shadowRoot.querySelector('#sections-extensions').click();
       });
 });

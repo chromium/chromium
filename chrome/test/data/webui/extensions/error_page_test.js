@@ -141,7 +141,10 @@ suite(extension_error_page_tests.suiteName, function() {
         mockDelegate.requestFileSourceResolver.resolve(code);
         mockDelegate.requestFileSourceResolver.promise.then(function() {
           flush();
-          expectEquals(code, errorPage.$$('extensions-code-section').code);
+          expectEquals(
+              code,
+              errorPage.shadowRoot.querySelector('extensions-code-section')
+                  .code);
           done();
         });
       });

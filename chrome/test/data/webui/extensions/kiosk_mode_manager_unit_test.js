@@ -54,13 +54,14 @@ suite(extension_manager_unit_tests.suiteName, function() {
   });
 
   test(assert(extension_manager_unit_tests.TestNames.KioskMode), function() {
-    expectFalse(!!manager.$$('extensions-kiosk-dialog'));
+    expectFalse(!!manager.shadowRoot.querySelector('extensions-kiosk-dialog'));
 
     return browserProxy.whenCalled('initializeKioskAppSettings').then(() => {
-      expectTrue(manager.$$('extensions-toolbar').kioskEnabled);
-      manager.$$('extensions-toolbar').fire('kiosk-tap');
+      expectTrue(
+          manager.shadowRoot.querySelector('extensions-toolbar').kioskEnabled);
+      manager.shadowRoot.querySelector('extensions-toolbar').fire('kiosk-tap');
       flush();
-      expectTrue(!!manager.$$('extensions-kiosk-dialog'));
+      expectTrue(!!manager.shadowRoot.querySelector('extensions-kiosk-dialog'));
     });
   });
 });

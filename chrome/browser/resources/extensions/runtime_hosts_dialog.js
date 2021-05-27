@@ -10,7 +10,7 @@ import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemDelegate} from './item.js';
 
@@ -47,66 +47,75 @@ export function getPatternFromSite(site) {
   return scheme + host + port + path;
 }
 
-Polymer({
-  is: 'extensions-runtime-hosts-dialog',
+/** @polymer */
+class ExtensionsRuntimeHostsDialogElement extends PolymerElement {
+  static get is() {
+    return 'extensions-runtime-hosts-dialog';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {!ItemDelegate} */
-    delegate: Object,
+  static get properties() {
+    return {
+      /** @type {!ItemDelegate} */
+      delegate: Object,
 
-    /** @type {string} */
-    itemId: String,
+      /** @type {string} */
+      itemId: String,
 
-    /**
-     * The site that this entry is currently managing. Only non-empty if this
-     * is for editing an existing entry.
-     * @type {?string}
-     */
-    currentSite: {
-      type: String,
-      value: null,
-    },
+      /**
+       * The site that this entry is currently managing. Only non-empty if this
+       * is for editing an existing entry.
+       * @type {?string}
+       */
+      currentSite: {
+        type: String,
+        value: null,
+      },
 
-    /**
-     * Whether the dialog should update the host access to be "on specific
-     * sites" before adding a new host permission.
-     */
-    updateHostAccess: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Whether the dialog should update the host access to be "on specific
+       * sites" before adding a new host permission.
+       */
+      updateHostAccess: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * The site to add an exception for.
-     * @private
-     */
-    site_: String,
+      /**
+       * The site to add an exception for.
+       * @private
+       */
+      site_: String,
 
-    /**
-     * Whether the currently-entered input is valid.
-     * @private
-     */
-    inputInvalid_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * Whether the currently-entered input is valid.
+       * @private
+       */
+      inputInvalid_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     if (this.currentSite !== null && this.currentSite !== undefined) {
       this.site_ = this.currentSite;
       this.validate_();
     }
     this.$.dialog.showModal();
-  },
+  }
 
   /** @return {boolean} */
   isOpen() {
     return this.$.dialog.open;
-  },
+  }
 
   /**
    * Validates that the pattern entered is valid.
@@ -122,7 +131,7 @@ Polymer({
 
     const valid = patternRegExp.test(this.site_);
     this.inputInvalid_ = !valid;
-  },
+  }
 
   /**
    * @return {string}
@@ -132,7 +141,7 @@ Polymer({
     const stringId = this.currentSite === null ? 'runtimeHostsDialogTitle' :
                                                  'hostPermissionsEdit';
     return loadTimeData.getString(stringId);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -141,7 +150,7 @@ Polymer({
   computeSubmitButtonDisabled_() {
     return this.inputInvalid_ || this.site_ === undefined ||
         this.site_.trim().length === 0;
-  },
+  }
 
   /**
    * @return {string}
@@ -150,12 +159,12 @@ Polymer({
   computeSubmitButtonLabel_() {
     const stringId = this.currentSite === null ? 'add' : 'save';
     return loadTimeData.getString(stringId);
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.$.dialog.cancel();
-  },
+  }
 
   /**
    * The tap handler for the submit button (adds the pattern and closes
@@ -170,7 +179,7 @@ Polymer({
     } else {
       this.handleAdd_();
     }
-  },
+  }
 
   /**
    * Handles adding a new site entry.
@@ -185,7 +194,7 @@ Polymer({
     }
 
     this.addPermission_();
-  },
+  }
 
   /**
    * Handles editing an existing site entry.
@@ -210,7 +219,7 @@ Polymer({
         .then(() => {
           this.addPermission_();
         });
-  },
+  }
 
   /**
    * Adds the runtime host permission through the delegate. If successful,
@@ -227,5 +236,9 @@ Polymer({
             () => {
               this.inputInvalid_ = true;
             });
-  },
-});
+  }
+}
+
+customElements.define(
+    ExtensionsRuntimeHostsDialogElement.is,
+    ExtensionsRuntimeHostsDialogElement);

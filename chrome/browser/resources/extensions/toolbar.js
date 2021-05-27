@@ -12,10 +12,10 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './pack_dialog.js';
 
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @interface */
 export class ToolbarDelegate {
@@ -39,53 +39,78 @@ export class ToolbarDelegate {
   updateAllExtensions(extensions) {}
 }
 
-Polymer({
-  is: 'extensions-toolbar',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ExtensionsToolbarElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
+  static get is() {
+    return 'extensions-toolbar';
+  }
 
-  properties: {
-    /** @type {!Array<!chrome.developerPrivate.ExtensionInfo>} */
-    extensions: Array,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {ToolbarDelegate} */
-    delegate: Object,
+  static get properties() {
+    return {
+      /** @type {!Array<!chrome.developerPrivate.ExtensionInfo>} */
+      extensions: Array,
 
-    inDevMode: {
-      type: Boolean,
-      value: false,
-      observer: 'onInDevModeChanged_',
-      reflectToAttribute: true,
-    },
+      /** @type {ToolbarDelegate} */
+      delegate: Object,
 
-    devModeControlledByPolicy: Boolean,
+      inDevMode: {
+        type: Boolean,
+        value: false,
+        observer: 'onInDevModeChanged_',
+        reflectToAttribute: true,
+      },
 
-    isSupervised: Boolean,
+      devModeControlledByPolicy: Boolean,
 
-    // <if expr="chromeos">
-    kioskEnabled: Boolean,
-    // </if>
+      isSupervised: Boolean,
 
-    canLoadUnpacked: Boolean,
+      // <if expr="chromeos">
+      kioskEnabled: Boolean,
+      // </if>
 
-    /** @private */
-    expanded_: Boolean,
+      canLoadUnpacked: Boolean,
 
-    /** @private */
-    showPackDialog_: Boolean,
+      /** @private */
+      expanded_: Boolean,
 
-    /**
-     * Prevents initiating update while update is in progress.
-     * @private
-     */
-    isUpdating_: {type: Boolean, value: false}
-  },
+      /** @private */
+      showPackDialog_: Boolean,
 
-  behaviors: [I18nBehavior],
+      /**
+       * Prevents initiating update while update is in progress.
+       * @private
+       */
+      isUpdating_: {type: Boolean, value: false}
+    };
+  }
 
-  hostAttributes: {
-    role: 'banner',
-  },
+  /** @override */
+  ready() {
+    super.ready();
+    this.setAttribute('role', 'banner');
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /**
    * @return {boolean}
@@ -93,7 +118,7 @@ Polymer({
    */
   shouldDisableDevMode_() {
     return this.devModeControlledByPolicy || this.isSupervised;
-  },
+  }
 
   /**
    * @return {string}
@@ -103,7 +128,7 @@ Polymer({
     return this.i18n(
         this.isSupervised ? 'controlledSettingChildRestriction' :
                             'controlledSettingPolicy');
-  },
+  }
 
   /**
    * @return {string}
@@ -111,7 +136,7 @@ Polymer({
    */
   getIcon_() {
     return this.isSupervised ? 'cr20:kite' : 'cr20:domain';
-  },
+  }
 
   /**
    * @param {!CustomEvent<boolean>} e
@@ -121,7 +146,7 @@ Polymer({
     this.delegate.setProfileInDevMode(e.detail);
     chrome.metricsPrivate.recordUserAction(
         'Options_ToggleDeveloperMode_' + (e.detail ? 'Enabled' : 'Disabled'));
-  },
+  }
 
   /**
    * @param {boolean} current
@@ -150,7 +175,7 @@ Polymer({
       });
     }
     this.expanded_ = !this.expanded_;
-  },
+  }
 
   /** @private */
   onLoadUnpackedTap_() {
@@ -163,28 +188,28 @@ Polymer({
           }
         })
         .catch(loadError => {
-          this.fire('load-error', loadError);
+          this.fire_('load-error', loadError);
         });
     chrome.metricsPrivate.recordUserAction('Options_LoadUnpackedExtension');
-  },
+  }
 
   /** @private */
   onPackTap_() {
     chrome.metricsPrivate.recordUserAction('Options_PackExtension');
     this.showPackDialog_ = true;
-  },
+  }
 
   /** @private */
   onPackDialogClose_() {
     this.showPackDialog_ = false;
     this.$.packExtensions.focus();
-  },
+  }
 
   // <if expr="chromeos">
   /** @private */
   onKioskTap_() {
-    this.fire('kiosk-tap');
-  },
+    this.fire_('kiosk-tap');
+  }
   // </if>
 
   /** @private */
@@ -209,9 +234,11 @@ Polymer({
               this.isUpdating_ = false;
             },
             loadError => {
-              this.fire('load-error', loadError);
+              this.fire_('load-error', loadError);
               toastManager.hide();
               this.isUpdating_ = false;
             });
-  },
-});
+  }
+}
+
+customElements.define(ExtensionsToolbarElement.is, ExtensionsToolbarElement);

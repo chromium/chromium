@@ -19,108 +19,115 @@ import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemDelegate} from './item.js';
 
-Polymer({
-  is: 'extensions-runtime-host-permissions',
+/** @polymer */
+class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
+  static get is() {
+    return 'extensions-runtime-host-permissions';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * The underlying permissions data.
-     * @type {chrome.developerPrivate.RuntimeHostPermissions}
-     */
-    permissions: Object,
+  static get properties() {
+    return {
+      /**
+       * The underlying permissions data.
+       * @type {chrome.developerPrivate.RuntimeHostPermissions}
+       */
+      permissions: Object,
 
-    /** @private */
-    itemId: String,
+      /** @private */
+      itemId: String,
 
-    /** @type {!ItemDelegate} */
-    delegate: Object,
+      /** @type {!ItemDelegate} */
+      delegate: Object,
 
-    /**
-     * Whether the dialog to add a new host permission is shown.
-     * @private
-     */
-    showHostDialog_: Boolean,
+      /**
+       * Whether the dialog to add a new host permission is shown.
+       * @private
+       */
+      showHostDialog_: Boolean,
 
-    /**
-     * The current site of the entry that the host dialog is editing, if the
-     * dialog is open for editing.
-     * @type {?string}
-     * @private
-     */
-    hostDialogModel_: {
-      type: String,
-      value: null,
-    },
+      /**
+       * The current site of the entry that the host dialog is editing, if the
+       * dialog is open for editing.
+       * @type {?string}
+       * @private
+       */
+      hostDialogModel_: {
+        type: String,
+        value: null,
+      },
 
-    /**
-     * The element to return focus to once the host dialog closes.
-     * @type {?HTMLElement}
-     * @private
-     */
-    hostDialogAnchorElement_: {
-      type: Object,
-      value: null,
-    },
+      /**
+       * The element to return focus to once the host dialog closes.
+       * @type {?HTMLElement}
+       * @private
+       */
+      hostDialogAnchorElement_: {
+        type: Object,
+        value: null,
+      },
 
-    /**
-     * If the action menu is open, the site of the entry it is open for.
-     * Otherwise null.
-     * @type {?string}
-     * @private
-     */
-    actionMenuModel_: {
-      type: String,
-      value: null,
-    },
+      /**
+       * If the action menu is open, the site of the entry it is open for.
+       * Otherwise null.
+       * @type {?string}
+       * @private
+       */
+      actionMenuModel_: {
+        type: String,
+        value: null,
+      },
 
-    /**
-     * The element that triggered the action menu, so that the page will
-     * return focus once the action menu (or dialog) closes.
-     * @type {?HTMLElement}
-     * @private
-     */
-    actionMenuAnchorElement_: {
-      type: Object,
-      value: null,
-    },
+      /**
+       * The element that triggered the action menu, so that the page will
+       * return focus once the action menu (or dialog) closes.
+       * @type {?HTMLElement}
+       * @private
+       */
+      actionMenuAnchorElement_: {
+        type: Object,
+        value: null,
+      },
 
-    /**
-     * The old host access setting; used when we don't immediately commit the
-     * change to host access so that we can reset it if the user cancels.
-     * @type {?string}
-     * @private
-     */
-    oldHostAccess_: {
-      type: String,
-      value: null,
-    },
+      /**
+       * The old host access setting; used when we don't immediately commit the
+       * change to host access so that we can reset it if the user cancels.
+       * @type {?string}
+       * @private
+       */
+      oldHostAccess_: {
+        type: String,
+        value: null,
+      },
 
-    /**
-     * Indicator to track if an onHostAccessChange_ event is coming from the
-     * setting being automatically reverted to the previous value, after a
-     * change to a new value was canceled.
-     * @private
-     */
-    revertingHostAccess_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Indicator to track if an onHostAccessChange_ event is coming from the
+       * setting being automatically reverted to the previous value, after a
+       * change to a new value was canceled.
+       * @private
+       */
+      revertingHostAccess_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Proxying the enum to be used easily by the html template.
-     * @private
-     */
-    HostAccess_: {
-      type: Object,
-      value: chrome.developerPrivate.HostAccess,
-    },
-  },
+      /**
+       * Proxying the enum to be used easily by the html template.
+       * @private
+       */
+      HostAccess_: {
+        type: Object,
+        value: chrome.developerPrivate.HostAccess,
+      },
+    };
+  }
 
   /**
    * @param {!Event} event
@@ -165,7 +172,7 @@ Polymer({
     } else {
       this.delegate.setItemHostAccess(this.itemId, access);
     }
-  },
+  }
 
   /**
    * @return {boolean}
@@ -174,7 +181,7 @@ Polymer({
   showSpecificSites_() {
     return this.permissions.hostAccess ===
         chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES;
-  },
+  }
 
   /**
    * Returns the granted host permissions as a sorted set of strings.
@@ -192,7 +199,7 @@ Polymer({
     return this.permissions.hosts.filter(control => control.granted)
         .map(control => control.host)
         .sort();
-  },
+  }
 
   /**
    * @param {Event} e
@@ -203,7 +210,7 @@ Polymer({
         'Extensions.Settings.Hosts.AddHostActivated');
     const target = /** @type {!HTMLElement} */ (e.target);
     this.doShowHostDialog_(target, null);
-  },
+  }
 
   /**
    * @param {!HTMLElement} anchorElement The element to return focus to once
@@ -216,7 +223,7 @@ Polymer({
     this.hostDialogAnchorElement_ = anchorElement;
     this.hostDialogModel_ = currentSite;
     this.showHostDialog_ = true;
-  },
+  }
 
   /** @private */
   onHostDialogClose_() {
@@ -225,7 +232,7 @@ Polymer({
     focusWithoutInk(assert(this.hostDialogAnchorElement_, 'Host Anchor'));
     this.hostDialogAnchorElement_ = null;
     this.oldHostAccess_ = null;
-  },
+  }
 
   /** @private */
   onHostDialogCancel_() {
@@ -240,7 +247,7 @@ Polymer({
       this.revertingHostAccess_ = false;
       this.oldHostAccess_ = null;
     }
-  },
+  }
 
   /**
    * @return {boolean}
@@ -248,7 +255,7 @@ Polymer({
    */
   dialogShouldUpdateHostAccess_() {
     return !!this.oldHostAccess_;
-  },
+  }
 
   /**
    * @param {!{
@@ -265,7 +272,7 @@ Polymer({
     const actionMenu =
         /** @type {CrActionMenuElement} */ (this.$.hostActionMenu);
     actionMenu.showAt(e.target);
-  },
+  }
 
   /** @private */
   onActionMenuEditClick_() {
@@ -282,7 +289,7 @@ Polymer({
     this.actionMenuAnchorElement_ = null;
     this.closeActionMenu_();
     this.doShowHostDialog_(anchorElement, site);
-  },
+  }
 
   /** @private */
   onActionMenuRemoveClick_() {
@@ -291,24 +298,28 @@ Polymer({
     this.delegate.removeRuntimeHostPermission(
         this.itemId, assert(this.actionMenuModel_, 'Action Menu Model'));
     this.closeActionMenu_();
-  },
+  }
 
   /** @private */
   closeActionMenu_() {
     const menu = this.$.hostActionMenu;
     assert(menu.open);
     menu.close();
-  },
+  }
 
   /** @private */
   onActionMenuClose_() {
     this.actionMenuModel_ = null;
     this.actionMenuAnchorElement_ = null;
-  },
+  }
 
   /** @private */
   onLearnMoreClick_() {
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Settings.Hosts.LearnMoreActivated');
   }
-});
+}
+
+customElements.define(
+    ExtensionsRuntimeHostPermissionsElement.is,
+    ExtensionsRuntimeHostPermissionsElement);

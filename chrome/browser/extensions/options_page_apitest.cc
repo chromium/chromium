@@ -52,7 +52,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OptionsPage) {
   static constexpr char kScriptClickOptionButton[] = R"(
     (function() {
       var button = document.querySelector('extensions-manager').
-                    $$('extensions-detail-view').$$('#extensions-options');
+                    shadowRoot.querySelector('extensions-detail-view').
+                    shadowRoot.querySelector('#extensions-options');
       button.click();
     })();)";
 

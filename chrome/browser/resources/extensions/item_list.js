@@ -7,88 +7,101 @@ import './shared_style.js';
 import './checkup.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemDelegate} from './item.js';
 
-Polymer({
-  is: 'extensions-item-list',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ExtensionsItemListElementBase =
+    mixinBehaviors([CrContainerShadowBehavior, I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ExtensionsItemListElement extends ExtensionsItemListElementBase {
+  static get is() {
+    return 'extensions-item-list';
+  }
 
-  behaviors: [CrContainerShadowBehavior, I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {!Array<!chrome.developerPrivate.ExtensionInfo>} */
-    apps: Array,
+  static get properties() {
+    return {
+      /** @type {!Array<!chrome.developerPrivate.ExtensionInfo>} */
+      apps: Array,
 
-    /** @type {!Array<!chrome.developerPrivate.ExtensionInfo>} */
-    extensions: Array,
+      /** @type {!Array<!chrome.developerPrivate.ExtensionInfo>} */
+      extensions: Array,
 
-    /** @type {ItemDelegate} */
-    delegate: Object,
+      /** @type {ItemDelegate} */
+      delegate: Object,
 
-    inDevMode: {
-      type: Boolean,
-      value: false,
-    },
+      inDevMode: {
+        type: Boolean,
+        value: false,
+      },
 
-    filter: {
-      type: String,
-    },
+      filter: {
+        type: String,
+      },
 
-    /** @private */
-    computedFilter_: {
-      type: String,
-      computed: 'computeFilter_(filter)',
-      observer: 'announceSearchResults_',
-    },
+      /** @private */
+      computedFilter_: {
+        type: String,
+        computed: 'computeFilter_(filter)',
+        observer: 'announceSearchResults_',
+      },
 
-    /** @private */
-    maxColumns_: {
-      type: Number,
-      value: () => loadTimeData.getBoolean('showCheckup') ? 2 : 3,
-    },
+      /** @private */
+      maxColumns_: {
+        type: Number,
+        value: () => loadTimeData.getBoolean('showCheckup') ? 2 : 3,
+      },
 
-    /** @private */
-    showCheckup_: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('showCheckup'),
-    },
+      /** @private */
+      showCheckup_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showCheckup'),
+      },
 
-    /** @private */
-    shownAppsCount_: {
-      type: Number,
-      value: 0,
-    },
+      /** @private */
+      shownAppsCount_: {
+        type: Number,
+        value: 0,
+      },
 
-    /** @private */
-    shownExtensionsCount_: {
-      type: Number,
-      value: 0,
-    },
-  },
+      /** @private */
+      shownExtensionsCount_: {
+        type: Number,
+        value: 0,
+      },
+    };
+  }
 
   /**
    * @param {string} id
    * @return {?Element}
    */
   getDetailsButton(id) {
-    const item = this.$$(`#${id}`);
+    const item = this.shadowRoot.querySelector(`#${id}`);
     return item && item.getDetailsButton();
-  },
+  }
 
   /**
    * @param {string} id
    * @return {?Element}
    */
   getErrorsButton(id) {
-    const item = this.$$(`#${id}`);
+    const item = this.shadowRoot.querySelector(`#${id}`);
     return item && item.getErrorsButton();
-  },
+  }
 
   /**
    * Computes the filter function to be used for determining which items
@@ -105,7 +118,7 @@ Polymer({
 
     return i => [i.name, i.id].some(
                s => s.toLowerCase().includes(formattedFilter));
-  },
+  }
 
   /** @private */
   shouldShowEmptyItemsMessage_() {
@@ -114,36 +127,42 @@ Polymer({
     }
 
     return this.apps.length === 0 && this.extensions.length === 0;
-  },
+  }
 
   /** @private */
   shouldShowEmptySearchMessage_() {
     return !this.shouldShowEmptyItemsMessage_() && this.shownAppsCount_ === 0 &&
         this.shownExtensionsCount_ === 0;
-  },
+  }
 
   /** @private */
   onNoExtensionsTap_(e) {
     if (e.target.tagName === 'A') {
       chrome.metricsPrivate.recordUserAction('Options_GetMoreExtensions');
     }
-  },
+  }
 
   /** @private */
   announceSearchResults_() {
     if (this.computedFilter_) {
       IronA11yAnnouncer.requestAvailability();
-      this.async(() => {  // Async to allow list to update.
+      setTimeout(() => {  // Async to allow list to update.
         const total = this.shownAppsCount_ + this.shownExtensionsCount_;
-        this.fire('iron-announce', {
-          text: this.shouldShowEmptySearchMessage_() ?
-              this.i18n('noSearchResults') :
-              (total === 1 ?
-                   this.i18n('searchResultsSingular', this.filter) :
-                   this.i18n(
-                       'searchResultsPlural', total.toString(), this.filter)),
-        });
-      });
+        this.dispatchEvent(new CustomEvent('iron-announce', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            text: this.shouldShowEmptySearchMessage_() ?
+                this.i18n('noSearchResults') :
+                (total === 1 ?
+                     this.i18n('searchResultsSingular', this.filter) :
+                     this.i18n(
+                         'searchResultsPlural', total.toString(), this.filter)),
+          }
+        }));
+      }, 0);
     }
-  },
-});
+  }
+}
+
+customElements.define(ExtensionsItemListElement.is, ExtensionsItemListElement);

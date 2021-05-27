@@ -73,30 +73,33 @@ suite(extension_pack_dialog_tests.suiteName, function() {
   });
 
   test(assert(extension_pack_dialog_tests.TestNames.Interaction), function() {
-    const dialogElement = packDialog.$$('cr-dialog').getNative();
+    const dialogElement =
+        packDialog.shadowRoot.querySelector('cr-dialog').getNative();
 
     expectTrue(isElementVisible(dialogElement));
-    expectEquals('', packDialog.$$('#root-dir').value);
-    packDialog.$$('#root-dir-browse').click();
+    expectEquals('', packDialog.shadowRoot.querySelector('#root-dir').value);
+    packDialog.shadowRoot.querySelector('#root-dir-browse').click();
     expectTrue(!!mockDelegate.rootPromise);
-    expectEquals('', packDialog.$$('#root-dir').value);
+    expectEquals('', packDialog.shadowRoot.querySelector('#root-dir').value);
     const kRootPath = 'this/is/a/path';
 
     const promises = [];
     promises.push(mockDelegate.rootPromise.promise.then(function() {
-      expectEquals(kRootPath, packDialog.$$('#root-dir').value);
+      expectEquals(
+          kRootPath, packDialog.shadowRoot.querySelector('#root-dir').value);
       expectEquals(kRootPath, packDialog.packDirectory_);
     }));
 
     flush();
-    expectEquals('', packDialog.$$('#key-file').value);
-    packDialog.$$('#key-file-browse').click();
+    expectEquals('', packDialog.shadowRoot.querySelector('#key-file').value);
+    packDialog.shadowRoot.querySelector('#key-file-browse').click();
     expectTrue(!!mockDelegate.keyPromise);
-    expectEquals('', packDialog.$$('#key-file').value);
+    expectEquals('', packDialog.shadowRoot.querySelector('#key-file').value);
     const kKeyPath = 'here/is/another/path';
 
     promises.push(mockDelegate.keyPromise.promise.then(function() {
-      expectEquals(kKeyPath, packDialog.$$('#key-file').value);
+      expectEquals(
+          kKeyPath, packDialog.shadowRoot.querySelector('#key-file').value);
       expectEquals(kKeyPath, packDialog.keyFile_);
     }));
 
@@ -104,14 +107,15 @@ suite(extension_pack_dialog_tests.suiteName, function() {
     mockDelegate.keyPromise.resolve(kKeyPath);
 
     return Promise.all(promises).then(function() {
-      packDialog.$$('.action-button').click();
+      packDialog.shadowRoot.querySelector('.action-button').click();
       expectEquals(kRootPath, mockDelegate.rootPath);
       expectEquals(kKeyPath, mockDelegate.keyPath);
     });
   });
 
   test(assert(extension_pack_dialog_tests.TestNames.PackSuccess), function() {
-    const dialogElement = packDialog.$$('cr-dialog').getNative();
+    const dialogElement =
+        packDialog.shadowRoot.querySelector('cr-dialog').getNative();
     let packDialogAlert;
     let alertElement;
 
@@ -122,26 +126,30 @@ suite(extension_pack_dialog_tests.suiteName, function() {
       status: chrome.developerPrivate.PackStatus.SUCCESS
     };
 
-    packDialog.$$('#root-dir-browse').click();
+    packDialog.shadowRoot.querySelector('#root-dir-browse').click();
     mockDelegate.rootPromise.resolve(kRootPath);
 
     return mockDelegate.rootPromise.promise
         .then(() => {
-          expectEquals(kRootPath, packDialog.$$('#root-dir').value);
-          packDialog.$$('.action-button').click();
+          expectEquals(
+              kRootPath,
+              packDialog.shadowRoot.querySelector('#root-dir').value);
+          packDialog.shadowRoot.querySelector('.action-button').click();
 
           return flushTasks();
         })
         .then(() => {
-          packDialogAlert = packDialog.$$('extensions-pack-dialog-alert');
+          packDialogAlert = packDialog.shadowRoot.querySelector(
+              'extensions-pack-dialog-alert');
           alertElement = packDialogAlert.$.dialog.getNative();
           expectTrue(isElementVisible(alertElement));
           expectTrue(isElementVisible(dialogElement));
-          expectTrue(!!packDialogAlert.$$('.action-button'));
+          expectTrue(
+              !!packDialogAlert.shadowRoot.querySelector('.action-button'));
 
           const wait = eventToPromise('close', dialogElement);
           // After 'ok', both dialogs should be closed.
-          packDialogAlert.$$('.action-button').click();
+          packDialogAlert.shadowRoot.querySelector('.action-button').click();
 
           return wait;
         })
@@ -152,7 +160,8 @@ suite(extension_pack_dialog_tests.suiteName, function() {
   });
 
   test(assert(extension_pack_dialog_tests.TestNames.PackError), function() {
-    const dialogElement = packDialog.$$('cr-dialog').getNative();
+    const dialogElement =
+        packDialog.shadowRoot.querySelector('cr-dialog').getNative();
     let packDialogAlert;
     let alertElement;
 
@@ -163,32 +172,36 @@ suite(extension_pack_dialog_tests.suiteName, function() {
       status: chrome.developerPrivate.PackStatus.ERROR
     };
 
-    packDialog.$$('#root-dir-browse').click();
+    packDialog.shadowRoot.querySelector('#root-dir-browse').click();
     mockDelegate.rootPromise.resolve(kRootPath);
 
     return mockDelegate.rootPromise.promise.then(() => {
-      expectEquals(kRootPath, packDialog.$$('#root-dir').value);
-      packDialog.$$('.action-button').click();
+      expectEquals(
+          kRootPath, packDialog.shadowRoot.querySelector('#root-dir').value);
+      packDialog.shadowRoot.querySelector('.action-button').click();
       flush();
 
       // Make sure new alert and the appropriate buttons are visible.
-      packDialogAlert = packDialog.$$('extensions-pack-dialog-alert');
+      packDialogAlert =
+          packDialog.shadowRoot.querySelector('extensions-pack-dialog-alert');
       alertElement = packDialogAlert.$.dialog.getNative();
       expectTrue(isElementVisible(alertElement));
       expectTrue(isElementVisible(dialogElement));
-      expectTrue(!!packDialogAlert.$$('.action-button'));
+      expectTrue(!!packDialogAlert.shadowRoot.querySelector('.action-button'));
 
       // After cancel, original dialog is still open and values unchanged.
-      packDialogAlert.$$('.action-button').click();
+      packDialogAlert.shadowRoot.querySelector('.action-button').click();
       flush();
       expectFalse(isElementVisible(alertElement));
       expectTrue(isElementVisible(dialogElement));
-      expectEquals(kRootPath, packDialog.$$('#root-dir').value);
+      expectEquals(
+          kRootPath, packDialog.shadowRoot.querySelector('#root-dir').value);
     });
   });
 
   test(assert(extension_pack_dialog_tests.TestNames.PackWarning), function() {
-    const dialogElement = packDialog.$$('cr-dialog').getNative();
+    const dialogElement =
+        packDialog.shadowRoot.querySelector('cr-dialog').getNative();
     let packDialogAlert;
     let alertElement;
 
@@ -202,26 +215,31 @@ suite(extension_pack_dialog_tests.suiteName, function() {
       override_flags: 1,
     };
 
-    packDialog.$$('#root-dir-browse').click();
+    packDialog.shadowRoot.querySelector('#root-dir-browse').click();
     mockDelegate.rootPromise.resolve(kRootPath);
 
     return mockDelegate.rootPromise.promise
         .then(() => {
-          expectEquals(kRootPath, packDialog.$$('#root-dir').value);
-          packDialog.$$('.action-button').click();
+          expectEquals(
+              kRootPath,
+              packDialog.shadowRoot.querySelector('#root-dir').value);
+          packDialog.shadowRoot.querySelector('.action-button').click();
           flush();
 
           // Make sure new alert and the appropriate buttons are visible.
-          packDialogAlert = packDialog.$$('extensions-pack-dialog-alert');
+          packDialogAlert = packDialog.shadowRoot.querySelector(
+              'extensions-pack-dialog-alert');
           alertElement = packDialogAlert.$.dialog.getNative();
           expectTrue(isElementVisible(alertElement));
           expectTrue(isElementVisible(dialogElement));
-          expectFalse(packDialogAlert.$$('.cancel-button').hidden);
-          expectFalse(packDialogAlert.$$('.action-button').hidden);
+          expectFalse(packDialogAlert.shadowRoot.querySelector('.cancel-button')
+                          .hidden);
+          expectFalse(packDialogAlert.shadowRoot.querySelector('.action-button')
+                          .hidden);
 
           // Make sure "proceed anyway" try to pack extension again.
           const whenClosed = eventToPromise('close', packDialogAlert);
-          packDialogAlert.$$('.action-button').click();
+          packDialogAlert.shadowRoot.querySelector('.action-button').click();
           return whenClosed;
         })
         .then(() => {

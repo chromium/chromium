@@ -11,52 +11,67 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {KioskApp, KioskAppSettings, KioskBrowserProxy, KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
 
 
-Polymer({
-  is: 'extensions-kiosk-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const ExtensionsKioskDialogElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ExtensionsKioskDialogElement extends ExtensionsKioskDialogElementBase {
+  static get is() {
+    return 'extensions-kiosk-dialog';
+  }
 
-  behaviors: [WebUIListenerBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private {?string} */
-    addAppInput_: {
-      type: String,
-      value: null,
-    },
+  static get properties() {
+    return {
+      /** @private {?string} */
+      addAppInput_: {
+        type: String,
+        value: null,
+      },
 
-    /** @private {!Array<!KioskApp>} */
-    apps_: Array,
+      /** @private {!Array<!KioskApp>} */
+      apps_: Array,
 
-    /** @private */
-    bailoutDisabled_: Boolean,
+      /** @private */
+      bailoutDisabled_: Boolean,
 
-    /** @private */
-    canEditAutoLaunch_: Boolean,
+      /** @private */
+      canEditAutoLaunch_: Boolean,
 
-    /** @private */
-    canEditBailout_: Boolean,
+      /** @private */
+      canEditBailout_: Boolean,
 
-    /** @private {?string} */
-    errorAppId_: String,
-  },
-
-  /** @private {?KioskBrowserProxy} */
-  kioskBrowserProxy_: null,
+      /** @private {?string} */
+      errorAppId_: String,
+    };
+  }
 
   /** @override */
-  ready() {
+  constructor() {
+    super();
+
+    /** @private {!KioskBrowserProxy} */
     this.kioskBrowserProxy_ = KioskBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.kioskBrowserProxy_.initializeKioskAppSettings()
         .then(params => {
           this.canEditAutoLaunch_ = params.autoLaunchEnabled;
@@ -70,7 +85,7 @@ Polymer({
     this.addWebUIListener('kiosk-app-error', this.showError_.bind(this));
 
     this.$.dialog.showModal();
-  },
+  }
 
   /**
    * @param {!KioskAppSettings} settings
@@ -80,7 +95,7 @@ Polymer({
     this.apps_ = settings.apps;
     this.bailoutDisabled_ = settings.disableBailout;
     this.canEditBailout_ = settings.hasAutoLaunchApp;
-  },
+  }
 
   /**
    * @param {!KioskApp} app
@@ -90,7 +105,7 @@ Polymer({
     const index = this.apps_.findIndex(a => a.id === app.id);
     assert(index < this.apps_.length);
     this.set('apps_.' + index, app);
-  },
+  }
 
   /**
    * @param {string} appId
@@ -98,7 +113,7 @@ Polymer({
    */
   showError_(appId) {
     this.errorAppId_ = appId;
-  },
+  }
 
   /**
    * @param {string} errorMessage
@@ -107,19 +122,19 @@ Polymer({
    */
   getErrorMessage_(errorMessage) {
     return this.errorAppId_ + ' ' + errorMessage;
-  },
+  }
 
   /** @private */
   onAddAppTap_() {
     assert(this.addAppInput_);
     this.kioskBrowserProxy_.addKioskApp(this.addAppInput_);
     this.addAppInput_ = null;
-  },
+  }
 
   /** @private */
   clearInputInvalid_() {
     this.errorAppId_ = null;
-  },
+  }
 
   /**
    * @param {{model: {item: !KioskApp}}} event
@@ -133,7 +148,7 @@ Polymer({
     } else {
       this.kioskBrowserProxy_.enableKioskAutoLaunch(app.id);
     }
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -147,24 +162,24 @@ Polymer({
       this.kioskBrowserProxy_.setDisableBailoutShortcut(false);
       this.$['confirm-dialog'].close();
     }
-  },
+  }
 
   /** @private */
   onBailoutDialogCancelTap_() {
     this.$.bailout.checked = false;
     this.$['confirm-dialog'].cancel();
-  },
+  }
 
   /** @private */
   onBailoutDialogConfirmTap_() {
     this.kioskBrowserProxy_.setDisableBailoutShortcut(true);
     this.$['confirm-dialog'].close();
-  },
+  }
 
   /** @private */
   onDoneTap_() {
     this.$.dialog.close();
-  },
+  }
 
   /**
    * @param {{model: {item: !KioskApp}}} event
@@ -172,7 +187,7 @@ Polymer({
    */
   onDeleteAppTap_(event) {
     this.kioskBrowserProxy_.removeKioskApp(event.model.item.id);
-  },
+  }
 
   /**
    * @param {boolean} autoLaunched
@@ -183,7 +198,7 @@ Polymer({
    */
   getAutoLaunchButtonLabel_(autoLaunched, disableStr, enableStr) {
     return autoLaunched ? disableStr : enableStr;
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -191,5 +206,8 @@ Polymer({
    */
   stopPropagation_(e) {
     e.stopPropagation();
-  },
-});
+  }
+}
+
+customElements.define(
+    ExtensionsKioskDialogElement.is, ExtensionsKioskDialogElement);

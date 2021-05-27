@@ -76,7 +76,7 @@ suite('ExtensionsActivityLogTest', function() {
   // needed for iron-list as it reuses components but hides them when not in
   // use.
   function getStreamItems() {
-    return activityLog.$$('activity-log-stream')
+    return activityLog.shadowRoot.querySelector('activity-log-stream')
         .shadowRoot.querySelectorAll('activity-log-stream-item:not([hidden])');
   }
 
@@ -88,7 +88,7 @@ suite('ExtensionsActivityLogTest', function() {
       currentPage = newPage;
     });
 
-    activityLog.$$('#closeButton').click();
+    activityLog.shadowRoot.querySelector('#closeButton').click();
     expectDeepEquals(
         currentPage, {page: Page.DETAILS, extensionId: EXTENSION_ID});
   });
@@ -105,7 +105,7 @@ suite('ExtensionsActivityLogTest', function() {
           currentPage = newPage;
         });
 
-        activityLog.$$('#closeButton').click();
+        activityLog.shadowRoot.querySelector('#closeButton').click();
         expectDeepEquals(currentPage, {page: Page.LIST});
       });
 
@@ -116,7 +116,7 @@ suite('ExtensionsActivityLogTest', function() {
     boundTestVisible('activity-log-history', true);
 
     // Navigate to the activity log stream.
-    activityLog.$$('cr-tabs').selected = 1;
+    activityLog.shadowRoot.querySelector('cr-tabs').selected = 1;
     flush();
 
     // One activity is recorded and should appear in the stream.
@@ -127,7 +127,7 @@ suite('ExtensionsActivityLogTest', function() {
     expectEquals(1, getStreamItems().length);
 
     // Navigate back to the activity log history tab.
-    activityLog.$$('cr-tabs').selected = 0;
+    activityLog.shadowRoot.querySelector('cr-tabs').selected = 0;
 
     // Expect a refresh of the activity log.
     await proxyDelegate.whenCalled('getExtensionActivityLog');
@@ -138,7 +138,7 @@ suite('ExtensionsActivityLogTest', function() {
     // the stream is inactive.
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
 
-    activityLog.$$('cr-tabs').selected = 1;
+    activityLog.shadowRoot.querySelector('cr-tabs').selected = 1;
     flush();
 
     // The one activity in the stream should have persisted between tab

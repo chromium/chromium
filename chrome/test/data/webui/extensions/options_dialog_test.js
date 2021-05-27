@@ -61,7 +61,8 @@ suite(extension_options_dialog_tests.suiteName, function() {
 
           assertEquals(
               data.name,
-              assert(optionsDialog.$$('#icon-and-name-wrapper span'))
+              assert(optionsDialog.shadowRoot.querySelector(
+                         '#icon-and-name-wrapper span'))
                   .textContent.trim());
         });
   });

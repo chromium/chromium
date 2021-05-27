@@ -10,7 +10,7 @@ import './code_section.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @interface */
 export class LoadErrorDelegate {
@@ -22,33 +22,42 @@ export class LoadErrorDelegate {
   retryLoadUnpacked(retryId) {}
 }
 
-Polymer({
-  is: 'extensions-load-error',
+/** @polymer */
+class ExtensionsLoadErrorElement extends PolymerElement {
+  static get is() {
+    return 'extensions-load-error';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {LoadErrorDelegate} */
-    delegate: Object,
+  static get properties() {
+    return {
+      /** @type {LoadErrorDelegate} */
+      delegate: Object,
 
-    /** @type {chrome.developerPrivate.LoadError} */
-    loadError: Object,
+      /** @type {chrome.developerPrivate.LoadError} */
+      loadError: Object,
 
-    /** @private */
-    retrying_: Boolean,
-  },
+      /** @private */
+      retrying_: Boolean,
+    };
+  }
 
-  observers: [
-    'observeLoadErrorChanges_(loadError)',
-  ],
+  static get observers() {
+    return [
+      'observeLoadErrorChanges_(loadError)',
+    ];
+  }
 
   show() {
     /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
-  },
+  }
 
   close() {
     /** @type {!CrDialogElement} */ (this.$.dialog).close();
-  },
+  }
 
   /** @private */
   onRetryTap_() {
@@ -63,7 +72,7 @@ Polymer({
                   /** @type {chrome.developerPrivate.LoadError} */ (loadError);
               this.retrying_ = false;
             });
-  },
+  }
 
   /** @private */
   observeLoadErrorChanges_() {
@@ -82,5 +91,8 @@ Polymer({
     };
 
     this.$.code.code = codeSectionProperties;
-  },
-});
+  }
+}
+
+customElements.define(
+    ExtensionsLoadErrorElement.is, ExtensionsLoadErrorElement);

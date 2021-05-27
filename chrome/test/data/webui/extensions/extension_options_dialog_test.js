@@ -23,13 +23,15 @@ suite('ExtensionOptionsDialogTest', () => {
     document.body.appendChild(manager);
     assertTrue(!!manager);
     await eventToPromise('view-enter-start', manager);
-    const extensionDetailView = manager.$$('extensions-detail-view');
+    const extensionDetailView =
+        manager.shadowRoot.querySelector('extensions-detail-view');
     assertTrue(!!extensionDetailView);
 
-    const optionsButton = extensionDetailView.$$('#extensions-options');
+    const optionsButton =
+        extensionDetailView.shadowRoot.querySelector('#extensions-options');
     optionsButton.click();
     await eventToPromise('cr-dialog-open', manager);
-    const dialog = manager.$$('#options-dialog');
+    const dialog = manager.shadowRoot.querySelector('#options-dialog');
     let waitForClose = eventToPromise('close', dialog);
     dialog.$.dialog.cancel();
     await waitForClose;

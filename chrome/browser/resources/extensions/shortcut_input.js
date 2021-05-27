@@ -9,9 +9,9 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
 import {hasValidModifiers, isValidKeyCode, Key, keystrokeToString} from './shortcut_util.js';
@@ -25,68 +25,85 @@ const ShortcutError = {
 };
 
 // The UI to display and manage keyboard shortcuts set for extension commands.
-Polymer({
-  is: 'extensions-shortcut-input',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ExtensionsShortcutInputElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class ExtensionsShortcutInputElement extends
+    ExtensionsShortcutInputElementBase {
+  static get is() {
+    return 'extensions-shortcut-input';
+  }
 
-  properties: {
-    /** @type {!KeyboardShortcutDelegate} */
-    delegate: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    item: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /** @type {!KeyboardShortcutDelegate} */
+      delegate: Object,
 
-    commandName: {
-      type: String,
-      value: '',
-    },
+      item: {
+        type: String,
+        value: '',
+      },
 
-    shortcut: {
-      type: String,
-      value: '',
-    },
+      commandName: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    capturing_: {
-      type: Boolean,
-      value: false,
-    },
+      shortcut: {
+        type: String,
+        value: '',
+      },
 
-    /** @private {!ShortcutError} */
-    error_: {
-      type: Number,
-      value: ShortcutError.NO_ERROR,
-    },
+      /** @private */
+      capturing_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {!ShortcutError} */
+      error_: {
+        type: Number,
+        value: ShortcutError.NO_ERROR,
+      },
 
 
-    /** @private */
-    readonly_: {
-      type: Boolean,
-      value: true,
-      reflectToAttribute: true,
-    },
+      /** @private */
+      readonly_: {
+        type: Boolean,
+        value: true,
+        reflectToAttribute: true,
+      },
 
-    /** @private */
-    pendingShortcut_: {
-      type: String,
-      value: '',
-    },
-  },
+      /** @private */
+      pendingShortcut_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     const node = this.$.input;
     node.addEventListener('mouseup', this.startCapture_.bind(this));
     node.addEventListener('blur', this.endCapture_.bind(this));
     node.addEventListener('focus', this.startCapture_.bind(this));
     node.addEventListener('keydown', this.onKeyDown_.bind(this));
     node.addEventListener('keyup', this.onKeyUp_.bind(this));
-  },
+  }
 
   /** @private */
   startCapture_() {
@@ -95,7 +112,7 @@ Polymer({
     }
     this.capturing_ = true;
     this.delegate.setShortcutHandlingSuspended(true);
-  },
+  }
 
   /** @private */
   endCapture_() {
@@ -108,7 +125,7 @@ Polymer({
     this.error_ = ShortcutError.NO_ERROR;
     this.delegate.setShortcutHandlingSuspended(false);
     this.readonly_ = true;
-  },
+  }
 
   /** @private */
   clearShortcut_() {
@@ -118,7 +135,7 @@ Polymer({
     // for the extension.
     this.commitPending_();
     this.endCapture_();
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -154,7 +171,7 @@ Polymer({
     }
 
     this.handleKey_(/** @type {!KeyboardEvent} */ (e));
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -178,7 +195,7 @@ Polymer({
     }
 
     this.handleKey_(/** @type {!KeyboardEvent} */ (e));
-  },
+  }
 
   /**
    * @param {!ShortcutError} error
@@ -201,7 +218,7 @@ Polymer({
         assert(this.error_ === ShortcutError.NO_ERROR);
         return '';
     }
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -235,20 +252,24 @@ Polymer({
     this.error_ = ShortcutError.NO_ERROR;
 
     IronA11yAnnouncer.requestAvailability();
-    this.fire('iron-announce', {
-      text: this.i18n('shortcutSet', this.computeText_()),
-    });
+    this.dispatchEvent(new CustomEvent('iron-announce', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        text: this.i18n('shortcutSet', this.computeText_()),
+      }
+    }));
 
     this.commitPending_();
     this.endCapture_();
-  },
+  }
 
   /** @private */
   commitPending_() {
     this.shortcut = this.pendingShortcut_;
     this.delegate.updateExtensionCommandKeybinding(
         this.item, this.commandName, this.shortcut);
-  },
+  }
 
   /**
    * @return {string} The placeholder text.
@@ -260,8 +281,7 @@ Polymer({
                              this.i18n('shortcutNotSet');
     }
     return this.i18n('shortcutTypeAShortcut');
-  },
-
+  }
 
   /**
    * @return {string} The text to be displayed in the shortcut field.
@@ -271,7 +291,7 @@ Polymer({
     const shortcutString =
         this.capturing_ ? this.pendingShortcut_ : this.shortcut;
     return shortcutString.split('+').join(' + ');
-  },
+  }
 
   /**
    * @return {boolean}
@@ -279,7 +299,7 @@ Polymer({
    */
   getIsInvalid_() {
     return this.error_ !== ShortcutError.NO_ERROR;
-  },
+  }
 
   /** @private */
   onEditClick_() {
@@ -290,5 +310,8 @@ Polymer({
     this.clearShortcut_();
     this.readonly_ = false;
     this.$.input.focus();
-  },
-});
+  }
+}
+
+customElements.define(
+    ExtensionsShortcutInputElement.is, ExtensionsShortcutInputElement);

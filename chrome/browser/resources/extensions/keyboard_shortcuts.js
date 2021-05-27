@@ -9,43 +9,58 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './shortcut_input.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
 
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ */
+const ExtensionsKeyboardShortcutsElementBase =
+    mixinBehaviors([CrContainerShadowBehavior], PolymerElement);
+
 // The UI to display and manage keyboard shortcuts set for extension commands.
-Polymer({
-  is: 'extensions-keyboard-shortcuts',
+/** @polymer */
+class ExtensionsKeyboardShortcutsElement extends
+    ExtensionsKeyboardShortcutsElementBase {
+  static get is() {
+    return 'extensions-keyboard-shortcuts';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  behaviors: [CrContainerShadowBehavior],
+  static get properties() {
+    return {
+      /** @type {!KeyboardShortcutDelegate} */
+      delegate: Object,
 
-  properties: {
-    /** @type {!KeyboardShortcutDelegate} */
-    delegate: Object,
+      /** @type {Array<!chrome.developerPrivate.ExtensionInfo>} */
+      items: Array,
 
-    /** @type {Array<!chrome.developerPrivate.ExtensionInfo>} */
-    items: Array,
+      /**
+       * Proxying the enum to be used easily by the html template.
+       * @private
+       */
+      CommandScope_: {
+        type: Object,
+        value: chrome.developerPrivate.CommandScope,
+      },
+    };
+  }
 
-    /**
-     * Proxying the enum to be used easily by the html template.
-     * @private
-     */
-    CommandScope_: {
-      type: Object,
-      value: chrome.developerPrivate.CommandScope,
-    },
-  },
-
-  listeners: {
-    'view-enter-start': 'onViewEnter_',
-  },
+  /** @override */
+  ready() {
+    super.ready();
+    this.addEventListener('view-enter-start', this.onViewEnter_);
+  }
 
   /** @private */
   onViewEnter_() {
     chrome.metricsPrivate.recordUserAction('Options_ExtensionCommands');
-  },
+  }
 
   /**
    * @return {!Array<!chrome.developerPrivate.ExtensionInfo>}
@@ -55,7 +70,7 @@ Polymer({
     return this.items.filter(function(item) {
       return item.commands.length > 0;
     });
-  },
+  }
 
   /**
    * A polymer bug doesn't allow for databinding of a string property as a
@@ -67,7 +82,7 @@ Polymer({
    */
   hasKeybinding_(keybinding) {
     return !!keybinding;
-  },
+  }
 
   /**
    * Determines whether to disable the dropdown menu for the command's scope.
@@ -77,7 +92,7 @@ Polymer({
    */
   computeScopeDisabled_(command) {
     return command.isExtensionAction || !command.isActive;
-  },
+  }
 
   /**
    * This function exists to force trigger an update when CommandScope_
@@ -87,12 +102,13 @@ Polymer({
    */
   triggerScopeChange_(scope) {
     return scope;
-  },
+  }
 
   /** @private */
   onCloseButtonClick_() {
-    this.fire('close');
-  },
+    this.dispatchEvent(
+        new CustomEvent('close', {bubbles: true, composed: true}));
+  }
 
   /**
    * @param {!{target: HTMLSelectElement, model: Object}} event
@@ -103,5 +119,8 @@ Polymer({
         event.model.get('item.id'), event.model.get('command.name'),
         /** @type {chrome.developerPrivate.CommandScope} */
         (event.target.value));
-  },
-});
+  }
+}
+
+customElements.define(
+    ExtensionsKeyboardShortcutsElement.is, ExtensionsKeyboardShortcutsElement);

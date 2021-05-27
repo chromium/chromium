@@ -44,28 +44,30 @@ suite(extension_load_error_tests.suiteName, function() {
   });
 
   test(assert(extension_load_error_tests.TestNames.RetryError), function() {
-    const dialogElement = loadError.$$('cr-dialog').getNative();
+    const dialogElement =
+        loadError.shadowRoot.querySelector('cr-dialog').getNative();
     expectFalse(isElementVisible(dialogElement));
     loadError.show();
     expectTrue(isElementVisible(dialogElement));
 
     mockDelegate.setRetryLoadUnpackedError(stubLoadError);
-    loadError.$$('.action-button').click();
+    loadError.shadowRoot.querySelector('.action-button').click();
     return mockDelegate.whenCalled('retryLoadUnpacked').then(arg => {
       expectEquals(fakeGuid, arg);
       expectTrue(isElementVisible(dialogElement));
-      loadError.$$('.cancel-button').click();
+      loadError.shadowRoot.querySelector('.cancel-button').click();
       expectFalse(isElementVisible(dialogElement));
     });
   });
 
   test(assert(extension_load_error_tests.TestNames.RetrySuccess), function() {
-    const dialogElement = loadError.$$('cr-dialog').getNative();
+    const dialogElement =
+        loadError.shadowRoot.querySelector('cr-dialog').getNative();
     expectFalse(isElementVisible(dialogElement));
     loadError.show();
     expectTrue(isElementVisible(dialogElement));
 
-    loadError.$$('.action-button').click();
+    loadError.shadowRoot.querySelector('.action-button').click();
     return mockDelegate.whenCalled('retryLoadUnpacked').then(arg => {
       expectEquals(fakeGuid, arg);
       expectFalse(isElementVisible(dialogElement));
@@ -73,7 +75,8 @@ suite(extension_load_error_tests.suiteName, function() {
   });
 
   test(assert(extension_load_error_tests.TestNames.CodeSection), function() {
-    expectTrue(loadError.$.code.$$('#scroll-container').hidden);
+    expectTrue(
+        loadError.$.code.shadowRoot.querySelector('#scroll-container').hidden);
     const loadErrorWithSource = {
       error: 'Some error',
       path: '/some/path',
@@ -85,6 +88,7 @@ suite(extension_load_error_tests.suiteName, function() {
     };
 
     loadError.loadError = loadErrorWithSource;
-    expectFalse(loadError.$.code.$$('#scroll-container').hidden);
+    expectFalse(
+        loadError.$.code.shadowRoot.querySelector('#scroll-container').hidden);
   });
 });

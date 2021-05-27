@@ -26,7 +26,7 @@ import './kiosk_dialog.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActivityLogExtensionPlaceholder} from './activity_log/activity_log.js';
 // <if expr="chromeos">
@@ -62,156 +62,171 @@ const compareExtensions = function(a, b) {
       compare(a.id, b.id);
 };
 
-Polymer({
-  is: 'extensions-manager',
+/** @polymer */
+class ExtensionsManagerElement extends PolymerElement {
+  static get is() {
+    return 'extensions-manager';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    canLoadUnpacked: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @type {!Service} */
-    delegate: {
-      type: Object,
-      value() {
-        return Service.getInstance();
+  static get properties() {
+    return {
+      canLoadUnpacked: {
+        type: Boolean,
+        value: false,
       },
-    },
 
-    inDevMode: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('inDevMode'),
-    },
+      /** @type {!Service} */
+      delegate: {
+        type: Object,
+        value() {
+          return Service.getInstance();
+        },
+      },
 
-    showActivityLog: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('showActivityLog'),
-    },
+      inDevMode: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('inDevMode'),
+      },
 
-    devModeControlledByPolicy: {
-      type: Boolean,
-      value: false,
-    },
+      showActivityLog: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showActivityLog'),
+      },
 
-    /** @private */
-    isSupervised_: {
-      type: Boolean,
-      value: false,
-    },
+      devModeControlledByPolicy: {
+        type: Boolean,
+        value: false,
+      },
 
-    incognitoAvailable_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      isSupervised_: {
+        type: Boolean,
+        value: false,
+      },
 
-    filter: {
-      type: String,
-      value: '',
-    },
+      incognitoAvailable_: {
+        type: Boolean,
+        value: false,
+      },
+
+      filter: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * The item currently displayed in the error subpage. We use a separate
+       * item for different pages (rather than a single subpageItem_ property)
+       * so that hidden subpages don't update when an item updates. That is, we
+       * don't want the details view subpage to update when the item shown in
+       * the errors page updates, and vice versa.
+       * @private {!chrome.developerPrivate.ExtensionInfo|undefined}
+       */
+      errorPageItem_: Object,
+
+      /**
+       * The item currently displayed in the details view subpage. See also
+       * errorPageItem_.
+       * @private {!chrome.developerPrivate.ExtensionInfo|undefined}
+       */
+      detailViewItem_: Object,
+
+      /**
+       * The item that provides some information about the current extension
+       * for the activity log view subpage. See also errorPageItem_.
+       * @private {!chrome.developerPrivate.ExtensionInfo|undefined|
+       *           !ActivityLogExtensionPlaceholder}
+       */
+      activityLogItem_: Object,
+
+      /** @private {!Array<!chrome.developerPrivate.ExtensionInfo>} */
+      extensions_: Array,
+
+      /** @private {!Array<!chrome.developerPrivate.ExtensionInfo>} */
+      apps_: Array,
+
+      /**
+       * Prevents page content from showing before data is first loaded.
+       * @private
+       */
+      didInitPage_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      showDrawer_: Boolean,
+
+      /** @private */
+      showLoadErrorDialog_: Boolean,
+
+      /** @private */
+      showInstallWarningsDialog_: Boolean,
+
+      /** @private {?Array<string>} */
+      installWarnings_: Array,
+
+      /** @private */
+      showOptionsDialog_: Boolean,
+
+      /**
+       * Whether the last page the user navigated from was the activity log
+       * page.
+       * @private
+       */
+      fromActivityLog_: Boolean,
+
+      // <if expr="chromeos">
+      /** @private */
+      kioskEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      showKioskDialog_: {
+        type: Boolean,
+        value: false,
+      },
+      // </if>
+    };
+  }
+
+  constructor() {
+    super();
 
     /**
-     * The item currently displayed in the error subpage. We use a separate
-     * item for different pages (rather than a single subpageItem_ property)
-     * so that hidden subpages don't update when an item updates. That is, we
-     * don't want the details view subpage to update when the item shown in
-     * the errors page updates, and vice versa.
-     * @private {!chrome.developerPrivate.ExtensionInfo|undefined}
+     * The current page being shown. Default to null, and initPage_ will figure
+     * out the initial page based on url.
+     * @private {?PageState}
      */
-    errorPageItem_: Object,
+    this.currentPage_ = null;
 
     /**
-     * The item currently displayed in the details view subpage. See also
-     * errorPageItem_.
-     * @private {!chrome.developerPrivate.ExtensionInfo|undefined}
+     * The ID of the listener on |navigation|. Stored so that the
+     * listener can be removed when this element is detached (happens in tests).
+     * @private {?number}
      */
-    detailViewItem_: Object,
-
-    /**
-     * The item that provides some information about the current extension
-     * for the activity log view subpage. See also errorPageItem_.
-     * @private {!chrome.developerPrivate.ExtensionInfo|undefined|
-     *           !ActivityLogExtensionPlaceholder}
-     */
-    activityLogItem_: Object,
-
-    /** @private {!Array<!chrome.developerPrivate.ExtensionInfo>} */
-    extensions_: Array,
-
-    /** @private {!Array<!chrome.developerPrivate.ExtensionInfo>} */
-    apps_: Array,
-
-    /**
-     * Prevents page content from showing before data is first loaded.
-     * @private
-     */
-    didInitPage_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    showDrawer_: Boolean,
-
-    /** @private */
-    showLoadErrorDialog_: Boolean,
-
-    /** @private */
-    showInstallWarningsDialog_: Boolean,
-
-    /** @private {?Array<string>} */
-    installWarnings_: Array,
-
-    /** @private */
-    showOptionsDialog_: Boolean,
-
-    /**
-     * Whether the last page the user navigated from was the activity log
-     * page.
-     * @private
-     */
-    fromActivityLog_: Boolean,
-
-    // <if expr="chromeos">
-    /** @private */
-    kioskEnabled_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    showKioskDialog_: {
-      type: Boolean,
-      value: false,
-    },
-    // </if>
-  },
-
-  listeners: {
-    'load-error': 'onLoadError_',
-    'view-enter-start': 'onViewEnterStart_',
-    'view-exit-start': 'onViewExitStart_',
-    'view-exit-finish': 'onViewExitFinish_',
-  },
-
-  /**
-   * The current page being shown. Default to null, and initPage_ will figure
-   * out the initial page based on url.
-   * @private {?PageState}
-   */
-  currentPage_: null,
-
-  /**
-   * The ID of the listener on |navigation|. Stored so that the
-   * listener can be removed when this element is detached (happens in tests).
-   * @private {?number}
-   */
-  navigationListener_: null,
+    this.navigationListener_ = null;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
+    this.addEventListener(
+        'load-error',
+        e => this.onLoadError_(
+            /** @type {!CustomEvent<!chrome.developerPrivate.LoadError>} */ (
+                e)));
+    this.addEventListener('view-enter-start', this.onViewEnterStart_);
+    this.addEventListener('view-exit-start', this.onViewExitStart_);
+    this.addEventListener('view-exit-finish', this.onViewExitFinish_);
+
     const service = Service.getInstance();
 
     const onProfileStateChanged = profileInfo => {
@@ -239,24 +254,27 @@ Polymer({
           this.kioskEnabled_ = params.kioskEnabled;
         });
     // </if>
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     document.documentElement.classList.remove('loading');
     document.fonts.load('bold 12px Roboto');
 
     this.navigationListener_ = navigation.addListener(newPage => {
       this.changePage_(newPage);
     });
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
     assert(navigation.removeListener(
         /** @type {number} */ (this.navigationListener_)));
     this.navigationListener_ = null;
-  },
+  }
 
   /**
    * Initializes the page to reflect what's specified in the url so that if
@@ -266,7 +284,7 @@ Polymer({
   initPage_() {
     this.didInitPage_ = true;
     this.changePage_(navigation.getCurrentPage());
-  },
+  }
 
   /**
    * @param {!chrome.developerPrivate.EventData} eventData
@@ -302,7 +320,7 @@ Polymer({
         }
 
         const listId = this.getListId_(eventData.extensionInfo);
-        const currentIndex = this[listId].findIndex(
+        const currentIndex = this.get(listId).findIndex(
             item => item.id === eventData.extensionInfo.id);
 
         if (currentIndex >= 0) {
@@ -317,7 +335,7 @@ Polymer({
       default:
         assertNotReached();
     }
-  },
+  }
 
   /**
    * @param {!CustomEvent<string>} event
@@ -328,15 +346,15 @@ Polymer({
       navigation.navigateTo({page: Page.LIST});
     }
     this.filter = event.detail;
-  },
+  }
 
   /** @private */
   onMenuButtonTap_() {
     this.showDrawer_ = true;
-    this.async(() => {
-      this.$$('#drawer').openDrawer();
-    });
-  },
+    setTimeout(() => {
+      this.shadowRoot.querySelector('#drawer').openDrawer();
+    }, 0);
+  }
 
   /**
    * @param {!chrome.developerPrivate.ExtensionInfo} item
@@ -358,7 +376,7 @@ Polymer({
         break;
     }
     assertNotReached();
-  },
+  }
 
   /**
    * @param {string} listId The list to look for the item in.
@@ -367,10 +385,10 @@ Polymer({
    * @private
    */
   getIndexInList_(listId, itemId) {
-    return this[listId].findIndex(function(item) {
+    return this.get(listId).findIndex(function(item) {
       return item.id === itemId;
     });
-  },
+  }
 
   /**
    * @return {?chrome.developerPrivate.ExtensionInfo}
@@ -379,7 +397,7 @@ Polymer({
   getData_(id) {
     return this.extensions_[this.getIndexInList_('extensions_', id)] ||
         this.apps_[this.getIndexInList_('apps_', id)];
-  },
+  }
 
   /**
    * Categorizes |extensionsAndApps| to apps and extensions and initializes
@@ -398,7 +416,7 @@ Polymer({
 
     this.apps_ = apps;
     this.extensions_ = extensions;
-  },
+  }
 
   /**
    * Creates and adds a new extensions-item element to the list, inserting it
@@ -410,14 +428,14 @@ Polymer({
   addItem_(listId, item) {
     // We should never try and add an existing item.
     assert(this.getIndexInList_(listId, item.id) === -1);
-    let insertBeforeChild = this[listId].findIndex(function(listEl) {
+    let insertBeforeChild = this.get(listId).findIndex(function(listEl) {
       return compareExtensions(listEl, item) > 0;
     });
     if (insertBeforeChild === -1) {
-      insertBeforeChild = this[listId].length;
+      insertBeforeChild = this.get(listId).length;
     }
     this.splice(listId, insertBeforeChild, 0, item);
-  },
+  }
 
   /**
    * @param {!chrome.developerPrivate.ExtensionInfo} item The data for the
@@ -446,7 +464,7 @@ Polymer({
         this.currentPage_.page === Page.ACTIVITY_LOG) {
       this.activityLogItem_ = item;
     }
-  },
+  }
 
   /**
    * @param {string} itemId The id of item to remove.
@@ -472,7 +490,7 @@ Polymer({
       // Leave the details page (the 'list' page is a fine choice).
       navigation.replaceWith({page: Page.LIST});
     }
-  },
+  }
 
   /**
    * @param {!CustomEvent<!chrome.developerPrivate.LoadError>} e
@@ -480,12 +498,12 @@ Polymer({
    */
   onLoadError_(e) {
     this.showLoadErrorDialog_ = true;
-    this.async(() => {
-      const dialog = this.$$('#load-error');
+    setTimeout(() => {
+      const dialog = this.shadowRoot.querySelector('#load-error');
       dialog.loadError = e.detail;
       dialog.show();
-    });
-  },
+    }, 0);
+  }
 
   /**
    * Changes the active page selection.
@@ -495,7 +513,7 @@ Polymer({
   changePage_(newPage) {
     this.onCloseDrawer_();
 
-    const optionsDialog = this.$$('#options-dialog');
+    const optionsDialog = this.shadowRoot.querySelector('#options-dialog');
     if (optionsDialog && optionsDialog.open) {
       this.showOptionsDialog_ = false;
     }
@@ -549,16 +567,16 @@ Polymer({
       assert(newPage.subpage === Dialog.OPTIONS);
       assert(newPage.extensionId);
       this.showOptionsDialog_ = true;
-      this.async(() => {
-        this.$$('#options-dialog').show(data);
-      });
+      setTimeout(() => {
+        this.shadowRoot.querySelector('#options-dialog').show(data);
+      }, 0);
     }
 
     document.title = toPage === Page.DETAILS ?
         `${loadTimeData.getString('title')} - ${this.detailViewItem_.name}` :
         loadTimeData.getString('title');
     this.currentPage_ = newPage;
-  },
+  }
 
   /**
    * This method detaches the drawer dialog completely. Should only be
@@ -567,34 +585,35 @@ Polymer({
    */
   onDrawerClose_() {
     this.showDrawer_ = false;
-  },
+  }
 
   /**
    * This method animates the closing of the drawer.
    * @private
    */
   onCloseDrawer_() {
-    const drawer = this.$$('#drawer');
+    const drawer = this.shadowRoot.querySelector('#drawer');
     if (drawer && drawer.open) {
       drawer.close();
     }
-  },
+  }
 
   /** @private */
   onLoadErrorDialogClose_() {
     this.showLoadErrorDialog_ = false;
-  },
+  }
 
   /** @private */
   onOptionsDialogClose_() {
     this.showOptionsDialog_ = false;
-    this.$$('extensions-detail-view').focusOptionsButton();
-  },
+    this.shadowRoot.querySelector('extensions-detail-view')
+        .focusOptionsButton();
+  }
 
   /** @private */
   onViewEnterStart_() {
     this.fromActivityLog_ = false;
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -603,7 +622,7 @@ Polymer({
   onViewExitStart_(e) {
     const viewType = e.composedPath()[0].tagName;
     this.fromActivityLog_ = viewType === 'EXTENSIONS-ACTIVITY-LOG';
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -618,7 +637,7 @@ Polymer({
     }
 
     const extensionId = e.composedPath()[0].data.id;
-    const list = this.$$('extensions-item-list');
+    const list = this.shadowRoot.querySelector('extensions-item-list');
     const button = viewType === 'EXTENSIONS-DETAIL-VIEW' ?
         list.getDetailsButton(extensionId) :
         list.getErrorsButton(extensionId);
@@ -628,7 +647,7 @@ Polymer({
     if (button) {
       button.focus();
     }
-  },
+  }
 
   /**
    * @param {!CustomEvent<!Array<string>>} e
@@ -640,22 +659,24 @@ Polymer({
     // in the DOM yet.
     this.installWarnings_ = e.detail;
     this.showInstallWarningsDialog_ = true;
-  },
+  }
 
   /** @private */
   onInstallWarningsDialogClose_() {
     this.installWarnings_ = null;
     this.showInstallWarningsDialog_ = false;
-  },
+  }
 
   // <if expr="chromeos">
   /** @private */
   onKioskTap_() {
     this.showKioskDialog_ = true;
-  },
+  }
 
   onKioskDialogClose_() {
     this.showKioskDialog_ = false;
-  },
+  }
   // </if>
-});
+}
+
+customElements.define(ExtensionsManagerElement.is, ExtensionsManagerElement);

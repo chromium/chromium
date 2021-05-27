@@ -52,7 +52,7 @@ suite('RuntimeHostPermissions', function() {
     const testIsVisible = isChildVisible.bind(null, element);
     expectTrue(testIsVisible('#host-access'));
 
-    const selectHostAccess = element.$$('#host-access');
+    const selectHostAccess = element.shadowRoot.querySelector('#host-access');
     expectEquals(HostAccess.ON_CLICK, selectHostAccess.selected);
     // For on-click mode, there should be no runtime hosts listed.
     expectFalse(testIsVisible('#hosts'));
@@ -74,7 +74,11 @@ suite('RuntimeHostPermissions', function() {
     expectEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.selected);
     expectTrue(testIsVisible('#hosts'));
     // Expect three entries in the list: the two hosts + the add-host button.
-    expectEquals(3, element.$$('#hosts').getElementsByTagName('li').length);
+    expectEquals(
+        3,
+        element.shadowRoot.querySelector('#hosts')
+            .getElementsByTagName('li')
+            .length);
     expectTrue(testIsVisible('#add-host'));
   });
 
@@ -88,7 +92,7 @@ suite('RuntimeHostPermissions', function() {
     element.set('permissions', permissions);
     flush();
 
-    const selectHostAccess = element.$$('#host-access');
+    const selectHostAccess = element.shadowRoot.querySelector('#host-access');
     assertTrue(!!selectHostAccess);
 
     // Changes the value of the selectHostAccess menu and fires the change
@@ -127,13 +131,14 @@ suite('RuntimeHostPermissions', function() {
     element.permissions = permissions;
     flush();
 
-    const selectHostAccess = element.$$('#host-access');
+    const selectHostAccess = element.shadowRoot.querySelector('#host-access');
     assertTrue(!!selectHostAccess);
 
     selectHostAccess.selected = HostAccess.ON_SPECIFIC_SITES;
 
     flush();
-    const dialog = element.$$('extensions-runtime-hosts-dialog');
+    const dialog =
+        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
     expectEquals(
         getUserActionCount('Extensions.Settings.Hosts.OnClickSelected'), 0);
@@ -147,7 +152,7 @@ suite('RuntimeHostPermissions', function() {
     // since no host was added.
     assertTrue(dialog.isOpen());
     let whenClosed = eventToPromise('close', dialog);
-    dialog.$$('.cancel-button').click();
+    dialog.shadowRoot.querySelector('.cancel-button').click();
     await whenClosed;
 
     flush();
@@ -177,7 +182,7 @@ suite('RuntimeHostPermissions', function() {
     element.set('permissions', permissions);
     flush();
 
-    const selectHostAccess = element.$$('#host-access');
+    const selectHostAccess = element.shadowRoot.querySelector('#host-access');
     assertTrue(!!selectHostAccess);
 
     selectHostAccess.selected = HostAccess.ON_SPECIFIC_SITES;
@@ -186,13 +191,14 @@ suite('RuntimeHostPermissions', function() {
         1);
 
     flush();
-    const dialog = element.$$('extensions-runtime-hosts-dialog');
+    const dialog =
+        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
 
     expectTrue(dialog.updateHostAccess);
 
     // Make the add button clickable by entering valid input.
-    const input = dialog.$$('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     input.value = 'https://example.com';
     input.fire('input');
 
@@ -200,7 +206,7 @@ suite('RuntimeHostPermissions', function() {
     // selectHostAccess value at ON_SPECIFIC_SITES.
     assertTrue(dialog.isOpen());
     let whenClosed = eventToPromise('close', dialog);
-    dialog.$$('.action-button').click();
+    dialog.shadowRoot.querySelector('.action-button').click();
     return whenClosed.then(() => {
       flush();
       expectEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.selected);
@@ -222,11 +228,11 @@ suite('RuntimeHostPermissions', function() {
       flush();
 
       // Open the dialog by clicking to edit the host permission.
-      const editHost = element.$$('.edit-host');
+      const editHost = element.shadowRoot.querySelector('.edit-host');
       editHost.click();
       expectEquals(
           getUserActionCount('Extensions.Settings.Hosts.ActionMenuOpened'), 1);
-      const actionMenu = element.$$('cr-action-menu');
+      const actionMenu = element.shadowRoot.querySelector('cr-action-menu');
       const actionMenuEdit = actionMenu.querySelector('#action-menu-edit');
       assertTrue(!!actionMenuEdit);
       actionMenuEdit.click();
@@ -238,7 +244,8 @@ suite('RuntimeHostPermissions', function() {
 
       // Verify that the dialog does not want to update the old host access.
       // Regression test for https://crbug.com/903082.
-      const dialog = element.$$('extensions-runtime-hosts-dialog');
+      const dialog =
+          element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
       assertTrue(!!dialog);
       expectTrue(dialog.$.dialog.open);
       expectFalse(dialog.updateHostAccess);
@@ -260,7 +267,7 @@ suite('RuntimeHostPermissions', function() {
     element.set('permissions', permissions);
     flush();
 
-    const addHostButton = element.$$('#add-host');
+    const addHostButton = element.shadowRoot.querySelector('#add-host');
     assertTrue(!!addHostButton);
     expectTrue(isChildVisible(element, '#add-host'));
 
@@ -268,7 +275,8 @@ suite('RuntimeHostPermissions', function() {
     flush();
     expectEquals(
         getUserActionCount('Extensions.Settings.Hosts.AddHostActivated'), 1);
-    const dialog = element.$$('extensions-runtime-hosts-dialog');
+    const dialog =
+        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
     expectTrue(dialog.$.dialog.open);
     expectEquals(null, dialog.currentSite);
@@ -288,12 +296,12 @@ suite('RuntimeHostPermissions', function() {
     element.set('permissions', permissions);
     flush();
 
-    const editHost = element.$$('.edit-host');
+    const editHost = element.shadowRoot.querySelector('.edit-host');
     assertTrue(!!editHost);
     editHost.click();
     expectEquals(
         getUserActionCount('Extensions.Settings.Hosts.ActionMenuOpened'), 1);
-    const actionMenu = element.$$('cr-action-menu');
+    const actionMenu = element.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!actionMenu);
     expectTrue(actionMenu.open);
 
@@ -325,16 +333,17 @@ suite('RuntimeHostPermissions', function() {
     element.set('permissions', permissions);
     flush();
 
-    const editHost = element.$$('.edit-host');
+    const editHost = element.shadowRoot.querySelector('.edit-host');
     editHost.click();
-    const actionMenu = element.$$('cr-action-menu');
+    const actionMenu = element.shadowRoot.querySelector('cr-action-menu');
 
     const actionMenuEdit = actionMenu.querySelector('#action-menu-edit');
     assertTrue(!!actionMenuEdit);
 
     actionMenuEdit.click();
     flush();
-    const dialog = element.$$('extensions-runtime-hosts-dialog');
+    const dialog =
+        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
     expectTrue(dialog.$.dialog.open);
     expectFalse(dialog.updateHostAccess);

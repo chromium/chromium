@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 
 /**
@@ -13,16 +13,34 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
  * modify a cr-toggle, by leveraging the native <label> functionality. It uses
  * a hidden native <input type="checkbox"> to achieve this.
  */
-Polymer({
-  is: 'extensions-toggle-row',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ExtensionsToggleRowElement extends PolymerElement {
+  static get is() {
+    return 'extensions-toggle-row';
+  }
 
-  properties: {
-    checked: Boolean,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    disabled: Boolean,
-  },
+  static get properties() {
+    return {
+      checked: Boolean,
+
+      disabled: Boolean,
+    };
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /**
    * Exposing the clickable part of extensions-toggle-row for testing
@@ -31,7 +49,7 @@ Polymer({
    */
   getLabel() {
     return /** @type {!HTMLElement} */ (this.$.label);
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -43,7 +61,7 @@ Polymer({
     // browser emits an extraneous event when the label is clicked. Stop
     // propagation so that it does not interfere with |onLabelTap_| listener.
     e.stopPropagation();
-  },
+  }
 
   /**
    * Fires when the native checkbox changes value. This happens when the user
@@ -58,8 +76,8 @@ Polymer({
     this.$.crToggle.checked = this.$.native.checked;
     this.checked = this.$.native.checked;
 
-    this.fire('change', this.checked);
-  },
+    this.fire_('change', this.checked);
+  }
 
   /**
    * @param {!CustomEvent<boolean>} e
@@ -71,6 +89,9 @@ Polymer({
     // Sync value of native checkbox and cr-toggle.
     this.$.native.checked = e.detail;
 
-    this.fire('change', this.checked);
-  },
-});
+    this.fire_('change', this.checked);
+  }
+}
+
+customElements.define(
+    ExtensionsToggleRowElement.is, ExtensionsToggleRowElement);

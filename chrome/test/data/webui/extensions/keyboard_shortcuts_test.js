@@ -85,8 +85,8 @@ suite(extension_shortcut_tests.suiteName, function() {
       // rather than a fancy-schmancy custom element.
       return isChildVisible(e, s, true);
     };
-    const cards =
-        keyboardShortcuts.$$('#container').querySelectorAll('.shortcut-card');
+    const cards = keyboardShortcuts.shadowRoot.querySelector('#container')
+                      .querySelectorAll('.shortcut-card');
     assertEquals(2, cards.length);
 
     const card1 = cards[0];
@@ -130,7 +130,7 @@ suite(extension_shortcut_tests.suiteName, function() {
   });
 
   test(extension_shortcut_tests.TestNames.ScopeChange, function() {
-    const selectElement = keyboardShortcuts.$$('select');
+    const selectElement = keyboardShortcuts.shadowRoot.querySelector('select');
     selectElement.value = 'GLOBAL';
     selectElement.dispatchEvent(new CustomEvent('change'));
     return keyboardShortcuts.delegate.whenCalled('updateExtensionCommandScope')
