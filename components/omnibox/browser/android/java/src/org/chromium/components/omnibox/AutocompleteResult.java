@@ -78,7 +78,7 @@ public class AutocompleteResult {
         // Note that the mNativeResult might change at any point during the lifecycle of this object
         // to reflect relocation or destruction of the native object, so we cache this information
         // separately.
-        mIsFromCachedResult = nativeResult != 0;
+        mIsFromCachedResult = nativeResult == 0;
         mNativeAutocompleteResult = nativeResult;
         mSuggestions = suggestions != null ? suggestions : new ArrayList<>();
         mGroupsDetails = groupsDetails != null ? groupsDetails : new SparseArray<>();
