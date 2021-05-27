@@ -298,10 +298,8 @@ void PersistentSystemProfile::SetSystemProfile(
     // Don't overwrite a complete profile with an incomplete one.
     if (!complete && allocator.has_complete_profile())
       continue;
-    // A full system profile always starts fresh. Incomplete keeps existing
-    // records for merging.
-    if (complete)
-      allocator.Reset();
+    // System profile always starts fresh.
+    allocator.Reset();
     // Write out the serialized profile.
     allocator.Write(kSystemProfileProto, serialized_profile);
     // Indicate if this is a complete profile.
