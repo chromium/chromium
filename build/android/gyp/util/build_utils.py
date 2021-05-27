@@ -655,8 +655,8 @@ def WriteDepfile(depfile_path, first_gn_output, inputs=None):
   # Ninja does not support multiple outputs in depfiles.
   with open(depfile_path, 'w') as depfile:
     depfile.write(first_gn_output.replace(' ', '\\ '))
-    depfile.write(': ')
-    depfile.write(' '.join(i.replace(' ', '\\ ') for i in inputs))
+    depfile.write(': \\\n ')
+    depfile.write(' \\\n '.join(i.replace(' ', '\\ ') for i in inputs))
     depfile.write('\n')
 
 
