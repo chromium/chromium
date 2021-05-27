@@ -72,12 +72,7 @@ void NGInlineBoxState::InitializeFont(bool is_svg_text,
   scaled_font.emplace();
   LayoutSVGInlineText::ComputeNewScaledFontForStyle(
       layout_object, scaling_factor, *scaled_font);
-  if (scaling_factor == 1.0f) {
-    scaled_font = absl::nullopt;
-    font = &style->GetFont();
-  } else {
-    font = &*scaled_font;
-  }
+  font = &*scaled_font;
 }
 
 void NGInlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
