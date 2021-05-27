@@ -458,7 +458,7 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
     ax::mojom::Action event_from_action,
     std::vector<ui::AXEventIntent> event_intents) {
   EnqueueDirtyObject(obj, ax::mojom::EventFrom::kAction, event_from_action,
-                     event_intents, QueuePosition::kBack);
+                     event_intents);
 
   if (subtree)
     serializer_->InvalidateSubtree(obj);
@@ -634,17 +634,13 @@ void RenderAccessibilityImpl::EnqueueDirtyObject(
     const blink::WebAXObject& obj,
     ax::mojom::EventFrom event_from,
     ax::mojom::Action event_from_action,
-    std::vector<ui::AXEventIntent> event_intents,
-    RenderAccessibilityImpl::QueuePosition queue_position) {
+    std::vector<ui::AXEventIntent> event_intents) {
   DirtyObject* dirty_object = new DirtyObject();
   dirty_object->obj = obj;
   dirty_object->event_from = event_from;
   dirty_object->event_from_action = event_from_action;
   dirty_object->event_intents = event_intents;
-  if (queue_position == QueuePosition::kBack)
-    dirty_objects_.push_back(base::WrapUnique<DirtyObject>(dirty_object));
-  else
-    dirty_objects_.push_front(base::WrapUnique<DirtyObject>(dirty_object));
+  dirty_objects_.push_back(base::WrapUnique<DirtyObject>(dirty_object));
 }
 
 int RenderAccessibilityImpl::GetDeferredEventsDelay() {
@@ -912,21 +908,10 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
             << " on node id " << event.id;
   }
 
-  // Keep track of the last object in the queue; anything appended past
-  // this object during this loop will be skipped until the next round.
-  auto last_dirty_object_to_serialize = --dirty_objects_.end();
-
-  // Keep track of IDs serialized so we don't serialize the same node twice.
+  // Now serialize all dirty objects. Keep track of IDs serialized
+  // so we don't have to serialize the same node twice.
   std::set<int32_t> already_serialized_ids;
-
-  // Serialize all dirty objects in the list at this point in time, stopping
-  // either after we finish |last_dirty_object_to_serialize| or when the
-  // queue is empty.
-  bool done = false;
-  while (!dirty_objects_.empty() && !done) {
-    if (dirty_objects_.begin() == last_dirty_object_to_serialize)
-      done = true;
-
+  while (!dirty_objects_.empty()) {
     std::unique_ptr<DirtyObject> current_dirty_object =
         std::move(dirty_objects_.front());
     dirty_objects_.pop_front();
@@ -983,18 +968,13 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
         // Similarly, during Event::kTextChanged, if any Ignored,
         // but included in tree ancestor uses NameFrom::kContents,
         // they must also be re-serialized in case the name changed.
-        //
-        // Enqueue this dirty object at the front of the queue to ensure
-        // it's serialized now, not in a subsequent message.
         EnqueueDirtyObject(ancestor, current_dirty_object->event_from,
                            current_dirty_object->event_from_action,
-                           current_dirty_object->event_intents,
-                           QueuePosition::kFront);
+                           current_dirty_object->event_intents);
       }
       EnqueueDirtyObject(ancestor, current_dirty_object->event_from,
                          current_dirty_object->event_from_action,
-                         current_dirty_object->event_intents,
-                         QueuePosition::kFront);
+                         current_dirty_object->event_intents);
     }
 
     ui::AXTreeUpdate update;
