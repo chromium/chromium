@@ -66,7 +66,9 @@ class UI_CHROMEOS_EXPORT SuggestionView : public views::Button {
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
-  std::unique_ptr<views::View> CreateAnnotationLabel();
+  std::unique_ptr<views::View> CreateAnnotationContainer();
+  std::unique_ptr<views::View> CreateDownAndEnterAnnotationLabel();
+  std::unique_ptr<views::View> CreateTabAnnotationLabel();
 
   // Views created in the class will be part of tree of |this|, so these
   // child views will be deleted when |this| is deleted.
@@ -78,7 +80,9 @@ class UI_CHROMEOS_EXPORT SuggestionView : public views::Button {
   // The suggestion label renders suggestions.
   views::StyledLabel* suggestion_label_ = nullptr;
   // The annotation view renders annotations.
-  views::View* annotation_label_ = nullptr;
+  views::View* annotation_container_ = nullptr;
+  views::View* down_and_enter_annotation_label_ = nullptr;
+  views::View* tab_annotation_label_ = nullptr;
   views::ImageView* down_icon_ = nullptr;
   views::ImageView* arrow_icon_ = nullptr;
 

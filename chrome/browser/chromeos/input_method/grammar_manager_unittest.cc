@@ -186,7 +186,7 @@ TEST_F(GrammarManagerTest, ShowsAndDismissesGrammarSuggestion) {
   ui::ime::SuggestionDetails expected_details;
   expected_details.text = u"correct";
   expected_details.confirmed_length = 0;
-  expected_details.show_annotation = false;
+  expected_details.show_accept_annotation = false;
   expected_details.show_setting_link = false;
 
   EXPECT_CALL(mock_suggestion_handler, SetSuggestion(1, expected_details, _));

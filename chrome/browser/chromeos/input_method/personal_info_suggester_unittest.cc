@@ -49,7 +49,7 @@ class TestSuggestionHandler : public SuggestionHandlerInterface {
                      std::string* error) override {
     suggestion_text_ = details.text;
     confirmed_length_ = details.confirmed_length;
-    show_annotation_ = details.show_annotation;
+    show_accept_annotation_ = details.show_accept_annotation;
     show_setting_link_ = details.show_setting_link;
     return true;
   }
@@ -103,8 +103,8 @@ class TestSuggestionHandler : public SuggestionHandlerInterface {
     return false;
   }
 
-  void VerifyShowAnnotation(const bool show_annotation) {
-    EXPECT_EQ(show_annotation_, show_annotation);
+  void VerifyShowAnnotation(const bool show_accept_annotation) {
+    EXPECT_EQ(show_accept_annotation_, show_accept_annotation);
   }
   void VerifyShowSettingLink(const bool show_setting_link) {
     EXPECT_EQ(show_setting_link_, show_setting_link);
@@ -118,7 +118,7 @@ class TestSuggestionHandler : public SuggestionHandlerInterface {
  private:
   std::u16string suggestion_text_;
   size_t confirmed_length_ = 0;
-  bool show_annotation_ = false;
+  bool show_accept_annotation_ = false;
   bool show_setting_link_ = false;
   bool suggestion_accepted_ = false;
   ui::ime::ButtonId button_clicked_ = ui::ime::ButtonId::kNone;

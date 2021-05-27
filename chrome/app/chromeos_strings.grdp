@@ -5943,6 +5943,9 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN" desc="String announced by screenreader when a button to undo an autocorrect is shown. Example, user types 'hllo', system autocorrects to 'hello', user then prepares to revert the autocorrect.">
     Autocorrect undo dialog is shown for <ph name="TYPED_WORD">$1<ex>hllo</ex></ph> corrected to <ph name="CORRECTED_WORD">$2<ex>hello</ex></ph>.  Press up arrow to access, escape to ignore.
   </message>
+  <message name="IDS_SUGGESTION_TAB_KEY" desc="This string is the tab key annotation, which is used to educate users how to accept a predictive writing suggestion">
+    Tab
+  </message>
 
   <!-- Strings for emoji picker-->
   <message name="IDS_ACCNAME_EMOJI_PICKER" desc="The accessible name for the emoji picker.">

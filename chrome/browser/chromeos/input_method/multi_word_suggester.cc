@@ -133,15 +133,14 @@ std::vector<TextSuggestion> MultiWordSuggester::GetSuggestions() {
 void MultiWordSuggester::DisplaySuggestion(const TextSuggestion& suggestion) {
   ui::ime::SuggestionDetails details;
   details.text = base::UTF8ToUTF16(suggestion.text);
+  details.show_accept_annotation = false;
+  details.show_quick_accept_annotation = true;
 
   // TODO(crbug/1146266): Move to suggestions service
   details.confirmed_length =
       suggestion.mode == TextSuggestionMode::kCompletion
           ? CalculateConfirmedLength(details.text, last_known_text_)
           : 0;
-
-  // TODO(crbug/1146266): Handle the suggestion ui annotation.
-  details.show_annotation = false;
 
   // TODO(crbug/1146266): Add required pref counter to hide settings link.
   details.show_setting_link = false;
