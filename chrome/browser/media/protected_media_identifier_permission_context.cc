@@ -28,7 +28,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/ash/attestation/platform_verification_dialog.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -36,13 +35,8 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/user_prefs/user_prefs.h"
-#include "ui/views/widget/widget.h"
 #elif !defined(OS_ANDROID) && !defined(OS_WIN)
 #error This file currently only supports Chrome OS, Android and Windows.
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-using ash::attestation::PlatformVerificationDialog;
 #endif
 
 ProtectedMediaIdentifierPermissionContext::
@@ -56,51 +50,6 @@ ProtectedMediaIdentifierPermissionContext::
 ProtectedMediaIdentifierPermissionContext::
     ~ProtectedMediaIdentifierPermissionContext() {
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void ProtectedMediaIdentifierPermissionContext::DecidePermission(
-    content::WebContents* web_contents,
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
-    permissions::BrowserPermissionCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Since the dialog is modal, we only support one prompt per |web_contents|.
-  // Reject the new one if there is already one pending. See
-  // http://crbug.com/447005
-  if (pending_requests_.count(web_contents)) {
-    std::move(callback).Run(CONTENT_SETTING_ASK);
-    return;
-  }
-
-  // ShowDialog doesn't use the callback if it returns null.
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
-
-  // On ChromeOS, we don't use PermissionContextBase::RequestPermission() which
-  // uses the standard permission infobar/bubble UI. See http://crbug.com/454847
-  // Instead, we show the existing platform verification UI.
-  // TODO(xhwang): Remove when http://crbug.com/454847 is fixed.
-  views::Widget* widget = PlatformVerificationDialog::ShowDialog(
-      web_contents, requesting_origin,
-      base::BindOnce(&ProtectedMediaIdentifierPermissionContext::
-                         OnPlatformVerificationConsentResponse,
-                     weak_factory_.GetWeakPtr(), web_contents, id,
-                     requesting_origin, embedding_origin, user_gesture,
-                     base::Time::Now(), std::move(split_callback.first)));
-
-  // This could happen when the permission is requested from an extension. See
-  // http://crbug.com/728534
-  if (!widget) {
-    std::move(split_callback.second).Run(CONTENT_SETTING_ASK);
-    return;
-  }
-
-  pending_requests_.insert(
-      std::make_pair(web_contents, std::make_pair(widget, id)));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ContentSetting
 ProtectedMediaIdentifierPermissionContext::GetPermissionStatusInternal(
@@ -119,8 +68,10 @@ ProtectedMediaIdentifierPermissionContext::GetPermissionStatusInternal(
       permissions::PermissionContextBase::GetPermissionStatusInternal(
           render_frame_host, requesting_origin, embedding_origin);
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
-         content_setting == CONTENT_SETTING_BLOCK ||
-         content_setting == CONTENT_SETTING_ASK);
+#if defined(OS_ANDROID)
+         content_setting == CONTENT_SETTING_ASK ||
+#endif
+         content_setting == CONTENT_SETTING_BLOCK);
 
   // For automated testing of protected content - having a prompt that
   // requires user intervention is problematic. If the domain has been
@@ -211,81 +162,3 @@ bool ProtectedMediaIdentifierPermissionContext::
 
   return true;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-void ProtectedMediaIdentifierPermissionContext::
-    OnPlatformVerificationConsentResponse(
-        content::WebContents* web_contents,
-        const permissions::PermissionRequestID& id,
-        const GURL& requesting_origin,
-        const GURL& embedding_origin,
-        bool user_gesture,
-        base::Time dialog_show_time,
-        permissions::BrowserPermissionCallback callback,
-        PlatformVerificationDialog::ConsentResponse response) {
-  // Prepare function to report metrics.
-  auto report_metrics_func = [&](auto permission_action) {
-    // Use base::DoNothing() because we create a PermissionRequest only
-    // so that we can call PermissionUmaUtil::PermissionPromptResolved() below.
-    auto permission_request =
-        std::make_unique<permissions::PermissionRequestImpl>(
-            requesting_origin, ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-            user_gesture,
-            /*permission_decided_callback=*/base::DoNothing(),
-            /*delete_callback=*/base::DoNothing());
-
-    permissions::PermissionUmaUtil::PermissionPromptResolved(
-        {permission_request.get()}, web_contents, permission_action,
-        base::Time::Now() - dialog_show_time,
-        permissions::PermissionPromptDisposition::CUSTOM_MODAL_DIALOG,
-        /*ui_reason=*/absl::nullopt,
-        /*predicted_grant_likelihood=*/absl::nullopt);
-  };
-
-  // The request may have been canceled. Drop the callback in that case.
-  // This can happen if the tab is closed.
-  PendingRequestMap::iterator request = pending_requests_.find(web_contents);
-  if (request == pending_requests_.end()) {
-    VLOG(1) << "Platform verification ignored by user.";
-    report_metrics_func(permissions::PermissionAction::IGNORED);
-    return;
-  }
-
-  DCHECK(request->second.second == id);
-  pending_requests_.erase(request);
-
-  ContentSetting content_setting = CONTENT_SETTING_ASK;
-  bool persist = false; // Whether the ContentSetting should be saved.
-  switch (response) {
-    case PlatformVerificationDialog::CONSENT_RESPONSE_NONE:
-      // This can happen if user clicked "x", or pressed "Esc", or navigated
-      // away without closing the tab.
-      VLOG(1) << "Platform verification dismissed by user.";
-      report_metrics_func(permissions::PermissionAction::DISMISSED);
-      content_setting = CONTENT_SETTING_ASK;
-      persist = false;
-      break;
-    case PlatformVerificationDialog::CONSENT_RESPONSE_ALLOW:
-      VLOG(1) << "Platform verification accepted by user.";
-      base::RecordAction(
-          base::UserMetricsAction("PlatformVerificationAccepted"));
-      report_metrics_func(permissions::PermissionAction::GRANTED);
-      content_setting = CONTENT_SETTING_ALLOW;
-      persist = true;
-      break;
-    case PlatformVerificationDialog::CONSENT_RESPONSE_DENY:
-      VLOG(1) << "Platform verification denied by user.";
-      base::RecordAction(
-          base::UserMetricsAction("PlatformVerificationRejected"));
-      report_metrics_func(permissions::PermissionAction::DENIED);
-      content_setting = CONTENT_SETTING_BLOCK;
-      persist = true;
-      break;
-  }
-
-  NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                      std::move(callback), persist, content_setting,
-                      /*is_one_time=*/false);
-}
-#endif

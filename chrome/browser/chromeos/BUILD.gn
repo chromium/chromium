@@ -887,8 +887,6 @@ source_set("chromeos") {
     "../ash/attestation/machine_certificate_uploader.h",
     "../ash/attestation/machine_certificate_uploader_impl.cc",
     "../ash/attestation/machine_certificate_uploader_impl.h",
-    "../ash/attestation/platform_verification_dialog.cc",
-    "../ash/attestation/platform_verification_dialog.h",
     "../ash/attestation/platform_verification_flow.cc",
     "../ash/attestation/platform_verification_flow.h",
     "../ash/attestation/tpm_challenge_key.cc",
