@@ -55,6 +55,17 @@ interface MediaMetricsProvider {
   SetTimeToFirstFrame(mojo_base.mojom.TimeDelta elapsed);
   SetTimeToPlayReady(mojo_base.mojom.TimeDelta elapsed);
 
+  // Sets the RendererType used in the playback.
+  SetRendererType(RendererType renderer_type);
+
+  // Sets the EME key system used for an EME playback. For clear playback, or if
+  // the `key_system` is not recognized, value 0 (kUnknownKeySystemForUkm) will
+  // be reported.
+  SetKeySystem(string key_system);
+
+  // Called when the EME playback uses a hardware secure pipeline.
+  SetIsHardwareSecure();
+
   // For src= playbacks, this is the container (".mp4", ".webm", etc).
   SetContainerName(MediaContainerName container_name);
 
@@ -78,7 +89,6 @@ interface MediaMetricsProvider {
        pending_receiver<PlaybackEventsRecorder> receiver);
 
   // Can be called multiple times to set properties about a playback.
-  SetRendererType(RendererType renderer_type);
   SetHasAudio(AudioCodec codec);
   SetHasVideo(VideoCodec codec);
   SetVideoPipelineInfo(VideoDecoderInfo info);

@@ -8828,7 +8828,7 @@ be describing additional metrics about the same event.
       we don't know the video codec.
     </summary>
   </metric>
-  <metric name="Video.EME.KeySystem">
+  <metric name="Video.EME.KeySystem" enum="MediaKeySystem">
     <summary>
       Name of the KeySystem used during for an encrypted (EME) playback. Will be
       unset when EME is not used.
@@ -8971,6 +8971,12 @@ be describing additional metrics about the same event.
       once attached can't be removed.
     </summary>
   </metric>
+  <metric name="IsHardwareSecure" enum="Boolean">
+    <summary>
+      Boolean value indicating whether the EME playback is using hardware secure
+      pipeline. For clear playback, this will always be false.
+    </summary>
+  </metric>
   <metric name="IsMSE">
     <summary>
       Boolean value indicating if this event is for an MSE playback. If false it
@@ -8983,6 +8989,12 @@ be describing additional metrics about the same event.
       frame. For privacy, metrics from inner frames are recorded with the top
       frame's origin, so this flag helps separate top frame vs. embedded
       playbacks.
+    </summary>
+  </metric>
+  <metric name="KeySystem" enum="MediaKeySystem">
+    <summary>
+      For EME playback, this is the key system used. For clear playback, this
+      will always be the default value 0 (kUnknownKeySystemForUkm).
     </summary>
   </metric>
   <metric name="PlayerID">

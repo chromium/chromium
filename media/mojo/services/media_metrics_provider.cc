@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "media/base/key_systems.h"
 #include "media/learning/mojo/mojo_learning_task_controller_service.h"
 #include "media/mojo/services/video_decode_stats_recorder.h"
 #include "media/mojo/services/watch_time_recorder.h"
@@ -73,6 +74,8 @@ MediaMetricsProvider::~MediaMetricsProvider() {
   builder.SetIsEME(uma_info_.is_eme);
   builder.SetIsMSE(is_mse_);
   builder.SetRendererType(static_cast<int>(renderer_type_));
+  builder.SetKeySystem(GetKeySystemIntForUKM(key_system_));
+  builder.SetIsHardwareSecure(is_hardware_secure_);
   builder.SetFinalPipelineStatus(uma_info_.last_pipeline_status);
   if (!is_mse_) {
     builder.SetURLScheme(static_cast<int64_t>(url_scheme_));
@@ -264,6 +267,14 @@ void MediaMetricsProvider::SetContainerName(
 
 void MediaMetricsProvider::SetRendererType(RendererType renderer_type) {
   renderer_type_ = renderer_type;
+}
+
+void MediaMetricsProvider::SetKeySystem(const std::string& key_system) {
+  key_system_ = key_system;
+}
+
+void MediaMetricsProvider::SetIsHardwareSecure() {
+  is_hardware_secure_ = true;
 }
 
 void MediaMetricsProvider::AcquireWatchTimeRecorder(

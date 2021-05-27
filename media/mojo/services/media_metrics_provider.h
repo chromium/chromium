@@ -110,6 +110,8 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   void SetContainerName(
       container_names::MediaContainerName container_name) override;
   void SetRendererType(RendererType renderer_type) override;
+  void SetKeySystem(const std::string& key_system) override;
+  void SetIsHardwareSecure() override;
   void SetHasAudio(AudioCodec audio_codec) override;
   void SetHasPlayed() override;
   void SetHasVideo(VideoCodec video_codec) override;
@@ -158,6 +160,8 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   mojom::MediaURLScheme url_scheme_;
   mojom::MediaStreamType media_stream_type_;
   RendererType renderer_type_ = RendererType::kDefault;
+  std::string key_system_;
+  bool is_hardware_secure_ = false;
 
   base::TimeDelta time_to_metadata_ = kNoTimestamp;
   base::TimeDelta time_to_first_frame_ = kNoTimestamp;

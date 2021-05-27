@@ -185,6 +185,8 @@ class FakeMediaMetricsProvider
       media::mojom::blink::MediaContainerName container_name) override {}
   void SetRendererType(
       media::mojom::blink::RendererType renderer_type) override {}
+  void SetKeySystem(const String& key_system) override {}
+  void SetIsHardwareSecure() override {}
   void SetHasPlayed() override {}
   void SetHaveEnough() override {}
   void SetHasAudio(media::mojom::AudioCodec audio_codec) override {}

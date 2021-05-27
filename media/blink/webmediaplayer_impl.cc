@@ -1551,6 +1551,10 @@ void WebMediaPlayerImpl::SetCdmInternal(
   cdm_config_ = web_cdm->GetCdmConfig();
   key_system_ = web_cdm->GetKeySystem();
   DCHECK(!key_system_.empty());
+
+  media_metrics_provider_->SetKeySystem(key_system_);
+  if (cdm_config_->use_hw_secure_codecs)
+    media_metrics_provider_->SetIsHardwareSecure();
   CreateVideoDecodeStatsReporter();
 
   CdmContext* cdm_context = cdm_context_ref->GetCdmContext();

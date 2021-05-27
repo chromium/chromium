@@ -276,6 +276,8 @@ class WatchTimeReporterTest
     void SetContainerName(
         container_names::MediaContainerName container_name) override {}
     void SetRendererType(RendererType renderer_type) override {}
+    void SetKeySystem(const std::string& key_system) override {}
+    void SetIsHardwareSecure() override {}
     void SetHasPlayed() override {}
     void SetHaveEnough() override {}
     void SetHasAudio(AudioCodec audio_codec) override {}
