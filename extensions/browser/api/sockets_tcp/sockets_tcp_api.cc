@@ -124,17 +124,13 @@ SocketsTcpCreateFunction::~SocketsTcpCreateFunction() {}
 
 bool SocketsTcpCreateFunction::Prepare() {
   params_ = sockets_tcp::Create::Params::Create(*args_);
-  browser_context_ = browser_context();
   EXTENSION_FUNCTION_VALIDATE(params_.get());
   return true;
 }
 
 void SocketsTcpCreateFunction::Work() {
-  // TODO(crbug.com/1191472): |browser_context_| is unsafe to access when
-  // DestroyProfileOnBrowserClose is enabled, since it could've been deleted by
-  // now. Fix this by creating the TCPSocket on the UI thread instead.
   ResumableTCPSocket* socket =
-      new ResumableTCPSocket(browser_context_, extension_->id());
+      new ResumableTCPSocket(browser_context(), extension_->id());
 
   sockets_tcp::SocketProperties* properties = params_->properties.get();
   if (properties) {
@@ -502,7 +498,7 @@ bool SocketsTcpSecureFunction::Prepare() {
 // Override the regular implementation, which would call AsyncWorkCompleted
 // immediately after Work().
 void SocketsTcpSecureFunction::AsyncWorkStart() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
   if (!socket) {

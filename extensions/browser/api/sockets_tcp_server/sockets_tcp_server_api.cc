@@ -84,17 +84,13 @@ SocketsTcpServerCreateFunction::~SocketsTcpServerCreateFunction() {}
 
 bool SocketsTcpServerCreateFunction::Prepare() {
   params_ = sockets_tcp_server::Create::Params::Create(*args_);
-  browser_context_ = browser_context();
   EXTENSION_FUNCTION_VALIDATE(params_.get());
   return true;
 }
 
 void SocketsTcpServerCreateFunction::Work() {
-  // TODO(crbug.com/1191472): |browser_context_| is unsafe to access when
-  // DestroyProfileOnBrowserClose is enabled, since it could've been deleted by
-  // now. Fix this by creating the TCPSocket on the UI thread instead.
   auto* socket =
-      new ResumableTCPServerSocket(browser_context_, extension_->id());
+      new ResumableTCPServerSocket(browser_context(), extension_->id());
 
   sockets_tcp_server::SocketProperties* properties = params_->properties.get();
   if (properties) {
