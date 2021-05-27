@@ -50,8 +50,6 @@ source_set("heap_unsanitized") {
 }
 
 blink_platform_sources("heap") {
-  configs += [ "//build/config/compiler:noshadowing" ]
-
   sources = [
     "blink_gc_memory_dump_provider.h",
     "collection_support/clear_collection_scope.h",
