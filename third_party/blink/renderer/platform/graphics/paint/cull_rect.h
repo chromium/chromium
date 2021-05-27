@@ -89,7 +89,7 @@ class PLATFORM_EXPORT CullRect {
       const PropertyTreeState& destination);
 
   bool ChangedEnough(const CullRect& old_cull_rect,
-                     const IntSize* bounds) const;
+                     const absl::optional<IntRect>& expansion_bounds) const;
 
   IntRect rect_;
 };

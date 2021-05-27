@@ -220,6 +220,9 @@ bool CullRect::ApplyPaintProperties(
           destination))
     return false;
 
+  if (IsInfinite())
+    return false;
+
   // Since the cull rect mapping above can produce extremely large numbers in
   // cases of perspective, try our best to "normalize" the result by ensuring
   // that none of the rect dimensions exceed some large, but reasonable, limit.
@@ -236,15 +239,20 @@ bool CullRect::ApplyPaintProperties(
   if (rect_.MaxY() > kReasonablePixelLimit)
     rect_.ShiftMaxYEdgeTo(kReasonablePixelLimit);
 
-  const IntSize* expansion_bounds = nullptr;
+  absl::optional<IntRect> expansion_bounds;
   bool expanded = false;
-  if (last_scroll_translation_result == kExpandedForPartialScrollingContents &&
-      last_clip == &destination.Clip()) {
+  if (last_scroll_translation_result == kExpandedForPartialScrollingContents) {
     DCHECK(last_transform->ScrollNode());
-    expansion_bounds = &last_transform->ScrollNode()->ContentsSize();
+    expansion_bounds.emplace(IntPoint(),
+                             last_transform->ScrollNode()->ContentsSize());
+    // Map expansion_bounds into the same space as rect_.
+    GeometryMapper::SourceToDestinationRect(
+        *last_transform, destination.Transform(), *expansion_bounds);
     expanded = true;
-  } else if (!IsInfinite() && last_transform != &destination.Transform() &&
-             destination.Transform().RequiresCullRectExpansion()) {
+  }
+
+  if (last_transform != &destination.Transform() &&
+      destination.Transform().RequiresCullRectExpansion()) {
     // Direct compositing reasons such as will-change transform can cause the
     // content to move arbitrarily, so there is no exact cull rect. Instead of
     // using an infinite rect, we use a heuristic of expanding by
@@ -270,8 +278,9 @@ bool CullRect::ApplyPaintProperties(
   return expanded;
 }
 
-bool CullRect::ChangedEnough(const CullRect& old_cull_rect,
-                             const IntSize* expansion_bounds) const {
+bool CullRect::ChangedEnough(
+    const CullRect& old_cull_rect,
+    const absl::optional<IntRect>& expansion_bounds) const {
   DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
          RuntimeEnabledFeatures::CullRectUpdateEnabled());
 
@@ -297,7 +306,7 @@ bool CullRect::ChangedEnough(const CullRect& old_cull_rect,
     return false;
 
   // The cull rect must have been clipped by *expansion_bounds.
-  DCHECK(IntRect(IntPoint(), *expansion_bounds).Contains(rect_));
+  DCHECK(expansion_bounds->Contains(rect_));
 
   // Even if the new cull rect doesn't include enough new area to satisfy
   // the condition above, update anyway if it touches the edge of the scrolling
@@ -310,15 +319,17 @@ bool CullRect::ChangedEnough(const CullRect& old_cull_rect,
   // A new rect of 0,0 100x8000 will not be |kChangedEnoughMinimumDistance|
   // pixels away from the current rect. Without additional logic for this case,
   // we will continue using the old cull rect.
-  if (rect_.X() == 0 && old_cull_rect.Rect().X() != 0)
+  if (rect_.X() == expansion_bounds->X() &&
+      old_cull_rect.Rect().X() != expansion_bounds->X())
     return true;
-  if (rect_.Y() == 0 && old_cull_rect.Rect().Y() != 0)
+  if (rect_.Y() == expansion_bounds->Y() &&
+      old_cull_rect.Rect().Y() != expansion_bounds->Y())
     return true;
-  if (rect_.MaxX() == expansion_bounds->Width() &&
-      old_cull_rect.Rect().MaxX() != expansion_bounds->Width())
+  if (rect_.MaxX() == expansion_bounds->MaxX() &&
+      old_cull_rect.Rect().MaxX() != expansion_bounds->MaxX())
     return true;
-  if (rect_.MaxY() == expansion_bounds->Height() &&
-      old_cull_rect.Rect().MaxY() != expansion_bounds->Height())
+  if (rect_.MaxY() == expansion_bounds->MaxY() &&
+      old_cull_rect.Rect().MaxY() != expansion_bounds->MaxY())
     return true;
 
   return false;
