@@ -21,6 +21,7 @@
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "storage/common/database/database_identifier.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 using base::StringPiece;
@@ -53,26 +54,32 @@ const base::FilePath::CharType kLevelDBExtension[] =
     FILE_PATH_LITERAL(".leveldb");
 
 // static
-base::FilePath GetBlobStoreFileName(const url::Origin& origin) {
-  std::string origin_id = storage::GetIdentifierFromOrigin(origin);
+base::FilePath GetBlobStoreFileName(const blink::StorageKey& storage_key) {
+  // TODO(crbug.com/1199077): This will be replaced when the new storage is
+  // implemented.
+  std::string storage_key_id =
+      storage::GetIdentifierFromOrigin(storage_key.origin());
   return base::FilePath()
-      .AppendASCII(origin_id)
+      .AppendASCII(storage_key_id)
       .AddExtension(kIndexedDBExtension)
       .AddExtension(kBlobExtension);
 }
 
 // static
-base::FilePath GetLevelDBFileName(const url::Origin& origin) {
-  std::string origin_id = storage::GetIdentifierFromOrigin(origin);
+base::FilePath GetLevelDBFileName(const blink::StorageKey& storage_key) {
+  // TODO(crbug.com/1199077): This will be replaced when the new storage is
+  // implemented.
+  std::string storage_key_id =
+      storage::GetIdentifierFromOrigin(storage_key.origin());
   return base::FilePath()
-      .AppendASCII(origin_id)
+      .AppendASCII(storage_key_id)
       .AddExtension(kIndexedDBExtension)
       .AddExtension(kLevelDBExtension);
 }
 
-base::FilePath ComputeCorruptionFileName(const url::Origin& origin) {
-  return GetLevelDBFileName(origin).Append(
-      FILE_PATH_LITERAL("corruption_info.json"));
+base::FilePath ComputeCorruptionFileName(const blink::StorageKey& storage_key) {
+  return GetLevelDBFileName(storage_key)
+      .Append(FILE_PATH_LITERAL("corruption_info.json"));
 }
 
 bool IsPathTooLong(storage::FilesystemProxy* filesystem,
@@ -106,9 +113,9 @@ bool IsPathTooLong(storage::FilesystemProxy* filesystem,
 
 std::string ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
                                const base::FilePath& path_base,
-                               const url::Origin& origin) {
+                               const blink::StorageKey& storage_key) {
   const base::FilePath info_path =
-      path_base.Append(indexed_db::ComputeCorruptionFileName(origin));
+      path_base.Append(indexed_db::ComputeCorruptionFileName(storage_key));
   std::string message;
   if (IsPathTooLong(filesystem_proxy, info_path))
     return message;

@@ -63,6 +63,7 @@
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
@@ -1127,8 +1128,9 @@ bool IndexedDBBackingStore::RecordCorruptionInfo(
     const url::Origin& origin,
     const std::string& message) {
   auto filesystem = storage::CreateFilesystemProxy();
-  const base::FilePath info_path =
-      path_base.Append(indexed_db::ComputeCorruptionFileName(origin));
+  const base::FilePath info_path = path_base.Append(
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      indexed_db::ComputeCorruptionFileName(blink::StorageKey(origin)));
   if (IsPathTooLong(filesystem.get(), info_path))
     return false;
 
@@ -1159,8 +1161,8 @@ Status IndexedDBBackingStore::DeleteDatabase(
   if (!success)
     return Status::OK();
 
-  // |ORIGIN_NAME| is the first key (0) in the database prefix, so this deletes
-  // the whole database.
+  // `ORIGIN_NAME` is the first key (0) in the database prefix, so this
+  // deletes the whole database.
   const std::string start_key =
       DatabaseMetaDataKey::Encode(id, DatabaseMetaDataKey::ORIGIN_NAME);
   const std::string stop_key =

@@ -54,6 +54,7 @@
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/browser/indexed_db/indexed_db_tombstone_sweeper.h"
 #include "content/browser/indexed_db/indexed_db_tracing.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
@@ -114,10 +115,12 @@ CreateDatabaseDirectories(storage::FilesystemProxy* filesystem,
     return {base::FilePath(), base::FilePath(), status};
   }
 
-  base::FilePath leveldb_path =
-      path_base.Append(indexed_db::GetLevelDBFileName(origin));
-  base::FilePath blob_path =
-      path_base.Append(indexed_db::GetBlobStoreFileName(origin));
+  base::FilePath leveldb_path = path_base.Append(
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      indexed_db::GetLevelDBFileName(blink::StorageKey(origin)));
+  base::FilePath blob_path = path_base.Append(
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      indexed_db::GetBlobStoreFileName(blink::StorageKey(origin)));
   if (indexed_db::IsPathTooLong(filesystem, leveldb_path)) {
     ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_ORIGIN_TOO_LONG,
                      origin);
@@ -439,8 +442,9 @@ void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
   //       so our corruption info file will remain.
   //       The blob directory will be deleted when the database is recreated
   //       the next time it is opened.
-  const base::FilePath file_path =
-      path_base.Append(indexed_db::GetLevelDBFileName(saved_origin));
+  const base::FilePath file_path = path_base.Append(
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      indexed_db::GetLevelDBFileName(blink::StorageKey(saved_origin)));
   leveldb::Status s =
       class_factory_->leveldb_factory().DestroyLevelDB(file_path);
   DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
@@ -822,7 +826,8 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
     // Check for previous corruption, and if found then try to delete the
     // database.
     std::string corruption_message = indexed_db::ReadCorruptionInfo(
-        filesystem_proxy.get(), data_directory, origin);
+        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+        filesystem_proxy.get(), data_directory, blink::StorageKey(origin));
     if (UNLIKELY(!corruption_message.empty())) {
       LOG(ERROR) << "IndexedDB recovering from a corrupted (and deleted) "
                     "database.";

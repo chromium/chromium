@@ -49,6 +49,7 @@
 #include "storage/browser/database/database_util.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/common/database/database_identifier.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -878,13 +879,17 @@ void IndexedDBContextImpl::Shutdown() {
 base::FilePath IndexedDBContextImpl::GetBlobStorePath(
     const Origin& origin) const {
   DCHECK(!is_incognito());
-  return data_path_.Append(indexed_db::GetBlobStoreFileName(origin));
+  return data_path_.Append(
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      indexed_db::GetBlobStoreFileName(blink::StorageKey(origin)));
 }
 
 base::FilePath IndexedDBContextImpl::GetLevelDBPath(
     const Origin& origin) const {
   DCHECK(!is_incognito());
-  return data_path_.Append(indexed_db::GetLevelDBFileName(origin));
+  return data_path_.Append(
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      indexed_db::GetLevelDBFileName(blink::StorageKey(origin)));
 }
 
 int64_t IndexedDBContextImpl::ReadUsageFromDisk(const Origin& origin) const {

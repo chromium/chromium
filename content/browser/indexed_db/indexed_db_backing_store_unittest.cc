@@ -51,6 +51,7 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 using blink::IndexedDBDatabaseMetadata;
@@ -59,6 +60,7 @@ using blink::IndexedDBKey;
 using blink::IndexedDBKeyPath;
 using blink::IndexedDBKeyRange;
 using blink::IndexedDBObjectStoreMetadata;
+using blink::StorageKey;
 using url::Origin;
 
 namespace content {
@@ -1627,18 +1629,20 @@ TEST_F(IndexedDBBackingStoreTest, ReadCorruptionInfo) {
 
   // No |path_base|.
   EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(),
-                                             base::FilePath(), Origin())
+                                             base::FilePath(),
+                                             StorageKey(Origin()))
                   .empty());
 
   const base::FilePath path_base = temp_dir_.GetPath();
-  const Origin origin = Origin::Create(GURL("http://www.google.com/"));
+  const StorageKey storage_key =
+      StorageKey(Origin::Create(GURL("http://www.google.com/")));
   ASSERT_FALSE(path_base.empty());
   ASSERT_TRUE(PathIsWritable(path_base));
 
   // File not found.
-  EXPECT_TRUE(
-      indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base, origin)
-          .empty());
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             storage_key)
+                  .empty());
 
   const base::FilePath info_path =
       path_base.AppendASCII("http_www.google.com_0.indexeddb.leveldb")
@@ -1648,59 +1652,59 @@ TEST_F(IndexedDBBackingStoreTest, ReadCorruptionInfo) {
   // Empty file.
   std::string dummy_data;
   ASSERT_TRUE(base::WriteFile(info_path, dummy_data));
-  EXPECT_TRUE(
-      indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base, origin)
-          .empty());
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             storage_key)
+                  .empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // File size > 4 KB.
   dummy_data.resize(5000, 'c');
   ASSERT_TRUE(base::WriteFile(info_path, dummy_data));
-  EXPECT_TRUE(
-      indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base, origin)
-          .empty());
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             storage_key)
+                  .empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Random string.
   ASSERT_TRUE(base::WriteFile(info_path, "foo bar"));
-  EXPECT_TRUE(
-      indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base, origin)
-          .empty());
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             storage_key)
+                  .empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Not a dictionary.
   ASSERT_TRUE(base::WriteFile(info_path, "[]"));
-  EXPECT_TRUE(
-      indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base, origin)
-          .empty());
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             storage_key)
+                  .empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Empty dictionary.
   ASSERT_TRUE(base::WriteFile(info_path, "{}"));
-  EXPECT_TRUE(
-      indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base, origin)
-          .empty());
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             storage_key)
+                  .empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Dictionary, no message key.
   ASSERT_TRUE(base::WriteFile(info_path, "{\"foo\":\"bar\"}"));
-  EXPECT_TRUE(
-      indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base, origin)
-          .empty());
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             storage_key)
+                  .empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Dictionary, message key.
   ASSERT_TRUE(base::WriteFile(info_path, "{\"message\":\"bar\"}"));
-  std::string message =
-      indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base, origin);
+  std::string message = indexed_db::ReadCorruptionInfo(filesystem_proxy.get(),
+                                                       path_base, storage_key);
   EXPECT_FALSE(message.empty());
   EXPECT_FALSE(PathExists(info_path));
   EXPECT_EQ("bar", message);
 
   // Dictionary, message key and more.
   ASSERT_TRUE(base::WriteFile(info_path, "{\"message\":\"foo\",\"bar\":5}"));
-  message =
-      indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base, origin);
+  message = indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                           storage_key);
   EXPECT_FALSE(message.empty());
   EXPECT_FALSE(PathExists(info_path));
   EXPECT_EQ("foo", message);

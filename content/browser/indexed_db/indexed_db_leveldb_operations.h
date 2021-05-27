@@ -23,9 +23,12 @@
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
-#include "url/origin.h"
 
 // Contains common operations for LevelDBTransactions and/or LevelDBDatabases.
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 class TransactionalLevelDBDatabase;
@@ -39,23 +42,23 @@ extern const base::FilePath::CharType kBlobExtension[];
 extern const base::FilePath::CharType kIndexedDBExtension[];
 extern const base::FilePath::CharType kLevelDBExtension[];
 
-base::FilePath GetBlobStoreFileName(const url::Origin& origin);
-base::FilePath GetLevelDBFileName(const url::Origin& origin);
-base::FilePath ComputeCorruptionFileName(const url::Origin& origin);
+base::FilePath GetBlobStoreFileName(const blink::StorageKey& storage_key);
+base::FilePath GetLevelDBFileName(const blink::StorageKey& storage_key);
+base::FilePath ComputeCorruptionFileName(const blink::StorageKey& storage_key);
 
 // Returns if the given file path is too long for the current operating system's
 // file system.
 bool IsPathTooLong(storage::FilesystemProxy* filesystem,
                    const base::FilePath& leveldb_dir);
 
-// If a corruption file for the given |origin| at the given |path_base| exists
-// it is deleted, and the message is returned. If the file does not exist, or if
-// there is an error parsing the message, then this method returns an empty
-// string (and deletes the file).
+// If a corruption file for the given `storage_key` at the given |path_base|
+// exists it is deleted, and the message is returned. If the file does not
+// exist, or if there is an error parsing the message, then this method returns
+// an empty string (and deletes the file).
 std::string CONTENT_EXPORT
 ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
                    const base::FilePath& path_base,
-                   const url::Origin& origin);
+                   const blink::StorageKey& storage_key);
 
 // Was able to use LevelDB to read the data w/o error, but the data read was not
 // in the expected format.
