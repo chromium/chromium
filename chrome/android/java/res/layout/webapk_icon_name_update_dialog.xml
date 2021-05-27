@@ -15,7 +15,7 @@
 
     <!-- The icon, name and short_name as it is before updating. -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="128dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:orientation="vertical"
@@ -23,8 +23,8 @@
 
         <ImageView
             android:id="@+id/app_icon_old"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:visibility="gone"
             android:contentDescription="@string/update_webapk_current_icon" />
 
@@ -33,7 +33,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:maxWidth="128dp"
             android:maxLines="5"
             android:ellipsize="end"
             android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
@@ -43,22 +42,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:maxWidth="128dp"
             android:maxLines="5"
             android:ellipsize="end"
             android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
     </LinearLayout>
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="45dp"
+        android:layout_marginTop="20dp"
         android:importantForAccessibility="no"
-        app:srcCompat="@drawable/ic_right_arrow_black_24dp" />
+        app:srcCompat="@drawable/ic_forward_arrow_black_24dp" />
 
     <!-- The icon, name and short_name as it will be after the update. -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="128dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:orientation="vertical"
@@ -66,8 +64,8 @@
 
         <ImageView
             android:id="@+id/app_icon_new"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:visibility="gone"
             android:contentDescription="@string/update_webapk_updated_icon"/>
 
@@ -76,7 +74,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:maxWidth="128dp"
             android:maxLines="5"
             android:ellipsize="end"
             android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
@@ -86,7 +83,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:maxWidth="128dp"
             android:maxLines="5"
             android:ellipsize="end"
             android:textAppearance="@style/TextAppearance.TextMedium.Primary" />

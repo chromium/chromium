@@ -52,9 +52,11 @@ public class WebApkIconNameUpdateDialogTest {
         public static DialogParams createDefault() {
             DialogParams dialogParams = new DialogParams();
             dialogParams.iconChanged = false;
+            dialogParams.expectIconShownAnyway = false;
             dialogParams.bitmapBefore = null;
             dialogParams.bitmapAfter = null;
             dialogParams.shortNameChanged = false;
+            dialogParams.expectShortNameShownAnyway = false;
             dialogParams.shortNameBefore = "";
             dialogParams.shortNameAfter = "";
             dialogParams.nameChanged = false;
@@ -64,9 +66,11 @@ public class WebApkIconNameUpdateDialogTest {
         }
 
         public boolean iconChanged;
+        public boolean expectIconShownAnyway;
         public Bitmap bitmapBefore;
         public Bitmap bitmapAfter;
         public boolean shortNameChanged;
+        public boolean expectShortNameShownAnyway;
         public String shortNameBefore;
         public String shortNameAfter;
         public boolean nameChanged;
@@ -136,17 +140,27 @@ public class WebApkIconNameUpdateDialogTest {
                     dialogParams.bitmapBefore, dialogParams.bitmapAfter, false, false,
                     this::onResult);
 
-            Assert.assertEquals(dialogParams.shortNameChanged ? dialogParams.shortNameBefore : null,
+            Assert.assertEquals(
+                    dialogParams.shortNameChanged || dialogParams.expectShortNameShownAnyway
+                            ? dialogParams.shortNameBefore
+                            : null,
                     getUpdateDialogAppNameLabel(R.id.short_app_name_old));
-            Assert.assertEquals(dialogParams.shortNameChanged ? dialogParams.shortNameAfter : null,
+            Assert.assertEquals(
+                    dialogParams.shortNameChanged || dialogParams.expectShortNameShownAnyway
+                            ? dialogParams.shortNameAfter
+                            : null,
                     getUpdateDialogAppNameLabel(R.id.short_app_name_new));
             Assert.assertEquals(dialogParams.nameChanged ? dialogParams.nameBefore : null,
                     getUpdateDialogAppNameLabel(R.id.app_name_old));
             Assert.assertEquals(dialogParams.nameChanged ? dialogParams.nameAfter : null,
                     getUpdateDialogAppNameLabel(R.id.app_name_new));
-            Assert.assertEquals(dialogParams.iconChanged ? dialogParams.bitmapBefore : null,
+            Assert.assertEquals(dialogParams.iconChanged || dialogParams.expectIconShownAnyway
+                            ? dialogParams.bitmapBefore
+                            : null,
                     getUpdateDialogBitmap(R.id.app_icon_old));
-            Assert.assertEquals(dialogParams.iconChanged ? dialogParams.bitmapAfter : null,
+            Assert.assertEquals(dialogParams.iconChanged || dialogParams.expectIconShownAnyway
+                            ? dialogParams.bitmapAfter
+                            : null,
                     getUpdateDialogBitmap(R.id.app_icon_new));
 
             modalDialogManager.getCurrentPresenterForTest().dismissCurrentDialog(expectAccept
@@ -170,6 +184,8 @@ public class WebApkIconNameUpdateDialogTest {
         dialogParams.iconChanged = true;
         dialogParams.bitmapBefore = blue;
         dialogParams.bitmapAfter = red;
+        // Short name is force-shown when icon changes.
+        dialogParams.expectShortNameShownAnyway = true;
         verifyValues(/* expectAccept= */ true, dialogParams);
 
         // Test only short name changing.
@@ -177,6 +193,8 @@ public class WebApkIconNameUpdateDialogTest {
         dialogParams.shortNameChanged = true;
         dialogParams.shortNameBefore = "short1";
         dialogParams.shortNameAfter = "short2";
+        // Icons always show, even if unchanged.
+        dialogParams.expectIconShownAnyway = true;
         verifyValues(/* expectAccept= */ true, dialogParams);
 
         // Test only long name changing.
@@ -184,6 +202,8 @@ public class WebApkIconNameUpdateDialogTest {
         dialogParams.nameChanged = true;
         dialogParams.nameBefore = "name1";
         dialogParams.nameAfter = "name2";
+        // Icons always show, even if unchanged.
+        dialogParams.expectIconShownAnyway = true;
         verifyValues(/* expectAccept= */ true, dialogParams);
 
         // Test only short name and icon changing.

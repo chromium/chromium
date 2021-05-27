@@ -73,13 +73,19 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
         WebApkIconNameUpdateCustomView dialogCustomView =
                 (WebApkIconNameUpdateCustomView) LayoutInflaterUtils.inflate(
                         context, R.layout.webapk_icon_name_update_dialog, null);
+        // Always show the icon, because the dialog looks weird if only WebappInfo#shortname or
+        // WebappInfo#name is changing.
         dialogCustomView.configureIcons(
                 currentAppIcon, updatedAppIcon, oldIconAdaptive, newIconAdaptive);
-        if (shortNameChanging) {
-            dialogCustomView.configureShortNames(oldAppShortName, newAppShortName);
-        }
         if (nameChanging) {
             dialogCustomView.configureNames(oldAppName, newAppName);
+        }
+
+        // Show the webapp short name in the scenario that neither the webapp short name nor the web
+        // app name has changed. This is to make it clearer which app is changing its identity in
+        // this scenario.
+        if (shortNameChanging || !nameChanging) {
+            dialogCustomView.configureShortNames(oldAppShortName, newAppShortName);
         }
 
         PropertyModel dialogModel =
