@@ -685,7 +685,9 @@ bool StructTraits<url::mojom::UrlDataView, GURL>::Read(
   if (url_string.length() > url::kMaxURLChars)
     return false;
   *out = GURL(url_string);
-  return !url_string.empty() && out->is_valid();
+  if (!url_string.empty() && !out->is_valid())
+    return false;
+  return true;
 }
 ```
 
