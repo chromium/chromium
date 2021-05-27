@@ -6421,6 +6421,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"productivity-launcher", flag_descriptions::kAppListBubbleName,
+     flag_descriptions::kAppListBubbleDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kAppListBubble)},
     {"enable-launcher-app-paging",
      flag_descriptions::kNewDragSpecInLauncherName,
      flag_descriptions::kNewDragSpecInLauncherDescription, kOsCrOS,

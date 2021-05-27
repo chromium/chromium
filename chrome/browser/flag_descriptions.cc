@@ -3804,6 +3804,12 @@ const char kAllowScrollSettingsDescription[] =
     "Shows settings to enable/disable scroll acceleration and to adjust the "
     "sensitivity for scrolling.";
 
+extern const char kAppListBubbleName[] =
+    "Productivity experiment: App Launcher";
+extern const char kAppListBubbleDescription[] =
+    "To evaluate an enhanced Launcher experience that aims to improve app "
+    "workflows by optimizing access to apps, app content, and app actions.";
+
 const char kAppServiceExternalProtocolName[] = "App Service External Protocol";
 const char kAppServiceExternalProtocolDescription[] =
     "Use the App Service to provide data for external protocol dialog.";

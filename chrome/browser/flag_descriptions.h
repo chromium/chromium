@@ -2194,6 +2194,9 @@ extern const char kAllowRepeatedUpdatesDescription[];
 extern const char kAllowScrollSettingsName[];
 extern const char kAllowScrollSettingsDescription[];
 
+extern const char kAppListBubbleName[];
+extern const char kAppListBubbleDescription[];
+
 extern const char kAppServiceAdaptiveIconName[];
 extern const char kAppServiceAdaptiveIconDescription[];
 

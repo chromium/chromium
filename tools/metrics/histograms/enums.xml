@@ -46563,6 +46563,7 @@ from previous Chrome versions.
   <int value="-660160292" label="enable-apps-show-on-first-paint"/>
   <int value="-658319177" label="VaapiAV1Decoder:disabled"/>
   <int value="-657808907" label="CopyLinkToText:disabled"/>
+  <int value="-657656374" label="AppListBubble:disabled"/>
   <int value="-656743717" label="HelpAppDiscoverTab:enabled"/>
   <int value="-654705905" label="ShortcutCustomizationApp:enabled"/>
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>
@@ -47370,6 +47371,7 @@ from previous Chrome versions.
   <int value="59992411" label="ChangePasswordAffiliationInfo:enabled"/>
   <int value="60023885" label="AutofillNoLocalSaveOnUnmaskSuccess:disabled"/>
   <int value="60442188" label="MultilingualTyping:enabled"/>
+  <int value="60461879" label="AppListBubble:enabled"/>
   <int value="61130490" label="WebViewBrotliSupport:enabled"/>
   <int value="61205887" label="enable-text-input-focus-manager"/>
   <int value="61466986" label="AsyncDns:disabled"/>
