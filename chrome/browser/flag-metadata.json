@@ -4459,12 +4459,12 @@
   {
     "name": "related-searches",
     "owners": [ "ayman", "donnd" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 97
   },
   {
     "name": "related-searches-ui",
     "owners": [ "ayman", "donnd" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 97
   },
   {
     "name": "release-notes-notification",
