@@ -59,7 +59,7 @@
           function(task, should) {
             cancelTest(should, linearRampTest('linearRampToValueAtTime'), {
               valueThreshold: 8.3998e-5,
-              curveThreshold: 0
+              curveThreshold: 5.9605e-5
             }).then(task.done.bind(task));
           });
 
@@ -247,7 +247,7 @@
                 summary: 'Initial setTargetAtTime',
               };
             }, {
-              valueThreshold: 1.2320e-6,
+              valueThreshold: 3.1210e-6,
               curveThreshold: 0
             }).then(task.done.bind(task));
           });
@@ -269,7 +269,7 @@
             cancelTest(
                 should,
                 linearRampTest('Post cancellation linearRampToValueAtTime'),
-                {valueThreshold: 8.3998e-5, curveThreshold: 0},
+                {valueThreshold: 8.3998e-5, curveThreshold: 5.9605e-8},
                 function(g, cancelTime, expectedConstant) {
                   // Schedule the linear ramp on g[0], and do the same for g[2],
                   // using the starting point given by expectedConstant.
@@ -298,7 +298,7 @@
             cancelTest(
                 should,
                 linearRampTest('Post cancel exponentialRampToValueAtTime'),
-                {valueThreshold: 8.3998e-5, curveThreshold: 0},
+                {valueThreshold: 8.3998e-5, curveThreshold: 5.9605e-8},
                 function(g, cancelTime, expectedConstant) {
                   // Schedule the exponential ramp on g[0], and do the same for
                   // g[2], using the starting point given by expectedConstant.
@@ -320,7 +320,7 @@
         // Then schedule a setValueCurve after the cancellation.
         cancelTest(
             should, linearRampTest('Post cancel setValueCurveAtTime'),
-            {valueThreshold: 8.3998e-5, curveThreshold: 0},
+            {valueThreshold: 8.3998e-5, curveThreshold: 5.9605e-8},
             function(g, cancelTime, expectedConstant) {
               // Schedule the exponential ramp on g[0], and do the same for
               // g[2], using the starting point given by expectedConstant.
@@ -345,7 +345,7 @@
         // Then schedule a setTarget after the cancellation.
         cancelTest(
             should, linearRampTest('Post cancel setTargetAtTime'),
-            {valueThreshold: 8.3998e-5, curveThreshold: 0},
+            {valueThreshold: 8.3998e-5, curveThreshold: 5.9605e-8},
             function(g, cancelTime, expectedConstant) {
               // Schedule the exponential ramp on g[0], and do the same for
               // g[2], using the starting point given by expectedConstant.
@@ -370,7 +370,7 @@
         // Then schedule a setTarget after the cancellation.
         cancelTest(
             should, linearRampTest('Post cancel setValueAtTime'),
-            {valueThreshold: 8.3998e-5, curveThreshold: 0},
+            {valueThreshold: 8.3998e-5, curveThreshold: 5.9605e-8},
             function(g, cancelTime, expectedConstant) {
               // Schedule the exponential ramp on g[0], and do the same for
               // g[2], using the starting point given by expectedConstant.
@@ -494,7 +494,7 @@
           cancelTest2(
             should,
             linearRampTest('1st linearRamp'),
-            {valueThreshold: 0, curveThreshold: 0},
+            {valueThreshold: 0, curveThreshold: 5.9605e-8},
             (g, cancelTime, expectedConstant, cancelTime2) => {
               // Ramp from first cancel time to the end will be cancelled at
               // second cancel time.
