@@ -259,6 +259,12 @@ int GetStartupNotificationPrefCount(PrefService* pref_service) {
       prefs::kImprovedShortcutsNotificationShownCount);
 }
 
+bool IsGuestUserSession() {
+  const absl::optional<user_manager::UserType> user_type =
+      Shell::Get()->session_controller()->GetUserType();
+  return user_type && *user_type == user_manager::USER_TYPE_GUEST;
+}
+
 // Increments the number of times the startup notification has been shown
 // in prefs.
 void IncrementStartupNotificationCount(PrefService* pref_service) {
@@ -1809,7 +1815,7 @@ void AcceleratorControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   DCHECK(pref_service);
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
-    if (should_show_shortcut_notification_)
+    if (should_show_shortcut_notification_ && !IsGuestUserSession())
       NotifyShortcutChangesInRelease(pref_service);
   }
 }
