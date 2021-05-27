@@ -2465,6 +2465,58 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Logs the loading time for the gstatic file request.</summary>
 </histogram>
 
+<histogram name="PasswordProtection.AndroidVisualFeaturesNativeViewHeight"
+    units="dip" expires_after="2021-10-04">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the height of the content area, according to the NativeView on
+    Android. This is logged on every ping by an SBER user due to an unfamiliar
+    login page, when the NativeView is available.
+
+    Added as part of https://crbug.com/1211045
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.AndroidVisualFeaturesNativeViewNull"
+    enum="BooleanNull" expires_after="2021-10-04">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether or not we were able to get a NativeView to query the size of
+    the content area on Android. This is logged on every ping by an SBER user
+    due to an unfamiliar login page, when the RenderWidgetHostView is not null.
+
+    Added as part of https://crbug.com/1211045
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.AndroidVisualFeaturesNativeViewWidth"
+    units="dip" expires_after="2021-10-04">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the width of the content area, according to the NativeView on
+    Android. This is logged on every ping by an SBER user due to an unfamiliar
+    login page, when the NativeView is available.
+
+    Added as part of https://crbug.com/1211045
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.AndroidVisualFeaturesViewNull"
+    enum="BooleanNull" expires_after="2021-10-04">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether or not we were able to get a RenderWidgetHostView to query
+    the size of the content area on Android. This is logged on every ping by an
+    SBER user due to an unfamiliar login page.
+
+    Added as part of https://crbug.com/1211045
+  </summary>
+</histogram>
+
 <histogram name="PasswordProtection.DomFeatureExtractionDuration" units="ms"
     expires_after="2021-10-04">
   <owner>drubery@chromium.org</owner>
