@@ -5406,7 +5406,7 @@
         'mixins': [
           'gpu-swarming-pool',
           'isolate_profile_data',
-          'linux-xenial-or-bionic',
+          'linux-bionic',
           'no_gpu',
           'x86-64',
         ],
@@ -5419,7 +5419,7 @@
         'mixins': [
           'gpu-swarming-pool',
           'isolate_profile_data',
-          'linux-xenial-or-bionic',
+          'linux-bionic',
           'no_gpu',
           'timeout_15m',
           'x86-64',
@@ -5433,7 +5433,7 @@
         'mixins': [
           'gpu-swarming-pool',
           'isolate_profile_data',
-          'linux-xenial-or-bionic',
+          'linux-bionic',
           'no_gpu',
           'timeout_15m',
           'x86-64',
@@ -5447,7 +5447,7 @@
         'mixins': [
           'gpu-swarming-pool',
           'isolate_profile_data',
-          'linux-xenial-or-bionic',
+          'linux-bionic',
           'no_gpu',
           'timeout_15m',
           'x86-64',
