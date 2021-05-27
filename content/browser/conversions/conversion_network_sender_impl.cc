@@ -85,12 +85,13 @@ GURL GetReportUrl(const content::ConversionReport& report) {
 std::string GetReportPostBody(const content::ConversionReport& report) {
   base::Value dict(base::Value::Type::DICTIONARY);
 
-  // The API denotes this id as a string. Note that a uint64_t cannot be put in
-  // a dict as an integer key.
+  // The API denotes these values as strings; a `uint64_t` cannot be put in
+  // a dict as an integer in order to be opaque to various API configurations.
   dict.SetStringKey("source_event_id",
                     base::NumberToString(report.impression.impression_data()));
 
-  dict.SetIntKey("trigger_data", report.conversion_data);
+  dict.SetStringKey("trigger_data",
+                    base::NumberToString(report.conversion_data));
 
   // Write the dict to json;
   std::string output_json;
