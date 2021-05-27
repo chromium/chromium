@@ -28,8 +28,6 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -77,12 +75,6 @@ class ElementStyleResources {
 
   void LoadPendingSVGResources(ComputedStyle&);
   void LoadPendingImages(ComputedStyle&);
-
-  StyleImage* LoadPendingImage(
-      ComputedStyle&,
-      CSSValue&,
-      FetchParameters::ImageRequestBehavior = FetchParameters::kNone,
-      CrossOriginAttributeValue = kCrossOriginAttributeNotSet);
 
   Element& element_;
   HashSet<CSSPropertyID> pending_image_properties_;

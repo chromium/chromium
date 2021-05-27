@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
@@ -168,37 +169,6 @@ static bool BackgroundLayerMayBeSprite(const FillLayer& background_layer) {
          background_layer.PositionY().IsFixed();
 }
 
-StyleImage* ElementStyleResources::LoadPendingImage(
-    ComputedStyle& style,
-    CSSValue& value,
-    FetchParameters::ImageRequestBehavior image_request_behavior,
-    CrossOriginAttributeValue cross_origin) {
-  if (auto* image_value = DynamicTo<CSSImageValue>(value)) {
-    return image_value->CacheImage(element_.GetDocument(),
-                                   image_request_behavior, cross_origin);
-  }
-
-  if (auto* paint_value = DynamicTo<CSSPaintValue>(value)) {
-    auto* image = MakeGarbageCollected<StyleGeneratedImage>(*paint_value);
-    style.AddPaintImage(image);
-    return image;
-  }
-
-  if (auto* image_generator_value = DynamicTo<CSSImageGeneratorValue>(value)) {
-    image_generator_value->LoadSubimages(element_.GetDocument());
-    return MakeGarbageCollected<StyleGeneratedImage>(*image_generator_value);
-  }
-
-  if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
-    return image_set_value->CacheImage(element_.GetDocument(),
-                                       device_scale_factor_,
-                                       image_request_behavior, cross_origin);
-  }
-
-  NOTREACHED();
-  return nullptr;
-}
-
 static CSSValue* PendingCssValue(StyleImage* style_image) {
   if (auto* pending_image = DynamicTo<StylePendingImage>(style_image))
     return pending_image->CssValue();
@@ -223,6 +193,39 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
   // If we eagerly loaded the images we'd fetch a.png, even though it's not
   // used. If we didn't null check below we'd crash since the none actually
   // removed all background images.
+
+  auto LoadPendingImage =
+      [&](ComputedStyle& style, CSSValue& value,
+          FetchParameters::ImageRequestBehavior image_request_behavior =
+              FetchParameters::kNone,
+          CrossOriginAttributeValue cross_origin =
+              kCrossOriginAttributeNotSet) -> StyleImage* {
+    if (auto* image_value = DynamicTo<CSSImageValue>(value)) {
+      return image_value->CacheImage(element_.GetDocument(),
+                                     image_request_behavior, cross_origin);
+    }
+
+    if (auto* paint_value = DynamicTo<CSSPaintValue>(value)) {
+      auto* image = MakeGarbageCollected<StyleGeneratedImage>(*paint_value);
+      style.AddPaintImage(image);
+      return image;
+    }
+
+    if (auto* image_generator_value =
+            DynamicTo<CSSImageGeneratorValue>(value)) {
+      image_generator_value->LoadSubimages(element_.GetDocument());
+      return MakeGarbageCollected<StyleGeneratedImage>(*image_generator_value);
+    }
+
+    if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
+      return image_set_value->CacheImage(element_.GetDocument(),
+                                         device_scale_factor_,
+                                         image_request_behavior, cross_origin);
+    }
+
+    NOTREACHED();
+    return nullptr;
+  };
 
   for (CSSPropertyID property : pending_image_properties_) {
     switch (property) {
