@@ -39,7 +39,10 @@ bool JobDelegate::ShouldYield() {
 #if DCHECK_IS_ON()
   last_should_yield_ = should_yield;
 #endif  // DCHECK_IS_ON()
-  recordreplay::Assert("JobDelegate::ShouldYield Done %d", should_yield);
+  recordreplay::Assert("JobDelegate::ShouldYield Done %d %d %d",
+                       should_yield,
+                       task_source_->ShouldYield(),
+                       !!pooled_task_runner_delegate_);
   return should_yield;
 }
 
