@@ -2870,7 +2870,6 @@
 <translation id="4035758313003622889">&amp;ተግባር አስተዳዳሪ</translation>
 <translation id="4036778507053569103">ከአገልጋዩ የወረደው መመሪያ ልክ ያልኾነ ነው።</translation>
 <translation id="4037084878352560732">ፈረስ</translation>
-<translation id="4037889604535939429">ሰውን ያርትዑ</translation>
 <translation id="4040753847560036377">ትክክል ያልኾነ PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{ከገጽ ውጣ}one{ከገጾች ውጣ}other{ከገጾች ውጣ}}</translation>
 <translation id="4044612648082411741">የእርስዎን የዕውቅና ማረጋገጫ ይለፍ ቃል ያስገቡ</translation>
@@ -4336,7 +4335,6 @@
 <translation id="5709557627224531708">Chromeን እንደ ነባሪ አሳሽዎ አድርገው ያቀናብሩት</translation>
 <translation id="5711983031544731014">ማስከፈት አልተቻለም። የይለፍ ቃልዎን ያስገቡ።</translation>
 <translation id="5712153969432126546">ጣቢያዎች አንዳንድ ጊዜ እንደ ሰነዶች፣ ውሎች እና ቅጾች ያሉ በPDF ያትማሉ</translation>
-<translation id="5712323955984474772">ቀጣዩ ዝማኔ</translation>
 <translation id="5715711091495208045">የተሰኪ አስማሚ፦ <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ነባሪ የፍለጋ ፕሮግራሞች</translation>
 <translation id="5719637365829998022">የQR ኮድ ተቃኝቷል።</translation>
@@ -5108,7 +5106,6 @@
 <translation id="6563469144985748109">የእርስዎ አስተዳዳሪ ገና አላጸደቁትም</translation>
 <translation id="6568283005472142698">የትር ፍለጋ</translation>
 <translation id="6569911211938664415">በማንኛውም መሣሪያ ላይ እርስዎ ሊጠቀሙባቸው እንዲችሉ የይለፍ ቃላት በGoogle መለያዎ (<ph name="ACCOUNT" />) ላይ ተቀምጠዋል።</translation>
-<translation id="6569934958368283244">ሌሎች ሰዎች</translation>
 <translation id="6573497332121198392">አቋራጭን ማስወገድ አልተቻለም</translation>
 <translation id="657402800789773160">ይህን ገጽ &amp;ዳግም ጫን</translation>
 <translation id="6577284282025554716">ማውረድ ተሰርዟል፦ <ph name="FILE_NAME" /></translation>
@@ -6799,7 +6796,6 @@ nil</translation>
 <translation id="8393700583063109961">መልዕክት ይላኩ</translation>
 <translation id="8397825320644530257">የተገናኘ ስልክ ያላቅቁ</translation>
 <translation id="8398877366907290961">ለማንኛውም ቀጥል</translation>
-<translation id="8400146488506985033">ሰዎችን አቀናብር</translation>
 <translation id="8401432541486058167">ከእርስዎ ዘመናዊ ካርድ ጋር የተቆራኘውን ፒን ይስጡ።</translation>
 <translation id="8404893580027489425">የጣት አሻራ ዳሳሹ ከእርስዎ <ph name="DEVICE_TYPE" /> በቀኝ-እጅ በኩል ነው። በማንኛውም ጣት በስሱ ይንኩት።</translation>
 <translation id="8405046151008197676">ከቅርብ ጊዜው ዝማኔ ድምቀቶችን ያግኙ</translation>
@@ -6855,7 +6851,6 @@ nil</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ለማሄድ የእርስዎ ፍቃድ ያስፈልገዋል</translation>
 <translation id="8466417995783206254">ይህ ትር አንድ ቪዲዮ በሥዕል-ውስጥ-ሥዕል ሁነታ ላይ እያጫወተ ነው።</translation>
 <translation id="8467326454809944210">ሌላ ቋንቋ ይምረጡ</translation>
-<translation id="8470214316007448308">ሌሎች ሰዎች</translation>
 <translation id="8470513973197838199">የተቀመጡ የ<ph name="ORIGIN" /> የይለፍ ቃላት</translation>
 <translation id="8471525937465764768">ጣቢያዎች እንደ ሰነድ ማተም ወይም ወደ የማከማቻ መሣሪያ ማስቀመጥ ያሉ ባህሪያትን ለማግኘት አብዛኛው ጊዜ ከዩኤስቢ መሣሪያዎች ጋር ይገናኛሉ</translation>
 <translation id="8471959340398751476">ቅናሾች ጠፍተዋል። በአብጅ ምናሌ ውስጥ ሊያበሩዋቸው ይችላሉ</translation>
@@ -7042,6 +7037,7 @@ nil</translation>
 <translation id="8676374126336081632">ግቤቱን አጽዳ</translation>
 <translation id="8676770494376880701">አነስተኛ ኃይል ያለው ባትሪ መሙያ ተገናኝቷል</translation>
 <translation id="8677212948402625567">ሁሉንም ሰብስብ...</translation>
+<translation id="867767487203716855">ቀጣዩ ዝማኔ</translation>
 <translation id="8677859815076891398">ምንም አልበሞች የሉም። በ<ph name="LINK_BEGIN" />Google ፎቶዎች<ph name="LINK_END" /> ውስጥ አልበም ይፈጠሩ።</translation>
 <translation id="8678582529642151449">ትሮች አይሰበሰቡም</translation>
 <translation id="8678933587484842200">ይህ መተግበሪያ እንዴት እንዲጀምር ይፈልጋሉ?</translation>
@@ -7130,7 +7126,6 @@ nil</translation>
 <translation id="87646919272181953">የGoogle ፎቶዎች አልበም</translation>
 <translation id="8767621466733104912">Chromeን ለሁሉም ተጠቃሚዎች በራስ-ሰር አዘምን</translation>
 <translation id="8770406935328356739">የቅጥያ ስርወ ማውጫ</translation>
-<translation id="8770507190024617908">ሰዎችን አቀናብር</translation>
 <translation id="8771300903067484968">የጅምር ገጽ ጀርባው ወደ ነባሪው ጀርባ ዳግም ተጀምሯል።</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" />ን አስቀምጥ</translation>
 <translation id="8774379074441005279">ወደነበረበት መመለስን ያረጋግጡ</translation>

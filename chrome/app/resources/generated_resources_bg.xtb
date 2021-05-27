@@ -2579,6 +2579,7 @@
 <translation id="3742666961763734085">Не бе намерена организационна единица с това име. Моля, опитайте отново.</translation>
 <translation id="3744111561329211289">Синхронизиране на заден план</translation>
 <translation id="3747077776423672805">За да премахнете приложения, отворете „Настройки“ &gt; „Google Play Магазин“ &gt; „Управление на предпочитанията за Android“ &gt; „Приложения“ или мениджъра на приложенията. Докоснете това, което искате да деинсталирате (може да се наложи да прекарате пръст надясно или наляво, за да го намерите). Докоснете „Деинсталиране“ или „Деактивиране“.</translation>
+<translation id="3747220812138541072">Показване на вложени предложения, докато пишете</translation>
 <translation id="3748706263662799310">Подаване на сигнал за програмна грешка</translation>
 <translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Съхранете веднъж. Използвайте навсякъде</translation>
@@ -2873,7 +2874,6 @@
 <translation id="4035758313003622889">Мени&amp;джър на задачите</translation>
 <translation id="4036778507053569103">Изтегленото от сървъра правило е невалидно.</translation>
 <translation id="4037084878352560732">Кон</translation>
-<translation id="4037889604535939429">Редактиране на подстраницата за човека</translation>
 <translation id="4040753847560036377">Неправилен PUK код</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Изход от страницата}other{Изход от страниците}}</translation>
 <translation id="4044612648082411741">Въведете паролата си за сертификата</translation>
@@ -3270,6 +3270,7 @@
 <translation id="4510614391273086606">Файловете и приложенията за Linux се възстановяват от резервното копие.</translation>
 <translation id="451102079304155829">кошници</translation>
 <translation id="4513275008300099962">Деактивиране на наслагването с контроли за прозореца</translation>
+<translation id="4513872120116766993">Предвиждащо писане</translation>
 <translation id="4513946894732546136">Отзиви</translation>
 <translation id="451407183922382411">Предоставено от <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Превключвател за възпроизвеждане или поставяне на пауза на видеоклипа</translation>
@@ -4343,7 +4344,6 @@
 <translation id="5709557627224531708">Задаване на Chrome като браузър по подразбиране</translation>
 <translation id="5711983031544731014">Не може да се отключи. Въведете паролата си.</translation>
 <translation id="5712153969432126546">Сайтовете понякога публикуват PDF файлове, като например документи, договори и формуляри</translation>
-<translation id="5712323955984474772">Следваща актуализация</translation>
 <translation id="5715711091495208045">Посредник за приставки: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Търсещи машини по подразбиране</translation>
 <translation id="5719637365829998022">QR кодът е сканиран.</translation>
@@ -4434,6 +4434,7 @@
 <translation id="5826395379250998812">Свържете своя <ph name="DEVICE_TYPE" /> с телефона си. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Полупрозрачно</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Предвиждане на следващата дума</translation>
 <translation id="5828545842856466741">Добавяне на потребителски профил...</translation>
 <translation id="5828633471261496623">Отпечатва се...</translation>
 <translation id="5830720307094128296">Запазване на страницата &amp;като...</translation>
@@ -5115,7 +5116,6 @@
 <translation id="6563469144985748109">Мениджърът ви все още не е одобрил заявката</translation>
 <translation id="6568283005472142698">Търсене на раздели</translation>
 <translation id="6569911211938664415">Паролите се запазват в профила ви в Google (<ph name="ACCOUNT" />), за да можете да ги използвате на всяко устройство</translation>
-<translation id="6569934958368283244">Други хора</translation>
 <translation id="6573497332121198392">Прекият път не бе премахнат</translation>
 <translation id="657402800789773160">&amp;Презареждане на тази страница</translation>
 <translation id="6577284282025554716">Изтеглянето е анулирано: <ph name="FILE_NAME" /></translation>
@@ -6305,6 +6305,7 @@
 <translation id="78526636422538552">Функцията за добавяне на профили в Google е деактивирана</translation>
 <translation id="7853747251428735">Още инструмен&amp;ти</translation>
 <translation id="7855678561139483478">Преместване на раздела в нов прозорец</translation>
+<translation id="7857093393627376423">Текстови предложения</translation>
 <translation id="7857117644404132472">Добавяне на изключение</translation>
 <translation id="7857949311770343000">Това очакваният от вас нов раздел ли е?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -6802,7 +6803,6 @@
 <translation id="8393700583063109961">Изпратете съобщение</translation>
 <translation id="8397825320644530257">Прекратяване на връзката със свързания телефон</translation>
 <translation id="8398877366907290961">Продължаване напред въпреки това</translation>
-<translation id="8400146488506985033">Управление на хората</translation>
 <translation id="8401432541486058167">Въведете ПИН, свързан със смарткартата ви</translation>
 <translation id="8404893580027489425">Сензорът за отпечатъци се намира в дясната част на вашия <ph name="DEVICE_TYPE" />. Докоснете го леко с който и да е пръст.</translation>
 <translation id="8405046151008197676">Вижте най-важното от най-новата актуализация</translation>
@@ -6858,7 +6858,6 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> се нуждае от разрешението ви, за да стартира</translation>
 <translation id="8466417995783206254">В този раздел се възпроизвежда видеоклип в режим „Картина в картината“.</translation>
 <translation id="8467326454809944210">Избор на друг език</translation>
-<translation id="8470214316007448308">Други хора</translation>
 <translation id="8470513973197838199">Запазени пароли за <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Сайтовете обикновено се свързват с USB устройства, за да осигуряват функции като отпечатване на документи или запазване в устройство за съхранение</translation>
 <translation id="8471959340398751476">Отстъпките са изключени. Можете да ги включите от менюто за персонализиране</translation>
@@ -7045,6 +7044,7 @@
 <translation id="8676374126336081632">Изчистване на въведеното</translation>
 <translation id="8676770494376880701">Свързано е зарядно устройство с малка мощност</translation>
 <translation id="8677212948402625567">Свиване на всички...</translation>
+<translation id="867767487203716855">Следваща актуализация</translation>
 <translation id="8677859815076891398">Няма албуми. Създайте албум в <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Разделите не се свиват</translation>
 <translation id="8678933587484842200">Как искате да се стартира това приложение?</translation>
@@ -7133,7 +7133,6 @@
 <translation id="87646919272181953">Албум в Google Снимки</translation>
 <translation id="8767621466733104912">Автоматично актуализиране на Chrome за всички потребители</translation>
 <translation id="8770406935328356739">Основна директория на разширението</translation>
-<translation id="8770507190024617908">Управление на хората</translation>
 <translation id="8771300903067484968">Възстановен е стандартният фон на началната страница.</translation>
 <translation id="8773302562181397928">Запазване на <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Потвърждаване на възстановяването</translation>

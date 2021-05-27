@@ -2868,7 +2868,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4035758313003622889">&amp;Oppgavebehandling</translation>
 <translation id="4036778507053569103">Regelen som ble lastet ned fra tjeneren, er ugyldig.</translation>
 <translation id="4037084878352560732">Hest</translation>
-<translation id="4037889604535939429">Endre person</translation>
 <translation id="4040753847560036377">Feil PUK-kode.</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Lukk siden}other{Lukk sidene}}</translation>
 <translation id="4044612648082411741">Angi sertifikatpassordet ditt</translation>
@@ -4336,7 +4335,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5709557627224531708">Angi Chrome som standardnettleser</translation>
 <translation id="5711983031544731014">Kan ikke låse opp. Skriv inn passordet ditt.</translation>
 <translation id="5712153969432126546">Nettsteder publiserer av og til PDF-filer, for eksempel dokumenter, kontrakter og skjemaer</translation>
-<translation id="5712323955984474772">Neste oppdatering</translation>
 <translation id="5715711091495208045">Programtilleggsmegler: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standard søkemotorer</translation>
 <translation id="5719637365829998022">QR-koden er skannet.</translation>
@@ -5108,7 +5106,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6563469144985748109">Administratoren din har ikke godkjent det ennå</translation>
 <translation id="6568283005472142698">Fanesøk</translation>
 <translation id="6569911211938664415">Passordene er lagret i Google-kontoen din (<ph name="ACCOUNT" />), slik at du kan bruke dem på alle enheter</translation>
-<translation id="6569934958368283244">Andre personer</translation>
 <translation id="6573497332121198392">Kan ikke fjerne snarveien</translation>
 <translation id="657402800789773160">&amp;Last inn denne siden på nytt</translation>
 <translation id="6577284282025554716">Nedlasting avbrutt: <ph name="FILE_NAME" /></translation>
@@ -6794,7 +6791,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8393700583063109961">Send melding</translation>
 <translation id="8397825320644530257">Koble fra den tilkoblede telefonen</translation>
 <translation id="8398877366907290961">Fortsett likevel</translation>
-<translation id="8400146488506985033">Administrer personer</translation>
 <translation id="8401432541486058167">Oppgi PIN-koden som er tilknyttet smartkortet ditt.</translation>
 <translation id="8404893580027489425">Fingeravtrykkssensoren er på høyre side av <ph name="DEVICE_TYPE" />. Trykk forsiktig på den med hvilken som helst finger.</translation>
 <translation id="8405046151008197676">Se høydepunktene i den nyeste oppdateringen</translation>
@@ -6850,7 +6846,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8465444703385715657">Du må gi tillatelse for at <ph name="PLUGIN_NAME" /> skal kunne kjøre</translation>
 <translation id="8466417995783206254">Denne fanen spiller av en video i bilde-i-bilde-modus.</translation>
 <translation id="8467326454809944210">Velg et annet språk</translation>
-<translation id="8470214316007448308">Andre personer</translation>
 <translation id="8470513973197838199">Lagrede passord for <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Nettsteder kobler vanligvis til USB-enheter for å kunne tilby funksjoner som å skrive ut dokumenter eller lagre filer på lagringsenheter</translation>
 <translation id="8471959340398751476">Rabatter er avslått. Du kan slå dem på i tilpasningsmenyen</translation>
@@ -7037,6 +7032,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="8676374126336081632">Slett teksten</translation>
 <translation id="8676770494376880701">Laveffektslader er tilkoblet</translation>
 <translation id="8677212948402625567">Skjul alle</translation>
+<translation id="867767487203716855">Neste oppdatering</translation>
 <translation id="8677859815076891398">Ingen album. Opprett et album i <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Faner krymper ikke</translation>
 <translation id="8678933587484842200">Hvordan vil du at denne appen skal starte?</translation>
@@ -7125,7 +7121,6 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="87646919272181953">Google Foto-album</translation>
 <translation id="8767621466733104912">Oppdater Chrome automatisk for alle brukere</translation>
 <translation id="8770406935328356739">Rotkatalog for utvidelser</translation>
-<translation id="8770507190024617908">Administrer personer</translation>
 <translation id="8771300903067484968">Bakgrunnen på startsiden er tilbakestilt til standardbakgrunnen.</translation>
 <translation id="8773302562181397928">Lagre <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Bekreft gjenoppretting</translation>

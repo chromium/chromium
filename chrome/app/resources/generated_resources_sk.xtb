@@ -2863,7 +2863,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4035758313003622889">&amp;Správca úloh</translation>
 <translation id="4036778507053569103">Pravidlo stiahnuté zo servera je neplatné.</translation>
 <translation id="4037084878352560732">Kôň</translation>
-<translation id="4037889604535939429">Úprava osoby</translation>
 <translation id="4040753847560036377">Nesprávny kód PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Opustiť stránku}few{Opustiť stránky}many{Opustiť stránky}other{Opustiť stránky}}</translation>
 <translation id="4044612648082411741">Zadajte heslo certifikátu</translation>
@@ -4331,7 +4330,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5709557627224531708">Nastavte Chrome ako predvolený prehliadač</translation>
 <translation id="5711983031544731014">Nie je možné odomknúť. Zadajte heslo.</translation>
 <translation id="5712153969432126546">Weby niekedy zverejňujú súbory PDF, napríklad dokumenty, zmluvy a formuláre</translation>
-<translation id="5712323955984474772">Ďalšia aktualizácia</translation>
 <translation id="5715711091495208045">Doplnok Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Predvolené vyhľadávače</translation>
 <translation id="5719637365829998022">QR kód bol naskenovaný</translation>
@@ -5103,7 +5101,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6563469144985748109">Váš správca to zatiaľ neschválil</translation>
 <translation id="6568283005472142698">Vyhľadávanie kariet</translation>
 <translation id="6569911211938664415">Heslá sa ukladajú do účtu Google (<ph name="ACCOUNT" />), takže ich môžete používať v ľubovoľnom zariadení</translation>
-<translation id="6569934958368283244">Iné osoby</translation>
 <translation id="6573497332121198392">Odkaz sa nedá odstrániť</translation>
 <translation id="657402800789773160">&amp;Obnoviť túto stránku</translation>
 <translation id="6577284282025554716">Sťahovanie bolo zrušené: <ph name="FILE_NAME" /></translation>
@@ -6788,7 +6785,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8393700583063109961">Odoslať správu</translation>
 <translation id="8397825320644530257">Odpojiť pripojený telefón</translation>
 <translation id="8398877366907290961">Pokračovať!</translation>
-<translation id="8400146488506985033">Spravovať ľudí</translation>
 <translation id="8401432541486058167">Zadajte PIN spojený s vašou inteligentnou kartou.</translation>
 <translation id="8404893580027489425">Senzor odtlačkov prstov je na pravej strane zariadenia <ph name="DEVICE_TYPE" />. Zľahka sa ho dotknite ľubovoľným prstom.</translation>
 <translation id="8405046151008197676">Získajte zhrnutie najdôležitejších súčastí poslednej aktualizácie</translation>
@@ -6844,7 +6840,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8465444703385715657">Doplnok <ph name="PLUGIN_NAME" /> potrebuje na spustenie vaše povolenie</translation>
 <translation id="8466417995783206254">Táto karta prehráva video v režime obraz v obraze.</translation>
 <translation id="8467326454809944210">Vybrať iný jazyk</translation>
-<translation id="8470214316007448308">Iné osoby</translation>
 <translation id="8470513973197838199">Uložené heslá pre <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Weby sa zvyčajne pripájajú k zariadeniam USB, aby mohli poskytovať funkcie, ako tlač dokumentu alebo uloženie do zariadenia</translation>
 <translation id="8471959340398751476">Zľavy sú vypnuté. Môžete ich zapnúť v ponuke prispôsobenia.</translation>
@@ -7031,6 +7026,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="8676374126336081632">Vymazať vstup</translation>
 <translation id="8676770494376880701">Pripojila sa nabíjačka s nízkym výkonom</translation>
 <translation id="8677212948402625567">Zbaliť všetky...</translation>
+<translation id="867767487203716855">Ďalšia aktualizácia</translation>
 <translation id="8677859815076891398">Žiadne albumy Vytvorte album vo <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Karty sa nezmenšia</translation>
 <translation id="8678933587484842200">Ako sa má táto aplikácia spúšťať?</translation>
@@ -7119,7 +7115,6 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="87646919272181953">Album Fotiek Google</translation>
 <translation id="8767621466733104912">Automaticky aktualizovať Chrome pre všetkých používateľov</translation>
 <translation id="8770406935328356739">Koreňový adresár rozšírenia</translation>
-<translation id="8770507190024617908">Spravovať ľudí</translation>
 <translation id="8771300903067484968">Pozadie úvodnej stránky bolo resetované na predvolené.</translation>
 <translation id="8773302562181397928">Uložiť <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Potvrdenie obnovy</translation>

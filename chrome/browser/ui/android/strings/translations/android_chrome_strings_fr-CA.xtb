@@ -278,6 +278,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2777555524387840389">Il reste <ph name="SECONDS" /> secondes</translation>
 <translation id="2779651927720337254">échec</translation>
 <translation id="2781151931089541271">Il reste 1 s</translation>
+<translation id="2788468313014644040">Numéro de groupe</translation>
 <translation id="2801022321632964776">Mettez Chrome à jour pour en profiter dans votre propre langue</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4060598801229743805">Options disponibles vers le haut de l'écran</translation>
 <translation id="4062305924942672200">Mentions juridiques</translation>
-<translation id="4082818367361753283">Identifiant du groupe</translation>
 <translation id="4084682180776658562">Favoris</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />fourni par Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Supprimer les données de l'application?</translation>

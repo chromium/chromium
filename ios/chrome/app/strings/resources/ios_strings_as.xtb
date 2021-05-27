@@ -456,6 +456,7 @@
 <translation id="5782227691023083829">অনুবাদ কাৰ্য্য চলি আছে...</translation>
 <translation id="5797070761912323120">Googleএ Search, বিজ্ঞাপন আৰু অন্য Google সেৱা ব্যক্তিকৃত কৰিবলৈ আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="5803566855766646066">আপুনি এই নতুন কাৰ্ডখন প্ৰত্যাখ্যান কৰিব বিচাৰে বুলি নিশ্চিতনে?</translation>
+<translation id="5812974770859303494">ইয়াত যোগ দিয়ক...</translation>
 <translation id="5816228676161003208">এই সুবিধাই আপোনাক নিজৰ কণ্ঠস্বৰ ব্যৱহাৰ কৰি ক্ষিপ্ৰভাৱে সন্ধান কৰিবলৈ দিয়ে।</translation>
 <translation id="581659025233126501">ছিংক অন কৰক</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" />এ পৰিচালনা কৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -763,6 +764,7 @@
 <translation id="8654802032646794042">বাতিল কৰক</translation>
 <translation id="8668210798914567634">আপোনাৰ পঢ়াসূচীত এই পৃষ্ঠাটো ছেভ কৰা হৈছে।</translation>
 <translation id="8680787084697685621">একাউণ্টৰ ছাইন ইনৰ সবিশেষৰ ম্যাদ উকলিল।</translation>
+<translation id="8693663554456874301">{count,plural, =1{টেব বন্ধ কৰক}one{টেববোৰ বন্ধ কৰক}other{টেববোৰ বন্ধ কৰক}}</translation>
 <translation id="8706588385081740091">পাছৱৰ্ডসমূহ</translation>
 <translation id="8717864919010420084">লিংকটো প্ৰতিলিপি কৰক</translation>
 <translation id="8721297211384281569">সঁজুলিৰ মেনু</translation>

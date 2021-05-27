@@ -2868,7 +2868,6 @@
 <translation id="4035758313003622889">&amp;কার্য পরিচালক</translation>
 <translation id="4036778507053569103">সার্ভার থেকে ডাউনলোড করা নীতিটি ভুল।</translation>
 <translation id="4037084878352560732">ঘোড়া</translation>
-<translation id="4037889604535939429">ব্যক্তির সম্পাদনা করুন</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{পৃষ্ঠাটি ছেড়ে যান}one{পৃষ্ঠাগুলি ছেড়ে যান}other{পৃষ্ঠাগুলি ছেড়ে যান}}</translation>
 <translation id="4044612648082411741">আপনার সার্টিফিকেটের পাসওয়ার্ড লিখুন</translation>
 <translation id="4044708573046946214">স্ক্রিন লক করার পাসওয়ার্ড</translation>
@@ -4335,7 +4334,6 @@
 <translation id="5709557627224531708">Chrome-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করুন</translation>
 <translation id="5711983031544731014">আনলক করতে অক্ষম৷ আপনার পাসওয়ার্ড লিখুন৷</translation>
 <translation id="5712153969432126546">সাইট কখনও কখনও পিডিএফ ফাইল প্রকাশ করে, যেমন ডকুমেন্ট, চুক্তিপত্র এবং ফর্ম</translation>
-<translation id="5712323955984474772">পরবর্তী আপডেট</translation>
 <translation id="5715711091495208045">প্লাগ-ইন ব্রোকার: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ডিফল্ট সার্চ ইঞ্জিনগুলি</translation>
 <translation id="5719637365829998022">QR কোড স্ক্যান করা হয়েছে।</translation>
@@ -5103,7 +5101,6 @@
 <translation id="6563469144985748109">আপনার পরিচালক এখনও এটি অনুমোদন করেন নি</translation>
 <translation id="6568283005472142698">ট্যাব সার্চ করা</translation>
 <translation id="6569911211938664415">পাসওয়ার্ড আপনার Google অ্যাকাউন্টে (<ph name="ACCOUNT" />) সেভ করা থাকে তাই আপনি যেকোনও ডিভাইসে পাসওয়ার্ড ব্যবহার করতে পারবেন</translation>
-<translation id="6569934958368283244">অন্যান্য লোকজন</translation>
 <translation id="6573497332121198392">শর্টকাট সরানো যাচ্ছে না</translation>
 <translation id="657402800789773160">&amp;Reload This Page</translation>
 <translation id="6577284282025554716">ডাউনলোড বাতিল হয়েছে: <ph name="FILE_NAME" /></translation>
@@ -6776,7 +6773,6 @@
 <translation id="8393700583063109961">বার্তা পাঠান</translation>
 <translation id="8397825320644530257">যুক্ত থাকা ফোন ডিসকানেক্ট করুন</translation>
 <translation id="8398877366907290961">যাইহোক এগিয়ে যান</translation>
-<translation id="8400146488506985033">ব্যক্তিগণকে পরিচালনা করুন</translation>
 <translation id="8401432541486058167">আপনার স্মার্ট কার্ডের পিন নম্বরটি দিন।</translation>
 <translation id="8404893580027489425">আপনার <ph name="DEVICE_TYPE" />-এর ডানদিকে আঙ্গুলের ছাপের সেন্সর আছে। যেকোনও আঙ্গুল দিয়ে সেটি আলতো করে টাচ করুন।</translation>
 <translation id="8405046151008197676">লেটেস্ট আপডেটের হাইলাইটগুলি দেখুন</translation>
@@ -6832,7 +6828,6 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> চালানোর জন্য আপনার অনুমতি প্রয়োজন</translation>
 <translation id="8466417995783206254">এই ট্যাবটি ছবির-মধ্যে-ছবি মোডে ভিডিওটি চালাচ্ছে।</translation>
 <translation id="8467326454809944210">অন্য ভাষা বেছে নিন</translation>
-<translation id="8470214316007448308">অন্যান্য লোকজন</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> এর জন্য সেভ করা পাসওয়ার্ডগুলি</translation>
 <translation id="8471525937465764768">ডকুমেন্ট প্রিন্ট করা অথবা স্টোরেজ ডিভাইসে সেভ করার মতো ফিচারের জন্য সাইট সাধারণত USB ডিভাইসের সাথে কানেক্ট করে</translation>
 <translation id="8471959340398751476">ছাড়ের সুবিধা বন্ধ করা আছে। আপনি কাস্টমাইজ মেনু থেকে এই সুবিধা চালু করতে পারবেন</translation>
@@ -7019,6 +7014,7 @@
 <translation id="8676374126336081632">ইনপুট সাফ করুন</translation>
 <translation id="8676770494376880701">নিম্ন শক্তির চার্জার সংযুক্ত করা হয়েছে</translation>
 <translation id="8677212948402625567">সবগুলি আড়াল করুন...</translation>
+<translation id="867767487203716855">পরবর্তী আপডেট</translation>
 <translation id="8677859815076891398">কোনও অ্যালবাম নেই। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-এ একটি অ্যালবাম তৈরি করুন।</translation>
 <translation id="8678582529642151449">ট্যাব সঙ্কুচিত হয় না</translation>
 <translation id="8678933587484842200">আপনি কীভাবে এই অ্যাপটি চালু করতে চান?</translation>
@@ -7107,7 +7103,6 @@
 <translation id="87646919272181953">Google Photos অ্যালবাম</translation>
 <translation id="8767621466733104912">সকল ব্যবহারকারীর জন্য স্বয়ংক্রিয়ভাবে Chrome আপডেট করুন</translation>
 <translation id="8770406935328356739">এক্সটেনশান রুট ডিরেক্টরি</translation>
-<translation id="8770507190024617908">ব্যক্তিগণকে পরিচালনা করুন</translation>
 <translation id="8771300903067484968">স্টার্ট পেজের ব্যাকগ্রাউন্ড ডিফল্ট ব্যাকগ্রাউন্ডে রিসেট করা হয়েছে।</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> সেভ করুন</translation>
 <translation id="8774379074441005279">ফিরিয়ে আনতে কনফার্ম করুন</translation>

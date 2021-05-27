@@ -2876,7 +2876,6 @@
 <translation id="4035758313003622889">&amp;מנהל המשימות</translation>
 <translation id="4036778507053569103">המדיניות שהורדה מהשרת אינה חוקית.</translation>
 <translation id="4037084878352560732">סוס</translation>
-<translation id="4037889604535939429">עריכת פרטי משתמש</translation>
 <translation id="4040753847560036377">‏ה-PUK שגוי</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{יציאה מהדף}two{יציאה מהדפים}many{יציאה מהדפים}other{יציאה מהדפים}}</translation>
 <translation id="4044612648082411741">יש להזין את סיסמת האישור</translation>
@@ -4345,7 +4344,6 @@
 <translation id="5709557627224531708">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
 <translation id="5711983031544731014">לא ניתן לבטל את הנעילה. יש להזין את הסיסמה שלך.</translation>
 <translation id="5712153969432126546">‏לפעמים אתרים מפרסמים קובצי PDF, כמו מסמכים, חוזים וטפסים</translation>
-<translation id="5712323955984474772">העדכון הבא</translation>
 <translation id="5715711091495208045">מתווך פלאגין: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">מנועי חיפוש המוגדרים כברירת מחדל</translation>
 <translation id="5719637365829998022">‏קוד ה-QR נסרק.</translation>
@@ -5117,7 +5115,6 @@
 <translation id="6563469144985748109">המנהל שלך עדיין לא אישר זאת</translation>
 <translation id="6568283005472142698">חיפוש בכרטיסיות</translation>
 <translation id="6569911211938664415">‏סיסמאות נשמרות בחשבון Google (<ph name="ACCOUNT" />) כדי לאפשר לך להשתמש בהן בכל המכשירים</translation>
-<translation id="6569934958368283244">אנשים אחרים</translation>
 <translation id="6573497332121198392">לא ניתן להסיר את קיצור הדרך</translation>
 <translation id="657402800789773160">&amp;טעינת דף זה מחדש</translation>
 <translation id="6577284282025554716">ההורדה בוטלה: <ph name="FILE_NAME" /></translation>
@@ -6805,7 +6802,6 @@
 <translation id="8393700583063109961">שליחת הודעה</translation>
 <translation id="8397825320644530257">ניתוק הטלפון המחובר</translation>
 <translation id="8398877366907290961">להמשיך בכל זאת</translation>
-<translation id="8400146488506985033">ניהול משתמשים</translation>
 <translation id="8401432541486058167">עליך לציין את קוד האימות המשויך לכרטיס החכם שלך.</translation>
 <translation id="8404893580027489425">חיישן טביעות האצבע מופיע בצד ימין של מכשיר <ph name="DEVICE_TYPE" /> שלך. יש לגעת בו בעדינות באחת האצבעות.</translation>
 <translation id="8405046151008197676">ריכזנו עבורך את הפרטים החשובים לגבי העדכון האחרון</translation>
@@ -6861,7 +6857,6 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> צריך אישור ממך כדי לפעול</translation>
 <translation id="8466417995783206254">בכרטיסייה הזו מופעל סרטון במצב 'תמונה בתוך תמונה'.</translation>
 <translation id="8467326454809944210">בחירת שפה אחרת</translation>
-<translation id="8470214316007448308">אנשים אחרים</translation>
 <translation id="8470513973197838199">סיסמאות שנשמרו בשביל <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">‏אתרים מתחברים בדרך כלל להתקני USB כדי לתמוך בתכונות כמו הדפסת מסמכים או שמירה בהתקן אחסון</translation>
 <translation id="8471959340398751476">ההנחות כבויות. ניתן להפעיל אותן בתפריט ההתאמה האישית</translation>
@@ -7048,6 +7043,7 @@
 <translation id="8676374126336081632">ניקוי קלט</translation>
 <translation id="8676770494376880701">חובר מטען בעל מתח נמוך</translation>
 <translation id="8677212948402625567">כיווץ הכול...</translation>
+<translation id="867767487203716855">העדכון הבא</translation>
 <translation id="8677859815076891398">‏אין אלבומים. ניתן ליצור אלבום ב<ph name="LINK_BEGIN" />תמונות Google<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">הכרטיסיות לא יתכווצו</translation>
 <translation id="8678933587484842200">איך להפעיל את האפליקציה הזו?</translation>
@@ -7136,7 +7132,6 @@
 <translation id="87646919272181953">‏אלבום של Google Photos</translation>
 <translation id="8767621466733104912">‏עדכון אוטומטי של Chrome אצל כל המשתמשים</translation>
 <translation id="8770406935328356739">ספריית הבסיס של תוסף</translation>
-<translation id="8770507190024617908">ניהול אנשים</translation>
 <translation id="8771300903067484968">רקע דף הפתיחה עבר איפוס לרקע ברירת המחדל.</translation>
 <translation id="8773302562181397928">שמירת <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">אישור השחזור</translation>

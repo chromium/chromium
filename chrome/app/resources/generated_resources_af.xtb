@@ -2876,7 +2876,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4035758313003622889">Taakbestuurder</translation>
 <translation id="4036778507053569103">Die beleid wat van die bediener afgelaai is, is ongeldig.</translation>
 <translation id="4037084878352560732">Perd</translation>
-<translation id="4037889604535939429">Wysig persoon</translation>
 <translation id="4040753847560036377">Verkeerde PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Verlaat bladsy}other{Verlaat bladsye}}</translation>
 <translation id="4044612648082411741">Voer jou sertifikaatwagwoord in</translation>
@@ -4346,7 +4345,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5709557627224531708">Stel Chrome as jou verstekblaaier</translation>
 <translation id="5711983031544731014">Kan nie ontsluit nie. Voer jou wagwoord in.</translation>
 <translation id="5712153969432126546">Werwe publiseer soms PDF's, soos dokumente, kontrakte en vorms</translation>
-<translation id="5712323955984474772">Volgende opdatering</translation>
 <translation id="5715711091495208045">Inpropagent: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Versteksoekenjins</translation>
 <translation id="5719637365829998022">QR-kode is geskandeer.</translation>
@@ -5118,7 +5116,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6563469144985748109">Jou bestuurder het dit nog nie goedgekeur nie</translation>
 <translation id="6568283005472142698">Oortjiesoektog</translation>
 <translation id="6569911211938664415">Wagwoorde word in jou Google-rekening (<ph name="ACCOUNT" />) gestoor sodat jy hulle op enige toestel kan gebruik.</translation>
-<translation id="6569934958368283244">Ander mense</translation>
 <translation id="6573497332121198392">Kan nie kortpad verwyder nie</translation>
 <translation id="657402800789773160">Herlaai hierdie bladsy</translation>
 <translation id="6577284282025554716">Aflaai is gekanselleer: <ph name="FILE_NAME" /></translation>
@@ -6804,7 +6801,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8393700583063109961">Stuur boodskap</translation>
 <translation id="8397825320644530257">Ontkoppel gekoppelde foon</translation>
 <translation id="8398877366907290961">Gaan nogtans voort</translation>
-<translation id="8400146488506985033">Bestuur mense</translation>
 <translation id="8401432541486058167">Verskaf die PIN wat met jou slimkaart geassosieer word.</translation>
 <translation id="8404893580027489425">Die vingerafdruksensor is aan die regterkant van jou <ph name="DEVICE_TYPE" />. Raak met enige vinger liggies daaraan.</translation>
 <translation id="8405046151008197676">Kry hoogtepunte van die jongste opdatering</translation>
@@ -6860,7 +6856,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> het jou toestemming nodig om te werk</translation>
 <translation id="8466417995783206254">Hierdie oortjie speel tans 'n video in prent-in-prent-modus.</translation>
 <translation id="8467326454809944210">Kies 'n ander taal</translation>
-<translation id="8470214316007448308">Ander mense</translation>
 <translation id="8470513973197838199">Gestoorde wagwoorde vir <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Werwe koppel gewoonlik aan USB-toestelle vir kenmerke soos om 'n dokument te druk of om op 'n bergingtoestel te stoor</translation>
 <translation id="8471959340398751476">Afslag is af. Jy kan dit in die gepasmaakte kieslys aanskakel</translation>
@@ -7047,6 +7042,7 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="8676374126336081632">Vee invoer uit</translation>
 <translation id="8676770494376880701">Laekraglaaier gekoppel</translation>
 <translation id="8677212948402625567">Vou alles in …</translation>
+<translation id="867767487203716855">Volgende opdatering</translation>
 <translation id="8677859815076891398">Geen albums nie. Skep 'n album in <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Oortjies krimp nie</translation>
 <translation id="8678933587484842200">Hoe wil jy hê moet hierdie program oopmaak?</translation>
@@ -7135,7 +7131,6 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="87646919272181953">Google Foto's-album</translation>
 <translation id="8767621466733104912">Dateer Chrome outomaties vir alle gebruikers op</translation>
 <translation id="8770406935328356739">Uitbreidingwortelgids</translation>
-<translation id="8770507190024617908">Bestuur mense</translation>
 <translation id="8771300903067484968">Beginbladsy se agtergrond is na die verstekagtergrond toe teruggestel.</translation>
 <translation id="8773302562181397928">Bespaar <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Bevestig terugstelling</translation>

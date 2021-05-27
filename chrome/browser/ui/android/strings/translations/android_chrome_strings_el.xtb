@@ -278,6 +278,7 @@
 <translation id="2777555524387840389">Απομένουν <ph name="SECONDS" /> δευτερόλεπτα</translation>
 <translation id="2779651927720337254">απέτυχε</translation>
 <translation id="2781151931089541271">Απομένει 1 δευτερόλεπτο</translation>
+<translation id="2788468313014644040">Αριθμός ομάδας</translation>
 <translation id="2801022321632964776">Ενημερώστε για να χρησιμοποιείτε τη γλώσσα σας στην πιο πρόσφατη έκδοση του Chrome</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@
 <translation id="4056223980640387499">Σέπια</translation>
 <translation id="4060598801229743805">Διαθέσιμες επιλογές κοντά στην κορυφή της οθόνης</translation>
 <translation id="4062305924942672200">Νομικές πληροφορίες</translation>
-<translation id="4082818367361753283">Αναγνωριστικό ομάδας</translation>
 <translation id="4084682180776658562">Σελιδοδείκτης</translation>
 <translation id="4084712963632273211">Από <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />παρέχεται από την Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Διαγραφή δεδομένων εφαρμογών;</translation>

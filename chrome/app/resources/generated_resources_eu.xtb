@@ -2860,7 +2860,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4035758313003622889">&amp;Zereginen kudeatzailea</translation>
 <translation id="4036778507053569103">Zerbitzaritik deskargatu den gidalerroak ez du balio.</translation>
 <translation id="4037084878352560732">Zaldia</translation>
-<translation id="4037889604535939429">Editatu pertsona</translation>
 <translation id="4040753847560036377">Okerreko PUKa</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Irten orritik}other{Irten orrietatik}}</translation>
 <translation id="4044612648082411741">Idatzi ziurtagiriaren pasahitza</translation>
@@ -4328,7 +4327,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5709557627224531708">Ezarri Chrome arakatzaile lehenetsi gisa</translation>
 <translation id="5711983031544731014">Ezin da desblokeatu. Idatzi pasahitza.</translation>
 <translation id="5712153969432126546">Batzuetan, webguneek PDFak argitaratzen dituzte, hala nola dokumentuak, kontratuak eta inprimakiak</translation>
-<translation id="5712323955984474772">Hurrengo eguneratzea</translation>
 <translation id="5715711091495208045">Pluginaren bitartekaria: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Bilatzaile lehenetsiak</translation>
 <translation id="5719637365829998022">Eskaneatu da QR kodea.</translation>
@@ -5100,7 +5098,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6563469144985748109">Kudeatzaileak ez du onartu eskaera oraindik</translation>
 <translation id="6568283005472142698">Fitxa-bilaketa</translation>
 <translation id="6569911211938664415">Pasahitzak Google-ko kontuan gordetzen dira (<ph name="ACCOUNT" />), edozein gailutan eskura izan ditzazun</translation>
-<translation id="6569934958368283244">Jende gehiago</translation>
 <translation id="6573497332121198392">Ezin da kendu lasterbidea</translation>
 <translation id="657402800789773160">&amp;Kargatu orria berriro</translation>
 <translation id="6577284282025554716">Bertan behera utzi da <ph name="FILE_NAME" /> fitxategia deskargatzeko prozesua</translation>
@@ -6785,7 +6782,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8393700583063109961">Bidali mezua</translation>
 <translation id="8397825320644530257">Deskonektatu konektatutako telefonoa</translation>
 <translation id="8398877366907290961">Jarraitu, hala ere</translation>
-<translation id="8400146488506985033">Kudeatu jendea</translation>
 <translation id="8401432541486058167">Eman txartel adimendunarekin lotutako PIN kodea.</translation>
 <translation id="8404893580027489425"><ph name="DEVICE_TYPE" /> gailuaren eskuineko aldean dago hatz-marken sentsorea. Uki ezazu edozein hatzekin leuntasunez.</translation>
 <translation id="8405046151008197676">Irakurri azken eguneratzeari buruzko datu aipagarriak</translation>
@@ -6841,7 +6837,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> pluginak zure baimena behar du exekutatzeko</translation>
 <translation id="8466417995783206254">Fitxa honetan, bideo bat pantaila txiki gainjarriko moduan erreproduzitzen ari da.</translation>
 <translation id="8467326454809944210">Aukeratu beste hizkuntza bat</translation>
-<translation id="8470214316007448308">Jende gehiago</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> webgunean gordetako pasahitzak</translation>
 <translation id="8471525937465764768">Webguneak USB bidezko gailuetara konektatu ohi dira dokumentu bat inprimatzeko edo biltegiratze-gailu batean gordetzeko, eta antzeko eginbideak eskaintzeko</translation>
 <translation id="8471959340398751476">Deskontuak aurkitzeko eginbidea desaktibatuta dago. Aktiba ezazu Pertsonalizatu menuan.</translation>
@@ -7028,6 +7023,7 @@ Esleipena kentzeko, sakatu esleitutako erabilerraztasun-etengailu bat.</translat
 <translation id="8676374126336081632">Garbitu idatzitakoa</translation>
 <translation id="8676770494376880701">Potentzia txikiko kargagailua konektatu da</translation>
 <translation id="8677212948402625567">Tolestu guztiak…</translation>
+<translation id="867767487203716855">Hurrengo eguneratzea</translation>
 <translation id="8677859815076891398">Ez dago albumik. Sortu bat <ph name="LINK_BEGIN" />Google Argazkiak<ph name="LINK_END" /> zerbitzuan.</translation>
 <translation id="8678582529642151449">Fitxak ez dira txikitzen</translation>
 <translation id="8678933587484842200">Nola abiarazi behar da aplikazio hau?</translation>
@@ -7116,7 +7112,6 @@ Esleipena kentzeko, sakatu esleitutako erabilerraztasun-etengailu bat.</translat
 <translation id="87646919272181953">Google Argazkiak zerbitzuko albuma</translation>
 <translation id="8767621466733104912">Eguneratu Chrome automatikoki erabiltzaile guztiei</translation>
 <translation id="8770406935328356739">Luzapenaren erroko direktorioa</translation>
-<translation id="8770507190024617908">Kudeatu jendea</translation>
 <translation id="8771300903067484968">Atzeko plano lehenetsia berrezarri da orri nagusian.</translation>
 <translation id="8773302562181397928">Gorde <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Berretsi leheneratu nahi duzula</translation>

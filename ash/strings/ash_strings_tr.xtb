@@ -245,6 +245,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Uygulama, uzantı ve tema yükleme</translation>
 <translation id="2977598380246111477">Sonraki sayı</translation>
+<translation id="2992327365391326550">Cihazın mikrofon düğmesi kapalı.</translation>
 <translation id="2995447421581609334">Yayın cihazlarını göster.</translation>
 <translation id="2996462380875591307">Yerleştirilmiş Büyüteç etkinleştirildi. Kapatmak için tekrar Ctrl+Arama+H tuşlarına basın.</translation>
 <translation id="3000461861112256445">Mono ses</translation>
@@ -255,6 +256,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3038571455154067151">Oturum açmak için Family Link ebeveyn erişim kodunuzu girin</translation>
 <translation id="3039939407102840004">Ekran kalemi pil seviyesi yüzde <ph name="PERCENTAGE" />.</translation>
 <translation id="3045488863354895414">İyi günler,</translation>
+<translation id="3051189971848907985">Profil yeniden adlandırılıyor. Birkaç dakika bekleyin.</translation>
 <translation id="3055162170959710888">Bugün bu cihazı <ph name="USED_TIME" /> kullandınız</translation>
 <translation id="3077734595579995578">üstkrktr</translation>
 <translation id="3081696990447829002">Menüyü genişlet</translation>
@@ -295,6 +297,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3371140690572404006">USB-C cihaz (sağ ön bağlantı noktası)</translation>
 <translation id="3375634426936648815">Bağlı</translation>
+<translation id="3378442621503952303">Profile bağlanılıyor. Birkaç dakika bekleyin.</translation>
 <translation id="3386978599540877378">tam ekran büyüteci</translation>
 <translation id="3400357268283240774">Ek ayarlar</translation>
 <translation id="3410336247007142655">Koyu tema ayarlarını göster</translation>
@@ -351,6 +354,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="380165613292957338">Merhaba, nasıl yardımcı olabilirim?</translation>
 <translation id="3826099427150913765">Şifreye geç</translation>
 <translation id="383058930331066723">Pil tasarrufu modu açık</translation>
+<translation id="3835880383832568924">Güncellemeleri görmek için Kısayollar uygulamasını açın</translation>
 <translation id="383629559565718788">Klavye ayarlarını göster</translation>
 <translation id="3846214748874656680">Tam ekran modundan çık</translation>
 <translation id="3846575436967432996">Hiçbir ağ bilgisi yok</translation>
@@ -471,6 +475,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4705716602320768426">Geri bildirim gönder</translation>
 <translation id="4731797938093519117">Ebeveyn erişimi</translation>
 <translation id="4734965478015604180">Yatay</translation>
+<translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Sayı klavye kısayolu değişti. İşlev tuşlarını kullanmak için <ph name="LAUNCHER_KEY_NAME" /> tuşu + üst sıradaki tuşlardan birine basın.</translation>
 <translation id="4744944742468440486">Seçiminizle ilgili bilgi</translation>
 <translation id="4759238208242260848">İndirilenler</translation>
 <translation id="4774338217796918551">Saat <ph name="COME_BACK_TIME" /> olduğunda geri gelin.</translation>
@@ -729,6 +734,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6896758677409633944">Kopyala</translation>
 <translation id="6910714959251846841">Bu güncelleme, cihazınızda powerwash işlemi yapılmasını gerektiriyor. En yeni <ph name="SYSTEM_APP_NAME" /> güncellemesi ile ilgili daha fazla bilgi edinin.</translation>
 <translation id="6919251195245069855">Akıllı kartınız tanınamadı. Tekrar deneyin.</translation>
+<translation id="6921188888306725546">Klavye kısayolları iyileştirildi</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6961121602502368900">Telefonu sessize alma özelliği, iş profilinde kullanılamaz</translation>
 <translation id="6961840794482373852">Alt + Yukarı Ok klavye kısayolu değişti. Page Up tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Yukarı Ok tuşlarına basın.</translation>
@@ -935,6 +941,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8631727435199967028">Erişebilirlik Ayarları</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> kaldı</translation>
+<translation id="8641805545866562088">Profil listesi yenileniyor. Birkaç dakika bekleyin.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> zamanlayıcı</translation>
 <translation id="8647931990447795414">Kullanıcı eklemek için Family Link ebeveyn erişim kodunuzu girin</translation>
 <translation id="8649101189709089199">Seç ve Dinle</translation>
@@ -962,6 +969,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Kablosuz</translation>
 <translation id="881757059229893486">Giriş Yöntemi Ayarları</translation>
+<translation id="8818320199597151042">Profil kaldırılıyor. Birkaç dakika bekleyin.</translation>
 <translation id="8825863694328519386">Geri gitmek için soldan kaydırın</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Geri düğmesi</translation>
@@ -1007,6 +1015,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> adlı ekran kaldırıldı</translation>
 <translation id="9098969848082897657">Telefonu sessize al</translation>
 <translation id="9099154003160514616">Lacros güncellemesi var</translation>
+<translation id="9100887602489003640">Profil ekleniyor. Birkaç dakika bekleyin.</translation>
 <translation id="9105450214093926548">Lacros tarayıcı çalışırken ikinci bir kullanıcının oturum açması desteklenmiyor. Bunun yerine lütfen Lacros'ta ikinci bir tarayıcı profili kullanın veya Lacros'u kapatıp tekrar deneyin.</translation>
 <translation id="9133335900048457298">Korunan içerik kaydedilemez</translation>
 <translation id="9151726767154816831">Güncellemek için yeniden başlatın ve Powerwash uygulayın</translation>

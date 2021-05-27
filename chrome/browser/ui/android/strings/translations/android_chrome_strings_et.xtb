@@ -278,6 +278,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2777555524387840389">Jäänud on <ph name="SECONDS" /> sekundit</translation>
 <translation id="2779651927720337254">ebaõnnestus</translation>
 <translation id="2781151931089541271">Jäänud on 1 sekund</translation>
+<translation id="2788468313014644040">Grupi number</translation>
 <translation id="2801022321632964776">Oma keele kasutamiseks värskendage Chrome uusimale versioonile</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@ Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirko
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4060598801229743805">Ekraani ülaosas saadaolevad valikud</translation>
 <translation id="4062305924942672200">Juriidiline teave</translation>
-<translation id="4082818367361753283">Grupi ID</translation>
 <translation id="4084682180776658562">Järjehoidja</translation>
 <translation id="4084712963632273211">Avaldajalt <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />sisu pakub Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Kas kustutada rakenduse andmed?</translation>

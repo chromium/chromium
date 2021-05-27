@@ -216,6 +216,7 @@
 <translation id="1294263471858445589">Activer l'authentification ambiante pour les sessions standards et de navigation privée.</translation>
 <translation id="1295737447968372331">Activer la dictée sur l'écran de connexion</translation>
 <translation id="1297182715641689552">Utiliser un script de proxy .pac</translation>
+<translation id="1297827666345629703">Un compte géré doit être un compte principal</translation>
 <translation id="1297961932043741908">Définir la quantité maximale (en mégaoctets) de mémoire qu'une instance de Chrome peut utiliser.</translation>
 <translation id="1304973015437969093">Identifiants d'extension ou d'application et URL de mise à jour à installer en arrière-plan</translation>
 <translation id="1305400589435476516">Si cette règle est activée, l'itinérance des données est autorisée sur l'appareil.
@@ -581,6 +582,13 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="1755310913456007816">Utiliser les paramètres existants de vérification en ligne de la révocation</translation>
 <translation id="1760951637494635692">Autoriser l'API Serial sur ces sites</translation>
+<translation id="1765503534110351026">Cette règle étant obsolète, veuillez utiliser <ph name="PROXY_SETTINGS_POLICY_NAME" /> à la place.
+
+       Si cette règle est configurée, <ph name="PRODUCT_NAME" /> contourne tout proxy de la liste d'hôtes indiquée ici. Elle ne s'applique que si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> n'est pas spécifiée et si vous avez sélectionné <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> ou <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> pour <ph name="PROXY_MODE_POLICY_NAME" />.
+
+       Ne configurez pas cette règle si vous avez sélectionné un autre mode pour spécifier les règles de proxy.
+
+       Remarque : Pour voir des exemples détaillés, accédez à The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1767673020408652620">Activer les recommandations d'applications dans le champ de recherche vide</translation>
 <translation id="1780323582106687813">Cette règle étant obsolète, veuillez utiliser à la place la règle <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />.
 
@@ -819,6 +827,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2082205219176343977">Configurer la version Chrome minimale autorisée de l'appareil.</translation>
 <translation id="208566302163036794">Bloquer les fonctionnalités désactivées</translation>
 <translation id="208623333578980446">Autoriser les wakelocks forçant l'activation de l'écran pour la gestion de l'alimentation</translation>
+<translation id="2086944573376916479">Un compte géré doit être un compte principal sans comptes secondaires</translation>
 <translation id="2090939118981888335">Si vous activez cette règle, le proxy de compression des données est activé. Si vous la désactivez, le proxy est désactivé.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si vous ne la configurez pas, les utilisateurs peuvent choisir d'utiliser ou non la fonctionnalité.</translation>
@@ -872,6 +881,17 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Si cette règle n'est pas configurée, le navigateur ne commence à économiser de la mémoire que s'il détecte que la quantité de mémoire physique sur l'ordinateur est faible.</translation>
 <translation id="2166472654199325139">Ne pas filtrer les sites de contenus réservés aux adultes</translation>
+<translation id="2168060657210442816">
+      Cette règle nécessite que la règle <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> soit définie sur "True" pour être appliquée.
+
+      Si elle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> au niveau de l'ordinateur, tous les comptes gérés seront obligatoirement des comptes principaux.
+      Si elle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> au niveau d'un compte, ce compte sera toujours un compte principal, qui pourra avoir des comptes secondaires dans son profil.
+
+      Si elle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> au niveau de l'ordinateur, tous les comptes gérés seront obligatoirement des comptes principaux.
+      Si elle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> au niveau d'un compte, ce compte sera toujours un compte principal, sans compte secondaire dans son profil.
+
+      Si elle est définie sur <ph name="POLICY_VALUE_NONE" /> ou si elle n'est pas configurée, il n'y aura aucune restriction pour les comptes gérés. Il sera donc possible qu'un compte géré soit un compte secondaire, ce qui l'empêchera de recevoir des règles définies sur le compte par l'administrateur.
+    </translation>
 <translation id="2168397434410358693">Délai d'inactivité (secteur)</translation>
 <translation id="217013996107840632">Paramètres de ligne de commande pour basculer vers Chrome à partir du navigateur secondaire.</translation>
 <translation id="2170233653554726857">Activer l'optimisation WPAD</translation>
@@ -1771,6 +1791,11 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="3261592499545947104">Nombre de secondes avant l'expiration d'un certificat lorsque le renouvellement doit être déclenché.</translation>
+<translation id="3264706118366247207">Configure une liste des types de données de navigation devant être supprimés lorsque l'utilisateur ferme toutes les fenêtres du navigateur. Les types de données disponibles sont les suivants : historique de navigation (<ph name="DATA_TYPE_BROWSING_HISTORY" />), historique des téléchargements (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), saisie automatique (<ph name="DATA_TYPE_AUTOFILL" />), mots de passe (<ph name="DATA_TYPE_PASSWORD" />), paramètres des sites (<ph name="DATA_TYPE_SITE_SETTINGS" />) et données des applis hébergées (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Cette règle ne prévaut pas sur <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+      Cette règle nécessite que la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> soit définie sur "True". Si ce n'est pas le cas, elle sera ignorée. Si cette règle est définie au niveau de la plate-forme, la synchronisation devra y être désactivée. Si elle est définie au niveau d'un utilisateur, la synchronisation devra être désactivée au niveau de cet utilisateur pour que la règle prenne effet.
+
+      Si <ph name="PRODUCT_NAME" /> ne se ferme pas correctement, par exemple si le navigateur ou l'OS plante, les données de navigation seront supprimées lors du prochain chargement du profil.</translation>
 <translation id="3264793472749429012">Codages du moteur de recherche par défaut</translation>
 <translation id="3273221114520206906">Paramètre JavaScript par défaut</translation>
 <translation id="328347261792478720">Par défaut, le navigateur propose à l'utilisateur des recommandations personnalisées de contenus multimédias. Si cette règle est désactivée, l'utilisateur ne bénéficie pas de ces recommandations. Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur peut voir ces recommandations.</translation>
@@ -1831,6 +1856,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure ou égale au délai d'inactivité.
 
           Le message d'avertissement ne s'affiche que si le dépassement du délai d'inactivité entraîne une déconnexion ou l'arrêt de l'appareil.</translation>
+<translation id="3363360928811201045">Ajouter des restrictions aux comptes gérés</translation>
 <translation id="3367868895271989224">Si cette règle est activée, tous les sites sont isolés. (Chaque site exécute son propre processus.) Si cette règle est désactivée ou si elle n'est pas configurée, les utilisateurs peuvent désactiver l'isolation de sites (en accédant à l'option "Désactiver l'isolation de sites" sur la page chrome://flags, par exemple).
 
       <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> peut être également utile pour le réglage des origines. Pour <ph name="PRODUCT_OS_NAME" /> 76 ou version antérieure, attribuez la même valeur à la règle <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> relative aux appareils. En effet, si les valeurs ne sont pas identiques, un retard peut être constaté lors de l'ouverture d'une session utilisateur.
@@ -3009,6 +3035,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Si une règle ne figure pas dans la liste et qu'il y a conflit entre plusieurs sources, champs d'application ou niveaux, la règle ayant la plus haute priorité s'applique.</translation>
 <translation id="5056708224511062314">Loupe désactivée</translation>
 <translation id="5058573563327660283">Sélectionner la stratégie utilisée pour libérer de l'espace disque au cours du nettoyage automatique (obsolète)</translation>
+<translation id="5059201920681374653">Les comptes gérés doivent être sur un appareil géré affilié</translation>
 <translation id="5061114193960158745">Permet d'établir la liste des sites Web qui ne déclencheront jamais de changement de navigateur. Chaque élément est traité comme une instruction. Les instructions pour lesquelles il y a une correspondance ne déclenchent pas l'ouverture d'un navigateur secondaire. Contrairement à la règle <ph name="URL_LIST_POLICY_NAME" />, les instructions s'appliquent dans les deux sens. Lorsque le module complémentaire d'<ph name="IE_PRODUCT_NAME" /> est activé, il contrôle également si <ph name="IE_PRODUCT_NAME" /> doit ouvrir ou non ces URL dans <ph name="PRODUCT_NAME" />.
 
       Si cette règle n'est pas configurée, aucun site Web n'est ajouté à la liste.
@@ -3194,6 +3221,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle n'est pas configurée, les utilisateurs ne peuvent pas jouer à ce jeu sur les appareils équipés de <ph name="PRODUCT_OS_NAME" />, mais ils le peuvent dans d'autres circonstances.</translation>
 <translation id="529457411593078576">Activer les conditions d'utilisation à la première exécution des onglets personnalisés Chrome</translation>
+<translation id="5298949392804966105">Aucune restriction pour les comptes gérés</translation>
 <translation id="530134925949808452">Heure locale à laquelle le quota d'utilisation est renouvelé.</translation>
 <translation id="5303080953475303561">Cette règle permet de contrôler la fréquence à laquelle l'écran de verrouillage exige un mot de passe pour le déverrouillage rapide. Si la dernière saisie du mot de passe est antérieure à la période définie, le déverrouillage rapide n'est pas disponible. Si l'utilisateur reste sur l'écran de verrouillage au-delà de cette période, il devra saisir son mot de passe la prochaine fois qu'il saisira un code erroné ou accédera de nouveau à l'écran de verrouillage, selon la situation qui se présente en premier.
 
@@ -4367,6 +4395,26 @@ Si vous sélectionnez les options suivantes :
 
           Remarque : <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> remplace cette règle si l'ancienne est définie.</translation>
 <translation id="6833988859168635883">Démarrage, page d'accueil et page Nouvel onglet</translation>
+<translation id="6834298774555537368">Cette règle permet de configurer les paramètres de proxy pour Chrome et les applis ARC, qui ignorent toutes les options liées au proxy spécifiées à partir de la ligne de commande.
+
+       Si cette règle n'est pas configurée, les utilisateurs peuvent sélectionner les paramètres de proxy.
+
+       Si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> est configurée, les champs suivants sont proposés :
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> vous permet de spécifier le serveur proxy que Chrome utilise, et empêche les utilisateurs de modifier les paramètres de proxy
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> : URL d'un fichier .pac de proxy
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> : URL du serveur proxy
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> : liste d'hôtes pour lesquels le proxy sera contourné
+
+       Le champ <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> est obsolète et a été remplacé par le champ <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Dans <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, si vous sélectionnez :
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, aucun proxy n'est utilisé et tous les autres champs sont ignorés ;
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, le proxy du système est utilisé et tous les autres champs sont ignorés ;
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tous les autres champs sont ignorés ;
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, les champs <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> et <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> sont utilisés ;
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, les champs <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> et <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> sont utilisés.
+
+      Remarque : Pour voir des exemples détaillés, accédez à The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="6835883744948188639">Afficher une invite récurrente indiquant qu'un redémarrage est recommandé</translation>
 <translation id="683688607121170501">Ce paramètre permet aux utilisateurs de basculer d'un compte Google à l'autre dans la zone de contenu de la fenêtre de leur navigateur et dans les applications Android une fois qu'ils sont connectés sur leur appareil <ph name="PRODUCT_OS_NAME" />.
 

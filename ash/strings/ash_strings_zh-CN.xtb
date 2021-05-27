@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">安装应用、扩展程序和主题背景</translation>
 <translation id="2977598380246111477">下一个代码</translation>
+<translation id="2992327365391326550">设备的麦克风按钮已关闭。</translation>
 <translation id="2995447421581609334">显示投射设备。</translation>
 <translation id="2996462380875591307">已启用停靠的放大镜。再按一次 Ctrl+搜索键+D 组合键即可将其停用。</translation>
 <translation id="3000461861112256445">单声道音频</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">如需登录，请输入您的 Family Link 家长访问码</translation>
 <translation id="3039939407102840004">触控笔电池电量为 <ph name="PERCENTAGE" />%。</translation>
 <translation id="3045488863354895414">下午好！</translation>
+<translation id="3051189971848907985">正在重命名配置文件。请稍等几分钟。</translation>
 <translation id="3055162170959710888">您今天的设备使用时长：<ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">展开菜单</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3371140690572404006">USB-C 设备（右侧前端端口）</translation>
 <translation id="3375634426936648815">已连接</translation>
+<translation id="3378442621503952303">正在连接到配置文件。请稍等几分钟。</translation>
 <translation id="3386978599540877378">全屏放大镜</translation>
 <translation id="3400357268283240774">其他设置</translation>
 <translation id="3410336247007142655">显示深色主题设置</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">嗨，有什么我可以帮你的吗？</translation>
 <translation id="3826099427150913765">切换到密码</translation>
 <translation id="383058930331066723">省电模式已开启</translation>
+<translation id="3835880383832568924">若要查看更新，请打开“快捷键”应用</translation>
 <translation id="383629559565718788">显示键盘设置</translation>
 <translation id="3846214748874656680">退出全屏模式</translation>
 <translation id="3846575436967432996">没有可用的网络信息</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">提交反馈</translation>
 <translation id="4731797938093519117">家长访问</translation>
 <translation id="4734965478015604180">横向</translation>
+<translation id="4735498845456076464">键盘快捷键“<ph name="LAUNCHER_KEY_NAME" /> + 数字键”已更改。若要使用功能键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 顶排的某个键。</translation>
 <translation id="4744944742468440486">与您所选内容相关的信息</translation>
 <translation id="4759238208242260848">下载内容</translation>
 <translation id="4774338217796918551">您需要等到明天<ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">复制</translation>
 <translation id="6910714959251846841">必须对您的设备执行 Powerwash 才能安装这项更新。详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新。</translation>
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
+<translation id="6921188888306725546">已改进键盘快捷键</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6961121602502368900">工作资料不支持“将手机设为静音”功能</translation>
 <translation id="6961840794482373852">键盘快捷键“Alt + 向上键”已更改。若要使用 Page Up 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向上键。</translation>
@@ -934,6 +940,7 @@
 <translation id="8631727435199967028">无障碍设置</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="8639760480004882931">剩余电量：<ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">正在刷新配置文件列表。请稍等几分钟。</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" />定时器</translation>
 <translation id="8647931990447795414">若要添加人员，请输入您的 Family Link 家长访问码</translation>
 <translation id="8649101189709089199">随选朗读</translation>
@@ -961,6 +968,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">输入法设置</translation>
+<translation id="8818320199597151042">正在移除配置文件。请稍等几分钟。</translation>
 <translation id="8825863694328519386">从左侧向右滑动手指即可返回</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">“返回”按钮</translation>
@@ -1006,6 +1014,7 @@
 <translation id="9091626656156419976">已移除显示器“<ph name="DISPLAY_NAME" />”</translation>
 <translation id="9098969848082897657">将手机设为静音</translation>
 <translation id="9099154003160514616">有可用的 Lacros 更新</translation>
+<translation id="9100887602489003640">正在添加配置文件。请稍等几分钟。</translation>
 <translation id="9105450214093926548">当 Lacros 浏览器正在运行时，不支持多用户登录。请在 Lacros 中改用另一浏览器配置文件，或者关闭 Lacros 并重试。</translation>
 <translation id="9133335900048457298">无法录制受保护的内容</translation>
 <translation id="9151726767154816831">重新启动并通过 Powerwash 来进行更新</translation>

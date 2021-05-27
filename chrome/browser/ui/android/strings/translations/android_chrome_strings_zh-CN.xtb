@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1016498331642356377">使用语音快速搜索。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="1028699632127661925">正在发送到<ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">一并清除来自这些网站和应用的数据？</translation>
 <translation id="1036348656032585052">关闭</translation>
@@ -157,6 +158,7 @@
 <translation id="2067805253194386918">文本</translation>
 <translation id="2068748236079642969">观看下一个视频</translation>
 <translation id="2074143993849053708">针对 Google 助理语音搜索功能的用户意见征求界面已关闭</translation>
+<translation id="2075835334924942448">您会在此处看到报道</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 条结果，共 <ph name="TOTAL_RESULTS" /> 条</translation>
 <translation id="2096012225669085171">在所有设备上保持同步，获享个性化体验</translation>
 <translation id="2100273922101894616">自动登录</translation>
@@ -170,6 +172,7 @@
 <translation id="2131665479022868825">节省了 <ph name="DATA" /></translation>
 <translation id="213279576345780926">已关闭“<ph name="TAB_TITLE" />”</translation>
 <translation id="2139186145475833000">添加到主屏幕</translation>
+<translation id="2141396931810938595">根据您的使用情况</translation>
 <translation id="214888715418183969">选择您要与 Chrome 共享哪些数据。您共享的指标将有助于我们改进 Chrome 的功能、性能和稳定性。</translation>
 <translation id="2154484045852737596">修改支付卡</translation>
 <translation id="2154710561487035718">复制网址</translation>
@@ -258,6 +261,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 个音频文件}other{# 个音频文件}}</translation>
 <translation id="2656405586795711023">Web 应用</translation>
 <translation id="2689830683995595741">使用 Chrome 即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。<ph name="BEGIN_LINK3" />针对通过 Family Link 管理的 Google 帐号的隐私权声明<ph name="END_LINK3" />也适用。</translation>
+<translation id="2702516483241149200">新功能：分享某个文本链接即可滚动至对应的文本</translation>
 <translation id="2704606927547763573">已复制</translation>
 <translation id="2707726405694321444">刷新网页</translation>
 <translation id="271033894570825754">新建</translation>
@@ -274,6 +278,7 @@
 <translation id="2777555524387840389">还剩 <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失败</translation>
 <translation id="2781151931089541271">还剩 1 秒</translation>
+<translation id="2788468313014644040">群组编号</translation>
 <translation id="2801022321632964776">更新即可在最新版本的 Chrome 中使用您的语言</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -305,6 +310,7 @@
 <translation id="2956410042958133412">该帐号由 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 个未读页面}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 个未读页面}}</translation>
 <translation id="2979025552038692506">所选的无痕模式标签页</translation>
+<translation id="2979448359891869301">无法扩展屏幕截图范围。请在手机内存不紧张时重试。</translation>
 <translation id="2987620471460279764">从其他设备分享的文字</translation>
 <translation id="2989523299700148168">最近用过的搜索引擎</translation>
 <translation id="2992473221983447149">图片说明</translation>
@@ -346,6 +352,7 @@
 <translation id="3265534588625245297">管理您关注的网站</translation>
 <translation id="3269093882174072735">加载图片</translation>
 <translation id="3269956123044984603">要访问您在其他设备上的标签页，请在 Android 帐号设置部分开启“自动同步数据”。</translation>
+<translation id="3280562213547448728">语音搜索</translation>
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3284510035090979597">主动帮助</translation>
 <translation id="3285080554353377245">介绍如何使用 Chrome 的视频</translation>
@@ -396,6 +403,7 @@
 <translation id="3563767357928833671">已显示剪贴板内容</translation>
 <translation id="3566923219790363270">Chrome 仍在准备 VR。请稍等片刻再重启 Chrome。</translation>
 <translation id="3568688522516854065">要访问您在其他设备上的标签页，请登录您的帐号并开启同步功能</translation>
+<translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587596251841506391">帮助我们改善网络安全环境</translation>
 <translation id="3602290021589620013">预览</translation>
@@ -460,7 +468,6 @@
 <translation id="4056223980640387499">棕褐色调</translation>
 <translation id="4060598801229743805">选项位于屏幕顶部附近</translation>
 <translation id="4062305924942672200">法律信息</translation>
-<translation id="4082818367361753283">群组 ID</translation>
 <translation id="4084682180776658562">添加书签</translation>
 <translation id="4084712963632273211">来自 <ph name="PUBLISHER_ORIGIN" /> - <ph name="BEGIN_DEEMPHASIZED" />由 Google 提供<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">要删除应用数据吗？</translation>
@@ -481,6 +488,7 @@
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4198423547019359126">没有可用的下载内容保存位置</translation>
 <translation id="4209895695669353772">要获取 Google 推荐的个性化内容，请开启同步功能</translation>
+<translation id="4225895483398857530">工具栏中的快捷方式</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4248098802131000011">确保您的密码免受数据泄露和其他安全问题的侵害</translation>
 <translation id="4250229828105606438">屏幕截图</translation>
@@ -748,12 +756,14 @@
 <translation id="5864419784173784555">正在等待完成另一项下载…</translation>
 <translation id="5865733239029070421">自动将使用情况统计信息和崩溃报告发送至 Google</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
+<translation id="587735546353481577">若要关注某个网站，请转到该网站，打开 Chrome 菜单，然后点按“关注”。</translation>
 <translation id="5880748256563468367">转到 Feed</translation>
 <translation id="5884076754568147479">为了帮助您执行各种操作，Google 将会收到您使用 Google 助理时所在网站的网址和内容，以及您通过 Google 助理提交的信息</translation>
 <translation id="5919204609460789179">需更新 <ph name="PRODUCT_NAME" />，才能开始同步</translation>
 <translation id="5937580074298050696">已节省 <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">重置</translation>
 <translation id="5942872142862698679">目前使用的搜索引擎是 Google</translation>
+<translation id="5945035219773565305">当前建议：<ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">目前查看的是实际网页</translation>
 <translation id="5952764234151283551">将您尝试访问的网页的网址发送给 Google</translation>
 <translation id="5956665950594638604">在新标签页中打开 Chrome 帮助中心</translation>
@@ -767,6 +777,10 @@
 <translation id="6000203700195075278">重新关注</translation>
 <translation id="6002623704405939939">若要清除<ph name="BEGIN_LINK1" />搜索<ph name="END_LINK1" />记录或其他形式的历史记录，请前往<ph name="BEGIN_LINK2" />我的 Google 活动记录<ph name="END_LINK2" />页面</translation>
 <translation id="6005538289190791541">建议的密码</translation>
+<translation id="6032091552407840792">这项试用版功能仅在<ph name="BEGIN_LINK" />部分区域<ph name="END_LINK" />有效。</translation>
+<translation id="6033245666633565791">Chrome 正在通过 <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> 开发新技术，以便既能保护开放网络又能使您免受跨网站跟踪。
+
+Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部分区域使用。现阶段，网站可在继续使用第三方 Cookie 等当前网络技术的同时试用 Privacy Sandbox。</translation>
 <translation id="6036057147555329831">额外的 ICU</translation>
 <translation id="6039379616847168523">跳转到下一个标签页</translation>
 <translation id="6040143037577758943">关闭</translation>
@@ -832,6 +846,7 @@
 <translation id="6407224748847589805">无法连接到您的计算机。请尝试另一种验证方式。</translation>
 <translation id="6410404864818553978">基本的使用情况数据</translation>
 <translation id="6410883413783534063">打开多个标签页即可同时访问不同网页</translation>
+<translation id="6411219469806822692">无法继续向上滚动屏幕了。请尝试从页面中更靠上的位置开始截屏。</translation>
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="641643625718530986">打印…</translation>
 <translation id="6427112570124116297">翻译网页</translation>
@@ -894,10 +909,12 @@
 <translation id="671481426037969117">您的 <ph name="FQDN" /> 计时器已结束计时。它将于明天重新开始。</translation>
 <translation id="6738516213925468394">您的数据已于 <ph name="TIME" />使用您的<ph name="BEGIN_LINK" />同步密码<ph name="END_LINK" />加密。输入该密码即可开始同步。</translation>
 <translation id="6738867403308150051">正在下载…</translation>
+<translation id="6751521182688001123">快速打开一个新标签页。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="6767294960381293877">要与之分享标签页的设备的列表已半屏打开。</translation>
 <translation id="6783942555455976443">保存此页面以便稍后阅读并接收提醒</translation>
 <translation id="6811034713472274749">页面已可供查看</translation>
 <translation id="6813446258015311409">登录 Chrome，已打开。</translation>
+<translation id="6817747507826986771">快速分享此页面。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">已选择标签页“<ph name="TAB_TITLE" />”</translation>
 <translation id="6846298663435243399">正在加载…</translation>
@@ -968,6 +985,7 @@
 <translation id="7333031090786104871">仍在添加先前的网站</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
 <translation id="7340958967809483333">“探索”功能的选项</translation>
+<translation id="7352339641508007922">向上/向下拖动即可截取长屏幕</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7352939065658542140">视频</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{分享 1 个所选项}other{分享 # 个所选项}}</translation>
@@ -1060,6 +1078,7 @@
 <translation id="7876243839304621966">全部删除</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 个未读页面}other{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 个未读页面}}</translation>
 <translation id="7882131421121961860">未找到任何记录</translation>
+<translation id="7884346424584885269">Chrome 需要获得相应权限，才能搜寻附近的设备。<ph name="BEGIN_LINK" />更新权限<ph name="END_LINK" />。</translation>
 <translation id="7886917304091689118">正在 Chrome 中运行</translation>
 <translation id="789763218334337857">如何使用 Chrome</translation>
 <translation id="7903184275147100332">请稍等片刻</translation>
@@ -1153,6 +1172,11 @@
 <translation id="8461694314515752532">使用您自己的同步密码加密已同步的数据</translation>
 <translation id="8466613982764129868">请确保<ph name="TARGET_DEVICE_NAME" />已连接到互联网</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
+<translation id="8481921391193215807">如果此控件已开启，网站可能会使用此处所示的隐私保护技术来提供其内容和服务。这些技术包括跨网站跟踪机制的替代方案。随着时间的推移，我们可能会添加更多试用版功能。
+
+<ph name="BEGIN_LIST_ITEM1" />广告主和发布商可使用 FLoC。<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />广告主和发布商可通过一种不会对您进行跨网站跟踪的方式研究广告的效果。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">试用版功能已开启</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">打开历史记录页</translation>
@@ -1264,6 +1288,7 @@
 <translation id="9204836675896933765">还剩 1 个文件</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">无法致电</translation>
+<translation id="9212845824145208577">无法继续向下滚动屏幕了。请尝试从页面中更靠下的位置开始截屏。</translation>
 <translation id="9219103736887031265">图片</translation>
 <translation id="926205370408745186">从“数字健康”应用中移除您的 Chrome 活动记录</translation>
 <translation id="927968626442779827">使用 Google Chrome 的精简模式</translation>

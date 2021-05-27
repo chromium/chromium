@@ -456,6 +456,7 @@
 <translation id="5782227691023083829">翻訳しています...</translation>
 <translation id="5797070761912323120">検索、広告、その他の Google サービスをカスタマイズするために、Google で履歴が使用されることがあります</translation>
 <translation id="5803566855766646066">この新しいカードを破棄してもよろしいですか？</translation>
+<translation id="5812974770859303494">追加先…</translation>
 <translation id="5816228676161003208">音声を使ってより速く検索できます。</translation>
 <translation id="581659025233126501">同期をオンにする</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> によって管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -766,6 +767,7 @@
 <translation id="8654802032646794042">キャンセル</translation>
 <translation id="8668210798914567634">このページはリーディング リストに保存されています。</translation>
 <translation id="8680787084697685621">アカウントのログイン情報が古くなっています。</translation>
+<translation id="8693663554456874301">{count,plural, =1{タブを閉じる}other{タブを閉じる}}</translation>
 <translation id="8706588385081740091">パスワード</translation>
 <translation id="8717864919010420084">リンクをコピー</translation>
 <translation id="8721297211384281569">ツールメニュー</translation>

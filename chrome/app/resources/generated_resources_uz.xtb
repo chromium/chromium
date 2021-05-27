@@ -2571,6 +2571,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3742666961763734085">Bu nomdagi tashkilot qismi topilmadi. Qayta urining.</translation>
 <translation id="3744111561329211289">Orqa fonda sinxronlash</translation>
 <translation id="3747077776423672805">Ilovalarni oʻchirib tashlash uchun Sozlamalar &gt; Google Play Market &gt; Android sozlamalari boshqaruvi &gt; Ilovalar yoki Ilovalar menejeri menyusiga kiring. Kerakli ilovani tanlab (ilovani topish uchun ekranni oʻng yoki chapga suring), “Oʻchirib tashlash” yoki “Faolsizlantirish” tugmasini bosing.</translation>
+<translation id="3747220812138541072">Takliflar yozish vaqtida qator ichida chiqsin</translation>
 <translation id="3748706263662799310">Xatolik haqida xabar berish</translation>
 <translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Bir marta saqlash. Doim ishlatish</translation>
@@ -2864,7 +2865,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4035758313003622889">&amp;Vazifalar menejeri</translation>
 <translation id="4036778507053569103">Serverdan yaroqsiz siyosat yuklab olindi.</translation>
 <translation id="4037084878352560732">Toychoq</translation>
-<translation id="4037889604535939429">Profilni almashtirish</translation>
 <translation id="4040753847560036377">PUK kod xato</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Sahifani yopish}other{Sahifalarni yopish}}</translation>
 <translation id="4044612648082411741">Sertifikat parolini kiriting</translation>
@@ -3261,6 +3261,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4510614391273086606">Linux fayllari va ilovalari zaxiralangan nusxadan tiklanmoqda.</translation>
 <translation id="451102079304155829">savatchalar</translation>
 <translation id="4513275008300099962">Oyna ustidan boshqaruv tugmalari chiqishini faolsizlantirish</translation>
+<translation id="4513872120116766993">Matn kiritishda takliflar</translation>
 <translation id="4513946894732546136">Fikr-mulohaza</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> asosida ishlaydi</translation>
 <translation id="4514610446763173167">Videoni ijro yoki pauza qilish</translation>
@@ -4333,7 +4334,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5709557627224531708">Chromeni standart brauzer etib tayinlang</translation>
 <translation id="5711983031544731014">Qulfdan chiqarib bo‘lmadi. Parolni kiriting.</translation>
 <translation id="5712153969432126546">Baʼzan saytlar hujjatlar, shartnomalar va shakllarni PDF formatda chop etadi.</translation>
-<translation id="5712323955984474772">Keyingi yangilanish</translation>
 <translation id="5715711091495208045">Vositachi: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standart qidiruv tizimlari</translation>
 <translation id="5719637365829998022">QR kod skanerlandi.</translation>
@@ -4424,6 +4424,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5826395379250998812"><ph name="DEVICE_TYPE" /> qurilmasiga telefoningizni ulang. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Yarim shaffof</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Keyingi soʻzni taklif qilish</translation>
 <translation id="5828545842856466741">Profil kiritish...</translation>
 <translation id="5828633471261496623">Chop etilmoqda...</translation>
 <translation id="5830720307094128296">Sahifani &amp;saqlab olish...</translation>
@@ -5105,7 +5106,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6563469144985748109">Administrator tomonidan hali tasdiqlanmagan</translation>
 <translation id="6568283005472142698">Varaqlar ichidan qidirish</translation>
 <translation id="6569911211938664415">Google hisobingizga (<ph name="ACCOUNT" />) saqlangan parollardan har qanday qurilmada foydalanishingiz mumkin</translation>
-<translation id="6569934958368283244">Boshqalar</translation>
 <translation id="6573497332121198392">Yorliq olib tashlanmadi</translation>
 <translation id="657402800789773160">&amp;Sahifani yangilash</translation>
 <translation id="6577284282025554716">Yuklanma bekor qilindi: <ph name="FILE_NAME" /></translation>
@@ -6294,6 +6294,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="78526636422538552">Boshqa Google hisoblarini qoʻshish xususiyati oʻchiq.</translation>
 <translation id="7853747251428735">Qo‘shimcha &amp;vositalar</translation>
 <translation id="7855678561139483478">Varaqni yangi oynaga olish</translation>
+<translation id="7857093393627376423">Matn takliflari</translation>
 <translation id="7857117644404132472">Istisno qo‘shish</translation>
 <translation id="7857949311770343000">Bu boshqa tezkor havolalar sahifasimi?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -6790,7 +6791,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8393700583063109961">Xabar yuborish</translation>
 <translation id="8397825320644530257">Ulangan telefonni uzish</translation>
 <translation id="8398877366907290961">Davom etish</translation>
-<translation id="8400146488506985033">Foydalanuvchilarni boshqarish</translation>
 <translation id="8401432541486058167">Smart kartangiz PIN kodini kiriting.</translation>
 <translation id="8404893580027489425">Barmoq izi sensori <ph name="DEVICE_TYPE" /> qurilmasining oʻng orqasida joylashgan. Istalgan barmoq bilan unga asta tegining.</translation>
 <translation id="8405046151008197676">Oxirgi yangilanishdagi asosiy oʻzgarishlar</translation>
@@ -6846,7 +6846,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8465444703385715657">“<ph name="PLUGIN_NAME" />” plaginni ishga tushirish uchun ruxsat kerak</translation>
 <translation id="8466417995783206254">Bu varaqdagi video tasvir ustida tasvir rejimida ijro etilmoqda.</translation>
 <translation id="8467326454809944210">Boshqa tilni tanlang</translation>
-<translation id="8470214316007448308">Boshqalar</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> uchun saqlangan parollar</translation>
 <translation id="8471525937465764768">Saytlar odatda hujjatni chop etish yoki tashqi xotiraga saqlash maqsadida USB qurilmalarga ulanadi</translation>
 <translation id="8471959340398751476">Chegirmalar yoqilmagan. Ularni menyuni moslash orqali yoqish mumkin</translation>
@@ -7033,6 +7032,7 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="8676374126336081632">Tozalash</translation>
 <translation id="8676770494376880701">Kam quvvatli zaryadlash vositasi</translation>
 <translation id="8677212948402625567">Barchasini yig‘ish...</translation>
+<translation id="867767487203716855">Keyingi yangilanish</translation>
 <translation id="8677859815076891398">Albomlar mavjud emas. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> orqali albom yarating.</translation>
 <translation id="8678582529642151449">Varaqlar kichraymaydi</translation>
 <translation id="8678933587484842200">Bu ilova qanday ishga tushirilsin?</translation>
@@ -7121,7 +7121,6 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="87646919272181953">Google Photos albomi</translation>
 <translation id="8767621466733104912">Barcha Chrome foydalanuvchilari uchun avtomatik yangilash</translation>
 <translation id="8770406935328356739">Kengaytma tub katalogi</translation>
-<translation id="8770507190024617908">Foydalanuvchilarni boshqarish</translation>
 <translation id="8771300903067484968">Bosh sahifadagi fon rasmi standart fon rasm etib tayinlandi.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> printerini saqlash</translation>
 <translation id="8774379074441005279">Tiklashni tasdiqlang</translation>

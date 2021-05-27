@@ -278,6 +278,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder igjen</translation>
 <translation id="2779651927720337254">mislyktes</translation>
 <translation id="2781151931089541271">1 sekund igjen</translation>
+<translation id="2788468313014644040">Gruppenummer</translation>
 <translation id="2801022321632964776">Oppdater for å få språket ditt i den nyeste versjonen av Chrome</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2806840421670364300">FLoC (samlet læring i kohorter)</translation>
@@ -467,7 +468,6 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Du finner alternativene oppe på skjermen</translation>
 <translation id="4062305924942672200">Juridisk informasjon</translation>
-<translation id="4082818367361753283">Gruppe-ID</translation>
 <translation id="4084682180776658562">Legg til bokmerke</translation>
 <translation id="4084712963632273211">Fra <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />levert av Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Slette appdataene?</translation>

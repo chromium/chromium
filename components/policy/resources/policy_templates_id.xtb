@@ -216,6 +216,7 @@
 <translation id="1294263471858445589">Mengaktifkan autentikasi pasif di sesi samaran dan reguler.</translation>
 <translation id="1295737447968372331">Mengaktifkan dikte di layar login</translation>
 <translation id="1297182715641689552">Gunakan skrip proxy .pac</translation>
+<translation id="1297827666345629703">Akun terkelola harus berupa akun utama</translation>
 <translation id="1297961932043741908">Menetapkan batas megabyte memori yang dapat digunakan oleh satu instance Chrome.</translation>
 <translation id="1304973015437969093">ID Ekstensi/Aplikasi dan URL pembaruan akan dipasang di latar belakang</translation>
 <translation id="1305400589435476516">Jika kebijakan disetel ke Aktif, roaming data akan diizinkan untuk perangkat.
@@ -579,6 +580,13 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="1755310913456007816">Gunakan setelan pemeriksaan pembatalan online yang sudah ada</translation>
 <translation id="1760951637494635692">Mengizinkan Serial API di situs ini</translation>
+<translation id="1765503534110351026">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+       Jika kebijakan disetel, <ph name="PRODUCT_NAME" /> akan mengabaikan proxy apa pun untuk daftar host yang diberikan di sini. Kebijakan ini hanya berlaku jika kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> tidak ditentukan dan Anda menentukan <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> atau <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> untuk <ph name="PROXY_MODE_POLICY_NAME" />.
+
+       Biarkan kebijakan ini tidak disetel, jika Anda memilih mode lain untuk menyetel kebijakan proxy.
+
+       Catatan: Untuk contoh yang lebih mendetail, buka Project Chromium ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="1767673020408652620">Aktifkan fitur Rekomendasi Aplikasi pada Status Kosong Kotak Penelusuran</translation>
 <translation id="1780323582106687813">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />'.
 
@@ -817,6 +825,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2082205219176343977">Mengonfigurasi versi minimum Chrome yang diizinkan untuk perangkat.</translation>
 <translation id="208566302163036794">Blokir fitur yang dinonaktifkan</translation>
 <translation id="208623333578980446">Izinkan penguncian layar saat aktif untuk pengelolaan daya</translation>
+<translation id="2086944573376916479">Akun terkelola harus berupa akun utama dan tidak memiliki akun sekunder</translation>
 <translation id="2090939118981888335">Jika kebijakan disetel ke Aktif, proxy kompresi data akan diizinkan. Jika kebijakan disetel ke Nonaktif, proxy tidak akan diizinkan.
 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, pengguna dapat memilih menggunakan fitur tersebut.</translation>
@@ -870,6 +879,17 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Jika kebijakan ini tidak ditetapkan, browser hanya akan mulai mencoba menghemat memori setelah mendeteksi bahwa perangkatnya memiliki jumlah memori fisik yang rendah.</translation>
 <translation id="2166472654199325139">Jangan filter konten khusus dewasa dari situs</translation>
+<translation id="2168060657210442816">
+      Kebijakan ini mengharuskan <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> disetel ke Benar (True) agar dapat berlaku.
+
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> di tingkat perangkat, semua akun terkelola akan dipaksa menjadi akun utama.
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> untuk suatu akun, akun tersebut akan selalu menjadi akun utama, tetapi dapat memiliki akun sekunder di profilnya.
+
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> di tingkat perangkat, semua akun terkelola akan dipaksa menjadi akun utama.
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> untuk suatu akun, akun tersebut akan selalu menjadi akun utama dan tidak akan memiliki akun sekunder di profilnya.
+
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_NONE" /> atau tidak disetel, akun terkelola tidak akan memiliki batasan. Hal ini dapat menyebabkan akun terkelola menjadi akun sekunder, yang akan menonaktifkan kemampuannya untuk menerima kebijakan yang disetel di akun oleh admin.
+    </translation>
 <translation id="2168397434410358693">Menunda waktu menganggur saat menggunakan daya AC</translation>
 <translation id="217013996107840632">Parameter command line untuk beralih dari browser alternatif.</translation>
 <translation id="2170233653554726857">Aktifkan pengoptimalan WPAD</translation>
@@ -1790,6 +1810,11 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="3261592499545947104">Jumlah detik sebelum masa berlaku sertifikat habis saat perpanjangan harus dipicu.</translation>
+<translation id="3264706118366247207">Mengonfigurasi daftar jenis data penjelajahan yang harus dihapus saat pengguna menutup semua jendela browser. Jenis data yang tersedia adalah histori penjelajahan (<ph name="DATA_TYPE_BROWSING_HISTORY" />), histori download (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, isi otomatis (<ph name="DATA_TYPE_AUTOFILL" />), sandi (<ph name="DATA_TYPE_PASSWORD" />), setelan situs (<ph name="DATA_TYPE_SITE_SETTINGS" />), dan data aplikasi yang dihosting (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Kebijakan ini tidak akan lebih diprioritaskan daripada <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+      Kebijakan ini mengharuskan kebijakan <ph name="SYNC_DISABLED_POLICY_NAME" /> disetel ke benar (true). Jika tidak, kebijakan ini akan diabaikan. Jika kebijakan ini disetel di tingkat platform, Sinkronisasi harus dinonaktifkan di tingkat platform. Jika kebijakan ini disetel di tingkat pengguna, Sinkronisasi harus dinonaktifkan untuk pengguna tersebut agar kebijakan ini dapat berlaku.
+
+      Jika <ph name="PRODUCT_NAME" /> tidak ditutup dengan benar (misalnya, browser atau OS mengalami error), data penjelajahan akan dihapus saat berikutnya profil dimuat.</translation>
 <translation id="3264793472749429012">Penyandiaksaraan penyedia penelusuran default</translation>
 <translation id="3273221114520206906">Setelan JavaScript default</translation>
 <translation id="328347261792478720">Secara default, browser akan menampilkan rekomendasi media yang dipersonalisasi kepada pengguna. Jika kebijakan ini disetel ke Nonaktif, rekomendasi ini akan disembunyikan dari pengguna. Jika kebijakan ini disetel ke Aktif atau tidak disetel, rekomendasi media akan ditampilkan kepada pengguna.</translation>
@@ -1854,6 +1879,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci ke kurang dari atau sama dengan penundaan waktu tidak ada aktivitas.
 
           Pesan peringatan hanya ditampilkan jika tindakan tidak ada aktivitas adalah logout atau matikan.</translation>
+<translation id="3363360928811201045">Menambahkan batasan di akun terkelola</translation>
 <translation id="3367868895271989224">Jika kebijakan disetel ke Aktif, semua situs akan diisolasi. (Setiap situs menjalankan prosesnya sendiri.) Jika kebijakan disetel ke Nonaktif atau tidak disetel, isolasi situs tidak akan dinonaktifkan, tetapi pengguna dapat memilih untuk tidak ikut (misalnya, dengan menggunakan opsi Nonaktifkan isolasi situs di chrome://flags).
 
       <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> juga dapat bermanfaat untuk menyempurnakan asal. Di <ph name="PRODUCT_OS_NAME" /> versi 76 dan yang lebih lama, setel kebijakan perangkat <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> ke nilai yang sama. (Jika nilai tidak cocok, penundaan dapat terjadi saat memasuki sesi pengguna.)
@@ -3036,6 +3062,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika sebuah kebijakan tidak tercantum dalam daftar dan terdapat konflik antara sumber, cakupan, atau level, kebijakan dengan prioritas tertinggi akan diterapkan.</translation>
 <translation id="5056708224511062314">Lup dinonaktifkan</translation>
 <translation id="5058573563327660283">Pilih strategi yang digunakan untuk mengosongkan ruang disk selama pembersihan otomatis (tidak digunakan lagi)</translation>
+<translation id="5059201920681374653">Akun terkelola harus berada di perangkat terkelola yang berafiliasi</translation>
 <translation id="5061114193960158745">Menyetel kebijakan akan mengontrol daftar situs yang tidak pernah menyebabkan pengalihan browser. Setiap item diperlakukan sebagai aturan. Aturan yang cocok tidak akan membuka browser alternatif. Tidak seperti kebijakan <ph name="URL_LIST_POLICY_NAME" />, aturan berlaku untuk kedua arah. Jika diaktifkan, add-in <ph name="IE_PRODUCT_NAME" /> juga akan mengontrol apakah <ph name="IE_PRODUCT_NAME" /> harus membuka URL ini di <ph name="PRODUCT_NAME" />.
 
       Jika kebijakan tidak disetel, tidak ada situs yang akan ditambahkan ke daftar.
@@ -3222,6 +3249,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan tidak ditetapkan, pengguna tidak dapat memainkan game di <ph name="PRODUCT_OS_NAME" /> yang terdaftar, tetapi dapat memainkannya dalam kondisi lain.</translation>
 <translation id="529457411593078576">Menampilkan Persyaratan Layanan (ToS) saat CCT pertama kali dijalankan</translation>
+<translation id="5298949392804966105">Tidak ada batasan di akun terkelola</translation>
 <translation id="530134925949808452">Waktu dalam hari dalam waktu lokal saat kuota penggunaan diperpanjang.</translation>
 <translation id="5303080953475303561">Menyetel kebijakan akan mengontrol frekuensi layar kunci meminta sandi untuk mode buka kunci cepat. Setiap kali layar kunci ditampilkan, jika entri sandi terakhir terjadi sebelum jangka waktu yang ditentukan oleh nilai yang dipilih, mode buka kunci cepat tidak akan tersedia. Jika pengguna tetap berada di layar kunci setelah jangka waktu ini, sandi akan diminta saat pengguna salah memasukkan kode lagi atau masuk kembali ke layar kunci, mana saja yang terjadi lebih dahulu.
 
@@ -4397,6 +4425,26 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
           Catatan: <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> akan mengganti kebijakan ini jika kebijakan tersebut ditentukan.</translation>
 <translation id="6833988859168635883">Halaman Awal, Halaman Beranda, dan halaman Tab Baru</translation>
+<translation id="6834298774555537368">Menyetel kebijakan akan mengonfigurasi setelan proxy untuk Chrome dan aplikasi ARC, yang mengabaikan semua opsi terkait proxy yang ditentukan dari command line.
+
+       Jika kebijakan tidak disetel, pengguna dapat memilih setelan proxy mereka.
+
+       Menyetel kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> akan menyetujui kolom berikut:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, yang memungkinkan Anda menentukan server proxy yang digunakan oleh Chrome dan mencegah pengguna mengubah setelan proxy
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, URL ke file .pac proxy
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, URL server proxy
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, daftar host proxy yang diabaikan
+
+       Kolom <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> tidak digunakan lagi dan digantikan dengan kolom <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Untuk <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, jika Anda memilih nilai:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, proxy tidak akan pernah digunakan dan semua kolom lainnya akan diabaikan.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, proxy sistem akan digunakan dan semua kolom lainnya akan diabaikan.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, semua kolom lainnya akan diabaikan.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, kolom <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> dan <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> akan digunakan.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, kolom <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> dan <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> akan digunakan.
+
+      Catatan: Untuk contoh yang lebih mendetail, buka Project Chromium ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="6835883744948188639">Tampilkan permintaan berulang kepada pengguna yang menunjukkan bahwa peluncuran ulang direkomendasikan</translation>
 <translation id="683688607121170501">Setelan ini memungkinkan pengguna beralih ke Akun Google lain di dalam area konten jendela browser dan aplikasi Android setelah mereka login ke perangkat <ph name="PRODUCT_OS_NAME" />.
 

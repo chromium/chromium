@@ -212,6 +212,7 @@
 <translation id="1294263471858445589">シークレット モードと標準のセッションでアンビエント認証を有効にします。</translation>
 <translation id="1295737447968372331">ログイン画面で音声入力を有効にする</translation>
 <translation id="1297182715641689552">.pac プロキシ スクリプトを使用する</translation>
+<translation id="1297827666345629703">管理対象アカウントをメイン アカウントのみとする</translation>
 <translation id="1297961932043741908">1 つの Chrome インスタンスで使用できるメモリの制限量を MB 単位で設定する。</translation>
 <translation id="1304973015437969093">サイレント インストールされる拡張機能 / アプリの ID と更新 URL</translation>
 <translation id="1305400589435476516">このポリシーを有効に設定した場合、デバイスのデータ ローミングが許可されます。
@@ -566,6 +567,13 @@
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="1755310913456007816">オンライン失効確認の既存の設定を使用する</translation>
 <translation id="1760951637494635692">シリアル API を許可するサイトを指定します</translation>
+<translation id="1765503534110351026">このポリシーはサポートが終了しています。代わりに <ph name="PROXY_SETTINGS_POLICY_NAME" /> を使用してください。
+
+       このポリシーを設定した場合、<ph name="PRODUCT_NAME" /> では、ここで指定したホストリストに対してプロキシを一切使用しません。このポリシーは、<ph name="PROXY_SETTINGS_POLICY_NAME" /> ポリシーを指定せずに、<ph name="PROXY_MODE_POLICY_NAME" /> を <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> または <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> のいずれかに指定した場合のみ適用されます。
+
+       プロキシ ポリシーの設定で他のモードを選択した場合は、このポリシーを未設定のままにしてください。
+
+       注: 詳しい例については、Chromium プロジェクトの説明（https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett）をご覧ください。</translation>
 <translation id="1767673020408652620">検索ボックスが「ゼロ状態」のときにアプリのおすすめを有効にする</translation>
 <translation id="1780323582106687813">このポリシーはサポートが終了しています。代わりに <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
 
@@ -792,6 +800,7 @@
 <translation id="2082205219176343977">デバイスでの使用を許可する Chrome の最小バージョンを設定する。</translation>
 <translation id="208566302163036794">無効にした機能をブロックする</translation>
 <translation id="208623333578980446">電源管理の画面の wake lock を許可する</translation>
+<translation id="2086944573376916479">管理対象アカウントを予備のアカウントのないメイン アカウントのみとする</translation>
 <translation id="2090939118981888335">このポリシーを有効に設定した場合、データ圧縮プロキシが許可されます。このポリシーを無効に設定した場合、プロキシは許可されません。
 
       このポリシーを設定した場合、ユーザーはこの設定を変更できません。未設定の場合、ユーザーはこの機能の使用を選択できます。</translation>
@@ -845,6 +854,17 @@
 
       このポリシーを設定しない場合、ブラウザでパソコンの物理メモリが少なくなったことが検出されたときにのみ、メモリの節約が試行されます。</translation>
 <translation id="2166472654199325139">アダルト コンテンツに基づくサイトの除外を行わない</translation>
+<translation id="2168060657210442816">
+      このポリシーを適用するには、<ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> を True に設定する必要があります。
+
+      マシンレベルでこのポリシーを <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> に設定した場合、管理対象アカウントはすべて強制的にメイン アカウントとなります。
+      アカウントでこのポリシーを <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> に設定した場合、そのアカウントは常にメイン アカウントとなりますが、プロファイルで予備のアカウントを作成できます。
+
+      マシンレベルでこのポリシーを <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> に設定した場合、管理対象アカウントはすべて強制的にメイン アカウントとなります。
+      アカウントでこのポリシーを <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> に設定した場合、そのアカウントは常にメイン アカウントとなり、プロファイルで予備のアカウントを作成することはできません。
+
+      このポリシーを <ph name="POLICY_VALUE_NONE" /> に設定するか未設定のままにした場合、管理対象アカウントに制限は課されません。これにより、管理対象アカウントは予備のアカウントとなる場合もあります。その場合、管理者がアカウントに設定したポリシーは適用されません。
+    </translation>
 <translation id="2168397434410358693">アイドル状態になるまでの時間（AC 電源での実行時）</translation>
 <translation id="217013996107840632">代替ブラウザからの切り替えに使用するコマンドライン パラメータです。</translation>
 <translation id="2170233653554726857">WPAD 最適化を有効にする</translation>
@@ -1722,6 +1742,11 @@
 
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="3261592499545947104">更新が必要となる、証明書の有効期限が切れるまでの時間（秒）</translation>
+<translation id="3264706118366247207">ユーザーがすべてのブラウザ ウィンドウを終了したときに削除する閲覧データの種類のリストを設定します。指定できるデータの種類は、閲覧履歴（<ph name="DATA_TYPE_BROWSING_HISTORY" />）、ダウンロード履歴（<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />）、Cookie（<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />）、キャッシュ（<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />）、自動入力（<ph name="DATA_TYPE_AUTOFILL" />）、パスワード（<ph name="DATA_TYPE_PASSWORD" />）、サイトの設定（<ph name="DATA_TYPE_SITE_SETTINGS" />）、ホストされているアプリデータ（<ph name="DATA_TYPE_HOSTED_APP_DATA" />）です。ただし、このポリシーよりも <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> が優先されます。
+
+      このポリシーを適用するには、<ph name="SYNC_DISABLED_POLICY_NAME" /> ポリシーを true に設定する必要があります。設定していない場合、このポリシーは無視されます。このポリシーをプラットフォーム レベルで設定する場合は、プラットフォーム レベルで同期を無効にする必要があります。このポリシーをユーザーレベルで設定する場合は、そのユーザーに対して同期を無効にする必要があります。
+
+      <ph name="PRODUCT_NAME" /> が正常に終了しなかった場合（ブラウザや OS がクラッシュした場合など）は、次回プロファイルが読み込まれたときに閲覧データが削除されます。</translation>
 <translation id="3264793472749429012">デフォルトの検索プロバイダのエンコード</translation>
 <translation id="3273221114520206906">デフォルトのJavaScript 設定</translation>
 <translation id="328347261792478720">デフォルトでは、ブラウザはユーザーに合わせてパーソナライズされたおすすめメディアを表示します。このポリシーを無効に設定すると、ユーザーに対するおすすめは表示されません。このポリシーを有効にするか、未設定のままにすると、おすすめメディアがユーザーに表示されます。</translation>
@@ -1783,6 +1808,7 @@
           このポリシーの値はミリ秒単位とし、アイドル待ちの時間と同じかそれより短い時間を指定できます。
 
           警告メッセージは、アイドル時の操作がログアウトかシャットダウンの場合にのみ表示されます。</translation>
+<translation id="3363360928811201045">管理対象アカウントに制限を追加する</translation>
 <translation id="3367868895271989224">このポリシーを有効に設定した場合、すべてのサイトが分離されます（各サイトが独自のプロセスで実行されます）。このポリシーを無効に設定するか未設定のままにした場合、サイト分離は無効になりませんが、ユーザーは chrome://flags などで無効に設定できます。
 
       <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> を使用して、発行元を詳細に管理することもできます。<ph name="PRODUCT_OS_NAME" /> バージョン 76 以前では、<ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> デバイス ポリシーを同じ値に設定してください（値が異なる場合、ユーザー セッションの開始時に遅延が生じる可能性があります）。
@@ -2942,6 +2968,7 @@
       ポリシーがリストになく、ソース、スコープ、レベル間で矛盾がある場合は、優先度の最も高いポリシーが適用されます。</translation>
 <translation id="5056708224511062314">画面拡大鏡を無効にする</translation>
 <translation id="5058573563327660283">自動クリーンアップ時にディスクの空き容量を増やす方法を選択する（サポート終了）</translation>
+<translation id="5059201920681374653">管理対象アカウントを関連する管理対象デバイス上のアカウントのみとする</translation>
 <translation id="5061114193960158745">このポリシーの設定により、ブラウザの切り替えを行わないウェブサイトのリストを管理します。個々のアイテムはルールとして扱われます。このルールに一致すると、代替ブラウザは開かれません。<ph name="URL_LIST_POLICY_NAME" /> ポリシーとは異なり、ルールは双方向に適用されます。<ph name="IE_PRODUCT_NAME" /> アドインが有効になっている場合は、<ph name="IE_PRODUCT_NAME" /> でこれらの URL を開くときに <ph name="PRODUCT_NAME" /> を使用するかどうかもこのポリシーで制御されます。
 
       このポリシーを未設定のままにした場合、リストにウェブサイトは追加されません。
@@ -3115,6 +3142,7 @@
 <translation id="5290940294294002042">ユーザーが有効または無効にできるプラグインのリストを指定する</translation>
 <translation id="5293044154216294358">このポリシーを True に設定した場合、ユーザーが恐竜ゲームをプレイすることを許可します。このポリシーを False に設定した場合、ユーザーはデバイスがオフラインのときに恐竜のイースター エッグゲームをプレイできません。このポリシーを未設定のままにした場合、ユーザーは登録されている <ph name="PRODUCT_OS_NAME" /> ではゲームをプレイできませんが、他の環境ではプレイできます。</translation>
 <translation id="529457411593078576">CCT の初回実行時の利用規約を有効にする</translation>
+<translation id="5298949392804966105">管理対象アカウントに制限を課さない</translation>
 <translation id="530134925949808452">使用時間の割り当てが更新される時間（現地時間）です。</translation>
 <translation id="5303080953475303561">このポリシーでは、ロック画面でロックをクイック解除するためにパスワードの入力を求める頻度を管理できます。ロック画面が表示されるたびに、前回のパスワード入力から指定値に基づく時間が経過したかどうかが確認され、経過していなければロックのクイック解除は使用できません。ユーザーがロックを解除しないまま設定した指定時間が経過した場合は、次回ユーザーが誤ったコードを入力するか、ロック画面を再表示するかのいずれか早い方が発生した時点でパスワード入力が求められます。
 
@@ -4222,6 +4250,26 @@
 
           注: <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> が指定されている場合はこのポリシーより優先されます。</translation>
 <translation id="6833988859168635883">起動ページ、ホームページ、新しいタブページ</translation>
+<translation id="6834298774555537368">このポリシーでは、Chrome と ARC アプリのプロキシ設定を行います。いずれもコマンドラインで指定されたプロキシ関連の設定はすべて無視されます。
+
+       このポリシーを未設定のままにした場合、ユーザーはプロキシ設定を選択できます。
+
+       <ph name="PROXY_SETTINGS_POLICY_NAME" /> ポリシーを設定すると、次のフィールドを受け取れるようになります。
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Chrome で使用するプロキシ サーバーを指定して、ユーザーがプロキシ設定を変更できないようにします
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: プロキシ .pac ファイルへの URL
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: プロキシ サーバーの URL
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: プロキシを使用しないホストのリスト
+
+       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> フィールドはサポートを終了しました。代わりに <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> フィールドを使用してください。
+
+        <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> については、以下のいずれかの値を指定します。
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />: プロキシは一切使用せず、他のフィールドをすべて無視します。
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: システムのプロキシを使用して、他のフィールドをすべて無視します。
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: 他のフィールドをすべて無視します。
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> フィールドと <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> フィールドと <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
+
+      注: 詳しい例については、Chromium プロジェクトの説明（https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett）をご覧ください。</translation>
 <translation id="6835883744948188639">再起動が推奨されることを示すメッセージをユーザーに繰り返し表示する</translation>
 <translation id="683688607121170501">ユーザーが <ph name="PRODUCT_OS_NAME" /> デバイスにログインした後に、ブラウザ ウィンドウのコンテンツ領域内や Android アプリケーションで Google アカウントを切り替えることができるかどうかを制御します。
 

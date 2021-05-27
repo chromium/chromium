@@ -230,6 +230,7 @@
 <translation id="247737702124049222">इमेजची वर्णने सुरू आहेत</translation>
 <translation id="2482878487686419369">सूचना</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
+<translation id="2489545061398461256">आमचे काम पूर्ण झाल्यावर, आम्ही ते पुन्हा बंद करू</translation>
 <translation id="2494974097748878569">Chrome मधील Google असिस्टंट</translation>
 <translation id="2496180316473517155">ब्राउझिंग इतिहास</translation>
 <translation id="2497852260688568942">तुमच्या ॲडमिनिस्ट्रेटरने सिंक अक्षम केले आहे</translation>
@@ -277,6 +278,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकंद शिल्लक</translation>
 <translation id="2779651927720337254">अयशस्वी झाले</translation>
 <translation id="2781151931089541271">1 सेकंद शिल्लक</translation>
+<translation id="2788468313014644040">गटाचा नंबर</translation>
 <translation id="2801022321632964776">Chrome च्या नवीनतम आवृत्तीमध्ये तुमची भाषा मिळवण्यासाठी अपडेट करा</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -466,7 +468,6 @@
 <translation id="4056223980640387499">सेपिया</translation>
 <translation id="4060598801229743805">स्क्रीनच्या शीर्षावर पर्याय उपलब्ध आहेत</translation>
 <translation id="4062305924942672200">कायदेशीर माहिती</translation>
-<translation id="4082818367361753283">गटाचा आयडी</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> कडून – <ph name="BEGIN_DEEMPHASIZED" />Google ने वितरित केले<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ॲप डेटा हटवायचा?</translation>
@@ -543,6 +544,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">हे <ph name="CREATION_TIME" /> पासूनचे ऑफलाइन पेज आहे आणि ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
+<translation id="4608360466722749036">ब्लूटूथ सुरू करत आहोत…</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> उघडा</translation>
 <translation id="4619564267100705184">हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="4634124774493850572">पासवर्ड वापरा</translation>

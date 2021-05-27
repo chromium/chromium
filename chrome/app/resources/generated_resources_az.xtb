@@ -2859,7 +2859,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4035758313003622889">Tapşırıq meneceri</translation>
 <translation id="4036778507053569103">Serverdən endirilmiş qayda yanlışdır.</translation>
 <translation id="4037084878352560732">At</translation>
-<translation id="4037889604535939429">Şəxsi redaktə edin</translation>
 <translation id="4040753847560036377">Yanlış PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Səhifədən Çıxın}other{Səhifələrdən Çıxın}}</translation>
 <translation id="4044612648082411741">Sertifikat parolunuzu daxil edin</translation>
@@ -4325,7 +4324,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5709557627224531708">Chrome'u defolt brauzer kimi quraşdırın</translation>
 <translation id="5711983031544731014">Kilidi açmaq mümkün olmadı. Şifrənizi daxil edin.</translation>
 <translation id="5712153969432126546">Saytlar bəzən sənədlər, müqavilələr və formalar kimi PDF-lər yayımlayır</translation>
-<translation id="5712323955984474772">Növbəti Güncəlləmə</translation>
 <translation id="5715711091495208045">Plaqin Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Defolt axtarış sistemləri</translation>
 <translation id="5719637365829998022">QR kod skanlanıb.</translation>
@@ -5095,7 +5093,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6563469144985748109">Meneceriniz hələ ki təsdiq etməyib</translation>
 <translation id="6568283005472142698">Tab Axtarışı</translation>
 <translation id="6569911211938664415">Parollar Google Hesabınızda (<ph name="ACCOUNT" />) yadda saxlanılıb. Onları istənilən cihazda istifadə edə bilərsiniz.</translation>
-<translation id="6569934958368283244">Digər şəxslər</translation>
 <translation id="6573497332121198392">Qısayolu silmək olmur</translation>
 <translation id="657402800789773160">Bu Səhifəni Yenidən yükləyin</translation>
 <translation id="6577284282025554716">Endirmə ləğv edildi: <ph name="FILE_NAME" /></translation>
@@ -6779,7 +6776,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8393700583063109961">Mesaj göndərin</translation>
 <translation id="8397825320644530257">Qoşulmuş telefonu ayırın</translation>
 <translation id="8398877366907290961">Hər halda davam edin</translation>
-<translation id="8400146488506985033">İnsanları idarə edin</translation>
 <translation id="8401432541486058167">Smart kartınızla əlaqəli PIN daxil edin.</translation>
 <translation id="8404893580027489425">Barmaq izi sensoru <ph name="DEVICE_TYPE" /> cihazınızın sağ tərəfindədir. Barmağınızla ona yavaşca toxunun.</translation>
 <translation id="8405046151008197676">Ən yeni güncəlləmə ilə bağlı yenilikləri əldə edin</translation>
@@ -6835,7 +6831,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> işləmək üçün icazənizi gözləyir</translation>
 <translation id="8466417995783206254">Bu tab şəkil içində şəkil funksiyasında video oxudur.</translation>
 <translation id="8467326454809944210">Başqa dil seçin</translation>
-<translation id="8470214316007448308">Digər Şəxslər</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> üçün parollar yadda saxlanıldı</translation>
 <translation id="8471525937465764768">Saytlar adətən sənəd çap etmək və ya yaddaş cihazında saxlamaq kimi xüsusiyyətlər üçün USB cihazlarına qoşulur</translation>
 <translation id="8471959340398751476">Endirimlər deaktivdir. Onları fərdiləşdirmə menyusunda aktiv edə bilərsiniz</translation>
@@ -7022,6 +7017,7 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
 <translation id="8676374126336081632">Daxiletməni silin</translation>
 <translation id="8676770494376880701">Enerjiyə qənaət edən şarjer qoşuldu</translation>
 <translation id="8677212948402625567">Hamısını yığcamlaşdırın...</translation>
+<translation id="867767487203716855">Növbəti güncəlləmə</translation>
 <translation id="8677859815076891398">Albom yoxdur. <ph name="LINK_BEGIN" />Google Fotoda<ph name="LINK_END" /> albom yaradın.</translation>
 <translation id="8678582529642151449">Tabların ölçüsü dəyişmir</translation>
 <translation id="8678933587484842200">Bu tətbiqin necə başlamasını istərdiniz?</translation>
@@ -7108,7 +7104,6 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
 <translation id="87646919272181953">Google Foto albomu</translation>
 <translation id="8767621466733104912">Chrome'u bütün istifadəçilər üçün avtomatik güncəlləyin</translation>
 <translation id="8770406935328356739">Artırma kökü kataqolu</translation>
-<translation id="8770507190024617908">İnsanları İdarə Edin</translation>
 <translation id="8771300903067484968">Başlanğıc səhifəsinin arxa fonu defolt arxa fona sıfırlanıb.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> cihazını yadda saxlayın</translation>
 <translation id="8774379074441005279">Bərpanı təsdiq edin</translation>

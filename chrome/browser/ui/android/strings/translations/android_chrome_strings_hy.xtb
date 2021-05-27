@@ -278,6 +278,7 @@
 <translation id="2777555524387840389">Մնացել է <ph name="SECONDS" /> վրկ</translation>
 <translation id="2779651927720337254">չհաջողվեց ներբեռնել</translation>
 <translation id="2781151931089541271">Մնացել է 1 վրկ</translation>
+<translation id="2788468313014644040">Խմբի համարը</translation>
 <translation id="2801022321632964776">Տեղադրեք Chrome-ի վերջին տարբերակը՝ կայքերը ձեր լեզվով դիտելու համար</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4056223980640387499">Սեպիա</translation>
 <translation id="4060598801229743805">Ընտրանքները հասանելի են էկրանի վերին հատվածում</translation>
 <translation id="4062305924942672200">Իրավական տեղեկություններ</translation>
-<translation id="4082818367361753283">Խմբի ID</translation>
 <translation id="4084682180776658562">Էջանիշ</translation>
 <translation id="4084712963632273211">Բովանդակությունը՝ <ph name="PUBLISHER_ORIGIN" /> կայքից։ <ph name="BEGIN_DEEMPHASIZED" />Մատուցվում է Google-ի կողմից<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Ջնջե՞լ հավելվածների տվյալները:</translation>

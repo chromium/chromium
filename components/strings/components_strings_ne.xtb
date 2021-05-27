@@ -49,7 +49,7 @@
 <translation id="1156303062776767266">तपाईं स्थानीय वा साझा फाइल हेर्दै हुनुहुन्छ</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> ले अप्रत्याशित रूपमा जडान बन्द गर्यो।</translation>
 <translation id="115926840831309955">आफ्नो CVC जाँच गरी फेरि प्रयास गर्नुहोस् वा म्याद सकिने मिति अपडेट गर्नुहोस्</translation>
-<translation id="1161325031994447685">Wi-Fi मा पुनः जडान गर्नुहोस्</translation>
+<translation id="1161325031994447685">Wi-Fi मा पुनः कनेक्ट गर्नुहोस्</translation>
 <translation id="1165039591588034296">त्रुटि</translation>
 <translation id="1165174597379888365">पृष्ठ खोलिएको छ</translation>
 <translation id="1174723505405632867">तपाईं <ph name="EMBEDDED_URL" /> लाई <ph name="TOP_LEVEL_URL" /> का कुकी र साइटको डेटा प्रयोग गर्ने अनुमति दिन चाहनुहुन्छ?
@@ -161,7 +161,7 @@
 <translation id="1495677929897281669">ट्याबमा फर्कनुहोस्</translation>
 <translation id="1501859676467574491">आफ्नो Google खाताका कार्डहरू देखाउनुहोस्</translation>
 <translation id="1507202001669085618">&lt;p&gt;तपाईं अनलाइन हुनु पूर्व साइन इन गर्न पर्नेमा Wi-Fi पोर्टल प्रयोग गर्नुभएको खण्डमा तपाईंले यो त्रुटि देखुहुने छ।&lt;/p&gt;
-    &lt;p&gt;त्रुटि समाधान गर्न, तपाईंले खोल्ने प्रयास गर्नुभएको पृष्ठमा &lt;strong&gt;जडान गर्नुहोस्&lt;/strong&gt; मा क्लिक गर्नुहोस्‌।&lt;/p&gt;</translation>
+    &lt;p&gt;त्रुटि समाधान गर्न, तपाईंले खोल्ने प्रयास गर्नुभएको पृष्ठमा &lt;strong&gt;कनेक्ट गर्नुहोस्&lt;/strong&gt; मा क्लिक गर्नुहोस्‌।&lt;/p&gt;</translation>
 <translation id="1513706915089223971">इतिहाससम्बन्धी प्रविष्टिहरूको सूची</translation>
 <translation id="1517433312004943670">फोन नम्बर आवश्यक छ</translation>
 <translation id="1519264250979466059">निर्माण मिति</translation>
@@ -742,7 +742,7 @@
 <translation id="3711895659073496551">निलम्बन</translation>
 <translation id="3712624925041724820">इजाजतपत्र निकास</translation>
 <translation id="3714780639079136834">मोबाइल डेटा वा Wi-Fi लाई सक्रिय गर्नुहोस्</translation>
-<translation id="3715597595485130451">Wi-Fi मा जडान गर्नुहोस्</translation>
+<translation id="3715597595485130451">Wi-Fi मा कनेक्ट गर्नुहोस्</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रोक्सी, फायरवाल र DNS को कन्फिगरेसनलाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">यो त्रुटि उत्पन्न गराउन सक्ने एपहरूमा एन्टिभाइरस, फायरवाल र वेब-फिल्टर वा प्रोक्सी सफ्टवेयर पर्दछन्।</translation>
 <translation id="373042150751172459">B4 (Envelope)</translation>
@@ -1157,7 +1157,7 @@
 <translation id="5230733896359313003">ढुवानीको ठेगाना</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
-<translation id="5250209940322997802">"नेटवर्कमा जडान गर्नुहोस्‌"</translation>
+<translation id="5250209940322997802">"नेटवर्कमा कनेक्ट गर्नुहोस्‌"</translation>
 <translation id="5251803541071282808">क्लाउड</translation>
 <translation id="5252000469029418751">C7 (Envelope)</translation>
 <translation id="5254043433801397071">छाप्ने सामग्री अनुकूलन गर्नुहोस्</translation>
@@ -1180,7 +1180,7 @@
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
 <translation id="5306593769196050043">दुवै पाना</translation>
 <translation id="5307166000025436103">ठिक छ</translation>
-<translation id="5308380583665731573">जडान गर्नुहोस्</translation>
+<translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
 <translation id="5308689395849655368">क्र्यास रिपोर्ट अक्षम छ।</translation>
 <translation id="5314967030527622926">पुस्तिका निर्माता</translation>
 <translation id="5316812925700871227">घडीको विपरीत दिशामा घुमाउनुहोस्</translation>
@@ -2167,7 +2167,7 @@
 <translation id="9117930699067497412">ताजा</translation>
 <translation id="9119042192571987207">अपलोड गरिएको</translation>
 <translation id="9128016270925453879">नीतिहरू लोड गरिएका छन्</translation>
-<translation id="9128870381267983090">नेटवर्कमा जडान गर्नुहोस्</translation>
+<translation id="9128870381267983090">नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
 <translation id="9137013805542155359">मूल देखाउनुहोस्</translation>
 <translation id="9141013498910525015">ठेगानाहरू व्यवस्थित गर्नुहोस्</translation>
 <translation id="9148088599418889305">ढुवानीको विधि छनौट गर्नुहोस्</translation>

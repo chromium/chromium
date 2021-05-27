@@ -2873,7 +2873,6 @@
 <translation id="4035758313003622889">ຕົວຈັດການໜ້າວຽກ</translation>
 <translation id="4036778507053569103">ນະໂຍບາຍທີ່ດາວໂຫຼດຈາກເຊີບເວີໃຊ້ບໍ່ໄດ້.</translation>
 <translation id="4037084878352560732">ມ້າ</translation>
-<translation id="4037889604535939429">ແກ້ໄຂບຸກຄົນ</translation>
 <translation id="4040753847560036377">PUK ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{ອອກຈາກໜ້າ}other{ອອກຈາກໜ້າ}}</translation>
 <translation id="4044612648082411741">ປ້ອນລະຫັດຜ່ານໃບຢັ້ງຢືນ</translation>
@@ -4342,7 +4341,6 @@
 <translation id="5709557627224531708">ຕັ້ງຄ່າ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ</translation>
 <translation id="5711983031544731014">ບໍ່​ສາ​ມາດປົດລັອກໄດ້. ປ້ອນ​ລະ​ຫັດ​ຜ່ານ​ຂອງ​ທ່ານເຂົ້າໄປ​.</translation>
 <translation id="5712153969432126546">ບາງເທື່ອເວັບໄຊຈະເຜີຍແຜ່ PDF ຕ່າງໆ ເຊັ່ນ: ເອກະສານ, ສັນຍາ ແລະ ແບບຟອມ</translation>
-<translation id="5712323955984474772">ອັບເດດຕໍ່ໄປ</translation>
 <translation id="5715711091495208045">ຕົວ​ຈັດ​ຫາ​ປ​ລັກ​ອິນ: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນ</translation>
 <translation id="5719637365829998022">ສະແກນລະຫັດ QR ແລ້ວ.</translation>
@@ -5114,7 +5112,6 @@
 <translation id="6563469144985748109">ຜູ້ຈັດການຂອງທ່ານຍັງບໍ່ທັນອະນຸມັດມັນເທື່ອ</translation>
 <translation id="6568283005472142698">ການຊອກຫາໃນແຖບ</translation>
 <translation id="6569911211938664415">ລະຫັດຜ່ານຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານແລ້ວ (<ph name="ACCOUNT" />) ເພື່ອໃຫ້ທ່ານສາມາດໃຊ້ພວກມັນຢູ່ອຸປະກອນໃດກໍໄດ້.</translation>
-<translation id="6569934958368283244">ບຸກຄົນອື່ນ</translation>
 <translation id="6573497332121198392">ບໍ່ສາມາດລຶບທາງລັດອອກໄດ້</translation>
 <translation id="657402800789773160">​ໂຫຼດ​ຫນ້າ​ນີ້ຄືນອີກ</translation>
 <translation id="6577284282025554716">ຍົກເລີກການດາວໂຫຼດແລ້ວ: <ph name="FILE_NAME" /></translation>
@@ -6799,7 +6796,6 @@
 <translation id="8393700583063109961">ສົ່ງຂໍ້ຄວາມ</translation>
 <translation id="8397825320644530257">ຕັດການເຊື່ອມຕໍ່ໂທລະສັບທີ່ເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="8398877366907290961">ແນວໃດກໍ່ດໍາເນີນການຕໍ່</translation>
-<translation id="8400146488506985033">ຈັດການຜູ້ຄົນ</translation>
 <translation id="8401432541486058167">ໃຫ້ PIN ທີ່ເຊື່ອມໂຍງກັບບັດອັດສະລິຍະຂອງທ່ານ.</translation>
 <translation id="8404893580027489425">ເຊັນ​ເຊີລາຍນີ້ວ​ມືແມ່ນຢູ່ທາງຂວາມືຂອງ <ph name="DEVICE_TYPE" /> ທ່ານ. ແຕະມັນຄ່ອຍໆໂດຍໃຊ້ນິ້ວໃດກໍໄດ້.</translation>
 <translation id="8405046151008197676">ຮັບໄຮໄລ້ຈາກການອັບເດດຫຼ້າສຸດ</translation>
@@ -6855,7 +6851,6 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ຕ້ອງການການອະນຸຍາດຂອງທ່ານເພື່ອເປີດໃຊ້</translation>
 <translation id="8466417995783206254">ແຖບນີ້ກຳລັງຫຼິ້ນວິດີໂອໃນໂໝດສະແດງຜົນຊ້ອນກັນ.</translation>
 <translation id="8467326454809944210">ເລືອກພາສາອື່ນ</translation>
-<translation id="8470214316007448308">ບຸກຄົນອື່ນ</translation>
 <translation id="8470513973197838199">ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">ໂດຍປົກກະຕິ ເວັບໄຊຈະເຊື່ອມຕໍ່ກັບອຸປະກອນ USB ສຳລັບຄຸນສົມບັດ ເຊັ່ນ: ການພິມເອກະສານ ຫຼື ການບັນທຶກໄວ້ໃນອຸປະກອນຈັດເກັບຂໍ້ມູນ</translation>
 <translation id="8471959340398751476">ສ່ວນຫຼຸດຖືກປິດການນຳໃຊ້ຢູ່. ທ່ານສາມາດເປີດໃຊ້ພວກມັນໄດ້ໃນເມນູປັບແຕ່ງ</translation>
@@ -7042,6 +7037,7 @@
 <translation id="8676374126336081632">ລຶບການປ້ອນເຂົ້າ</translation>
 <translation id="8676770494376880701">ເຄື່ອງສາກ​ແບບ​ໃຊ້ໄຟຕໍ່າເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="8677212948402625567">ຍຸບເຊື່ອງທັງໝົດ...</translation>
+<translation id="867767487203716855">ອັບເດດຕໍ່ໄປ</translation>
 <translation id="8677859815076891398">ບໍ່ມີອະລະບ້ຳ. ສ້າງອະລະບໍ້າໃນ <ph name="LINK_BEGIN" />Google ຮູບພາບ<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">ບໍ່ມີການຫຍໍ້ຂະໜາດແຖບ</translation>
 <translation id="8678933587484842200">ທ່ານຕ້ອງການໃຫ້ແອັບພລິເຄຊັນນີ້ເປີດໃຊ້ແນວໃດ?</translation>
@@ -7130,7 +7126,6 @@
 <translation id="87646919272181953">ອະລະບໍ້າ Google ຮູບພາບ</translation>
 <translation id="8767621466733104912">ອັບເດດ Chrome ໂດຍອັດຕະໂນມັດສຳລັບຜູ້ໃຊ້ທຸກຄົນ</translation>
 <translation id="8770406935328356739">ໄດເຣັກທໍຣີພື້ນຖານຂອງສ່ວນຂະຫຍາຍ</translation>
-<translation id="8770507190024617908">ຈັດການຜູ້ຄົນ</translation>
 <translation id="8771300903067484968">ພາບພື້ນຫຼັງຂອງໜ້າເລີ່ມຕົ້ນໄດ້ຖືກຣີເຊັດເປັນພາບພື້ນຫຼັງເລີ່ມຕົ້ນແລ້ວ.</translation>
 <translation id="8773302562181397928">ບັນທຶກ <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">ຢືນຢັນກູ້ຄືນ</translation>

@@ -2852,7 +2852,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4035758313003622889">&amp;Menaxheri i detyrave</translation>
 <translation id="4036778507053569103">Politika e shkarkuar nga serveri është e pavlefshme.</translation>
 <translation id="4037084878352560732">Kalë</translation>
-<translation id="4037889604535939429">Redakto personin</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Dil nga faqja}other{Dil nga faqet}}</translation>
 <translation id="4044612648082411741">Fut fjalëkalimin e certifikatës</translation>
 <translation id="4044708573046946214">Fjalëkalimi i kyçjes së ekranit</translation>
@@ -4317,7 +4316,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5709557627224531708">Caktoje Chrome si shfletuesin tënd të parazgjedhur</translation>
 <translation id="5711983031544731014">Nuk mund të shkyçet. Fut fjalëkalimin</translation>
 <translation id="5712153969432126546">Sajtet ndonjëherë publikojnë PDF, si dokumente, kontrata dhe formularë</translation>
-<translation id="5712323955984474772">Përditësimi tjetër</translation>
 <translation id="5715711091495208045">Ndërmjetësi i përbërësit shtesë: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motorët e parazgjedhur të kërkimit</translation>
 <translation id="5719637365829998022">Kodi QR u skanua.</translation>
@@ -5085,7 +5083,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6563469144985748109">Menaxheri yt nuk e ka miratuar ende</translation>
 <translation id="6568283005472142698">Kërkimi në skeda</translation>
 <translation id="6569911211938664415">Fjalëkalimet ruhen në "Llogarinë tënde të Google" (<ph name="ACCOUNT" />) që të mund t'i përdorësh në çdo pajisje</translation>
-<translation id="6569934958368283244">Njerëz të tjerë</translation>
 <translation id="6573497332121198392">Shkurtorja nuk mund të hiqet</translation>
 <translation id="657402800789773160">&amp;Ringarkoje këtë faqe</translation>
 <translation id="6577284282025554716">Shkarkimi u anulua: <ph name="FILE_NAME" /></translation>
@@ -6758,7 +6755,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8393700583063109961">Dërgo mesazh</translation>
 <translation id="8397825320644530257">Shkëput telefonin e lidhur</translation>
 <translation id="8398877366907290961">Vazhdo gjithsesi</translation>
-<translation id="8400146488506985033">Menaxho kontaktet</translation>
 <translation id="8401432541486058167">Jep kodin PIN të lidhur me kartën tënde smart.</translation>
 <translation id="8404893580027489425">Sensori i gjurmës së gishtit është në anën e djathtë të pajisjes sate <ph name="DEVICE_TYPE" />. Preke lehtë me një gisht.</translation>
 <translation id="8405046151008197676">Merr pikat kryesore nga përditësimi i fundit</translation>
@@ -6814,7 +6810,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ka nevojë për leje që të ekzekutohet</translation>
 <translation id="8466417995783206254">Kjo skedë po luan një video në modalitetin "figurë brenda figurës".</translation>
 <translation id="8467326454809944210">Zgjidh një gjuhë tjetër</translation>
-<translation id="8470214316007448308">Njerëz të tjerë</translation>
 <translation id="8470513973197838199">Fjalëkalimet e ruajtura për <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sajtet lidhen zakonisht me pajisjet me USB për veçoritë si printimi i një dokumenti ose ruajtja te një pajisje e hapësirës ruajtëse</translation>
 <translation id="8471959340398751476">Uljet e çmimeve janë joaktive. Mund t'i aktivizosh te menyja e personalizimit</translation>
@@ -7001,6 +6996,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8676374126336081632">Pastro hyrjen</translation>
 <translation id="8676770494376880701">Është lidhur karikues me fuqi të ulët</translation>
 <translation id="8677212948402625567">Palosi të gjitha...</translation>
+<translation id="867767487203716855">Përditësimi tjetër</translation>
 <translation id="8677859815076891398">Nuk ka albume. Krijo një album te <ph name="LINK_BEGIN" />Fotografitë e Google<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Skedat nuk tkurren</translation>
 <translation id="8678933587484842200">Si dëshiron që të hapet ky aplikacion?</translation>
@@ -7089,7 +7085,6 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="87646919272181953">Albumi i "Fotografive të Google"</translation>
 <translation id="8767621466733104912">Përditësoje automatikisht Chrome për të gjithë përdoruesit</translation>
 <translation id="8770406935328356739">Direktoria rrënjë e shtesës</translation>
-<translation id="8770507190024617908">Menaxho kontaktet</translation>
 <translation id="8771300903067484968">Sfondi i faqes së nisjes është rivendosur në sfondin e parazgjedhur.</translation>
 <translation id="8773302562181397928">Ruaje <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Konfirmo restaurimin</translation>

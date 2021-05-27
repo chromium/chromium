@@ -217,6 +217,7 @@
 <translation id="1294263471858445589">Attiva l'autenticazione ambientale nelle sessioni standard e in modalità in incognito.</translation>
 <translation id="1295737447968372331">Attiva la dettatura sulla schermata di accesso</translation>
 <translation id="1297182715641689552">Utilizza uno script proxy .pac</translation>
+<translation id="1297827666345629703">Un account gestito deve essere un account principale</translation>
 <translation id="1297961932043741908">Imposta un limite sui megabyte di memoria che una istanza singola di Chrome può usare.</translation>
 <translation id="1304973015437969093">ID app/estensioni e URL di aggiornamento da installare automaticamente</translation>
 <translation id="1305400589435476516">Se il criterio viene impostato su Attivato, il roaming dei dati è consentito per il dispositivo.
@@ -576,6 +577,13 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="1755310913456007816">Utilizza le impostazioni di controllo delle revoche online esistenti</translation>
 <translation id="1760951637494635692">Consenti l'API Serial su questi siti</translation>
+<translation id="1765503534110351026">Questo criterio è deprecato. Usa il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+       Se il criterio viene impostato, <ph name="PRODUCT_NAME" /> bypassa qualsiasi proxy per l'elenco di host fornito. Questo criterio viene applicato se il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> non viene specificato e hai indicato <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> o <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> per <ph name="PROXY_MODE_POLICY_NAME" />.
+
+       Non impostare questo criterio se hai selezionato una qualsiasi altra modalità per i criteri di impostazione del proxy.
+
+       Nota: per esempi più dettagliati, consulta la pagina The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1767673020408652620">Attiva consigli di app a stato nullo della casella di ricerca</translation>
 <translation id="1780323582106687813">Questo criterio è deprecato, al suo posto utilizza "<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />".
 
@@ -809,6 +817,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2082205219176343977">Configura la versione minima di Chrome consentita per il dispositivo.</translation>
 <translation id="208566302163036794">Blocca le funzionalità disattivate</translation>
 <translation id="208623333578980446">Consenti wakelock schermo per la gestione dell'alimentazione</translation>
+<translation id="2086944573376916479">Un account gestito deve essere un account principale e non deve avere account secondari</translation>
 <translation id="2090939118981888335">Se il criterio viene impostato su Attivato, è consentito il proxy di compressione dei dati. Se viene impostato su Disattivato, il proxy non è consentito.
 
       Se il criterio viene configurato, gli utenti non possono modificarlo. In caso contrario, gli utenti possono scegliere di utilizzare la funzionalità.</translation>
@@ -862,6 +871,17 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 
       Se questo criterio non viene impostato, il browser farà dei tentativi per risparmiare memoria solo una volta rilevato che la memoria fisica del computer è in esaurimento.</translation>
 <translation id="2166472654199325139">Non filtrare i siti di contenuti per adulti</translation>
+<translation id="2168060657210442816">
+      Per essere applicato, questo criterio richiede l'impostazione di <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> su Vero.
+
+      Se questo criterio è impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> a livello di macchina, tutti gli account gestiti vengono forzati come principali.
+      Se è impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> a livello di account, quell'account sarà sempre considerato principale, ma potrà avere account secondari nel suo profilo.
+
+      Se questo criterio è impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> a livello di macchina, tutti gli account gestiti vengono forzati come principali.
+      Se viene impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> a livello di account, quell'account sarà sempre considerato principale e non avrà account secondari nel suo profilo.
+
+      Se il criterio è impostato su <ph name="POLICY_VALUE_NONE" /> o non viene configurato, gli account gestiti non avranno limitazioni Di conseguenza, un account gestito potrebbe essere un account secondario, il che ne disabilita la capacità di ricevere criteri impostati sull'account da parte dell'amministratore.
+    </translation>
 <translation id="2168397434410358693">Ritardo inattività in caso di utilizzo di CA</translation>
 <translation id="217013996107840632">Parametri della riga di comando per cambiare il browser alternativo.</translation>
 <translation id="2170233653554726857">Attiva ottimizzazione WPAD</translation>
@@ -1771,6 +1791,11 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="3261592499545947104">Il numero di secondi prima della scadenza di un certificato in cui attivare il rinnovo.</translation>
+<translation id="3264706118366247207">Consente di configurare un elenco dei tipi di dati di navigazione che dovrebbero essere eliminati alla chiusura di tutte le finestre del browser da parte dell'utente. Tra i tipi di dati disponibili ci sono: cronologia di navigazione (<ph name="DATA_TYPE_BROWSING_HISTORY" />), cronologia dei download (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, compilazione automatica (<ph name="DATA_TYPE_AUTOFILL" />), password (<ph name="DATA_TYPE_PASSWORD" />), impostazioni sito (<ph name="DATA_TYPE_SITE_SETTINGS" />) e dati di app ospitate (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Questo criterio non ha la precedenza su <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+      Questo criterio richiede l'impostazione del criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> su Vero, altrimenti sarà ignorato. Se questo criterio viene impostato a livello di piattaforma, la sincronizzazione dovrebbe essere disattivata a livello di piattaforma. Se questo criterio viene impostato a livello di utente, la sincronizzazione dovrebbe essere disattivata per quell'utente affinché il criterio venga applicato.
+
+      Se <ph name="PRODUCT_NAME" /> non si chiude correttamente (ad esempio, in caso di arresto anomalo del browser o del sistema operativo), i dati di navigazione verranno cancellati al successivo caricamento del profilo.</translation>
 <translation id="3264793472749429012">Codifiche del provider di ricerca predefinito</translation>
 <translation id="3273221114520206906">Impostazione JavaScript predefinita</translation>
 <translation id="328347261792478720">Per impostazione predefinita, nel browser vengono mostrati consigli di contenuti multimediali personalizzati in base agli interessi dell'utente. Se questo criterio viene impostato su Disattivato, questi consigli vengono nascosti all'utente. Se il criterio viene impostato su Attivato o se non viene configurato, i consigli di contenuti multimediali vengono mostrati all'utente.</translation>
@@ -1832,6 +1857,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di inattività.
 
           L'avviso viene mostrato solo se l'azione stabilita in caso di inattività è la disconnessione o lo spegnimento.</translation>
+<translation id="3363360928811201045">Aggiungi limitazioni agli account gestiti</translation>
 <translation id="3367868895271989224">Se il criterio viene impostato su Attivato, tutti i siti vengono isolati. Ogni sito viene eseguito nel proprio processo. Se il criterio viene impostato su Disattivato o se non viene configurato, l'isolamento dei siti non viene disattivato, ma possono farlo gli utenti (ad esempio, utilizzando la voce "Disattiva isolamento dei siti" in chrome://flags).
 
       Il criterio <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> potrebbe essere utile anche per la correzione delle origini. In <ph name="PRODUCT_OS_NAME" /> 76 o versioni precedenti, imposta il criterio relativo ai dispositivi <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> sullo stesso valore, perché, se i valori non corrispondono, potrebbe verificarsi un ritardo quando si accede a una sessione utente.
@@ -3014,6 +3040,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se un criterio è nell'elenco, nel caso ci sia conflitto tra le origini, l'ambito o il livello, verrà applicato il criterio con la priorità massima.</translation>
 <translation id="5056708224511062314">Ingrandimento dello schermo disattivato</translation>
 <translation id="5058573563327660283">Seleziona la strategia da utilizzare per liberare spazio su disco durante la pulizia automatica (obsoleta)</translation>
+<translation id="5059201920681374653">Gli account gestiti devono trovarsi un su dispositivo gestito affiliato</translation>
 <translation id="5061114193960158745">Questo criterio consente di stabilire l'elenco di siti web che non causeranno mai un cambio di browser. Ogni elemento è considerato come una regola. Le regole con una corrispondenza non aprono un browser alternativo. A differenza del criterio <ph name="URL_LIST_POLICY_NAME" />, le regole vengono applicate in entrambe le direzioni. Quando il componente aggiuntivo <ph name="IE_PRODUCT_NAME" /> è attivo, il criterio consente di stabilire anche se <ph name="IE_PRODUCT_NAME" /> deve aprire questi URL in <ph name="PRODUCT_NAME" />.
 
       Se il criterio non viene impostato, non viene aggiunto alcun sito web all'elenco.
@@ -3199,6 +3226,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se il criterio non è configurato, gli utenti non possono giocare sul dispositivo <ph name="PRODUCT_OS_NAME" /> registrato, ma possono farlo in altre circostanze.</translation>
 <translation id="529457411593078576">Attiva i TdS alla prima esecuzione di CCT</translation>
+<translation id="5298949392804966105">Nessuna limitazione per gli account gestiti</translation>
 <translation id="530134925949808452">L'ora del giorno, in ora locale, in cui viene rinnovata la quota di utilizzo.</translation>
 <translation id="5303080953475303561">La configurazione del criterio consente di stabilire la frequenza della richiesta della password nella schermata di blocco per lo sblocco rapido. Ogni volta che viene visualizzata la schermata di blocco, se l'ultimo inserimento della password si è verificato prima del periodo di tempo specificato dal valore scelto, lo sblocco rapido non sarà disponibile. Se l'utente rimane nella schermata di blocco per un tempo superiore a quello specificato in questo criterio, viene richiesta la password la volta successiva che inserisce il codice sbagliato o accede di nuovo alla schermata di blocco, a seconda dell'evento che si verifica per primo.
 
@@ -4349,6 +4377,26 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 
           Nota: se specificato, <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> sostituisce questo criterio.</translation>
 <translation id="6833988859168635883">Avvio, pagina iniziale e pagina Nuova scheda</translation>
+<translation id="6834298774555537368">L'impostazione del criterio consente di configurare le impostazioni del proxy per Chrome e le app ARC, ignorando tutte le opzioni relative al proxy specificate dalla riga di comando.
+
+       Se il criterio non viene configurato, gli utenti possono scegliere le impostazioni del proxy.
+
+       L'impostazione del criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> consente di accettare i seguenti campi:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, che consente di specificare il server proxy utilizzato da Chrome e impedisce agli utenti di modificare le impostazioni del proxy
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, un URL a un file proxy .pac
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, un URL a un server proxy
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, un elenco di host per i quali il proxy verrà bypassato
+
+       Il campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> è deprecato a favore del campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Per il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se scegli il valore:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, non viene mai utilizzato un proxy e tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, viene utilizzato il proxy del sistema e tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tutti gli altri campi vengono ignorati.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, vengono utilizzati i campi <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, vengono utilizzati i campi <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+
+      Nota: per esempi più dettagliati, consulta la pagina The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="6835883744948188639">Mostra all'utente un messaggio ricorrente che indica che è consigliato eseguire un riavvio</translation>
 <translation id="683688607121170501">Questa impostazione consente agli utenti di passare da un Account Google a un altro all'interno dell'area dei contenuti della finestra del browser e nelle applicazioni Android, dopo avere eseguito l'accesso al dispositivo <ph name="PRODUCT_OS_NAME" />.
 

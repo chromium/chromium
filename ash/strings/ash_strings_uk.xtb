@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">установлювати додатки, розширення й теми</translation>
 <translation id="2977598380246111477">Наступна цифра</translation>
+<translation id="2992327365391326550">Кнопку мікрофона пристрою вимкнено.</translation>
 <translation id="2995447421581609334">Показати пристрої для трансляції</translation>
 <translation id="2996462380875591307">Увімкнено закріплену лупу. Щоб вимкнути її, знову натисніть комбінацію Ctrl + клавіша пошуку + D.</translation>
 <translation id="3000461861112256445">Монофонічне аудіо</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">Щоб увійти, введіть свій батьківський код доступу з Family Link</translation>
 <translation id="3039939407102840004">Заряд акумулятора стилуса у відсотках становить <ph name="PERCENTAGE" />.</translation>
 <translation id="3045488863354895414">Доброго дня!</translation>
+<translation id="3051189971848907985">Профіль перейменовується. Зачекайте кілька хвилин.</translation>
 <translation id="3055162170959710888">Сьогодні цей пристрій працював <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Розгорнути меню</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">Підключено</translation>
 <translation id="3371140690572404006">пристрій, під’єднаний до порту USB-C (праворуч на передній панелі)</translation>
 <translation id="3375634426936648815">Підключено</translation>
+<translation id="3378442621503952303">Триває підключення до профілю. Зачекайте кілька хвилин.</translation>
 <translation id="3386978599540877378">лупу для повноекранного режиму</translation>
 <translation id="3400357268283240774">Додаткові налаштування</translation>
 <translation id="3410336247007142655">Показати налаштування темної теми</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">Вітаю! Чим я можу допомогти?</translation>
 <translation id="3826099427150913765">Ввести пароль</translation>
 <translation id="383058930331066723">Режим енергозбереження ввімкнено</translation>
+<translation id="3835880383832568924">Щоб переглянути оновлення, відкрийте додаток Ярлики</translation>
 <translation id="383629559565718788">Показати налаштування клавіатури</translation>
 <translation id="3846214748874656680">Вийти з повноекранного режиму</translation>
 <translation id="3846575436967432996">Інформація про мережу не доступна</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">Надіслати відгук</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
+<translation id="4735498845456076464">Комбінацію клавіш <ph name="LAUNCHER_KEY_NAME" /> + цифра змінено. Щоб створити емуляцію функціональних клавіш, натисніть <ph name="LAUNCHER_KEY_NAME" /> + клавішу у верхньому рядку.</translation>
 <translation id="4744944742468440486">Інформація, пов'язана з виділеним текстом</translation>
 <translation id="4759238208242260848">Завантаження</translation>
 <translation id="4774338217796918551">Поверніться завтра о <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">Копіювати</translation>
 <translation id="6910714959251846841">Для цього оновлення потрібно виконати Powerwash на пристрої. Докладніше про останнє оновлення додатка <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Не вдається розпізнати розумну картку. Повторіть спробу.</translation>
+<translation id="6921188888306725546">Комбінації клавіш покращено</translation>
 <translation id="6945221475159498467">Вибрати</translation>
 <translation id="6961121602502368900">Звук телефона не можна вимкнути в робочому профілі</translation>
 <translation id="6961840794482373852">Комбінацію клавіш Alt + стрілка вгору змінено. Щоб скористатися клавішею Page Up, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вгору.</translation>
@@ -934,6 +940,7 @@
 <translation id="8631727435199967028">Налаштування спеціальних можливостей</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="8639760480004882931">Залишилося <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">Оновлюється список профілів. Зачекайте кілька хвилин.</translation>
 <translation id="8646417893960517480">Таймер на <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Щоб додати людину, введіть батьківський код доступу з Family Link</translation>
 <translation id="8649101189709089199">Читання з екрана</translation>
@@ -961,6 +968,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Налаштування методів введення</translation>
+<translation id="8818320199597151042">Видаляється профіль. Зачекайте кілька хвилин.</translation>
 <translation id="8825863694328519386">Щоб повернутися, проведіть пальцем від лівого краю</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Кнопка "Назад"</translation>
@@ -1006,6 +1014,7 @@
 <translation id="9091626656156419976">Дисплей <ph name="DISPLAY_NAME" /> вилучено</translation>
 <translation id="9098969848082897657">Вимкнути звук на телефоні</translation>
 <translation id="9099154003160514616">Доступне оновлення Lacros</translation>
+<translation id="9100887602489003640">Додається профіль. Зачекайте кілька хвилин.</translation>
 <translation id="9105450214093926548">Під час роботи веб-переглядача Lacros вхід у кілька облікових записів не підтримується. Скористайтесь іншим профілем веб-переглядача або закрийте Lacros і повторіть спробу.</translation>
 <translation id="9133335900048457298">Не вдається записати захищений контент</translation>
 <translation id="9151726767154816831">Для оновлення перезапустіть пристрій і виконайте Powerwash</translation>

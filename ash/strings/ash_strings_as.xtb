@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">এপ্‌, এক্সটেনশ্বন আৰু থীম ইনষ্টল কৰক</translation>
 <translation id="2977598380246111477">পৰৱৰ্তী সংখ্যা</translation>
+<translation id="2992327365391326550">ডিভাইচটোৰ মাইক্ৰ’ফ’নৰ বুটামটো অফ কৰা হ’ল।</translation>
 <translation id="2995447421581609334">কাষ্ট ডিভাইচবোৰ দেখুৱাওক।</translation>
 <translation id="2996462380875591307">ড'ক কৰা বিৱৰ্ধক সক্ষম কৰা হ'ল। ইয়াক ট’গল অফ কৰিবলৈ আকৌ Ctrl+Search+D টিপক।</translation>
 <translation id="3000461861112256445">ম’ন’ অডিঅ’</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">ছাইন ইন কৰিবলৈ, আপোনাৰ Family Linkৰ অভিভাৱকৰ এক্সেছ ক'ডটো দিয়ক</translation>
 <translation id="3039939407102840004">ষ্টাইলাছৰ বেটাৰী <ph name="PERCENTAGE" /> শতাংশ আছে।</translation>
 <translation id="3045488863354895414">শুভ অপৰাহ্ন,</translation>
+<translation id="3051189971848907985">প্ৰ’ফাইলটোৰ নতুন নাম দি থকা হৈছে। কেইমিনিটমান অপেক্ষা কৰক।</translation>
 <translation id="3055162170959710888">আপুনি আজি ডিভাইচটো <ph name="USED_TIME" /> সময় ব্যৱহাৰ কৰিলে</translation>
 <translation id="3077734595579995578">Shift+</translation>
 <translation id="3081696990447829002">মেনু বিস্তাৰ কৰক</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">সংযোগ কৰা হ’ল</translation>
 <translation id="3371140690572404006">USB-C ডিভাইচ। (সোঁফালৰ সন্মুখৰ প’ৰ্ট)</translation>
 <translation id="3375634426936648815">সংযোগ কৰা হ’ল</translation>
+<translation id="3378442621503952303">প্ৰ’ফাইলৰ সৈতে সংযোগ কৰি থকা হৈছে। কেইমিনিটমান অপেক্ষা কৰক।</translation>
 <translation id="3386978599540877378">সম্পূর্ণ স্ক্ৰীণৰ বিৱৰ্ধকটো</translation>
 <translation id="3400357268283240774">অতিৰিক্ত ছেটিংসমূহ</translation>
 <translation id="3410336247007142655">গাঢ় ৰঙৰ থীমৰ ছেটিংসমূহ দেখুৱাওক</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">নমস্কাৰ, মই আপোনাক কেনেদৰে সহায় কৰিব পাৰোঁ?</translation>
 <translation id="3826099427150913765">পাছৱৰ্ডলৈ সলনি কৰক</translation>
 <translation id="383058930331066723">বেটাৰী সঞ্চয়কাৰী মোড অন কৰা আছে</translation>
+<translation id="3835880383832568924">আপডে’টসমূহ চাবলৈ Shortcuts এপ্‌টো খোলক</translation>
 <translation id="383629559565718788">কীব’ৰ্ডৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="3846214748874656680">পূৰ্ণষ্ক্রীণৰ পৰা বাহিৰ হওক</translation>
 <translation id="3846575436967432996">নেটৱৰ্কৰ বিষয়ে কোনো তথ্য নাই</translation>
@@ -470,6 +474,7 @@
 <translation id="4705716602320768426">মতামত ফাইল কৰক</translation>
 <translation id="4731797938093519117">অভিভাৱকৰ এক্সেছ</translation>
 <translation id="4734965478015604180">আনুভূমিক</translation>
+<translation id="4735498845456076464">কীব’ৰ্ডৰ শ্বৰ্টকাট <ph name="LAUNCHER_KEY_NAME" /> + নাম্বাৰটো সলনি হৈছে। ফাংশ্বন কীসমূহ ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + ওপৰৰ শাৰীৰ এটা কী টিপক।</translation>
 <translation id="4744944742468440486">আপুনি কৰা বাছনি সম্পৰ্কীয় তথ্য</translation>
 <translation id="4759238208242260848">ডাউনল'ডসমূহ</translation>
 <translation id="4774338217796918551">কাইলৈ <ph name="COME_BACK_TIME" /> বজাত আকৌ চাব৷</translation>
@@ -727,6 +732,7 @@
 <translation id="6896758677409633944">প্ৰতিলিপি কৰক</translation>
 <translation id="6910714959251846841">এই আপডে’টটো কৰিবলৈ হ’লে আপোনাৰ ডিভাইচটো পাৱাৰৱাশ্ব কৰাটো প্ৰয়োজনীয়। শেহতীয়া <ph name="SYSTEM_APP_NAME" /> আপডে’টৰ বিষয়ে অধিক জানক।</translation>
 <translation id="6919251195245069855">আপোনাৰ স্মার্ট কার্ডখন চিনাক্ত কৰিব পৰা নগ'ল। আকৌ চেষ্টা কৰক।</translation>
+<translation id="6921188888306725546">কীব’ৰ্ডৰ শ্বৰ্টকাটসমূহ উন্নত কৰা হৈছে</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
 <translation id="6961121602502368900">কৰ্মস্থানৰ প্ৰ’ফাইলত নীৰৱ ফ’ন উপলব্ধ নহয়</translation>
 <translation id="6961840794482373852">কীব’ৰ্ডৰ শ্বৰ্টকাট অল্ট + আপ এৰ'টো সলনি হৈছে। পেজ আপ কীটো ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + আপ এৰ' টিপক।</translation>
@@ -930,6 +936,7 @@
 <translation id="8631727435199967028">সাধ্য সুবিধাৰ ছেটিংসমূহ</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> বাকী আছে</translation>
+<translation id="8641805545866562088">প্ৰ’ফাইলৰ সূচী ৰিফ্ৰেশ্ব কৰি থকা হৈছে। কেইমিনিটমান অপেক্ষা কৰক।</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" />ৰ টাইমাৰ</translation>
 <translation id="8647931990447795414">এগৰাকী লোকক যোগ দিয়ক, আপোনাৰ Family Linkৰ অভিভাৱকৰ এক্সেছ ক'ডটো দিয়ক</translation>
 <translation id="8649101189709089199">কথা ক’বলৈ বাছনি কৰক</translation>
@@ -957,6 +964,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">ৱাই-ফাই</translation>
 <translation id="881757059229893486">ইনপুট পদ্ধতিৰ ছেটিং</translation>
+<translation id="8818320199597151042">প্ৰ’ফাইলটো আঁতৰাই থকা হৈছে। কেইমিনিটমান অপেক্ষা কৰক।</translation>
 <translation id="8825863694328519386">উভতি যাবলৈ বাওঁফালৰ পৰা ছোৱাইপ কৰক</translation>
 <translation id="8828714802988429505">৯০°</translation>
 <translation id="8841375032071747811">পূর্বৱর্তী পৃষ্ঠালৈ যোৱা বুটাম</translation>
@@ -1002,6 +1010,7 @@
 <translation id="9091626656156419976">ডিছপ্লে' <ph name="DISPLAY_NAME" /> আঁতৰোৱা হ'ল</translation>
 <translation id="9098969848082897657">ফ’নটো নীৰৱ কৰক</translation>
 <translation id="9099154003160514616">Lacrosৰ আপডে’ট উপলব্ধ</translation>
+<translation id="9100887602489003640">প্ৰ’ফাইল যোগ দি থকা হৈছে। কেইমিনিটমান অপেক্ষা কৰক।</translation>
 <translation id="9105450214093926548">Lacros ব্ৰাউজাৰটো চলি থকাৰ সময়ত দ্বিতীয় এগৰাকী ব্যৱহাৰকাৰী ছাইন ইন কৰাটো সমৰ্থিত নহয়। অনুগ্ৰহ কৰি তাৰ সলনি Lacrosত দ্বিতীয় এটা ব্ৰাউজাৰ প্ৰ’ফাইল ব্যৱহাৰ কৰক অথবা Lacros বন্ধ কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="9133335900048457298">সুৰক্ষিত সমল ৰেকৰ্ড কৰিব নোৱাৰি</translation>
 <translation id="9151726767154816831">আপডে’ট কৰিবলৈ ৰিষ্টাৰ্ট আৰু পাৱাৰৱাশ্ব কৰক</translation>

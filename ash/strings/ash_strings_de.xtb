@@ -245,6 +245,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2963773877003373896">Mod3</translation>
 <translation id="2970920913501714344">Apps, Erweiterungen und Designs installieren</translation>
 <translation id="2977598380246111477">Nächste Nummer</translation>
+<translation id="2992327365391326550">Das Mikrofon des Geräts ist ausgeschaltet.</translation>
 <translation id="2995447421581609334">Streaminggeräte anzeigen</translation>
 <translation id="2996462380875591307">Angedockte Lupe aktiviert. Drücken Sie Strg + Suchtaste + D, um sie zu deaktivieren.</translation>
 <translation id="3000461861112256445">Mono-Audio</translation>
@@ -255,6 +256,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3038571455154067151">Wenn Sie sich anmelden möchten, geben Sie Ihren Eltern-Zugangscode für Family Link ein</translation>
 <translation id="3039939407102840004">Der Akku des Eingabestifts ist bei <ph name="PERCENTAGE" /> %.</translation>
 <translation id="3045488863354895414">Guten Tag,</translation>
+<translation id="3051189971848907985">Profil wird umbenannt. Warten Sie ein paar Minuten.</translation>
 <translation id="3055162170959710888">Du hast das Gerät heute <ph name="USED_TIME" /> verwendet</translation>
 <translation id="3077734595579995578">Umschalttaste</translation>
 <translation id="3081696990447829002">Menü maximieren</translation>
@@ -295,6 +297,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3371140690572404006">USB-C-Gerät (Port vorne rechts)</translation>
 <translation id="3375634426936648815">Verbunden</translation>
+<translation id="3378442621503952303">Verbindung zum Profil wird hergestellt. Warten Sie ein paar Minuten.</translation>
 <translation id="3386978599540877378">die Vollbildlupe</translation>
 <translation id="3400357268283240774">Zusätzliche Einstellungen</translation>
 <translation id="3410336247007142655">Einstellungen für das dunkle Design anzeigen</translation>
@@ -351,6 +354,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="380165613292957338">Hallo, wie kann ich dir helfen?</translation>
 <translation id="3826099427150913765">Zu Passwort wechseln</translation>
 <translation id="383058930331066723">Energiesparmodus ist aktiviert</translation>
+<translation id="3835880383832568924">Öffnen Sie die App mit den Tastenkombinationen, um sich die Neuerungen anzusehen</translation>
 <translation id="383629559565718788">Tastatureinstellungen anzeigen</translation>
 <translation id="3846214748874656680">Vollbildmodus beenden</translation>
 <translation id="3846575436967432996">Keine Netzwerkinformationen verfügbar</translation>
@@ -471,6 +475,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4705716602320768426">Feedback geben</translation>
 <translation id="4731797938093519117">Elternfreigabe</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735498845456076464">Die Tastenkombination <ph name="LAUNCHER_KEY_NAME" /> + Ziffer hat sich geändert. Wenn Sie jetzt eine Funktionstaste benötigen, drücken Sie die <ph name="LAUNCHER_KEY_NAME" />-Taste + eine Taste in der oberen Reihe.</translation>
 <translation id="4744944742468440486">Informationen in Bezug auf Ihre Auswahl</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4774338217796918551">Du darfst das Gerät um <ph name="COME_BACK_TIME" /> wieder verwenden.</translation>
@@ -728,6 +733,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6910714959251846841">Damit dieses Update installiert werden kann, muss auf Ihrem Gerät ein Powerwash durchgeführt werden. Informieren Sie sich über das aktuelle <ph name="SYSTEM_APP_NAME" />-Update.</translation>
 <translation id="6919251195245069855">Ihre Smartcard wurde nicht erkannt. Bitte versuchen Sie es noch einmal.</translation>
+<translation id="6921188888306725546">Tastenkombinationen wurden optimiert</translation>
 <translation id="6945221475159498467">Auswählen</translation>
 <translation id="6961121602502368900">„Smartphone stummschalten“ ist im Arbeitsprofil nicht verfügbar</translation>
 <translation id="6961840794482373852">Die Tastenkombination Alt + Aufwärtspfeil hat sich geändert. Wenn Sie jetzt die Seite-nach-oben-Taste benötigen, drücken Sie <ph name="LAUNCHER_KEY_NAME" />-Taste + Aufwärtspfeil.</translation>
@@ -934,6 +940,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8631727435199967028">Einstellungen für Bedienungshilfen</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" />, von Ihrem Administrator verwaltet</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> verbleibend</translation>
+<translation id="8641805545866562088">Profilliste wird aktualisiert. Warten Sie ein paar Minuten.</translation>
 <translation id="8646417893960517480">Timer: <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Wenn Sie eine Person hinzufügen möchten, geben Sie Ihren Eltern-Zugangscode für Family Link ein</translation>
 <translation id="8649101189709089199">Vorlesen</translation>
@@ -961,6 +968,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">WLAN</translation>
 <translation id="881757059229893486">Einstellungen für Eingabemethoden</translation>
+<translation id="8818320199597151042">Profil wird entfernt. Warten Sie ein paar Minuten.</translation>
 <translation id="8825863694328519386">Von links nach rechts wischen, um zurückzugehen</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Schaltfläche "Zurück"</translation>
@@ -1006,6 +1014,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="9091626656156419976">Bildschirm <ph name="DISPLAY_NAME" /> wurde entfernt</translation>
 <translation id="9098969848082897657">Smartphone stummschalten</translation>
 <translation id="9099154003160514616">Lacros-Update verfügbar</translation>
+<translation id="9100887602489003640">Profil wird hinzugefügt. Warten Sie ein paar Minuten.</translation>
 <translation id="9105450214093926548">Während der Lacros-Browser läuft, kann kein zweiter Nutzer angemeldet werden. Verwenden Sie stattdessen ein zweites Browserprofil in Lacros oder schließen Sie den Browser und versuchen es noch einmal.</translation>
 <translation id="9133335900048457298">Geschützte Inhalte können nicht aufgezeichnet werden</translation>
 <translation id="9151726767154816831">Zum Aktualisieren Neustart und Powerwash durchführen</translation>

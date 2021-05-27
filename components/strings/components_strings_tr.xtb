@@ -305,12 +305,14 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2042213636306070719">Tepsi 7</translation>
 <translation id="204357726431741734">Google Hesabınızda kayıtlı şifreleri kullanmak için oturum açın</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> dilindeki sayfalar çevrilmeyecek.</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Bu denetim açık ve durum etkin olduğunda Chrome, son tarama etkinliklerinizin en çok benzediği geniş kullanıcı grubu veya "kohort"u belirler. Reklamverenler grup için reklam seçebilirler ve tarama etkinliğiniz cihazınızda gizli tutulur. Grubunuz her gün güncellenir.}=1{Bu denetim açık ve durum etkin olduğunda Chrome, son tarama etkinliklerinizin en çok benzediği geniş kullanıcı grubu veya "kohort"u belirler. Reklamverenler grup için reklam seçebilirler ve tarama etkinliğiniz cihazınızda gizli tutulur. Grubunuz her gün güncellenir.}other{Bu denetim açık ve durum etkin olduğunda Chrome, son tarama etkinliklerinizin en çok benzediği geniş kullanıcı grubu veya "kohort"u belirler. Reklamverenler grup için reklam seçebilirler ve tarama etkinliğiniz cihazınızda gizli tutulur. Grubunuz {NUM_DAYS} günde bir güncellenir.}}</translation>
 <translation id="2053553514270667976">Posta kodu</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 öneri}other{# öneri}}</translation>
 <translation id="2071692954027939183">Genelde izin vermediğiniz için bildirimler otomatik olarak engellendi</translation>
 <translation id="2079545284768500474">Geri al</translation>
 <translation id="20817612488360358">Sistem proxy ayarları kullanılmak üzere ayarlandı, ancak açık bir proxy yapılandırması da belirtildi.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> sonuçtan <ph name="RESULT_NUMBER" /> numaralı sonuç</translation>
+<translation id="2085876078937250610">Kaydet…</translation>
 <translation id="2088086323192747268">Senkronizasyonu yönet düğmesi, Chrome ayarlarında hangi bilgileri senkronize ettiğinizi yönetmek için Enter'a basın</translation>
 <translation id="2091887806945687916">Ses</translation>
 <translation id="2094505752054353250">Alan adı uyuşmazlığı</translation>
@@ -391,6 +393,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2355395290879513365">Saldırganlar bu sitede baktığınız resimleri görebilir ve bu resimler üzerinde değişiklik yaparak sizi kandırabilirler.</translation>
 <translation id="2356070529366658676">Sor</translation>
 <translation id="2357481397660644965">Cihazınız <ph name="DEVICE_MANAGER" /> tarafından, hesabınız ise <ph name="ACCOUNT_MANAGER" /> tarafından yönetiliyor.</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Bir günden kısa bir süre içinde}=1{Bir gün içinde}other{{NUM_DAYS} gün içinde}}</translation>
 <translation id="2359629602545592467">Birden fazla</translation>
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2359961752320758691">Sanal kart numaranız uygulandı.</translation>
@@ -711,6 +714,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3590643883886679995">Gizli moddan çıktıktan sonra oturum açma verileriniz bu cihazda saklanır.</translation>
 <translation id="359126217934908072">Ay/Yıl:</translation>
 <translation id="3592413004129370115">Italian (Zarf)</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Grubunuzu istediğiniz zaman sıfırlayabilirsiniz. Yeni bir gruba katılmak yaklaşık bir gün sürer.}=1{Grubunuzu istediğiniz zaman sıfırlayabilirsiniz. Yeni bir gruba katılmak yaklaşık bir gün sürer.}other{Grubunuzu istediğiniz zaman sıfırlayabilirsiniz. Yeni bir gruba katılmak yaklaşık {NUM_DAYS} gün sürer.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Uygulama, yöneticiniz tarafından engellendi</translation>
 <translation id="3608932978122581043">Besleme yönü</translation>
@@ -1194,6 +1198,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5332219387342487447">Gönderim Yöntemi</translation>
 <translation id="5333022057423422993">Chrome, az önce kullandığınız şifrenin bir veri ihlali sonucunda açığa çıktığını belirledi. Hesaplarınızın güvenliğini sağlamak için kayıtlı şifrelerinizi kontrol etmenizi öneririz.</translation>
 <translation id="5334013548165032829">Ayrıntılı sistem günlükleri</translation>
+<translation id="5334145288572353250">Adres Kaydedilsin mi?</translation>
 <translation id="5340250774223869109">Uygulama engellendi</translation>
 <translation id="534295439873310000">NFC cihazları</translation>
 <translation id="5344579389779391559">Bu sayfa sizden para almaya çalışabilir</translation>
@@ -1533,6 +1538,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6671697161687535275">Form önerisi Chromium'dan kaldırılsın mı?</translation>
 <translation id="6685834062052613830">Çıkış yapın ve kurulumu tamamlayın</translation>
 <translation id="6687335167692595844">Yazı tipi boyutu istendi</translation>
+<translation id="6688743156324860098">Güncelle…</translation>
 <translation id="6689249931105087298">Siyah nokta sıkıştırma ile göreli</translation>
 <translation id="6689271823431384964">Chrome, oturumunuz açık olduğu için kartlarınızı Google Hesabınıza kaydetmeyi öneriyor. Bu davranışı ayarlardan değiştirebilirsiniz. Kart sahibinin adı hesabınızdan gelir.</translation>
 <translation id="6698381487523150993">Oluşturma tarihi:</translation>
@@ -1548,6 +1554,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6744009308914054259">Bağlantı kurulmasını beklerken çevrimdışı makaleleri okumak için İndirilenler bölümünü ziyaret edebilirsiniz.</translation>
 <translation id="6753269504797312559">Politika değeri</translation>
 <translation id="6757797048963528358">Cihazınız uyku moduna geçti.</translation>
+<translation id="6767985426384634228">Adres Güncellensin mi?</translation>
 <translation id="6768213884286397650">Hagaki (Kartpostal)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Mor</translation>
@@ -1707,6 +1714,7 @@ Ek ayrıntılar:
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Geçerli değil</translation>
 <translation id="7390545607259442187">Kartı Onayla</translation>
+<translation id="7392089738299859607">Adresi Güncelle</translation>
 <translation id="7399802613464275309">Güvenlik Kontrolü</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> adlı cihazınız yönetilmektedir</translation>
@@ -1845,6 +1853,7 @@ Ek ayrıntılar:
 <translation id="7865448901209910068">En iyi hız</translation>
 <translation id="7874263914261512992">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chrome, <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ve bu şifreyi kullandığınız diğer sitelerdeki kayıtlı şifrelerinizi hemen kontrol etmenizi öneriyor.</translation>
 <translation id="7878562273885520351">Şifrenizin güvenliği ihlal edilmiş olabilir</translation>
+<translation id="7880146494886811634">Adresi Kaydet</translation>
 <translation id="7882421473871500483">Kahverengi</translation>
 <translation id="7887683347370398519">CVC'nizi kontrol edin ve tekrar deneyin</translation>
 <translation id="7887885240995164102">Pencere içinde pencere moduna gir</translation>

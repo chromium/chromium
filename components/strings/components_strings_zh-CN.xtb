@@ -304,12 +304,14 @@
 <translation id="2042213636306070719">纸匣 7</translation>
 <translation id="204357726431741734">登录后即可使用您 Google 帐号中保存的密码</translation>
 <translation id="2053111141626950936">系统不会翻译<ph name="LANGUAGE" />网页。</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{如果此控件已开启且处于有效状态，Chrome 会确定您近期的浏览活动与哪个大型用户群组或“同类群组”最接近。广告主可为群组选择广告，您的浏览活动记录会私密地保留在您的设备上。系统会按每天 1 次的频率更新您所属的群组。}=1{如果此控件已开启且处于有效状态，Chrome 会确定您近期的浏览活动与哪个大型用户群组或“同类群组”最接近。广告主可为群组选择广告，您的浏览活动记录会私密地保留在您的设备上。系统会按每天 1 次的频率更新您所属的群组。}other{如果此控件已开启且处于有效状态，Chrome 会确定您近期的浏览活动与哪个大型用户群组或“同类群组”最接近。广告主可为群组选择广告，您的浏览活动记录会私密地保留在您的设备上。系统会按每 {NUM_DAYS} 天 1 次的频率更新您所属的群组。}}</translation>
 <translation id="2053553514270667976">邮编</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 条建议}other{# 条建议}}</translation>
 <translation id="2071692954027939183">由于您通常不允许显示通知，系统已自动屏蔽通知</translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="20817612488360358">已设置为使用系统代理设置，但同时指定了一个明确的代理配置。</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 条结果，共 <ph name="TOTAL_RESULTS" /> 条</translation>
+<translation id="2085876078937250610">保存…</translation>
 <translation id="2088086323192747268">“管理同步数据”按钮，按 Enter 键即可在 Chrome 设置中管理您要同步的信息</translation>
 <translation id="2091887806945687916">声音</translation>
 <translation id="2094505752054353250">网域不匹配</translation>
@@ -390,6 +392,7 @@
 <translation id="2355395290879513365">攻击者可能能够看到您正在此网站上浏览的图片，并通过编辑这些图片让您受骗。</translation>
 <translation id="2356070529366658676">询问</translation>
 <translation id="2357481397660644965">您的设备由 <ph name="DEVICE_MANAGER" /> 管理，您的帐号由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{不到 1 天后}=1{1 天后}other{{NUM_DAYS} 天后}}</translation>
 <translation id="2359629602545592467">多种货币</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2359961752320758691">已应用您的虚拟卡号。</translation>
@@ -707,6 +710,7 @@
 <translation id="3590643883886679995">当您退出无痕模式后，登录数据会存储在此设备中。</translation>
 <translation id="359126217934908072">月/年：</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{您可以随时重置自己所属的群组。大约需要 1 天的时间才能加入新群组。}=1{您可以随时重置自己所属的群组。大约需要 1 天的时间才能加入新群组。}other{您可以随时重置自己所属的群组。大约需要 {NUM_DAYS} 天的时间才能加入新群组。}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3603507503523709">已被您的管理员禁用的应用</translation>
 <translation id="3608932978122581043">送纸方向</translation>
@@ -1188,6 +1192,7 @@
 <translation id="5332219387342487447">送货方式</translation>
 <translation id="5333022057423422993">Chrome 发现您刚才使用的密码已遭遇数据泄露。为确保您的帐号安全，建议您检查您保存的密码。</translation>
 <translation id="5334013548165032829">详细的系统日志</translation>
+<translation id="5334145288572353250">保存地址？</translation>
 <translation id="5340250774223869109">此应用已被禁用</translation>
 <translation id="534295439873310000">NFC 设备</translation>
 <translation id="5344579389779391559">此页面可能会向您收取费用</translation>
@@ -1526,6 +1531,7 @@
 <translation id="6671697161687535275">要从 Chromium 中移除表单填写建议吗？</translation>
 <translation id="6685834062052613830">请退出并完成设置</translation>
 <translation id="6687335167692595844">请求的字号</translation>
+<translation id="6688743156324860098">更新…</translation>
 <translation id="6689249931105087298">相对（使用黑点压缩）</translation>
 <translation id="6689271823431384964">Chrome 正在询问是否要将卡保存到您的 Google 帐号中，因为您已登录。您可在“设置”中更改此行为。持卡人姓名来自您的帐号。</translation>
 <translation id="6698381487523150993">创建时间：</translation>
@@ -1541,6 +1547,7 @@
 <translation id="6744009308914054259">在等待连接时，您可以前往“下载内容”页面阅读离线文章。</translation>
 <translation id="6753269504797312559">政策值</translation>
 <translation id="6757797048963528358">您的设备已进入休眠模式。</translation>
+<translation id="6767985426384634228">更新地址？</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">紫罗兰色</translation>
@@ -1700,6 +1707,7 @@
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">不适用</translation>
 <translation id="7390545607259442187">确认信用卡</translation>
+<translation id="7392089738299859607">更新地址</translation>
 <translation id="7399802613464275309">安全检查</translation>
 <translation id="7400418766976504921">网址</translation>
 <translation id="7403591733719184120">您的 <ph name="DEVICE_NAME" /> 受管理</translation>
@@ -1838,6 +1846,7 @@
 <translation id="7865448901209910068">最快的速度</translation>
 <translation id="7874263914261512992">您刚刚在一个诈骗网站中输入了密码。Chrome 建议您立即前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 以及使用此密码的其他网站检查您保存的密码。</translation>
 <translation id="7878562273885520351">您的密码可能会被盗用</translation>
+<translation id="7880146494886811634">保存地址</translation>
 <translation id="7882421473871500483">棕色</translation>
 <translation id="7887683347370398519">请检查您的银行卡验证码 (CVC)，然后重试</translation>
 <translation id="7887885240995164102">进入“画中画”模式</translation>

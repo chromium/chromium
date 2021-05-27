@@ -2876,7 +2876,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4035758313003622889">&amp;Aktivitetshanteraren</translation>
 <translation id="4036778507053569103">Policyn som laddades ned från servern är ogiltig.</translation>
 <translation id="4037084878352560732">Häst</translation>
-<translation id="4037889604535939429">Redigera person</translation>
 <translation id="4040753847560036377">Fel PUK-kod</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Lämna sidan}other{Lämna sidorna}}</translation>
 <translation id="4044612648082411741">Ange certifikatlösenordet</translation>
@@ -4345,7 +4344,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5709557627224531708">Ange Chrome som standardwebbläsare</translation>
 <translation id="5711983031544731014">Det går inte att låsa upp. Ange ditt lösenord.</translation>
 <translation id="5712153969432126546">Ibland publicerar webbplatser PDF-filer, som dokument, avtal och formulär</translation>
-<translation id="5712323955984474772">Nästa uppdatering</translation>
 <translation id="5715711091495208045">Agent för pluginprogram: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standardsökmotorer</translation>
 <translation id="5719637365829998022">QR-koden har skannats.</translation>
@@ -5117,7 +5115,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6563469144985748109">Den ansvarige har inte godkänt den ännu</translation>
 <translation id="6568283005472142698">Sök bland flikar</translation>
 <translation id="6569911211938664415">Lösenorden sparas i Google-kontot (<ph name="ACCOUNT" />) så att du kan använda dem på vilken enhet som helst</translation>
-<translation id="6569934958368283244">Andra personer</translation>
 <translation id="6573497332121198392">Det gick inte att ta bort genvägen</translation>
 <translation id="657402800789773160">&amp;Hämta sidan igen</translation>
 <translation id="6577284282025554716">Nedladdningen avbröts: <ph name="FILE_NAME" /></translation>
@@ -6804,7 +6801,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8393700583063109961">Skicka meddelande</translation>
 <translation id="8397825320644530257">Koppla från ansluten telefon</translation>
 <translation id="8398877366907290961">Fortsätt ändå</translation>
-<translation id="8400146488506985033">Hantera personer</translation>
 <translation id="8401432541486058167">Ange den pinkod som är kopplad till ditt smartkort.</translation>
 <translation id="8404893580027489425">Fingeravtryckssensorn sitter på den högra sidan av <ph name="DEVICE_TYPE" />. Tryck lätt på den med valfritt finger.</translation>
 <translation id="8405046151008197676">Läs det viktigaste om den senaste uppdateringen</translation>
@@ -6860,7 +6856,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8465444703385715657">Du måste godkänna att <ph name="PLUGIN_NAME" /> körs</translation>
 <translation id="8466417995783206254">På den här fliken spelas en video upp i bild-i-bild-läge.</translation>
 <translation id="8467326454809944210">Välj ett annat språk</translation>
-<translation id="8470214316007448308">Andra personer</translation>
 <translation id="8470513973197838199">Sparade lösenord för <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Åtkomst till USB-enheter brukar kunna behövas för funktioner som att skriva ut dokument eller spara filer på en lagringsenhet</translation>
 <translation id="8471959340398751476">Rabatter har inaktiverats. Du kan inaktivera dem i menyn Anpassa</translation>
@@ -7047,6 +7042,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="8676374126336081632">Radera inmatning</translation>
 <translation id="8676770494376880701">Laddare med låg effekt ansluten</translation>
 <translation id="8677212948402625567">Dölj alla...</translation>
+<translation id="867767487203716855">Nästa uppdatering</translation>
 <translation id="8677859815076891398">Du har inga album. Skapa ett album i <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Flikar förminskas inte</translation>
 <translation id="8678933587484842200">Hur vill du att det här programmet ska startas?</translation>
@@ -7135,7 +7131,6 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="87646919272181953">Album i Google Foto</translation>
 <translation id="8767621466733104912">Uppdatera Chrome automatiskt för alla användare</translation>
 <translation id="8770406935328356739">Tilläggets rotkatalog</translation>
-<translation id="8770507190024617908">Hantera personer</translation>
 <translation id="8771300903067484968">Startsidans bakgrund har återställts till standardbakgrunden.</translation>
 <translation id="8773302562181397928">Spara <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Bekräfta återställning</translation>

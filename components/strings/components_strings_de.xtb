@@ -304,12 +304,14 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2042213636306070719">Fach 7</translation>
 <translation id="204357726431741734">Anmelden, um die in Ihrem Google-Konto gespeicherten Passwörter zu verwenden</translation>
 <translation id="2053111141626950936">Seiten auf <ph name="LANGUAGE" /> werden nicht übersetzt.</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ Ihre aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und Ihre Browseraktivitäten werden sicher auf Ihrem Gerät gespeichert. Ihre Gruppe wird täglich aktualisiert.}=1{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ Ihre aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und Ihre Browseraktivitäten werden sicher auf Ihrem Gerät gespeichert. Ihre Gruppe wird täglich aktualisiert.}other{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ Ihre aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und Ihre Browseraktivitäten werden sicher auf Ihrem Gerät gespeichert. Ihre Gruppe wird alle {NUM_DAYS} Tage aktualisiert.}}</translation>
 <translation id="2053553514270667976">Postleitzahl</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 Vorschlag}other{# Vorschläge}}</translation>
 <translation id="2071692954027939183">Benachrichtigungen wurden automatisch blockiert, da Sie sie normalerweise nicht zulassen</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
 <translation id="20817612488360358">Die System-Proxy-Einstellungen sind zur Verwendung angegeben, gleichzeitig wurde aber auch eine explizite Proxy-Konfiguration festgelegt.</translation>
 <translation id="2082238445998314030">Ergebnis <ph name="RESULT_NUMBER" /> von <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2085876078937250610">Speichern…</translation>
 <translation id="2088086323192747268">Schaltfläche zum Verwalten der Synchronisierung – drücken Sie die Eingabetaste, um in den Chrome-Einstellungen zu verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="2091887806945687916">Ton</translation>
 <translation id="2094505752054353250">Domains stimmen nicht überein.</translation>
@@ -390,6 +392,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2355395290879513365">Angreifer können unter Umständen die Bilder sehen, die Sie sich auf dieser Website ansehen, und könnten dann versuchen, Sie durch Ändern der Bilder zu täuschen.</translation>
 <translation id="2356070529366658676">Nachfragen</translation>
 <translation id="2357481397660644965">Dein Gerät wird von <ph name="DEVICE_MANAGER" /> und dein Konto von <ph name="ACCOUNT_MANAGER" /> verwaltet.</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{In weniger als einem Tag}=1{In einem Tag}other{In {NUM_DAYS} Tagen}}</translation>
 <translation id="2359629602545592467">Mehrere</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2359961752320758691">Ihre virtuelle Kartennummer wurde eingefügt.</translation>
@@ -530,6 +533,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2941952326391522266">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat stammt von <ph name="DOMAIN2" />. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der Ihre Verbindung abfängt.</translation>
 <translation id="2943895734390379394">Uhrzeit des Uploads:</translation>
 <translation id="2948083400971632585">Sie können alle für eine Verbindung konfigurierten Proxys auf der Seite "Einstellungen" deaktivieren.</translation>
+<translation id="2949183777371959169">Ignoriert, da der Computer nicht bei der Chrome-Verwaltung über die Cloud angemeldet ist.</translation>
 <translation id="2951588413176968965">Meine Ablage</translation>
 <translation id="295526156371527179">Warnung: Diese Richtlinie wurde nicht gemäß Richtlinie in einem Wörterbuch zusammengeführt, weil sie kein Wörterbuch ist.</translation>
 <translation id="2955913368246107853">Suchleiste schließen</translation>
@@ -708,6 +712,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3590643883886679995">Nach dem Deaktivieren des Inkognitomodus werden Anmeldedaten auf diesem Gerät gespeichert.</translation>
 <translation id="359126217934908072">Monat/Jahr:</translation>
 <translation id="3592413004129370115">Italian (Umschlag)</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Sie können Ihre Gruppe jederzeit zurücksetzen. Es dauert ungefähr einen Tag, einer neuen Gruppe beizutreten.}=1{Sie können Ihre Gruppe jederzeit zurücksetzen. Es dauert ungefähr einen Tag, einer neuen Gruppe beizutreten.}other{Sie können Ihre Gruppe jederzeit zurücksetzen. Es dauert {NUM_DAYS} Tage, einer neuen Gruppe beizutreten.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">App durch Administrator blockiert</translation>
 <translation id="3608932978122581043">Einzugsausrichtung</translation>
@@ -1189,6 +1194,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5332219387342487447">Versandart</translation>
 <translation id="5333022057423422993">Chrome hat das Passwort, das Sie gerade verwendet haben, in einer Datenpanne gefunden. Wir empfehlen Ihnen, Ihre gespeicherten Passwörter zu prüfen, um Ihre Konten besser zu schützen.</translation>
 <translation id="5334013548165032829">Detaillierte Systemprotokolle</translation>
+<translation id="5334145288572353250">Adresse speichern?</translation>
 <translation id="5340250774223869109">Die App ist blockiert</translation>
 <translation id="534295439873310000">NFC-Geräte</translation>
 <translation id="5344579389779391559">Auf dieser Seite wird möglicherweise versucht, Ihnen etwas in Rechnung zu stellen</translation>
@@ -1528,6 +1534,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6671697161687535275">Vorschlag für das Formular aus Chromium entfernen?</translation>
 <translation id="6685834062052613830">Abmelden und Einrichtung abschließen</translation>
 <translation id="6687335167692595844">Gewünschte Schriftgröße</translation>
+<translation id="6688743156324860098">Aktualisieren…</translation>
 <translation id="6689249931105087298">Relativ mit Schwarzpunktkompensation</translation>
 <translation id="6689271823431384964">Chrome bietet Ihnen die Möglichkeit, die Karten in Ihrem Google-Konto zu speichern, weil Sie angemeldet sind. Sie können dies in den Einstellungen ändern. Der Name des Karteninhabers stammt aus Ihrem Konto.</translation>
 <translation id="6698381487523150993">Erstellt:</translation>
@@ -1543,6 +1550,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6744009308914054259">Während Sie auf eine Verbindung warten, können Sie "Downloads" aufrufen und Offline-Artikel lesen.</translation>
 <translation id="6753269504797312559">Wert der Richtlinie</translation>
 <translation id="6757797048963528358">Ihr Gerät ist im Ruhemodus.</translation>
+<translation id="6767985426384634228">Adresse aktualisieren?</translation>
 <translation id="6768213884286397650">Hagaki (Postkarte)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violett</translation>
@@ -1702,6 +1710,7 @@ Weitere Details:
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Nicht zutreffend</translation>
 <translation id="7390545607259442187">Karte bestätigen</translation>
+<translation id="7392089738299859607">Adresse aktualisieren</translation>
 <translation id="7399802613464275309">Sicherheitscheck</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120">Ihr <ph name="DEVICE_NAME" /> wird verwaltet</translation>
@@ -1840,6 +1849,7 @@ Weitere Details:
 <translation id="7865448901209910068">Beste Geschwindigkeit</translation>
 <translation id="7874263914261512992">Sie haben Ihr Passwort gerade auf einer verdächtigen Seite eingegeben. Chrome empfiehlt, Ihre gespeicherten Passwörter für <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> und alle anderen Websites, auf denen Sie dieses Passwort verwenden, zu prüfen.</translation>
 <translation id="7878562273885520351">Ihr Passwort könnte gefährdet sein</translation>
+<translation id="7880146494886811634">Adresse speichern</translation>
 <translation id="7882421473871500483">Braun</translation>
 <translation id="7887683347370398519">Prüfen Sie Ihren CVC und versuchen Sie es dann erneut.</translation>
 <translation id="7887885240995164102">Bild im Bild aktivieren</translation>

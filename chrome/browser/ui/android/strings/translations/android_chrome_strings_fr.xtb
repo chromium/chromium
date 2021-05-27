@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="1016498331642356377">Recherchez rapidement par commande vocale. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
 <translation id="1028699632127661925">Envoi sur <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Effacer ces données ?</translation>
 <translation id="1036348656032585052">Désactiver</translation>
@@ -157,6 +158,7 @@
 <translation id="2067805253194386918">texte</translation>
 <translation id="2068748236079642969">Regarder la vidéo suivante</translation>
 <translation id="2074143993849053708">Interface d'autorisation pour la recherche vocale de l'Assistant fermée</translation>
+<translation id="2075835334924942448">Vous trouverez des articles ici</translation>
 <translation id="2082238445998314030">Résultat <ph name="RESULT_NUMBER" /> sur <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Synchroniser et personnaliser les données sur tous les appareils</translation>
 <translation id="2100273922101894616">Connexion automatique</translation>
@@ -170,6 +172,7 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <translation id="2131665479022868825"><ph name="DATA" /> économisés</translation>
 <translation id="213279576345780926">L'onglet "<ph name="TAB_TITLE" />" a été fermé.</translation>
 <translation id="2139186145475833000">Ajouter à l'écran d'accueil</translation>
+<translation id="2141396931810938595">D'après votre utilisation</translation>
 <translation id="214888715418183969">Sélectionnez le type de données que vous acceptez de partager avec Chrome. Ces statistiques serviront à améliorer les fonctionnalités, les performances et la stabilité de Chrome.</translation>
 <translation id="2154484045852737596">Modifier la carte</translation>
 <translation id="2154710561487035718">Copier l'URL</translation>
@@ -258,6 +261,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# fichier audio}one{# fichier audio}other{# fichiers audio}}</translation>
 <translation id="2656405586795711023">Applications Web</translation>
 <translation id="2689830683995595741">En utilisant Chrome, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />. L'<ph name="BEGIN_LINK3" />Avis de confidentialité relatif aux comptes Google gérés avec Family Link<ph name="END_LINK3" /> s'applique également.</translation>
+<translation id="2702516483241149200">Nouveau : partagez un lien vers ce texte</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2707726405694321444">Actualiser la page</translation>
 <translation id="271033894570825754">Nouveau</translation>
@@ -274,6 +278,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2777555524387840389"><ph name="SECONDS" /> secondes restantes</translation>
 <translation id="2779651927720337254">échec</translation>
 <translation id="2781151931089541271">1 seconde restante</translation>
+<translation id="2788468313014644040">Numéro du groupe</translation>
 <translation id="2801022321632964776">Lancez la mise à jour pour obtenir votre langue dans la dernière version de Chrome</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2806840421670364300">FLoC (Federated Learning of Cohorts)</translation>
@@ -305,6 +310,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2956410042958133412">Ce compte est géré par <ph name="PARENT_NAME_1" /> et <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page non lue}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page non lue}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pages non lues}}</translation>
 <translation id="2979025552038692506">Onglet de navigation privée sélectionné</translation>
+<translation id="2979448359891869301">Impossible d'étendre la capture d'écran. Réessayez lorsque votre téléphone ne sera plus occupé.</translation>
 <translation id="2987620471460279764">Texte partagé depuis un autre appareil</translation>
 <translation id="2989523299700148168">Consultations récentes</translation>
 <translation id="2992473221983447149">Descriptions d'images</translation>
@@ -346,6 +352,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3265534588625245297">Gérer les sites que vous suivez</translation>
 <translation id="3269093882174072735">Charger l'image</translation>
 <translation id="3269956123044984603">Activez l'option "Synchro auto des données" dans les paramètres Android de votre compte Google pour accéder à vos onglets sur vos autres appareils.</translation>
+<translation id="3280562213547448728">Recherche vocale</translation>
 <translation id="3282568296779691940">Connectez-vous à Chrome</translation>
 <translation id="3284510035090979597">Aide proactive</translation>
 <translation id="3285080554353377245">Vidéos sur l'utilisation de Chrome</translation>
@@ -396,6 +403,7 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="3563767357928833671">Contenu du presse-papiers affiché</translation>
 <translation id="3566923219790363270">Le mode de réalité virtuelle n'est pas encore prêt. Redémarrez Chrome plus tard.</translation>
 <translation id="3568688522516854065">Connectez-vous et activez la synchronisation pour accéder à vos onglets sur vos autres appareils</translation>
+<translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3587482841069643663">Tous</translation>
 <translation id="3587596251841506391">Contribuer à sécuriser le Web</translation>
 <translation id="3602290021589620013">Aperçu</translation>
@@ -460,7 +468,6 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4060598801229743805">Options disponibles à proximité du haut de l'écran</translation>
 <translation id="4062305924942672200">Informations légales</translation>
-<translation id="4082818367361753283">ID du groupe</translation>
 <translation id="4084682180776658562">Favori</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" />, <ph name="BEGIN_DEEMPHASIZED" />proposé par Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Supprimer les données de l'application ?</translation>
@@ -481,6 +488,7 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4198423547019359126">Aucun emplacement de téléchargements disponible</translation>
 <translation id="4209895695669353772">Activez la synchronisation pour obtenir des suggestions de contenu personnalisées de la part de Google</translation>
+<translation id="4225895483398857530">Raccourci de la barre d'outils</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4248098802131000011">Protégez vos mots de passe contre les violations de données et d'autres problèmes liés à la sécurité</translation>
 <translation id="4250229828105606438">Capture d'écran</translation>
@@ -748,12 +756,14 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5864419784173784555">En attente d'un autre téléchargement…</translation>
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
+<translation id="587735546353481577">Pour suivre un site, accédez-y, ouvrez le menu Chrome et appuyez sur "Suivre".</translation>
 <translation id="5880748256563468367">Accéder au flux</translation>
 <translation id="5884076754568147479">Pour vous aider à effectuer des tâches, Google recevra les URL et le contenu des sites sur lesquels vous utilisez l'Assistant, ainsi que les informations que vous envoyez via celui-ci</translation>
 <translation id="5919204609460789179">Mettre à jour <ph name="PRODUCT_NAME" /> pour lancer la synchronisation</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> économisé(s)</translation>
 <translation id="5939518447894949180">Réinitialiser</translation>
 <translation id="5942872142862698679">Utilisation de Google pour les recherches</translation>
+<translation id="5945035219773565305">Recommandation actuelle :  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Page en ligne</translation>
 <translation id="5952764234151283551">Envoie l'URL de la page que vous essayez d'ouvrir à Google</translation>
 <translation id="5956665950594638604">Ouvrir le centre d'aide dans un nouvel onglet</translation>
@@ -767,6 +777,10 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6000203700195075278">Se réabonner</translation>
 <translation id="6002623704405939939">Pour effacer l'<ph name="BEGIN_LINK1" />historique des recherches<ph name="END_LINK1" /> ou d'autres historiques, consultez <ph name="BEGIN_LINK2" />Mon activité Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
+<translation id="6032091552407840792">Cet essai n'est actif que dans <ph name="BEGIN_LINK" />certaines régions<ph name="END_LINK" />.</translation>
+<translation id="6033245666633565791">Avec <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome développe de nouvelles technologies pour vous protéger contre le suivi intersite tout en préservant le Web ouvert.
+
+Les essais Privacy Sandbox sont encore en développement et ne sont disponibles que dans certaines régions. Pour le moment, les sites peuvent essayer Privacy Sandbox sans désactiver les technologies Web actuelles comme les cookies tiers.</translation>
 <translation id="6036057147555329831">ICU supplémentaire</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
 <translation id="6040143037577758943">Fermer</translation>
@@ -832,6 +846,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6407224748847589805">Impossible de se connecter à votre ordinateur. Essayez une autre option de validation.</translation>
 <translation id="6410404864818553978">Données d'utilisation de base</translation>
 <translation id="6410883413783534063">Utilisez les onglets pour consulter plusieurs pages en même temps</translation>
+<translation id="6411219469806822692">Impossible d'aller plus haut. Essayez de commencer plus haut sur la page.</translation>
 <translation id="6412673304250309937">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="641643625718530986">Imprimer…</translation>
 <translation id="6427112570124116297">Traduire le Web</translation>
@@ -894,10 +909,12 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="671481426037969117">Votre minuteur <ph name="FQDN" /> a expiré. Il redémarrera demain.</translation>
 <translation id="6738516213925468394">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />phrase secrète de synchronisation<ph name="END_LINK" /> le <ph name="TIME" />. Saisissez-la pour lancer la synchronisation.</translation>
 <translation id="6738867403308150051">Téléchargement en cours…</translation>
+<translation id="6751521182688001123">Ouvre rapidement un nouvel onglet. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
 <translation id="6767294960381293877">La liste des appareils avec lesquels vous pouvez partager un onglet est ouverte à mi-hauteur.</translation>
 <translation id="6783942555455976443">Enregistrer cette page pour plus tard et recevoir un rappel</translation>
 <translation id="6811034713472274749">La page est prête à être affichée</translation>
 <translation id="6813446258015311409">Se connecter à Chrome, ouvert.</translation>
+<translation id="6817747507826986771">Partagez rapidement cette page. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
 <translation id="6820686453637990663">Code CVC :</translation>
 <translation id="6824899148643461612">"<ph name="TAB_TITLE" />", onglet, sélectionné</translation>
 <translation id="6846298663435243399">Chargement…</translation>
@@ -968,6 +985,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7333031090786104871">L'ajout du site précédent est toujours en cours</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7340958967809483333">Options pour Discover</translation>
+<translation id="7352339641508007922">Faites glisser pour prendre une capture d'écran pleine page</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
 <translation id="7352939065658542140">VIDÉO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Partager 1 élément sélectionné}one{Partager # élément sélectionné}other{Partager # éléments sélectionnés}}</translation>
@@ -1060,6 +1078,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7876243839304621966">Tout supprimer</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page non lue}one{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> page non lue}other{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pages non lues}}</translation>
 <translation id="7882131421121961860">Aucun historique trouvé</translation>
+<translation id="7884346424584885269">Chrome doit être autorisé à rechercher les appareils à proximité. <ph name="BEGIN_LINK" />Modifiez les autorisations.<ph name="END_LINK" /></translation>
 <translation id="7886917304091689118">En cours d'exécution dans Chrome</translation>
 <translation id="789763218334337857">Comment utiliser Google Chrome</translation>
 <translation id="7903184275147100332">Cela peut prendre une minute</translation>
@@ -1153,6 +1172,11 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8461694314515752532">Chiffrer les données synchronisées avec votre propre phrase secrète de synchronisation</translation>
 <translation id="8466613982764129868">Assurez-vous que l'appareil <ph name="TARGET_DEVICE_NAME" /> est connecté à Internet</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
+<translation id="8481921391193215807">Lorsque cette option est activée, les sites peuvent utiliser les techniques présentées ici, qui préservent la vie privée, pour fournir leurs contenus et leurs services. Ces techniques incluent des alternatives au suivi intersite. D'autres méthodes pourront être mises à l'essai par la suite.
+
+<ph name="BEGIN_LIST_ITEM1" />Les annonceurs et les éditeurs peuvent utiliser le FLoC.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Les annonceurs et les éditeurs peuvent évaluer l'efficacité des annonces sans utiliser le suivi intersite.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Les fonctionnalités à l'essai sont activées</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Ouvrir la page "Historique"</translation>
@@ -1264,6 +1288,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="9204836675896933765">1 fichier restant</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">Impossible de passer des appels</translation>
+<translation id="9212845824145208577">Impossible d'aller plus bas. Essayez de commencer plus bas sur la page.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="926205370408745186">Supprimer votre activité Chrome de Bien-être numérique</translation>
 <translation id="927968626442779827">Utilisez le mode simplifié dans Google Chrome</translation>

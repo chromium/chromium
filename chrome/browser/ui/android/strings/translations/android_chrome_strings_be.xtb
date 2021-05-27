@@ -278,6 +278,7 @@
 <translation id="2777555524387840389">Засталося <ph name="SECONDS" /> с</translation>
 <translation id="2779651927720337254">не выканана</translation>
 <translation id="2781151931089541271">Засталася 1 секунда</translation>
+<translation id="2788468313014644040">Нумар групы</translation>
 <translation id="2801022321632964776">Каб атрымаць інтэрфейс на сваёй мове ў апошняй версіі браўзера Chrome, абнавіце яго</translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4056223980640387499">Сепія</translation>
 <translation id="4060598801229743805">Параметры даступныя ўверсе экрана</translation>
 <translation id="4062305924942672200">Юрыдычная інфармацыя</translation>
-<translation id="4082818367361753283">Ідэнтыфікатар групы</translation>
 <translation id="4084682180776658562">Дадаць у закладкі</translation>
 <translation id="4084712963632273211">Выдавец – <ph name="PUBLISHER_ORIGIN" />, <ph name="BEGIN_DEEMPHASIZED" />пастаўшчык – Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Выдаліць даныя праграмы?</translation>

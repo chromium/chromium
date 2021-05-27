@@ -245,6 +245,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Instalar apps, extensiones y temas</translation>
 <translation id="2977598380246111477">Próximo número</translation>
+<translation id="2992327365391326550">El botón del micrófono del dispositivo está desactivado.</translation>
 <translation id="2995447421581609334">Mostrar dispositivos de transmisión</translation>
 <translation id="2996462380875591307">Se habilitó la lupa con vista acoplada. Presiona Ctrl+Buscar+D de nuevo para desactivarla.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
@@ -255,6 +256,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3038571455154067151">Para acceder, ingresa el código de acceso parental de Family Link.</translation>
 <translation id="3039939407102840004">El nivel de la batería de la pluma stylus es del <ph name="PERCENTAGE" />%.</translation>
 <translation id="3045488863354895414">Buenas tardes:</translation>
+<translation id="3051189971848907985">Se está cambiando el nombre del perfil. Espera unos minutos.</translation>
 <translation id="3055162170959710888">Hoy usaste este dispositivo durante <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Expandir menú</translation>
@@ -295,6 +297,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3371140690572404006">Dispositivo USB-C (puerto lateral derecho delantero)</translation>
 <translation id="3375634426936648815">Conectado</translation>
+<translation id="3378442621503952303">Se está estableciendo conexión con el perfil. Espera unos minutos.</translation>
 <translation id="3386978599540877378">la lupa de pantalla completa</translation>
 <translation id="3400357268283240774">Configuración adicional</translation>
 <translation id="3410336247007142655">Mostrar la configuración del Tema oscuro</translation>
@@ -352,6 +355,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="380165613292957338">Hola, ¿cómo puedo ayudarte?</translation>
 <translation id="3826099427150913765">Cambiar a contraseña</translation>
 <translation id="383058930331066723">El modo de Ahorro de batería está activado</translation>
+<translation id="3835880383832568924">Para ver las actualizaciones, abre la app de Shortcuts.</translation>
 <translation id="383629559565718788">Mostrar la configuración del teclado</translation>
 <translation id="3846214748874656680">Salir de pantalla completa</translation>
 <translation id="3846575436967432996">No hay información de red disponible.</translation>
@@ -472,6 +476,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4705716602320768426">Enviar comentarios</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735498845456076464">Se modificó la combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + un número. Para usar las teclas de función, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + una tecla de la fila superior.</translation>
 <translation id="4744944742468440486">Información sobre el texto seleccionado</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4774338217796918551">Regresa mañana a las <ph name="COME_BACK_TIME" />.</translation>
@@ -729,6 +734,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6910714959251846841">Esta actualización requiere que apliques la función Powerwash en tu dispositivo. Obtén más información sobre la actualización más reciente de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">No se reconoció tu tarjeta inteligente. Vuelve a intentarlo.</translation>
+<translation id="6921188888306725546">Se mejoraron las combinaciones de teclas</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6961121602502368900">La opción Silenciar teléfono no está disponible en los perfiles de trabajo</translation>
 <translation id="6961840794482373852">Se modificó la combinación de teclas Alt + flecha hacia arriba. Para usar la tecla Re Pág, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia arriba.</translation>
@@ -935,6 +941,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8631727435199967028">Configuración de accesibilidad</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restante</translation>
+<translation id="8641805545866562088">Se está actualizando la lista de perfiles. Espera unos minutos.</translation>
 <translation id="8646417893960517480">Temporizador: <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Para agregar una persona, ingresa tu código de acceso para padres de Family Link.</translation>
 <translation id="8649101189709089199">Seleccionar para pronunciar</translation>
@@ -962,6 +969,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Configuración de los métodos de entrada</translation>
+<translation id="8818320199597151042">Se está quitando el perfil. Espera unos minutos.</translation>
 <translation id="8825863694328519386">Para volver, desliza el dedo desde la izquierda</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
@@ -1007,6 +1015,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="9091626656156419976">Se quitó la pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>
 <translation id="9099154003160514616">Actualización disponible para Lacros</translation>
+<translation id="9100887602489003640">Se está agregando un perfil. Espera unos minutos.</translation>
 <translation id="9105450214093926548">No se admite el acceso a un segundo usuario mientras se ejecuta el navegador Lacros. En su lugar, usa un segundo perfil de navegador en Lacros, o cierra Lacros y vuelve a intentarlo.</translation>
 <translation id="9133335900048457298">No se puede grabar contenido protegido</translation>
 <translation id="9151726767154816831">Reiniciar y aplicar Powerwash para actualizar</translation>

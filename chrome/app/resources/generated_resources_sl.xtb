@@ -2879,7 +2879,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4035758313003622889">&amp;Upravitelj opravil</translation>
 <translation id="4036778507053569103">Pravilnik, prenesen iz strežnika, ni veljaven.</translation>
 <translation id="4037084878352560732">Konj</translation>
-<translation id="4037889604535939429">Urejanje osebe</translation>
 <translation id="4040753847560036377">Napačna koda PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Zapri stran}one{Zapri strani}two{Zapri strani}few{Zapri strani}other{Zapri strani}}</translation>
 <translation id="4044612648082411741">Vnesite geslo za potrdilo</translation>
@@ -4350,7 +4349,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5709557627224531708">Nastavite Chrome kot privzeti brskalnik</translation>
 <translation id="5711983031544731014">Odklepanje ni mogoče. Vnesite geslo.</translation>
 <translation id="5712153969432126546">Spletna mesta občasno objavijo datoteke PDF, na primer dokumente, pogodbe in obrazce.</translation>
-<translation id="5712323955984474772">Naslednja posodobitev</translation>
 <translation id="5715711091495208045">Posrednik za vtičnik: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Privzeti iskalniki</translation>
 <translation id="5719637365829998022">Koda QR je optično prebrana.</translation>
@@ -5122,7 +5120,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6563469144985748109">Skrbnik še ni odobril</translation>
 <translation id="6568283005472142698">Iskanje po zavihkih</translation>
 <translation id="6569911211938664415">Gesla so shranjena v računu Google (<ph name="ACCOUNT" />), da jih lahko uporabite v kateri koli napravi.</translation>
-<translation id="6569934958368283244">Drugi</translation>
 <translation id="6573497332121198392">Bližnjice ni mogoče odstraniti.</translation>
 <translation id="657402800789773160">Znov&amp;a naloži to stran</translation>
 <translation id="6577284282025554716">Prenos preklican: <ph name="FILE_NAME" /></translation>
@@ -6809,7 +6806,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8393700583063109961">Pošlji sporočilo</translation>
 <translation id="8397825320644530257">Prekinitev povezave s telefonom</translation>
 <translation id="8398877366907290961">Vseeno nadaljuj</translation>
-<translation id="8400146488506985033">Upravljanje ljudi</translation>
 <translation id="8401432541486058167">Navedite kodo PIN, povezano s pametno kartico.</translation>
 <translation id="8404893580027489425">Tipalo prstnih odtisov je na desni strani naprave <ph name="DEVICE_TYPE" />. Rahlo se ga dotaknite s poljubnim prstom.</translation>
 <translation id="8405046151008197676">Oglejte si najzanimivejše dele najnovejše posodobitve</translation>
@@ -6865,7 +6861,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8465444703385715657">Vtičnik <ph name="PLUGIN_NAME" /> potrebuje vaše dovoljenje za izvajanje</translation>
 <translation id="8466417995783206254">Na tem zavihku se predvaja videoposnetek v načinu slike v sliki.</translation>
 <translation id="8467326454809944210">Izberi drug jezik</translation>
-<translation id="8470214316007448308">Drugi</translation>
 <translation id="8470513973197838199">Shranjena gesla za <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Spletna mesta običajno vzpostavijo povezavo z napravami USB zaradi funkcij, kot sta tiskanje dokumenta ali shranjevanje podatkov v napravo za shranjevanje.</translation>
 <translation id="8471959340398751476">Popusti so izklopljeni. Vklopite jih lahko v meniju za prilagajanje.</translation>
@@ -7052,6 +7047,7 @@ Pritisnite dodeljeno stikalo, če želite odstraniti dodelitev.</translation>
 <translation id="8676374126336081632">Izbriši vnos</translation>
 <translation id="8676770494376880701">Priključen je nizkoenergijski polnilnik</translation>
 <translation id="8677212948402625567">Strni vse ...</translation>
+<translation id="867767487203716855">Naslednja posodobitev</translation>
 <translation id="8677859815076891398">Ni albumov. Ustvarite album v <ph name="LINK_BEGIN" />Googlu Foto<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Zavihki se ne skrčijo.</translation>
 <translation id="8678933587484842200">Kako želite, da se zažene ta aplikacija?</translation>
@@ -7140,7 +7136,6 @@ Pritisnite dodeljeno stikalo, če želite odstraniti dodelitev.</translation>
 <translation id="87646919272181953">Album v Googlu Foto</translation>
 <translation id="8767621466733104912">Samodejno posodobi Chrome za vse uporabnike</translation>
 <translation id="8770406935328356739">Korenski imenik razširitve</translation>
-<translation id="8770507190024617908">Upravljanje ljudi</translation>
 <translation id="8771300903067484968">Ozadje začetne strani je ponastavljeno na privzeto ozadje.</translation>
 <translation id="8773302562181397928">Shranjevanje tiskalnika <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Potrdite obnovitev</translation>

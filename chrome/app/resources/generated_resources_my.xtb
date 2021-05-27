@@ -1535,7 +1535,7 @@
 <translation id="2610780100389066815">Microsoft ယုံကြည်မှု စာရင်းထက်မှတ်ထိုး</translation>
 <translation id="2612676031748830579">ကဒ်နံပါတ်</translation>
 <translation id="2616366145935564096">သင်၏ ဒေတာကို<ph name="WEBSITE_1" />မှာ ဖတ်ပါ၊ ပြောင်းလဲပါ</translation>
-<translation id="2617342710774726426">ဆင်းမ်ကဒ် လော့ခ်ကျနေပါသည်</translation>
+<translation id="2617342710774726426">ဆင်းမ်ကတ် လော့ခ်ကျနေပါသည်</translation>
 <translation id="2618797463720777311">'အနီးတစ်ဝိုက် မျှဝေခြင်း' ကို စနစ်ထည့်သွင်းခြင်း</translation>
 <translation id="2619761439309613843">နေ့စဉ် ပြန်လည်စတင်ရန်</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ကို လုံခြုံစွာ ဒေါင်းလုဒ်လုပ်၍မရပါ။</translation>
@@ -2874,7 +2874,6 @@
 <translation id="4035758313003622889">အလုပ် မန်နေဂျာ</translation>
 <translation id="4036778507053569103">ဆာဗာမှနေ၍ ဒေါင်းလုဒ်လုပ်ထားသည့် မူဝါဒသည် မမှန်ကန်ပါ။</translation>
 <translation id="4037084878352560732">မြင်း</translation>
-<translation id="4037889604535939429">လူပုဂ္ဂိုလ်ကို တည်းဖြတ်ပါ</translation>
 <translation id="4040753847560036377">PUK မမှန်ပါ</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{စာမျက်နှာကို ပိတ်ရန်}other{စာမျက်နှာများကို ပိတ်ရန်}}</translation>
 <translation id="4044612648082411741">သင်၏ အသိအမှတ်ပြုလက်မှတ် စကားဝှက်ကို ထည့်ပါ</translation>
@@ -3847,7 +3846,7 @@
 <translation id="5158983316805876233">ပရိုတိုကော အားလုံး အတွက် တစ်ခုတည်းသော ပရော့က်စီကို သုံးရန်</translation>
 <translation id="5159094275429367735">Crostini စနစ် ထည့်သွင်းရန်</translation>
 <translation id="5159419673777902220">နောက်ဆက်တွဲခွင့်ပြုချက်များကို သင့်မိဘက ပိတ်ထားသည်</translation>
-<translation id="5160634252433617617">လက်ကွက် ခလုတ်ခုံ</translation>
+<translation id="5160634252433617617">စက်၏ ကီးဘုတ်</translation>
 <translation id="5160857336552977725">သင့်<ph name="DEVICE_TYPE" /> သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> မှ USB ကိရိယာများ</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ကို ပိတ်ထားလိုက်ပါပြီ</translation>
@@ -4344,7 +4343,6 @@
 <translation id="5709557627224531708">Chromium ကို သင်၏မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ပါ</translation>
 <translation id="5711983031544731014">သော့ဖွင့် မရပါ။ သင်၏ စကားဝှက်ကို ရိုက်ထည့်ပါ။</translation>
 <translation id="5712153969432126546">ဝဘ်ဆိုက်များသည် စာရွက်စာတမ်း၊ စာချုပ်နှင့် ဖောင်များကဲ့သို့ PDF များကို တစ်ခါတစ်ရံ ထုတ်ဝေသည်</translation>
-<translation id="5712323955984474772">လာမည့် အပ်ဒိတ်</translation>
 <translation id="5715711091495208045">ပလတ်အင် အကျိုးဆောင်- <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">မူရင်းရှာဖွေမှုအင်ဂျင်များ</translation>
 <translation id="5719637365829998022">QR ကုဒ်ကို စကင်ဖတ်ပြီးပါပြီ။</translation>
@@ -5113,7 +5111,6 @@
 <translation id="6563469144985748109">သင့်စီမံခန့်ခွဲသူသည် ၎င်းကို အတည်မပြုသေးပါ</translation>
 <translation id="6568283005472142698">တဘ်ရှာဖွေမှု</translation>
 <translation id="6569911211938664415">မည်သည့်စက်တွင်မဆို အသုံးပြုနိုင်ရန် စကားဝှက်များကို သင်၏ Google Account (<ph name="ACCOUNT" />) တွင် သိမ်းထားပါသည်။</translation>
-<translation id="6569934958368283244">အခြားလူများ</translation>
 <translation id="6573497332121198392">ဖြတ်လမ်းလင့်ခ်ကို ဖယ်ရှား၍မရပါ</translation>
 <translation id="657402800789773160">&amp;ဒီစာမျက်နှာကို ပြန်တင်ရန်</translation>
 <translation id="6577284282025554716">ဒေါင်းလုဒ်လုပ်ခြင်းကို ပယ်ဖျက်ထားသည်− <ph name="FILE_NAME" /></translation>
@@ -6799,7 +6796,6 @@
 <translation id="8393700583063109961">စာပို့ရန်</translation>
 <translation id="8397825320644530257">ချိတ်ဆက်ထားသောဖုန်းကို ဖြုတ်ရန်</translation>
 <translation id="8398877366907290961">မည်သို့ပင် ဖြစ်စေ ရှေ့ဆက်မည်</translation>
-<translation id="8400146488506985033">လူများကို စီမံခန့်ခွဲပါ</translation>
 <translation id="8401432541486058167">သင့်အဆင့်မြင့်ကတ်နှင့် ဆက်စပ်နေသော ပင်နံပါတ်ကို ပေးပါ။</translation>
 <translation id="8404893580027489425">လက်ဗွေ အာရုံခံကိရိယာသည် သင့် <ph name="DEVICE_TYPE" /> ၏ ညာဘက်တွင် ရှိသည်။ လက်တစ်ချောင်းဖြင့် ၎င်းကို အသာထိပါ။</translation>
 <translation id="8405046151008197676">နောက်ဆုံးထွက် အပ်ဒိတ်မှ အထူးအသားပေးများကို ရယူပါ</translation>
@@ -6826,7 +6822,7 @@
 <translation id="8428634594422941299">ရပါပြီ</translation>
 <translation id="84297032718407999">သင်သည် <ph name="LOGOUT_TIME_LEFT" /> အတွင်း ထွက်သွားပါမည်</translation>
 <translation id="8431190899827883166">တို့ရန်များကို ပြခြင်း</translation>
-<translation id="8431909052837336408">ဆင်းမ်ကဒ် ပင်နံပါတ်ပြောင်းရန်</translation>
+<translation id="8431909052837336408">ဆင်းမ်ကတ် ပင်နံပါတ်ပြောင်းရန်</translation>
 <translation id="8434480141477525001">NaCl အမှားရှာပြင်ခြင်း ပို့တ်</translation>
 <translation id="8435395510592618362">သင်မည်သူမည်ဝါဖြစ်ကြောင်း <ph name="APP_NAME" /> နှင့် အတည်ပြုပါ</translation>
 <translation id="8437209419043462667">US</translation>
@@ -6839,7 +6835,7 @@
 <translation id="8448729345478502352">သင်၏ မျက်နှာပြင်ပေါ်ရှိ အရာများကို ပိုသေးအောင် သို့မဟုတ် ပိုကြီးအောင် ပြုလုပ်ပါ</translation>
 <translation id="8449008133205184768">ကပ်ပေးရန် နှင့် စတိုင် ညှိပေ</translation>
 <translation id="8449036207308062757">သိုလှောင်ခန်းကို စီမံခန့်ခွဲပါ</translation>
-<translation id="8452135315243592079">ဆင်းမ်ကဒ် မရှိပါ</translation>
+<translation id="8452135315243592079">ဆင်းမ်ကတ် မရှိပါ</translation>
 <translation id="8455026683977728932">ADB သရုပ်ဖော်ပုံကို ဖွင့်၍မရပါ</translation>
 <translation id="8456512334795994339">အလုပ်နှင့် ဖျော်ဖြေရေးအတွက် အက်ပ်များ ရှာဖွေပါ</translation>
 <translation id="845702320058262034">ချိတ်ဆက်၍ မရပါ။ သင့်ဖုန်း၏ ဘလူးတုသ်ကို ဖွင့်ထားပါ။</translation>
@@ -6855,7 +6851,6 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> သည် အလုပ်လုပ်နိုင်ရန် သင့်ခွင့်ပြုချက် လိုအပ်သည်</translation>
 <translation id="8466417995783206254">ဤတဘ်သည် ဗီဒီယိုကို 'တစ်ခုပေါ်တစ်ခုထပ်၍ ဖွင့်သည့်မုဒ်' တွင် ဖွင့်နေသည်။</translation>
 <translation id="8467326454809944210">အခြားဘာသာစကားတစ်ခု ရွေးရန်</translation>
-<translation id="8470214316007448308">အခြားလူများ</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> အတွက် သိမ်းဆည်းထားသည့် စကားဝှက်များ</translation>
 <translation id="8471525937465764768">မှတ်တမ်းဖိုင်ပုံနှိပ်ထုတ်ရန် သို့မဟုတ် သိုလှောင်ခန်းကိရိယာတွင် သိမ်းရန်ကဲ့သို့ ဝန်ဆောင်မှုများအတွက် USB ကိရိယာများသို့ ဝဘ်ဆိုက်များက ချိတ်ဆက်လေ့ရှိသည်</translation>
 <translation id="8471959340398751476">လျှော့ဈေးများကို ပိတ်ထားသည်။ မီနူးစိတ်ကြိုက်ပြင်သည့် နေရာတွင် ၎င်းတို့ကို ပြန်ဖွင့်နိုင်သည်</translation>
@@ -7042,6 +7037,7 @@
 <translation id="8676374126336081632">ထည့်သွင်းမှု ရှင်းရန်</translation>
 <translation id="8676770494376880701">ပါဝါနှိမ့် အားသွင်းကိရိယာ ချိတ်ဆက်ထားသည်</translation>
 <translation id="8677212948402625567">အားလုံး ခေါက်သိမ်းရန်...</translation>
+<translation id="867767487203716855">လာမည့် အပ်ဒိတ်</translation>
 <translation id="8677859815076891398">အယ်လ်ဘမ် မရှိပါ။ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> တွင် အယ်လ်ဘမ်တစ်ခု ပြုလုပ်ပါ။</translation>
 <translation id="8678582529642151449">တဘ်များချုံ့သွားမည် မဟုတ်ပါ</translation>
 <translation id="8678933587484842200">ဤအပလီကေးရှင်းကို မည်ကဲ့သို့ စတင်စေလိုပါသနည်း။</translation>
@@ -7130,7 +7126,6 @@
 <translation id="87646919272181953">Google Photos အယ်လ်ဘမ်</translation>
 <translation id="8767621466733104912">အသုံးပြုသူများ အားလုံးအတွက် Chrome ကို အလိုအလျောက် အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="8770406935328356739">နောက်ဆက်တွဲ ပင်မလမ်းကြောင်း</translation>
-<translation id="8770507190024617908">လူများကို စီမံခန့်ခွဲပါ</translation>
 <translation id="8771300903067484968">စတင်သည့် စာမျက်နှာနောက်ခံကို မူလနောက်ခံသို့ ပြင်ဆင်သတ်မှတ်ထားပါသည်။</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> ကို သိမ်းရန်</translation>
 <translation id="8774379074441005279">ပြန်ယူခြင်းကို အတည်ပြုခြင်း</translation>

@@ -280,6 +280,7 @@
 <translation id="3207953481422525583">Потребителски настройки</translation>
 <translation id="3217205077783620295">Звукът е включен. Превключването ще го спре.</translation>
 <translation id="3226991577105957773">+ още <ph name="COUNT" /></translation>
+<translation id="324366796737464147">Потискане на шума</translation>
 <translation id="3249513730522716925">Прозорецът <ph name="WINDOW_TITLE" /> бе преместен от работен кът <ph name="ACTIVE_DESK" /> в работен кът <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">„What can you do?“ („Какво можеш да правиш?“)</translation>
 <translation id="3269597722229482060">Кликване с десния бутон</translation>

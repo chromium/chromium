@@ -278,6 +278,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2777555524387840389">Pozostało: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">Nie pobrano</translation>
 <translation id="2781151931089541271">Pozostała sekunda</translation>
+<translation id="2788468313014644040">Numer grupy</translation>
 <translation id="2801022321632964776">Zaktualizuj Chrome do najnowszej wersji, by mieć w nim dostępny swój język</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="2806840421670364300">Sfederowane uczenie się kohort</translation>
@@ -467,7 +468,6 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Opcje dostępne na górze ekranu</translation>
 <translation id="4062305924942672200">Informacje prawne</translation>
-<translation id="4082818367361753283">Identyfikator grupy</translation>
 <translation id="4084682180776658562">Dodaj do zakładek</translation>
 <translation id="4084712963632273211">Opublikowane na <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />wyświetlone przez Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Usunąć dane aplikacji?</translation>

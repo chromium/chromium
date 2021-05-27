@@ -2860,7 +2860,6 @@
 <translation id="4035758313003622889">&amp;Менаџер задатака</translation>
 <translation id="4036778507053569103">Смернице преузете са сервера су неважеће.</translation>
 <translation id="4037084878352560732">Коњ</translation>
-<translation id="4037889604535939429">Измена особе</translation>
 <translation id="4040753847560036377">Нетачан PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Затвори страницу}one{Затвори странице}few{Затвори странице}other{Затвори странице}}</translation>
 <translation id="4044612648082411741">Унесите лозинку за сертификат</translation>
@@ -4329,7 +4328,6 @@
 <translation id="5709557627224531708">Подесите Chrome као подразумевани прегледач</translation>
 <translation id="5711983031544731014">Откључавање није могуће. Унесите лозинку.</translation>
 <translation id="5712153969432126546">Сајтови понекад објављују PDF-ове, попут докумената, уговора и образаца</translation>
-<translation id="5712323955984474772">Следеће ажурирање</translation>
 <translation id="5715711091495208045">Посредник додатне компоненте: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Подразумевани претраживачи</translation>
 <translation id="5719637365829998022">QR кôд је скениран.</translation>
@@ -5098,7 +5096,6 @@
 <translation id="6563469144985748109">Менаџер га још увек није одобрио</translation>
 <translation id="6568283005472142698">Претрага картица</translation>
 <translation id="6569911211938664415">Лозинке се чувају на Google налогу (<ph name="ACCOUNT" />) да бисте могли да их користите на било ком уређају</translation>
-<translation id="6569934958368283244">Други људи</translation>
 <translation id="6573497332121198392">Уклањање пречице није успело</translation>
 <translation id="657402800789773160">&amp;Reload This Page (Поново учитај ову страницу)</translation>
 <translation id="6577284282025554716">Преузимање је отказано: <ph name="FILE_NAME" /></translation>
@@ -6784,7 +6781,6 @@
 <translation id="8393700583063109961">Пошаљите поруку</translation>
 <translation id="8397825320644530257">Прекините везу са повезаним телефоном</translation>
 <translation id="8398877366907290961">Ипак настави</translation>
-<translation id="8400146488506985033">Управљај људима</translation>
 <translation id="8401432541486058167">Наведите PIN који је повезан са паметном картицом.</translation>
 <translation id="8404893580027489425">Сензор за отисак прста се налази на десној страни уређаја <ph name="DEVICE_TYPE" />. Лагано га додирните било којим прстом.</translation>
 <translation id="8405046151008197676">Погледајте резиме најновијег ажурирања</translation>
@@ -6840,7 +6836,6 @@
 <translation id="8465444703385715657">Потребна је ваша дозвола да би се додатна компонента <ph name="PLUGIN_NAME" /> покренула</translation>
 <translation id="8466417995783206254">Ова картица репродукује видео у режиму слике у слици.</translation>
 <translation id="8467326454809944210">Одаберите други језик</translation>
-<translation id="8470214316007448308">Други људи</translation>
 <translation id="8470513973197838199">Сачуване лозинке за <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Сајтови се обично повезују са USB уређајима за потребе функција попут штампања докумената или чувања садржаја на меморијским уређајима</translation>
 <translation id="8471959340398751476">Попусти су искључени. Можете да их укључите у менију за прилагођавање</translation>
@@ -7027,6 +7022,7 @@
 <translation id="8676374126336081632">Обриши унос</translation>
 <translation id="8676770494376880701">Повезан је пуњач мале снаге</translation>
 <translation id="8677212948402625567">Скупи све...</translation>
+<translation id="867767487203716855">Следеће ажурирање</translation>
 <translation id="8677859815076891398">Нема албума. Направите албум у <ph name="LINK_BEGIN" />Google сликама<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Картице се не скупљају</translation>
 <translation id="8678933587484842200">Како желите да се ова апликација покреће?</translation>
@@ -7115,7 +7111,6 @@
 <translation id="87646919272181953">Албум Google слика</translation>
 <translation id="8767621466733104912">Аутоматски ажурирај Chrome за све кориснике</translation>
 <translation id="8770406935328356739">Основни директоријум додатка</translation>
-<translation id="8770507190024617908">Управљај људима</translation>
 <translation id="8771300903067484968">Позадина почетне странице је ресетована на подразумевану позадину.</translation>
 <translation id="8773302562181397928">Сачувајте <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Потврдите враћање</translation>

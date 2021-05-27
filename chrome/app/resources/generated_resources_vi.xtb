@@ -2876,7 +2876,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4035758313003622889">&amp;Trình quản lý tác vụ</translation>
 <translation id="4036778507053569103">Chính sách được tải xuống từ máy chủ là không hợp lệ.</translation>
 <translation id="4037084878352560732">Ngựa</translation>
-<translation id="4037889604535939429">Chỉnh sửa người</translation>
 <translation id="4040753847560036377">Mã PUK không chính xác</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Thoát khỏi trang}other{Thoát khỏi trang}}</translation>
 <translation id="4044612648082411741">Nhập mật khẩu chứng chỉ của bạn</translation>
@@ -4345,7 +4344,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5709557627224531708">Đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="5711983031544731014">Không mở khóa được. Hãy nhập mật khẩu của bạn.</translation>
 <translation id="5712153969432126546">Đôi khi, trang web sẽ xuất bản các tệp PDF, như tài liệu, hợp đồng và biểu mẫu</translation>
-<translation id="5712323955984474772">Thời gian cập nhật tiếp theo</translation>
 <translation id="5715711091495208045">Trình môi giới plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Công cụ tìm kiếm mặc định</translation>
 <translation id="5719637365829998022">Đã quét xong mã QR.</translation>
@@ -5117,7 +5115,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6563469144985748109">Người quản lý của bạn chưa phê duyệt trang web</translation>
 <translation id="6568283005472142698">Tìm thẻ</translation>
 <translation id="6569911211938664415">Các mật khẩu được lưu trong Tài khoản Google (<ph name="ACCOUNT" />) của bạn để bạn có thể sử dụng trên bất cứ thiết bị nào</translation>
-<translation id="6569934958368283244">Người khác</translation>
 <translation id="6573497332121198392">Không thể xóa lối tắt</translation>
 <translation id="657402800789773160">&amp;Tải lại trang này</translation>
 <translation id="6577284282025554716">Đã hủy tải xuống: <ph name="FILE_NAME" /></translation>
@@ -6804,7 +6801,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8393700583063109961">Gửi tin nhắn</translation>
 <translation id="8397825320644530257">Ngắt kết nối điện thoại đã kết nối</translation>
 <translation id="8398877366907290961">Tiếp tục truy cập</translation>
-<translation id="8400146488506985033">Quản lý mọi người</translation>
 <translation id="8401432541486058167">Hãy cung cấp mã PIN liên kết với thẻ thông minh của bạn.</translation>
 <translation id="8404893580027489425">Cảm biến vân tay nằm ở bên phải <ph name="DEVICE_TYPE" />. Hãy chạm nhẹ ngón tay bất kỳ vào đó.</translation>
 <translation id="8405046151008197676">Xem những điểm nổi bật của bản cập nhật mới nhất</translation>
@@ -6860,7 +6856,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> cần có sự cho phép của bạn để chạy</translation>
 <translation id="8466417995783206254">Thẻ này đang phát video ở chế độ hình trong hình.</translation>
 <translation id="8467326454809944210">Chọn ngôn ngữ khác</translation>
-<translation id="8470214316007448308">Người khác</translation>
 <translation id="8470513973197838199">Đã lưu mật khẩu cho <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Các trang web thường kết nối với thiết bị USB để áp dụng những tính năng như in tài liệu hoặc lưu vào thiết bị lưu trữ</translation>
 <translation id="8471959340398751476">Tính năng nhận chiết khấu đang tắt. Bạn có thể bật tính năng này trong trình đơn tùy chỉnh</translation>
@@ -7047,6 +7042,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
 <translation id="8676770494376880701">Đã kết nối bộ sạc công suất thấp</translation>
 <translation id="8677212948402625567">Thu gọn tất cả...</translation>
+<translation id="867767487203716855">Thời gian cập nhật tiếp theo</translation>
 <translation id="8677859815076891398">Không có album nào. Hãy tạo một album trong <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Thẻ sẽ không thu gọn</translation>
 <translation id="8678933587484842200">Bạn muốn ứng dụng này khởi động như thế nào?</translation>
@@ -7135,7 +7131,6 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="87646919272181953">Album trên Google Photos</translation>
 <translation id="8767621466733104912">Tự động cập nhật Chrome cho tất cả người dùng</translation>
 <translation id="8770406935328356739">Thư mục gốc của tiện ích</translation>
-<translation id="8770507190024617908">Quản lý mọi người</translation>
 <translation id="8771300903067484968">Nền của trang bắt đầu đã được đặt lại thành nền mặc định.</translation>
 <translation id="8773302562181397928">Lưu <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Xác nhận khôi phục</translation>

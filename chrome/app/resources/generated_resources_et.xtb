@@ -2867,7 +2867,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4035758313003622889">&amp;Tegumihaldur</translation>
 <translation id="4036778507053569103">Serverist alla laaditud reegel on kehtetu.</translation>
 <translation id="4037084878352560732">Hobune</translation>
-<translation id="4037889604535939429">Isiku muutmine</translation>
 <translation id="4040753847560036377">Vale PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Välju lehelt}other{Välju lehtedelt}}</translation>
 <translation id="4044612648082411741">Sisestage oma sertifikaadi parool</translation>
@@ -4335,7 +4334,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5709557627224531708">Määrake Chrome vaikebrauseriks</translation>
 <translation id="5711983031544731014">Ei õnnestu avada. Sisestage parool.</translation>
 <translation id="5712153969432126546">Mõnikord avaldavad saidid PDF-e, nt dokumente, lepinguid ja vorme</translation>
-<translation id="5712323955984474772">Järgmises värskenduses</translation>
 <translation id="5715711091495208045">Pistikprogrammi vahendaja: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Vaikeotsingumootorid</translation>
 <translation id="5719637365829998022">QR-kood skanniti.</translation>
@@ -5107,7 +5105,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6563469144985748109">Haldur ei ole seda veel kinnitanud</translation>
 <translation id="6568283005472142698">Otsing vahelehtedelt</translation>
 <translation id="6569911211938664415">Paroolid salvestatakse teie Google'i kontole (<ph name="ACCOUNT" />), et saaksite neid kasutada mis tahes seadmes</translation>
-<translation id="6569934958368283244">Teised inimesed</translation>
 <translation id="6573497332121198392">Otseteed ei saa eemaldada</translation>
 <translation id="657402800789773160">&amp;Laadi see leht uuesti</translation>
 <translation id="6577284282025554716">Allalaadimine on tühistatud: <ph name="FILE_NAME" /></translation>
@@ -6794,7 +6791,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8393700583063109961">Saatke sõnum</translation>
 <translation id="8397825320644530257">Ühendatud telefoni eemaldamine</translation>
 <translation id="8398877366907290961">Jätka ikkagi</translation>
-<translation id="8400146488506985033">Halda inimesi</translation>
 <translation id="8401432541486058167">Sisestage oma kiipkaardi PIN-kood.</translation>
 <translation id="8404893580027489425">Sõrmejäljeandur on seadme <ph name="DEVICE_TYPE" /> paremas servas. Puudutage seda õrnalt mis tahes sõrmega.</translation>
 <translation id="8405046151008197676">Vaadake viimase värskenduse esiletõstetud teavet</translation>
@@ -6850,7 +6846,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8465444703385715657">Pistikprogramm <ph name="PLUGIN_NAME" /> vajab käitamiseks teie luba</translation>
 <translation id="8466417995783206254">Vahelehel esitatakse videot režiimis Pilt pildis</translation>
 <translation id="8467326454809944210">Teise keele valimine</translation>
-<translation id="8470214316007448308">Teised inimesed</translation>
 <translation id="8470513973197838199">Salvestatud paroolid – <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Saidid loovad USB-seadmetega ühenduse tavaliselt teatud funktsioonide jaoks, näiteks dokumentide printimiseks või salvestusseadmele talletamiseks</translation>
 <translation id="8471959340398751476">Allahindlused on välja lülitatud. Saate need menüüs Kohandamine sisse lülitada.</translation>
@@ -7037,6 +7032,7 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
 <translation id="8676374126336081632">Tühjenda sisestus</translation>
 <translation id="8676770494376880701">Väikese energiakuluga laadija on ühendatud</translation>
 <translation id="8677212948402625567">Ahenda kõik ...  </translation>
+<translation id="867767487203716855">Järgmine värskendus</translation>
 <translation id="8677859815076891398">Albumeid pole. Looge album teenuses <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Vahelehed ei kahane</translation>
 <translation id="8678933587484842200">Kuidas soovite selle rakenduse käivitada?</translation>
@@ -7125,7 +7121,6 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
 <translation id="87646919272181953">Teenuse Google Photos album</translation>
 <translation id="8767621466733104912">Värskenda Chrome'i automaatselt kõikide kasutajate jaoks</translation>
 <translation id="8770406935328356739">Laienduse juurkataloog</translation>
-<translation id="8770507190024617908">Halda inimesi</translation>
 <translation id="8771300903067484968">Avalehe taust lähtestati vaiketaustale.</translation>
 <translation id="8773302562181397928">Salvesta <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Taastamise kinnitamine</translation>

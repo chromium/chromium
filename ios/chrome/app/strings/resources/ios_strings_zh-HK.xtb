@@ -456,6 +456,7 @@
 <translation id="5782227691023083829">正在翻譯...</translation>
 <translation id="5797070761912323120">Google 可能會使用您的記錄，為您提供個人化的搜尋服務、廣告和其他 Google 服務</translation>
 <translation id="5803566855766646066">確定要捨棄這張新的信用卡嗎？</translation>
+<translation id="5812974770859303494">新增至…</translation>
 <translation id="5816228676161003208">這樣您便可使用語音更快速地搜尋內容。</translation>
 <translation id="581659025233126501">開啟同步處理功能</translation>
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -764,6 +765,7 @@
 <translation id="8654802032646794042">取消</translation>
 <translation id="8668210798914567634">此網頁已儲存至您的閱讀清單。</translation>
 <translation id="8680787084697685621">帳戶登入詳情已過期。</translation>
+<translation id="8693663554456874301">{count,plural, =1{關閉單一分頁}other{關閉多個分頁}}</translation>
 <translation id="8706588385081740091">密碼</translation>
 <translation id="8717864919010420084">複製連結</translation>
 <translation id="8721297211384281569">工具選單</translation>

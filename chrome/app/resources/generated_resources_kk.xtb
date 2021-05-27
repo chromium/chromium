@@ -2857,7 +2857,6 @@
 <translation id="4035758313003622889">&amp;Тапсырмалар реттеушісі</translation>
 <translation id="4036778507053569103">Серверден жүктеп алынған саясат жарамсыз.</translation>
 <translation id="4037084878352560732">Жылқы</translation>
-<translation id="4037889604535939429">Пайдаланушы мәліметтерін өзгерту</translation>
 <translation id="4040753847560036377">PUK коды дұрыс емес.</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Беттен шығу}other{Беттерден шығу}}</translation>
 <translation id="4044612648082411741">Сертификат құпия сөзін енгізу</translation>
@@ -4325,7 +4324,6 @@
 <translation id="5709557627224531708">Chrome браузерін әдепкі етіп орнатыңыз</translation>
 <translation id="5711983031544731014">Құлпын ашу мүмкін емес. Құпия сөзіңізді енгізіңіз.</translation>
 <translation id="5712153969432126546">Сайттар кейде PDF-терді (мысалы, құжаттар, келісімшарттар және үлгілер) жариялайды.</translation>
-<translation id="5712323955984474772">Келесі жаңарту</translation>
 <translation id="5715711091495208045">Плагин делдалы: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Әдепкі іздеу жүйелері</translation>
 <translation id="5719637365829998022">QR коды сканерленді.</translation>
@@ -5097,7 +5095,6 @@
 <translation id="6563469144985748109">Менеджеріңіз әлі мақұлдаған жоқ</translation>
 <translation id="6568283005472142698">Қойындыны іздеу</translation>
 <translation id="6569911211938664415">Құпия сөздер Google есептік жазбаңызда (<ph name="ACCOUNT" />) сақталады және оларды кез келген құрылғыда пайдалана аласыз.</translation>
-<translation id="6569934958368283244">Басқа адамдар</translation>
 <translation id="6573497332121198392">Таңбашаны өшіру мүмкін емес.</translation>
 <translation id="657402800789773160">&amp;Бұл бетті қайта жүктеу</translation>
 <translation id="6577284282025554716">Жүктеп алудан бас тартылды: <ph name="FILE_NAME" /></translation>
@@ -6782,7 +6779,6 @@
 <translation id="8393700583063109961">Хабар жіберу</translation>
 <translation id="8397825320644530257">Байланыстырылған телефонды ажырату</translation>
 <translation id="8398877366907290961">Бәрібір жалғастыру</translation>
-<translation id="8400146488506985033">Адамдарды басқару</translation>
 <translation id="8401432541486058167">Смарт картаңызбен байланыстырылған PIN кодын көрсетіңіз.</translation>
 <translation id="8404893580027489425">Саусақ ізін оқу сканері <ph name="DEVICE_TYPE" /> құрылғысының оң жағында орналасқан. Оны кез келген саусақпен түртіңіз.</translation>
 <translation id="8405046151008197676">Ең соңғы нұсқаға қатысты негізгі ақпарат алыңыз.</translation>
@@ -6838,7 +6834,6 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> плагині іске қосылуы үшін рұқсатыңыз қажет</translation>
 <translation id="8466417995783206254">Бұл қойынды "суреттегі сурет" режимінде бейне ойнатуда.</translation>
 <translation id="8467326454809944210">Басқа тілді таңдау</translation>
-<translation id="8470214316007448308">Басқа адамдар</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> сайты үшін құпия сөздер сақталды</translation>
 <translation id="8471525937465764768">Сайттар әдетте құжатты басып шығару немесе жад құрылғысына сақтау сияқты функциялар үшін USB құрылғыларына қосылады</translation>
 <translation id="8471959340398751476">Жеңілдіктер өшірулі. Оларды арнаулы мәзірден қосуыңызға болады.</translation>
@@ -7025,6 +7020,7 @@
 <translation id="8676374126336081632">Енгізілгенді өшіру</translation>
 <translation id="8676770494376880701">Төмен қуат зарядтағышы қосылды</translation>
 <translation id="8677212948402625567">Барлығын жию…</translation>
+<translation id="867767487203716855">Келесі жаңарту</translation>
 <translation id="8677859815076891398">Альбомдар жоқ. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> қызметінде альбом жасаңыз.</translation>
 <translation id="8678582529642151449">қойындылар кішіреймейді</translation>
 <translation id="8678933587484842200">Бұл қолданбаны қалай іске қосқыңыз келеді?</translation>
@@ -7113,7 +7109,6 @@
 <translation id="87646919272181953">Google Photos альбомы</translation>
 <translation id="8767621466733104912">Chrome браузерін барлық пайдаланушылар үшін автоматты жаңарту</translation>
 <translation id="8770406935328356739">Кеңейтімнің түбір каталогы:</translation>
-<translation id="8770507190024617908">Адамдарды басқару</translation>
 <translation id="8771300903067484968">Бастау бетінің фондық режимі әдепкі фонға қайтарылды.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> сақтау</translation>
 <translation id="8774379074441005279">Қалпына келтіруді растау</translation>

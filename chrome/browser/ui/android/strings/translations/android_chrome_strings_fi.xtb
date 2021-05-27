@@ -278,6 +278,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekuntia jäljellä</translation>
 <translation id="2779651927720337254">epäonnistui</translation>
 <translation id="2781151931089541271">1 sekunti jäljellä</translation>
+<translation id="2788468313014644040">Ryhmän numero</translation>
 <translation id="2801022321632964776">Päivitä Chrome uusimpaan versioon, niin se toimii omalla kielelläsi</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="2806840421670364300">FLoC-kohdentaminen</translation>
@@ -467,7 +468,6 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4060598801229743805">Toimintoja on käytettävissä näytön yläosassa.</translation>
 <translation id="4062305924942672200">Oikeudelliset tiedot</translation>
-<translation id="4082818367361753283">Ryhmän tunnus</translation>
 <translation id="4084682180776658562">Kirjanmerkki</translation>
 <translation id="4084712963632273211">Lähde: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Googlen toimittama<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Poistetaanko sovellustiedot?</translation>

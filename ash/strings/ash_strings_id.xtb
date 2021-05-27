@@ -245,6 +245,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Instal aplikasi, ekstensi, dan tema</translation>
 <translation id="2977598380246111477">Nomor berikutnya</translation>
+<translation id="2992327365391326550">Tombol mikrofon perangkat dinonaktifkan.</translation>
 <translation id="2995447421581609334">Tampilkan perangkat transmisi.</translation>
 <translation id="2996462380875591307">Kaca Pembesar Tersemat diaktifkan. Tekan Ctrl+Search+D lagi untuk menonaktifkannya.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
@@ -255,6 +256,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3038571455154067151">Untuk login, masukkan kode akses orang tua Family Link</translation>
 <translation id="3039939407102840004">Baterai stilus <ph name="PERCENTAGE" /> persen.</translation>
 <translation id="3045488863354895414">Selamat siang,</translation>
+<translation id="3051189971848907985">Mengganti nama profil. Tunggu beberapa menit.</translation>
 <translation id="3055162170959710888">Anda menggunakan perangkat ini selama <ph name="USED_TIME" /> hari ini</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Luaskan menu</translation>
@@ -295,6 +297,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3368922792935385530">Terhubung</translation>
 <translation id="3371140690572404006">Perangkat USB-C (port depan sebelah kanan)</translation>
 <translation id="3375634426936648815">Terhubung</translation>
+<translation id="3378442621503952303">Menghubungkan ke profil. Tunggu beberapa menit.</translation>
 <translation id="3386978599540877378">kaca pembesar layar penuh</translation>
 <translation id="3400357268283240774">Setelan tambahan</translation>
 <translation id="3410336247007142655">Tampilkan setelan tema gelap</translation>
@@ -351,6 +354,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="380165613292957338">Hai, ada yang bisa dibantu?</translation>
 <translation id="3826099427150913765">Ganti ke sandi</translation>
 <translation id="383058930331066723">Mode penghemat baterai aktif</translation>
+<translation id="3835880383832568924">Untuk melihat pembaruan, buka aplikasi Pintasan</translation>
 <translation id="383629559565718788">Tampilkan setelan keyboard</translation>
 <translation id="3846214748874656680">Keluar dari layar penuh</translation>
 <translation id="3846575436967432996">Tidak tersedia informasi jaringan</translation>
@@ -471,6 +475,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4705716602320768426">Kirim masukan</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735498845456076464">Pintasan keyboard <ph name="LAUNCHER_KEY_NAME" /> + Angka telah diubah. Untuk menggunakan tombol fungsi, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + tombol di baris atas.</translation>
 <translation id="4744944742468440486">Info terkait pilihan Anda</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4774338217796918551">Gunakan lagi besok pukul <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6910714959251846841">Update ini memerlukan powerwash perangkat. Pelajari lebih lanjut update <ph name="SYSTEM_APP_NAME" /> terbaru.</translation>
 <translation id="6919251195245069855">Tidak bisa mengenali kartu smart Anda. Coba lagi.</translation>
+<translation id="6921188888306725546">Pintasan keyboard telah ditingkatkan</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6961121602502368900">Fitur senyapkan ponsel tidak tersedia di profil kerja</translation>
 <translation id="6961840794482373852">Pintasan keyboard Alt + Panah Atas telah diubah. Untuk menggunakan tombol Page Up, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Panah Atas.</translation>
@@ -934,6 +940,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8631727435199967028">Setelan Aksesibilitas</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>
 <translation id="8639760480004882931">Sisa <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">Memperbarui daftar profil. Tunggu beberapa menit.</translation>
 <translation id="8646417893960517480">Timer <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Untuk menambahkan pengguna, masukkan kode akses orang tua Family Link</translation>
 <translation id="8649101189709089199">Klik untuk Diucapkan</translation>
@@ -961,6 +968,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Setelan Metode Input</translation>
+<translation id="8818320199597151042">Menghapus profil. Tunggu beberapa menit.</translation>
 <translation id="8825863694328519386">Geser dari kiri untuk kembali</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Tombol kembali</translation>
@@ -1006,6 +1014,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="9091626656156419976">Tampilan <ph name="DISPLAY_NAME" /> dihapus</translation>
 <translation id="9098969848082897657">Senyapkan suara ponsel</translation>
 <translation id="9099154003160514616">Update Lacros tersedia</translation>
+<translation id="9100887602489003640">Menambahkan profil. Tunggu beberapa menit.</translation>
 <translation id="9105450214093926548">Login pengguna kedua tidak didukung saat browser Lacros sedang berjalan. Gunakan profil browser kedua di Lacros atau tutup Lacros lalu coba lagi.</translation>
 <translation id="9133335900048457298">Tidak dapat merekam konten yang dilindungi</translation>
 <translation id="9151726767154816831">Mulai ulang dan powerwash untuk memperbarui</translation>

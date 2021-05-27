@@ -278,6 +278,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2777555524387840389">Queden <ph name="SECONDS" /> segons</translation>
 <translation id="2779651927720337254">ha fallat</translation>
 <translation id="2781151931089541271">Queda 1 segon</translation>
+<translation id="2788468313014644040">Número de grup</translation>
 <translation id="2801022321632964776">Fes l'actualització per veure la darrera versió de Chrome en el teu idioma</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="4056223980640387499">Sèpia</translation>
 <translation id="4060598801229743805">Hi ha opcions disponibles a prop de la part superior de la pantalla</translation>
 <translation id="4062305924942672200">Informació legal</translation>
-<translation id="4082818367361753283">Identificador de grup</translation>
 <translation id="4084682180776658562">Adreça d'interès</translation>
 <translation id="4084712963632273211">Publicada originalment per <ph name="PUBLISHER_ORIGIN" />, <ph name="BEGIN_DEEMPHASIZED" />oferida per Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Vols suprimir les dades de l'aplicació?</translation>

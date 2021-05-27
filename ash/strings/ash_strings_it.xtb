@@ -153,7 +153,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2127372758936585790">Caricabatterie a basso consumo</translation>
 <translation id="2132302418721800944">Registra schermo intero</translation>
 <translation id="2135456203358955318">Lente d'ingrandimento ancorata</translation>
-<translation id="2146800439053023141">Attiva/disattiva posizione della barra</translation>
+<translation id="2146800439053023141">Posizione della barra di attivazione</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Riprova</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Scorri con tre dita verso il basso per uscire dalla modalità Panoramica</translation>
@@ -245,6 +245,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Installare app, estensioni e temi.</translation>
 <translation id="2977598380246111477">Numero successivo</translation>
+<translation id="2992327365391326550">Il pulsante del microfono del dispositivo è disattivato.</translation>
 <translation id="2995447421581609334">Mostra dispositivi di trasmissione.</translation>
 <translation id="2996462380875591307">Lente d'ingrandimento ancorata attivata. Premi di nuovo CTRL + tasto per la ricerca + D per disattivarla.</translation>
 <translation id="3000461861112256445">Audio in formato mono</translation>
@@ -255,6 +256,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3038571455154067151">Per accedere, inserisci il codice accesso genitori di Family Link</translation>
 <translation id="3039939407102840004">Batteria dello stilo: <ph name="PERCENTAGE" /> percento.</translation>
 <translation id="3045488863354895414">Buon pomeriggio,</translation>
+<translation id="3051189971848907985">Ridenominazione del profilo in corso… Attendi qualche minuto.</translation>
 <translation id="3055162170959710888">Oggi hai utilizzato questo dispositivo per <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">maiusc</translation>
 <translation id="3081696990447829002">Espandi il menu</translation>
@@ -295,6 +297,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3368922792935385530">Connesso</translation>
 <translation id="3371140690572404006">Dispositivo USB-C (porta anteriore destra)</translation>
 <translation id="3375634426936648815">Connessa</translation>
+<translation id="3378442621503952303">Connessione al profilo in corso… Attendi qualche minuto.</translation>
 <translation id="3386978599540877378">la lente d'ingrandimento a schermo intero</translation>
 <translation id="3400357268283240774">Impostazioni aggiuntive</translation>
 <translation id="3410336247007142655">Mostra le impostazioni del tema scuro</translation>
@@ -352,6 +355,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="380165613292957338">Ciao, come posso aiutarti?</translation>
 <translation id="3826099427150913765">Passa alla password</translation>
 <translation id="383058930331066723">La modalità Risparmio energetico è attiva</translation>
+<translation id="3835880383832568924">Per vedere gli aggiornamenti, apri l'app Shortcuts</translation>
 <translation id="383629559565718788">Mostra impostazioni tastiera</translation>
 <translation id="3846214748874656680">Esci da schermo intero</translation>
 <translation id="3846575436967432996">Nessuna informazione di rete disponibile</translation>
@@ -472,6 +476,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4705716602320768426">Invia feedback</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="4734965478015604180">Orizzontale</translation>
+<translation id="4735498845456076464">La scorciatoia da tastiera <ph name="LAUNCHER_KEY_NAME" /> + Numero è cambiata. Per usare i tasti funzione, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + un tasto nella fila superiore.</translation>
 <translation id="4744944742468440486">Informazioni relative al testo selezionato</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4774338217796918551">Puoi riprendere domani alle ore <ph name="COME_BACK_TIME" />.</translation>
@@ -729,6 +734,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6910714959251846841">Questo aggiornamento richiede il powerwash del dispositivo. Leggi ulteriori informazioni sull'ultimo aggiornamento di <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>
+<translation id="6921188888306725546">Le scorciatoie da tastiera sono state migliorate</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6961121602502368900">La funzionalità Disattiva audio non è disponibile sul profilo di lavoro</translation>
 <translation id="6961840794482373852">La scorciatoia da tastiera Alt + Freccia su è cambiata. Per usare il tasto Pagina su, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia su.</translation>
@@ -935,6 +941,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8631727435199967028">Impostazioni di accessibilità</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />, gestita dall'amministratore</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> rimanente</translation>
+<translation id="8641805545866562088">Aggiornamento dell'elenco di profili in corso… Attendi qualche minuto.</translation>
 <translation id="8646417893960517480">Timer: <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Per aggiungere una persona, inserisci il codice accesso genitori di Family Link</translation>
 <translation id="8649101189709089199">Seleziona per ascoltare</translation>
@@ -962,6 +969,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Impostazioni metodi di immissione</translation>
+<translation id="8818320199597151042">Rimozione del profilo in corso… Attendi qualche minuto.</translation>
 <translation id="8825863694328519386">Scorri da sinistra per tornare indietro</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Pulsante Indietro</translation>
@@ -1007,6 +1015,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="9091626656156419976">Schermo <ph name="DISPLAY_NAME" /> rimosso</translation>
 <translation id="9098969848082897657">Disattiva audio</translation>
 <translation id="9099154003160514616">Aggiornamento di Lacros disponibile</translation>
+<translation id="9100887602489003640">Aggiunta del profilo in corso… Attendi qualche minuto.</translation>
 <translation id="9105450214093926548">L'accesso di un secondo utente non è supportato durante l'uso del browser Lacros. Usa invece un secondo profilo del browser in Lacros oppure chiudi Lacros e riprova.</translation>
 <translation id="9133335900048457298">Impossibile registrare contenuti protetti</translation>
 <translation id="9151726767154816831">Riavvia ed esegui Powerwash per aggiornare</translation>

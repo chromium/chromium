@@ -2567,6 +2567,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3742666961763734085">Kan geen organisatie-eenheid met die naam vinden. Probeer het opnieuw.</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3747077776423672805">Als je apps wilt verwijderen, ga je naar Instellingen &gt; Google Play Store &gt; Android-voorkeuren beheren &gt; Apps of App-beheer. Tik op de app die je wilt verwijderen (je moet mogelijk naar rechts of links swipen om de app te vinden). Tik vervolgens op Verwijderen of Uitzetten.</translation>
+<translation id="3747220812138541072">Inline schrijfsuggesties laten zien terwijl je typt</translation>
 <translation id="3748706263662799310">Een fout melden</translation>
 <translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Eén keer opslaan, Overal gebruiken</translation>
@@ -2860,7 +2861,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4035758313003622889">&amp;Taakbeheer</translation>
 <translation id="4036778507053569103">Het beleid dat van de server is gedownload, is ongeldig.</translation>
 <translation id="4037084878352560732">Paard</translation>
-<translation id="4037889604535939429">Persoon bewerken</translation>
 <translation id="4040753847560036377">Onjuiste pukcode</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Pagina afsluiten}other{Pagina's afsluiten}}</translation>
 <translation id="4044612648082411741">Geef je certificaatwachtwoord op</translation>
@@ -3256,6 +3256,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4510614391273086606">Linux-bestanden en -apps worden hersteld naar de status van de back-up.</translation>
 <translation id="451102079304155829">winkelwagens</translation>
 <translation id="4513275008300099962">Overlay voor vensterbediening uitzetten</translation>
+<translation id="4513872120116766993">Voorspellend schrijven</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Mogelijk gemaakt door <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Video schakelen tussen afspelen en pauzeren</translation>
@@ -4326,7 +4327,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5709557627224531708">Chrome instellen als je standaardbrowser</translation>
 <translation id="5711983031544731014">Kan niet ontgrendelen. Geef je wachtwoord op.</translation>
 <translation id="5712153969432126546">Sites publiceren soms pdf's, zoals documenten, contracten en formulieren</translation>
-<translation id="5712323955984474772">Volgende update</translation>
 <translation id="5715711091495208045">Plug-inbroker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standaardzoekmachines</translation>
 <translation id="5719637365829998022">De QR-code is gescand</translation>
@@ -4417,6 +4417,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5826395379250998812">Koppel je <ph name="DEVICE_TYPE" /> aan je telefoon. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Semi-transparant</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">Woordvoorspelling</translation>
 <translation id="5828545842856466741">Profiel toevoegen...</translation>
 <translation id="5828633471261496623">Bezig met afdrukken....</translation>
 <translation id="5830720307094128296">Pagina opslaan &amp;als...</translation>
@@ -5098,7 +5099,6 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="6563469144985748109">Je beheerder heeft dit nog niet goedgekeurd</translation>
 <translation id="6568283005472142698">Zoeken op tabbladen</translation>
 <translation id="6569911211938664415">Wachtwoorden worden in je Google-account (<ph name="ACCOUNT" />) opgeslagen, zodat je ze op elk apparaat kunt gebruiken</translation>
-<translation id="6569934958368283244">Andere mensen</translation>
 <translation id="6573497332121198392">Kan snelkoppeling niet verwijderen</translation>
 <translation id="657402800789773160">&amp;Laad pagina opnieuw</translation>
 <translation id="6577284282025554716">Download geannuleerd: <ph name="FILE_NAME" /></translation>
@@ -6287,6 +6287,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="78526636422538552">Toevoegen van meer Google-accounts staat uit</translation>
 <translation id="7853747251428735">Meer hu&amp;lpprogramma's</translation>
 <translation id="7855678561139483478">Tabblad verplaatsen naar nieuw venster</translation>
+<translation id="7857093393627376423">Tekstsuggesties</translation>
 <translation id="7857117644404132472">Uitzondering toevoegen</translation>
 <translation id="7857949311770343000">Is dit de nieuwe pagina met tabbladen die je had verwacht?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -6783,7 +6784,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8393700583063109961">Bericht verzenden</translation>
 <translation id="8397825320644530257">Verbonden telefoon loskoppelen</translation>
 <translation id="8398877366907290961">Toch doorgaan</translation>
-<translation id="8400146488506985033">Mensen beheren</translation>
 <translation id="8401432541486058167">Geef de pincode op die hoort bij je smartkaart.</translation>
 <translation id="8404893580027489425">De vingerafdruksensor zit aan de rechterkant van je <ph name="DEVICE_TYPE" />. Raak deze kort aan met een vinger.</translation>
 <translation id="8405046151008197676">Ontvang de hoogtepunten van de nieuwste update</translation>
@@ -6839,7 +6839,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8465444703385715657">Voor het uitvoeren van <ph name="PLUGIN_NAME" /> is je toestemming nodig</translation>
 <translation id="8466417995783206254">De video op dit tabblad wordt afgespeeld in de scherm-in-scherm-modus.</translation>
 <translation id="8467326454809944210">Een andere taal kiezen</translation>
-<translation id="8470214316007448308">Andere mensen</translation>
 <translation id="8470513973197838199">Opgeslagen wachtwoorden voor <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sites maken meestal verbinding met USB-apparaten voor functies zoals het afdrukken van een document of opslaan naar een opslagapparaat</translation>
 <translation id="8471959340398751476">Kortingen staan uit. Je kunt ze aanzetten via het menu Aanpassen.</translation>
@@ -7026,6 +7025,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="8676374126336081632">Invoer wissen</translation>
 <translation id="8676770494376880701">Laag-vermogen-lader aangesloten</translation>
 <translation id="8677212948402625567">Alles samenvouwen...</translation>
+<translation id="867767487203716855">Volgende update</translation>
 <translation id="8677859815076891398">Geen albums. Maak een album in <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Tabbladen krimpen niet</translation>
 <translation id="8678933587484842200">Hoe moet deze app worden gestart?</translation>
@@ -7115,7 +7115,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="87646919272181953">Google Foto's-album</translation>
 <translation id="8767621466733104912">Chrome automatisch updaten voor alle gebruikers</translation>
 <translation id="8770406935328356739">Hoofddirectory van extensie</translation>
-<translation id="8770507190024617908">Mensen beheren</translation>
 <translation id="8771300903067484968">De achtergrond van de startpagina is gereset naar de standaardachtergrond.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> opslaan</translation>
 <translation id="8774379074441005279">Herstel bevestigen</translation>

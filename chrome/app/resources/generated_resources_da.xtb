@@ -2877,7 +2877,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4035758313003622889">&amp;Jobliste</translation>
 <translation id="4036778507053569103">Den politik, der er downloadet fra serveren, er ugyldig.</translation>
 <translation id="4037084878352560732">Hest</translation>
-<translation id="4037889604535939429">Rediger personen</translation>
 <translation id="4040753847560036377">PUK-koden er forkert</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Forlad side}one{Forlad side}other{Forlad sider}}</translation>
 <translation id="4044612648082411741">Angiv adgangskoden til dit certifikat</translation>
@@ -4346,7 +4345,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5709557627224531708">Angiv Chrome som din standardbrowser</translation>
 <translation id="5711983031544731014">Enheden kan ikke låses op. Angiv din adgangskode.</translation>
 <translation id="5712153969432126546">Websites kan nogle gange udgive PDF-filer som f.eks. dokumenter, kontrakter og formularer</translation>
-<translation id="5712323955984474772">Næste opdatering</translation>
 <translation id="5715711091495208045">Pluginmægler: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standardsøgemaskiner</translation>
 <translation id="5719637365829998022">QR-koden blev scannet.</translation>
@@ -5118,7 +5116,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6563469144985748109">Din administrator har ikke godkendt det endnu</translation>
 <translation id="6568283005472142698">Søgning efter tekst under faner</translation>
 <translation id="6569911211938664415">Adgangskoder gemmes på din Google-konto (<ph name="ACCOUNT" />), så du kan bruge dem på enhver enhed</translation>
-<translation id="6569934958368283244">Andre personer</translation>
 <translation id="6573497332121198392">Genvejen kan ikke fjernes</translation>
 <translation id="657402800789773160">&amp;Genindlæs denne side</translation>
 <translation id="6577284282025554716">Downloaden blev annulleret: <ph name="FILE_NAME" /></translation>
@@ -6804,7 +6801,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8393700583063109961">Send en besked</translation>
 <translation id="8397825320644530257">Afbryd forbindelsen til den tilsluttede telefon</translation>
 <translation id="8398877366907290961">Fortsæt alligevel</translation>
-<translation id="8400146488506985033">Administrer personer</translation>
 <translation id="8401432541486058167">Brug den pinkode, der hører til dit chipkort.</translation>
 <translation id="8404893580027489425">Fingeraftrykslæseren sidder til højre på din <ph name="DEVICE_TYPE" />. Tryk let på den med en finger.</translation>
 <translation id="8405046151008197676">Få højdepunkter fra den seneste opdatering</translation>
@@ -6860,7 +6856,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> kræver din tilladelse for at køre</translation>
 <translation id="8466417995783206254">Denne fane afspiller en video i tilstanden med integreret billede.</translation>
 <translation id="8467326454809944210">Vælg et andet sprog</translation>
-<translation id="8470214316007448308">Andre personer</translation>
 <translation id="8470513973197838199">Gemte adgangskoder til <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Websites opretter normalt forbindelse til USB-enheder for at kunne udskrive dokumenter eller gemme filer på en lagerenhed</translation>
 <translation id="8471959340398751476">Rabatter er slået fra. Du kan slå rabatter til i menuen for tilpasning</translation>
@@ -7047,6 +7042,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="8676374126336081632">Ryd indtastning</translation>
 <translation id="8676770494376880701">Oplader med lav kraft er tilsluttet</translation>
 <translation id="8677212948402625567">Skjul alle...</translation>
+<translation id="867767487203716855">Næste opdatering</translation>
 <translation id="8677859815076891398">Der er ingen album. Opret et album i <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Faner formindskes ikke</translation>
 <translation id="8678933587484842200">Hvordan vil du starte denne app?</translation>
@@ -7136,7 +7132,6 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="87646919272181953">Google Fotos-album</translation>
 <translation id="8767621466733104912">Opdater Chrome automatisk for alle brugere</translation>
 <translation id="8770406935328356739">Udvidelsens rodmappe</translation>
-<translation id="8770507190024617908">Administrer personer</translation>
 <translation id="8771300903067484968">Baggrunden for startsiden er nulstillet til standardbaggrunden.</translation>
 <translation id="8773302562181397928">Gem <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Bekræft gendannelse</translation>

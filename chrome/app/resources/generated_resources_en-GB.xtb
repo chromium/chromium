@@ -2876,7 +2876,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4035758313003622889">&amp;Task manager</translation>
 <translation id="4036778507053569103">The policy downloaded from the server is invalid.</translation>
 <translation id="4037084878352560732">Horse</translation>
-<translation id="4037889604535939429">Edit person</translation>
 <translation id="4040753847560036377">Incorrect PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Exit Page}other{Exit Pages}}</translation>
 <translation id="4044612648082411741">Enter your certificate password</translation>
@@ -4345,7 +4344,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5709557627224531708">Set Chrome as your default browser</translation>
 <translation id="5711983031544731014">Unable to unlock. Enter your password.</translation>
 <translation id="5712153969432126546">Sites sometimes publish PDFs, like documents, contracts and forms</translation>
-<translation id="5712323955984474772">Next update</translation>
 <translation id="5715711091495208045">Plug-in Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Default search engines</translation>
 <translation id="5719637365829998022">QR code has been scanned.</translation>
@@ -5117,7 +5115,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6563469144985748109">Your manager hasn't approved it yet</translation>
 <translation id="6568283005472142698">Tab search</translation>
 <translation id="6569911211938664415">Passwords are saved in your Google Account (<ph name="ACCOUNT" />) so that you can use them on any device</translation>
-<translation id="6569934958368283244">Other people</translation>
 <translation id="6573497332121198392">Can't remove shortcut</translation>
 <translation id="657402800789773160">&amp;Reload This Page</translation>
 <translation id="6577284282025554716">Download cancelled: <ph name="FILE_NAME" /></translation>
@@ -6804,7 +6801,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8393700583063109961">Send message</translation>
 <translation id="8397825320644530257">Disconnect connected phone</translation>
 <translation id="8398877366907290961">Proceed anyway</translation>
-<translation id="8400146488506985033">Manage people</translation>
 <translation id="8401432541486058167">Provide the PIN that’s associated with your smart card.</translation>
 <translation id="8404893580027489425">The fingerprint sensor is on the right-hand side of your <ph name="DEVICE_TYPE" />. Touch it lightly with any finger.</translation>
 <translation id="8405046151008197676">Get highlights from the latest update</translation>
@@ -6860,7 +6856,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> needs your permission to run</translation>
 <translation id="8466417995783206254">This tab is playing a video in picture-in-picture mode.</translation>
 <translation id="8467326454809944210">Choose another language</translation>
-<translation id="8470214316007448308">Other people</translation>
 <translation id="8470513973197838199">Saved passwords for <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sites usually connect to USB devices for features like printing a document or saving to a storage device</translation>
 <translation id="8471959340398751476">Discounts are off. You can turn them on in the customise menu</translation>
@@ -7047,6 +7042,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8676374126336081632">Clear input</translation>
 <translation id="8676770494376880701">Low-power charger connected</translation>
 <translation id="8677212948402625567">Collapse all...</translation>
+<translation id="867767487203716855">Next update</translation>
 <translation id="8677859815076891398">No albums. Create an album in <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Tabs don't shrink</translation>
 <translation id="8678933587484842200">How would you like this application to launch?</translation>
@@ -7135,7 +7131,6 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="87646919272181953">Google Photos album</translation>
 <translation id="8767621466733104912">Automatically update Chrome for all users</translation>
 <translation id="8770406935328356739">Extension root directory</translation>
-<translation id="8770507190024617908">Manage People</translation>
 <translation id="8771300903067484968">Start page background has been reset to the default background.</translation>
 <translation id="8773302562181397928">Save <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirm Restore</translation>

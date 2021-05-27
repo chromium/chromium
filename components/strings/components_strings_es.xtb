@@ -39,7 +39,7 @@
 <translation id="1107591249535594099">Si se selecciona, Chrome almacenará una copia de tu tarjeta en este dispositivo para completar formularios más rápidamente.</translation>
 <translation id="1110994991967754504">Seleccionar permiso de <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Deshacer reorganización</translation>
-<translation id="1123753900084781868">La función Subtítulos instantáneos no está disponible en estos momentos</translation>
+<translation id="1123753900084781868">Subtítulos automáticos no está disponible en estos momentos</translation>
 <translation id="1125573121925420732">Es probable que se muestren advertencias mientras se actualiza la seguridad de los sitios web, pero pronto se solucionará.</translation>
 <translation id="112840717907525620">Caché de política correcta</translation>
 <translation id="1130564665089811311">Botón Traducir página, pulsa Intro para traducir esta página con el Traductor de Google</translation>
@@ -308,12 +308,14 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2042213636306070719">Bandeja 7</translation>
 <translation id="204357726431741734">Inicia sesión para poder usar las contraseñas guardadas en tu cuenta de Google</translation>
 <translation id="2053111141626950936">No se traducirán las páginas en <ph name="LANGUAGE" />.</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Cuando el control está habilitado y en estado activo, Chrome determina qué grupo de personas o "cohorte" encaja mejor con tu actividad de navegación reciente. Los anunciantes pueden seleccionar anuncios para el grupo, y tu actividad de navegación se conservará en tu dispositivo y será privada. Tu grupo se actualiza todos los días.}=1{Cuando el control está habilitado y en estado activo, Chrome determina qué grupo de personas o "cohorte" encaja mejor con tu actividad de navegación reciente. Los anunciantes pueden seleccionar anuncios para el grupo, y tu actividad de navegación se conservará en tu dispositivo y será privada. Tu grupo se actualiza todos los días.}other{Cuando el control está habilitado y en estado activo, Chrome determina qué grupo de personas o "cohorte" encaja mejor con tu actividad de navegación reciente. Los anunciantes pueden seleccionar anuncios para el grupo, y tu actividad de navegación se conservará en tu dispositivo y será privada. Tu grupo se actualiza cada {NUM_DAYS} días.}}</translation>
 <translation id="2053553514270667976">Código postal</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Una sugerencia}other{# sugerencias}}</translation>
 <translation id="2071692954027939183">Se han bloqueado automáticamente las notificaciones porque no las sueles permitir.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="20817612488360358">Se ha establecido la configuración del proxy del sistema, pero también se han especificado ajustes de proxy explícitos.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2085876078937250610">Guardar…</translation>
 <translation id="2088086323192747268">Botón Gestionar sincronización, pulsa Intro para gestionar la información que sincronizas en la configuración de Chrome</translation>
 <translation id="2091887806945687916">Sonido</translation>
 <translation id="2094505752054353250">El dominio no coincide</translation>
@@ -394,6 +396,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2355395290879513365">Es posible que los atacantes puedan ver las imágenes que ves en este sitio web y que las modifiquen para engañarte.</translation>
 <translation id="2356070529366658676">Preguntar</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> gestiona tu dispositivo y <ph name="ACCOUNT_MANAGER" /> gestiona tu cuenta.</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Dentro de menos de un día}=1{Dentro de un día}other{Dentro de {NUM_DAYS} días}}</translation>
 <translation id="2359629602545592467">Varias</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2359961752320758691">Número de tu tarjeta virtual aplicado.</translation>
@@ -716,6 +719,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3590643883886679995">Los datos de inicio de sesión se almacenarán en este dispositivo cuando salgas del modo de incógnito.</translation>
 <translation id="359126217934908072">Mes/año:</translation>
 <translation id="3592413004129370115">Italian (sobre)</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Puedes restablecer tu grupo en cualquier momento. Se tarda alrededor de un día en unirse a un nuevo grupo.}=1{Puedes restablecer tu grupo en cualquier momento. Se tarda alrededor de un día en unirse a un nuevo grupo.}other{Puedes restablecer tu grupo en cualquier momento. Se tardan {NUM_DAYS} días en unirse a un nuevo grupo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Tu administrador ha bloqueado esta aplicación</translation>
 <translation id="3608932978122581043">Orientación de entrada</translation>
@@ -1203,6 +1207,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5332219387342487447">Método de envío</translation>
 <translation id="5333022057423422993">Chrome ha detectado que la contraseña que acabas de usar se ha visto expuesta en una quiebra de seguridad de datos. Para proteger tus cuentas, te recomendamos que compruebes las contraseñas que tengas guardadas.</translation>
 <translation id="5334013548165032829">Registros detallados del sistema</translation>
+<translation id="5334145288572353250">¿Guardar dirección?</translation>
 <translation id="5340250774223869109">Se ha bloqueado la aplicación</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344579389779391559">Es posible que esta página intente aplicar algún cargo</translation>
@@ -1542,6 +1547,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6671697161687535275">¿Quitar sugerencia de formulario de Chromium?</translation>
 <translation id="6685834062052613830">Cierra sesión y completa la configuración</translation>
 <translation id="6687335167692595844">Tamaño de fuente solicitado</translation>
+<translation id="6688743156324860098">Actualizar…</translation>
 <translation id="6689249931105087298">Relativo con compresión de puntos negros</translation>
 <translation id="6689271823431384964">Chrome te ofrece guardar las tarjetas en tu cuenta de Google porque has iniciado sesión. Puedes cambiar esta opción en los ajustes. El nombre del titular procede de tu cuenta.</translation>
 <translation id="6698381487523150993">Creado:</translation>
@@ -1557,6 +1563,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6744009308914054259">Mientras esperas a que haya conexión, puedes ir a Descargas para leer artículos sin conexión.</translation>
 <translation id="6753269504797312559">Valor de la política</translation>
 <translation id="6757797048963528358">El dispositivo se ha suspendido.</translation>
+<translation id="6767985426384634228">¿Actualizar dirección?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
@@ -1716,6 +1723,7 @@ Más información:
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">No aplicable</translation>
 <translation id="7390545607259442187">Confirmar tarjeta</translation>
+<translation id="7392089738299859607">Actualizar dirección</translation>
 <translation id="7399802613464275309">Comprobación de seguridad</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120">Tu <ph name="DEVICE_NAME" /> está administrado</translation>
@@ -1854,6 +1862,7 @@ Más información:
 <translation id="7865448901209910068">Mejor velocidad</translation>
 <translation id="7874263914261512992">Acabas de escribir tu contraseña en un sitio web engañoso. Chrome te recomienda que compruebes las contraseñas que has guardado en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y otros sitios en los que uses esta contraseña.</translation>
 <translation id="7878562273885520351">Es posible que tu contraseña se haya vulnerado</translation>
+<translation id="7880146494886811634">Guardar dirección</translation>
 <translation id="7882421473871500483">Marrón</translation>
 <translation id="7887683347370398519">Comprueba el código CVC y vuelve a intentarlo</translation>
 <translation id="7887885240995164102">Activar el modo imagen en imagen</translation>

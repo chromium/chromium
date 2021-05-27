@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">アプリ、拡張機能、テーマをインストールする</translation>
 <translation id="2977598380246111477">次の番号</translation>
+<translation id="2992327365391326550">デバイスのマイクボタンはオフになっています。</translation>
 <translation id="2995447421581609334">キャスト デバイスを表示します。</translation>
 <translation id="2996462380875591307">ドッキング拡大鏡がオンになっています。オフにするには Ctrl+検索+D キーをもう一度押します。</translation>
 <translation id="3000461861112256445">モノラル音声</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">ログインするには、ファミリー リンクの保護者のアクセスコードを入力してください</translation>
 <translation id="3039939407102840004">タッチペンのバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="3045488863354895414">こんにちは</translation>
+<translation id="3051189971848907985">プロファイルの名前を変更しています。数分お待ちください。</translation>
 <translation id="3055162170959710888">あなたは今日、このデバイスを <ph name="USED_TIME" />使用しました</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">メニューを展開</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3371140690572404006">USB-C デバイス（右手前のポート）</translation>
 <translation id="3375634426936648815">接続完了</translation>
+<translation id="3378442621503952303">プロファイルに接続しています。数分お待ちください。</translation>
 <translation id="3386978599540877378">全画面拡大鏡</translation>
 <translation id="3400357268283240774">その他の設定</translation>
 <translation id="3410336247007142655">ダークテーマの設定を表示</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">はい、どんなご用でしょう？</translation>
 <translation id="3826099427150913765">パスワードに切り替える</translation>
 <translation id="383058930331066723">バッテリー セーバー モードがオンです</translation>
+<translation id="3835880383832568924">変更点を確認するには、ショートカット アプリを開きます</translation>
 <translation id="383629559565718788">キーボード設定を表示</translation>
 <translation id="3846214748874656680">全画面表示を終了</translation>
 <translation id="3846575436967432996">利用可能なネットワーク情報がありません</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">フィードバックを送信</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="4734965478015604180">横</translation>
+<translation id="4735498845456076464">キーボード ショートカット「<ph name="LAUNCHER_KEY_NAME" />+数字」が変更されました。ファンクション キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+最上列のキーを押してください。</translation>
 <translation id="4744944742468440486">選択した項目に関連する情報</translation>
 <translation id="4759238208242260848">ダウンロード</translation>
 <translation id="4774338217796918551">明日の <ph name="COME_BACK_TIME" /> になったら利用を再開できます。</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">コピー</translation>
 <translation id="6910714959251846841">このアップデートを適用するにはデバイスで Powerwash を実行する必要があります。<ph name="SYSTEM_APP_NAME" /> の最新アップデートの詳細をご確認ください。</translation>
 <translation id="6919251195245069855">スマートカードを認識できませんでした。もう一度お試しください。</translation>
+<translation id="6921188888306725546">キーボード ショートカットが改善されました</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6961121602502368900">スマートフォンの消音は仕事用プロファイルでは使用できません</translation>
 <translation id="6961840794482373852">キーボード ショートカット「Alt+上矢印」が変更されました。PageUp キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+上矢印キーを押してください。</translation>
@@ -935,6 +941,7 @@
 <translation id="8631727435199967028">ユーザー補助機能の設定</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="8639760480004882931">バッテリー残量: <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">プロファイル リストを更新しています。数分お待ちください。</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> タイマー</translation>
 <translation id="8647931990447795414">ユーザーを追加するには、ファミリー リンクの保護者のアクセスコードを入力してください</translation>
 <translation id="8649101189709089199">選択して読み上げ</translation>
@@ -962,6 +969,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">入力方法の設定</translation>
+<translation id="8818320199597151042">プロファイルを削除しています。数分お待ちください。</translation>
 <translation id="8825863694328519386">左側からスワイプすると前の画面に戻ります</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">戻るボタン</translation>
@@ -1007,6 +1015,7 @@
 <translation id="9091626656156419976">ディスプレイ「<ph name="DISPLAY_NAME" />」が取り外されました</translation>
 <translation id="9098969848082897657">スマートフォンを消音する</translation>
 <translation id="9099154003160514616">Lacros のアップデートがあります</translation>
+<translation id="9100887602489003640">プロファイルを追加しています。数分お待ちください。</translation>
 <translation id="9105450214093926548">Lacros ブラウザの実行中は 2 つ目のユーザーにログインできません。代わりに Lacros で 2 つ目のブラウザ プロフィールを使用するか、Lacros を閉じてログインしなおしてください。</translation>
 <translation id="9133335900048457298">保護されたコンテンツは録画できません</translation>
 <translation id="9151726767154816831">更新するには、再起動して Powerwash を実行してください</translation>

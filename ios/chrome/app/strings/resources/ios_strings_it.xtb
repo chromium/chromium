@@ -456,6 +456,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5782227691023083829">Traduzione in corso...</translation>
 <translation id="5797070761912323120">Google può utilizzare la tua cronologia per personalizzare la Ricerca, gli annunci e altri servizi Google</translation>
 <translation id="5803566855766646066">Vuoi eliminare questa nuova carta?</translation>
+<translation id="5812974770859303494">Aggiungi a…</translation>
 <translation id="5816228676161003208">In questo modo puoi eseguire ricerche più veloci con la voce.</translation>
 <translation id="581659025233126501">Attiva la sincronizzazione</translation>
 <translation id="5819208479324046259">Gestito da <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -766,6 +767,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8654802032646794042">Annulla</translation>
 <translation id="8668210798914567634">Questa pagina è stata salvata nel tuo Elenco di lettura.</translation>
 <translation id="8680787084697685621">I dati di accesso dell'account sono obsoleti.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Chiudi scheda}other{Chiudi schede}}</translation>
 <translation id="8706588385081740091">Password</translation>
 <translation id="8717864919010420084">Copia link</translation>
 <translation id="8721297211384281569">Menu Strumenti</translation>

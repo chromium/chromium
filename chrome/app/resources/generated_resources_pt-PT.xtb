@@ -2862,7 +2862,6 @@ Pretende pará-lo?</translation>
 <translation id="4035758313003622889">Gestor de &amp;tarefas</translation>
 <translation id="4036778507053569103">A política transferida do servidor é inválida.</translation>
 <translation id="4037084878352560732">Cavalo</translation>
-<translation id="4037889604535939429">Editar pessoa</translation>
 <translation id="4040753847560036377">PUK incorreto</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Sair da página}other{Sair das páginas}}</translation>
 <translation id="4044612648082411741">Introduzir a palavra-passe do certificado</translation>
@@ -4331,7 +4330,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5709557627224531708">Definir o Chrome como o navegador predefinido</translation>
 <translation id="5711983031544731014">Não foi possível desbloquear. Introduza a sua palavra-passe.</translation>
 <translation id="5712153969432126546">Por vezes, os sites publicam PDFs, como documentos, contratos e formulários</translation>
-<translation id="5712323955984474772">Próxima atualização</translation>
 <translation id="5715711091495208045">Mediador de plug-ins: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motores de pesquisa predefinidos</translation>
 <translation id="5719637365829998022">O código QR foi digitalizado.</translation>
@@ -5103,7 +5101,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6563469144985748109">O seu gestor ainda não o aprovou</translation>
 <translation id="6568283005472142698">Pesquisa de separadores</translation>
 <translation id="6569911211938664415">As palavras-passe são guardadas na sua Conta Google (<ph name="ACCOUNT" />) para que as possa utilizar em qualquer dispositivo</translation>
-<translation id="6569934958368283244">Outras pessoas</translation>
 <translation id="6573497332121198392">Não foi possível remover o atalho.</translation>
 <translation id="657402800789773160">&amp;Recarregar esta página</translation>
 <translation id="6577284282025554716">Transferência cancelada: <ph name="FILE_NAME" /></translation>
@@ -6789,7 +6786,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8393700583063109961">Enviar mensagem</translation>
 <translation id="8397825320644530257">Desligar telemóvel associado</translation>
 <translation id="8398877366907290961">Prosseguir</translation>
-<translation id="8400146488506985033">Gerir pessoas</translation>
 <translation id="8401432541486058167">Indique o PIN que está associado ao seu cartão inteligente.</translation>
 <translation id="8404893580027489425">O sensor de impressões digitais está do lado direito do <ph name="DEVICE_TYPE" />. Toque levemente no mesmo com qualquer dedo.</translation>
 <translation id="8405046151008197676">Obtenha os destaques da atualização mais recente.</translation>
@@ -6845,7 +6841,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8465444703385715657">O <ph name="PLUGIN_NAME" /> necessita da sua autorização para ser executado</translation>
 <translation id="8466417995783206254">Este separador está a reproduzir um vídeo no modo ecrã no ecrã.</translation>
 <translation id="8467326454809944210">Selecionar outro idioma</translation>
-<translation id="8470214316007448308">Outras Pessoas</translation>
 <translation id="8470513973197838199">Palavras-passe guardadas para <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Normalmente, os sites estabelecem ligação a dispositivos USB para funcionalidades como imprimir um documento ou guardar num dispositivo de armazenamento.</translation>
 <translation id="8471959340398751476">Os descontos estão desativados. Pode ativá-los no menu Personalizar</translation>
@@ -7032,6 +7027,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="8676374126336081632">Limpar texto</translation>
 <translation id="8676770494376880701">Carregador de baixo consumo ligado</translation>
 <translation id="8677212948402625567">Reduzir tudo...</translation>
+<translation id="867767487203716855">Próxima atualização</translation>
 <translation id="8677859815076891398">Não existem álbuns. Crie um álbum no <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Os separadores não são reduzidos</translation>
 <translation id="8678933587484842200">Como pretende que esta aplicação seja iniciada?</translation>
@@ -7120,7 +7116,6 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="87646919272181953">Álbum do Google Fotos</translation>
 <translation id="8767621466733104912">Atualizar automaticamente o Chrome para todos os utilizadores</translation>
 <translation id="8770406935328356739">Diretório raiz da extensão</translation>
-<translation id="8770507190024617908">Gerir pessoas</translation>
 <translation id="8771300903067484968">O fundo da página de inicio foi reposto para a predefinição.</translation>
 <translation id="8773302562181397928">Guardar <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirme o restauro</translation>

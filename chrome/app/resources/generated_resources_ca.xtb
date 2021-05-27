@@ -2860,7 +2860,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4035758313003622889">Gestor de &amp;tasques</translation>
 <translation id="4036778507053569103">La política que s'ha baixat del servidor no és vàlida.</translation>
 <translation id="4037084878352560732">Cavall</translation>
-<translation id="4037889604535939429">Edita la persona</translation>
 <translation id="4040753847560036377">El PUK no és correcte</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Surt de la pàgina}other{Surt de les pàgines}}</translation>
 <translation id="4044612648082411741">Introdueix la contrasenya del certificat</translation>
@@ -4330,7 +4329,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5709557627224531708">Defineix Chrome com a navegador predeterminat</translation>
 <translation id="5711983031544731014">No es pot desbloquejar: introduïu la contrasenya</translation>
 <translation id="5712153969432126546">A vegades, els llocs web publiquen fitxers PDF, com ara documents, contractes i formularis</translation>
-<translation id="5712323955984474772">Propera actualització</translation>
 <translation id="5715711091495208045">Agent de connectors: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motors de cerca predeterminats</translation>
 <translation id="5719637365829998022">S'ha escanejat el codi QR.</translation>
@@ -5102,7 +5100,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6563469144985748109">El teu gestor encara no ho ha aprovat</translation>
 <translation id="6568283005472142698">Cerca de pestanyes</translation>
 <translation id="6569911211938664415">Les contrasenyes es desen al Compte de Google (<ph name="ACCOUNT" />) perquè les puguis utilitzar en tots els dispositius</translation>
-<translation id="6569934958368283244">Altres persones</translation>
 <translation id="6573497332121198392">No es pot suprimir la drecera</translation>
 <translation id="657402800789773160">&amp;Torna a carregar aquesta pàgina</translation>
 <translation id="6577284282025554716">Baixada cancel·lada: <ph name="FILE_NAME" /></translation>
@@ -6789,7 +6786,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8393700583063109961">Envia el missatge</translation>
 <translation id="8397825320644530257">Desconnecta el telèfon connectat</translation>
 <translation id="8398877366907290961">Continua igualment</translation>
-<translation id="8400146488506985033">Gestiona persones</translation>
 <translation id="8401432541486058167">Proporciona el PIN que està associat a la teva targeta intel·ligent.</translation>
 <translation id="8404893580027489425">El sensor d'empremtes digitals és a la part dreta del <ph name="DEVICE_TYPE" />. Toca'l lleugerament amb un dit.</translation>
 <translation id="8405046151008197676">Descobreix les novetats més destacades de la darrera actualització</translation>
@@ -6845,7 +6841,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> necessita el teu permís per executar-se</translation>
 <translation id="8466417995783206254">En aquesta pestanya s'està reproduint un vídeo en mode de pantalla en pantalla.</translation>
 <translation id="8467326454809944210">Tria un altre idioma</translation>
-<translation id="8470214316007448308">Altres persones</translation>
 <translation id="8470513973197838199">Contrasenyes desades per a <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Els llocs web solen connectar-se a dispositius USB per a funcions com ara desar dades en un dispositiu d'emmagatzematge o imprimir un document</translation>
 <translation id="8471959340398751476">Els descomptes estan desactivats. Pots activar-los al menú de personalització.</translation>
@@ -7032,6 +7027,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="8676374126336081632">Esborra l'entrada</translation>
 <translation id="8676770494376880701">S'ha connectat un carregador de baix consum</translation>
 <translation id="8677212948402625567">Redueix-ho tot...</translation>
+<translation id="867767487203716855">Propera actualització</translation>
 <translation id="8677859815076891398">No hi ha cap àlbum. Crea'n un a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Les pestanyes no es redueixen</translation>
 <translation id="8678933587484842200">Com voldries que s'iniciés aquesta aplicació?</translation>
@@ -7120,7 +7116,6 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="87646919272181953">Àlbum de Google Fotos</translation>
 <translation id="8767621466733104912">Actualitza Chrome automàticament per a tots els usuaris</translation>
 <translation id="8770406935328356739">Directori arrel de l'extensió</translation>
-<translation id="8770507190024617908">Gestiona persones</translation>
 <translation id="8771300903067484968">El fons de la pàgina d'inici s'ha restablert al fons predeterminat.</translation>
 <translation id="8773302562181397928">Desa <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirma la restauració</translation>

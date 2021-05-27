@@ -278,6 +278,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundo gelditzen dira</translation>
 <translation id="2779651927720337254">huts egin du</translation>
 <translation id="2781151931089541271">Segundo bat gelditzen da</translation>
+<translation id="2788468313014644040">Taldearen zenbakia</translation>
 <translation id="2801022321632964776">Eguneratu azken bertsiora Chrome zure hizkuntzan erabili ahal izateko</translation>
 <translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Pantailaren goialdean daude aukera erabilgarriak</translation>
 <translation id="4062305924942672200">Legezko informazioa</translation>
-<translation id="4082818367361753283">Taldearen IDa</translation>
 <translation id="4084682180776658562">Laster-marka</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> da argitaratzailea <ph name="BEGIN_DEEMPHASIZED" />eta Google-k eskaintzen du<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Aplikazioko datuak ezabatu nahi dituzu?</translation>

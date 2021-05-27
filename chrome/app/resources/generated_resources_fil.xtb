@@ -2877,7 +2877,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4035758313003622889">&amp;Task manager</translation>
 <translation id="4036778507053569103">Invalid ang patakarang na-download mula sa server.</translation>
 <translation id="4037084878352560732">Kabayo</translation>
-<translation id="4037889604535939429">I-edit ang tao</translation>
 <translation id="4040753847560036377">Mali ang PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Umalis sa Page}one{Umalis sa Mga Page}other{Umalis sa Mga Page}}</translation>
 <translation id="4044612648082411741">Ilagay ang password ng iyong certificate</translation>
@@ -4346,7 +4345,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5709557627224531708">Itakda ang Chrome bilang iyong default na browser</translation>
 <translation id="5711983031544731014">Hindi mai-unlock. Ilagay ang iyong password.</translation>
 <translation id="5712153969432126546">Paminsan-minsan, nagpa-publish ang mga site ng mga PDF, tulad ng mga dokumento, kontrata, at form</translation>
-<translation id="5712323955984474772">Susunod na Update</translation>
 <translation id="5715711091495208045">Broker ng plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Mga default na search engine</translation>
 <translation id="5719637365829998022">Na-scan na ang QR code.</translation>
@@ -5118,7 +5116,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6563469144985748109">Hindi pa ito inaaprubahan ng iyong manager</translation>
 <translation id="6568283005472142698">Paghahanap sa Tab</translation>
 <translation id="6569911211938664415">Sine-save ang mga password sa iyong Google Account (<ph name="ACCOUNT" />) para magamit mo ang mga ito sa anumang device</translation>
-<translation id="6569934958368283244">Iba pang tao</translation>
 <translation id="6573497332121198392">Hindi maalis ang shortcut</translation>
 <translation id="657402800789773160">&amp;I-reload ang Pahinang Ito</translation>
 <translation id="6577284282025554716">Nakansela ang pag-download: <ph name="FILE_NAME" /></translation>
@@ -6805,7 +6802,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8393700583063109961">Ipadala ang mensahe</translation>
 <translation id="8397825320644530257">Idiskonekta ang nakakonektang telepono</translation>
 <translation id="8398877366907290961">Magpatuloy</translation>
-<translation id="8400146488506985033">Pamahalaan ang mga tao</translation>
 <translation id="8401432541486058167">Ibigay ang PIN na nauugnay sa iyong smart card.</translation>
 <translation id="8404893580027489425">Nasa kanang gilid ng iyong <ph name="DEVICE_TYPE" /> ang sensor para sa fingerprint. Pindutin ito nang magaan gamit ang alinmang daliri.</translation>
 <translation id="8405046151008197676">Kunin ang mga highlight mula sa pinakabagong update</translation>
@@ -6862,7 +6858,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8465444703385715657">Kailangan ng <ph name="PLUGIN_NAME" /> ng iyong pahintulot upang tumakbo</translation>
 <translation id="8466417995783206254">Nagpe-play ang tab na ito ng video sa picture-in-picture mode.</translation>
 <translation id="8467326454809944210">Pumili ng iba pang wika</translation>
-<translation id="8470214316007448308">Iba Pang Tao</translation>
 <translation id="8470513973197838199">Mga naka-save na password para sa <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Karaniwang kumokonekta ang mga site sa mga USB device para sa mga feature gaya ng pag-print ng dokumento o pag-save sa storage device</translation>
 <translation id="8471959340398751476">Naka-off ang mga diskwento. Puwede mong i-on ang mga ito sa menu na i-customize</translation>
@@ -7049,6 +7044,7 @@ Pumindot ng nakatalagang switch para alisin ang pagtatalaga.</translation>
 <translation id="8676374126336081632">I-clear ang input</translation>
 <translation id="8676770494376880701">Nakakabit ang low-power charger</translation>
 <translation id="8677212948402625567">Tiklupin lahat...</translation>
+<translation id="867767487203716855">Susunod na update</translation>
 <translation id="8677859815076891398">Walang album. Gumawa ng album sa <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Hindi liliit ang mga tab</translation>
 <translation id="8678933587484842200">Paano mo gustong ilunsad ang application na ito?</translation>
@@ -7137,7 +7133,6 @@ Pumindot ng nakatalagang switch para alisin ang pagtatalaga.</translation>
 <translation id="87646919272181953">Album sa Google Photos</translation>
 <translation id="8767621466733104912">Awtomatikong i-update ang Chrome para sa lahat ng user</translation>
 <translation id="8770406935328356739">Root directory ng extension</translation>
-<translation id="8770507190024617908">Pamahalaan ang Mga Tao</translation>
 <translation id="8771300903067484968">Na-reset sa default na background ang background ng start page.</translation>
 <translation id="8773302562181397928">Makatipid ng <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Kumpirmahin ang Pag-restore</translation>

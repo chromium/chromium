@@ -2862,7 +2862,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4035758313003622889">&amp;Manager de activități</translation>
 <translation id="4036778507053569103">Politica descărcată de pe server nu este validă.</translation>
 <translation id="4037084878352560732">Cal</translation>
-<translation id="4037889604535939429">Editează persoana</translation>
 <translation id="4040753847560036377">Cod PUK incorect</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Închide pagina}few{Închide paginile}other{Închide paginile}}</translation>
 <translation id="4044612648082411741">Introdu parola pentru certificat</translation>
@@ -4330,7 +4329,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5709557627224531708">Setează Chrome ca browser prestabilit</translation>
 <translation id="5711983031544731014">Nu se poate debloca. Introdu parola.</translation>
 <translation id="5712153969432126546">Site-urile publică uneori fișiere PDF, cum ar documente, contracte și formulare</translation>
-<translation id="5712323955984474772">Următoarea actualizare</translation>
 <translation id="5715711091495208045">Broker pluginuri: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motoarele de căutare prestabilite</translation>
 <translation id="5719637365829998022">Codul QR a fost scanat.</translation>
@@ -5102,7 +5100,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6563469144985748109">Administratorul nu l-a aprobat încă</translation>
 <translation id="6568283005472142698">Căutarea filelor</translation>
 <translation id="6569911211938664415">Parolele sunt salvate în Contul tău Google (<ph name="ACCOUNT" />), astfel încât să le poți folosi pe orice dispozitiv</translation>
-<translation id="6569934958368283244">Alte persoane</translation>
 <translation id="6573497332121198392">Nu se poate elimina comanda rapidă</translation>
 <translation id="657402800789773160">&amp;Reîncarcă această pagină</translation>
 <translation id="6577284282025554716">Descărcare anulată: <ph name="FILE_NAME" /></translation>
@@ -6788,7 +6785,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8393700583063109961">Trimite un mesaj</translation>
 <translation id="8397825320644530257">Deconectează telefonul conectat</translation>
 <translation id="8398877366907290961">Continuă oricum</translation>
-<translation id="8400146488506985033">Gestionează persoanele</translation>
 <translation id="8401432541486058167">Introdu codul PIN asociat cardului inteligent.</translation>
 <translation id="8404893580027489425">Senzorul de amprente se află pe partea dreaptă a dispozitivului <ph name="DEVICE_TYPE" />. Atinge-l ușor cu orice deget.</translation>
 <translation id="8405046151008197676">Vezi informațiile importante despre ultima actualizare</translation>
@@ -6844,7 +6840,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8465444703385715657">Pluginul <ph name="PLUGIN_NAME" /> are nevoie de permisiunea ta pentru a rula</translation>
 <translation id="8466417995783206254">Această filă redă un videoclip în modul picture-in-picture.</translation>
 <translation id="8467326454809944210">Alege altă limbă</translation>
-<translation id="8470214316007448308">Alte persoane</translation>
 <translation id="8470513973197838199">Parole salvate pentru <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Site-urile se conectează de obicei la dispozitive USB pentru funcții cum ar fi imprimarea unui document sau salvarea pe un dispozitiv de stocare</translation>
 <translation id="8471959340398751476">Reducerile sunt dezactivate. Le poți activa în meniul de personalizare</translation>
@@ -7031,6 +7026,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="8676374126336081632">Șterge textul introdus</translation>
 <translation id="8676770494376880701">A fost conectat un încărcător de putere joasă</translation>
 <translation id="8677212948402625567">Restrânge-le pe toate...</translation>
+<translation id="867767487203716855">Următoarea actualizare</translation>
 <translation id="8677859815076891398">Niciun album. Creează un album în <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Filele nu se micșorează</translation>
 <translation id="8678933587484842200">Cum dorești să se lanseze această aplicație?</translation>
@@ -7119,7 +7115,6 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="87646919272181953">Album Google Foto</translation>
 <translation id="8767621466733104912">Actualizează automat Chrome pentru toți utilizatorii</translation>
 <translation id="8770406935328356739">Director rădăcină pentru extensie</translation>
-<translation id="8770507190024617908">Gestionează persoanele</translation>
 <translation id="8771300903067484968">Fundalul paginii de pornire a fost resetat la fundalul prestabilit.</translation>
 <translation id="8773302562181397928">Salvați <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirmă restabilirea</translation>

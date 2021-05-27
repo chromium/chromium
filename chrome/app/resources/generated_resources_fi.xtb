@@ -2872,7 +2872,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4035758313003622889">&amp;Tehtävänhallinta</translation>
 <translation id="4036778507053569103">Palvelimelta ladattu käytäntö on virheellinen.</translation>
 <translation id="4037084878352560732">Hevonen</translation>
-<translation id="4037889604535939429">Muokkaa henkilöä</translation>
 <translation id="4040753847560036377">Väärä PUK-koodi</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Sulje sivu}other{Sulje sivut}}</translation>
 <translation id="4044612648082411741">Anna varmenteen salasana.</translation>
@@ -4341,7 +4340,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5709557627224531708">Aseta Chrome oletusselaimeksi</translation>
 <translation id="5711983031544731014">Avaaminen ei onnistu. Lisää salasana.</translation>
 <translation id="5712153969432126546">Sivustot julkaisevat joskus PDF-tiedostoja, kuten asiakirjoja, sopimuksia ja lomakkeita</translation>
-<translation id="5712323955984474772">Seuraava päivitys</translation>
 <translation id="5715711091495208045">Laajennuksen välittäjä: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Oletushakukoneet</translation>
 <translation id="5719637365829998022">QR-koodi on skannattu.</translation>
@@ -5113,7 +5111,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6563469144985748109">Ylläpitäjä ei ole hyväksynyt sitä vielä.</translation>
 <translation id="6568283005472142698">Välilehtihaku</translation>
 <translation id="6569911211938664415">Salasanat tallennetaan Google-tilillesi (<ph name="ACCOUNT" />), jotta voit käyttää niitä kaikilla laitteilla</translation>
-<translation id="6569934958368283244">Muut ihmiset</translation>
 <translation id="6573497332121198392">Pikakuvaketta ei voi poistaa</translation>
 <translation id="657402800789773160">&amp;Päivitä tämä sivu</translation>
 <translation id="6577284282025554716">Lataus peruutettu: <ph name="FILE_NAME" /></translation>
@@ -6799,7 +6796,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8393700583063109961">Lähetä viesti</translation>
 <translation id="8397825320644530257">Katkaise yhdistetyn puhelimen yhteys</translation>
 <translation id="8398877366907290961">Jatka silti</translation>
-<translation id="8400146488506985033">Hallinnoi käyttäjiä</translation>
 <translation id="8401432541486058167">Ilmoita älykorttiisi liittyvä PIN-koodi.</translation>
 <translation id="8404893580027489425">Sormenjälkitunnistin on laitteen (<ph name="DEVICE_TYPE" />) oikeassa reunassa. Kosketa sitä kevyesti millä tahansa sormella.</translation>
 <translation id="8405046151008197676">Katso uusimman päivityksen parhaat palat</translation>
@@ -6855,7 +6851,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> tarvitsee suoritusluvan.</translation>
 <translation id="8466417995783206254">Tämä välilehti toistaa videota kuva kuvassa ‑tilassa.</translation>
 <translation id="8467326454809944210">Valitse toinen kieli</translation>
-<translation id="8470214316007448308">Muut ihmiset</translation>
 <translation id="8470513973197838199">Tallennetut salasanat: <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sivustot yhdistävät yleensä USB-laitteisiin tulostaakseen dokumentteja tai lisätäkseen niitä tallennustilaan</translation>
 <translation id="8471959340398751476">Alennukset ovat pois käytöstä. Voit ottaa ne takaisin käyttöön muokkausvalikosta.</translation>
@@ -7042,6 +7037,7 @@ Paina määritettyä kytkintä, niin poistat sen määrityksen.</translation>
 <translation id="8676374126336081632">Tyhjennä teksti</translation>
 <translation id="8676770494376880701">Pienitehoinen laturi kytketty</translation>
 <translation id="8677212948402625567">Tiivistä kaikki...</translation>
+<translation id="867767487203716855">Seuraava päivitys</translation>
 <translation id="8677859815076891398">Albumeja ei ole. Luo albumi <ph name="LINK_BEGIN" />Google Kuvissa<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Välilehdet eivät kutistu</translation>
 <translation id="8678933587484842200">Miten haluat käynnistää tämän sovelluksen?</translation>
@@ -7130,7 +7126,6 @@ Paina määritettyä kytkintä, niin poistat sen määrityksen.</translation>
 <translation id="87646919272181953">Google Kuvat ‑albumi</translation>
 <translation id="8767621466733104912">Päivitä kaikkien käyttäjien Chrome automaattisesti</translation>
 <translation id="8770406935328356739">Laajennuksen juurihakemisto</translation>
-<translation id="8770507190024617908">Hallinnoi käyttäjiä</translation>
 <translation id="8771300903067484968">Aloitussivun taustakuvaksi on palautettu oletustaustakuva.</translation>
 <translation id="8773302562181397928">Tallenna <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Vahvista palautus</translation>

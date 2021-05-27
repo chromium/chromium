@@ -308,12 +308,14 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2042213636306070719">Vassoio 7</translation>
 <translation id="204357726431741734">Accedi per usare le password salvate nel tuo Account Google</translation>
 <translation id="2053111141626950936">Le pagine in <ph name="LANGUAGE" /> non verranno tradotte.</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quando questo controllo è attivato e lo stato è attivo, Chrome stabilisce a quale "coorte" (un gruppo numeroso di utenti) è più simile la tua attività di navigazione. Gli inserzionisti possono selezionare gli annunci per il gruppo e la tua attività di navigazione rimane privata sul tuo dispositivo. Il tuo gruppo viene aggiornato ogni giorno.}=1{Quando questo controllo è attivato e lo stato è attivo, Chrome stabilisce a quale "coorte" (un gruppo numeroso di utenti) è più simile la tua attività di navigazione. Gli inserzionisti possono selezionare gli annunci per il gruppo e la tua attività di navigazione rimane privata sul tuo dispositivo. Il tuo gruppo viene aggiornato ogni giorno.}other{Quando questo controllo è attivato e lo stato è attivo, Chrome stabilisce a quale "coorte" (un gruppo numeroso di utenti) è più simile la tua attività di navigazione. Gli inserzionisti possono selezionare gli annunci per il gruppo e la tua attività di navigazione rimane privata sul tuo dispositivo. Il tuo gruppo viene aggiornato ogni {NUM_DAYS} giorni}}</translation>
 <translation id="2053553514270667976">ZIP</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggerimento}other{# suggerimenti}}</translation>
 <translation id="2071692954027939183">Le notifiche sono state automaticamente bloccate perché solitamente non le consenti</translation>
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="20817612488360358">Devono essere utilizzate le impostazioni del proxy di sistema ma è stata specificata anche una configurazione proxy esplicita.</translation>
 <translation id="2082238445998314030">Risultato <ph name="RESULT_NUMBER" /> di <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2085876078937250610">Salva…</translation>
 <translation id="2088086323192747268">Pulsante Gestisci sincronizzazione: premi Invio per gestire le informazioni da sincronizzare nelle impostazioni di Chrome</translation>
 <translation id="2091887806945687916">Audio</translation>
 <translation id="2094505752054353250">Dominio non corrispondente</translation>
@@ -394,6 +396,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2355395290879513365">Gli utenti malintenzionati potrebbero riuscire a vedere le immagini che visualizzi in questo sito e ingannarti modificandole.</translation>
 <translation id="2356070529366658676">Chiedi</translation>
 <translation id="2357481397660644965">Il tuo dispositivo è gestito da <ph name="DEVICE_MANAGER" /> e il tuo account da <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Tra meno di un giorno}=1{Tra un giorno}other{Tra {NUM_DAYS} giorni}}</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2359961752320758691">Il numero della tua carta virtuale è stato utilizzato.</translation>
@@ -713,6 +716,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3590643883886679995">I dati di accesso verranno memorizzati su questo dispositivo quando uscirai dalla modalità di navigazione in incognito.</translation>
 <translation id="359126217934908072">Mese/anno:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Puoi reimpostare il tuo gruppo in qualsiasi momento. Ci vorrà circa un giorno per unirsi a un nuovo gruppo.}=1{Puoi reimpostare il tuo gruppo in qualsiasi momento. Ci vorrà circa un giorno per unirsi a un nuovo gruppo.}other{Puoi reimpostare il tuo gruppo in qualsiasi momento. Ci vorranno {NUM_DAYS} giorni per unirsi a un nuovo gruppo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Applicazione bloccata dal tuo amministratore</translation>
 <translation id="3608932978122581043">Fornisci orientamento</translation>
@@ -1200,6 +1204,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5332219387342487447">Modalità di spedizione</translation>
 <translation id="5333022057423422993">Chrome ha rilevato che la password appena usata è stata esposta a una violazione dei dati. Per proteggere i tuoi account, ti consigliamo di controllare le password che hai salvato.</translation>
 <translation id="5334013548165032829">Log di sistema dettagliati</translation>
+<translation id="5334145288572353250">Vuoi salvare l'indirizzo?</translation>
 <translation id="5340250774223869109">L'applicazione è bloccata</translation>
 <translation id="534295439873310000">Dispositivi NFC</translation>
 <translation id="5344579389779391559">Questa pagina potrebbe tentare di addebitarti dei costi</translation>
@@ -1538,6 +1543,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6671697161687535275">Rimuovere il suggerimento per i moduli da Chromium?</translation>
 <translation id="6685834062052613830">Esci e completa la configurazione</translation>
 <translation id="6687335167692595844">Dimensioni carattere richieste</translation>
+<translation id="6688743156324860098">Aggiorna…</translation>
 <translation id="6689249931105087298">Relativo con compressione del punto nero</translation>
 <translation id="6689271823431384964">Chrome chiede se vuoi salvare le tue carte nel tuo Account Google perché hai eseguito l'accesso. Puoi modificare questo comportamento nelle impostazioni. Il nome del titolare della carta proviene dal tuo account.</translation>
 <translation id="6698381487523150993">Data creazione:</translation>
@@ -1553,6 +1559,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6744009308914054259">In attesa di una connessione, puoi visitare la pagina Download per leggere gli articoli offline.</translation>
 <translation id="6753269504797312559">Valore criterio</translation>
 <translation id="6757797048963528358">Il dispositivo è entrato in modalità sospensione.</translation>
+<translation id="6767985426384634228">Vuoi aggiornare l'indirizzo?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Lilla</translation>
@@ -1712,6 +1719,7 @@ Ulteriori dettagli:
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Non applicabile</translation>
 <translation id="7390545607259442187">Conferma della carta</translation>
+<translation id="7392089738299859607">Aggiorna indirizzo</translation>
 <translation id="7399802613464275309">Controllo sicurezza</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120">Il tuo dispositivo <ph name="DEVICE_NAME" /> è gestito</translation>
@@ -1850,6 +1858,7 @@ Ulteriori dettagli:
 <translation id="7865448901209910068">Massima velocità</translation>
 <translation id="7874263914261512992">Hai appena inserito la tua password su un sito ingannevole. Chrome ti consiglia di controllare le password salvate per <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e altri siti su cui utilizzi questa password.</translation>
 <translation id="7878562273885520351">La tua password potrebbe essere stata compromessa</translation>
+<translation id="7880146494886811634">Salva indirizzo</translation>
 <translation id="7882421473871500483">Marrone</translation>
 <translation id="7887683347370398519">Controlla il tuo codice CVC e riprova</translation>
 <translation id="7887885240995164102">Attiva Picture in picture</translation>

@@ -304,12 +304,14 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2042213636306070719">Bandeja 7</translation>
 <translation id="204357726431741734">Faça login para usar as senhas salvas na sua Conta do Google</translation>
 <translation id="2053111141626950936">Páginas em <ph name="LANGUAGE" /> não serão traduzidas.</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado todos os dias.}=1{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado todos os dias.}one{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado a cada {NUM_DAYS} dia.}other{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado a cada {NUM_DAYS} dias.}}</translation>
 <translation id="2053553514270667976">CEP</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugestão}one{# sugestão}other{# sugestões}}</translation>
 <translation id="2071692954027939183">As notificações foram bloqueadas automaticamente porque você não costuma permiti-las</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="20817612488360358">As configurações de proxy do sistema são definidas para serem utilizadas, mas uma configuração explícita de proxy também foi especificada.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2085876078937250610">Salvar…</translation>
 <translation id="2088086323192747268">Botão "Gerenciar sincronização". Pressione "Enter" para gerenciar quais informações são sincronizadas nas configurações do Chrome</translation>
 <translation id="2091887806945687916">Som</translation>
 <translation id="2094505752054353250">Incompatibilidade de domínio</translation>
@@ -390,6 +392,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2355395290879513365">É possível que invasores consigam ver as imagens que você está olhando nesse site e as modifiquem para enganar você.</translation>
 <translation id="2356070529366658676">Perguntar</translation>
 <translation id="2357481397660644965">Seu dispositivo é gerenciado por <ph name="DEVICE_MANAGER" />, e sua conta é gerenciada por <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Em menos de um dia}=1{Em um dia}one{Em {NUM_DAYS} dia}other{Em {NUM_DAYS} dias}}</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2359961752320758691">O número do seu cartão virtual foi aplicado.</translation>
@@ -710,6 +713,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3590643883886679995">Depois que você sair do modo de navegação anônima, os dados de login serão armazenados no dispositivo.</translation>
 <translation id="359126217934908072">Mês/ano:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Você pode redefinir o grupo a qualquer momento. Demora cerca de um dia para fazer parte de um novo grupo.}=1{Você pode redefinir o grupo a qualquer momento. Demora cerca de um dia para fazer parte de um novo grupo.}one{Você pode redefinir o grupo a qualquer momento. Demora {NUM_DAYS} dia para fazer parte de um novo grupo.}other{Você pode redefinir o grupo a qualquer momento. Demora {NUM_DAYS} dias para fazer parte de um novo grupo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplicativo bloqueado pelo administrador</translation>
 <translation id="3608932978122581043">Fornecer orientação</translation>
@@ -1192,6 +1196,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5332219387342487447">Forma de envio</translation>
 <translation id="5333022057423422993">A senha que você acabou de usar foi encontrada pelo Chrome em uma violação de dados. Para proteger suas contas, recomendamos verificar as senhas salvas.</translation>
 <translation id="5334013548165032829">Registros detalhados do sistema</translation>
+<translation id="5334145288572353250">Salvar endereço?</translation>
 <translation id="5340250774223869109">O aplicativo foi bloqueado</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344579389779391559">Esta página pode tentar cobrar pagamento em dinheiro</translation>
@@ -1531,6 +1536,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6671697161687535275">Remover sugestão de formulário do Chromium?</translation>
 <translation id="6685834062052613830">Saia e conclua a configuração</translation>
 <translation id="6687335167692595844">Tamanho da fonte solicitado</translation>
+<translation id="6688743156324860098">Atualizar…</translation>
 <translation id="6689249931105087298">Relativa com compressão de pontos pretos</translation>
 <translation id="6689271823431384964">A opção de salvar seus cartões na Conta do Google está disponível no Chrome porque você fez login. É possível alterar esse comportamento nas configurações. O nome do titular do cartão vem da sua conta.</translation>
 <translation id="6698381487523150993">Criado em:</translation>
@@ -1546,6 +1552,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6744009308914054259">Enquanto espera por uma conexão, acesse "Downloads" para ler artigos off-line.</translation>
 <translation id="6753269504797312559">Valor da política</translation>
 <translation id="6757797048963528358">O dispositivo entrou em modo de suspensão.</translation>
+<translation id="6767985426384634228">Atualizar endereço?</translation>
 <translation id="6768213884286397650">Hagaki (Postal)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
@@ -1705,6 +1712,7 @@ Mais detalhes:
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Não aplicável</translation>
 <translation id="7390545607259442187">Confirmar cartão</translation>
+<translation id="7392089738299859607">Atualizar endereço</translation>
 <translation id="7399802613464275309">Confirmação de segurança</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120">Seu <ph name="DEVICE_NAME" /> é gerenciado</translation>
@@ -1843,6 +1851,7 @@ Mais detalhes:
 <translation id="7865448901209910068">Melhor velocidade</translation>
 <translation id="7874263914261512992">Você acabou de digitar sua senha em um site suspeito. O Chrome recomenda que você verifique agora suas senhas salvas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sites em que você usa essa senha.</translation>
 <translation id="7878562273885520351">Sua senha pode estar comprometida</translation>
+<translation id="7880146494886811634">Salvar endereço</translation>
 <translation id="7882421473871500483">Marrom</translation>
 <translation id="7887683347370398519">Verifique seu CVC e tente novamente</translation>
 <translation id="7887885240995164102">Entrar no modo picture-in-picture</translation>

@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">安裝應用程式、擴充功能和主題</translation>
 <translation id="2977598380246111477">下一個號碼</translation>
+<translation id="2992327365391326550">裝置的麥克風按鈕已關閉。</translation>
 <translation id="2995447421581609334">顯示投放裝置。</translation>
 <translation id="2996462380875591307">停駐放大鏡已啟用。再次按下 Ctrl 鍵 + 搜尋鍵 + D 鍵即可停用。</translation>
 <translation id="3000461861112256445">單聲道音訊</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">如要登入帳戶，請輸入 Family Link 家長存取碼</translation>
 <translation id="3039939407102840004">觸控筆電量：<ph name="PERCENTAGE" />%。</translation>
 <translation id="3045488863354895414">午安，</translation>
+<translation id="3051189971848907985">正在重新命名設定檔，請稍後片刻。</translation>
 <translation id="3055162170959710888">你今天的裝置使用時間：<ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">Shift</translation>
 <translation id="3081696990447829002">展開選單</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3371140690572404006">USB-C 裝置 (右前方連接埠)</translation>
 <translation id="3375634426936648815">已連線</translation>
+<translation id="3378442621503952303">正在連線至設定檔，請稍後片刻。</translation>
 <translation id="3386978599540877378">全螢幕放大鏡</translation>
 <translation id="3400357268283240774">其他設定</translation>
 <translation id="3410336247007142655">顯示深色主題設定</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">你好，需要什麼協助嗎？</translation>
 <translation id="3826099427150913765">切換為密碼</translation>
 <translation id="383058930331066723">省電模式已開啟</translation>
+<translation id="3835880383832568924">如要查看相關更新，請開啟「捷徑」應用程式</translation>
 <translation id="383629559565718788">顯示鍵盤設定</translation>
 <translation id="3846214748874656680">結束全螢幕</translation>
 <translation id="3846575436967432996">沒有可用的網路資訊</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">提供意見回饋</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4734965478015604180">橫向</translation>
+<translation id="4735498845456076464">「<ph name="LAUNCHER_KEY_NAME" /> 鍵 + 數字鍵」的鍵盤快速鍵已變更。如要使用功能鍵，請按下<ph name="LAUNCHER_KEY_NAME" /> 鍵 + 最上排的任一按鍵。</translation>
 <translation id="4744944742468440486">所選內容的相關資訊</translation>
 <translation id="4759238208242260848">下載</translation>
 <translation id="4774338217796918551"><ph name="COME_BACK_TIME" /> 裝置就會解除鎖定。</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">複製</translation>
 <translation id="6910714959251846841">必須對你的裝置執行 Powerwash 才能安裝這項更新。進一步瞭解最新的 <ph name="SYSTEM_APP_NAME" />更新內容。</translation>
 <translation id="6919251195245069855">無法辨識你的智慧型卡片，請再試一次。</translation>
+<translation id="6921188888306725546">我們已改善鍵盤快速鍵功能</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6961121602502368900">工作資料夾不支援將手機設為靜音</translation>
 <translation id="6961840794482373852">「Alt + 向上鍵」的鍵盤快速鍵已變更。如要使用 Page Up 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向上鍵。</translation>
@@ -934,6 +940,7 @@
 <translation id="8631727435199967028">無障礙設定</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
 <translation id="8639760480004882931">剩餘電量：<ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">正在重新整理設定檔清單，請稍後片刻。</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" />的計時器</translation>
 <translation id="8647931990447795414">如要新增使用者，請輸入 Family Link 家長存取碼</translation>
 <translation id="8649101189709089199">隨選朗讀</translation>
@@ -961,6 +968,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">輸入法設定</translation>
+<translation id="8818320199597151042">正在移除設定檔，請稍後片刻。</translation>
 <translation id="8825863694328519386">從螢幕左側向右滑動即可返回</translation>
 <translation id="8828714802988429505">90 度</translation>
 <translation id="8841375032071747811">返回按鈕</translation>
@@ -1006,6 +1014,7 @@
 <translation id="9091626656156419976">「<ph name="DISPLAY_NAME" />」螢幕已移除</translation>
 <translation id="9098969848082897657">將手機設為靜音</translation>
 <translation id="9099154003160514616">有 Lacros 更新</translation>
+<translation id="9100887602489003640">正在新增設定檔，請稍後片刻。</translation>
 <translation id="9105450214093926548">Lacros 瀏覽器執行期間不支援登入第二個使用者帳戶。請改為在 Lacros 中使用第二個瀏覽器設定檔，或者關閉 Lacros 後再試一次。</translation>
 <translation id="9133335900048457298">無法錄製受保護的內容</translation>
 <translation id="9151726767154816831">重新啟動並執行 Powerwash 即可更新</translation>

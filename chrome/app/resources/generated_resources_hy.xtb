@@ -2862,7 +2862,6 @@
 <translation id="4035758313003622889">&amp;Խնդիրների կառավարիչ</translation>
 <translation id="4036778507053569103">Սերվերից ներբեռնված քաղաքականությունն անվավեր է:</translation>
 <translation id="4037084878352560732">Ձի</translation>
-<translation id="4037889604535939429">Փոխել օգտատիրոջը</translation>
 <translation id="4040753847560036377">PUK կոդը սխալ է</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Փակել էջը}one{Փակել էջը}other{Փակել էջը}}</translation>
 <translation id="4044612648082411741">Մուտքագրեք հավաստագրի գաղտնաբառը</translation>
@@ -4333,7 +4332,6 @@
 <translation id="5709557627224531708">Դարձրեք Chrome-ը կանխադրված դիտարկիչ</translation>
 <translation id="5711983031544731014">Հնարավոր չէ ապակողպել: Մուտքագրեք ձեր գաղտնաբառը:</translation>
 <translation id="5712153969432126546">Կայքերը երբեմն հրապարակում են PDF ֆայլեր, օրինակ՝ փաստաթղթեր, պայմանագրեր և այլ ձևեր։</translation>
-<translation id="5712323955984474772">Հաջորդ թարմացումը</translation>
 <translation id="5715711091495208045">Փլագինի միջնորդ՝ <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Կանխադրված որոնման համակարգեր</translation>
 <translation id="5719637365829998022">QR կոդը սկանավորվեց</translation>
@@ -5105,7 +5103,6 @@
 <translation id="6563469144985748109">Ձեր ադմինիստրատորը դեռ չի հաստատել</translation>
 <translation id="6568283005472142698">Որոնում ներդիրներում</translation>
 <translation id="6569911211938664415">Գաղտնաբառերը պահվում են ձեր Google հաշվում (<ph name="ACCOUNT" />), որպեսզի դրանք կարողանաք օգտագործել ցանկացած սարքում։</translation>
-<translation id="6569934958368283244">Այլ մարդիկ</translation>
 <translation id="6573497332121198392">Չհաջողվեց հեռացնել դյուրանցումը</translation>
 <translation id="657402800789773160">&amp;Վերաբեռնել այս էջը</translation>
 <translation id="6577284282025554716">Ներբեռնումը չեղարկվել է՝ <ph name="FILE_NAME" /></translation>
@@ -6789,7 +6786,6 @@
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>
 <translation id="8397825320644530257">Չեղարկել հեռախոսի հետ կապը</translation>
 <translation id="8398877366907290961">Շարունակել</translation>
-<translation id="8400146488506985033">Օգտատերերի կառավարում</translation>
 <translation id="8401432541486058167">Մուտքագրեք PIN կոդը, որը կապված է ձեր խելացի քարտի հետ։</translation>
 <translation id="8404893580027489425">Մատնահետքի սկաները գտնվում է ձեր <ph name="DEVICE_TYPE" /> սարքի աջ մասում։ Մատով թեթևակի հպեք դրան։</translation>
 <translation id="8405046151008197676">Ծանոթացեք վերջին թարմացման մասին հիմնական տեղեկություններին</translation>
@@ -6845,7 +6841,6 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> փլագինն աշխատեցնելու համար հարկավոր է ձեր թույլտվությունը</translation>
 <translation id="8466417995783206254">Այս ներդիրում նվագարկվում է տեսանյութ «նկար նկարի մեջ» ռեժիմում։</translation>
 <translation id="8467326454809944210">Ընտրել մեկ այլ լեզու</translation>
-<translation id="8470214316007448308">Այլ մարդիկ</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> կայքի պահված գաղտնաբառերը</translation>
 <translation id="8471525937465764768">Կայքերը սովորաբար միանում են USB սարքերին՝ փաստաթուղթ տպելու, սարքի հիշողությունում որևէ տարր պահելու և նման այլ գործառույթների համար</translation>
 <translation id="8471959340398751476">Զեղչերն անջատված են։ Կարող եք դրանք միացնել անհատականացման ընտրացանկում։</translation>
@@ -7032,6 +7027,7 @@
 <translation id="8676374126336081632">Մաքրել ներածումը</translation>
 <translation id="8676770494376880701">Կապակցվել է թույլ լիցքով լիցքավորիչ</translation>
 <translation id="8677212948402625567">Կոծկել բոլորը…</translation>
+<translation id="867767487203716855">Հաջորդ թարմացումը</translation>
 <translation id="8677859815076891398">Ալբոմներ չկան: Ստեղծեք ալբոմ <ph name="LINK_BEGIN" />Google Լուսանկարներում<ph name="LINK_END" />։</translation>
 <translation id="8678582529642151449">Ներդիրները չեն փոքրացվում</translation>
 <translation id="8678933587484842200">Ինչպե՞ս գործարկել այս հավելվածը։</translation>
@@ -7120,7 +7116,6 @@
 <translation id="87646919272181953">Google Լուսանկարների ալբոմ</translation>
 <translation id="8767621466733104912">Ինքնաթարմացնել Chrome-ը բոլոր օգտատերերի համար</translation>
 <translation id="8770406935328356739">Ընդլայնման արմատային գրացուցակ</translation>
-<translation id="8770507190024617908">Օգտատերերի կառավարում</translation>
 <translation id="8771300903067484968">Գլխավոր էջը վերակայվել է կանխադրված ֆոնով։</translation>
 <translation id="8773302562181397928">Պահել «<ph name="PRINTER_NAME" />» տպիչը</translation>
 <translation id="8774379074441005279">Հաստատեք վերականգնումը</translation>

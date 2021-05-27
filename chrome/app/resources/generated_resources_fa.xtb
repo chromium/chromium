@@ -2873,7 +2873,6 @@
 <translation id="4035758313003622889">مدیر &amp;فعالیت ها</translation>
 <translation id="4036778507053569103">خط‌مشی بارگیری‌شده از سرور نامعتبر است.</translation>
 <translation id="4037084878352560732">اسب</translation>
-<translation id="4037889604535939429">ویرایش شخص</translation>
 <translation id="4040753847560036377">‏PUK نادرست است</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{خروج از صفحه}one{خروج از صفحه‌ها}other{خروج از صفحه‌ها}}</translation>
 <translation id="4044612648082411741">گذرواژه گواهی‌تان را وارد کنید</translation>
@@ -4342,7 +4341,6 @@
 <translation id="5709557627224531708">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="5711983031544731014">قفل باز نشد. گذرواژه‌تان را وارد کنید.</translation>
 <translation id="5712153969432126546">‏سایت‌ها گاهی‌اوقات فایل‌های PDF (ازجمله سند، قرارداد، و فرم) منتشر می‌کنند</translation>
-<translation id="5712323955984474772">به‌روزرسانی بعدی</translation>
 <translation id="5715711091495208045">واسطه افزایه:‌ <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">موتورهای جستجوی پیش‌فرض</translation>
 <translation id="5719637365829998022">رمزینه پاسخ‌سریع اسکن شده است.</translation>
@@ -5114,7 +5112,6 @@
 <translation id="6563469144985748109">مدیرتان هنوز این سایت را تأیید نکرده است</translation>
 <translation id="6568283005472142698">جستجوی برگه</translation>
 <translation id="6569911211938664415">‏گذرواژه‌ها در «حساب Google» شما (<ph name="ACCOUNT" />) ذخیره می‌شوند تا بتوانید در همه دستگاه‌هایتان از آن‌ها استفاده کنید.</translation>
-<translation id="6569934958368283244">افراد دیگر</translation>
 <translation id="6573497332121198392">نمی‌توان میان‌بر را برداشت</translation>
 <translation id="657402800789773160">&amp;بارگیری مجدد این صفحه</translation>
 <translation id="6577284282025554716">بارگیری لغو شد: <ph name="FILE_NAME" /></translation>
@@ -6801,7 +6798,6 @@
 <translation id="8393700583063109961">ارسال پیام</translation>
 <translation id="8397825320644530257">قطع اتصال تلفن متصل</translation>
 <translation id="8398877366907290961">در هر حال ادامه داده شود</translation>
-<translation id="8400146488506985033">مدیریت افراد</translation>
 <translation id="8401432541486058167">پین مرتبط با کارت هوشمندتان را ارائه کنید.</translation>
 <translation id="8404893580027489425">حسگر اثر انگشت در سمت راست <ph name="DEVICE_TYPE" /> قرار دارد. با یکی از انگشت‌هایتان آن را به‌آرامی لمس کنید.</translation>
 <translation id="8405046151008197676">دریافت موارد مهم آخرین به‌روزرسانی</translation>
@@ -6857,7 +6853,6 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> برای اجرا به مجوز شما نیاز دارد</translation>
 <translation id="8466417995783206254">این برگه درحال پخش ویدیو در حالت تصویردرتصویر است.</translation>
 <translation id="8467326454809944210">انتخاب زبانی دیگر</translation>
-<translation id="8470214316007448308">افراد دیگر</translation>
 <translation id="8470513973197838199">گذرواژه‌های ذخیره‌شده برای <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">‏سایت‌ها معمولاً برای ارائه ویژگی‌هایی مانند چاپ سند یا ذخیره در دستگاه ذخیره‌سازی به دستگاه‌های USB متصل می‌شوند</translation>
 <translation id="8471959340398751476">تخفیف‌ها خاموش هستند. می‌توانید در منوی سفارشی آن‌ها را روشن کنید</translation>
@@ -7044,6 +7039,7 @@
 <translation id="8676374126336081632">پاک کردن ورودی</translation>
 <translation id="8676770494376880701">شارژر برق متصل شده ضعیف است</translation>
 <translation id="8677212948402625567">کوچک کردن همه...</translation>
+<translation id="867767487203716855">به‌روزرسانی بعدی</translation>
 <translation id="8677859815076891398">‏آلبومی وجود ندارد. آلبومی در <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ایجاد کنید.</translation>
 <translation id="8678582529642151449">برگه‌ها کوچک نمی‌شوند</translation>
 <translation id="8678933587484842200">می‌خواهید این برنامه چگونه راه‌اندازی شود؟</translation>
@@ -7132,7 +7128,6 @@
 <translation id="87646919272181953">‏آلبوم Google Photos</translation>
 <translation id="8767621466733104912">‏به‌روزرسانی‌ خودکار Chrome برای همه کاربران</translation>
 <translation id="8770406935328356739">دایرکتوری ریشه افزونه:</translation>
-<translation id="8770507190024617908">مدیریت افراد</translation>
 <translation id="8771300903067484968">پس‌زمینه صفحه شروع روی پس‌زمینه پیش‌فرض بازنشانی شده است.</translation>
 <translation id="8773302562181397928">ذخیره <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">تأیید بازیابی</translation>

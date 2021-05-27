@@ -212,6 +212,7 @@
 <translation id="1294263471858445589">Ativar a autenticação pelo SO em sessões normais e anônimas.</translation>
 <translation id="1295737447968372331">Ativa o ditado na tela de login</translation>
 <translation id="1297182715641689552">Usar um script de proxy .pac</translation>
+<translation id="1297827666345629703">Uma conta gerenciada precisa ser uma conta principal</translation>
 <translation id="1297961932043741908">Define um limite, em megabytes, para a memória que uma única instância do Chrome pode usar.</translation>
 <translation id="1304973015437969093">IDs de extensões//aplicativos e URLs de atualização deverão ser instalados silenciosamente</translation>
 <translation id="1305400589435476516">Se a política for definida como "Ativada", o roaming de dados será permitido no dispositivo.
@@ -576,6 +577,13 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="1755310913456007816">Usar as configurações on-line existentes de verificação da revogação</translation>
 <translation id="1760951637494635692">Permitir a API Serial nesses sites</translation>
+<translation id="1765503534110351026">O uso desta política foi suspenso. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+       Se a política for definida, o <ph name="PRODUCT_NAME" /> ignorará todos os proxies em favor da lista de hosts apresentada aqui. Esta política só terá efeito se a política <ph name="PROXY_SETTINGS_POLICY_NAME" /> não tiver sido especificada e você tiver selecionado <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> ou <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> para <ph name="PROXY_MODE_POLICY_NAME" />.
+
+       Não defina esta política se você tiver selecionado qualquer outro modo para políticas de configuração de proxy.
+
+       Observação: para ver mais exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
 <translation id="1767673020408652620">Ativar recomendações de app no estado inicial da caixa de pesquisa</translation>
 <translation id="1780323582106687813">Esta política está obsoleta. Use <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />.
 
@@ -810,6 +818,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2082205219176343977">Configurar a versão mínima permitida do Chrome para o dispositivo.</translation>
 <translation id="208566302163036794">Bloquear recursos desativados</translation>
 <translation id="208623333578980446">Permitir wake locks de tela para gerenciamento de energia</translation>
+<translation id="2086944573376916479">Uma conta gerenciada precisa ser a principal e não pode ter contas secundárias</translation>
 <translation id="2090939118981888335">Se a política for definida como "Ativada", o proxy de compressão de dados será permitido. Se a política for definida como "Desativada", o proxy não será permitido.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, os usuários poderão escolher como usar o recurso.</translation>
@@ -863,6 +872,17 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Se esta política não for definida, o navegador só começará a economizar memória quando detectar que a quantidade de memória física da máquina está baixa.</translation>
 <translation id="2166472654199325139">Não filtrar sites com conteúdo adulto</translation>
+<translation id="2168060657210442816">
+      Esta política precisa que <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> seja definida como "Verdadeira" para entrar em vigor.
+
+      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> no nível da máquina, todas as contas gerenciadas serão forçadas a ser principais.
+      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> em uma conta, essa conta sempre será principal, mas poderá ter contas secundárias no perfil.
+
+      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> no nível da máquina, todas as contas gerenciadas serão forçadas a ser principais.
+      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> em uma conta, essa conta será sempre principal e não terá nenhuma conta secundária no perfil.
+
+      Se esta política for definida como <ph name="POLICY_VALUE_NONE" /> ou não for definida, contas gerenciadas não terão restrições. Isso pode resultar em uma conta gerenciada secundária, o que desativa a capacidade de receber políticas definidas para a conta pelo administrador.
+    </translation>
 <translation id="2168397434410358693">Intervalo de inatividade no funcionamento com alimentação CA</translation>
 <translation id="217013996107840632">Parâmetros de linha de comando para fazer a mudança do navegador alternativo.</translation>
 <translation id="2170233653554726857">Ativar otimização WPAD</translation>
@@ -1782,6 +1802,11 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="3261592499545947104">Número de segundos antes da expiração de um certificado quando a renovação precisa ser acionada.</translation>
+<translation id="3264706118366247207">Configura uma lista de tipos de dados de navegação a serem excluídos quando o usuário fechar todas as janelas do navegador. Os tipos de dados disponíveis são: histórico de navegação (<ph name="DATA_TYPE_BROWSING_HISTORY" />), histórico de downloads (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, preenchimento automático (<ph name="DATA_TYPE_AUTOFILL" />), senhas (<ph name="DATA_TYPE_PASSWORD" />), configurações de sites (<ph name="DATA_TYPE_SITE_SETTINGS" />) e dados de apps hospedados (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Esta política não tem precedência sobre <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+      Esta política exige <ph name="SYNC_DISABLED_POLICY_NAME" /> para ser definida como verdadeira. Caso contrário, ela será ignorada. Se esta política for definida no nível da plataforma, a sincronização será desativada em toda a plataforma. Se ela for definida no nível do usuário, a sincronização desse usuário específico será desativada para que esta política seja aplicada.
+
+      Se o <ph name="PRODUCT_NAME" /> não for fechado corretamente (por exemplo, se o navegador ou o SO falhar), os dados de navegação serão excluídos da próxima vez que o perfil for carregado.</translation>
 <translation id="3264793472749429012">Codificações do provedor de pesquisa padrão</translation>
 <translation id="3273221114520206906">Configuração padrão do JavaScript</translation>
 <translation id="328347261792478720">Por padrão, o navegador mostrará recomendações de mídia personalizadas para o usuário. Se esta política for definida como "Desativada", essas recomendações ficarão ocultas para o usuário. Se esta política for definida como "Ativada" ou não for definida, as recomendações de mídia serão mostradas para o usuário.</translation>
@@ -1842,6 +1867,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores ou iguais ao intervalo de inatividade.
 
           A mensagem de aviso só será mostrada se a ação de inatividade for para sair ou encerrar.</translation>
+<translation id="3363360928811201045">Adicionar restrições em contas gerenciadas</translation>
 <translation id="3367868895271989224">Se a política for definida como "Ativada" todos os sites serão isolados. Cada site executará um processo próprio. Se a política for definida como "Desativada" ou não for definida, o isolamento de sites não será desativado, mas os usuários poderão desativá-lo, por exemplo, usando "Disable site isolation" (Desativar isolamento de sites) em chrome://flags.
 
       A <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> pode ser útil para origens de ajustes. No <ph name="PRODUCT_OS_NAME" /> 76 e versões anteriores, defina a política <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> do dispositivo com o mesmo valor. Se os valores não forem iguais, pode haver um atraso ao entrar em uma sessão de usuário.
@@ -3018,6 +3044,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Se uma política não estiver na lista e houver um conflito entre fontes, escopos ou níveis, a política com a maior prioridade será aplicada.</translation>
 <translation id="5056708224511062314">Lupa desativada</translation>
 <translation id="5058573563327660283">Selecionar a estratégia usada para liberar espaço em disco durante a limpeza automática (obsoleta)</translation>
+<translation id="5059201920681374653">As contas gerenciadas precisam estar conectadas em um dispositivo gerenciado afiliado</translation>
 <translation id="5061114193960158745">A definição a política controla a lista de sites que nunca causarão uma troca de navegador. Cada item é tratado como uma regra. As regras correspondentes não abrirão um navegador alternativo. Ao contrário da política <ph name="URL_LIST_POLICY_NAME" />, as regras se aplicam nas duas direções. Quando o suplemento do <ph name="IE_PRODUCT_NAME" /> estiver ativado, ele também controlará se o <ph name="IE_PRODUCT_NAME" /> abrirá os URLs no <ph name="PRODUCT_NAME" />.
 
       Se a política não for definida, nenhum site será adicionado à lista.
@@ -3201,6 +3228,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Não definir a política significa que os usuários não poderão jogar no <ph name="PRODUCT_OS_NAME" /> registrado, mas poderão fazer isso em outras circunstâncias.</translation>
 <translation id="529457411593078576">Ativar TOS durante a primeira execução do CCT</translation>
+<translation id="5298949392804966105">Nenhuma restrição em contas gerenciadas</translation>
 <translation id="530134925949808452">A hora do dia, no horário local, em que a cota de uso é renovada.</translation>
 <translation id="5303080953475303561">Se a política for definida, ela controlará a frequência com que a tela de bloqueio solicita a senha para o desbloqueio rápido. Quando a tela de bloqueio aparece, se a última senha digitada tiver sido inserida antes da janela de tempo especificada pelo valor escolhido, o desbloqueio rápido não ficará disponível. Se os usuários continuarem na tela de bloqueio após esse período, uma senha será solicitada na próxima vez que o código errado for digitado ou que eles acessarem a tela de bloqueio, o que ocorrer primeiro.
 
@@ -4369,6 +4397,26 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
           Observação: se <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> for especificada, ela substituirá esta política.</translation>
 <translation id="6833988859168635883">Inicialização, página inicial e página "Nova guia"</translation>
+<translation id="6834298774555537368">Se a política for definida, haverá configurações de proxy para o Chrome e apps ARC, ignorando todas as opções relacionadas a proxy especificadas na linha de comando.
+
+       Se a política não for definida, os usuários poderão escolher as configurações de proxy.
+
+       Se a política <ph name="PROXY_SETTINGS_POLICY_NAME" /> for definida, os campos a seguir serão aceitos:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, permite especificar o servidor proxy usado pelo Chrome e evitar que os usuários mudem as configurações de proxy.
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, um URL de um arquivo de proxy .pac.
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, um URL do servidor de proxy.
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, uma lista de hosts pelos quais o proxy será ignorado.
+
+       O uso do campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> foi suspenso em favor do campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Para <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se você escolher o valor:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, um proxy nunca será usado e todos os outros campos serão ignorados;
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, o proxy do sistema será usado e todos os outros campos serão ignorados;
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, todos os outros campos serão ignorados;
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, os campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados;
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, os campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados.
+
+      Observação: para ver mais exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
 <translation id="6835883744948188639">Mostrar um prompt recorrente ao usuário indicando que a reinicialização é necessária</translation>
 <translation id="683688607121170501">Esta configuração permite que os usuários alternem entre Contas do Google na área de conteúdo da janela do navegador e nos aplicativos Android, depois de fazer login no dispositivo <ph name="PRODUCT_OS_NAME" />.
 

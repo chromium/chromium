@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1016498331642356377">Schnelle Sprachsuche verwenden. Zum Ändern Schaltfläche gedrückt halten.</translation>
 <translation id="1028699632127661925">Wird an <ph name="DEVICE_NAME" /> gesendet…</translation>
 <translation id="103269572468856066">Auch Daten dieser Websites &amp; Apps löschen?</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
@@ -157,6 +158,7 @@
 <translation id="2067805253194386918">Text</translation>
 <translation id="2068748236079642969">Nächstes Video ansehen</translation>
 <translation id="2074143993849053708">Benutzeroberfläche für die Einwilligung in die Sprachsuche von Assistant geschlossen</translation>
+<translation id="2075835334924942448">Hier finden Sie Beiträge</translation>
 <translation id="2082238445998314030">Ergebnis <ph name="RESULT_NUMBER" /> von <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Geräteübergreifend synchronisieren und personalisieren</translation>
 <translation id="2100273922101894616">Automatisch anmelden</translation>
@@ -170,6 +172,7 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 <translation id="2131665479022868825"><ph name="DATA" /> eingespart</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> geschlossen</translation>
 <translation id="2139186145475833000">Zum Startbildschirm zufügen</translation>
+<translation id="2141396931810938595">Auf Grundlage Ihrer Nutzung</translation>
 <translation id="214888715418183969">Wählen Sie aus, welche Messwerte für Chrome freigegeben werden sollen. Die freigegebenen Messwerte werden verwendet, um die Funktionen, die Leistung und die Stabilität von Chrome zu verbessern.</translation>
 <translation id="2154484045852737596">Karte bearbeiten</translation>
 <translation id="2154710561487035718">URL kopieren</translation>
@@ -227,6 +230,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="247737702124049222">Bildbeschreibungen sind aktiviert</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
+<translation id="2489545061398461256">Wir deaktivieren es wieder, sobald es nicht mehr benötigt wird</translation>
 <translation id="2494974097748878569">Google Assistant für Chrome</translation>
 <translation id="2496180316473517155">Browserverlauf</translation>
 <translation id="2497852260688568942">Die Synchronisierung wurde von Ihrem Administrator deaktiviert</translation>
@@ -257,6 +261,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Audiodatei}other{# Audiodateien}}</translation>
 <translation id="2656405586795711023">Web-Apps</translation>
 <translation id="2689830683995595741">Wenn Sie Chrome verwenden, stimmen Sie damit den <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> zu. Außerdem gelten die <ph name="BEGIN_LINK3" />Datenschutzhinweise für mit Family Link verwaltete Google-Konten<ph name="END_LINK3" />.</translation>
+<translation id="2702516483241149200">Neu: Link teilen, der direkt zu diesem Text führt</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2707726405694321444">Seite aktualisieren</translation>
 <translation id="271033894570825754">Neu</translation>
@@ -273,6 +278,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2777555524387840389"><ph name="SECONDS" /> Sekunden übrig</translation>
 <translation id="2779651927720337254">fehlgeschlagen</translation>
 <translation id="2781151931089541271">1 Sekunde übrig</translation>
+<translation id="2788468313014644040">Gruppennummer</translation>
 <translation id="2801022321632964776">Chrome jetzt aktualisieren und das Internet in Ihrer Sprache entdecken</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -304,6 +310,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2956410042958133412">Dieses Konto wird von <ph name="PARENT_NAME_1" /> und <ph name="PARENT_NAME_2" /> verwaltet.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ungelesene Seite}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ungelesene Seiten}}</translation>
 <translation id="2979025552038692506">Ausgewählter Inkognitotab</translation>
+<translation id="2979448359891869301">Screenshot kann nicht erweitert werden. Versuchen Sie es noch einmal, wenn die Speicherauslastung Ihres Smartphones geringer ist.</translation>
 <translation id="2987620471460279764">Text, der über ein anderes Gerät geteilt wurde</translation>
 <translation id="2989523299700148168">Kürzlich besucht</translation>
 <translation id="2992473221983447149">Bildbeschreibungen</translation>
@@ -345,6 +352,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3265534588625245297">Websites verwalten, denen Sie folgen</translation>
 <translation id="3269093882174072735">Bild laden</translation>
 <translation id="3269956123044984603">Aktivieren Sie "Daten automatisch synchronisieren" in den Android-Kontoeinstellungen, um Tabs von Ihren anderen Geräten abzurufen.</translation>
+<translation id="3280562213547448728">Sprachsuche</translation>
 <translation id="3282568296779691940">In Chrome anmelden</translation>
 <translation id="3284510035090979597">Proaktive Hilfe</translation>
 <translation id="3285080554353377245">Videos über die Verwendung von Chrome</translation>
@@ -395,6 +403,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="3563767357928833671">Inhalte der Zwischenablage werden angezeigt</translation>
 <translation id="3566923219790363270">VR ist noch nicht bereit. Starten Sie Chrome später neu.</translation>
 <translation id="3568688522516854065">Melden Sie sich an und aktivieren Sie die Synchronisierung, um Ihre Tabs von Ihren anderen Geräten abzurufen</translation>
+<translation id="3577473026931028326">Ein Fehler ist aufgetreten. Versuchen Sie es noch einmal.</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587596251841506391">Dabei helfen, das Web sicherer zu machen</translation>
 <translation id="3602290021589620013">Vorschau</translation>
@@ -459,7 +468,6 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Optionen sind oben auf dem Bildschirm verfügbar</translation>
 <translation id="4062305924942672200">Rechtliche Hinweise</translation>
-<translation id="4082818367361753283">Gruppen-ID</translation>
 <translation id="4084682180776658562">Lesezeichen</translation>
 <translation id="4084712963632273211">Von <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />bereitgestellt durch Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">App-Daten löschen?</translation>
@@ -480,6 +488,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4198423547019359126">Keine verfügbaren Speicherorte für Downloads</translation>
 <translation id="4209895695669353772">Aktivieren Sie die Synchronisierung, um personalisierte, von Google vorgeschlagene Inhalte zu erhalten</translation>
+<translation id="4225895483398857530">Tastenkürzel in Symbolleiste</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
 <translation id="4248098802131000011">Schützen Sie Ihre Passwörter vor Datenpannen und anderen Sicherheitsproblemen</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -535,6 +544,7 @@ Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4583164079174244168">{MINUTES,plural, =1{vor # Minute}other{vor # Minuten}}</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4594952190837476234">Diese Offlineseite ist vom <ph name="CREATION_TIME" /> und unterscheidet sich gegebenenfalls von der Onlineversion.</translation>
+<translation id="4608360466722749036">Bluetooth wird aktiviert…</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> öffnen</translation>
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
@@ -746,12 +756,14 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5864419784173784555">Warten auf weiteren Download…</translation>
 <translation id="5865733239029070421">Nutzungsstatistiken und Absturzberichte automatisch an Google senden</translation>
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
+<translation id="587735546353481577">Wenn Sie einer Website folgen möchten, rufen Sie die Website auf, öffnen Sie das Chrome-Menü und tippen Sie auf „Folgen“.</translation>
 <translation id="5880748256563468367">Zum Feed</translation>
 <translation id="5884076754568147479">Wenn Sie in Chrome mit Assistant Aufgaben erledigen, werden die URLs und Inhalte der Websites, auf denen Sie Assistant verwenden, sowie die Daten, die Sie über Assistant weitergeben, an Google gesendet</translation>
 <translation id="5919204609460789179">Zur Synchronisierung müssen Sie <ph name="PRODUCT_NAME" /> aktualisieren</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> gespeichert</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="5942872142862698679">Suche erfolgt mit Google</translation>
+<translation id="5945035219773565305">Aktuelle Empfehlung: <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Live-Seite wird angezeigt</translation>
 <translation id="5952764234151283551">Die URL einer Seite, die Sie aufrufen möchten, wird an Google gesendet</translation>
 <translation id="5956665950594638604">Chrome-Hilfe in einem neuen Tab öffnen</translation>
@@ -765,6 +777,10 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="6000203700195075278">Wieder folgen</translation>
 <translation id="6002623704405939939">Unter <ph name="BEGIN_LINK2" />Meine Google-Aktivitäten<ph name="END_LINK2" /> können Sie Verläufe wie den <ph name="BEGIN_LINK1" />Suchverlauf<ph name="END_LINK1" /> löschen</translation>
 <translation id="6005538289190791541">Vorgeschlagenes Passwort</translation>
+<translation id="6032091552407840792">Diese Testversion ist probeweise nur in <ph name="BEGIN_LINK" />ausgewählten Regionen verfügbar<ph name="END_LINK" />.</translation>
+<translation id="6033245666633565791">Im Rahmen der Initiative <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> werden neue Technologien entwickelt, die zum Schutz vor websiteübergreifenden Tracking-Mechanismen und zum Erhalt des offenen Webs beitragen.
+
+Privacy Sandbox befindet sich noch in der Entwicklung und Testversionen sind nur in ausgewählten Regionen verfügbar. Manche Websites, die Privacy Sandbox probeweise nutzen, verwenden momentan möglicherweise weiterhin aktuelle Web-Technologien wie Drittanbieter-Cookies.</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Zum nächsten Tab wechseln</translation>
 <translation id="6040143037577758943">Schließen</translation>
@@ -830,6 +846,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6407224748847589805">Verbindung zum Computer nicht möglich. Versuchen Sie es mit einer anderen Bestätigungsoption.</translation>
 <translation id="6410404864818553978">Grundlegende Nutzungsdaten</translation>
 <translation id="6410883413783534063">Öffnen Sie Tabs, um mehrere Seiten gleichzeitig zu besuchen</translation>
+<translation id="6411219469806822692">Screenshot kann nicht nach oben erweitert werden. Beginnen Sie weiter oben auf der Seite.</translation>
 <translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, Ihr Passwort zu stehlen, oder wenn Sie eine schädliche Datei herunterladen, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="641643625718530986">Drucken...</translation>
 <translation id="6427112570124116297">Das Web übersetzen</translation>
@@ -892,10 +909,12 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="671481426037969117">Ihr <ph name="FQDN" />-Timer ist abgelaufen. Morgen startet er neu.</translation>
 <translation id="6738516213925468394">Ihre Daten wurden am <ph name="TIME" /> mit Ihrer <ph name="BEGIN_LINK" />Synchronisierungspassphrase<ph name="END_LINK" /> verschlüsselt. Geben Sie diese ein, um die Synchronisierung zu starten.</translation>
 <translation id="6738867403308150051">Wird heruntergeladen...</translation>
+<translation id="6751521182688001123">Öffnet schnell einen neuen Tab. Zum Ändern Schaltfläche gedrückt halten.</translation>
 <translation id="6767294960381293877">Die Liste von Geräten, mit denen ein Tab geteilt werden kann, ist halb geöffnet.</translation>
 <translation id="6783942555455976443">Diese Seite für später speichern und eine Erinnerung erhalten</translation>
 <translation id="6811034713472274749">Seitenansicht bereit</translation>
 <translation id="6813446258015311409">In Chrome anmelden, geöffnet.</translation>
+<translation id="6817747507826986771">Diese Seite schnell teilen. Zum Ändern Schaltfläche gedrückt halten.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Tab „<ph name="TAB_TITLE" />“ ausgewählt</translation>
 <translation id="6846298663435243399">Wird geladen…</translation>
@@ -966,6 +985,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7333031090786104871">Vorherige Website wird noch hinzugefügt</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="7340958967809483333">Optionen für Discover</translation>
+<translation id="7352339641508007922">Ziehen, um einen langen Screenshot zu erstellen</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten.</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 ausgewähltes Element teilen}other{# ausgewählte Elemente teilen}}</translation>
@@ -1058,6 +1078,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7876243839304621966">Alle entfernen</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Sie haben <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ungelesene Seite}other{Sie haben <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ungelesene Seiten}}</translation>
 <translation id="7882131421121961860">Kein Verlauf gefunden</translation>
+<translation id="7884346424584885269">Chrome benötigt die Berechtigung zum Suchen nach Geräten in der Nähe. <ph name="BEGIN_LINK" />Berechtigungen aktualisieren<ph name="END_LINK" /></translation>
 <translation id="7886917304091689118">Wird in Chrome ausgeführt</translation>
 <translation id="789763218334337857">Chrome verwenden</translation>
 <translation id="7903184275147100332">Dies kann einen Moment dauern</translation>
@@ -1151,6 +1172,11 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8461694314515752532">Synchronisierte Daten mit eigener Synchronisierungspassphrase verschlüsseln</translation>
 <translation id="8466613982764129868">Prüfen Sie, ob <ph name="TARGET_DEVICE_NAME" /> mit dem Internet verbunden ist</translation>
 <translation id="8473863474539038330">Adressen</translation>
+<translation id="8481921391193215807">Wenn diese Option aktiviert ist, können Websites die hier aufgeführten Technologien, die zu einem besseren Datenschutz beitragen, zur Bereitstellung ihrer Inhalte und Dienste verwenden. Hierzu zählen unter anderem Alternativen zum websiteübergreifenden Tracking. Mit der Zeit können weitere Testfunktionen hinzukommen.
+
+<ph name="BEGIN_LIST_ITEM1" />Werbetreibende und Publisher können FLoC verwenden.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />Werbetreibende und Publisher können die Wirksamkeit von Anzeigen prüfen, ohne Sie dabei websiteübergreifend zu tracken.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Testfunktionen sind aktiviert</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Verlaufsseite öffnen</translation>
@@ -1262,6 +1288,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="9204836675896933765">Noch 1 Datei</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">Anrufe nicht möglich</translation>
+<translation id="9212845824145208577">Screenshot kann nicht nach unten erweitert werden. Beginnen Sie weiter unten auf der Seite.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="926205370408745186">Chrome-Aktivitäten aus Digital Wellbeing entfernen</translation>
 <translation id="927968626442779827">Verwenden Sie den Lite-Modus in Google Chrome</translation>

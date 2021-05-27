@@ -916,7 +916,7 @@
 <translation id="1938351510777341717">Perintah Luaran</translation>
 <translation id="1940546824932169984">Peranti yang disambungkan</translation>
 <translation id="1942600407708803723">Matikan apabila penutup ditutup</translation>
-<translation id="1944528062465413897">Kod berpasangan Bluetooth:</translation>
+<translation id="1944528062465413897">Kod gandingan Bluetooth:</translation>
 <translation id="1944921356641260203">Kemas kini ditemui</translation>
 <translation id="1946577776959096882">Lihat akaun</translation>
 <translation id="1949584741547056205">Jawapan Pantas</translation>
@@ -2876,7 +2876,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4035758313003622889">&amp;Pengurus tugas</translation>
 <translation id="4036778507053569103">Dasar yang dimuat turun daripada pelayan tidak sah.</translation>
 <translation id="4037084878352560732">Kuda</translation>
-<translation id="4037889604535939429">Edit orang</translation>
 <translation id="4040753847560036377">PUK salah</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Keluar daripada Halaman}other{Keluar daripada Halaman}}</translation>
 <translation id="4044612648082411741">Masukkan kata laluan sijil anda</translation>
@@ -4345,7 +4344,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5709557627224531708">Tetapkan Chrome sebagai penyemak imbas lalai anda</translation>
 <translation id="5711983031544731014">Tidak dapat membuka kunci. Masukkan kata laluan anda.</translation>
 <translation id="5712153969432126546">Kadangkala laman menerbitkan PDF, seperti dokumen, kontrak dan borang</translation>
-<translation id="5712323955984474772">Kemas Kini Seterusnya</translation>
 <translation id="5715711091495208045">Broker Pemalam: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Enjin carian lalai</translation>
 <translation id="5719637365829998022">Kod QR telah diimbas.</translation>
@@ -5117,7 +5115,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6563469144985748109">Pengurus anda belum meluluskannya</translation>
 <translation id="6568283005472142698">Carian Tab</translation>
 <translation id="6569911211938664415">Kata laluan disimpan dalam Akaun Google anda (<ph name="ACCOUNT" />) supaya anda dapat menggunakan kata laluan tersebut pada mana-mana peranti</translation>
-<translation id="6569934958368283244">Orang lain</translation>
 <translation id="6573497332121198392">Tidak dapat mengalih keluar pintasan</translation>
 <translation id="657402800789773160">&amp;Muatkan Semula Halaman Ini</translation>
 <translation id="6577284282025554716">Muat turun dibatalkan: <ph name="FILE_NAME" /></translation>
@@ -6805,7 +6802,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8393700583063109961">Hantar mesej</translation>
 <translation id="8397825320644530257">Putuskan sambungan telefon yang bersambung</translation>
 <translation id="8398877366907290961">Teruskan juga</translation>
-<translation id="8400146488506985033">Urus orang</translation>
 <translation id="8401432541486058167">Sediakan PIN yang dikaitkan dengan kad pintar anda.</translation>
 <translation id="8404893580027489425">Penderia cap jari terletak di sisi sebelah kanan <ph name="DEVICE_TYPE" /> anda. Sentuh dengan lembut menggunakan mana-mana jari.</translation>
 <translation id="8405046151008197676">Dapatkan sorotan daripada kemas kini terbaharu</translation>
@@ -6861,7 +6857,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> memerlukan kebenaran anda untuk dijalankan</translation>
 <translation id="8466417995783206254">Tab ini memainkan video dalam mod gambar dalam gambar.</translation>
 <translation id="8467326454809944210">Pilih bahasa lain</translation>
-<translation id="8470214316007448308">Orang Lain</translation>
 <translation id="8470513973197838199">Kata laluan disimpan untuk <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Tapak biasanya menyambung kepada peranti USB untuk ciri seperti mencetak dokumen atau menyimpan pada peranti storan</translation>
 <translation id="8471959340398751476">Diskaun dimatikan. Anda boleh menghidupkan diskaun dalam menu sesuaikan</translation>
@@ -7048,6 +7043,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="8676374126336081632">Kosongkan input</translation>
 <translation id="8676770494376880701">Pengecas berkuasa rendah disambungkan</translation>
 <translation id="8677212948402625567">Runtuhkan semua...</translation>
+<translation id="867767487203716855">Kemas kini seterusnya</translation>
 <translation id="8677859815076891398">Tiada album. Buat album dalam <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Tab tidak mengecil</translation>
 <translation id="8678933587484842200">Bagaimanakah anda mahu apl ini dilancarkan?</translation>
@@ -7136,7 +7132,6 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
 <translation id="8767621466733104912">Kemas kini Chrome untuk semua pengguna secara automatik</translation>
 <translation id="8770406935328356739">Direktori akar sambungan</translation>
-<translation id="8770507190024617908">Urus Orang</translation>
 <translation id="8771300903067484968">Latar belakang halaman mula telah ditetapkan semula kepada latar belakang lalai.</translation>
 <translation id="8773302562181397928">Simpan <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Sahkan Pemulihan</translation>
@@ -7151,7 +7146,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="878069093594050299">Sijil telah disahkan untuk penggunaan berikut:</translation>
 <translation id="8781834595282316166">Tab Baharu dalam Kumpulan</translation>
 <translation id="8782565991310229362">Pelancaran aplikasi kios dibatalkan.</translation>
-<translation id="8783834180813871000">Taip kod berpasangan Bluetooth, kemudian tekan Return atau Enter.</translation>
+<translation id="8783834180813871000">Taip kod gandingan Bluetooth, kemudian tekan Return atau Enter.</translation>
 <translation id="8784626084144195648">Purata Bin</translation>
 <translation id="8785622406424941542">Stilus</translation>
 <translation id="8787254343425541995">Benarkan proksi untuk rangkaian yang dikongsi</translation>

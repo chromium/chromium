@@ -456,6 +456,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5782227691023083829">Çevriliyor...</translation>
 <translation id="5797070761912323120">Google; Arama, reklamlar ve diğer Google hizmetlerini kişiselleştirmek için geçmişinizi kullanabilir</translation>
 <translation id="5803566855766646066">Bu yeni kartı silmek istediğinizden emin misiniz?</translation>
+<translation id="5812974770859303494">Ekle…</translation>
 <translation id="5816228676161003208">Böylece, sesinizi kullanarak daha hızlı arama yapabilirsiniz.</translation>
 <translation id="581659025233126501">Senkronizasyonu Aç</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> tarafından yönetiliyor. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
@@ -766,6 +767,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8654802032646794042">İptal</translation>
 <translation id="8668210798914567634">Bu sayfa Okuma Listenize kaydedildi.</translation>
 <translation id="8680787084697685621">Hesap oturum açma ayrıntıları eski.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Sekmeyi Kapat}other{Sekmeleri Kapat}}</translation>
 <translation id="8706588385081740091">Şifreler</translation>
 <translation id="8717864919010420084">Bağlantıyı Kopyala</translation>
 <translation id="8721297211384281569">Araçlar Menüsü</translation>

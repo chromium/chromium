@@ -1138,6 +1138,7 @@
 <translation id="2179416702468739594">उपलब्ध प्रोफाइल शोधत आहे. यामुळे तुमचे मोबाइल नेटवर्क काही मिनिटांसाठी डिस्कनेक्ट होऊ शकते.</translation>
 <translation id="2182058453334755893">तुमच्या क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="2184515124301515068">जेव्हा साइट आवाज प्ले करेल तेव्हा Chrome ला निवड करू दे (शिफारस केलेले)</translation>
+<translation id="2186711480981247270">दुसऱ्या डिव्हाइसवरून शेअर केलेले पेज</translation>
 <translation id="2187675480456493911">तुमच्या खात्यावरील इतर डिव्हाइसशी सिंक केले आहे. इतर वापरकर्त्यांनी बदललेली सेटिंग्ज सिंक केली जाणार नाहीत. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">सर्व्हर सर्टिफिकेट आयात एरर</translation>
 <translation id="2187906491731510095">विस्तार अपडेट केले</translation>
@@ -2874,7 +2875,6 @@
 <translation id="4035758313003622889">&amp;कार्य व्यवस्थापक</translation>
 <translation id="4036778507053569103">सर्व्हरवरून डाउनलोड केलेले धोरण चुकीचे आहे.</translation>
 <translation id="4037084878352560732">घोडा</translation>
-<translation id="4037889604535939429">व्यक्ती संपादित करा</translation>
 <translation id="4040753847560036377">चुकीचा PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{पेजमधून बाहेर या}other{पेजमधून बाहेर या}}</translation>
 <translation id="4044612648082411741">तुमचा सर्टिफिकेट पासवर्ड एंटर करा</translation>
@@ -4341,7 +4341,6 @@
 <translation id="5709557627224531708">Chrome ला तुमचा डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
 <translation id="5711983031544731014">अनलॉक करता आले नाही. तुमचा पासवर्ड एंटर करा.</translation>
 <translation id="5712153969432126546">साइट काहीवेळा दस्तऐवज, करार आणि फॉर्म यांसारख्या PDF प्रकाशित करतात</translation>
-<translation id="5712323955984474772">पुढील अपडेट</translation>
 <translation id="5715711091495208045">प्लगइन ब्रोकर: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">डीफॉल्ट शोध इंजीन</translation>
 <translation id="5719637365829998022">QR कोड स्कॅन केला आहे.</translation>
@@ -5114,7 +5113,6 @@
 <translation id="6563469144985748109">आपल्या व्यवस्थापकाने अद्याप ती मंजूर केली नाही</translation>
 <translation id="6568283005472142698">टॅब शोध</translation>
 <translation id="6569911211938664415">तुम्हाला कोणत्याही डिव्हाइसवर वापरता यावेत म्हणून तुमच्या Google खाते (<ph name="ACCOUNT" />) मध्ये पासवर्ड सेव्ह केले जातात.</translation>
-<translation id="6569934958368283244">इतर लोक</translation>
 <translation id="6573497332121198392">शॉर्टकट काढून टाकू शकत नाही</translation>
 <translation id="657402800789773160">हे पृष्ठ &amp;रीलोड करा</translation>
 <translation id="6577284282025554716">डाउनलोड रद्द केले: <ph name="FILE_NAME" /></translation>
@@ -6799,7 +6797,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8393700583063109961">संदेश पाठवा</translation>
 <translation id="8397825320644530257">कनेक्ट केलेला फोन डिस्‍कनेक्‍ट करा</translation>
 <translation id="8398877366907290961">तरीही पुढे चला</translation>
-<translation id="8400146488506985033">लोकांना व्यवस्थापित करा</translation>
 <translation id="8401432541486058167">तुमच्या स्‍मार्ट कार्डशी संलग्न असलेला पिन द्या.</translation>
 <translation id="8404893580027489425">फिंगरप्रिंट सेन्सर तुमच्या <ph name="DEVICE_TYPE" /> च्या उजव्या बाजूला आहे. कोणत्याही बोटाने त्याला हळुवार स्पर्श करा.</translation>
 <translation id="8405046151008197676">नवीनतम अपडेटमधून हायलाइट मिळवा</translation>
@@ -6855,7 +6852,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ला रन करण्यासाठी तुमची परवानगी आवश्यक आहे.</translation>
 <translation id="8466417995783206254">हा टॅब चित्रात-चित्र मोडमध्ये व्हिडिओ प्ले करत आहे.</translation>
 <translation id="8467326454809944210">दुसरी भाषा निवडा</translation>
-<translation id="8470214316007448308">इतर लोक</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> साठी सेव्ह केलेले पासवर्ड</translation>
 <translation id="8471525937465764768">दस्तऐवज प्रिंट करणे किंवा स्टोरेज डिव्हाइसमध्ये सेव्ह करणे यांसारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे USB डिव्हाइसशी कनेक्ट करतात</translation>
 <translation id="8471959340398751476">सवलती बंद आहेत. तुम्ही कस्टमाइझ करा मेनूमधून त्या सुरू करू शकता</translation>
@@ -7042,6 +7038,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8676374126336081632">इनपुट साफ करा</translation>
 <translation id="8676770494376880701">निम्न-उर्जेचे चार्जर कनेक्ट केले</translation>
 <translation id="8677212948402625567">सर्व कोलॅप्स करा...</translation>
+<translation id="867767487203716855">पुढील अपडेट</translation>
 <translation id="8677859815076891398">कोणतेही अल्बम नाहीत. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मध्ये एखादा अल्बम तयार करा.</translation>
 <translation id="8678582529642151449">टॅब लहान केले जात नाहीत</translation>
 <translation id="8678933587484842200">हे ॲप्लिकेशन कसे लॉंच व्हावे असे तुम्हाला वाटते?</translation>
@@ -7130,7 +7127,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="87646919272181953">Google Photos अल्बम</translation>
 <translation id="8767621466733104912">सर्व वापरकर्त्यांसाठी Chrome आपोआप अपडेट करा</translation>
 <translation id="8770406935328356739">एक्स्टेंशन मूळ डिरेक्टरी</translation>
-<translation id="8770507190024617908">लोकांना व्यवस्थापित करा</translation>
 <translation id="8771300903067484968">पेज बॅकग्राउंड सुरू करा डीफॉल्ट बॅकग्राउंडवर रीसेट केले गेले आहे.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> सेव्ह करा</translation>
 <translation id="8774379074441005279">रिस्टोअर करण्याची खात्री करा</translation>

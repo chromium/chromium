@@ -278,6 +278,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2777555524387840389">Zbývá: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">nezdařilo se</translation>
 <translation id="2781151931089541271">Zbývá: 1 s</translation>
+<translation id="2788468313014644040">Číslo skupiny</translation>
 <translation id="2801022321632964776">Chcete-li si obsah prohlížet ve svém jazyce, aktualizujte na nejnovější verzi Chromu</translation>
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="2806840421670364300">Federované učení kohort</translation>
@@ -467,7 +468,6 @@ Privacy Sandbox se stále aktivně vyvíjí a je dostupný jen ve vybraných ob
 <translation id="4056223980640387499">Sépie</translation>
 <translation id="4060598801229743805">Možnosti jsou k dispozici u horního okraje obrazovky</translation>
 <translation id="4062305924942672200">Právní informace</translation>
-<translation id="4082818367361753283">ID skupiny</translation>
 <translation id="4084682180776658562">Záložka</translation>
 <translation id="4084712963632273211">Zdroj: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />poskytováno společností Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Smazat data aplikace?</translation>

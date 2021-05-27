@@ -2858,7 +2858,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4035758313003622889">&amp;Menedżer zadań</translation>
 <translation id="4036778507053569103">Zasady pobrane z serwera są nieprawidłowe.</translation>
 <translation id="4037084878352560732">Koń</translation>
-<translation id="4037889604535939429">Edytuj dane osoby</translation>
 <translation id="4040753847560036377">Nieprawidłowy kod PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Zamknij stronę}few{Zamknij strony}many{Zamknij strony}other{Zamknij strony}}</translation>
 <translation id="4044612648082411741">Podaj hasło certyfikatu</translation>
@@ -4326,7 +4325,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5709557627224531708">Ustaw Chrome jako domyślną przeglądarkę</translation>
 <translation id="5711983031544731014">Nie można odblokować. Wpisz hasło.</translation>
 <translation id="5712153969432126546">Czasami witryny publikują pliki PDF takie jak dokumenty, umowy i formularze</translation>
-<translation id="5712323955984474772">Następna aktualizacja</translation>
 <translation id="5715711091495208045">Broker wtyczek: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Domyślne wyszukiwarki</translation>
 <translation id="5719637365829998022">Zeskanowano kod QR.</translation>
@@ -5095,7 +5093,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6563469144985748109">Twój menedżer jeszcze na to nie zezwolił</translation>
 <translation id="6568283005472142698">Wyszukiwanie kart</translation>
 <translation id="6569911211938664415">Hasła są zapisywane na Twoim koncie Google (<ph name="ACCOUNT" />), dzięki czemu możesz ich używać na dowolnym urządzeniu</translation>
-<translation id="6569934958368283244">Inne osoby</translation>
 <translation id="6573497332121198392">Nie można usunąć skrótu</translation>
 <translation id="657402800789773160">&amp;Załaduj ponownie tę stronę</translation>
 <translation id="6577284282025554716">Anulowano pobieranie: <ph name="FILE_NAME" /></translation>
@@ -6782,7 +6779,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8393700583063109961">Wyślij wiadomość</translation>
 <translation id="8397825320644530257">Odłącz połączony telefon</translation>
 <translation id="8398877366907290961">Kontynuuj mimo wszystko</translation>
-<translation id="8400146488506985033">Zarządzaj użytkownikami</translation>
 <translation id="8401432541486058167">Wpisz kod PIN powiązany z Twoją kartą elektroniczną.</translation>
 <translation id="8404893580027489425">Czytnik linii papilarnych znajduje się po prawej stronie urządzenia <ph name="DEVICE_TYPE" />. Dotknij go delikatnie dowolnym palcem.</translation>
 <translation id="8405046151008197676">Poznaj najważniejsze ulepszenia z najnowszej aktualizacji</translation>
@@ -6838,7 +6834,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8465444703385715657">Uruchomienie wtyczki <ph name="PLUGIN_NAME" /> wymaga Twojej zgody</translation>
 <translation id="8466417995783206254">Na tej karcie jest odtwarzany film w trybie obrazu w obrazie.</translation>
 <translation id="8467326454809944210">Wybierz inny język</translation>
-<translation id="8470214316007448308">Inne osoby</translation>
 <translation id="8470513973197838199">Zapisane hasła do <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Strony zwykle łączą się z urządzeniami USB na przykład w celu drukowania dokumentów lub zapisywania plików na urządzeniu pamięci masowej</translation>
 <translation id="8471959340398751476">Zniżki są wyłączone. Możesz je włączyć w menu Dostosuj.</translation>
@@ -7025,6 +7020,7 @@ Naciśnij przypisany przełącznik, by usunąć przypisanie.</translation>
 <translation id="8676374126336081632">Wyczyść wpisany tekst</translation>
 <translation id="8676770494376880701">Podłączono ładowarkę o małej mocy</translation>
 <translation id="8677212948402625567">Zwiń wszystko...</translation>
+<translation id="867767487203716855">Następna aktualizacja</translation>
 <translation id="8677859815076891398">Brak albumów. Utwórz album w <ph name="LINK_BEGIN" />Zdjęciach Google<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Karty się nie zmniejszają</translation>
 <translation id="8678933587484842200">Jak chcesz uruchamiać tę aplikację?</translation>
@@ -7113,7 +7109,6 @@ Naciśnij przypisany przełącznik, by usunąć przypisanie.</translation>
 <translation id="87646919272181953">Album Zdjęcia Google</translation>
 <translation id="8767621466733104912">Automatycznie aktualizuj Chrome u wszystkich użytkowników</translation>
 <translation id="8770406935328356739">Główny katalog rozszerzenia</translation>
-<translation id="8770507190024617908">Zarządzaj użytkownikami</translation>
 <translation id="8771300903067484968">Na stronie startowej zostało przywrócone domyślne tło.</translation>
 <translation id="8773302562181397928">Zapisz drukarkę <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Potwierdzenie przywrócenia danych</translation>

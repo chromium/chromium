@@ -456,6 +456,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5782227691023083829">Menerjemahkan...</translation>
 <translation id="5797070761912323120">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran, iklan, dan layanan Google lainnya</translation>
 <translation id="5803566855766646066">Yakin ingin menghapus kartu baru ini?</translation>
+<translation id="5812974770859303494">Tambahkan ke ...</translation>
 <translation id="5816228676161003208">Hal ini memungkinkan Anda menelusuri lebih cepat menggunakan suara.</translation>
 <translation id="581659025233126501">Aktifkan Sinkronisasi</translation>
 <translation id="5819208479324046259">Dikelola oleh <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -766,6 +767,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8654802032646794042">Batal</translation>
 <translation id="8668210798914567634">Halaman ini telah disimpan di Daftar Bacaan.</translation>
 <translation id="8680787084697685621">Detail proses masuk akun sudah usang.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Tutup Tab}other{Tutup Tab}}</translation>
 <translation id="8706588385081740091">Sandi</translation>
 <translation id="8717864919010420084">Salin Link</translation>
 <translation id="8721297211384281569">Menu Alat</translation>

@@ -2876,7 +2876,6 @@
 <translation id="4035758313003622889">작업 관리자(&amp;T)</translation>
 <translation id="4036778507053569103">서버에서 다운로드한 정책이 올바르지 않습니다.</translation>
 <translation id="4037084878352560732">말</translation>
-<translation id="4037889604535939429">사용자 수정</translation>
 <translation id="4040753847560036377">잘못된 PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{페이지 나가기}other{페이지 나가기}}</translation>
 <translation id="4044612648082411741">인증서 비밀번호를 입력하세요.</translation>
@@ -4342,7 +4341,6 @@
 <translation id="5709557627224531708">Chrome을 기본 브라우저로 설정</translation>
 <translation id="5711983031544731014">잠금 해제할 수 없습니다. 비밀번호를 입력하세요.</translation>
 <translation id="5712153969432126546">사이트에서 때때로 문서, 계약서, 양식과 같은 PDF를 게시할 수 있습니다.</translation>
-<translation id="5712323955984474772">다음 업데이트</translation>
 <translation id="5715711091495208045">플러그인 중개인: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">기본 검색엔진</translation>
 <translation id="5719637365829998022">QR 코드가 스캔되었습니다.</translation>
@@ -5114,7 +5112,6 @@
 <translation id="6563469144985748109">관리자가 아직 승인하지 않았습니다.</translation>
 <translation id="6568283005472142698">탭 검색</translation>
 <translation id="6569911211938664415">어느 기기에서나 사용할 수 있도록 비밀번호가 Google 계정(<ph name="ACCOUNT" />)에 저장됩니다.</translation>
-<translation id="6569934958368283244">다른 사용자</translation>
 <translation id="6573497332121198392">바로가기를 삭제할 수 없음</translation>
 <translation id="657402800789773160">페이지 새로고침(&amp;R)</translation>
 <translation id="6577284282025554716">다운로드 취소됨: <ph name="FILE_NAME" /></translation>
@@ -6801,7 +6798,6 @@
 <translation id="8393700583063109961">메시지 보내기</translation>
 <translation id="8397825320644530257">연결된 휴대전화 연결 해제</translation>
 <translation id="8398877366907290961">무시하고 계속하기</translation>
-<translation id="8400146488506985033">사용자 관리</translation>
 <translation id="8401432541486058167">스마트 카드와 연결된 PIN을 입력하세요.</translation>
 <translation id="8404893580027489425">지문 센서는 <ph name="DEVICE_TYPE" /> 오른쪽에 있습니다. 손가락으로 가볍게 터치하세요.</translation>
 <translation id="8405046151008197676">최신 업데이트에서 중요한 사항을 확인하세요.</translation>
@@ -6857,7 +6853,6 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" />에 실행 권한이 필요합니다.</translation>
 <translation id="8466417995783206254">이 탭에서는 PIP 모드로 동영상이 재생되고 있습니다.</translation>
 <translation id="8467326454809944210">다른 언어 선택</translation>
-<translation id="8470214316007448308">다른 사용자</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" />의 저장된 비밀번호</translation>
 <translation id="8471525937465764768">사이트에서는 일반적으로 문서 인쇄 또는 스토리지 기기에 저장과 같은 기능을 사용하기 위해 USB 기기에 연결합니다.</translation>
 <translation id="8471959340398751476">할인 기능이 사용 중지되었습니다. 맞춤설정 메뉴에서 사용 설정할 수 있습니다.</translation>
@@ -7044,6 +7039,7 @@
 <translation id="8676374126336081632">입력내용 지우기</translation>
 <translation id="8676770494376880701">저출력 충전기 연결됨</translation>
 <translation id="8677212948402625567">모두 접기...</translation>
+<translation id="867767487203716855">다음 업데이트</translation>
 <translation id="8677859815076891398">앨범이 없습니다. <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />에서 앨범을 만드세요.</translation>
 <translation id="8678582529642151449">탭이 줄어들지 않음</translation>
 <translation id="8678933587484842200">이 애플리케이션을 실행할 방법을 선택하세요.</translation>
@@ -7132,7 +7128,6 @@
 <translation id="87646919272181953">Google 포토 앨범</translation>
 <translation id="8767621466733104912">모든 사용자의 Chrome 자동 업데이트</translation>
 <translation id="8770406935328356739">확장 프로그램 루트 디렉터리</translation>
-<translation id="8770507190024617908">사용자 관리</translation>
 <translation id="8771300903067484968">시작 페이지 배경화면이 기본 배경화면으로 재설정되었습니다.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> 저장</translation>
 <translation id="8774379074441005279">복원 확인</translation>

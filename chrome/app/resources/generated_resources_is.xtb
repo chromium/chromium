@@ -2876,7 +2876,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4035758313003622889">Verks&amp;tjórn</translation>
 <translation id="4036778507053569103">Reglan sem sótt var frá þjóninum er ógild.</translation>
 <translation id="4037084878352560732">Hestur</translation>
-<translation id="4037889604535939429">Breyta aðila</translation>
 <translation id="4040753847560036377">Rangt PUK-númer</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Loka síðu}one{Loka síðum}other{Loka síðum}}</translation>
 <translation id="4044612648082411741">Sláðu inn aðgangsorð vottorðs</translation>
@@ -4345,7 +4344,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5709557627224531708">Stilltu Chrome sem sjálfgefinn vafra</translation>
 <translation id="5711983031544731014">Ekki tókst að opna. Sláðu inn aðgangsorðið þitt.</translation>
 <translation id="5712153969432126546">Stundum birta vefsvæði PDF-skjöl, t.d. fylgiskjöl, samninga og eyðublöð</translation>
-<translation id="5712323955984474772">Næsta uppfærsla</translation>
 <translation id="5715711091495208045">Miðlari viðbótar: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Sjálfgefnar leitarvélar</translation>
 <translation id="5719637365829998022">QR-kóði var skannaður inn.</translation>
@@ -5117,7 +5115,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6563469144985748109">Umsjónarmaðurinn hefur enn ekki samþykkt þetta</translation>
 <translation id="6568283005472142698">Flipaleit</translation>
 <translation id="6569911211938664415">Aðgangsorð eru vistuð á Google reikningnum þínum (<ph name="ACCOUNT" />) til að þú getir notað þau í hvaða tæki sem er</translation>
-<translation id="6569934958368283244">Annað fólk</translation>
 <translation id="6573497332121198392">Ekki er hægt að fjarlægja flýtileið</translation>
 <translation id="657402800789773160">Endu&amp;rhlaða þessa síðu</translation>
 <translation id="6577284282025554716">Hætt við niðurhal: <ph name="FILE_NAME" /></translation>
@@ -6803,7 +6800,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8393700583063109961">Senda skilaboð</translation>
 <translation id="8397825320644530257">Aftengja tengdan síma</translation>
 <translation id="8398877366907290961">Halda samt áfram</translation>
-<translation id="8400146488506985033">Vinna með einstaklinga</translation>
 <translation id="8401432541486058167">Sláðu inn PIN-númerið fyrir snjallkortið þitt.</translation>
 <translation id="8404893580027489425">Fingrafaralesarinn er hægra megin á <ph name="DEVICE_TYPE" />. Snertu hann laust með fingrinum.</translation>
 <translation id="8405046151008197676">Fá það helsta úr nýjustu uppfærslunni</translation>
@@ -6859,7 +6855,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> þarf heimild þína til að keyra</translation>
 <translation id="8466417995783206254">Þessi flipi spilar myndskeið í stillingunni „mynd í mynd“.</translation>
 <translation id="8467326454809944210">Velja annað tungumál</translation>
-<translation id="8470214316007448308">Annað fólk</translation>
 <translation id="8470513973197838199">Vistuð aðgangsorð fyrir <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Vefsvæði tengjast yfirleitt USB-tækjum til að nota eiginleika eins og að prenta skjal eða vista í geymslutæki</translation>
 <translation id="8471959340398751476">Afslættir eru ekki virkir. Þú getur virkjað þá í sérsniðsvalmynd</translation>
@@ -7046,6 +7041,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8676374126336081632">Hreinsa innslátt</translation>
 <translation id="8676770494376880701">Afllítið hleðslutæki tengt</translation>
 <translation id="8677212948402625567">Minnka allt...</translation>
+<translation id="867767487203716855">Næsta uppfærsla</translation>
 <translation id="8677859815076891398">Engin albúm. Búðu til albúm í <ph name="LINK_BEGIN" />Google myndum<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Flipar minnka ekki</translation>
 <translation id="8678933587484842200">Hvernig á þetta forrit að opnast?</translation>
@@ -7134,7 +7130,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="87646919272181953">Albúm í Google myndum</translation>
 <translation id="8767621466733104912">Uppfæra Chrome sjálfkrafa fyrir alla notendur</translation>
 <translation id="8770406935328356739">Rótarmappa viðbóta</translation>
-<translation id="8770507190024617908">Vinna með einstaklinga</translation>
 <translation id="8771300903067484968">Bakgrunnur upphafssíðu hefur verið endurstilltur á sjálfgefinn bakgrunn.</translation>
 <translation id="8773302562181397928">Vista <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Staðfesta endurheimt</translation>

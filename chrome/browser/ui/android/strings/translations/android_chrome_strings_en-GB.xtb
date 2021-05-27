@@ -278,6 +278,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2777555524387840389"><ph name="SECONDS" /> secs left</translation>
 <translation id="2779651927720337254">failed</translation>
 <translation id="2781151931089541271">1 sec left</translation>
+<translation id="2788468313014644040">Group number</translation>
 <translation id="2801022321632964776">Update to get your language in the latest version of Chrome</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Options available near the top of the screen</translation>
 <translation id="4062305924942672200">Legal information</translation>
-<translation id="4082818367361753283">Group ID</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084712963632273211">From <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />delivered by Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Delete app data?</translation>

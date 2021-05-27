@@ -245,6 +245,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">instalar apps, extensões e temas;</translation>
 <translation id="2977598380246111477">Próximo número</translation>
+<translation id="2992327365391326550">O botão do microfone do dispositivo está desativado.</translation>
 <translation id="2995447421581609334">Mostrar dispositivos de transmissão.</translation>
 <translation id="2996462380875591307">Lupa em área fixa ativada. Pressione Ctrl+Pesquisa+D novamente para desativá-la.</translation>
 <translation id="3000461861112256445">Áudio mono</translation>
@@ -255,6 +256,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3038571455154067151">Para fazer login, insira seu código de acesso de pai/mãe do Family Link</translation>
 <translation id="3039939407102840004">Bateria da stylus em <ph name="PERCENTAGE" />%.</translation>
 <translation id="3045488863354895414">Boa tarde,</translation>
+<translation id="3051189971848907985">Renomeando o perfil. Aguarde alguns minutos.</translation>
 <translation id="3055162170959710888">Você usou este dispositivo por <ph name="USED_TIME" /> hoje</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Expandir menu</translation>
@@ -295,6 +297,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3371140690572404006">Dispositivo USB-C (porta frontal da direita)</translation>
 <translation id="3375634426936648815">Conectado</translation>
+<translation id="3378442621503952303">Conectando-se ao perfil. Aguarde alguns minutos.</translation>
 <translation id="3386978599540877378">a lupa de tela cheia</translation>
 <translation id="3400357268283240774">Configurações adicionais</translation>
 <translation id="3410336247007142655">Mostrar configurações do tema escuro</translation>
@@ -351,6 +354,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="380165613292957338">Oi! Como posso ajudar?</translation>
 <translation id="3826099427150913765">Usar senha</translation>
 <translation id="383058930331066723">Modo de Economia de bateria ativado</translation>
+<translation id="3835880383832568924">Para ver as atualizações, abra o app Atalhos</translation>
 <translation id="383629559565718788">Mostrar configurações do teclado</translation>
 <translation id="3846214748874656680">Sair da tela cheia</translation>
 <translation id="3846575436967432996">Não há informações de rede disponíveis</translation>
@@ -471,6 +475,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4705716602320768426">Enviar feedback</translation>
 <translation id="4731797938093519117">Acesso de pai/mãe</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735498845456076464">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + tecla numérica mudou. Para usar as teclas de função, pressione <ph name="LAUNCHER_KEY_NAME" /> + uma tecla na linha superior.</translation>
 <translation id="4744944742468440486">Informações relacionadas à sua seleção</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4774338217796918551">Volte amanhã, neste horário: <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6910714959251846841">Esta atualização requer o powerwash do seu dispositivo. Saiba mais sobre a última atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer seu cartão inteligente. Tente novamente.</translation>
+<translation id="6921188888306725546">Os atalhos de teclado foram melhorados</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6961121602502368900">O recurso "Silenciar smartphone" não está disponível no perfil de trabalho</translation>
 <translation id="6961840794482373852">O atalho de teclado Alt + seta para cima mudou. Para usar a tecla Page Up, pressione <ph name="LAUNCHER_KEY_NAME" /> + seta para cima.</translation>
@@ -934,6 +940,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="8631727435199967028">Configurações de acessibilidade</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />, gerenciada pelo seu administrador</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restante(s)</translation>
+<translation id="8641805545866562088">Atualizando a lista de perfis. Aguarde alguns minutos.</translation>
 <translation id="8646417893960517480">Timer de <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Para adicionar uma pessoa, insira seu código de acesso de pai/mãe do Family Link</translation>
 <translation id="8649101189709089199">Selecionar para ouvir</translation>
@@ -961,6 +968,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Configurações de métodos de entrada</translation>
+<translation id="8818320199597151042">Removendo o perfil. Aguarde alguns minutos.</translation>
 <translation id="8825863694328519386">Deslize da esquerda para voltar</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Botão "Voltar"</translation>
@@ -1006,6 +1014,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="9091626656156419976">Tela <ph name="DISPLAY_NAME" /> removida</translation>
 <translation id="9098969848082897657">Silenciar smartphone</translation>
 <translation id="9099154003160514616">Atualização do Lacros disponível</translation>
+<translation id="9100887602489003640">Adicionando perfil. Aguarde alguns minutos.</translation>
 <translation id="9105450214093926548">Não é possível fazer login em um segundo usuário enquanto o navegador Lacros está aberto. Use um segundo perfil de navegador no Lacros ou feche-o e tente novamente.</translation>
 <translation id="9133335900048457298">Não é possível gravar conteúdo protegido</translation>
 <translation id="9151726767154816831">Reinicie e execute um powerwash para atualizar</translation>

@@ -456,6 +456,7 @@
 <translation id="5782227691023083829">Виконується переклад сторінки...</translation>
 <translation id="5797070761912323120">Google може використовувати вашу історію, щоб персоналізувати Пошук, оголошення й інші сервіси Google</translation>
 <translation id="5803566855766646066">Відхилити цю нову картку?</translation>
+<translation id="5812974770859303494">Додати в…</translation>
 <translation id="5816228676161003208">Ви зможете швидше шукати голосом.</translation>
 <translation id="581659025233126501">Увімкнути синхронізацію</translation>
 <translation id="5819208479324046259">Веб-переглядачем керує <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -766,6 +767,7 @@
 <translation id="8654802032646794042">Скасувати</translation>
 <translation id="8668210798914567634">Цю сторінку збережено в списку читання.</translation>
 <translation id="8680787084697685621">Дані для входу в обліковий запис застаріли.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Закрити вкладку}one{Закрити вкладки}few{Закрити вкладки}many{Закрити вкладки}other{Закрити вкладки}}</translation>
 <translation id="8706588385081740091">Паролі</translation>
 <translation id="8717864919010420084">Скопіювати посилання</translation>
 <translation id="8721297211384281569">Меню інструментів</translation>

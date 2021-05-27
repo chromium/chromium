@@ -2861,7 +2861,6 @@
 <translation id="4035758313003622889">&amp;ამოცანების მმართველი</translation>
 <translation id="4036778507053569103">სერვერიდან ჩამოტვირთული წესები არასწორია.</translation>
 <translation id="4037084878352560732">ცხენი</translation>
-<translation id="4037889604535939429">პიროვნების რედაქტირება</translation>
 <translation id="4040753847560036377">PUK-კოდი არასწორია</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{გვერდიდან გასვლა}other{გვერდებიდან გასვლა}}</translation>
 <translation id="4044612648082411741">შეიყვანეთ თქვენი სერტიფიკატის პაროლი</translation>
@@ -4329,7 +4328,6 @@
 <translation id="5709557627224531708">დააყენეთ Chrome ნაგულისხმევ ბრაუზერად</translation>
 <translation id="5711983031544731014">განბლოკვა შეუძლებელია. შეიყვანეთ პაროლი.</translation>
 <translation id="5712153969432126546">საიტები ზოგჯერ აქვეყნებს ისეთ PDF-ებს, როგორიცაა, მაგალითად, დოკუმენტები, კონტრაქტები, ფორმები და ა.შ.</translation>
-<translation id="5712323955984474772">შემდეგი განახლება</translation>
 <translation id="5715711091495208045">დანამატის ბროკერი: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ნაგულისხმევი საძიებო სისტემები</translation>
 <translation id="5719637365829998022">QR-კოდი დასკანირდა.</translation>
@@ -5101,7 +5099,6 @@
 <translation id="6563469144985748109">თქვენს მენეჯერს ის ჯერ არ დაუდასტურებია</translation>
 <translation id="6568283005472142698">ჩანართებში ძიება</translation>
 <translation id="6569911211938664415">პაროლები ინახება თქვენს Google ანგარიშში (<ph name="ACCOUNT" />), რაც ნიშნავს, რომ მათი გამოყენება ნებისმიერ მოწყობილობაზე შეგიძლიათ</translation>
-<translation id="6569934958368283244">სხვა ადამიანები</translation>
 <translation id="6573497332121198392">მალსახმობი ვერ ამოიშალა</translation>
 <translation id="657402800789773160">&amp;ამ გვერდის ხელახლა ჩატვირთვა</translation>
 <translation id="6577284282025554716">ჩამოტვირთვა გაუქმდა: <ph name="FILE_NAME" /></translation>
@@ -6785,7 +6782,6 @@
 <translation id="8393700583063109961">შეტყობინების გაგზავნა</translation>
 <translation id="8397825320644530257">დაკავშირებულ ტელეფონთან კავშირის გაწყვეტა</translation>
 <translation id="8398877366907290961">მაინც გაგრძელება</translation>
-<translation id="8400146488506985033">ადამიანების მართვა</translation>
 <translation id="8401432541486058167">მიუთითეთ PIN-კოდი, რომელიც დაკავშირებულია თქვენს სმარტ-ბარათთან.</translation>
 <translation id="8404893580027489425">თითის ანაბეჭდის სენსორი მდებარეობს <ph name="DEVICE_TYPE" />-ის მარჯვენა მხარეს. შეეხეთ მას მსუბუქად ნებისმიერი თითით.</translation>
 <translation id="8405046151008197676">გაეცანით ძირითად სიახლეებს ბოლო განახლებაში</translation>
@@ -6841,7 +6837,6 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> გასაშვებად თქვენს ნებართვას საჭიროებს</translation>
 <translation id="8466417995783206254">ეს ჩანართი ვიდეოს დასაკრავად იყენებს რეჟიმს „გამოსახულება გამოსახულებაში“.</translation>
 <translation id="8467326454809944210">სხვა ენის არჩევა</translation>
-<translation id="8470214316007448308">სხვა ადამიანები</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" />-ისთვის შენახული პაროლები</translation>
 <translation id="8471525937465764768">როგორც წესი, საიტები USB-მოწყობილობებს უკავშირდება ისეთი ფუნქციების უზრუნველსაყოფად, როგორიცაა, მაგალითად, დოკუმენტის ბეჭდვა თუ მეხსიერების მოწყობილობაზე შენახვა</translation>
 <translation id="8471959340398751476">ფასდაკლებები გამორთულია. მართი ჩართვა შეგიძლიათ მორგების მენიუდან.</translation>
@@ -7028,6 +7023,7 @@
 <translation id="8676374126336081632">შეყვანილი ტექსტის გასუფთავება</translation>
 <translation id="8676770494376880701">დაბალი სიმძლავრის დამტენი დაკავშირებულია</translation>
 <translation id="8677212948402625567">ყველას აკეცვა…</translation>
+<translation id="867767487203716855">შემდეგი განახლება</translation>
 <translation id="8677859815076891398">ალბომები არ არის. შექმენით ალბომები <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-ში.</translation>
 <translation id="8678582529642151449">ჩანართები არ შევიწროვდება</translation>
 <translation id="8678933587484842200">რა გზით გსურთ ამ აპლიკაციის გაშვება?</translation>
@@ -7116,7 +7112,6 @@
 <translation id="87646919272181953">Google Photos ალბომი</translation>
 <translation id="8767621466733104912">Chrome-ის ავტომატურად განახლება ყველა მომხმარებლისთვის</translation>
 <translation id="8770406935328356739">გაფართოების ძირეული დირექტორია</translation>
-<translation id="8770507190024617908">ადამიანების მართვა</translation>
 <translation id="8771300903067484968">საწყისი გვერდის ფონი გადაყენებულია ნაგულისხმევ ფონზე.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" />-ის შენახვა</translation>
 <translation id="8774379074441005279">დაადასტურეთ აღდგენა</translation>

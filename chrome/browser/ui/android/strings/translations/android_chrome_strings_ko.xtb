@@ -278,6 +278,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" />초 남음</translation>
 <translation id="2779651927720337254">실패</translation>
 <translation id="2781151931089541271">1초 남음</translation>
+<translation id="2788468313014644040">그룹 번호</translation>
 <translation id="2801022321632964776">최신 버전의 Chrome에서 내가 사용하는 언어를 사용하려면 업데이트하세요.</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@
 <translation id="4056223980640387499">세피아</translation>
 <translation id="4060598801229743805">화면 상단에서 옵션을 선택할 수 있습니다.</translation>
 <translation id="4062305924942672200">법적 정보</translation>
-<translation id="4082818367361753283">그룹 ID</translation>
 <translation id="4084682180776658562">북마크</translation>
 <translation id="4084712963632273211">발신자: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google 제공<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">앱 데이터를 삭제하시겠습니까?</translation>

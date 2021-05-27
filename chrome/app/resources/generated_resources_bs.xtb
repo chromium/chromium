@@ -2874,7 +2874,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4035758313003622889">Upravi&amp;telj zadataka</translation>
 <translation id="4036778507053569103">Pravilo preuzeto sa servera je nevažeće.</translation>
 <translation id="4037084878352560732">Konj</translation>
-<translation id="4037889604535939429">Uredite osobu</translation>
 <translation id="4040753847560036377">Pogrešan PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Napusti stranicu}one{Napusti stranice}few{Napusti stranice}other{Napusti stranice}}</translation>
 <translation id="4044612648082411741">Unesite lozinku potvrde</translation>
@@ -4343,7 +4342,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5709557627224531708">Postavite Chrome kao zadani preglednik</translation>
 <translation id="5711983031544731014">Nije moguće otključati. Unesite lozinku.</translation>
 <translation id="5712153969432126546">Web lokacije ponekad objavljuju PDF-ove, kao što su dokumenti, ugovori i obrasci</translation>
-<translation id="5712323955984474772">Sljedeće ažuriranje</translation>
 <translation id="5715711091495208045">Posrednik dodatka: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Zadani pretraživači</translation>
 <translation id="5719637365829998022">QR kôd je skeniran.</translation>
@@ -5115,7 +5113,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6563469144985748109">Voditelj je još nije odobrio</translation>
 <translation id="6568283005472142698">Pretraživanje kartica</translation>
 <translation id="6569911211938664415">Lozinke se pohranjuju na vaš Google račun (<ph name="ACCOUNT" />) da ih možete koristiti na bilo kojem uređaju</translation>
-<translation id="6569934958368283244">Druge osobe</translation>
 <translation id="6573497332121198392">Nije moguće ukloniti prečicu</translation>
 <translation id="657402800789773160">&amp;Ponovo učitaj ovu stranicu</translation>
 <translation id="6577284282025554716">Otkazano je preuzimanje fajla: <ph name="FILE_NAME" /></translation>
@@ -6802,7 +6799,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8393700583063109961">Pošalji poruku</translation>
 <translation id="8397825320644530257">Prekinite vezu s povezanim telefonom</translation>
 <translation id="8398877366907290961">Svejedno nastavi</translation>
-<translation id="8400146488506985033">Upravljaj osobama</translation>
 <translation id="8401432541486058167">Unesite PIN koji je povezan s vašom pametnom karticom.</translation>
 <translation id="8404893580027489425">Senzor za otisak prsta se nalazi na desnoj strani uređaja <ph name="DEVICE_TYPE" />. Nježno ga dodirnite bilo kojim prstom.</translation>
 <translation id="8405046151008197676">Otkrijte istaknute novosti o najnovijem ažuriranju</translation>
@@ -6858,7 +6854,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8465444703385715657">Za pokretanje dodatka <ph name="PLUGIN_NAME" /> je potrebno vaše odobrenje</translation>
 <translation id="8466417995783206254">Ova kartica reproducira videozapis u načinu rada slika u slici.</translation>
 <translation id="8467326454809944210">Odaberi drugi jezik</translation>
-<translation id="8470214316007448308">Druge osobe</translation>
 <translation id="8470513973197838199">Sačuvane lozinke za <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Web lokacije se obično povezuju s USB uređajima radi funkcija kao što je štampanje dokumenta ili pohranjivanje na uređaj za pohranu</translation>
 <translation id="8471959340398751476">Popusti su isključeni. Možete ih uključiti u meniju za prilagođavanje</translation>
@@ -7045,6 +7040,7 @@ Pritisnite dodijeljeni prekidač za pristup da uklonite dodjeljivanje.</translat
 <translation id="8676374126336081632">Brisanje unosa</translation>
 <translation id="8676770494376880701">Priključen je punjač male snage</translation>
 <translation id="8677212948402625567">Suzi sve...</translation>
+<translation id="867767487203716855">Sljedeće ažuriranje</translation>
 <translation id="8677859815076891398">Nema albuma. Kreirajte album u <ph name="LINK_BEGIN" />Google Fotografijama<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Kartice se ne smanjuju</translation>
 <translation id="8678933587484842200">Kako želite da se ova aplikacija pokreće?</translation>
@@ -7133,7 +7129,6 @@ Pritisnite dodijeljeni prekidač za pristup da uklonite dodjeljivanje.</translat
 <translation id="87646919272181953">Album Google Fotografija</translation>
 <translation id="8767621466733104912">Automatski ažuriraj Chrome za sve korisnike</translation>
 <translation id="8770406935328356739">Temeljni direktorij ekstenzije</translation>
-<translation id="8770507190024617908">Upravljaj osobama</translation>
 <translation id="8771300903067484968">Pozadina početne stranice je vraćena na zadanu pozadinu.</translation>
 <translation id="8773302562181397928">Sačuvajte štampač <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Potvrda vraćanja</translation>

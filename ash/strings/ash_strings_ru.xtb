@@ -245,6 +245,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Устанавливать приложения, расширения и темы.</translation>
 <translation id="2977598380246111477">Следующая цифра</translation>
+<translation id="2992327365391326550">Кнопка микрофона на устройстве отключена</translation>
 <translation id="2995447421581609334">Показать устройства Google Cast</translation>
 <translation id="2996462380875591307">Закрепленная лупа включена. Чтобы отключить ее, нажмите Ctrl + Поиск + D.</translation>
 <translation id="3000461861112256445">Монофонический звук</translation>
@@ -255,6 +256,7 @@
 <translation id="3038571455154067151">Чтобы войти, введите родительский код доступа Family Link.</translation>
 <translation id="3039939407102840004">Заряд батареи стилуса составляет <ph name="PERCENTAGE" /> процентов.</translation>
 <translation id="3045488863354895414">Добрый день!</translation>
+<translation id="3051189971848907985">Профиль переименовывается. Подождите несколько минут.</translation>
 <translation id="3055162170959710888">Сегодня вы уже использовали это устройство <ph name="USED_TIME" />.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Развернуть меню</translation>
@@ -295,6 +297,7 @@
 <translation id="3368922792935385530">Подключено</translation>
 <translation id="3371140690572404006">Устройство USB-C (ближний порт справа)</translation>
 <translation id="3375634426936648815">Подключено</translation>
+<translation id="3378442621503952303">Выполняется подключение к профилю. Подождите несколько минут.</translation>
 <translation id="3386978599540877378">Полноэкранная лупа</translation>
 <translation id="3400357268283240774">Дополнительные настройки</translation>
 <translation id="3410336247007142655">Показать настройки тёмной темы</translation>
@@ -351,6 +354,7 @@
 <translation id="380165613292957338">Привет! Чем могу помочь?</translation>
 <translation id="3826099427150913765">Войти с помощью пароля</translation>
 <translation id="383058930331066723">Включен режим энергосбережения</translation>
+<translation id="3835880383832568924">Чтобы посмотреть изменения, откройте приложение Shortcuts.</translation>
 <translation id="383629559565718788">Показать настройки клавиатуры</translation>
 <translation id="3846214748874656680">Обычный режим</translation>
 <translation id="3846575436967432996">Информация о сетях недоступна</translation>
@@ -471,6 +475,7 @@
 <translation id="4705716602320768426">Отправить отзыв</translation>
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
+<translation id="4735498845456076464">Функция сочетания клавиш "<ph name="LAUNCHER_KEY_NAME" /> + цифра" изменилась. Чтобы выполнить действие функциональной клавиши, нажмите <ph name="LAUNCHER_KEY_NAME" /> + клавиша верхнего ряда.</translation>
 <translation id="4744944742468440486">Информация на основе выделенного текста</translation>
 <translation id="4759238208242260848">Скачанные файлы</translation>
 <translation id="4774338217796918551">Возвращайтесь завтра в <ph name="COME_BACK_TIME" />.</translation>
@@ -728,6 +733,7 @@
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6910714959251846841">Чтобы установить это обновление, необходимо сбросить настройки устройства до заводских. Подробнее о последнем обновлении <ph name="SYSTEM_APP_NAME" />…</translation>
 <translation id="6919251195245069855">Не удалось распознать смарт-карту. Повторите попытку.</translation>
+<translation id="6921188888306725546">Сочетания клавиш были улучшены</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="6961121602502368900">Отключение звука на телефоне недоступно в рабочем профиле</translation>
 <translation id="6961840794482373852">Функция сочетания клавиш Alt + Стрелка вверх изменилась. Чтобы выполнить действие клавиши Page Up, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вверх.</translation>
@@ -934,6 +940,7 @@
 <translation id="8631727435199967028">Настройки специальных возможностей</translation>
 <translation id="8637598503828012618">Статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="8639760480004882931">Батарея заряжена на <ph name="PERCENTAGE" /></translation>
+<translation id="8641805545866562088">Список профилей обновляется. Подождите несколько минут.</translation>
 <translation id="8646417893960517480">Таймер на <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Чтобы добавить пользователя, введите родительский код доступа Family Link.</translation>
 <translation id="8649101189709089199">Озвучивание при нажатии</translation>
@@ -961,6 +968,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" />.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Настройки способов ввода</translation>
+<translation id="8818320199597151042">Профиль удаляется. Подождите несколько минут.</translation>
 <translation id="8825863694328519386">Чтобы вернуться, проведите по экрану от левого края</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Назад</translation>
@@ -1006,6 +1014,7 @@
 <translation id="9091626656156419976">Удален экран "<ph name="DISPLAY_NAME" />"</translation>
 <translation id="9098969848082897657">Отключить звук на телефоне</translation>
 <translation id="9099154003160514616">Доступно обновление Lacros</translation>
+<translation id="9100887602489003640">Профиль добавляется. Подождите несколько минут.</translation>
 <translation id="9105450214093926548">Во время работы Lacros не поддерживается вход в несколько аккаунтов. Вы можете использовать второй профиль браузера или закрыть Lacros и повторить попытку.</translation>
 <translation id="9133335900048457298">Не удается записать видео с экрана из-за защищенного контента</translation>
 <translation id="9151726767154816831">Чтобы обновить систему, перезапустите ее и выполните Powerwash</translation>

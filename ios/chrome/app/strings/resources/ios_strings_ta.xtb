@@ -456,6 +456,7 @@
 <translation id="5782227691023083829">மொழிபெயர்க்கிறது...</translation>
 <translation id="5797070761912323120">தேடல், விளம்பரங்கள் மற்றும் பிற Google சேவைகளைத் தனிப்பயனாக்க, உங்கள் வரலாற்றை Google பயன்படுத்தக்கூடும்</translation>
 <translation id="5803566855766646066">இந்தப் புதிய கார்டை நிராகரிக்க வேண்டுமா?</translation>
+<translation id="5812974770859303494">இதில் சேர்...</translation>
 <translation id="5816228676161003208">இதன் மூலம் உங்கள் குரலைப் பயன்படுத்தி வேகமாகத் தேடலாம்.</translation>
 <translation id="581659025233126501">ஒத்திசைவை இயக்கு</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> நிர்வகிக்கிறது. <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
@@ -522,6 +523,7 @@
 <translation id="634878792104344809">கடவுச்சொற்கள், உலாவியில் இதுவரை பார்த்தவை போன்ற பல தகவல்களை அனைத்துச் சாதனங்களிலும் ஒத்திசைக்கலாம்</translation>
 <translation id="6362362396625799311">மறைநிலைத் தாவல்கள் இல்லை</translation>
 <translation id="6363526231572697780">பயனர்பெயர் இல்லை</translation>
+<translation id="6366663624406569102">வெளியேறி, ஒத்திசைவை முடக்கு</translation>
 <translation id="6374469231428023295">மீண்டும் முயலவும்</translation>
 <translation id="6377118281273296434">தளத்தின் பாதுகாப்பு</translation>
 <translation id="6380866119319257197">கடவுச்சொற்றொடரை மறந்துவிட்டால் அல்லது இந்த அமைப்பை மாற்ற விரும்பினால், <ph name="BEGIN_LINK" />ஒத்திசைவை மீட்டமைக்கவும்<ph name="END_LINK" /></translation>
@@ -765,6 +767,7 @@
 <translation id="8654802032646794042">ரத்துசெய்</translation>
 <translation id="8668210798914567634">இந்தப் பக்கம் உங்கள் வாசிப்புப் பட்டியலில் சேமிக்கப்பட்டது.</translation>
 <translation id="8680787084697685621">கணக்கு உள்நுழைவு விவரங்கள் காலாவதியாகிவிட்டன.</translation>
+<translation id="8693663554456874301">{count,plural, =1{தாவலை மூடுக}other{தாவல்களை மூடுக}}</translation>
 <translation id="8706588385081740091">கடவுச்சொற்கள்</translation>
 <translation id="8717864919010420084">இணைப்பை நகலெடு</translation>
 <translation id="8721297211384281569">கருவிகள் மெனு</translation>

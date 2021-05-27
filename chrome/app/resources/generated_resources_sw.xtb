@@ -2872,7 +2872,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4035758313003622889">&amp;Kidhibiti cha shughuli</translation>
 <translation id="4036778507053569103">Sera iliyopakuliwa kutoka kwenye seva ni batili.</translation>
 <translation id="4037084878352560732">Farasi</translation>
-<translation id="4037889604535939429">Badilisha wasifu wa mtumiaji</translation>
 <translation id="4040753847560036377">PUK si sahihi</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Funga Ukurasa}other{Funga Kurasa}}</translation>
 <translation id="4044612648082411741">Weka nenosiri la cheti chako</translation>
@@ -4339,7 +4338,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5709557627224531708">Weka Chrome iwe kivinjari chako chaguomsingi</translation>
 <translation id="5711983031544731014">Haiwezi kufungua. Weka nenosiri lako.</translation>
 <translation id="5712153969432126546">Wakati mwingine, tovuti huchapisha faili za PDF, kama vile hati, mikataba na fomu</translation>
-<translation id="5712323955984474772">Sasisho Lijalo</translation>
 <translation id="5715711091495208045">Dalali wa Programu jalizi: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Mitambo chaguomsingi ya kutafuta</translation>
 <translation id="5719637365829998022">Msimbo wa QR umechanganuliwa.</translation>
@@ -5111,7 +5109,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6563469144985748109">Msimamizi wako bado hajaiidhinisha</translation>
 <translation id="6568283005472142698">Utafutaji kwenye Vichupo</translation>
 <translation id="6569911211938664415">Manenosiri huhifadhiwa kwenye Akaunti yako ya Google (<ph name="ACCOUNT" />) ili uweze kuyatumia kwenye kifaa chochote</translation>
-<translation id="6569934958368283244">Watu wengine</translation>
 <translation id="6573497332121198392">Imeshindwa kuondoa njia ya mkato</translation>
 <translation id="657402800789773160">&amp;Pakia Ukurasa Huu Upya</translation>
 <translation id="6577284282025554716">Imeghairi kupakua: <ph name="FILE_NAME" /></translation>
@@ -6800,7 +6797,6 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8393700583063109961">Tuma ujumbe</translation>
 <translation id="8397825320644530257">Tenganisha simu iliyounganishwa</translation>
 <translation id="8398877366907290961">Endelea licha ya hayo</translation>
-<translation id="8400146488506985033">Simamia watu</translation>
 <translation id="8401432541486058167">Weka PIN inayohusiana na kadi yako mahiri.</translation>
 <translation id="8404893580027489425">Kitambua alama ya kidole kiko kwenye upande wa kulia wa <ph name="DEVICE_TYPE" /> yako. Kiguse taratibu ukitumia kidole chochote.</translation>
 <translation id="8405046151008197676">Pata muhtasari kutoka kwenye sasisho la hivi punde</translation>
@@ -6856,7 +6852,6 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> inahitaji ruhusa yako ili kutumia</translation>
 <translation id="8466417995783206254">Kichupo hiki kinacheza video katika hali ya picha ndani ya picha.</translation>
 <translation id="8467326454809944210">Chagua lugha nyingine</translation>
-<translation id="8470214316007448308">Watu Wengine</translation>
 <translation id="8470513973197838199">Manenosiri yaliyohifadhiwa ya <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Tovuti huunganisha kwenye vifaa vya USB kwa ajili ya vipengele kama vile kuchapisha hati au kuweka faili kwenye kifaa cha kuhifadhi</translation>
 <translation id="8471959340398751476">Kipengele cha punguzo kimezimwa. Unaweza kukiwasha kwenye menyu ya kuweka mapendeleo</translation>
@@ -7043,6 +7038,7 @@ Bonyeza swichi uliyokabidhi ili uache kuikabidhi.</translation>
 <translation id="8676374126336081632">Futa uingizaji wa maandishi</translation>
 <translation id="8676770494376880701">Chaja ya nguvu ya chini imeunganishwa</translation>
 <translation id="8677212948402625567">Kunja zote...</translation>
+<translation id="867767487203716855">Sasisho lijalo</translation>
 <translation id="8677859815076891398">Hakuna albamu. Anzisha albamu mpya katika <ph name="LINK_BEGIN" />Picha kwenye Google<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Ukubwa wa vichupo haupunguzwi</translation>
 <translation id="8678933587484842200">Je, ungependa kuanzisha programu hii kwa njia gani?</translation>
@@ -7131,7 +7127,6 @@ Bonyeza swichi uliyokabidhi ili uache kuikabidhi.</translation>
 <translation id="87646919272181953">Albamu ya Picha kwenye Google</translation>
 <translation id="8767621466733104912">Sasisha Chrome kwa watumiaji wote kiotomatiki</translation>
 <translation id="8770406935328356739">Saraka msingi ya kiendelezi</translation>
-<translation id="8770507190024617908">Simamia Watu</translation>
 <translation id="8771300903067484968">Mandhari ya ukurasa wa mwanzo yamewekwa upya kuwa mandhari chaguomsingi.</translation>
 <translation id="8773302562181397928">Hifadhi <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Thibitisha Hatua ya Kurejesha</translation>

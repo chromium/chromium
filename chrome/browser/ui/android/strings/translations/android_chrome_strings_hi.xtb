@@ -278,6 +278,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकंड शेष</translation>
 <translation id="2779651927720337254">डाउनलोड नहीं हो सका</translation>
 <translation id="2781151931089541271">1 सेकंड शेष</translation>
+<translation id="2788468313014644040">ग्रुप नंबर</translation>
 <translation id="2801022321632964776">Chrome के नए वर्शन में अपनी भाषा पाने के लिए अपडेट करें</translation>
 <translation id="2805756323405976993">ऐप्स</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">स्क्रीन के शीर्ष भाग में मौजूद विकल्प</translation>
 <translation id="4062305924942672200">कानूनी जानकारी</translation>
-<translation id="4082818367361753283">ग्रुप आईडी</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084712963632273211">प्रकाशक: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google की ओर से डिलीवर किया गया<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ऐप्लिकेशन डेटा मिटाएं?</translation>

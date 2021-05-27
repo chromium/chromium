@@ -304,12 +304,14 @@
 <translation id="2042213636306070719">紙匣 7</translation>
 <translation id="204357726431741734">登入即可使用儲存在 Google 帳戶中的密碼</translation>
 <translation id="2053111141626950936">系統將不會翻譯<ph name="LANGUAGE" />網頁。</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每日更新您所屬的群組。}=1{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每日更新您所屬的群組。}other{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每隔 {NUM_DAYS} 日更新您所屬的群組。}}</translation>
 <translation id="2053553514270667976">郵遞區號</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 個建議}other{# 個建議}}</translation>
 <translation id="2071692954027939183">由於您通常不允許通知，因此系統已自動封鎖通知</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="20817612488360358">雖然系統 Proxy 設定已設為使用，不過也指定了明確的 Proxy 設定。</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 項結果 (共 <ph name="TOTAL_RESULTS" /> 項)</translation>
+<translation id="2085876078937250610">儲存…</translation>
 <translation id="2088086323192747268">管理同步功能按鈕，㩒一下 Enter 鍵就可以喺 Chrome 設定度管理同步資料</translation>
 <translation id="2091887806945687916">音效</translation>
 <translation id="2094505752054353250">網域不符</translation>
@@ -390,6 +392,7 @@
 <translation id="2355395290879513365">攻擊者可能可以看到您正在此網站上看到的圖片，然後透過修改圖片來欺騙您。</translation>
 <translation id="2356070529366658676">詢問</translation>
 <translation id="2357481397660644965">您的裝置由 <ph name="DEVICE_MANAGER" /> 管理，而您的帳戶由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{少於 1 天內}=1{1 天後}other{{NUM_DAYS} 天後}}</translation>
 <translation id="2359629602545592467">多種貨幣</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2359961752320758691">已套用虛擬卡號。</translation>
@@ -709,6 +712,7 @@
 <translation id="3590643883886679995">離開無痕模式後，登入資料會儲存在此裝置中。</translation>
 <translation id="359126217934908072">月/年：</translation>
 <translation id="3592413004129370115">Italian (信封)</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{您可隨時重設群組。加入新群組約需時 1 天。}=1{您可隨時重設群組。加入新群組約需時 1 天。}other{您可隨時重設群組。加入新群組約需時 {NUM_DAYS} 天。}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3603507503523709">您的管理員已封鎖應用程式</translation>
 <translation id="3608932978122581043">送紙方向</translation>
@@ -1191,6 +1195,7 @@
 <translation id="5332219387342487447">運送方式</translation>
 <translation id="5333022057423422993">Chrome 發現您剛才使用的密碼因資料外洩而被洩露。如要確保帳戶安全，建議您檢查已儲存的密碼。</translation>
 <translation id="5334013548165032829">詳細系統記錄</translation>
+<translation id="5334145288572353250">要儲存地址嗎？</translation>
 <translation id="5340250774223869109">已封鎖應用程式</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5344579389779391559">此網頁可能會向您收取費用</translation>
@@ -1530,6 +1535,7 @@
 <translation id="6671697161687535275">要從 Chromium 移除表格建議嗎？</translation>
 <translation id="6685834062052613830">請登出並完成設定程序</translation>
 <translation id="6687335167692595844">要求的字型大小</translation>
+<translation id="6688743156324860098">更新…</translation>
 <translation id="6689249931105087298">與黑點壓縮相對</translation>
 <translation id="6689271823431384964">由於您已登入，因此 Chrome 提議將您的付款卡儲存至 Google 帳戶。您可在設定中變更此行為。持卡人姓名來自您的帳戶。</translation>
 <translation id="6698381487523150993">已建立：</translation>
@@ -1545,6 +1551,7 @@
 <translation id="6744009308914054259">等待連線時，您可以前往「下載」閱讀離線文章。</translation>
 <translation id="6753269504797312559">政策值</translation>
 <translation id="6757797048963528358">您的裝置已進入休眠狀態。</translation>
+<translation id="6767985426384634228">要更新地址嗎？</translation>
 <translation id="6768213884286397650">Hagaki (明信片)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">紫羅蘭色</translation>
@@ -1704,6 +1711,7 @@
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">不適用</translation>
 <translation id="7390545607259442187">驗證信用卡</translation>
+<translation id="7392089738299859607">更新地址</translation>
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7400418766976504921">網址</translation>
 <translation id="7403591733719184120">您的 <ph name="DEVICE_NAME" /> 已受管理</translation>
@@ -1842,6 +1850,7 @@
 <translation id="7865448901209910068">最佳速度</translation>
 <translation id="7874263914261512992">您剛才在欺詐網站上輸入了密碼。Chrome 建議您立即檢查已儲存在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 以及其他您使用此密碼的網站。</translation>
 <translation id="7878562273885520351">您的密碼可能會被盜用</translation>
+<translation id="7880146494886811634">儲存地址</translation>
 <translation id="7882421473871500483">啡色</translation>
 <translation id="7887683347370398519">請檢查您的 CVC，然後再試一次</translation>
 <translation id="7887885240995164102">進入畫中畫</translation>

@@ -456,6 +456,7 @@
 <translation id="5782227691023083829">جارٍ ترجمة...</translation>
 <translation id="5797070761912323120">‏قد تستخدم Google سجلّك لتخصيص البحث والإعلانات وخدمات Google الأخرى.</translation>
 <translation id="5803566855766646066">هل تريد فعلاً تجاهل هذه البطاقة الجديدة؟</translation>
+<translation id="5812974770859303494">إضافة إلى...</translation>
 <translation id="5816228676161003208">هذا يتيح لك البحث بشكلٍ أسرع باستخدام صوتك.</translation>
 <translation id="581659025233126501">تفعيل المزامنة</translation>
 <translation id="5819208479324046259">تتم إدارة المتصفِّح من خلال <ph name="MANAGER" />. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -766,6 +767,7 @@
 <translation id="8654802032646794042">إلغاء</translation>
 <translation id="8668210798914567634">تم حفظ هذه الصفحة في قائمة القراءة.</translation>
 <translation id="8680787084697685621">تفاصيل تسجيل الدخول إلى الحساب قديمة.</translation>
+<translation id="8693663554456874301">{count,plural, =1{إغلاق علامة التبويب}zero{إغلاق علامات التبويب}two{إغلاق علامتَي التبويب}few{إغلاق علامات التبويب}many{إغلاق علامات التبويب}other{إغلاق علامات التبويب}}</translation>
 <translation id="8706588385081740091">كلمات المرور</translation>
 <translation id="8717864919010420084">نسخ الرابط</translation>
 <translation id="8721297211384281569">قائمة الأدوات</translation>

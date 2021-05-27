@@ -278,6 +278,7 @@
 <translation id="2777555524387840389">Остават <ph name="SECONDS" /> сек</translation>
 <translation id="2779651927720337254">неуспешно</translation>
 <translation id="2781151931089541271">Остава 1 сек</translation>
+<translation id="2788468313014644040">Номер на групата</translation>
 <translation id="2801022321632964776">Актуализирайте, за да получите своя език в най-новата версия на Chrome</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4060598801229743805">Опциите са в горната част на екрана</translation>
 <translation id="4062305924942672200">Правна информация</translation>
-<translation id="4082818367361753283">Идентификационен номер на групата</translation>
 <translation id="4084682180776658562">Отметка</translation>
 <translation id="4084712963632273211">От <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />показва се от Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Да се изтрият ли данните на приложенията?</translation>

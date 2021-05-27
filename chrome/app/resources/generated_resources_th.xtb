@@ -2568,6 +2568,7 @@
 <translation id="3742666961763734085">ไม่พบชื่อหน่วยดังกล่าวขององค์กร โปรดลองอีกครั้ง</translation>
 <translation id="3744111561329211289">ซิงค์ในแบ็กกราวด์</translation>
 <translation id="3747077776423672805">หากต้องการนำแอปออก ให้ไปที่การตั้งค่า &gt; Google Play Store &gt; จัดการค่ากำหนด Android &gt; ตัวจัดการแอปหรือแอปพลิเคชัน แล้วแตะแอปที่คุณต้องการถอนการติดตั้ง (อาจต้องเลื่อนไปทางขวาหรือทางซ้ายเพื่อค้นหาแอป) และแตะถอนการติดตั้ง หรือปิดใช้</translation>
+<translation id="3747220812138541072">แสดงคำแนะนำการเขียนแทรกในบรรทัดซึ่งปรากฏขึ้นเมื่อพิมพ์</translation>
 <translation id="3748706263662799310">รายงานข้อบกพร่อง</translation>
 <translation id="3752582316358263300">ตกลง...</translation>
 <translation id="3753033997400164841">บันทึกครั้งเดียว แล้วใช้ได้ทุกที่</translation>
@@ -2861,7 +2862,6 @@
 <translation id="4035758313003622889">&amp;ตัวจัดการงาน</translation>
 <translation id="4036778507053569103">นโยบายที่ดาวน์โหลดจากเซิร์ฟเวอร์ไม่ถูกต้อง</translation>
 <translation id="4037084878352560732">ม้า</translation>
-<translation id="4037889604535939429">แก้ไขบุคคล</translation>
 <translation id="4040753847560036377">PUK ไม่ถูกต้อง</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{หน้าที่ออกไป}other{หน้าที่ออกไป}}</translation>
 <translation id="4044612648082411741">ป้อนรหัสผ่านใบรับรอง</translation>
@@ -3257,6 +3257,7 @@
 <translation id="4510614391273086606">ระบบกำลังคืนค่าไฟล์และแอป Linux เป็นสถานะข้อมูลสำรอง</translation>
 <translation id="451102079304155829">รถเข็น</translation>
 <translation id="4513275008300099962">ปิดใช้การวางซ้อนการควบคุมหน้าต่าง</translation>
+<translation id="4513872120116766993">การเขียนแบบช่วยคาดเดา</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
 <translation id="451407183922382411">ขับเคลื่อนโดย <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">สลับปุ่มควบคุมวิดีโอเพื่อเล่นหรือหยุดชั่วคราว</translation>
@@ -4329,7 +4330,6 @@
 <translation id="5709557627224531708">ตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="5711983031544731014">ไม่สามารถปลดล็อก โปรดใส่รหัสผ่าน</translation>
 <translation id="5712153969432126546">บางครั้งเว็บไซต์จะเผยแพร่ PDF เช่น เอกสาร สัญญา แบบฟอร์ม</translation>
-<translation id="5712323955984474772">การอัปเดตถัดไป</translation>
 <translation id="5715711091495208045">โบรกเกอร์ปลั๊กอิน: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">เครื่องมือค้นหาเริ่มต้น</translation>
 <translation id="5719637365829998022">สแกนคิวอาร์โค้ดแล้ว</translation>
@@ -4420,6 +4420,7 @@
 <translation id="5826395379250998812">เชื่อมต่อ <ph name="DEVICE_TYPE" /> กับโทรศัพท์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">เปิดเผยบางส่วน</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827733057563115968">การคาดคะเนคำถัดไป</translation>
 <translation id="5828545842856466741">เพิ่มโปรไฟล์...</translation>
 <translation id="5828633471261496623">กำลังพิมพ์...</translation>
 <translation id="5830720307094128296">บันทึกหน้าเ&amp;ป็น...</translation>
@@ -5101,7 +5102,6 @@
 <translation id="6563469144985748109">ผู้จัดการยังไม่ได้อนุมัติเว็บไซต์นี้</translation>
 <translation id="6568283005472142698">การค้นหาแท็บ</translation>
 <translation id="6569911211938664415">เราจะบันทึกรหัสผ่านไว้ในบัญชี Google (<ph name="ACCOUNT" />) เพื่อให้คุณใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
-<translation id="6569934958368283244">บุคคลอื่น</translation>
 <translation id="6573497332121198392">นำทางลัดออกไม่ได้</translation>
 <translation id="657402800789773160">&amp;โหลดหน้านี้ใหม่</translation>
 <translation id="6577284282025554716">ยกเลิกการดาวน์โหลดแล้ว: <ph name="FILE_NAME" /></translation>
@@ -6291,6 +6291,7 @@
 <translation id="78526636422538552">ปิดใช้การเพิ่มบัญชี Google อื่นอยู่</translation>
 <translation id="7853747251428735">เครื่องมือเ&amp;พิ่มเติม</translation>
 <translation id="7855678561139483478">ย้ายแท็บไปที่หน้าต่างใหม่</translation>
+<translation id="7857093393627376423">คำแนะนำข้อความ</translation>
 <translation id="7857117644404132472">เพิ่มข้อยกเว้น</translation>
 <translation id="7857949311770343000">นี่คือหน้าแท็บใหม่ที่คุณคาดไว้ใช่ไหม</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -6787,7 +6788,6 @@
 <translation id="8393700583063109961">ส่งข้อความ</translation>
 <translation id="8397825320644530257">ยกเลิกการเชื่อมต่อโทรศัพท์ที่เชื่อมต่ออยู่</translation>
 <translation id="8398877366907290961">ดำเนินการต่อ</translation>
-<translation id="8400146488506985033">จัดการบุคคล</translation>
 <translation id="8401432541486058167">ใส่ PIN ที่เชื่อมโยงกับสมาร์ทการ์ดของคุณ</translation>
 <translation id="8404893580027489425">เซ็นเซอร์ลายนิ้วมืออยู่ทางด้านขวามือของ <ph name="DEVICE_TYPE" /> ให้แตะเบาๆ ด้วยนิ้วใดก็ได้</translation>
 <translation id="8405046151008197676">ดูไฮไลต์จากอัปเดตล่าสุด</translation>
@@ -6843,7 +6843,6 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ต้องได้รับอนุญาตจากคุณก่อนจึงจะทำงานได้</translation>
 <translation id="8466417995783206254">แท็บนี้กำลังเล่นวิดีโอในโหมดการแสดงภาพซ้อนภาพ</translation>
 <translation id="8467326454809944210">เลือกภาษาอื่น</translation>
-<translation id="8470214316007448308">บุคคลอื่น</translation>
 <translation id="8470513973197838199">รหัสผ่านที่บันทึกไว้สำหรับ <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">โดยปกติแล้วเว็บไซต์จะเชื่อมต่อกับอุปกรณ์ USB เพื่อดำเนินการตามฟีเจอร์ต่างๆ เช่น พิมพ์เอกสาร หรือบันทึกลงในอุปกรณ์จัดเก็บข้อมูล</translation>
 <translation id="8471959340398751476">ส่วนลดปิดอยู่ คุณเปิดส่วนลดได้ในเมนูการปรับแต่ง</translation>
@@ -7030,6 +7029,7 @@
 <translation id="8676374126336081632">ล้างข้อมูลที่ป้อน</translation>
 <translation id="8676770494376880701">เชื่อมต่อกับที่ชาร์จพลังงานต่ำ</translation>
 <translation id="8677212948402625567">ยุบทั้งหมด...</translation>
+<translation id="867767487203716855">การอัปเดตถัดไป</translation>
 <translation id="8677859815076891398">ไม่มีอัลบั้ม สร้างอัลบั้มใน <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
 <translation id="8678582529642151449">แท็บจะไม่ย่อ</translation>
 <translation id="8678933587484842200">คุณต้องการเปิดแอปพลิเคชันนี้ด้วยวิธีใด</translation>
@@ -7118,7 +7118,6 @@
 <translation id="87646919272181953">อัลบั้มใน Google Photos</translation>
 <translation id="8767621466733104912">อัปเดต Chrome สำหรับผู้ใช้ทุกคนโดยอัตโนมัติ</translation>
 <translation id="8770406935328356739">ไดเรกทอรีหลักของส่วนขยาย</translation>
-<translation id="8770507190024617908">จัดการบุคคล</translation>
 <translation id="8771300903067484968">มีการรีเซ็ตพื้นหลังของหน้าเริ่มต้นเป็นพื้นหลังเริ่มต้น</translation>
 <translation id="8773302562181397928">บันทึก <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">ยืนยันการคืนค่า</translation>

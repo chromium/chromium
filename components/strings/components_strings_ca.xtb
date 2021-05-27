@@ -533,7 +533,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2941952326391522266">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè el seu certificat de seguretat prové del domini <ph name="DOMAIN2" />. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="2943895734390379394">Hora de la pujada:</translation>
 <translation id="2948083400971632585">Podeu desactivar qualsevol servidor intermediari configurat per a una connexió des de la pàgina de configuració.</translation>
-<translation id="2949183777371959169">S'ha ignorat perquè l'ordinador no s'ha inscrit amb Gestió de navegadors Chrome en núvol.</translation>
+<translation id="2949183777371959169">S'ha ignorat perquè la màquina no s'ha inscrit amb Gestió de navegadors Chrome en núvol.</translation>
 <translation id="2951588413176968965">La meva bústia de correu</translation>
 <translation id="295526156371527179">Advertiment: aquesta política no s'ha combinat com a diccionari segons el que s'especifica a la política perquè no és un diccionari.</translation>
 <translation id="2955913368246107853">Tanca la barra de cerca</translation>

@@ -278,6 +278,7 @@
 <translation id="2777555524387840389">Још <ph name="SECONDS" /> сек</translation>
 <translation id="2779651927720337254">није успело</translation>
 <translation id="2781151931089541271">Још 1 сек</translation>
+<translation id="2788468313014644040">Број групе</translation>
 <translation id="2801022321632964776">Ажурирајте на најновију верзију Chrome-а да бисте имали свој језик у њој</translation>
 <translation id="2805756323405976993">Апликације</translation>
 <translation id="2806840421670364300">Груписани подаци о кохортама</translation>
@@ -467,7 +468,6 @@
 <translation id="4056223980640387499">Сепија</translation>
 <translation id="4060598801229743805">Опције су доступне при врху екрана</translation>
 <translation id="4062305924942672200">Правне информације</translation>
-<translation id="4082818367361753283">ИД групе</translation>
 <translation id="4084682180776658562">Обележивач</translation>
 <translation id="4084712963632273211">Од објављивача <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />приказује Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Желите ли да избришете податке апликације?</translation>

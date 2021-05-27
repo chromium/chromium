@@ -2863,7 +2863,6 @@
 <translation id="4035758313003622889">&amp;ಕಾರ್ಯ ನಿರ್ವಾಹಕ</translation>
 <translation id="4036778507053569103">ಸರ್ವರ್‌ನಿಂದ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾದ ಕಾರ್ಯನೀತಿಯು ಅಮಾನ್ಯವಾಗಿದೆ.</translation>
 <translation id="4037084878352560732">ಕುದುರೆ</translation>
-<translation id="4037889604535939429">ವ್ಯಕ್ತಿಯ ಹೆಸರನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{ನಿರ್ಗಮನ ಪುಟ}one{ನಿರ್ಗಮನ ಪುಟಗಳು}other{ನಿರ್ಗಮನ ಪುಟಗಳು}}</translation>
 <translation id="4044612648082411741">ನಿಮ್ಮ ಪ್ರಮಾಣಪತ್ರ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="4044708573046946214">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಪಾಸ್‌ವರ್ಡ್</translation>
@@ -4330,7 +4329,6 @@
 <translation id="5709557627224531708">Chrome ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ರೂಪದಲ್ಲಿ ಹೊಂದಿಸಿ</translation>
 <translation id="5711983031544731014">ಅನ್‌ಲಾಕ್‌ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ನಮೂದಿಸಿ.</translation>
 <translation id="5712153969432126546">ಸೈಟ್‌ಗಳು ಕೆಲವೊಮ್ಮೆ ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು, ಒಪ್ಪಂದಗಳು ಮತ್ತು ಫಾರ್ಮ್‌ಗಳಂತಹ PDF ಗಳನ್ನು ಪ್ರಕಟಿಸುತ್ತವೆ</translation>
-<translation id="5712323955984474772">ಮುಂದಿನ ಅಪ್‌ಡೇಟ್</translation>
 <translation id="5715711091495208045">ಪ್ಲಗಿನ್ ಬ್ರೋಕರ್: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ಡೀಫಾಲ್ಟ್ ಹುಡುಕಾಟ ಇಂಜಿನ್‌ಗಳು</translation>
 <translation id="5719637365829998022">QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ.</translation>
@@ -5098,7 +5096,6 @@
 <translation id="6563469144985748109">ನಿಮ್ಮ ಮ್ಯಾನೇಜರ್ ಇನ್ನೂ ಇದನ್ನು ಅಂಗೀಕರಿಸಿಲ್ಲ</translation>
 <translation id="6568283005472142698">ಟ್ಯಾಬ್ ಹುಡುಕಾಟ</translation>
 <translation id="6569911211938664415">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆ (<ph name="ACCOUNT" />) ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ, ಇದರಿಂದ ನೀವು ಅವುಗಳನ್ನು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಬಹುದು.</translation>
-<translation id="6569934958368283244">ಇತರ ಜನರು</translation>
 <translation id="6573497332121198392">ಶಾರ್ಟ್‌ಕಟ್‌ ತೆಗೆದುಹಾಕಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="657402800789773160">ಈ ಪುಟವನ್ನು &amp;ರೀಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="6577284282025554716">ಡೌನ್‌ಲೋಡ್ ರದ್ದುಪಡಿಸಲಾಗಿದೆ: <ph name="FILE_NAME" /></translation>
@@ -6770,7 +6767,6 @@
 <translation id="8393700583063109961">ಸಂದೇಶ ಕಳುಹಿಸು</translation>
 <translation id="8397825320644530257">ಕನೆಕ್ಟ್ ಆಗಿರುವ ಫೋನ್ ಅನ್ನು ಡಿಸ್‌ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="8398877366907290961">ಏನಾಗಲಿ ಮುಂದುವರೆಯಿರಿ</translation>
-<translation id="8400146488506985033">ಜನರನ್ನು ನಿರ್ವಹಿಸು</translation>
 <translation id="8401432541486058167">ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್‌ನೊಂದಿಗೆ ಸಂಯೋಜಿತವಾಗಿರುವ ಪಿನ್ ಅನ್ನು ಒದಗಿಸಿ.</translation>
 <translation id="8404893580027489425">ಈ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಸೆನ್ಸರ್‌‌ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಬಲಭಾಗದಲ್ಲಿದೆ. ಯಾವುದೇ ಬೆರಳಿನ ಮೂಲಕ ಅದನ್ನು ಮೆಲ್ಲಗೆ ಸ್ಪರ್ಶಿಸಿ.</translation>
 <translation id="8405046151008197676">ಇತ್ತೀಚಿನ ಅಪ್‌ಡೇಟ್ ಕುರಿತು ಮುಖ್ಯಾಂಶಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
@@ -6826,7 +6822,6 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ರನ್ ಮಾಡಲು ನಿಮ್ಮ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8466417995783206254">ಚಿತ್ರದಲ್ಲಿನ ಚಿತ್ರ ಮೋಡ್‌ನಲ್ಲಿ ಈ ಟ್ಯಾಬ್ ವೀಡಿಯೊವನ್ನು ಪ್ಲೇ ಮಾಡುತ್ತಿದೆ.</translation>
 <translation id="8467326454809944210">ಬೇರೊಂದು ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
-<translation id="8470214316007448308">ಇತರ ಜನರು</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8471525937465764768">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ, ಡಾಕ್ಯುಮೆಂಟ್ ಮುದ್ರಿಸುವುದು ಅಥವಾ ಸಂಗ್ರಹಣಾ ಸಾಧನಕ್ಕೆ ಉಳಿಸುವಂತಹ ಫೀಚರ್‌ಗಳಿಗಾಗಿ USB ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಆಗುತ್ತವೆ</translation>
 <translation id="8471959340398751476">ರಿಯಾಯಿತಿಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ. ನೀವು ಅವುಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮೆನುವಿನಲ್ಲಿ ಆನ್ ಮಾಡಬಹುದು</translation>
@@ -7013,6 +7008,7 @@
 <translation id="8676374126336081632">ಇನ್‌ಪುಟ್‌‌ ತೆರವುಗೊಳಿಸು</translation>
 <translation id="8676770494376880701">ಕಡಿಮೆ ವಿದ್ಯುತ್ ಚಾರ್ಜರ್ ಸಂಪರ್ಕಪಡಿಸಲಾಗಿದೆ</translation>
 <translation id="8677212948402625567">ಎಲ್ಲವನ್ನು ಕುಗ್ಗಿಸು...</translation>
+<translation id="867767487203716855">ಮುಂದಿನ ಅಪ್‌ಡೇಟ್</translation>
 <translation id="8677859815076891398">ಯಾವುದೇ ಆಲ್ಬಮ್‌ಗಳಿಲ್ಲ. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ನಲ್ಲಿ ಆಲ್ಬಮ್ ಅನ್ನು ರಚಿಸಿ.</translation>
 <translation id="8678582529642151449">ಟ್ಯಾಬ್‌ಗಳು ಕುಗ್ಗುವುದಿಲ್ಲ</translation>
 <translation id="8678933587484842200">ಈ ಅಪ್ಲಿಕೇಶನ್‌ ಅನ್ನು ನೀವು ಹೇಗೆ ಪ್ರಾರಂಭಿಸಲು ಬಯಸುತ್ತೀರಿ?</translation>
@@ -7101,7 +7097,6 @@
 <translation id="87646919272181953">Google Photos ಆಲ್ಬಮ್‌</translation>
 <translation id="8767621466733104912">ಎಲ್ಲಾ ಬಳಕೆದಾರರಿಗಾಗಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="8770406935328356739">ವಿಸ್ತರಣೆ ಮೂಲ ಡೈರೆಕ್ಟರಿ</translation>
-<translation id="8770507190024617908">ಜನರನ್ನು ನಿರ್ವಹಿಸು</translation>
 <translation id="8771300903067484968">ಆರಂಭಿಕ ಪುಟದ ಹಿನ್ನೆಲೆಯನ್ನು ಡೀಫಾಲ್ಟ್ ಹಿನ್ನೆಲೆಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> ಅನ್ನು ಉಳಿಸಿ</translation>
 <translation id="8774379074441005279">ಮರುಸ್ಥಾಪನೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>

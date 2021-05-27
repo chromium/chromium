@@ -2862,7 +2862,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4035758313003622889">Gestionnaire de &amp;tâches</translation>
 <translation id="4036778507053569103">La politique téléchargée du serveur n'est pas valide.</translation>
 <translation id="4037084878352560732">Cheval</translation>
-<translation id="4037889604535939429">Modifier la personne</translation>
 <translation id="4040753847560036377">Clé personnelle de déblocage incorrecte</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Quitter la page}one{Quitter la page}other{Quitter les pages}}</translation>
 <translation id="4044612648082411741">Entrez le mot de passe de votre certificat</translation>
@@ -4330,7 +4329,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5709557627224531708">Définir Chrome comme navigateur par défaut</translation>
 <translation id="5711983031544731014">Impossible de procéder au déverrouillage. Veuillez entrer votre mot de passe.</translation>
 <translation id="5712153969432126546">Les sites publient parfois des fichiers en format PDF, comme des documents, des contrats et des formulaires</translation>
-<translation id="5712323955984474772">Prochaine mise à jour</translation>
 <translation id="5715711091495208045">Gestionnaire de plugiciels : <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Moteurs de recherche par défaut</translation>
 <translation id="5719637365829998022">Le code QR a été numérisé.</translation>
@@ -5102,7 +5100,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6563469144985748109">Votre gestionnaire n'a pas encore donné son autorisation</translation>
 <translation id="6568283005472142698">Recherche d'onglet</translation>
 <translation id="6569911211938664415">Les mots de passe sont enregistrés dans votre compte Google (<ph name="ACCOUNT" />) afin que vous puissiez les utiliser sur n'importe quel appareil</translation>
-<translation id="6569934958368283244">Autres personnes</translation>
 <translation id="6573497332121198392">Impossible de supprimer le raccourci</translation>
 <translation id="657402800789773160">Actualise&amp;r cette page</translation>
 <translation id="6577284282025554716">Téléchargement annulé : <ph name="FILE_NAME" /></translation>
@@ -6788,7 +6785,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8393700583063109961">Envoyer un message</translation>
 <translation id="8397825320644530257">Déconnecter le téléphone connecté</translation>
 <translation id="8398877366907290961">Continuer</translation>
-<translation id="8400146488506985033">Gérer les personnes</translation>
 <translation id="8401432541486058167">Entrez le NIP associé à votre carte à puce.</translation>
 <translation id="8404893580027489425">Le capteur d'empreintes digitales se trouve sur le côté droit de votre <ph name="DEVICE_TYPE" />. Touchez-le doucement avec n'importe quel doigt.</translation>
 <translation id="8405046151008197676">Consultez les faits saillants de la dernière mise à jour</translation>
@@ -6844,7 +6840,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8465444703385715657">Le plugiciel <ph name="PLUGIN_NAME" /> a besoin de votre autorisation pour s'exécuter</translation>
 <translation id="8466417995783206254">Cet onglet fait jouer une vidéo en mode d'incrustation d'image.</translation>
 <translation id="8467326454809944210">Choisir une autre langue</translation>
-<translation id="8470214316007448308">Autres personnes</translation>
 <translation id="8470513973197838199">Mots de passe enregistrés pour <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Les sites se connectent généralement aux appareils USB pour proposer des fonctionnalités comme l'impression de document ou l'enregistrement sur un périphérique de stockage</translation>
 <translation id="8471959340398751476">Les rabais sont désactivés. Vous pouvez les activer dans le menu de personnalisation</translation>
@@ -7031,6 +7026,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="8676374126336081632">Effacer l'entrée</translation>
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>
 <translation id="8677212948402625567">Tout réduire…</translation>
+<translation id="867767487203716855">Prochaine mise à jour</translation>
 <translation id="8677859815076891398">Aucun album. Créez un album dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Les onglets ne sont pas réduits</translation>
 <translation id="8678933587484842200">Comment souhaitez-vous lancer cette application?</translation>
@@ -7119,7 +7115,6 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
 <translation id="8767621466733104912">Mettre à jour Chrome automatiquement pour tous les utilisateurs</translation>
 <translation id="8770406935328356739">Répertoire racine de l'extension</translation>
-<translation id="8770507190024617908">Gérer les personnes</translation>
 <translation id="8771300903067484968">L'arrière-plan de la page d'accueil a été réinitialisé à sa valeur par défaut.</translation>
 <translation id="8773302562181397928">Enregistrer <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirmez la restauration</translation>

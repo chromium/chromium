@@ -38,6 +38,7 @@
 <translation id="2560420686485554789">‏يحتاج Chromium إلى الوصول إلى مساحة التخزين لتنزيل الملفات.</translation>
 <translation id="2572494885440352020">‏أداة مساعدة Chromium</translation>
 <translation id="2577788541081224677">‏للوصول من خلال جميع أجهزتك إلى بياناتك في Chromium، عليك تسجيل الدخول كي تتمكّن من تفعيل المزامنة.</translation>
+<translation id="2580426763510374355">‏تثبيت نظام التشغيل Chromium</translation>
 <translation id="2583187216237139145">‏يمكن لمشرف الملف الشخصي للعمل إزالة أي بيانات مرتبطة بمتصفِّح Chromium والتي يتم إنشاؤها أثناء استخدام هذا الملف الشخصي (مثل إنشاء الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى).<ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">‏يلزم إعادة تشغيل نظام التشغيل Chromium حتى يتم تطبيق التحديث.</translation>
 <translation id="2648074677641340862">‏حدث خطأ في نظام التشغيل أثناء عملية التثبيت. يُرجى إعادة تنزيل Chromium.</translation>
@@ -136,6 +137,7 @@
 <translation id="5438241569118040789">‏<ph name="PAGE_TITLE" /> - الإصدار التجريبي من Chromium</translation>
 <translation id="5479196819031988440">‏يتعذر على نظام التشغيل Chromium فتح هذه الصفحة.</translation>
 <translation id="5480860683791598150">‏يحتاج Chromium للوصول إلى موقعك الجغرافي لمشاركته مع هذا الموقع.</translation>
+<translation id="5481338274774984070">‏ينصح Chromium بعدم تنزيل هذا الملف أو فتحه.</translation>
 <translation id="549669000822060376">‏يُرجى الانتظار أثناء تثبيت Chromium لآخر تحديثات النظام.</translation>
 <translation id="5496810170689441661">‏يحاول Chromium تعديل كلمات المرور. للسماح بذلك، يُرجى كتابة كلمة مرور Windows الخاصة بك.</translation>
 <translation id="5527463683072221100">‏فتح ملفات PDF في Chromium</translation>

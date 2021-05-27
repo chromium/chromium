@@ -2859,7 +2859,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4035758313003622889">Správce úloh</translation>
 <translation id="4036778507053569103">Zásada stažená ze serveru není platná.</translation>
 <translation id="4037084878352560732">Kůň</translation>
-<translation id="4037889604535939429">Úprava osoby</translation>
 <translation id="4040753847560036377">Nesprávný kód PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Opustit stránku}few{Opustit stránky}many{Opustit stránky}other{Opustit stránky}}</translation>
 <translation id="4044612648082411741">Zadejte heslo certifikátu</translation>
@@ -4327,7 +4326,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5709557627224531708">Nastavte si Chrome jako výchozí prohlížeč</translation>
 <translation id="5711983031544731014">Zařízení nelze odemknout. Zadejte heslo.</translation>
 <translation id="5712153969432126546">Weby někdy publikují soubory PDF, např. dokumenty, smlouvy a formuláře</translation>
-<translation id="5712323955984474772">Další aktualizace</translation>
 <translation id="5715711091495208045">Zprostředkovatel pluginu: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Výchozí vyhledávače</translation>
 <translation id="5719637365829998022">QR kód byl naskenován.</translation>
@@ -5098,7 +5096,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6563469144985748109">Správce vám přístup na web dosud neschválil.</translation>
 <translation id="6568283005472142698">Vyhledávání v kartách</translation>
 <translation id="6569911211938664415">Hesla se ukládají do vašeho účtu Google (<ph name="ACCOUNT" />), abyste je mohli používat na všech zařízeních.</translation>
-<translation id="6569934958368283244">Jiní lidé</translation>
 <translation id="6573497332121198392">Zkratku nelze odstranit</translation>
 <translation id="657402800789773160">&amp;Načíst tuto stránku znovu</translation>
 <translation id="6577284282025554716">Stahování zrušeno: <ph name="FILE_NAME" /></translation>
@@ -6779,7 +6776,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8393700583063109961">Odeslat zprávu</translation>
 <translation id="8397825320644530257">Odpojit připojený telefon</translation>
 <translation id="8398877366907290961">Přesto pokračovat</translation>
-<translation id="8400146488506985033">Správa uživatelů</translation>
 <translation id="8401432541486058167">Zadejte kód PIN přidružený k vaší chytré kartě.</translation>
 <translation id="8405046151008197676">Zobrazit hlavní změny v poslední aktualizaci</translation>
 <translation id="8407199357649073301">Úroveň protokolu:</translation>
@@ -6834,7 +6830,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8465444703385715657">Plugin <ph name="PLUGIN_NAME" /> potřebuje ke spuštění vaše povolení</translation>
 <translation id="8466417995783206254">Na této kartě se přehrává video v režimu obrazu v obraze</translation>
 <translation id="8467326454809944210">Vybrat jiný jazyk</translation>
-<translation id="8470214316007448308">Jiní lidé</translation>
 <translation id="8470513973197838199">Uložená hesla z webu <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Weby se obvykle připojují k zařízením USB kvůli funkcím, jako je tisk dokumentu nebo uložení obsahu na paměťové zařízení</translation>
 <translation id="8471959340398751476">Slevy jsou vypnuté. Můžete je zapnout v nabídce přizpůsobení</translation>
@@ -7021,6 +7016,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="8676374126336081632">Vymazat vstup</translation>
 <translation id="8676770494376880701">Byla připojena nabíječka s nízkým napětím</translation>
 <translation id="8677212948402625567">Sbalit vše...</translation>
+<translation id="867767487203716855">Další aktualizace</translation>
 <translation id="8677859815076891398">Žádná alba. Vytvořte album ve <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Karty se nezmenšují</translation>
 <translation id="8678933587484842200">Jak tuto aplikaci chcete spouštět?</translation>
@@ -7109,7 +7105,6 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="87646919272181953">Album Fotek Google</translation>
 <translation id="8767621466733104912">Automaticky aktualizovat Chrome pro všechny uživatele</translation>
 <translation id="8770406935328356739">Kořenový adresář rozšíření</translation>
-<translation id="8770507190024617908">Správa uživatelů</translation>
 <translation id="8771300903067484968">Pozadí úvodní stránky bylo resetováno na výchozí pozadí.</translation>
 <translation id="8773302562181397928">Uložit tiskárnu <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Potvrzení obnovení</translation>

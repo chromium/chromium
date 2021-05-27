@@ -278,6 +278,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> секунд үлдсэн</translation>
 <translation id="2779651927720337254">татаж чадсангүй</translation>
 <translation id="2781151931089541271">1 секунд үлдсэн</translation>
+<translation id="2788468313014644040">Бүлгийн тоо</translation>
 <translation id="2801022321632964776">Chrome-н хамгийн сүүлийн хувилбарт хэлээ авахын тулд шинэчилнэ үү</translation>
 <translation id="2805756323405976993">Програм</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@ Privacy Sandbox нь идэвхтэй хөгжүүлэлтэд байгаа бө
 <translation id="4056223980640387499">Сепиа</translation>
 <translation id="4060598801229743805">Сонголт дэлгэцийн дээд хэсэгт байна</translation>
 <translation id="4062305924942672200">Хууль, эрх зүйн мэдээлэл</translation>
-<translation id="4082818367361753283">Бүлгийн ID</translation>
 <translation id="4084682180776658562">Хадгалах</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" />-с – <ph name="BEGIN_DEEMPHASIZED" />Google-с хүргэсэн<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Апп-н өгөгдлийг устгах уу?</translation>

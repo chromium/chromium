@@ -456,6 +456,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5782227691023083829">Traduzindo...</translation>
 <translation id="5797070761912323120">O histórico será usado para personalizar a Pesquisa, anúncios e outros serviços Google.</translation>
 <translation id="5803566855766646066">Tem certeza de que você quer descartar este novo card?</translation>
+<translation id="5812974770859303494">Adicionar a…</translation>
 <translation id="5816228676161003208">Isso permite que você pesquise mais rapidamente usando sua voz.</translation>
 <translation id="581659025233126501">Ativar a sincronização</translation>
 <translation id="5819208479324046259">Gerenciado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -766,6 +767,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8668210798914567634">Esta página foi salva na sua lista de leitura.</translation>
 <translation id="8680787084697685621">Os detalhes de login da conta estão desatualizados.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Fechar guia}one{Fechar guia}other{Fechar guias}}</translation>
 <translation id="8706588385081740091">Senhas</translation>
 <translation id="8717864919010420084">Copiar link</translation>
 <translation id="8721297211384281569">Menu Ferramentas</translation>

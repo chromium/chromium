@@ -2852,7 +2852,6 @@
 <translation id="4035758313003622889">&amp;કાર્ય વ્યવસ્થાપક</translation>
 <translation id="4036778507053569103">સર્વરમાંથી ડાઉનલોડ કરેલી પૉલિસી અમાન્ય છે.</translation>
 <translation id="4037084878352560732">ઘોડો</translation>
-<translation id="4037889604535939429">વ્યક્તિની માહિતીમાં ફેરફાર કરો</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{પેજમાંથી બહાર નીકળો}one{પેજમાંથી બહાર નીકળો}other{પેજમાંથી બહાર નીકળો}}</translation>
 <translation id="4044612648082411741">તમારો પ્રમાણપત્ર પાસવર્ડ દાખલ કરો</translation>
 <translation id="4044708573046946214">સ્ક્રીન લૉકનો પાસવર્ડ</translation>
@@ -4318,7 +4317,6 @@
 <translation id="5709557627224531708">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="5711983031544731014">અનલૉક કરવામાં અસમર્થ છે. તમારો પાસવર્ડ દાખલ કરો.</translation>
 <translation id="5712153969432126546">સાઇટ અમુક વખતે PDFs પ્રકાશિત કરે છે, જેમ કે દસ્તાવેજો, કરારો અને ફોર્મ</translation>
-<translation id="5712323955984474772">આગલી અપડેટ</translation>
 <translation id="5715711091495208045">પ્લગિન બ્રોકર: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ડિફૉલ્ટ શોધ એંજિન્સ</translation>
 <translation id="5719637365829998022">QR કોડ સ્કૅન કરવામાં આવ્યો છે.</translation>
@@ -5087,7 +5085,6 @@ USB ડિવાઇસ</translation>
 <translation id="6563469144985748109">તમારા સંચાલકે હજી સુધી તેને મંજૂર કરેલ નથી</translation>
 <translation id="6568283005472142698">ટૅબની શોધ</translation>
 <translation id="6569911211938664415">તમારા Google એકાઉન્ટ (<ph name="ACCOUNT" />)માં પાસવર્ડ સાચવવામાં આવે છે, જેથી તમે કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરી શકો</translation>
-<translation id="6569934958368283244">અન્ય લોકો</translation>
 <translation id="6573497332121198392">શૉર્ટકટ કાઢી નાખી શકાતો નથી</translation>
 <translation id="657402800789773160">&amp;Reload This Page</translation>
 <translation id="6577284282025554716">ડાઉનલોડ રદ કર્યું: <ph name="FILE_NAME" /></translation>
@@ -6756,7 +6753,6 @@ USB ડિવાઇસ</translation>
 <translation id="8393700583063109961">સંદેશ મોકલો</translation>
 <translation id="8397825320644530257">કનેક્ટ થયેલા ફોનને ડિસકનેક્ટ કરવાના સેટિંગ</translation>
 <translation id="8398877366907290961">કોઈપણ રીતે આગળ વધારો</translation>
-<translation id="8400146488506985033">લોકોને મેનેજ કરો</translation>
 <translation id="8401432541486058167">તમારા સ્માર્ટ કાર્ડ સાથે સંકળાયેલો હોય તે પિન પ્રદાન કરો.</translation>
 <translation id="8404893580027489425">ફિંગરપ્રિન્ટ સેન્સર તમારા <ph name="DEVICE_TYPE" />ની જમણી બાજુએ છે. તેને કોઈપણ આંગળી વડે હળવેથી સ્પર્શ કરો.</translation>
 <translation id="8405046151008197676">એકદમ નવી અપડેટની હાઇલાઇટ મેળવો</translation>
@@ -6812,7 +6808,6 @@ USB ડિવાઇસ</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ને ચલાવવા માટે તમારી પરવાનગીની જરૂર છે</translation>
 <translation id="8466417995783206254">આ ટૅબમાં ચિત્રમાં ચિત્ર મોડમાં વીડિઓ ચાલી રહ્યો છે.</translation>
 <translation id="8467326454809944210">બીજી ભાષા પસંદ કરો</translation>
-<translation id="8470214316007448308">અન્ય લોકો</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> માટે સાચવેલા પાસવર્ડ</translation>
 <translation id="8471525937465764768">દસ્તાવેજ પ્રિન્ટ કરવા જેવી અથવા સ્ટોરેજ ડિવાઇસમાં સાચવવા જેવી સુવિધાઓ માટે, સાઇટ સામાન્ય રીતે USB ડિવાઇસ સાથે કનેક્ટ કરે છે</translation>
 <translation id="8471959340398751476">છૂટ મેળવવાની સુવિધા બંધ છે. તમે તેને 'કસ્ટમાઇઝ કરો' મેનૂમાં જઈને ચાલુ કરી શકો છો</translation>
@@ -6999,6 +6994,7 @@ USB ડિવાઇસ</translation>
 <translation id="8676374126336081632">ઇનપુટ સાફ કરો</translation>
 <translation id="8676770494376880701">નિમ્ન-પાવર ચાર્જર કનેક્ટ કર્યું છે</translation>
 <translation id="8677212948402625567">બધાને સંકુચિત કરો...</translation>
+<translation id="867767487203716855">આગલી અપડેટ</translation>
 <translation id="8677859815076891398">કોઈ આલ્બમ નથી. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />માં કોઈ આલ્બમ બનાવો.</translation>
 <translation id="8678582529642151449">ટૅબ સંકોચાતી નથી</translation>
 <translation id="8678933587484842200">તમે આ ઍપ્લિકેશન કેવી રીતે લૉન્ચ કરવાનું પસંદ કરશો?</translation>
@@ -7087,7 +7083,6 @@ USB ડિવાઇસ</translation>
 <translation id="87646919272181953">Google Photos આલ્બમ</translation>
 <translation id="8767621466733104912">Chrome ને તમામ વપરાશકર્તાઓ માટે ઑટોમૅટિક રીતે અપડેટ કરો</translation>
 <translation id="8770406935328356739">એક્સ્ટેન્શન રૂટ ડિરેક્ટરી</translation>
-<translation id="8770507190024617908">લોકોને મેનેજ કરો</translation>
 <translation id="8771300903067484968">પ્રારંભ પેજના બૅકગ્રાઉન્ડને ડિફૉલ્ટ બૅકગ્રાઉન્ડ તરીકે સેટ કરવામાં આવ્યું છે.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" />ને સાચવો</translation>
 <translation id="8774379074441005279">પુનઃસ્થાપિત કરવાનું કન્ફર્મ કરો</translation>

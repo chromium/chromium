@@ -456,6 +456,7 @@
 <translation id="5782227691023083829">正在翻译...</translation>
 <translation id="5797070761912323120">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索、广告和其他 Google 服务</translation>
 <translation id="5803566855766646066">确定要舍弃这张新信用卡吗？</translation>
+<translation id="5812974770859303494">添加到…</translation>
 <translation id="5816228676161003208">这样，您就可以使用语音更快速地进行搜索。</translation>
 <translation id="581659025233126501">开启同步功能</translation>
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -766,6 +767,7 @@
 <translation id="8654802032646794042">取消</translation>
 <translation id="8668210798914567634">此页面已保存到您的阅读列表。</translation>
 <translation id="8680787084697685621">帐号登录详细信息已过期。</translation>
+<translation id="8693663554456874301">{count,plural, =1{关闭这个标签页}other{关闭这些标签页}}</translation>
 <translation id="8706588385081740091">密码</translation>
 <translation id="8717864919010420084">复制链接</translation>
 <translation id="8721297211384281569">工具菜单</translation>

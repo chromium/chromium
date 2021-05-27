@@ -278,6 +278,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2777555524387840389"><ph name="SECONDS" /> másodperc van hátra</translation>
 <translation id="2779651927720337254">sikertelen</translation>
 <translation id="2781151931089541271">1 másodperc van hátra</translation>
+<translation id="2788468313014644040">Csoportszám</translation>
 <translation id="2801022321632964776">Frissítsen, hogy a saját nyelvén használhassa a Chrome legújabb verzióját</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="4056223980640387499">Szépia</translation>
 <translation id="4060598801229743805">A lehetőségek a képernyő tetején találhatók</translation>
 <translation id="4062305924942672200">Jogi információk</translation>
-<translation id="4082818367361753283">Csoportazonosító</translation>
 <translation id="4084682180776658562">Könyvjelző</translation>
 <translation id="4084712963632273211">A következőtől: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />megjelenítette a Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Törli az alkalmazásadatokat?</translation>

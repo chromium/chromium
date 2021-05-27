@@ -456,6 +456,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5782227691023083829">Traduction en cours...</translation>
 <translation id="5797070761912323120">Google peut utiliser votre historique pour personnaliser la recherche, les annonces et d'autres services Google</translation>
 <translation id="5803566855766646066">Voulez-vous vraiment supprimer cette nouvelle carte ?</translation>
+<translation id="5812974770859303494">Ajouter à…</translation>
 <translation id="5816228676161003208">Cela vous permet d'effectuer des recherches plus rapidement en utilisant la recherche vocale.</translation>
 <translation id="581659025233126501">Activer la synchronisation</translation>
 <translation id="5819208479324046259">Géré par <ph name="MANAGER" />. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -767,6 +768,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8654802032646794042">Annuler</translation>
 <translation id="8668210798914567634">Cette page a été enregistrée dans votre liste de lecture.</translation>
 <translation id="8680787084697685621">Les informations de connexion au compte sont obsolètes.</translation>
+<translation id="8693663554456874301">{count,plural, =1{Fermer l'onglet}one{Fermer l'onglet}other{Fermer les onglets}}</translation>
 <translation id="8706588385081740091">Mots de passe</translation>
 <translation id="8717864919010420084">Copier le lien</translation>
 <translation id="8721297211384281569">Menu "Outils"</translation>

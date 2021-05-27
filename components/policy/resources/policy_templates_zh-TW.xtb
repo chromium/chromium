@@ -215,6 +215,7 @@
 <translation id="1294263471858445589">在無痕模式工作階段和一般工作階段中啟用背景驗證。</translation>
 <translation id="1295737447968372331">在登入畫面上啟用語音輸入功能</translation>
 <translation id="1297182715641689552">使用 .pac Proxy 指令碼</translation>
+<translation id="1297827666345629703">受管理帳戶必須是主要帳戶</translation>
 <translation id="1297961932043741908">設定單一 Chrome 例項可以使用的記憶體大小限制 (以 MB 為單位)。</translation>
 <translation id="1304973015437969093">自動在背景中安裝的擴充功能/應用程式 ID 和更新網址</translation>
 <translation id="1305400589435476516">如果將這項政策設為啟用，將允許裝置使用漫遊服務功能。
@@ -577,6 +578,13 @@
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="1755310913456007816">採用現有的線上撤銷檢查設定</translation>
 <translation id="1760951637494635692">允許這些網站上的 Serial API</translation>
+<translation id="1765503534110351026">這項政策已遭淘汰，請改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
+
+       如果設定這項政策，<ph name="PRODUCT_NAME" /> 會略過此處所列主機的 Proxy。只有在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未設定，且你為 <ph name="PROXY_MODE_POLICY_NAME" /> 選取 <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> 或 <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> 時，這項政策才會生效。
+
+       如果你選擇了透過任何其他模式設定 Proxy 政策，請勿設定這項政策。
+
+       注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
 <translation id="1767673020408652620">在零狀態搜尋框中啟用應用程式推薦</translation>
 <translation id="1780323582106687813">這項政策已遭淘汰，請改用「<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />」政策。
 
@@ -799,6 +807,7 @@
 <translation id="2082205219176343977">設定裝置的最低 Chrome 版本限制。</translation>
 <translation id="208566302163036794">封鎖已停用的功能</translation>
 <translation id="208623333578980446">允許電源管理的螢幕 Wake Lock</translation>
+<translation id="2086944573376916479">受管理帳戶必須是主要帳戶，而且不能有次要帳戶。</translation>
 <translation id="2090939118981888335">如果將這項政策設為啟用，代表允許使用資料壓縮 Proxy。如果將這項政策設為停用，則代表禁止使用該 Proxy。
 
       如果設定這項政策，使用者將無法變更設定。如果不設定，使用者可選擇使用該功能。</translation>
@@ -852,6 +861,17 @@
 
       如果不設定這項政策，瀏覽器只會在偵測到電腦上的實體記憶體即將用盡時，才會開始嘗試節省記憶體。</translation>
 <translation id="2166472654199325139">不要針對成人內容篩選網站。</translation>
+<translation id="2168060657210442816">
+      如要使用這項政策，必須將 <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> 設為 True，政策才會生效。
+
+      如果在電腦層級將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />，系統會強制將所有受管理帳戶變更為主要帳戶。
+      如果在某個帳戶中將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />，系統一律會將該帳戶變更為主要帳戶，但其設定檔中可具備次要帳戶。
+
+      如果在電腦層級將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />，系統會強制將所有受管理帳戶變更為主要帳戶。
+      如果在某個帳戶中將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />，系統一律會將該帳戶變更為主要帳戶，而且其設定檔中不能有任何次要帳戶。
+
+      如果將這項政策設為 <ph name="POLICY_VALUE_NONE" /> 或不設定，系統不會對受管理帳戶設定限制。這麼做可能導致受管理帳戶變更為次要帳戶，進而讓該帳戶無法接收由管理員對其設定的政策。
+    </translation>
 <translation id="2168397434410358693">在 AC 供電環境下執行時的閒置延遲時間</translation>
 <translation id="217013996107840632">從替代瀏覽器切換到 Chrome 所使用的指令列參數。</translation>
 <translation id="2170233653554726857">啟用 WPAD 最佳化功能</translation>
@@ -1758,6 +1778,11 @@
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="3261592499545947104">憑證過期之前提早觸發更新程序的秒數</translation>
+<translation id="3264706118366247207">設定當使用者關閉所有瀏覽器視窗時要刪除的瀏覽資料類型清單。可用的資料類型有瀏覽記錄 (<ph name="DATA_TYPE_BROWSING_HISTORY" />)、下載記錄 (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />)、Cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />)、快取內容<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、自動填入內容 (<ph name="DATA_TYPE_AUTOFILL" />)、密碼 (<ph name="DATA_TYPE_PASSWORD" />)、網站設定 (<ph name="DATA_TYPE_SITE_SETTINGS" />) 和代管的應用程式資料 (<ph name="DATA_TYPE_HOSTED_APP_DATA" />)。這項政策的優先順序低於 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />。
+
+      如要使用這項政策，必須將 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策設為 True，否則系統會予以忽略。如果是在平台層級設定這項政策，必須在平台層級停用同步功能。如果是在使用者層級設定這項政策，則必須為該使用者停用同步功能，這樣這項政策才會生效。
+
+      如果未正常關閉 <ph name="PRODUCT_NAME" /> (例如瀏覽器或作業系統當機時)，系統會在下次載入設定檔時清除瀏覽資料。</translation>
 <translation id="3264793472749429012">預設搜尋引擎編碼</translation>
 <translation id="3273221114520206906">預設 JavaScript 設定</translation>
 <translation id="328347261792478720">在預設狀態下，瀏覽器會根據使用者顯示個人化的媒體推薦內容。如果將這項政策設為停用，瀏覽器會向使用者隱藏這類推薦內容。如果將這項政策設為啟用或不設定，瀏覽器會向使用者顯示媒體推薦內容。</translation>
@@ -1815,6 +1840,7 @@
           指定政策值時需以毫秒為單位。設定值必須小於或等於閒置延遲時間。
 
           只有當閒置動作設為登出或關機時，系統才會顯示警告訊息。</translation>
+<translation id="3363360928811201045">對受管理帳戶設定限制</translation>
 <translation id="3367868895271989224">如果將這項政策設為啟用，系統會隔離所有網站。(每個網站將各自以獨立程序執行)。如果將這項政策設為停用或不設定，系統不會停用網站隔離，但使用者可以選擇停用 (例如：在 chrome://flags 中透過停用網站隔離的方式進行停用)。
 
       <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> 也可用於微調來源。請在 <ph name="PRODUCT_OS_NAME" /> 76 以下版本中，將 <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> 裝置政策設為相同值。(原因是如果兩者的值不相符，在進入使用者工作階段時可能會發生延遲。)
@@ -2990,6 +3016,7 @@
       如果某項政策不在清單中，但發生來源、範圍或層級衝突，系統會套用優先順序最高的政策。</translation>
 <translation id="5056708224511062314">已停用螢幕放大鏡</translation>
 <translation id="5058573563327660283">選取自動清理時用來釋出磁碟空間的策略 (已不適用)</translation>
+<translation id="5059201920681374653">必須在關聯的受管理裝置上使用受管理帳戶</translation>
 <translation id="5061114193960158745">你可以透過這項政策，控管一律不觸發瀏覽器切換的網站清單。系統會將每個項目視為規則。相符的規則不會開啟替代瀏覽器。這項政策與 <ph name="URL_LIST_POLICY_NAME" /> 政策的不同之處在於，規則為雙向適用。如果 <ph name="IE_PRODUCT_NAME" /> 增益集已啟用，這項政策也會控管 <ph name="IE_PRODUCT_NAME" /> 是否應在 <ph name="PRODUCT_NAME" /> 中開啟這些網址。
 
 
@@ -3174,6 +3201,7 @@
 
       如果未設定這項政策，使用者無法在已註冊的 <ph name="PRODUCT_OS_NAME" />上玩恐龍復活節彩蛋遊戲，但可以在其他環境下玩這個遊戲。</translation>
 <translation id="529457411593078576">在第一次執行 CCT 時啟用《服務條款》</translation>
+<translation id="5298949392804966105">不對受管理帳戶設定限制</translation>
 <translation id="530134925949808452">要在一天中的哪個時段 (以當地時間為準) 更新用量配額。</translation>
 <translation id="5303080953475303561">你可以透過這項政策，控管螢幕鎖定畫面要求使用者輸入密碼以快速解鎖的頻率。每當螢幕鎖定畫面顯示時，如果上一次輸入密碼的時間點落在所選值指定的時間範圍之前，裝置將無法快速解鎖。如果使用者停留在螢幕鎖定畫面的時間超過這個時間長度，則下次當他們輸入錯誤的解鎖碼或重新進入螢幕鎖定畫面時 (以先發生者為準)，系統就會要求輸入密碼。
 
@@ -4301,6 +4329,26 @@
 
           注意：如果指定 <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" />，這項政策會遭到覆寫。</translation>
 <translation id="6833988859168635883">起始頁面、首頁和新分頁</translation>
+<translation id="6834298774555537368">你可以透過這項政策，設定 Chrome 和 ARC 應用程式的 Proxy 設定，系統會忽略所有從指令列所指定的 Proxy 相關選項。
+
+       如果不設定這項政策，使用者就能選擇要使用的 Proxy 設定。
+
+      設定 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策時，可使用下列欄位：
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 可讓你指定 Chrome 要使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> 是 Proxy .pac 檔案的網址
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 是 Proxy 伺服器的網址
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 是會略過的 Proxy 主機清單
+
+       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> 欄位已遭淘汰，請改用 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 欄位。
+
+        如果將 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 的值設為：
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />：Chrome 一律不會使用 Proxy，且會忽略所有其他欄位。
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />：Chrome 會使用系統 Proxy，並忽略所有其他欄位。
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />：Chrome 會忽略所有其他欄位。
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />：Chrome 會使用 <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 欄位。
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />：Chrome 會使用 <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 欄位。
+
+      注意：如需詳細範例，請前往 Chromium 計畫 (網址為 https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)。</translation>
 <translation id="6835883744948188639">顯示週期性提示，建議使用者重新啟動瀏覽器</translation>
 <translation id="683688607121170501">如果啟用這項設定，當使用者登入 <ph name="PRODUCT_OS_NAME" />裝置後，將可在瀏覽器視窗的內容區域和 Android 應用程式中切換 Google 帳戶。
 

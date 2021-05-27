@@ -304,12 +304,14 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2042213636306070719">Bandeja 7</translation>
 <translation id="204357726431741734">Accede a tu Cuenta de Google para usar las contraseñas guardadas allí</translation>
 <translation id="2053111141626950936">No se traducirán las páginas en <ph name="LANGUAGE" />.</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Si habilitas este control y su estado es "activado", Chrome determinará el grupo grande de personas, o "cohorte", al que más se asemeja tu actividad de navegación reciente. Los anunciantes podrán seleccionar los anuncios del grupo, y tu actividad de navegación se mantendrá privada en tu dispositivo. Tu grupo se actualiza todos los días.}=1{Si habilitas este control y su estado es "activado", Chrome determinará el grupo grande de personas, o "cohorte", al que más se asemeja tu actividad de navegación reciente. Los anunciantes podrán seleccionar los anuncios del grupo, y tu actividad de navegación se mantendrá privada en tu dispositivo. Tu grupo se actualiza todos los días.}other{Si habilitas este control y su estado es "activado", Chrome determinará el grupo grande de personas, o "cohorte", al que más se asemeja tu actividad de navegación reciente. Los anunciantes podrán seleccionar los anuncios del grupo, y tu actividad de navegación se mantendrá privada en tu dispositivo. Tu grupo se actualiza cada {NUM_DAYS} días.}}</translation>
 <translation id="2053553514270667976">Código Postal</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugerencia}other{# sugerencias}}</translation>
 <translation id="2071692954027939183">Se bloquearon las notificaciones de forma automática porque no sueles permitirlas.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="20817612488360358">Se ha establecido la configuración de proxy del sistema, pero también se ha especificado una configuración explícita de proxy.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2085876078937250610">Guardar…</translation>
 <translation id="2088086323192747268">Botón Administrar la sincronización: presiona Intro para administrar en la configuración de Chrome qué información sincronizar</translation>
 <translation id="2091887806945687916">Sonido</translation>
 <translation id="2094505752054353250">El dominio no coincide.</translation>
@@ -390,6 +392,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2355395290879513365">Es posible que los atacantes vean las imágenes que observas en este sitio y las modifiquen para engañarte.</translation>
 <translation id="2356070529366658676">Preguntar</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> y <ph name="ACCOUNT_MANAGER" /> administran tu dispositivo y tu cuenta, respectivamente.</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{En menos de un día}=1{En un día}other{En {NUM_DAYS} días}}</translation>
 <translation id="2359629602545592467">Varias</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2359961752320758691">Se aplicó tu número de tarjeta virtual.</translation>
@@ -711,6 +714,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3590643883886679995">Los datos de acceso se almacenarán en este dispositivo cuando salgas del modo Incógnito.</translation>
 <translation id="359126217934908072">Mes/Año:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Puedes restablecer tu grupo en cualquier momento. Te llevará aproximadamente un día unirte a un grupo nuevo.}=1{Puedes restablecer tu grupo en cualquier momento. Te llevará aproximadamente un día unirte a un grupo nuevo.}other{Puedes restablecer tu grupo en cualquier momento. Te llevará {NUM_DAYS} días unirte a un grupo nuevo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">El administrador bloqueó la aplicación</translation>
 <translation id="3608932978122581043">Orientación de la entrada</translation>
@@ -1193,6 +1197,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5332219387342487447">Método de envío</translation>
 <translation id="5333022057423422993">Chrome encontró la contraseña que acabas de usar en una violación de la seguridad de los datos. Para proteger tus cuentas, te recomendamos revisar las contraseñas guardadas.</translation>
 <translation id="5334013548165032829">Registros detallados del sistema</translation>
+<translation id="5334145288572353250">¿Deseas guardar la dirección?</translation>
 <translation id="5340250774223869109">Se bloqueó la app</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344579389779391559">Es posible que esta página intente cobrarte dinero</translation>
@@ -1532,6 +1537,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6671697161687535275">¿Confirmas que quieres quitar la sugerencia de formulario de Chromium?</translation>
 <translation id="6685834062052613830">Salir y completar la configuración</translation>
 <translation id="6687335167692595844">Se necesita el tamaño de la fuente</translation>
+<translation id="6688743156324860098">Actualizar…</translation>
 <translation id="6689249931105087298">Relativo con la compresión de puntos negros</translation>
 <translation id="6689271823431384964">Como accediste a tu Cuenta de Google, Chrome te ofrece guardar tus tarjetas allí. Puedes modificar este comportamiento en la configuración. El nombre del titular de la tarjeta se obtiene de tu cuenta.</translation>
 <translation id="6698381487523150993">Creado:</translation>
@@ -1547,6 +1553,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6744009308914054259">Mientras esperas a que se restablezca la conexión, puedes visitar Descargas para leer artículos sin conexión.</translation>
 <translation id="6753269504797312559">Valor de la política</translation>
 <translation id="6757797048963528358">El dispositivo se suspendió.</translation>
+<translation id="6767985426384634228">¿Deseas actualizar la dirección?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
@@ -1706,6 +1713,7 @@ Detalles adicionales:
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">No aplicable</translation>
 <translation id="7390545607259442187">Confirmar tarjeta</translation>
+<translation id="7392089738299859607">Actualizar dirección</translation>
 <translation id="7399802613464275309">Verificación de seguridad</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120">Tu <ph name="DEVICE_NAME" /> está administrado</translation>
@@ -1844,6 +1852,7 @@ Detalles adicionales:
 <translation id="7865448901209910068">Mejor velocidad</translation>
 <translation id="7874263914261512992">Ingresaste tu contraseña en un sitio engañoso. Chrome te recomienda revisar las contraseñas guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y otros sitios donde uses esta contraseña.</translation>
 <translation id="7878562273885520351">Es posible que tu contraseña esté en peligro</translation>
+<translation id="7880146494886811634">Guardar dirección</translation>
 <translation id="7882421473871500483">Marrón</translation>
 <translation id="7887683347370398519">Verifica tu CVC y vuelve a intentarlo.</translation>
 <translation id="7887885240995164102">Ingresar al modo de pantalla en pantalla</translation>

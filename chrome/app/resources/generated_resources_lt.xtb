@@ -2879,7 +2879,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4035758313003622889">&amp;Užduočių tvarkytuvė</translation>
 <translation id="4036778507053569103">Iš serverio atsisiųsta politika yra netinkama.</translation>
 <translation id="4037084878352560732">Arklys</translation>
-<translation id="4037889604535939429">Asmens informacijos redagavimas</translation>
 <translation id="4040753847560036377">Netinkamas PUK kodas</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Išeiti iš puslapio}one{Išeiti iš puslapių}few{Išeiti iš puslapių}many{Išeiti iš puslapių}other{Išeiti iš puslapių}}</translation>
 <translation id="4044612648082411741">Įveskite sertifikato slaptažodį</translation>
@@ -4349,7 +4348,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5709557627224531708">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="5711983031544731014">Nepavyko atrakinti. Įveskite slaptažodį.</translation>
 <translation id="5712153969432126546">Svetainėse kartais skelbiami PDF failai, pvz., dokumentai, sutartys ir formos</translation>
-<translation id="5712323955984474772">Kitas naujinys</translation>
 <translation id="5715711091495208045">Papildinių tarpininkas: „<ph name="PLUGIN_NAME" />“</translation>
 <translation id="5719603411793408026">Numatytieji paieškos varikliai</translation>
 <translation id="5719637365829998022">QR kodas nuskaitytas.</translation>
@@ -5121,7 +5119,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6563469144985748109">Jūsų valdytojas dar jos nepatvirtino</translation>
 <translation id="6568283005472142698">Skirtukų paieška</translation>
 <translation id="6569911211938664415">Slaptažodžiai išsaugomi „Google“ paskyroje (<ph name="ACCOUNT" />), kad galėtumėte juos naudoti bet kuriame įrenginyje.</translation>
-<translation id="6569934958368283244">Kiti žmonės</translation>
 <translation id="6573497332121198392">Negalima pašalinti sparčiojo klavišo</translation>
 <translation id="657402800789773160">&amp;Iš naujo įkelti šį puslapį</translation>
 <translation id="6577284282025554716">Atsisiuntimas atšauktas: <ph name="FILE_NAME" /></translation>
@@ -6808,7 +6805,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8393700583063109961">Siųsti pranešimą</translation>
 <translation id="8397825320644530257">Atsieti susietą telefoną</translation>
 <translation id="8398877366907290961">Vis tiek tęsti</translation>
-<translation id="8400146488506985033">Tvarkyti žmones</translation>
 <translation id="8401432541486058167">Nurodykite su išmaniąja kortele susietą PIN kodą.</translation>
 <translation id="8404893580027489425">Kontrolinio kodo jutiklis yra įrenginio „<ph name="DEVICE_TYPE" />“ dešinėje pusėje. Lengvai jį palieskite bet kuriuo pirštu.</translation>
 <translation id="8405046151008197676">Gaukite svarbiausios informacijos apie paskiausią naujinį</translation>
@@ -6864,7 +6860,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8465444703385715657">Norint paleisti „<ph name="PLUGIN_NAME" />“ reikalingas jūsų leidimas</translation>
 <translation id="8466417995783206254">Šiame skirtuke vaizdo įrašas leidžiamas vaizdo vaizde režimu.</translation>
 <translation id="8467326454809944210">Pasirinkti kitą kalbą</translation>
-<translation id="8470214316007448308">Kiti žmonės</translation>
 <translation id="8470513973197838199">Išsaugoti <ph name="ORIGIN" /> slaptažodžiai</translation>
 <translation id="8471525937465764768">Paprastai svetainėse prisijungiama prie USB įrenginių vykdant tam tikras funkcijas, pvz., spausdinant dokumentą ar saugant saugyklos įrenginyje</translation>
 <translation id="8471959340398751476">Nuolaidų funkcija išjungta. Ją galite įjungti tinkinimo meniu</translation>
@@ -7051,6 +7046,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="8676374126336081632">Išvalyti įvestą tekstą</translation>
 <translation id="8676770494376880701">Prijungtas mažos galios įkroviklis</translation>
 <translation id="8677212948402625567">Sutraukti viską...</translation>
+<translation id="867767487203716855">Kitas naujinys</translation>
 <translation id="8677859815076891398">Nėra albumų. Sukurkite albumą <ph name="LINK_BEGIN" />„Google“ nuotraukose<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Skirtukai nesumažinami</translation>
 <translation id="8678933587484842200">Kaip norite paleisti šią programą?</translation>
@@ -7139,7 +7135,6 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="87646919272181953">„Google“ nuotraukų albumas</translation>
 <translation id="8767621466733104912">Automatiškai atnaujinti „Chrome“ visiems naudotojams</translation>
 <translation id="8770406935328356739">Plėtinio šakninis katalogas</translation>
-<translation id="8770507190024617908">Tvarkyti žmones</translation>
 <translation id="8771300903067484968">Pradžios puslapio fonas iš naujo nustatytas kaip numatytasis fonas.</translation>
 <translation id="8773302562181397928">Išsaugoti „<ph name="PRINTER_NAME" />“</translation>
 <translation id="8774379074441005279">Atkūrimo patvirtinimas</translation>

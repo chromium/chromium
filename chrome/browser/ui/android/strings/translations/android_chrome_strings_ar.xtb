@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1016498331642356377">يتيح لك هذا الزر إجراء بحث صوتي بسرعة. ولتعديل هذا الاختصار، انقر مع الاستمرار.</translation>
 <translation id="1028699632127661925">جارٍ الإرسال إلى <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">محو البيانات هنا أيضًا؟</translation>
 <translation id="1036348656032585052">إيقاف</translation>
@@ -157,6 +158,7 @@
 <translation id="2067805253194386918">نص</translation>
 <translation id="2068748236079642969">مشاهدة الفيديو التالي</translation>
 <translation id="2074143993849053708">‏تم إغلاق واجهة المستخدم الخاصة بالموافقة على استخدام ميزة "البحث الصوتي" في "مساعد Google".</translation>
+<translation id="2075835334924942448">ستظهر الأخبار هنا</translation>
 <translation id="2082238445998314030">النتيجة <ph name="RESULT_NUMBER" /> من <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">المزامنة والتخصيص على الأجهزة</translation>
 <translation id="2100273922101894616">تسجيل الدخول تلقائيًا</translation>
@@ -170,6 +172,7 @@
 <translation id="2131665479022868825">تم توفير <ph name="DATA" /></translation>
 <translation id="213279576345780926">تم إغلاق <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">الإضافة إلى الشاشة الرئيسية</translation>
+<translation id="2141396931810938595">حسب معدّل استخدامك</translation>
 <translation id="214888715418183969">‏اختَر ما تريد مشاركته في Chrome. وسيتم استخدام المقاييس التي تشاركها للمساعدة في تحسين ميزات Chrome وأدائه وثباته.</translation>
 <translation id="2154484045852737596">تعديل البطاقة</translation>
 <translation id="2154710561487035718">‏نسخ عنوان URL</translation>
@@ -258,6 +261,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{ملف صوتي واحد (#)}zero{# ملف صوتي}two{ملفان صوتيان (#)}few{# ملفات صوتية}many{# ملفًا صوتيًا}other{# ملف صوتي}}</translation>
 <translation id="2656405586795711023">تطبيقات الويب</translation>
 <translation id="2689830683995595741">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome و"نظام التشغيل Chrome"<ph name="END_LINK2" />. وينطبق ذلك أيضًا على <ph name="BEGIN_LINK3" />إشعار الخصوصية لحسابات Google المُدارة من خلال Family Link<ph name="END_LINK3" />.</translation>
+<translation id="2702516483241149200">ميزة جديدة: يمكنك مشاركة رابط يؤدي إلى هذا النص.</translation>
 <translation id="2704606927547763573">تم النسخ</translation>
 <translation id="2707726405694321444">إعادة تحميل الصفحة</translation>
 <translation id="271033894570825754">جديدة</translation>
@@ -274,8 +278,10 @@
 <translation id="2777555524387840389">عدد الثواني المتبقية: <ph name="SECONDS" /></translation>
 <translation id="2779651927720337254">تعذَّر التنزيل</translation>
 <translation id="2781151931089541271">يتبقى ثانية واحدة</translation>
+<translation id="2788468313014644040">رقم المجموعة</translation>
 <translation id="2801022321632964776">‏يمكنك إجراء التحديث للحصول على لغتك في أحدث إصدار من Chrome.</translation>
 <translation id="2805756323405976993">التطبيقات</translation>
+<translation id="2806840421670364300">‏التعلُّم الموحّد للمجموعات النموذجية (FLoC)</translation>
 <translation id="281504910091592009">‏بإمكانك عرض كلمات المرور المحفوظة وإدارتها في <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="2818669890320396765">للحصول على الإشارات المرجعية على جميع أجهزتك، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -304,6 +310,7 @@
 <translation id="2956410042958133412">تتم إدارة هذا الحساب بواسطة <ph name="PARENT_NAME_1" /> و <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{صفحة واحدة (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) غير مقروءة}zero{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}two{صفحتان (<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />) غير مقروءتَين}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحات غير مقروءة}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}}</translation>
 <translation id="2979025552038692506">علامة تبويب محددة للتصفح المتخفي</translation>
+<translation id="2979448359891869301">يتعذّر توسيع نافذة لقطة الشاشة. حاوِل مرة أخرى عندما يتوفّر قدر كافٍ من الذاكرة.</translation>
 <translation id="2987620471460279764">النصوص التي تمت مشاركتها من جهاز آخر</translation>
 <translation id="2989523299700148168">تم الانتقال إليها مؤخرًا</translation>
 <translation id="2992473221983447149">أوصاف الصور</translation>
@@ -345,6 +352,7 @@
 <translation id="3265534588625245297">إدارة المواقع الإلكترونية التي تتابعها</translation>
 <translation id="3269093882174072735">تحميل الصورة</translation>
 <translation id="3269956123044984603">‏للحصول على علامات التبويب من أجهزتك الأخرى، فعِّل "المزامنة التلقائية للبيانات" في إعدادات حساب Android.</translation>
+<translation id="3280562213547448728">بحث صوتي</translation>
 <translation id="3282568296779691940">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="3284510035090979597">المساعدة الاستباقية</translation>
 <translation id="3285080554353377245">‏فيديوهات حول كيفية استخدام Chrome</translation>
@@ -395,6 +403,7 @@
 <translation id="3563767357928833671">تم عرض محتوى الحافظة.</translation>
 <translation id="3566923219790363270">‏لا يزال Chrome يستعد للواقع الافتراضي. يُرجى إعادة تشغيل Chrome لاحقًا.</translation>
 <translation id="3568688522516854065">للحصول على علامات التبويب من أجهزتك الأخرى، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
+<translation id="3577473026931028326">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="3587482841069643663">الكل</translation>
 <translation id="3587596251841506391">المساعدة في تحسين الأمان على الويب</translation>
 <translation id="3602290021589620013">معاينة</translation>
@@ -479,6 +488,7 @@
 <translation id="4195643157523330669">الفتح في علامة تبويب جديدة</translation>
 <translation id="4198423547019359126">ما من مواقع تنزيل متاحة</translation>
 <translation id="4209895695669353772">‏للحصول على محتوى مُخصَّص اقترحته Google، يُرجى تفعيل المزامنة.</translation>
+<translation id="4225895483398857530">اختصارات شريط الأدوات</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="4248098802131000011">لحماية كلمة المرور من عمليات اختراق البيانات ومشاكل الأمان الأخرى</translation>
 <translation id="4250229828105606438">لقطة شاشة</translation>
@@ -746,12 +756,14 @@
 <translation id="5864419784173784555">في انتظار تنزيل آخر…</translation>
 <translation id="5865733239029070421">‏يُرسِل إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا.</translation>
 <translation id="5869522115854928033">كلمات المرور المحفوظة</translation>
+<translation id="587735546353481577">‏لمتابعة موقع إلكتروني، انتقِل إلى الموقع الإلكتروني وافتح قائمة Chrome وانقر على "متابعة".</translation>
 <translation id="5880748256563468367">الانتقال إلى الخلاصة</translation>
 <translation id="5884076754568147479">‏لمساعدتك على إنجاز المهام، ستتلقى Google عناوين URL للمواقع الإلكترونية ومحتواها عند استخدامك "مساعد Google" على تلك المواقع، بالإضافة إلى المعلومات التي يتم إرسالها من خلال "مساعد Google".</translation>
 <translation id="5919204609460789179">تحديث <ph name="PRODUCT_NAME" /> لبدء المزامنة</translation>
 <translation id="5937580074298050696">تم توفير <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
 <translation id="5942872142862698679">‏استخدام محرك Google للبحث</translation>
+<translation id="5945035219773565305">الاقتراح الحالي:  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">الاطّلاع على صفحة العرض المباشر</translation>
 <translation id="5952764234151283551">‏يُرسِل عنوان URL لصفحة تحاول الوصول إليها إلى Google.</translation>
 <translation id="5956665950594638604">‏فتح مركز مساعدة Chrome في علامة تبويب جديدة</translation>
@@ -765,6 +777,10 @@
 <translation id="6000203700195075278">المتابعة مجدّدًا</translation>
 <translation id="6002623704405939939">‏لمحو <ph name="BEGIN_LINK1" />سجلّ البحث<ph name="END_LINK1" /> أو غيره من السجلّات، انتقِل إلى صفحة <ph name="BEGIN_LINK2" />نشاطي على Google<ph name="END_LINK2" />.</translation>
 <translation id="6005538289190791541">كلمة المرور المُقترحَة</translation>
+<translation id="6032091552407840792">لا يتوفّر هذا الإصدار التجريبي سوى في <ph name="BEGIN_LINK" />بعض المناطق<ph name="END_LINK" />.</translation>
+<translation id="6033245666633565791">‏من خلال <ph name="BEGIN_LINK" />مبادرة حماية الخصوصية<ph name="END_LINK" />، نعمل في Chrome على تطوير تقنيات جديدة لحمايتك من آليات التتبُّع في جميع المواقع الإلكترونية مع الحفاظ على محتوى شبكة الإنترنت المفتوحة المتاحة للجميع.
+
+لا تزال إصدارات "مبادرة حماية الخصوصية" التجريبية في مرحلة التطوير المستمر ولا تتوفّر إلا في مناطق محدَّدة. في الوقت الحالي، قد تحاول المواقع الإلكترونية تجربة "مبادرة حماية الخصوصية" أثناء استخدام تقنيات الويب الحالية مثل ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
 <translation id="6036057147555329831">وحدة الرعاية المركزية الإضافية</translation>
 <translation id="6039379616847168523">الانتقال السريع إلى علامة التبويب التالية</translation>
 <translation id="6040143037577758943">إغلاق</translation>
@@ -830,6 +846,7 @@
 <translation id="6407224748847589805">تعذّر الاتصال بجهاز الكمبيوتر. يمكنك تجربة خيار آخر لإثبات الهوية.</translation>
 <translation id="6410404864818553978">بيانات الاستخدام الأساسية</translation>
 <translation id="6410883413783534063">يمكنك فتح علامات تبويب لزيارة صفحات مختلفة في آنٍ واحد.</translation>
+<translation id="6411219469806822692">لا يمكن السحب أعلى من ذلك. يمكنك بدء سحب نافذة لقطة الشاشة من موضع أعلى في الصفحة.</translation>
 <translation id="6412673304250309937">‏يعمل على التحقّق من عناوين URL التي تحتوي على قائمة بمواقع إلكترونية غير آمنة مُخزّنة في Chrome. وإذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسل متصفّح Chrome أيضًا عناوين URL تتضمّن أجزاء من محتوى الصفحة إلى "التصفّح الآمن".</translation>
 <translation id="641643625718530986">طباعة…</translation>
 <translation id="6427112570124116297">ترجمة الموقع الإلكتروني</translation>
@@ -892,10 +909,12 @@
 <translation id="671481426037969117">انقضى وقت موقّت <ph name="FQDN" />، وسيبدأ عمله مرّةً أخرى غدًا.</translation>
 <translation id="6738516213925468394">تم ترميز بياناتك باستخدام <ph name="BEGIN_LINK" />عبارة مرور المزامنة<ph name="END_LINK" /> في <ph name="TIME" />. يُرجى إدخالها لبدء المزامنة.</translation>
 <translation id="6738867403308150051">جارٍ التنزيل…</translation>
+<translation id="6751521182688001123">يتيح لك هذا الزر فتح علامة تبويب جديدة بسرعة. ولتعديل هذا الاختصار، انقر مع الاستمرار.</translation>
 <translation id="6767294960381293877">قائمة الأجهزة التي يمكن مشاركة علامة تبويب معها، مفتوحة على طول النصف السفلي من الشاشة.</translation>
 <translation id="6783942555455976443">حفظ هذه الصفحة لوقتٍ لاحق والحصول على تذكير</translation>
 <translation id="6811034713472274749">الصفحة جاهزة للعرض</translation>
 <translation id="6813446258015311409">‏تسجيل الدخول إلى Chrome، تم فتح البطاقة السفلية.</translation>
+<translation id="6817747507826986771">يتيح لك هذا الزر مشاركة هذه الصفحة بسرعة. ولتعديل هذا الاختصار، انقر مع الاستمرار.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">تم اختيار علامة التبويب <ph name="TAB_TITLE" />.</translation>
 <translation id="6846298663435243399">جارٍ التحميل…</translation>
@@ -966,6 +985,7 @@
 <translation id="7333031090786104871">لا تزال عملية إضافة الموقع الإلكتروني السابق جارية</translation>
 <translation id="7339898014177206373">نافذة جديدة</translation>
 <translation id="7340958967809483333">خيارات الاقتراحات</translation>
+<translation id="7352339641508007922">اسحب النافذة للحصول على لقطة شاشة طويلة.</translation>
 <translation id="7352651011704765696">حدث خطأ ما</translation>
 <translation id="7352939065658542140">فيديو</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{مشاركة عنصر واحد محدد}zero{مشاركة # عنصر محدد}two{مشاركة عنصرين (#) محددين}few{مشاركة # عناصر محددة}many{مشاركة # عنصرًا محددًا}other{مشاركة # عنصر محدد}}</translation>
@@ -1058,6 +1078,7 @@
 <translation id="7876243839304621966">إزالة الكل</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{لديك صفحة واحدة (<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />) غير مقروءة}zero{لديك <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحة غير مقروءة}two{لديك صفحتان (<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />) غير مقروءتَين}few{لديك <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحات غير مقروءة}many{لديك <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحة غير مقروءة}other{لديك <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحة غير مقروءة}}</translation>
 <translation id="7882131421121961860">لم يتم العثور على أي سجلّ</translation>
+<translation id="7884346424584885269">‏يحتاج Chrome إلى إذن للبحث عن الأجهزة المجاورة. <ph name="BEGIN_LINK" />تعديل الأذونات<ph name="END_LINK" /></translation>
 <translation id="7886917304091689118">‏قيد التشغيل في Chrome</translation>
 <translation id="789763218334337857">‏كيفية استخدام Chrome</translation>
 <translation id="7903184275147100332">يُرجى الانتظار قليلًا</translation>
@@ -1151,6 +1172,11 @@
 <translation id="8461694314515752532">ترميز البيانات المتزامنة باستخدام عبارة مرور المزامنة الخاصة بك</translation>
 <translation id="8466613982764129868">يُرجى التأكُّد من اتصال الجهاز <ph name="TARGET_DEVICE_NAME" /> بالإنترنت.</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
+<translation id="8481921391193215807">‏عند تفعيل "مبادرة حماية الخصوصية"، قد تستخدم المواقع الإلكترونية التقنيات الموضحة هنا للحفاظ على خصوصية المستخدمين مع توفير المحتوى والخدمات لهم. وتشمل هذه التقنيات بدائل عن آليات التتبُّع في المواقع الإلكترونية. قد تتم إضافة إصدارات تجريبية بمرور الوقت.
+
+<ph name="BEGIN_LIST_ITEM1" />يمكن للمعلِنين والناشرين استخدام تقنية "التعلُّم الموحّد للمجموعات النموذجية" (FLoC).<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />يمكن للمعلِنين والناشرين تحديد مدى فعالية الإعلانات بدون الحاجة إلى تتبّع نشاطك في المواقع الإلكترونية.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">تم تفعيل ميزات الإصدار التجريبي.</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">فتح صفحة السجل</translation>
@@ -1185,7 +1211,9 @@
 <translation id="8662811608048051533">الخروج من معظم المواقع الإلكترونية.</translation>
 <translation id="8664979001105139458">اسم الملف موجود</translation>
 <translation id="8676789164135894283">عمليات التحقّق من تسجيل الدخول</translation>
+<translation id="867767487203716855">التحديث التالي</translation>
 <translation id="8683039184091909753">صورة</translation>
+<translation id="8683081248374354009">إعادة تحديد المجموعة</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{مستوى قوة الإشارة: شريط واحد (#)}zero{مستوى قوة الإشارة: # شريط}two{مستوى قوة الإشارة: شريطان (#)}few{مستوى قوة الإشارة: # أشرطة}many{مستوى قوة الإشارة: # شريطًا}other{مستوى قوة الإشارة: # شريط}}</translation>
 <translation id="869891660844655955">تاريخ انتهاء الصلاحية</translation>
 <translation id="8699120352855309748">عدم اقتراح ترجمة لهذه اللغات</translation>
@@ -1260,6 +1288,7 @@
 <translation id="9204836675896933765">ملف واحد متبقٍ</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">لا يمكن إجراء المكالمات</translation>
+<translation id="9212845824145208577">لا يمكن السحب أدنى من ذلك. يمكنك بدء سحب نافذة لقطة الشاشة من موضع أدنى في الصفحة.</translation>
 <translation id="9219103736887031265">الصور</translation>
 <translation id="926205370408745186">‏إزالة نشاط Chrome من الرفاهية الرقمية</translation>
 <translation id="927968626442779827">‏استخدِم "الوضع البسيط" على Google Chrome.</translation>

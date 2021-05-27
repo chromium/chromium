@@ -2863,7 +2863,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4035758313003622889">Uzdevumu pārvaldnieks</translation>
 <translation id="4036778507053569103">No servera lejupielādētā politika nav derīga.</translation>
 <translation id="4037084878352560732">Zirgs</translation>
-<translation id="4037889604535939429">Personas informācijas rediģēšana</translation>
 <translation id="4040753847560036377">Nepareizs PUK kods</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Iziet no lapas}zero{Iziet no lapām}one{Iziet no lapām}other{Iziet no lapām}}</translation>
 <translation id="4044612648082411741">Ievadiet sertifikāta paroli</translation>
@@ -4331,7 +4330,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5709557627224531708">Chrome iestatīšana par noklusējuma pārlūku</translation>
 <translation id="5711983031544731014">Neizdevās atbloķēt. Ievadiet paroli.</translation>
 <translation id="5712153969432126546">Dažkārt vietnēs tiek publicēti PDF faili, piemēram, dokumenti, līgumi un veidlapas.</translation>
-<translation id="5712323955984474772">Nākamais atjauninājums</translation>
 <translation id="5715711091495208045">Spraudņa starpnieks: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Noklusējuma meklētājprogrammas</translation>
 <translation id="5719637365829998022">QR kods ir noskenēts.</translation>
@@ -5100,7 +5098,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6563469144985748109">Jūsu vadītājs vēl nav to apstiprinājis</translation>
 <translation id="6568283005472142698">Meklēšana cilnēs</translation>
 <translation id="6569911211938664415">Paroles tiek saglabātas jūsu Google kontā (<ph name="ACCOUNT" />), lai jūs varētu tās izmantot jebkurā ierīcē.</translation>
-<translation id="6569934958368283244">Citas personas</translation>
 <translation id="6573497332121198392">Nevar noņemt saīsni</translation>
 <translation id="657402800789773160">&amp;Atkārtoti ielādēt šo lapu</translation>
 <translation id="6577284282025554716">Lejupielāde atcelta: <ph name="FILE_NAME" /></translation>
@@ -6786,7 +6783,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8393700583063109961">Sūtīt ziņojumu</translation>
 <translation id="8397825320644530257">Saistīta tālruņa atvienošana</translation>
 <translation id="8398877366907290961">Turpināt jebkurā gadījumā</translation>
-<translation id="8400146488506985033">Pārvaldīt personas</translation>
 <translation id="8401432541486058167">Norādiet PIN, kas ir saistīts ar jūsu viedkarti.</translation>
 <translation id="8404893580027489425">Pirksta nospieduma sensors atrodas ierīces (<ph name="DEVICE_TYPE" />) labajā pusē. Viegli pieskarieties tam ar jebkuru pirkstu.</translation>
 <translation id="8405046151008197676">Iegūstiet svarīgāko informāciju no jaunākā atjauninājuma</translation>
@@ -6842,7 +6838,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8465444703385715657">Spraudņa <ph name="PLUGIN_NAME" /> izpildīšanai ir nepieciešama jūsu atļauja</translation>
 <translation id="8466417995783206254">Šajā cilnē videoklips tiek atskaņots režīmā “Attēls attēlā”.</translation>
 <translation id="8467326454809944210">Izvēlēties citu valodu</translation>
-<translation id="8470214316007448308">Citas personas</translation>
 <translation id="8470513973197838199">Saglabātās paroles vietnei <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Parasti vietnēs savienojums ar USB ierīcēm tiek veidots, lai nodrošinātu noteiktas funkcijas, piemēram, dokumentu drukāšanu vai saglabāšanu atmiņas ierīcē.</translation>
 <translation id="8471959340398751476">Atlaides ir izslēgtas. Varat tās ieslēgt pielāgošanas izvēlnē.</translation>
@@ -7029,6 +7024,7 @@ Lai noņemtu piešķiršanu, nospiediet piešķirtu slēdzi.</translation>
 <translation id="8676374126336081632">Notīrīt ievadi</translation>
 <translation id="8676770494376880701">Pievienots lādētājs ar mazu strāvas padevi</translation>
 <translation id="8677212948402625567">Sakļaut visu...</translation>
+<translation id="867767487203716855">Nākamais atjauninājums</translation>
 <translation id="8677859815076891398">Nav albumu. Varat izveidot albumu pakalpojumā <ph name="LINK_BEGIN" />Google fotoattēli<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Cilnes netiek samazinātas</translation>
 <translation id="8678933587484842200">Kā vēlaties palaist šo lietojumprogrammu?</translation>
@@ -7117,7 +7113,6 @@ Lai noņemtu piešķiršanu, nospiediet piešķirtu slēdzi.</translation>
 <translation id="87646919272181953">Google fotoattēlu albumi</translation>
 <translation id="8767621466733104912">Automātiski atjaunināt pārlūku Chrome visiem lietotājiem</translation>
 <translation id="8770406935328356739">Paplašinājuma saknes direktorijs</translation>
-<translation id="8770507190024617908">Pārvaldīt personas</translation>
 <translation id="8771300903067484968">Sākumlapas fons ir atiestatīts uz noklusējuma fonu.</translation>
 <translation id="8773302562181397928">Saglabāt ierīci <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Atjaunošanas apstiprinājums</translation>

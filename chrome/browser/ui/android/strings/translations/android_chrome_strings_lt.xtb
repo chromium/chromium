@@ -278,6 +278,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2777555524387840389">Liko <ph name="SECONDS" /> sek.</translation>
 <translation id="2779651927720337254">nepavyko</translation>
 <translation id="2781151931089541271">Liko 1 sek.</translation>
+<translation id="2788468313014644040">Grupės numeris</translation>
 <translation id="2801022321632964776">Norėdami gauti naujausią versiją su įdiegta savo kalba, atnaujinkite „Chrome“</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -467,7 +468,6 @@ Privatumo „sandbox“ (smėlio dėžė) vis dar intensyviai kuriama ir pasieki
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4060598801229743805">Parinktys pasiekiamos netoli ekrano viršaus</translation>
 <translation id="4062305924942672200">Teisinė informacija</translation>
-<translation id="4082818367361753283">Grupės ID</translation>
 <translation id="4084682180776658562">Žymė</translation>
 <translation id="4084712963632273211">Nuo <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />pateikė „Google“<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Ištrinti programos duomenis?</translation>

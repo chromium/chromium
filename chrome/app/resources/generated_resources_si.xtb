@@ -2865,7 +2865,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4035758313003622889">&amp;කාර්ය කළමනාකරු</translation>
 <translation id="4036778507053569103">සේවාදායකයෙන් බාගත් ප්‍රතිපත්තිය අවලංගුයි.</translation>
 <translation id="4037084878352560732">අශ්වයා</translation>
-<translation id="4037889604535939429">පුද්ගලයා සංස්කරණය කරන්න</translation>
 <translation id="4040753847560036377">වැරදි PUK එකකි.</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{පිටවීමේ පිටුව}one{පිටවීමේ පිටු}other{පිටවීමේ පිටු}}</translation>
 <translation id="4044612648082411741">ඔබේ සහතික මුරපදය ඇතුළු කරන්න</translation>
@@ -4334,7 +4333,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5709557627224531708">Chrome ඔබේ පෙරනිමි බ්‍රවුසරය ලෙස සකසන්න</translation>
 <translation id="5711983031544731014">අගුලු හැරීමට නොහැකිය. ඔබගේ මුරපදය ඇතුළු කරන්න.</translation>
 <translation id="5712153969432126546">අඩවි සමහර විට ලේඛන, කොන්ත්‍රාත්තු සහ පෝරම වැනි PDF ප්‍රකාශයට පත් කළ හැකිය</translation>
-<translation id="5712323955984474772">ඊළඟ යාවත්කාලීනය</translation>
 <translation id="5715711091495208045">ප්ලගින තැරැව්කරු: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">පෙරනිමි සෙවීම් යාන්ත්‍රණ</translation>
 <translation id="5719637365829998022">QR කේතය ස්කෑන් කර ඇත.</translation>
@@ -5104,7 +5102,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6563469144985748109">ඔබේ කළමනාකරු තවම එය අනුමත කර නැත</translation>
 <translation id="6568283005472142698">ටැබ සෙවීම</translation>
 <translation id="6569911211938664415">මුරපද ඔබගේ Google ගිණුමේ (<ph name="ACCOUNT" />) සුරකිනු ලබන අතර, එම නිසා ඔබට ඒවා ඕනෑම උපාංගයක භාවිත කළ හැකිය</translation>
-<translation id="6569934958368283244">වෙනත් පුද්ගලයින්</translation>
 <translation id="6573497332121198392">කෙටි මග ඉවත් කළ නොහැකිය</translation>
 <translation id="657402800789773160">මෙම පිටුව නැවත පුරවන්න (&amp;R)</translation>
 <translation id="6577284282025554716">බාගැනීම අවලංගු කරන ලදී: <ph name="FILE_NAME" /></translation>
@@ -6788,7 +6785,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8393700583063109961">පණිවිඩය යවන්න</translation>
 <translation id="8397825320644530257">සම්බන්ධිත දුරකථනය විසන්ධි කරන්න</translation>
 <translation id="8398877366907290961">කෙසේ හෝ කරගෙන යන්න</translation>
-<translation id="8400146488506985033">පුද්ගලයින් කළමනාකරණය කරන්න</translation>
 <translation id="8401432541486058167">ඔබේ ස්මාර්ට් කාඩ්පත හා සම්බන්ධ රහස් අංකය ලබා දෙන්න.</translation>
 <translation id="8404893580027489425">ඇඟිලි සලකුණු සංවේදකය ඔබගේ <ph name="DEVICE_TYPE" /> හි දකුණු අත පැත්තේ ඇත. ඕනෑම ඇඟිල්ලකින් එය සුළුවෙන් ස්පර්ශ කරන්න.</translation>
 <translation id="8405046151008197676">නවතම යාවත්කාලීනයෙන් උද්දීපන ලබා ගන්න</translation>
@@ -6844,7 +6840,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> හට ධාවනය වීමට ඔබේ අවසරය අවශ්‍යයි</translation>
 <translation id="8466417995783206254">මෙම පටිත්ත පින්තූරය-තුළ-පින්තූරය තුළ වීඩියෝව ධාවනය කරයි.</translation>
 <translation id="8467326454809944210">වෙනත් භාෂාවක් තෝරන්න</translation>
-<translation id="8470214316007448308">වෙනත් පුද්ගලයින්</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> සඳහා සුරැකි මුරපද</translation>
 <translation id="8471525937465764768">අඩවි සාමාන්‍යයෙන් ලේඛනයක් මුද්‍රණය කිරීම හෝ ගබඩා උපාංගයකට සුරැකීම වැනි විශේෂාංග සඳහා USB උපාංග සමඟ සම්බන්ධ වේ</translation>
 <translation id="8471959340398751476">වට්ටම් ක්‍රියාවිරහිතයි. අභිරුචිකරණ මෙනුවෙන් ඔබට ඒවා ක්‍රියාත්මක කළ හැකිය</translation>
@@ -7031,6 +7026,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8676374126336081632">ආදානය හිස් කරන්න</translation>
 <translation id="8676770494376880701">අඩු-බල ආරෝපකය සමබන්ධ කර ඇත</translation>
 <translation id="8677212948402625567">සියල්ල හකුළන්න...</translation>
+<translation id="867767487203716855">ඊළඟ යාවත්කාලීනය</translation>
 <translation id="8677859815076891398">ඇල්බම නොමැත. <ph name="LINK_BEGIN" />Google ඡායාරූප<ph name="LINK_END" /> තුළ ඇල්බමයක් තනන්න.</translation>
 <translation id="8678582529642151449">නොහැකිළෙන ටැබ</translation>
 <translation id="8678933587484842200">ඔබ මෙම යෙදුම දියත් කිරීමට කැමති කෙසේ ද?</translation>
@@ -7119,7 +7115,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="87646919272181953">Google ඡායාරූප ඇල්බමය</translation>
 <translation id="8767621466733104912">සියලු පරිශීලකයන් සඳහා Chrome ස්වයංක්‍රීයව යාවත්කාලීන කරන්න</translation>
 <translation id="8770406935328356739">දිගු මූල නාමාවලිය</translation>
-<translation id="8770507190024617908">පුද්ගලයින් කළමනාකරණය කරන්න</translation>
 <translation id="8771300903067484968">ආරම්භක පිටු පසුබිම පෙරනිමි පසුබිම ලෙස යළි සකසා ඇත.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> සුරකින්න</translation>
 <translation id="8774379074441005279">ප්‍රතිසාධනය තහවුරු කරන්න</translation>
