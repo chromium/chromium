@@ -11,11 +11,11 @@
 #include <cstdio>
 #include <cstring>
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"

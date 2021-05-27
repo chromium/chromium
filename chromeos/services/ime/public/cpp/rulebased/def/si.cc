@@ -4,7 +4,7 @@
 
 #include "chromeos/services/ime/public/cpp/rulebased/def/si.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace si {
 

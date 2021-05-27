@@ -12,8 +12,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/fake_shill_third_party_vpn_driver_client.h"
 #include "chromeos/dbus/shill/shill_third_party_vpn_observer.h"

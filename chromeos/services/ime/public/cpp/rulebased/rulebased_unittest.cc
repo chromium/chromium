@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "chromeos/services/ime/public/cpp/rulebased/def/us.h"
 #include "chromeos/services/ime/public/cpp/rulebased/engine.h"
 #include "chromeos/services/ime/public/cpp/rulebased/rules_data.h"

@@ -5,7 +5,7 @@
 #include "chromeos/services/ime/public/cpp/rulebased/rules_data.h"
 
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/ime/public/cpp/rulebased/def/ar.h"
 #include "chromeos/services/ime/public/cpp/rulebased/def/bn_phone.h"

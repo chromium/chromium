@@ -4,9 +4,9 @@
 
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 

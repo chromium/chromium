@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/tether_constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -17,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
