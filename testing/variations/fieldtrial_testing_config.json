@@ -487,30 +487,6 @@
             ]
         }
     ],
-    "AndroidInProductHelpToolbarButtons": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "NewTabPageButtonIphConfig",
-                    "params": {
-                        "availability": ">=1",
-                        "cohortFeatureName": "ToolbarIphAndroidCohort2",
-                        "event_trigger": "name:ntp_iph_triggered;comparator:==0;window:90;storage:90",
-                        "event_used": "name:homepage_button_clicked;comparator:==0;window:14;storage:90",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_NewTabPageHomeButton",
-                        "ToolbarIphAndroid",
-                        "ToolbarIphAndroidCohort2"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidInProductHelpToolbarButtons_TabSwitcher": [
         {
             "platforms": [
@@ -527,8 +503,7 @@
                         "session_rate": "<1"
                     },
                     "enable_features": [
-                        "IPH_TabSwitcherButton",
-                        "ToolbarIphAndroidCohort1"
+                        "IPH_TabSwitcherButton"
                     ]
                 }
             ]
