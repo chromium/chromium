@@ -147,4 +147,14 @@
     <!-- Rating star colors -->
     <color name="rating_star_yellow_dark">@color/modern_yellow_500</color>
     <color name="rating_star_yellow_light">@color/modern_yellow_300</color>
+
+    <!-- Colors of adaptive toolbar -->
+    <color name="adaptive_toolbar_preference_header_background_light">@color/modern_white</color>
+    <color name="adaptive_toolbar_preference_header_background_dark">@color/modern_grey_900_with_grey_200_alpha_11</color>
+    <color name="adaptive_toolbar_preference_header_line_light">@color/modern_grey_800</color>
+    <color name="adaptive_toolbar_preference_header_line_dark">@color/modern_white</color>
+    <color name="adaptive_toolbar_preference_header_blue_light">@color/modern_blue_600</color>
+    <color name="adaptive_toolbar_preference_header_blue_dark">@color/modern_blue_300</color>
+    <color name="adaptive_toolbar_preference_header_omnibox_light">@color/modern_grey_100</color>
+    <color name="adaptive_toolbar_preference_header_omnibox_dark">@color/white_alpha_6</color>
 </resources>

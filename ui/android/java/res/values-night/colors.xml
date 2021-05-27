@@ -75,6 +75,12 @@
     <color name="incognito_history_placeholder_stroke_color">@color/modern_grey_600</color>
     <color name="incognito_history_placeholder_bottom_circle_color">@color/modern_grey_900</color>
 
+    <!-- Colors of adaptive toolbar -->
+    <color name="adaptive_toolbar_preference_header_background">@color/adaptive_toolbar_preference_header_background_dark</color>
+    <color name="adaptive_toolbar_preference_header_line">@color/adaptive_toolbar_preference_header_line_dark</color>
+    <color name="adaptive_toolbar_preference_header_blue">@color/adaptive_toolbar_preference_header_blue_dark</color>
+    <color name="adaptive_toolbar_preference_header_omnibox">@color/adaptive_toolbar_preference_header_omnibox_dark</color>
+
     <!-- Other colors -->
     <color name="default_red">@color/default_red_light</color>
     <color name="default_green">@color/default_green_light</color>

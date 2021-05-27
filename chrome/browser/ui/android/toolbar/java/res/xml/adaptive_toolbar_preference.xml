@@ -7,6 +7,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarHeaderPreference
+        android:key="adaptive_toolbar_header" />
+
        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="toolbar_shortcut_switch"
         android:title="@string/toolbar_shortcut" />

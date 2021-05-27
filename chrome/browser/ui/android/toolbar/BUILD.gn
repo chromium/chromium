@@ -33,6 +33,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarFeatures.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarPrefs.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonController.java",
+    "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/AdaptiveToolbarHeaderPreference.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/AdaptiveToolbarPreferenceFragment.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/RadioButtonGroupAdaptiveToolbarPreference.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsContentDelegate.java",
@@ -133,6 +134,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/incognito_simple.png",
     "java/res/drawable-xxxhdpi/incognito_switch.png",
     "java/res/drawable/new_tab_icon.xml",
+    "java/res/layout/adaptive_toolbar_header_preference.xml",
     "java/res/layout/bottom_control_container.xml",
     "java/res/layout/control_container.xml",
     "java/res/layout/radio_button_group_adaptive_toolbar_preference.xml",
@@ -186,7 +188,6 @@ java_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
-    "//ui/android:ui_java_test_support",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
