@@ -1457,7 +1457,7 @@ NavigationRequest::~NavigationRequest() {
     if (blink::features::IsPrerender2Enabled() &&
         IsPrerenderedPageActivation()) {
       GetPrerenderHostRegistry().AbandonReservedHost(
-          prerender_frame_tree_node_id_);
+          prerender_frame_tree_node_id_.value());
     }
 
     if (IsServedFromBackForwardCache()) {
@@ -1688,6 +1688,7 @@ void NavigationRequest::BeginNavigation() {
     CommitNavigation();
     return;
   }
+
   // If the navigation is served from the back-forward cache or is activating a
   // prerendered page, we already know its preview type from the first time we
   // navigated into the page, so we should only set |previews_state| when the
@@ -1696,17 +1697,6 @@ void NavigationRequest::BeginNavigation() {
     common_params_->previews_state =
         GetContentClient()->browser()->DetermineAllowedPreviews(
             common_params_->previews_state, this, common_params_->url);
-  }
-
-  // Prerender2:
-  // Find an available prerendered page for the request URL. If it's found,
-  // this navigation will activate it instead of loading a page via network.
-  if (blink::features::IsPrerender2Enabled()) {
-    prerender_frame_tree_node_id_ =
-        GetPrerenderHostRegistry().ReserveHostToActivate(*this);
-    // If `prerender_frame_tree_node_id_` is not
-    // RenderFrameHost::kNoFrameTreeNodeId, this navigation will activate the
-    // prerendered page on navigation commit.
   }
 
   WillStartRequest();
@@ -1720,6 +1710,21 @@ void NavigationRequest::SetWaitingForRendererResponse() {
 void NavigationRequest::StartNavigation(bool is_for_commit) {
   DCHECK(frame_tree_node_->navigation_request() == this || is_for_commit);
   FrameTreeNode* frame_tree_node = frame_tree_node_;
+
+  if (blink::features::IsPrerender2Enabled()) {
+    // Find an available prerendered page for the request URL. If it's found,
+    // this navigation will activate it instead of loading a page via network.
+    // This is the earliest we can compute this because:
+    // - A NavigationRequest is created before sending the BeforeUnload event
+    //   which may cancel the navigation, reserving the host means we'd have to
+    //   abandon it in that case. BeginNavigation, which calls StartNavigation,
+    //   is the first time when we know the navigation will proceed.
+    // - We do this in StartNavigation rather than BeginNavigation because
+    //   there are some cases like renderer-initiated same document navigations
+    //   that call StartNavigation but not BeginNavigation.
+    prerender_frame_tree_node_id_ =
+        GetPrerenderHostRegistry().ReserveHostToActivate(*this);
+  }
 
   // This is needed to get site URLs and assign the expected RenderProcessHost.
   // This is not always the same as |source_site_instance_|, as it only depends
@@ -2790,7 +2795,7 @@ void NavigationRequest::OnResponseStarted(
 
     render_frame_host_ =
         GetPrerenderHostRegistry().GetRenderFrameHostForReservedHost(
-            prerender_frame_tree_node_id_);
+            prerender_frame_tree_node_id_.value());
     // TODO(https://crbug.com/1181712): Handle the cases when the prerender is
     // cancelled and RFH is destroyed while NavigationRequest is alive.
   } else if (response_should_be_rendered_) {
@@ -3953,7 +3958,7 @@ void NavigationRequest::CommitPageActivation() {
       return;
   } else {
     activated_entry = GetPrerenderHostRegistry().ActivateReservedHost(
-        prerender_frame_tree_node_id_, *this);
+        prerender_frame_tree_node_id_.value(), *this);
 
     // TODO(https://crbug.com/1181712): Determine the best way to handle
     // navigation when prerendering is cancelled during activation. This
@@ -5592,8 +5597,10 @@ bool NavigationRequest::IsInPrimaryMainFrame() {
 }
 
 bool NavigationRequest::IsPrerenderedPageActivation() {
-  // TODO(https://crbug.com/1211736): Make this CHECK more robust.
-  CHECK_GE(state_, WILL_START_REQUEST);
+  if (!blink::features::IsPrerender2Enabled())
+    return false;
+
+  CHECK(prerender_frame_tree_node_id_.has_value());
   return prerender_frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId;
 }
 

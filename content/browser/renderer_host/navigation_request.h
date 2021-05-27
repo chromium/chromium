@@ -883,7 +883,9 @@ class CONTENT_EXPORT NavigationRequest
   base::WeakPtr<NavigationRequest> GetWeakPtr();
 
   int prerender_frame_tree_node_id() const {
-    return prerender_frame_tree_node_id_;
+    DCHECK(prerender_frame_tree_node_id_.has_value())
+        << "Must be called after StartNavigation()";
+    return prerender_frame_tree_node_id_.value();
   }
 
   void RenderFallbackContentForObjectTag();
@@ -1723,9 +1725,13 @@ class CONTENT_EXPORT NavigationRequest
   net::IsolationInfo isolation_info_for_subresources_;
 
   // Prerender2:
-  // The root frame tree node id of the prerendered page. This is valid only
-  // when this navigation will activate a prerendered page.
-  int prerender_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+  // The root frame tree node id of the prerendered page. This will be a valid
+  // FrameTreeNode id when this navigation will activate a prerendered page.
+  // For all other navigations this will be
+  // RenderFrameHost::kNoFrameTreeNodeId. We only know whether this is the case
+  // when BeginNavigation is called so the optional will be empty until then
+  // and callers must not query its value before it's been computed.
+  absl::optional<int> prerender_frame_tree_node_id_;
   // Used to store a cloned NavigationEntry for activating a prerendered page.
   // |prerender_navigation_entry_| is cloned and stored in NavigationRequest
   // when the prerendered page is transferred to the target FrameTree and is
