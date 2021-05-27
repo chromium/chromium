@@ -458,8 +458,11 @@ TEST_F(AccountConsistencyServiceTest, ChromeManageAccountsDefault) {
 // Tests that the ManageAccountsDelegate is notified when a navigation on Gaia
 // signon realm returns with a X-Auto-Login header.
 TEST_F(AccountConsistencyServiceTest, ChromeShowConsistencyPromo) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+  base::test::ScopedFeatureList consistency_feature_list;
+  consistency_feature_list.InitAndEnableFeature(
+      signin::kMobileIdentityConsistency);
+  base::test::ScopedFeatureList websignin_feature_list;
+  websignin_feature_list.InitAndEnableFeature(signin::kMICEWebSignIn);
 
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
@@ -750,8 +753,11 @@ TEST_F(AccountConsistencyServiceTest,
 // after the sign-in promo is shown.
 TEST_F(AccountConsistencyServiceTest,
        SetChromeConnectedCookiesSignedOutGaiaVisitor) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+  base::test::ScopedFeatureList consistency_feature_list;
+  consistency_feature_list.InitAndEnableFeature(
+      signin::kMobileIdentityConsistency);
+  base::test::ScopedFeatureList websignin_feature_list;
+  websignin_feature_list.InitAndEnableFeature(signin::kMICEWebSignIn);
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
   [[[delegate expect] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];

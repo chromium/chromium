@@ -216,7 +216,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
   // page show the account consistency promo.
   NSString* x_autologin_header = [[http_response allHeaderFields]
       objectForKey:[NSString stringWithUTF8String:signin::kAutoLoginHeader]];
-  if (signin::IsMobileIdentityConsistencyEnabled() && x_autologin_header) {
+  if (signin::IsMICEWebSignInEnabled() && x_autologin_header) {
     show_consistency_promo_ = true;
     // Allows the URL response to load before showing the consistency promo.
     // The promo should always be displayed in the foreground of Gaia

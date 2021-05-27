@@ -250,6 +250,10 @@ extern const char kLocationPermissionsPromptDescription[];
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];
 
+// Title and description for the flag to enable MICE web sign-in.
+extern const char kMICEWebSignInName[];
+extern const char kMICEWebSignInDescription[];
+
 // Title and description for the flag where the Google SRP is requested in
 // mobile mode by default.
 extern const char kMobileGoogleSRPName[];
