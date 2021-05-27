@@ -9,6 +9,7 @@ for more details about the presubmit API built into depot_tools.
 """
 
 FILE_PATTERN = [ r'.+_test.py$' ]
+USE_PYTHON3 = True
 
 def CheckChangeOnUpload(input_api, output_api):
   return input_api.canned_checks.RunUnitTestsInDirectory(

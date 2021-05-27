@@ -32,7 +32,7 @@ class CppTypeGenerator(object):
     """
     self._default_namespace = default_namespace
     if self._default_namespace is None:
-      self._default_namespace = model.namespaces.values()[0]
+      self._default_namespace = list(model.namespaces.values())[0]
     self._namespace_resolver = namespace_resolver
 
   def GetEnumNoneValue(self, type_):

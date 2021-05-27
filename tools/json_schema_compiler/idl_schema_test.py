@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -34,30 +34,30 @@ def getType(schema, id):
 class IdlSchemaTest(unittest.TestCase):
   def setUp(self):
     loaded = idl_schema.Load('test/idl_basics.idl')
-    self.assertEquals(1, len(loaded))
-    self.assertEquals('idl_basics', loaded[0]['namespace'])
+    self.assertEqual(1, len(loaded))
+    self.assertEqual('idl_basics', loaded[0]['namespace'])
     self.idl_basics = loaded[0]
     self.maxDiff = None
 
   def testSimpleCallbacks(self):
     schema = self.idl_basics
     expected = [{'type': 'function', 'name': 'cb', 'parameters':[]}]
-    self.assertEquals(expected, getParams(schema, 'function4'))
+    self.assertEqual(expected, getParams(schema, 'function4'))
 
     expected = [{'type': 'function', 'name': 'cb',
                  'parameters':[{'name': 'x', 'type': 'integer'}]}]
-    self.assertEquals(expected, getParams(schema, 'function5'))
+    self.assertEqual(expected, getParams(schema, 'function5'))
 
     expected = [{'type': 'function', 'name': 'cb',
                  'parameters':[{'name': 'arg', '$ref': 'MyType1'}]}]
-    self.assertEquals(expected, getParams(schema, 'function6'))
+    self.assertEqual(expected, getParams(schema, 'function6'))
 
   def testCallbackWithArrayArgument(self):
     schema = self.idl_basics
     expected = [{'type': 'function', 'name': 'cb',
                  'parameters':[{'name': 'arg', 'type': 'array',
                                 'items':{'$ref': 'MyType2'}}]}]
-    self.assertEquals(expected, getParams(schema, 'function12'))
+    self.assertEqual(expected, getParams(schema, 'function12'))
 
 
   def testArrayOfCallbacks(self):
@@ -65,10 +65,10 @@ class IdlSchemaTest(unittest.TestCase):
     expected = [{'type': 'array', 'name': 'callbacks',
                  'items':{'type': 'function', 'name': 'MyCallback',
                           'parameters':[{'type': 'integer', 'name': 'x'}]}}]
-    self.assertEquals(expected, getParams(schema, 'whatever'))
+    self.assertEqual(expected, getParams(schema, 'whatever'))
 
   def testLegalValues(self):
-    self.assertEquals({
+    self.assertEqual({
         'x': {'name': 'x', 'type': 'integer', 'enum': [1,2],
               'description': 'This comment tests "double-quotes".',
               'jsexterns': None},
@@ -80,9 +80,9 @@ class IdlSchemaTest(unittest.TestCase):
       getType(self.idl_basics, 'MyType1')['properties'])
 
   def testMemberOrdering(self):
-    self.assertEquals(
+    self.assertEqual(
         ['x', 'y', 'z', 'a', 'b', 'c'],
-        getType(self.idl_basics, 'MyType1')['properties'].keys())
+        list(getType(self.idl_basics, 'MyType1')['properties'].keys()))
 
   def testEnum(self):
     schema = self.idl_basics
@@ -90,36 +90,36 @@ class IdlSchemaTest(unittest.TestCase):
                          {'name': 'name2'}],
                 'description': 'Enum description',
                 'type': 'string', 'id': 'EnumType'}
-    self.assertEquals(expected, getType(schema, expected['id']))
+    self.assertEqual(expected, getType(schema, expected['id']))
 
     expected = [{'name': 'type', '$ref': 'EnumType'},
                 {'type': 'function', 'name': 'cb',
                   'parameters':[{'name': 'type', '$ref': 'EnumType'}]}]
-    self.assertEquals(expected, getParams(schema, 'function13'))
+    self.assertEqual(expected, getParams(schema, 'function13'))
 
     expected = [{'items': {'$ref': 'EnumType'}, 'name': 'types',
                  'type': 'array'}]
-    self.assertEquals(expected, getParams(schema, 'function14'))
+    self.assertEqual(expected, getParams(schema, 'function14'))
 
   def testScopedArguments(self):
     schema = self.idl_basics
     expected = [{'name': 'value', '$ref': 'idl_other_namespace.SomeType'}]
-    self.assertEquals(expected, getParams(schema, 'function20'))
+    self.assertEqual(expected, getParams(schema, 'function20'))
 
     expected = [{'items': {'$ref': 'idl_other_namespace.SomeType'},
                  'name': 'values',
                  'type': 'array'}]
-    self.assertEquals(expected, getParams(schema, 'function21'))
+    self.assertEqual(expected, getParams(schema, 'function21'))
 
     expected = [{'name': 'value',
                  '$ref': 'idl_other_namespace.sub_namespace.AnotherType'}]
-    self.assertEquals(expected, getParams(schema, 'function22'))
+    self.assertEqual(expected, getParams(schema, 'function22'))
 
     expected = [{'items': {'$ref': 'idl_other_namespace.sub_namespace.'
                                    'AnotherType'},
                  'name': 'values',
                  'type': 'array'}]
-    self.assertEquals(expected, getParams(schema, 'function23'))
+    self.assertEqual(expected, getParams(schema, 'function23'))
 
   def testNoCompile(self):
     schema = self.idl_basics
@@ -150,114 +150,114 @@ class IdlSchemaTest(unittest.TestCase):
         'id': 'EnumTypeWithNoDocValue',
         'description': ''
     }
-    self.assertEquals(expected, getType(schema, expected['id']))
+    self.assertEqual(expected, getType(schema, expected['id']))
 
   def testInternalNamespace(self):
     idl_basics  = self.idl_basics
-    self.assertEquals('idl_basics', idl_basics['namespace'])
+    self.assertEqual('idl_basics', idl_basics['namespace'])
     self.assertTrue(idl_basics['internal'])
     self.assertFalse(idl_basics['nodoc'])
 
   def testReturnTypes(self):
     schema = self.idl_basics
-    self.assertEquals({'name': 'function24', 'type': 'integer'},
+    self.assertEqual({'name': 'function24', 'type': 'integer'},
                       getReturns(schema, 'function24'))
-    self.assertEquals({'name': 'function25', '$ref': 'MyType1',
+    self.assertEqual({'name': 'function25', '$ref': 'MyType1',
                        'optional': True},
                       getReturns(schema, 'function25'))
-    self.assertEquals({'name': 'function26', 'type': 'array',
+    self.assertEqual({'name': 'function26', 'type': 'array',
                        'items': {'$ref': 'MyType1'}},
                       getReturns(schema, 'function26'))
-    self.assertEquals({'name': 'function27', '$ref': 'EnumType',
+    self.assertEqual({'name': 'function27', '$ref': 'EnumType',
                        'optional': True},
                       getReturns(schema, 'function27'))
-    self.assertEquals({'name': 'function28', 'type': 'array',
+    self.assertEqual({'name': 'function28', 'type': 'array',
                        'items': {'$ref': 'EnumType'}},
                       getReturns(schema, 'function28'))
-    self.assertEquals({'name': 'function29', '$ref':
+    self.assertEqual({'name': 'function29', '$ref':
                        'idl_other_namespace.SomeType',
                        'optional': True},
                       getReturns(schema, 'function29'))
-    self.assertEquals({'name': 'function30', 'type': 'array',
+    self.assertEqual({'name': 'function30', 'type': 'array',
                        'items': {'$ref': 'idl_other_namespace.SomeType'}},
                       getReturns(schema, 'function30'))
 
   def testChromeOSPlatformsNamespace(self):
     schema = idl_schema.Load('test/idl_namespace_chromeos.idl')[0]
-    self.assertEquals('idl_namespace_chromeos', schema['namespace'])
+    self.assertEqual('idl_namespace_chromeos', schema['namespace'])
     expected = ['chromeos']
-    self.assertEquals(expected, schema['platforms'])
+    self.assertEqual(expected, schema['platforms'])
 
   def testAllPlatformsNamespace(self):
     schema = idl_schema.Load('test/idl_namespace_all_platforms.idl')[0]
-    self.assertEquals('idl_namespace_all_platforms', schema['namespace'])
+    self.assertEqual('idl_namespace_all_platforms', schema['namespace'])
     expected = ['chromeos', 'linux', 'mac', 'win']
-    self.assertEquals(expected, schema['platforms'])
+    self.assertEqual(expected, schema['platforms'])
 
   def testNonSpecificPlatformsNamespace(self):
     schema = idl_schema.Load('test/idl_namespace_non_specific_platforms.idl')[0]
-    self.assertEquals('idl_namespace_non_specific_platforms',
+    self.assertEqual('idl_namespace_non_specific_platforms',
                       schema['namespace'])
     expected = None
-    self.assertEquals(expected, schema['platforms'])
+    self.assertEqual(expected, schema['platforms'])
 
   def testGenerateErrorMessages(self):
     schema = idl_schema.Load('test/idl_generate_error_messages.idl')[0]
-    self.assertEquals('idl_generate_error_messages', schema['namespace'])
+    self.assertEqual('idl_generate_error_messages', schema['namespace'])
     self.assertTrue(schema['compiler_options'].get('generate_error_messages',
                     False))
 
     schema = idl_schema.Load('test/idl_basics.idl')[0]
-    self.assertEquals('idl_basics', schema['namespace'])
+    self.assertEqual('idl_basics', schema['namespace'])
     self.assertFalse(schema['compiler_options'].get('generate_error_messages',
                      False))
 
   def testSpecificImplementNamespace(self):
     schema = idl_schema.Load('test/idl_namespace_specific_implement.idl')[0]
-    self.assertEquals('idl_namespace_specific_implement',
+    self.assertEqual('idl_namespace_specific_implement',
                       schema['namespace'])
     expected = 'idl_namespace_specific_implement.idl'
-    self.assertEquals(expected, schema['compiler_options']['implemented_in'])
+    self.assertEqual(expected, schema['compiler_options']['implemented_in'])
 
   def testSpecificImplementOnChromeOSNamespace(self):
     schema = idl_schema.Load(
         'test/idl_namespace_specific_implement_chromeos.idl')[0]
-    self.assertEquals('idl_namespace_specific_implement_chromeos',
+    self.assertEqual('idl_namespace_specific_implement_chromeos',
                       schema['namespace'])
     expected_implemented_path = 'idl_namespace_specific_implement_chromeos.idl'
     expected_platform = ['chromeos']
-    self.assertEquals(expected_implemented_path,
+    self.assertEqual(expected_implemented_path,
                       schema['compiler_options']['implemented_in'])
-    self.assertEquals(expected_platform, schema['platforms'])
+    self.assertEqual(expected_platform, schema['platforms'])
 
   def testCallbackComment(self):
     schema = self.idl_basics
-    self.assertEquals('A comment on a callback.',
+    self.assertEqual('A comment on a callback.',
                       getParams(schema, 'function16')[0]['description'])
-    self.assertEquals(
+    self.assertEqual(
         'A parameter.',
         getParams(schema, 'function16')[0]['parameters'][0]['description'])
-    self.assertEquals(
+    self.assertEqual(
         'Just a parameter comment, with no comment on the callback.',
         getParams(schema, 'function17')[0]['parameters'][0]['description'])
-    self.assertEquals(
+    self.assertEqual(
         'Override callback comment.',
         getParams(schema, 'function18')[0]['description'])
 
   def testFunctionComment(self):
     schema = self.idl_basics
     func = getFunction(schema, 'function3')
-    self.assertEquals(('This comment should appear in the documentation, '
+    self.assertEqual(('This comment should appear in the documentation, '
                        'despite occupying multiple lines.'),
                       func['description'])
-    self.assertEquals(
+    self.assertEqual(
         [{'description': ('So should this comment about the argument. '
                           '<em>HTML</em> is fine too.'),
           'name': 'arg',
           '$ref': 'MyType1'}],
         func['parameters'])
     func = getFunction(schema, 'function4')
-    self.assertEquals(
+    self.assertEqual(
         '<p>This tests if "double-quotes" are escaped correctly.</p>'
         '<p>It also tests a comment with two newlines.</p>',
         func['description'])
@@ -266,62 +266,62 @@ class IdlSchemaTest(unittest.TestCase):
     schema = idl_schema.Load('test/idl_reserved_words.idl')[0]
 
     foo_type = getType(schema, 'Foo')
-    self.assertEquals([{'name': 'float'}, {'name': 'DOMString'}],
+    self.assertEqual([{'name': 'float'}, {'name': 'DOMString'}],
                       foo_type['enum'])
 
     enum_type = getType(schema, 'enum')
-    self.assertEquals([{'name': 'callback'}, {'name': 'namespace'}],
+    self.assertEqual([{'name': 'callback'}, {'name': 'namespace'}],
                       enum_type['enum'])
 
     dictionary = getType(schema, 'dictionary')
-    self.assertEquals('integer', dictionary['properties']['long']['type'])
+    self.assertEqual('integer', dictionary['properties']['long']['type'])
 
     mytype = getType(schema, 'MyType')
-    self.assertEquals('string', mytype['properties']['interface']['type'])
+    self.assertEqual('string', mytype['properties']['interface']['type'])
 
     params = getParams(schema, 'static')
-    self.assertEquals('Foo', params[0]['$ref'])
-    self.assertEquals('enum', params[1]['$ref'])
+    self.assertEqual('Foo', params[0]['$ref'])
+    self.assertEqual('enum', params[1]['$ref'])
 
   def testObjectTypes(self):
     schema = idl_schema.Load('test/idl_object_types.idl')[0]
 
     foo_type = getType(schema, 'FooType')
-    self.assertEquals('object', foo_type['type'])
-    self.assertEquals('integer', foo_type['properties']['x']['type'])
-    self.assertEquals('object', foo_type['properties']['y']['type'])
-    self.assertEquals(
+    self.assertEqual('object', foo_type['type'])
+    self.assertEqual('integer', foo_type['properties']['x']['type'])
+    self.assertEqual('object', foo_type['properties']['y']['type'])
+    self.assertEqual(
         'any',
         foo_type['properties']['y']['additionalProperties']['type'])
-    self.assertEquals('object', foo_type['properties']['z']['type'])
-    self.assertEquals(
+    self.assertEqual('object', foo_type['properties']['z']['type'])
+    self.assertEqual(
         'any',
         foo_type['properties']['z']['additionalProperties']['type'])
-    self.assertEquals('Window', foo_type['properties']['z']['isInstanceOf'])
+    self.assertEqual('Window', foo_type['properties']['z']['isInstanceOf'])
 
     bar_type = getType(schema, 'BarType')
-    self.assertEquals('object', bar_type['type'])
-    self.assertEquals('any', bar_type['properties']['x']['type'])
+    self.assertEqual('object', bar_type['type'])
+    self.assertEqual('any', bar_type['properties']['x']['type'])
 
   def testObjectTypesInFunctions(self):
     schema = idl_schema.Load('test/idl_object_types.idl')[0]
 
     params = getParams(schema, 'objectFunction1')
-    self.assertEquals('object', params[0]['type'])
-    self.assertEquals('any', params[0]['additionalProperties']['type'])
-    self.assertEquals('ImageData', params[0]['isInstanceOf'])
+    self.assertEqual('object', params[0]['type'])
+    self.assertEqual('any', params[0]['additionalProperties']['type'])
+    self.assertEqual('ImageData', params[0]['isInstanceOf'])
 
     params = getParams(schema, 'objectFunction2')
-    self.assertEquals('any', params[0]['type'])
+    self.assertEqual('any', params[0]['type'])
 
   def testObjectTypesWithOptionalFields(self):
     schema = idl_schema.Load('test/idl_object_types.idl')[0]
 
     baz_type = getType(schema, 'BazType')
-    self.assertEquals(True, baz_type['properties']['x']['optional'])
-    self.assertEquals('integer', baz_type['properties']['x']['type'])
-    self.assertEquals(True, baz_type['properties']['foo']['optional'])
-    self.assertEquals('FooType', baz_type['properties']['foo']['$ref'])
+    self.assertEqual(True, baz_type['properties']['x']['optional'])
+    self.assertEqual('integer', baz_type['properties']['x']['type'])
+    self.assertEqual(True, baz_type['properties']['foo']['optional'])
+    self.assertEqual('FooType', baz_type['properties']['foo']['$ref'])
 
   def testObjectTypesWithUnions(self):
     schema = idl_schema.Load('test/idl_object_types.idl')[0]
@@ -358,7 +358,7 @@ class IdlSchemaTest(unittest.TestCase):
                  },
                }
 
-    self.assertEquals(expected, union_type)
+    self.assertEqual(expected, union_type)
 
   def testUnionsWithModifiers(self):
     schema = idl_schema.Load('test/idl_object_types.idl')[0]
@@ -379,7 +379,7 @@ class IdlSchemaTest(unittest.TestCase):
                  }
                }
 
-    self.assertEquals(expected, union_type)
+    self.assertEqual(expected, union_type)
 
   def testSerializableFunctionType(self):
     schema = idl_schema.Load('test/idl_object_types.idl')[0]
@@ -396,7 +396,7 @@ class IdlSchemaTest(unittest.TestCase):
                    }
                  }
                }
-    self.assertEquals(expected, object_type)
+    self.assertEqual(expected, object_type)
 
   def testUnionsWithFunctions(self):
     schema = idl_schema.Load('test/idl_function_types.idl')[0]
@@ -410,7 +410,7 @@ class IdlSchemaTest(unittest.TestCase):
                  ]
                }]
 
-    self.assertEquals(expected, union_params)
+    self.assertEqual(expected, union_params)
 
   def testUnionsWithCallbacks(self):
     schema = idl_schema.Load('test/idl_function_types.idl')[0]
@@ -425,7 +425,7 @@ class IdlSchemaTest(unittest.TestCase):
                    ]}
                  ]
                }]
-    self.assertEquals(expected, blah_params)
+    self.assertEqual(expected, blah_params)
 
     badabish_params = getParams(schema, 'badabish')
     expected = [{
@@ -437,7 +437,7 @@ class IdlSchemaTest(unittest.TestCase):
                  }]
                }]
 
-    self.assertEquals(expected, badabish_params)
+    self.assertEqual(expected, badabish_params)
 
   def testFunctionWithPromise(self):
     schema = idl_schema.Load('test/idl_function_types.idl')[0]
@@ -452,7 +452,7 @@ class IdlSchemaTest(unittest.TestCase):
         ('name', 'promise_supporting'),
         ('type', 'function')
     ])
-    self.assertEquals(expected, promise_function)
+    self.assertEqual(expected, promise_function)
 
   def testFunctionWithPromiseAndParams(self):
     schema = idl_schema.Load('test/idl_function_types.idl')[0]
@@ -475,11 +475,11 @@ class IdlSchemaTest(unittest.TestCase):
         ('name', 'promise_supporting_with_params'),
         ('type', 'function')
     ])
-    self.assertEquals(expected, promise_function)
+    self.assertEqual(expected, promise_function)
 
   def testProperties(self):
     schema = idl_schema.Load('test/idl_properties.idl')[0]
-    self.assertEquals(OrderedDict([
+    self.assertEqual(OrderedDict([
       ('first', OrderedDict([
         ('description', 'Integer property.'),
         ('jsexterns', None),
@@ -507,7 +507,7 @@ class IdlSchemaTest(unittest.TestCase):
 
   def testManifestKeys(self):
     schema = self.idl_basics
-    self.assertEquals(
+    self.assertEqual(
         OrderedDict([('key_str',
                       OrderedDict([('description', 'String manifest key.'),
                                    ('jsexterns', None), ('name', 'key_str'),

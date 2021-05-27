@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -9,16 +9,16 @@ import unittest
 
 class SchemaUtilTest(unittest.TestCase):
   def testStripNamespace(self):
-    self.assertEquals('Bar', StripNamespace('foo.Bar'))
-    self.assertEquals('Baz', StripNamespace('Baz'))
+    self.assertEqual('Bar', StripNamespace('foo.Bar'))
+    self.assertEqual('Baz', StripNamespace('Baz'))
 
   def testJsFunctionNameToClassName(self):
-    self.assertEquals('FooBar', JsFunctionNameToClassName('foo', 'bar'))
-    self.assertEquals('FooBar',
+    self.assertEqual('FooBar', JsFunctionNameToClassName('foo', 'bar'))
+    self.assertEqual('FooBar',
                       JsFunctionNameToClassName('experimental.foo', 'bar'))
-    self.assertEquals('FooBarBaz',
+    self.assertEqual('FooBarBaz',
                       JsFunctionNameToClassName('foo.bar', 'baz'))
-    self.assertEquals('FooBarBaz',
+    self.assertEqual('FooBarBaz',
                       JsFunctionNameToClassName('experimental.foo.bar', 'baz'))
 
 if __name__ == '__main__':

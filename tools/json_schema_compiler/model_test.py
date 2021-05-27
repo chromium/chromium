@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -70,47 +70,47 @@ class ModelTest(unittest.TestCase):
         'function_platform_win_linux')
 
   def testNamespaces(self):
-    self.assertEquals(12, len(self.model.namespaces))
+    self.assertEqual(12, len(self.model.namespaces))
     self.assertTrue(self.permissions)
 
   def testHasFunctions(self):
-    self.assertEquals(["contains", "getAll", "remove", "request"],
+    self.assertEqual(["contains", "getAll", "remove", "request"],
         sorted(self.permissions.functions.keys()))
 
   def testHasTypes(self):
-    self.assertEquals(['Tab'], self.tabs.types.keys())
-    self.assertEquals(['Permissions'], self.permissions.types.keys())
-    self.assertEquals(['Window'], self.windows.types.keys())
+    self.assertEqual(['Tab'], list(self.tabs.types.keys()))
+    self.assertEqual(['Permissions'], list(self.permissions.types.keys()))
+    self.assertEqual(['Window'], list(self.windows.types.keys()))
 
   def testHasProperties(self):
-    self.assertEquals(["active", "favIconUrl", "highlighted", "id",
+    self.assertEqual(["active", "favIconUrl", "highlighted", "id",
         "incognito", "index", "pinned", "selected", "status", "title", "url",
         "windowId"],
         sorted(self.tabs.types['Tab'].properties.keys()))
 
   def testProperties(self):
     string_prop = self.tabs.types['Tab'].properties['status']
-    self.assertEquals(model.PropertyType.STRING,
+    self.assertEqual(model.PropertyType.STRING,
                       string_prop.type_.property_type)
     integer_prop = self.tabs.types['Tab'].properties['id']
-    self.assertEquals(model.PropertyType.INTEGER,
+    self.assertEqual(model.PropertyType.INTEGER,
                       integer_prop.type_.property_type)
     array_prop = self.windows.types['Window'].properties['tabs']
-    self.assertEquals(model.PropertyType.ARRAY,
+    self.assertEqual(model.PropertyType.ARRAY,
                       array_prop.type_.property_type)
-    self.assertEquals(model.PropertyType.REF,
+    self.assertEqual(model.PropertyType.REF,
                       array_prop.type_.item_type.property_type)
-    self.assertEquals('tabs.Tab', array_prop.type_.item_type.ref_type)
+    self.assertEqual('tabs.Tab', array_prop.type_.item_type.ref_type)
     object_prop = self.tabs.functions['query'].params[0]
-    self.assertEquals(model.PropertyType.OBJECT,
+    self.assertEqual(model.PropertyType.OBJECT,
                       object_prop.type_.property_type)
-    self.assertEquals(
+    self.assertEqual(
         ["active", "highlighted", "pinned", "status", "title", "url",
          "windowId", "windowType"],
         sorted(object_prop.type_.properties.keys()))
 
   def testChoices(self):
-    self.assertEquals(model.PropertyType.CHOICES,
+    self.assertEqual(model.PropertyType.CHOICES,
                       self.tabs.functions['move'].params[0].type_.property_type)
 
   def testPropertyNotImplemented(self):
@@ -135,7 +135,7 @@ class ModelTest(unittest.TestCase):
   def testDescription(self):
     self.assertFalse(
         self.permissions.functions['contains'].params[0].description)
-    self.assertEquals(
+    self.assertEqual(
         'True if the extension has the specified permissions.', self.
         permissions.functions['contains'].returns_async.params[0].description)
 
@@ -153,7 +153,7 @@ class ModelTest(unittest.TestCase):
 
   def testPropertyUnixName(self):
     param = self.tabs.functions['move'].params[0]
-    self.assertEquals('tab_ids', param.unix_name)
+    self.assertEqual('tab_ids', param.unix_name)
 
   def testUnixName(self):
     expectations = {
@@ -170,7 +170,7 @@ class ModelTest(unittest.TestCase):
       'foo_Bar_Baz_box': 'foo_bar_baz_box',
       }
     for name in expectations:
-      self.assertEquals(expectations[name], model.UnixName(name))
+      self.assertEqual(expectations[name], model.UnixName(name))
 
   def testCamelName(self):
     expectations = {
@@ -185,7 +185,7 @@ class ModelTest(unittest.TestCase):
       'bar_baz_': 'barBaz',
       }
     for testcase, expected in expectations.items():
-      self.assertEquals(expected, model.CamelName(testcase))
+      self.assertEqual(expected, model.CamelName(testcase))
 
   def testPlatforms(self):
     self.assertEqual([Platforms.CHROMEOS],
