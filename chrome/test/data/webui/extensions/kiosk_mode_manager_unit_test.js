@@ -35,12 +35,12 @@ suite(extension_manager_unit_tests.suiteName, function() {
 
   setup(function() {
     browserProxy = new TestKioskBrowserProxy();
-    KioskBrowserProxyImpl.instance_ = browserProxy;
+    KioskBrowserProxyImpl.setInstance(browserProxy);
 
     document.body.innerHTML = '';
 
     service = new TestService();
-    Service.instance_ = service;
+    Service.setInstance(service);
 
     manager = document.createElement('extensions-manager');
     document.body.appendChild(manager);

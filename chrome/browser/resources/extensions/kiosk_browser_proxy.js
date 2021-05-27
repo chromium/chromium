@@ -7,7 +7,7 @@
  * the browser.
  */
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @typedef {{
@@ -97,6 +97,17 @@ export class KioskBrowserProxyImpl {
   setDisableBailoutShortcut(disableBailout) {
     chrome.send('setDisableBailoutShortcut', [disableBailout]);
   }
+
+  /** @return {!KioskBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new KioskBrowserProxyImpl());
+  }
+
+  /** @param {!KioskBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(KioskBrowserProxyImpl);
+/** @type {?KioskBrowserProxy} */
+let instance = null;

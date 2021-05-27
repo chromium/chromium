@@ -86,7 +86,7 @@ suite(extension_kiosk_mode_tests.suiteName, function() {
   setup(function() {
     browserProxy = new TestKioskBrowserProxy();
     setAppSettings({apps: basicApps.slice(0)});
-    KioskBrowserProxyImpl.instance_ = browserProxy;
+    KioskBrowserProxyImpl.setInstance(browserProxy);
 
     return initPage();
   });

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 import {ActivityLogDelegate} from './activity_log/activity_log_history.js';
 import {ActivityLogEventDelegate} from './activity_log/activity_log_stream.js';
@@ -494,6 +493,17 @@ export class Service {
   notifyDragInstallInProgress() {
     chrome.developerPrivate.notifyDragInstallInProgress();
   }
+
+  /** @return {!Service} */
+  static getInstance() {
+    return instance || (instance = new Service());
+  }
+
+  /** @param {!Service} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(Service);
+/** @type {?Service} */
+let instance = null;

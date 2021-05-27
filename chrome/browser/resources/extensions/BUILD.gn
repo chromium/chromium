@@ -458,7 +458,6 @@ js_library("service") {
     "activity_log:activity_log_history",
     "activity_log:activity_log_stream",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
   ]
   externs_list = chrome_extension_public_externs + [
                    "$externs_path/activity_log_private.js",
