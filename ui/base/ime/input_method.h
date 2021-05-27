@@ -146,10 +146,6 @@ class InputMethod {
   // of IME popups is not supported.
   virtual bool IsCandidatePopupOpen() const = 0;
 
-  // Check whether text entered into the focused text input client should be
-  // used to improve typing suggestions for the user.
-  virtual bool GetClientShouldDoLearning() = 0;
-
   // Displays an on screen keyboard if enabled.
   virtual void ShowVirtualKeyboardIfEnabled() = 0;
 

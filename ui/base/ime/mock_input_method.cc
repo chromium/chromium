@@ -107,10 +107,6 @@ bool MockInputMethod::IsCandidatePopupOpen() const {
   return false;
 }
 
-bool MockInputMethod::GetClientShouldDoLearning() {
-  return false;
-}
-
 void MockInputMethod::ShowVirtualKeyboardIfEnabled() {
   for (InputMethodObserver& observer : observer_list_)
     observer.OnShowVirtualKeyboardIfEnabled();

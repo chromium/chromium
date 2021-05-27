@@ -76,10 +76,6 @@ bool DummyInputMethod::IsCandidatePopupOpen() const {
   return false;
 }
 
-bool DummyInputMethod::GetClientShouldDoLearning() {
-  return false;
-}
-
 void DummyInputMethod::ShowVirtualKeyboardIfEnabled() {}
 
 void DummyInputMethod::AddObserver(InputMethodObserver* observer) {

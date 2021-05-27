@@ -149,6 +149,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   // Whether the focused text input client supports inline composition.
   bool CanComposeInline() const;
 
+  // Check whether text entered into the focused text input client should be
+  // used to improve typing suggestions for the user.
+  bool GetClientShouldDoLearning() const;
+
   // Called from the engine when it completes processing.
   void ProcessKeyEventDone(ui::KeyEvent* event, bool is_handled);
 

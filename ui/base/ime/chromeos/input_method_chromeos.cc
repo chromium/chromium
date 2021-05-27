@@ -783,6 +783,11 @@ bool InputMethodChromeOS::CanComposeInline() const {
   return client ? client->CanComposeInline() : true;
 }
 
+bool InputMethodChromeOS::GetClientShouldDoLearning() const {
+  TextInputClient* client = GetTextInputClient();
+  return client && client->ShouldDoLearning();
+}
+
 void InputMethodChromeOS::SendKeyEvent(KeyEvent* event) {
   ui::EventDispatchDetails details = DispatchKeyEvent(event);
   DCHECK(!details.dispatcher_destroyed);
