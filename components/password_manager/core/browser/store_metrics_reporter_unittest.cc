@@ -51,6 +51,8 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
                                            false);
     prefs_.registry()->RegisterBooleanPref(
         password_manager::prefs::kWasAutoSignInFirstRunExperienceShown, false);
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kWasPhishedCredentialsUploadedToSync, false);
   }
 
   ~StoreMetricsReporterTest() override = default;
@@ -58,7 +60,6 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
  protected:
   MockPasswordManagerClient client_;
   TestingPrefServiceSimple prefs_;
-  DISALLOW_COPY_AND_ASSIGN(StoreMetricsReporterTest);
 };
 
 // The test fixture defines two tests, one that doesn't require a password store

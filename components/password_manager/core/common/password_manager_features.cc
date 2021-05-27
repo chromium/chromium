@@ -141,7 +141,7 @@ const base::Feature kSecondaryServerFieldPredictions = {
 
 // Enables syncing of compromised credentials.
 const base::Feature kSyncingCompromisedCredentials = {
-    "SyncingCompromisedCredentials", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SyncingCompromisedCredentials", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Treat heuritistics to find new password fields as reliable. This enables
 // password generation on more forms, but could lead to false positives.

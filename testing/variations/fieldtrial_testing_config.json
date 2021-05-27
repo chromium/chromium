@@ -7432,28 +7432,6 @@
             ]
         }
     ],
-    "SyncingCompromisedCredentials": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "SyncingCompromisedCredentials",
-                    "enable_features": [
-                        "SyncingCompromisedCredentials"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabGridLayoutAndroid": [
         {
             "platforms": [

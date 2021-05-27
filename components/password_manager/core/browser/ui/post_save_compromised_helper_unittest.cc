@@ -47,7 +47,7 @@ class PostSaveCompromisedHelperTest : public testing::Test {
  public:
   PostSaveCompromisedHelperTest() {
     mock_profile_store_ = new MockPasswordStore;
-    EXPECT_TRUE(mock_profile_store_->Init(&prefs_));
+    EXPECT_TRUE(mock_profile_store_->Init(/*prefs=*/nullptr));
     prefs_.registry()->RegisterDoublePref(kLastTimePasswordCheckCompleted, 0.0);
   }
 
@@ -248,7 +248,7 @@ class PostSaveCompromisedHelperWithTwoStoreTest
  public:
   PostSaveCompromisedHelperWithTwoStoreTest() {
     mock_account_store_ = new MockPasswordStore;
-    EXPECT_TRUE(mock_account_store_->Init(prefs()));
+    EXPECT_TRUE(mock_account_store_->Init(/*prefs=*/nullptr));
   }
 
   ~PostSaveCompromisedHelperWithTwoStoreTest() override {

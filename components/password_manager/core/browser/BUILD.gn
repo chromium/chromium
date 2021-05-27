@@ -685,9 +685,6 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [ "password_scripts_fetcher_impl_unittests.cc" ]
   }
-  if (is_mac) {
-    sources -= [ "password_store_impl_unittest.cc" ]
-  }
   if (is_ios) {
     sources += [ "login_database_ios_unittest.cc" ]
   } else {
