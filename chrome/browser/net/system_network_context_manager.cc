@@ -499,23 +499,7 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   network_service->ConfigureHttpAuthPrefs(
       CreateHttpAuthDynamicParams(local_state_));
 
-  int max_connections_per_proxy =
-      local_state_->GetInteger(prefs::kMaxConnectionsPerProxy);
-  if (max_connections_per_proxy != -1)
-    network_service->SetMaxConnectionsPerProxy(max_connections_per_proxy);
-
-  network_service_network_context_.reset();
-  network_service->CreateNetworkContext(
-      network_service_network_context_.BindNewPipeAndPassReceiver(),
-      CreateNetworkContextParams());
-
-  mojo::PendingRemote<network::mojom::NetworkContextClient> client_remote;
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<content::NetworkContextClientBase>(),
-      client_remote.InitWithNewPipeAndPassReceiver());
-  network_service_network_context_->SetClient(std::move(client_remote));
-
-// Configure the Certificate Transparency logs.
+  // Configure the Certificate Transparency logs.
 #if !defined(OS_ANDROID)
   if (g_enable_certificate_transparency) {
     std::vector<std::string> operated_by_google_logs =
@@ -545,6 +529,22 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
     network_service->UpdateCtLogList(std::move(log_list_mojo));
   }
 #endif
+
+  int max_connections_per_proxy =
+      local_state_->GetInteger(prefs::kMaxConnectionsPerProxy);
+  if (max_connections_per_proxy != -1)
+    network_service->SetMaxConnectionsPerProxy(max_connections_per_proxy);
+
+  network_service_network_context_.reset();
+  network_service->CreateNetworkContext(
+      network_service_network_context_.BindNewPipeAndPassReceiver(),
+      CreateNetworkContextParams());
+
+  mojo::PendingRemote<network::mojom::NetworkContextClient> client_remote;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<content::NetworkContextClientBase>(),
+      client_remote.InitWithNewPipeAndPassReceiver());
+  network_service_network_context_->SetClient(std::move(client_remote));
 
   // Configure the stub resolver. This must be done after the system
   // NetworkContext is created, but before anything has the chance to use it.
