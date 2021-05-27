@@ -1,4 +1,8 @@
 include_rules = [
   "+chromecast/media",
+  "+chromecast/renderer",
   '+chromecast/service',
+  '+components/cast_streaming',
+  "+content/public",
+  "+media/base",
 ]

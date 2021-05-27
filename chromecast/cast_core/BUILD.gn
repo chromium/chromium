@@ -4,20 +4,35 @@
 
 import("//chromecast/chromecast.gni")
 
+cast_source_set("renderer") {
+  sources = [
+    "cast_runtime_content_renderer_client.cc",
+    "cast_runtime_content_renderer_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast/renderer",
+    "//components/cast_streaming/renderer",
+    "//content/public/renderer",
+    "//media",
+  ]
+}
+
 cast_source_set("cast_core") {
   sources = [
     "cast_runtime_service.cc",
     "cast_runtime_service.h",
   ]
-
-  if (!enable_cast_media_runtime) {
-    sources += [ "cast_runtime_service_simple.cc" ]
-  }
-
   deps = [
     "//base",
     "//chromecast/service",
   ]
-
   public_deps = [ "//chromecast/media/cma/backend/proxy:headers" ]
+
+  if (!enable_cast_media_runtime) {
+    sources += [ "cast_runtime_service_simple.cc" ]
+  } else {
+    deps += [ ":renderer" ]
+  }
 }
