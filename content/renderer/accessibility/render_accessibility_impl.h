@@ -206,10 +206,12 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
                                    const ui::AXEvent& event) const;
 
   // Add a DirtyObject to the dirty_objects_ queue.
+  enum class QueuePosition { kFront, kBack };
   void EnqueueDirtyObject(const blink::WebAXObject& obj,
                           ax::mojom::EventFrom event_from,
                           ax::mojom::Action event_from_action,
-                          std::vector<ui::AXEventIntent> event_intents);
+                          std::vector<ui::AXEventIntent> event_intents,
+                          QueuePosition queue_position);
 
   // If we are calling this from a task, scheduling is allowed even if there is
   // a running task
