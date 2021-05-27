@@ -11,6 +11,7 @@
 namespace blink {
 
 class ExceptionState;
+class HTMLCanvasElement;
 class HTMLVideoElement;
 class GPUTextureDescriptor;
 class GPUTextureView;
@@ -29,6 +30,10 @@ class GPUTexture : public DawnObject<WGPUTexture> {
                                HTMLVideoElement* video,
                                WGPUTextureUsage usage,
                                ExceptionState& exception_state);
+  static GPUTexture* FromCanvas(GPUDevice* device,
+                                HTMLCanvasElement* canvas,
+                                WGPUTextureUsage usage,
+                                ExceptionState& exception_state);
 
   GPUTexture(GPUDevice* device, WGPUTexture texture, WGPUTextureFormat format);
   GPUTexture(GPUDevice* device,

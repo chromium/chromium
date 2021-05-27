@@ -128,6 +128,10 @@ class PixelTestPages(object):
   def DefaultPages(base_name):
     sw_compositing_args = [cba.DISABLE_GPU_COMPOSITING]
 
+    webgpu_args = [
+        cba.ENABLE_UNSAFE_WEBGPU, cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
+    ]
+
     # The optimizer script spat out pretty similar values for most MP4 tests, so
     # combine into a single set of parameters.
     general_mp4_algo = algo.SobelMatchingAlgorithm(max_different_pixels=56300,
@@ -336,6 +340,19 @@ class PixelTestPages(object):
                       base_name + '_WebGLPreservedAfterTabSwitch',
                       test_rect=[0, 0, 300, 300],
                       optional_action='SwitchTabsAndCopyImage'),
+        PixelTestPage('pixel_webgpu_import_webgl_canvas.html',
+                      base_name + '_WebGPUImportWebGLCanvas',
+                      test_rect=[0, 0, 400, 200],
+                      browser_args=webgpu_args),
+        PixelTestPage('pixel_webgpu_import_2d_canvas.html',
+                      base_name + '_WebGPUImport2DCanvas',
+                      test_rect=[0, 0, 400, 200],
+                      browser_args=webgpu_args),
+        PixelTestPage('pixel_webgpu_import_2d_canvas.html',
+                      base_name + '_WebGPUImportUnaccelerated2DCanvas',
+                      test_rect=[0, 0, 400, 200],
+                      browser_args=webgpu_args +
+                      [cba.DISABLE_ACCELERATED_2D_CANVAS]),
     ]
 
   # Pages that should be run with GPU rasterization enabled.

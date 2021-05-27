@@ -151,6 +151,45 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
   return true;
 }
 
+bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
+    CanvasResourceProvider* resource_provider) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(resource_provider);
+
+  if (!IsValid())
+    return false;
+
+  DCHECK(mailbox_.IsSharedImage());
+
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
+      SharedGpuContext::ContextProviderWrapper();
+  if (!shared_context_wrapper || !shared_context_wrapper->ContextProvider())
+    return false;
+
+  const auto& dst_mailbox = resource_provider->GetBackingMailboxForOverwrite(
+      MailboxSyncMode::kOrderingBarrier);
+  if (dst_mailbox.IsZero())
+    return false;
+
+  const GLenum dst_target = resource_provider->GetBackingTextureTarget();
+  const bool unpack_flip_y =
+      IsOriginTopLeft() != resource_provider->IsOriginTopLeft();
+  const bool unpack_premultiply_alpha = false;
+
+  auto* ri = shared_context_wrapper->ContextProvider()->RasterInterface();
+  DCHECK(ri);
+  ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
+  ri->CopySubTexture(mailbox_, dst_mailbox, dst_target, 0, 0, 0, 0,
+                     Size().Width(), Size().Height(), unpack_flip_y,
+                     unpack_premultiply_alpha);
+  // We need to update the texture holder's sync token to ensure that when this
+  // mailbox is recycled or deleted, it is done after the copy operation above.
+  gpu::SyncToken sync_token;
+  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  mailbox_ref_->set_sync_token(sync_token);
+  return true;
+}
+
 PaintImage AcceleratedStaticBitmapImage::PaintImageForCurrentFrame() {
   // TODO(ccameron): This function should not ignore |colorBehavior|.
   // https://crbug.com/672306

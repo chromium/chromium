@@ -146,6 +146,11 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
     return false;
   }
 
+  virtual bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
+                                                     SourceDrawingBuffer) {
+    return false;
+  }
+
   virtual cc::Layer* CcLayer() const { return nullptr; }
 
   enum LostContextMode {

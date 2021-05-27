@@ -622,6 +622,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
   // graphics switching. Guard against this.
   if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
     return nullptr;
+
   // Use the drawing buffer size here instead of the canvas size to ensure that
   // sizing is consistent. The forced downsizing logic in Reshape() can lead to
   // the drawing buffer being smaller than the canvas size.
@@ -1658,6 +1659,7 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     return true;
   }
 
+  // TODO(sunnyps): Why is a texture restorer needed? See if it can be removed.
   ScopedTexture2DRestorer restorer(this);
   ScopedFramebufferRestorer fbo_restorer(this);
 
@@ -1686,6 +1688,14 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
 
   // Early-out if the context has been lost.
   if (!GetDrawingBuffer())
+    return false;
+
+  ScopedFramebufferRestorer fbo_restorer(this);
+  // In rare situations on macOS the drawing buffer can be destroyed
+  // during the resolve process, specifically during automatic
+  // graphics switching. Guard against this.
+  // This is a no-op if already called higher up the stack from here.
+  if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
     return false;
 
   const bool flip_y = IsOriginTopLeft() != resource_provider->IsOriginTopLeft();

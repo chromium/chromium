@@ -17,6 +17,7 @@
 namespace blink {
 
 class ExecutionContext;
+class HTMLCanvasElement;
 class HTMLVideoElement;
 class GPUAdapter;
 class GPUAdapter;
@@ -76,6 +77,9 @@ class GPUDevice final : public EventTargetWithInlineData,
   GPUTexture* createTexture(const GPUTextureDescriptor* descriptor,
                             ExceptionState& exception_state);
   GPUTexture* experimentalImportTexture(HTMLVideoElement* video,
+                                        unsigned int usage_flags,
+                                        ExceptionState& exception_state);
+  GPUTexture* experimentalImportTexture(HTMLCanvasElement* canvas,
                                         unsigned int usage_flags,
                                         ExceptionState& exception_state);
   GPUSampler* createSampler(const GPUSamplerDescriptor* descriptor);

@@ -21,6 +21,7 @@ class GLES2Interface;
 }  // namespace gpu
 
 namespace blink {
+class CanvasResourceProvider;
 
 class PLATFORM_EXPORT StaticBitmapImage : public Image {
  public:
@@ -70,6 +71,11 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
                              bool,
                              const IntPoint&,
                              const IntRect&) {
+    NOTREACHED();
+    return false;
+  }
+
+  virtual bool CopyToResourceProvider(CanvasResourceProvider*) {
     NOTREACHED();
     return false;
   }

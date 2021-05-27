@@ -174,3 +174,36 @@ crbug.com/1151767 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Vide
 # Flakes on Linux
 crbug.com/1209284 [ linux nvidia-0x1cb3 skia-renderer-gl ] TraceTest_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 crbug.com/1209284 [ linux nvidia-0x1cb3 skia-renderer-gl ] TraceTest_WebGLReadPixelsTabSwitch [ RetryOnFailure ]
+
+# WebGPU pixel tests hang on mac bots which mostly run older versions of mac os.
+crbug.com/1213170 [ mac ] TraceTest_WebGPUImportWebGLCanvas [ Skip ]
+crbug.com/1213170 [ mac ] TraceTest_WebGPUImport2DCanvas [ Skip ]
+crbug.com/1213170 [ mac ] TraceTest_WebGPUImportUnaccelerated2DCanvas [ Skip ]
+
+# WebGPU experimentalImportTexture pixel tests fail on Linux+SkiaRenderer+Vulkan
+crbug.com/1213657 [ linux skia-renderer-vulkan ] TraceTest_WebGPUImportWebGLCanvas [ Skip ]
+crbug.com/1213657 [ linux skia-renderer-vulkan ] TraceTest_WebGPUImport2DCanvas [ Skip ]
+crbug.com/1213657 [ linux skia-renderer-vulkan ] TraceTest_WebGPUImportUnaccelerated2DCanvas [ Skip ]
+
+# WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
+crbug.com/976495 [ linux skia-renderer-gl ] TraceTest_WebGPUImportWebGLCanvas [ Skip ]
+crbug.com/976495 [ linux skia-renderer-gl ] TraceTest_WebGPUImport2DCanvas [ Skip ]
+crbug.com/976495 [ linux skia-renderer-gl ] TraceTest_WebGPUImportUnaccelerated2DCanvas [ Skip ]
+crbug.com/976495 [ linux skia-renderer-dawn ] TraceTest_WebGPUImportWebGLCanvas [ Skip ]
+crbug.com/976495 [ linux skia-renderer-dawn ] TraceTest_WebGPUImport2DCanvas [ Skip ]
+crbug.com/976495 [ linux skia-renderer-dawn ] TraceTest_WebGPUImportUnaccelerated2DCanvas [ Skip ]
+crbug.com/976495 [ linux skia-renderer-disabled ] TraceTest_WebGPUImportWebGLCanvas [ Skip ]
+crbug.com/976495 [ linux skia-renderer-disabled ] TraceTest_WebGPUImport2DCanvas [ Skip ]
+crbug.com/976495 [ linux skia-renderer-disabled ] TraceTest_WebGPUImportUnaccelerated2DCanvas [ Skip ]
+crbug.com/976497 [ android ] TraceTest_WebGPUImportWebGLCanvas [ Skip ]
+crbug.com/976497 [ android ] TraceTest_WebGPUImport2DCanvas [ Skip ]
+crbug.com/976497 [ android ] TraceTest_WebGPUImportUnaccelerated2DCanvas [ Skip ]
+crbug.com/852089 [ chromeos ] TraceTest_WebGPUImportWebGLCanvas [ Skip ]
+crbug.com/852089 [ chromeos ] TraceTest_WebGPUImport2DCanvas [ Skip ]
+crbug.com/852089 [ chromeos ] TraceTest_WebGPUImportUnaccelerated2DCanvas [ Skip ]
+crbug.com/852089 [ fuchsia ] TraceTest_WebGPUImportWebGLCanvas [ Skip ]
+crbug.com/852089 [ fuchsia ] TraceTest_WebGPUImport2DCanvas [ Skip ]
+crbug.com/852089 [ fuchsia ] TraceTest_WebGPUImportUnaccelerated2DCanvas [ Skip ]
+crbug.com/852089 [ win7 ] TraceTest_WebGPUImportWebGLCanvas [ Skip ]
+crbug.com/852089 [ win7 ] TraceTest_WebGPUImport2DCanvas [ Skip ]
+crbug.com/852089 [ win7 ] TraceTest_WebGPUImportUnaccelerated2DCanvas [ Skip ]
