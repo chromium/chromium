@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 
 #import "base/time/time.h"
+#include "base/timer/timer.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_observer_bridge.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
@@ -29,11 +30,11 @@ namespace {
 
 // Default time interval to wait to show the promo after loading a webpage.
 // This should allow any initial overlays to be presented first.
-const NSTimeInterval kShowPromoWebpageLoadWaitTime = 3;
+const int64_t kShowPromoWebpageLoadWaitTime = 3;
 
 // Default time interval to wait to show the promo after the share action is
 // completed.
-const NSTimeInterval kShowPromoPostShareWaitTime = 1;
+const int64_t kShowPromoPostShareWaitTime = 1;
 
 // Number of times to show the promo to a user.
 const int kPromoShownTimesLimit = 2;
@@ -63,6 +64,12 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
   // Observe the browser the web state list is tied to to deregister any
   // observers before the browser is destroyed.
   std::unique_ptr<BrowserObserverBridge> _browserObserver;
+
+  // Timer for showing the promo after page load.
+  std::unique_ptr<base::OneShotTimer> _showPromoTimer;
+
+  // Timer for dismissing the promo after it is shown.
+  std::unique_ptr<base::OneShotTimer> _dismissPromoTimer;
 }
 
 // Type of the promo being triggered, use for metrics only.
@@ -70,12 +77,6 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
 
 // Time when a non modal promo was shown on screen, used for metrics only.
 @property(nonatomic) base::TimeTicks promoShownTime;
-
-// Timer for showing the promo after page load.
-@property(nonatomic, strong) NSTimer* showPromoTimer;
-
-// Timer for dismissing the promo after it is shown.
-@property(nonatomic, strong) NSTimer* dismissPromoTimer;
 
 // WebState that the triggering event occured in.
 @property(nonatomic, assign) web::WebState* webStateToListenTo;
@@ -110,6 +111,10 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
     _promoTypeForMetrics = NonModalPromoTriggerType::kUnknown;
   }
   return self;
+}
+
+- (void)dealloc {
+  self.browser = nullptr;
 }
 
 - (void)logUserPastedInOmnibox {
@@ -334,11 +339,16 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
 - (void)startShowPromoTimer {
   DCHECK(self.currentPromoReason != PromoReasonNone);
 
-  if (!PromoCanBeDisplayed() || self.promoIsShowing || self.showPromoTimer) {
+  if (!PromoCanBeDisplayed()) {
+    self.currentPromoReason = PromoReasonNone;
     return;
   }
 
-  NSTimeInterval promoTimeInterval;
+  if (self.promoIsShowing || _showPromoTimer) {
+    return;
+  }
+
+  int64_t promoTimeInterval;
   switch (self.currentPromoReason) {
     case PromoReasonNone:
       NOTREACHED();
@@ -355,17 +365,17 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
       break;
   }
 
-  self.showPromoTimer =
-      [NSTimer scheduledTimerWithTimeInterval:promoTimeInterval
-                                       target:self
-                                     selector:@selector(showPromoTimerFinished)
-                                     userInfo:nil
-                                      repeats:NO];
+  __weak __typeof(self) weakSelf = self;
+  _showPromoTimer = std::make_unique<base::OneShotTimer>();
+  _showPromoTimer->Start(FROM_HERE,
+                         base::TimeDelta::FromSeconds(promoTimeInterval),
+                         base::BindOnce(^{
+                           [weakSelf showPromoTimerFinished];
+                         }));
 }
 
 - (void)cancelShowPromoTimer {
-  [self.showPromoTimer invalidate];
-  self.showPromoTimer = nil;
+  _showPromoTimer = nullptr;
   self.currentPromoReason = PromoReasonNone;
 }
 
@@ -373,7 +383,7 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
   if (!PromoCanBeDisplayed() || self.promoIsShowing) {
     return;
   }
-  self.showPromoTimer = nil;
+  _showPromoTimer = nullptr;
   [self.handler showDefaultBrowserNonModalPromo];
   self.promoIsShowing = YES;
   LogNonModalPromoAction(NonModalPromoAction::kAppear, self.promoTypeForMetrics,
@@ -383,24 +393,25 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
 }
 
 - (void)startDismissPromoTimer {
-  if (self.dismissPromoTimer) {
+  if (_dismissPromoTimer) {
     return;
   }
-  self.dismissPromoTimer = [NSTimer
-      scheduledTimerWithTimeInterval:NonModalPromosTimeout()
-                              target:self
-                            selector:@selector(dismissPromoTimerFinished)
-                            userInfo:nil
-                             repeats:NO];
+
+  __weak __typeof(self) weakSelf = self;
+  _dismissPromoTimer = std::make_unique<base::OneShotTimer>();
+  _dismissPromoTimer->Start(
+      FROM_HERE, base::TimeDelta::FromSeconds(NonModalPromosTimeout()),
+      base::BindOnce(^{
+        [weakSelf dismissPromoTimerFinished];
+      }));
 }
 
 - (void)cancelDismissPromoTimer {
-  [self.dismissPromoTimer invalidate];
-  self.dismissPromoTimer = nil;
+  _dismissPromoTimer = nullptr;
 }
 
 - (void)dismissPromoTimerFinished {
-  self.dismissPromoTimer = nil;
+  _dismissPromoTimer = nullptr;
   if (self.promoIsShowing) {
     LogNonModalPromoAction(NonModalPromoAction::kTimeout,
                            self.promoTypeForMetrics,
