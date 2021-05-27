@@ -248,7 +248,7 @@ class ReusingTextShaper final {
                                      unsigned end_offset) {
     DCHECK_LT(start_offset, end_offset);
     const TextDirection direction = start_item.Direction();
-    const Font& font = start_item.FontWithSVGScaling();
+    const Font& font = start_item.FontWithSvgScaling();
     if (data_.segments) {
       return data_.segments->ShapeText(&shaper_, &font, direction, start_offset,
                                        end_offset,
@@ -1246,7 +1246,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
   // Provide full context of the entire node to the shaper.
   ReusingTextShaper shaper(data, previous_items);
-  ShapeResultSpacing<String> spacing(text_content, IsSVGText());
+  ShapeResultSpacing<String> spacing(text_content, IsSvgText());
 
   DCHECK(!data->segments ||
          data->segments->EndOffset() == text_content.length());
@@ -1259,7 +1259,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     }
 
     const ComputedStyle& start_style = *start_item.Style();
-    const Font& font = start_item.FontWithSVGScaling();
+    const Font& font = start_item.FontWithSvgScaling();
     TextDirection direction = start_item.Direction();
     unsigned end_index = index + 1;
     unsigned end_offset = start_item.EndOffset();
@@ -1818,7 +1818,7 @@ static LayoutUnit ComputeContentSize(
 
   if (mode == NGLineBreakerMode::kMinContent &&
       can_compute_max_size_from_min_size) {
-    if (node.IsSVGText()) {
+    if (node.IsSvgText()) {
       *max_size_out = result;
       return result;
       // The following DCHECK_EQ() doesn't work well for SVG <text> because
@@ -1899,18 +1899,18 @@ bool NGInlineNode::ShouldReportLetterSpacingUseCounterForTesting(
 
 const Vector<std::pair<unsigned, NGSvgCharacterData>>&
 NGInlineNode::SvgCharacterDataList() const {
-  DCHECK(IsSVGText());
+  DCHECK(IsSvgText());
   return Data().svg_node_data_->character_data_list;
 }
 
 const Vector<SvgTextContentRange>& NGInlineNode::SvgTextLengthRangeList()
     const {
-  DCHECK(IsSVGText());
+  DCHECK(IsSvgText());
   return Data().svg_node_data_->text_length_range_list;
 }
 
 const Vector<SvgTextContentRange>& NGInlineNode::SvgTextPathRangeList() const {
-  DCHECK(IsSVGText());
+  DCHECK(IsSvgText());
   return Data().svg_node_data_->text_path_range_list;
 }
 

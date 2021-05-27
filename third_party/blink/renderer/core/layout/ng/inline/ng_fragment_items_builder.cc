@@ -384,7 +384,7 @@ void NGFragmentItemsBuilder::ToFragmentItems(const PhysicalSize& outer_size,
                                              void* data) {
   DCHECK(text_content_);
   ConvertToPhysical(outer_size);
-  if (node_.IsSVGText()) {
+  if (node_.IsSvgText()) {
     NGSvgTextLayoutAlgorithm(node_, GetWritingMode())
         .Layout(TextContent(false), items_);
   }

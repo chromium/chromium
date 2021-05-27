@@ -420,8 +420,8 @@ void NGInlineLayoutAlgorithm::CreateLine(
   //
   // For SVG <text>, the block offset of the initial 'current text position'
   // should be 0. As for the inline offset, see
-  // NGSVGTextLayoutAttributesBuilder::Build().
-  if (!Node().IsSVGText())
+  // NGSvgTextLayoutAttributesBuilder::Build().
+  if (!Node().IsSvgText())
     line_box->MoveInBlockDirection(line_box_metrics.ascent);
 
   LayoutUnit block_offset = line_info->BfcOffset().block_offset;
@@ -819,7 +819,7 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
   String line_text = line_text_builder.ToString();
   DCHECK_GT(line_text.length(), 0u);
 
-  ShapeResultSpacing<String> spacing(line_text, Node().IsSVGText());
+  ShapeResultSpacing<String> spacing(line_text, Node().IsSvgText());
   spacing.SetExpansion(space, line_info->BaseDirection(),
                        line_info->LineStyle().GetTextJustify());
   const LayoutObject* box = Node().GetLayoutBox();

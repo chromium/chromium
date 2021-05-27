@@ -191,7 +191,7 @@ unsigned NGInlineItem::SetBidiLevel(Vector<NGInlineItem>& items,
   return index + 1;
 }
 
-const Font& NGInlineItem::FontWithSVGScaling() const {
+const Font& NGInlineItem::FontWithSvgScaling() const {
   if (const auto* svg_text = DynamicTo<LayoutSVGInlineText>(layout_object_)) {
     DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
     // We don't need to care about StyleVariant(). SVG 1.1 doesn't support

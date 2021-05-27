@@ -124,7 +124,7 @@ FloatRect LayoutNGSVGText::ObjectBoundingBox() const {
       if (!fragment.Items())
         continue;
       for (const auto& item : fragment.Items()->Items()) {
-        if (item.Type() != NGFragmentItem::kSVGText)
+        if (item.Type() != NGFragmentItem::kSvgText)
           continue;
         // Do not use item.RectInContainerFragment() in order to avoid
         // precision loss.

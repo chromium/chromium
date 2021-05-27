@@ -159,7 +159,7 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnBeginPlaceItems(
     FontBaseline baseline_type,
     bool line_height_quirk,
     NGLogicalLineItems* line_box) {
-  is_svg_text_ = node.IsSVGText();
+  is_svg_text_ = node.IsSvgText();
   if (stack_.IsEmpty()) {
     // For the first line, push a box state for the line itself.
     stack_.resize(1);
@@ -194,7 +194,7 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnBeginPlaceItems(
   NGInlineBoxState& line_box_state = LineBoxState();
   if (line_box_state.style != &line_style) {
     line_box_state.style = &line_style;
-    line_box_state.InitializeFont(node.IsSVGText(), *node.GetLayoutBox());
+    line_box_state.InitializeFont(node.IsSvgText(), *node.GetLayoutBox());
 
     // Use a "strut" (a zero-width inline box with the element's font and
     // line height properties) as the initial metrics for the line box.

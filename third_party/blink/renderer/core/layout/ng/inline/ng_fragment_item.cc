@@ -197,10 +197,10 @@ NGFragmentItem::NGFragmentItem(const NGFragmentItem& source)
     case kText:
       new (&text_) TextItem(source.text_);
       break;
-    case kSVGText:
-      new (&svg_text_) SVGTextItem();
+    case kSvgText:
+      new (&svg_text_) SvgTextItem();
       svg_text_.data =
-          std::make_unique<NGSVGFragmentData>(*source.svg_text_.data);
+          std::make_unique<NGSvgFragmentData>(*source.svg_text_.data);
       break;
     case kGeneratedText:
       new (&generated_text_) GeneratedTextItem(source.generated_text_);
@@ -239,8 +239,8 @@ NGFragmentItem::NGFragmentItem(NGFragmentItem&& source)
     case kText:
       new (&text_) TextItem(std::move(source.text_));
       break;
-    case kSVGText:
-      new (&svg_text_) SVGTextItem(std::move(source.svg_text_));
+    case kSvgText:
+      new (&svg_text_) SvgTextItem(std::move(source.svg_text_));
       break;
     case kGeneratedText:
       new (&generated_text_)
@@ -260,8 +260,8 @@ NGFragmentItem::~NGFragmentItem() {
     case kText:
       text_.~TextItem();
       break;
-    case kSVGText:
-      svg_text_.~SVGTextItem();
+    case kSvgText:
+      svg_text_.~SvgTextItem();
       break;
     case kGeneratedText:
       generated_text_.~GeneratedTextItem();
@@ -304,7 +304,7 @@ bool NGFragmentItem::IsEmptyLineBox() const {
 }
 
 bool NGFragmentItem::IsStyleGeneratedText() const {
-  if (Type() == kText || Type() == kSVGText)
+  if (Type() == kText || Type() == kSvgText)
     return GetLayoutObject()->IsStyleGenerated();
   return false;
 }
@@ -317,28 +317,28 @@ bool NGFragmentItem::IsListMarker() const {
   return layout_object_ && layout_object_->IsLayoutNGOutsideListMarker();
 }
 
-void NGFragmentItem::ConvertToSVGText(std::unique_ptr<NGSVGFragmentData> data,
+void NGFragmentItem::ConvertToSvgText(std::unique_ptr<NGSvgFragmentData> data,
                                       const PhysicalRect& unscaled_rect,
                                       bool is_hidden) {
   DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
   DCHECK_EQ(Type(), kText);
   is_hidden_for_paint_ = is_hidden;
   text_.~TextItem();
-  new (&svg_text_) SVGTextItem();
+  new (&svg_text_) SvgTextItem();
   svg_text_.data = std::move(data);
-  type_ = kSVGText;
+  type_ = kSvgText;
   rect_ = unscaled_rect;
 }
 
 FloatRect NGFragmentItem::ObjectBoundingBox() const {
-  if (Type() != kSVGText)
+  if (Type() != kSvgText)
     return FloatRect(rect_);
   const float scaling_factor =
       To<LayoutSVGInlineText>(GetLayoutObject())->ScalingFactor();
   DCHECK_GT(scaling_factor, 0.0f);
-  FloatRect item_rect = SVGFragmentData()->rect;
-  if (HasSVGTransformForBoundingBox())
-    item_rect = BuildSVGTransformForBoundingBox().MapRect(item_rect);
+  FloatRect item_rect = SvgFragmentData()->rect;
+  if (HasSvgTransformForBoundingBox())
+    item_rect = BuildSvgTransformForBoundingBox().MapRect(item_rect);
   item_rect.Scale(1 / scaling_factor);
   return item_rect;
 }
@@ -433,7 +433,7 @@ PhysicalRect NGFragmentItem::InkOverflow() const {
 const ShapeResultView* NGFragmentItem::TextShapeResult() const {
   if (Type() == kText)
     return text_.shape_result.get();
-  if (Type() == kSVGText)
+  if (Type() == kSvgText)
     return svg_text_.data->shape_result.get();
   if (Type() == kGeneratedText)
     return generated_text_.shape_result.get();
@@ -444,7 +444,7 @@ const ShapeResultView* NGFragmentItem::TextShapeResult() const {
 NGTextOffset NGFragmentItem::TextOffset() const {
   if (Type() == kText)
     return text_.text_offset;
-  if (Type() == kSVGText)
+  if (Type() == kSvgText)
     return svg_text_.data->text_offset;
   if (Type() == kGeneratedText)
     return {0, generated_text_.text.length()};
@@ -477,7 +477,7 @@ StringView NGFragmentItem::Text(const NGFragmentItems& items) const {
     return StringView(items.Text(UsesFirstLineStyle()), text_.text_offset.start,
                       text_.text_offset.Length());
   }
-  if (Type() == kSVGText) {
+  if (Type() == kSvgText) {
     return StringView(items.Text(UsesFirstLineStyle()),
                       svg_text_.data->text_offset.start,
                       svg_text_.data->text_offset.Length());
@@ -494,7 +494,7 @@ NGTextFragmentPaintInfo NGFragmentItem::TextPaintInfo(
     return {items.Text(UsesFirstLineStyle()), text_.text_offset.start,
             text_.text_offset.end, text_.shape_result.get()};
   }
-  if (Type() == kSVGText) {
+  if (Type() == kSvgText) {
     return {items.Text(UsesFirstLineStyle()), svg_text_.data->text_offset.start,
             svg_text_.data->text_offset.end,
             svg_text_.data->shape_result.get()};
@@ -517,13 +517,13 @@ TextDirection NGFragmentItem::ResolvedDirection() const {
   return static_cast<TextDirection>(text_direction_);
 }
 
-bool NGFragmentItem::HasSVGTransformForPaint() const {
-  return Type() == kSVGText && (svg_text_.data->length_adjust_scale != 1.0f ||
+bool NGFragmentItem::HasSvgTransformForPaint() const {
+  return Type() == kSvgText && (svg_text_.data->length_adjust_scale != 1.0f ||
                                 svg_text_.data->angle != 0.0f);
 }
 
-bool NGFragmentItem::HasSVGTransformForBoundingBox() const {
-  return Type() == kSVGText && svg_text_.data->angle != 0.0f;
+bool NGFragmentItem::HasSvgTransformForBoundingBox() const {
+  return Type() == kSvgText && svg_text_.data->angle != 0.0f;
 }
 
 // For non-<textPath>:
@@ -533,23 +533,23 @@ bool NGFragmentItem::HasSVGTransformForBoundingBox() const {
 //
 // (x, y) is the center of the rotation.  The center points of a non-<textPath>
 // character and a <textPath> character are different.
-AffineTransform NGFragmentItem::BuildSVGTransformForPaint() const {
-  DCHECK_EQ(Type(), kSVGText);
+AffineTransform NGFragmentItem::BuildSvgTransformForPaint() const {
+  DCHECK_EQ(Type(), kSvgText);
   if (svg_text_.data->in_text_path) {
     if (svg_text_.data->angle == 0.0f)
-      return BuildSVGTransformForLengthAdjust();
-    return BuildSVGTransformForTextPath(BuildSVGTransformForLengthAdjust());
+      return BuildSvgTransformForLengthAdjust();
+    return BuildSvgTransformForTextPath(BuildSvgTransformForLengthAdjust());
   }
-  AffineTransform transform = BuildSVGTransformForBoundingBox();
-  AffineTransform length_adjust = BuildSVGTransformForLengthAdjust();
+  AffineTransform transform = BuildSvgTransformForBoundingBox();
+  AffineTransform length_adjust = BuildSvgTransformForLengthAdjust();
   if (!length_adjust.IsIdentity())
     transform.PreMultiply(length_adjust);
   return transform;
 }
 
-AffineTransform NGFragmentItem::BuildSVGTransformForLengthAdjust() const {
-  DCHECK_EQ(Type(), kSVGText);
-  const NGSVGFragmentData& svg_data = *svg_text_.data;
+AffineTransform NGFragmentItem::BuildSvgTransformForLengthAdjust() const {
+  DCHECK_EQ(Type(), kSvgText);
+  const NGSvgFragmentData& svg_data = *svg_text_.data;
   const bool is_horizontal = IsHorizontal();
   AffineTransform scale_transform;
   float scale = svg_data.length_adjust_scale;
@@ -572,10 +572,10 @@ AffineTransform NGFragmentItem::BuildSVGTransformForLengthAdjust() const {
   return scale_transform;
 }
 
-AffineTransform NGFragmentItem::BuildSVGTransformForTextPath(
+AffineTransform NGFragmentItem::BuildSvgTransformForTextPath(
     const AffineTransform& length_adjust) const {
-  DCHECK_EQ(Type(), kSVGText);
-  const NGSVGFragmentData& svg_data = *svg_text_.data;
+  DCHECK_EQ(Type(), kSvgText);
+  const NGSvgFragmentData& svg_data = *svg_text_.data;
   DCHECK(svg_data.in_text_path);
   DCHECK_NE(svg_data.angle, 0.0f);
 
@@ -589,7 +589,7 @@ AffineTransform NGFragmentItem::BuildSVGTransformForTextPath(
   // The rotation should be about the center of the baseline.
   const auto font_baseline = Style().GetFontBaseline();
   // |x| in the horizontal writing-mode and |y| in the vertical writing-mode
-  // point the center of the baseline.  See |NGSVGTextLayoutAlgorithm::
+  // point the center of the baseline.  See |NGSvgTextLayoutAlgorithm::
   // PositionOnPath()|.
   float x = svg_data.rect.X();
   float y = svg_data.rect.Y();
@@ -612,14 +612,14 @@ AffineTransform NGFragmentItem::BuildSVGTransformForTextPath(
 //
 // (x, y) is the center of the rotation.  The center points of a non-<textPath>
 // character and a <textPath> character are different.
-AffineTransform NGFragmentItem::BuildSVGTransformForBoundingBox() const {
-  DCHECK_EQ(Type(), kSVGText);
-  const NGSVGFragmentData& svg_data = *svg_text_.data;
+AffineTransform NGFragmentItem::BuildSvgTransformForBoundingBox() const {
+  DCHECK_EQ(Type(), kSvgText);
+  const NGSvgFragmentData& svg_data = *svg_text_.data;
   AffineTransform transform;
   if (svg_data.angle == 0.0f)
     return transform;
   if (svg_data.in_text_path)
-    return BuildSVGTransformForTextPath(AffineTransform());
+    return BuildSvgTransformForTextPath(AffineTransform());
 
   transform.Rotate(svg_data.angle);
   const SimpleFontData* font_data =
@@ -893,7 +893,7 @@ PhysicalRect NGFragmentItem::LocalRect(StringView text,
 PositionWithAffinity NGFragmentItem::PositionForPointInText(
     const PhysicalOffset& point,
     const NGInlineCursor& cursor) const {
-  DCHECK(Type() == kText || Type() == kSVGText);
+  DCHECK(Type() == kText || Type() == kSvgText);
   DCHECK_EQ(cursor.CurrentItem(), this);
   if (IsGeneratedText())
     return PositionWithAffinity();
@@ -904,7 +904,7 @@ PositionWithAffinity NGFragmentItem::PositionForPointInText(
 PositionWithAffinity NGFragmentItem::PositionForPointInText(
     unsigned text_offset,
     const NGInlineCursor& cursor) const {
-  DCHECK(Type() == kText || Type() == kSVGText);
+  DCHECK(Type() == kText || Type() == kSvgText);
   DCHECK_EQ(cursor.CurrentItem(), this);
   DCHECK(!IsGeneratedText());
   DCHECK_LE(text_offset, EndOffset());
@@ -921,7 +921,7 @@ PositionWithAffinity NGFragmentItem::PositionForPointInText(
 unsigned NGFragmentItem::TextOffsetForPoint(
     const PhysicalOffset& point,
     const NGFragmentItems& items) const {
-  DCHECK(Type() == kText || Type() == kSVGText);
+  DCHECK(Type() == kText || Type() == kSvgText);
   const ComputedStyle& style = Style();
   const LayoutUnit& point_in_line_direction =
       style.IsHorizontalWritingMode() ? point.left : point.top;
@@ -958,8 +958,8 @@ std::ostream& operator<<(std::ostream& ostream, const NGFragmentItem& item) {
       ostream << "Text " << item.StartOffset() << "-" << item.EndOffset() << " "
               << (IsLtr(item.ResolvedDirection()) ? "LTR" : "RTL");
       break;
-    case NGFragmentItem::kSVGText:
-      ostream << "SVGText " << item.StartOffset() << "-" << item.EndOffset()
+    case NGFragmentItem::kSvgText:
+      ostream << "SvgText " << item.StartOffset() << "-" << item.EndOffset()
               << " " << (IsLtr(item.ResolvedDirection()) ? "LTR" : "RTL");
       break;
     case NGFragmentItem::kGeneratedText:

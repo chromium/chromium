@@ -77,7 +77,7 @@ bool NGLayoutInputNode::IsSliderThumb() const {
   return IsBlock() && blink::IsSliderThumb(GetDOMNode());
 }
 
-bool NGLayoutInputNode::IsSVGText() const {
+bool NGLayoutInputNode::IsSvgText() const {
   return box_ && box_->IsNGSVGText();
 }
 

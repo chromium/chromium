@@ -77,7 +77,7 @@ NGSvgTextLayoutAlgorithm::NGSvgTextLayoutAlgorithm(NGInlineNode node,
       // 1.5. Let "horizontal" be a flag, true if the writing mode of ‘text’
       // is horizontal, false otherwise.
       horizontal_(IsHorizontalWritingMode(writing_mode)) {
-  DCHECK(node.IsSVGText());
+  DCHECK(node.IsSvgText());
 }
 
 void NGSvgTextLayoutAlgorithm::Layout(
@@ -156,7 +156,7 @@ void NGSvgTextLayoutAlgorithm::Layout(
                                LayoutUnit(y / scaling_factor),
                                LayoutUnit(width / scaling_factor),
                                LayoutUnit(height / scaling_factor));
-    auto data = std::make_unique<NGSVGFragmentData>();
+    auto data = std::make_unique<NGSvgFragmentData>();
     data->shape_result = item->TextShapeResult();
     data->text_offset = item->TextOffset();
     data->rect = scaled_rect;
@@ -164,7 +164,7 @@ void NGSvgTextLayoutAlgorithm::Layout(
     data->angle = info.rotate.value_or(0.0f);
     data->baseline_shift = info.baseline_shift;
     data->in_text_path = info.in_text_path;
-    item.item.ConvertToSVGText(std::move(data), unscaled_rect, info.hidden);
+    item.item.ConvertToSvgText(std::move(data), unscaled_rect, info.hidden);
   }
 }
 

@@ -178,7 +178,7 @@ class CORE_EXPORT NGInlineItem {
 
   // Returns a screen-size font for SVG text.
   // Returns Style()->GetFont() otherwise.
-  const Font& FontWithSVGScaling() const;
+  const Font& FontWithSvgScaling() const;
 
   // Get or set the whitespace collapse type at the end of this item.
   NGCollapseType EndCollapseType() const {

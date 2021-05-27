@@ -56,7 +56,7 @@ inline PhysicalRect ComputeBoxRect(const NGInlineCursor& cursor,
                                    const PhysicalOffset& paint_offset,
                                    const PhysicalOffset& parent_offset) {
   PhysicalRect box_rect;
-  if (const auto* svg_data = cursor.CurrentItem()->SVGFragmentData())
+  if (const auto* svg_data = cursor.CurrentItem()->SvgFragmentData())
     box_rect = PhysicalRect::FastAndLossyFromFloatRect(svg_data->rect);
   else
     box_rect = cursor.CurrentItem()->RectInContainerFragment();
@@ -170,7 +170,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   IntRect visual_rect;
   const LayoutSVGInlineText* svg_inline_text = nullptr;
   float scaling_factor = 1.0f;
-  if (text_item.Type() == NGFragmentItem::kSVGText) {
+  if (text_item.Type() == NGFragmentItem::kSvgText) {
     svg_inline_text = To<LayoutSVGInlineText>(layout_object);
     scaling_factor = svg_inline_text->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
@@ -272,10 +272,10 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     state_saver.emplace(context);
     context.Scale(1 / scaling_factor, 1 / scaling_factor);
   }
-  if (text_item.HasSVGTransformForPaint()) {
+  if (text_item.HasSvgTransformForPaint()) {
     if (!state_saver)
       state_saver.emplace(context);
-    context.ConcatCTM(text_item.BuildSVGTransformForPaint());
+    context.ConcatCTM(text_item.BuildSvgTransformForPaint());
   }
   NGTextPainter text_painter(context, font, fragment_paint_info, visual_rect,
                              text_origin, box_rect, is_horizontal);

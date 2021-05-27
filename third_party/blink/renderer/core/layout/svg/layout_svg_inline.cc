@@ -81,7 +81,7 @@ FloatRect LayoutSVGInline::ObjectBoundingBox() const {
     for (cursor.MoveToIncludingCulledInline(*this); cursor;
          cursor.MoveToNextForSameLayoutObject()) {
       const NGFragmentItem& item = *cursor.CurrentItem();
-      if (item.Type() == NGFragmentItem::kSVGText)
+      if (item.Type() == NGFragmentItem::kSvgText)
         bounds.Unite(item.ObjectBoundingBox());
     }
     return bounds;
@@ -126,7 +126,7 @@ void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
     for (cursor.MoveToIncludingCulledInline(*this); cursor;
          cursor.MoveToNextForSameLayoutObject()) {
       const NGFragmentItem& item = *cursor.CurrentItem();
-      if (item.Type() == NGFragmentItem::kSVGText) {
+      if (item.Type() == NGFragmentItem::kSvgText) {
         quads.push_back(
             LocalToAbsoluteQuad(SVGLayoutSupport::ExtendTextBBoxWithStroke(
                                     *this, item.ObjectBoundingBox()),
