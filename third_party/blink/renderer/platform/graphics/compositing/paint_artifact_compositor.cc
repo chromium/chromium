@@ -239,13 +239,14 @@ PaintArtifactCompositor::ScrollbarLayerForPendingLayer(
   const auto& item = pending_layer.FirstDisplayItem();
   DCHECK(item.IsScrollbar());
 
-  // We should never decomposite scroll translations, so we don't need to adjust
-  // the layer's offset for decomposited transforms.
-  DCHECK_EQ(FloatPoint(), pending_layer.offset_of_decomposited_transforms);
-
   const auto& scrollbar_item = To<ScrollbarDisplayItem>(item);
   auto* existing_layer = ScrollbarLayer(scrollbar_item.ElementId());
-  return scrollbar_item.CreateOrReuseLayer(existing_layer);
+  scoped_refptr<cc::ScrollbarLayerBase> layer =
+      scrollbar_item.CreateOrReuseLayer(existing_layer);
+  layer->SetOffsetToTransformParent(
+      layer->offset_to_transform_parent() +
+      gfx::Vector2dF(pending_layer.offset_of_decomposited_transforms));
+  return layer;
 }
 
 std::unique_ptr<ContentLayerClientImpl>
