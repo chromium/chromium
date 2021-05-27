@@ -4,6 +4,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
@@ -152,10 +153,16 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsBrowserTest, UserResetFlocID) {
   privacy_sandbox_settings()->AddObserver(&observer);
   EXPECT_CALL(observer, OnFlocDataAccessibleSinceUpdated(true));
 
+  base::UserActionTester user_action_tester;
+  ASSERT_EQ(0, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.ResetFloc"));
+
   privacy_sandbox_settings()->ResetFlocId();
 
   EXPECT_NE(base::Time(),
             privacy_sandbox_settings()->FlocDataAccessibleSince());
+  ASSERT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.ResetFloc"));
 }
 
 class PrivacySandboxSettingsBrowserPolicyTest

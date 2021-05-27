@@ -7,6 +7,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/util/values/values_util.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -1153,9 +1154,19 @@ TEST_F(PrivacySandboxSettingsTest, IsFlocPrefEnabled) {
 TEST_F(PrivacySandboxSettingsTest, SetFlocPrefEnabled) {
   // The FLoc pref should always be updated by this function, regardless of
   // other Sandbox State.
+  base::UserActionTester user_action_tester;
+  ASSERT_EQ(0, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.FlocEnabled"));
+  ASSERT_EQ(0, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.FlocDisabled"));
+
   privacy_sandbox_settings()->SetFlocPrefEnabled(false);
   EXPECT_FALSE(profile()->GetTestingPrefService()->GetBoolean(
       prefs::kPrivacySandboxFlocEnabled));
+  ASSERT_EQ(0, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.FlocEnabled"));
+  ASSERT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.FlocDisabled"));
 
   // Disabling the sandbox shouldn't prevent the pref from being updated. This
   // state is not directly allowable by the UI, but the state itself is valid
@@ -1165,6 +1176,10 @@ TEST_F(PrivacySandboxSettingsTest, SetFlocPrefEnabled) {
   privacy_sandbox_settings()->SetFlocPrefEnabled(true);
   EXPECT_TRUE(profile()->GetTestingPrefService()->GetBoolean(
       prefs::kPrivacySandboxFlocEnabled));
+  ASSERT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.FlocEnabled"));
+  ASSERT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.FlocDisabled"));
 }
 
 TEST_F(PrivacySandboxSettingsTest, OnPrivacySandboxPrefChanged) {

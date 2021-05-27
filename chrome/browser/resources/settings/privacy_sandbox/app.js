@@ -102,7 +102,6 @@ Polymer({
   /** @private */
   onResetFlocClick_: function() {
     this.privacySandboxBrowserProxy_.resetFlocId();
-    this.metricsBrowserProxy_.recordAction('Settings.PrivacySandbox.ResetFloc');
   },
 
   /**
