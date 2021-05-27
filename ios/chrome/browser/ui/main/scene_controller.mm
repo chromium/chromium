@@ -949,9 +949,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     [self finishActivatingBrowserDismissingTabSwitcher:YES];
   }
 
-  // If this is first run, or if this web state list should have an NTP created
-  // when it activates, then create that tab.
-  if (firstRun || [self shouldOpenNTPTabOnActivationOfBrowser:browser]) {
+  // If this web state list should have an NTP created when it activates, then
+  // create that tab.
+  if ([self shouldOpenNTPTabOnActivationOfBrowser:browser]) {
     OpenNewTabCommand* command = [OpenNewTabCommand
         commandWithIncognito:self.currentInterface.incognito];
     command.userInitiated = NO;
