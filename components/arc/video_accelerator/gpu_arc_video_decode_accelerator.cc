@@ -361,7 +361,6 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
   pending_requests_ = {};
   pending_flush_callbacks_ = {};
   pending_reset_callback_.Reset();
-  protected_input_buffer_count_ = 0;
 
   if (!vda_config.is_deferred_initialization_allowed)
     return OnInitializeDone(mojom::VideoDecodeAccelerator::Result::SUCCESS);

@@ -175,8 +175,6 @@ class GpuArcVideoDecodeAccelerator
 
   scoped_refptr<ProtectedBufferManager> protected_buffer_manager_;
 
-  size_t protected_input_buffer_count_ = 0;
-
   absl::optional<bool> secure_mode_ = absl::nullopt;
   size_t output_buffer_count_ = 0;
 
