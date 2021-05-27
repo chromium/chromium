@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 
@@ -84,13 +83,11 @@ public interface LocationBarDataProvider {
      */
     boolean isInOverviewAndShowingOmnibox();
 
-    /** Returns the current {@link Profile}. */
-    Profile getProfile();
-
     /** Returns the contents of the {@link UrlBar}. */
     UrlBarData getUrlBarData();
 
     /** Returns the title of the current page, or the empty string if there is currently no tab. */
+    @NonNull
     String getTitle();
 
     /** Returns the primary color to use for the background.*/

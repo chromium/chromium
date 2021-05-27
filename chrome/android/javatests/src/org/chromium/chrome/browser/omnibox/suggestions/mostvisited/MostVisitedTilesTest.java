@@ -193,7 +193,7 @@ public class MostVisitedTilesTest {
             return null;
         })
                 .when(mController)
-                .startZeroSuggest(any(), eq(PAGE_URL), any(), anyInt(), any());
+                .startZeroSuggest(eq(PAGE_URL), any(), anyInt(), any());
     }
 
     private void focusOmniboxAndWaitForSuggestions() {

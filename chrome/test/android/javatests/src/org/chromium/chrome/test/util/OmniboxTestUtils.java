@@ -9,21 +9,16 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.UrlBar;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownItemViewInfo;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -35,34 +30,6 @@ import java.util.concurrent.Callable;
  */
 public class OmniboxTestUtils {
     private OmniboxTestUtils() {}
-
-    /**
-     * AutocompleteController instance that will trigger no suggestions.
-     */
-    public static class StubAutocompleteController extends AutocompleteController {
-        public StubAutocompleteController() {
-            super(null, profile -> {}, () -> {});
-            addOnSuggestionsReceivedListener(new OnSuggestionsReceivedListener() {
-                @Override
-                public void onSuggestionsReceived(
-                        AutocompleteResult autocompleteResult, String inlineAutocompleteText) {
-                    Assert.fail("No autocomplete suggestions should be received");
-                }
-            });
-        }
-
-        @Override
-        public void start(Profile profile, String url, int pageClassification, String text,
-                int cursorPosition, boolean preventInlineAutocomplete, String queryTileId,
-                boolean isQueryStartedFromTiles) {}
-
-        @Override
-        public void startZeroSuggest(Profile profile, String omniboxText, String url,
-                int pageClassification, String title) {}
-
-        @Override
-        public void stop(boolean clear) {}
-    }
 
     /**
      * Checks and verifies that the URL bar can request and release focus X times without issue.

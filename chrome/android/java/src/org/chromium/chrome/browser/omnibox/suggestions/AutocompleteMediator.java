@@ -399,10 +399,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
 
     /**
      * @return The current native pointer to the autocomplete results.
+     * TODO(crbug.com/1138587): Figure out how to remove this.
      */
-    // TODO(tedchoc): Figure out how to remove this.
     long getCurrentNativeAutocompleteResult() {
-        return mAutocomplete.getCurrentNativeAutocompleteResult();
+        return mAutocompleteResult.getNativeObjectRef();
     }
 
     /** Called when a query tile is selected by the user. */
@@ -423,7 +423,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mNewOmniboxEditSessionTimestamp = SystemClock.elapsedRealtime();
         mEditSessionState = EditSessionState.ACTIVATED_BY_QUERY_TILE;
 
-        mAutocomplete.start(mDataProvider.getProfile(), mDataProvider.getCurrentUrl(),
+        mAutocomplete.start(mDataProvider.getCurrentUrl(),
                 mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox()),
                 mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
                 mUrlBarEditingTextProvider.getSelectionStart(),
@@ -666,7 +666,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         } else {
             if (mDataProvider.hasTab() || mDataProvider.isInOverviewAndShowingOmnibox()) {
                 boolean preventAutocomplete = !mUrlBarEditingTextProvider.shouldAutocomplete();
-                Profile profile = mDataProvider.getProfile();
                 int cursorPosition = mUrlBarEditingTextProvider.getSelectionStart()
                                 == mUrlBarEditingTextProvider.getSelectionEnd()
                         ? mUrlBarEditingTextProvider.getSelectionStart()
@@ -678,9 +677,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
                         || mEditSessionState == EditSessionState.ACTIVATED_BY_QUERY_TILE;
 
                 postAutocompleteRequest(() -> {
-                    mAutocomplete.start(profile, currentUrl, pageClassification,
-                            textWithoutAutocomplete, cursorPosition, preventAutocomplete, null,
-                            isQueryStartedFromTiles);
+                    mAutocomplete.start(currentUrl, pageClassification, textWithoutAutocomplete,
+                            cursorPosition, preventAutocomplete, null, isQueryStartedFromTiles);
                 }, OMNIBOX_SUGGESTION_START_DELAY_MS);
             } else {
                 // There may be no tabs when searching form omnibox in overview mode. In that case,
@@ -858,8 +856,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
                     mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox());
             mShouldCacheSuggestions =
                     pageClassification == PageClassification.ANDROID_SEARCH_WIDGET_VALUE;
-            mAutocomplete.startZeroSuggest(mDataProvider.getProfile(),
-                    mUrlBarEditingTextProvider.getTextWithAutocomplete(),
+            mAutocomplete.startZeroSuggest(mUrlBarEditingTextProvider.getTextWithAutocomplete(),
                     mDataProvider.getCurrentUrl(), pageClassification, mDataProvider.getTitle());
         }
     }
@@ -913,7 +910,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         if (!mNativeInitialized || mAutocomplete == null) return;
         stopAutocomplete(false);
         if (mDataProvider.hasTab()) {
-            mAutocomplete.start(mDataProvider.getProfile(), mDataProvider.getCurrentUrl(),
+            mAutocomplete.start(mDataProvider.getCurrentUrl(),
                     mDataProvider.getPageClassification(false), query, -1, false, null, false);
         }
     }

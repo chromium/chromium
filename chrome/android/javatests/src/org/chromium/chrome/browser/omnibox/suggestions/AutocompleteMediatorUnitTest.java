@@ -289,7 +289,6 @@ public class AutocompleteMediatorUnitTest {
      */
     void setUpLocationBarDataProvider(String url, String title, int pageClassification) {
         when(mLocationBarDataProvider.hasTab()).thenReturn(true);
-        when(mLocationBarDataProvider.getProfile()).thenReturn(mProfile);
         when(mLocationBarDataProvider.getCurrentUrl()).thenReturn(url);
         when(mLocationBarDataProvider.getTitle()).thenReturn(title);
         when(mLocationBarDataProvider.getPageClassification(false)).thenReturn(pageClassification);
@@ -462,8 +461,7 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onNativeInitialized();
         mMediator.onTextChanged("", "");
-        verify(mAutocompleteController)
-                .startZeroSuggest(mProfile, "", url, pageClassification, title);
+        verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
     }
 
     @Test
@@ -483,7 +481,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onTextChanged("test", "testing");
         mHandler.runQueuedTasks();
         verify(mAutocompleteController)
-                .start(mProfile, url, pageClassification, "test", 4, false, null, false);
+                .start(url, pageClassification, "test", 4, false, null, false);
     }
 
     @Test
@@ -504,9 +502,9 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onTextChanged("nottest", "nottesting");
         mHandler.runQueuedTasks();
         verify(mAutocompleteController, times(1))
-                .start(mProfile, url, pageClassification, "nottest", 4, false, null, false);
+                .start(url, pageClassification, "nottest", 4, false, null, false);
         verify(mAutocompleteController, times(1))
-                .start(any(), any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+                .start(any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
     }
 
     @Test
@@ -529,14 +527,13 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onUrlFocusChange(false);
         mMediator.onUrlFocusChange(true);
         mHandler.runQueuedTasks();
-        verify(mAutocompleteController, never())
-                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+        verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
         // Simulate native being inititalized. Make sure we only ever issue one request.
         mMediator.onNativeInitialized();
         mHandler.runQueuedTasks();
         verify(mAutocompleteController, times(1))
-                .startZeroSuggest(mProfile, "", url, pageClassification, title);
+                .startZeroSuggest("", url, pageClassification, title);
     }
 
     @Test
@@ -558,14 +555,12 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onUrlFocusChange(true);
         mMediator.onUrlFocusChange(false);
         mHandler.runQueuedTasks();
-        verify(mAutocompleteController, never())
-                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+        verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
         // Simulate native being inititalized. Make sure no suggest requests are sent.
         mMediator.onNativeInitialized();
         mHandler.runQueuedTasks();
-        verify(mAutocompleteController, never())
-                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+        verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
     }
 
     @Test
@@ -591,18 +586,16 @@ public class AutocompleteMediatorUnitTest {
 
         mHandler.runQueuedTasks();
         verify(mAutocompleteController, never())
-                .start(any(), any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
-        verify(mAutocompleteController, never())
-                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+                .start(any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+        verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
         mMediator.onNativeInitialized();
         mHandler.runQueuedTasks();
         verify(mAutocompleteController, times(1))
-                .start(mProfile, url, pageClassification, "A", 0, true, null, false);
+                .start(url, pageClassification, "A", 0, true, null, false);
         verify(mAutocompleteController, times(1))
-                .start(any(), any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
-        verify(mAutocompleteController, never())
-                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+                .start(any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+        verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
     }
 
     @Test
@@ -626,16 +619,14 @@ public class AutocompleteMediatorUnitTest {
 
         mHandler.runQueuedTasks();
         verify(mAutocompleteController, never())
-                .start(any(), any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
-        verify(mAutocompleteController, never())
-                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+                .start(any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+        verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
         mMediator.onNativeInitialized();
         mHandler.runQueuedTasks();
         verify(mAutocompleteController, never())
-                .start(any(), any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
-        verify(mAutocompleteController, times(1))
-                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+                .start(any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+        verify(mAutocompleteController, times(1)).startZeroSuggest(any(), any(), anyInt(), any());
     }
 
     @Test
@@ -717,8 +708,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.onUrlFocusChange(true);
         mHandler.runQueuedTasks();
-        verify(mAutocompleteController)
-                .startZeroSuggest(mProfile, url, url, pageClassification, title);
+        verify(mAutocompleteController).startZeroSuggest(url, url, pageClassification, title);
     }
 
     @Test
@@ -739,14 +729,12 @@ public class AutocompleteMediatorUnitTest {
         // Signal focus prior to initializing native; confirm that zero suggest is not triggered.
         mMediator.onUrlFocusChange(true);
         mHandler.runQueuedTasks();
-        verify(mAutocompleteController, never())
-                .startZeroSuggest(any(), any(), any(), anyInt(), any());
+        verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
         // Initialize native and ensure zero suggest is triggered.
         mMediator.onNativeInitialized();
         mHandler.runQueuedTasks();
-        verify(mAutocompleteController)
-                .startZeroSuggest(mProfile, "", url, pageClassification, title);
+        verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
     }
 
     @Test

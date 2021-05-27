@@ -167,7 +167,6 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(Profile* profile) {
 
 void AutocompleteControllerAndroid::Start(
     JNIEnv* env,
-    const JavaRef<jobject>& obj,
     const JavaRef<jstring>& j_text,
     jint j_cursor_pos,
     const JavaRef<jstring>& j_desired_tld,
@@ -215,7 +214,6 @@ void AutocompleteControllerAndroid::Start(
 
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& j_text,
     bool focused_from_fakebox) {
   if (!autocomplete_controller_)
@@ -225,7 +223,7 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
   autocomplete_controller_->result().DestroyJavaObject();
 
   inside_synchronous_start_ = true;
-  Start(env, obj, j_text, -1, nullptr, nullptr, true, false, false, false,
+  Start(env, j_text, -1, nullptr, nullptr, true, false, false, false,
         focused_from_fakebox, JavaRef<jstring>(), false);
   inside_synchronous_start_ = false;
   DCHECK(autocomplete_controller_->done());
@@ -239,7 +237,6 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
 
 void AutocompleteControllerAndroid::OnOmniboxFocused(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& j_omnibox_text,
     const JavaParamRef<jstring>& j_current_url,
     jint j_page_classification,
@@ -275,22 +272,18 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
 }
 
 void AutocompleteControllerAndroid::Stop(JNIEnv* env,
-                                         const JavaParamRef<jobject>& obj,
                                          bool clear_results) {
   if (autocomplete_controller_ != nullptr)
     autocomplete_controller_->Stop(clear_results);
 }
 
-void AutocompleteControllerAndroid::ResetSession(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void AutocompleteControllerAndroid::ResetSession(JNIEnv* env) {
   if (autocomplete_controller_ != nullptr)
     autocomplete_controller_->ResetSession();
 }
 
 void AutocompleteControllerAndroid::OnSuggestionSelected(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jint selected_index,
     const jint j_window_open_disposition,
     const JavaParamRef<jstring>& j_current_url,
@@ -356,7 +349,6 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
 
 void AutocompleteControllerAndroid::DeleteSuggestion(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jint selected_index) {
   const AutocompleteResult& result = autocomplete_controller_->result();
   const AutocompleteMatch& match = result.match_at(selected_index);
@@ -367,7 +359,6 @@ void AutocompleteControllerAndroid::DeleteSuggestion(
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
     UpdateMatchDestinationURLWithQueryFormulationTime(
         JNIEnv* env,
-        const JavaParamRef<jobject>& obj,
         jint selected_index,
         jlong elapsed_time_since_input_change,
         const base::android::JavaParamRef<jstring>& jnew_query_text,
@@ -416,7 +407,6 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
 base::android::ScopedJavaLocalRef<jobject>
 AutocompleteControllerAndroid::FindMatchingTabWithUrl(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_gurl) {
   TabAndroid* tab = provider_client_->GetTabOpenWithURL(
       *url::GURLAndroid::ToNativeGURL(env, j_gurl), nullptr);

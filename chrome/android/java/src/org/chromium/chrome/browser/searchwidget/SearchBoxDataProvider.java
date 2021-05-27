@@ -13,7 +13,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
@@ -53,11 +52,6 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     @Override
     public boolean isInOverviewAndShowingOmnibox() {
         return false;
-    }
-
-    @Override
-    public Profile getProfile() {
-        return mTab != null ? Profile.fromWebContents(mTab.getWebContents()) : null;
     }
 
     @Override

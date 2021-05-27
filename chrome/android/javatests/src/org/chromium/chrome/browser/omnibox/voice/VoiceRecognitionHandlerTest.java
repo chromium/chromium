@@ -351,11 +351,6 @@ public class VoiceRecognitionHandlerTest {
         }
 
         @Override
-        public Profile getProfile() {
-            return null;
-        }
-
-        @Override
         public UrlBarData getUrlBarData() {
             return UrlBarData.EMPTY;
         }

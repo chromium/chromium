@@ -33,7 +33,6 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   // Methods that forward to AutocompleteController:
   void Start(JNIEnv* env,
-             const base::android::JavaRef<jobject>& obj,
              const base::android::JavaRef<jstring>& j_text,
              jint j_cursor_pos,
              const base::android::JavaRef<jstring>& j_desired_tld,
@@ -47,24 +46,19 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
              bool is_query_started_from_tiles);
   base::android::ScopedJavaLocalRef<jobject> Classify(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& j_text,
       bool focused_from_fakebox);
   void OnOmniboxFocused(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& j_omnibox_text,
       const base::android::JavaParamRef<jstring>& j_current_url,
       jint j_page_classification,
       const base::android::JavaParamRef<jstring>& j_current_title);
-  void Stop(JNIEnv* env,
-            const base::android::JavaParamRef<jobject>& obj,
-            bool clear_result);
-  void ResetSession(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj);
+  void Stop(JNIEnv* env, bool clear_result);
+  void ResetSession(JNIEnv* env);
+
   void OnSuggestionSelected(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jint selected_index,
       const jint j_window_open_disposition,
       const base::android::JavaParamRef<jstring>& j_current_url,
@@ -72,20 +66,16 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       jlong elapsed_time_since_first_modified,
       jint completed_length,
       const base::android::JavaParamRef<jobject>& j_web_contents);
-  void DeleteSuggestion(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj,
-                        jint selected_index);
+  void DeleteSuggestion(JNIEnv* env, jint selected_index);
   base::android::ScopedJavaLocalRef<jobject>
   UpdateMatchDestinationURLWithQueryFormulationTime(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jint selected_index,
       jlong elapsed_time_since_input_change,
       const base::android::JavaParamRef<jstring>& jnew_query_text,
       const base::android::JavaParamRef<jobjectArray>& jnew_query_params);
   base::android::ScopedJavaLocalRef<jobject> FindMatchingTabWithUrl(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& j_gurl);
 
   // Break the association between the AutocompleteController java and
