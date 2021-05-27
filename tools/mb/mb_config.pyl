@@ -2030,7 +2030,8 @@
     ],
 
     'fuchsia_clang_code_coverage': [
-      'fuchsia', 'release_bot', 'clang', 'use_clang_coverage', 'no_symbols'
+      'clang', 'fuchsia', 'fuchsia_code_coverage', 'no_symbols', 'release_bot',
+      'use_clang_coverage'
     ],
 
     'fuchsia_clang_tot_official_arm64': [
@@ -3158,6 +3159,10 @@
 
     'fuchsia': {
       'gn_args': 'target_os="fuchsia"',
+    },
+
+    'fuchsia_code_coverage': {
+      'gn_args': 'fuchsia_code_coverage=true',
     },
 
     'fuchsia_include_astro_images': {
