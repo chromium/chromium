@@ -12,7 +12,6 @@
 #include "base/allocator/buildflags.h"
 #include "base/bits.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/page_size.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"

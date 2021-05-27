@@ -6,7 +6,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/test/gtest_util.h"
 #include "base/win/embedded_i18n/language_selector.h"

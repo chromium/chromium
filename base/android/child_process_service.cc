@@ -9,7 +9,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/file_descriptor_store.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/posix/global_descriptors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

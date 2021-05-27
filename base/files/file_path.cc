@@ -15,7 +15,6 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"

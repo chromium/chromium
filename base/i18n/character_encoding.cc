@@ -4,7 +4,6 @@
 
 #include "base/i18n/character_encoding.h"
 
-#include "base/macros.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 
 namespace base {

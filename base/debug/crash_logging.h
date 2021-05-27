@@ -11,7 +11,6 @@
 #include <type_traits>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"

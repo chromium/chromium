@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/test/move_only_int.h"

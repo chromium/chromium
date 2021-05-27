@@ -8,7 +8,6 @@
 #include <atomic>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"

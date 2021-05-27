@@ -5,7 +5,6 @@
 #ifndef BASE_TEST_COPY_ONLY_INT_H_
 #define BASE_TEST_COPY_ONLY_INT_H_
 
-#include "base/macros.h"
 
 namespace base {
 

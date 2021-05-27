@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"

@@ -8,7 +8,6 @@
 #include "base/cancelable_callback.h"
 #include "base/mac/scoped_cftyperef.h"
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

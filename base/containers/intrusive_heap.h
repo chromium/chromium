@@ -138,7 +138,6 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 
 namespace base {

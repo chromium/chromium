@@ -6,7 +6,6 @@
 #define BASE_TRACING_PERFETTO_TASK_RUNNER_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/timer.h"

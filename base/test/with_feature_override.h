@@ -6,7 +6,6 @@
 #define BASE_TEST_WITH_FEATURE_OVERRIDE_H_
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

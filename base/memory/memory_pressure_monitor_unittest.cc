@@ -4,7 +4,6 @@
 
 #include "base/memory/memory_pressure_monitor.h"
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"

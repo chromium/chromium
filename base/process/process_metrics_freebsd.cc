@@ -9,7 +9,6 @@
 #include <sys/user.h>
 #include <unistd.h>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_metrics_iocounters.h"
 #include "base/stl_util.h"

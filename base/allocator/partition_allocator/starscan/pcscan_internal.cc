@@ -38,7 +38,6 @@
 #include "base/debug/alias.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
