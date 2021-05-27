@@ -78,6 +78,7 @@ class BrowserRootView : public views::internal::RootView {
   void OnDragExited() override;
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event) override;
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
 
@@ -127,6 +128,11 @@ class BrowserRootView : public views::internal::RootView {
   // If |url| is non-null and the user can "paste and go", |url| is set to the
   // desired destination.
   bool GetPasteAndGoURL(const ui::OSExchangeData& data, GURL* url);
+
+  // Navigates to the dropped URL.
+  void NavigateToDropUrl(std::unique_ptr<DropInfo> drop_info,
+                         const ui::DropTargetEvent& event,
+                         ui::mojom::DragOperation& output_drag_op);
 
   // The BrowserView.
   BrowserView* browser_view_ = nullptr;

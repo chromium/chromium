@@ -66,3 +66,24 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropTarget) {
   // the target.
   CloseBrowserSynchronously(browser());
 }
+
+// Drop is performed when drop callback is run.
+IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, RunDropCallback) {
+  ui::OSExchangeData data;
+  data.SetURL(GURL("http://www.chromium.org/"), std::u16string());
+  ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_COPY);
+
+  auto* tab_strip_model = browser()->tab_strip_model();
+
+  EXPECT_EQ(tab_strip_model->count(), 1);
+
+  BrowserRootView* root_view = browser_root_view();
+  root_view->OnDragUpdated(event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  auto cb = root_view->GetDropCallback(event);
+  std::move(cb).Run(event, output_drag_op);
+
+  EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kCopy);
+  EXPECT_EQ(tab_strip_model->count(), 2);
+}
