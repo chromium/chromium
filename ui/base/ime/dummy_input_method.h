@@ -39,7 +39,6 @@ class DummyInputMethod : public InputMethod {
   void CancelComposition(const TextInputClient* client) override;
   TextInputType GetTextInputType() const override;
   TextInputMode GetTextInputMode() const override;
-  int GetTextInputFlags() const override;
   bool IsCandidatePopupOpen() const override;
   void ShowVirtualKeyboardIfEnabled() override;
 

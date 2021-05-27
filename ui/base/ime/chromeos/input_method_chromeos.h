@@ -153,6 +153,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   // used to improve typing suggestions for the user.
   bool GetClientShouldDoLearning() const;
 
+  // Gets the text input flags of the focused text input client. Returns
+  // 0 if there is no focused client.
+  int GetTextInputFlags() const;
+
   // Called from the engine when it completes processing.
   void ProcessKeyEventDone(ui::KeyEvent* event, bool is_handled);
 

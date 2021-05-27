@@ -99,10 +99,6 @@ TextInputMode MockInputMethod::GetTextInputMode() const {
   return TEXT_INPUT_MODE_DEFAULT;
 }
 
-int MockInputMethod::GetTextInputFlags() const {
-  return 0;
-}
-
 bool MockInputMethod::IsCandidatePopupOpen() const {
   return false;
 }

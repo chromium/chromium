@@ -91,11 +91,6 @@ TextInputMode InputMethodBase::GetTextInputMode() const {
   return client ? client->GetTextInputMode() : TEXT_INPUT_MODE_DEFAULT;
 }
 
-int InputMethodBase::GetTextInputFlags() const {
-  TextInputClient* client = GetTextInputClient();
-  return client ? client->GetTextInputFlags() : 0;
-}
-
 void InputMethodBase::ShowVirtualKeyboardIfEnabled() {
   for (InputMethodObserver& observer : observer_list_)
     observer.OnShowVirtualKeyboardIfEnabled();

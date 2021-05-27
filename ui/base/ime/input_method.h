@@ -137,10 +137,6 @@ class InputMethod {
   // ui::TEXT_INPUT_TYPE_DEFAULT if there is no focused client.
   virtual TextInputMode GetTextInputMode() const = 0;
 
-  // Gets the text input flags of the focused text input client. Returns
-  // 0 if there is no focused client.
-  virtual int GetTextInputFlags() const = 0;
-
   // Returns true if we know for sure that a candidate window (or IME suggest,
   // etc.) is open.  Returns false if no popup window is open or the detection
   // of IME popups is not supported.

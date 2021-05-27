@@ -787,6 +787,11 @@ bool InputMethodChromeOS::GetClientShouldDoLearning() const {
   return client && client->ShouldDoLearning();
 }
 
+int InputMethodChromeOS::GetTextInputFlags() const {
+  TextInputClient* client = GetTextInputClient();
+  return client ? client->GetTextInputFlags() : 0;
+}
+
 void InputMethodChromeOS::SendKeyEvent(KeyEvent* event) {
   ui::EventDispatchDetails details = DispatchKeyEvent(event);
   DCHECK(!details.dispatcher_destroyed);
