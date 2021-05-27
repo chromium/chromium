@@ -109,7 +109,7 @@ const cart_db::ChromeCartContentProto kMockExampleProtoWithProducts =
         kMockExample,
         kMockExampleURL,
         {"https://static.guitarcenter.com/product-image/foo_123-0-medium",
-         "https://static.guitarcenter.com/product-image/bar_456-0-medium"});
+         "https://images.cymax.com/Images/3/bar_456-baz_789-0-medium"});
 
 const char kMockAmazon[] = "amazon.com";
 const char kMockAmazonURL[] = "https://www.amazon.com/gp/cart/view.html";
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest,
       BuildProtoWithProducts(
           kMockExample, kMockExampleURL,
           {"https://static.guitarcenter.com/product-image/foo_123-0-medium",
-           "https://static.guitarcenter.com/product-image/bar_456-0-medium"},
+           "https://images.cymax.com/Images/3/bar_456-baz_789-0-medium"},
           {"foo_123", "bar_456"});
   const ShoppingCarts expected_carts = {{kMockExample, expected_cart_protos}};
   WaitForProductCount(expected_carts);
