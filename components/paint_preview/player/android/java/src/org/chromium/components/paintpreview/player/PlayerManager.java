@@ -109,8 +109,8 @@ public class PlayerManager {
     // considered 'large'.
     private static final float LARGE_SUB_FRAME_RATIO = .8f;
     // The maximum scroll extent value that is allowed for a frame to be considered non-scrollable,
-    // in pixels.
-    private static final float SCROLLABLE_FRAME_LENIENCY_THRESHOLD = 50;
+    // as a ratio of the viewport height.
+    private static final float SCROLLABLE_FRAME_LENIENCY_RATIO = .1f;
 
     /**
      * Creates a new {@link PlayerManager}.
@@ -227,12 +227,14 @@ public class PlayerManager {
             return;
         }
 
-        float mainFrameScale = mRootFrameCoordinator.getViewportForAccessibility().getScale();
-        int mainFrameViewportHeight =
+        final float mainFrameScale = mRootFrameCoordinator.getViewportForAccessibility().getScale();
+        final int mainFrameViewportHeight =
                 mRootFrameCoordinator.getViewportForAccessibility().getHeight();
-        boolean isMainFrameScrollable =
-                (mainFrameScale * mRootFrameData.getContentHeight()) - mainFrameViewportHeight
-                < SCROLLABLE_FRAME_LENIENCY_THRESHOLD;
+        final float mainFrameScrollAmountPx =
+                (mainFrameScale * mRootFrameData.getContentHeight()) - mainFrameViewportHeight;
+        final float mainFrameScrollLeniencyPx =
+                SCROLLABLE_FRAME_LENIENCY_RATIO * mainFrameViewportHeight;
+        final boolean isMainFrameScrollable = mainFrameScrollAmountPx > mainFrameScrollLeniencyPx;
         if (isMainFrameScrollable) {
             // We cannot have accessibility support if we have scrollable sub-frames as well as a
             // scrollable main frame.
