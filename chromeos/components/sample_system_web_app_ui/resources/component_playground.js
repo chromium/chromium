@@ -2,4 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../../../third_party/material_web_components/components-chromium/node_modules/@material/mwc-button/mwc-button.js'
+import '../../../../chromeos/components/cros_elements/button/button.js'
+
+customElements.whenDefined('cros-button').then(() => {
+  document.documentElement.classList.remove('loading');
+});

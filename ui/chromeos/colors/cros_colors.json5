@@ -112,18 +112,26 @@
       dark: "$google_blue_300",
     },
 
+    /* button common */
+    button_focus_ring_color: "$icon_color_prominent",
+
     /* button-primary */
     button_background_color_primary: "$icon_color_prominent",
     button_label_color_primary: {
       light: "$google_grey_200",
       dark: "$google_grey_900",
     },
+    button_ripple_color_primary: { light: "$white", dark: "$black" },
     /* button-primary:hover */
-    /* TODO(calamity): Generate a linear-gradient() to use for compositing
-       backgrounds */
-    button_background_color_primary_hover_overlay: {
-      light: "rgba($white_rgb, 0.08)",
-      dark: "rgba($black_rgb, 0.08)",
+    button_background_color_primary_hover_overlay: "rgba($black_rgb, 0.08)",
+    /* button-primary:active */
+    button_active_shadow_color_ambient_primary: {
+      light: "rgba($google_blue_500_rgb, 0.15)",
+      dark: "rgba($google_blue_400_rgb, 0.15)"
+    },
+    button_active_shadow_color_key_primary: {
+      light: "rgba($google_blue_500_rgb, 0.3)",
+      dark: "rgba($google_blue_400_rgb, 0.3)"
     },
     /* button-primary[disabled] */
     button_background_color_primary_disabled: {
@@ -141,9 +149,26 @@
       light: "$google_grey_300",
       dark: "$google_grey_700",
     },
+    button_ripple_color_secondary: "$icon_color_prominent",
+
     /* button-secondary:hover */
-    button_background_color_secondary_hover:
-        "rgba($icon_color_prominent_rgb, 0.04)",
+    button_stroke_color_secondary_hover: {
+      light: "$google_blue_100",
+      dark: "rgba($google_blue_300_rgb, 0.32)"
+    },
+    button_background_color_secondary_hover: {
+      light: "rgba($google_blue_500_rgb, 0.04)",
+      dark: "rgba($google_blue_300_rgb, 0.08)",
+    },
+    /* button-secondary:active */
+    button_active_shadow_color_ambient_secondary: {
+      light: "rgba($google_grey_500_rgb, 0.15)",
+      dark: "rgba($google_grey_600_rgb, 0.15)"
+    },
+    button_active_shadow_color_key_secondary: {
+      light: "rgba($google_grey_500_rgb, 0.3)",
+      dark: "rgba($google_grey_600_rgb, 0.3)"
+    },
     /* button-secondary[disabled] */
     button_label_color_secondary_disabled: {
       light: "$google_grey_600",
@@ -207,5 +232,8 @@
   },
   opacities: {
     disabled_opacity: 0.38,
+
+    button_primary_ripple_opacity: { light: 0.32, dark: 0.16 },
+    button_secondary_ripple_opacity: { light: 0.1, dark: 0.16 },
   },
 }
