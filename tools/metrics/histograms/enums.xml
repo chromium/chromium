@@ -86592,6 +86592,11 @@ Called by update_scheduler_enums.py.-->
   <int value="53" label="Show tips for Chrome"/>
 </enum>
 
+<enum name="WrongConfigurationMetric">
+  <int value="0" label="Thunderbolt peripheral - wrong cable"/>
+  <int value="1" label="USB4 peripheral - wrong cable"/>
+</enum>
+
 <enum name="XFrameOptions">
   <int value="0" label="NONE">
     A frame is loaded without any X-Frame-Options header.
