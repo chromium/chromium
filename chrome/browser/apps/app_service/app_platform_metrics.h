@@ -64,7 +64,8 @@ const std::set<apps::AppTypeName>& GetAppTypeNameSet();
 
 // Records metrics when launching apps.
 void RecordAppLaunchMetrics(Profile* profile,
-                            const apps::AppUpdate& update,
+                            apps::mojom::AppType app_type,
+                            const std::string& app_id,
                             apps::mojom::LaunchSource launch_source,
                             apps::mojom::LaunchContainer container);
 

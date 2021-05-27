@@ -349,15 +349,13 @@ const std::set<apps::AppTypeName>& GetAppTypeNameSet() {
 }
 
 void RecordAppLaunchMetrics(Profile* profile,
-                            const apps::AppUpdate& update,
+                            apps::mojom::AppType app_type,
+                            const std::string& app_id,
                             apps::mojom::LaunchSource launch_source,
                             apps::mojom::LaunchContainer container) {
-  apps::mojom::AppType app_type = update.AppType();
   if (app_type == apps::mojom::AppType::kUnknown) {
     return;
   }
-
-  const std::string& app_id = update.AppId();
 
   RecordAppLaunchSource(launch_source);
   RecordAppLaunchPerAppType(

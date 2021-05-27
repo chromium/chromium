@@ -17,6 +17,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_utils.h"
@@ -46,8 +47,15 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
         web_app_launch_manager_.OpenApplication(std::move(params));
 
     if (!SessionID::IsValidValue(restore_id)) {
+      RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kWeb,
+                             params.app_id, GetLaunchSource(params.source),
+                             params.container);
       return web_contents;
     }
+
+    RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kWeb, params.app_id,
+                           apps::mojom::LaunchSource::kFromFullRestore,
+                           params.container);
 
     int session_id = GetSessionIdForRestoreFromWebContents(web_contents);
     if (!SessionID::IsValidValue(session_id)) {
@@ -80,6 +88,10 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
   // If the restore id is available, save the launch parameters to the full
   // restore file.
   if (SessionID::IsValidValue(params.restore_id)) {
+    RecordAppLaunchMetrics(
+        profile_, apps::mojom::AppType::kExtension, params.app_id,
+        apps::mojom::LaunchSource::kFromFullRestore, params.container);
+
     AppLaunchParams params_for_restore(
         params.app_id, params.container, params.disposition, params.source,
         params.display_id, params.launch_files, params.intent);
@@ -91,6 +103,10 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
         std::move(params_for_restore.intent));
     full_restore::SaveAppLaunchInfo(profile_->GetPath(),
                                     std::move(launch_info));
+  } else {
+    RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kExtension,
+                           params.app_id, GetLaunchSource(params.source),
+                           params.container);
   }
 #endif
 
