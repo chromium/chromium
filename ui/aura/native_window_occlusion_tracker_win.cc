@@ -180,9 +180,12 @@ bool NativeWindowOcclusionTrackerWin::IsWindowVisibleAndFullyOpaque(
   // Filter out "tool windows", which are floating windows that do not appear on
   // the taskbar or ALT-TAB. Floating windows can have larger window rectangles
   // than what is visible to the user, so by filtering them out we will avoid
-  // incorrectly marking native windows as occluded.
-  if (ex_styles & WS_EX_TOOLWINDOW)
-    return false;
+  // incorrectly marking native windows as occluded. We do not filter out the
+  // Windows Taskbar.
+  if (ex_styles & WS_EX_TOOLWINDOW) {
+    if (gfx::GetClassName(hwnd) != L"Shell_TrayWnd")
+      return false;
+  }
 
   // Filter out layered windows that are not opaque or that set a transparency
   // colorkey.
@@ -230,14 +233,35 @@ bool NativeWindowOcclusionTrackerWin::IsWindowVisibleAndFullyOpaque(
     return false;
 
   // Ignore popup windows since they're transient unless it is a Chrome Widget
-  // Window.
+  // Window or the Windows Taskbar
   if (::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP) {
-    if (!base::StartsWith(gfx::GetClassName(hwnd), L"Chrome_WidgetWin_")) {
+    std::wstring hwnd_class_name = gfx::GetClassName(hwnd);
+    if (!base::StartsWith(hwnd_class_name, L"Chrome_WidgetWin_") &&
+        hwnd_class_name != L"Shell_TrayWnd") {
       return false;
     }
   }
 
   *window_rect = gfx::Rect(win_rect);
+
+  WINDOWPLACEMENT window_placement = {0};
+  window_placement.length = sizeof(WINDOWPLACEMENT);
+  ::GetWindowPlacement(hwnd, &window_placement);
+  if (window_placement.showCmd == SW_MAXIMIZE) {
+    // If the window is maximized the window border extends beyond the visible
+    // region of the screen.  Adjust the maximized window rect to fit the
+    // screen dimensions to ensure that fullscreen windows, which do not extend
+    // beyond the screen boundaries since they typically have no borders, will
+    // occlude maximized windows underneath them.
+    HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+    if (hmon) {
+      MONITORINFO mi;
+      mi.cbSize = sizeof(mi);
+      if (GetMonitorInfo(hmon, &mi)) {
+        (*window_rect).AdjustToFit(gfx::Rect(mi.rcWork));
+      }
+    }
+  }
 
   return true;
 }
@@ -695,12 +719,14 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     return;
 
   // We generally ignore events for popup windows, except for when the taskbar
-  // is hidden or when the popup is a Chrome Widget, in which case we
-  // recalculate occlusion.
+  // is hidden or when the popup is a Chrome Widget or Windows Taskbar, in
+  // which case we recalculate occlusion.
   bool calculate_occlusion = true;
   if (::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP) {
+    std::wstring hwnd_class_name = gfx::GetClassName(hwnd);
     calculate_occlusion =
-        base::StartsWith(gfx::GetClassName(hwnd), L"Chrome_WidgetWin_");
+        base::StartsWith(hwnd_class_name, L"Chrome_WidgetWin_") ||
+        hwnd_class_name == L"Shell_TrayWnd";
   }
 
   // Detect if either the alt tab view or the task list thumbnail is being
