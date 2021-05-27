@@ -810,6 +810,10 @@ SkPath DesktopWindowTreeHostPlatform::GetWindowMaskForWindowShapeInPixels() {
   return window_mask;
 }
 
+absl::optional<ui::MenuType> DesktopWindowTreeHostPlatform::GetMenuType() {
+  return GetContentWindow()->GetProperty(aura::client::kMenuType);
+}
+
 void DesktopWindowTreeHostPlatform::OnWorkspaceChanged() {
   OnHostWorkspaceChanged();
 }

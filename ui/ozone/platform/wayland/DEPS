@@ -1,13 +1,5 @@
 include_rules = [
-  "+ui/base/buildflags.h",  # Doesn't bring in all of ui/base.
-  "+ui/base/hit_test.h", # UI hit test doesn't bring in all of ui/base.
-  "+ui/base/ui_base_features.h",
   "+mojo/public",
   "+third_party/wayland",
-  "+ui/base/clipboard/clipboard_constants.h",
-  "+ui/base/dragdrop/drag_drop_types.h",
-  "+ui/base/dragdrop/mojom",
-  "+ui/base/clipboard/file_info.h",
-  "+ui/base/dragdrop/os_exchange_data.h",
-  "+ui/base/dragdrop/os_exchange_data_provider_non_backed.h",
+  "+ui/base",
 ]

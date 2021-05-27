@@ -94,6 +94,19 @@ enum MenuSourceType {
   MENU_SOURCE_TYPE_LAST = MENU_SOURCE_ADJUST_SELECTION_RESET
 };
 
+// Menu types that are used to position menu windows correctly.
+enum class MenuType {
+  // A context menu opened either via a right click or a long tap.
+  kRootContextMenu = 0,
+
+  // A root non-context menu. Example: The three dot menu.
+  kRootMenu,
+
+  // A child menu opened by clicking on a nested menu entry of either
+  // |kRootContextMenu| or |kRootParentMenu|.
+  kChildMenu,
+};
+
 COMPONENT_EXPORT(UI_BASE)
 MenuSourceType GetMenuSourceTypeForEvent(const ui::Event& event);
 

@@ -126,6 +126,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   absl::optional<gfx::Size> GetMinimumSizeForWindow() override;
   absl::optional<gfx::Size> GetMaximumSizeForWindow() override;
   SkPath GetWindowMaskForWindowShapeInPixels() override;
+  absl::optional<ui::MenuType> GetMenuType() override;
 
   // ui::WorkspaceExtensionDelegate:
   void OnWorkspaceChanged() override;

@@ -42,6 +42,7 @@
 #include "ui/views/widget/widget_utils.h"
 
 #if defined(USE_AURA)
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/null_window_targeter.h"
@@ -2607,6 +2608,81 @@ TEST_F(MenuControllerTest, DragFromViewIntoMenuAndExit) {
                                release_location, ui::EventTimeForNow(),
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
   ProcessMouseReleased(sub_menu, release_event);
+}
+
+// Tests that |MenuHost::InitParams| are correctly forwarded to the created
+// |aura::Window|.
+TEST_F(MenuControllerTest, AuraWindowIsInitializedWithMenuHostInitParams) {
+  SubmenuView* sub_menu = menu_item()->GetSubmenu();
+
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = gfx::Rect(0, 0, 100, 100);
+  params.do_capture = false;
+  params.menu_type = ui::MenuType::kRootMenu;
+  sub_menu->ShowAt(params);
+
+  aura::Window* window = sub_menu->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(ui::MenuType::kRootMenu,
+            window->GetProperty(aura::client::kMenuType));
+}
+
+// Tests that |aura::Window| has the correct properties when a context menu is
+// shown.
+TEST_F(MenuControllerTest, ContextMenuInitializesAuraWindowWhenShown) {
+  SubmenuView* sub_menu = menu_item()->GetSubmenu();
+
+  // Checking that context menu properties are calculated correctly.
+  menu_controller()->Run(owner(), nullptr, menu_item(), menu_item()->bounds(),
+                         MenuAnchorPosition::kTopLeft, true, false);
+  OpenMenu(menu_item());
+
+  aura::Window* window = sub_menu->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(ui::MenuType::kRootContextMenu,
+            window->GetProperty(aura::client::kMenuType));
+
+  // Checking that child menu properties are calculated correctly.
+  MenuItemView* const child_menu = menu_item()->GetSubmenu()->GetMenuItemAt(0);
+  child_menu->CreateSubmenu();
+  ASSERT_NE(nullptr, child_menu->GetParentMenuItem());
+  menu_controller()->Run(owner(), nullptr, child_menu, child_menu->bounds(),
+                         MenuAnchorPosition::kTopRight, false, false);
+  OpenMenu(child_menu);
+
+  ASSERT_NE(nullptr, child_menu->GetWidget());
+  window = child_menu->GetSubmenu()->GetWidget()->GetNativeWindow();
+
+  EXPECT_EQ(ui::MenuType::kChildMenu,
+            window->GetProperty(aura::client::kMenuType));
+}
+
+// Tests that |aura::Window| has the correct properties when a root or a child
+// menu is shown.
+TEST_F(MenuControllerTest, RootAndChildMenusInitializeAuraWindowWhenShown) {
+  SubmenuView* sub_menu = menu_item()->GetSubmenu();
+
+  // Checking that root menu properties are calculated correctly.
+  menu_controller()->Run(owner(), nullptr, menu_item(), menu_item()->bounds(),
+                         MenuAnchorPosition::kTopLeft, false, false);
+  OpenMenu(menu_item());
+
+  aura::Window* window = sub_menu->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(ui::MenuType::kRootMenu,
+            window->GetProperty(aura::client::kMenuType));
+
+  // Checking that child menu properties are calculated correctly.
+  MenuItemView* const child_menu = menu_item()->GetSubmenu()->GetMenuItemAt(0);
+  child_menu->CreateSubmenu();
+  ASSERT_NE(nullptr, child_menu->GetParentMenuItem());
+  menu_controller()->Run(owner(), nullptr, child_menu, child_menu->bounds(),
+                         MenuAnchorPosition::kTopRight, false, false);
+  OpenMenu(child_menu);
+
+  ASSERT_NE(nullptr, child_menu->GetWidget());
+  window = child_menu->GetSubmenu()->GetWidget()->GetNativeWindow();
+
+  EXPECT_EQ(ui::MenuType::kChildMenu,
+            window->GetProperty(aura::client::kMenuType));
 }
 
 #endif  // defined(USE_AURA)

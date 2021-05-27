@@ -47,6 +47,7 @@ class MenuHost : public Widget, public WidgetObserver {
     View* contents_view = nullptr;
     bool do_capture = false;
     gfx::NativeView native_view_for_gestures;
+    ui::MenuType menu_type = ui::MenuType::kRootContextMenu;
   };
 
   explicit MenuHost(SubmenuView* submenu);
