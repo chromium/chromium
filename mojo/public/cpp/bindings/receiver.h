@@ -271,7 +271,7 @@ class Receiver {
 
   // Allows test code to swap the interface implementation.
   ImplPointerType SwapImplForTesting(ImplPointerType new_impl) {
-    return internal_state_.SwapImplForTesting(new_impl);
+    return internal_state_.SwapImplForTesting(std::move(new_impl));
   }
 
   // Reports the currently dispatching message as bad and resets this receiver.

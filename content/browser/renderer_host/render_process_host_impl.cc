@@ -2637,22 +2637,21 @@ void RenderProcessHostImpl::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // There should be at most one receiver and one CodeCacheHostImpl for any
-  // given RenderProcessHost.
-  DCHECK(!code_cache_host_impl_);
+  // There should be at most one CodeCacheHostImpl for any given
+  // RenderProcessHost.
   DCHECK(code_cache_host_receivers_.empty());
 
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  code_cache_host_impl_ = std::make_unique<CodeCacheHostImpl>(
+  auto code_cache_host = std::make_unique<CodeCacheHostImpl>(
       GetID(), this, storage_partition_impl_->GetGeneratedCodeCacheContext());
-  auto receiver_id = code_cache_host_receivers_.Add(code_cache_host_impl_.get(),
+  CodeCacheHostImpl* impl = code_cache_host.get();
+  auto receiver_id = code_cache_host_receivers_.Add(std::move(code_cache_host),
                                                     std::move(receiver));
 
   // If there is a callback registered, then invoke it with the newly
   // created CodeCacheHostImpl.
   if (!GetCodeCacheHostReceiverHandler().is_null()) {
-    GetCodeCacheHostReceiverHandler().Run(this, code_cache_host_impl_.get(),
-                                          receiver_id,
+    GetCodeCacheHostReceiverHandler().Run(this, impl, receiver_id,
                                           code_cache_host_receivers_);
   }
 }
@@ -4693,7 +4692,6 @@ void RenderProcessHostImpl::ResetIPC() {
   // object so that we can clearly create the new CodeCacheHostImpl while
   // asserting we don't have any duplicates.
   code_cache_host_receivers_.Clear();
-  code_cache_host_impl_.reset();
 
   // It's important not to wait for the DeleteTask to delete the channel
   // proxy. Kill it off now. That way, in case the profile is going away, the

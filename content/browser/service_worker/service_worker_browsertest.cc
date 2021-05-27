@@ -2325,7 +2325,6 @@ class CodeCacheHostInterceptor
   CodeCacheHostInterceptor(RenderProcessHost* rph,
                            CodeCacheHostImpl* code_cache_host_impl)
       : render_process_host_(rph), code_cache_host_impl_(code_cache_host_impl) {
-    // Intercept messages for the CodeCacheHost.
 
     // Register with the RenderProcessHost so we can cleanup properly.
     render_process_host_->AddObserver(this);
@@ -2439,7 +2438,7 @@ class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
       RenderProcessHost* rph,
       CodeCacheHostImpl* code_cache_host_impl,
       mojo::ReceiverId receiver_id,
-      mojo::ReceiverSet<blink::mojom::CodeCacheHost>& receiver_set) {
+      mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>& receiver_set) {
     // Override the cache_storage context to assert that CodeCacheHostImpl
     // does not try to access it when given a bad origin.
     code_cache_host_impl->SetCacheStorageControlForTesting(
@@ -2448,16 +2447,17 @@ class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
     // Create an interceptor that passes a bad origin to CodeCacheHostImpl.
     auto interceptor =
         std::make_unique<CodeCacheHostInterceptor>(rph, code_cache_host_impl);
-    receiver_set.SwapImplForTesting(receiver_id, interceptor.get());
-    interceptors_.push_back(std::move(interceptor));
+    code_cache_host_interfaces_.push_back(
+        receiver_set.SwapImplForTesting(receiver_id, std::move(interceptor)));
   }
 
  private:
   std::unique_ptr<CacheStorageControlForBadOrigin> cache_storage_control_;
 
-  // Track the CodeCacheHostIntercptor objects so we can delete them in
-  // the test destructor.
-  std::vector<std::unique_ptr<CodeCacheHostInterceptor>> interceptors_;
+  // Track the original CodeCacheHost interface objects so we can delete them
+  // in the test destructor.
+  std::vector<std::unique_ptr<blink::mojom::CodeCacheHost>>
+      code_cache_host_interfaces_;
 };
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest,

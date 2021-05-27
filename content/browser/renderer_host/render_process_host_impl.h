@@ -456,7 +456,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       RenderProcessHost*,
       CodeCacheHostImpl*,
       mojo::ReceiverId,
-      mojo::ReceiverSet<blink::mojom::CodeCacheHost>&)>;
+      mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>&)>;
   static void SetCodeCacheHostReceiverHandlerForTesting(
       CodeCacheHostReceiverHandler handler);
 
@@ -1083,10 +1083,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Currently fetching code caches from main thread use the interface
   // associated with the RenderFrameHost. All others (fetches from worker
   // threads, writing into code caches) use per-process interface.
-  // TODO(mythria): Change this to unique receiver set so we don't need to hold
-  // the CodeCacheHostImpl explicitly.
-  mojo::ReceiverSet<blink::mojom::CodeCacheHost> code_cache_host_receivers_;
-  std::unique_ptr<CodeCacheHostImpl> code_cache_host_impl_;
+  mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>
+      code_cache_host_receivers_;
 
   bool channel_connected_;
   bool sent_render_process_ready_;
