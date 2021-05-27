@@ -19,14 +19,10 @@
 
   TabGridTopToolbar* topToolbar = [[TabGridTopToolbar alloc] init];
   topToolbar.translatesAutoresizingMaskIntoConstraints = NO;
-  topToolbar.leadingButton.title = @"Leading";
-  topToolbar.trailingButton.title = @"Trailing";
   [self.view addSubview:topToolbar];
 
   TabGridBottomToolbar* bottomToolbar = [[TabGridBottomToolbar alloc] init];
   bottomToolbar.translatesAutoresizingMaskIntoConstraints = NO;
-  bottomToolbar.leadingButton.title = @"Leading";
-  bottomToolbar.trailingButton.title = @"Trailing";
   [self.view addSubview:bottomToolbar];
 
   NSArray* constraints = @[

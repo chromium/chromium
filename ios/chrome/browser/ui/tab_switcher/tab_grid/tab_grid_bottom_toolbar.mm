@@ -27,6 +27,8 @@
   NSLayoutConstraint* _largeNewTabButtonBottomAnchor;
   TabGridNewTabButton* _smallNewTabButton;
   TabGridNewTabButton* _largeNewTabButton;
+  UIBarButtonItem* _doneButton;
+  UIBarButtonItem* _closeAllOrUndoButton;
   UIBarButtonItem* _addToButton;
   UIBarButtonItem* _closeTabsButton;
   UIBarButtonItem* _shareButton;
@@ -86,6 +88,8 @@
 }
 
 - (void)setMode:(TabGridMode)mode {
+  if (_mode == mode)
+    return;
   _mode = mode;
   [self updateLayout];
 }
@@ -104,15 +108,58 @@
                forControlEvents:UIControlEventTouchUpInside];
 }
 
+- (void)setCloseAllButtonTarget:(id)target action:(SEL)action {
+  _closeAllOrUndoButton.target = target;
+  _closeAllOrUndoButton.action = action;
+}
+
+- (void)setDoneButtonTarget:(id)target action:(SEL)action {
+  _doneButton.target = target;
+  _doneButton.action = action;
+}
+
 - (void)setNewTabButtonEnabled:(BOOL)enabled {
   _smallNewTabButton.enabled = enabled;
   _largeNewTabButton.enabled = enabled;
+}
+
+- (void)setDoneButtonEnabled:(BOOL)enabled {
+  _doneButton.enabled = enabled;
+}
+
+- (void)setCloseAllButtonEnabled:(BOOL)enabled {
+  _closeAllOrUndoButton.enabled = enabled;
 }
 
 - (void)setSelectionModeButtonsEnabled:(BOOL)enabled {
   _addToButton.enabled = enabled;
   _closeTabsButton.enabled = enabled;
   _shareButton.enabled = enabled;
+}
+
+- (void)useUndoCloseAll:(BOOL)useUndo {
+  _closeAllOrUndoButton.enabled = YES;
+  if (useUndo) {
+    _closeAllOrUndoButton.title =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON);
+    // Setting the |accessibilityIdentifier| seems to trigger layout, which
+    // causes an infinite loop.
+    if (_closeAllOrUndoButton.accessibilityIdentifier !=
+        kTabGridUndoCloseAllButtonIdentifier) {
+      _closeAllOrUndoButton.accessibilityIdentifier =
+          kTabGridUndoCloseAllButtonIdentifier;
+    }
+  } else {
+    _closeAllOrUndoButton.title =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON);
+    // Setting the |accessibilityIdentifier| seems to trigger layout, which
+    // causes an infinite loop.
+    if (_closeAllOrUndoButton.accessibilityIdentifier !=
+        kTabGridCloseAllButtonIdentifier) {
+      _closeAllOrUndoButton.accessibilityIdentifier =
+          kTabGridCloseAllButtonIdentifier;
+    }
+  }
 }
 
 - (void)hide {
@@ -139,12 +186,15 @@
   [_toolbar setShadowImage:[[UIImage alloc] init]
         forToolbarPosition:UIBarPositionAny];
 
-  _leadingButton = [[UIBarButtonItem alloc] init];
-  _leadingButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  _closeAllOrUndoButton = [[UIBarButtonItem alloc] init];
+  _closeAllOrUndoButton.tintColor =
+      UIColorFromRGB(kTabGridToolbarTextButtonColor);
 
-  _trailingButton = [[UIBarButtonItem alloc] init];
-  _trailingButton.style = UIBarButtonItemStyleDone;
-  _trailingButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  _doneButton = [[UIBarButtonItem alloc] init];
+  _doneButton.style = UIBarButtonItemStyleDone;
+  _doneButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  _doneButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_DONE_BUTTON);
+  _doneButton.accessibilityIdentifier = kTabGridDoneButtonIdentifier;
 
   _spaceItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
@@ -223,14 +273,15 @@
 }
 
 - (void)updateSelectionButtonsTitle {
-  _closeTabsButton.title =
-      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-          IDS_IOS_TAB_GRID_CLOSE_TABS_BUTTON, _selectedTabsCount));
+  _closeTabsButton.title = l10n_util::GetPluralNSStringF(
+      IDS_IOS_TAB_GRID_CLOSE_TABS_BUTTON, _selectedTabsCount);
 }
 
 - (void)updateLayout {
   _largeNewTabButtonBottomAnchor.constant =
       -kTabGridFloatingButtonVerticalInset;
+  UIBarButtonItem* leadingButton = _closeAllOrUndoButton;
+  UIBarButtonItem* trailingButton = _doneButton;
 
   if (self.mode == TabGridModeSelection) {
     [_toolbar setItems:@[
@@ -247,11 +298,10 @@
     // For incognito/regular pages, display all 3 buttons;
     // For remote tabs page, only display new tab button.
     if (self.page == TabGridPageRemoteTabs) {
-      [_toolbar setItems:@[ _spaceItem, self.trailingButton ]];
+      [_toolbar setItems:@[ _spaceItem, trailingButton ]];
     } else {
       [_toolbar setItems:@[
-        self.leadingButton, _spaceItem, _newTabButtonItem, _spaceItem,
-        self.trailingButton
+        leadingButton, _spaceItem, _newTabButtonItem, _spaceItem, trailingButton
       ]];
     }
 

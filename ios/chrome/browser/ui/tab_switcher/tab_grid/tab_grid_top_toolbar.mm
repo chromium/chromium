@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_control.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,11 +26,106 @@ const int kNewTabButtonTrailingSpace = 20;
 @end
 
 @implementation TabGridTopToolbar {
-  UIBarButtonItem* _centralItem;
+  UIBarButtonItem* _leadingButton;
   UIBarButtonItem* _spaceItem;
   UIBarButtonItem* _newTabButton;
   UIBarButtonItem* _fixedTrailingSpaceItem;
   UIBarButtonItem* _selectTabsButton;
+  UIBarButtonItem* _selectAllButton;
+  UIBarButtonItem* _selectedTabsItem;
+  UIBarButtonItem* _doneButton;
+  UIBarButtonItem* _closeAllOrUndoButton;
+  UIBarButtonItem* _pageControlItem;
+  UILabel* _selectedTabsLabel;
+}
+
+- (UIBarButtonItem*)anchorItem {
+  return _leadingButton;
+}
+
+- (void)setPage:(TabGridPage)page {
+  _page = page;
+  [self setItemsForTraitCollection:self.traitCollection];
+}
+
+- (void)setMode:(TabGridMode)mode {
+  if (_mode == mode)
+    return;
+  _mode = mode;
+  [self setItemsForTraitCollection:self.traitCollection];
+}
+
+- (void)setSelectedTabsCount:(int)count {
+  _selectedTabsCount = count;
+  if (_selectedTabsCount == 0) {
+    _selectedTabsLabel.text =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_TABS_TITLE);
+
+  } else {
+    _selectedTabsLabel.text = l10n_util::GetPluralNSStringF(
+        IDS_IOS_TAB_GRID_SELECTED_TABS_TITLE, _selectedTabsCount);
+  }
+}
+
+- (void)setNewTabButtonTarget:(id)target action:(SEL)action {
+  _newTabButton.target = target;
+  _newTabButton.action = action;
+}
+
+- (void)setSelectTabButtonTarget:(id)target action:(SEL)action {
+  _selectTabsButton.target = target;
+  _selectTabsButton.action = action;
+}
+
+- (void)setDoneButtonTarget:(id)target action:(SEL)action {
+  _doneButton.target = target;
+  _doneButton.action = action;
+}
+
+- (void)setNewTabButtonEnabled:(BOOL)enabled {
+  _newTabButton.enabled = enabled;
+}
+
+- (void)setSelectTabsButtonEnabled:(BOOL)enabled {
+  _selectTabsButton.enabled = enabled;
+}
+
+- (void)setCloseAllButtonTarget:(id)target action:(SEL)action {
+  _closeAllOrUndoButton.target = target;
+  _closeAllOrUndoButton.action = action;
+}
+
+- (void)setCloseAllButtonEnabled:(BOOL)enabled {
+  _closeAllOrUndoButton.enabled = enabled;
+}
+
+- (void)setDoneButtonEnabled:(BOOL)enabled {
+  _doneButton.enabled = enabled;
+}
+
+- (void)useUndoCloseAll:(BOOL)useUndo {
+  _closeAllOrUndoButton.enabled = YES;
+  if (useUndo) {
+    _closeAllOrUndoButton.title =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON);
+    // Setting the |accessibilityIdentifier| seems to trigger layout, which
+    // causes an infinite loop.
+    if (_closeAllOrUndoButton.accessibilityIdentifier !=
+        kTabGridUndoCloseAllButtonIdentifier) {
+      _closeAllOrUndoButton.accessibilityIdentifier =
+          kTabGridUndoCloseAllButtonIdentifier;
+    }
+  } else {
+    _closeAllOrUndoButton.title =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON);
+    // Setting the |accessibilityIdentifier| seems to trigger layout, which
+    // causes an infinite loop.
+    if (_closeAllOrUndoButton.accessibilityIdentifier !=
+        kTabGridCloseAllButtonIdentifier) {
+      _closeAllOrUndoButton.accessibilityIdentifier =
+          kTabGridCloseAllButtonIdentifier;
+    }
+  }
 }
 
 - (void)hide {
@@ -39,24 +136,6 @@ const int kNewTabButtonTrailingSpace = 20;
 - (void)show {
   self.backgroundColor = UIColor.clearColor;
   self.pageControl.alpha = 1.0;
-}
-
-- (void)setNewTabButtonTarget:(id)target action:(SEL)action {
-  _newTabButton.target = target;
-  _newTabButton.action = action;
-}
-
-- (void)setNewTabButtonEnabled:(BOOL)enabled {
-  _newTabButton.enabled = enabled;
-}
-
-- (void)setSelectTabButtonTarget:(id)target action:(SEL)action {
-  _selectTabsButton.target = target;
-  _selectTabsButton.action = action;
-}
-
-- (void)setSelectTabsButtonEnabled:(BOOL)enabled {
-  _selectTabsButton.enabled = enabled;
 }
 
 #pragma mark - UIView
@@ -87,37 +166,64 @@ const int kNewTabButtonTrailingSpace = 20;
 
 #pragma mark - Private
 
+- (BOOL)requiresPreTrailingButtonForTraitCollection:
+    (UITraitCollection*)traitCollection {
+  return (IsTabsBulkActionsEnabled() && _mode == TabGridModeNormal &&
+          self.page != TabGridPageRemoteTabs) ||
+         ShowThumbStripInTraitCollection(traitCollection);
+}
+
 - (void)setItemsForTraitCollection:(UITraitCollection*)traitCollection {
+  UIBarButtonItem* centralItem = _pageControlItem;
+  UIBarButtonItem* trailingButton = _doneButton;
+
   if (traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
       traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
-    if (IsTabsBulkActionsEnabled()) {
+    if (IsTabsBulkActionsEnabled() && self.page != TabGridPageRemoteTabs) {
+      if (_mode == TabGridModeSelection) {
+        centralItem = _selectedTabsItem;
+        _leadingButton = _selectAllButton;
+      } else {
+        trailingButton = _selectTabsButton;
+        _leadingButton = _spaceItem;
+      }
       [self setItems:@[
-        _spaceItem, _spaceItem, _centralItem, _spaceItem, _selectTabsButton
+        _leadingButton, _spaceItem, centralItem, _spaceItem, trailingButton
       ]];
     } else {
-      [self setItems:@[ _spaceItem, _centralItem, _spaceItem ]];
+      [self setItems:@[ _spaceItem, centralItem, _spaceItem ]];
     }
     return;
   }
+  // In Landscape normal mode trailig button is always "done".
+  trailingButton = _doneButton;
+  // In Landscape normal mode leading button is always "closeAll".
+  _leadingButton = _closeAllOrUndoButton;
 
-  // The new tab button is only used if the thumb strip is enabled. In other
-  // cases, there is a floating new tab button on the bottom.
-  if (ShowThumbStripInTraitCollection(traitCollection)) {
+  if ([self requiresPreTrailingButtonForTraitCollection:traitCollection]) {
+    UIBarButtonItem* preTrailingButton;
+
+    // The new tab button is only used if the thumb strip is enabled. In other
+    // cases, there is a floating new tab button on the bottom.
+    if (ShowThumbStripInTraitCollection(traitCollection))
+      preTrailingButton = _newTabButton;
+    else
+      preTrailingButton = _selectTabsButton;
+
     [self setItems:@[
-      _leadingButton, _spaceItem, _centralItem, _spaceItem, _newTabButton,
-      _fixedTrailingSpaceItem, _trailingButton
+      _leadingButton, _spaceItem, centralItem, _spaceItem, preTrailingButton,
+      _fixedTrailingSpaceItem, trailingButton
     ]];
     return;
   }
-  if (IsTabsBulkActionsEnabled()) {
-    [self setItems:@[
-      _leadingButton, _spaceItem, _centralItem, _spaceItem, _selectTabsButton,
-      _fixedTrailingSpaceItem, _trailingButton
-    ]];
-    return;
+
+  if (IsTabsBulkActionsEnabled() && _mode == TabGridModeSelection) {
+    centralItem = _selectedTabsItem;
+    _leadingButton = _selectAllButton;
   }
+
   [self setItems:@[
-    _leadingButton, _spaceItem, _centralItem, _spaceItem, _trailingButton
+    _leadingButton, _spaceItem, centralItem, _spaceItem, trailingButton
   ]];
 }
 
@@ -129,8 +235,15 @@ const int kNewTabButtonTrailingSpace = 20;
   [self setShadowImage:[[UIImage alloc] init]
       forToolbarPosition:UIBarPositionAny];
 
-  _leadingButton = [[UIBarButtonItem alloc] init];
-  _leadingButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  _closeAllOrUndoButton = [[UIBarButtonItem alloc] init];
+  _closeAllOrUndoButton.tintColor =
+      UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  [self useUndoCloseAll:NO];
+
+  _selectAllButton = [[UIBarButtonItem alloc] init];
+  _selectAllButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  _selectAllButton.title =
+      l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON);
 
   _selectTabsButton = [[UIBarButtonItem alloc] init];
   _selectTabsButton.image = [UIImage imageNamed:@"select_tabs_toolbar_button"];
@@ -139,11 +252,22 @@ const int kNewTabButtonTrailingSpace = 20;
   // The segmented control has an intrinsic size.
   _pageControl = [[TabGridPageControl alloc] init];
   _pageControl.translatesAutoresizingMaskIntoConstraints = NO;
-  _centralItem = [[UIBarButtonItem alloc] initWithCustomView:_pageControl];
+  _pageControlItem = [[UIBarButtonItem alloc] initWithCustomView:_pageControl];
 
-  _trailingButton = [[UIBarButtonItem alloc] init];
-  _trailingButton.style = UIBarButtonItemStyleDone;
-  _trailingButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  _doneButton = [[UIBarButtonItem alloc] init];
+  _doneButton.style = UIBarButtonItemStyleDone;
+  _doneButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  _doneButton.accessibilityIdentifier = kTabGridDoneButtonIdentifier;
+  _doneButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_DONE_BUTTON);
+
+  _selectedTabsLabel = [[UILabel alloc] init];
+  _selectedTabsLabel.text =
+      l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_TABS_TITLE);
+  _selectedTabsLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  _selectedTabsLabel.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+
+  _selectedTabsItem =
+      [[UIBarButtonItem alloc] initWithCustomView:_selectedTabsLabel];
 
   _newTabButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemAdd

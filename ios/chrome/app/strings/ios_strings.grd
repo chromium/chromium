@@ -2452,6 +2452,17 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TAB_GRID_ADD_TO_BUTTON" desc="Title of the button in the tab grid UI that when tapped, will provide the user with a menu to add selected tabs to bookmarks or to the reading list. [iOS only]">
         Add To...
       </message>
+      <message name="IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON" desc="Title of the button in the tab grid UI selection mode, when tapped it will mark all tabs selected.">
+          Select All
+          </message>
+      <message name="IDS_IOS_TAB_GRID_SELECT_TABS_TITLE" desc="Title shown in the tab grid selection mode when no tab is selected. [iOS only]">
+              Select Tabs
+      </message>
+      <message name="IDS_IOS_TAB_GRID_SELECTED_TABS_TITLE" desc="Title shown in the tab grid selection mode to indicate the number of selected tabs. count refers to the number of tabs selected. According to its value, the string goes from singular to plural. [iOS only]">
+        {count, plural,
+          =1 {{count} Tab}
+          other {{count} Tabs}}
+      </message>
       <message name="IDS_IOS_TAB_GRID_INCOGNITO_TABS_TITLE" desc="The accessibility label of the Incognito Tabs page in the tab grid UI. [iOS only]">
         Incognito Tabs
       </message>

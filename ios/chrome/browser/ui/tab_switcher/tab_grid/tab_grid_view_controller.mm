@@ -143,8 +143,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @property(nonatomic, weak) UIView* scrollContentView;
 @property(nonatomic, weak) TabGridTopToolbar* topToolbar;
 @property(nonatomic, weak) TabGridBottomToolbar* bottomToolbar;
-@property(nonatomic, weak) UIBarButtonItem* doneButton;
-@property(nonatomic, weak) UIBarButtonItem* closeAllButton;
 @property(nonatomic, assign) BOOL undoCloseAllAvailable;
 // Bool informing if the confirmation action sheet is displayed.
 @property(nonatomic, assign) BOOL closeAllConfirmationDisplayed;
@@ -1179,16 +1177,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   // Sets the leadingButton title during initialization allows the actionSheet
   // to be correctly anchored. See: crbug.com/1140982.
-  topToolbar.leadingButton.title =
-      l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON);
-  topToolbar.leadingButton.target = self;
-  topToolbar.leadingButton.action = @selector(closeAllButtonTapped:);
-  topToolbar.trailingButton.title =
-      l10n_util::GetNSString(IDS_IOS_TAB_GRID_DONE_BUTTON);
-  topToolbar.trailingButton.accessibilityIdentifier =
-      kTabGridDoneButtonIdentifier;
-  topToolbar.trailingButton.target = self;
-  topToolbar.trailingButton.action = @selector(doneButtonTapped:);
+  [topToolbar setCloseAllButtonTarget:self
+                               action:@selector(closeAllButtonTapped:)];
+  [topToolbar setDoneButtonTarget:self action:@selector(doneButtonTapped:)];
   [topToolbar setNewTabButtonTarget:self action:@selector(newTabButtonTapped:)];
   [topToolbar setSelectTabButtonTarget:self
                                 action:@selector(selectButtonTapped:)];
@@ -1223,14 +1214,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         constraintEqualToAnchor:self.view.trailingAnchor],
   ]];
 
-  bottomToolbar.leadingButton.target = self;
-    bottomToolbar.leadingButton.action = @selector(closeAllButtonTapped:);
-  bottomToolbar.trailingButton.title =
-      l10n_util::GetNSString(IDS_IOS_TAB_GRID_DONE_BUTTON);
-  bottomToolbar.trailingButton.accessibilityIdentifier =
-      kTabGridDoneButtonIdentifier;
-  bottomToolbar.trailingButton.target = self;
-  bottomToolbar.trailingButton.action = @selector(doneButtonTapped:);
+  [bottomToolbar setCloseAllButtonTarget:self
+                                  action:@selector(closeAllButtonTapped:)];
+  [bottomToolbar setDoneButtonTarget:self action:@selector(doneButtonTapped:)];
 
   [bottomToolbar setNewTabButtonTarget:self
                                 action:@selector(newTabButtonTapped:)];
@@ -1285,22 +1271,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // vertically long.
     self.configuration = TabGridConfigurationBottomToolbar;
   }
-  switch (self.configuration) {
-    case TabGridConfigurationBottomToolbar:
-      self.doneButton = self.bottomToolbar.trailingButton;
-      self.closeAllButton = self.bottomToolbar.leadingButton;
-      break;
-    case TabGridConfigurationFloatingButton:
-      self.doneButton = self.topToolbar.trailingButton;
-      self.closeAllButton = self.topToolbar.leadingButton;
-      break;
-  }
   [self configureButtonsForActiveAndCurrentPage];
 }
 
 - (void)configureButtonsForActiveAndCurrentPage {
   self.bottomToolbar.page = self.currentPage;
+  self.topToolbar.page = self.currentPage;
   self.bottomToolbar.mode = self.tabGridMode;
+  self.topToolbar.mode = self.tabGridMode;
+
   // When current page is a remote tabs page.
   if (self.currentPage == TabGridPageRemoteTabs) {
     if (self.pageConfiguration ==
@@ -1322,7 +1301,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
        !self.regularTabsViewController)) {
     [self configureDoneButtonOnDisabledPage];
     [self.bottomToolbar setNewTabButtonEnabled:NO];
-    self.closeAllButton.enabled = NO;
+    [self.topToolbar setCloseAllButtonEnabled:NO];
+    [self.bottomToolbar setCloseAllButtonEnabled:NO];
     return;
   }
 
@@ -1357,11 +1337,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   BOOL incognitoTabsNeedsAuth =
       (self.currentPage == TabGridPageIncognitoTabs &&
        self.incognitoTabsViewController.contentNeedsAuthentication);
-
-  self.doneButton.enabled =
-      !gridViewController.gridEmpty &&
-      self.topToolbar.pageControl.userInteractionEnabled &&
-      !incognitoTabsNeedsAuth;
+  BOOL doneEnabled = !gridViewController.gridEmpty &&
+                     self.topToolbar.pageControl.userInteractionEnabled &&
+                     !incognitoTabsNeedsAuth;
+  [self.topToolbar setDoneButtonEnabled:doneEnabled];
+  [self.bottomToolbar setDoneButtonEnabled:doneEnabled];
 }
 
 // Disables the done button on bottom toolbar if a disabled tab view is
@@ -1369,23 +1349,22 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)configureDoneButtonOnDisabledPage {
   if (!self.closeAllConfirmationDisplayed)
     self.topToolbar.pageControl.userInteractionEnabled = YES;
-  self.doneButton.enabled = NO;
+  [self.bottomToolbar setDoneButtonEnabled:NO];
+  [self.topToolbar setDoneButtonEnabled:NO];
 }
 
 - (void)configureCloseAllButtonForCurrentPageAndUndoAvailability {
-  if (self.undoCloseAllAvailable &&
-      self.currentPage == TabGridPageRegularTabs) {
-    // Setup closeAllButton as undo button.
-    self.closeAllButton.enabled = YES;
-    self.closeAllButton.title =
-        l10n_util::GetNSString(IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON);
-    self.closeAllButton.accessibilityIdentifier =
-        kTabGridUndoCloseAllButtonIdentifier;
+  BOOL useUndo =
+      self.undoCloseAllAvailable && self.currentPage == TabGridPageRegularTabs;
+  [self.bottomToolbar useUndoCloseAll:useUndo];
+  [self.topToolbar useUndoCloseAll:useUndo];
+  if (useUndo)
     return;
-  }
+
   // Otherwise setup as a Close All button.
   GridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
+
   BOOL enabled =
       (gridViewController == nil) ? NO : !gridViewController.gridEmpty;
   BOOL incognitoTabsNeedsAuth =
@@ -1393,16 +1372,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
        self.incognitoTabsViewController.contentNeedsAuthentication);
   enabled = enabled && !incognitoTabsNeedsAuth;
 
-  self.closeAllButton.enabled = enabled;
-  self.closeAllButton.title =
-      l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON);
-  // Setting the |accessibilityIdentifier| seems to trigger layout, which causes
-  // an infinite loop.
-  if (self.closeAllButton.accessibilityIdentifier !=
-      kTabGridCloseAllButtonIdentifier) {
-    self.closeAllButton.accessibilityIdentifier =
-        kTabGridCloseAllButtonIdentifier;
-  }
+  [self.topToolbar setCloseAllButtonEnabled:enabled];
+  [self.bottomToolbar setCloseAllButtonEnabled:enabled];
 }
 
 // Shows the two toolbars and the floating button. Suitable for use in
@@ -1795,6 +1766,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - Control actions
 
 - (void)doneButtonTapped:(id)sender {
+  // Tapping Done when in selection mode, should only return back to the normal
+  // mode.
+  if (self.tabGridMode == TabGridModeSelection) {
+    self.tabGridMode = TabGridModeNormal;
+    self.bottomToolbar.mode = self.tabGridMode;
+    self.topToolbar.mode = self.tabGridMode;
+    // Records action when user exit the selection mode.
+    base::RecordAction(base::UserMetricsAction("MobileTabGridSelectionDone"));
+    return;
+  }
+
   TabGridPage newActivePage = self.currentPage;
   if (self.currentPage == TabGridPageRemoteTabs) {
     newActivePage = self.activePage;
@@ -1818,16 +1800,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.bottomToolbar.mode = self.tabGridMode;
   self.regularTabsViewController.mode = self.tabGridMode;
   self.incognitoTabsViewController.mode = self.tabGridMode;
+  self.topToolbar.mode = self.tabGridMode;
   base::RecordAction(base::UserMetricsAction("MobileTabGridSelectTabs"));
 }
 
 // Shows an action sheet that asks for confirmation when 'Close All' button is
 // tapped.
 - (void)closeAllButtonTappedShowConfirmation {
-  // Sets the action sheet anchor on the leading button of the top
+  // Sets the action sheet anchor on the to the anchor item of the top
   // toolbar in order to avoid alignment issues when changing the device
   // orientation to landscape in multi window mode.
-  UIBarButtonItem* buttonAnchor = self.topToolbar.leadingButton;
+  UIBarButtonItem* buttonAnchor = self.topToolbar.anchorItem;
   self.closeAllConfirmationDisplayed = YES;
   self.topToolbar.pageControl.userInteractionEnabled = NO;
   switch (self.currentPage) {
