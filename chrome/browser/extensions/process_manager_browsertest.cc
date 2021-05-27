@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -47,6 +48,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -66,9 +68,8 @@ namespace extensions {
 namespace {
 
 bool IsExtensionProcessSharingAllowed() {
-  // TODO(nick): Currently, process sharing is allowed even in
-  // --site-per-process. Lock this down.  https://crbug.com/766267
-  return true;
+  return !base::FeatureList::IsEnabled(
+      extensions_features::kStrictExtensionIsolation);
 }
 
 void AddFrameToSet(std::set<content::RenderFrameHost*>* frames,

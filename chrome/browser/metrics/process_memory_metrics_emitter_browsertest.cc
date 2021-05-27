@@ -39,6 +39,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/background_page_watcher.h"
 #include "extensions/test/test_extension_dir.h"
 #endif
@@ -663,6 +664,13 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
                        MAYBE_FetchAndEmitMetricsWithExtensionsAndHostReuse) {
+  // When strict extension isolation is enabled, there is no process reuse for
+  // extensions, and this becomes the same as FetchAndEmitMetricsWithExtensions.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kStrictExtensionIsolation)) {
+    return;
+  }
+
   // Limit the number of renderer processes to force reuse.
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
   const Extension* extension1 = CreateExtension("Extension 1");

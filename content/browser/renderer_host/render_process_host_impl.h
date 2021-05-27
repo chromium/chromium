@@ -335,6 +335,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Implementation of FilterURL below that can be shared with the mock class.
   static void FilterURL(RenderProcessHost* rph, bool empty_allowed, GURL* url);
 
+  // Returns the current process count for comparisons against
+  // GetMaxRendererProcessCount, taking into account any processes the embedder
+  // wants to ignore via ContentBrowserClient::GetProcessCountToIgnoreForLimit.
+  static size_t GetProcessCountForLimit();
+
   // Returns true if |host| is suitable for rendering a page in the given
   // |isolation_context|, where the page would utilize |site_info.site_url()| as
   // its SiteInstance site URL, and its process would be locked to

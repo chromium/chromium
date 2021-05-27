@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/extensions/navigation_observer.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -18,8 +20,18 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 
 namespace extensions {
+
+namespace {
+
+bool IsStrictExtensionIsolationEnabled() {
+  return base::FeatureList::IsEnabled(
+      extensions_features::kStrictExtensionIsolation);
+}
+
+}  // namespace
 
 // A class for testing various scenarios of disabled extensions.
 class DisableExtensionBrowserTest : public ExtensionBrowserTest {
@@ -184,9 +196,11 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   scoped_refptr<content::SiteInstance> extension_site_instance =
       subframe->GetSiteInstance();
 
-  // The extension process shouldn't be locked, since multiple extensions are
-  // allowed to reuse the same extension process.
-  EXPECT_FALSE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+  // The extension process should only be locked if strict extension isolation
+  // is enabled, since multiple extensions are normally allowed to reuse the
+  // same extension process.
+  EXPECT_EQ(IsStrictExtensionIsolationEnabled(),
+            subframe->GetProcess()->IsProcessLockedToSiteForTesting());
 
   // Disable the extension.
   extension_service()->DisableExtension(extension->id(),
@@ -212,8 +226,10 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   EXPECT_EQ(subframe->GetSiteInstance()->GetSiteURL(),
             GURL(chrome::kExtensionInvalidRequestURL));
 
-  // The disabled extension process also shouldn't be locked.
-  EXPECT_FALSE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+  // The disabled extension process should only be locked if strict extension
+  // isolation is enabled.
+  EXPECT_EQ(IsStrictExtensionIsolationEnabled(),
+            subframe->GetProcess()->IsProcessLockedToSiteForTesting());
 
   // Re-enable the extension.
   extension_service()->EnableExtension(extension->id());
@@ -226,7 +242,8 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   subframe = ChildFrameAt(web_contents->GetMainFrame(), 0);
   EXPECT_TRUE(subframe->IsRenderFrameLive());
   EXPECT_EQ(subframe->GetSiteInstance(), extension_site_instance);
-  EXPECT_FALSE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+  EXPECT_EQ(IsStrictExtensionIsolationEnabled(),
+            subframe->GetProcess()->IsProcessLockedToSiteForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, NoExtensionsInRefererHeader) {
