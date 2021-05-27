@@ -60,10 +60,4 @@ void NoAllocDirectCallExceptionState::ClearException() {
   deferred_exception_.Reset();
 }
 
-NoAllocDirectCallExceptionState::~NoAllocDirectCallExceptionState() {
-  if (deferred_exception_) {
-    host_->PostDeferrableAction(std::move(deferred_exception_));
-  }
-}
-
 }  // namespace blink

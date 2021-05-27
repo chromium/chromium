@@ -23,7 +23,11 @@ class PLATFORM_EXPORT NoAllocDirectCallExceptionState : public ExceptionState {
       : ExceptionState(isolate, context_type, interface_name, property_name),
         host_(host) {}
 
-  virtual ~NoAllocDirectCallExceptionState();
+  virtual ~NoAllocDirectCallExceptionState() {
+    if (deferred_exception_) {
+      host_->PostDeferrableAction(std::move(deferred_exception_));
+    }
+  }
 
   void ThrowDOMException(DOMExceptionCode, const String& message) override;
   void ThrowTypeError(const String& message) override;
