@@ -222,8 +222,14 @@ class ContentSubresourceFilterThrottleManager
   VerifiedRuleset::Handle* EnsureRulesetHandle();
   void DestroyRulesetHandleIfNoLongerUsed();
 
+  // Prefer the NavigationHandle version where possible as there are better
+  // guard-rails for deriving the correct frame in edge cases.
+  blink::FrameAdEvidence& EnsureFrameAdEvidence(
+      content::NavigationHandle* navigation_handle);
   blink::FrameAdEvidence& EnsureFrameAdEvidence(
       content::RenderFrameHost* render_frame_host);
+  blink::FrameAdEvidence& EnsureFrameAdEvidence(int frame_tree_node_id,
+                                                int parent_frame_tree_node_id);
 
   mojom::ActivationState ActivationStateForNextCommittedLoad(
       content::NavigationHandle* navigation_handle);

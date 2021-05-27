@@ -66,6 +66,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -1133,6 +1134,54 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ui_test_utils::NavigateToURL(browser(), a_url);
   ExpectParsedScriptElementLoadedStatusInFrames(
       std::vector<const char*>{"b", "d"}, {false, false});
+}
+
+class SubresourceFilterPrerenderingBrowserTest
+    : public SubresourceFilterBrowserTest {
+ public:
+  SubresourceFilterPrerenderingBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &SubresourceFilterPrerenderingBrowserTest::web_contents,
+            base::Unretained(this))) {}
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    SubresourceFilterBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// A very basic smoke test for prerendering; this test just activates on the
+// main frame of a prerender. It currently doesn't check any behavior but
+// passes if we don't crash.
+// TODO(bokan): Test activating the prerender and make stronger assertions
+// about what happens with subresource filtering inside a prerender once that
+// works.
+IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
+                       PrerenderingMainFrameActivated) {
+  const GURL kPrerenderingUrl =
+      embedded_test_server()->GetURL("/page_with_iframe.html");
+  const GURL kInitialUrl =
+      embedded_test_server()->GetURL("/prerender/add_prerender.html");
+
+  ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
+      "suffix-that-does-not-match-anything"));
+
+  Configuration config(subresource_filter::mojom::ActivationLevel::kDryRun,
+                       subresource_filter::ActivationScope::ALL_SITES);
+  ResetConfiguration(std::move(config));
+
+  ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+
+  ASSERT_EQ(prerender_helper_.GetRequestCount(kPrerenderingUrl), 0);
+  prerender_helper_.AddPrerender(kPrerenderingUrl);
+  ASSERT_EQ(prerender_helper_.GetRequestCount(kPrerenderingUrl), 1);
 }
 
 }  // namespace subresource_filter
