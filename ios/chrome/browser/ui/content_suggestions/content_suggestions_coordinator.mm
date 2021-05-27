@@ -261,7 +261,7 @@
 
   // Offset to maintain Discover feed scroll position.
   CGFloat offset = 0;
-  if (IsDiscoverFeedEnabled() && ![self isRefactoredFeedVisible]) {
+  if (IsDiscoverFeedEnabled() && !IsRefactoredNTP()) {
     web::NavigationManager* navigationManager =
         self.webState->GetNavigationManager();
     web::NavigationItem* item = navigationManager->GetVisibleItem();
