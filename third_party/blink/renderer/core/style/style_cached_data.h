@@ -7,6 +7,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -37,6 +39,9 @@ class CORE_EXPORT StyleCachedData final {
   //      getComputedStyle(div, "::before").color // still green.
   //    </script>
   std::unique_ptr<PseudoElementStyleCache> pseudo_element_styles_;
+
+  // Stores the names of of all custom properties on a given ComputedStyle.
+  std::unique_ptr<Vector<AtomicString>> variable_names_;
 };
 
 }  // namespace blink

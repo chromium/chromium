@@ -179,6 +179,19 @@ const ComputedStyle* CSSComputedStyleDeclaration::ComputeComputedStyle() const {
   return style;
 }
 
+const Vector<AtomicString>* CSSComputedStyleDeclaration::GetVariableNames()
+    const {
+  if (auto* style = ComputeComputedStyle())
+    return &style->GetVariableNames();
+  return nullptr;
+}
+
+size_t CSSComputedStyleDeclaration::GetVariableNamesCount() const {
+  if (auto* style = ComputeComputedStyle())
+    return style->GetVariableNamesCount();
+  return 0;
+}
+
 Node* CSSComputedStyleDeclaration::StyledNode() const {
   if (!node_)
     return nullptr;
@@ -317,15 +330,33 @@ String CSSComputedStyleDeclaration::GetPropertyValue(
 unsigned CSSComputedStyleDeclaration::length() const {
   if (!node_ || !node_->InActiveDocument())
     return 0;
-  return ComputableProperties(GetExecutionContext()).size();
+
+  size_t variable_count = 0;
+
+  if (RuntimeEnabledFeatures::CSSEnumeratedCustomPropertiesEnabled()) {
+    UpdateStyleAndLayoutTreeIfNeeded(nullptr /* property_name */);
+    UpdateStyleAndLayoutIfNeeded(nullptr /* property */);
+    variable_count = GetVariableNamesCount();
+  }
+
+  return ComputableProperties(GetExecutionContext()).size() + variable_count;
 }
 
 String CSSComputedStyleDeclaration::item(unsigned i) const {
   if (i >= length())
     return "";
 
-  return ComputableProperties(GetExecutionContext())[i]
-      ->GetPropertyNameString();
+  const auto& standard_names = ComputableProperties(GetExecutionContext());
+
+  if (i < standard_names.size())
+    return standard_names[i]->GetPropertyNameString();
+
+  DCHECK(RuntimeEnabledFeatures::CSSEnumeratedCustomPropertiesEnabled());
+  DCHECK(GetVariableNames());
+  const auto& variable_names = *GetVariableNames();
+  CHECK_LT(i - standard_names.size(), variable_names.size());
+
+  return variable_names[i - standard_names.size()];
 }
 
 bool CSSComputedStyleDeclaration::CssPropertyMatches(

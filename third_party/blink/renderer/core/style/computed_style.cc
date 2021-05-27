@@ -151,6 +151,25 @@ scoped_refptr<ComputedStyle> ComputedStyle::CreateInitialStyleSingleton() {
   return base::MakeRefCounted<ComputedStyle>(PassKey());
 }
 
+Vector<AtomicString>* ComputedStyle::GetVariableNamesCache() const {
+  if (cached_data_)
+    return cached_data_->variable_names_.get();
+  return nullptr;
+}
+
+Vector<AtomicString>& ComputedStyle::EnsureVariableNamesCache() const {
+  if (!cached_data_ || !cached_data_->variable_names_) {
+    EnsureCachedData().variable_names_ =
+        std::make_unique<Vector<AtomicString>>();
+  }
+  return *cached_data_->variable_names_;
+}
+
+void ComputedStyle::ClearVariableNamesCache() const {
+  if (cached_data_)
+    cached_data_->variable_names_.reset();
+}
+
 scoped_refptr<ComputedStyle> ComputedStyle::Clone(const ComputedStyle& other) {
   return base::AdoptRef(new ComputedStyle(PassKey(), other));
 }
@@ -1777,7 +1796,18 @@ bool ComputedStyle::HasVariables() const {
          HasInitialVariables(InitialDataInternal().get());
 }
 
-HashSet<AtomicString> ComputedStyle::GetVariableNames() const {
+size_t ComputedStyle::GetVariableNamesCount() const {
+  if (!HasVariables())
+    return 0;
+  return GetVariableNames().size();
+}
+
+const Vector<AtomicString>& ComputedStyle::GetVariableNames() const {
+  if (auto* cache = GetVariableNamesCache())
+    return *cache;
+
+  Vector<AtomicString>& cache = EnsureVariableNamesCache();
+
   HashSet<AtomicString> names;
   if (auto* initial_data = InitialDataInternal().get())
     initial_data->CollectVariableNames(names);
@@ -1785,18 +1815,22 @@ HashSet<AtomicString> ComputedStyle::GetVariableNames() const {
     inherited_variables->CollectNames(names);
   if (auto* non_inherited_variables = NonInheritedVariables())
     non_inherited_variables->CollectNames(names);
-  return names;
+  CopyToVector(names, cache);
+
+  return cache;
 }
 
-StyleInheritedVariables* ComputedStyle::InheritedVariables() const {
+const StyleInheritedVariables* ComputedStyle::InheritedVariables() const {
   return InheritedVariablesInternal().get();
 }
 
-StyleNonInheritedVariables* ComputedStyle::NonInheritedVariables() const {
+const StyleNonInheritedVariables* ComputedStyle::NonInheritedVariables() const {
   return NonInheritedVariablesInternal().get();
 }
 
 StyleInheritedVariables& ComputedStyle::MutableInheritedVariables() {
+  ClearVariableNamesCache();
+
   scoped_refptr<StyleInheritedVariables>& variables =
       MutableInheritedVariablesInternal();
   if (!variables)
@@ -1807,6 +1841,8 @@ StyleInheritedVariables& ComputedStyle::MutableInheritedVariables() {
 }
 
 StyleNonInheritedVariables& ComputedStyle::MutableNonInheritedVariables() {
+  ClearVariableNamesCache();
+
   std::unique_ptr<StyleNonInheritedVariables>& variables =
       MutableNonInheritedVariablesInternal();
   if (!variables)
@@ -1815,6 +1851,8 @@ StyleNonInheritedVariables& ComputedStyle::MutableNonInheritedVariables() {
 }
 
 void ComputedStyle::SetInitialData(scoped_refptr<StyleInitialData> data) {
+  ClearVariableNamesCache();
+
   MutableInitialDataInternal() = std::move(data);
 }
 

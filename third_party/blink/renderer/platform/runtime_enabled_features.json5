@@ -511,6 +511,12 @@
       status: "experimental"
     },
     {
+      // Include custom properties in CSSComputedStyleDeclaration::item/length.
+      // https://crbug.com/949807
+      name: "CSSEnumeratedCustomProperties",
+      status: "test",
+    },
+    {
       name: "CSSFocusVisible",
       status: "stable",
     },
