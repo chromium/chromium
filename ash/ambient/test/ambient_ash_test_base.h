@@ -13,6 +13,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/test/test_ambient_client.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
+#include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/test/ash_test_base.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/view.h"
@@ -177,6 +178,7 @@ class AmbientAshTestBase : public AshTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   power_manager::PowerSupplyProperties proto_;
+  TestImageDownloader image_downloader_;
 };
 
 }  // namespace ash

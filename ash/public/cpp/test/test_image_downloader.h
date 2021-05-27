@@ -15,10 +15,15 @@ class ASH_PUBLIC_EXPORT TestImageDownloader : public ImageDownloader {
   TestImageDownloader();
   ~TestImageDownloader() override;
 
+  void set_should_fail(bool should_fail) { should_fail_ = should_fail; }
+
   // ImageDownloader:
   void Download(const GURL& url,
                 const net::NetworkTrafficAnnotationTag& annotation_tag,
                 DownloadCallback callback) override;
+
+ private:
+  bool should_fail_ = false;
 };
 
 }  // namespace ash

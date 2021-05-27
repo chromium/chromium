@@ -14,6 +14,7 @@
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/cpp/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper_types.h"
@@ -44,6 +45,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time_override.h"
+#include "base/util/timer/wall_clock_timer.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -299,6 +301,13 @@ WallpaperInfo InfoWithType(WallpaperType type) {
                        base::Time::Now().LocalMidnight());
 }
 
+base::Time DayBeforeYesterdayish() {
+  base::TimeDelta today_delta =
+      base::Time::Now().LocalMidnight().ToDeltaSinceWindowsEpoch();
+  base::TimeDelta yesterday_delta = today_delta - base::TimeDelta::FromDays(2);
+  return base::Time::FromDeltaSinceWindowsEpoch(yesterday_delta);
+}
+
 // A test implementation of the WallpaperControllerObserver interface.
 class TestWallpaperControllerObserver : public WallpaperControllerObserver {
  public:
@@ -367,6 +376,16 @@ class WallpaperControllerTest : public AshTestBase {
     base::FilePath policy_wallpaper;
     controller_->Init(user_data_dir_.GetPath(), online_wallpaper_dir_.GetPath(),
                       custom_wallpaper_dir_.GetPath(), policy_wallpaper);
+  }
+
+  void TearDown() override {
+    // Although pref services outlive wallpaper controller in the os, in ash
+    // tests, they are destroyed in tear down (See |AshTestHelper|). We don't
+    // want this timer to run a task after tear down, since it relies on a pref
+    // service being around.
+    controller_->GetDailyRefreshTimerForTesting().Stop();
+
+    AshTestBase::TearDown();
   }
 
   WallpaperView* wallpaper_view() {
@@ -1125,6 +1144,8 @@ TEST_F(WallpaperControllerTest,
 
 TEST_F(WallpaperControllerTest, SetOnlineWallpaper) {
   SetBypassDecode();
+  TestImageDownloader image_downloader;
+
   gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
   WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER_CROPPED;
   SimulateUserLogin(kUser1);
@@ -3010,6 +3031,8 @@ TEST_F(WallpaperControllerTest,
   TestWallpaperControllerClient client;
   controller_->SetClient(&client);
 
+  SetBypassDecode();
+
   PutWallpaperInfoInPrefs(account_id_1, InfoWithType(CUSTOMIZED),
                           GetLocalPrefService(), prefs::kUserWallpaperInfo);
 
@@ -3195,6 +3218,164 @@ TEST_F(WallpaperControllerTest, SetDailyRefreshCollectionIdNullCollectionId) {
   PrefService* pref_service = GetProfilePrefService(account_id_1);
   std::string actual = pref_service->GetString(kWallpaperCollectionId);
   EXPECT_EQ("", actual);
+}
+
+TEST_F(WallpaperControllerTest, UpdateDailyRefreshWallpaper) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  std::string expected{"fun_collection"};
+  SimulateUserLogin(kUser1);
+
+  controller_->SetDailyRefreshCollectionId(expected);
+  controller_->SetUserWallpaperInfo(
+      account_id_1, WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER, DAILY,
+                                  DayBeforeYesterdayish()));
+
+  controller_->UpdateDailyRefreshWallpaperForTesting();
+  EXPECT_EQ(expected, client.get_fetch_daily_refresh_wallpaper_param());
+}
+
+TEST_F(WallpaperControllerTest, UpdateDailyRefreshWallpaperCalledOnLogin) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  TestImageDownloader image_downloader;
+
+  std::string expected{"fun_collection"};
+  SimulateUserLogin(kUser1);
+
+  controller_->SetDailyRefreshCollectionId(expected);
+  controller_->SetUserWallpaperInfo(
+      account_id_1, WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER, DAILY,
+                                  DayBeforeYesterdayish()));
+
+  ClearLogin();
+  SimulateUserLogin(kUser1);
+
+  // |daily_refresh_timer_| adds a task to the sequence, as opposed to execute
+  // within the task that it is called in.
+  RunAllTasksUntilIdle();
+
+  EXPECT_EQ(expected, client.get_fetch_daily_refresh_wallpaper_param());
+}
+
+TEST_F(WallpaperControllerTest, UpdateDailyRefreshWallpaper_NotEnabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  SimulateUserLogin(kUser1);
+  controller_->SetUserWallpaperInfo(
+      account_id_1, WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER, DAILY,
+                                  DayBeforeYesterdayish()));
+
+  controller_->UpdateDailyRefreshWallpaperForTesting();
+  EXPECT_EQ(std::string(), client.get_fetch_daily_refresh_wallpaper_param());
+}
+
+TEST_F(WallpaperControllerTest,
+       UpdateDailyRefreshWallpaper_TimerStartsOnPrefServiceChange) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  using base::Time;
+  using base::TimeDelta;
+
+  SimulateUserLogin(kUser1);
+  controller_->SetDailyRefreshCollectionId("fun_collection");
+  controller_->SetUserWallpaperInfo(
+      account_id_1, WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER, DAILY,
+                                  base::Time::Now().LocalMidnight()));
+
+  controller_->OnActiveUserPrefServiceChanged(
+      GetProfilePrefService(account_id_1));
+
+  Time run_time =
+      controller_->GetDailyRefreshTimerForTesting().desired_run_time();
+  TimeDelta delta = run_time.ToDeltaSinceWindowsEpoch();
+
+  TimeDelta update_time =
+      Time::Now().LocalMidnight().ToDeltaSinceWindowsEpoch() +
+      TimeDelta::FromDays(1);
+
+  ASSERT_GE(delta, update_time - TimeDelta::FromMinutes(1));
+  ASSERT_LE(delta,
+            update_time + TimeDelta::FromHours(1) + TimeDelta::FromMinutes(1));
+}
+
+TEST_F(WallpaperControllerTest,
+       UpdateDailyRefreshWallpaper_RetryTimerTriggersOnFailedFetchInfo) {
+  using base::Time;
+  using base::TimeDelta;
+
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+  client.set_fetch_daily_refresh_info_fails(true);
+
+  SimulateUserLogin(kUser1);
+  controller_->SetDailyRefreshCollectionId("fun_collection");
+  controller_->SetUserWallpaperInfo(
+      account_id_1, WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER, DAILY,
+                                  DayBeforeYesterdayish()));
+
+  controller_->UpdateDailyRefreshWallpaperForTesting();
+  Time run_time =
+      controller_->GetDailyRefreshTimerForTesting().desired_run_time();
+  TimeDelta delay = run_time - Time::Now();
+
+  TimeDelta one_hour = TimeDelta::FromHours(1);
+  // Lave a little wiggle room.
+  ASSERT_GE(delay, one_hour - TimeDelta::FromMinutes(1));
+  ASSERT_LE(delay, one_hour + TimeDelta::FromMinutes(1));
+}
+
+TEST_F(WallpaperControllerTest,
+       UpdateDailyRefreshWallpaper_RetryTimerTriggersOnFailedFetchData) {
+  using base::Time;
+  using base::TimeDelta;
+
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  SimulateUserLogin(kUser1);
+  controller_->SetDailyRefreshCollectionId("fun_collection");
+  controller_->SetUserWallpaperInfo(
+      account_id_1, WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER, DAILY,
+                                  DayBeforeYesterdayish()));
+
+  TestImageDownloader image_downloader;
+  image_downloader.set_should_fail(true);
+
+  controller_->UpdateDailyRefreshWallpaperForTesting();
+
+  RunAllTasksUntilIdle();
+
+  Time run_time =
+      controller_->GetDailyRefreshTimerForTesting().desired_run_time();
+  TimeDelta delay = run_time - Time::Now();
+
+  TimeDelta one_hour = TimeDelta::FromHours(1);
+  // Lave a little wiggle room.
+  ASSERT_GE(delay, one_hour - TimeDelta::FromMinutes(1));
+  ASSERT_LE(delay, one_hour + TimeDelta::FromMinutes(1));
 }
 
 }  // namespace ash

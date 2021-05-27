@@ -23,8 +23,10 @@ void TestImageDownloader::Download(
   // Pretend to respond asynchronously.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), gfx::test::CreateImageSkia(
-                                              /*width=*/10, /*height=*/20)));
+      base::BindOnce(std::move(callback),
+                     should_fail_ ? gfx::ImageSkia()
+                                  : gfx::test::CreateImageSkia(
+                                        /*width=*/10, /*height=*/20)));
 }
 
 }  // namespace ash

@@ -21,6 +21,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper.pb.h"
 #include "chrome/browser/ash/customization/customization_wallpaper_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -48,6 +49,7 @@
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
+using backdrop_wallpaper_handlers::SurpriseMeImageFetcher;
 using extension_misc::kWallpaperManagerId;
 
 namespace {
@@ -636,6 +638,16 @@ void WallpaperControllerClientImpl::MigrateCollectionIdFromChromeApp() {
           storage_weak_factory_.GetWeakPtr(), task_runner));
 }
 
+void WallpaperControllerClientImpl::FetchDailyRefreshWallpaper(
+    const std::string& collection_id,
+    DailyWallpaperUrlFetchedCallback callback) {
+  surprise_me_image_fetcher_ = std::make_unique<SurpriseMeImageFetcher>(
+      collection_id, /*resume_token=*/std::string());
+  surprise_me_image_fetcher_->Start(
+      base::BindOnce(&WallpaperControllerClientImpl::OnDailyImageInfoFetched,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 bool WallpaperControllerClientImpl::ShouldShowUserNamesOnLogin() const {
   bool show_user_names = true;
   ash::CrosSettings::Get()->GetBoolean(
@@ -665,4 +677,17 @@ void WallpaperControllerClientImpl::OnGetWallpaperChromeAppValueStore(
 void WallpaperControllerClientImpl::SetDailyRefreshCollectionId(
     const std::string& collection_id) {
   wallpaper_controller_->SetDailyRefreshCollectionId(collection_id);
+}
+
+void WallpaperControllerClientImpl::OnDailyImageInfoFetched(
+    DailyWallpaperUrlFetchedCallback callback,
+    bool success,
+    const backdrop::Image& image,
+    const std::string& next_resume_token) {
+  if (success) {
+    std::move(callback).Run(image.image_url());
+  } else {
+    std::move(callback).Run(std::string());
+  }
+  surprise_me_image_fetcher_.reset();
 }

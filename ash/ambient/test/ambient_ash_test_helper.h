@@ -11,7 +11,6 @@
 
 namespace ash {
 
-class TestImageDownloader;
 class TestAmbientClient;
 
 // The helper class to test the Ambient Mode in Ash.
@@ -31,7 +30,6 @@ class AmbientAshTestHelper {
   }
 
  private:
-  std::unique_ptr<TestImageDownloader> image_downloader_;
   device::TestWakeLockProvider wake_lock_provider_;
   std::unique_ptr<TestAmbientClient> ambient_client_;
 };
