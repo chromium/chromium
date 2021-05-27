@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"

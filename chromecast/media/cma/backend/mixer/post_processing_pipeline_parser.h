@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/values.h"

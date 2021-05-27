@@ -8,7 +8,6 @@
 #include <deque>
 #include <map>
 
-#include "base/containers/flat_set.h"
 #include "base/containers/linked_list.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_capture_driver.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_readiness_tracker.h"

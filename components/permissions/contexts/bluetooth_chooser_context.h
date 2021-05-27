@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/flat_set.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"

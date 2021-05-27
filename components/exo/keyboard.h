@@ -10,7 +10,6 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/observer_list.h"
 #include "components/exo/key_state.h"
 #include "components/exo/keyboard_observer.h"

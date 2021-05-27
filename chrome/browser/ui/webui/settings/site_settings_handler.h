@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/containers/flat_set.h"
 #include "base/scoped_multi_source_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"

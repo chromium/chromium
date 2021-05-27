@@ -6,7 +6,6 @@
 #define COMPONENTS_UI_DEVTOOLS_VIZ_DOM_AGENT_VIZ_H_
 
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "components/ui_devtools/DOM.h"
 #include "components/ui_devtools/dom_agent.h"
 #include "components/viz/service/frame_sinks/frame_sink_observer.h"

@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"

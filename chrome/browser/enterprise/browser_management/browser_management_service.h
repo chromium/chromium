@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_BROWSER_MANAGEMENT_BROWSER_MANAGEMENT_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_BROWSER_MANAGEMENT_BROWSER_MANAGEMENT_SERVICE_H_
 
-#include "base/containers/flat_set.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/policy_export.h"
 

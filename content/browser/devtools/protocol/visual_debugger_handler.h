@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_VISUAL_DEBUGGER_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_VISUAL_DEBUGGER_HANDLER_H_
 
-#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/devtools/protocol/browser.h"

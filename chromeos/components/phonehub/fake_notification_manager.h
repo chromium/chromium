@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "chromeos/components/phonehub/notification.h"
 #include "chromeos/components/phonehub/notification_manager.h"
 

@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/containers/flat_set.h"
 #include "base/numerics/clamped_math.h"
 #include "net/base/network_change_notifier.h"
 #include "net/quic/quic_chromium_client_session.h"

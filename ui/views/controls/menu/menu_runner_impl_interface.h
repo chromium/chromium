@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback_forward.h"
-#include "base/containers/flat_set.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace views {

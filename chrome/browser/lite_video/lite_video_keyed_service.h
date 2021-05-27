@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_KEYED_SERVICE_H_
 #define CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_KEYED_SERVICE_H_
 
-#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/lite_video/lite_video_decider.h"

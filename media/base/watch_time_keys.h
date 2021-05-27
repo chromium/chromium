@@ -5,7 +5,6 @@
 #ifndef MEDIA_BASE_WATCH_TIME_KEYS_H_
 #define MEDIA_BASE_WATCH_TIME_KEYS_H_
 
-#include "base/containers/flat_set.h"
 #include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
 

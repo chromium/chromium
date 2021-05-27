@@ -19,7 +19,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

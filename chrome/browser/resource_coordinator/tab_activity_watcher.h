@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "chrome/browser/resource_coordinator/tab_ranker/tab_score_predictor.h"
 #include "chrome/browser/ui/browser_list_observer.h"

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_MANAGEMENT_PLATFORM_MANAGEMENT_STATUS_PROVIDER_WIN_H_
 #define COMPONENTS_POLICY_CORE_COMMON_MANAGEMENT_PLATFORM_MANAGEMENT_STATUS_PROVIDER_WIN_H_
 
-#include "base/containers/flat_set.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/policy_export.h"

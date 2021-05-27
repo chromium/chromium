@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/observer_list_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_chooser.h"

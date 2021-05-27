@@ -7,7 +7,6 @@
 
 #include <GLES2/gl2.h>
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 
 namespace gpu {

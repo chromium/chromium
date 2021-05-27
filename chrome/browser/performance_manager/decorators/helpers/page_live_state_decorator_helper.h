@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_HELPERS_PAGE_LIVE_STATE_DECORATOR_HELPER_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_HELPERS_PAGE_LIVE_STATE_DECORATOR_HELPER_H_
 
-#include "base/containers/flat_set.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "components/performance_manager/public/performance_manager_main_thread_observer.h"
