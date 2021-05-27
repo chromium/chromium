@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<body>
+<script>
+const SCOPE = './';
+const WORKER_URL = './postmessage-to-client-worker.js';
+
+// This page tests behavior of a service worker before activation, so it should
+// never be activated.
+document.onprerenderingchange = () => assert_not_reached();
+
+async function unregisterServiceWorker(scope) {
+  const registration = await navigator.serviceWorker.getRegistration(scope);
+  if (!registration)
+    return;
+  return registration.unregister();
+}
+
+async function registerServiceWorker() {
+  assert_true(document.prerendering);
+
+  await unregisterServiceWorker(SCOPE);
+  const registration =
+      await navigator.serviceWorker.register(WORKER_URL, {scope: SCOPE});
+
+  const message = await new Promise(resolve => {
+    navigator.serviceWorker.onmessage = resolve;
+    get_newest_worker(registration).postMessage('invoke onmessage handler');
+  });
+  await registration.unregister();
+
+  const bc = new BroadcastChannel('prerender-channel');
+  bc.postMessage(message.data);
+  bc.close();
+}
+
+registerServiceWorker();
+</script>
+</body>
