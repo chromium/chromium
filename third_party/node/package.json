@@ -8,8 +8,10 @@
     "eslint": "7.11.0",
     "polymer-bundler": "4.0.10",
     "polymer-css-build": "0.7.0",
-    "terser": "5.3.3",
+    "source-map": "0.7.3",
     "svgo": "1.2.0",
-    "typescript": "4.2.3"
+    "terser": "5.3.3",
+    "typescript": "4.2.3",
+    "v8-to-istanbul": "7.1.2"
   }
 }

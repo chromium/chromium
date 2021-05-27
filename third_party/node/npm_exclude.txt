@@ -20,3 +20,8 @@ powered-test/es6-destructuring-assignments.js
 *.map
 typescript/lib/*
 typescript/loc/*
+*.markdown
+*.flow
+lcov.info
+travis-gh-pages
+*/lcov-report/*
