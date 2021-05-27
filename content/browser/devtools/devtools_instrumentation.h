@@ -194,7 +194,7 @@ void PortalActivated(RenderFrameHostImpl* render_frame_host_impl);
 
 void ReportSameSiteCookieIssue(
     RenderFrameHostImpl* render_frame_host_impl,
-    const net::CookieWithAccessResult& excluded_cookie,
+    const network::mojom::CookieOrLineWithAccessResultPtr& excluded_cookie,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     blink::mojom::SameSiteCookieOperation operation,

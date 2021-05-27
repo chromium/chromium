@@ -1,0 +1,35 @@
+Verifies that Set-Cookie lines with invalid SameParty attribute usage file an issue.
+
+Issue reported: {
+    code : SameSiteCookieIssue
+    details : {
+        sameSiteCookieIssueDetails : {
+            cookieExclusionReasons : [
+                [0] : ExcludeInvalidSameParty
+            ]
+            cookieUrl : https://cookie.test:8443/inspector-protocol/network/resources/set-cookie.php?cookie=name%3Dvalue%3B%20SameSite%3DStrict%3B%20SameParty%3B%20Secure
+            cookieWarningReasons : [
+            ]
+            operation : SetCookie
+            rawCookieLine : name=value; SameSite=Strict; SameParty; Secure
+            siteForCookies : https://cookie.test/
+        }
+    }
+}
+Issue reported: {
+    code : SameSiteCookieIssue
+    details : {
+        sameSiteCookieIssueDetails : {
+            cookieExclusionReasons : [
+                [0] : ExcludeInvalidSameParty
+            ]
+            cookieUrl : https://cookie.test:8443/inspector-protocol/network/resources/set-cookie.php?cookie=name%3Dvalue%3B%20SameParty
+            cookieWarningReasons : [
+            ]
+            operation : SetCookie
+            rawCookieLine : name=value; SameParty
+            siteForCookies : https://cookie.test/
+        }
+    }
+}
+

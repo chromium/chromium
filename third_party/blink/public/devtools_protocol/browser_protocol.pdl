@@ -509,6 +509,7 @@ experimental domain Audits
       ExcludeSameSiteNoneInsecure
       ExcludeSameSiteLax
       ExcludeSameSiteStrict
+      ExcludeInvalidSameParty
 
   type SameSiteCookieWarningReason extends string
     enum
@@ -531,7 +532,12 @@ experimental domain Audits
   # information without the cookie.
   type SameSiteCookieIssueDetails extends object
     properties
-      AffectedCookie cookie
+      # If AffectedCookie is not set then rawCookieLine contains the raw
+      # Set-Cookie header string. This hints at a problem where the
+      # cookie line is syntactically or semantically malformed in a way
+      # that no valid cookie could be created.
+      optional AffectedCookie cookie
+      optional string rawCookieLine
       array of SameSiteCookieWarningReason cookieWarningReasons
       array of SameSiteCookieExclusionReason cookieExclusionReasons
       # Optionally identifies the site-for-cookies and the cookie url, which

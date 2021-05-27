@@ -811,6 +811,12 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildExclusionReasons(
         protocol::Audits::SameSiteCookieExclusionReasonEnum::
             ExcludeSameSiteStrict);
   }
+  if (status.HasExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY)) {
+    exclusion_reasons->push_back(
+        protocol::Audits::SameSiteCookieExclusionReasonEnum::
+            ExcludeInvalidSameParty);
+  }
 
   return exclusion_reasons;
 }
@@ -887,7 +893,7 @@ protocol::String BuildCookieOperation(
 
 void ReportSameSiteCookieIssue(
     RenderFrameHostImpl* render_frame_host_impl,
-    const net::CookieWithAccessResult& excluded_cookie,
+    const network::mojom::CookieOrLineWithAccessResultPtr& excluded_cookie,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     blink::mojom::SameSiteCookieOperation operation,
@@ -902,23 +908,30 @@ void ReportSameSiteCookieIssue(
                            .Build();
   }
 
-  auto affected_cookie = protocol::Audits::AffectedCookie::Create()
-                             .SetName(excluded_cookie.cookie.Name())
-                             .SetPath(excluded_cookie.cookie.Path())
-                             .SetDomain(excluded_cookie.cookie.Domain())
-                             .Build();
-
   auto same_site_details =
       protocol::Audits::SameSiteCookieIssueDetails::Create()
-          .SetCookie(std::move(affected_cookie))
           .SetCookieExclusionReasons(
-              BuildExclusionReasons(excluded_cookie.access_result.status))
+              BuildExclusionReasons(excluded_cookie->access_result.status))
           .SetCookieWarningReasons(
-              BuildWarningReasons(excluded_cookie.access_result.status))
+              BuildWarningReasons(excluded_cookie->access_result.status))
           .SetOperation(BuildCookieOperation(operation))
           .SetCookieUrl(url.spec())
           .SetRequest(std::move(affected_request))
           .Build();
+
+  if (excluded_cookie->cookie_or_line->is_cookie()) {
+    const auto& cookie = excluded_cookie->cookie_or_line->get_cookie();
+    auto affected_cookie = protocol::Audits::AffectedCookie::Create()
+                               .SetName(cookie.Name())
+                               .SetPath(cookie.Path())
+                               .SetDomain(cookie.Domain())
+                               .Build();
+    same_site_details->SetCookie(std::move(affected_cookie));
+  } else {
+    CHECK(excluded_cookie->cookie_or_line->is_cookie_string());
+    same_site_details->SetRawCookieLine(
+        excluded_cookie->cookie_or_line->get_cookie_string());
+  }
 
   if (!site_for_cookies.IsNull()) {
     same_site_details->SetSiteForCookies(
