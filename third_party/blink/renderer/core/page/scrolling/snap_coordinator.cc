@@ -231,7 +231,14 @@ void SnapCoordinator::ResnapAllContainersIfNeeded() {
 }
 
 void SnapCoordinator::UpdateAllSnapContainerDataIfNeeded() {
-  for (auto* container : snap_containers_) {
+  std::vector<LayoutBox*> container_vector;
+  for (LayoutBox* container : snap_containers_) {
+    container_vector.push_back(container);
+  }
+  std::sort(container_vector.begin(), container_vector.end(),
+            recordreplay::CompareByPointerId());
+
+  for (auto* container : container_vector) {
     if (container->GetScrollableArea()->SnapContainerDataNeedsUpdate())
       UpdateSnapContainerData(*container);
   }
