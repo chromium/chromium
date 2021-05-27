@@ -40,6 +40,8 @@ public final class SharingNotificationUtil {
      * @param id The notification id.
      * @param contentIntent The notification content intent.
      * @param deleteIntent The notification delete intent.
+     * @param confirmIntent The notification confirm intent.
+     * @param cancelIntent The notification cancel intent.
      * @param contentTitle The notification title text.
      * @param contentText The notification content text.
      * @param largeIconId The large notification icon resource id, 0 if not used.
@@ -48,6 +50,7 @@ public final class SharingNotificationUtil {
      */
     public static void showNotification(@SystemNotificationType int type, String group, int id,
             PendingIntentProvider contentIntent, PendingIntentProvider deleteIntent,
+            PendingIntentProvider confirmIntent, PendingIntentProvider cancelIntent,
             String contentTitle, String contentText, @DrawableRes int smallIconId,
             @DrawableRes int largeIconId, int color, boolean startsActivity) {
         Context context = ContextUtils.getApplicationContext();
@@ -67,16 +70,25 @@ public final class SharingNotificationUtil {
                         .setAutoCancel(true)
                         .setDefaults(Notification.DEFAULT_ALL);
 
-        if (startsActivity && BuildInfo.isAtLeastS()) {
-            // We can't use the NotificationIntentInterceptor to start Activities starting in
-            // Android S. Use the unmodified PendingIntent directly instead.
-            builder.setContentIntent(contentIntent.getPendingIntent());
-        } else {
-            builder.setContentIntent(contentIntent);
+        if (contentIntent != null) {
+            if (startsActivity && BuildInfo.isAtLeastS()) {
+                // We can't use the NotificationIntentInterceptor to start Activities starting in
+                // Android S. Use the unmodified PendingIntent directly instead.
+                builder.setContentIntent(contentIntent.getPendingIntent());
+            } else {
+                builder.setContentIntent(contentIntent);
+            }
         }
-
         if (deleteIntent != null) {
             builder.setDeleteIntent(deleteIntent);
+        }
+        if (confirmIntent != null) {
+            builder.addAction(R.drawable.ic_checkmark_24dp, resources.getString(R.string.ok),
+                    confirmIntent, NotificationUmaTracker.ActionType.SHARING_CONFIRM);
+        }
+        if (cancelIntent != null) {
+            builder.addAction(R.drawable.ic_cancel_circle, resources.getString(R.string.cancel),
+                    cancelIntent, NotificationUmaTracker.ActionType.SHARING_CANCEL);
         }
 
         if (largeIconId != 0) {

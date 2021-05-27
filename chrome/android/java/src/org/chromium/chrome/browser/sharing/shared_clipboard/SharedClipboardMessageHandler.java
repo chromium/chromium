@@ -212,8 +212,8 @@ public class SharedClipboardMessageHandler {
                 NotificationUmaTracker.SystemNotificationType.SHARED_CLIPBOARD,
                 NotificationConstants.GROUP_SHARED_CLIPBOARD,
                 NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_INCOMING, contentIntent,
-                /*deleteIntent=*/null, notificationTitle,
-                resources.getString(R.string.shared_clipboard_notification_text),
+                /*deleteIntent=*/null, /*confirmIntent=*/null, /*cancelIntent=*/null,
+                notificationTitle, resources.getString(R.string.shared_clipboard_notification_text),
                 R.drawable.ic_devices_16dp, R.drawable.shared_clipboard_40dp,
                 R.color.default_icon_color_blue, /*startsActivity=*/false);
     }

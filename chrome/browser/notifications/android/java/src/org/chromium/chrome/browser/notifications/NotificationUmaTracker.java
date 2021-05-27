@@ -161,7 +161,12 @@ public class NotificationUmaTracker {
         int PRICE_DROP_VISIT_SITE = 24;
         int PRICE_DROP_TURN_OFF_ALERT = 25;
 
-        int NUM_ENTRIES = 26;
+        // Confirm button on sharing notification.
+        int SHARING_CONFIRM = 26;
+        // Cancel button on sharing notification.
+        int SHARING_CANCEL = 27;
+
+        int NUM_ENTRIES = 28;
     }
 
     private static class LazyHolder {
