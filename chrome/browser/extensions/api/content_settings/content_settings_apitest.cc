@@ -224,7 +224,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
 
-class ExtensionContentSettingsApiLazyTest
+class ExtensionContentSettingsApiTestWithContextType
     : public ExtensionContentSettingsApiTest,
       public testing::WithParamInterface<ContextType> {
  protected:
@@ -235,17 +235,18 @@ class ExtensionContentSettingsApiLazyTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(EventPage,
-                         ExtensionContentSettingsApiLazyTest,
-                         ::testing::Values(ContextType::kEventPage));
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionContentSettingsApiTestWithContextType,
+                         ::testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionContentSettingsApiLazyTest,
+                         ExtensionContentSettingsApiTestWithContextType,
                          ::testing::Values(ContextType::kServiceWorker));
 
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, Standard) {
+IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithContextType,
+                       Standard) {
   CheckContentSettingsDefault();
 
-  const char kExtensionPath[] = "content_settings/standard";
+  static constexpr char kExtensionPath[] = "content_settings/standard";
 
   EXPECT_TRUE(RunExtensionTest(kExtensionPath, {.page_url = "test.html"}))
       << message_;
@@ -267,7 +268,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, Standard) {
   CheckContentSettingsDefault();
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest,
+IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithContextType,
                        UnsupportedDefaultSettings) {
   const char kExtensionPath[] = "content_settings/unsupporteddefaultsettings";
   EXPECT_TRUE(RunExtensionTest(kExtensionPath)) << message_;
@@ -275,7 +276,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest,
 
 // Tests if an extension clearing content settings for one content type leaves
 // the others unchanged.
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest,
+IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithContextType,
                        ClearProperlyGranular) {
   const char kExtensionPath[] = "content_settings/clearproperlygranular";
   EXPECT_TRUE(RunLazyTest(kExtensionPath)) << message_;
@@ -323,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContentSettingsApiTest,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest,
+IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithContextType,
                        EmbeddedSettingsMetric) {
   base::HistogramTester histogram_tester;
   const char kExtensionPath[] = "content_settings/embeddedsettingsmetric";
@@ -352,7 +353,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest,
       "ContentSettings.ExtensionNonEmbeddedSettingSet", 2);
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, ConsoleErrorTest) {
+IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithContextType,
+                       ConsoleErrorTest) {
   constexpr char kExtensionPath[] = "content_settings/disablepluginsapi";
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII(kExtensionPath));

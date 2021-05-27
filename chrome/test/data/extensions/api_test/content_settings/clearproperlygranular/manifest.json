@@ -5,7 +5,7 @@
   "description" : "Sets and checks content settings, ensuring clear works properly.",
   "background": {
     "scripts": ["test.js"],
-    "persistent": false
+    "persistent": true
   },
   "permissions": [ "contentSettings" ]
 }
