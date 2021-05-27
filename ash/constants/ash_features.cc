@@ -573,10 +573,6 @@ const base::Feature kPluginVmShowCameraPermissions{
 const base::Feature kPluginVmShowMicrophonePermissions{
     "PluginVmShowMicrophonePermissions", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to show printer statuses.
-const base::Feature kPrinterStatus{"PrinterStatus",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to show printer statuses on the Print Preview destination
 // dialog.
 const base::Feature kPrinterStatusDialog{"PrinterStatusDialog",

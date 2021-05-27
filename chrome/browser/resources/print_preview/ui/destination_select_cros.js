@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/js/util.m.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -18,12 +17,10 @@ import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Base, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudOrigins, Destination, DestinationOrigin, PDF_DESTINATION_KEY, RecentDestination, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
-import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
 import {SelectBehavior} from './select_behavior.js';
 
@@ -73,26 +70,10 @@ Polymer({
     },
 
     /** @private {string} */
-    backgroundImages_: {
-      type: String,
-      computed:
-          'computeBackgroundImages_(destinationIcon_, dark, noDestinations)',
-    },
-
-    /** @private {string} */
     destinationIcon_: {
       type: String,
       computed:
           'computeDestinationIcon_(selectedValue, destination, destination.printerStatusReason)',
-    },
-
-    /** @private */
-    printerStatusFlagEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('showPrinterStatus');
-      },
-      readOnly: true,
     },
 
     /** @private */
@@ -103,17 +84,8 @@ Polymer({
     },
   },
 
-  /** @private {!IronMetaElement} */
-  meta_: /** @type {!IronMetaElement} */ (
-      Base.create('iron-meta', {type: 'iconset'})),
-
   focus() {
-    if (this.printerStatusFlagEnabled_) {
-      this.$$('#dropdown').$$('#destination-dropdown').focus();
-      return;
-    }
-
-    this.$$('.md-select').focus();
+    this.$$('#dropdown').$$('#destination-dropdown').focus();
   },
 
   /** Sets the select to the current value of |destination|. */
@@ -136,8 +108,7 @@ Polymer({
     // If the destination matches the selected value, pull the icon from the
     // destination.
     if (this.destination && this.destination.key === this.selectedValue) {
-      if (this.printerStatusFlagEnabled_ &&
-          this.isCurrentDestinationCrosLocal_) {
+      if (this.isCurrentDestinationCrosLocal_) {
         return getPrinterStatusIcon(
             this.destination.printerStatusReason,
             this.destination.isEnterprisePrinter);
@@ -174,26 +145,6 @@ Polymer({
     return 'print-preview:print';
   },
 
-  /**
-   * @return {string} An inline svg corresponding to the icon for the current
-   *     destination and the image for the dropdown arrow.
-   * @private
-   */
-  computeBackgroundImages_() {
-    if (!this.destinationIcon_) {
-      return '';
-    }
-
-    let iconSetAndIcon = null;
-    if (this.noDestinations) {
-      iconSetAndIcon = ['cr', 'error'];
-    }
-    iconSetAndIcon = iconSetAndIcon || this.destinationIcon_.split(':');
-    const iconset = /** @type {!IronIconsetSvgElement} */ (
-        this.meta_.byKey(iconSetAndIcon[0]));
-    return getSelectDropdownBackground(iconset, iconSetAndIcon[1], this);
-  },
-
   onProcessSelectChange(value) {
     this.fire('selected-option-change', value);
   },
@@ -203,8 +154,6 @@ Polymer({
    * @private
    */
   onDropdownValueSelected_(e) {
-    assert(this.printerStatusFlagEnabled_);
-
     const selectedItem = e.detail;
     if (!selectedItem || selectedItem.value === this.destination.key) {
       return;
@@ -218,10 +167,6 @@ Polymer({
    * @private
    */
   onRecentDestinationListChanged_() {
-    if (!this.printerStatusFlagEnabled_) {
-      return;
-    }
-
     for (const destination of this.recentDestinationList) {
       if (!destination || destination.origin !== DestinationOrigin.CROS) {
         continue;
@@ -239,8 +184,6 @@ Polymer({
    * @private
    */
   onPrinterStatusReceived_(destinationKey) {
-    assert(this.printerStatusFlagEnabled_);
-
     const indexFound = this.recentDestinationList.findIndex(destination => {
       return destination.key === destinationKey;
     });
@@ -281,10 +224,8 @@ Polymer({
       }
     }
 
-    // Only when the flag is enabled do we need to fetch a local printer status
-    // error string.
-    if (this.destination.origin !== DestinationOrigin.CROS ||
-        !this.printerStatusFlagEnabled_) {
+    // Non-local printers do not show an error status.
+    if (this.destination.origin !== DestinationOrigin.CROS) {
       return '';
     }
 
@@ -328,9 +269,7 @@ Polymer({
    * @return {!Array<!Element>}
    */
   getVisibleItemsForTest: function() {
-    return this.printerStatusFlagEnabled_ ?
-        this.$$('#dropdown')
-            .shadowRoot.querySelectorAll('.list-item:not([hidden])') :
-        this.shadowRoot.querySelectorAll('option:not([hidden])');
+    return this.$$('#dropdown')
+        .shadowRoot.querySelectorAll('.list-item:not([hidden])');
   },
 });

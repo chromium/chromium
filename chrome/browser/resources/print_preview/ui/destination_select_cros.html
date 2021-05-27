@@ -1,4 +1,4 @@
-<style include="print-preview-shared throbber md-select destination-select cr-hidden-style">
+<style include="print-preview-shared throbber destination-select cr-hidden-style">
   :host([is-current-destination-cros-local_]) #statusText {
     color: var(--google-red-600);
     font-size: calc(10 / 13 * 1em);
@@ -14,45 +14,17 @@
     <div class="throbber-container" hidden$="[[loaded]]">
       <div class="throbber"></div>
     </div>
-    <template is="dom-if" if="[[!printerStatusFlagEnabled_]]">
-      <select id="dropdown" class="md-select"
-          aria-label="$i18n{destinationLabel}" hidden$="[[!loaded]]"
-          style="background-image:[[backgroundImages_]];"
-          disabled$="[[disabled]]"
-          value="{{selectedValue::change}}">
-        <template is="dom-repeat" items="[[recentDestinationList]]">
-          <option value="[[item.key]]">[[item.displayName]]</option>
-        </template>
-        <option value="[[pdfDestinationKey_]]" hidden$="[[pdfPrinterDisabled]]">
-          $i18n{printToPDF}
-        </option>
-        <option value="[[driveDestinationKey]]"
-            hidden$="[[!driveDestinationKey]]">
-          $i18n{printToGoogleDrive}
-        </option>
-        <option value="noDestinations"
-            hidden$="[[!noDestinations]]" selected$="[[noDestinations]]">
-          $i18n{noDestinationsMessage}
-        </option>
-        <option value="seeMore"
-            aria-label="$i18n{seeMoreDestinationsLabel}">
-          $i18n{seeMore}
-        </option>
-      </select>
-    </template>
-    <template is="dom-if" if="[[printerStatusFlagEnabled_]]">
-      <print-preview-destination-dropdown-cros id="dropdown"
-          value="[[destination]]" hidden$="[[!loaded]]"
-          item-list="[[recentDestinationList]]"
-          pdf-destination-key="[[pdfDestinationKey_]]"
-          drive-destination-key="[[driveDestinationKey]]"
-          no-destinations="[[noDestinations]]"
-          pdf-printer-disabled="[[pdfPrinterDisabled]]"
-          destination-icon="[[destinationIcon_]]" disabled="[[disabled]]"
-          on-dropdown-value-selected="onDropdownValueSelected_"
-          destination-status-text="[[statusText_]]">
-      </print-preview-destination-dropdown-cros>
-    </template>
+    <print-preview-destination-dropdown-cros id="dropdown"
+        value="[[destination]]" hidden$="[[!loaded]]"
+        item-list="[[recentDestinationList]]"
+        pdf-destination-key="[[pdfDestinationKey_]]"
+        drive-destination-key="[[driveDestinationKey]]"
+        no-destinations="[[noDestinations]]"
+        pdf-printer-disabled="[[pdfPrinterDisabled]]"
+        destination-icon="[[destinationIcon_]]" disabled="[[disabled]]"
+        on-dropdown-value-selected="onDropdownValueSelected_"
+        destination-status-text="[[statusText_]]">
+    </print-preview-destination-dropdown-cros>
   </div>
 </print-preview-settings-section>
 <print-preview-settings-section class="destination-additional-info"

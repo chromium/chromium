@@ -1210,9 +1210,6 @@ extern const char kMBIModeDescription[];
 extern const char kIntensiveWakeUpThrottlingName[];
 extern const char kIntensiveWakeUpThrottlingDescription[];
 
-extern const char kPrinterStatusName[];
-extern const char kPrinterStatusDescription[];
-
 extern const char kPrinterStatusDialogName[];
 extern const char kPrinterStatusDialogDescription[];
 

@@ -256,8 +256,6 @@ extern const base::Feature kPrintJobManagementApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPrintServerScaling;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kPrinterStatus;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPrinterStatusDialog;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjector;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjectorFeaturePod;

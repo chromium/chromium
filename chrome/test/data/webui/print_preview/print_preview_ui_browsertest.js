@@ -1313,52 +1313,6 @@ TEST_F('PrintPreviewKeyEventTest', 'CtrlShiftPOpensSystemDialog', function() {
 
 GEN('#if defined(OS_CHROMEOS)');
 // eslint-disable-next-line no-var
-var PrintPreviewDestinationSelectTestCrOS = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/destination_select_test_cros.js';
-  }
-
-  /** @override */
-  get suiteName() {
-    return destination_select_test_cros.suiteName;
-  }
-
-  /** @override */
-  get featureList() {
-    const kPrinterStatus = ['chromeos::features::kPrinterStatus'];
-    const featureList = super.featureList || [];
-    featureList.disabled = featureList.disabled ?
-        featureList.disabled.concat(kPrinterStatus) :
-        kPrinterStatus;
-    return featureList;
-  }
-};
-
-// TODO(crbug.com/1207745): Remove once the tests pass on Lacros.
-GEN(`#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_UpdateStatus DISABLED_UpdateStatus
-#define MAYBE_ChangeIcon DISABLED_ChangeIcon
-#else
-#define MAYBE_UpdateStatus UpdateStatus
-#define MAYBE_ChangeIcon ChangeIcon
-#endif
-`);
-
-TEST_F(
-    'PrintPreviewDestinationSelectTestCrOS', 'MAYBE_UpdateStatus', function() {
-      this.runMochaTest(destination_select_test_cros.TestNames.UpdateStatus);
-    });
-
-TEST_F('PrintPreviewDestinationSelectTestCrOS', 'MAYBE_ChangeIcon', function() {
-  this.runMochaTest(destination_select_test_cros.TestNames.ChangeIcon);
-});
-
-TEST_F('PrintPreviewDestinationSelectTestCrOS', 'EulaIsDisplayed', function() {
-  this.runMochaTest(destination_select_test_cros.TestNames.EulaIsDisplayed);
-});
-
-// eslint-disable-next-line no-var
 var PrintPreviewPrinterStatusTestCros = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
@@ -1368,16 +1322,6 @@ var PrintPreviewPrinterStatusTestCros = class extends PrintPreviewTest {
   /** @override */
   get suiteName() {
     return printer_status_test_cros.suiteName;
-  }
-
-  /** @override */
-  get featureList() {
-    const kPrinterStatus = ['chromeos::features::kPrinterStatus'];
-    const featureList = super.featureList || [];
-    featureList.enabled = featureList.enabled ?
-        featureList.enabled.concat(kPrinterStatus) :
-        kPrinterStatus;
-    return featureList;
   }
 };
 

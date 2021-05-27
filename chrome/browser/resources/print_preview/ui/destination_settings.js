@@ -164,17 +164,6 @@ Polymer({
 
     /** @private {!Array<string>} */
     users_: Array,
-
-    // <if expr="chromeos or lacros">
-    /** @private */
-    printerStatusFlagEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('showPrinterStatus');
-      },
-      readOnly: true,
-    },
-    // </if>
   },
 
   /** @private {string} */

@@ -2099,10 +2099,6 @@ const char kIntensiveWakeUpThrottlingDescription[] =
     "page that has been hidden for 5 minutes. For additional details, see "
     "https://www.chromestatus.com/feature/4718288976216064.";
 
-const char kPrinterStatusName[] = "Show printer Status";
-const char kPrinterStatusDescription[] =
-    "Enables printer status icons and labels for saved and nearby printers";
-
 const char kPrinterStatusDialogName[] =
     "Show printer status on destination dialog";
 const char kPrinterStatusDialogDescription[] =
