@@ -6,8 +6,8 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {fakeChromeVersion, fakeStates} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rma.js';
-import {State} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {BtnState, ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rma.js';
+import {RmaState, State} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
@@ -138,9 +138,13 @@ export function shimlessRMAAppTest() {
     await clickNext();
     assertFalse(initialPage.hidden);
 
-    resolver.resolve(true);
+    resolver.resolve(RmaState.kUpdateChrome);
     await flushTasks();
 
+    const updatePage =
+        component.shadowRoot.querySelector('onboarding-update-page');
+    assertTrue(!!updatePage);
+    assertFalse(updatePage.hidden);
     assertTrue(initialPage.hidden);
   });
 
@@ -157,9 +161,22 @@ export function shimlessRMAAppTest() {
     await clickNext();
     assertFalse(initialPage.hidden);
 
-    resolver.resolve(false);
+    resolver.reject();
     await flushTasks();
 
     assertFalse(initialPage.hidden);
+  });
+
+  test('UpdateButtonState', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+
+    const backBtn = component.shadowRoot.querySelector('#back');
+    assertTrue(!!backBtn);
+    assertTrue(backBtn.hidden);
+
+    component.updateBtnState('btnBack', BtnState.VISIBLE);
+    await flushTasks();
+
+    assertFalse(backBtn.hidden);
   });
 }

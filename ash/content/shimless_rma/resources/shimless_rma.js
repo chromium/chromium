@@ -17,7 +17,7 @@ import {CurrentState, NextState, PrevState, RmadErrorCode, RmaState, ShimlessRma
  * Enum for button states.
  * @enum {string}
  */
-const BtnState = {
+export const BtnState = {
   VISIBLE: 'visible',
   DISABLED: 'disable',
   HIDDEN: 'hidden'
@@ -50,7 +50,14 @@ const StateComponentMapping = {
     btnCancel: BtnState.VISIBLE,
     btnBack: BtnState.HIDDEN,
   },
+  // TODO(joonbug): update to correct RmaState
   [RmaState.kSelectComponents]: {
+    componentIs: 'onboarding-update-page',
+    btnNext: BtnState.HIDDEN,
+    btnCancel: BtnState.VISIBLE,
+    btnBack: BtnState.VISIBLE,
+  },
+  [RmaState.kUpdateChrome]: {
     componentIs: 'onboarding-update-page',
     btnNext: BtnState.HIDDEN,
     btnCancel: BtnState.VISIBLE,
@@ -79,6 +86,7 @@ export class ShimlessRmaElement extends PolymerElement {
        * @type {PageInfo}
        */
       currentPage_: {
+        reflectToAttribute: true,
         type: Object,
         value: {},
       },
@@ -191,6 +199,15 @@ export class ShimlessRmaElement extends PolymerElement {
     return btn === 'disabled';
   }
 
+  /**
+   * @param {string} btnName
+   * @param {!BtnState} btnState
+   */
+  updateBtnState(btnName, btnState) {
+    assert(this.currentPage_.hasOwnProperty(btnName));
+    this.set(`currentPage_.${btnName}`, btnState);
+  }
+
   /** @protected */
   onBackBtnClicked_() {
     // TODO(joonbug): error handling based on state.error
@@ -204,11 +221,13 @@ export class ShimlessRmaElement extends PolymerElement {
 
     // Acquire promise to check whether current page is ready for next page.
     const prepPageAdvance =
-        page.onNextBtnClick || (() => Promise.resolve(true));
+        page.onNextBtnClick || (() => Promise.resolve(RmaState.kUnknown));
     assert(typeof prepPageAdvance === 'function');
 
     prepPageAdvance()
-        .then((ready) => ready ? this.fetchNextState_() : Promise.reject())
+        .then(
+            (rmaState) => !!rmaState ? Promise.resolve({nextState: rmaState}) :
+                                       this.fetchNextState_())
         .then((state) => this.loadState_(state.nextState))
         .catch((err) => void 0);
   }
