@@ -126,8 +126,7 @@ class SyncEngineImpl : public SyncEngine,
   //
   // |model_type_connector| is our ModelTypeConnector, which is owned because in
   // production it is a proxy object to the real ModelTypeConnector.
-  virtual void HandleInitializationSuccessOnFrontendLoop(
-      ModelTypeSet initial_types,
+  void HandleInitializationSuccessOnFrontendLoop(
       const WeakHandle<DataTypeDebugInfoListener> debug_info_listener,
       std::unique_ptr<ModelTypeConnector> model_type_connector,
       const std::string& birthday,

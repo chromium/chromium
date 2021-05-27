@@ -53,7 +53,6 @@ DataTypeManagerImpl::AssociationTypesInfo::AssociationTypesInfo(
 DataTypeManagerImpl::AssociationTypesInfo::~AssociationTypesInfo() = default;
 
 DataTypeManagerImpl::DataTypeManagerImpl(
-    ModelTypeSet initial_types,
     const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
     const DataTypeController::TypeMap* controllers,
     const DataTypeEncryptionHandler* encryption_handler,
@@ -61,13 +60,16 @@ DataTypeManagerImpl::DataTypeManagerImpl(
     DataTypeManagerObserver* observer)
     : configurer_(configurer),
       controllers_(controllers),
-      downloaded_types_(initial_types),
       debug_info_listener_(debug_info_listener),
       model_load_manager_(controllers, this),
       observer_(observer),
       encryption_handler_(encryption_handler) {
   DCHECK(configurer_);
   DCHECK(observer_);
+
+  // This class does not really handle NIGORI (whose controller lives on a
+  // different thread).
+  DCHECK_EQ(controllers_->count(NIGORI), 0u);
 
   // Check if any of the controllers are already in a FAILED state, and if so,
   // mark them accordingly in the status table.

@@ -29,10 +29,9 @@ class SyncInvalidationsService;
 // service (like SyncableService) implementations.
 class SyncApiComponentFactory {
  public:
-  virtual ~SyncApiComponentFactory() {}
+  virtual ~SyncApiComponentFactory() = default;
 
   virtual std::unique_ptr<DataTypeManager> CreateDataTypeManager(
-      ModelTypeSet initial_types,
       const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
       const DataTypeController::TypeMap* controllers,
       const DataTypeEncryptionHandler* encryption_handler,

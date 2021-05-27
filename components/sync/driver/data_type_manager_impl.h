@@ -30,10 +30,7 @@ struct DataTypeConfigurationStats;
 class DataTypeManagerImpl : public DataTypeManager,
                             public ModelLoadManagerDelegate {
  public:
-  // TODO(crbug.com/1170318): Get rid of the |initial_types| param, it doesn't
-  // seem to actually do anything.
   DataTypeManagerImpl(
-      ModelTypeSet initial_types,
       const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
       const DataTypeController::TypeMap* controllers,
       const DataTypeEncryptionHandler* encryption_handler,
@@ -178,7 +175,13 @@ class DataTypeManagerImpl : public DataTypeManager,
   State state_ = DataTypeManager::STOPPED;
 
   // The set of types whose initial download of sync data has completed.
-  ModelTypeSet downloaded_types_;
+  // TODO(crbug.com/1170318): This class does not actually handle control types
+  // (i.e. NIGORI) - |controllers_| doesn't contain an entry for NIGORI.
+  // However, we have to pretend that NIGORI is already downloaded (which it
+  // is, but this class doesn't know that) to prevent a re-download on every
+  // browser startup. It would be cleaner to remove all NIGORI/ControlTypes()
+  // handling from this class.
+  ModelTypeSet downloaded_types_ = ControlTypes();
 
   // Types that requested in current configuration cycle.
   ModelTypeSet last_requested_types_;

@@ -32,7 +32,6 @@ class SyncEngineHost {
   // initialized only if |success| is true.
 
   virtual void OnEngineInitialized(
-      ModelTypeSet initial_types,
       const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
       bool success,
       bool is_first_time_sync_configure) = 0;

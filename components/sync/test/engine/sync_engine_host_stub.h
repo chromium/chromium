@@ -16,7 +16,6 @@ class SyncEngineHostStub : public SyncEngineHost {
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(
-      ModelTypeSet initial_types,
       const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
       bool success,
       bool is_first_time_sync_configure) override;

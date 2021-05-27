@@ -32,15 +32,14 @@ void FakeSyncApiComponentFactory::AllowFakeEngineInitCompletion(bool allow) {
 
 std::unique_ptr<DataTypeManager>
 FakeSyncApiComponentFactory::CreateDataTypeManager(
-    ModelTypeSet initial_types,
     const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
     const DataTypeController::TypeMap* controllers,
     const DataTypeEncryptionHandler* encryption_handler,
     ModelTypeConfigurer* configurer,
     DataTypeManagerObserver* observer) {
   auto data_type_manager = std::make_unique<TestDataTypeManagerImpl>(
-      initial_types, debug_info_listener, controllers, encryption_handler,
-      configurer, observer);
+      debug_info_listener, controllers, encryption_handler, configurer,
+      observer);
   last_created_data_type_manager_ = data_type_manager->AsWeakPtr();
   return data_type_manager;
 }

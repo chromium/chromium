@@ -4,9 +4,7 @@
 
 #include "components/sync/driver/glue/sync_engine_impl.h"
 
-#include <cstddef>
-#include <map>
-#include <set>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -16,7 +14,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
@@ -27,8 +24,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/invalidation/impl/invalidation_logger.h"
-#include "components/invalidation/impl/invalidation_switches.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
@@ -46,15 +41,12 @@
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/test/engine/fake_sync_manager.h"
 #include "components/sync/test/engine/sync_engine_host_stub.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 using testing::_;
 using testing::NiceMock;
-using testing::NotNull;
 
 namespace syncer {
 
@@ -66,16 +58,12 @@ constexpr char kTestGaiaId[] = "test_gaia_id";
 
 class TestSyncEngineHost : public SyncEngineHostStub {
  public:
-  explicit TestSyncEngineHost(
-      base::OnceCallback<void(ModelTypeSet)> set_engine_types)
-      : set_engine_types_(std::move(set_engine_types)) {}
+  TestSyncEngineHost() = default;
 
-  void OnEngineInitialized(ModelTypeSet initial_types,
-                           const WeakHandle<DataTypeDebugInfoListener>&,
+  void OnEngineInitialized(const WeakHandle<DataTypeDebugInfoListener>&,
                            bool success,
                            bool is_first_time_sync_configure) override {
     EXPECT_EQ(expect_success_, success);
-    std::move(set_engine_types_).Run(initial_types);
     std::move(quit_closure_).Run();
   }
 
@@ -88,7 +76,6 @@ class TestSyncEngineHost : public SyncEngineHostStub {
   }
 
  private:
-  base::OnceCallback<void(ModelTypeSet)> set_engine_types_;
   bool expect_success_ = false;
   base::OnceClosure quit_closure_;
 };
@@ -102,7 +89,7 @@ class FakeSyncManagerFactory : public SyncManagerFactory {
         fake_manager_(fake_manager) {
     *fake_manager_ = nullptr;
   }
-  ~FakeSyncManagerFactory() override {}
+  ~FakeSyncManagerFactory() override = default;
 
   // SyncManagerFactory implementation.  Called on the sync thread.
   std::unique_ptr<SyncManager> CreateSyncManager(
@@ -190,12 +177,8 @@ std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory() {
 
 class SyncEngineImplTest : public testing::Test {
  protected:
-  SyncEngineImplTest()
-      : host_(base::BindOnce(&SyncEngineImplTest::SetEngineTypes,
-                             base::Unretained(this))),
-        fake_manager_(nullptr) {}
-
-  ~SyncEngineImplTest() override {}
+  SyncEngineImplTest() = default;
+  ~SyncEngineImplTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -252,10 +235,14 @@ class SyncEngineImplTest : public testing::Test {
     backend_->Initialize(std::move(params));
 
     PumpSyncThread();
-    // |fake_manager_factory_|'s fake_manager() is set on the sync
-    // thread, but we can rely on the message loop barriers to
-    // guarantee that we see the updated value.
+    // |fake_manager_| is set on the sync thread, but we can rely on the message
+    // loop barriers to guarantee that we see the updated value.
     DCHECK(fake_manager_);
+
+    if (expect_success) {
+      EXPECT_TRUE(engine_types_.Empty());
+      engine_types_ = fake_manager_->GetEnabledTypes();
+    }
   }
 
   void ShutdownBackend(ShutdownReason reason) {
@@ -271,9 +258,6 @@ class SyncEngineImplTest : public testing::Test {
   }
 
   ModelTypeSet ConfigureDataTypesWithUnready(ModelTypeSet unready_types) {
-    ModelTypeSet disabled_types =
-        Difference(ModelTypeSet::All(), enabled_types_);
-
     ModelTypeConfigurer::ConfigureParams params;
     params.reason = CONFIGURE_REASON_RECONFIGURATION;
     params.enabled_types = Difference(enabled_types_, unready_types);
@@ -281,7 +265,7 @@ class SyncEngineImplTest : public testing::Test {
     if (!params.to_download.Empty()) {
       params.to_download.Put(NIGORI);
     }
-    params.to_purge = Intersection(engine_types_, disabled_types);
+    params.to_purge = Difference(engine_types_, enabled_types_);
     params.ready_task = base::BindOnce(&SyncEngineImplTest::DownloadReady,
                                        base::Unretained(this));
 
@@ -305,11 +289,6 @@ class SyncEngineImplTest : public testing::Test {
     std::move(quit_loop_).Run();
   }
 
-  void SetEngineTypes(ModelTypeSet engine_types) {
-    EXPECT_TRUE(engine_types_.Empty());
-    engine_types_ = engine_types;
-  }
-
   void PumpSyncThread() {
     base::RunLoop run_loop;
     quit_loop_ = run_loop.QuitClosure();
@@ -327,7 +306,7 @@ class SyncEngineImplTest : public testing::Test {
       sync_transport_data_cleared_cb_;
   std::unique_ptr<SyncEngineImpl> backend_;
   std::unique_ptr<FakeSyncManagerFactory> fake_manager_factory_;
-  FakeSyncManager* fake_manager_;
+  FakeSyncManager* fake_manager_ = nullptr;
   ModelTypeSet engine_types_;
   ModelTypeSet enabled_types_;
   base::OnceClosure quit_loop_;

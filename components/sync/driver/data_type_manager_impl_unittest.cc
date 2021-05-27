@@ -220,10 +220,10 @@ class SyncDataTypeManagerImplTest : public testing::Test {
  protected:
   void SetUp() override { RecreateDataTypeManager(); }
 
-  void RecreateDataTypeManager(ModelTypeSet initial_types = ModelTypeSet()) {
+  void RecreateDataTypeManager() {
     dtm_ = std::make_unique<DataTypeManagerImpl>(
-        initial_types, MakeWeakHandle(debug_info_listener_.AsWeakPtr()),
-        &controllers_, &encryption_handler_, &configurer_, &observer_);
+        MakeWeakHandle(debug_info_listener_.AsWeakPtr()), &controllers_,
+        &encryption_handler_, &configurer_, &observer_);
   }
 
   void SetConfigureStartExpectation() { observer_.ExpectStart(); }
@@ -825,18 +825,25 @@ TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfiguration) {
   SetConfigureStartExpectation();
   SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
 
-  // Initially only PRIORITY_PREFERENCES is downloaded.
+  // Start the configuration.
+  ASSERT_EQ(0, configurer_.configure_call_count());
   Configure(ModelTypeSet(BOOKMARKS, PRIORITY_PREFERENCES));
+  // This causes an immediate ConfigureDataTypes() call for control types, i.e.
+  // Nigori. It's important that this does *not* ask for any types to be
+  // downloaded, see crbug.com/1170318 and crbug.com/1187914.
+  ASSERT_NE(0, configurer_.configure_call_count());
+  EXPECT_EQ(ModelTypeSet(), last_configure_params().to_download);
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
-  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  // Finishing the no-op download of the control types causes the next
+  // ConfigureDataTypes() call, for priority types.
+  FinishDownload(ModelTypeSet(), ModelTypeSet());
   EXPECT_EQ(AddControlTypesTo(PRIORITY_PREFERENCES),
             last_configure_params().to_download);
 
   // BOOKMARKS is downloaded after PRIORITY_PREFERENCES finishes.
   FinishDownload(ModelTypeSet(PRIORITY_PREFERENCES), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
-  EXPECT_EQ(ModelTypeSet(BOOKMARKS, NIGORI),
-            last_configure_params().to_download);
+  EXPECT_EQ(AddControlTypesTo(BOOKMARKS), last_configure_params().to_download);
 
   FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
@@ -861,8 +868,7 @@ TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfigurationReconfigure) {
 
   FinishDownload(ModelTypeSet(PRIORITY_PREFERENCES), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
-  EXPECT_EQ(ModelTypeSet(BOOKMARKS, NIGORI),
-            last_configure_params().to_download);
+  EXPECT_EQ(AddControlTypesTo(BOOKMARKS), last_configure_params().to_download);
 
   // Enable syncing for APPS.
   Configure(ModelTypeSet(BOOKMARKS, PRIORITY_PREFERENCES, APPS));
@@ -877,7 +883,7 @@ TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfigurationReconfigure) {
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   FinishDownload(ModelTypeSet(PRIORITY_PREFERENCES), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
-  EXPECT_EQ(ModelTypeSet(APPS, NIGORI), last_configure_params().to_download);
+  EXPECT_EQ(AddControlTypesTo(APPS), last_configure_params().to_download);
 
   FinishDownload(ModelTypeSet(BOOKMARKS, APPS), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
@@ -901,8 +907,7 @@ TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfigurationStop) {
   // BOOKMARKS is configured after download of PRIORITY_PREFERENCES finishes.
   FinishDownload(ModelTypeSet(PRIORITY_PREFERENCES), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
-  EXPECT_EQ(ModelTypeSet(BOOKMARKS, NIGORI),
-            last_configure_params().to_download);
+  EXPECT_EQ(AddControlTypesTo(BOOKMARKS), last_configure_params().to_download);
 
   // PRIORITY_PREFERENCES controller is running while BOOKMARKS is downloading.
   EXPECT_EQ(DataTypeController::RUNNING,
@@ -1278,9 +1283,8 @@ TEST_F(SyncDataTypeManagerImplTest, ErrorBeforeStartup) {
 
 // Test that sync configures properly if all types are ready.
 TEST_F(SyncDataTypeManagerImplTest, AllTypesReady) {
-  // Mark PRIORITY_PREFERENCES and BOOKMARKS as already downloaded.
-  RecreateDataTypeManager(/*initial_types=*/{PRIORITY_PREFERENCES, BOOKMARKS});
-
+  // TODO(crbug.com/1170318): Mark PRIORITY_PREFERENCES and BOOKMARKS as already
+  // downloaded (and fix that the test passes even without that!).
   AddController(PRIORITY_PREFERENCES);
   AddController(BOOKMARKS);
 
