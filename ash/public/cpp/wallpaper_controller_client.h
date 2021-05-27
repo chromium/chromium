@@ -5,10 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_WALLPAPER_CONTROLLER_CLIENT_H_
 #define ASH_PUBLIC_CPP_WALLPAPER_CONTROLLER_CLIENT_H_
 
-#include <string>
-
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/callback.h"
 
 class AccountId;
 
@@ -31,14 +28,6 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
   // Retrieves the current collection id from the Wallpaper Picker Chrome App
   // for migration.
   virtual void MigrateCollectionIdFromChromeApp() = 0;
-
-  // Downloads and sets a new random wallpaper from the collection of the
-  // specified collection_id.
-  using DailyWallpaperUrlFetchedCallback =
-      base::OnceCallback<void(const std::string&)>;
-  virtual void FetchDailyRefreshWallpaper(
-      const std::string& collection_id,
-      DailyWallpaperUrlFetchedCallback callback) = 0;
 };
 
 }  // namespace ash
