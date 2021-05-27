@@ -130,15 +130,6 @@ std::u16string GetSyncErrorDescription(
   }
 }
 
-ProfileAttributesEntry* GetProfileAttributesEntry(Profile* profile) {
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath());
-  CHECK(entry);
-  return entry;
-}
-
 void NavigateToGoogleAccountPage(Profile* profile, const std::string& email) {
   // Create a URL so that the account chooser is shown if the account with
   // |email| is not signed into the web. Include a UTM parameter to signal the
@@ -458,7 +449,13 @@ void ProfileMenuView::BuildIdentity() {
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
           account);
   ProfileAttributesEntry* profile_attributes =
-      GetProfileAttributesEntry(profile);
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (!profile_attributes) {
+    // May happen if the profile is being deleted. https://crbug.com/1040079
+    return;
+  }
 
   std::u16string profile_name;
   absl::optional<EditButtonParams> edit_button_params;
