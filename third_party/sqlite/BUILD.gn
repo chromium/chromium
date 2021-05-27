@@ -241,6 +241,8 @@ component("chromium_sqlite3") {
   deps = [ "//third_party/icu" ]
 }
 
+# Similar to component("chromium_sqlite") above, but uses the developer tools
+# options at config("dev_sqlite3_compile_options").
 component("dev_sqlite3") {
   visibility = [ ":*" ]
 
@@ -368,6 +370,39 @@ if (is_win || is_mac || is_linux || is_chromeos) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       ":chromium_sqlite3_compile_options",
+      "//build/config/compiler:no_chromium_code",
+
+      # Must be after no_chromium_code for warning flags to be ordered
+      # correctly.
+      ":sqlite_warnings",
+    ]
+  }
+
+  # Similar to executable("sqlite_shell") above, but uses the developer tools
+  # options at config("dev_sqlite3_compile_options") and group("sqlite_dev").
+  executable("sqlite_dev_shell") {
+    include_dirs = [
+      # SQLite's shell.c contains an '#include "sqlite3.h", which we want to be
+      # resolved to //third_party/sqlite/sqlite3.h.
+      ".",
+    ]
+
+    sources = [
+      "sqlite_shell_icu_helper.cc",
+      "sqlite_shell_icu_helper.h",
+      "sqlite_shell_shim.c",
+    ]
+
+    deps = [
+      ":sqlite_dev",
+      "//base",
+      "//base:i18n",
+      "//third_party/icu",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      ":dev_sqlite3_compile_options",
       "//build/config/compiler:no_chromium_code",
 
       # Must be after no_chromium_code for warning flags to be ordered
