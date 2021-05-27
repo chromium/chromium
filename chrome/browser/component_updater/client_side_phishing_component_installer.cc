@@ -126,7 +126,7 @@ ClientSidePhishingComponentInstallerPolicy::GetInstallerAttributes() const {
   // Pass the tag parameter to the installer as the "tag" attribute; it will
   // be used to choose which binary is downloaded.
   attributes["tag"] = safe_browsing::GetClientSideDetectionTag();
-  return update_client::InstallerAttributes();
+  return attributes;
 }
 
 void RegisterClientSidePhishingComponent(ComponentUpdateService* cus) {
