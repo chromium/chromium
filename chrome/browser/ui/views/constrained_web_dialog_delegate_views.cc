@@ -135,8 +135,6 @@ class WebDialogWebContentsDelegateViews
       const content::NativeWebKeyboardEvent& event) override {
     // Forward shortcut keys in dialog to our initiator's delegate.
     // http://crbug.com/104586
-    // Disabled on Mac due to http://crbug.com/112173
-#if !defined(OS_MAC)
     if (!initiator_observer_->web_contents())
       return false;
 
@@ -145,9 +143,6 @@ class WebDialogWebContentsDelegateViews
       return false;
     return delegate->HandleKeyboardEvent(initiator_observer_->web_contents(),
                                          event);
-#else
-    return false;
-#endif
   }
 
   void ResizeDueToAutoResize(content::WebContents* source,
