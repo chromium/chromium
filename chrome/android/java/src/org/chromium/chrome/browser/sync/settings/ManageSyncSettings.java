@@ -707,6 +707,10 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                 SyncSettingsUtils.openTrustedVaultKeyRetrievalDialog(
                         this, primaryAccountInfo, REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL);
                 return;
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                // TODO(crbug.com/1100279): Implement logic.
+                return;
             case SyncError.SYNC_SETUP_INCOMPLETE:
                 mProfileSyncService.setSyncRequested(true);
                 mProfileSyncService.setFirstSetupComplete(

@@ -271,6 +271,13 @@ ProfileSyncServiceAndroid::IsTrustedVaultKeyRequiredForPreferredDataTypes(
       ->IsTrustedVaultKeyRequiredForPreferredDataTypes();
 }
 
+jboolean ProfileSyncServiceAndroid::IsTrustedVaultRecoverabilityDegraded(
+    JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return sync_service_->GetUserSettings()
+      ->IsTrustedVaultRecoverabilityDegraded();
+}
+
 jboolean ProfileSyncServiceAndroid::IsUsingExplicitPassphrase(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return sync_service_->GetUserSettings()->IsUsingExplicitPassphrase();

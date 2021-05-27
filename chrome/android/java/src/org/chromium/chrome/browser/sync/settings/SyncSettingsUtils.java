@@ -52,8 +52,10 @@ public class SyncSettingsUtils {
 
     @IntDef({SyncError.NO_ERROR, SyncError.ANDROID_SYNC_DISABLED, SyncError.AUTH_ERROR,
             SyncError.PASSPHRASE_REQUIRED, SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
-            SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS, SyncError.CLIENT_OUT_OF_DATE,
-            SyncError.SYNC_SETUP_INCOMPLETE, SyncError.OTHER_ERRORS})
+            SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS,
+            SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING,
+            SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS,
+            SyncError.CLIENT_OUT_OF_DATE, SyncError.SYNC_SETUP_INCOMPLETE, SyncError.OTHER_ERRORS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SyncError {
         int NO_ERROR = -1;
@@ -62,8 +64,10 @@ public class SyncSettingsUtils {
         int PASSPHRASE_REQUIRED = 2;
         int TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING = 3;
         int TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS = 4;
-        int CLIENT_OUT_OF_DATE = 5;
-        int SYNC_SETUP_INCOMPLETE = 6;
+        int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING = 5;
+        int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS = 6;
+        int CLIENT_OUT_OF_DATE = 7;
+        int SYNC_SETUP_INCOMPLETE = 8;
         int OTHER_ERRORS = 128;
     }
 
@@ -111,6 +115,13 @@ public class SyncSettingsUtils {
                     : SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS;
         }
 
+        if (profileSyncService.isEngineInitialized()
+                && profileSyncService.isTrustedVaultRecoverabilityDegraded()) {
+            return profileSyncService.isEncryptEverythingEnabled()
+                    ? SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING
+                    : SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS;
+        }
+
         if (!profileSyncService.isFirstSetupComplete()) {
             return SyncError.SYNC_SETUP_INCOMPLETE;
         }
@@ -140,6 +151,10 @@ public class SyncSettingsUtils {
                 return context.getString(R.string.hint_sync_retrieve_keys_for_everything);
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
                 return context.getString(R.string.hint_sync_retrieve_keys_for_passwords);
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+                return context.getString(R.string.hint_sync_recoverability_degraded_for_everything);
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                return context.getString(R.string.hint_sync_recoverability_degraded_for_passwords);
             case SyncError.SYNC_SETUP_INCOMPLETE:
                 return context.getString(R.string.hint_sync_settings_not_confirmed_description);
             case SyncError.NO_ERROR:
@@ -164,6 +179,8 @@ public class SyncSettingsUtils {
                 return context.getString(R.string.passphrase_required_error_card_button);
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
                 return context.getString(R.string.trusted_vault_error_card_button);
             case SyncError.SYNC_SETUP_INCOMPLETE:
                 return context.getString(R.string.sync_promo_turn_on_sync);
@@ -175,7 +192,6 @@ public class SyncSettingsUtils {
 
     /**
      * Return a short summary of the current sync status.
-     * TODO(https://crbug.com/1129930): Refactor this method
      */
     public static String getSyncStatusSummary(Context context) {
         if (!IdentityServicesProvider.get()
@@ -227,7 +243,8 @@ public class SyncSettingsUtils {
             return context.getString(R.string.sync_need_passphrase);
         }
 
-        if (profileSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
+        if (profileSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()
+                || profileSyncService.isTrustedVaultRecoverabilityDegraded()) {
             return profileSyncService.isEncryptEverythingEnabled()
                     ? context.getString(R.string.sync_error_card_title)
                     : context.getString(R.string.password_sync_error_summary);

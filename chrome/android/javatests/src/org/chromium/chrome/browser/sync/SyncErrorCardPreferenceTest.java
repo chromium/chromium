@@ -218,6 +218,52 @@ public class SyncErrorCardPreferenceTest {
     @LargeTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSyncErrorCardForTrustedVaultRecoverabilityDegradedForEverything(
+            boolean nightModeEnabled) throws Exception {
+        mFakeProfileSyncService.setEngineInitialized(true);
+        mFakeProfileSyncService.setTrustedVaultRecoverabilityDegraded(true);
+        mFakeProfileSyncService.setEncryptEverythingEnabled(true);
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeProfileSyncService);
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> Assert.assertEquals(
+                                "TRUSTED_VAULT_RECOVERABILITY_DEGRADED SyncError should be set",
+                                SyncSettingsUtils.SyncError
+                                        .TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING,
+                                SyncSettingsUtils.getSyncError()));
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        mRenderTestRule.render(getPersonalizedSyncPromoView(),
+                "sync_error_card_trusted_vault_recoverability_degraded_for_everything");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSyncErrorCardForTrustedVaultRecoverabilityDegradedForPasswords(
+            boolean nightModeEnabled) throws Exception {
+        mFakeProfileSyncService.setEngineInitialized(true);
+        mFakeProfileSyncService.setTrustedVaultRecoverabilityDegraded(true);
+        mFakeProfileSyncService.setEncryptEverythingEnabled(false);
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeProfileSyncService);
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> Assert.assertEquals(
+                                "TRUSTED_VAULT_RECOVERABILITY_DEGRADED SyncError should be set",
+                                SyncSettingsUtils.SyncError
+                                        .TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS,
+                                SyncSettingsUtils.getSyncError()));
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        mRenderTestRule.render(getPersonalizedSyncPromoView(),
+                "sync_error_card_trusted_vault_recoverability_degraded_for_passwords");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSyncErrorCardForSyncSetupIncomplete(boolean nightModeEnabled) throws Exception {
         // Passing a null ProfileSyncService instance here would sign-in the user but
         // FirstSetupComplete will be unset.

@@ -23,6 +23,7 @@ public class FakeProfileSyncService extends ProfileSyncService {
     private boolean mPassphraseRequiredForPreferredDataTypes;
     private boolean mTrustedVaultKeyRequired;
     private boolean mTrustedVaultKeyRequiredForPreferredDataTypes;
+    private boolean mTrustedVaultRecoverabilityDegraded;
     private boolean mEncryptEverythingEnabled;
     private boolean mRequiresClientUpgrade;
     private Set<Integer> mChosenTypes = new HashSet<>();
@@ -110,6 +111,15 @@ public class FakeProfileSyncService extends ProfileSyncService {
             boolean trustedVaultKeyRequiredForPreferredDataTypes) {
         mTrustedVaultKeyRequiredForPreferredDataTypes =
                 trustedVaultKeyRequiredForPreferredDataTypes;
+    }
+
+    @Override
+    public boolean isTrustedVaultRecoverabilityDegraded() {
+        return mTrustedVaultRecoverabilityDegraded;
+    }
+
+    public void setTrustedVaultRecoverabilityDegraded(boolean recoverabilityDegraded) {
+        mTrustedVaultRecoverabilityDegraded = recoverabilityDegraded;
     }
 
     @Override

@@ -171,23 +171,4 @@ public class SyncErrorCardPreference extends Preference
     public void onProfileDataUpdated(String accountEmail) {
         update();
     }
-
-    private boolean isTrustedVaultError() {
-        switch (mSyncError) {
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
-                return true;
-            case SyncError.ANDROID_SYNC_DISABLED:
-            case SyncError.AUTH_ERROR:
-            case SyncError.CLIENT_OUT_OF_DATE:
-            case SyncError.OTHER_ERRORS:
-            case SyncError.PASSPHRASE_REQUIRED:
-            case SyncError.SYNC_SETUP_INCOMPLETE:
-            case SyncError.NO_ERROR:
-                return false;
-            default:
-                assert false : "Unknown sync error";
-                return false;
-        }
-    }
 }

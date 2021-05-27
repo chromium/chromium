@@ -458,6 +458,18 @@ public class ProfileSyncService {
     }
 
     /**
+     * Checks if recoverability of the trusted vault keys is degraded and user action is required,
+     * affecting currently enabled data types.
+     *
+     * @return true if recoverability is degraded.
+     */
+    public boolean isTrustedVaultRecoverabilityDegraded() {
+        assert isEngineInitialized();
+        return ProfileSyncServiceJni.get().isTrustedVaultRecoverabilityDegraded(
+                mNativeProfileSyncServiceAndroid);
+    }
+
+    /**
      * @return Whether setting a custom passphrase is allowed.
      */
     public boolean isCustomPassphraseAllowed() {
@@ -634,6 +646,7 @@ public class ProfileSyncService {
         boolean isTrustedVaultKeyRequired(long nativeProfileSyncServiceAndroid);
         boolean isTrustedVaultKeyRequiredForPreferredDataTypes(
                 long nativeProfileSyncServiceAndroid);
+        boolean isTrustedVaultRecoverabilityDegraded(long nativeProfileSyncServiceAndroid);
         boolean isUsingExplicitPassphrase(long nativeProfileSyncServiceAndroid);
         boolean setDecryptionPassphrase(long nativeProfileSyncServiceAndroid, String passphrase);
         void setEncryptionPassphrase(long nativeProfileSyncServiceAndroid, String passphrase);

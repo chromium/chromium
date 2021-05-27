@@ -523,6 +523,13 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
             }
             return;
         }
+
+        if (mCurrentSyncError == SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING
+                || mCurrentSyncError
+                        == SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS) {
+            // TODO(crbug.com/1100279): Implement logic.
+            return;
+        }
     }
 
     private static void removePreference(PreferenceGroup from, Preference preference) {

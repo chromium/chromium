@@ -54,6 +54,22 @@ public class SyncAndServicesSettingsWithFakeProfileSyncServiceTest {
         Assert.assertNotNull("Sync error card should be shown", getSyncErrorCard(fragment));
     }
 
+    @Test
+    @LargeTest
+    @Feature({"Sync", "Preferences"})
+    public void testTrustedVaultRecoverabilityDegradedShowsSyncErrorCard() throws Exception {
+        FakeProfileSyncService fakeProfileSyncService =
+                (FakeProfileSyncService) mSyncTestRule.getProfileSyncService();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        SyncTestUtil.waitForSyncFeatureActive();
+        fakeProfileSyncService.setEngineInitialized(true);
+        fakeProfileSyncService.setTrustedVaultRecoverabilityDegraded(true);
+
+        SyncAndServicesSettings fragment = startSyncAndServicesPreferences();
+
+        Assert.assertNotNull("Sync error card should be shown", getSyncErrorCard(fragment));
+    }
+
     private SyncAndServicesSettings startSyncAndServicesPreferences() {
         mSettingsActivityTestRule.startSettingsActivity();
         return mSettingsActivityTestRule.getFragment();
