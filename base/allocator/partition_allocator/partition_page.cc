@@ -9,7 +9,6 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
@@ -46,7 +45,7 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
   root->DecreaseCommittedPages(slot_span->bucket->slot_size);
 
   size_t reserved_size =
-      extent->map_size + extent->padding_for_alignment +
+      extent->map_size +
       PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
   PA_DCHECK(!(reserved_size & DirectMapAllocationGranularityOffsetMask()));
   PA_DCHECK(root->total_size_of_direct_mapped_pages >= reserved_size);
@@ -55,9 +54,9 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
 
   char* ptr = reinterpret_cast<char*>(
       SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(slot_span));
-  // The mapping may start at an unspecified location within a super page, but
-  // we always reserve memory aligned to super page size.
-  ptr = bits::AlignDown(ptr, kSuperPageSize);
+  // Account for the mapping starting a partition page before the actual
+  // allocation address.
+  ptr -= PartitionPageSize();
 
 #if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
   return {ptr, reserved_size, root->UseBRPPool()};
