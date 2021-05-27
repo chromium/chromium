@@ -5862,21 +5862,6 @@
             ]
         }
     ],
-    "PasswordEditingInSettingsIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EditPasswordsInSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "PaymentRequestAlwaysAllowJustInTimePaymentApp": [
         {
             "platforms": [
