@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_logger.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_trace_names.h"
 #include "third_party/blink/renderer/modules/webcodecs/hardware_preference.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -29,6 +30,7 @@
 
 namespace media {
 class GpuVideoAcceleratorFactories;
+class ScopedDecodeTrace;
 }
 
 namespace blink {
@@ -47,6 +49,8 @@ class MODULES_EXPORT DecoderTemplate
   typedef typename Traits::MediaOutputType MediaOutputType;
   typedef typename Traits::OutputType OutputType;
   typedef typename Traits::OutputCallbackType OutputCallbackType;
+
+  static const CodecTraceNames* GetTraceNames();
 
   DecoderTemplate(ScriptState*, const InitType*, ExceptionState&);
   ~DecoderTemplate() override;
@@ -109,6 +113,15 @@ class MODULES_EXPORT DecoderTemplate
 
     void Trace(Visitor*) const;
 
+    // Starts an async trace event.
+    void StartTracing();
+
+    // Ends the async trace event associated with |this|.
+    void EndTracing(bool shutting_down = false);
+
+    // Get a trace event name from DecoderTemplate::GetTraceNames() and |type|.
+    const char* TraceNameFromType();
+
     Type type;
 
     // For kConfigure Requests. Prefer absl::optional<> to ensure values are
@@ -129,6 +142,14 @@ class MODULES_EXPORT DecoderTemplate
     // The value of |reset_generation_| at the time of this request. Used to
     // abort pending requests following a reset().
     uint32_t reset_generation = 0;
+
+    // Used for tracing kDecode requests.
+    std::unique_ptr<media::ScopedDecodeTrace> decode_trace;
+
+#if DCHECK_IS_ON()
+    // Tracks the state of tracing for debug purposes.
+    bool is_tracing;
+#endif
   };
 
   void ProcessRequests();
@@ -151,6 +172,8 @@ class MODULES_EXPORT DecoderTemplate
 
   // Helper function making it easier to check |state_|.
   bool IsClosed();
+
+  void TraceQueueSizes() const;
 
   Member<ScriptState> script_state_;
   Member<OutputCallbackType> output_cb_;

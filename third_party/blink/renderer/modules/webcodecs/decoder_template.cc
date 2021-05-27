@@ -12,6 +12,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
+#include "media/base/decode_status.h"
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -45,6 +48,18 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
+
+namespace {
+constexpr const char kCategory[] = "media";
+}  // namespace
+
+// static
+template <typename Traits>
+const CodecTraceNames* DecoderTemplate<Traits>::GetTraceNames() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(CodecTraceNames, trace_names,
+                                  (Traits::GetName()));
+  return &trace_names;
+}
 
 template <typename Traits>
 DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
@@ -227,6 +242,8 @@ void DecoderTemplate<Traits>::ProcessRequests() {
       continue;
     }
 
+    TraceQueueSizes();
+
     DCHECK_EQ(request->reset_generation, reset_generation_);
     switch (request->type) {
       case Request::Type::kConfigure:
@@ -248,6 +265,8 @@ void DecoderTemplate<Traits>::ProcessRequests() {
     }
     requests_.pop_front();
   }
+
+  TraceQueueSizes();
 }
 
 template <typename Traits>
@@ -267,6 +286,7 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
   // TODO(sandersd): Record this configuration as pending but don't apply it
   // until there is a decode request.
   pending_request_ = request;
+  pending_request_->StartTracing();
 
   if (gpu_factories_.has_value()) {
     ContinueConfigureWithGpuFactories(request, gpu_factories_.value());
@@ -364,6 +384,12 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
     ;
   pending_decodes_.Set(pending_decode_id_, request);
   --num_pending_decodes_;
+
+  if (media::ScopedDecodeTrace::IsEnabled()) {
+    request->decode_trace = std::make_unique<media::ScopedDecodeTrace>(
+        GetTraceNames()->decode.c_str(), *request->decoder_buffer);
+  }
+
   decoder_->Decode(std::move(request->decoder_buffer),
                    WTF::Bind(&DecoderTemplate::OnDecodeDone,
                              WrapWeakPersistent(this), pending_decode_id_));
@@ -389,6 +415,8 @@ bool DecoderTemplate<Traits>::ProcessFlushRequest(Request* request) {
 
   // Processing continues in OnFlushDone().
   pending_request_ = request;
+  pending_request_->StartTracing();
+
   decoder_->Decode(
       media::DecoderBuffer::CreateEOSBuffer(),
       WTF::Bind(&DecoderTemplate::OnFlushDone, WrapWeakPersistent(this)));
@@ -403,15 +431,17 @@ bool DecoderTemplate<Traits>::ProcessResetRequest(Request* request) {
   DCHECK_EQ(request->type, Request::Type::kReset);
   DCHECK_GT(reset_generation_, 0u);
 
-  // Processing continues in OnResetDone().
-  pending_request_ = request;
-
   // Signal [[codec implementation]] to cease producing output for the previous
   // configuration.
   if (decoder_) {
+    pending_request_ = request;
+    pending_request_->StartTracing();
+
+    // Processing continues in OnResetDone().
     decoder_->Reset(
         WTF::Bind(&DecoderTemplate::OnResetDone, WrapWeakPersistent(this)));
   }
+
   return true;
 }
 
@@ -421,12 +451,15 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
   if (IsClosed())
     return;
 
+  TRACE_EVENT1(kCategory, GetTraceNames()->shutdown.c_str(), "has_exception",
+               !!exception);
+
   // Abort pending work (otherwise it will never complete)
   if (pending_request_) {
     if (pending_request_->resolver)
       pending_request_->resolver.Release()->Reject();
 
-    pending_request_.Release();
+    pending_request_.Release()->EndTracing(/*shutting_down*/ true);
   }
 
   // Abort all upcoming work.
@@ -448,6 +481,22 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
 
   // Clear decoding and JS-visible queue state.
   decoder_.reset();
+
+  if (pending_request_) {
+    // This request was added as part of calling ResetAlgorithm above. However,
+    // OnResetDone() will never execute, since we are now in a kClosed state,
+    // and |decoder_| has been reset.
+    DCHECK_EQ(pending_request_->type, Request::Type::kReset);
+    pending_request_.Release()->EndTracing(/*shutting_down*/ true);
+  }
+
+  bool trace_enabled = false;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(kCategory, &trace_enabled);
+  if (trace_enabled) {
+    for (auto& pending_decode : pending_decodes_)
+      pending_decode.value->decode_trace.reset();
+  }
+
   pending_decodes_.clear();
   num_pending_decodes_ = 0;
 
@@ -501,6 +550,8 @@ void DecoderTemplate<Traits>::OnFlushDone(media::Status status) {
   // since the client is required to do so manually.
   const bool is_flush = pending_request_->type == Request::Type::kFlush;
   if (is_flush && pending_request_->reset_generation != reset_generation_) {
+    pending_request_->EndTracing();
+
     // TODO(crbug.com/1201299): Emit an AbortError.
     pending_request_.Release()->resolver.Release()->Reject();
     ProcessRequests();
@@ -546,15 +597,16 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::Status status) {
   }
 
   if (is_flush) {
-    pending_request_.Release()->resolver.Release()->Resolve();
+    pending_request_->resolver.Release()->Resolve();
   } else {
     Traits::UpdateDecoderLog(*decoder_, *pending_request_->media_config,
                              logger_->log());
 
     low_delay_ = pending_request_->low_delay.value();
     active_config_ = std::move(pending_request_->media_config);
-    pending_request_.Release();
   }
+
+  pending_request_.Release()->EndTracing();
 
   if (!initializing_sync_)
     ProcessRequests();
@@ -568,14 +620,18 @@ void DecoderTemplate<Traits>::OnDecodeDone(uint32_t id, media::Status status) {
   if (IsClosed())
     return;
 
+  auto it = pending_decodes_.find(id);
+  if (it != pending_decodes_.end()) {
+    if (it->value->decode_trace)
+      it->value->decode_trace->EndTrace(status);
+    pending_decodes_.erase(it);
+  }
+
   if (!status.is_ok() && status.code() != media::StatusCode::kAborted) {
     Shutdown(logger_->MakeException("Decoding error.", status));
     return;
   }
 
-  DCHECK(pending_decodes_.Contains(id));
-  auto it = pending_decodes_.find(id);
-  pending_decodes_.erase(it);
   ProcessRequests();
 }
 
@@ -588,7 +644,7 @@ void DecoderTemplate<Traits>::OnResetDone() {
   DCHECK(pending_request_);
   DCHECK_EQ(pending_request_->type, Request::Type::kReset);
 
-  pending_request_.Release();
+  pending_request_.Release()->EndTracing();
   ProcessRequests();
 }
 
@@ -616,8 +672,21 @@ void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
     return;
   }
 
-  output_cb_->InvokeAndReportException(nullptr,
-                                       std::move(output_or_error).value());
+  OutputType* blink_output = std::move(output_or_error).value();
+
+  TRACE_EVENT_BEGIN1(kCategory, GetTraceNames()->output.c_str(), "timestamp",
+                     blink_output->timestamp());
+
+  output_cb_->InvokeAndReportException(nullptr, blink_output);
+
+  TRACE_EVENT_END0(kCategory, GetTraceNames()->output.c_str());
+}
+
+template <typename Traits>
+void DecoderTemplate<Traits>::TraceQueueSizes() const {
+  TRACE_COUNTER_ID2(kCategory, "pending requests", this, "decodes",
+                    num_pending_decodes_, "other",
+                    requests_.size() - num_pending_decodes_);
 }
 
 template <typename Traits>
@@ -647,6 +716,44 @@ bool DecoderTemplate<Traits>::HasPendingActivity() const {
 template <typename Traits>
 void DecoderTemplate<Traits>::Request::Trace(Visitor* visitor) const {
   visitor->Trace(resolver);
+}
+
+template <typename Traits>
+const char* DecoderTemplate<Traits>::Request::TraceNameFromType() {
+  using RequestType = typename DecoderTemplate<Traits>::Request::Type;
+
+  const CodecTraceNames* trace_names = DecoderTemplate<Traits>::GetTraceNames();
+
+  switch (type) {
+    case RequestType::kConfigure:
+      return trace_names->configure.c_str();
+    case RequestType::kDecode:
+      return trace_names->decode.c_str();
+    case RequestType::kFlush:
+      return trace_names->flush.c_str();
+    case RequestType::kReset:
+      return trace_names->reset.c_str();
+  }
+  return "InvalidCodecTraceName";
+}
+
+template <typename Traits>
+void DecoderTemplate<Traits>::Request::StartTracing() {
+#if DCHECK_IS_ON()
+  DCHECK(!is_tracing);
+  is_tracing = true;
+#endif
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kCategory, TraceNameFromType(), this);
+}
+
+template <typename Traits>
+void DecoderTemplate<Traits>::Request::EndTracing(bool shutting_down) {
+#if DCHECK_IS_ON()
+  DCHECK(is_tracing);
+  is_tracing = false;
+#endif
+  TRACE_EVENT_NESTABLE_ASYNC_END1(kCategory, TraceNameFromType(), this,
+                                  "completed", !shutting_down);
 }
 
 template class DecoderTemplate<AudioDecoderTraits>;
