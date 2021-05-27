@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/resources/grit/omnibox_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace {
@@ -190,6 +191,65 @@ void OmniboxPedalProvider::Tokenize(OmniboxPedal::TokenSequence& out_tokens,
   }
 }
 
+void OmniboxPedalProvider::TokenizeAndExpandDictionary(
+    OmniboxPedal::TokenSequence& out_tokens,
+    const std::u16string& token_sequence_string) {
+  out_tokens.Clear();
+  if (tokenize_characters_.empty()) {
+    // Tokenize on Unicode character boundaries when we have no delimiters.
+    base::i18n::UTF16CharIterator char_iter(token_sequence_string);
+    size_t left = 0;
+    while (!char_iter.end()) {
+      char_iter.Advance();
+      size_t right = char_iter.array_pos();
+      if (right > left) {
+        if (out_tokens.Size() >= max_tokens_) {
+          // Can't take another token; the source data is invalid.
+          out_tokens.Clear();
+          break;
+        }
+        const auto token = token_sequence_string.substr(left, right - left);
+        // TODO(orinj): Consider checking an IsTokenValid(token) function
+        // before adding token to dictionary, as we don't want to include
+        // capitals, punctuation, etc. Alternatively, we could modify
+        // tokens (lowercase, remove unexpected characters, etc.) but
+        // processing should be limited since this could affect startup.
+        const auto iter = dictionary_.find(token);
+        if (iter == dictionary_.end()) {
+          // Token not in dictionary; expand dictionary.
+          out_tokens.Add(dictionary_.size());
+          dictionary_.insert({token, dictionary_.size()});
+        } else {
+          // Token in dictionary; add existing token identifier to sequence.
+          out_tokens.Add(iter->second);
+        }
+        left = right;
+      } else {
+        break;
+      }
+    }
+  } else {
+    // Delimiters will neatly divide the string into tokens.
+    StringTokenizer16 tokenizer(token_sequence_string, tokenize_characters_);
+    while (tokenizer.GetNext()) {
+      if (out_tokens.Size() >= max_tokens_) {
+        // Can't take another token; the source data is invalid.
+        out_tokens.Clear();
+        break;
+      }
+      const auto iter = dictionary_.find(tokenizer.token());
+      if (iter == dictionary_.end()) {
+        // Token not in dictionary; expand dictionary.
+        out_tokens.Add(dictionary_.size());
+        dictionary_.insert({tokenizer.token(), dictionary_.size()});
+      } else {
+        // Token in dictionary; add existing token identifier to sequence.
+        out_tokens.Add(iter->second);
+      }
+    }
+  }
+}
+
 void OmniboxPedalProvider::LoadPedalConcepts() {
   // The locale is a two-letter language code, possibly followed by a dash and
   // country code. English locales include "en", "en-US", and "en-GB" while
@@ -232,7 +292,9 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
 
   const base::Value* ignore_group_value = concept_data->FindKey("ignore_group");
   DCHECK_NE(ignore_group_value, nullptr);
-  ignore_group_ = LoadSynonymGroup(*ignore_group_value);
+  // TODO(orinj): Parse a dedicated l10n string for the common ignore group
+  // once the user-generated omnibox_pedal_synonyms.grdp is established.
+  ignore_group_ = LoadSynonymGroupValue(*ignore_group_value);
 
   for (const auto& pedal_value : concept_data->FindKey("pedals")->GetList()) {
     DCHECK(pedal_value.is_dict());
@@ -251,22 +313,41 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
       // Data may exist for Pedals that are intentionally not registered; skip.
       continue;
     }
+    OmniboxPedal* pedal = pedal_iter->second.get();
     const base::Value* ui_strings =
         pedal_value.FindDictKey("omnibox_ui_strings");
     if (ui_strings) {
-      pedal_iter->second->SetLabelStrings(*ui_strings);
+      pedal->SetLabelStrings(*ui_strings);
     }
     const std::string* url = pedal_value.FindStringKey("url");
     if (!url->empty()) {
-      pedal_iter->second->SetNavigationUrl(GURL(*url));
+      pedal->SetNavigationUrl(GURL(*url));
     }
-    for (const auto& group_value : pedal_value.FindKey("groups")->GetList()) {
-      pedal_iter->second->AddSynonymGroup(LoadSynonymGroup(group_value));
+    std::vector<OmniboxPedal::SynonymGroupSpec> specs =
+        pedal->SpecifySynonymGroups();
+    if (specs.empty()) {
+      for (const auto& group_value : pedal_value.FindKey("groups")->GetList()) {
+        // Note, group JSON values are preprocessed by the data generation tool.
+        pedal->AddSynonymGroup(LoadSynonymGroupValue(group_value));
+      }
+    } else {
+      for (const auto& spec : specs) {
+        // Note, group strings are not preprocessed; they are the raw outputs
+        // from translators in the localization pipeline, so we need to remove
+        // ignore group sequences and validate remaining data.
+        OmniboxPedal::SynonymGroup group =
+            LoadSynonymGroupString(spec.required, spec.match_once,
+                                   l10n_util::GetStringUTF16(spec.message_id));
+        group.EraseIgnoreGroup(ignore_group_);
+        if (group.IsValid()) {
+          pedal->AddSynonymGroup(std::move(group));
+        }
+      }
     }
   }
 }
 
-OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroup(
+OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupValue(
     const base::Value& group_value) const {
   DCHECK(group_value.is_dict());
   const bool required = group_value.FindKey("required")->GetBool();
@@ -283,4 +364,18 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroup(
     synonym_group.AddSynonym(std::move(synonym_all_tokens));
   }
   return synonym_group;
+}
+
+OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupString(
+    bool required,
+    bool match_once,
+    std::u16string synonyms_csv) {
+  OmniboxPedal::SynonymGroup group(required, match_once, 0);
+  StringTokenizer16 tokenizer(synonyms_csv, u",");
+  while (tokenizer.GetNext()) {
+    OmniboxPedal::TokenSequence sequence(0);
+    TokenizeAndExpandDictionary(sequence, tokenizer.token());
+    group.AddSynonym(std::move(sequence));
+  }
+  return group;
 }

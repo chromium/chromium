@@ -199,6 +199,19 @@ size_t OmniboxPedal::SynonymGroup::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(synonyms_);
 }
 
+void OmniboxPedal::SynonymGroup::EraseIgnoreGroup(
+    const SynonymGroup& ignore_group) {
+  for (auto& synonym : synonyms_) {
+    ignore_group.EraseMatchesIn(synonym, true);
+    synonym.ResetLinks();
+  }
+}
+
+bool OmniboxPedal::SynonymGroup::IsValid() const {
+  return std::all_of(synonyms_.begin(), synonyms_.end(),
+                     [](const auto& synonym) { return synonym.Size() > 0; });
+}
+
 // =============================================================================
 
 OmniboxPedal::OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url)
@@ -240,6 +253,11 @@ const gfx::VectorIcon& OmniboxPedal::GetVectorIcon() const {
 
 void OmniboxPedal::AddSynonymGroup(SynonymGroup&& group) {
   synonym_groups_.push_back(std::move(group));
+}
+
+std::vector<OmniboxPedal::SynonymGroupSpec>
+OmniboxPedal::SpecifySynonymGroups() {
+  return {};
 }
 
 void OmniboxPedal::RecordActionShown() const {

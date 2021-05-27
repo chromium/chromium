@@ -101,6 +101,12 @@ class OmniboxPedal : public OmniboxAction {
     std::vector<Token> tokens_;
   };
 
+  struct SynonymGroupSpec {
+    bool required;
+    bool match_once;
+    int message_id;
+  };
+
   class SynonymGroup {
    public:
     // Note: synonyms must be specified in decreasing order by length
@@ -129,6 +135,13 @@ class OmniboxPedal : public OmniboxAction {
 
     // Estimates RAM usage in bytes for this synonym group.
     size_t EstimateMemoryUsage() const;
+
+    // Erases sequences in ignore group from all synonyms in this group.
+    void EraseIgnoreGroup(const SynonymGroup& ignore_group);
+
+    // Returns true if this synonym group contains nontrivial data that can
+    // be used by the matching algorithm.
+    bool IsValid() const;
 
    protected:
     // If this is true, a synonym of the group must be present for triggering.
@@ -166,6 +179,9 @@ class OmniboxPedal : public OmniboxAction {
 
   // Move a synonym group into this Pedal's collection.
   void AddSynonymGroup(SynonymGroup&& group);
+
+  // Specify synonym groups to load from localization strings.
+  virtual std::vector<SynonymGroupSpec> SpecifySynonymGroups();
 
   OmniboxPedalId id() const { return id_; }
 

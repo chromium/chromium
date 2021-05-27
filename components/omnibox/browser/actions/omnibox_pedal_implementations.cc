@@ -39,6 +39,23 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),
             GURL("chrome://settings/clearBrowserData")) {}
 
+  std::vector<SynonymGroupSpec> SpecifySynonymGroups() override {
+    return {
+        // TODO(orinj): Gather the fixed structures and reference l10n strings
+        // once available (ideally in a new omnibox_pedal_synonyms.grdp file).
+        // Here is an example of how this Pedal could be structured:
+        // { true, true,
+        // IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_GROUP_CLEAR_REQUIRED,
+        // },
+        // { true, true,
+        // IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_GROUP_DATA_REQUIRED,
+        // },
+        // { false, true,
+        // IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_GROUP_CHROME_OPTIONAL,
+        // },
+    };
+  }
+
  protected:
   ~OmniboxPedalClearBrowsingData() override = default;
 };

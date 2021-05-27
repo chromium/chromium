@@ -67,9 +67,22 @@ class OmniboxPedalProvider {
   void Tokenize(OmniboxPedal::TokenSequence& out_tokens,
                 const std::u16string& text) const;
 
+  // An open variant of Tokenize that expands the token dictionary as needed.
+  void TokenizeAndExpandDictionary(OmniboxPedal::TokenSequence& out_tokens,
+                                   const std::u16string& token_sequence_string);
+
   void LoadPedalConcepts();
-  OmniboxPedal::SynonymGroup LoadSynonymGroup(
+
+  // Load a synonym group from a JSON sourced Value.
+  OmniboxPedal::SynonymGroup LoadSynonymGroupValue(
       const base::Value& group_value) const;
+
+  // Load a synonym group from a localization sourced string with comma
+  // separated synonyms.
+  OmniboxPedal::SynonymGroup LoadSynonymGroupString(
+      bool required,
+      bool match_once,
+      std::u16string synonyms_csv);
 
   AutocompleteProviderClient& client_;
 
