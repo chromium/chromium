@@ -54,10 +54,6 @@ class AndroidPushNotificationManager : public PushNotificationManager {
   void OnNeedToPurgeStore();
   void OnPurgeCompleted();
 
-  // Called when all the push notifications for the given optimization type have
-  // been processed. This clears the Android cache.
-  void OnOptimizationTypeHandled(proto::OptimizationType opt_type);
-
   // Called when a non-cached notification can't be processed right now so it
   // should be cached in Android.
   void OnNewPushNotificationNotHandled(

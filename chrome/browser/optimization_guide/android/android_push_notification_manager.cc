@@ -8,7 +8,9 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/optimization_guide/android/optimization_guide_bridge.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "url/gurl.h"
@@ -67,21 +69,57 @@ class DroppedSuccessCallbackHelper {
   explicit DroppedSuccessCallbackHelper(base::OnceClosure on_failure)
       : on_failure_(std::move(on_failure)) {}
   ~DroppedSuccessCallbackHelper() {
-    if (on_failure_) {
+    bool did_succeed = !on_failure_;
+
+    if (report_result_to_boolean_histogram_) {
+      base::UmaHistogramBoolean(*report_result_to_boolean_histogram_,
+                                did_succeed);
+    }
+
+    if (!did_succeed) {
       std::move(on_failure_).Run();
     }
+  }
+
+  void SetReportResultHistogram(const std::string& histogram) {
+    report_result_to_boolean_histogram_ = histogram;
   }
 
   void Disarm() { on_failure_.Reset(); }
 
  private:
   base::OnceClosure on_failure_;
+  absl::optional<std::string> report_result_to_boolean_histogram_;
 };
 
 // Called on success of an action to disarm the helper.
-void DisarmHelper(std::unique_ptr<DroppedSuccessCallbackHelper> helper) {
+void SimpleDisarmHelper(std::unique_ptr<DroppedSuccessCallbackHelper> helper) {
   helper->Disarm();
 }
+
+// Called when all the push notifications for the given optimization type have
+// been processed. This clears the Android cache and disarms the helper.
+void OnOptimizationTypeHandled(
+    std::unique_ptr<DroppedSuccessCallbackHelper> helper,
+    proto::OptimizationType opt_type) {
+  helper->Disarm();
+  OptimizationGuideBridge::ClearCacheForOptimizationType(opt_type);
+}
+
+class ScopedBooleanHistogramRecorder {
+ public:
+  explicit ScopedBooleanHistogramRecorder(const std::string& histogram_name)
+      : histogram_name_(histogram_name) {}
+  ~ScopedBooleanHistogramRecorder() {
+    base::UmaHistogramBoolean(histogram_name_, sample_);
+  }
+
+  void SetSample(bool sample) { sample_ = sample; }
+
+ private:
+  const std::string histogram_name_;
+  bool sample_ = false;
+};
 
 }  // namespace
 
@@ -103,6 +141,8 @@ void AndroidPushNotificationManager::OnDelegateReady() {
 
   // Quickly check that nothing overflowed. That way we don't risk some
   // notifications being processed just before a purge sweeps everything out.
+  ScopedBooleanHistogramRecorder overflow_recorder(
+      "OptimizationGuide.PushNotifications.DidOverflow");
   for (int int_opt_type = proto::OptimizationType_MIN;
        int_opt_type <= proto::OptimizationType_MAX; int_opt_type++) {
     if (!proto::OptimizationType_IsValid(int_opt_type)) {
@@ -115,16 +155,22 @@ void AndroidPushNotificationManager::OnDelegateReady() {
     // TODO(crbug/1199123): Rework this to reduce the number of JNI calls. Maybe
     // just fetch a list of all overflowed types and all types with
     // notifications.
+
     if (OptimizationGuideBridge::DidOptimizationTypeOverflow(opt_type)) {
       // The whole store will be purged in this case, because checking each
       // stored hint's optimization types is too expensive and we presume that a
       // cache overflow likely means native hasn't been started in a long time
       // so the store is probably mostly expired anyways.
       OnNeedToPurgeStore();
+
+      overflow_recorder.SetSample(true);
+
       return;
     }
   }
+  overflow_recorder.SetSample(false);
 
+  size_t cached_notifications_total = 0;
   for (int int_opt_type = proto::OptimizationType_MIN;
        int_opt_type <= proto::OptimizationType_MAX; int_opt_type++) {
     if (!proto::OptimizationType_IsValid(int_opt_type)) {
@@ -134,12 +180,15 @@ void AndroidPushNotificationManager::OnDelegateReady() {
     proto::OptimizationType opt_type =
         static_cast<proto::OptimizationType>(int_opt_type);
 
+    std::vector<proto::HintNotificationPayload> notifications =
+        OptimizationGuideBridge::GetCachedNotifications(opt_type);
+    cached_notifications_total += notifications.size();
+
     // The delegate expects to only get one type of a key representation at a
     // time, so separate those out.
     std::map<proto::KeyRepresentation, base::flat_set<std::string>>
         hints_keys_by_key_rep;
-    for (const proto::HintNotificationPayload& notification :
-         OptimizationGuideBridge::GetCachedNotifications(opt_type)) {
+    for (const proto::HintNotificationPayload& notification : notifications) {
       if (!notification.has_hint_key())
         continue;
       if (!notification.has_key_representation())
@@ -158,18 +207,29 @@ void AndroidPushNotificationManager::OnDelegateReady() {
       continue;
     }
 
+    // The helper here is used only for tracking success and logging that to
+    // metrics. In this case, nothing needs to be done in the event of failure.
+    auto helper =
+        DroppedSuccessCallbackHelper::CreateAndArm(base::DoNothing::Once());
+    helper->SetReportResultHistogram(
+        "OptimizationGuide.PushNotifications."
+        "CachedNotificationsHandledSuccessfully");
+
     // The barrier closure will once run the given once closure after it is run
     // |hints_keys_by_key_rep.size()| times.
-    base::RepeatingClosure barrier = base::BarrierClosure(
-        hints_keys_by_key_rep.size(),
-        base::BindOnce(
-            &AndroidPushNotificationManager::OnOptimizationTypeHandled,
-            weak_ptr_factory_.GetWeakPtr(), opt_type));
+    base::RepeatingClosure barrier =
+        base::BarrierClosure(hints_keys_by_key_rep.size(),
+                             base::BindOnce(&OnOptimizationTypeHandled,
+                                            std::move(helper), opt_type));
     for (const auto& pair : hints_keys_by_key_rep) {
       delegate_->RemoveFetchedEntriesByHintKeys(barrier, pair.first,
                                                 pair.second);
     }
   }
+
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.PushNotifications.CachedNotificationCount",
+      cached_notifications_total);
 }
 
 void AndroidPushNotificationManager::OnNeedToPurgeStore() {
@@ -182,6 +242,9 @@ void AndroidPushNotificationManager::OnNeedToPurgeStore() {
 
 void AndroidPushNotificationManager::OnNewPushNotification(
     const proto::HintNotificationPayload& notification) {
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PushNotifications.GotPushNotification", true);
+
   if (!delegate_) {
     OnNewPushNotificationNotHandled(notification);
     return;
@@ -199,14 +262,13 @@ void AndroidPushNotificationManager::OnNewPushNotification(
       &AndroidPushNotificationManager::OnNewPushNotificationNotHandled,
       weak_ptr_factory_.GetWeakPtr(), notification));
 
-  delegate_->RemoveFetchedEntriesByHintKeys(
-      base::BindOnce(&DisarmHelper, std::move(helper)),
-      notification.key_representation(), {notification.hint_key()});
-}
+  helper->SetReportResultHistogram(
+      "OptimizationGuide.PushNotifications."
+      "PushNotificationHandledSuccessfully");
 
-void AndroidPushNotificationManager::OnOptimizationTypeHandled(
-    proto::OptimizationType opt_type) {
-  OptimizationGuideBridge::ClearCacheForOptimizationType(opt_type);
+  delegate_->RemoveFetchedEntriesByHintKeys(
+      base::BindOnce(&SimpleDisarmHelper, std::move(helper)),
+      notification.key_representation(), {notification.hint_key()});
 }
 
 void AndroidPushNotificationManager::OnPurgeCompleted() {

@@ -7,6 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/containers/contains.h"
+#include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/optimization_guide/android/native_j_unittests_jni_headers/OptimizationGuidePushNotificationTestHelper_jni.h"
 #include "chrome/browser/profiles/profile.h"
@@ -70,11 +72,6 @@ class TestDelegate : public PushNotificationManager::Delegate {
   bool did_call_purge_ = false;
   bool run_success_callbacks_ = true;
 };
-
-const proto::OptimizationType kOptType1 =
-    proto::OptimizationType::PERFORMANCE_HINTS;
-const proto::OptimizationType kOptType2 =
-    proto::OptimizationType::LINK_PERFORMANCE;
 
 const int kOverflowSize = 5;
 
@@ -160,6 +157,7 @@ class AndroidPushNotificationManagerJavaTest : public testing::Test {
 
 TEST_F(AndroidPushNotificationManagerJavaTest,
        SingleCachedNotification_SuccessCallback) {
+  base::HistogramTester histogram_tester;
   TestDelegate delegate;
   delegate.SetRunSuccessCallbacks(true);
 
@@ -169,19 +167,32 @@ TEST_F(AndroidPushNotificationManagerJavaTest,
   proto::HintNotificationPayload notification;
   notification.set_hint_key("hintkey");
   notification.set_key_representation(proto::KeyRepresentation::HOST);
-  notification.set_optimization_type(kOptType1);
+  notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
   ASSERT_TRUE(CacheNotification(notification));
-  ASSERT_EQ(1U, AndroidNotificationCacheSize(kOptType1));
+  ASSERT_EQ(1U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
 
   manager.OnDelegateReady();
   const auto& last_remove_many = delegate.last_remove_many();
   EXPECT_EQ(proto::KeyRepresentation::HOST, last_remove_many.first);
   EXPECT_EQ(base::flat_set<std::string>{"hintkey"}, last_remove_many.second);
-  EXPECT_EQ(0U, AndroidNotificationCacheSize(kOptType1));
+  EXPECT_EQ(0U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.CachedNotificationCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.DidOverflow", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications."
+      "CachedNotificationsHandledSuccessfully",
+      true, 1);
 }
 
 TEST_F(AndroidPushNotificationManagerJavaTest,
        SingleCachedNotification_FailedCallback) {
+  base::HistogramTester histogram_tester;
   TestDelegate delegate;
   delegate.SetRunSuccessCallbacks(false);
 
@@ -191,9 +202,11 @@ TEST_F(AndroidPushNotificationManagerJavaTest,
   proto::HintNotificationPayload notification;
   notification.set_hint_key("hintkey");
   notification.set_key_representation(proto::KeyRepresentation::HOST);
-  notification.set_optimization_type(kOptType1);
+  notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
   ASSERT_TRUE(CacheNotification(notification));
-  ASSERT_EQ(1U, AndroidNotificationCacheSize(kOptType1));
+  ASSERT_EQ(1U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
 
   manager.OnDelegateReady();
   const auto& last_remove_many = delegate.last_remove_many();
@@ -203,24 +216,84 @@ TEST_F(AndroidPushNotificationManagerJavaTest,
   // The callback wasn't run, indicating failure, so the notification should be
   // put back into the Android cache.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1U, AndroidNotificationCacheSize(kOptType1));
+  EXPECT_EQ(1U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications."
+      "CachedNotificationsHandledSuccessfully",
+      false, 1);
 }
 
-TEST_F(AndroidPushNotificationManagerJavaTest, Overflow_HandledSuccess) {
+TEST_F(AndroidPushNotificationManagerJavaTest, TwoCachedNotifications) {
+  base::HistogramTester histogram_tester;
   TestDelegate delegate;
   delegate.SetRunSuccessCallbacks(true);
 
   AndroidPushNotificationManager manager(prefs());
   manager.SetDelegate(&delegate);
 
-  CauseOverflow(kOptType1);
-  ASSERT_TRUE(DidOverflow(kOptType1));
+  proto::HintNotificationPayload notification;
+  notification.set_hint_key("hintkey");
+  notification.set_key_representation(proto::KeyRepresentation::HOST);
+  notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
+  ASSERT_TRUE(CacheNotification(notification));
+  ASSERT_EQ(1U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
+
+  proto::HintNotificationPayload notification2;
+  notification2.set_hint_key("hintkey2");
+  notification2.set_key_representation(proto::KeyRepresentation::HOST);
+  notification2.set_optimization_type(
+      proto::OptimizationType::RESOURCE_LOADING);
+  ASSERT_TRUE(CacheNotification(notification2));
+  ASSERT_EQ(1U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::RESOURCE_LOADING));
+
+  manager.OnDelegateReady();
+  const auto& last_remove_many = delegate.last_remove_many();
+  EXPECT_EQ(proto::KeyRepresentation::HOST, last_remove_many.first);
+  EXPECT_EQ(0U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
+  EXPECT_EQ(0U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::RESOURCE_LOADING));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.CachedNotificationCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.DidOverflow", false, 1);
+  // One sample is logged for each OptimizationType.
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications."
+      "CachedNotificationsHandledSuccessfully",
+      true, 2);
+}
+
+TEST_F(AndroidPushNotificationManagerJavaTest, Overflow_HandledSuccess) {
+  base::HistogramTester histogram_tester;
+  TestDelegate delegate;
+  delegate.SetRunSuccessCallbacks(true);
+
+  AndroidPushNotificationManager manager(prefs());
+  manager.SetDelegate(&delegate);
+
+  CauseOverflow(proto::OptimizationType::PERFORMANCE_HINTS);
+  ASSERT_TRUE(DidOverflow(proto::OptimizationType::PERFORMANCE_HINTS));
 
   manager.OnDelegateReady();
   EXPECT_TRUE(delegate.did_call_purge());
 
-  EXPECT_FALSE(DidOverflow(kOptType1));
-  EXPECT_EQ(0U, AndroidNotificationCacheSize(kOptType1));
+  EXPECT_FALSE(DidOverflow(proto::OptimizationType::PERFORMANCE_HINTS));
+  EXPECT_EQ(0U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.DidOverflow", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PushNotifications."
+      "CachedNotificationsHandledSuccessfully",
+      0);
 }
 
 TEST_F(AndroidPushNotificationManagerJavaTest, Overflow_HandledFailure) {
@@ -230,16 +303,17 @@ TEST_F(AndroidPushNotificationManagerJavaTest, Overflow_HandledFailure) {
   AndroidPushNotificationManager manager(prefs());
   manager.SetDelegate(&delegate);
 
-  CauseOverflow(kOptType1);
-  ASSERT_TRUE(DidOverflow(kOptType1));
+  CauseOverflow(proto::OptimizationType::PERFORMANCE_HINTS);
+  ASSERT_TRUE(DidOverflow(proto::OptimizationType::PERFORMANCE_HINTS));
 
   manager.OnDelegateReady();
   EXPECT_TRUE(delegate.did_call_purge());
 
-  EXPECT_TRUE(DidOverflow(kOptType1));
+  EXPECT_TRUE(DidOverflow(proto::OptimizationType::PERFORMANCE_HINTS));
 }
 
 TEST_F(AndroidPushNotificationManagerJavaTest, OverflowPurgesAllTypes) {
+  base::HistogramTester histogram_tester;
   TestDelegate delegate;
   delegate.SetRunSuccessCallbacks(true);
 
@@ -249,36 +323,100 @@ TEST_F(AndroidPushNotificationManagerJavaTest, OverflowPurgesAllTypes) {
   proto::HintNotificationPayload supported_notification;
   supported_notification.set_hint_key("other hintkey");
   supported_notification.set_key_representation(proto::KeyRepresentation::HOST);
-  supported_notification.set_optimization_type(kOptType2);
+  supported_notification.set_optimization_type(
+      proto::OptimizationType::LINK_PERFORMANCE);
   ASSERT_TRUE(CacheNotification(supported_notification));
-  ASSERT_EQ(1U, AndroidNotificationCacheSize(kOptType2));
+  ASSERT_EQ(1U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::LINK_PERFORMANCE));
 
-  CauseOverflow(kOptType1);
-  ASSERT_TRUE(DidOverflow(kOptType1));
+  CauseOverflow(proto::OptimizationType::PERFORMANCE_HINTS);
+  ASSERT_TRUE(DidOverflow(proto::OptimizationType::PERFORMANCE_HINTS));
 
   manager.OnDelegateReady();
   EXPECT_TRUE(delegate.did_call_purge());
 
   // All types should be purged.
-  EXPECT_FALSE(DidOverflow(kOptType1));
-  EXPECT_FALSE(DidOverflow(kOptType2));
-  EXPECT_EQ(0U, AndroidNotificationCacheSize(kOptType1));
-  EXPECT_EQ(0U, AndroidNotificationCacheSize(kOptType2));
+  EXPECT_FALSE(DidOverflow(proto::OptimizationType::PERFORMANCE_HINTS));
+  EXPECT_FALSE(DidOverflow(proto::OptimizationType::LINK_PERFORMANCE));
+  EXPECT_EQ(0U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
+  EXPECT_EQ(0U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::LINK_PERFORMANCE));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.DidOverflow", true, 1);
+}
+
+TEST_F(AndroidPushNotificationManagerJavaTest, PushNotification_Success) {
+  base::HistogramTester histogram_tester;
+  TestDelegate delegate;
+  delegate.SetRunSuccessCallbacks(true);
+
+  AndroidPushNotificationManager manager(prefs());
+  manager.SetDelegate(&delegate);
+
+  proto::HintNotificationPayload notification;
+  notification.set_hint_key("hintkey");
+  notification.set_key_representation(proto::KeyRepresentation::HOST);
+  notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
+
+  manager.OnNewPushNotification(notification);
+
+  // Because there was a delegate, the notification should not be cached.
+  EXPECT_EQ(0U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.PushNotificationHandledSuccessfully",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.GotPushNotification", true, 1);
+}
+
+TEST_F(AndroidPushNotificationManagerJavaTest, PushNotification_Failure) {
+  base::HistogramTester histogram_tester;
+  TestDelegate delegate;
+  delegate.SetRunSuccessCallbacks(false);
+
+  AndroidPushNotificationManager manager(prefs());
+  manager.SetDelegate(&delegate);
+
+  proto::HintNotificationPayload notification;
+  notification.set_hint_key("hintkey");
+  notification.set_key_representation(proto::KeyRepresentation::HOST);
+  notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
+
+  manager.OnNewPushNotification(notification);
+
+  // The notification should be cached because it was not handled successfully.
+  EXPECT_EQ(1U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.PushNotificationHandledSuccessfully",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.GotPushNotification", true, 1);
 }
 
 TEST_F(AndroidPushNotificationManagerJavaTest,
        PushNotificationCachedWhenNoDelegate) {
+  base::HistogramTester histogram_tester;
   AndroidPushNotificationManager manager(prefs());
 
   proto::HintNotificationPayload notification;
   notification.set_hint_key("hintkey");
   notification.set_key_representation(proto::KeyRepresentation::HOST);
-  notification.set_optimization_type(kOptType1);
+  notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
 
   manager.OnNewPushNotification(notification);
 
   // Because there was not delegate, the notification should be cached.
-  EXPECT_EQ(1U, AndroidNotificationCacheSize(kOptType1));
+  EXPECT_EQ(1U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
 
   // But the same notification can be pulled with a delegate.
   TestDelegate delegate;
@@ -287,9 +425,13 @@ TEST_F(AndroidPushNotificationManagerJavaTest,
   const auto& last_remove_many = delegate.last_remove_many();
   EXPECT_EQ(proto::KeyRepresentation::HOST, last_remove_many.first);
   EXPECT_EQ(base::flat_set<std::string>{"hintkey"}, last_remove_many.second);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.GotPushNotification", true, 1);
 }
 
 TEST_F(AndroidPushNotificationManagerJavaTest, MultipleKeyRepresentations) {
+  base::HistogramTester histogram_tester;
   TestDelegate delegate;
   delegate.SetRunSuccessCallbacks(true);
 
@@ -299,16 +441,20 @@ TEST_F(AndroidPushNotificationManagerJavaTest, MultipleKeyRepresentations) {
   proto::HintNotificationPayload host_notification;
   host_notification.set_hint_key("host-key.com");
   host_notification.set_key_representation(proto::KeyRepresentation::HOST);
-  host_notification.set_optimization_type(kOptType1);
+  host_notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
   ASSERT_TRUE(CacheNotification(host_notification));
-  ASSERT_EQ(1U, AndroidNotificationCacheSize(kOptType1));
+  ASSERT_EQ(1U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
 
   proto::HintNotificationPayload url_notification;
   url_notification.set_hint_key("http://url-key.com/page");
   url_notification.set_key_representation(proto::KeyRepresentation::FULL_URL);
-  url_notification.set_optimization_type(kOptType1);
+  url_notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
   ASSERT_TRUE(CacheNotification(url_notification));
-  ASSERT_EQ(2U, AndroidNotificationCacheSize(kOptType1));
+  ASSERT_EQ(2U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
 
   manager.OnDelegateReady();
 
@@ -324,7 +470,15 @@ TEST_F(AndroidPushNotificationManagerJavaTest, MultipleKeyRepresentations) {
       std::make_pair(proto::KeyRepresentation::FULL_URL,
                      base::flat_set<std::string>{"http://url-key.com/page"})));
 
-  EXPECT_EQ(0U, AndroidNotificationCacheSize(kOptType1));
+  EXPECT_EQ(0U, AndroidNotificationCacheSize(
+                    proto::OptimizationType::PERFORMANCE_HINTS));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications.CachedNotificationCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PushNotifications."
+      "CachedNotificationsHandledSuccessfully",
+      true, 1);
 }
 
 }  // namespace android
