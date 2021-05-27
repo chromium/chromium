@@ -438,6 +438,3 @@ crbug.com/1179570 virtual/scroll-unification/fast/forms/suggestion-picker/month-
 crbug.com/1179570 virtual/scroll-unification/fast/forms/suggestion-picker/time-suggestion-picker-mouse-operations.html [ Timeout ]
 crbug.com/1179570 virtual/scroll-unification/fast/forms/suggestion-picker/week-suggestion-picker-mouse-operations.html [ Timeout ]
 crbug.com/1179570 virtual/wheel-event-regions/fast/events/wheel/wheelevent-in-scrolling-div.html [ Timeout ]
-
-# Flake:
-crbug.com/1213718 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/* [ Skip ]
