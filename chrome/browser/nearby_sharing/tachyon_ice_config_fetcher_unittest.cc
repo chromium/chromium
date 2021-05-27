@@ -30,6 +30,15 @@ const char kApiUrl[] =
 const char kOAuthToken[] = "oauth_token";
 const char kTestAccount[] = "test@test.test";
 const char kIceConfigFetchedMetric[] = "Sharing.WebRtc.IceConfigFetched";
+const char kResultMetric[] =
+    "Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.Result";
+const char kFailureReasonMetric[] =
+    "Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.FailureReason";
+const char kCacheHitMetric[] =
+    "Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.CacheHit";
+const char kTokenFetchSuccessMetric[] =
+    "Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher."
+    "OAuthTokenFetchResult";
 const int kLifetimeDurationSeconds = 86400;
 
 void CheckSuccessResponse(
@@ -114,6 +123,13 @@ TEST_F(TachyonIceConfigFetcherTest, ResponseSuccessful) {
 
   histogram_tester_.ExpectTotalCount(kIceConfigFetchedMetric, 1);
   histogram_tester_.ExpectBucketCount(kIceConfigFetchedMetric, 2, 1);
+  histogram_tester_.ExpectTotalCount(kResultMetric, 1);
+  histogram_tester_.ExpectBucketCount(kResultMetric, 1, 1);
+  histogram_tester_.ExpectTotalCount(kCacheHitMetric, 1);
+  histogram_tester_.ExpectBucketCount(kCacheHitMetric, 0, 1);
+  histogram_tester_.ExpectTotalCount(kFailureReasonMetric, 0);
+  histogram_tester_.ExpectTotalCount(kTokenFetchSuccessMetric, 1);
+  histogram_tester_.ExpectBucketCount(kTokenFetchSuccessMetric, 1, 1);
 }
 
 TEST_F(TachyonIceConfigFetcherTest, ResponseError) {
@@ -135,6 +151,14 @@ TEST_F(TachyonIceConfigFetcherTest, ResponseError) {
 
   histogram_tester_.ExpectTotalCount(kIceConfigFetchedMetric, 1);
   histogram_tester_.ExpectBucketCount(kIceConfigFetchedMetric, 0, 1);
+  histogram_tester_.ExpectTotalCount(kResultMetric, 1);
+  histogram_tester_.ExpectBucketCount(kResultMetric, 0, 1);
+  histogram_tester_.ExpectTotalCount(kCacheHitMetric, 1);
+  histogram_tester_.ExpectBucketCount(kCacheHitMetric, 0, 1);
+  histogram_tester_.ExpectTotalCount(kFailureReasonMetric, 1);
+  histogram_tester_.ExpectBucketCount(kFailureReasonMetric, 500, 1);
+  histogram_tester_.ExpectTotalCount(kTokenFetchSuccessMetric, 1);
+  histogram_tester_.ExpectBucketCount(kTokenFetchSuccessMetric, 1, 1);
 }
 
 TEST_F(TachyonIceConfigFetcherTest, OverlappingCalls) {
@@ -164,6 +188,13 @@ TEST_F(TachyonIceConfigFetcherTest, OverlappingCalls) {
 
   histogram_tester_.ExpectTotalCount(kIceConfigFetchedMetric, 2);
   histogram_tester_.ExpectBucketCount(kIceConfigFetchedMetric, 2, 2);
+  histogram_tester_.ExpectTotalCount(kResultMetric, 2);
+  histogram_tester_.ExpectBucketCount(kResultMetric, 1, 2);
+  histogram_tester_.ExpectTotalCount(kCacheHitMetric, 2);
+  histogram_tester_.ExpectBucketCount(kCacheHitMetric, 0, 2);
+  histogram_tester_.ExpectTotalCount(kFailureReasonMetric, 0);
+  histogram_tester_.ExpectTotalCount(kTokenFetchSuccessMetric, 2);
+  histogram_tester_.ExpectBucketCount(kTokenFetchSuccessMetric, 1, 2);
 }
 
 TEST_F(TachyonIceConfigFetcherTest, IceServersCached) {
@@ -204,6 +235,13 @@ TEST_F(TachyonIceConfigFetcherTest, IceServersCached) {
 
   histogram_tester_.ExpectTotalCount(kIceConfigFetchedMetric, 2);
   histogram_tester_.ExpectBucketCount(kIceConfigFetchedMetric, 2, 2);
+  histogram_tester_.ExpectTotalCount(kResultMetric, 2);
+  histogram_tester_.ExpectBucketCount(kResultMetric, 1, 2);
+  histogram_tester_.ExpectTotalCount(kCacheHitMetric, 3);
+  histogram_tester_.ExpectBucketCount(kCacheHitMetric, 0, 2);
+  histogram_tester_.ExpectTotalCount(kFailureReasonMetric, 0);
+  histogram_tester_.ExpectTotalCount(kTokenFetchSuccessMetric, 2);
+  histogram_tester_.ExpectBucketCount(kTokenFetchSuccessMetric, 1, 2);
 }
 
 TEST_F(TachyonIceConfigFetcherTest, OAuthTokenFailed) {
@@ -218,6 +256,14 @@ TEST_F(TachyonIceConfigFetcherTest, OAuthTokenFailed) {
   SetOAuthTokenSuccessful(false);
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
   run_loop.Run();
+
+  histogram_tester_.ExpectTotalCount(kIceConfigFetchedMetric, 0);
+  histogram_tester_.ExpectTotalCount(kResultMetric, 0);
+  histogram_tester_.ExpectTotalCount(kCacheHitMetric, 1);
+  histogram_tester_.ExpectBucketCount(kCacheHitMetric, 0, 1);
+  histogram_tester_.ExpectTotalCount(kFailureReasonMetric, 0);
+  histogram_tester_.ExpectTotalCount(kTokenFetchSuccessMetric, 1);
+  histogram_tester_.ExpectBucketCount(kTokenFetchSuccessMetric, 0, 1);
 }
 
 TEST_F(TachyonIceConfigFetcherTest, OverlappingTokenFetch) {
@@ -248,4 +294,11 @@ TEST_F(TachyonIceConfigFetcherTest, OverlappingTokenFetch) {
 
   histogram_tester_.ExpectTotalCount(kIceConfigFetchedMetric, 2);
   histogram_tester_.ExpectBucketCount(kIceConfigFetchedMetric, 2, 2);
+  histogram_tester_.ExpectTotalCount(kResultMetric, 2);
+  histogram_tester_.ExpectBucketCount(kResultMetric, 1, 2);
+  histogram_tester_.ExpectTotalCount(kCacheHitMetric, 2);
+  histogram_tester_.ExpectBucketCount(kCacheHitMetric, 0, 2);
+  histogram_tester_.ExpectTotalCount(kFailureReasonMetric, 0);
+  histogram_tester_.ExpectTotalCount(kTokenFetchSuccessMetric, 2);
+  histogram_tester_.ExpectBucketCount(kTokenFetchSuccessMetric, 1, 2);
 }
