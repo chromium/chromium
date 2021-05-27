@@ -36,7 +36,6 @@ namespace inlined_vector_internal {
 // GCC does not deal very well with the below code
 #if !defined(__clang__) && defined(__GNUC__)
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 
@@ -956,7 +955,7 @@ auto Storage<T, N, A>::Swap(Storage* other_storage_ptr) -> void {
   swap(*GetAllocPtr(), *other_storage_ptr->GetAllocPtr());
 }
 
-// End ignore "array-bounds" and "maybe-uninitialized"
+// End ignore "maybe-uninitialized"
 #if !defined(__clang__) && defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
