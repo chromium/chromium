@@ -6,9 +6,9 @@
 // finish running its tests.
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
-import {BookmarkFolderElement} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
+import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
 import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
-import {BookmarksListElement} from 'chrome://read-later.top-chrome/side_panel/bookmarks_list.js';
+import {BookmarksListElement, LOCAL_STORAGE_OPEN_FOLDERS_KEY} from 'chrome://read-later.top-chrome/side_panel/bookmarks_list.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
@@ -78,6 +78,7 @@ suite('SidePanelBookmarksListTest', () => {
   }
 
   setup(async () => {
+    window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY] = undefined;
     document.body.innerHTML = '';
 
     bookmarksApi = new TestBookmarksApiProxy();
@@ -96,10 +97,6 @@ suite('SidePanelBookmarksListTest', () => {
   test('GetsAndShowsFolders', () => {
     assertEquals(1, bookmarksApi.getCallCount('getFolders'));
     assertEquals(folders.length, getFolderElements(bookmarksList).length);
-  });
-
-  test('OpensFirstFolderByDefault', () => {
-    assertTrue(getFolderElements(bookmarksList)[0].openByDefault);
   });
 
   test('UpdatesChangedBookmarks', () => {
@@ -169,5 +166,37 @@ suite('SidePanelBookmarksListTest', () => {
     const childFolder = getFolderElements(bookmarksBarFolder)[0];
     const childFolderBookmarks = getBookmarkElements(childFolder);
     assertEquals(0, childFolderBookmarks.length);
+  });
+
+  test('DefaultsToFirstFolderBeingOpen', () => {
+    assertEquals(
+        JSON.stringify([folders[0].id]),
+        window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY]);
+  });
+
+  test('UpdatesLocalStorageOnFolderOpenChanged', () => {
+    bookmarksList.dispatchEvent(new CustomEvent(FOLDER_OPEN_CHANGED_EVENT, {
+      bubbles: true,
+      composed: true,
+      detail: {
+        id: folders[0].id,
+        open: false,
+      }
+    }));
+    assertEquals(
+        JSON.stringify([]),
+        window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY]);
+
+    bookmarksList.dispatchEvent(new CustomEvent(FOLDER_OPEN_CHANGED_EVENT, {
+      bubbles: true,
+      composed: true,
+      detail: {
+        id: '5001',
+        open: true,
+      }
+    }));
+    assertEquals(
+        JSON.stringify(['5001']),
+        window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY]);
   });
 });

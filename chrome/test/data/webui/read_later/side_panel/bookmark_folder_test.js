@@ -7,11 +7,11 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from 'chrome://read-later.top-chrome/read_later_api_proxy.js';
-import {BookmarkFolderElement} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
+import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {eventToPromise, flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 import {TestReadLaterApiProxy} from '../test_read_later_api_proxy.js';
 
 suite('SidePanelBookmarkFolderTest', () => {
@@ -60,7 +60,7 @@ suite('SidePanelBookmarkFolderTest', () => {
     bookmarkFolder = /** @type {!BookmarkFolderElement} */ (
         document.createElement('bookmark-folder'));
     bookmarkFolder.folder = folder;
-    bookmarkFolder.openByDefault = true;
+    bookmarkFolder.openFolders = ['0'];
     document.body.appendChild(bookmarkFolder);
 
     await flushTasks();
@@ -98,14 +98,24 @@ suite('SidePanelBookmarkFolderTest', () => {
             'background-image'));
   });
 
-  test('OpensAndClosesFolder', () => {
+  test('OpensAndClosesFolder', async () => {
     const arrowIcon = bookmarkFolder.shadowRoot.querySelector('#arrowIcon');
     assertTrue(arrowIcon.hasAttribute('open'));
     assertEquals(3, getChildElements().length);
 
+    const eventPromise =
+        eventToPromise(FOLDER_OPEN_CHANGED_EVENT, document.body);
     bookmarkFolder.shadowRoot.querySelector('.row').click();
     assertFalse(arrowIcon.hasAttribute('open'));
     assertEquals(3, getChildElements().length);
+    await eventPromise;
+  });
+
+  test('UpdatesOpenStateBasedOnOpenFolders', async () => {
+    bookmarkFolder.openFolders = [];
+    await waitAfterNextRender();
+    getChildElements().forEach(
+        child => assertEquals('none', child.style.display));
   });
 
   test('OpensBookmark', async () => {

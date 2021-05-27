@@ -80,7 +80,8 @@
   <template is="dom-if" if="[[open_]]">
     <template is="dom-repeat" items="[[folder.children]]">
       <template is="dom-if" if="[[!item.url]]">
-        <bookmark-folder folder="[[item]]" depth="[[childDepth_]]">
+        <bookmark-folder folder="[[item]]" depth="[[childDepth_]]"
+            open-folders="[[openFolders]]">
         </bookmark-folder>
       </template>
 

@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './bookmark_folder.js';
-
 import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FOLDER_OPEN_CHANGED_EVENT} from './bookmark_folder.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
+
+/**
+ * Key for localStorage object that refers to all the open folders.
+ * @const {string}
+ */
+export const LOCAL_STORAGE_OPEN_FOLDERS_KEY = 'openFolders';
 
 /**
  * @constructor
@@ -32,7 +37,13 @@ export class BookmarksListElement extends BookmarksListElementBase {
       /** @private {!Array<!chrome.bookmarks.BookmarkTreeNode>} */
       folders_: {
         type: Array,
-        value: [],
+        value: () => [],
+      },
+
+      /** @private {!Array<string>} */
+      openFolders_: {
+        type: Array,
+        value: () => [],
       },
     };
   }
@@ -45,6 +56,14 @@ export class BookmarksListElement extends BookmarksListElementBase {
 
     /** @private @const {!Object<string, !Function>} */
     this.listeners_ = {};
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener(
+        FOLDER_OPEN_CHANGED_EVENT,
+        e => this.onFolderOpenChanged_(
+            /** @type {!CustomEvent<{id: string, open: boolean}>} */ (e)));
   }
 
   connectedCallback() {
@@ -62,6 +81,16 @@ export class BookmarksListElement extends BookmarksListElementBase {
           'onMoved', (id, movedInfo) => this.onMoved_(id, movedInfo));
       this.addListener_(
           'onRemoved', (id, removeInfo) => this.onRemoved_(id, removeInfo));
+
+      try {
+        const openFolders = window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY];
+        this.openFolders_ =
+            /** @type {!Array<string>} */ (JSON.parse(openFolders));
+      } catch (error) {
+        this.openFolders_ = [this.folders_[0].id];
+        window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY] =
+            JSON.stringify(this.openFolders_);
+      }
     });
   }
 
@@ -175,6 +204,21 @@ export class BookmarksListElement extends BookmarksListElementBase {
         this.findPathToId_(/** @type {string} */ (node.parentId));
     const pathToParentString = this.getPathString_(pathToParent);
     this.push(`${pathToParentString}.children`, node);
+  }
+
+  /**
+   * @param {!CustomEvent<{id: string, open: boolean}>} event
+   * @private
+   */
+  onFolderOpenChanged_(event) {
+    const {id, open} = event.detail;
+    if (open) {
+      this.openFolders_.push(id);
+    } else {
+      this.openFolders_.splice(this.openFolders_.indexOf(id), 1);
+    }
+    window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY] =
+        JSON.stringify(this.openFolders_);
   }
 
   /**

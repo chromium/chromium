@@ -7,7 +7,14 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../read_later_api_proxy.js';
+
+/**
+ * Event name for open state of a folder being changed.
+ * @const {string}
+ */
+export const FOLDER_OPEN_CHANGED_EVENT = 'bookmark-folder-open-changed';
 
 export class BookmarkFolderElement extends PolymerElement {
   static get is() {
@@ -36,11 +43,15 @@ export class BookmarkFolderElement extends PolymerElement {
       folder: Object,
 
       /** @private */
-      open_: Boolean,
-
-      openByDefault: {
+      open_: {
         type: Boolean,
         value: false,
+      },
+
+      /** @type {!Array<string>} */
+      openFolders: {
+        type: Array,
+        observer: 'onOpenFoldersChanged_',
       },
     };
   }
@@ -50,11 +61,6 @@ export class BookmarkFolderElement extends PolymerElement {
 
     /** @private @const {!ReadLaterApiProxy} */
     this.readLaterApi_ = ReadLaterApiProxyImpl.getInstance();
-  }
-
-  ready() {
-    super.ready();
-    this.open_ = this.openByDefault;
   }
 
   /**
@@ -90,6 +96,20 @@ export class BookmarkFolderElement extends PolymerElement {
     }
 
     this.open_ = !this.open_;
+    this.dispatchEvent(new CustomEvent(FOLDER_OPEN_CHANGED_EVENT, {
+      bubbles: true,
+      composed: true,
+      detail: {
+        id: this.folder.id,
+        open: this.open_,
+      }
+    }));
+  }
+
+  /** @private */
+  onOpenFoldersChanged_() {
+    this.open_ =
+        Boolean(this.openFolders) && this.openFolders.includes(this.folder.id);
   }
 }
 
