@@ -21,6 +21,8 @@ constexpr float kIconScaleToFit = 0.85f;
 
 constexpr float kBackgroundCircleScale = 176.0f / 192.0f;
 
+constexpr float kMinimumVisibleCircularIconSizeRatio = 0.625f;
+
 // Returns the bounding rect for the opaque part of the icon.
 gfx::Rect GetVisibleIconBounds(const SkBitmap& bitmap) {
   const SkPixmap pixmap = bitmap.pixmap();
@@ -152,13 +154,13 @@ bool IsIconCircleShaped(const gfx::ImageSkia& image) {
     preview.eraseColor(SK_ColorTRANSPARENT);
 
     // |preview| will be the original icon with all visible pixels colored red.
-    for (int x = 0; x < width; x++) {
-      for (int y = 0; y < height; y++) {
-        const SkColor* src_color =
-            reinterpret_cast<SkColor*>(bitmap.getAddr32(0, y));
-        SkColor* preview_color =
-            reinterpret_cast<SkColor*>(preview.getAddr32(0, y));
+    for (int y = 0; y < height; y++) {
+      const SkColor* src_color =
+          reinterpret_cast<SkColor*>(bitmap.getAddr32(0, y));
+      SkColor* preview_color =
+          reinterpret_cast<SkColor*>(preview.getAddr32(0, y));
 
+      for (int x = 0; x < width; x++) {
         SkColor target_color;
 
         if (SkColorGetA(src_color[x]) < 1) {
@@ -172,36 +174,14 @@ bool IsIconCircleShaped(const gfx::ImageSkia& image) {
     }
 
     gfx::Rect visible_preview_bounds = GetVisibleIconBounds(preview);
-    float visible_icon_diagonal = std::sqrt(
-        visible_preview_bounds.height() * visible_preview_bounds.height() +
-        visible_preview_bounds.width() * visible_preview_bounds.width());
 
-    float preview_diagonal = std::sqrt(preview.height() * preview.height() +
-                                       preview.width() * preview.width());
-
-    float scale = preview_diagonal / visible_icon_diagonal;
-
-    // If the visible icon requires too large of a scale, then the icon is small
-    // enough that it should not be considered circular. This also serves as a
-    // speculative crash fix by setting an upper limit on |scale| in the case it
-    // is too large. (crbug.com/1162155)
-    if (scale >= 1.6f)
+    float visible_icon_size_ratio =
+        static_cast<float>(visible_preview_bounds.width()) /
+        static_cast<float>(width);
+    // If the visible icon is too small then it should not be considered
+    // circular.
+    if (visible_icon_size_ratio < kMinimumVisibleCircularIconSizeRatio)
       return false;
-
-    gfx::Size scaled_icon_size =
-        gfx::ScaleToRoundedSize(rep.pixel_size(), scale);
-
-    // To detect a circle shaped icon of any size, resize and scale |preview| so
-    // the visible icon bounds match the maximum width and height of the bitmap.
-    const SkBitmap scaled_preview = skia::ImageOperations::Resize(
-        preview, skia::ImageOperations::RESIZE_BEST, scaled_icon_size.width(),
-        scaled_icon_size.height());
-
-    preview.eraseColor(SK_ColorTRANSPARENT);
-    SkCanvas canvas1(preview);
-    canvas1.drawImage(scaled_preview.asImage(),
-                      -visible_preview_bounds.x() * scale,
-                      -visible_preview_bounds.y() * scale);
 
     // Use a canvas to perform XOR and DST_OUT operations, which should
     // generate a transparent bitmap for |preview| if the original icon is
@@ -214,14 +194,15 @@ bool IsIconCircleShaped(const gfx::ImageSkia& image) {
 
     // XOR operation to remove a circle.
     paint_circle_mask.setBlendMode(SkBlendMode::kXor);
-    canvas.drawCircle(SkPoint::Make(width / 2.0f, height / 2.0f), width / 2.0,
-                      paint_circle_mask);
+    canvas.drawCircle(SkPoint::Make(width / 2.0f, height / 2.0f),
+                      visible_preview_bounds.width() / 2.0f, paint_circle_mask);
 
     SkPaint paint_outline;
     paint_outline.setColor(SK_ColorGREEN);
     paint_outline.setStyle(SkPaint::kStroke_Style);
 
-    const float outline_stroke_width = width * kCircleOutlineStrokeWidthRatio;
+    const float outline_stroke_width =
+        visible_preview_bounds.width() * kCircleOutlineStrokeWidthRatio;
     const float radius_offset = outline_stroke_width / 8.0f;
 
     paint_outline.setStrokeWidth(outline_stroke_width);
@@ -230,7 +211,8 @@ bool IsIconCircleShaped(const gfx::ImageSkia& image) {
     // DST_OUT operation to remove an extra circle outline.
     paint_outline.setBlendMode(SkBlendMode::kDstOut);
     canvas.drawCircle(SkPoint::Make(width / 2.0f, height / 2.0f),
-                      width / 2.0f + radius_offset, paint_outline);
+                      visible_preview_bounds.width() / 2.0f + radius_offset,
+                      paint_outline);
 
     // Compute the total pixel difference between the circle mask and the
     // original icon.
@@ -244,7 +226,8 @@ bool IsIconCircleShaped(const gfx::ImageSkia& image) {
     }
 
     float percentage_diff_pixels =
-        static_cast<float>(total_pixel_difference) / (width * height);
+        static_cast<float>(total_pixel_difference) /
+        (visible_preview_bounds.width() * visible_preview_bounds.height());
 
     // If the pixel difference between a circle and the original icon is small
     // enough, then the icon can be considered circle shaped.
