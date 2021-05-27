@@ -934,4 +934,42 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
                     ->sources.size());
 }
 
+// Regression test for https://crbug.com/1196372. This test passes if the
+// renderer does not crash.
+IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
+                       PolicyContainerOnClonedDocumentNoCrash) {
+  GURL page = embedded_test_server()->GetURL("a.com", "/empty.html");
+  GURL img_url = embedded_test_server()->GetURL("a.com", "/blank.jpg");
+  ASSERT_TRUE(NavigateToURL(shell(), page));
+
+  // Create an empty iframe and clone its document. Then execute a javascript
+  // URL inside the iframe. This will create a new ExecutionContext, but with
+  // the same PolicyContainer. However, the clone we created is still around and
+  // still has an ExecutionContext, which has not PolicyContainer anymore. The
+  // following code used to trigger a nullptr dereference, while it should not.
+  ASSERT_TRUE(ExecJs(current_frame_host(), JsReplace(R"(
+      new Promise((resolve, reject) => {
+        let iframe = document.createElement('iframe');
+        document.body.appendChild(iframe);
+        let d = iframe.contentDocument.cloneNode(true);
+        iframe.src =
+            'javascript:"<script>top.postMessage(\'ready\',\'*\');</script>"';
+        function addStyleSheet() {
+          let css = 'html { background: url($1); }';
+          let style = d.createElement('style');
+          d.head.appendChild(style);
+          style.type = 'text/css';
+          style.appendChild(d.createTextNode(css));
+        };
+        window.addEventListener('message', e => {
+          if (e.source !== iframe.contentWindow) return;
+          if (e.data !== 'ready') return;
+          addStyleSheet();
+          resolve();
+        });
+      });
+  )",
+                                                     img_url)));
+}
+
 }  // namespace content

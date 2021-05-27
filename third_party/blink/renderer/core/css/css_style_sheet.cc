@@ -143,10 +143,13 @@ CSSStyleSheet* CSSStyleSheet::CreateInline(Node& owner_node,
       owner_node_document, owner_node_document.BaseURL(),
       true /* origin_clean */,
       Referrer(
-          owner_node_document.GetExecutionContext()
-              ? owner_node_document.GetExecutionContext()->OutgoingReferrer()
-              : String(),  // GetExecutionContext() only returns null in tests.
-          owner_node.GetDocument().GetReferrerPolicy()),
+          // Fetch requests from an inline CSS use the referrer of the owner
+          // document. `Referrer::ClientReferrerString()` for a fetch request
+          // just means "use the default referrer", which will be computed from
+          // the client (in this case, the owner document's ExecutionContext)
+          // when fetching.
+          Referrer::ClientReferrerString(),
+          network::mojom::ReferrerPolicy::kDefault),
       encoding);
   if (AdTracker::IsAdScriptExecutingInDocument(&owner_node.GetDocument()))
     parser_context->SetIsAdRelated();
