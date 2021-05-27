@@ -93,6 +93,9 @@
     <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_CONFIRM" desc="Text to show for the Autofill upload save credit card prompt accept button when more information (e.g., CVC) was needed in order to save the card and was entered." formatter_data="android_java">
       Confirm
     </message>
+    <message name="IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_TITLE" desc="This message appears as the title of a confirmation dialog in which the user can view/edit the information that will be saved to Google Payments, and only appears after the user has expressed interest in uploading the card.">
+      Save to Google Account
+    </message>
   </if>
   <if expr="is_ios">
     <then>
