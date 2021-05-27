@@ -23,16 +23,6 @@ constexpr float kMagnificationScale = 2.f;
 // of the magnifying glass shadow and border.
 constexpr int kMagnifierRadius = 188;
 
-aura::Window* GetCurrentRootWindow() {
-  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  for (aura::Window* root_window : root_windows) {
-    if (root_window->ContainsPointInRoot(
-            root_window->GetHost()->dispatcher()->GetLastMouseLocationInRoot()))
-      return root_window;
-  }
-  return nullptr;
-}
-
 }  // namespace
 
 PartialMagnificationController::PartialMagnificationController() {
@@ -66,13 +56,25 @@ void PartialMagnificationController::SetEnabled(bool enabled) {
 
 void PartialMagnificationController::SwitchTargetRootWindowIfNeeded(
     aura::Window* new_root_window) {
-  if (!new_root_window)
-    new_root_window = GetCurrentRootWindow();
+  if (new_root_window == current_root_window_)
+    return;
+  current_root_window_ = new_root_window;
 
+  // |new_root_window| could be null, e.g. current mouse/touch point is beyond
+  // the bounds of the displays. Deactivate and return.
+  if (!current_root_window_) {
+    SetActive(false);
+    return;
+  }
+
+  DCHECK(current_root_window_->IsRootWindow());
+
+  // Arbitrarily place the magnifier at the center of the new root window.
+  // This function's caller is expected to call |ShowFor| afterwards with
+  // more appropriate location if possible.
   if (is_enabled_ && is_active_) {
-    magnifier_glass_->ShowFor(
-        new_root_window,
-        new_root_window->GetHost()->dispatcher()->GetLastMouseLocationInRoot());
+    magnifier_glass_->ShowFor(current_root_window_,
+                              current_root_window_->bounds().CenterPoint());
   }
 }
 
@@ -88,15 +90,12 @@ void PartialMagnificationController::SetActive(bool active) {
   // Fail if we're trying to activate while disabled.
   DCHECK(is_enabled_ || !active);
 
+  if (is_active_ == active)
+    return;
+
   is_active_ = active;
-  if (is_active_) {
-    aura::Window* root_window = GetCurrentRootWindow();
-    magnifier_glass_->ShowFor(
-        root_window,
-        root_window->GetHost()->dispatcher()->GetLastMouseLocationInRoot());
-  } else {
+  if (!is_active_)
     magnifier_glass_->Close();
-  }
 }
 
 void PartialMagnificationController::OnLocatedEvent(
@@ -124,6 +123,8 @@ void PartialMagnificationController::OnLocatedEvent(
   const bool palette_contains_point =
       palette_utils::PaletteContainsPointInScreen(screen_point);
 
+  SwitchTargetRootWindowIfNeeded(event_root);
+
   // If the stylus is pressed on the palette icon or widget, do not activate.
   if ((event->type() == ui::ET_TOUCH_PRESSED && !palette_contains_point) ||
       is_mouse_event) {
@@ -136,18 +137,7 @@ void PartialMagnificationController::OnLocatedEvent(
   if (!is_active_)
     return;
 
-  aura::Window* root_window = GetCurrentRootWindow();
-  // |root_window| could be null, e.g. current mouse/touch point is beyond the
-  // bounds of the displays. Deactivate and return.
-  if (!root_window) {
-    SetActive(false);
-    return;
-  }
-
-  // Remap point from where it was captured to the display it is actually on.
-  gfx::Point point = event->root_location();
-  aura::Window::ConvertPointToTarget(event_root, root_window, &point);
-  magnifier_glass_->ShowFor(root_window, point);
+  magnifier_glass_->ShowFor(current_root_window_, event->root_location());
 
   // If the stylus is over the palette icon or widget or if the magnifier is
   // following the mouse, do not consume the event.

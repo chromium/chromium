@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 
@@ -31,6 +32,14 @@ class PartialMagnificationControllerTestApi {
 
   gfx::Point GetWidgetOrigin() const {
     return host_widget()->GetWindowBoundsInScreen().origin();
+  }
+
+  aura::Window* GetWidgetRootWindow() const {
+    return host_widget()->GetNativeView()->GetRootWindow();
+  }
+
+  gfx::Point GetWidgetRootOrigin() const {
+    return GetWidgetRootWindow()->GetBoundsInScreen().origin();
   }
 
  private:
@@ -107,7 +116,8 @@ TEST_F(PartialMagnificationControllerTest, MultipleDisplays) {
 
   // Disconnect the second display, verify that magnifier is still active.
   UpdateDisplay("800x600");
-  GetController()->SwitchTargetRootWindowIfNeeded(nullptr);
+  GetController()->SwitchTargetRootWindowIfNeeded(
+      Shell::GetPrimaryRootWindow());
   EXPECT_TRUE(GetTestApi().is_active());
   EXPECT_TRUE(GetTestApi().host_widget());
 }
@@ -176,6 +186,55 @@ TEST_F(PartialMagnificationControllerTest, MagnifierFollowsPointer) {
   event_generator->PressTouch();
   EXPECT_EQ(event_generator->current_screen_location() + offset,
             GetTestApi().GetWidgetOrigin());
+}
+
+// The magnifier appears on the root window associated with the
+// correct display.
+TEST_F(PartialMagnificationControllerTest, MagnifierAppearsCorrectDisplay) {
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->EnterPenPointerMode();
+  UpdateDisplay("800x600,800x600");
+  GetController()->SetEnabled(true);
+  display::Screen* screen = display::Screen::GetScreen();
+
+  event_generator->PressTouch(gfx::Point(400, 300));
+  EXPECT_EQ(GetPrimaryDisplay(),
+            screen->GetDisplayNearestPoint(GetTestApi().GetWidgetRootOrigin()));
+
+  event_generator->ReleaseTouch();
+
+  event_generator->PressTouch(gfx::Point(1200, 300));
+  EXPECT_EQ(GetSecondaryDisplay(),
+            screen->GetDisplayNearestPoint(GetTestApi().GetWidgetRootOrigin()));
+}
+
+// The magnifier appears under the pen, not the mouse.
+TEST_F(PartialMagnificationControllerTest, MagnifierAppearsUnderPen) {
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  UpdateDisplay("800x600,800x600");
+  GetController()->SetEnabled(true);
+  display::Screen* screen = display::Screen::GetScreen();
+
+  // Hold pen on primary; use mouse to move pointer to secondary
+  event_generator->EnterPenPointerMode();
+  event_generator->PressTouch(gfx::Point(400, 300));
+  event_generator->ExitPenPointerMode();
+  event_generator->MoveMouseTo(gfx::Point(1200, 300));
+  EXPECT_EQ(GetPrimaryDisplay(),
+            screen->GetDisplayNearestPoint(GetTestApi().GetWidgetRootOrigin()));
+
+  // Pen must be lifted before it is touched to the next display.
+  event_generator->EnterPenPointerMode();
+  event_generator->ReleaseTouch();
+  event_generator->ExitPenPointerMode();
+
+  // Hold pen on secondary; use mouse to move pointer to primary
+  event_generator->EnterPenPointerMode();
+  event_generator->PressTouch(gfx::Point(1200, 300));
+  event_generator->ExitPenPointerMode();
+  event_generator->MoveMouseTo(gfx::Point(400, 300));
+  EXPECT_EQ(GetSecondaryDisplay(),
+            screen->GetDisplayNearestPoint(GetTestApi().GetWidgetRootOrigin()));
 }
 
 }  // namespace ash
