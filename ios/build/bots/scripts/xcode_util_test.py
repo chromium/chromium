@@ -351,10 +351,72 @@ class MacToolchainInvocationTests(XcodeUtilTest):
     self.runtime_cache_folder = 'test/path/Runtime'
     self.ios_version = '14.4'
 
+  @mock.patch('shutil.rmtree', autospec=True)
+  @mock.patch('os.path.exists', autospec=True)
+  @mock.patch('glob.glob', autospec=True)
   @mock.patch('subprocess.check_call', autospec=True)
-  def test_install_runtime(self, mock_check_output):
+  def test_install_runtime_no_cache(self, mock_check_output, mock_glob,
+                                    mock_exists, mock_rmtree):
+    mock_glob.return_value = []
+    mock_exists.return_value = False
+
     xcode_util._install_runtime(self.mac_toolchain, self.runtime_cache_folder,
                                 self.xcode_build_version, self.ios_version)
+
+    mock_glob.assert_called_with('test/path/Runtime/*.simruntime')
+    calls = [
+        mock.call('test/path/Runtime/.cipd'),
+        mock.call('test/path/Runtime/.xcode_versions'),
+    ]
+    mock_exists.assert_has_calls(calls)
+    self.assertFalse(mock_rmtree.called)
+    mock_check_output.assert_called_with([
+        'mac_toolchain', 'install-runtime', '-xcode-version',
+        'testxcodeversion', '-runtime-version', 'ios-14-4', '-output-dir',
+        'test/path/Runtime'
+    ],
+                                         stderr=-2)
+
+  @mock.patch('shutil.rmtree', autospec=True)
+  @mock.patch('os.path.exists', autospec=True)
+  @mock.patch('glob.glob', autospec=True)
+  @mock.patch('subprocess.check_call', autospec=True)
+  def test_install_runtime_has_cache(self, mock_check_output, mock_glob,
+                                     mock_exists, mock_rmtree):
+    mock_glob.return_value = ['test/path/Runtime/iOS.simruntime']
+    xcode_util._install_runtime(self.mac_toolchain, self.runtime_cache_folder,
+                                self.xcode_build_version, self.ios_version)
+
+    mock_glob.assert_called_with('test/path/Runtime/*.simruntime')
+    self.assertFalse(mock_exists.called)
+    self.assertFalse(mock_rmtree.called)
+    mock_check_output.assert_called_with([
+        'mac_toolchain', 'install-runtime', '-xcode-version',
+        'testxcodeversion', '-runtime-version', 'ios-14-4', '-output-dir',
+        'test/path/Runtime'
+    ],
+                                         stderr=-2)
+
+  @mock.patch('shutil.rmtree', autospec=True)
+  @mock.patch('os.path.exists', autospec=True)
+  @mock.patch('glob.glob', autospec=True)
+  @mock.patch('subprocess.check_call', autospec=True)
+  def test_install_runtime_incorrect_cache(self, mock_check_output, mock_glob,
+                                           mock_exists, mock_rmtree):
+    mock_glob.return_value = []
+    mock_exists.return_value = True
+
+    xcode_util._install_runtime(self.mac_toolchain, self.runtime_cache_folder,
+                                self.xcode_build_version, self.ios_version)
+
+    mock_glob.assert_called_with('test/path/Runtime/*.simruntime')
+    calls = [
+        mock.call('test/path/Runtime/.cipd'),
+        mock.call('test/path/Runtime/.xcode_versions'),
+    ]
+    mock_exists.assert_has_calls(calls)
+    mock_rmtree.assert_has_calls(calls)
+
     mock_check_output.assert_called_with([
         'mac_toolchain', 'install-runtime', '-xcode-version',
         'testxcodeversion', '-runtime-version', 'ios-14-4', '-output-dir',

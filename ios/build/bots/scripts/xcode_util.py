@@ -81,6 +81,18 @@ def _install_runtime(mac_toolchain, install_path, xcode_build_version,
     xcode_build_version: (string) Xcode build version, e.g. 12d4e.
     ios_version: (string) Runtime version (number only), e.g. 13.4.
   """
+
+  existing_runtimes = glob.glob(os.path.join(install_path, '*.simruntime'))
+  # When no runtime file exists, remove any remaining .cipd or .xcode_versions
+  # status folders, so mac_toolchain(underlying CIPD) will work to download a
+  # new one.
+  if len(existing_runtimes) == 0:
+    for dir_name in ['.cipd', '.xcode_versions']:
+      dir_path = os.path.join(install_path, dir_name)
+      if os.path.exists(dir_path):
+        LOGGER.warning('Removing %s in runtime cache folder.', dir_path)
+        shutil.rmtree(dir_path)
+
   # Transform iOS version to the runtime version format required my the tool.
   # e.g. "14.4" -> "ios-14-4"
   runtime_version = 'ios-' + ios_version.replace('.', '-')
