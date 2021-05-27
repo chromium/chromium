@@ -42,8 +42,7 @@ ui::IMEEngineHandlerInterface* GetEngine() {
 InputMethodChromeOS::InputMethodChromeOS(
     internal::InputMethodDelegate* delegate)
     : InputMethodBase(delegate),
-      typing_session_manager_(
-          TypingSessionManager(base::DefaultClock::GetInstance())) {
+      typing_session_manager_(base::DefaultClock::GetInstance()) {
   ResetContext();
 }
 
