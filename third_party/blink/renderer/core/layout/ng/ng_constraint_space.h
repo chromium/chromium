@@ -61,7 +61,7 @@ enum class NGBaselineAlgorithmType {
 };
 
 // The behavior of the 'auto' keyword when used with a main-size.
-enum class NGAutoBehavior {
+enum class NGAutoBehavior : uint8_t {
   // We should shrink-to-fit within the available space.
   kFitContent,
   // We should stretch to the available space, but if there is an aspect-ratio

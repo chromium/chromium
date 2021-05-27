@@ -22,8 +22,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                                NGBlockBreakToken> {
  public:
   enum class AutoPlacementType { kNotNeeded, kMajor, kMinor, kBoth };
-  enum class AxisEdge { kStart, kCenter, kEnd, kBaseline };
-  enum class ItemType { kInGridFlow, kOutOfFlow };
+  enum class AxisEdge : uint8_t { kStart, kCenter, kEnd, kBaseline };
+  enum class ItemType : uint8_t { kInGridFlow, kOutOfFlow };
 
   // This enum corresponds to each step used to accommodate grid items across
   // intrinsic tracks according to their min and max track sizing functions, as
@@ -37,7 +37,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     kForFreeSpace,
   };
 
-  enum class BaselineType {
+  enum class BaselineType : uint8_t {
     kMajor,
     kMinor,
   };
@@ -120,6 +120,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     AxisEdge block_axis_alignment;
     absl::optional<AxisEdge> inline_axis_alignment_fallback;
     absl::optional<AxisEdge> block_axis_alignment_fallback;
+
+    bool is_inline_axis_overflow_safe;
+    bool is_block_axis_overflow_safe;
 
     ItemType item_type;
     bool is_grid_containing_block;
