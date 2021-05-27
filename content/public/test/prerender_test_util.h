@@ -117,6 +117,15 @@ class PrerenderTestHelper {
   // add_prerender.html and waits until the completion of prerendering.
   int AddPrerenderWithTestUtilJS(const GURL& gurl);
 
+  // Adds <script type="speculationrules"> in the current main frame and waits
+  // until the completion of prerendering. Returns the id of the resulting
+  // prerendering host.
+  //
+  // AddSpeculationRulesAsync() is the same as AddSpeculationRules(), but does
+  // not wait until the completion of prerendering.
+  int AddSpeculationRules(const GURL& prerendering_url);
+  void AddSpeculationRulesAsync(const GURL& prerendering_url);
+
   // This navigates, but does not activate, the prerendered page.
   void NavigatePrerenderedPage(int host_id, const GURL& gurl);
 

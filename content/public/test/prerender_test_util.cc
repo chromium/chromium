@@ -22,6 +22,18 @@ namespace content {
 namespace test {
 namespace {
 
+constexpr char kAddSpeculationRuleScript[] = R"({
+    const script = document.createElement('script');
+    script.type = 'speculationrules';
+    script.text = `{
+      "prerender": [{
+        "source": "list",
+        "urls": [$1]
+      }]
+    }`;
+    document.head.appendChild(script);
+  })";
+
 PrerenderHostRegistry& GetPrerenderHostRegistry(
     content::WebContents* web_contents) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -298,6 +310,24 @@ int PrerenderTestHelper::AddPrerenderWithTestUtilJS(const GURL& gurl) {
   int host_id = GetHostForUrl(gurl);
   EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
   return host_id;
+}
+
+int PrerenderTestHelper::AddSpeculationRules(const GURL& prerendering_url) {
+  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
+  AddSpeculationRulesAsync(prerendering_url);
+
+  WaitForPrerenderLoadCompletion(prerendering_url);
+  const int host_id = GetHostForUrl(prerendering_url);
+  EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  return host_id;
+}
+
+void PrerenderTestHelper::AddSpeculationRulesAsync(
+    const GURL& prerendering_url) {
+  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
+  const auto script = JsReplace(kAddSpeculationRuleScript, prerendering_url);
+  GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
+      base::UTF8ToUTF16(script), base::NullCallback());
 }
 
 void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,

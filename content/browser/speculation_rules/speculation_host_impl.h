@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "content/common/content_export.h"
 #include "content/public/browser/frame_service_base.h"
 #include "content/public/browser/speculation_host_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -14,10 +15,11 @@
 
 namespace content {
 class RenderFrameHost;
+class PrerenderProcessor;
 
 // Receiver for speculation rules from the web platform. See
 // third_party/blink/renderer/core/speculation_rules/README.md
-class SpeculationHostImpl
+class CONTENT_EXPORT SpeculationHostImpl final
     : public content::FrameServiceBase<blink::mojom::SpeculationHost> {
  public:
   // Creates and binds an instance of this per-frame.
@@ -26,6 +28,11 @@ class SpeculationHostImpl
       mojo::PendingReceiver<blink::mojom::SpeculationHost> receiver);
 
   ~SpeculationHostImpl() override;
+
+  SpeculationHostImpl(const SpeculationHostImpl&) = delete;
+  SpeculationHostImpl& operator=(const SpeculationHostImpl&) = delete;
+  SpeculationHostImpl(SpeculationHostImpl&&) = delete;
+  SpeculationHostImpl& operator=(SpeculationHostImpl&&) = delete;
 
  private:
   SpeculationHostImpl(
@@ -36,6 +43,7 @@ class SpeculationHostImpl
       std::vector<blink::mojom::SpeculationCandidatePtr> candidates) override;
 
   std::unique_ptr<SpeculationHostDelegate> delegate_;
+  std::unique_ptr<PrerenderProcessor> prerender_processor_;
 };
 
 }  // namespace content
