@@ -13,6 +13,7 @@ import("//components/nacl/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//pdf/features.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 
 assert(enable_extensions)
@@ -1261,6 +1262,14 @@ static_library("extensions") {
       "plugin_manager.cc",
       "plugin_manager.h",
     ]
+  }
+
+  if (enable_basic_printing && (is_win || is_mac || is_linux || is_chromeos)) {
+    # Needed by files which include //chrome/browser/service_sandbox_type.h.
+    # Inclusion of print_backend_service_manager.h depends on this.
+    # TODO(crbug.com/1213762)  Replace this with more accurate dependency
+    # once //chrome/browser/printing build is able to be cleanly targeted.
+    deps += [ "//chrome/services/printing/public/mojom" ]
   }
 
   if (enable_service_discovery) {
