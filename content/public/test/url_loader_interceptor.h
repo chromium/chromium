@@ -45,7 +45,7 @@ namespace content {
 //  -if you need to delay when the server sends the response, use
 //   net::test_server::ControllableHttpResponse
 //  -otherwise, if you need full control over the net::Error and/or want to
-//   inspect and/or modify the C++ structs used by URLoader interface, then use
+//   inspect and/or modify the C++ structs used by URLLoader interface, then use
 //   this helper class
 //
 // Notes:

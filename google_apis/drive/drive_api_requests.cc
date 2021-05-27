@@ -1076,7 +1076,7 @@ SingleBatchableDelegateRequest::SingleBatchableDelegateRequest(
           sender,
           base::BindRepeating(
               &SingleBatchableDelegateRequest::OnUploadProgress,
-              // Safe to not retain as the SimpleURLoader is owned by our base
+              // Safe to not retain as the SimpleURLLoader is owned by our base
               // class and cannot outlive this instance.
               base::Unretained(this)),
           ProgressCallback()),
