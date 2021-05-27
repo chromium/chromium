@@ -505,7 +505,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, UsesSelectOptionForDropdowns) {
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "SELECT"));
   EXPECT_CALL(mock_web_controller_,
               SelectOption("^05\\/2050$", /* case_sensitive= */ false,
-                           SelectOptionProto::VALUE, /* strict= */ true,
+                           SelectOptionProto::VALUE, /* strict= */ false,
                            EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<5>(OkClientStatus()));
 
@@ -555,7 +555,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "SELECT"));
   EXPECT_CALL(mock_web_controller_,
               SelectOption("^05\\/2050", /* case_sensitive= */ true,
-                           SelectOptionProto::VALUE, /* strict= */ true,
+                           SelectOptionProto::VALUE, /* strict= */ false,
                            EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<5>(OkClientStatus()));
 
