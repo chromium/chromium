@@ -171,12 +171,21 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             onSelectorReady(INVALID_SELECTOR);
             return;
         }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
+            LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
+                    LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.REQUEST_SELECTOR);
+        }
 
         mProducer = mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
                 TextFragmentReceiver.MANAGER);
         mProducer.requestSelector(new TextFragmentReceiver.RequestSelectorResponse() {
             @Override
             public void call(String selector) {
+                if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
+                    LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
+                            LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.SELECTOR_RECEIVED);
+                }
                 onSelectorReady(selector);
             }
         });

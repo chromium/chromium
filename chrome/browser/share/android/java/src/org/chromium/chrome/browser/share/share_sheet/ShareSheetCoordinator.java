@@ -210,6 +210,11 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
                 && chromeShareExtras.isUserHighlightedText()) {
+            if (!chromeShareExtras.isReshareHighlightedText()) {
+                LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
+                        LinkToTextMetricsHelper.LinkToTextDiagnoseStatus
+                                .SHOW_SHARINGHUB_FOR_HIGHLIGHT);
+            }
             String tabUrl =
                     mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec() : "";
             mLinkToTextCoordinator =

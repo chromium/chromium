@@ -300,6 +300,8 @@ void TextFragmentSelectorGenerator::RequestSelector(
     pending_generate_selector_callback_ = std::move(callback);
     GenerateSelector();
   } else {
+    base::UmaHistogramEnumeration(
+        "SharedHighlights.LinkGenerated.StateAtRequest", state_);
     pending_generate_selector_callback_ = std::move(callback);
     DCHECK_NE(state_, kNotStarted);
     if (state_ == kFailure || state_ == kSuccess) {

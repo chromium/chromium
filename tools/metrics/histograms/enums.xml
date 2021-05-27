@@ -44002,11 +44002,26 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Generation failed (shared text)"/>
 </enum>
 
+<enum name="LinkGenerationState">
+  <int value="0" label="kNotStarted: Link generation is not strated."/>
+  <int value="1"
+      label="kNeedsNewCandidate: New candidate selector is being generated."/>
+  <int value="2" label="kTestCandidate: Candidate selector is being tested."/>
+  <int value="3" label="kFailure: Link generation completed with failure."/>
+  <int value="4" label="kSuccess: Link generation completed with success."/>
+</enum>
+
 <enum name="LinkMonitorFailureType">
   <int value="0" label="Local MAC Address Not Found"/>
   <int value="1" label="Client Startup Failure"/>
   <int value="2" label="Transmission Failure"/>
   <int value="3" label="Failure Threshold Reached"/>
+</enum>
+
+<enum name="LinkToTextDiagnoseStatus">
+  <int value="0" label="Show sharing hub is requested for highlighted text"/>
+  <int value="1" label="Selector is requested for highlighted text"/>
+  <int value="2" label="Selector is received for highlighted text"/>
 </enum>
 
 <enum name="LinkToTextShouldOfferResult">

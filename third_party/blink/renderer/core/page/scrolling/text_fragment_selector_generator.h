@@ -98,7 +98,9 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
     kFailure,
 
     // Selector is found. No further attempts are necessary.
-    kSuccess
+    kSuccess,
+
+    kMaxValue = kSuccess
   };
 
   // Generates selector for current selection.
