@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/file_system/rename_handler.h"
 
+#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
+#include "chrome/browser/enterprise/connectors/file_system/test_helper.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -18,7 +20,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/fake_download_item.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -253,9 +254,9 @@ class MockUploader : public BoxUploader {
               (),
               (override));
 
-  void NotifySuccess() { NotifyResultForTesting(true); }
+  void NotifySuccess() { SetUploadApiCallFlowDoneForTesting(true); }
 
-  void NotifyFailure() { NotifyResultForTesting(false); }
+  void NotifyFailure() { SetUploadApiCallFlowDoneForTesting(false); }
 };
 
 class RenameHandlerTestBase {
@@ -275,11 +276,12 @@ class RenameHandlerTestBase {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile, nullptr);
 
+    item_.SetTargetFilePath(base::FilePath::FromUTF8Unsafe("somefile.png"));
     item_.SetURL(GURL("https://any.com"));
     content::DownloadItemUtils::AttachInfo(&item_, profile,
                                            web_contents_.get());
-
-    item_.SetTargetFilePath(base::FilePath::FromUTF8Unsafe("somefile.png"));
+    ASSERT_TRUE(base::WriteFile(item_.GetFullPath(), "RenameHandlerTest"))
+        << "Failed to create " << item_.GetFullPath();
 
     ConnectorsService* service = ConnectorsServiceFactory::GetForBrowserContext(
         content::DownloadItemUtils::GetBrowserContext(&item_));
@@ -299,9 +301,13 @@ class RenameHandlerTestBase {
   void TearDown() {
     handler_.reset();
     web_contents_.reset();
+    ASSERT_FALSE(base::PathExists(item_.GetFullPath()) &&
+                 base::PathExists(item_.GetTargetFilePath()))
+        << "File should have been deleted regardless of rerouting success or "
+           "failure";
   }
 
-  content::FakeDownloadItem item_;
+  DownloadItemForTest item_{FILE_PATH_LITERAL("rename_handler_test.txt")};
 
  private:
   std::unique_ptr<RenameHandlerForTest> handler_;

@@ -178,7 +178,7 @@ void FileSystemRenameHandler::StartInternal() {
   // not to be assumed valid on the UI thread.
   if (!context || !contents || !(prefs = PrefsFromBrowserContext(context))) {
     DLOG(ERROR) << "Empty pointers???";
-    NotifyResultToDownloadThread(false);
+    uploader_->TerminateTask();
     return;
   }
 
@@ -256,7 +256,7 @@ void FileSystemRenameHandler::OnAccessTokenFetched(
     return StartInternal();
   }
   // Handle token storage operations failure.
-  return NotifyResultToDownloadThread(false);
+  return uploader_->TerminateTask();
 }
 
 void FileSystemRenameHandler::OnAuthenticationError(
@@ -267,9 +267,8 @@ void FileSystemRenameHandler::OnAuthenticationError(
     VLOG(20) << "Re-authenticating...";
     StartInternal();
   } else {
-    DLOG(ERROR) << "Failed to clear OAuth2 tokens. Notifying failure back.";
-    NotifyResultToDownloadThread(false);
-    // TODO(https://crbug.com/1184351): Handle local temporary file.
+    DLOG(ERROR) << "Failed to clear OAuth2 tokens. Will notify failure back.";
+    uploader_->TerminateTask();
   }
 }
 
@@ -279,8 +278,7 @@ void FileSystemRenameHandler::OnSignInCancellation() {
   if (prefs) {
     ClearFileSystemOAuth2Tokens(prefs, settings_.service_provider);
   }
-  NotifyResultToDownloadThread(false);
-  // TODO(https://crbug.com/1184351): Handle local temporary file.
+  uploader_->TerminateTask();
 }
 
 void FileSystemRenameHandler::OnApiAuthenticationError() {

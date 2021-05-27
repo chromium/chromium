@@ -71,6 +71,7 @@ std::string ExtractId(const base::Value& entry) {
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 std::string GetMimeType(base::FilePath file_path) {
   auto ext = file_path.FinalExtension();
+  DCHECK(ext.size()) << file_path;
   if (ext.front() == '.') {
     ext.erase(ext.begin());
   }

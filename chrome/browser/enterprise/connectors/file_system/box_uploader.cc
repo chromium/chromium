@@ -51,6 +51,7 @@ BoxUploader::BoxUploader(download::DownloadItem* download_item)
       target_file_name_(download_item->GetTargetFilePath().BaseName()) {}
 
 BoxUploader::~BoxUploader() = default;
+// TODO(https://crbug.com/1213761) May need to TerminateTask() to resume later.
 
 void BoxUploader::Init(
     base::RepeatingCallback<void(void)> authen_retry_callback,
@@ -80,6 +81,12 @@ void BoxUploader::TryCurrentApiCall() {
   } else {
     StartCurrentApiCall();
   }
+}
+
+void BoxUploader::TerminateTask() {
+  current_api_call_.reset(nullptr);
+  // TODO(https://crbug.com/1213761) May need to resume upload later.
+  OnApiCallFlowFailure();
 }
 
 bool BoxUploader::EnsureSuccessResponse(bool success, int response_code) {
@@ -114,11 +121,11 @@ void BoxUploader::OnApiCallFlowDone(bool upload_success, GURL file_url) {
     // for trusted testers (TT), deleting as usual for now. Need to determine
     // how to communicate the failure/error to user.
   } else {
+    DCHECK(file_url_.is_empty());
     file_url_ = file_url;
   }
 
-  PostDeleteFileTask(base::BindOnce(
-      &BoxUploader::OnFileDeleted, weak_factory_.GetWeakPtr(), upload_success));
+  PostDeleteFileTask(upload_success);
 }
 
 void BoxUploader::NotifyResult(bool success) {
@@ -252,9 +259,10 @@ void BoxUploader::SetCurrentApiCall(
 
 // File Delete /////////////////////////////////////////////////////////////////
 
-void BoxUploader::PostDeleteFileTask(
-    base::OnceCallback<void(bool)> delete_file_reply) {
+void BoxUploader::PostDeleteFileTask(bool upload_success) {
   auto delete_file_task = base::BindOnce(&DeleteIfExists, GetLocalFilePath());
+  auto delete_file_reply = base::BindOnce(
+      &BoxUploader::OnFileDeleted, weak_factory_.GetWeakPtr(), upload_success);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       std::move(delete_file_task), std::move(delete_file_reply));
@@ -277,8 +285,8 @@ void BoxUploader::NotifyOAuth2ErrorForTesting() {
   authentication_retry_callback_.Run();
 }
 
-void BoxUploader::NotifyResultForTesting(bool success) {
-  NotifyResult(success);
+void BoxUploader::SetUploadApiCallFlowDoneForTesting(bool success) {
+  OnApiCallFlowDone(success, {});
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -88,8 +88,7 @@ class BoxUploaderForTest : public BoxUploader {
 class BoxUploaderTest : public BoxUploaderTestBase {
  public:
   BoxUploaderTest()
-      : BoxUploaderTestBase(
-            FILE_PATH_LITERAL("box_uploader_test.txt.crdownload")),
+      : BoxUploaderTestBase(FILE_PATH_LITERAL("box_uploader_test.txt")),
         uploader_(std::make_unique<BoxUploaderForTest>(
             &test_item_,
             base::BindOnce(&BoxUploaderTest::InterceptedPreUpload,
@@ -188,6 +187,24 @@ TEST_F(BoxUploaderTest, CreateFolder_UnexpectedFailure) {
   AddFetchResult(kFileSystemBoxCreateFolderUrl, net::HTTP_NOT_FOUND);
 
   uploader_->TryTask(url_factory_, "test_token");
+  RunWithQuitClosure();
+
+  // Should just report failure via callback.
+  ASSERT_EQ(authentication_retry_, 0);
+  EXPECT_FALSE(upload_initiated_);
+  EXPECT_TRUE(download_thread_cb_called_);
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(), "");
+}
+
+TEST_F(BoxUploaderTest, CreateFolder_TerminateTask) {
+  // Check that the API calls flow is terminated upon any other failure code
+  // other than net::HTTP_UNAUTHORIZED.
+  AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
+                 kFileSystemBoxFindFolderResponseEmptyEntriesList);
+
+  uploader_->TryTask(url_factory_, "test_token");
+  uploader_
+      ->TerminateTask();  // Terminate without mock fetch result for create.
   RunWithQuitClosure();
 
   // Should just report failure via callback.
@@ -353,7 +370,7 @@ class BoxUploader_FileDeleteTest : public BoxUploaderTestBase {
  public:
   BoxUploader_FileDeleteTest()
       : BoxUploaderTestBase(
-            FILE_PATH_LITERAL("box_uploader_file_delete_test.txt.crdownload")),
+            FILE_PATH_LITERAL("box_uploader_file_delete_test.txt")),
         uploader_(std::make_unique<BoxUploaderForFileDeleteTest>(&test_item_)) {
   }
 
@@ -403,6 +420,16 @@ TEST_F(BoxUploader_FileDeleteTest, OnApiCallFlowFailure) {
   ASSERT_FALSE(upload_success_);
 }
 
+TEST_F(BoxUploader_FileDeleteTest, TerminateTask) {
+  CreateTemporaryFile();
+
+  uploader_->TerminateTask();
+  RunWithQuitClosure();
+
+  EXPECT_FALSE(base::PathExists(GetFilePath()));  // Make sure file is deleted.
+  ASSERT_FALSE(upload_success_);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BoxDirectUploaderTest
 ////////////////////////////////////////////////////////////////////////////////
@@ -410,8 +437,7 @@ TEST_F(BoxUploader_FileDeleteTest, OnApiCallFlowFailure) {
 class BoxDirectUploaderTest : public BoxUploaderTestBase {
  public:
   BoxDirectUploaderTest()
-      : BoxUploaderTestBase(
-            FILE_PATH_LITERAL("box_direct_uploader_test.txt.crdownload")),
+      : BoxUploaderTestBase(FILE_PATH_LITERAL("box_direct_uploader_test.txt")),
         uploader_(std::make_unique<BoxDirectUploader>(&test_item_)) {}
 
   void SetUp() override {
@@ -472,7 +498,7 @@ class BoxChunkedUploaderTest : public BoxUploaderTestBase {
  public:
   BoxChunkedUploaderTest()
       : BoxUploaderTestBase(
-            FILE_PATH_LITERAL("box_chunked_uploader_test.txt.crdownload")) {}
+            FILE_PATH_LITERAL("box_chunked_uploader_test.txt")) {}
 
   void SetUp() override {
     testing::Test::SetUp();

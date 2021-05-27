@@ -23,22 +23,6 @@ std::string GetTestName() {
 namespace enterprise_connectors {
 
 ////////////////////////////////////////////////////////////////////////////////
-// DownloadItemForTest
-////////////////////////////////////////////////////////////////////////////////
-
-DownloadItemForTest::DownloadItemForTest(
-    base::FilePath::StringPieceType file_name) {
-  CHECK(temp_dir_.CreateUniqueTempDir());
-  file_path_ = temp_dir_.GetPath().Append(file_name);
-  CHECK_EQ(file_path_.FinalExtension(), FILE_PATH_LITERAL(".crdownload"));
-  SetTargetFilePath(file_path_.RemoveFinalExtension());
-}
-
-const base::FilePath& DownloadItemForTest::GetFullPath() const {
-  return file_path_;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // BoxUploaderTestBase
 ////////////////////////////////////////////////////////////////////////////////
 

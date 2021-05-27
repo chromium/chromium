@@ -7,14 +7,13 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_flow.h"
+#include "chrome/browser/enterprise/connectors/file_system/test_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/fake_download_item.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -26,21 +25,10 @@ namespace enterprise_connectors {
 
 class BoxUploader;
 
-class DownloadItemForTest : public content::FakeDownloadItem {
- public:
-  explicit DownloadItemForTest(base::FilePath::StringPieceType file_name);
-  const base::FilePath& GetFullPath() const override;
-
- protected:
-  base::ScopedTempDir temp_dir_;
-  base::FilePath file_path_;
-};
-
 class BoxUploaderTestBase : public testing::Test {
  public:
-  explicit BoxUploaderTestBase(
-      base::FilePath::StringPieceType file_name =
-          FILE_PATH_LITERAL("box_uploader_test.txt.crdownload"));
+  explicit BoxUploaderTestBase(base::FilePath::StringPieceType file_name =
+                                   FILE_PATH_LITERAL("box_uploader_test.txt"));
   ~BoxUploaderTestBase() override;
 
   base::FilePath GetFilePath() const;

@@ -40,13 +40,16 @@ class BoxUploader {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token);
 
+  // Cancel the upload and delete the local temporary file.
+  void TerminateTask();
+
   virtual GURL GetUploadedFileUrl() const;
   virtual GURL GetDestinationFolderUrl() const;
 
   // Helper methods for unit tests.
   std::string GetFolderIdForTesting() const;
   void NotifyOAuth2ErrorForTesting();
-  void NotifyResultForTesting(bool success);
+  void SetUploadApiCallFlowDoneForTesting(bool success);
 
   class FileChunksHandler;  // To be moved into BoxChunkedFileUploader.
 
@@ -93,9 +96,8 @@ class BoxUploader {
 
   // The followings are not necessarily specific to Box:
   // Post a task to ThreadPool to delete the local file, after the entire file
-  // has been uploaded, with callback OnFileDeleted(). Arg of |delete_cb|
-  // indicates whether deletion succeeded.
-  void PostDeleteFileTask(base::OnceCallback<void(bool)> delete_cb);
+  // upload was done, with callback OnFileDeleted().
+  void PostDeleteFileTask(bool upload_success);
   // Callback attached in PostDeleteFileTask(). Report success back to original
   // thread via download_callback_.
   void OnFileDeleted(bool upload_success, bool delete_success);
