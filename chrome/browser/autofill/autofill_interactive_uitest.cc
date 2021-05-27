@@ -78,7 +78,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom_us_layout_data.h"
@@ -269,9 +268,7 @@ content::RenderFrameHost* RenderFrameHostForName(
 class AutofillInteractiveTestBase : public AutofillUiTest {
  protected:
   AutofillInteractiveTestBase()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitAndEnableFeature(blink::features::kAutofillShadowDOM);
-  }
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
  public:
   AutofillInteractiveTestBase(const AutofillInteractiveTestBase&) = delete;
@@ -706,10 +703,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   void TriggerFormFill(const std::string& field_name) {
     FocusFieldByName(field_name);
-    TriggerFormFillAlreadyFocused();
-  }
 
-  void TriggerFormFillAlreadyFocused() {
     // Start filling the first name field with "M" and wait for the popup to be
     // shown.
     SendKeyToPageAndWait(ui::DomKey::FromCharacter('M'), ui::DomCode::US_M,
@@ -776,8 +770,6 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   // The response to return for queries to |kTestUrlPath|
   std::string test_url_content_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 const char AutofillInteractiveTestBase::kTestUrlPath[] =
@@ -3515,61 +3507,6 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   ExpectFieldValue("company", "Initech");
   ExpectFieldValue("email", "red.swingline@initech.com");
   ExpectFieldValue("phone", "15125551234");
-}
-
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ShadowDOM) {
-  CreateTestProfile();
-
-  GURL url =
-      embedded_test_server()->GetURL("a.com", "/autofill/shadowdom.html");
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
-
-  bool result = false;
-  ASSERT_TRUE(
-      content::ExecuteScriptAndExtractBool(GetWebContents(),
-                                           R"( function onFocusHandler(e) {
-              e.target.removeEventListener(e.type, arguments.callee);
-              domAutomationController.send(true);
-            }
-            if (document.readyState === 'complete') {
-              var target = getNameElement();
-              target.addEventListener('focus', onFocusHandler);
-              target.focus();
-            } else {
-              domAutomationController.send(false);
-            })",
-                                           &result));
-  ASSERT_TRUE(result);
-  TriggerFormFillAlreadyFocused();
-
-  std::string name;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "window.domAutomationController.send(getName())",
-      &name));
-  EXPECT_EQ("Milton C. Waddams", name) << " for field name";
-
-  std::string address;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "window.domAutomationController.send(getAddress())",
-      &address));
-  EXPECT_EQ("4120 Freidrich Lane", address) << " for field address";
-
-  std::string city;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "window.domAutomationController.send(getCity())",
-      &city));
-  EXPECT_EQ("Austin", city) << " for field city";
-
-  std::string state;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "window.domAutomationController.send(getState())",
-      &state));
-  EXPECT_EQ("TX", state) << " for field state";
-
-  std::string zip;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "window.domAutomationController.send(getZip())", &zip));
-  EXPECT_EQ("78744", zip) << " for field zip";
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

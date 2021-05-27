@@ -407,10 +407,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kFledgeInterestGroupAPI;
 BLINK_COMMON_EXPORT extern const base::Feature
     kMinimizeAudioProcessingForUnusedOutput;
 
-// Makes autofill look across shadow boundaries when collecting form controls to
-// fill.
-BLINK_COMMON_EXPORT extern const base::Feature kAutofillShadowDOM;
-
 }  // namespace features
 }  // namespace blink
 
