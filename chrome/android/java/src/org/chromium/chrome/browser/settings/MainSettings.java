@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
@@ -70,6 +71,7 @@ public class MainSettings extends PreferenceFragmentCompat
     public static final String PREF_SEARCH_ENGINE = "search_engine";
     public static final String PREF_PASSWORDS = "passwords";
     public static final String PREF_HOMEPAGE = "homepage";
+    public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
     public static final String PREF_PRIVACY = "privacy";
     public static final String PREF_SAFETY_CHECK = "safety_check";
@@ -203,6 +205,10 @@ public class MainSettings extends PreferenceFragmentCompat
             findPreference(PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION).setVisible(true);
             mManageSync.setVisible(true);
             findPreference(PREF_GOOGLE_SERVICES).setVisible(true);
+        }
+
+        if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) {
+            getPreferenceScreen().removePreference(findPreference(PREF_TOOLBAR_SHORTCUT));
         }
     }
 
