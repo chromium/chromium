@@ -30,9 +30,8 @@ namespace {
 const char kPrefKeyUsage[] = "keyUsage";
 const char kPrefKeyUsageCorporate[] = "corporate";
 
-const base::DictionaryValue* GetPrefsEntry(
-    const std::string& public_key_spki_der_b64,
-    const PrefService* const profile_prefs) {
+const base::Value* GetPrefsEntry(const std::string& public_key_spki_der_b64,
+                                 const PrefService* const profile_prefs) {
   if (!profile_prefs)
     return nullptr;
 
@@ -41,14 +40,7 @@ const base::DictionaryValue* GetPrefsEntry(
   if (!platform_keys)
     return nullptr;
 
-  const base::Value* key_entry_value =
-      platform_keys->FindKey(public_key_spki_der_b64);
-  if (!key_entry_value)
-    return nullptr;
-
-  const base::DictionaryValue* key_entry = nullptr;
-  key_entry_value->GetAsDictionary(&key_entry);
-  return key_entry;
+  return platform_keys->FindKey(public_key_spki_der_b64);
 }
 
 }  // namespace
@@ -62,7 +54,7 @@ bool IsUserKeyMarkedCorporateInPref(const std::string& public_key_spki_der,
   std::string public_key_spki_der_b64;
   base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
 
-  const base::DictionaryValue* prefs_entry =
+  const base::Value* prefs_entry =
       GetPrefsEntry(public_key_spki_der_b64, profile_prefs);
   if (prefs_entry) {
     const base::Value* key_usage = prefs_entry->FindKey(kPrefKeyUsage);
