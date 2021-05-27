@@ -2212,6 +2212,10 @@ if (enable_java_templates) {
   #     resources to put in the final output, even if aapt_locale_allowlist
   #     is defined to a smaller subset.
   #
+  #   support_zh_hk: (optional)
+  #     If true, support zh-HK in Chrome on Android by using the resources
+  #     from zh-TW. See https://crbug.com/780847.
+  #
   #   aapt_locale_allowlist: (optional)
   #     Restrict compiled locale-dependent resources to a specific allowlist.
   #     NOTE: This is a list of Chromium locale names, not Android ones.
@@ -2522,6 +2526,10 @@ if (enable_java_templates) {
     if (defined(invoker.resource_values_filter_rules)) {
       _args +=
           [ "--values-filter-rules=${invoker.resource_values_filter_rules}" ]
+    }
+
+    if (defined(invoker.support_zh_hk) && invoker.support_zh_hk) {
+      _args += [ "--support-zh-hk" ]
     }
 
     if (defined(invoker.include_resource)) {

@@ -121,6 +121,11 @@ def _ParseArgs(args):
       'must be identical.')
 
   input_opts.add_argument(
+      '--support-zh-hk',
+      action='store_true',
+      help='Use zh-rTW resources for zh-rHK.')
+
+  input_opts.add_argument(
       '--debuggable',
       action='store_true',
       help='Whether to add android:debuggable="true".')
@@ -283,6 +288,20 @@ def _IterFiles(root_dir):
       yield os.path.join(root, f)
 
 
+def _DuplicateZhResources(resource_dirs, path_info):
+  """Duplicate Taiwanese resources into Hong-Kong specific directory."""
+  for resource_dir in resource_dirs:
+    # We use zh-TW resources for zh-HK (if we have zh-TW resources).
+    for path in _IterFiles(resource_dir):
+      if 'zh-rTW' in path:
+        hk_path = path.replace('zh-rTW', 'zh-rHK')
+        build_utils.MakeDirectory(os.path.dirname(hk_path))
+        shutil.copyfile(path, hk_path)
+        path_info.RegisterRename(
+            os.path.relpath(path, resource_dir),
+            os.path.relpath(hk_path, resource_dir))
+
+
 def _RenameLocaleResourceDirs(resource_dirs, path_info):
   """Rename locale resource directories into standard names when necessary.
 
@@ -338,11 +357,13 @@ def _RenameLocaleResourceDirs(resource_dirs, path_info):
             os.path.relpath(path2, resource_dir))
 
 
-def _ToAndroidLocales(locale_allowlist):
+def _ToAndroidLocales(locale_allowlist, support_zh_hk):
   """Converts the list of Chrome locales to Android config locale qualifiers.
 
   Args:
     locale_allowlist: A list of Chromium locale names.
+    support_zh_hk: True if we need to support zh-HK by duplicating
+      the zh-TW strings.
   Returns:
     A set of matching Android config locale qualifier names.
   """
@@ -356,7 +377,14 @@ def _ToAndroidLocales(locale_allowlist):
     language = locale.split('-')[0]
     ret.add(language)
 
-  return ret
+  # We don't actually support zh-HK in Chrome on Android, but we mimic the
+  # native side behavior where we use zh-TW resources when the locale is set to
+  # zh-HK. See https://crbug.com/780847.
+  if support_zh_hk:
+    assert not any('HK' in l for l in locale_allowlist), (
+        'Remove special logic if zh-HK is now supported (crbug.com/780847).')
+    ret.add('zh-rHK')
+  return set(ret)
 
 
 def _MoveImagesToNonMdpiFolders(res_root, path_info):
@@ -682,7 +710,8 @@ def _RemoveUnwantedLocalizedStrings(dep_subdirs, options):
   # list provided by --locale-allowlist.
   wanted_locales = all_locales
   if options.locale_allowlist:
-    wanted_locales = _ToAndroidLocales(options.locale_allowlist)
+    wanted_locales = _ToAndroidLocales(options.locale_allowlist,
+                                       options.support_zh_hk)
 
   # Set B: shared resources locales, which is either set A
   # or the list provided by --shared-resources-allowlist-locales
@@ -694,7 +723,7 @@ def _RemoveUnwantedLocalizedStrings(dep_subdirs, options):
             options.shared_resources_allowlist))
 
     shared_resources_locales = _ToAndroidLocales(
-        options.shared_resources_allowlist_locales)
+        options.shared_resources_allowlist_locales, options.support_zh_hk)
 
   # Remove any file that belongs to a locale not covered by
   # either A or B.
@@ -754,6 +783,8 @@ def _PackageApk(options, build):
 
   logging.debug('Applying locale transformations')
   path_info = resource_utils.ResourceInfoFile()
+  if options.support_zh_hk:
+    _DuplicateZhResources(dep_subdirs, path_info)
   _RenameLocaleResourceDirs(dep_subdirs, path_info)
 
   logging.debug('Applying file-based exclusions')
