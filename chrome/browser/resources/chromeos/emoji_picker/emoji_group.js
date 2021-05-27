@@ -40,8 +40,15 @@ class EmojiGroupComponent extends PolymerElement {
     return emoji.name;
   }
 
-  getDisplayEmojiForEmoji(emoji) {
-    return this.preferred[emoji] || emoji;
+  /**
+   *
+   * @param {string} emoji
+   * @param {Object<string,string>} preferred this.preferred, the map from base
+   *     emoji to preferred variant. Needs to be included so that polymer
+   *     understands the dependency chain
+   */
+  getDisplayEmojiForEmoji(emoji, preferred) {
+    return (preferred && preferred[emoji]) || emoji;
   }
 
   onClearClick(ev) {

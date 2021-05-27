@@ -99,8 +99,9 @@
   </template>
 <div id="emoji">
   <div id="fake-focus-target" tabindex="-1"></div>
-  <template is="dom-repeat" items="[[data.emoji]]">
-    <emoji-button emoji="[[getDisplayEmojiForEmoji(item.base.string)]]"
+  <template is="dom-repeat" items="[[data.emoji]]" observe="preferred">
+    <emoji-button
+      emoji="[[getDisplayEmojiForEmoji(item.base.string, preferred) ]]"
       variants="[[item.alternates]]" tooltip="[[getTooltipForEmoji(item.base)]]"
     >
     </emoji-button>

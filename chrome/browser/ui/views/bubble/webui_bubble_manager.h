@@ -47,6 +47,7 @@ class WebUIBubbleManager : public views::WidgetObserver {
   }
   void ResetContentsWrapperForTesting();
   void DisableCloseBubbleHelperForTesting();
+  void SetAnchorRect(gfx::Rect anchor_rect) { anchor_rect_ = anchor_rect; }
 
  protected:
   BubbleContentsWrapper* cached_contents_wrapper() {
@@ -84,6 +85,7 @@ class WebUIBubbleManager : public views::WidgetObserver {
 
   // Controls whether `close_bubble_helper_` is set when ShowBubble() is called.
   bool disable_close_bubble_helper_ = false;
+  absl::optional<gfx::Rect> anchor_rect_;
 };
 
 template <typename T>

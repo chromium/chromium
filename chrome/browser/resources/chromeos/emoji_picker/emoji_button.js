@@ -61,6 +61,8 @@ export class EmojiButton extends PolymerElement {
       baseEmoji: this.base,
       allVariants: this.allVariants ? this.allVariants : this.variants
     }));
+    ev.preventDefault();
+    ev.stopPropagation();
   }
 
   onContextMenu(ev) {

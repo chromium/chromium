@@ -196,6 +196,10 @@ export class EmojiSearch extends PolymerElement {
         .shadowRoot.querySelector('button')
         .click();
   }
+
+  clearSearch() {
+    this.$.search.setValue('');
+  }
 }
 
 customElements.define(EmojiSearch.is, EmojiSearch);

@@ -14,9 +14,12 @@ interface PageHandlerFactory {
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
 
-  // Request the UI to be shown.  Using this interface, dialog can be invisible
+  // Request the UI to be shown. Using this interface, dialog can be invisible
   // while rendering to avoid UI showing in incomplete state.
   ShowUI();
+
+  // Request the UI to be hidden.
+  CloseUI();
 
   // Request backend to insert emoji (will close the picker).
   // emoji: The emoji to insert in string form e.g. "😂".

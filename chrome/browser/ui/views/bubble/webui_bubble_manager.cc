@@ -31,7 +31,9 @@ bool WebUIBubbleManager::ShowBubble() {
   cache_timer_->Stop();
 
   bubble_view_ = CreateWebUIBubbleDialog();
-
+  if (anchor_rect_.has_value()) {
+    bubble_view_->SetAnchorRect(*anchor_rect_);
+  }
   bubble_widget_observation_.Observe(bubble_view_->GetWidget());
   if (!disable_close_bubble_helper_) {
     close_bubble_helper_ = std::make_unique<CloseBubbleOnTabActivationHelper>(
