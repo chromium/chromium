@@ -101,6 +101,18 @@ export class ItemNavigatorInterface {
    */
   restart() {}
 
+  /**
+   * Restores the suspended group and focus, if there is one.
+   * @abstract
+   */
+  restoreSuspendedGroup() {}
+
+  /**
+   * Saves the current focus and group, and then exits the group.
+   * @abstract
+   */
+  suspendCurrentGroup() {}
+
   // =============== Getter Methods ==============
 
   /**

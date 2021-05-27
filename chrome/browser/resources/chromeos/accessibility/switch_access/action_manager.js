@@ -285,7 +285,7 @@ export class ActionManager {
     // having the menu on the group stack interferes with some actions. We do
     // not close the menu bubble until we receive the ActionResponse CLOSE_MENU.
     // If we receive a different response, we re-enter the menu.
-    Navigator.byItem.exitIfInGroup(MenuManager.menuAutomationNode);
+    Navigator.byItem.suspendCurrentGroup();
 
     const response = this.actionNode_.performAction(action);
 
@@ -295,6 +295,9 @@ export class ActionManager {
         return;
       case SAConstants.ActionResponse.EXIT_MENU:
         ActionManager.exitCurrentMenu();
+        return;
+      case SAConstants.ActionResponse.REMAIN_OPEN:
+        Navigator.byItem.restoreSuspendedGroup();
         return;
       case SAConstants.ActionResponse.RELOAD_MENU:
         ActionManager.refreshMenuUnconditionally();
