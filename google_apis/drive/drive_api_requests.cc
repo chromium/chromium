@@ -1031,38 +1031,38 @@ bool PermissionsInsertRequest::GetContentData(std::string* upload_content_type,
   base::DictionaryValue root;
   switch (type_) {
     case PERMISSION_TYPE_ANYONE:
-      root.SetString("type", "anyone");
+      root.SetStringKey("type", "anyone");
       break;
     case PERMISSION_TYPE_DOMAIN:
-      root.SetString("type", "domain");
+      root.SetStringKey("type", "domain");
       break;
     case PERMISSION_TYPE_GROUP:
-      root.SetString("type", "group");
+      root.SetStringKey("type", "group");
       break;
     case PERMISSION_TYPE_USER:
-      root.SetString("type", "user");
+      root.SetStringKey("type", "user");
       break;
   }
   switch (role_) {
     case PERMISSION_ROLE_OWNER:
-      root.SetString("role", "owner");
+      root.SetStringKey("role", "owner");
       break;
     case PERMISSION_ROLE_READER:
-      root.SetString("role", "reader");
+      root.SetStringKey("role", "reader");
       break;
     case PERMISSION_ROLE_WRITER:
-      root.SetString("role", "writer");
+      root.SetStringKey("role", "writer");
       break;
     case PERMISSION_ROLE_COMMENTER:
-      root.SetString("role", "reader");
+      root.SetStringKey("role", "reader");
       {
-        auto list = std::make_unique<base::ListValue>();
-        list->AppendString("commenter");
-        root.Set("additionalRoles", std::move(list));
+        base::Value list(base::Value::Type::LIST);
+        list.Append("commenter");
+        root.SetKey("additionalRoles", std::move(list));
       }
       break;
   }
-  root.SetString("value", value_);
+  root.SetStringKey("value", value_);
   base::JSONWriter::Write(root, upload_content);
   return true;
 }
