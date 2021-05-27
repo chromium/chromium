@@ -57,11 +57,6 @@ class ThemeColorPolicyHandlerTest : public testing::Test {
     CheckInvalidPolicy(theme_color_value);
   }
 
-  void CheckInvalidTypePolicy(const base::Value& policy_value) {
-    EXPECT_FALSE(CheckPolicy(policy_value.Clone()));
-    EXPECT_NE(0U, errors_.size());
-  }
-
   ThemeColorPolicyHandler handler_;
   PolicyErrorMap errors_;
   PolicyMap policies_;
