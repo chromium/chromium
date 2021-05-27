@@ -303,6 +303,12 @@ void NetworkState::GetStateProperties(base::Value* dictionary) const {
     dictionary->SetKey(shill::kOutOfCreditsProperty,
                        base::Value(cellular_out_of_credits()));
   }
+
+  // Cellular properties
+  if (NetworkTypePattern::Cellular().MatchesType(type())) {
+    dictionary->SetKey(shill::kIccidProperty, base::Value(iccid()));
+    dictionary->SetKey(shill::kEidProperty, base::Value(eid()));
+  }
 }
 
 bool NetworkState::IsActive() const {
