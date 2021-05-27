@@ -141,6 +141,7 @@ struct ShortcutInfo {
   int ideal_splash_image_size_in_px = 0;
   int minimum_splash_image_size_in_px = 0;
   GURL splash_image_url;
+  bool is_splash_image_maskable = false;
   GURL best_primary_icon_url;
   std::vector<std::string> icon_urls;
   std::vector<GURL> screenshot_urls;

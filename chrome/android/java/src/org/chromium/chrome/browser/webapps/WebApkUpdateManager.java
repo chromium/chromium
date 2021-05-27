@@ -526,12 +526,12 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         WebApkUpdateManagerJni.get().storeWebApkUpdateRequestToFile(updateRequestPath,
                 info.manifestStartUrl(), info.scopeUrl(), info.name(), info.shortName(),
                 primaryIconUrl, info.icon().bitmap(), info.isIconAdaptive(), splashIconUrl,
-                info.splashIcon().bitmap(), iconUrls, iconHashes, info.displayMode(),
-                info.orientation(), info.toolbarColor(), info.backgroundColor(), shareTargetAction,
-                shareTargetParamTitle, shareTargetParamText, shareTargetIsMethodPost,
-                shareTargetIsEncTypeMultipart, shareTargetParamFileNames, shareTargetParamAccepts,
-                shortcuts, info.manifestUrl(), info.webApkPackageName(), versionCode,
-                isManifestStale, updateReasonsArray, callback);
+                info.splashIcon().bitmap(), info.isSplashIconMaskable(), iconUrls, iconHashes,
+                info.displayMode(), info.orientation(), info.toolbarColor(), info.backgroundColor(),
+                shareTargetAction, shareTargetParamTitle, shareTargetParamText,
+                shareTargetIsMethodPost, shareTargetIsEncTypeMultipart, shareTargetParamFileNames,
+                shareTargetParamAccepts, shortcuts, info.manifestUrl(), info.webApkPackageName(),
+                versionCode, isManifestStale, updateReasonsArray, callback);
     }
 
     @NativeMethods
@@ -539,14 +539,14 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         public void storeWebApkUpdateRequestToFile(String updateRequestPath, String startUrl,
                 String scope, String name, String shortName, String primaryIconUrl,
                 Bitmap primaryIcon, boolean isPrimaryIconMaskable, String splashIconUrl,
-                Bitmap splashIcon, String[] iconUrls, String[] iconHashes,
-                @WebDisplayMode int displayMode, int orientation, long themeColor,
-                long backgroundColor, String shareTargetAction, String shareTargetParamTitle,
-                String shareTargetParamText, boolean shareTargetParamIsMethodPost,
-                boolean shareTargetParamIsEncTypeMultipart, String[] shareTargetParamFileNames,
-                Object[] shareTargetParamAccepts, String[][] shortcuts, String manifestUrl,
-                String webApkPackage, int webApkVersion, boolean isManifestStale,
-                int[] updateReasons, Callback<Boolean> callback);
+                Bitmap splashIcon, boolean isSplashIconMaskable, String[] iconUrls,
+                String[] iconHashes, @WebDisplayMode int displayMode, int orientation,
+                long themeColor, long backgroundColor, String shareTargetAction,
+                String shareTargetParamTitle, String shareTargetParamText,
+                boolean shareTargetParamIsMethodPost, boolean shareTargetParamIsEncTypeMultipart,
+                String[] shareTargetParamFileNames, Object[] shareTargetParamAccepts,
+                String[][] shortcuts, String manifestUrl, String webApkPackage, int webApkVersion,
+                boolean isManifestStale, int[] updateReasons, Callback<Boolean> callback);
         public void updateWebApkFromFile(String updateRequestPath, WebApkUpdateCallback callback);
     }
 }

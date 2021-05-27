@@ -260,7 +260,11 @@ std::unique_ptr<std::string> BuildProtoInBackground(
       webapk::Image* splash_icon_image = web_app_manifest->add_icons();
       SetImageData(splash_icon_image, splash_icon);
       splash_icon_image->add_usages(webapk::Image::SPLASH_ICON);
-      splash_icon_image->add_purposes(webapk::Image::ANY);
+      if (shortcut_info.is_splash_image_maskable) {
+        splash_icon_image->add_purposes(webapk::Image::MASKABLE);
+      } else {
+        splash_icon_image->add_purposes(webapk::Image::ANY);
+      }
     }
   }
 
@@ -284,9 +288,13 @@ std::unique_ptr<std::string> BuildProtoInBackground(
       if (shortcut_info.splash_image_url !=
           shortcut_info.best_primary_icon_url) {
         image->set_image_data(it->second.unsafe_data);
+        if (shortcut_info.is_splash_image_maskable) {
+          image->add_purposes(webapk::Image::MASKABLE);
+        } else {
+          image->add_purposes(webapk::Image::ANY);
+        }
       }
       image->add_usages(webapk::Image::SPLASH_ICON);
-      image->add_purposes(webapk::Image::ANY);
     }
   }
 
@@ -694,8 +702,8 @@ void WebApkInstaller::OnGotIconMurmur2Hashes(
     return;
   }
 
-  // Using empty |splash_icon| here because in this code path (WebApk install),
-  // we are using the splash icon data from |hashes|.
+  // Using empty |splash_icon| here because in this code path (WebApk
+  // install), we are using the splash icon data from |hashes|.
   BuildProto(*install_shortcut_info_, install_primary_icon_,
              is_primary_icon_maskable_, SkBitmap() /* splash_icon */,
              "" /* package_name */, "" /* version */, std::move(*hashes),

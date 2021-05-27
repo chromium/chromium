@@ -61,6 +61,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     jboolean java_is_primary_icon_maskable,
     const JavaParamRef<jstring>& java_splash_icon_url,
     const JavaParamRef<jobject>& java_splash_icon_bitmap,
+    jboolean java_is_splash_icon_maskable,
     const JavaParamRef<jobjectArray>& java_icon_urls,
     const JavaParamRef<jobjectArray>& java_icon_hashes,
     jint java_display_mode,
@@ -101,6 +102,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
       GURL(ConvertJavaStringToUTF8(env, java_primary_icon_url));
   info.splash_image_url =
       GURL(ConvertJavaStringToUTF8(env, java_splash_icon_url));
+  info.is_splash_image_maskable = java_is_splash_icon_maskable;
   info.manifest_url = GURL(ConvertJavaStringToUTF8(env, java_web_manifest_url));
 
   GURL share_target_action =

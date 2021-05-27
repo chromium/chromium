@@ -61,11 +61,24 @@ std::unique_ptr<ShortcutInfo> ShortcutInfo::CreateShortcutInfo(
       WebappsIconUtils::GetIdealSplashImageSizeInPx();
   shortcut_info->minimum_splash_image_size_in_px =
       WebappsIconUtils::GetMinimumSplashImageSizeInPx();
-  shortcut_info->splash_image_url =
-      blink::ManifestIconSelector::FindBestMatchingSquareIcon(
-          manifest.icons, shortcut_info->ideal_splash_image_size_in_px,
-          shortcut_info->minimum_splash_image_size_in_px,
-          blink::mojom::ManifestImageResource_Purpose::ANY);
+  if (WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
+    shortcut_info->splash_image_url =
+        blink::ManifestIconSelector::FindBestMatchingSquareIcon(
+            manifest.icons, shortcut_info->ideal_splash_image_size_in_px,
+            shortcut_info->minimum_splash_image_size_in_px,
+            blink::mojom::ManifestImageResource_Purpose::MASKABLE);
+    shortcut_info->is_splash_image_maskable = true;
+  }
+  // If did not fetch maskable icon for splash image, or can not find a best
+  // match, fallback to ANY icon.
+  if (!shortcut_info->splash_image_url.is_valid()) {
+    shortcut_info->splash_image_url =
+        blink::ManifestIconSelector::FindBestMatchingSquareIcon(
+            manifest.icons, shortcut_info->ideal_splash_image_size_in_px,
+            shortcut_info->minimum_splash_image_size_in_px,
+            blink::mojom::ManifestImageResource_Purpose::ANY);
+    shortcut_info->is_splash_image_maskable = false;
+  }
 
   return shortcut_info;
 }

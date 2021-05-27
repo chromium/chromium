@@ -30,6 +30,7 @@ struct InstallableData {
                   bool has_maskable_primary_icon,
                   const GURL& splash_icon_url,
                   const SkBitmap* splash_icon,
+                  bool has_maskable_splash_icon,
                   const std::vector<SkBitmap>& screenshots,
                   bool valid_manifest,
                   bool has_worker);
@@ -76,6 +77,10 @@ struct InstallableData {
   // specifying |valid_splash_icon| must check that the bitmap exists before
   // using it.
   const SkBitmap* splash_icon;
+
+  // Whether the splash icon had the 'maskable' purpose, meaningless if no
+  // splash_icon was requested.
+  const bool has_maskable_splash_icon;
 
   // The screenshots to show in the install UI.
   const std::vector<SkBitmap>& screenshots;

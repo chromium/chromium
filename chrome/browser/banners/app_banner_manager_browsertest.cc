@@ -713,9 +713,10 @@ IN_PROC_BROWSER_TEST_F(
 
   blink::Manifest manifest;
   std::vector<SkBitmap> screenshots;
-  installable_manager_->FailNext(base::WrapUnique(new InstallableData(
-      {MANIFEST_URL_CHANGED}, GURL::EmptyGURL(), manifest, GURL::EmptyGURL(),
-      nullptr, false, GURL::EmptyGURL(), nullptr, screenshots, false, false)));
+  installable_manager_->FailNext(base::WrapUnique(
+      new InstallableData({MANIFEST_URL_CHANGED}, GURL::EmptyGURL(), manifest,
+                          GURL::EmptyGURL(), nullptr, false, GURL::EmptyGURL(),
+                          nullptr, false, screenshots, false, false)));
 
   // The page should record one failure of MANIFEST_URL_CHANGED, but it should
   // still successfully get to the PENDING_PROMPT state of the pipeline, as it
