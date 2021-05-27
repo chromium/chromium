@@ -35,9 +35,9 @@ public final class SigninPromoUtil {
     private SigninPromoUtil() {}
 
     /**
-     * Launches the {@link SigninActivity} if it needs to be displayed.
-     * @param context The {@link Context} to launch the {@link SigninActivity}.
-     * @param syncConsentActivityLauncher launcher used to launch the {@link SigninActivity}.
+     * Launches the {@link SyncConsentActivity} if it needs to be displayed.
+     * @param context The {@link Context} to launch the {@link SyncConsentActivity}.
+     * @param syncConsentActivityLauncher launcher used to launch the {@link SyncConsentActivity}.
      * @param currentMajorVersion The current major version of Chrome.
      * @return Whether the signin promo is shown.
      */
@@ -56,13 +56,6 @@ public final class SigninPromoUtil {
             return false;
         }
 
-        final AccountManagerFacade accountManagerFacade =
-                AccountManagerFacadeProvider.getInstance();
-        if (!accountManagerFacade.isCachePopulated()) {
-            // Suppress the promo if the account list isn't available yet.
-            return false;
-        }
-
         final Profile profile = Profile.getLastUsedRegularProfile();
         if (IdentityServicesProvider.get().getIdentityManager(profile).getPrimaryAccountInfo(
                     ConsentLevel.SYNC)
@@ -77,21 +70,22 @@ public final class SigninPromoUtil {
             return false;
         }
 
-        final List<Account> accounts = accountManagerFacade.tryGetGoogleAccounts();
-
-        if (accounts.isEmpty()) {
+        final AccountManagerFacade accountManagerFacade =
+                AccountManagerFacadeProvider.getInstance();
+        Optional<List<Account>> accounts = accountManagerFacade.getGoogleAccounts();
+        if (!accounts.isPresent() || accounts.get().isEmpty()) {
             // Don't show if the account list isn't available yet or there are no accounts in it.
             return false;
         }
 
         Optional<Boolean> canDefaultAccountOfferExtendedSyncPromos =
-                accountManagerFacade.canOfferExtendedSyncPromos(accounts.get(0));
+                accountManagerFacade.canOfferExtendedSyncPromos(accounts.get().get(0));
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
                 && canDefaultAccountOfferExtendedSyncPromos.or(/* defaultValue= */ false)) {
             return false;
         }
 
-        final List<String> currentAccountNames = AccountUtils.toAccountNames(accounts);
+        final List<String> currentAccountNames = AccountUtils.toAccountNames(accounts.get());
         final Set<String> previousAccountNames = prefManager.getSigninPromoLastAccountNames();
         if (previousAccountNames != null && previousAccountNames.containsAll(currentAccountNames)) {
             // Don't show if no new accounts have been added after the last time promo was shown.
