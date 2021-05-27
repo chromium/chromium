@@ -212,7 +212,7 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
   if (window->GetProperty(full_restore::kParentToHiddenContainerKey))
     return;
 
-  UpdateAndObserveWindow(widget->GetNativeWindow());
+  UpdateAndObserveWindow(window);
 }
 
 void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
@@ -256,22 +256,22 @@ void FullRestoreController::OnWindowStackingChanged(aura::Window* window) {
 
 void FullRestoreController::OnWindowVisibilityChanged(aura::Window* window,
                                                       bool visible) {
-  if (!windows_observation_.IsObservingSource(window) &&
-      !to_be_shown_windows_.contains(window)) {
+  // `OnWindowVisibilityChanged` fires for children of a window as well, but we
+  // are only interested in the window we originally observed.
+  if (!windows_observation_.IsObservingSource(window))
     return;
-  }
+
+  if (!visible || !to_be_shown_windows_.contains(window))
+    return;
 
   to_be_shown_windows_.erase(window);
 
-  // Arc app geometry is ready at this point so restore state type.
-  if (IsArcWindow(window))
-    RestoreStateTypeAndClearLaunchedKey(window);
+  RestoreStateTypeAndClearLaunchedKey(window);
 
-  // Early return if `window` isn't visible, we're not in tablet mode, or the
-  // app list is null.
+  // Early return if we're not in tablet mode, or the app list is null.
   aura::Window* app_list_window =
       Shell::Get()->app_list_controller()->GetWindow();
-  if (!visible || !Shell::Get()->tablet_mode_controller()->InTabletMode() ||
+  if (!Shell::Get()->tablet_mode_controller()->InTabletMode() ||
       !app_list_window) {
     return;
   }
@@ -291,9 +291,12 @@ void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
   DCHECK(window->parent());
   windows_observation_.AddObservation(window);
 
-  // Only restore state type for arc apps once their geometry is ready.
-  if (!IsArcWindow(window))
-    RestoreStateTypeAndClearLaunchedKey(window);
+  // Unless minimized, snap state and activation unblock are done when the
+  // window is first shown, which will be async for exo apps.
+  if (WindowState::Get(window)->IsMinimized())
+    window->SetProperty(full_restore::kLaunchedFromFullRestoreKey, false);
+  else
+    to_be_shown_windows_.insert(window);
 
   int32_t* activation_index =
       window->GetProperty(full_restore::kActivationIndexKey);
