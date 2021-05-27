@@ -643,9 +643,7 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
 }
 
 // Regression test for https://crbug.com/1169446.
-// TODO(crbug.com/1206937): Test is flaky.
-TEST_P(WaylandWindowDragControllerTest,
-       DISABLED_MotionEventsSkippedWhileReattaching) {
+TEST_P(WaylandWindowDragControllerTest, MotionEventsSkippedWhileReattaching) {
   auto* dragged_window = window_.get();
   EXPECT_TRUE(dragged_window);
 
@@ -653,20 +651,28 @@ TEST_P(WaylandWindowDragControllerTest,
   SendPointerPress(dragged_window, &delegate_, BTN_LEFT);
   SendPointerMotion(dragged_window, &delegate_, {10, 10});
 
-  auto* wayland_extension = GetWaylandExtension(*window_);
-  wayland_extension->StartWindowDraggingSessionIfNeeded();
-  EXPECT_EQ(State::kAttached, drag_controller()->state());
+  // Start the drag session.
+  GetWaylandExtension(*dragged_window)->StartWindowDraggingSessionIfNeeded();
 
-  auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
+  // Ensure the controller's state is updated accordingly and a MOUSE_ENTERED
+  // event is dispatched in response to wl_data_device.enter.
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+  EXPECT_CALL(delegate(), DispatchEvent(_)).Times(1);
+  Sync();
+
+  auto* move_loop_handler = GetWmMoveLoopHandler(*dragged_window);
   ASSERT_TRUE(move_loop_handler);
 
   auto test = [](WaylandWindowDragControllerTest* self,
                  WmMoveLoopHandler* move_loop_handler) {
     // While in |kDetached| state, motion events are expected to be propagated
-    // by window drag controller.
+    // by window drag controller as bounds changes.
     EXPECT_EQ(State::kDetached, self->drag_controller()->state());
     self->SendDndMotion({30, 30});
-    EXPECT_CALL(self->delegate(), DispatchEvent(_)).Times(1);
+    EXPECT_CALL(self->delegate(), OnBoundsChanged(_))
+        .WillOnce([&](const PlatformWindowDelegate::BoundsChange& change) {
+          EXPECT_EQ(gfx::Point(30, 30), change.bounds.origin());
+        });
     self->Sync();
 
     move_loop_handler->EndMoveLoop();
@@ -676,8 +682,8 @@ TEST_P(WaylandWindowDragControllerTest,
     // ends (ie. kAttaching state), motion events are **not** expected to be
     // propagated.
     EXPECT_EQ(State::kAttaching, self->drag_controller()->state());
-    self->SendDndMotion({30, 30});
-    EXPECT_CALL(self->delegate(), DispatchEvent(_)).Times(0);
+    self->SendDndMotion({31, 31});
+    EXPECT_CALL(self->delegate(), OnBoundsChanged(_)).Times(0);
     self->Sync();
   };
   ScheduleTestTask(base::BindOnce(test, base::Unretained(this),
