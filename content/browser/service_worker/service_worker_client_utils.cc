@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -40,6 +39,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/page_visibility_state.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -435,7 +435,7 @@ void GetNonWindowClients(
       for (auto it = controller->context()->GetClientContainerHostIterator(
                // TODO(crbug.com/1199077): Update this when ServiceWorkerVersion
                // implements StorageKey.
-               storage::StorageKey(controller->origin()),
+               blink::StorageKey(controller->origin()),
                false /* include_reserved_clients */,
                false /* include_back_forward_cached_clients */);
            !it->IsAtEnd(); it->Advance()) {
@@ -480,7 +480,7 @@ void GetWindowClients(
       for (auto it = controller->context()->GetClientContainerHostIterator(
                // TODO(crbug.com/1199077): Update this when ServiceWorkerVersion
                // implements StorageKey.
-               storage::StorageKey(controller->origin()),
+               blink::StorageKey(controller->origin()),
                false /* include_reserved_clients */,
                false /* include_back_forward_cached_clients */);
            !it->IsAtEnd(); it->Advance()) {
@@ -660,7 +660,7 @@ void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
            context->GetClientContainerHostIterator(
                // TODO(crbug.com/1199077): Update this when ServiceWorkerVersion
                // implements StorageKey.
-               storage::StorageKey(url::Origin::Create(origin)),
+               blink::StorageKey(url::Origin::Create(origin)),
                true /* include_reserved_clients */,
                false /* include_back_forward_cached_clients */);
        !it->IsAtEnd(); it->Advance()) {

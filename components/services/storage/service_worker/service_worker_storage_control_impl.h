@@ -16,6 +16,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace storage {
 
 class ServiceWorkerLiveVersionRefImpl;
@@ -53,19 +57,19 @@ class ServiceWorkerStorageControlImpl
       GetRegisteredStorageKeysCallback callback) override;
   void FindRegistrationForClientUrl(
       const GURL& client_url,
-      const StorageKey& key,
+      const blink::StorageKey& key,
       FindRegistrationForClientUrlCallback callback) override;
   void FindRegistrationForScope(
       const GURL& scope,
-      const StorageKey& key,
+      const blink::StorageKey& key,
       FindRegistrationForScopeCallback callback) override;
   void FindRegistrationForId(int64_t registration_id,
-                             const absl::optional<StorageKey>& key,
+                             const absl::optional<blink::StorageKey>& key,
                              FindRegistrationForIdCallback callback) override;
   void GetRegistrationsForStorageKey(
-      const StorageKey& key,
+      const blink::StorageKey& key,
       GetRegistrationsForStorageKeyCallback callback) override;
-  void GetUsageForStorageKey(const StorageKey& key,
+  void GetUsageForStorageKey(const blink::StorageKey& key,
                              GetUsageForStorageKeyCallback callback) override;
   void GetAllRegistrationsDeprecated(
       GetAllRegistrationsDeprecatedCallback calback) override;
@@ -74,24 +78,24 @@ class ServiceWorkerStorageControlImpl
       std::vector<mojom::ServiceWorkerResourceRecordPtr> resources,
       StoreRegistrationCallback callback) override;
   void DeleteRegistration(int64_t registration_id,
-                          const StorageKey& key,
+                          const blink::StorageKey& key,
                           DeleteRegistrationCallback callback) override;
   void UpdateToActiveState(int64_t registration_id,
-                           const StorageKey& key,
+                           const blink::StorageKey& key,
                            UpdateToActiveStateCallback callback) override;
   void UpdateLastUpdateCheckTime(
       int64_t registration_id,
-      const StorageKey& key,
+      const blink::StorageKey& key,
       base::Time last_update_check_time,
       UpdateLastUpdateCheckTimeCallback callback) override;
   void UpdateNavigationPreloadEnabled(
       int64_t registration_id,
-      const StorageKey& key,
+      const blink::StorageKey& key,
       bool enable,
       UpdateNavigationPreloadEnabledCallback callback) override;
   void UpdateNavigationPreloadHeader(
       int64_t registration_id,
-      const StorageKey& key,
+      const blink::StorageKey& key,
       const std::string& value,
       UpdateNavigationPreloadHeaderCallback callback) override;
   void GetNewRegistrationId(GetNewRegistrationIdCallback callback) override;
@@ -119,7 +123,7 @@ class ServiceWorkerStorageControlImpl
                    const std::vector<std::string>& keys,
                    GetUserDataCallback callback) override;
   void StoreUserData(int64_t registration_id,
-                     const StorageKey& key,
+                     const blink::StorageKey& key,
                      std::vector<mojom::ServiceWorkerUserDataPtr> user_data,
                      StoreUserDataCallback callback) override;
   void ClearUserData(int64_t registration_id,

@@ -12,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
@@ -34,6 +33,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "url/gurl.h"
@@ -162,7 +162,7 @@ void DispatchSyncEventOnCoreThread(
     const std::string& tag,
     bool last_chance) {
   context->FindReadyRegistrationForId(
-      registration_id, storage::StorageKey(origin),
+      registration_id, blink::StorageKey(origin),
       base::BindOnce(&DidFindRegistrationForDispatchSyncEventOnCoreThread,
                      sync_context, tag, last_chance));
 }
@@ -174,7 +174,7 @@ void DispatchPeriodicSyncEventOnCoreThread(
     int64_t registration_id,
     const std::string& tag) {
   context->FindReadyRegistrationForId(
-      registration_id, storage::StorageKey(origin),
+      registration_id, blink::StorageKey(origin),
       base::BindOnce(
           &DidFindRegistrationForDispatchPeriodicSyncEventOnCoreThread,
           sync_context, tag));
@@ -261,8 +261,7 @@ Response ServiceWorkerHandler::StartWorker(const std::string& scope_url) {
   if (!context_)
     return CreateContextErrorResponse();
   context_->StartActiveServiceWorker(
-      GURL(scope_url),
-      storage::StorageKey(url::Origin::Create(GURL(scope_url))),
+      GURL(scope_url), blink::StorageKey(url::Origin::Create(GURL(scope_url))),
       base::DoNothing());
   return Response::Success();
 }
@@ -273,8 +272,7 @@ Response ServiceWorkerHandler::SkipWaiting(const std::string& scope_url) {
   if (!context_)
     return CreateContextErrorResponse();
   context_->SkipWaitingWorker(
-      GURL(scope_url),
-      storage::StorageKey(url::Origin::Create(GURL(scope_url))));
+      GURL(scope_url), blink::StorageKey(url::Origin::Create(GURL(scope_url))));
   return Response::Success();
 }
 
@@ -313,8 +311,7 @@ Response ServiceWorkerHandler::UpdateRegistration(
   if (!context_)
     return CreateContextErrorResponse();
   context_->UpdateRegistration(
-      GURL(scope_url),
-      storage::StorageKey(url::Origin::Create(GURL(scope_url))));
+      GURL(scope_url), blink::StorageKey(url::Origin::Create(GURL(scope_url))));
   return Response::Success();
 }
 

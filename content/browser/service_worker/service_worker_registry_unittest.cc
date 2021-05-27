@@ -327,7 +327,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
 
   blink::ServiceWorkerStatusCode FindRegistrationForClientUrl(
       const GURL& document_url,
-      const storage::StorageKey& key,
+      const blink::StorageKey& key,
       scoped_refptr<ServiceWorkerRegistration>& out_registration) {
     blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
@@ -346,7 +346,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
 
   blink::ServiceWorkerStatusCode FindRegistrationForScope(
       const GURL& scope,
-      const storage::StorageKey& key,
+      const blink::StorageKey& key,
       scoped_refptr<ServiceWorkerRegistration>& out_registration) {
     blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
@@ -365,7 +365,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
 
   blink::ServiceWorkerStatusCode FindRegistrationForId(
       int64_t registration_id,
-      const storage::StorageKey& key,
+      const blink::StorageKey& key,
       scoped_refptr<ServiceWorkerRegistration>& out_registration) {
     blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
@@ -417,7 +417,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
 
   blink::ServiceWorkerStatusCode DeleteRegistration(
       scoped_refptr<ServiceWorkerRegistration> registration,
-      const storage::StorageKey& key) {
+      const blink::StorageKey& key) {
     blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
     registry()->DeleteRegistration(
@@ -460,7 +460,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
   }
 
   GetStorageUsageForStorageKeyResult GetStorageUsageForStorageKey(
-      const storage::StorageKey& key) {
+      const blink::StorageKey& key) {
     GetStorageUsageForStorageKeyResult result;
     base::RunLoop loop;
     registry()->GetStorageUsageForStorageKey(
@@ -491,7 +491,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
   }
 
   blink::ServiceWorkerStatusCode GetRegistrationsForStorageKey(
-      const storage::StorageKey& key,
+      const blink::StorageKey& key,
       std::vector<scoped_refptr<ServiceWorkerRegistration>>& registrations) {
     blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
@@ -617,7 +617,7 @@ TEST_F(ServiceWorkerRegistryTest, RegisteredStorageKeyCount) {
 
 TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   const GURL kScope("http://www.test.not/scope/");
-  const storage::StorageKey kKey(url::Origin::Create(kScope));
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   const GURL kDocumentUrl("http://www.test.not/scope/document.html");
   const GURL kResource1("http://www.test.not/scope/resource1.js");
   const int64_t kResource1Size = 1591234;
@@ -773,7 +773,7 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       GetRegistrationsForStorageKey(
-          storage::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
+          blink::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
           registrations_for_storage_key));
   EXPECT_TRUE(registrations_for_storage_key.empty());
 
@@ -840,7 +840,7 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
 
 TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
   const GURL kScope("http://www.test.not/scope/");
-  const storage::StorageKey kKey(url::Origin::Create(kScope));
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   const GURL kScript("http://www.test.not/script.js");
   const GURL kDocumentUrl("http://www.test.not/scope/document.html");
   const int64_t kVersionId = 0;
@@ -894,7 +894,7 @@ TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       GetRegistrationsForStorageKey(
-          storage::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
+          blink::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
           registrations_for_storage_key));
   EXPECT_TRUE(registrations_for_storage_key.empty());
 
@@ -938,7 +938,7 @@ TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       GetRegistrationsForStorageKey(
-          storage::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
+          blink::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
           registrations_for_storage_key));
   EXPECT_TRUE(registrations_for_storage_key.empty());
 
@@ -975,7 +975,7 @@ TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       GetRegistrationsForStorageKey(
-          storage::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
+          blink::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
           registrations_for_storage_key));
   EXPECT_TRUE(registrations_for_storage_key.empty());
 
@@ -986,7 +986,7 @@ TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
 
 TEST_F(ServiceWorkerRegistryTest, FindRegistration_LongestScopeMatch) {
   const GURL kDocumentUrl("http://www.example.com/scope/foo");
-  const storage::StorageKey kKey(url::Origin::Create(kDocumentUrl));
+  const blink::StorageKey kKey(url::Origin::Create(kDocumentUrl));
   scoped_refptr<ServiceWorkerRegistration> found_registration;
 
   // Registration for "/scope/".
@@ -1100,7 +1100,7 @@ TEST_F(ServiceWorkerRegistryTest, RegistrationInfoFields) {
 
 TEST_F(ServiceWorkerRegistryTest, OriginTrialsAbsentEntryAndEmptyEntry) {
   const GURL origin1("http://www1.example.com");
-  const storage::StorageKey key1(url::Origin::Create(origin1));
+  const blink::StorageKey key1(url::Origin::Create(origin1));
   const GURL scope1("http://www1.example.com/foo/");
   const GURL script1(origin1.spec() + "/script.js");
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources1;
@@ -1115,7 +1115,7 @@ TEST_F(ServiceWorkerRegistryTest, OriginTrialsAbsentEntryAndEmptyEntry) {
   StoreRegistrationData(std::move(data1), std::move(resources1));
 
   const GURL origin2("http://www2.example.com");
-  const storage::StorageKey key2(url::Origin::Create(origin2));
+  const blink::StorageKey key2(url::Origin::Create(origin2));
   const GURL scope2("http://www2.example.com/foo/");
   const GURL script2(origin2.spec() + "/script.js");
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources2;
@@ -1150,7 +1150,7 @@ TEST_F(ServiceWorkerRegistryTest, OriginTrialsAbsentEntryAndEmptyEntry) {
 // Tests loading a registration that has no navigation preload state.
 TEST_F(ServiceWorkerRegistryTest, AbsentNavigationPreloadState) {
   const GURL origin1("http://www1.example.com");
-  const storage::StorageKey key1(url::Origin::Create(origin1));
+  const blink::StorageKey key1(url::Origin::Create(origin1));
   const GURL scope1("http://www1.example.com/foo/");
   const GURL script1(origin1.spec() + "/script.js");
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources1;
@@ -1182,7 +1182,7 @@ TEST_F(ServiceWorkerRegistryTest, AbsentNavigationPreloadState) {
 // well as a custom header value.
 TEST_F(ServiceWorkerRegistryTest, EnabledNavigationPreloadState) {
   const GURL kScope("https://valid.example.com/scope");
-  const storage::StorageKey kKey(url::Origin::Create(kScope));
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   const GURL kScript("https://valid.example.com/script.js");
   const std::string kHeaderValue("custom header value");
 
@@ -1221,7 +1221,7 @@ TEST_F(ServiceWorkerRegistryTest, EnabledNavigationPreloadState) {
 TEST_F(ServiceWorkerRegistryTest, ScriptResponseTime) {
   // Make a registration.
   const GURL kScope("https://example.com/scope");
-  const storage::StorageKey kKey(url::Origin::Create(kScope));
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   const GURL kScript("https://example.com/script.js");
   scoped_refptr<ServiceWorkerRegistration> registration =
       CreateServiceWorkerRegistrationAndVersion(context(), kScope, kScript,
@@ -1269,7 +1269,7 @@ TEST_F(ServiceWorkerRegistryTest, ScriptResponseTime) {
 // state.
 TEST_F(ServiceWorkerRegistryTest, DisabledNavigationPreloadState) {
   const GURL kScope("https://valid.example.com/scope");
-  const storage::StorageKey kKey(url::Origin::Create(kScope));
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   const GURL kScript("https://valid.example.com/script.js");
   scoped_refptr<ServiceWorkerRegistration> registration =
       CreateServiceWorkerRegistrationAndVersion(context(), kScope, kScript,
@@ -1306,7 +1306,7 @@ TEST_F(ServiceWorkerRegistryTest, StoragePolicyChange) {
   const GURL kScope("http://www.example.com/scope/");
   const GURL kScriptUrl("http://www.example.com/script.js");
   const auto kOrigin(url::Origin::Create(kScope));
-  const storage::StorageKey kKey(kOrigin);
+  const blink::StorageKey kKey(kOrigin);
 
   scoped_refptr<ServiceWorkerRegistration> registration =
       CreateServiceWorkerRegistrationAndVersion(context(), kScope, kScriptUrl,
@@ -1332,7 +1332,7 @@ TEST_F(ServiceWorkerRegistryTest, RemoteStorageDisconnection) {
   const GURL kScope("http://www.example.com/scope/");
   const GURL kScriptUrl("http://www.example.com/script.js");
   const auto kOrigin(url::Origin::Create(kScope));
-  const storage::StorageKey kKey(kOrigin);
+  const blink::StorageKey kKey(kOrigin);
 
   scoped_refptr<ServiceWorkerRegistration> registration =
       CreateServiceWorkerRegistrationAndVersion(context(), kScope, kScriptUrl,
@@ -1364,7 +1364,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
   const GURL kScope1("https://www.example.com/scope/");
   const GURL kScriptUrl1("https://www.example.com/script.js");
   const auto kOrigin1(url::Origin::Create(kScope1));
-  const storage::StorageKey kKey1(kOrigin1);
+  const blink::StorageKey kKey1(kOrigin1);
   scoped_refptr<ServiceWorkerRegistration> registration1 =
       CreateServiceWorkerRegistrationAndVersion(context(), kScope1, kScriptUrl1,
                                                 /*resource_id=*/1);
@@ -1372,7 +1372,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
   const GURL kScope2("https://www2.example.com/scope/foo");
   const GURL kScriptUrl2("https://www2.example.com/foo/script.js");
   const auto kOrigin2(url::Origin::Create(kScope2));
-  const storage::StorageKey kKey2(kOrigin2);
+  const blink::StorageKey kKey2(kOrigin2);
   scoped_refptr<ServiceWorkerRegistration> registration2 =
       CreateServiceWorkerRegistrationAndVersion(context(), kScope2, kScriptUrl2,
                                                 /*resource_id=*/2);
@@ -1440,7 +1440,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
     base::RunLoop loop2;
     const GURL kNotInScope("http://www.example.com/not-in-scope");
     registry()->FindRegistrationForScope(
-        kNotInScope, storage::StorageKey(url::Origin::Create(kNotInScope)),
+        kNotInScope, blink::StorageKey(url::Origin::Create(kNotInScope)),
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode status,
                 scoped_refptr<ServiceWorkerRegistration> found_registration) {
@@ -1584,7 +1584,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_FindRegistrationForId) {
   base::RunLoop loop1;
   registry()->FindRegistrationForId(
       registration_id1,
-      storage::StorageKey(url::Origin::Create(origin1.GetOrigin())),
+      blink::StorageKey(url::Origin::Create(origin1.GetOrigin())),
       base::BindLambdaForTesting(
           [&](blink::ServiceWorkerStatusCode status,
               scoped_refptr<ServiceWorkerRegistration> found_registration) {
@@ -1618,7 +1618,7 @@ TEST_F(ServiceWorkerRegistryTest,
 
   const GURL kScope("http://www.example.com/scope/");
   const GURL kScriptUrl("http://www.example.com/script.js");
-  const storage::StorageKey kKey(url::Origin::Create(kScope));
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
 
   scoped_refptr<ServiceWorkerRegistration> registration;
 
@@ -1666,7 +1666,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_UserData) {
   const GURL kScope1("http://www.example.com/scope/");
   const GURL kScriptUrl1("http://www.example.com/script.js");
   const auto kOrigin1(url::Origin::Create(kScope1));
-  const storage::StorageKey kKey1(kOrigin1);
+  const blink::StorageKey kKey1(kOrigin1);
   scoped_refptr<ServiceWorkerRegistration> registration1 =
       CreateServiceWorkerRegistrationAndVersion(context(), kScope1, kScriptUrl1,
                                                 /*resource_id=*/1);
@@ -1676,7 +1676,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_UserData) {
   const GURL kScope2("http://www.example.com/scope/foo");
   const GURL kScriptUrl2("http://www.example.com/fooscript.js");
   const auto kOrigin2(url::Origin::Create(kScope2));
-  const storage::StorageKey kKey2(kOrigin2);
+  const blink::StorageKey kKey2(kOrigin2);
   scoped_refptr<ServiceWorkerRegistration> registration2 =
       CreateServiceWorkerRegistrationAndVersion(context(), kScope2, kScriptUrl2,
                                                 /*resource_id=*/2);
@@ -1891,7 +1891,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_ApplyPolicyUpdates) {
   const GURL kScope("http://www.example.com/scope/");
   const GURL kScriptUrl("http://www.example.com/script.js");
   const auto kOrigin(url::Origin::Create(kScope));
-  const storage::StorageKey kKey(kOrigin);
+  const blink::StorageKey kKey(kOrigin);
 
   scoped_refptr<ServiceWorkerRegistration> registration =
       CreateServiceWorkerRegistrationAndVersion(context(), kScope, kScriptUrl,
@@ -1933,7 +1933,7 @@ TEST_F(ServiceWorkerRegistryTest, DestroyRegistryDuringInflightCall) {
   {
     base::RunLoop loop;
     registry()->GetStorageUsageForStorageKey(
-        storage::StorageKey(url::Origin::Create(GURL("https://example.com/"))),
+        blink::StorageKey(url::Origin::Create(GURL("https://example.com/"))),
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode status, int64_t usage) {
               EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kErrorFailed);
@@ -1956,7 +1956,7 @@ TEST_F(ServiceWorkerRegistryTest,
   base::RunLoop loop;
   registry()->StoreUserData(
       /*registration_id=*/1,
-      storage::StorageKey(url::Origin::Create(GURL("https://example.com/"))),
+      blink::StorageKey(url::Origin::Create(GURL("https://example.com/"))),
       {{"key", "value"}},
       base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
         EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kErrorFailed);
@@ -2077,7 +2077,7 @@ class ServiceWorkerRegistryOriginTrialsTest : public ServiceWorkerRegistryTest {
 
 TEST_F(ServiceWorkerRegistryOriginTrialsTest, FromMainScript) {
   const GURL kScope("https://valid.example.com/scope");
-  const storage::StorageKey kKey(url::Origin::Create(kScope));
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   const GURL kScript("https://valid.example.com/script.js");
   const int64_t kRegistrationId = 1;
   const int64_t kVersionId = 1;
@@ -2214,7 +2214,7 @@ class ServiceWorkerRegistryResourceTest : public ServiceWorkerRegistryTest {
     version_id_ = version->version_id();
 
     // Add the resources ids to the uncommitted list.
-    storage::StorageKey key(url::Origin::Create(scope_));
+    blink::StorageKey key(url::Origin::Create(scope_));
     registry()->StoreUncommittedResourceId(resource_id1_, key);
     registry()->StoreUncommittedResourceId(resource_id2_, key);
     EnsureRemoteCallsAreExecuted();
@@ -2339,10 +2339,9 @@ TEST_F(ServiceWorkerRegistryResourceTest, DeleteRegistration_NoLiveVersion) {
   // list.
   base::RunLoop loop;
   storage_control()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
-  EXPECT_EQ(
-      blink::ServiceWorkerStatusCode::kOk,
-      DeleteRegistration(registration_,
-                         storage::StorageKey(url::Origin::Create(scope_))));
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            DeleteRegistration(registration_,
+                               blink::StorageKey(url::Origin::Create(scope_))));
   // At this point registration_->waiting_version() has a remote reference, so
   // the resources should be in the purgeable list.
   EXPECT_EQ(2u, GetPurgeableResourceIds().size());
@@ -2361,10 +2360,9 @@ TEST_F(ServiceWorkerRegistryResourceTest, DeleteRegistration_WaitingVersion) {
   // Deleting the registration should result in the resources being added to the
   // purgeable list and then doomed in the disk cache and removed from that
   // list.
-  EXPECT_EQ(
-      blink::ServiceWorkerStatusCode::kOk,
-      DeleteRegistration(registration_,
-                         storage::StorageKey(url::Origin::Create(scope_))));
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            DeleteRegistration(registration_,
+                               blink::StorageKey(url::Origin::Create(scope_))));
   EXPECT_EQ(2u, GetPurgeableResourceIds().size());
 
   EXPECT_TRUE(VerifyBasicResponse(storage_control(), resource_id1_, false));
@@ -2387,7 +2385,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, DeleteRegistration_ActiveVersion) {
   registration_->active_version()->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registry()->UpdateToActiveState(
       registration_->id(),
-      storage::StorageKey(url::Origin::Create(registration_->scope())),
+      blink::StorageKey(url::Origin::Create(registration_->scope())),
       base::DoNothing());
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
@@ -2398,10 +2396,9 @@ TEST_F(ServiceWorkerRegistryResourceTest, DeleteRegistration_ActiveVersion) {
 
   // Deleting the registration should move the resources to the purgeable list
   // but keep them available.
-  EXPECT_EQ(
-      blink::ServiceWorkerStatusCode::kOk,
-      DeleteRegistration(registration_,
-                         storage::StorageKey(url::Origin::Create(scope_))));
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            DeleteRegistration(registration_,
+                               blink::StorageKey(url::Origin::Create(scope_))));
   EXPECT_EQ(2u, GetPurgeableResourceIds().size());
 
   EXPECT_TRUE(VerifyBasicResponse(storage_control(), resource_id1_, true));
@@ -2526,10 +2523,9 @@ TEST_F(ServiceWorkerRegistryResourceTest, CleanupOnRestart) {
 
   // Deleting the registration should move the resources to the purgeable list
   // but keep them available.
-  EXPECT_EQ(
-      blink::ServiceWorkerStatusCode::kOk,
-      DeleteRegistration(registration_,
-                         storage::StorageKey(url::Origin::Create(scope_))));
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            DeleteRegistration(registration_,
+                               blink::StorageKey(url::Origin::Create(scope_))));
   std::vector<int64_t> verify_ids = GetPurgeableResourceIds();
   EXPECT_EQ(2u, verify_ids.size());
 
@@ -2587,8 +2583,8 @@ TEST_F(ServiceWorkerRegistryResourceTest, Restart_LiveVersion) {
 
   // Delete the registration. The resources should be on the purgeable list but
   // should not be purged yet.
-  ASSERT_EQ(DeleteRegistration(registration_, storage::StorageKey(
-                                                  url::Origin::Create(scope_))),
+  ASSERT_EQ(DeleteRegistration(registration_,
+                               blink::StorageKey(url::Origin::Create(scope_))),
             blink::ServiceWorkerStatusCode::kOk);
 
   EXPECT_THAT(GetPurgeableResourceIds(), testing::UnorderedElementsAreArray(

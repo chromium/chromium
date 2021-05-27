@@ -17,7 +17,6 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/notifications/blink_notification_service_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -39,6 +38,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -170,7 +170,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = GURL(kTestOrigin);
 
-    storage::StorageKey key(url::Origin::Create(GURL(kTestOrigin)));
+    blink::StorageKey key(url::Origin::Create(GURL(kTestOrigin)));
 
     {
       base::RunLoop run_loop;

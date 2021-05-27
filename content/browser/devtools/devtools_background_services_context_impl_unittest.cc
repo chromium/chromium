@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/devtools/devtools_background_services.pb.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/public/browser/content_browser_client.h"
@@ -19,6 +18,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -209,7 +209,7 @@ class DevToolsBackgroundServicesContextTest
     GURL script_url(origin_.GetURL().spec() + "sw.js");
     // TODO(crbug.com/1199077): Update this when
     // DevToolsBackgroundServicesContextImpl implements StorageKey.
-    storage::StorageKey key(origin_);
+    blink::StorageKey key(origin_);
     int64_t service_worker_registration_id =
         blink::mojom::kInvalidServiceWorkerRegistrationId;
 

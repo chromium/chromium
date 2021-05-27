@@ -6,13 +6,13 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/push_messaging/push_messaging_manager.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -66,7 +66,7 @@ void UpdatePushSubscriptionIdOnIO(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   service_worker_context->StoreRegistrationUserData(
       service_worker_registration_id,
-      storage::StorageKey(url::Origin::Create(origin)),
+      blink::StorageKey(url::Origin::Create(origin)),
       {{kPushRegistrationIdServiceWorkerKey, subscription_id}},
       base::BindOnce(&CallClosureFromIO, std::move(callback)));
 }
@@ -82,7 +82,7 @@ void StorePushSubscriptionOnIOForTesting(
 
   service_worker_context->StoreRegistrationUserData(
       service_worker_registration_id,
-      storage::StorageKey(url::Origin::Create(origin)),
+      blink::StorageKey(url::Origin::Create(origin)),
       {{kPushRegistrationIdServiceWorkerKey, subscription_id},
        {kPushSenderIdServiceWorkerKey, sender_id}},
       base::BindOnce(&CallClosureFromIO, std::move(callback)));

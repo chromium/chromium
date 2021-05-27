@@ -13,6 +13,10 @@
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/public/browser/shared_worker_instance.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
 class SharedWorkerHost;
@@ -40,7 +44,7 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
       override;
   RenderProcessHost* GetProcessHost() override;
 
-  storage::StorageKey GetStorageKey() const;
+  blink::StorageKey GetStorageKey() const;
 
   bool Matches(SharedWorkerHost* worker_host);
   void WorkerReadyForInspection(

@@ -51,6 +51,7 @@ class WebUsbService;
 namespace web_pref {
 struct WebPreferences;
 }  // namespace web_pref
+class StorageKey;
 class URLLoaderThrottle;
 }  // namespace blink
 
@@ -71,10 +72,6 @@ class UrlCheckerDelegate;
 namespace sandbox {
 class SeatbeltExecClient;
 }  // namespace sandbox
-
-namespace storage {
-class StorageKey;
-}  // namespace storage
 
 namespace ui {
 class NativeTheme;
@@ -254,7 +251,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                          const GURL& site_for_cookies,
                          const absl::optional<url::Origin>& top_frame_origin,
                          const std::string& name,
-                         const storage::StorageKey& storage_key,
+                         const blink::StorageKey& storage_key,
                          content::BrowserContext* context,
                          int render_process_id,
                          int render_frame_id) override;

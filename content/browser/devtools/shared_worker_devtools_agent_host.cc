@@ -66,7 +66,7 @@ GURL SharedWorkerDevToolsAgentHost::GetURL() {
   return instance_.url();
 }
 
-storage::StorageKey SharedWorkerDevToolsAgentHost::GetStorageKey() const {
+blink::StorageKey SharedWorkerDevToolsAgentHost::GetStorageKey() const {
   return instance_.storage_key();
 }
 

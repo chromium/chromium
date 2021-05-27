@@ -17,7 +17,6 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -42,6 +41,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -278,8 +278,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
              context_->GetClientContainerHostIterator(
                  // TODO(crbug.com/1199077): Update this when
                  // ServiceWorkerContainerHost implements StorageKey.
-                 storage::StorageKey(
-                     url::Origin::Create(container_host->url())),
+                 blink::StorageKey(url::Origin::Create(container_host->url())),
                  false /* include_reserved_clients */,
                  false /* include_back_forward_cached_clients */);
          !it->IsAtEnd(); it->Advance()) {

@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/notifications/notification_database_conversions.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -61,7 +61,7 @@ void NotificationStorage::WriteNotificationData(
   // NotificationDatabaseData should be changed to use StorageKey.
   service_worker_context_->StoreRegistrationUserData(
       data.service_worker_registration_id,
-      storage::StorageKey(url::Origin::Create(data.origin)),
+      blink::StorageKey(url::Origin::Create(data.origin)),
       {{CreateDataKey(data.notification_id), std::move(serialized_data)}},
       base::BindOnce(&NotificationStorage::OnWriteComplete,
                      weak_ptr_factory_.GetWeakPtr(), data,
@@ -137,8 +137,7 @@ void NotificationStorage::OnReadCompleteUpdateInteraction(
     return;
   }
 
-  storage::StorageKey key =
-      storage::StorageKey(url::Origin::Create(data->origin));
+  blink::StorageKey key = blink::StorageKey(url::Origin::Create(data->origin));
   std::string notification_id = data->notification_id;
   service_worker_context_->StoreRegistrationUserData(
       service_worker_registration_id, key,

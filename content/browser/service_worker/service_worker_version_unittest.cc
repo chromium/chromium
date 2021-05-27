@@ -20,7 +20,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -40,6 +39,7 @@
 #include "net/base/test_completion_callback.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom.h"
@@ -350,7 +350,7 @@ TEST_F(ServiceWorkerVersionTest, StartUnregisteredButStillLiveWorker) {
   base::RunLoop run_loop;
   helper_->context()->registry()->DeleteRegistration(
       registration_,
-      storage::StorageKey(url::Origin::Create(registration_->scope())),
+      blink::StorageKey(url::Origin::Create(registration_->scope())),
       ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
   run_loop.Run();
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());

@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/trace_event/trace_event.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/background_fetch/background_fetch_cross_origin_filter.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"
@@ -22,6 +21,7 @@
 #include "services/network/public/cpp/cors/cors.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 
@@ -217,7 +217,7 @@ void MarkRequestCompleteTask::CreateAndStoreCompletedRequest(
 
   service_worker_context()->StoreRegistrationUserData(
       registration_id_.service_worker_registration_id(),
-      storage::StorageKey(registration_id_.origin()),
+      blink::StorageKey(registration_id_.origin()),
       {{CompletedRequestKey(completed_request_.unique_id(),
                             completed_request_.request_index()),
         completed_request_.SerializeAsString()}},
@@ -294,7 +294,7 @@ void MarkRequestCompleteTask::DidGetMetadata(
 
   service_worker_context()->StoreRegistrationUserData(
       registration_id_.service_worker_registration_id(),
-      storage::StorageKey(registration_id_.origin()),
+      blink::StorageKey(registration_id_.origin()),
       {{RegistrationKey(registration_id_.unique_id()),
         metadata->SerializeAsString()}},
       base::BindOnce(&MarkRequestCompleteTask::DidStoreMetadata,

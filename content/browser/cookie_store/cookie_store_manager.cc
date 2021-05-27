@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -22,6 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "url/gurl.h"
 
@@ -422,7 +422,7 @@ void CookieStoreManager::StoreSubscriptions(
   // implements StorageKey.
   service_worker_context_->StoreRegistrationUserData(
       service_worker_registration_id,
-      storage::StorageKey(url::Origin::Create(service_worker_origin)),
+      blink::StorageKey(url::Origin::Create(service_worker_origin)),
       std::vector<std::pair<std::string, std::string>>(
           {{registration_user_data_key_, subscriptions_data}}),
       base::BindOnce(

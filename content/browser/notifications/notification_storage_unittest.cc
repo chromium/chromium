@@ -7,13 +7,13 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -64,7 +64,7 @@ class NotificationStorageTest : public ::testing::Test {
   // ServiceWorkerRegistration will be kept alive for the test's lifetime.
   int64_t RegisterServiceWorker() {
     GURL script_url = url_;
-    storage::StorageKey key(origin_);
+    blink::StorageKey key(origin_);
     {
       blink::mojom::ServiceWorkerRegistrationOptions options;
       options.scope = url_;

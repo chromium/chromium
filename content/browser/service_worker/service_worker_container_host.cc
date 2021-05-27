@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/strings/stringprintf.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -27,6 +26,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -210,7 +210,7 @@ void ServiceWorkerContainerHost::Register(
 
   // TODO(crbug.com/1199077): Update this when ServiceWorkerContainerHost
   // implements StorageKey.
-  storage::StorageKey key(url::Origin::Create(options->scope));
+  blink::StorageKey key(url::Origin::Create(options->scope));
   context_->RegisterServiceWorker(
       script_url, key, *options,
       std::move(outside_fetch_client_settings_object),
@@ -247,7 +247,7 @@ void ServiceWorkerContainerHost::GetRegistration(
                            "ServiceWorkerContainerHost::GetRegistration",
                            trace_id, "Client URL", client_url.spec());
   context_->registry()->FindRegistrationForClientUrl(
-      client_url, storage::StorageKey(url::Origin::Create(client_url)),
+      client_url, blink::StorageKey(url::Origin::Create(client_url)),
       base::BindOnce(&ServiceWorkerContainerHost::GetRegistrationComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      trace_id));
@@ -279,7 +279,7 @@ void ServiceWorkerContainerHost::GetRegistrations(
                            "ServiceWorkerContainerHost::GetRegistrations",
                            trace_id);
   context_->registry()->GetRegistrationsForStorageKey(
-      storage::StorageKey(url::Origin::Create(url_)),
+      blink::StorageKey(url::Origin::Create(url_)),
       base::BindOnce(&ServiceWorkerContainerHost::GetRegistrationsComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      trace_id));

@@ -6,7 +6,7 @@ module storage.mojom;
 
 import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/service_worker_database.mojom";
-import "components/services/storage/public/mojom/storage_key/storage_key.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
@@ -140,30 +140,30 @@ interface ServiceWorkerStorageControl {
   Recover(array<ServiceWorkerLiveVersionInfo> versions) => ();
 
   // Returns all StorageKeys which have service worker registrations.
-  GetRegisteredStorageKeys() => (array<storage.mojom.StorageKey> keys);
+  GetRegisteredStorageKeys() => (array<blink.mojom.StorageKey> keys);
 
   // Reads a stored registration for `client_url` that is associated with `key`.
   FindRegistrationForClientUrl(url.mojom.Url client_url,
-                               storage.mojom.StorageKey key) =>
+                               blink.mojom.StorageKey key) =>
       (ServiceWorkerDatabaseStatus status,
        ServiceWorkerFindRegistrationResult? result);
   // Reads a stored registration for `scope` that is associated with `key`.
-  FindRegistrationForScope(url.mojom.Url scope, storage.mojom.StorageKey key) =>
+  FindRegistrationForScope(url.mojom.Url scope, blink.mojom.StorageKey key) =>
       (ServiceWorkerDatabaseStatus status,
        ServiceWorkerFindRegistrationResult? result);
   // Reads a stored registration for `registration_id`. `key` is to
   // be used as a hint to look up the registration faster.
-  FindRegistrationForId(int64 registration_id, storage.mojom.StorageKey? key) =>
+  FindRegistrationForId(int64 registration_id, blink.mojom.StorageKey? key) =>
       (ServiceWorkerDatabaseStatus status,
        ServiceWorkerFindRegistrationResult? result);
 
   // Returns all stored registrations for a given StorageKey.
-  GetRegistrationsForStorageKey(storage.mojom.StorageKey key) =>
+  GetRegistrationsForStorageKey(blink.mojom.StorageKey key) =>
       (ServiceWorkerDatabaseStatus status,
        array<ServiceWorkerFindRegistrationResult> registrations);
 
   // Returns the total resource size for a given StorageKey.
-  GetUsageForStorageKey(storage.mojom.StorageKey key) =>
+  GetUsageForStorageKey(blink.mojom.StorageKey key) =>
       (ServiceWorkerDatabaseStatus status, int64 usage);
 
   // Returns all stored registrations.
@@ -185,27 +185,27 @@ interface ServiceWorkerStorageControl {
   // `deleted_resources_size` carries the total size of deleted resources.
   // `storage_key_state` is kDelete if there is no registration for `key` after
   // deletion.
-  DeleteRegistration(int64 registration_id, storage.mojom.StorageKey key) =>
+  DeleteRegistration(int64 registration_id, blink.mojom.StorageKey key) =>
       (ServiceWorkerDatabaseStatus status,
        uint64 deleted_resources_size,
        ServiceWorkerStorageStorageKeyState storage_key_state);
 
   // Updates the state of the registration's stored version to active.
-  UpdateToActiveState(int64 registration_id, storage.mojom.StorageKey key) =>
+  UpdateToActiveState(int64 registration_id, blink.mojom.StorageKey key) =>
       (ServiceWorkerDatabaseStatus status);
   // Updates the last update check time on the storage.
   UpdateLastUpdateCheckTime(int64 registration_id,
-                            storage.mojom.StorageKey key,
+                            blink.mojom.StorageKey key,
                             mojo_base.mojom.Time last_update_check_time) =>
       (ServiceWorkerDatabaseStatus status);
   // Updates the registration's navigation preload enabled flag in storage.
   UpdateNavigationPreloadEnabled(int64 registration_id,
-                                 storage.mojom.StorageKey key,
+                                 blink.mojom.StorageKey key,
                                  bool enable) =>
       (ServiceWorkerDatabaseStatus status);
   // Updates the registration's navigation preload header in storage.
   UpdateNavigationPreloadHeader(int64 registration_id,
-                                storage.mojom.StorageKey key,
+                                blink.mojom.StorageKey key,
                                 string value) =>
       (ServiceWorkerDatabaseStatus status);
 
@@ -256,7 +256,7 @@ interface ServiceWorkerStorageControl {
       (ServiceWorkerDatabaseStatus status, array<string> values);
   // Stores `user_data` on persistent storage.
   StoreUserData(int64 registration_id,
-                storage.mojom.StorageKey key,
+                blink.mojom.StorageKey key,
                 array<ServiceWorkerUserData> user_data) =>
       (ServiceWorkerDatabaseStatus status);
   // Clears user data specified by |registration_id| and |keys|.

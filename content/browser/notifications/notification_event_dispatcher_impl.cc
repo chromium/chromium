@@ -9,7 +9,6 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/notifications/devtools_event_logging.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -22,6 +21,7 @@
 #include "content/public/common/persistent_notification_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 namespace {
@@ -189,7 +189,7 @@ void FindServiceWorkerRegistration(
       base::BindOnce(&ServiceWorkerContextWrapper::FindReadyRegistrationForId,
                      service_worker_context,
                      notification_database_data.service_worker_registration_id,
-                     storage::StorageKey(origin),
+                     blink::StorageKey(origin),
                      base::BindOnce(&DispatchNotificationEventOnRegistration,
                                     notification_database_data,
                                     std::move(notification_action_callback),

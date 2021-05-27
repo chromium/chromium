@@ -5,10 +5,10 @@
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 
 #include "base/containers/contains.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "components/services/storage/service_worker/service_worker_resource_ops.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
@@ -131,7 +131,7 @@ void ServiceWorkerStorageControlImpl::GetRegisteredStorageKeys(
 
 void ServiceWorkerStorageControlImpl::FindRegistrationForClientUrl(
     const GURL& client_url,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     FindRegistrationForClientUrlCallback callback) {
   storage_->FindRegistrationForClientUrl(
       client_url, key,
@@ -141,7 +141,7 @@ void ServiceWorkerStorageControlImpl::FindRegistrationForClientUrl(
 
 void ServiceWorkerStorageControlImpl::FindRegistrationForScope(
     const GURL& scope,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     FindRegistrationForClientUrlCallback callback) {
   storage_->FindRegistrationForScope(
       scope, key,
@@ -151,7 +151,7 @@ void ServiceWorkerStorageControlImpl::FindRegistrationForScope(
 
 void ServiceWorkerStorageControlImpl::FindRegistrationForId(
     int64_t registration_id,
-    const absl::optional<StorageKey>& key,
+    const absl::optional<blink::StorageKey>& key,
     FindRegistrationForClientUrlCallback callback) {
   if (key.has_value()) {
     storage_->FindRegistrationForId(
@@ -167,7 +167,7 @@ void ServiceWorkerStorageControlImpl::FindRegistrationForId(
 }
 
 void ServiceWorkerStorageControlImpl::GetRegistrationsForStorageKey(
-    const StorageKey& key,
+    const blink::StorageKey& key,
     GetRegistrationsForStorageKeyCallback callback) {
   storage_->GetRegistrationsForStorageKey(
       key,
@@ -177,7 +177,7 @@ void ServiceWorkerStorageControlImpl::GetRegistrationsForStorageKey(
 }
 
 void ServiceWorkerStorageControlImpl::GetUsageForStorageKey(
-    const StorageKey& key,
+    const blink::StorageKey& key,
     GetUsageForStorageKeyCallback callback) {
   storage_->GetUsageForStorageKey(key, std::move(callback));
 }
@@ -200,7 +200,7 @@ void ServiceWorkerStorageControlImpl::StoreRegistration(
 
 void ServiceWorkerStorageControlImpl::DeleteRegistration(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     DeleteRegistrationCallback callback) {
   storage_->DeleteRegistration(
       registration_id, key,
@@ -210,14 +210,14 @@ void ServiceWorkerStorageControlImpl::DeleteRegistration(
 
 void ServiceWorkerStorageControlImpl::UpdateToActiveState(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     UpdateToActiveStateCallback callback) {
   storage_->UpdateToActiveState(registration_id, key, std::move(callback));
 }
 
 void ServiceWorkerStorageControlImpl::UpdateLastUpdateCheckTime(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     base::Time last_update_check_time,
     UpdateLastUpdateCheckTimeCallback callback) {
   storage_->UpdateLastUpdateCheckTime(
@@ -226,7 +226,7 @@ void ServiceWorkerStorageControlImpl::UpdateLastUpdateCheckTime(
 
 void ServiceWorkerStorageControlImpl::UpdateNavigationPreloadEnabled(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     bool enable,
     UpdateNavigationPreloadEnabledCallback callback) {
   storage_->UpdateNavigationPreloadEnabled(registration_id, key, enable,
@@ -235,7 +235,7 @@ void ServiceWorkerStorageControlImpl::UpdateNavigationPreloadEnabled(
 
 void ServiceWorkerStorageControlImpl::UpdateNavigationPreloadHeader(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     const std::string& value,
     UpdateNavigationPreloadHeaderCallback callback) {
   storage_->UpdateNavigationPreloadHeader(registration_id, key, value,
@@ -298,7 +298,7 @@ void ServiceWorkerStorageControlImpl::GetUserData(
 
 void ServiceWorkerStorageControlImpl::StoreUserData(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     std::vector<mojom::ServiceWorkerUserDataPtr> user_data,
     StoreUserDataCallback callback) {
   storage_->StoreUserData(registration_id, key, std::move(user_data),

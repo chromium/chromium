@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -15,6 +14,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/fetch/fetch_request_type_converters.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 #include "url/gurl.h"
 
@@ -22,7 +22,7 @@ namespace content {
 
 ServiceWorkerOfflineCapabilityChecker::ServiceWorkerOfflineCapabilityChecker(
     const GURL& url,
-    const storage::StorageKey& key)
+    const blink::StorageKey& key)
     : url_(url), key_(key) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 }

@@ -10,18 +10,18 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace browsing_data {
 
 SharedWorkerHelper::SharedWorkerInfo::SharedWorkerInfo(
     const GURL& worker,
     const std::string& name,
-    const storage::StorageKey& storage_key)
+    const blink::StorageKey& storage_key)
     : worker(worker), name(name), storage_key(storage_key) {}
 
 SharedWorkerHelper::SharedWorkerInfo::SharedWorkerInfo(
@@ -54,7 +54,7 @@ void SharedWorkerHelper::StartFetching(FetchCallback callback) {
 void SharedWorkerHelper::DeleteSharedWorker(
     const GURL& worker,
     const std::string& name,
-    const storage::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   storage_partition_->GetSharedWorkerService()->TerminateWorker(worker, name,
                                                                 storage_key);
@@ -69,7 +69,7 @@ CannedSharedWorkerHelper::~CannedSharedWorkerHelper() = default;
 void CannedSharedWorkerHelper::AddSharedWorker(
     const GURL& worker,
     const std::string& name,
-    const storage::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key) {
   if (!HasWebScheme(worker))
     return;  // Non-websafe state is not considered browsing data.
 
@@ -108,7 +108,7 @@ void CannedSharedWorkerHelper::StartFetching(FetchCallback callback) {
 void CannedSharedWorkerHelper::DeleteSharedWorker(
     const GURL& worker,
     const std::string& name,
-    const storage::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key) {
   for (auto it = pending_shared_worker_info_.begin();
        it != pending_shared_worker_info_.end();) {
     if (it->worker == worker && it->name == name &&

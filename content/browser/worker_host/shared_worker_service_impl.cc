@@ -17,7 +17,6 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/task/post_task.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/loader/file_url_loader_factory.h"
@@ -43,6 +42,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_client.mojom.h"
@@ -91,7 +91,7 @@ void SharedWorkerServiceImpl::EnumerateSharedWorkers(Observer* observer) {
 bool SharedWorkerServiceImpl::TerminateWorker(
     const GURL& url,
     const std::string& name,
-    const storage::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   SharedWorkerHost* worker_host =
@@ -134,7 +134,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
 
   // Enforce same-origin policy.
   // data: URLs are not considered a different origin.
-  storage::StorageKey storage_key(render_frame_host->GetLastCommittedOrigin());
+  blink::StorageKey storage_key(render_frame_host->GetLastCommittedOrigin());
   bool is_cross_origin = !info->url.SchemeIs(url::kDataScheme) &&
                          url::Origin::Create(info->url) != storage_key.origin();
   if (is_cross_origin &&
@@ -447,7 +447,7 @@ void SharedWorkerServiceImpl::StartWorker(
 SharedWorkerHost* SharedWorkerServiceImpl::FindMatchingSharedWorkerHost(
     const GURL& url,
     const std::string& name,
-    const storage::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key) {
   for (auto& host : worker_hosts_) {
     if (host->instance().Matches(url, name, storage_key))
       return host.get();

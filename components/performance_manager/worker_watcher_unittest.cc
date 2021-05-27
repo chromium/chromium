@@ -25,12 +25,12 @@
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/process_node_source.h"
 #include "components/performance_manager/public/features.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_service_worker_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace performance_manager {
 
@@ -162,7 +162,7 @@ class TestSharedWorkerService : public content::SharedWorkerService {
   void EnumerateSharedWorkers(Observer* observer) override;
   bool TerminateWorker(const GURL& url,
                        const std::string& name,
-                       const storage::StorageKey& storage_key) override;
+                       const blink::StorageKey& storage_key) override;
   void Shutdown() override;
 
   // Creates a new shared worker and returns its token.
@@ -210,7 +210,7 @@ void TestSharedWorkerService::EnumerateSharedWorkers(Observer* observer) {
 bool TestSharedWorkerService::TerminateWorker(
     const GURL& url,
     const std::string& name,
-    const storage::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key) {
   // Not implemented.
   ADD_FAILURE();
   return false;

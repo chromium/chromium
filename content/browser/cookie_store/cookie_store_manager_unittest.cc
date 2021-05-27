@@ -9,7 +9,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/cookie_store/cookie_store_context.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -26,6 +25,7 @@
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -200,7 +200,7 @@ class CookieStoreManagerTest
     int64_t registration_id;
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = GURL(scope);
-    storage::StorageKey key(url::Origin::Create(GURL(scope)));
+    blink::StorageKey key(url::Origin::Create(GURL(scope)));
     base::RunLoop run_loop;
     worker_test_helper_->context()->RegisterServiceWorker(
         GURL(script_url), key, options,

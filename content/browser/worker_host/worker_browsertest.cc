@@ -50,6 +50,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -214,7 +215,7 @@ class WorkerTest : public ContentBrowserTest,
     auto* service = static_cast<SharedWorkerServiceImpl*>(
         partition->GetSharedWorkerService());
     return service->FindMatchingSharedWorkerHost(
-        url, "", storage::StorageKey(url::Origin::Create(url)));
+        url, "", blink::StorageKey(url::Origin::Create(url)));
   }
 
   net::test_server::EmbeddedTestServer* ssl_server() { return &ssl_server_; }

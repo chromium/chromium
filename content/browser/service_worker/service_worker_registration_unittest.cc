@@ -20,7 +20,6 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
@@ -48,6 +47,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "url/gurl.h"
@@ -855,7 +855,7 @@ class ServiceWorkerRegistrationObjectHostTest
 
   blink::ServiceWorkerStatusCode FindRegistrationInStorage(
       int64_t registration_id,
-      const storage::StorageKey& key) {
+      const blink::StorageKey& key) {
     absl::optional<blink::ServiceWorkerStatusCode> status;
     registry()->FindRegistrationForId(
         registration_id, key,
@@ -1182,14 +1182,14 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest, Unregister_Success) {
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       FindRegistrationInStorage(
-          registration_id, storage::StorageKey(url::Origin::Create(kScope))));
+          registration_id, blink::StorageKey(url::Origin::Create(kScope))));
   EXPECT_EQ(blink::mojom::ServiceWorkerErrorType::kNone,
             CallUnregister(registration_host.get()));
 
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kErrorNotFound,
       FindRegistrationInStorage(
-          registration_id, storage::StorageKey(url::Origin::Create(kScope))));
+          registration_id, blink::StorageKey(url::Origin::Create(kScope))));
   EXPECT_EQ(blink::mojom::ServiceWorkerErrorType::kNotFound,
             CallUnregister(registration_host.get()));
 }

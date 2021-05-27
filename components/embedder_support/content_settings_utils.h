@@ -13,12 +13,12 @@
 class GURL;
 class HostContentSettingsMap;
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content_settings {
 class CookieSettings;
-}
-
-namespace storage {
-class StorageKey;
 }
 
 namespace embedder_support {
@@ -43,7 +43,7 @@ bool AllowSharedWorker(const GURL& worker_url,
                        const GURL& site_for_cookies,
                        const absl::optional<url::Origin>& top_frame_origin,
                        const std::string& name,
-                       const storage::StorageKey& storage_key,
+                       const blink::StorageKey& storage_key,
                        int render_process_id,
                        int render_frame_id,
                        const content_settings::CookieSettings* cookie_settings);

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/loader/content_security_notifier.h"
@@ -38,6 +37,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 
@@ -709,7 +709,7 @@ void DedicatedWorkerHost::MaybeCountWebFeature(const GURL& script_url) {
         return;
 
       service_worker_context->GetRegistrationsForStorageKey(
-          storage::StorageKey(
+          blink::StorageKey(
               ancestor_render_frame_host->GetLastCommittedOrigin()),
           base::BindOnce(&DedicatedWorkerHost::ContinueOnMaybeCountWebFeature,
                          weak_factory_.GetWeakPtr(), script_url,

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/public/cpp/storage_key.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace storage {
+namespace blink {
 
 // Test when a constructed StorageKey object should be considered valid/opaque.
-TEST(StorageStorageKeyTest, ConstructionValidity) {
+TEST(BlinkStorageKeyTest, ConstructionValidity) {
   StorageKey empty = StorageKey();
   EXPECT_TRUE(empty.opaque());
 
@@ -25,7 +25,7 @@ TEST(StorageStorageKeyTest, ConstructionValidity) {
 }
 
 // Test that StorageKeys are/aren't equivalent as expected.
-TEST(StorageStorageKeyTest, Equivalance) {
+TEST(BlinkStorageKeyTest, Equivalance) {
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
   url::Origin origin3 = url::Origin();
@@ -61,7 +61,7 @@ TEST(StorageStorageKeyTest, Equivalance) {
 }
 
 // Test that StorageKeys Serialize to the expected value.
-TEST(StorageStorageKeyTest, Serialize) {
+TEST(BlinkStorageKeyTest, Serialize) {
   std::string example = "https://example.com/";
   std::string example_no_trailing_slash = "https://example.com";
   std::string test = "https://test.example/";
@@ -77,7 +77,7 @@ TEST(StorageStorageKeyTest, Serialize) {
 }
 
 // Test that deserialized StorageKeys are valid/opaque as expected.
-TEST(StorageStorageKeyTest, Deserialize) {
+TEST(BlinkStorageKeyTest, Deserialize) {
   std::string example = "https://example.com/";
   std::string test = "https://test.example/";
   std::string wrong = "I'm not a valid URL.";
@@ -95,7 +95,7 @@ TEST(StorageStorageKeyTest, Deserialize) {
 
 // Test that a StorageKey, constructed by deserializing another serialized
 // StorageKey, is equivalent to the original.
-TEST(StorageStorageKeyTest, SerializeDeserialize) {
+TEST(BlinkStorageKeyTest, SerializeDeserialize) {
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
 
@@ -112,4 +112,4 @@ TEST(StorageStorageKeyTest, SerializeDeserialize) {
   EXPECT_EQ(key2, key2_deserialized);
 }
 
-}  // namespace storage
+}  // namespace blink

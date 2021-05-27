@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/public/cpp/storage_key.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #include "url/gurl.h"
 
-namespace storage {
+namespace blink {
 
 StorageKey StorageKey::Deserialize(const std::string& in) {
   return StorageKey(url::Origin::Create(GURL(in)));
@@ -29,4 +29,4 @@ bool operator<(const StorageKey& lhs, const StorageKey& rhs) {
   return lhs.origin_ < rhs.origin_;
 }
 
-}  // namespace storage
+}  // namespace blink

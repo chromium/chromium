@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_STORAGE_KEY_H_
-#define COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_STORAGE_KEY_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_STORAGE_KEY_STORAGE_KEY_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_STORAGE_KEY_STORAGE_KEY_H_
 
 #include <string>
 
-#include "base/component_export.h"
+#include "third_party/blink/public/common/common_export.h"
 #include "url/origin.h"
 
-namespace storage {
+namespace blink {
 
 // A class representing the key that Storage APIs use to key their storage on.
-class COMPONENT_EXPORT(STORAGE_SERVICE_STORAGE_KEY_SUPPORT) StorageKey {
+class BLINK_COMMON_EXPORT StorageKey {
  public:
   StorageKey() = default;
   explicit StorageKey(const url::Origin& origin) : origin_(origin) {}
@@ -42,20 +42,20 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_STORAGE_KEY_SUPPORT) StorageKey {
   const url::Origin& origin() const { return origin_; }
 
  private:
-  COMPONENT_EXPORT(STORAGE_SERVICE_STORAGE_KEY_SUPPORT)
+  BLINK_COMMON_EXPORT
   friend bool operator==(const StorageKey& lhs, const StorageKey& rhs);
 
-  COMPONENT_EXPORT(STORAGE_SERVICE_STORAGE_KEY_SUPPORT)
+  BLINK_COMMON_EXPORT
   friend bool operator!=(const StorageKey& lhs, const StorageKey& rhs);
 
   // Allows StorageKey to be used as a key in STL (for example, a std::set or
   // std::map).
-  COMPONENT_EXPORT(STORAGE_SERVICE_STORAGE_KEY_SUPPORT)
+  BLINK_COMMON_EXPORT
   friend bool operator<(const StorageKey& lhs, const StorageKey& rhs);
 
   url::Origin origin_;
 };
 
-}  // namespace storage
+}  // namespace blink
 
-#endif  // COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_STORAGE_KEY_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_STORAGE_KEY_STORAGE_KEY_H_

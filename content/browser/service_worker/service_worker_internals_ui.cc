@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
@@ -38,6 +37,7 @@
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 
 using base::DictionaryValue;
@@ -680,7 +680,7 @@ void ServiceWorkerInternalsHandler::HandleStartWorker(const ListValue* args) {
                      callback_id);
   context->StartActiveServiceWorker(
       GURL(scope_string),
-      storage::StorageKey(url::Origin::Create(GURL(scope_string))),
+      blink::StorageKey(url::Origin::Create(GURL(scope_string))),
       std::move(callback));
 }
 
@@ -737,7 +737,7 @@ void ServiceWorkerInternalsHandler::UnregisterWithScope(
   // TODO(crbug.com/1199077): Update this when ServiceWorkerInternalsHandler
   // implements StorageKey.
   context->context()->UnregisterServiceWorker(
-      scope, storage::StorageKey(url::Origin::Create(scope)),
+      scope, blink::StorageKey(url::Origin::Create(scope)),
       /*is_immediate=*/false, std::move(callback));
 }
 

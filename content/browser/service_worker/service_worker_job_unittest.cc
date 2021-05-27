@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -49,6 +48,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
@@ -197,7 +197,7 @@ class ServiceWorkerJobTest : public testing::Test {
                                    EmbeddedWorkerStatus running_status);
   scoped_refptr<ServiceWorkerRegistration> FindRegistrationForScope(
       const GURL& scope,
-      const storage::StorageKey& key,
+      const blink::StorageKey& key,
       blink::ServiceWorkerStatusCode expected_status =
           blink::ServiceWorkerStatusCode::kOk);
   ServiceWorkerContainerHost* CreateControllee();
@@ -252,7 +252,7 @@ void ServiceWorkerJobTest::WaitForVersionRunningStatus(
 scoped_refptr<ServiceWorkerRegistration>
 ServiceWorkerJobTest::FindRegistrationForScope(
     const GURL& scope,
-    const storage::StorageKey& key,
+    const blink::StorageKey& key,
     blink::ServiceWorkerStatusCode expected_status) {
   scoped_refptr<ServiceWorkerRegistration> registration;
   base::RunLoop run_loop;
@@ -299,7 +299,7 @@ ServiceWorkerJobTest::CreateRegistrationWithControllee(const GURL& script_url,
 TEST_F(ServiceWorkerJobTest, SameDocumentSameRegistration) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   GURL url("https://www.example.com/");
-  storage::StorageKey key(url::Origin::Create(url));
+  blink::StorageKey key(url::Origin::Create(url));
 
   options.scope = url;
   scoped_refptr<ServiceWorkerRegistration> original_registration =
@@ -327,7 +327,7 @@ TEST_F(ServiceWorkerJobTest, SameDocumentSameRegistration) {
 TEST_F(ServiceWorkerJobTest, SameMatchSameRegistration) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   GURL url("https://www.example.com/");
-  storage::StorageKey key(url::Origin::Create(url));
+  blink::StorageKey key(url::Origin::Create(url));
 
   options.scope = url;
   scoped_refptr<ServiceWorkerRegistration> original_registration =
@@ -359,7 +359,7 @@ TEST_F(ServiceWorkerJobTest, DifferentMatchDifferentRegistration) {
   const GURL scope1("https://www.example.com/one");
   const GURL scope2("https://www.example.com/two");
   const GURL script_url("https://www.example.com/service_worker.js");
-  const storage::StorageKey key(url::Origin::Create(script_url));
+  const blink::StorageKey key(url::Origin::Create(script_url));
   blink::mojom::ServiceWorkerRegistrationOptions options1;
   options1.scope = scope1;
   blink::mojom::ServiceWorkerRegistrationOptions options2;
@@ -473,7 +473,7 @@ TEST_F(ServiceWorkerJobTest, Unregister) {
   EXPECT_EQ(ServiceWorkerVersion::REDUNDANT, version->status());
 
   registration = FindRegistrationForScope(
-      options.scope, storage::StorageKey(url::Origin::Create(options.scope)),
+      options.scope, blink::StorageKey(url::Origin::Create(options.scope)),
       blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   EXPECT_FALSE(registration);
@@ -513,7 +513,7 @@ TEST_F(ServiceWorkerJobTest, UnregisterImmediate) {
 TEST_F(ServiceWorkerJobTest, RegisterNewScript) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
-  storage::StorageKey key(url::Origin::Create(options.scope));
+  blink::StorageKey key(url::Origin::Create(options.scope));
   scoped_refptr<ServiceWorkerRegistration> old_registration = RunRegisterJob(
       GURL("https://www.example.com/service_worker.js"), options);
   auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
@@ -544,7 +544,7 @@ TEST_F(ServiceWorkerJobTest, RegisterDuplicateScript) {
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
-  storage::StorageKey key(url::Origin::Create(options.scope));
+  blink::StorageKey key(url::Origin::Create(options.scope));
 
   scoped_refptr<ServiceWorkerRegistration> old_registration =
       RunRegisterJob(script_url, options);
@@ -627,7 +627,7 @@ TEST_F(ServiceWorkerJobTest, ParallelRegUnreg) {
   RunUnregisterJob(options.scope);
 
   registration = FindRegistrationForScope(
-      options.scope, storage::StorageKey(url::Origin::Create(options.scope)),
+      options.scope, blink::StorageKey(url::Origin::Create(options.scope)),
       blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   ASSERT_EQ(scoped_refptr<ServiceWorkerRegistration>(), registration);
@@ -653,7 +653,7 @@ TEST_F(ServiceWorkerJobTest, ParallelRegNewScript) {
 
   scoped_refptr<ServiceWorkerRegistration> registration =
       FindRegistrationForScope(scope,
-                               storage::StorageKey(url::Origin::Create(scope)));
+                               blink::StorageKey(url::Origin::Create(scope)));
 
   ASSERT_EQ(registration2, registration);
 }
@@ -676,8 +676,7 @@ TEST_F(ServiceWorkerJobTest, ParallelRegSameScript) {
 
   scoped_refptr<ServiceWorkerRegistration> registration =
       FindRegistrationForScope(
-          options.scope,
-          storage::StorageKey(url::Origin::Create(options.scope)));
+          options.scope, blink::StorageKey(url::Origin::Create(options.scope)));
 
   ASSERT_EQ(registration, registration1);
 }
@@ -696,7 +695,7 @@ TEST_F(ServiceWorkerJobTest, ParallelUnreg) {
   // crashing.
   scoped_refptr<ServiceWorkerRegistration> registration =
       FindRegistrationForScope(scope,
-                               storage::StorageKey(url::Origin::Create(scope)),
+                               blink::StorageKey(url::Origin::Create(scope)),
                                blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   ASSERT_EQ(scoped_refptr<ServiceWorkerRegistration>(), registration);
@@ -731,11 +730,11 @@ TEST_F(ServiceWorkerJobTest, AbortAll_Register) {
   run_loop.Run();
 
   registration1 = FindRegistrationForScope(
-      options1.scope, storage::StorageKey(url::Origin::Create(options1.scope)),
+      options1.scope, blink::StorageKey(url::Origin::Create(options1.scope)),
       blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   registration2 = FindRegistrationForScope(
-      options2.scope, storage::StorageKey(url::Origin::Create(options2.scope)),
+      options2.scope, blink::StorageKey(url::Origin::Create(options2.scope)),
       blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   EXPECT_EQ(scoped_refptr<ServiceWorkerRegistration>(), registration1);
@@ -789,7 +788,7 @@ TEST_F(ServiceWorkerJobTest, AbortAll_RegUnreg) {
   run_loop.Run();
 
   registration = FindRegistrationForScope(
-      options.scope, storage::StorageKey(url::Origin::Create(options.scope)),
+      options.scope, blink::StorageKey(url::Origin::Create(options.scope)),
       blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   EXPECT_EQ(scoped_refptr<ServiceWorkerRegistration>(), registration);
@@ -822,12 +821,12 @@ TEST_F(ServiceWorkerJobTest, AbortScope) {
   run_loop.Run();
 
   registration1 = FindRegistrationForScope(
-      options1.scope, storage::StorageKey(url::Origin::Create(options1.scope)),
+      options1.scope, blink::StorageKey(url::Origin::Create(options1.scope)),
       blink::ServiceWorkerStatusCode::kErrorNotFound);
   EXPECT_EQ(nullptr, registration1);
 
   registration2 = FindRegistrationForScope(
-      options2.scope, storage::StorageKey(url::Origin::Create(options2.scope)),
+      options2.scope, blink::StorageKey(url::Origin::Create(options2.scope)),
       blink::ServiceWorkerStatusCode::kOk);
   EXPECT_NE(nullptr, registration2);
 }
@@ -992,7 +991,7 @@ TEST_F(ServiceWorkerJobTest, RegisterAndUnregisterWhileUninstalling) {
   GURL script2("https://www.example.com/service_worker.js?new");
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/one/");
-  storage::StorageKey key(url::Origin::Create(options.scope));
+  blink::StorageKey key(url::Origin::Create(options.scope));
 
   scoped_refptr<ServiceWorkerRegistration> registration =
       RunRegisterJob(script1, options);
@@ -1128,7 +1127,7 @@ TEST_F(ServiceWorkerJobTest, HasFetchHandler) {
   GURL script("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
-  storage::StorageKey key(url::Origin::Create(options.scope));
+  blink::StorageKey key(url::Origin::Create(options.scope));
   scoped_refptr<ServiceWorkerRegistration> registration;
 
   auto* fetch_handler_worker =
@@ -1482,7 +1481,7 @@ TEST_F(ServiceWorkerUpdateJobTest, RegisterWithDifferentUpdateViaCache) {
   const GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
-  storage::StorageKey key(url::Origin::Create(options.scope));
+  blink::StorageKey key(url::Origin::Create(options.scope));
 
   scoped_refptr<ServiceWorkerRegistration> old_registration =
       RunRegisterJob(script_url, options);

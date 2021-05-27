@@ -24,7 +24,6 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -59,6 +58,7 @@
 #include "storage/browser/test/blob_test_utils.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 using blink::mojom::CacheStorageError;
@@ -504,7 +504,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
   }
 
   void FindRegistrationForId(int64_t id,
-                             const storage::StorageKey& key,
+                             const blink::StorageKey& key,
                              blink::ServiceWorkerStatusCode expected_status) {
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
     blink::ServiceWorkerStatusCode status =

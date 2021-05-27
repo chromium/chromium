@@ -186,6 +186,7 @@ mojom("mojom_platform") {
     "speech/speech_recognizer.mojom",
     "speech/speech_synthesis.mojom",
     "storage_access/storage_access_automation.mojom",
+    "storage_key/storage_key.mojom",
     "timing/performance_mark_or_measure.mojom",
     "timing/resource_timing.mojom",
     "timing/worker_timing_container.mojom",
@@ -631,6 +632,19 @@ mojom("mojom_platform") {
       ]
       traits_headers = [ "//third_party/blink/common/permissions_policy/policy_value_mojom_traits.h" ]
       traits_sources = [ "//third_party/blink/common/permissions_policy/policy_value_mojom_traits.cc" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.StorageKey"
+          cpp = "::blink::StorageKey"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/storage_key/storage_key_mojom_traits.h" ]
+      traits_sources = [
+        "//third_party/blink/common/storage_key/storage_key_mojom_traits.cc",
+      ]
+      traits_public_deps = [ "//url/mojom:url_mojom_origin" ]
     },
     {
       types = [

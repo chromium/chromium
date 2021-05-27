@@ -8,12 +8,12 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_job_coordinator.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/service_worker/service_worker_utils.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace content {
@@ -36,7 +36,7 @@ void ServiceWorkerUnregisterJob::AddCallback(UnregistrationCallback callback) {
 
 void ServiceWorkerUnregisterJob::Start() {
   context_->registry()->FindRegistrationForScope(
-      scope_, storage::StorageKey(url::Origin::Create(scope_)),
+      scope_, blink::StorageKey(url::Origin::Create(scope_)),
       base::BindOnce(&ServiceWorkerUnregisterJob::OnRegistrationFound,
                      weak_factory_.GetWeakPtr()));
 }

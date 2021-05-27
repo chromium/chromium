@@ -15,7 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
@@ -37,6 +36,7 @@
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 
 namespace content {
@@ -147,7 +147,7 @@ void ServiceWorkerRegisterJob::StartImpl() {
 
   scoped_refptr<ServiceWorkerRegistration> registration =
       context_->registry()->GetUninstallingRegistration(
-          scope_, storage::StorageKey(url::Origin::Create(scope_)));
+          scope_, blink::StorageKey(url::Origin::Create(scope_)));
   if (registration.get())
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -155,7 +155,7 @@ void ServiceWorkerRegisterJob::StartImpl() {
                        blink::ServiceWorkerStatusCode::kOk, registration));
   else
     context_->registry()->FindRegistrationForScope(
-        scope_, storage::StorageKey(url::Origin::Create(scope_)),
+        scope_, blink::StorageKey(url::Origin::Create(scope_)),
         std::move(next_step));
 }
 
@@ -376,7 +376,7 @@ void ServiceWorkerRegisterJob::OnUpdateCheckFinished(
   context_->registry()->NotifyInstallingRegistration(registration());
   context_->registry()->CreateNewVersion(
       registration(), script_url_, worker_script_type_,
-      storage::StorageKey(url::Origin::Create(script_url_)),
+      blink::StorageKey(url::Origin::Create(script_url_)),
       base::BindOnce(&ServiceWorkerRegisterJob::StartWorkerForUpdate,
                      weak_factory_.GetWeakPtr()));
 }
@@ -566,7 +566,7 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
     }
     context_->registry()->CreateNewVersion(
         registration(), script_url_, worker_script_type_,
-        storage::StorageKey(url::Origin::Create(script_url_)),
+        blink::StorageKey(url::Origin::Create(script_url_)),
         std::move(next_task));
     return;
   }

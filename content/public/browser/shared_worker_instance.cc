@@ -15,7 +15,7 @@ SharedWorkerInstance::SharedWorkerInstance(
     blink::mojom::ScriptType script_type,
     network::mojom::CredentialsMode credentials_mode,
     const std::string& name,
-    const storage::StorageKey& storage_key,
+    const blink::StorageKey& storage_key,
     network::mojom::IPAddressSpace creation_address_space,
     blink::mojom::SharedWorkerCreationContextType creation_context_type)
     : url_(url),
@@ -40,10 +40,9 @@ SharedWorkerInstance::SharedWorkerInstance(SharedWorkerInstance&& other) =
 
 SharedWorkerInstance::~SharedWorkerInstance() = default;
 
-bool SharedWorkerInstance::Matches(
-    const GURL& url,
-    const std::string& name,
-    const storage::StorageKey& storage_key) const {
+bool SharedWorkerInstance::Matches(const GURL& url,
+                                   const std::string& name,
+                                   const blink::StorageKey& storage_key) const {
   // Step 11.2: "If there exists a SharedWorkerGlobalScope object whose closing
   // flag is false, constructor origin is same origin with outside settings's
   // origin, constructor url equals urlRecord, and name equals the value of

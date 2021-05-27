@@ -10,13 +10,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/common/content_client.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -281,7 +281,7 @@ void DevToolsBackgroundServicesContextImpl::
   // TODO(crbug.com/1199077): Update this when
   // DevToolsBackgroundServicesContextImpl implements StorageKey.
   service_worker_context_->StoreRegistrationUserData(
-      service_worker_registration_id, storage::StorageKey(origin),
+      service_worker_registration_id, blink::StorageKey(origin),
       {{CreateEntryKey(event.background_service()), event.SerializeAsString()}},
       base::BindOnce(&DidLogServiceEvent));
 

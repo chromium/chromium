@@ -104,8 +104,9 @@ class ServiceWorkerStorageTest : public testing::Test {
  protected:
   void LazyInitialize() { storage()->LazyInitializeForTest(); }
 
-  ServiceWorkerDatabase::Status DeleteRegistration(int64_t registration_id,
-                                                   const StorageKey& key) {
+  ServiceWorkerDatabase::Status DeleteRegistration(
+      int64_t registration_id,
+      const blink::StorageKey& key) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->DeleteRegistration(
@@ -139,8 +140,9 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
-  ServiceWorkerDatabase::Status GetUsageForStorageKey(const StorageKey& key,
-                                                      int64_t& out_usage) {
+  ServiceWorkerDatabase::Status GetUsageForStorageKey(
+      const blink::StorageKey& key,
+      int64_t& out_usage) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->GetUsageForStorageKey(
@@ -155,7 +157,7 @@ class ServiceWorkerStorageTest : public testing::Test {
   }
 
   ServiceWorkerDatabase::Status GetRegistrationsForStorageKey(
-      const StorageKey& key) {
+      const blink::StorageKey& key) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->GetRegistrationsForStorageKey(
@@ -208,7 +210,7 @@ class ServiceWorkerStorageTest : public testing::Test {
 
   ServiceWorkerDatabase::Status StoreUserData(
       int64_t registration_id,
-      const StorageKey& key,
+      const blink::StorageKey& key,
       const std::vector<std::pair<std::string, std::string>>& key_value_pairs) {
     std::vector<mojom::ServiceWorkerUserDataPtr> user_data;
     for (const auto& kv : key_value_pairs) {
@@ -291,8 +293,9 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
-  ServiceWorkerDatabase::Status UpdateToActiveState(int64_t registration_id,
-                                                    const StorageKey& key) {
+  ServiceWorkerDatabase::Status UpdateToActiveState(
+      int64_t registration_id,
+      const blink::StorageKey& key) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->UpdateToActiveState(
@@ -307,7 +310,7 @@ class ServiceWorkerStorageTest : public testing::Test {
 
   ServiceWorkerDatabase::Status FindRegistrationForClientUrl(
       const GURL& document_url,
-      const StorageKey& key) {
+      const blink::StorageKey& key) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->FindRegistrationForClientUrl(
@@ -324,7 +327,7 @@ class ServiceWorkerStorageTest : public testing::Test {
 
   ServiceWorkerDatabase::Status FindRegistrationForScope(
       const GURL& scope,
-      const StorageKey& key) {
+      const blink::StorageKey& key) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->FindRegistrationForScope(
@@ -339,8 +342,9 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
-  ServiceWorkerDatabase::Status FindRegistrationForId(int64_t registration_id,
-                                                      const StorageKey& key) {
+  ServiceWorkerDatabase::Status FindRegistrationForId(
+      int64_t registration_id,
+      const blink::StorageKey& key) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->FindRegistrationForId(
@@ -527,7 +531,7 @@ class ServiceWorkerStorageTest : public testing::Test {
 TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
   const GURL kScope("http://www.example.com/scope/");
   const url::Origin kOrigin = url::Origin::Create(kScope);
-  const StorageKey kKey(kOrigin);
+  const blink::StorageKey kKey(kOrigin);
   const GURL kScript("http://www.example.com/script.js");
   const GURL kDocumentUrl("http://www.example.com/scope/document.html");
   const int64_t kRegistrationId = 0;
@@ -603,7 +607,7 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   const int64_t kRegistrationId = 1;
   const GURL kScope("http://www.test.not/scope/");
   const url::Origin kOrigin = url::Origin::Create(kScope);
-  const StorageKey kKey(kOrigin);
+  const blink::StorageKey kKey(kOrigin);
   const GURL kScript("http://www.test.not/script.js");
   LazyInitialize();
 
@@ -775,10 +779,10 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
 // called.
 TEST_F(ServiceWorkerStorageTest, StoreUserData_BeforeInitialize) {
   const int kRegistrationId = 0;
-  EXPECT_EQ(StoreUserData(
-                kRegistrationId,
-                StorageKey(url::Origin::Create(GURL("https://example.com"))),
-                {{"key", "data"}}),
+  EXPECT_EQ(StoreUserData(kRegistrationId,
+                          blink::StorageKey(
+                              url::Origin::Create(GURL("https://example.com"))),
+                          {{"key", "data"}}),
             ServiceWorkerDatabase::Status::kErrorNotFound);
 }
 
@@ -954,7 +958,7 @@ TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
 
   // Storage usage should report total resource size from two registrations.
   const url::Origin origin = url::Origin::Create(kScope1.GetOrigin());
-  const StorageKey key(origin);
+  const blink::StorageKey key(origin);
   int64_t usage;
   EXPECT_EQ(GetUsageForStorageKey(key, usage),
             ServiceWorkerDatabase::Status::kOk);

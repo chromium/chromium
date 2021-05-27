@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/public/mojom/storage_key/storage_key_mojom_traits.h"
+#include "third_party/blink/public/common/storage_key/storage_key_mojom_traits.h"
 
-#include "components/services/storage/public/cpp/storage_key.h"
-#include "components/services/storage/public/mojom/storage_key/storage_key.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/storage_key/storage_key.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace storage {
+namespace blink {
 namespace {
 
 TEST(StorageKeyMojomTraitsTest, SerializeAndDeserialize) {
@@ -33,4 +33,4 @@ TEST(StorageKeyMojomTraitsTest, SerializeAndDeserialize) {
 }
 
 }  // namespace
-}  // namespace storage
+}  // namespace blink

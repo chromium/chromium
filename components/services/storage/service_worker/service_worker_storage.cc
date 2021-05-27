@@ -66,7 +66,7 @@ ServiceWorkerStorage::InitialData::~InitialData() = default;
 
 ServiceWorkerStorage::DidDeleteRegistrationParams::DidDeleteRegistrationParams(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     DeleteRegistrationCallback callback)
     : registration_id(registration_id),
       key(key),
@@ -93,7 +93,7 @@ void ServiceWorkerStorage::GetRegisteredStorageKeys(
     GetRegisteredStorageKeysCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
-      std::move(callback).Run(/*keys=*/std::vector<StorageKey>());
+      std::move(callback).Run(/*keys=*/std::vector<blink::StorageKey>());
       return;
     case STORAGE_STATE_INITIALIZING:
       // Fall-through.
@@ -106,14 +106,14 @@ void ServiceWorkerStorage::GetRegisteredStorageKeys(
       break;
   }
 
-  std::vector<StorageKey> keys(registered_keys_.begin(),
-                               registered_keys_.end());
+  std::vector<blink::StorageKey> keys(registered_keys_.begin(),
+                                      registered_keys_.end());
   std::move(callback).Run(std::move(keys));
 }
 
 void ServiceWorkerStorage::FindRegistrationForClientUrl(
     const GURL& client_url,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     FindRegistrationDataCallback callback) {
   DCHECK(!client_url.has_ref());
   switch (state_) {
@@ -153,7 +153,7 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
 
 void ServiceWorkerStorage::FindRegistrationForScope(
     const GURL& scope,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     FindRegistrationDataCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -190,7 +190,7 @@ void ServiceWorkerStorage::FindRegistrationForScope(
 
 void ServiceWorkerStorage::FindRegistrationForId(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     FindRegistrationDataCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -251,7 +251,7 @@ void ServiceWorkerStorage::FindRegistrationForIdOnly(
 }
 
 void ServiceWorkerStorage::GetRegistrationsForStorageKey(
-    const StorageKey& key,
+    const blink::StorageKey& key,
     GetRegistrationsDataCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -288,7 +288,7 @@ void ServiceWorkerStorage::GetRegistrationsForStorageKey(
 }
 
 void ServiceWorkerStorage::GetUsageForStorageKey(
-    const StorageKey& key,
+    const blink::StorageKey& key,
     GetUsageForStorageKeyCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -389,7 +389,7 @@ void ServiceWorkerStorage::StoreRegistrationData(
 
 void ServiceWorkerStorage::UpdateToActiveState(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     DatabaseStatusCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -415,7 +415,7 @@ void ServiceWorkerStorage::UpdateToActiveState(
 
 void ServiceWorkerStorage::UpdateLastUpdateCheckTime(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     base::Time last_update_check_time,
     DatabaseStatusCallback callback) {
   switch (state_) {
@@ -444,7 +444,7 @@ void ServiceWorkerStorage::UpdateLastUpdateCheckTime(
 
 void ServiceWorkerStorage::UpdateNavigationPreloadEnabled(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     bool enable,
     DatabaseStatusCallback callback) {
   switch (state_) {
@@ -473,7 +473,7 @@ void ServiceWorkerStorage::UpdateNavigationPreloadEnabled(
 
 void ServiceWorkerStorage::UpdateNavigationPreloadHeader(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     const std::string& value,
     DatabaseStatusCallback callback) {
   switch (state_) {
@@ -502,7 +502,7 @@ void ServiceWorkerStorage::UpdateNavigationPreloadHeader(
 
 void ServiceWorkerStorage::DeleteRegistration(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     DeleteRegistrationCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -702,7 +702,7 @@ void ServiceWorkerStorage::DoomUncommittedResources(
 
 void ServiceWorkerStorage::StoreUserData(
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     std::vector<mojom::ServiceWorkerUserDataPtr> user_data,
     DatabaseStatusCallback callback) {
   switch (state_) {
@@ -1197,7 +1197,7 @@ void ServiceWorkerStorage::ApplyPolicyUpdates(
   }
 
   for (const auto& update : policy_updates) {
-    StorageKey key(update->origin);
+    blink::StorageKey key(update->origin);
     if (!update->purge_on_shutdown)
       keys_to_purge_on_shutdown_.erase(key);
     else
@@ -1337,7 +1337,7 @@ void ServiceWorkerStorage::DidGetAllRegistrations(
 void ServiceWorkerStorage::DidStoreRegistrationData(
     StoreRegistrationDataCallback callback,
     uint64_t new_resources_total_size_bytes,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     const ServiceWorkerDatabase::DeletedVersion& deleted_version,
     ServiceWorkerDatabase::Status status) {
   if (status != ServiceWorkerDatabase::Status::kOk) {
@@ -1610,7 +1610,7 @@ void ServiceWorkerStorage::DeleteRegistrationFromDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     DeleteRegistrationInDBCallback callback) {
   DCHECK(database);
 
@@ -1654,10 +1654,10 @@ void ServiceWorkerStorage::WriteRegistrationInDB(
   ServiceWorkerDatabase::Status status =
       database->WriteRegistration(*registration, resources, &deleted_version);
   original_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     StorageKey(url::Origin::Create(registration->script)),
-                     deleted_version, status));
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                blink::StorageKey(
+                                    url::Origin::Create(registration->script)),
+                                deleted_version, status));
 }
 
 // static
@@ -1665,7 +1665,7 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     const GURL& client_url,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     FindInDBCallback callback) {
   RegistrationList registration_data_list;
   ServiceWorkerDatabase::Status status =
@@ -1702,7 +1702,7 @@ void ServiceWorkerStorage::FindForScopeInDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     const GURL& scope,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     FindInDBCallback callback) {
   RegistrationList registration_data_list;
   ServiceWorkerDatabase::Status status =
@@ -1738,7 +1738,7 @@ void ServiceWorkerStorage::FindForIdInDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     int64_t registration_id,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     FindInDBCallback callback) {
   mojom::ServiceWorkerRegistrationDataPtr data;
   auto resources = std::make_unique<ResourceList>();
@@ -1755,7 +1755,7 @@ void ServiceWorkerStorage::FindForIdOnlyInDB(
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     int64_t registration_id,
     FindInDBCallback callback) {
-  StorageKey key;
+  blink::StorageKey key;
   ServiceWorkerDatabase::Status status =
       database->ReadRegistrationStorageKey(registration_id, &key);
   if (status != ServiceWorkerDatabase::Status::kOk) {
@@ -1773,7 +1773,7 @@ void ServiceWorkerStorage::FindForIdOnlyInDB(
 void ServiceWorkerStorage::GetUsageForStorageKeyInDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-    const StorageKey& key,
+    const blink::StorageKey& key,
     GetUsageForStorageKeyCallback callback) {
   int64_t usage = 0;
   ServiceWorkerDatabase::Status status =
@@ -1851,7 +1851,7 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefixInDB(
 
 void ServiceWorkerStorage::DeleteAllDataForStorageKeysFromDB(
     ServiceWorkerDatabase* database,
-    const std::set<StorageKey>& keys) {
+    const std::set<blink::StorageKey>& keys) {
   DCHECK(database);
 
   std::vector<int64_t> newly_purgeable_resources;

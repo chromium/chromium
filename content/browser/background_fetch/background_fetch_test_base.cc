@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -26,6 +25,7 @@
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -107,7 +107,7 @@ int64_t BackgroundFetchTestBase::RegisterServiceWorkerForOrigin(
   int64_t service_worker_registration_id =
       blink::mojom::kInvalidServiceWorkerRegistrationId;
 
-  const storage::StorageKey key(origin);
+  const blink::StorageKey key(origin);
 
   {
     blink::mojom::ServiceWorkerRegistrationOptions options;
@@ -162,7 +162,7 @@ void BackgroundFetchTestBase::UnregisterServiceWorker(
   // TODO(crbug.com/1199077): Update this when background fetch implements
   // StorageKey.
   embedded_worker_test_helper_.context()->UnregisterServiceWorker(
-      scope, storage::StorageKey(url::Origin::Create(scope)),
+      scope, blink::StorageKey(url::Origin::Create(scope)),
       /*is_immediate=*/false,
       base::BindOnce(&DidUnregisterServiceWorker, run_loop.QuitClosure()));
   run_loop.Run();

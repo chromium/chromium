@@ -361,7 +361,7 @@ TEST(ServiceWorkerDatabaseTest, GetNextAvailableIds) {
 TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
 
-  std::set<StorageKey> keys;
+  std::set<blink::StorageKey> keys;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetStorageKeysWithRegistrations(&keys));
   EXPECT_TRUE(keys.empty());
@@ -369,7 +369,7 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   ServiceWorkerDatabase::DeletedVersion deleted_version;
 
   GURL origin1 = GURL("https://example.com");
-  StorageKey key1(url::Origin::Create(origin1));
+  blink::StorageKey key1(url::Origin::Create(origin1));
   RegistrationData data1;
   data1.registration_id = 123;
   data1.scope = URL(origin1, "/foo");
@@ -382,7 +382,7 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
             database->WriteRegistration(data1, resources1, &deleted_version));
 
   GURL origin2 = GURL("https://www.example.com");
-  StorageKey key2(url::Origin::Create(origin2));
+  blink::StorageKey key2(url::Origin::Create(origin2));
   RegistrationData data2;
   data2.registration_id = 234;
   data2.scope = URL(origin2, "/bar");
@@ -395,7 +395,7 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
             database->WriteRegistration(data2, resources2, &deleted_version));
 
   GURL origin3 = GURL("https://example.org");
-  StorageKey key3(url::Origin::Create(origin3));
+  blink::StorageKey key3(url::Origin::Create(origin3));
   RegistrationData data3;
   data3.registration_id = 345;
   data3.scope = URL(origin3, "/hoge");
@@ -463,9 +463,9 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   GURL origin2("https://www.example.com");
   GURL origin3("https://example.org");
 
-  StorageKey key1(url::Origin::Create(origin1));
-  StorageKey key2(url::Origin::Create(origin2));
-  StorageKey key3(url::Origin::Create(origin3));
+  blink::StorageKey key1(url::Origin::Create(origin1));
+  blink::StorageKey key2(url::Origin::Create(origin2));
+  blink::StorageKey key3(url::Origin::Create(origin3));
 
   std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
   std::vector<std::vector<ResourceRecordPtr>> resources_list;
@@ -651,7 +651,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Basic) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
 
   GURL origin("https://example.com");
-  StorageKey key(url::Origin::Create(origin));
+  blink::StorageKey key(url::Origin::Create(origin));
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(origin, "/foo");
@@ -695,7 +695,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Basic) {
                                        &resources_out));
   VerifyRegistrationData(data, *data_out);
   VerifyResourceRecords(resources, resources_out);
-  StorageKey key_out;
+  blink::StorageKey key_out;
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
       database->ReadRegistrationStorageKey(data.registration_id, &key_out));
@@ -764,10 +764,11 @@ TEST(ServiceWorkerDatabaseTest, DeleteNonExistentRegistration) {
   // Delete from an origin that has a registration.
   deleted_version.version_id = kArbitraryVersionId;
   deleted_version.newly_purgeable_resources.clear();
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(
-                kNonExistentRegistrationId,
-                StorageKey(url::Origin::Create(origin)), &deleted_version));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->DeleteRegistration(
+          kNonExistentRegistrationId,
+          blink::StorageKey(url::Origin::Create(origin)), &deleted_version));
   EXPECT_EQ(blink::mojom::kInvalidServiceWorkerVersionId,
             deleted_version.version_id);
   EXPECT_TRUE(deleted_version.newly_purgeable_resources.empty());
@@ -775,11 +776,12 @@ TEST(ServiceWorkerDatabaseTest, DeleteNonExistentRegistration) {
   // Delete from an origin that has no registration.
   deleted_version.version_id = kArbitraryVersionId;
   deleted_version.newly_purgeable_resources.clear();
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(
-                kNonExistentRegistrationId,
-                StorageKey(url::Origin::Create(GURL("https://example.net"))),
-                &deleted_version));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->DeleteRegistration(
+          kNonExistentRegistrationId,
+          blink::StorageKey(url::Origin::Create(GURL("https://example.net"))),
+          &deleted_version));
   EXPECT_EQ(blink::mojom::kInvalidServiceWorkerVersionId,
             deleted_version.version_id);
   EXPECT_TRUE(deleted_version.newly_purgeable_resources.empty());
@@ -789,7 +791,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Overwrite) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
 
   GURL origin("https://example.com");
-  StorageKey key(url::Origin::Create(origin));
+  blink::StorageKey key(url::Origin::Create(origin));
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(origin, "/foo");
@@ -868,7 +870,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Overwrite) {
 TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   GURL origin("https://example.com");
-  StorageKey key(url::Origin::Create(origin));
+  blink::StorageKey key(url::Origin::Create(origin));
 
   ServiceWorkerDatabase::DeletedVersion deleted_version;
 
@@ -908,7 +910,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
                                        &resources_out));
   VerifyRegistrationData(data1, *data_out);
   VerifyResourceRecords(resources1, resources_out);
-  StorageKey key_out;
+  blink::StorageKey key_out;
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
       database->ReadRegistrationStorageKey(data1.registration_id, &key_out));
@@ -970,7 +972,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
 TEST(ServiceWorkerDatabaseTest, Registration_UninitializedDatabase) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const GURL origin("https://example.com");
-  StorageKey key(url::Origin::Create(origin));
+  blink::StorageKey key(url::Origin::Create(origin));
 
   // Should be failed because the database does not exist.
   RegistrationDataPtr data_out;
@@ -979,7 +981,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_UninitializedDatabase) {
             database->ReadRegistration(100, key, &data_out, &resources_out));
   EXPECT_TRUE(data_out.is_null());
   EXPECT_TRUE(resources_out.empty());
-  StorageKey key_out;
+  blink::StorageKey key_out;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
             database->ReadRegistrationStorageKey(100, &key_out));
 
@@ -1064,28 +1066,31 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
 
   RegistrationDataPtr data;
   std::vector<ResourceRecordPtr> resources;
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data1.registration_id,
-                                       StorageKey(url::Origin::Create(origin1)),
-                                       &data, &resources));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->ReadRegistration(
+          data1.registration_id,
+          blink::StorageKey(url::Origin::Create(origin1)), &data, &resources));
   VerifyRegistrationData(data1, *data);
   VerifyResourceRecords(resources1, resources);
   EXPECT_EQ(2U, resources.size());
   resources.clear();
 
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data2.registration_id,
-                                       StorageKey(url::Origin::Create(origin2)),
-                                       &data, &resources));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->ReadRegistration(
+          data2.registration_id,
+          blink::StorageKey(url::Origin::Create(origin2)), &data, &resources));
   VerifyRegistrationData(data2, *data);
   VerifyResourceRecords(resources2, resources);
   EXPECT_EQ(2U, resources.size());
   resources.clear();
 
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data3.registration_id,
-                                       StorageKey(url::Origin::Create(origin3)),
-                                       &data, &resources));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->ReadRegistration(
+          data3.registration_id,
+          blink::StorageKey(url::Origin::Create(origin3)), &data, &resources));
   VerifyRegistrationData(data3, *data);
   VerifyResourceRecords(resources3, resources);
   EXPECT_EQ(2U, resources.size());
@@ -1095,7 +1100,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
 TEST(ServiceWorkerDatabaseTest, UserData_Basic) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
-  StorageKey key(kOrigin);
+  blink::StorageKey key(kOrigin);
 
   // Add a registration.
   RegistrationData data;
@@ -1216,7 +1221,7 @@ TEST(ServiceWorkerDatabaseTest,
      UserData_ReadUserDataForAllRegistrationsByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
-  StorageKey key(kOrigin);
+  blink::StorageKey key(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
@@ -1327,7 +1332,7 @@ TEST(ServiceWorkerDatabaseTest, ReadUserDataByKeyPrefix) {
   // Write user data associated with the registration.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data.registration_id, StorageKey(kOrigin),
+                data.registration_id, blink::StorageKey(kOrigin),
                 CreateUserData(data.registration_id,
                                {{"key_prefix:key1", "value_c1"},
                                 {"key_prefix:key2", "value_c2"},
@@ -1373,7 +1378,7 @@ TEST(ServiceWorkerDatabaseTest, ReadUserKeysAndDataByKeyPrefix) {
   // Write user data associated with the registration.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data.registration_id, StorageKey(kOrigin),
+                data.registration_id, blink::StorageKey(kOrigin),
                 CreateUserData(data.registration_id,
                                {{"key_prefix:key1", "value_c1"},
                                 {"key_prefix:key2", "value_c2"},
@@ -1406,7 +1411,7 @@ TEST(ServiceWorkerDatabaseTest, ReadUserKeysAndDataByKeyPrefix) {
 TEST(ServiceWorkerDatabaseTest, UserData_DeleteUserDataByKeyPrefixes) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
-  StorageKey key(kOrigin);
+  blink::StorageKey key(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
@@ -1515,7 +1520,7 @@ TEST(ServiceWorkerDatabaseTest,
      UserData_DeleteUserDataForAllRegistrationsByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
-  StorageKey key(kOrigin);
+  blink::StorageKey key(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
@@ -1603,7 +1608,7 @@ TEST(ServiceWorkerDatabaseTest,
 TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
-  StorageKey key(kOrigin);
+  blink::StorageKey key(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
@@ -1702,7 +1707,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
 TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
-  StorageKey key(kOrigin);
+  blink::StorageKey key(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
@@ -1783,7 +1788,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
 TEST(ServiceWorkerDatabaseTest, UserData_UninitializedDatabase) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
-  StorageKey key(kOrigin);
+  blink::StorageKey key(kOrigin);
 
   // Should be failed because the database does not exist.
   std::vector<std::string> user_data_out;
@@ -1819,7 +1824,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_UninitializedDatabase) {
 TEST(ServiceWorkerDatabaseTest, UpdateVersionToActive) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   GURL origin("https://example.com");
-  StorageKey key(url::Origin::Create(origin));
+  blink::StorageKey key(url::Origin::Create(origin));
 
   ServiceWorkerDatabase::DeletedVersion deleted_version;
 
@@ -1877,7 +1882,7 @@ TEST(ServiceWorkerDatabaseTest, UpdateVersionToActive) {
 TEST(ServiceWorkerDatabaseTest, UpdateLastCheckTime) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   GURL origin("https://example.com");
-  StorageKey key(url::Origin::Create(origin));
+  blink::StorageKey key(url::Origin::Create(origin));
   ServiceWorkerDatabase::DeletedVersion deleted_version;
 
   // Should be false because a registration does not exist.
@@ -1991,8 +1996,8 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForStorageKey) {
   GURL url2("https://example.org");
   url::Origin origin1 = url::Origin::Create(url1);
   url::Origin origin2 = url::Origin::Create(url2);
-  StorageKey key1(origin1);
-  StorageKey key2(origin2);
+  blink::StorageKey key1(origin1);
+  blink::StorageKey key2(origin2);
 
   // |key1| has two registrations (registration1 and registration2).
   RegistrationData data1;
@@ -2059,7 +2064,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForStorageKey) {
                 data3.registration_id, key2,
                 CreateUserData(data3.registration_id, {{"key6", "value6"}})));
 
-  std::set<StorageKey> keys_to_delete;
+  std::set<blink::StorageKey> keys_to_delete;
   std::vector<int64_t> newly_purgeable_resources;
   keys_to_delete.insert(key1);
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -2067,7 +2072,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForStorageKey) {
                                                   &newly_purgeable_resources));
 
   // |key1| should be removed from the unique origin list.
-  std::set<StorageKey> unique_keys;
+  std::set<blink::StorageKey> unique_keys;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetStorageKeysWithRegistrations(&unique_keys));
   EXPECT_EQ(1u, unique_keys.size());
@@ -2079,7 +2084,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForStorageKey) {
       ServiceWorkerDatabase::Status::kOk,
       database->GetRegistrationsForStorageKey(key1, &registrations, nullptr));
   EXPECT_TRUE(registrations.empty());
-  StorageKey key_out;
+  blink::StorageKey key_out;
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kErrorNotFound,
       database->ReadRegistrationStorageKey(data1.registration_id, &key_out));
@@ -2172,10 +2177,11 @@ TEST(ServiceWorkerDatabaseTest, Corruption_NoMainResource) {
   // The database should detect lack of the main resource (i.e. "/resource1").
   RegistrationDataPtr data_out;
   std::vector<ResourceRecordPtr> resources_out;
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorCorrupted,
-            database->ReadRegistration(data.registration_id,
-                                       StorageKey(url::Origin::Create(origin)),
-                                       &data_out, &resources_out));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kErrorCorrupted,
+      database->ReadRegistration(data.registration_id,
+                                 blink::StorageKey(url::Origin::Create(origin)),
+                                 &data_out, &resources_out));
   EXPECT_TRUE(resources_out.empty());
 }
 
@@ -2187,7 +2193,7 @@ TEST(ServiceWorkerDatabaseTest, Corruption_GetRegistrationsForStorageKey) {
   ServiceWorkerDatabase::DeletedVersion deleted_version;
   std::vector<ResourceRecordPtr> resources;
   GURL origin("https://example.com");
-  StorageKey key(url::Origin::Create(origin));
+  blink::StorageKey key(url::Origin::Create(origin));
 
   // Write a normal registration.
   RegistrationData data1;
@@ -2310,8 +2316,8 @@ TEST(ServiceWorkerDatabaseTest, CrossOriginEmbedderPolicyStoreRestore) {
     std::vector<std::vector<ResourceRecordPtr>> resources_list;
     EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
               database->GetRegistrationsForStorageKey(
-                  StorageKey(url::Origin::Create(origin)), &registrations,
-                  &resources_list));
+                  blink::StorageKey(url::Origin::Create(origin)),
+                  &registrations, &resources_list));
 
     // The data must not have been altered.
     VerifyRegistrationData(data, *registrations[0]);
@@ -2385,9 +2391,9 @@ TEST(ServiceWorkerDatabaseTest, NoCrossOriginEmbedderPolicyValue) {
 }
 
 // As part of crbug.com/1199077 ServiceWorkerDataBase was refactored to use
-// StorageKey instead of url::Origin/GURL. The refactor is/should be a no-op but
-// this test exists to confirms that a DB created with the Origin/GURL impl can
-// still be correctly read by the StorageKey impl.
+// blink::StorageKey instead of url::Origin/GURL. The refactor is/should be a
+// no-op but this test exists to confirms that a DB created with the Origin/GURL
+// impl can still be correctly read by the blink::StorageKey impl.
 TEST(ServiceWorkerDatabaseTest, StorageKeyImplCanReadPreviousOriginImplDB) {
   base::FilePath root_path;
   base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path);
@@ -2420,7 +2426,8 @@ TEST(ServiceWorkerDatabaseTest, StorageKeyImplCanReadPreviousOriginImplDB) {
 
   // https://googlechrome.github.io/samples/service-worker/basic/ provided the
   // service worker for this test.
-  StorageKey key(url::Origin::Create(GURL("https://googlechrome.github.io/")));
+  blink::StorageKey key(
+      url::Origin::Create(GURL("https://googlechrome.github.io/")));
 
   std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
   std::vector<std::vector<ResourceRecordPtr>> resources_list;

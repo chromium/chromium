@@ -35,6 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using blink::MessagePortChannel;
@@ -75,7 +76,7 @@ class SharedWorkerHostTest : public testing::Test {
     SharedWorkerInstance instance(
         kWorkerUrl, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
-        storage::StorageKey(url::Origin::Create(kWorkerUrl)),
+        blink::StorageKey(url::Origin::Create(kWorkerUrl)),
         network::mojom::IPAddressSpace::kPublic,
         blink::mojom::SharedWorkerCreationContextType::kSecure);
     auto host = std::make_unique<SharedWorkerHost>(

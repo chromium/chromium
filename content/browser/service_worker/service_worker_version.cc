@@ -28,7 +28,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
@@ -55,6 +54,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 namespace {
@@ -466,7 +466,7 @@ void ServiceWorkerVersion::StartWorker(ServiceWorkerMetrics::EventType purpose,
   // get associated with it in
   // ServiceWorkerHost::CompleteStartWorkerPreparation.
   context_->registry()->FindRegistrationForId(
-      registration_id_, storage::StorageKey(origin_),
+      registration_id_, blink::StorageKey(origin_),
       base::BindOnce(
           &ServiceWorkerVersion::DidEnsureLiveRegistrationForStartWorker,
           weak_factory_.GetWeakPtr(), purpose, status_,
@@ -584,7 +584,7 @@ void ServiceWorkerVersion::StartUpdate() {
   if (!context_)
     return;
   context_->registry()->FindRegistrationForId(
-      registration_id_, storage::StorageKey(origin_),
+      registration_id_, blink::StorageKey(origin_),
       base::BindOnce(&ServiceWorkerVersion::FoundRegistrationForUpdate,
                      weak_factory_.GetWeakPtr()));
 }

@@ -19,7 +19,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/background_sync/background_sync_metrics.h"
 #include "content/browser/background_sync/background_sync_network_observer.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
@@ -33,6 +32,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -1315,7 +1315,7 @@ void BackgroundSyncManager::StoreDataInBackend(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   service_worker_context_->StoreRegistrationUserData(
-      sw_registration_id, storage::StorageKey(origin), {{backend_key, data}},
+      sw_registration_id, blink::StorageKey(origin), {{backend_key, data}},
       std::move(callback));
 }
 
@@ -1414,7 +1414,7 @@ void BackgroundSyncManager::DispatchPeriodicSyncEvent(
 
 void BackgroundSyncManager::HasMainFrameWindowClient(const url::Origin& origin,
                                                      BoolCallback callback) {
-  service_worker_context_->HasMainFrameWindowClient(storage::StorageKey(origin),
+  service_worker_context_->HasMainFrameWindowClient(blink::StorageKey(origin),
                                                     std::move(callback));
 }
 
@@ -1954,7 +1954,7 @@ void BackgroundSyncManager::FireReadyEventsImpl(
     // BackgroundSyncRegistrations should be changed to use StorageKey.
     service_worker_context_->FindReadyRegistrationForId(
         service_worker_registration_id,
-        storage::StorageKey(
+        blink::StorageKey(
             active_registrations_[service_worker_registration_id].origin),
         base::BindOnce(
             &BackgroundSyncManager::FireReadyEventsDidFindRegistration,

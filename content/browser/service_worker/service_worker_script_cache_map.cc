@@ -9,11 +9,11 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "net/base/net_errors.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -44,7 +44,7 @@ void ServiceWorkerScriptCacheMap::NotifyStartedCaching(const GURL& url,
   resource_map_[url] =
       storage::mojom::ServiceWorkerResourceRecord::New(resource_id, url, -1);
   context_->registry()->StoreUncommittedResourceId(
-      resource_id, storage::StorageKey(url::Origin::Create(owner_->scope())));
+      resource_id, blink::StorageKey(url::Origin::Create(owner_->scope())));
 }
 
 void ServiceWorkerScriptCacheMap::NotifyFinishedCaching(

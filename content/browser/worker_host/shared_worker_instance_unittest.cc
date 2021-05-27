@@ -10,9 +10,9 @@
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -22,7 +22,7 @@ class SharedWorkerInstanceTest : public testing::Test {
 
   SharedWorkerInstance CreateInstance(const GURL& script_url,
                                       const std::string& name,
-                                      const storage::StorageKey& storage_key) {
+                                      const blink::StorageKey& storage_key) {
     return SharedWorkerInstance(
         script_url, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, name, storage_key,
@@ -33,12 +33,12 @@ class SharedWorkerInstanceTest : public testing::Test {
   bool Matches(const SharedWorkerInstance& instance,
                const std::string& url,
                const base::StringPiece& name) {
-    storage::StorageKey storage_key;
+    blink::StorageKey storage_key;
     if (GURL(url).SchemeIs(url::kDataScheme)) {
       storage_key =
-          storage::StorageKey(url::Origin::Create(GURL("http://example.com/")));
+          blink::StorageKey(url::Origin::Create(GURL("http://example.com/")));
     } else {
-      storage_key = storage::StorageKey(url::Origin::Create(GURL(url)));
+      storage_key = blink::StorageKey(url::Origin::Create(GURL(url)));
     }
     return instance.Matches(GURL(url), std::string(name), storage_key);
   }
@@ -54,7 +54,7 @@ TEST_F(SharedWorkerInstanceTest, MatchesTest) {
   // SharedWorker that doesn't have a name option.
   GURL script_url1("http://example.com/w.js");
   std::string name1("");
-  storage::StorageKey storage_key1(url::Origin::Create(script_url1));
+  blink::StorageKey storage_key1(url::Origin::Create(script_url1));
   SharedWorkerInstance instance1 =
       CreateInstance(script_url1, name1, storage_key1);
 
@@ -74,7 +74,7 @@ TEST_F(SharedWorkerInstanceTest, MatchesTest) {
   // SharedWorker that has a name option.
   GURL script_url2("http://example.com/w.js");
   std::string name2("name");
-  storage::StorageKey storage_key2(url::Origin::Create(script_url2));
+  blink::StorageKey storage_key2(url::Origin::Create(script_url2));
   SharedWorkerInstance instance2 =
       CreateInstance(script_url2, name2, storage_key2);
 
@@ -103,7 +103,7 @@ TEST_F(SharedWorkerInstanceTest, MatchesTest_DataURLWorker) {
   // SharedWorker created from a data: URL without a name option.
   GURL script_url1(kDataURL);
   std::string name1("");
-  storage::StorageKey storage_key1(
+  blink::StorageKey storage_key1(
       url::Origin::Create(GURL("http://example.com/")));
   SharedWorkerInstance instance1 =
       CreateInstance(script_url1, name1, storage_key1);
@@ -130,7 +130,7 @@ TEST_F(SharedWorkerInstanceTest, MatchesTest_DataURLWorker) {
   // SharedWorker created from a data: URL with a name option.
   GURL script_url2(kDataURL);
   std::string name2("name");
-  storage::StorageKey storage_key2(
+  blink::StorageKey storage_key2(
       url::Origin::Create(GURL("http://example.com/")));
   SharedWorkerInstance instance2 =
       CreateInstance(script_url2, name2, storage_key2);
@@ -158,7 +158,7 @@ TEST_F(SharedWorkerInstanceTest, MatchesTest_DataURLWorker) {
   // opposed to example.com) without a name option.
   GURL script_url3(kDataURL);
   std::string name3("");
-  storage::StorageKey storage_key3(
+  blink::StorageKey storage_key3(
       url::Origin::Create(GURL("http://example.net/")));
   SharedWorkerInstance instance3 =
       CreateInstance(script_url3, name3, storage_key3);
@@ -186,7 +186,7 @@ TEST_F(SharedWorkerInstanceTest, MatchesTest_DataURLWorker) {
   // opposed to example.com) with a name option.
   GURL script_url4(kDataURL);
   std::string name4("");
-  storage::StorageKey storage_key4(
+  blink::StorageKey storage_key4(
       url::Origin::Create(GURL("http://example.net/")));
   SharedWorkerInstance instance4 =
       CreateInstance(script_url4, name4, storage_key4);
@@ -218,7 +218,7 @@ TEST_F(SharedWorkerInstanceTest, MatchesTest_FileURLWorker) {
   // SharedWorker created from a file:// URL without a name option.
   GURL script_url1(kFileURL);
   std::string name1("");
-  storage::StorageKey storage_key1(url::Origin::Create(GURL(kFileURL)));
+  blink::StorageKey storage_key1(url::Origin::Create(GURL(kFileURL)));
   SharedWorkerInstance instance1 =
       CreateInstance(script_url1, name1, storage_key1);
 
@@ -243,7 +243,7 @@ TEST_F(SharedWorkerInstanceTest, MatchesTest_FileURLWorker) {
   // SharedWorker created from a file:// URL with a name option.
   GURL script_url2(kFileURL);
   std::string name2("name");
-  storage::StorageKey storage_key2(url::Origin::Create(GURL(kFileURL)));
+  blink::StorageKey storage_key2(url::Origin::Create(GURL(kFileURL)));
   SharedWorkerInstance instance2 =
       CreateInstance(script_url2, name2, storage_key2);
 
@@ -275,7 +275,7 @@ TEST_F(SharedWorkerInstanceTest, AddressSpace) {
     SharedWorkerInstance instance(
         GURL("http://example.com/w.js"), blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
-        storage::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
+        blink::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
         address_space,
         blink::mojom::SharedWorkerCreationContextType::kNonsecure);
     EXPECT_EQ(address_space, instance.creation_address_space());

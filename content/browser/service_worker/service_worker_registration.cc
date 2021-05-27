@@ -51,7 +51,7 @@ ServiceWorkerRegistration::ServiceWorkerRegistration(
       // to secure contexts.
       // TODO(crbug.com/1199077): Update this when
       // ServiceWorkerRegistrationOptions implements StorageKey.
-      key_(storage::StorageKey(url::Origin::Create(options.scope))),
+      key_(blink::StorageKey(url::Origin::Create(options.scope))),
       update_via_cache_(options.update_via_cache),
       registration_id_(registration_id),
       status_(Status::kIntact),

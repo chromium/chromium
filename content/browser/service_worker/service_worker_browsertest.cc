@@ -30,7 +30,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
@@ -83,6 +82,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-test-utils.h"
 
@@ -832,8 +832,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
         wrapper(), ServiceWorkerVersion::ACTIVATED);
     observer->Init();
     GURL url = https_server.GetURL(kPageUrl);
-    wrapper()->UpdateRegistration(
-        url, storage::StorageKey(url::Origin::Create(url)));
+    wrapper()->UpdateRegistration(url,
+                                  blink::StorageKey(url::Origin::Create(url)));
     observer->Wait();
 
     // Wait until the page is appropriately served by the service worker.
@@ -956,7 +956,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, StartWorkerWhileInstalling) {
   base::RunLoop run_loop;
   GURL full_url = embedded_test_server()->GetURL(kWorkerUrl);
   wrapper()->StartActiveServiceWorker(
-      full_url, storage::StorageKey(url::Origin::Create(full_url)),
+      full_url, blink::StorageKey(url::Origin::Create(full_url)),
       base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
         EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kErrorNotFound);
         run_loop.Quit();
@@ -1979,7 +1979,7 @@ class ServiceWorkerBlackBoxBrowserTest : public ServiceWorkerBrowserTest {
                                     blink::ServiceWorkerStatusCode* status,
                                     base::OnceClosure continuation) {
     wrapper()->FindReadyRegistrationForClientUrl(
-        document_url, storage::StorageKey(url::Origin::Create(document_url)),
+        document_url, blink::StorageKey(url::Origin::Create(document_url)),
         base::BindOnce(
             &ServiceWorkerBlackBoxBrowserTest::DidFindRegistrationOnCoreThread,
             base::Unretained(this), status, std::move(continuation)));

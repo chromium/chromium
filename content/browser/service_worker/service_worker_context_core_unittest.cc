@@ -9,7 +9,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/test/bind.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
@@ -20,6 +19,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -61,7 +61,7 @@ class ServiceWorkerContextCoreTest : public testing::Test,
   // Registers `script` and waits for the service worker to become activated.
   void RegisterServiceWorker(
       const GURL& script,
-      const storage::StorageKey& key,
+      const blink::StorageKey& key,
       blink::mojom::ServiceWorkerRegistrationOptions options,
       scoped_refptr<ServiceWorkerRegistration>* result) {
     base::RunLoop loop;
@@ -90,7 +90,7 @@ class ServiceWorkerContextCoreTest : public testing::Test,
   // Wrapper for ServiceWorkerRegistry::FindRegistrationForScope.
   blink::ServiceWorkerStatusCode FindRegistrationForScope(
       const GURL& scope,
-      const storage::StorageKey& key) {
+      const blink::StorageKey& key) {
     base::RunLoop loop;
     blink::ServiceWorkerStatusCode status;
     context()->registry()->FindRegistrationForScope(
@@ -107,7 +107,7 @@ class ServiceWorkerContextCoreTest : public testing::Test,
 
   // Wrapper for ServiceWorkerContextCore::UnregisterServiceWorker.
   blink::ServiceWorkerStatusCode Unregister(const GURL& scope,
-                                            const storage::StorageKey& key) {
+                                            const blink::StorageKey& key) {
     base::RunLoop loop;
     blink::ServiceWorkerStatusCode status;
     context()->UnregisterServiceWorker(
@@ -123,7 +123,7 @@ class ServiceWorkerContextCoreTest : public testing::Test,
 
   // Wrapper for ServiceWorkerContextCore::DeleteForStorageKey.
   blink::ServiceWorkerStatusCode DeleteForStorageKey(
-      const storage::StorageKey& key) {
+      const blink::StorageKey& key) {
     blink::ServiceWorkerStatusCode status;
     base::RunLoop loop;
     context()->DeleteForStorageKey(
@@ -200,7 +200,7 @@ TEST_F(ServiceWorkerContextCoreTest, DeleteForStorageKey) {
   const GURL script("https://www.example.com/a/sw.js");
   const GURL scope("https://www.example.com/a");
   const url::Origin origin = url::Origin::Create(scope);
-  const storage::StorageKey key(origin);
+  const blink::StorageKey key(origin);
 
   // Register a service worker.
   blink::mojom::ServiceWorkerRegistrationOptions options;
@@ -220,7 +220,7 @@ TEST_F(ServiceWorkerContextCoreTest, DeleteForStorageKeyAbortsQueuedJobs) {
   const GURL script("https://www.example.com/a/sw.js");
   const GURL scope("https://www.example.com/a");
   const url::Origin origin = url::Origin::Create(scope);
-  const storage::StorageKey key(origin);
+  const blink::StorageKey key(origin);
 
   // Register a service worker.
   blink::mojom::ServiceWorkerRegistrationOptions options;
@@ -253,7 +253,7 @@ TEST_F(ServiceWorkerContextCoreTest,
   const GURL script("https://www.example.com/a/sw.js");
   const GURL scope("https://www.example.com/a");
   const url::Origin origin = url::Origin::Create(scope);
-  const storage::StorageKey key(origin);
+  const blink::StorageKey key(origin);
 
   // Register a service worker.
   blink::mojom::ServiceWorkerRegistrationOptions options;
@@ -301,7 +301,7 @@ TEST_F(ServiceWorkerContextCoreTest, DeleteForStorageKey_UnregisterFail) {
   const GURL script("https://www.example.com/a/sw.js");
   const GURL scope("https://www.example.com/a");
   const url::Origin origin = url::Origin::Create(scope);
-  const storage::StorageKey key(origin);
+  const blink::StorageKey key(origin);
 
   // Register a service worker.
   blink::mojom::ServiceWorkerRegistrationOptions options;

@@ -14,7 +14,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -29,6 +28,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
@@ -576,7 +576,7 @@ TEST_F(PlatformNotificationContextTest, ServiceWorkerUnregistered) {
 
   GURL origin("https://example.com");
   GURL script_url("https://example.com/worker.js");
-  storage::StorageKey key(url::Origin::Create(origin));
+  blink::StorageKey key(url::Origin::Create(origin));
 
   int64_t service_worker_registration_id =
       blink::mojom::kInvalidServiceWorkerRegistrationId;

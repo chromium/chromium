@@ -18,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -32,6 +31,7 @@
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
@@ -570,7 +570,7 @@ void PushMessagingManager::PersistRegistrationOnSW(
                   data.options->application_server_key.end()));
 
   service_worker_context_->StoreRegistrationUserData(
-      registration_id, storage::StorageKey(requesting_origin),
+      registration_id, blink::StorageKey(requesting_origin),
       {{kPushRegistrationIdServiceWorkerKey, push_subscription_id},
        {kPushSenderIdServiceWorkerKey, application_server_key}},
       base::BindOnce(&PushMessagingManager::DidPersistRegistrationOnSW,

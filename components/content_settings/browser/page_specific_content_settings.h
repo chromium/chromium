@@ -32,13 +32,13 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 class NavigationHandle;
 }
-
-namespace storage {
-class StorageKey;
-}  // namespace storage
 
 namespace url {
 class Origin;
@@ -253,7 +253,7 @@ class PageSpecificContentSettings
                                    int render_frame_id,
                                    const GURL& worker_url,
                                    const std::string& name,
-                                   const storage::StorageKey& storage_key,
+                                   const blink::StorageKey& storage_key,
                                    bool blocked_by_policy);
 
   static content::WebContentsObserver* GetWebContentsObserverForTest(
@@ -356,7 +356,7 @@ class PageSpecificContentSettings
   void OnCacheStorageAccessed(const GURL& url, bool blocked_by_policy);
   void OnSharedWorkerAccessed(const GURL& worker_url,
                               const std::string& name,
-                              const storage::StorageKey& storage_key,
+                              const blink::StorageKey& storage_key,
                               bool blocked_by_policy);
   void OnWebDatabaseAccessed(const GURL& url, bool blocked_by_policy);
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
