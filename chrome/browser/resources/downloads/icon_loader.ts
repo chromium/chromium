@@ -2,25 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {getFileIconUrl} from 'chrome://resources/js/icon.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 export class IconLoader {
+  private iconResolvers_: Map<string, PromiseResolver<boolean>>;
+  private listeningImages_: Set<HTMLImageElement>;
+
   constructor() {
-    /** @private {!Map<string, !PromiseResolver<boolean>>} */
     this.iconResolvers_ = new Map();
 
-    /** @private {!Set<!HTMLImageElement>} */
     this.listeningImages_ = new Set();
   }
 
   /**
-   * @param {!HTMLImageElement} imageEl
-   * @param {string} filePath
-   * @return {!Promise<boolean>} Whether or not the icon loaded successfully.
+   * @return Whether or not the icon loaded successfully.
    */
-  loadIcon(imageEl, filePath) {
+  loadIcon(imageEl: HTMLImageElement, filePath: string): Promise<boolean> {
     const url = getFileIconUrl(filePath);
 
     if (!this.iconResolvers_.has(url)) {
@@ -35,30 +33,24 @@ export class IconLoader {
 
     imageEl.src = url;
 
-    return assert(this.iconResolvers_.get(url)).promise;
+    return this.iconResolvers_.get(url)!.promise;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  finishedLoading_(e) {
-    const resolver = assert(this.iconResolvers_.get(e.currentTarget.src));
+  private finishedLoading_(e: Event) {
+    const resolver =
+        this.iconResolvers_.get((e.currentTarget as HTMLImageElement).src)!;
     if (!resolver.isFulfilled) {
       resolver.resolve(e.type === 'load');
     }
   }
 
-  /** @return {!IconLoader} */
-  static getInstance() {
+  static getInstance(): IconLoader {
     return instance || (instance = new IconLoader());
   }
 
-  /** @param {!IconLoader} obj */
-  static setInstance(obj) {
+  static setInstance(obj: IconLoader) {
     instance = obj;
   }
 }
 
-/** @type {?IconLoader} */
-let instance = null;
+let instance: IconLoader|null = null;

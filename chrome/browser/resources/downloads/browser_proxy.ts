@@ -5,11 +5,12 @@
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './downloads.mojom-webui.js';
 
 export class BrowserProxy {
+  callbackRouter: PageCallbackRouter;
+  handler: PageHandlerRemote;
+
   constructor() {
-    /** @type {!PageCallbackRouter} */
     this.callbackRouter = new PageCallbackRouter();
 
-    /** @type {!PageHandlerRemote} */
     this.handler = new PageHandlerRemote();
 
     const factory = PageHandlerFactory.getRemote();
@@ -18,16 +19,13 @@ export class BrowserProxy {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  /** @return {!BrowserProxy} */
-  static getInstance() {
+  static getInstance(): BrowserProxy {
     return instance || (instance = new BrowserProxy());
   }
 
-  /** @param {!BrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: BrowserProxy) {
     instance = obj;
   }
 }
 
-/** @type {?BrowserProxy} */
-let instance = null;
+let instance: BrowserProxy|null = null;

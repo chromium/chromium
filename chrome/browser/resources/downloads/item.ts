@@ -26,34 +26,32 @@ import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://r
 
 import {BrowserProxy} from './browser_proxy.js';
 import {DangerType, States} from './constants.js';
-import {Data} from './data.js';
+import {MojomData} from './data.js';
 import {PageHandlerInterface} from './downloads.mojom-webui.js';
 import {IconLoader} from './icon_loader.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {FocusRowBehaviorInterface}
- */
-const DownloadsItemElementBase =
-    mixinBehaviors([FocusRowBehavior], PolymerElement);
+export interface DownloadsItemElement {
+  $: {
+    'controlled-by': HTMLElement,
+    'file-icon': HTMLImageElement,
+    'url': HTMLAnchorElement,
+    'remove': HTMLElement,
+  };
+}
 
-/** @polymer */
+const DownloadsItemElementBase =
+    mixinBehaviors([FocusRowBehavior], PolymerElement) as
+    {new (): PolymerElement & FocusRowBehavior};
+
 export class DownloadsItemElement extends DownloadsItemElementBase {
   static get is() {
     return 'downloads-item';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @type {!Data} */
       data: Object,
 
-      /** @private */
       completelyOnDisk_: {
         computed: 'computeCompletelyOnDisk_(' +
             'data.state, data.fileExternallyRemoved)',
@@ -61,20 +59,17 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         value: true,
       },
 
-      /** @private */
       controlledBy_: {
         computed: 'computeControlledBy_(data.byExtId, data.byExtName)',
         type: String,
         value: '',
       },
 
-      /** @private */
       controlRemoveFromListAriaLabel_: {
         type: String,
         computed: 'computeControlRemoveFromListAriaLabel_(data.fileName)',
       },
 
-      /** @private */
       isActive_: {
         computed: 'computeIsActive_(' +
             'data.state, data.fileExternallyRemoved)',
@@ -82,49 +77,42 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         value: true,
       },
 
-      /** @private */
       isDangerous_: {
         computed: 'computeIsDangerous_(data.state)',
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       isMalware_: {
         computed: 'computeIsMalware_(isDangerous_, data.dangerType)',
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       isInProgress_: {
         computed: 'computeIsInProgress_(data.state)',
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       pauseOrResumeText_: {
         computed: 'computePauseOrResumeText_(isInProgress_, data.resume)',
         type: String,
         observer: 'updatePauseOrResumeClass_',
       },
 
-      /** @private */
       showCancel_: {
         computed: 'computeShowCancel_(data.state)',
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showProgress_: {
         computed: 'computeShowProgress_(showCancel_, data.percent)',
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showOpenNow_: {
         computed: 'computeShowOpenNow_(data.state)',
         type: Boolean,
@@ -145,20 +133,24 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     ];
   }
 
+  data: MojomData;
+  private mojoHandler_: PageHandlerInterface|null = null;
+  private controlledBy_: string;
+  private isActive_: boolean;
+  private isDangerous_: boolean;
+  private isInProgress_: boolean;
+  private pauseOrResumeText_: string;
+  private showCancel_: boolean;
+  private showProgress_: boolean;
+  private useFileIcon_: boolean;
+  private restoreFocusAfterCancel_: boolean = false;
+  overrideCustomEquivalent: boolean;
+
   constructor() {
     super();
 
-    /**
-     * Used by FocusRowBehavior.
-     * @type {boolean}
-     */
+    /** Used by FocusRowBehavior. */
     this.overrideCustomEquivalent = true;
-
-    /** @private {?PageHandlerInterface} */
-    this.mojoHandler_ = null;
-
-    /** @private {boolean} */
-    this.restoreFocusAfterCancel_ = false;
   }
 
   /** @override */
@@ -174,32 +166,28 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   /** Overrides FocusRowBehavior. */
-  getCustomEquivalent(sampleElement) {
+  getCustomEquivalent(sampleElement: HTMLElement): HTMLElement|null {
     if (sampleElement.getAttribute('focus-type') === 'cancel') {
-      return this.shadowRoot.querySelector('[focus-type="retry"]');
+      return this.shadowRoot!.querySelector('[focus-type="retry"]');
     }
     if (sampleElement.getAttribute('focus-type') === 'retry') {
-      return this.shadowRoot.querySelector('[focus-type="pauseOrResume"]');
+      return this.shadowRoot!.querySelector('[focus-type="pauseOrResume"]');
     }
     return null;
   }
 
-  /** @return {!HTMLElement} */
-  getFileIcon() {
-    return /** @type {!HTMLElement} */ (this.$['file-icon']);
+  getFileIcon(): HTMLImageElement {
+    return this.$['file-icon'];
   }
 
   /**
-   * @param {string} url
-   * @return {string} A reasonably long URL.
-   * @private
+   * @return A reasonably long URL.
    */
-  chopUrl_(url) {
+  private chopUrl_(url: string): string {
     return url.slice(0, 300);
   }
 
-  /** @private */
-  computeClass_() {
+  private computeClass_(): string {
     const classes = [];
 
     if (this.isActive_) {
@@ -217,20 +205,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return classes.join(' ');
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeCompletelyOnDisk_() {
+  private computeCompletelyOnDisk_(): boolean {
     return this.data.state === States.COMPLETE &&
         !this.data.fileExternallyRemoved;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeControlledBy_() {
+  private computeControlledBy_(): string {
     if (!this.data.byExtId || !this.data.byExtName) {
       return '';
     }
@@ -240,20 +220,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return loadTimeData.getStringF('controlledByUrl', url, HTMLEscape(name));
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeControlRemoveFromListAriaLabel_() {
+  private computeControlRemoveFromListAriaLabel_(): string {
     return loadTimeData.getStringF(
         'controlRemoveFromListAriaLabel', this.data.fileName);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeDate_() {
+  private computeDate_(): string {
     assert(typeof this.data.hideDate === 'boolean');
     if (this.data.hideDate) {
       return '';
@@ -261,16 +233,11 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return assert(this.data.sinceString || this.data.dateString);
   }
 
-  /** @private @return {boolean} */
-  computeDescriptionVisible_() {
+  private computeDescriptionVisible_(): boolean {
     return this.computeDescription_() !== '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeDescription_() {
+  private computeDescription_(): string {
     const data = this.data;
 
     switch (data.state) {
@@ -332,13 +299,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeIcon_() {
+  private computeIcon_(): string {
     if (this.data) {
-      const dangerType = this.data.dangerType;
+      const dangerType = this.data.dangerType as DangerType;
       if ((loadTimeData.getBoolean('requestsApVerdicts') &&
            dangerType === DangerType.UNCOMMON_CONTENT) ||
           dangerType === DangerType.SENSITIVE_CONTENT_WARNING) {
@@ -367,13 +330,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeIconColor_() {
+  private computeIconColor_(): string {
     if (this.data) {
-      const dangerType = this.data.dangerType;
+      const dangerType = this.data.dangerType as DangerType;
       if ((loadTimeData.getBoolean('requestsApVerdicts') &&
            dangerType === DangerType.UNCOMMON_CONTENT) ||
           dangerType === DangerType.SENSITIVE_CONTENT_WARNING) {
@@ -402,57 +361,37 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return '';
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsActive_() {
+  private computeIsActive_(): boolean {
     return this.data.state !== States.CANCELLED &&
         this.data.state !== States.INTERRUPTED &&
         !this.data.fileExternallyRemoved;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsDangerous_() {
+  private computeIsDangerous_(): boolean {
     return this.data.state === States.DANGEROUS ||
         this.data.state === States.MIXED_CONTENT;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsInProgress_() {
+  private computeIsInProgress_(): boolean {
     return this.data.state === States.IN_PROGRESS;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsMalware_() {
+  private computeIsMalware_(): boolean {
     return this.isDangerous_ &&
         (this.data.dangerType === DangerType.DANGEROUS_CONTENT ||
          this.data.dangerType === DangerType.DANGEROUS_HOST ||
          this.data.dangerType === DangerType.DANGEROUS_URL ||
-         this.data.dangerType === DangerType.POTENTIALLY_UNWANTED || 
+         this.data.dangerType === DangerType.POTENTIALLY_UNWANTED ||
          this.data.dangerType === DangerType.DANGEROUS_ACCOUNT_COMPROMISE);
   }
 
-  /** @private */
-  toggleButtonClass_() {
-    this.shadowRoot.querySelector('#pauseOrResume')
-        .classList.toggle(
-            'action-button',
-            this.pauseOrResumeText_ ===
-                loadTimeData.getString('controlResume'));
+  private toggleButtonClass_() {
+    this.shadowRoot!.querySelector('#pauseOrResume')!.classList.toggle(
+        'action-button',
+        this.pauseOrResumeText_ === loadTimeData.getString('controlResume'));
   }
 
-  /** @private */
-  updatePauseOrResumeClass_() {
+  private updatePauseOrResumeClass_() {
     if (!this.pauseOrResumeText_) {
       return;
     }
@@ -462,11 +401,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     beforeNextRender(this, () => this.toggleButtonClass_());
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computePauseOrResumeText_() {
+  private computePauseOrResumeText_(): string {
     if (this.data === undefined) {
       return '';
     }
@@ -480,49 +415,29 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeRemoveStyle_() {
+  private computeRemoveStyle_(): string {
     const canDelete = loadTimeData.getBoolean('allowDeletingHistory');
     const hideRemove = this.isDangerous_ || this.showCancel_ || !canDelete;
     return hideRemove ? 'visibility: hidden' : '';
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowCancel_() {
+  private computeShowCancel_(): boolean {
     return this.data.state === States.IN_PROGRESS ||
         this.data.state === States.PAUSED ||
         this.data.state === States.ASYNC_SCANNING;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowProgress_() {
+  private computeShowProgress_(): boolean {
     return this.showCancel_ && this.data.percent >= -1 &&
         this.data.state !== States.ASYNC_SCANNING;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowOpenNow_() {
+  private computeShowOpenNow_(): boolean {
     const allowOpenNow = loadTimeData.getBoolean('allowOpenNow');
     return this.data.state === States.ASYNC_SCANNING && allowOpenNow;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeTag_() {
+  private computeTag_(): string {
     switch (this.data.state) {
       case States.CANCELLED:
         return loadTimeData.getString('statusCancelled');
@@ -539,26 +454,20 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return '';
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isIndeterminate_() {
+  private isIndeterminate_(): boolean {
     return this.data.percent === -1;
   }
 
-  /** @private */
-  observeControlledBy_() {
+  private observeControlledBy_() {
     this.$['controlled-by'].innerHTML = this.controlledBy_;
     if (this.controlledBy_) {
-      const link = this.shadowRoot.querySelector('#controlled-by a');
-      link.setAttribute('focus-row-control', '');
-      link.setAttribute('focus-type', 'controlledBy');
+      const link = this.shadowRoot!.querySelector('#controlled-by a');
+      link!.setAttribute('focus-row-control', '');
+      link!.setAttribute('focus-type', 'controlledBy');
     }
   }
 
-  /** @private */
-  observeIsDangerous_() {
+  private observeIsDangerous_() {
     if (!this.data) {
       return;
     }
@@ -572,7 +481,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     if (this.isDangerous_) {
       this.$.url.removeAttribute('href');
       this.useFileIcon_ = false;
-    } else if (OVERRIDDEN_ICON_TYPES.includes(this.data.dangerType)) {
+    } else if (OVERRIDDEN_ICON_TYPES.includes(
+                   this.data.dangerType as DangerType)) {
       this.useFileIcon_ = false;
     } else if (this.data.state === States.ASYNC_SCANNING) {
       this.useFileIcon_ = false;
@@ -580,8 +490,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       this.$.url.href = assert(this.data.url);
       const path = this.data.filePath;
       IconLoader.getInstance()
-          .loadIcon(
-              /** @type {!HTMLImageElement} */ (this.$['file-icon']), path)
+          .loadIcon(this.$['file-icon'], path)
           .then(success => {
             if (path === this.data.filePath &&
                 this.data.state !== States.ASYNC_SCANNING) {
@@ -591,98 +500,74 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.restoreFocusAfterCancel_ = true;
-    this.mojoHandler_.cancel(this.data.id);
+    this.mojoHandler_!.cancel(this.data.id);
   }
 
-  /** @private */
-  onDiscardDangerousTap_() {
-    this.mojoHandler_.discardDangerous(this.data.id);
+  private onDiscardDangerousTap_() {
+    this.mojoHandler_!.discardDangerous(this.data.id);
   }
 
-  /** @private */
-  onOpenNowTap_() {
-    this.mojoHandler_.openDuringScanningRequiringGesture(this.data.id);
+  private onOpenNowTap_() {
+    this.mojoHandler_!.openDuringScanningRequiringGesture(this.data.id);
   }
 
-  /**
-   * @private
-   * @param {Event} e
-   */
-  onDragStart_(e) {
+  private onDragStart_(e: Event) {
     e.preventDefault();
-    this.mojoHandler_.drag(this.data.id);
+    this.mojoHandler_!.drag(this.data.id);
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  onFileLinkTap_(e) {
+  private onFileLinkTap_(e: Event) {
     e.preventDefault();
-    this.mojoHandler_.openFileRequiringGesture(this.data.id);
+    this.mojoHandler_!.openFileRequiringGesture(this.data.id);
   }
 
-  /** @private */
-  onUrlTap_() {
+  private onUrlTap_() {
     chrome.send(
         'metricsHandler:recordAction', ['Downloads_OpenUrlOfDownloadedItem']);
   }
 
-  /** @private */
-  onPauseOrResumeTap_() {
+  private onPauseOrResumeTap_() {
     if (this.isInProgress_) {
-      this.mojoHandler_.pause(this.data.id);
+      this.mojoHandler_!.pause(this.data.id);
     } else {
-      this.mojoHandler_.resume(this.data.id);
+      this.mojoHandler_!.resume(this.data.id);
     }
   }
 
-  /**
-   * @private
-   * @param {Event} e
-   */
-  onRemoveTap_(e) {
-    this.mojoHandler_.remove(this.data.id);
+  private onRemoveTap_(e: Event) {
+    this.mojoHandler_!.remove(this.data.id);
     const pieces = loadTimeData.getSubstitutedStringPieces(
-        loadTimeData.getString('toastRemovedFromList'), this.data.fileName);
+                       loadTimeData.getString('toastRemovedFromList'),
+                       this.data.fileName) as unknown as
+        Array<{collapsible: boolean, value: string, arg?: string}>;
+
     pieces.forEach(p => {
       // Make the file name collapsible.
       p.collapsible = !!p.arg;
     });
     const canUndo = !this.data.isDangerous && !this.data.isMixedContent;
-    getToastManager().showForStringPieces(
-        /**
-         * @type {!Array<{collapsible: boolean,
-         *                 value: string,
-         *                 arg: (string|null)}>}
-         */
-        (pieces), /* hideSlotted= */ !canUndo);
+    getToastManager().showForStringPieces(pieces, /* hideSlotted= */ !canUndo);
 
     // Stop propagating a click to the document to remove toast.
     e.stopPropagation();
     e.preventDefault();
   }
 
-  /** @private */
-  onRetryTap_() {
-    this.mojoHandler_.retryDownload(this.data.id);
+  private onRetryTap_() {
+    this.mojoHandler_!.retryDownload(this.data.id);
   }
 
-  /** @private */
-  onSaveDangerousTap_() {
-    this.mojoHandler_.saveDangerousRequiringGesture(this.data.id);
+  private onSaveDangerousTap_() {
+    this.mojoHandler_!.saveDangerousRequiringGesture(this.data.id);
   }
 
-  /** @private */
-  onShowTap_() {
-    this.mojoHandler_.show(this.data.id);
+  private onShowTap_() {
+    this.mojoHandler_!.show(this.data.id);
   }
 
-  /** @private */
-  restoreFocusAfterCancelIfNeeded_() {
+  private restoreFocusAfterCancelIfNeeded_() {
     if (!this.restoreFocusAfterCancel_) {
       return;
     }
@@ -690,9 +575,13 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     setTimeout(() => {
       const element = this.getFocusRow().getFirstFocusable('retry');
       if (element) {
-        element.focus();
+        (element as HTMLElement).focus();
       }
     });
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

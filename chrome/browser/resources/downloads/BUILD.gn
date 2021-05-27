@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
 
@@ -20,7 +20,7 @@ if (optimize_webui) {
 
   optimize_webui("build") {
     host = "downloads"
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
     js_out_files = [ "downloads.rollup.js" ]
     js_module_in_files = [ "downloads.js" ]
     out_manifest = "$target_gen_dir/$build_manifest"
@@ -30,9 +30,7 @@ if (optimize_webui) {
     ]
 
     deps = [
-      ":preprocess",
-      ":preprocess_mojo",
-      ":preprocess_web_components",
+      ":build_ts",
       "../../../../ui/webui/resources:preprocess",
     ]
   }
@@ -50,16 +48,8 @@ generate_grd("build_grd") {
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
     resource_path_rewrites = [ "downloads.rollup.js|downloads.js" ]
   } else {
-    deps = [
-      ":preprocess",
-      ":preprocess_mojo",
-      ":preprocess_web_components",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_web_components_manifest",
-      "$target_gen_dir/$preprocess_mojo_manifest",
-    ]
+    deps = [ ":build_ts" ]
+    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   }
   grd_prefix = "downloads"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
@@ -70,12 +60,12 @@ preprocess_if_expr("preprocess") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
-    "browser_proxy.js",
-    "constants.js",
-    "data.js",
-    "downloads.js",
-    "icon_loader.js",
-    "search_service.js",
+    "browser_proxy.ts",
+    "constants.ts",
+    "data.ts",
+    "downloads.ts",
+    "icon_loader.ts",
+    "search_service.ts",
   ]
 }
 
@@ -85,10 +75,10 @@ preprocess_if_expr("preprocess_web_components") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_web_components_manifest"
   in_files = [
-    "icons.js",
-    "item.js",
-    "manager.js",
-    "toolbar.js",
+    "icons.ts",
+    "item.ts",
+    "manager.ts",
+    "toolbar.ts",
   ]
 }
 
@@ -117,104 +107,40 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/downloads",
-                root_build_dir),
-      ]
-  deps = [
-    ":browser_proxy",
-    ":constants",
-    ":data",
-    ":item",
-    ":manager",
-    ":search_service",
-    ":toolbar",
-  ]
-}
-
-js_library("browser_proxy") {
-  deps = [ "//chrome/browser/ui/webui/downloads:mojo_bindings_webui_js" ]
-}
-
-js_library("constants") {
-}
-
-js_library("data") {
-  deps = [ "//chrome/browser/ui/webui/downloads:mojo_bindings_webui_js" ]
-}
-
-js_library("icon_loader") {
-  deps = [
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:icon.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-  ]
-}
-
-js_library("item") {
-  deps = [
-    ":browser_proxy",
-    ":constants",
-    ":data",
-    ":icon_loader",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-}
-
-js_library("manager") {
-  deps = [
-    ":browser_proxy",
-    ":data",
-    ":item",
-    ":search_service",
-    ":toolbar",
-    "//third_party/polymer/v3_0/components-chromium/iron-list",
-    "//ui/webui/resources/cr_elements:find_shortcut_behavior",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("search_service") {
-  deps = [
-    ":browser_proxy",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("toolbar") {
-  deps = [
-    ":browser_proxy",
-    ":search_service",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
 html_to_js("web_components") {
   js_files = [
-    "icons.js",
-    "item.js",
-    "manager.js",
-    "toolbar.js",
+    "icons.ts",
+    "item.ts",
+    "manager.ts",
+    "toolbar.ts",
+  ]
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "browser_proxy.ts",
+    "constants.ts",
+    "data.ts",
+    "downloads.mojom-webui.js",
+    "downloads.ts",
+    "icon_loader.ts",
+    "icons.ts",
+    "item.ts",
+    "manager.ts",
+    "search_service.ts",
+    "toolbar.ts",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  extra_deps = [
+    ":preprocess",
+    ":preprocess_mojo",
+    ":preprocess_web_components",
   ]
 }

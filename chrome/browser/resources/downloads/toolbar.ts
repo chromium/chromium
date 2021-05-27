@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
@@ -11,6 +12,8 @@ import 'chrome://resources/js/util.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './strings.m.js';
 
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -18,33 +21,31 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {Data} from './data.js';
+import {MojomData} from './data.js';
 import {PageHandlerInterface} from './downloads.mojom-webui.js';
 import {SearchService} from './search_service.js';
 
-/** @polymer */
+export interface DownloadsToolbarElement {
+  $: {
+    'moreActionsMenu': CrActionMenuElement,
+    'moreActions': CrIconButtonElement,
+    'toolbar': CrToolbarElement,
+  };
+}
+
 export class DownloadsToolbarElement extends PolymerElement {
   static get is() {
     return 'downloads-toolbar';
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 
   static get properties() {
     return {
       hasClearableDownloads: {
         type: Boolean,
-        value: false,
         observer: 'updateClearAll_',
       },
 
-      /** @type {!Array<!Data>} */
-      items: {
-        type: Array,
-        value: Array,
-      },
+      items: Array,
 
       spinnerActive: {
         type: Boolean,
@@ -53,12 +54,10 @@ export class DownloadsToolbarElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
-
-    /** @private {?PageHandlerInterface} */
-    this.mojoHandler_ = null;
-  }
+  private mojoHandler_: PageHandlerInterface|null = null;
+  hasClearableDownloads: boolean = false;
+  spinnerActive: boolean;
+  items: Array<MojomData> = [];
 
   /** @override */
   ready() {
@@ -66,59 +65,48 @@ export class DownloadsToolbarElement extends PolymerElement {
     this.mojoHandler_ = BrowserProxy.getInstance().handler;
   }
 
-  /** @return {boolean} Whether removal can be undone. */
-  canUndo() {
+  /** @return Whether removal can be undone. */
+  canUndo(): boolean {
     return !this.isSearchFocused();
   }
 
-  /** @return {boolean} Whether "Clear all" should be allowed. */
-  canClearAll() {
+  /** @return Whether "Clear all" should be allowed. */
+  canClearAll(): boolean {
     return this.getSearchText().length === 0 && this.hasClearableDownloads;
   }
 
-  /** @return {string} The full text being searched. */
-  getSearchText() {
-    return /** @type {!CrToolbarElement} */ (this.$.toolbar)
-        .getSearchField()
-        .getValue();
+  /** @return The full text being searched. */
+  getSearchText(): string {
+    return this.$.toolbar.getSearchField().getValue();
   }
 
   focusOnSearchInput() {
-    return /** @type {!CrToolbarElement} */ (this.$.toolbar)
-        .getSearchField()
-        .showAndFocus();
+    this.$.toolbar.getSearchField().showAndFocus();
   }
 
-  isSearchFocused() {
-    return /** @type {!CrToolbarElement} */ (this.$.toolbar)
-        .getSearchField()
-        .isSearchFocused();
+  isSearchFocused(): boolean {
+    return this.$.toolbar.getSearchField().isSearchFocused();
   }
 
-  /** @private */
-  onClearAllTap_(e) {
+  private onClearAllTap_(e: Event) {
     assert(this.canClearAll());
-    this.mojoHandler_.clearAll();
+    this.mojoHandler_!.clearAll();
     this.$.moreActionsMenu.close();
     const canUndo =
         this.items.some(data => !data.isDangerous && !data.isMixedContent);
-    getToastManager().show(loadTimeData.getString('toastClearedAll'),
+    getToastManager().show(
+        loadTimeData.getString('toastClearedAll'),
         /* hideSlotted= */ !canUndo);
     // Stop propagating a click to the document to remove toast.
     e.stopPropagation();
     e.preventDefault();
   }
 
-  /** @private */
-  onMoreActionsTap_() {
+  private onMoreActionsTap_() {
     this.$.moreActionsMenu.showAt(this.$.moreActions);
   }
 
-  /**
-   * @param {!CustomEvent<string>} event
-   * @private
-   */
-  onSearchChanged_(event) {
+  private onSearchChanged_(event: CustomEvent<string>) {
     const searchService = SearchService.getInstance();
     if (searchService.search(event.detail)) {
       this.spinnerActive = searchService.isSearching();
@@ -126,15 +114,18 @@ export class DownloadsToolbarElement extends PolymerElement {
     this.updateClearAll_();
   }
 
-  /** @private */
-  onOpenDownloadsFolderTap_() {
-    this.mojoHandler_.openDownloadsFolderRequiringGesture();
+  private onOpenDownloadsFolderTap_() {
+    this.mojoHandler_!.openDownloadsFolderRequiringGesture();
     this.$.moreActionsMenu.close();
   }
 
-  /** @private */
-  updateClearAll_() {
-    this.shadowRoot.querySelector('.clear-all').hidden = !this.canClearAll();
+  private updateClearAll_() {
+    this.shadowRoot!.querySelector<HTMLButtonElement>('.clear-all')!.hidden =
+        !this.canClearAll();
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

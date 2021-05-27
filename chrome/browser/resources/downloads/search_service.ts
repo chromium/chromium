@@ -8,19 +8,15 @@ import {BrowserProxy} from './browser_proxy.js';
 import {PageHandlerInterface} from './downloads.mojom-webui.js';
 
 export class SearchService {
-  constructor() {
-    /** @private {!Array<string>} */
-    this.searchTerms_ = [];
-
-    /** @private {PageHandlerInterface} */
-    this.mojoHandler_ = BrowserProxy.getInstance().handler;
-  }
+  private searchTerms_: Array<string> = [];
+  private mojoHandler_: PageHandlerInterface =
+      BrowserProxy.getInstance().handler;
 
   /**
-   * @param {string} searchText Input typed by the user into a search box.
-   * @return {Array<string>} A list of terms extracted from |searchText|.
+   * @param searchText Input typed by the user into a search box.
+   * @return A list of terms extracted from |searchText|.
    */
-  static splitTerms(searchText) {
+  static splitTerms(searchText: string): Array<string> {
     // Split quoted terms (e.g., 'The "lazy" dog' => ['The', 'lazy', 'dog']).
     return searchText.split(/"([^"]*)"/).map(s => s.trim()).filter(s => !!s);
   }
@@ -39,18 +35,18 @@ export class SearchService {
   }
 
   /**
-   * @return {boolean} Whether the user is currently searching for downloads
+   * @return Whether the user is currently searching for downloads
    *     (i.e. has a non-empty search term).
    */
-  isSearching() {
+  isSearching(): boolean {
     return this.searchTerms_.length > 0;
   }
 
   /**
-   * @param {string} searchText What to search for.
-   * @return {boolean} Whether |searchText| resulted in new search terms.
+   * @param searchText What to search for.
+   * @return Whether |searchText| resulted in new search terms.
    */
-  search(searchText) {
+  search(searchText: string): boolean {
     const searchTerms = SearchService.splitTerms(searchText);
     let sameTerms = searchTerms.length === this.searchTerms_.length;
 
@@ -69,16 +65,13 @@ export class SearchService {
     return true;
   }
 
-  /** @return {!SearchService} */
-  static getInstance() {
+  static getInstance(): SearchService {
     return instance || (instance = new SearchService());
   }
 
-  /** @param {!SearchService} obj */
-  static setInstance(obj) {
+  static setInstance(obj: SearchService) {
     instance = obj;
   }
 }
 
-/** @type {?SearchService} */
-let instance = null;
+let instance: SearchService|null = null;

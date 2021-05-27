@@ -7,7 +7,8 @@
  * JS for chrome://downloads.
  */
 
-import {Data as MojomData} from './downloads.mojom-webui.js';
+import {Data} from './downloads.mojom-webui.js';
 
-/** @typedef {MojomData | {hideDate: boolean}} */
-export let Data;
+export class MojomData extends Data {
+  hideDate: boolean;
+}

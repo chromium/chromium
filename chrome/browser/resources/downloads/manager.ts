@@ -19,54 +19,57 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {States} from './constants.js';
-import {Data} from './data.js';
+import {MojomData} from './data.js';
 import {PageCallbackRouter, PageHandlerInterface} from './downloads.mojom-webui.js';
 import {SearchService} from './search_service.js';
+import {DownloadsToolbarElement} from './toolbar.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {FindShortcutBehaviorInterface}
- */
+declare global {
+  interface Window {
+    // https://github.com/microsoft/TypeScript/issues/40807
+    requestIdleCallback(callback: () => void): void;
+  }
+}
+
+export interface DownloadsManagerElement {
+  $: {
+    'toolbar': DownloadsToolbarElement,
+    'downloadsList': IronListElement,
+  };
+}
+
 const DownloadsManagerElementBase =
-    mixinBehaviors([FindShortcutBehavior], PolymerElement);
+    mixinBehaviors([FindShortcutBehavior], PolymerElement) as
+    {new (): PolymerElement & FindShortcutBehavior};
 
-/** @polymer */
 export class DownloadsManagerElement extends DownloadsManagerElementBase {
   static get is() {
     return 'downloads-manager';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @private */
       hasDownloads_: {
         observer: 'hasDownloadsChanged_',
         type: Boolean,
       },
 
-      /** @private */
       hasShadow_: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
       },
 
-      /** @private */
       inSearchMode_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {!Array<!Data>} */
       items_: {
         type: Array,
         value() {
@@ -74,16 +77,13 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         },
       },
 
-      /** @private */
       spinnerActive_: {
         type: Boolean,
         notify: true,
       },
 
-      /** @private {Element} */
       lastFocused_: Object,
 
-      /** @private */
       listBlurred_: Boolean,
     };
   }
@@ -92,28 +92,27 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     return ['itemsChanged_(items_.*)'];
   }
 
+  private items_: Array<MojomData>;
+  private hasDownloads_: boolean;
+  private hasShadow_: boolean;
+  private inSearchMode_: boolean;
+  private spinnerActive_: boolean;
+
+  private mojoHandler_: PageHandlerInterface;
+  private mojoEventTarget_: PageCallbackRouter;
+  private searchService_: SearchService = SearchService.getInstance();
+  private loaded_: PromiseResolver<void> = new PromiseResolver();
+  private listenerIds_: Array<number>;
+  private eventTracker_: EventTracker = new EventTracker();
+
   constructor() {
     super();
 
     const browserProxy = BrowserProxy.getInstance();
 
-    /** @private {!PageCallbackRouter} */
     this.mojoEventTarget_ = browserProxy.callbackRouter;
 
-    /** @private {!PageHandlerInterface} */
     this.mojoHandler_ = browserProxy.handler;
-
-    /** @private {!SearchService} */
-    this.searchService_ = SearchService.getInstance();
-
-    /** @private {!PromiseResolver} */
-    this.loaded_ = new PromiseResolver;
-
-    /** @private {?Array<number>} */
-    this.listenerIds_ = null;
-
-    /** @private {!EventTracker} */
-    this.eventTracker_ = new EventTracker();
 
     // Regular expression that captures the leading slash, the content and the
     // trailing slash in three different groups.
@@ -129,7 +128,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     super.connectedCallback();
 
     // TODO(dbeam): this should use a class instead.
-    this.setAttribute('loading', true);
+    this.toggleAttribute('loading', true);
     document.documentElement.classList.remove('loading');
 
     this.listenerIds_ = [
@@ -140,15 +139,17 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
       this.mojoEventTarget_.updateItem.addListener(this.updateItem_.bind(this)),
     ];
 
-    this.eventTracker_.add(document, 'keydown', e => this.onKeyDown_(e));
+    this.eventTracker_.add(
+        document, 'keydown', e => this.onKeyDown_(e as KeyboardEvent));
     this.eventTracker_.add(document, 'click', () => this.onClick_());
 
     this.loaded_.promise.then(() => {
-      requestIdleCallback(function() {
+      window.requestIdleCallback(function() {
         chrome.send(
             'metricsHandler:recordTime',
             ['Download.ResultsRenderedTime', window.performance.now()]);
-        document.fonts.load('bold 12px Roboto');
+        // https://github.com/microsoft/TypeScript/issues/13569
+        (document as any).fonts.load('bold 12px Roboto');
       });
     });
 
@@ -156,8 +157,8 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
 
     // Intercepts clicks on toast.
     const toastManager = getToastManager();
-    toastManager.shadowRoot.querySelector('#toast').onclick = e =>
-        this.onToastClicked_(e);
+    toastManager.shadowRoot!.querySelector<HTMLElement>('#toast')!.onclick =
+        e => this.onToastClicked_(e);
   }
 
   /** @override */
@@ -170,27 +171,20 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.eventTracker_.removeAll();
   }
 
-  /** @private */
-  clearAll_() {
+  private clearAll_() {
     this.set('items_', []);
   }
 
-  /** @private */
-  hasDownloadsChanged_() {
+  private hasDownloadsChanged_() {
     if (this.hasDownloads_) {
       this.$.downloadsList.fire('iron-resize');
     }
   }
 
-  /**
-   * @param {number} index
-   * @param {!Array<Data>} items
-   * @private
-   */
-  insertItems_(index, items) {
+  private insertItems_(index: number, items: Array<MojomData>) {
     // Insert |items| at the given |index| via Array#splice().
     if (items.length > 0) {
-      this.items_.splice.apply(this.items_, [index, 0].concat(items));
+      this.items_.splice(index, 0, ...items);
       this.updateHideDates_(index, index + items.length);
       this.notifySplices('items_', [{
                            index: index,
@@ -209,8 +203,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.spinnerActive_ = false;
   }
 
-  /** @private */
-  itemsChanged_() {
+  private itemsChanged_() {
     this.hasDownloads_ = this.items_.length > 0;
     this.$.toolbar.hasClearableDownloads =
         loadTimeData.getBoolean('allowDeletingHistory') &&
@@ -239,19 +232,14 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   }
 
   /**
-   * @return {string} The text to show when no download items are showing.
-   * @private
+   * @return The text to show when no download items are showing.
    */
-  noDownloadsText_() {
+  private noDownloadsText_(): string {
     return loadTimeData.getString(
         this.inSearchMode_ ? 'noSearchResults' : 'noDownloads');
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeyDown_(e) {
+  private onKeyDown_(e: KeyboardEvent) {
     let clearAllKey = 'c';
     // <if expr="is_macosx">
     // On Mac, pressing alt+c produces 'ç' as |event.key|.
@@ -276,16 +264,14 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     }
   }
 
-  /** @private */
-  onClick_() {
+  private onClick_() {
     const toastManager = getToastManager();
     if (toastManager.isToastOpen) {
       toastManager.hide();
     }
   }
 
-  /** @private */
-  onClearAllCommand_() {
+  private onClearAllCommand_() {
     if (!this.$.toolbar.canClearAll()) {
       return;
     }
@@ -293,12 +279,12 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.mojoHandler_.clearAll();
     const canUndo =
         this.items_.some(data => !data.isDangerous && !data.isMixedContent);
-    getToastManager().show(loadTimeData.getString('toastClearedAll'),
+    getToastManager().show(
+        loadTimeData.getString('toastClearedAll'),
         /* hideSlotted= */ !canUndo);
   }
 
-  /** @private */
-  onUndoCommand_() {
+  private onUndoCommand_() {
     if (!this.$.toolbar.canUndo()) {
       return;
     }
@@ -307,15 +293,13 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.mojoHandler_.undo();
   }
 
-  /** @private */
-  onToastClicked_(e) {
+  private onToastClicked_(e: Event) {
     e.stopPropagation();
     e.preventDefault();
   }
 
-  /** @private */
-  onScroll_() {
-    const container = this.$.downloadsList.scrollTarget;
+  private onScroll_() {
+    const container = this.$.downloadsList.scrollTarget!;
     const distanceToBottom =
         container.scrollHeight - container.scrollTop - container.offsetHeight;
     if (distanceToBottom <= 100) {
@@ -325,16 +309,11 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.hasShadow_ = container.scrollTop > 0;
   }
 
-  /** @private */
-  onSearchChanged_() {
+  private onSearchChanged_() {
     this.inSearchMode_ = this.searchService_.isSearching();
   }
 
-  /**
-   * @param {number} index
-   * @private
-   */
-  removeItem_(index) {
+  private removeItem_(index: number) {
     const removed = this.items_.splice(index, 1);
     this.updateHideDates_(index, index);
     this.notifySplices('items_', [{
@@ -347,8 +326,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.onScroll_();
   }
 
-  /** @private */
-  onUndoClick_() {
+  private onUndoClick_() {
     getToastManager().hide();
     this.mojoHandler_.undo();
   }
@@ -357,11 +335,8 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
    * Updates whether dates should show for |this.items_[start - end]|. Note:
    * this method does not trigger template bindings. Use notifySplices() or
    * after calling this method to ensure items are redrawn.
-   * @param {number} start
-   * @param {number} end
-   * @private
    */
-  updateHideDates_(start, end) {
+  private updateHideDates_(start: number, end: number) {
     for (let i = start; i <= end; ++i) {
       const current = this.items_[i];
       if (!current) {
@@ -372,24 +347,19 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     }
   }
 
-  /**
-   * @param {number} index
-   * @param {!Data} data
-   * @private
-   */
-  updateItem_(index, data) {
+  private updateItem_(index: number, data: MojomData) {
     this.items_[index] = data;
     this.updateHideDates_(index, index);
 
     this.notifyPath(`items_.${index}`);
     setTimeout(() => {
-      const list = /** @type {!IronListElement} */ (this.$.downloadsList);
+      const list = this.$.downloadsList;
       list.updateSizeForIndex(index);
     }, 0);
   }
 
   // Override FindShortcutBehavior methods.
-  handleFindShortcut(modalContextOpen) {
+  handleFindShortcut(modalContextOpen: boolean): boolean {
     if (modalContextOpen) {
       return false;
     }
@@ -400,6 +370,10 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   // Override FindShortcutBehavior methods.
   searchInputHasFocus() {
     return this.$.toolbar.isSearchFocused();
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 
