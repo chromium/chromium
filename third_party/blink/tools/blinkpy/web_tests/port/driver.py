@@ -380,7 +380,8 @@ class Driver(object):
         relative_path = test_name[len(test_dir_prefix):]
 
         if ('/https/' in test_name or '.https.' in test_name
-                or '.h2.' in test_name or '.serviceworker.' in test_name):
+                or '.h2.' in test_name or '.serviceworker.' in test_name
+                or '.serviceworker-module.' in test_name):
             return 'https://%s:%d%s%s' % (hostname, secure_port,
                                           test_url_prefix, relative_path)
         return 'http://%s:%d%s%s' % (hostname, insecure_port, test_url_prefix,
