@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -40,16 +41,20 @@ class MenuControllerTest;
 // to the MenuHost.
 class MenuHost : public Widget, public WidgetObserver {
  public:
+  struct InitParams {
+    Widget* parent = nullptr;
+    gfx::Rect bounds;
+    View* contents_view = nullptr;
+    bool do_capture = false;
+    gfx::NativeView native_view_for_gestures;
+  };
+
   explicit MenuHost(SubmenuView* submenu);
   ~MenuHost() override;
 
   // Initializes and shows the MenuHost.
-  // WARNING: |parent| may be NULL.
-  void InitMenuHost(Widget* parent,
-                    const gfx::Rect& bounds,
-                    View* contents_view,
-                    bool do_capture,
-                    gfx::NativeView native_view_for_gestures);
+  // WARNING: |init_params.parent| may be NULL.
+  void InitMenuHost(const InitParams& init_params);
 
   // Returns true if the menu host is visible.
   bool IsMenuHostVisible();

@@ -14,13 +14,13 @@
 #include "base/macros.h"
 #include "ui/views/animation/scroll_animator.h"
 #include "ui/views/controls/menu/menu_delegate.h"
+#include "ui/views/controls/menu/menu_host.h"
 #include "ui/views/controls/prefix_delegate.h"
 #include "ui/views/controls/prefix_selector.h"
 #include "ui/views/view.h"
 
 namespace views {
 
-class MenuHost;
 class MenuItemView;
 class MenuScrollViewContainer;
 
@@ -107,12 +107,9 @@ class VIEWS_EXPORT SubmenuView : public View,
   // Returns true if the menu is showing.
   virtual bool IsShowing() const;
 
-  // Shows the menu at the specified location. Coordinates are in screen
-  // coordinates. max_width gives the max width the view should be.
-  void ShowAt(Widget* parent,
-              const gfx::Rect& bounds,
-              bool do_capture,
-              gfx::NativeView native_view_for_gestures = nullptr);
+  // Shows the menu using the specified |init_params|. |init_params.bounds| are
+  // in screen coordinates.
+  void ShowAt(const MenuHost::InitParams& init_params);
 
   // Resets the bounds of the submenu to |bounds|.
   void Reposition(const gfx::Rect& bounds);

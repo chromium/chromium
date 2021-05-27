@@ -2137,8 +2137,12 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
   }
 
   if (show) {
-    item->GetSubmenu()->ShowAt(owner_, bounds, do_capture,
-                               native_view_for_gestures_);
+    MenuHost::InitParams params;
+    params.parent = owner_;
+    params.bounds = bounds;
+    params.do_capture = do_capture;
+    params.native_view_for_gestures = native_view_for_gestures_;
+    item->GetSubmenu()->ShowAt(params);
 
     // Figure out if the mouse is under the menu; if so, remember the mouse
     // location so we can ignore the first mouse move event(s) with that

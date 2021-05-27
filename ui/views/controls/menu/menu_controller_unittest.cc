@@ -612,7 +612,11 @@ class MenuControllerTest : public ViewsTestBase,
     SubmenuView* sub_menu = parent_item->GetSubmenu();
 
     parent_item->SetBoundsRect(parent_bounds);
-    sub_menu->ShowAt(owner(), parent_item->bounds(), false);
+    MenuHost::InitParams params;
+    params.parent = owner();
+    params.bounds = parent_item->bounds();
+    params.do_capture = false;
+    sub_menu->ShowAt(params);
     gfx::Rect final_bounds = CalculateBubbleMenuBounds(options, item);
     final_bounds.Inset(border_and_shadow_insets);
     sub_menu->Close();
@@ -780,7 +784,11 @@ class MenuControllerTest : public ViewsTestBase,
       button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
       item_view->AddChildView(button);
     }
-    menu_item()->GetSubmenu()->ShowAt(owner(), menu_item()->bounds(), false);
+    MenuHost::InitParams params;
+    params.parent = owner();
+    params.bounds = menu_item()->bounds();
+    params.do_capture = false;
+    menu_item()->GetSubmenu()->ShowAt(params);
     return item_view;
   }
 
@@ -1667,7 +1675,11 @@ TEST_F(MenuControllerTest, AsynchronousCancelDuringDrag) {
 // the MenuHost does not crash as the drag completes.
 TEST_F(MenuControllerTest, AsynchronousDragHostDeleted) {
   SubmenuView* submenu = menu_item()->GetSubmenu();
-  submenu->ShowAt(owner(), menu_item()->bounds(), false);
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = menu_item()->bounds();
+  params.do_capture = false;
+  submenu->ShowAt(params);
   MenuHost* host = GetMenuHost(submenu);
   MenuHostOnDragWillStart(host);
   submenu->Close();
@@ -1680,7 +1692,11 @@ TEST_F(MenuControllerTest, AsynchronousDragHostDeleted) {
 // access a destroyed MenuController. This test should not cause a crash.
 TEST_F(MenuControllerTest, HostReceivesInputBeforeDestruction) {
   SubmenuView* submenu = menu_item()->GetSubmenu();
-  submenu->ShowAt(owner(), menu_item()->bounds(), false);
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = menu_item()->bounds();
+  params.do_capture = false;
+  submenu->ShowAt(params);
   gfx::Point location(submenu->bounds().bottom_right());
   location.Offset(1, 1);
 
@@ -1724,7 +1740,11 @@ TEST_F(MenuControllerTest, PreserveGestureForOwner) {
   controller->Run(owner(), nullptr, item, gfx::Rect(),
                   MenuAnchorPosition::kBottomCenter, false, false);
   SubmenuView* sub_menu = item->GetSubmenu();
-  sub_menu->ShowAt(owner(), gfx::Rect(0, 0, 100, 100), true);
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = gfx::Rect(0, 0, 100, 100);
+  params.do_capture = true;
+  sub_menu->ShowAt(params);
 
   gfx::Point location(sub_menu->bounds().bottom_left().x(),
                       sub_menu->bounds().bottom_left().y() + 10);
@@ -1775,8 +1795,12 @@ TEST_F(MenuControllerTest, ForwardsEventsToNativeViewForGestures) {
                   MenuAnchorPosition::kBottomCenter, false, false,
                   child_window.get());
   SubmenuView* sub_menu = item->GetSubmenu();
-  sub_menu->ShowAt(owner(), gfx::Rect(0, 0, 100, 100), true,
-                   child_window.get());
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = item->bounds();
+  params.do_capture = false;
+  params.native_view_for_gestures = child_window.get();
+  sub_menu->ShowAt(params);
 
   gfx::Point location(sub_menu->bounds().bottom_left().x(),
                       sub_menu->bounds().bottom_left().y() + 10);
@@ -1825,7 +1849,11 @@ TEST_F(MenuControllerTest, NoTouchCloseWhenSendingGesturesToOwner) {
   // Show a sub menu and touch outside of it.
   MenuItemView* item = menu_item();
   SubmenuView* sub_menu = item->GetSubmenu();
-  sub_menu->ShowAt(owner(), item->bounds(), false);
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = item->bounds();
+  params.do_capture = false;
+  sub_menu->ShowAt(params);
   gfx::Point location(sub_menu->bounds().bottom_right());
   location.Offset(1, 1);
   ui::TouchEvent touch_event(
@@ -1869,7 +1897,11 @@ TEST_F(MenuControllerTest, AsynchronousRepostEvent) {
   // Show a sub menu to target with a pointer selection. However have the event
   // occur outside of the bounds of the entire menu.
   SubmenuView* sub_menu = item->GetSubmenu();
-  sub_menu->ShowAt(owner(), item->bounds(), false);
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = item->bounds();
+  params.do_capture = false;
+  sub_menu->ShowAt(params);
   gfx::Point location(sub_menu->bounds().bottom_right());
   location.Offset(1, 1);
   ui::MouseEvent event(ui::ET_MOUSE_PRESSED, location, location,
@@ -1901,7 +1933,11 @@ TEST_F(MenuControllerTest, AsynchronousTouchEventRepostEvent) {
   // outside of the bounds of the entire menu.
   MenuItemView* item = menu_item();
   SubmenuView* sub_menu = item->GetSubmenu();
-  sub_menu->ShowAt(owner(), item->bounds(), false);
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = item->bounds();
+  params.do_capture = false;
+  sub_menu->ShowAt(params);
   gfx::Point location(sub_menu->bounds().bottom_right());
   location.Offset(1, 1);
   ui::TouchEvent event(ui::ET_TOUCH_PRESSED, location, ui::EventTimeForNow(),
@@ -1936,7 +1972,11 @@ TEST_F(MenuControllerTest, AsynchronousRepostEventDeletesController) {
   // Show a sub menu to target with a pointer selection. However have the event
   // occur outside of the bounds of the entire menu.
   SubmenuView* sub_menu = item->GetSubmenu();
-  sub_menu->ShowAt(owner(), item->bounds(), true);
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = item->bounds();
+  params.do_capture = true;
+  sub_menu->ShowAt(params);
   gfx::Point location(sub_menu->bounds().bottom_right());
   location.Offset(1, 1);
   ui::MouseEvent event(ui::ET_MOUSE_PRESSED, location, location,
@@ -1972,7 +2012,11 @@ TEST_F(MenuControllerTest, AsynchronousGestureDeletesController) {
 
   // Show a sub menu to target with a tap event.
   SubmenuView* sub_menu = item->GetSubmenu();
-  sub_menu->ShowAt(owner(), gfx::Rect(0, 0, 100, 100), true);
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = gfx::Rect(0, 0, 100, 100);
+  params.do_capture = true;
+  sub_menu->ShowAt(params);
 
   gfx::Point location(sub_menu->bounds().CenterPoint());
   ui::GestureEvent event(location.x(), location.y(), 0, ui::EventTimeForNow(),
@@ -2413,7 +2457,11 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
   base_menu->SetBounds(0, 0, 200, 200);
   SubmenuView* base_submenu = base_menu->GetSubmenu();
   base_submenu->SetBounds(0, 0, 200, 200);
-  base_submenu->ShowAt(owner(), gfx::Rect(0, 0, 200, 200), false);
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = gfx::Rect(0, 0, 200, 200);
+  params.do_capture = false;
+  base_submenu->ShowAt(params);
   GetMenuHost(base_submenu)
       ->SetContentsView(base_submenu->GetScrollViewContainer());
 
@@ -2430,7 +2478,10 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
   base_submenu->AddChildView(sub_menu_item.get());
   SubmenuView* sub_menu_view = sub_menu_item->GetSubmenu();
   sub_menu_view->SetBounds(0, 50, 50, 50);
-  sub_menu_view->ShowAt(owner(), gfx::Rect(0, 50, 50, 50), false);
+  params.parent = owner();
+  params.bounds = gfx::Rect(0, 50, 50, 50);
+  params.do_capture = false;
+  sub_menu_view->ShowAt(params);
   GetMenuHost(sub_menu_view)
       ->SetContentsView(sub_menu_view->GetScrollViewContainer());
 
@@ -2454,7 +2505,10 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
 
   SubmenuView* nested_menu_submenu = nested_menu_item_1->GetSubmenu();
   nested_menu_submenu->SetBounds(0, 0, 100, 100);
-  nested_menu_submenu->ShowAt(owner(), gfx::Rect(0, 0, 100, 100), false);
+  params.parent = owner();
+  params.bounds = gfx::Rect(0, 0, 100, 100);
+  params.do_capture = false;
+  nested_menu_submenu->ShowAt(params);
   GetMenuHost(nested_menu_submenu)
       ->SetContentsView(nested_menu_submenu->GetScrollViewContainer());
 
@@ -2519,7 +2573,11 @@ TEST_F(MenuControllerTest, DragFromViewIntoMenuAndExit) {
 
   std::unique_ptr<View> drag_view = std::make_unique<View>();
   drag_view->SetBoundsRect(gfx::Rect(0, 500, 100, 100));
-  sub_menu->ShowAt(owner(), gfx::Rect(0, 0, 100, 100), false);
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = gfx::Rect(0, 0, 100, 100);
+  params.do_capture = false;
+  sub_menu->ShowAt(params);
   gfx::Point press_location(drag_view->bounds().CenterPoint());
   gfx::Point drag_location(first_item->bounds().CenterPoint());
   gfx::Point release_location(200, 50);
@@ -2571,7 +2629,11 @@ TEST_F(MenuControllerTest, NoUseAfterFreeWhenMenuCanceledOnMousePress) {
 
   controller->Run(owner(), nullptr, item.get(), item->bounds(),
                   MenuAnchorPosition::kTopLeft, false, false);
-  sub_menu->ShowAt(owner(), item->bounds(), true);
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.bounds = item->bounds();
+  params.do_capture = true;
+  sub_menu->ShowAt(params);
 
   // Simulate a mouse press in the middle of the |closing_widget|.
   gfx::Point location(canceling_view->bounds().CenterPoint());
