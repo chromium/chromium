@@ -43,10 +43,6 @@ html[new-layout] #outer-container {
   overflow-y: hidden;
 }
 
-#scroll-container::-webkit-scrollbar {
-  display: none;
-}
-
 #inner-container {
   border-radius: 2px;
   position: relative;
