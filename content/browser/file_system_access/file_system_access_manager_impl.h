@@ -283,6 +283,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void DidChooseEntries(const BindingContext& binding_context,
                         const FileSystemChooser::Options& options,
                         const std::string& starting_directory_id,
+                        bool request_directory_write_access,
                         ChooseEntriesCallback callback,
                         blink::mojom::FileSystemAccessErrorPtr result,
                         std::vector<FileSystemChooser::ResultEntry> entries);
@@ -290,6 +291,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       const BindingContext& binding_context,
       const FileSystemChooser::Options& options,
       const std::string& starting_directory_id,
+      bool request_directory_write_access,
       ChooseEntriesCallback callback,
       std::vector<FileSystemChooser::ResultEntry> entries,
       FileSystemAccessPermissionContext::SensitiveDirectoryResult result);

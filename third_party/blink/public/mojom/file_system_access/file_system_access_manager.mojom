@@ -49,7 +49,9 @@ struct SaveFilePickerOptions {
   string suggested_name;
 };
 
-struct DirectoryPickerOptions {};
+struct DirectoryPickerOptions {
+  bool request_writable;
+};
 
 // Encapsulation of data from the FilePickerOptions idl spec:
 // https://wicg.github.io/file-system-access/#dictdef-filepickeroptions.

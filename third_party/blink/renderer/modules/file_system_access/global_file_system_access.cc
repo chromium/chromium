@@ -431,7 +431,8 @@ ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
   if (exception_state.HadException())
     return ScriptPromise();
 
-  auto directory_picker_options = mojom::blink::DirectoryPickerOptions::New();
+  auto directory_picker_options =
+      mojom::blink::DirectoryPickerOptions::New(options->requestWritable());
   return ShowFilePickerImpl(
       script_state, window,
       mojom::blink::FilePickerOptions::NewDirectoryPickerOptions(
