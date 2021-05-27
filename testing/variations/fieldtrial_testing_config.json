@@ -6642,6 +6642,25 @@
             ]
         }
     ],
+    "RequestDesktopSiteForTablets": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_V2_1280dp",
+                    "params": {
+                        "enabled": "true",
+                        "screen_width_dp": "1280"
+                    },
+                    "enable_features": [
+                        "RequestDesktopSiteForTablets"
+                    ]
+                }
+            ]
+        }
+    ],
     "SCTAuditingPhase1": [
         {
             "platforms": [
