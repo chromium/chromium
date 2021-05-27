@@ -8209,6 +8209,23 @@
             ]
         }
     ],
+    "V8WasmMemoryProtection": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledPku",
+                    "enable_features": [
+                        "WebAssemblyCodeProtectionPku"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8WasmTrapHandlerMacOSArm64": [
         {
             "platforms": [
