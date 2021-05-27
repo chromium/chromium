@@ -25,19 +25,13 @@ namespace content {
 namespace {
 
 void DownloadBestMatchingIcon(
-    const GURL& scope,
-    std::unique_ptr<std::vector<GlobalFrameRoutingId>> frame_routing_ids,
+    WebContents* web_contents,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcher::PaymentInstrumentIconFetcherCallback
         callback);
 
-WebContents* GetWebContentsFromFrameRoutingIds(
-    const GURL& scope,
-    std::unique_ptr<std::vector<GlobalFrameRoutingId>> frame_routing_ids);
-
 void OnIconFetched(
-    const GURL& scope,
-    std::unique_ptr<std::vector<GlobalFrameRoutingId>> frame_routing_ids,
+    WebContents* web_contents,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcher::PaymentInstrumentIconFetcherCallback callback,
     const SkBitmap& bitmap) {
@@ -52,8 +46,7 @@ void OnIconFetched(
     } else {
       // If could not download or decode the chosen image(e.g. not supported,
       // invalid), try it again with remaining icons.
-      DownloadBestMatchingIcon(scope, std::move(frame_routing_ids), icons,
-                               std::move(callback));
+      DownloadBestMatchingIcon(web_contents, icons, std::move(callback));
     }
     return;
   }
@@ -71,15 +64,12 @@ void OnIconFetched(
 }
 
 void DownloadBestMatchingIcon(
-    const GURL& scope,
-    std::unique_ptr<std::vector<GlobalFrameRoutingId>> frame_routing_ids,
+    WebContents* web_contents,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcher::PaymentInstrumentIconFetcherCallback
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebContents* web_contents =
-      GetWebContentsFromFrameRoutingIds(scope, std::move(frame_routing_ids));
   if (web_contents == nullptr) {
     BrowserThread::GetTaskRunnerForThread(
         ServiceWorkerContext::GetCoreThreadId())
@@ -118,8 +108,8 @@ void DownloadBestMatchingIcon(
       payments::IconSizeCalculator::IdealIconHeight(native_view),
       payments::IconSizeCalculator::MinimumIconHeight(),
       /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
-      base::BindOnce(&OnIconFetched, scope, std::move(frame_routing_ids),
-                     copy_icons, std::move(callback)),
+      base::BindOnce(&OnIconFetched, web_contents, copy_icons,
+                     std::move(callback)),
       false /* square_only */);
   DCHECK(can_download_icon);
 }
@@ -155,8 +145,9 @@ void StartOnUI(
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  DownloadBestMatchingIcon(scope, std::move(frame_routing_ids), icons,
-                           std::move(callback));
+  WebContents* web_contents =
+      GetWebContentsFromFrameRoutingIds(scope, std::move(frame_routing_ids));
+  DownloadBestMatchingIcon(web_contents, icons, std::move(callback));
 }
 
 }  // namespace
