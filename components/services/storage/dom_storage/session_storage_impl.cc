@@ -27,6 +27,7 @@
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/session_storage_area_impl.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -306,8 +307,11 @@ void SessionStorageImpl::Flush(FlushCallback callback) {
 
   base::RepeatingClosure commit_callback = base::BarrierClosure(
       base::saturated_cast<int>(data_maps_.size()), std::move(callback));
+
   for (const auto& it : data_maps_)
-    it.second->storage_area()->ScheduleImmediateCommit(commit_callback);
+    it.second->storage_area()->ScheduleImmediateCommit(
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::OnceClosure(commit_callback)));
 }
 
 void SessionStorageImpl::GetUsage(GetUsageCallback callback) {
