@@ -25,16 +25,16 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
 
   // XDGPopupWrapper:
   bool Initialize(WaylandConnection* connection,
-                  const gfx::Rect& bounds) override;
+                  const ShellPopupParams& params) override;
   void AckConfigure(uint32_t serial) override;
 
  private:
   bool InitializeStable(WaylandConnection* connection,
-                        const gfx::Rect& bounds,
+                        const ShellPopupParams& params,
                         XDGSurfaceWrapperImpl* parent_xdg_surface_wrapper);
   struct xdg_positioner* CreatePositioner(WaylandConnection* connection,
                                           WaylandWindow* parent_window,
-                                          const gfx::Rect& bounds);
+                                          const ShellPopupParams& params);
 
   // xdg_popup_listener
   static void Configure(void* data,

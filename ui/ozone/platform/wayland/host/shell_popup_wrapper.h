@@ -13,7 +13,6 @@
 namespace ui {
 
 class WaylandConnection;
-class WaylandWindow;
 
 enum class WlAnchor {
   None,
@@ -49,6 +48,11 @@ enum class WlConstraintAdjustment : uint32_t {
   ResizeY = 32,
 };
 
+struct ShellPopupParams {
+  gfx::Rect bounds;
+  MenuType menu_type = MenuType::kRootContextMenu;
+};
+
 inline WlConstraintAdjustment operator|(WlConstraintAdjustment a,
                                         WlConstraintAdjustment b) {
   return static_cast<WlConstraintAdjustment>(static_cast<uint32_t>(a) |
@@ -68,15 +72,11 @@ class ShellPopupWrapper {
 
   // Initializes the popup surface.
   virtual bool Initialize(WaylandConnection* connection,
-                          const gfx::Rect& bounds) = 0;
+                          const ShellPopupParams& params) = 0;
 
   // Sends acknowledge configure event back to wayland.
   virtual void AckConfigure(uint32_t serial) = 0;
 
-  // Returns popup type for |type|.
-  MenuType GetPopupTypeForPositioner(PlatformWindowType type,
-                                     int last_pointer_button_pressed,
-                                     WaylandWindow* parent_window) const;
   bool CanGrabPopup(WaylandConnection* connection) const;
 };
 

@@ -25,16 +25,16 @@ class ZXDGPopupV6WrapperImpl : public ShellPopupWrapper {
 
   // XDGPopupWrapper:
   bool Initialize(WaylandConnection* connection,
-                  const gfx::Rect& bounds) override;
+                  const ShellPopupParams& params) override;
   void AckConfigure(uint32_t serial) override;
 
  private:
   bool InitializeV6(WaylandConnection* connection,
-                    const gfx::Rect& bounds,
+                    const ShellPopupParams& params,
                     ZXDGSurfaceV6WrapperImpl* parent_zxdg_surface_v6_wrapper);
   struct zxdg_positioner_v6* CreatePositioner(WaylandConnection* connection,
                                               WaylandWindow* parent_window,
-                                              const gfx::Rect& bounds);
+                                              const ShellPopupParams& bounds);
 
   // zxdg_popup_v6_listener
   static void Configure(void* data,

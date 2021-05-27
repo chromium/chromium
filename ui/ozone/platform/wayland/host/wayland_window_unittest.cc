@@ -1161,6 +1161,8 @@ TEST_P(WaylandWindowTest, OnAcceleratedWidgetDestroy) {
 
 TEST_P(WaylandWindowTest, CanCreateMenuWindow) {
   MockPlatformWindowDelegate menu_window_delegate;
+  EXPECT_CALL(menu_window_delegate, GetMenuType())
+      .WillRepeatedly(Return(MenuType::kRootContextMenu));
 
   // SetPointerFocus(true) requires a WaylandPointer.
   wl_seat_send_capabilities(
@@ -1204,6 +1206,8 @@ TEST_P(WaylandWindowTest, CreateAndDestroyNestedMenuWindow) {
   gfx::AcceleratedWidget menu_window_widget;
   EXPECT_CALL(menu_window_delegate, OnAcceleratedWidgetAvailable(_))
       .WillOnce(SaveArg<0>(&menu_window_widget));
+  EXPECT_CALL(menu_window_delegate, GetMenuType())
+      .WillRepeatedly(Return(MenuType::kRootContextMenu));
 
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, widget_, gfx::Rect(0, 0, 10, 10),
@@ -1225,6 +1229,8 @@ TEST_P(WaylandWindowTest, CreateAndDestroyNestedMenuWindow) {
 
 TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
   MockPlatformWindowDelegate menu_window_delegate;
+  EXPECT_CALL(menu_window_delegate, GetMenuType())
+      .WillOnce(Return(MenuType::kRootContextMenu));
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, widget_, gfx::Rect(10, 10, 10, 10),
       &menu_window_delegate);
@@ -1295,6 +1301,8 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
   // If nested menu window is added, the events are still correctly translated
   // to the captured window.
   MockPlatformWindowDelegate nested_menu_window_delegate;
+  EXPECT_CALL(nested_menu_window_delegate, GetMenuType())
+      .WillOnce(Return(MenuType::kRootContextMenu));
   std::unique_ptr<WaylandWindow> nested_menu_window =
       CreateWaylandWindowWithParams(
           PlatformWindowType::kMenu, menu_window->GetWidget(),
@@ -1337,6 +1345,8 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
 TEST_P(WaylandWindowTest,
        DispatchesLocatedEventsToCapturedWindowInTheSameStack) {
   MockPlatformWindowDelegate menu_window_delegate;
+  EXPECT_CALL(menu_window_delegate, GetMenuType())
+      .WillOnce(Return(MenuType::kRootContextMenu));
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, widget_, gfx::Rect(30, 40, 20, 50),
       &menu_window_delegate);
@@ -1408,6 +1418,8 @@ TEST_P(WaylandWindowTest,
 
 TEST_P(WaylandWindowTest, DispatchesKeyboardEventToToplevelWindow) {
   MockPlatformWindowDelegate menu_window_delegate;
+  EXPECT_CALL(menu_window_delegate, GetMenuType())
+      .WillOnce(Return(MenuType::kRootContextMenu));
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, widget_, gfx::Rect(10, 10, 10, 10),
       &menu_window_delegate);
@@ -1458,6 +1470,8 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
   gfx::AcceleratedWidget menu_window_widget;
   EXPECT_CALL(menu_window_delegate, OnAcceleratedWidgetAvailable(_))
       .WillOnce(SaveArg<0>(&menu_window_widget));
+  EXPECT_CALL(menu_window_delegate, GetMenuType())
+      .WillOnce(Return(MenuType::kRootContextMenu));
 
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, widget_, gfx::Rect(0, 0, 10, 10),
@@ -1467,6 +1481,8 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
   Sync();
 
   MockPlatformWindowDelegate nested_menu_window_delegate;
+  EXPECT_CALL(nested_menu_window_delegate, GetMenuType())
+      .WillOnce(Return(MenuType::kRootContextMenu));
   std::unique_ptr<WaylandWindow> nested_menu_window =
       CreateWaylandWindowWithParams(
           PlatformWindowType::kMenu, menu_window_widget,
@@ -2010,6 +2026,8 @@ TEST_P(WaylandWindowTest, AdjustPopupBounds) {
 
   // Case 1: the top menu window is positioned normally.
   MockPlatformWindowDelegate menu_window_delegate;
+  EXPECT_CALL(menu_window_delegate, GetMenuType())
+      .WillOnce(Return(MenuType::kRootMenu));
   gfx::Rect menu_window_bounds(gfx::Point(440, 76),
                                menu_window_positioner.size);
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
@@ -2030,6 +2048,8 @@ TEST_P(WaylandWindowTest, AdjustPopupBounds) {
 
   // Case 2: the nested menu window is positioned normally.
   MockPlatformWindowDelegate nested_menu_window_delegate;
+  EXPECT_CALL(nested_menu_window_delegate, GetMenuType())
+      .WillRepeatedly(Return(MenuType::kChildMenu));
   gfx::Rect nested_menu_window_bounds(gfx::Point(723, 156),
                                       nested_menu_window_positioner.size);
   std::unique_ptr<WaylandWindow> nested_menu_window =
@@ -2198,6 +2218,8 @@ TEST_P(WaylandWindowTest, OnCloseRequest) {
 TEST_P(WaylandWindowTest, WaylandPopupSimpleParent) {
   VerifyAndClearExpectations();
 
+  EXPECT_CALL(delegate_, GetMenuType())
+      .WillRepeatedly(Return(MenuType::kRootContextMenu));
   // WaylandPopup must ignore the parent provided by aura and should always
   // use focused window instead.
   gfx::Rect wayland_popup_bounds(gfx::Point(15, 15), gfx::Size(10, 10));
@@ -2229,6 +2251,7 @@ TEST_P(WaylandWindowTest, WaylandPopupSimpleParent) {
 TEST_P(WaylandWindowTest, NestedMenuWindows) {
   VerifyAndClearExpectations();
 
+  EXPECT_CALL(delegate_, GetMenuType()).WillOnce(Return(MenuType::kRootMenu));
   gfx::Rect menu_window_bounds(gfx::Rect(4, 20, 8, 20));
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, window_->GetWidget(), menu_window_bounds,
@@ -2237,6 +2260,7 @@ TEST_P(WaylandWindowTest, NestedMenuWindows) {
 
   VerifyAndClearExpectations();
 
+  EXPECT_CALL(delegate_, GetMenuType()).WillOnce(Return(MenuType::kChildMenu));
   gfx::Rect nested_menu_bounds(gfx::Rect(10, 30, 40, 20));
   std::unique_ptr<WaylandWindow> nested_menu_window =
       CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
@@ -2266,6 +2290,8 @@ TEST_P(WaylandWindowTest, NestedMenuWindows) {
 TEST_P(WaylandWindowTest, NestedMenuWindows1) {
   VerifyAndClearExpectations();
 
+  EXPECT_CALL(delegate_, GetMenuType())
+      .WillRepeatedly(Return(MenuType::kRootContextMenu));
   gfx::Rect menu_window_bounds(gfx::Rect(6, 20, 8, 20));
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, window_->GetWidget(), menu_window_bounds,
@@ -2303,6 +2329,7 @@ TEST_P(WaylandWindowTest, NestedMenuWindows1) {
 TEST_P(WaylandWindowTest, NestedMenuWindows2) {
   VerifyAndClearExpectations();
 
+  EXPECT_CALL(delegate_, GetMenuType()).WillOnce(Return(MenuType::kRootMenu));
   gfx::Rect menu_window_bounds(gfx::Rect(10, 20, 40, 20));
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, window_->GetWidget(), menu_window_bounds,
@@ -2311,6 +2338,7 @@ TEST_P(WaylandWindowTest, NestedMenuWindows2) {
 
   VerifyAndClearExpectations();
 
+  EXPECT_CALL(delegate_, GetMenuType()).WillOnce(Return(MenuType::kChildMenu));
   gfx::Rect nested_menu_bounds(gfx::Rect(5, 30, 21, 20));
   std::unique_ptr<WaylandWindow> nested_menu_window =
       CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
@@ -2340,6 +2368,8 @@ TEST_P(WaylandWindowTest, NestedMenuWindows2) {
 TEST_P(WaylandWindowTest, NestedMenuWindows3) {
   VerifyAndClearExpectations();
 
+  EXPECT_CALL(delegate_, GetMenuType())
+      .WillRepeatedly(Return(MenuType::kRootContextMenu));
   gfx::Rect menu_window_bounds(gfx::Rect(10, 20, 20, 20));
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, window_->GetWidget(), menu_window_bounds,
@@ -2477,6 +2507,8 @@ TEST_P(WaylandWindowTest, DestroysCreatesSurfaceOnHideShow) {
 
 TEST_P(WaylandWindowTest, DestroysCreatesPopupsOnHideShow) {
   MockPlatformWindowDelegate delegate;
+  EXPECT_CALL(delegate, GetMenuType())
+      .WillRepeatedly(Return(MenuType::kRootContextMenu));
   auto window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, window_->GetWidget(), gfx::Rect(0, 0, 50, 50),
       &delegate);
@@ -2688,6 +2720,8 @@ TEST_P(WaylandWindowTest, CreatesPopupOnButtonPressSerial) {
 
   // Create a popup window and verify the client used correct serial.
   MockPlatformWindowDelegate delegate;
+  EXPECT_CALL(delegate, GetMenuType())
+      .WillOnce(Return(MenuType::kRootContextMenu));
   auto popup = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, window_->GetWidget(), gfx::Rect(0, 0, 50, 50),
       &delegate);
@@ -2732,6 +2766,8 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
 
   // Create a popup window and verify the client used correct serial.
   MockPlatformWindowDelegate delegate;
+  EXPECT_CALL(delegate, GetMenuType())
+      .WillRepeatedly(Return(MenuType::kRootContextMenu));
   auto popup = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, window_->GetWidget(), gfx::Rect(0, 0, 50, 50),
       &delegate);
@@ -2807,6 +2843,8 @@ TEST_P(WaylandWindowTest, NestedPopupWindowsGetCorrectParent) {
 TEST_P(WaylandWindowTest, DoesNotGrabPopupIfNoSeat) {
   // Create a popup window and verify the grab serial is not set.
   MockPlatformWindowDelegate delegate;
+  EXPECT_CALL(delegate, GetMenuType())
+      .WillOnce(Return(MenuType::kRootContextMenu));
   auto popup = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, window_->GetWidget(), gfx::Rect(0, 0, 50, 50),
       &delegate);

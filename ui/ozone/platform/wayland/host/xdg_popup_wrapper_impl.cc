@@ -112,7 +112,7 @@ XDGPopupWrapperImpl::XDGPopupWrapperImpl(
 XDGPopupWrapperImpl::~XDGPopupWrapperImpl() = default;
 
 bool XDGPopupWrapperImpl::Initialize(WaylandConnection* connection,
-                                     const gfx::Rect& bounds) {
+                                     const ShellPopupParams& params) {
   if (!connection->shell() && !connection->shell_v6()) {
     NOTREACHED() << "Wrong shell protocol";
     return false;
@@ -136,21 +136,21 @@ bool XDGPopupWrapperImpl::Initialize(WaylandConnection* connection,
   if (!xdg_surface_wrapper_ || !parent_xdg_surface)
     return false;
 
-  auto new_bounds = bounds;
+  auto new_params = params;
   // Wayland doesn't allow empty bounds. If a zero or negative size is set, the
   // invalid_input error is raised. Thus, use the least possible one.
   // WaylandPopup will update its bounds upon the following configure event.
-  if (new_bounds.IsEmpty())
-    new_bounds.set_size({1, 1});
+  if (params.bounds.IsEmpty())
+    new_params.bounds.set_size({1, 1});
 
   if (connection->shell())
-    return InitializeStable(connection, new_bounds, parent_xdg_surface);
+    return InitializeStable(connection, new_params, parent_xdg_surface);
   return false;
 }
 
 bool XDGPopupWrapperImpl::InitializeStable(
     WaylandConnection* connection,
-    const gfx::Rect& bounds,
+    const ShellPopupParams& params,
     XDGSurfaceWrapperImpl* parent_xdg_surface) {
   static const struct xdg_popup_listener xdg_popup_listener = {
       &XDGPopupWrapperImpl::Configure,
@@ -158,7 +158,7 @@ bool XDGPopupWrapperImpl::InitializeStable(
   };
 
   struct xdg_positioner* positioner =
-      CreatePositioner(connection, wayland_window_->parent_window(), bounds);
+      CreatePositioner(connection, wayland_window_->parent_window(), params);
   if (!positioner)
     return false;
 
@@ -187,15 +187,11 @@ void XDGPopupWrapperImpl::AckConfigure(uint32_t serial) {
 struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(
     WaylandConnection* connection,
     WaylandWindow* parent_window,
-    const gfx::Rect& bounds) {
+    const ShellPopupParams& params) {
   struct xdg_positioner* positioner;
   positioner = xdg_wm_base_create_positioner(connection->shell());
   if (!positioner)
     return nullptr;
-
-  auto menu_type = GetPopupTypeForPositioner(
-      wayland_window_->type(),
-      connection->event_source()->last_pointer_button_pressed(), parent_window);
 
   // The parent we got must be the topmost in the stack of the same family
   // windows.
@@ -203,20 +199,21 @@ struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(
 
   // Place anchor to the end of the possible position.
   gfx::Rect anchor_rect = GetAnchorRect(
-      menu_type, bounds,
+      params.menu_type, params.bounds,
       gfx::ScaleToRoundedRect(parent_window->GetBounds(),
                               1.0 / parent_window->buffer_scale()));
 
   xdg_positioner_set_anchor_rect(positioner, anchor_rect.x(), anchor_rect.y(),
                                  anchor_rect.width(), anchor_rect.height());
-  xdg_positioner_set_size(positioner, bounds.width(), bounds.height());
-  xdg_positioner_set_anchor(positioner,
-                            TranslateAnchor(GetAnchor(menu_type, bounds)));
-  xdg_positioner_set_gravity(positioner,
-                             TranslateGravity(GetGravity(menu_type, bounds)));
+  xdg_positioner_set_size(positioner, params.bounds.width(),
+                          params.bounds.height());
+  xdg_positioner_set_anchor(
+      positioner, TranslateAnchor(GetAnchor(params.menu_type, params.bounds)));
+  xdg_positioner_set_gravity(positioner, TranslateGravity(GetGravity(
+                                             params.menu_type, params.bounds)));
   xdg_positioner_set_constraint_adjustment(
       positioner,
-      TranslateContraintAdjustment(GetConstraintAdjustment(menu_type)));
+      TranslateContraintAdjustment(GetConstraintAdjustment(params.menu_type)));
   return positioner;
 }
 

@@ -44,9 +44,13 @@ bool WaylandPopup::CreateShellPopup() {
   const auto bounds_dip =
       wl::TranslateWindowBoundsToParentDIP(this, parent_window());
 
+  ShellPopupParams params;
+  params.bounds = bounds_dip;
+  params.menu_type =
+      delegate()->GetMenuType().value_or(MenuType::kRootContextMenu);
+
   ShellObjectFactory factory;
-  shell_popup_ =
-      factory.CreateShellPopupWrapper(connection(), this, bounds_dip);
+  shell_popup_ = factory.CreateShellPopupWrapper(connection(), this, params);
   if (!shell_popup_) {
     LOG(ERROR) << "Failed to create Wayland shell popup";
     return false;

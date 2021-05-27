@@ -152,23 +152,6 @@ WlConstraintAdjustment GetConstraintAdjustment(MenuType menu_type) {
   return constraint;
 }
 
-MenuType ShellPopupWrapper::GetPopupTypeForPositioner(
-    PlatformWindowType type,
-    int last_pointer_button_pressed,
-    WaylandWindow* parent_window) const {
-  bool is_right_click_menu =
-      last_pointer_button_pressed & EF_RIGHT_MOUSE_BUTTON;
-
-  // Different types of menu require different anchors, constraint adjustments,
-  // gravity and etc.
-  if (is_right_click_menu || type == PlatformWindowType::kTooltip)
-    return MenuType::kRootContextMenu;
-  else if (!parent_window->AsWaylandPopup())
-    return MenuType::kRootMenu;
-  else
-    return MenuType::kChildMenu;
-}
-
 bool ShellPopupWrapper::CanGrabPopup(WaylandConnection* connection) const {
   // When drag process starts, as described the protocol -
   // https://goo.gl/1Mskq3, the client must have an active implicit grab. If

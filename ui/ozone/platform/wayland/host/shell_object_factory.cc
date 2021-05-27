@@ -47,7 +47,7 @@ ShellObjectFactory::CreateShellToplevelWrapper(WaylandConnection* connection,
 std::unique_ptr<ShellPopupWrapper> ShellObjectFactory::CreateShellPopupWrapper(
     WaylandConnection* connection,
     WaylandWindow* wayland_window,
-    const gfx::Rect& bounds) {
+    const ShellPopupParams& params) {
   if (connection->shell()) {
     auto surface =
         std::make_unique<XDGSurfaceWrapperImpl>(wayland_window, connection);
@@ -56,7 +56,7 @@ std::unique_ptr<ShellPopupWrapper> ShellObjectFactory::CreateShellPopupWrapper(
 
     auto popup = std::make_unique<XDGPopupWrapperImpl>(std::move(surface),
                                                        wayland_window);
-    return popup->Initialize(connection, bounds) ? std::move(popup) : nullptr;
+    return popup->Initialize(connection, params) ? std::move(popup) : nullptr;
   } else if (connection->shell_v6()) {
     auto surface =
         std::make_unique<ZXDGSurfaceV6WrapperImpl>(wayland_window, connection);
@@ -65,7 +65,7 @@ std::unique_ptr<ShellPopupWrapper> ShellObjectFactory::CreateShellPopupWrapper(
 
     auto popup = std::make_unique<ZXDGPopupV6WrapperImpl>(std::move(surface),
                                                           wayland_window);
-    return popup->Initialize(connection, bounds) ? std::move(popup) : nullptr;
+    return popup->Initialize(connection, params) ? std::move(popup) : nullptr;
   }
   LOG(WARNING) << "Shell protocol is not available.";
   return nullptr;

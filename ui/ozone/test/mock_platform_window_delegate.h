@@ -32,6 +32,7 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD1(OnActivationChanged, void(bool active));
   MOCK_METHOD0(GetMinimumSizeForWindow, absl::optional<gfx::Size>());
   MOCK_METHOD0(GetMaximumSizeForWindow, absl::optional<gfx::Size>());
+  MOCK_METHOD0(GetMenuType, absl::optional<MenuType>());
   MOCK_METHOD0(OnMouseEnter, void());
 
  private:
