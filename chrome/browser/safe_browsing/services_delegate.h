@@ -9,7 +9,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/incident_reporting/delayed_analysis_callback.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
