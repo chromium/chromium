@@ -838,7 +838,8 @@ cr.define('settings_about_page', function() {
 
       Polymer.dom.flush();
 
-      const deepLinkElement = page.$$('#reportIssue').$$('cr-icon-button');
+      const deepLinkElement =
+          page.$$('#reportIssue').shadowRoot.querySelector('cr-icon-button');
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
