@@ -77,6 +77,23 @@ class BoxUploader {
   void SetCurrentApiCall(std::unique_ptr<OAuth2ApiCallFlow> api_call);
 
  private:
+  // The largest number of retries attempted in OnPreflightCheckResponse.
+  enum EnterpriseFilesystemUploadAttemptCount {
+    kNotRenamed = 0,
+    kRenamedWithSuffix1 = 1,
+    kRenamedWithSuffix2 = 2,
+    kRenamedWithSuffix3 = 3,
+    kRenamedWithSuffix4 = 4,
+    kRenamedWithSuffix5 = 5,
+    kRenamedWithSuffix6 = 6,
+    kRenamedWithSuffix7 = 7,
+    kRenamedWithSuffix8 = 8,
+    kRenamedWithSuffix9 = 9,
+    kMaxRenamedWithSuffix = kRenamedWithSuffix9,
+    kTimestampBasedName = 1000,
+    kAbandonedUpload = 2000,
+  };
+
   // Box API call pre-upload steps:
   std::unique_ptr<OAuth2ApiCallFlow> MakeFindUpstreamFolderApiCall();
   std::unique_ptr<OAuth2ApiCallFlow> MakeCreateUpstreamFolderApiCall();
@@ -90,6 +107,7 @@ class BoxUploader {
                                       int response_code,
                                       const std::string& folder_id);
   void OnPreflightCheckResponse(bool success, int response_code);
+  void LogUniquifierCountToUma();
 
   // The followings are not necessarily specific to Box:
   // Post a task to ThreadPool to delete the local file, after the entire file
@@ -103,6 +121,9 @@ class BoxUploader {
   // File details.
   const base::FilePath local_file_path_;   // Path of the local temporary file.
   const base::FilePath target_file_name_;  // File name to be used finally.
+  const base::Time download_start_time_;   // Start time of the download.
+  unsigned int
+      uniquifier_;  // Number to be appended to the filename to make it unique.
   // Callback when API call gives Authenetication Error.
   base::RepeatingCallback<void(void)> authentication_retry_callback_;
   // Callback when the entire flow is completed to notify the download thread.

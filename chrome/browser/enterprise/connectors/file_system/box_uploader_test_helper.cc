@@ -27,11 +27,15 @@ namespace enterprise_connectors {
 ////////////////////////////////////////////////////////////////////////////////
 
 DownloadItemForTest::DownloadItemForTest(
-    base::FilePath::StringPieceType file_name) {
+    base::FilePath::StringPieceType file_name,
+    base::Time::Exploded start_time_exploded) {
   CHECK(temp_dir_.CreateUniqueTempDir());
   file_path_ = temp_dir_.GetPath().Append(file_name);
   CHECK_EQ(file_path_.FinalExtension(), FILE_PATH_LITERAL(".crdownload"));
   SetTargetFilePath(file_path_.RemoveFinalExtension());
+  base::Time start_time;
+  DCHECK(base::Time::FromLocalExploded(start_time_exploded, &start_time));
+  SetStartTime(start_time);
 }
 
 const base::FilePath& DownloadItemForTest::GetFullPath() const {
