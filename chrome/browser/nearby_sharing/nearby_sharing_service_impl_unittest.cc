@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/chromeos_buildflags.h"
@@ -52,6 +53,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/services/nearby/public/cpp/mock_nearby_process_manager.h"
 #include "chromeos/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
@@ -836,15 +838,31 @@ class NearbySharingServiceImplTest : public testing::Test {
     auto barrier = base::BarrierClosure(updates.size(), std::move(callback));
     auto& expectation =
         EXPECT_CALL(transfer_callback, OnTransferUpdate).Times(updates.size());
+
     for (TransferMetadata::Status status : updates) {
-      expectation.WillOnce(testing::Invoke(
-          [=](const ShareTarget& share_target, TransferMetadata metadata) {
-            EXPECT_EQ(target.id, share_target.id);
-            EXPECT_EQ(status, metadata.status());
-            if (new_share_target)
-              *new_share_target = share_target;
-            barrier.Run();
-          }));
+      expectation.WillOnce(testing::Invoke([=](const ShareTarget& share_target,
+                                               TransferMetadata metadata) {
+        EXPECT_EQ(target.id, share_target.id);
+        EXPECT_EQ(status, metadata.status());
+        if (new_share_target)
+          *new_share_target = share_target;
+
+        // Though this is indirect, verify that the highest level
+        // success/failure metric was logged. We expect transfer updates to
+        // be a few indeterminate status then only one success or failure
+        // status.
+        TransferMetadata::Result result = TransferMetadata::ToResult(status);
+        histogram_tester_.ExpectBucketCount(
+            "ChromeOS.FeatureUsage.NearbyShare",
+            feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess,
+            result == TransferMetadata::Result::kSuccess ? 1 : 0);
+        histogram_tester_.ExpectBucketCount(
+            "ChromeOS.FeatureUsage.NearbyShare",
+            feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure,
+            result == TransferMetadata::Result::kFailure ? 1 : 0);
+
+        barrier.Run();
+      }));
     }
   }
 
@@ -1046,6 +1064,7 @@ class NearbySharingServiceImplTest : public testing::Test {
   int64_t last_advertising_interval_max_ = 0;
   chromeos::nearby::NearbyProcessManager::NearbyProcessStoppedCallback
       process_stopped_callback_;
+  base::HistogramTester histogram_tester_;
 };
 
 struct ValidSendSurfaceTestData {
