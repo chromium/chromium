@@ -62,6 +62,12 @@ ABSL_NAMESPACE_END
 #define ABSL_INTERNAL_STRING_VIEW_MEMCMP memcmp
 #endif  // ABSL_HAVE_BUILTIN(__builtin_memcmp)
 
+#if defined(__cplusplus) && __cplusplus >= 201402L
+#define ABSL_INTERNAL_STRING_VIEW_CXX14_CONSTEXPR constexpr
+#else
+#define ABSL_INTERNAL_STRING_VIEW_CXX14_CONSTEXPR
+#endif
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 
@@ -265,9 +271,7 @@ class string_view {
   // string_view::size()
   //
   // Returns the number of characters in the `string_view`.
-  constexpr size_type size() const noexcept {
-    return length_;
-  }
+  constexpr size_type size() const noexcept { return length_; }
 
   // string_view::length()
   //
@@ -334,7 +338,7 @@ class string_view {
   //
   // Removes the first `n` characters from the `string_view`. Note that the
   // underlying string is not changed, only the view.
-  void remove_prefix(size_type n) {
+  ABSL_INTERNAL_STRING_VIEW_CXX14_CONSTEXPR void remove_prefix(size_type n) {
     ABSL_HARDENING_ASSERT(n <= length_);
     ptr_ += n;
     length_ -= n;
@@ -344,7 +348,7 @@ class string_view {
   //
   // Removes the last `n` characters from the `string_view`. Note that the
   // underlying string is not changed, only the view.
-  void remove_suffix(size_type n) {
+  ABSL_INTERNAL_STRING_VIEW_CXX14_CONSTEXPR void remove_suffix(size_type n) {
     ABSL_HARDENING_ASSERT(n <= length_);
     length_ -= n;
   }
@@ -352,7 +356,7 @@ class string_view {
   // string_view::swap()
   //
   // Swaps this `string_view` with another `string_view`.
-  void swap(string_view& s) noexcept {
+  ABSL_INTERNAL_STRING_VIEW_CXX14_CONSTEXPR void swap(string_view& s) noexcept {
     auto t = *this;
     *this = s;
     s = t;
@@ -389,7 +393,7 @@ class string_view {
   // `n`) as another string_view. This function throws `std::out_of_bounds` if
   // `pos > size`.
   // Use absl::ClippedSubstr if you need a truncating substr operation.
-  constexpr string_view substr(size_type pos, size_type n = npos) const {
+  constexpr string_view substr(size_type pos = 0, size_type n = npos) const {
     return ABSL_PREDICT_FALSE(pos > length_)
                ? (base_internal::ThrowStdOutOfRange(
                       "absl::string_view::substr"),
@@ -413,31 +417,31 @@ class string_view {
 
   // Overload of `string_view::compare()` for comparing a substring of the
   // 'string_view` and another `absl::string_view`.
-  int compare(size_type pos1, size_type count1, string_view v) const {
+  constexpr int compare(size_type pos1, size_type count1, string_view v) const {
     return substr(pos1, count1).compare(v);
   }
 
   // Overload of `string_view::compare()` for comparing a substring of the
   // `string_view` and a substring of another `absl::string_view`.
-  int compare(size_type pos1, size_type count1, string_view v, size_type pos2,
-              size_type count2) const {
+  constexpr int compare(size_type pos1, size_type count1, string_view v,
+                        size_type pos2, size_type count2) const {
     return substr(pos1, count1).compare(v.substr(pos2, count2));
   }
 
   // Overload of `string_view::compare()` for comparing a `string_view` and a
-  // a different  C-style string `s`.
-  int compare(const char* s) const { return compare(string_view(s)); }
+  // a different C-style string `s`.
+  constexpr int compare(const char* s) const { return compare(string_view(s)); }
 
   // Overload of `string_view::compare()` for comparing a substring of the
   // `string_view` and a different string C-style string `s`.
-  int compare(size_type pos1, size_type count1, const char* s) const {
+  constexpr int compare(size_type pos1, size_type count1, const char* s) const {
     return substr(pos1, count1).compare(string_view(s));
   }
 
   // Overload of `string_view::compare()` for comparing a substring of the
   // `string_view` and a substring of a different C-style string `s`.
-  int compare(size_type pos1, size_type count1, const char* s,
-              size_type count2) const {
+  constexpr int compare(size_type pos1, size_type count1, const char* s,
+                        size_type count2) const {
     return substr(pos1, count1).compare(string_view(s, count2));
   }
 
@@ -454,31 +458,65 @@ class string_view {
   // within the `string_view`.
   size_type find(char c, size_type pos = 0) const noexcept;
 
+  // Overload of `string_view::find()` for finding a substring of a different
+  // C-style string `s` within the `string_view`.
+  size_type find(const char* s, size_type pos, size_type count) const {
+    return find(string_view(s, count), pos);
+  }
+
+  // Overload of `string_view::find()` for finding a different C-style string
+  // `s` within the `string_view`.
+  size_type find(const char* s, size_type pos = 0) const {
+    return find(string_view(s), pos);
+  }
+
   // string_view::rfind()
   //
   // Finds the last occurrence of a substring `s` within the `string_view`,
   // returning the position of the first character's match, or `npos` if no
   // match was found.
-  size_type rfind(string_view s, size_type pos = npos) const
-      noexcept;
+  size_type rfind(string_view s, size_type pos = npos) const noexcept;
 
   // Overload of `string_view::rfind()` for finding the last given character `c`
   // within the `string_view`.
   size_type rfind(char c, size_type pos = npos) const noexcept;
+
+  // Overload of `string_view::rfind()` for finding a substring of a different
+  // C-style string `s` within the `string_view`.
+  size_type rfind(const char* s, size_type pos, size_type count) const {
+    return rfind(string_view(s, count), pos);
+  }
+
+  // Overload of `string_view::rfind()` for finding a different C-style string
+  // `s` within the `string_view`.
+  size_type rfind(const char* s, size_type pos = npos) const {
+    return rfind(string_view(s), pos);
+  }
 
   // string_view::find_first_of()
   //
   // Finds the first occurrence of any of the characters in `s` within the
   // `string_view`, returning the start position of the match, or `npos` if no
   // match was found.
-  size_type find_first_of(string_view s, size_type pos = 0) const
-      noexcept;
+  size_type find_first_of(string_view s, size_type pos = 0) const noexcept;
 
   // Overload of `string_view::find_first_of()` for finding a character `c`
   // within the `string_view`.
-  size_type find_first_of(char c, size_type pos = 0) const
-      noexcept {
+  size_type find_first_of(char c, size_type pos = 0) const noexcept {
     return find(c, pos);
+  }
+
+  // Overload of `string_view::find_first_of()` for finding a substring of a
+  // different C-style string `s` within the `string_view`.
+  size_type find_first_of(const char* s, size_type pos,
+                                    size_type count) const {
+    return find_first_of(string_view(s, count), pos);
+  }
+
+  // Overload of `string_view::find_first_of()` for finding a different C-style
+  // string `s` within the `string_view`.
+  size_type find_first_of(const char* s, size_type pos = 0) const {
+    return find_first_of(string_view(s), pos);
   }
 
   // string_view::find_last_of()
@@ -486,14 +524,24 @@ class string_view {
   // Finds the last occurrence of any of the characters in `s` within the
   // `string_view`, returning the start position of the match, or `npos` if no
   // match was found.
-  size_type find_last_of(string_view s, size_type pos = npos) const
-      noexcept;
+  size_type find_last_of(string_view s, size_type pos = npos) const noexcept;
 
   // Overload of `string_view::find_last_of()` for finding a character `c`
   // within the `string_view`.
-  size_type find_last_of(char c, size_type pos = npos) const
-      noexcept {
+  size_type find_last_of(char c, size_type pos = npos) const noexcept {
     return rfind(c, pos);
+  }
+
+  // Overload of `string_view::find_last_of()` for finding a substring of a
+  // different C-style string `s` within the `string_view`.
+  size_type find_last_of(const char* s, size_type pos, size_type count) const {
+    return find_last_of(string_view(s, count), pos);
+  }
+
+  // Overload of `string_view::find_last_of()` for finding a different C-style
+  // string `s` within the `string_view`.
+  size_type find_last_of(const char* s, size_type pos = npos) const {
+    return find_last_of(string_view(s), pos);
   }
 
   // string_view::find_first_not_of()
@@ -507,18 +555,43 @@ class string_view {
   // that is not `c` within the `string_view`.
   size_type find_first_not_of(char c, size_type pos = 0) const noexcept;
 
+  // Overload of `string_view::find_first_not_of()` for finding a substring of a
+  // different C-style string `s` within the `string_view`.
+  size_type find_first_not_of(const char* s, size_type pos,
+                              size_type count) const {
+    return find_first_not_of(string_view(s, count), pos);
+  }
+
+  // Overload of `string_view::find_first_not_of()` for finding a different
+  // C-style string `s` within the `string_view`.
+  size_type find_first_not_of(const char* s, size_type pos = 0) const {
+    return find_first_not_of(string_view(s), pos);
+  }
+
   // string_view::find_last_not_of()
   //
   // Finds the last occurrence of any of the characters not in `s` within the
   // `string_view`, returning the start position of the last non-match, or
   // `npos` if no non-match was found.
   size_type find_last_not_of(string_view s,
-                                          size_type pos = npos) const noexcept;
+                             size_type pos = npos) const noexcept;
 
   // Overload of `string_view::find_last_not_of()` for finding a character
   // that is not `c` within the `string_view`.
-  size_type find_last_not_of(char c, size_type pos = npos) const
-      noexcept;
+  size_type find_last_not_of(char c, size_type pos = npos) const noexcept;
+
+  // Overload of `string_view::find_last_not_of()` for finding a substring of a
+  // different C-style string `s` within the `string_view`.
+  size_type find_last_not_of(const char* s, size_type pos,
+                             size_type count) const {
+    return find_last_not_of(string_view(s, count), pos);
+  }
+
+  // Overload of `string_view::find_last_not_of()` for finding a different
+  // C-style string `s` within the `string_view`.
+  size_type find_last_not_of(const char* s, size_type pos = npos) const {
+    return find_last_not_of(string_view(s), pos);
+  }
 
  private:
   static constexpr size_type kMaxSize =
@@ -596,6 +669,7 @@ std::ostream& operator<<(std::ostream& o, string_view piece);
 ABSL_NAMESPACE_END
 }  // namespace absl
 
+#undef ABSL_INTERNAL_STRING_VIEW_CXX14_CONSTEXPR
 #undef ABSL_INTERNAL_STRING_VIEW_MEMCMP
 
 #endif  // ABSL_USES_STD_STRING_VIEW

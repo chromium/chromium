@@ -230,7 +230,7 @@ using Hash = absl::hash_internal::Hash<T>;
 // The requirement that the arguments match in both type and value is critical.
 // It means that `a == b` does not necessarily imply `HashOf(a) == HashOf(b)` if
 // `a` and `b` have different types. For example, `HashOf(2) != HashOf(2.0)`.
-template <typename... Types>
+template <int&... ExplicitArgumentBarrier, typename... Types>
 size_t HashOf(const Types&... values) {
   auto tuple = std::tie(values...);
   return absl::Hash<decltype(tuple)>{}(tuple);

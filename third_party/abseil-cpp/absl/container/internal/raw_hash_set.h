@@ -628,7 +628,9 @@ class raw_hash_set {
 
   static Layout MakeLayout(size_t capacity) {
     assert(IsValidCapacity(capacity));
-    return Layout(capacity + Group::kWidth + 1, capacity);
+    // The extra control bytes are for 1 sentinel byte followed by
+    // `Group::kWidth - 1` bytes that are cloned from the beginning.
+    return Layout(capacity + Group::kWidth, capacity);
   }
 
   using AllocTraits = absl::allocator_traits<allocator_type>;
@@ -1782,8 +1784,8 @@ class raw_hash_set {
     growth_left() = CapacityToGrowth(capacity()) - size_;
   }
 
-  // Sets the control byte, and if `i < Group::kWidth`, set the cloned byte at
-  // the end too.
+  // Sets the control byte, and if `i < Group::kWidth - 1`, set the cloned byte
+  // at the end too.
   void set_ctrl(size_t i, ctrl_t h) {
     assert(i < capacity_);
 
@@ -1794,8 +1796,8 @@ class raw_hash_set {
     }
 
     ctrl_[i] = h;
-    ctrl_[((i - Group::kWidth) & capacity_) + 1 +
-          ((Group::kWidth - 1) & capacity_)] = h;
+    constexpr size_t kClonedBytes = Group::kWidth - 1;
+    ctrl_[((i - kClonedBytes) & capacity_) + (kClonedBytes & capacity_)] = h;
   }
 
   size_t& growth_left() { return settings_.template get<0>(); }
@@ -1814,7 +1816,7 @@ class raw_hash_set {
   // TODO(alkis): Investigate removing some of these fields:
   // - ctrl/slots can be derived from each other
   // - size can be moved into the slot array
-  ctrl_t* ctrl_ = EmptyGroup();    // [(capacity + 1) * ctrl_t]
+  ctrl_t* ctrl_ = EmptyGroup();    // [(capacity + Group::kWidth) * ctrl_t]
   slot_type* slots_ = nullptr;     // [capacity * slot_type]
   size_t size_ = 0;                // number of full slots
   size_t capacity_ = 0;            // total number of slots
