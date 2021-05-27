@@ -28,7 +28,7 @@ static ResolvedUnderlinePosition ResolveUnderlinePosition(
       if (style.TextUnderlinePosition() & kTextUnderlinePositionFromFont)
         return ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont;
       return ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto;
-    case kIdeographicBaseline:
+    case kIdeographicBaseline: {
       // Compute language-appropriate default underline position.
       // https://drafts.csswg.org/css-text-decor-3/#default-stylesheet
       UScriptCode script = style.GetFontDescription().GetScript();
@@ -42,6 +42,10 @@ static ResolvedUnderlinePosition ResolveUnderlinePosition(
         return ResolvedUnderlinePosition::kOver;
       }
       return ResolvedUnderlinePosition::kUnder;
+    }
+    default:
+      NOTREACHED();
+      break;
   }
   NOTREACHED();
   return ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto;

@@ -491,7 +491,7 @@ class InlineFlowBox : public InlineBox {
 
   // Whether or not this line uses alphabetic or ideographic baselines by
   // default.
-  unsigned baseline_type_ : 1;  // FontBaseline
+  unsigned baseline_type_ : 3;  // FontBaseline
 
   // If the line contains any ruby runs, then this will be true.
   unsigned has_annotations_before_ : 1;
