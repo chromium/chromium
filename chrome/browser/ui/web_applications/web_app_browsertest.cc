@@ -186,13 +186,11 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
 // line switch to enable manifest parsing.
 class WebAppBrowserTest_WindowControlsOverlay : public WebAppBrowserTest {
  public:
-  WebAppBrowserTest_WindowControlsOverlay() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kWebAppWindowControlsOverlay}, {});
-  }
+  WebAppBrowserTest_WindowControlsOverlay() = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kWebAppWindowControlsOverlay};
 };
 
 using WebAppTabRestoreBrowserTest = WebAppBrowserTest;
@@ -1145,12 +1143,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InScopeHttpUrlsDisplayAppTitle) {
 
 class WebAppBrowserTest_HideOrigin : public WebAppBrowserTest {
  public:
-  WebAppBrowserTest_HideOrigin() {
-    scoped_feature_list_.InitAndEnableFeature(features::kHideWebAppOriginText);
-  }
+  WebAppBrowserTest_HideOrigin() = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kHideWebAppOriginText};
 };
 
 // WebApps should not have origin text with this feature on.
@@ -1163,13 +1160,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_HideOrigin, OriginTextRemoved) {
 
 class WebAppBrowserTest_AppNameInsteadOfOrigin : public WebAppBrowserTest {
  public:
-  WebAppBrowserTest_AppNameInsteadOfOrigin() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDesktopPWAsFlashAppNameInsteadOfOrigin);
-  }
+  WebAppBrowserTest_AppNameInsteadOfOrigin() = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kDesktopPWAsFlashAppNameInsteadOfOrigin};
 };
 
 // Web apps should flash the app name with this feature on.
@@ -1316,13 +1311,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_WindowControlsOverlay,
 
 class WebAppBrowserTest_RemoveStatusBar : public WebAppBrowserTest {
  public:
-  WebAppBrowserTest_RemoveStatusBar() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kRemoveStatusBarInWebApps);
-  }
+  WebAppBrowserTest_RemoveStatusBar() = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kRemoveStatusBarInWebApps};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_RemoveStatusBar, RemoveStatusBar) {

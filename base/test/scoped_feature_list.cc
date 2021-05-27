@@ -136,6 +136,10 @@ ScopedFeatureList::FeatureAndParams::FeatureAndParams(
 
 ScopedFeatureList::ScopedFeatureList() = default;
 
+ScopedFeatureList::ScopedFeatureList(const Feature& enable_feature) {
+  InitAndEnableFeature(enable_feature);
+}
+
 ScopedFeatureList::~ScopedFeatureList() {
   Reset();
 }

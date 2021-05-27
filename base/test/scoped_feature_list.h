@@ -41,7 +41,12 @@ namespace test {
 // initialization in the test harness's constructor.
 class ScopedFeatureList final {
  public:
+  // Constructs the instance in a non-initialized state.
   ScopedFeatureList();
+
+  // Shorthand for immediately initializing with InitAndEnableFeature().
+  explicit ScopedFeatureList(const Feature& enable_feature);
+
   ~ScopedFeatureList();
 
   struct FeatureAndParams {
