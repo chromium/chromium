@@ -1488,6 +1488,12 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
           ? views::Widget::MoveLoopEscapeBehavior::kHide
           : views::Widget::MoveLoopEscapeBehavior::kDontHide;
 
+  // This code isn't set up to handle nested run loops. Nested run loops may
+  // lead to all sorts of interesting crashes, and generally indicate a bug
+  // lower in the stack. This is a CHECK() as there may be security
+  // implications to attempting a nested run loop.
+  CHECK(!in_move_loop_);
+  in_move_loop_ = true;
   views::Widget::MoveLoopResult result = move_loop_widget_->RunMoveLoop(
       drag_offset, move_loop_source, escape_behavior);
   content::NotificationService::current()->Notify(
@@ -1498,10 +1504,8 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   if (!ref)
     return;
 
-  if (move_loop_widget_ &&
-      widget_observation_.IsObservingSource(move_loop_widget_)) {
-    widget_observation_.Reset();
-  }
+  in_move_loop_ = false;
+  widget_observation_.Reset();
   move_loop_widget_ = nullptr;
 
   if (current_state_ == DragState::kDraggingWindow) {

@@ -718,6 +718,9 @@ class TabDragController : public views::WidgetObserver {
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 
+  // True while RunMoveLoop() has been called on a widget.
+  bool in_move_loop_ = false;
+
   base::WeakPtrFactory<TabDragController> weak_factory_{this};
 };
 
