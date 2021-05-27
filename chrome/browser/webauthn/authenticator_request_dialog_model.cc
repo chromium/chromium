@@ -843,6 +843,12 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
 
   if (cable_ui_type_) {
     switch (*cable_ui_type_) {
+      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR:
+        if (!base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
+          break;
+        }
+        [[fallthrough]];
+
       case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK:
         transports_to_list_if_active.push_back(
             AuthenticatorTransport::kAndroidAccessory);
@@ -854,16 +860,14 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
         if (base::Contains(transport_availability_.available_transports,
                            cable)) {
           transports_to_list_if_active.push_back(cable);
-          DCHECK(is_get_assertion);
+          DCHECK(is_get_assertion ||
+                 base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport));
           if (!priority_transport) {
             priority_transport = cable;
           }
         }
         break;
       }
-
-      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR:
-        break;
     }
   }
 
