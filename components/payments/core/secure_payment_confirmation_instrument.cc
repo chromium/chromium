@@ -26,7 +26,7 @@ SecurePaymentConfirmationInstrument::SecurePaymentConfirmationInstrument(
   // before storing in DB. crbug.com/1122764
   base::UmaHistogramCounts10000(
       "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes",
-      credential_id.size());
+      this->credential_id.size());
 }
 
 SecurePaymentConfirmationInstrument::~SecurePaymentConfirmationInstrument() =
