@@ -135,6 +135,10 @@ const char kTabHoverCardImagesLoadedDelayParameterName[] = "page_loaded_delay";
 const base::Feature kTabOutlinesInLowContrastThemes{
     "TabOutlinesInLowContrastThemes", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables submenus under each tab group or window within the app menu history.
+const base::Feature kTabRestoreSubMenus{"TabRestoreSubMenus",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether or not feature parameters should be used for Tab Search's
 // fuzzy search or if default values should be used.
 const base::Feature kTabSearchFuzzySearch{"kTabSearchFuzzySearch",

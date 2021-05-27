@@ -50,7 +50,7 @@ BackForwardMenuModel::BackForwardMenuModel(Browser* browser,
                                            ModelType model_type)
     : browser_(browser), model_type_(model_type) {}
 
-BackForwardMenuModel::~BackForwardMenuModel() {}
+BackForwardMenuModel::~BackForwardMenuModel() = default;
 
 bool BackForwardMenuModel::HasIcons() const {
   return true;
@@ -286,7 +286,7 @@ void BackForwardMenuModel::OnFavIconDataAvailable(
   entry->GetFavicon().url = image_result.icon_url;
   entry->GetFavicon().image = image_result.image;
   if (menu_model_delegate()) {
-    menu_model_delegate()->OnIconChanged(model_index);
+    menu_model_delegate()->OnIconChanged(GetCommandIdAt(model_index));
   }
 }
 

@@ -52,7 +52,7 @@ class FaviconDelegate : public ui::MenuModelDelegate {
  public:
   FaviconDelegate() : was_called_(false) {}
 
-  void OnIconChanged(int model_index) override {
+  void OnIconChanged(int command_id) override {
     was_called_ = true;
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }

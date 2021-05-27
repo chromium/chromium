@@ -716,11 +716,13 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
 
   // ui::MenuModelDelegate implementation:
 
-  void OnIconChanged(int index) override {
-    int command_id = model_->GetCommandIdAt(index);
+  void OnIconChanged(int command_id) override {
+    ui::MenuModel* model = model_;
+    int index;
+    model_->GetModelAndIndexForCommandId(command_id, &model, &index);
     views::MenuItemView* item = menu_item_->GetMenuItemByID(command_id);
     DCHECK(item);
-    item->SetIcon(model_->GetIconAt(index));
+    item->SetIcon(model->GetIconAt(index));
   }
 
   void OnMenuStructureChanged() override {
@@ -729,20 +731,22 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
       menu_item_->RemoveAllMenuItems();
 
       // Remove all elements in |AppMenu::command_id_to_entry_| that map to
-      // |model_|.
+      // |model_| or any sub menu models.
+      base::flat_set<int> descendant_command_ids;
+      GetDescendantCommandIds(model_, &descendant_command_ids);
       auto iter = app_menu_->command_id_to_entry_.begin();
       while (iter != app_menu_->command_id_to_entry_.end()) {
-        if (iter->second.first == model_)
+        if (descendant_command_ids.find(iter->first) !=
+            descendant_command_ids.end()) {
           app_menu_->command_id_to_entry_.erase(iter++);
-        else
+        } else {
           ++iter;
+        }
       }
     }
 
     // Add all menu items from |model| to submenu.
-    for (int i = 0; i < model_->GetItemCount(); ++i) {
-      app_menu_->AddMenuItem(menu_item_, i, model_, i, model_->GetTypeAt(i));
-    }
+    BuildMenu(menu_item_, model_);
 
     // In case recent tabs submenu was open when items were changing, force a
     // ChildrenChanged().
@@ -750,9 +754,41 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
   }
 
  private:
-  AppMenu* app_menu_;
-  ui::MenuModel* model_;
-  views::MenuItemView* menu_item_;
+  AppMenu* const app_menu_;
+  ui::MenuModel* const model_;
+  views::MenuItemView* const menu_item_;
+
+  // Recursive helper function for OnMenuStructureChanged() which builds the
+  // |menu| and all descendant submenus.
+  void BuildMenu(MenuItemView* menu, ui::MenuModel* model) {
+    DCHECK(menu);
+    DCHECK(model);
+    const int item_count = model->GetItemCount();
+    for (int i = 0; i < item_count; ++i) {
+      MenuItemView* const item =
+          app_menu_->AddMenuItem(menu, i, model, i, model->GetTypeAt(i));
+      if (model->GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU ||
+          model->GetTypeAt(i) == ui::MenuModel::TYPE_ACTIONABLE_SUBMENU) {
+        DCHECK(item);
+        DCHECK(item->GetType() == MenuItemView::Type::kSubMenu ||
+               item->GetType() == MenuItemView::Type::kActionableSubMenu);
+        BuildMenu(item, model->GetSubmenuModelAt(i));
+      }
+    }
+  }
+
+  // Populates out_set with all command ids referenced by the model, including
+  // those referenced by sub menu models.
+  void GetDescendantCommandIds(MenuModel* model, base::flat_set<int>* out_set) {
+    const int item_count = model->GetItemCount();
+    for (int i = 0; i < item_count; i++) {
+      out_set->insert(model->GetCommandIdAt(i));
+      if (model->GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU ||
+          model->GetTypeAt(i) == ui::MenuModel::TYPE_ACTIONABLE_SUBMENU) {
+        GetDescendantCommandIds(model->GetSubmenuModelAt(i), out_set);
+      }
+    }
+  }
 };
 
 // AppMenu ------------------------------------------------------------------

@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/recent_tabs_builder_test_helper.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/menu_model_test.h"
@@ -270,6 +271,8 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
 // Test recently closed groups with no foreign tabs.
 TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
   DisableSync();
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kTabRestoreSubMenus);
 
   TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
       profile(),
@@ -333,6 +336,8 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
 
 TEST_F(RecentTabsSubMenuModelTest,
        RecentlyClosedTabsAndWindowsFromLastSession) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kTabRestoreSubMenus);
   DisableSync();
 
   TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
