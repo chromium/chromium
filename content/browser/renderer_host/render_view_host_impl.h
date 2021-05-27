@@ -85,7 +85,7 @@ using WillSendRendererPreferencesCallbackForTesting =
 //
 // DEPRECATED: RenderViewHostImpl is being removed as part of the SiteIsolation
 // project. New code should not be added here, but to either RenderFrameHostImpl
-// (if frame specific) or WebContentsImpl (if page specific).
+// (if frame specific) or PageImpl (if page specific).
 //
 // For context, please see https://crbug.com/467770 and
 // https://www.chromium.org/developers/design-documents/site-isolation.

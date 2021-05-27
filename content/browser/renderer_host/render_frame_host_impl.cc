@@ -1334,7 +1334,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       subframe_unload_timeout_(RenderViewHostImpl::kUnloadTimeout),
       media_device_id_salt_base_(
           BrowserContext::CreateRandomMediaDeviceIDSalt()),
-      document_associated_data_(std::make_unique<DocumentAssociatedData>()),
+      document_associated_data_(
+          std::make_unique<DocumentAssociatedData>(*this)),
       lifecycle_state_(lifecycle_state) {
   DCHECK(delegate_);
   DCHECK(lifecycle_state_ == LifecycleStateImpl::kSpeculative ||
@@ -1818,6 +1819,10 @@ AgentSchedulingGroupHost& RenderFrameHostImpl::GetAgentSchedulingGroup() {
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetParent() {
   return parent_;
+}
+
+PageImpl* RenderFrameHostImpl::GetPage() {
+  return GetMainFrame()->document_associated_data_->owned_page.get();
 }
 
 std::vector<RenderFrameHost*> RenderFrameHostImpl::GetFramesInSubtree() {
@@ -3012,7 +3017,7 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   // - a) new new state set in RenderFrameCreated doesn't get deleted.
   // - b) the old state is not leaked to a new RenderFrameHost.
   if (old_render_frame_state == RenderFrameState::kDeleted)
-    document_associated_data_ = std::make_unique<DocumentAssociatedData>();
+    document_associated_data_ = std::make_unique<DocumentAssociatedData>(*this);
 
   // Initialize the RenderWidgetHost which marks it and the RenderViewHost as
   // live before calling to the `delegate_`.
@@ -9545,7 +9550,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       // RenderFrameHost commits before the navigation commits. This happens
       // when the current RenderFrameHost crashes before navigating to a new
       // URL.
-      document_associated_data_ = std::make_unique<DocumentAssociatedData>();
+      document_associated_data_ =
+          std::make_unique<DocumentAssociatedData>(*this);
     }
 
     // Continue observing the events for the committed navigation.
@@ -11580,7 +11586,13 @@ void RenderFrameHostImpl::IncreaseCommitNavigationCounter() {
     commit_navigation_sent_counter_ = 0;
 }
 
-RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData() = default;
+RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
+    RenderFrameHostImpl& document) {
+  // Only create page object for the main document as the PageImpl is 1:1 with
+  // main document.
+  if (!document.GetParent())
+    owned_page = std::make_unique<PageImpl>(document);
+}
 RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() =
     default;
 

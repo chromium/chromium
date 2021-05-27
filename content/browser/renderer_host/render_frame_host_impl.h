@@ -44,6 +44,7 @@
 #include "content/browser/renderer_host/keep_alive_handle_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
+#include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/site_instance_impl.h"
@@ -493,6 +494,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Signals that the renderer has requested for this main-frame's window to be
   // shown, at which point we can service navigation requests.
   void Init();
+
+  // Returns the Page associated with this RenderFrameHost. Both GetPage() and
+  // GetMainFrame()->GetPage() will always return the same value.
+  //
+  // NOTE: For now, the associated Page object might change (when a navigation
+  // is reusing RenderFrameHost and a new document is created in this
+  // RenderFrameHost). The removal of this case is tracked in crbug.com/936696.
+  PageImpl* GetPage();
 
   // This needs to be called to make sure that the parent-child relationship
   // between frames is properly established both for cross-process iframes as
@@ -3581,7 +3590,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // GetRenderDocumentHostUserData(). Please refer to the description at
   // content/public/browser/render_document_host_user_data.h for more details.
   struct DocumentAssociatedData : public base::SupportsUserData {
-    DocumentAssociatedData();
+    DocumentAssociatedData(RenderFrameHostImpl& document);
     ~DocumentAssociatedData() override;
     DocumentAssociatedData(const DocumentAssociatedData&) = delete;
     DocumentAssociatedData& operator=(const DocumentAssociatedData&) = delete;
@@ -3597,6 +3606,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // Candidate favicon URLs. Each main frame may have a collection and will
     // be displayed when active (i.e., upon activation for prerendering).
     std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+
+    // The Page object associated with the main document. It is nullptr for
+    // subframes.
+    std::unique_ptr<PageImpl> owned_page;
   };
 
   std::unique_ptr<DocumentAssociatedData> document_associated_data_;
