@@ -12,7 +12,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.feed.v2.FeedProcessScopeDependencyProvider;
 import org.chromium.chrome.browser.feed.v2.FeedStream;
-import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
@@ -122,6 +121,12 @@ public class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependenc
     @Override
     public void processViewAction(byte[] data) {
         mFeedStream.processViewAction(data);
+    }
+
+    @Override
+    public void reportOnUploadVisibilityLog(boolean success) {
+        RecordHistogram.recordBooleanHistogram(
+                "ContentSuggestions.Feed.UploadVisibilityLog", success);
     }
 
     @Override

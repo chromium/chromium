@@ -38,4 +38,11 @@ public interface FeedLoggingDependencyProvider {
      * message.
      */
     default void processViewAction(byte[] data) {}
+
+    /**
+     * Reports whether the visibility log upload was successful.
+     *
+     * @param success - whether the upload was successful
+     */
+    default void reportOnUploadVisibilityLog(boolean success) {}
 }
