@@ -136,6 +136,11 @@ TEST_F(ITunesUrlsHandlerTabHelperTest, MatchingUrlsLaunchesStoreKit) {
                                      /*main_frame=*/true));
   EXPECT_NSEQ(expected_params, fake_launcher_.launchedProductParams);
 
+  EXPECT_TRUE(VerifyStoreKitLaunched(@"http://apps.apple.com/app/id123",
+                                     /*main_frame=*/true));
+  expected_params = @{product_id : @"123"};
+  EXPECT_NSEQ(expected_params, fake_launcher_.launchedProductParams);
+
   EXPECT_TRUE(VerifyStoreKitLaunched(
       @"http://itunes.apple.com/app/test/id123?qux&baz#foo",
       /*main_frame=*/true));
@@ -169,6 +174,6 @@ TEST_F(ITunesUrlsHandlerTabHelperTest, MatchingUrlsLaunchesStoreKit) {
       kITunesURLsHandlingResultHistogram,
       static_cast<base::HistogramBase::Sample>(
           ITunesUrlsStoreKitHandlingResult::kSingleAppUrlHandled),
-      7);
-  histogram_tester_.ExpectTotalCount(kITunesURLsHandlingResultHistogram, 7);
+      8);
+  histogram_tester_.ExpectTotalCount(kITunesURLsHandlingResultHistogram, 8);
 }
