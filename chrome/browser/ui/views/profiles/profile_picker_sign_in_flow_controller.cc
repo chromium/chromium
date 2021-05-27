@@ -46,7 +46,11 @@ namespace {
 // color is enforced by policy or downloaded through Sync. An IPH is shown after
 // the bubble, or right away if the bubble cannot be shown.
 void ShowCustomizationBubble(SkColor new_profile_color, Browser* browser) {
+  if (!browser)
+    return;
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view || !browser_view->toolbar_button_provider())
+    return;
   views::View* anchor_view =
       browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
   DCHECK(anchor_view);
