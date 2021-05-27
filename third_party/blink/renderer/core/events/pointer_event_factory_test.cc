@@ -12,29 +12,9 @@
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/pointer_type_names.h"
 
 namespace blink {
-
-namespace {
-
-const char* PointerTypeNameForWebPointPointerType(
-    WebPointerProperties::PointerType type) {
-  switch (type) {
-    case WebPointerProperties::PointerType::kUnknown:
-      return "";
-    case WebPointerProperties::PointerType::kTouch:
-      return "touch";
-    case WebPointerProperties::PointerType::kPen:
-    case WebPointerProperties::PointerType::kEraser:
-      return "pen";
-    case WebPointerProperties::PointerType::kMouse:
-      return "mouse";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-}
 
 class PointerEventFactoryTest : public testing::Test {
  protected:
@@ -79,8 +59,9 @@ class PointerEventFactoryTest : public testing::Test {
     EXPECT_EQ(is_primary, pointer_event->isPrimary());
     EXPECT_EQ(WebInputEvent::GetStaticTimeStampForTests(),
               pointer_event->PlatformTimeStamp());
-    const char* expected_pointer_type =
-        PointerTypeNameForWebPointPointerType(pointer_type);
+    const String& expected_pointer_type =
+        PointerEventFactory::PointerTypeNameForWebPointPointerType(
+            pointer_type);
     EXPECT_EQ(expected_pointer_type, pointer_event->pointerType());
 
     EXPECT_EQ(!!(modifiers & WebInputEvent::kControlKey),
@@ -152,8 +133,9 @@ PointerEvent* PointerEventFactoryTest::CreateAndCheckPointerCancel(
   EXPECT_EQ("pointercancel", pointer_event->type());
   EXPECT_EQ(unique_id, pointer_event->pointerId());
   EXPECT_EQ(is_primary, pointer_event->isPrimary());
-  EXPECT_EQ(PointerTypeNameForWebPointPointerType(pointer_type),
-            pointer_event->pointerType());
+  EXPECT_EQ(
+      PointerEventFactory::PointerTypeNameForWebPointPointerType(pointer_type),
+      pointer_event->pointerType());
   EXPECT_EQ(WebInputEvent::GetStaticTimeStampForTests(),
             pointer_event->PlatformTimeStamp());
 
@@ -635,42 +617,6 @@ TEST_F(PointerEventFactoryTest, PredictedEvents) {
       true /* isprimary */, false /* hovering */, WebInputEvent::kNoModifiers,
       WebInputEvent::Type::kPointerUp, WebPointerProperties::Button::kNoButton,
       0 /* coalesced_count */, 3 /* predicted_count */);
-}
-
-TEST_F(PointerEventFactoryTest, PenEraserButton) {
-  // Send the pointerdown event when pressing the eraser button on the tablet.
-  PointerEvent* first_pointerdown_event = CreateAndCheckWebPointerEvent(
-      WebPointerProperties::PointerType::kEraser, 0, mapped_id_start_,
-      true /* isprimary */, false /* hovering */,
-      WebInputEvent::kLeftButtonDown, WebInputEvent::Type::kPointerDown,
-      WebPointerProperties::Button::kLeft);
-  EXPECT_EQ(event_type_names::kPointerdown, first_pointerdown_event->type());
-
-  // Send the pointermove event when pressing any other button while the eraser
-  // button is still pressed on the tablet.
-  WebInputEvent::Modifiers modifiers = static_cast<WebInputEvent::Modifiers>(
-      WebInputEvent::kLeftButtonDown | WebInputEvent::kRightButtonDown);
-  PointerEvent* second_pointerdown_event = CreateAndCheckWebPointerEvent(
-      WebPointerProperties::PointerType::kEraser, 1, mapped_id_start_ + 1,
-      false /* isprimary */, false /* hovering */, modifiers,
-      WebInputEvent::Type::kPointerDown, WebPointerProperties::Button::kRight);
-  EXPECT_EQ(event_type_names::kPointermove, second_pointerdown_event->type());
-
-  // Send the pointermove event when releasing any other button while the
-  // eraser button is still pressed on the tablet.
-  PointerEvent* first_pointerup_event = CreateAndCheckWebPointerEvent(
-      WebPointerProperties::PointerType::kEraser, 1, mapped_id_start_ + 1,
-      false /* isprimary */, true /* hovering */,
-      WebInputEvent::kLeftButtonDown, WebInputEvent::Type::kPointerUp,
-      WebPointerProperties::Button::kRight);
-  EXPECT_EQ(event_type_names::kPointermove, first_pointerup_event->type());
-
-  // Send the pointerup event when releasing the eraser button from the tablet.
-  PointerEvent* last_pointerup_event = CreateAndCheckWebPointerEvent(
-      WebPointerProperties::PointerType::kEraser, 0, mapped_id_start_,
-      true /* isprimary */, true /* hovering */, WebInputEvent::kNoModifiers,
-      WebInputEvent::Type::kPointerUp, WebPointerProperties::Button::kLeft);
-  EXPECT_EQ(event_type_names::kPointerup, last_pointerup_event->type());
 }
 
 TEST_F(PointerEventFactoryTest, MousePointerKeyStates) {

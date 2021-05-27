@@ -27,6 +27,10 @@ class CORE_EXPORT PointerEventFactory {
   DISALLOW_NEW();
 
  public:
+  // Returns the pointerType string for the PointerType enum.
+  static const AtomicString& PointerTypeNameForWebPointPointerType(
+      WebPointerProperties::PointerType type);
+
   PointerEventFactory();
   ~PointerEventFactory();
 
@@ -95,9 +99,6 @@ class CORE_EXPORT PointerEventFactory {
   void SetLastPosition(PointerId pointer_id,
                        const FloatPoint& position_in_screen,
                        WebInputEvent::Type event_type);
-
-  static const char* PointerTypeNameForWebPointPointerType(
-      WebPointerProperties::PointerType type);
 
  private:
   // We use int64_t to cover the whole range for PointerId with no

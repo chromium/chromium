@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
@@ -182,7 +183,8 @@ void CountFiringEventListeners(const Event& event,
   if (CheckTypeThenUseCount(event, event_type_names::kPointerdown,
                             WebFeature::kPointerDownFired, document)) {
     if (IsA<PointerEvent>(event) &&
-        static_cast<const PointerEvent&>(event).pointerType() == "touch") {
+        static_cast<const PointerEvent&>(event).pointerType() ==
+            pointer_type_names::kTouch) {
       UseCounter::Count(document, WebFeature::kPointerDownFiredForTouch);
     }
     return;

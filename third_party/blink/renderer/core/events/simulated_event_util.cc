@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
+#include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -157,7 +158,7 @@ MouseEvent* CreateMouseOrPointerEvent(
   if (event_class_type == EventClassType::kPointer) {
     if (creation_scope == SimulatedClickCreationScope::kFromAccessibility) {
       initializer->setPointerId(PointerEventFactory::kMouseId);
-      initializer->setPointerType("mouse");
+      initializer->setPointerType(pointer_type_names::kMouse);
       initializer->setIsPrimary(true);
     }
     created_event = MakeGarbageCollected<PointerEvent>(

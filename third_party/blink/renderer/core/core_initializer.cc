@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/core/securitypolicyviolation_disposition_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/timezone/timezone_controller.h"
@@ -109,7 +110,8 @@ void CoreInitializer::Initialize() {
       html_tokenizer_names::kNamesCount + http_names::kNamesCount +
       input_type_names::kNamesCount + keywords::kNamesCount +
       media_feature_names::kNamesCount + media_type_names::kNamesCount +
-      performance_entry_names::kNamesCount + shadow_element_names::kNamesCount;
+      performance_entry_names::kNamesCount + pointer_type_names::kNamesCount +
+      shadow_element_names::kNamesCount;
 
   StringImpl::ReserveStaticStringsCapacityForSize(
       kCoreStaticStringsCount + StringImpl::AllStaticStrings().size());
@@ -136,6 +138,7 @@ void CoreInitializer::Initialize() {
   media_feature_names::Init();
   media_type_names::Init();
   performance_entry_names::Init();
+  pointer_type_names::Init();
   shadow_element_names::Init();
   securitypolicyviolation_disposition_names::Init();
 

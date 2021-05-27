@@ -883,6 +883,11 @@ make_names("make_core_generated_performance_entry_names") {
   output_dir = blink_core_output_dir
 }
 
+make_names("make_core_generated_pointer_type_names") {
+  in_files = [ "events/pointer_type_names.json5" ]
+  output_dir = blink_core_output_dir
+}
+
 make_names("make_core_generated_securitypolicyviolation_disposition_names") {
   in_files = [ "events/securitypolicyviolation_disposition_names.json5" ]
   output_dir = blink_core_output_dir
@@ -1086,6 +1091,7 @@ targets_generating_sources = [
   ":make_core_generated_origin_trials",
   ":make_core_generated_performance_entry_names",
   ":make_core_generated_permissions_policy_helper",
+  ":make_core_generated_pointer_type_names",
   ":make_core_generated_securitypolicyviolation_disposition_names",
   ":make_core_generated_shadow_element_names",
   ":make_core_generated_style_property_shorthand",

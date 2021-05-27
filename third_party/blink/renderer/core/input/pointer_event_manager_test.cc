@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -26,11 +27,11 @@ class CheckPointerEventListenerCallback final : public NativeEventListener {
 
     const String pointer_type =
         static_cast<PointerEvent*>(event)->pointerType();
-    if (pointer_type == "mouse")
+    if (pointer_type == pointer_type_names::kMouse)
       num_type_mouse_received_++;
-    else if (pointer_type == "touch")
+    else if (pointer_type == pointer_type_names::kTouch)
       num_type_touch_received_++;
-    else if (pointer_type == "pen")
+    else if (pointer_type == pointer_type_names::kPen)
       num_type_pen_received_++;
   }
 
