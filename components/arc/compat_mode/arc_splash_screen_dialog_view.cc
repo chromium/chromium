@@ -12,6 +12,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -24,6 +26,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/widget/widget.h"
 
 namespace arc {
 
@@ -49,6 +52,9 @@ std::unique_ptr<views::Button> CreateCloseButton(
       GetContentLayerColor(ContentLayerType::kIconColorPrimary));
   close_button->SetSize(kCloseButtonSize);
   close_button->ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
+  close_button->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
+  close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   return close_button;
 }
 
@@ -157,6 +163,13 @@ gfx::Size ArcSplashScreenDialogView::CalculatePreferredSize() const {
   size.set_width(provider->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   return size;
+}
+
+void ArcSplashScreenDialogView::AddedToWidget() {
+  auto& view_ax = GetWidget()->GetRootView()->GetViewAccessibility();
+  view_ax.OverrideRole(ax::mojom::Role::kDialog);
+  view_ax.OverrideName(
+      l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE));
 }
 
 void ArcSplashScreenDialogView::OnLinkClicked() {

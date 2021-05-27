@@ -48,7 +48,9 @@ class ResizeConfirmationDialogView : public views::BoxLayoutView {
       delete;
   ~ResizeConfirmationDialogView() override;
 
+  // views::View:
   gfx::Size CalculatePreferredSize() const override;
+  void AddedToWidget() override;
 
  private:
   std::unique_ptr<views::View> MakeContentsView();

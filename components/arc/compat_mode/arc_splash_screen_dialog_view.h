@@ -37,6 +37,7 @@ class ArcSplashScreenDialogView : public views::View {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+  void AddedToWidget() override;
 
  private:
   void OnLinkClicked();

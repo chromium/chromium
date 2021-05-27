@@ -12,11 +12,13 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace arc {
 
@@ -65,6 +67,13 @@ gfx::Size ResizeConfirmationDialogView::CalculatePreferredSize() const {
   size.set_width(provider->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   return size;
+}
+
+void ResizeConfirmationDialogView::AddedToWidget() {
+  auto& view_ax = GetWidget()->GetRootView()->GetViewAccessibility();
+  view_ax.OverrideRole(ax::mojom::Role::kDialog);
+  view_ax.OverrideName(
+      l10n_util::GetStringUTF16(IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_TITLE));
 }
 
 std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeContentsView() {
