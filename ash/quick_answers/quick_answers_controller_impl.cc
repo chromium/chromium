@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/quick_answers/quick_answers_state.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -56,7 +57,7 @@ namespace ash {
 
 QuickAnswersControllerImpl::QuickAnswersControllerImpl()
     : quick_answers_ui_controller_(
-          std::make_unique<ash::QuickAnswersUiController>(this)) {}
+          std::make_unique<QuickAnswersUiController>(this)) {}
 
 QuickAnswersControllerImpl::~QuickAnswersControllerImpl() = default;
 
@@ -72,8 +73,9 @@ void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
     const gfx::Rect& anchor_bounds,
     const std::string& title,
     const Context& context) {
-  if (!is_eligible_)
+  if (!QuickAnswersState::Get()->is_eligible()) {
     return;
+  }
 
   if (visibility_ == QuickAnswersVisibility::kClosed)
     return;
@@ -164,10 +166,6 @@ void QuickAnswersControllerImpl::OnQuickAnswerReceived(
   }
 
   quick_answer_ = std::move(quick_answer);
-}
-
-void QuickAnswersControllerImpl::OnEligibilityChanged(bool eligible) {
-  is_eligible_ = eligible;
 }
 
 void QuickAnswersControllerImpl::OnNetworkError() {

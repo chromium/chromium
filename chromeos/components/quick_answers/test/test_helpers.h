@@ -28,7 +28,6 @@ class MockQuickAnswersDelegate : public QuickAnswersDelegate {
   // QuickAnswersClient::QuickAnswersDelegate:
   MOCK_METHOD1(OnQuickAnswerReceived, void(std::unique_ptr<QuickAnswer>));
   MOCK_METHOD1(OnRequestPreprocessFinished, void(const QuickAnswersRequest&));
-  MOCK_METHOD1(OnEligibilityChanged, void(bool));
   MOCK_METHOD0(OnNetworkError, void());
 };
 

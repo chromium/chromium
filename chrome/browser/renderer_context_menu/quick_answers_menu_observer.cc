@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/quick_answers/controller/quick_answers_controller.h"
+#include "ash/public/cpp/quick_answers/quick_answers_state.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -48,11 +49,6 @@ QuickAnswersMenuObserver::QuickAnswersMenuObserver(
     if (browser_context->IsOffTheRecord())
       return;
 
-    quick_answers_client_ = std::make_unique<QuickAnswersClient>(
-        browser_context->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess()
-            .get(),
-        /*delegate=*/this);
     quick_answers_controller_ = ash::QuickAnswersController::Get();
     if (!quick_answers_controller_)
       return;
@@ -71,8 +67,12 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
     const gfx::Rect& bounds_in_screen) {
   menu_shown_time_ = base::TimeTicks::Now();
 
-  if (!quick_answers_controller_ || !is_eligible_)
+  if (!quick_answers_controller_)
     return;
+
+  if (!ash::QuickAnswersState::Get()->is_eligible()) {
+    return;
+  }
 
   // Skip password input field.
   if (params.input_field_type ==
@@ -136,10 +136,6 @@ void QuickAnswersMenuObserver::OnMenuClosed() {
 
 void QuickAnswersMenuObserver::CommandWillBeExecuted(int command_id) {
   is_other_command_executed_ = true;
-}
-
-void QuickAnswersMenuObserver::OnEligibilityChanged(bool eligible) {
-  is_eligible_ = eligible;
 }
 
 void QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable(

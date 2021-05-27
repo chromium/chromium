@@ -5,6 +5,7 @@
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/quick_answers/quick_answers_state.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/quick_answers/ui/quick_answers_view.h"
 #include "ash/quick_answers/ui/user_notice_view.h"
@@ -45,12 +46,13 @@ class QuickAnswersControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
+    QuickAnswersState::Get()->set_eligibility_for_testing(true);
+
     controller()->SetClient(
         std::make_unique<chromeos::quick_answers::QuickAnswersClient>(
             &test_url_loader_factory_,
             controller()->GetQuickAnswersDelegate()));
 
-    controller()->OnEligibilityChanged(true);
     controller()->SetVisibilityForTesting(QuickAnswersVisibility::kPending);
   }
 
@@ -117,7 +119,7 @@ class QuickAnswersControllerTest : public AshTestBase {
 };
 
 TEST_F(QuickAnswersControllerTest, ShouldNotShowWhenFeatureNotEligible) {
-  controller()->OnEligibilityChanged(false);
+  QuickAnswersState::Get()->set_eligibility_for_testing(false);
   ShowView();
 
   // The feature is not eligible, nothing should be shown.

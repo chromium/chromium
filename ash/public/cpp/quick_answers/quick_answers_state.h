@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -28,7 +29,7 @@ class ASH_PUBLIC_EXPORT QuickAnswersStateObserver
 };
 
 // A class that holds Quick Answers related prefs and states.
-class ASH_PUBLIC_EXPORT QuickAnswersState {
+class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
  public:
   static QuickAnswersState* Get();
 
@@ -37,14 +38,26 @@ class ASH_PUBLIC_EXPORT QuickAnswersState {
   QuickAnswersState(const QuickAnswersState&) = delete;
   QuickAnswersState& operator=(const QuickAnswersState&) = delete;
 
-  ~QuickAnswersState();
-
-  bool settings_enabled() const { return settings_enabled_; }
+  ~QuickAnswersState() override;
 
   void AddObserver(QuickAnswersStateObserver* observer);
   void RemoveObserver(QuickAnswersStateObserver* observer);
 
   void RegisterPrefChanges(PrefService* pref_service);
+
+  // AssistantStateObserver:
+  void OnAssistantFeatureAllowedChanged(
+      chromeos::assistant::AssistantAllowedState state) override;
+  void OnAssistantSettingsEnabled(bool enabled) override;
+  void OnAssistantContextEnabled(bool enabled) override;
+  void OnLocaleChanged(const std::string& locale) override;
+
+  bool settings_enabled() const { return settings_enabled_; }
+  bool is_eligible() const { return is_eligible_; }
+
+  void set_eligibility_for_testing(bool is_eligible) {
+    is_eligible_ = is_eligible;
+  }
 
  private:
   void InitializeObserver(QuickAnswersStateObserver* observer);
@@ -52,8 +65,15 @@ class ASH_PUBLIC_EXPORT QuickAnswersState {
   // Called when the related preferences are obtained from the pref service.
   void UpdateSettingsEnabled();
 
+  // Called when the feature eligibility might change.
+  void UpdateEligibility();
+
   // Whether the Quick Answers is enabled in system settings.
   bool settings_enabled_ = false;
+
+  // Whether the Quick Answers feature is eligible. The value is derived from a
+  // number of other states.
+  bool is_eligible_ = false;
 
   // Whether the pref values has been initialized.
   bool prefs_initialized_ = false;

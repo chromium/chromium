@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/quick_answers/controller/quick_answers_controller.h"
+#include "ash/quick_answers/quick_answers_state_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/gfx/geometry/rect.h"
@@ -61,7 +62,6 @@ class ASH_EXPORT QuickAnswersControllerImpl
   // QuickAnswersDelegate:
   void OnQuickAnswerReceived(
       std::unique_ptr<chromeos::quick_answers::QuickAnswer> answer) override;
-  void OnEligibilityChanged(bool eligible) override;
   void OnNetworkError() override;
   void OnRequestPreprocessFinished(
       const chromeos::quick_answers::QuickAnswersRequest& processed_request)
@@ -130,9 +130,7 @@ class ASH_EXPORT QuickAnswersControllerImpl
   std::unique_ptr<chromeos::quick_answers::QuickAnswersNotice>
       notice_controller_;
 
-  // Whether the feature is enabled and all eligibility criteria are met (
-  // locale, consents, etc).
-  bool is_eligible_ = false;
+  QuickAnswersStateController quick_answers_state_controller_;
 
   std::unique_ptr<QuickAnswersUiController> quick_answers_ui_controller_;
 
