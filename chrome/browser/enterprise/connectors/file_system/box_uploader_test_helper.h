@@ -10,7 +10,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_flow.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -27,12 +26,9 @@ namespace enterprise_connectors {
 
 class BoxUploader;
 
-// 1994-04-27 00:00:00.001 GMT+2 (South Africa Standard Time)
-const base::Time::Exploded kTestDateTime = {1994, 4, 2, 27, 0, 0, 0, 1};
 class DownloadItemForTest : public content::FakeDownloadItem {
  public:
-  explicit DownloadItemForTest(base::FilePath::StringPieceType file_name,
-                               base::Time::Exploded start_time = kTestDateTime);
+  explicit DownloadItemForTest(base::FilePath::StringPieceType file_name);
   const base::FilePath& GetFullPath() const override;
 
  protected:
