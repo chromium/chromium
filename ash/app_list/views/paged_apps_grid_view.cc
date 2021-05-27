@@ -4,18 +4,23 @@
 
 #include "ash/app_list/views/paged_apps_grid_view.h"
 
+#include <algorithm>
+
+#include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/check.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -39,6 +44,85 @@ void PagedAppsGridView::HandleScrollFromAppListView(const gfx::Vector2d& offset,
 
   // Maybe switch pages.
   pagination_controller_->OnScroll(offset, type);
+}
+
+void PagedAppsGridView::UpdateOpacity(bool restore_opacity) {
+  if (view_structure_.pages().empty())
+    return;
+
+  // App list view state animations animate the apps grid view opacity rather
+  // than individual items' opacity. This method (used during app list view
+  // drag) sets up opacity for individual grid item, and assumes that the apps
+  // grid view is fully opaque.
+  layer()->SetOpacity(1.0f);
+
+  // First it should prepare the layers for all of the app items in the current
+  // page when necessary, or destroy all of the layers when they become
+  // unnecessary. Do not dynamically ensure/destroy layers of individual items
+  // since the creation/destruction of the layer requires to repaint the parent
+  // view (i.e. this class).
+  if (restore_opacity) {
+    // If drag is in progress, layers are still required, so just update the
+    // opacity (the layers will be deleted when drag operation completes).
+    if (items_need_layer_for_drag_) {
+      for (const auto& entry : view_model()->entries()) {
+        if (drag_view() != entry.view && entry.view->layer())
+          entry.view->layer()->SetOpacity(1.0f);
+      }
+      return;
+    }
+
+    // Layers are not necessary. Destroy them, and return. No need to update
+    // opacity. This needs to be done on all views within |view_model_| because
+    // some item view might have been moved out from the current page. See also
+    // https://crbug.com/990529.
+    for (const auto& entry : view_model()->entries())
+      entry.view->DestroyLayer();
+    return;
+  }
+
+  // Updates the opacity of the apps in current page. The opacity of the app
+  // starting at 0.f when the centerline of the app is |kAllAppsOpacityStartPx|
+  // above the bottom of work area and transitioning to 1.0f by the time the
+  // centerline reaches |kAllAppsOpacityEndPx| above the work area bottom.
+  AppListView* app_list_view = contents_view_->app_list_view();
+  const int selected_page = pagination_model_.selected_page();
+  // Logging for https://crbug.com/1194639. We suspect |selected_page| is
+  // sometimes off the end of the view structure pages array.
+  if (selected_page >= int{view_structure_.pages().size()}) {
+    // Use concise log so it fits in a crash key.
+    LOG(FATAL) << "crbug.com/1194639 " << pagination_model_.total_pages() << " "
+               << selected_page << " " << int{view_structure_.pages().size()};
+  }
+  auto current_page = view_structure_.pages()[selected_page];
+
+  // Ensure layers and update their opacity.
+  for (AppListItemView* item_view : current_page)
+    item_view->EnsureLayer();
+
+  float centerline_above_work_area = 0.f;
+  float opacity = 0.f;
+  for (size_t i = 0; i < current_page.size(); i += cols()) {
+    AppListItemView* item_view = current_page[i];
+    gfx::Rect view_bounds = item_view->GetLocalBounds();
+    views::View::ConvertRectToScreen(item_view, &view_bounds);
+    centerline_above_work_area = std::max<float>(
+        app_list_view->GetScreenBottom() - view_bounds.CenterPoint().y(), 0.f);
+    const float start_px = GetAppListConfig().all_apps_opacity_start_px();
+    opacity = base::ClampToRange(
+        (centerline_above_work_area - start_px) /
+            (GetAppListConfig().all_apps_opacity_end_px() - start_px),
+        0.f, 1.0f);
+
+    if (opacity == item_view->layer()->opacity())
+      continue;
+
+    const size_t end_index = std::min(current_page.size() - 1, i + cols() - 1);
+    for (size_t j = i; j <= end_index; ++j) {
+      if (current_page[j] != drag_view())
+        current_page[j]->layer()->SetOpacity(opacity);
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -263,9 +263,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // The grid view must be inside a folder view.
   void OnFolderItemRemoved();
 
-  // Updates the opacity of all the items in the grid during dragging.
-  void UpdateOpacity(bool restore_opacity);
-
   // Moves |reparented_item| from its folder to the root AppsGridView in the
   // direction of |key_code|.
   void HandleKeyboardReparent(AppListItemView* reparented_view,
@@ -389,10 +386,19 @@ class ASH_EXPORT AppsGridView : public views::View,
   int vertical_tile_padding() const { return vertical_tile_padding_; }
   int horizontal_tile_padding() const { return horizontal_tile_padding_; }
 
-  // TODO(crbug.com/1211608): Move these to PagedAppsGridView.
+  // TODO(crbug.com/1211608): Move these member variables to PagedAppsGridView.
   PaginationModel pagination_model_{this};
+
   // Must appear after |pagination_model_|.
   std::unique_ptr<PaginationController> pagination_controller_;
+
+  // View structure used only for non-folder.
+  PagedViewStructure view_structure_{this};
+
+  // Set while apps grid items have layers to handle app list item drag
+  // operation. It's reset when the app list bounds animations requested after
+  // drag state is cleared complete.
+  bool items_need_layer_for_drag_ = false;
 
  private:
   class FadeoutLayerDelegate;
@@ -811,11 +817,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   AppListItemView* drag_view_ = nullptr;
 
-  // Set while apps grid items have layers to handle app list item drag
-  // operation. It's reset when the app list bounds animations requested after
-  // drag state is cleared complete.
-  bool items_need_layer_for_drag_ = false;
-
   // The index of the drag_view_ when the drag starts.
   GridIndex drag_view_init_index_;
 
@@ -899,9 +900,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // True if it is the end gesture from shelf dragging.
   bool is_end_gesture_ = false;
-
-  // view structure used only for non-folder.
-  PagedViewStructure view_structure_{this};
 
   // True if an extra page is opened after the user drags an app to the bottom
   // of last page with intention to put it in a new page. This is only used for

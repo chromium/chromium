@@ -34,6 +34,11 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView {
   void HandleScrollFromAppListView(const gfx::Vector2d& offset,
                                    ui::EventType type);
 
+  // Updates the opacity of all the items in the grid when the grid itself is
+  // being dragged. The app icons fade out as the launcher slides off the bottom
+  // of the screen.
+  void UpdateOpacity(bool restore_opacity);
+
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
