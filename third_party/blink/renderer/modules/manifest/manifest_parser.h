@@ -400,6 +400,12 @@ class MODULES_EXPORT ManifestParser {
   // https://github.com/WICG/sw-launch/blob/master/declarative_link_capturing.md#proposal
   mojom::blink::CaptureLinks ParseCaptureLinks(const JSONObject* object);
 
+  // Parses the 'isolated_storage' field of the manifest.
+  // This marks whether the application should be loaded in a dedicated storage
+  // partition.
+  // Returns true iff the field could be parsed as the boolean true.
+  bool ParseIsolatedStorage(const JSONObject* object);
+
   void AddErrorInfo(const String& error_msg,
                     bool critical = false,
                     int error_line = 0,

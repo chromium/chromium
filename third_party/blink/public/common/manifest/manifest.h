@@ -248,6 +248,11 @@ struct BLINK_COMMON_EXPORT Manifest {
   GURL scope;
 
   mojom::CaptureLinks capture_links = mojom::CaptureLinks::kUndefined;
+
+  // False if parsing failed or the field was not present.
+  // TODO(crbug.com/1212263): This field is non-standard and part of a Chrome
+  // experiment.
+  bool isolated_storage = false;
 };
 
 }  // namespace blink

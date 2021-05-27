@@ -143,6 +143,8 @@ bool StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>::Read(
   if (!data.ReadCaptureLinks(&out->capture_links))
     return false;
 
+  out->isolated_storage = data.isolated_storage();
+
   return true;
 }
 

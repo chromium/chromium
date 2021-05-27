@@ -157,6 +157,10 @@ struct BLINK_COMMON_EXPORT
     return manifest.capture_links;
   }
 
+  static bool isolated_storage(const ::blink::Manifest& manifest) {
+    return manifest.isolated_storage;
+  }
+
   static bool Read(blink::mojom::ManifestDataView data, ::blink::Manifest* out);
 };
 

@@ -83,6 +83,8 @@ TypeConverter<blink::Manifest, blink::mojom::blink::ManifestPtr>::Convert(
 
   output.capture_links = input->capture_links;
 
+  output.isolated_storage = input->isolated_storage;
+
   return output;
 }
 

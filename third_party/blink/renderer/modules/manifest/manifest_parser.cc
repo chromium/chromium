@@ -158,6 +158,11 @@ void ManifestParser::Parse() {
   manifest_->shortcuts = ParseShortcuts(root_object.get());
   manifest_->capture_links = ParseCaptureLinks(root_object.get());
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableIsolatedStorage)) {
+    manifest_->isolated_storage = ParseIsolatedStorage(root_object.get());
+  }
+
   ManifestUmaUtil::ParseSucceeded(manifest_);
 }
 
@@ -1371,6 +1376,15 @@ mojom::blink::CaptureLinks ManifestParser::ParseCaptureLinks(
   }
 
   return mojom::blink::CaptureLinks::kUndefined;
+}
+
+bool ManifestParser::ParseIsolatedStorage(const JSONObject* object) {
+  bool is_storage_isolated = ParseBoolean(object, "isolated_storage", false);
+  if (is_storage_isolated && manifest_->scope.GetPath() != "/") {
+    AddErrorInfo("Isolated storage is only supported with a scope of \"/\".");
+    return false;
+  }
+  return is_storage_isolated;
 }
 
 void ManifestParser::AddErrorInfo(const String& error_msg,

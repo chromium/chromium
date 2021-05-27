@@ -815,6 +815,10 @@ const base::Feature kLogUnexpectedIPCPostedToBackForwardCachedDocuments{
     "LogUnexpectedIPCPostedToBackForwardCachedDocuments",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables web apps to request isolated storage.
+const base::Feature kWebAppEnableIsolatedStorage{
+    "WebAppEnableIsolatedStorage", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables declarative link capturing in web apps.
 // Explainer:
 // https://github.com/WICG/sw-launch/blob/master/declarative_link_capturing.md
