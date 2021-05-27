@@ -112,4 +112,10 @@ TEST(MainMenuBuilderTest, Disabled) {
   EXPECT_NSEQ(l10n_util::GetNSStringWithFixup(IDS_NEW_TAB_MAC), [item title]);
 }
 
+TEST(MainMenuBuilderTest, Hidden) {
+  base::scoped_nsobject<NSMenuItem> item =
+      MenuItemBuilder(IDS_NEW_TAB_MAC).set_hidden(true).Build();
+  EXPECT_EQ(true, [item isHidden]);
+}
+
 }  // namespace

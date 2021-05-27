@@ -115,12 +115,15 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   // to have the global IDC view tags.
   enum Tags {
     kRecentlyClosedSeparator = 400,  // Item before recently closed section.
-    kRecentlyClosedTitle = 401,  // Title of recently closed section.
-    kRecentlyClosed = 420,  // Used for items in the recently closed section.
-    kVisitedSeparator = 440,  // Separator before visited section.
-    kVisitedTitle = 441,  // Title of the visited section.
-    kVisited = 460,  // Used for all entries in the visited section.
-    kShowFullSeparator = 480  // Separator after the visited section.
+    kRecentlyClosedTitle = 401,      // Title of recently closed section.
+    kRecentlyClosed = 420,     // Used for items in the recently closed section.
+    kVisitedSeparator = 440,   // Separator before visited section.
+    kVisitedTitle = 441,       // Title of the visited section.
+    kVisited = 460,            // Used for all entries in the visited section.
+    kShowFullSeparator = 480,  // Separator after the visited section.
+    kIncognitoDisclaimerSeparator =
+        500,  // Separator before Incognito disclaimer text.
+    kIncognitoDisclaimerLabel = 501  // Label for Incognito disclaimer text.
   };
 
   explicit HistoryMenuBridge(Profile* profile);
@@ -270,6 +273,13 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
+
+  // Changes the visibility of the menu items depend on the current profile
+  // type.
+  void SetVisibilityOfMenuItems();
+
+  // Returns if the given menu item should be visible for the current profile.
+  bool ShouldMenuItemBeVisible(NSMenuItem* item);
 
   DISALLOW_COPY_AND_ASSIGN(HistoryMenuBridge);
 };

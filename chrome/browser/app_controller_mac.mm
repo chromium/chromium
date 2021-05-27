@@ -748,7 +748,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     _tabMenuBridge.reset();
   }
 
-  [self windowChangedToProfile:browser->profile()->GetOriginalProfile()];
+  [self windowChangedToProfile:browser->profile()];
 }
 
 - (void)windowDidResignMain:(NSNotification*)notify {

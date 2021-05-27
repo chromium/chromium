@@ -119,6 +119,12 @@ class MenuItemBuilder {
     return *this;
   }
 
+  // Hide this item from the menu if |condition| is true.
+  MenuItemBuilder& set_hidden(bool condition) {
+    is_hidden_ |= condition;
+    return *this;
+  }
+
   // Builds a NSMenuItem instance from the properties set on the Builder.
   base::scoped_nsobject<NSMenuItem> Build() const;
 
@@ -141,6 +147,8 @@ class MenuItemBuilder {
   bool is_removed_ = false;
 
   absl::optional<std::vector<MenuItemBuilder>> submenu_;
+
+  bool is_hidden_ = false;
 
   // Copy and assign allowed.
 };
