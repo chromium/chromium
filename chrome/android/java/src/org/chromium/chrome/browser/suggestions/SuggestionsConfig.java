@@ -40,7 +40,7 @@ public final class SuggestionsConfig {
      * It must be kept in sync with //components/ntp_suggestions/features.cc
      */
     private static final String DEFAULT_CONTENT_SUGGESTIONS_REFERRER_URL =
-            "https://www.googleapis.com/auth/chrome-content-suggestions";
+            "https://www.google.com/";
 
     private SuggestionsConfig() {}
 

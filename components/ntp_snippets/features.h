@@ -86,6 +86,7 @@ extern const base::Feature kOptionalImagesEnabledFeature;
 std::vector<const base::Feature*> GetAllFeatures();
 
 // Return a referrer URL for content suggestions.
+// This is deprecated, and only used on iOS.
 std::string GetContentSuggestionsReferrerURL();
 }  // namespace ntp_snippets
 
