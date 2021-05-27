@@ -87,16 +87,12 @@ void SetMenuItemToMenu(
             input.style);
   }
 
-  if (input.visible)
-    out->modified |= InputMethodEngine::MENU_ITEM_MODIFIED_VISIBLE;
   out->visible = input.visible ? *input.visible : true;
 
   if (input.checked)
     out->modified |= InputMethodEngine::MENU_ITEM_MODIFIED_CHECKED;
   out->checked = input.checked ? *input.checked : false;
 
-  if (input.enabled)
-    out->modified |= InputMethodEngine::MENU_ITEM_MODIFIED_ENABLED;
   out->enabled = input.enabled ? *input.enabled : true;
 }
 

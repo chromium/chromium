@@ -579,14 +579,8 @@ void InputMethodEngine::MenuItemToProperty(
   if (item.modified & MENU_ITEM_MODIFIED_LABEL) {
     property->label = item.label;
   }
-  if (item.modified & MENU_ITEM_MODIFIED_VISIBLE) {
-    // TODO(nona): Implement it.
-  }
   if (item.modified & MENU_ITEM_MODIFIED_CHECKED) {
     property->is_selection_item_checked = item.checked;
-  }
-  if (item.modified & MENU_ITEM_MODIFIED_ENABLED) {
-    // TODO(nona): implement sensitive entry(crbug.com/140192).
   }
   if (item.modified & MENU_ITEM_MODIFIED_STYLE) {
     if (!item.children.empty()) {

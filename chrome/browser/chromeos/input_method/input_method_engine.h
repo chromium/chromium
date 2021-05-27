@@ -42,10 +42,7 @@ class InputMethodEngine : public InputMethodEngineBase,
   enum {
     MENU_ITEM_MODIFIED_LABEL = 0x0001,
     MENU_ITEM_MODIFIED_STYLE = 0x0002,
-    MENU_ITEM_MODIFIED_VISIBLE = 0x0004,
-    MENU_ITEM_MODIFIED_ENABLED = 0x0008,
     MENU_ITEM_MODIFIED_CHECKED = 0x0010,
-    MENU_ITEM_MODIFIED_ICON = 0x0020,
   };
 
   enum CandidateWindowPosition {
