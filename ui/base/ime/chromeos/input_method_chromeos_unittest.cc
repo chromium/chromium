@@ -416,13 +416,6 @@ TEST_F(InputMethodChromeOSTest, OnTextInputTypeChangedChangesInputType) {
   ime.SetFocusedTextInputClient(nullptr);
 }
 
-TEST_F(InputMethodChromeOSTest, CanComposeInline) {
-  EXPECT_TRUE(ime_->CanComposeInline());
-  can_compose_inline_ = false;
-  ime_->OnTextInputTypeChanged(this);
-  EXPECT_FALSE(ime_->CanComposeInline());
-}
-
 TEST_F(InputMethodChromeOSTest, GetTextInputClient) {
   EXPECT_EQ(this, ime_->GetTextInputClient());
   ime_->SetFocusedTextInputClient(nullptr);

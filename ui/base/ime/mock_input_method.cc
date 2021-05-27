@@ -103,10 +103,6 @@ int MockInputMethod::GetTextInputFlags() const {
   return 0;
 }
 
-bool MockInputMethod::CanComposeInline() const {
-  return true;
-}
-
 bool MockInputMethod::IsCandidatePopupOpen() const {
   return false;
 }

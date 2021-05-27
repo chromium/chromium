@@ -51,7 +51,6 @@ class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
   TextInputType GetTextInputType() const override;
   TextInputMode GetTextInputMode() const override;
   int GetTextInputFlags() const override;
-  bool CanComposeInline() const override;
   bool IsCandidatePopupOpen() const override;
   bool GetClientShouldDoLearning() override;
   void ShowVirtualKeyboardIfEnabled() override;

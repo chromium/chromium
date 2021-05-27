@@ -778,6 +778,11 @@ void InputMethodChromeOS::HidePreeditText() {
   }
 }
 
+bool InputMethodChromeOS::CanComposeInline() const {
+  TextInputClient* client = GetTextInputClient();
+  return client ? client->CanComposeInline() : true;
+}
+
 void InputMethodChromeOS::SendKeyEvent(KeyEvent* event) {
   ui::EventDispatchDetails details = DispatchKeyEvent(event);
   DCHECK(!details.dispatcher_destroyed);

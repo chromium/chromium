@@ -60,7 +60,6 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   TextInputType GetTextInputType() const override;
   TextInputMode GetTextInputMode() const override;
   int GetTextInputFlags() const override;
-  bool CanComposeInline() const override;
   bool GetClientShouldDoLearning() override;
   void ShowVirtualKeyboardIfEnabled() override;
 
