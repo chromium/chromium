@@ -183,16 +183,17 @@ NavigationEvent* NavigationEventList::FindNavigationEvent(
 
 NavigationEvent* NavigationEventList::FindPendingNavigationEvent(
     const GURL& target_url) {
+  NavigationEvent* return_event = nullptr;
   for (auto& it : pending_navigation_events_) {
-    // It is possible that several pending navigation events have the
-    // same destination URL.
-    // TODO(crbug.com/1161342): Compare the last updated time of the event and
-    // return the latest.
-    if (it.second->GetDestinationUrl() == target_url) {
-      return it.second.get();
+    // Returns the event that matches the target_url and also has the latest
+    // updated timestamp.
+    if (it.second->GetDestinationUrl() == target_url &&
+        (!return_event ||
+         return_event->last_updated < it.second.get()->last_updated)) {
+      return_event = it.second.get();
     }
   }
-  return nullptr;
+  return return_event;
 }
 
 NavigationEvent* NavigationEventList::FindRetargetingNavigationEvent(

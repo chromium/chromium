@@ -578,4 +578,31 @@ TEST_F(SBNavigationObserverTest,
   EXPECT_TRUE(referrer_chain[0].is_retargeting());
 }
 
+TEST_F(SBNavigationObserverTest, TestGetLatestPendingNavigationEvent) {
+  base::Time now = base::Time::Now();
+  base::Time one_minute_ago = base::Time::FromDoubleT(now.ToDoubleT() - 60.0);
+  base::Time two_minute_ago = base::Time::FromDoubleT(now.ToDoubleT() - 120.0);
+  GURL url("http://foo/0");
+  content::MockNavigationHandle handle_0(
+      url, browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame());
+  content::MockNavigationHandle handle_1(
+      url, browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame());
+  content::MockNavigationHandle handle_2(
+      url, browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame());
+  navigation_event_list()->RecordPendingNavigationEvent(
+      &handle_0, CreateNavigationEventUniquePtr(url, one_minute_ago));
+  navigation_event_list()->RecordPendingNavigationEvent(
+      &handle_1, CreateNavigationEventUniquePtr(url, now));
+  navigation_event_list()->RecordPendingNavigationEvent(
+      &handle_2, CreateNavigationEventUniquePtr(url, two_minute_ago));
+  ASSERT_EQ(3U, navigation_event_list()->PendingNavigationEventsSize());
+
+  NavigationEvent* event =
+      navigation_event_list()->FindPendingNavigationEvent(url);
+  ASSERT_NE(nullptr, event);
+  // FindPendingNavigationEvent should return the event for handle_1 because it
+  // has the latest updated timestamp.
+  EXPECT_EQ(now, event->last_updated);
+}
+
 }  // namespace safe_browsing
