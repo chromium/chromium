@@ -729,13 +729,6 @@
       'lacros-amd64-generic-chrome-fyi': 'chromeos_amd64-generic_lacros_official',
     },
 
-    'internal.client.kitchensync': {
-      'Linux Canary': 'debug_bot',
-      'Linux Dev': 'debug_bot',
-      'Mac Dev': 'debug_bot',
-      'Windows Dev': 'debug_bot',
-    },
-
     # Manually triggered internal builders running on LUCI.
     'luci.infra-internal.prod': {
       'gn-builder-linux': 'gn_linux_upload',
