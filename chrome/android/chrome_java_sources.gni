@@ -1327,6 +1327,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ui/AppLaunchDrawBlocker.java",
   "java/src/org/chromium/chrome/browser/ui/BottomContainer.java",
   "java/src/org/chromium/chrome/browser/ui/BottomSheetManager.java",
+  "java/src/org/chromium/chrome/browser/ui/MediaCaptureOverlayController.java",
   "java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java",
   "java/src/org/chromium/chrome/browser/ui/TabObscuringHandler.java",
   "java/src/org/chromium/chrome/browser/ui/TabObscuringHandlerSupplier.java",

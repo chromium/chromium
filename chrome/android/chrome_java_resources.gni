@@ -548,6 +548,7 @@ chrome_java_resources = [
   "java/res/drawable/btn_forward.xml",
   "java/res/drawable/btn_reload_stop.xml",
   "java/res/drawable/button_compat_shape.xml",
+  "java/res/drawable/capture_overlay_border.xml",
   "java/res/drawable/checkerboard_background.xml",
   "java/res/drawable/computer_black_24dp.xml",
   "java/res/drawable/contextual_search_panel_help_background.xml",

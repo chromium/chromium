@@ -196,6 +196,7 @@ public class RootUiCoordinator
     protected Supplier<Tab> mStartSurfaceParentTabSupplier;
     @Nullable
     private VoiceRecognitionHandler.Observer mMicStateObserver;
+    private MediaCaptureOverlayController mCaptureController;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -380,6 +381,11 @@ public class RootUiCoordinator
             mTabModelSelectorSupplier = null;
         }
 
+        if (mCaptureController != null) {
+            mCaptureController.destroy();
+            mCaptureController = null;
+        }
+
         mActivity = null;
     }
 
@@ -453,6 +459,9 @@ public class RootUiCoordinator
             public void onExitVr() {}
         };
         VrModuleProvider.registerVrModeObserver(mVrModeObserver);
+
+        mCaptureController = new MediaCaptureOverlayController(
+                mActivity.getWindowAndroid(), mActivity.findViewById(R.id.capture_overlay));
 
         // Ensure the bottom sheet's container has been laid out at least once before hiding it.
         // TODO(1196804): This should be owned by the BottomSheetControllerImpl, but there are some
