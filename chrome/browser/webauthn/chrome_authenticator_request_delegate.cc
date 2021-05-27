@@ -37,6 +37,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -832,29 +833,25 @@ static std::unique_ptr<device::cablev2::Pairing> PairingFromSyncedDevice(
 }
 
 static std::vector<std::unique_ptr<device::cablev2::Pairing>>
-GetCablePairingsFromSyncedDevices() {
+GetCablePairingsFromSyncedDevices(Profile* profile) {
   if (g_observer) {
     return g_observer->GetCablePairingsFromSyncedDevices();
   }
 
-  // Users may wish to sign into different profiles than the one syncing with
-  // the account that's on their phone. Therefore all known phones are
-  // considered:
-  std::vector<const syncer::DeviceInfoTracker*> trackers;
-  DeviceInfoSyncServiceFactory::GetAllDeviceInfoTrackers(&trackers);
+  syncer::DeviceInfoTracker* const tracker =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile)
+          ->GetDeviceInfoTracker();
+  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices =
+      tracker->GetAllDeviceInfo();
 
   std::vector<std::unique_ptr<device::cablev2::Pairing>> ret;
-  for (const auto* tracker : trackers) {
-    std::vector<std::unique_ptr<syncer::DeviceInfo>> devices =
-        tracker->GetAllDeviceInfo();
-    for (const auto& device : devices) {
-      std::unique_ptr<device::cablev2::Pairing> pairing =
-          PairingFromSyncedDevice(device.get());
-      if (!pairing) {
-        continue;
-      }
-      ret.emplace_back(std::move(pairing));
+  for (const auto& device : devices) {
+    std::unique_ptr<device::cablev2::Pairing> pairing =
+        PairingFromSyncedDevice(device.get());
+    if (!pairing) {
+      continue;
     }
+    ret.emplace_back(std::move(pairing));
   }
 
   return ret;
@@ -862,13 +859,13 @@ GetCablePairingsFromSyncedDevices() {
 
 std::vector<std::unique_ptr<device::cablev2::Pairing>>
 ChromeAuthenticatorRequestDelegate::GetCablePairings() {
+  Profile* const profile = Profile::FromBrowserContext(GetBrowserContext());
   std::vector<std::unique_ptr<device::cablev2::Pairing>> ret =
-      GetCablePairingsFromSyncedDevices();
+      GetCablePairingsFromSyncedDevices(profile);
   std::sort(ret.begin(), ret.end(),
             device::cablev2::Pairing::CompareByMostRecentFirst);
 
-  PrefService* prefs =
-      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+  PrefService* const prefs = profile->GetPrefs();
   const base::ListValue* pref_pairings =
       prefs->GetList(kWebAuthnCablePairingsPrefName);
 
