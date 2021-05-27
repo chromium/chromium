@@ -825,7 +825,7 @@
       'android_cronet': 'android_cronet_release_trybot_arm_no_neon',
       'android_mojo': 'android_release_trybot_arm64',
       'android_n5x_swarming_dbg': 'android_debug_trybot_arm64',
-      'android_optional_gpu_tests_rel': 'gpu_tests_android_release_trybot_arm64',
+      'android_optional_gpu_tests_rel': 'gpu_tests_android_release_trybot',
       'android_unswarmed_pixel_aosp': 'android_debug_trybot_arm64',
       'android-deterministic-dbg': 'android_debug_bot',
       'android-deterministic-rel': 'android_without_codecs_release_trybot',
