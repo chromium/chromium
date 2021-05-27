@@ -30,6 +30,7 @@
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/local_device_info_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1148,6 +1149,48 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithMalformedTimestamps) {
 
   ASSERT_EQ(3u, bridge()->GetAllDeviceInfo().size());
   EXPECT_EQ(1, bridge()->CountActiveDevices());
+}
+
+TEST_F(DeviceInfoSyncBridgeTest,
+       ShouldFilterOutNonChromeClientsFromDeviceTracker) {
+  InitializeAndMergeInitialData(SyncMode::kFull);
+  // Local device.
+  EXPECT_EQ(1, bridge()->CountActiveDevices());
+
+  ON_CALL(*processor(), GetEntityCreationTime)
+      .WillByDefault(Return(base::Time::Now()));
+  ON_CALL(*processor(), GetEntityModificationTime)
+      .WillByDefault(Return(base::Time::Now()));
+
+  // A different guid will contribute to the count.
+  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
+                             EntityAddList({CreateSpecifics(1)}));
+  ASSERT_THAT(GetAllData(), SizeIs(2));
+  ASSERT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(2));
+  ASSERT_EQ(2, bridge()->CountActiveDevices());
+  ASSERT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(1)), NotNull());
+
+  // If the Chrome version is not present, it should not be exposed as device.
+  sync_pb::DeviceInfoSpecifics specifics2 = CreateSpecifics(2);
+  specifics2.clear_chrome_version();
+  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
+                             EntityAddList({specifics2}));
+  ASSERT_THAT(GetAllData(), SizeIs(3));
+  EXPECT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(2));
+  EXPECT_EQ(2, bridge()->CountActiveDevices());
+  EXPECT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(2)), IsNull());
+
+  // If only the non-legacy field is present, the device should still be exposed
+  // in DeviceInfoTracker.
+  sync_pb::DeviceInfoSpecifics specifics3 = CreateSpecifics(3);
+  specifics3.clear_chrome_version();
+  specifics3.mutable_chrome_version_info()->set_version_number("someversion");
+  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
+                             EntityAddList({specifics3}));
+  ASSERT_THAT(GetAllData(), SizeIs(4));
+  EXPECT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(3));
+  EXPECT_EQ(3, bridge()->CountActiveDevices());
+  EXPECT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(3)), NotNull());
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, SendLocalData) {

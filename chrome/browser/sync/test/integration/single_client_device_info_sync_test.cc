@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -20,6 +21,9 @@
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/fake_server/fake_server.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -43,6 +47,10 @@ MATCHER(HasFullHardwareClass, "") {
 
 MATCHER(IsFullHardwareClassEmpty, "") {
   return arg.specifics().device_info().full_hardware_class().empty();
+}
+
+MATCHER_P(ModelEntryHasCacheGuid, expected_cache_guid, "") {
+  return arg->guid() == expected_cache_guid;
 }
 
 std::string CacheGuidForSuffix(int suffix) {
@@ -89,10 +97,21 @@ class SingleClientDeviceInfoSyncTest : public SyncTest {
     return prefs.GetCacheGuid();
   }
 
-  // Injects a test DeviceInfo entity to the fake server.
+  syncer::DeviceInfoTracker* GetDeviceInfoTracker() {
+    return DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
+        ->GetDeviceInfoTracker();
+  }
+
+  // Injects a test DeviceInfo entity to the fake server, given |suffix|.
   void InjectDeviceInfoEntityToServer(int suffix) {
+    InjectDeviceInfoSpecificsToServer(CreateSpecifics(suffix));
+  }
+
+  // Injects an arbitrary test DeviceInfo entity to the fake server.
+  void InjectDeviceInfoSpecificsToServer(
+      const sync_pb::DeviceInfoSpecifics& device_info_specifics) {
     sync_pb::EntitySpecifics specifics;
-    *specifics.mutable_device_info() = CreateSpecifics(suffix);
+    *specifics.mutable_device_info() = device_info_specifics;
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
             /*non_unique_name=*/"",
@@ -164,9 +183,50 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest, DownloadRemoteDevices) {
   ASSERT_TRUE(SetupSync());
 
   // The local device may or may not already be committed at this point.
-  EXPECT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
+  ASSERT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
               IsSupersetOf({HasCacheGuid(CacheGuidForSuffix(1)),
                             HasCacheGuid(CacheGuidForSuffix(2))}));
+
+  EXPECT_THAT(
+      GetDeviceInfoTracker()->GetAllDeviceInfo(),
+      UnorderedElementsAre(ModelEntryHasCacheGuid(GetLocalCacheGuid()),
+                           ModelEntryHasCacheGuid(CacheGuidForSuffix(1)),
+                           ModelEntryHasCacheGuid(CacheGuidForSuffix(2))));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       DownloadRemoteDeviceWithoutChromeVersion) {
+  sync_pb::DeviceInfoSpecifics device_info_specifics =
+      CreateSpecifics(/*suffix=*/1);
+  device_info_specifics.clear_chrome_version();
+  InjectDeviceInfoSpecificsToServer(device_info_specifics);
+
+  ASSERT_TRUE(SetupSync());
+
+  // Devices without a chrome_version correspond to non-Chromium-based clients
+  // and should be excluded.
+  EXPECT_THAT(
+      GetDeviceInfoTracker()->GetAllDeviceInfo(),
+      UnorderedElementsAre(ModelEntryHasCacheGuid(GetLocalCacheGuid())));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       DownloadRemoteDeviceWithNewVersionFieldOnly) {
+  sync_pb::DeviceInfoSpecifics device_info_specifics =
+      CreateSpecifics(/*suffix=*/1);
+  device_info_specifics.clear_chrome_version();
+  device_info_specifics.mutable_chrome_version_info()->set_version_number(
+      "someversion");
+  InjectDeviceInfoSpecificsToServer(device_info_specifics);
+
+  ASSERT_TRUE(SetupSync());
+
+  // Devices without a chrome_version correspond to non-Chromium-based clients
+  // and should be excluded.
+  EXPECT_THAT(
+      GetDeviceInfoTracker()->GetAllDeviceInfo(),
+      UnorderedElementsAre(ModelEntryHasCacheGuid(GetLocalCacheGuid()),
+                           ModelEntryHasCacheGuid(CacheGuidForSuffix(1))));
 }
 
 // CommitLocalDevice_TransportOnly and DownloadRemoteDevices_TransportOnly are
