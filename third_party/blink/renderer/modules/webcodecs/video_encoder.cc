@@ -200,7 +200,8 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   if (config->hasFramerate()) {
     constexpr double kMinFramerate = .0001;
     constexpr double kMaxFramerate = 1'000'000'000;
-    if (config->framerate() < kMinFramerate ||
+    if (std::isnan(config->framerate()) ||
+        config->framerate() < kMinFramerate ||
         config->framerate() > kMaxFramerate) {
       exception_state.ThrowTypeError(String::Format(
           "Invalid framerate; expected range from %f to %f, received %f.",
