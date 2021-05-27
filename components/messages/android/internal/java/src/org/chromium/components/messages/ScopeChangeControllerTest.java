@@ -6,6 +6,7 @@ package org.chromium.components.messages;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -87,15 +88,13 @@ public class ScopeChangeControllerTest {
         Assert.assertEquals("Scope type should be inactive when page is hidden",
                 ChangeType.INACTIVE, captor.getValue().changeType);
 
-        observer.navigationEntryCommitted(
-                new LoadCommittedDetails(-1, null, true, false, true, -1));
+        observer.navigationEntryCommitted(createLoadCommittedDetails(true));
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
                         .description("Delegate should not be called when entry is replaced"))
                 .onScopeChange(any());
 
-        observer.navigationEntryCommitted(
-                new LoadCommittedDetails(-1, null, false, false, true, -1));
+        observer.navigationEntryCommitted(createLoadCommittedDetails(false));
 
         expectedOnScopeChangeCalls++;
         verify(delegate,
@@ -116,5 +115,40 @@ public class ScopeChangeControllerTest {
                 .onScopeChange(captor.capture());
         Assert.assertEquals("Scope type should be destroy when top level native window changes",
                 ChangeType.DESTROY, captor.getValue().changeType);
+    }
+
+    @Test
+    @SmallTest
+    public void testIgnoreNavigation() {
+        ScopeChangeController.Delegate delegate =
+                Mockito.mock(ScopeChangeController.Delegate.class);
+        ScopeChangeController controller = new ScopeChangeController(delegate);
+
+        MockWebContents webContents = mock(MockWebContents.class);
+        ScopeKey key = new ScopeKey(MessageScopeType.WEB_CONTENTS, webContents);
+        controller.firstMessageEnqueued(key);
+
+        final ArgumentCaptor<WebContentsObserver> runnableCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(webContents).addObserver(runnableCaptor.capture());
+
+        WebContentsObserver observer = runnableCaptor.getValue();
+
+        // Default visibility of web contents is invisible.
+        ArgumentCaptor<MessageScopeChange> captor =
+                ArgumentCaptor.forClass(MessageScopeChange.class);
+        verify(delegate, description("Delegate should be called when page is hidden"))
+                .onScopeChange(captor.capture());
+        Assert.assertEquals("Scope type should be inactive when page is hidden",
+                ChangeType.INACTIVE, captor.getValue().changeType);
+
+        observer.navigationEntryCommitted(createLoadCommittedDetails(false));
+        verify(delegate,
+                times(1).description("Delegate should not be called when navigation is ignored"))
+                .onScopeChange(any());
+    }
+
+    private LoadCommittedDetails createLoadCommittedDetails(boolean didReplaceEntry) {
+        return new LoadCommittedDetails(-1, null, didReplaceEntry, false, true, -1);
     }
 }
