@@ -8,12 +8,17 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/callback.h"
+#include "base/containers/flat_map.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+
+struct zwp_linux_buffer_release_v1;
 
 namespace ui {
 
@@ -24,7 +29,10 @@ class WaylandWindow;
 // Wrapper of a wl_surface, owned by a WaylandWindow or a WlSubsurface.
 class WaylandSurface {
  public:
-  WaylandSurface(WaylandConnection* connection, WaylandWindow* root_window);
+  using ExplicitReleaseCallback =
+      base::RepeatingCallback<void(wl_buffer*, absl::optional<int32_t>)>;
+
+  WaylandSurface(WaylandConnection* connection, WaylandWindow* ro_window);
   WaylandSurface(const WaylandSurface&) = delete;
   WaylandSurface& operator=(const WaylandSurface&) = delete;
   ~WaylandSurface();
@@ -42,6 +50,9 @@ class WaylandSurface {
 
   int32_t buffer_scale() const { return buffer_scale_; }
   void set_buffer_scale(int32_t scale) { buffer_scale_ = scale; }
+  void set_explicit_release_callback(ExplicitReleaseCallback callback) {
+    explicit_release_callback_ = callback;
+  }
 
   // Returns an id that identifies the |wl_surface_|.
   uint32_t GetSurfaceId() const;
@@ -112,6 +123,24 @@ class WaylandSurface {
   wl::Object<wl_subsurface> CreateSubsurface(WaylandSurface* parent);
 
  private:
+  // Holds information about each explicit synchronization buffer release.
+  struct ExplicitReleaseInfo {
+    ExplicitReleaseInfo(
+        wl::Object<zwp_linux_buffer_release_v1>&& linux_buffer_release,
+        wl_buffer* buffer);
+    ~ExplicitReleaseInfo();
+
+    ExplicitReleaseInfo(const ExplicitReleaseInfo&) = delete;
+    ExplicitReleaseInfo& operator=(const ExplicitReleaseInfo&) = delete;
+
+    ExplicitReleaseInfo(ExplicitReleaseInfo&&);
+    ExplicitReleaseInfo& operator=(ExplicitReleaseInfo&&);
+
+    wl::Object<zwp_linux_buffer_release_v1> linux_buffer_release;
+    // The buffer associated with this explicit release.
+    wl_buffer* buffer;
+  };
+
   wl::Object<wl_region> CreateAndAddRegion(const gfx::Rect& region_px);
 
   WaylandConnection* const connection_;
@@ -119,6 +148,10 @@ class WaylandSurface {
   wl::Object<wl_surface> surface_;
   wl::Object<wp_viewport> viewport_;
   wl::Object<zwp_linux_surface_synchronization_v1> surface_sync_;
+  base::flat_map<zwp_linux_buffer_release_v1*, ExplicitReleaseInfo>
+      linux_buffer_releases_;
+  ExplicitReleaseCallback explicit_release_callback_;
+  wl_buffer* buffer_attached_since_last_commit_ = nullptr;
 
   // For top level window, stores outputs that the window is currently rendered
   // at.
@@ -150,6 +183,9 @@ class WaylandSurface {
   // If empty, no scaling is applied.
   gfx::Size display_size_px_ = gfx::Size();
 
+  void ExplicitRelease(struct zwp_linux_buffer_release_v1* linux_buffer_release,
+                       absl::optional<int32_t> fence);
+
   // wl_surface_listener
   static void Enter(void* data,
                     struct wl_surface* wl_surface,
@@ -157,6 +193,15 @@ class WaylandSurface {
   static void Leave(void* data,
                     struct wl_surface* wl_surface,
                     struct wl_output* output);
+
+  // zwp_linux_buffer_release_v1_listener
+  static void FencedRelease(
+      void* data,
+      struct zwp_linux_buffer_release_v1* linux_buffer_release,
+      int32_t fence);
+  static void ImmediateRelease(
+      void* data,
+      struct zwp_linux_buffer_release_v1* linux_buffer_release);
 };
 
 }  // namespace ui

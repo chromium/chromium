@@ -20,6 +20,19 @@
 
 namespace ui {
 
+WaylandSurface::ExplicitReleaseInfo::ExplicitReleaseInfo(
+    wl::Object<zwp_linux_buffer_release_v1>&& linux_buffer_release,
+    wl_buffer* buffer)
+    : linux_buffer_release(std::move(linux_buffer_release)), buffer(buffer) {}
+
+WaylandSurface::ExplicitReleaseInfo::~ExplicitReleaseInfo() = default;
+
+WaylandSurface::ExplicitReleaseInfo::ExplicitReleaseInfo(
+    ExplicitReleaseInfo&&) = default;
+
+WaylandSurface::ExplicitReleaseInfo&
+WaylandSurface::ExplicitReleaseInfo::operator=(ExplicitReleaseInfo&&) = default;
+
 WaylandSurface::WaylandSurface(WaylandConnection* connection,
                                WaylandWindow* root_window)
     : connection_(connection),
@@ -87,6 +100,7 @@ void WaylandSurface::AttachBuffer(wl_buffer* buffer) {
   // (0, 0). If this changes, then the calculation in DamageBuffer will also
   // need to be updated.
   wl_surface_attach(surface_.get(), buffer, 0, 0);
+  buffer_attached_since_last_commit_ = buffer;
   connection_->ScheduleFlush();
 }
 
@@ -160,7 +174,25 @@ void WaylandSurface::UpdateBufferDamageRegion(
 }
 
 void WaylandSurface::Commit() {
+  if (surface_sync_ && buffer_attached_since_last_commit_) {
+    auto* linux_buffer_release =
+        zwp_linux_surface_synchronization_v1_get_release(surface_sync_.get());
+
+    static struct zwp_linux_buffer_release_v1_listener release_listener = {
+        &WaylandSurface::FencedRelease,
+        &WaylandSurface::ImmediateRelease,
+    };
+    zwp_linux_buffer_release_v1_add_listener(linux_buffer_release,
+                                             &release_listener, this);
+
+    linux_buffer_releases_.emplace(
+        linux_buffer_release,
+        ExplicitReleaseInfo(
+            wl::Object<zwp_linux_buffer_release_v1>(linux_buffer_release),
+            buffer_attached_since_last_commit_));
+  }
   wl_surface_commit(surface_.get());
+  buffer_attached_since_last_commit_ = nullptr;
   connection_->ScheduleFlush();
 }
 
@@ -299,6 +331,17 @@ wl::Object<wl_subsurface> WaylandSurface::CreateSubsurface(
   return subsurface;
 }
 
+void WaylandSurface::ExplicitRelease(
+    struct zwp_linux_buffer_release_v1* linux_buffer_release,
+    absl::optional<int32_t> fence) {
+  auto iter = linux_buffer_releases_.find(linux_buffer_release);
+  DCHECK(iter != linux_buffer_releases_.end());
+  DCHECK(iter->second.buffer);
+  if (!explicit_release_callback_.is_null())
+    explicit_release_callback_.Run(iter->second.buffer, fence);
+  linux_buffer_releases_.erase(iter);
+}
+
 // static
 void WaylandSurface::Enter(void* data,
                            struct wl_surface* wl_surface,
@@ -334,6 +377,23 @@ void WaylandSurface::Leave(void* data,
 
   if (surface->root_window_)
     surface->root_window_->OnEnteredOutputIdRemoved();
+}
+
+// static
+void WaylandSurface::FencedRelease(
+    void* data,
+    struct zwp_linux_buffer_release_v1* linux_buffer_release,
+    int32_t fence) {
+  static_cast<WaylandSurface*>(data)->ExplicitRelease(linux_buffer_release,
+                                                      fence);
+}
+
+// static
+void WaylandSurface::ImmediateRelease(
+    void* data,
+    struct zwp_linux_buffer_release_v1* linux_buffer_release) {
+  static_cast<WaylandSurface*>(data)->ExplicitRelease(linux_buffer_release,
+                                                      absl::nullopt);
 }
 
 }  // namespace ui

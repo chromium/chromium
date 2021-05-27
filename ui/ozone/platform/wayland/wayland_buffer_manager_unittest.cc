@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 
@@ -24,6 +25,7 @@
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 using testing::_;
+using testing::Truly;
 using testing::Values;
 
 namespace ui {
@@ -1670,6 +1672,94 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
   EXPECT_CALL(*mock_surface, Commit()).Times(1);
 
   Sync();
+}
+
+TEST_P(WaylandBufferManagerTest, FencedRelease) {
+  constexpr uint32_t kBufferId1 = 1;
+  constexpr uint32_t kBufferId2 = 2;
+  constexpr uint32_t kBufferId3 = 3;
+  const int32_t kFenceFD = dup(1);
+
+  const gfx::AcceleratedWidget widget = window_->GetWidget();
+  const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
+  window_->SetBounds(bounds);
+
+  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
+
+  auto* linux_dmabuf = server_.zwp_linux_dmabuf_v1();
+  EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(3);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId2);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId3);
+
+  Sync();
+
+  ProcessCreatedBufferResourcesWithExpectation(3u /* expected size */,
+                                               false /* fail */);
+
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+
+  constexpr uint32_t kNumberOfCommits = 3;
+  EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_surface, Frame(_)).Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
+
+  Sync();
+
+  ::testing::InSequence s;
+
+  // Commit the first buffer and expect the OnSubmission immediately.
+  EXPECT_CALL(
+      mock_surface_gpu,
+      OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK,
+                   Truly([](const auto& fence) { return fence.is_null(); })))
+      .Times(1);
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, bounds);
+  mock_surface->SendFrameCallback();
+  Sync();
+
+  // Commit the second buffer now.
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId2, bounds, bounds);
+  mock_surface->SendFrameCallback();
+  Sync();
+
+  // Release the first buffer via fenced release. This should trigger
+  // OnSubmission for the second buffer with a non-null fence.
+  gfx::GpuFenceHandle handle;
+  handle.owned_fd.reset(kFenceFD);
+  EXPECT_CALL(
+      mock_surface_gpu,
+      OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK,
+                   Truly([](const auto& fence) { return !fence.is_null(); })))
+      .Times(1);
+  mock_surface->ReleaseBufferFenced(mock_surface->prev_attached_buffer(),
+                                    std::move(handle));
+  mock_surface->SendFrameCallback();
+
+  Sync();
+
+  // Commit the third buffer now.
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId3, bounds, bounds);
+  mock_surface->SendFrameCallback();
+  Sync();
+
+  // Release the second buffer via immediate explicit release. This should
+  // trigger OnSubmission for the second buffer with a null fence.
+  EXPECT_CALL(
+      mock_surface_gpu,
+      OnSubmission(kBufferId3, gfx::SwapResult::SWAP_ACK,
+                   Truly([](const auto& fence) { return fence.is_null(); })))
+      .Times(1);
+  mock_surface->ReleaseBufferFenced(mock_surface->prev_attached_buffer(),
+                                    gfx::GpuFenceHandle());
+  mock_surface->SendFrameCallback();
+
+  Sync();
+
+  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(widget, kBufferId3, false /*fail*/);
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

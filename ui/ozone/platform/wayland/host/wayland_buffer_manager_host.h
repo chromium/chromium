@@ -67,6 +67,10 @@ struct WaylandBuffer {
   // surface can tell the gpu about successful swap.
   bool released = true;
 
+  // Optional release fence. This may be set if the buffer is released
+  // via the explicit synchronization Wayland protocol.
+  gfx::GpuFenceHandle release_fence;
+
   DISALLOW_COPY_AND_ASSIGN(WaylandBuffer);
 };
 

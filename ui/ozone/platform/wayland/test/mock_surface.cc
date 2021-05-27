@@ -114,9 +114,6 @@ const struct zwp_linux_surface_synchronization_v1_interface
 MockSurface::MockSurface(wl_resource* resource) : ServerObject(resource) {}
 
 MockSurface::~MockSurface() {
-  for (auto& kv : linux_buffer_releases_)
-    wl_resource_destroy(kv.second);
-
   if (xdg_surface_ && xdg_surface_->resource())
     wl_resource_destroy(xdg_surface_->resource());
   if (sub_surface_ && sub_surface_->resource())
@@ -186,10 +183,8 @@ void MockSurface::ReleaseBuffer(wl_resource* buffer) {
   // But, this makes testing harder, and ozone/wayland should work with
   // just one of these signals (and handle both gracefully).
   auto iter = linux_buffer_releases_.find(buffer);
-  if (iter != linux_buffer_releases_.end()) {
-    wl_resource_destroy(iter->second);
+  if (iter != linux_buffer_releases_.end())
     linux_buffer_releases_.erase(iter);
-  }
 
   if (buffer == prev_attached_buffer_)
     prev_attached_buffer_ = nullptr;
@@ -210,7 +205,6 @@ void MockSurface::ReleaseBufferFenced(wl_resource* buffer,
     zwp_linux_buffer_release_v1_send_immediate_release(linux_buffer_release);
   }
   wl_client_flush(wl_resource_get_client(linux_buffer_release));
-  wl_resource_destroy(linux_buffer_release);
   linux_buffer_releases_.erase(iter);
   if (buffer == prev_attached_buffer_)
     prev_attached_buffer_ = nullptr;
