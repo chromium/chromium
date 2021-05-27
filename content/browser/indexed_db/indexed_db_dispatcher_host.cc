@@ -357,7 +357,9 @@ void IndexedDBDispatcherHost::CreateAndBindTransactionImpl(
     base::WeakPtr<IndexedDBTransaction> transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto transaction_impl = std::make_unique<TransactionImpl>(
-      transaction, origin, this->AsWeakPtr(), IDBTaskRunner());
+      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      transaction, blink::StorageKey(origin), this->AsWeakPtr(),
+      IDBTaskRunner());
   AddTransactionBinding(std::move(transaction_impl),
                         std::move(transaction_receiver));
 }

@@ -13,9 +13,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/origin.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -30,7 +30,7 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
  public:
   explicit TransactionImpl(
       base::WeakPtr<IndexedDBTransaction> transaction,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
       scoped_refptr<base::SequencedTaskRunner> idb_runner);
   ~TransactionImpl() override;
@@ -66,7 +66,7 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
   base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   base::WeakPtr<IndexedDBTransaction> transaction_;
-  const url::Origin origin_;
+  const blink::StorageKey storage_key_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
