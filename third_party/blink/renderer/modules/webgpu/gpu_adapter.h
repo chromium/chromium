@@ -17,6 +17,7 @@ namespace blink {
 
 class GPUDeviceDescriptor;
 class GPUSupportedFeatures;
+class GPUSupportedLimits;
 class ScriptPromiseResolver;
 
 class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
@@ -32,7 +33,7 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
 
   const String& name() const;
   GPUSupportedFeatures* features() const;
-  Vector<String> extensions(ExecutionContext* execution_context);
+  GPUSupportedLimits* limits() const { return limits_; }
 
   ScriptPromise requestDevice(ScriptState* script_state,
                               GPUDeviceDescriptor* descriptor);
@@ -54,6 +55,7 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
   uint32_t adapter_service_id_;
   WGPUDeviceProperties adapter_properties_;
   Member<GPUSupportedFeatures> features_;
+  Member<GPUSupportedLimits> limits_;
 
   static constexpr int kMaxAllowedConsoleWarnings = 50;
   int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;

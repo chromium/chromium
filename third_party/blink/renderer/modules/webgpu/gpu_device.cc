@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_sampler.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_shader_module.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_uncaptured_error_event.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_validation_error.h"
@@ -76,6 +77,14 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
                                                 WrapWeakPersistent(this))),
       lost_callback_(BindDawnCallback(&GPUDevice::OnDeviceLostError,
                                       WrapWeakPersistent(this))) {
+  // Check is necessary because we can't assign a default in the IDL.
+  if (descriptor->hasNonGuaranteedLimits()) {
+    limits_ = MakeGarbageCollected<GPUSupportedLimits>(
+        descriptor->nonGuaranteedLimits());
+  } else {
+    limits_ = MakeGarbageCollected<GPUSupportedLimits>();
+  }
+
   DCHECK(dawn_device);
   GetProcs().deviceSetUncapturedErrorCallback(
       GetHandle(), error_callback_->UnboundRepeatingCallback(),
@@ -427,6 +436,7 @@ const AtomicString& GPUDevice::InterfaceName() const {
 void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(adapter_);
   visitor->Trace(features_);
+  visitor->Trace(limits_);
   visitor->Trace(queue_);
   visitor->Trace(lost_property_);
   ExecutionContextClient::Trace(visitor);

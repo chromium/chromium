@@ -47,6 +47,7 @@ class GPUSamplerDescriptor;
 class GPUShaderModule;
 class GPUShaderModuleDescriptor;
 class GPUSupportedFeatures;
+class GPUSupportedLimits;
 class GPUTexture;
 class GPUTextureDescriptor;
 class ScriptPromiseResolver;
@@ -69,6 +70,7 @@ class GPUDevice final : public EventTargetWithInlineData,
   // gpu_device.idl
   GPUAdapter* adapter() const;
   GPUSupportedFeatures* features() const;
+  GPUSupportedLimits* limits() const { return limits_; }
   ScriptPromise lost(ScriptState* script_state);
 
   GPUQueue* queue();
@@ -150,6 +152,7 @@ class GPUDevice final : public EventTargetWithInlineData,
 
   Member<GPUAdapter> adapter_;
   Member<GPUSupportedFeatures> features_;
+  Member<GPUSupportedLimits> limits_;
   Member<GPUQueue> queue_;
   Member<LostProperty> lost_property_;
   std::unique_ptr<

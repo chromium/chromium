@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
@@ -43,6 +44,7 @@ WGPUDeviceProperties AsDawnType(const GPUDeviceDescriptor* descriptor) {
 
   return requested_device_properties;
 }
+
 }  // anonymous namespace
 
 GPUAdapter::GPUAdapter(
@@ -53,7 +55,8 @@ GPUAdapter::GPUAdapter(
     : DawnObjectBase(dawn_control_client),
       name_(name),
       adapter_service_id_(adapter_service_id),
-      adapter_properties_(properties) {
+      adapter_properties_(properties),
+      limits_(MakeGarbageCollected<GPUSupportedLimits>()) {
   InitializeFeatureNameList();
 }
 
@@ -129,6 +132,32 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
+  // Validation of the limits could happen in Dawn, but until that's
+  // implemented we can do it here to preserve the spec behavior.
+  if (descriptor->hasNonGuaranteedLimits()) {
+    for (const auto& key_value_pair : descriptor->nonGuaranteedLimits()) {
+      switch (
+          limits_->ValidateLimit(key_value_pair.first, key_value_pair.second)) {
+        case GPUSupportedLimits::ValidationResult::Valid:
+          break;
+        case GPUSupportedLimits::ValidationResult::BadName: {
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kOperationError, "The limit name \"" +
+                                                     key_value_pair.first +
+                                                     "\" is not recognized."));
+          return promise;
+        }
+        case GPUSupportedLimits::ValidationResult::BadValue: {
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kOperationError,
+              "The limit requested for \"" + key_value_pair.first +
+                  "\" exceeds the adapter's supported limit."));
+          return promise;
+        }
+      }
+    }
+  }
+
   WGPUDeviceProperties requested_device_properties = AsDawnType(descriptor);
 
   GetInterface()->RequestDeviceAsync(
@@ -141,6 +170,7 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
 
 void GPUAdapter::Trace(Visitor* visitor) const {
   visitor->Trace(features_);
+  visitor->Trace(limits_);
   ScriptWrappable::Trace(visitor);
 }
 

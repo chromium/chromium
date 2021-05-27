@@ -6,5 +6,7 @@
 
 dictionary GPUDeviceDescriptor : GPUObjectDescriptorBase {
     sequence<GPUFeatureName> nonGuaranteedFeatures = [];
-    GPULimits limits = {};
+
+    // Should have a default of {}, but Blink doesn't seem to support that yet.
+    record<DOMString, GPUSize32> nonGuaranteedLimits;
 };
