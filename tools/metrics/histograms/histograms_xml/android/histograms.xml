@@ -2625,7 +2625,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.AndroidX.ApiCall" enum="AndroidXWebkitApiCall"
     expires_after="2022-01-31">
-  <owner>laisminchillo@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records calls to WebView APIs from AndroidX. Some AndroidX-originating calls
@@ -2694,15 +2694,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.ClearProxyOverride" units="units"
     expires_after="2021-08-01">
-  <owner>laisminchillo@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>Records ClearProxyOverride calls.</summary>
 </histogram>
 
 <histogram name="Android.WebView.ComponentUpdater.CPSDirectorySize" units="KB"
     expires_after="2021-10-08">
-  <owner>laisminchillo@chromium.org</owner>
   <owner>nator@chromium.org</owner>
+  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Size on disk taken by the ComponentsProviderService serving directory. This
@@ -2712,8 +2712,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.ComponentUpdater.CUSDirectorySize" units="KB"
     expires_after="2021-10-08">
-  <owner>laisminchillo@chromium.org</owner>
   <owner>nator@chromium.org</owner>
+  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Size on disk taken by the AwComponentUpdateService directory. This is logged
@@ -2723,8 +2723,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.ComponentUpdater.GetFilesDuration" units="ms"
     expires_after="2021-10-08">
-  <owner>laisminchillo@chromium.org</owner>
   <owner>nator@chromium.org</owner>
+  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Duration of ComponentsProviderService getFilesForComponent request. This
@@ -2735,8 +2735,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.ComponentUpdater.GetFilesResult"
     enum="WebViewComponentUpdaterGetFilesResult" expires_after="2021-10-08">
-  <owner>laisminchillo@chromium.org</owner>
   <owner>nator@chromium.org</owner>
+  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Logs the result of ComponentsProviderService getFilesForComponent request.
@@ -2747,8 +2747,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.ComponentUpdater.UnexpectedExit"
     enum="Boolean" expires_after="2021-10-08">
-  <owner>laisminchillo@chromium.org</owner>
   <owner>nator@chromium.org</owner>
+  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Whether AwComponentUpdateService quit unexpectedly on the previous run. This
@@ -2759,8 +2759,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.ComponentUpdater.UpdateJobDuration" units="ms"
     expires_after="2021-10-08">
-  <owner>laisminchillo@chromium.org</owner>
   <owner>nator@chromium.org</owner>
+  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Duration of AwComponentUpdateService update job. This job is responsible for
@@ -2770,8 +2770,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.ComponentUpdater.UpdateJobFilesChanged"
     units="count" expires_after="2021-10-08">
-  <owner>laisminchillo@chromium.org</owner>
   <owner>nator@chromium.org</owner>
+  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     How many components were updated by AwComponentUpdateService update job.
@@ -3228,7 +3228,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.SetProxyOverride.BypassRules"
     enum="BooleanPresent" expires_after="2021-08-01">
-  <owner>laisminchillo@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records whether bypass rules were present in SetProxyOverride calls.
@@ -3237,7 +3237,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.SetProxyOverride.ProxySchemeFilterType"
     enum="AndroidWebViewProxySchemeFilterType" expires_after="2021-08-01">
-  <owner>laisminchillo@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the type of scheme filter in SetProxyOverride calls.
@@ -3246,7 +3246,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.SetProxyOverride.ProxyUrlType"
     enum="AndroidWebViewProxyUrlType" expires_after="2021-08-01">
-  <owner>laisminchillo@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>Records the type of url in SetProxyOverride calls.</summary>
 </histogram>
@@ -3388,7 +3388,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.SupportLibrary.ClientIsCompat"
     enum="WebViewClientTypeEnum" expires_after="2021-11-13">
-  <owner>laisminchillo@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
