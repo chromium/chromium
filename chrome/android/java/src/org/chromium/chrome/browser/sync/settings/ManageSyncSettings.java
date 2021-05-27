@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -174,10 +173,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mIsFromSigninScreen =
                 IntentUtils.safeGetBoolean(getArguments(), IS_FROM_SIGNIN_SCREEN, false);
 
-        getActivity().setTitle(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                        ? R.string.sync_category_title
-                        : R.string.manage_sync_title);
+        getActivity().setTitle(R.string.sync_category_title);
         setHasOptionsMenu(true);
         if (mIsFromSigninScreen) {
             ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -212,20 +208,19 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                 SyncSettingsUtils.toOnClickListener(this, this::onTurnOffSyncClicked));
 
         Profile profile = Profile.getLastUsedRegularProfile();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                && !mIsFromSigninScreen) {
+        if (!mIsFromSigninScreen) {
             // Child profiles should not be able to sign out.
             mTurnOffSync.setVisible(!profile.isChild());
             findPreference(PREF_ADVANCED_CATEGORY).setVisible(true);
 
             /**
-             * If MOBILE_IDENTITY_CONSISTENCY is disabled, sync data type states are retained even
-             * if the user toggles 'Sync your Chrome data' off in {@link SyncAndServicesSettings}
-             * page. This leads to an UI error that shows that all data types are enabled to sync
-             * even though sync is shown as turned off in {@link ManageSyncSettings} page.
-             * This state is impossible to reach if MOBILE_IDENTITY_CONSISTENCY is enabled.
-             * TODO(https://crbug.com/1065029): This code will be removed after
-             * MOBILE_IDENTITY_CONSISTENCY has been rolled out and existing users have been migrated
+             * Prior to the launch of MOBILE_IDENTITY_CONSISTENCY, sync request was done through a
+             * toggle that has now been removed. Currently sync is requested if the user checks
+             * any data type to sync. If no data type is checked then sync is not requested.
+             *
+             * This code is should be kept in place until M104 so that the users that had toggled
+             * sync request off prior to MOBILE_IDENTITY_CONSISTENCY get a chance to migrate to the
+             * new flow.
              */
             if (!ProfileSyncService.get().isSyncRequested()) {
                 ProfileSyncService.get().setChosenDataTypes(false, new HashSet<>());
@@ -303,8 +298,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                || !mIsFromSigninScreen) {
+        if (!mIsFromSigninScreen) {
             return super.onCreateView(inflater, container, savedInstanceState);
         }
 
@@ -398,8 +392,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                 || (mSyncPaymentsIntegration.isChecked() && mSyncAutofill.isChecked()));
 
         // For child profiles sync should always be on.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                && !Profile.getLastUsedRegularProfile().isChild()) {
+        if (!Profile.getLastUsedRegularProfile().isChild()) {
             boolean atLeastOneDataTypeEnabled =
                     mSyncEverything.isChecked() || selectedModelTypes.size() > 0;
             if (mProfileSyncService.isSyncRequested() && !atLeastOneDataTypeEnabled) {

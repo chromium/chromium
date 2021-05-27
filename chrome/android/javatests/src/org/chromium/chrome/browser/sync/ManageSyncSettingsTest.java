@@ -36,7 +36,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -47,7 +46,6 @@ import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.sync.ModelType;
@@ -159,7 +157,6 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testUnsettingAllDataTypesStopsSync() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncFeatureActive();
@@ -178,7 +175,6 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testSettingAnyDataTypeStartsSync() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.setChosenDataTypes(false, new HashSet<>());
@@ -195,7 +191,6 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testTogglingSyncEverythingStartsSync() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.setChosenDataTypes(false, new HashSet<>());
@@ -210,7 +205,6 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testTogglingSyncEverythingDoesNotStopSync() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.setChosenDataTypes(false, new HashSet<>());
@@ -226,7 +220,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testPressingTurnOffSyncAndSignOutShowsSignOutDialog() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.setChosenDataTypes(true, null);
@@ -549,7 +542,6 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testAdvancedSyncFlowPreferencesAndBottomBarShown() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncFeatureActive();
@@ -566,7 +558,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testAdvancedSyncFlowTopView() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncFeatureActive();
@@ -578,7 +569,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testAdvancedSyncFlowBottomView() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncFeatureActive();
@@ -597,8 +587,6 @@ public class ManageSyncSettingsTest {
     }
 
     private ManageSyncSettings startManageSyncPreferencesFromSyncConsentFlow() {
-        Assert.assertTrue(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY));
         mSettingsActivity = mSettingsActivityTestRule.startSettingsActivity(
                 ManageSyncSettings.createArguments(true));
         return mSettingsActivityTestRule.getFragment();
