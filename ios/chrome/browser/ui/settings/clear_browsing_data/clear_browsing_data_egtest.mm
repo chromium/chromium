@@ -84,6 +84,16 @@ using chrome_test_util::WindowWithNumber;
                                              clearBrowsingDataDialogLabel)];
 }
 
+- (void)openClearBrowsingDataDialogInWindowWithNumber:(int)windowNumber {
+  [ChromeEarlGreyUI openSettingsMenuInWindowWithNumber:windowNumber];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
+
+  NSString* clearBrowsingDataDialogLabel =
+      l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
+  [ChromeEarlGreyUI tapPrivacyMenuButton:ButtonWithAccessibilityLabel(
+                                             clearBrowsingDataDialogLabel)];
+}
+
 // Test that opening the clear browsing data dialog does not crash.
 - (void)testOpenClearBrowsingDataDialogUI {
   [self openClearBrowsingDataDialog];
@@ -123,14 +133,12 @@ using chrome_test_util::WindowWithNumber;
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
-  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
-  [self openClearBrowsingDataDialog];
+  [self openClearBrowsingDataDialogInWindowWithNumber:0];
 
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
-  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
-  [self openClearBrowsingDataDialog];
+  [self openClearBrowsingDataDialogInWindowWithNumber:1];
 
   // Grab start states.
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];

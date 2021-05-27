@@ -409,6 +409,11 @@
 // Returns a matcher for the current WebState's scroll view.
 + (id<GREYMatcher>)webStateScrollViewMatcher;
 
+// Returns a matcher for the current WebState's scroll view in the given
+// |windowNumber|.
++ (id<GREYMatcher>)webStateScrollViewMatcherInWindowWithNumber:
+    (int)windowNumber;
+
 // Returns a matcher for the Clear Browsing Data button in the History UI.
 + (id<GREYMatcher>)historyClearBrowsingDataButton;
 

@@ -208,6 +208,41 @@ there’s a special matcher for Multiwindow:
 id<GREYMatcher> SettingsMenuBackButton(int window_number);
 ```
 
+## Chrome Matchers
+Some chrome matchers have a version where the window number needs to be
+specified. On those, the root matcher will be set and left set on return to
+allow less verbosity at call site.
+
+```
+// Makes the toolbar visible by swiping downward, if necessary. Then taps on
+// the Tools menu button. At least one tab needs to be open and visible when
+// calling this method.
+// Sets and Leaves the root matcher to the given window with |windowNumber|.
+- (void)openToolsMenuInWindowWithNumber:(int)windowNumber;
+
+// Opens the settings menu by opening the tools menu, and then tapping the
+// Settings button. There will be a GREYAssert if the tools menu is open when
+// calling this method.
+// Sets and Leaves the root matcher to the given window with |windowNumber|.
+- (void)openSettingsMenuInWindowWithNumber:(int)windowNumber;
+```
+
+For example, the following code:
+
+```
+  [EarlGrey setRootMatcherForSubsequentInteractions:
+                chrome_test_util::WindowWithNumber(windowNumber)];
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
+```
+
+Can be reduced to:
+
+```
+  [ChromeEarlGreyUI openToolsMenuInWindowWithNumber:windowNumber];
+  [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
+```
+
 ## Actions
 
 There are actions that cannot be done using `EarlGrey` (yet?).  One of those is

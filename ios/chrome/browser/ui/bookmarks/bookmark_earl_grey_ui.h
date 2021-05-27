@@ -71,6 +71,10 @@ id<GREYMatcher> SearchIconButton();
 // Navigates to the bookmark manager UI.
 - (void)openBookmarks;
 
+// Navigates to the bookmark manager UI in window with number |windowNumber|.
+// Sets and Leaves the root matcher to the given window.
+- (void)openBookmarksInWindowWithNumber:(int)windowNumber;
+
 // Selects MobileBookmarks to open.
 - (void)openMobileBookmarks;
 

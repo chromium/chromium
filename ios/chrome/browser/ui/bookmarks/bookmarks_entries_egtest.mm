@@ -1149,14 +1149,13 @@ id<GREYMatcher> AddBookmarkButton() {
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
-  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
-  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openBookmarksInWindowWithNumber:1];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Load url in first window and bookmark it.
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
   [ChromeEarlGrey loadURL:URL1 inWindowWithNumber:0];
-  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI openToolsMenuInWindowWithNumber:0];
   [ChromeEarlGreyUI tapToolsMenuButton:AddBookmarkButton()];
 
   // Assert it appeared in second window's list.
@@ -1166,8 +1165,7 @@ id<GREYMatcher> AddBookmarkButton() {
       assertWithMatcher:grey_notNil()];
 
   // Open bookmark panel in first window also.
-  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
-  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openBookmarksInWindowWithNumber:0];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(

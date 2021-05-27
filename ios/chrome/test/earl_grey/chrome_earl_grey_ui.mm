@@ -103,8 +103,29 @@ class ScopedDisableTimerTracking {
   // to always find it.
 }
 
+- (void)openToolsMenuInWindowWithNumber:(int)windowNumber {
+  [EarlGrey setRootMatcherForSubsequentInteractions:
+                chrome_test_util::WindowWithNumber(windowNumber)];
+  // TODO(crbug.com/639524): Add logic to ensure the app is in the correct
+  // state, for example DCHECK if no tabs are displayed.
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(chrome_test_util::ToolsMenuButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionDown)
+      onElementWithMatcher:chrome_test_util::
+                               WebStateScrollViewMatcherInWindowWithNumber(
+                                   windowNumber)] performAction:grey_tap()];
+  // TODO(crbug.com/639517): Add webViewScrollView matcher so we don't have
+  // to always find it.
+}
+
 - (void)openSettingsMenu {
   [self openToolsMenu];
+  [self tapToolsMenuButton:SettingsMenuButton()];
+}
+
+- (void)openSettingsMenuInWindowWithNumber:(int)windowNumber {
+  [self openToolsMenuInWindowWithNumber:windowNumber];
   [self tapToolsMenuButton:SettingsMenuButton()];
 }
 

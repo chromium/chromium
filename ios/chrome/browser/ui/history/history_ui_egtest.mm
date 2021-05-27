@@ -617,8 +617,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
-  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
-  [self openHistoryPanel];
+  [self openHistoryPanelInWindowWithNumber:1];
 
   // Assert that three history elements are present in second window.
   [[EarlGrey
@@ -632,8 +631,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_notNil()];
 
   // Open history panel in first window also.
-  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
-  [self openHistoryPanel];
+  [self openHistoryPanelInWindowWithNumber:0];
 
   // Assert that three history elements are present in first window.
   [[EarlGrey
@@ -679,6 +677,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (void)openHistoryPanel {
   [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
+}
+
+- (void)openHistoryPanelInWindowWithNumber:(int)windowNumber {
+  [ChromeEarlGreyUI openToolsMenuInWindowWithNumber:windowNumber];
   [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
 }
 

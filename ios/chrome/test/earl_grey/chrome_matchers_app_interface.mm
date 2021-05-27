@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/tab_test_util.h"
+#import "ios/chrome/test/app/window_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/public/test/earl_grey/web_view_matchers.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -831,6 +832,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)webStateScrollViewMatcher {
   return web::WebViewScrollView(chrome_test_util::GetCurrentWebState());
+}
+
++ (id<GREYMatcher>)webStateScrollViewMatcherInWindowWithNumber:
+    (int)windowNumber {
+  return web::WebViewScrollView(
+      chrome_test_util::GetCurrentWebStateForWindowWithNumber(windowNumber));
 }
 
 + (id<GREYMatcher>)historyClearBrowsingDataButton {

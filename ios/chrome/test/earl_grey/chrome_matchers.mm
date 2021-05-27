@@ -531,6 +531,11 @@ id<GREYMatcher> WebStateScrollViewMatcher() {
   return [ChromeMatchersAppInterface webStateScrollViewMatcher];
 }
 
+id<GREYMatcher> WebStateScrollViewMatcherInWindowWithNumber(int windowNumber) {
+  return [ChromeMatchersAppInterface
+      webStateScrollViewMatcherInWindowWithNumber:windowNumber];
+}
+
 id<GREYMatcher> HistoryClearBrowsingDataButton() {
   return [ChromeMatchersAppInterface historyClearBrowsingDataButton];
 }

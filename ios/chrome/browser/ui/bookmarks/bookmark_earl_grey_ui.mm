@@ -129,6 +129,16 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_nil()];
 }
 
+- (void)openBookmarksInWindowWithNumber:(int)windowNumber {
+  // Opens the bookmark manager.
+  [ChromeEarlGreyUI openToolsMenuInWindowWithNumber:windowNumber];
+  [ChromeEarlGreyUI tapToolsMenuButton:BookmarksMenuButton()];
+
+  // Assert the menu is gone.
+  [[EarlGrey selectElementWithMatcher:BookmarksMenuButton()]
+      assertWithMatcher:grey_nil()];
+}
+
 - (void)openMobileBookmarks {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(

@@ -37,10 +37,22 @@
 // calling this method.
 - (void)openToolsMenu;
 
+// Makes the toolbar visible by swiping downward, if necessary. Then taps on
+// the Tools menu button. At least one tab needs to be open and visible when
+// calling this method.
+// Sets and Leaves the root matcher to the given window with |windowNumber|.
+- (void)openToolsMenuInWindowWithNumber:(int)windowNumber;
+
 // Opens the settings menu by opening the tools menu, and then tapping the
 // Settings button. There will be a GREYAssert if the tools menu is open when
 // calling this method.
 - (void)openSettingsMenu;
+
+// Opens the settings menu by opening the tools menu, and then tapping the
+// Settings button. There will be a GREYAssert if the tools menu is open when
+// calling this method.
+// Sets and Leaves the root matcher to the given window with |windowNumber|.
+- (void)openSettingsMenuInWindowWithNumber:(int)windowNumber;
 
 // Scrolls to find the button in the Tools menu with the corresponding
 // |buttonMatcher|, and then taps it. If |buttonMatcher| is not found, or
