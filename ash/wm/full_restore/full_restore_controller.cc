@@ -16,6 +16,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/auto_reset.h"
@@ -121,6 +122,40 @@ aura::Window* GetSiblingToStackBelow(aura::Window* window) {
   return nullptr;
 }
 
+// If `window`'s saved window info makes the `window` out-of-bounds for the
+// display, manually restore its bounds. Also ensures that at least 30% of the
+// window is visible to handle the case where the display a window is restored
+// to is drastically smaller than the pre-restore display.
+void MaybeRestoreOutOfBoundsWindows(aura::Window* window) {
+  std::unique_ptr<full_restore::WindowInfo> window_info = GetWindowInfo(window);
+  if (!window_info)
+    return;
+
+  gfx::Rect current_bounds =
+      window_info->current_bounds.value_or(gfx::Rect(0, 0));
+  if (current_bounds.IsEmpty())
+    return;
+
+  const auto& closest_display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  gfx::Rect display_area = closest_display.work_area();
+  if (display_area.Contains(current_bounds))
+    return;
+
+  AdjustBoundsToEnsureMinimumWindowVisibility(display_area, &current_bounds);
+
+  auto* window_state = WindowState::Get(window);
+  if (window_state->HasRestoreBounds()) {
+    // When a `window` is in maximized, minimized, or snapped its restore bounds
+    // are saved in `WindowInfo.current_bounds` and its
+    // maximized/minimized/snapped bounds are determined by the system, so apply
+    // this adjustment to `window`'s restore bounds instead.
+    window_state->SetRestoreBoundsInScreen(current_bounds);
+  } else {
+    window->SetBoundsInScreen(current_bounds, closest_display);
+  }
+}
+
 }  // namespace
 
 FullRestoreController::FullRestoreController() {
@@ -213,6 +248,14 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
     return;
 
   UpdateAndObserveWindow(window);
+
+  // If the restored bounds are out of the screen, move the window to the bounds
+  // manually as most widget types force windows to be within the work area on
+  // creation.
+  // TODO(chinsenj|sammiequon): The Files app uses async Mojo calls to activate
+  // and set its bounds, making this approach not work. In the future, we'll
+  // need to address the Files app.
+  MaybeRestoreOutOfBoundsWindows(window);
 }
 
 void FullRestoreController::OnARCTaskReadyForUnparentedWindow(

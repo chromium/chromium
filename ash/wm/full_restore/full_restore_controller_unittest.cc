@@ -933,12 +933,13 @@ TEST_F(FullRestoreControllerTest, HotseatIsHiddenOnRestoration) {
 
   // Add two entries, where the window highest on the z-order is minimized.
   // Restore both entries. The hotseat should now be hidden.
+  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
   AddEntryToFakeFile(/*restore_window_id=*/1, gfx::Rect(200, 200),
                      chromeos::WindowStateType::kMinimized,
-                     /*activation_index=*/1);
+                     /*activation_index=*/1, /*display_id=*/primary_id);
   AddEntryToFakeFile(/*restore_window_id=*/2, gfx::Rect(200, 200),
                      chromeos::WindowStateType::kNormal,
-                     /*activation_index=*/2);
+                     /*activation_index=*/2, /*display_id=*/primary_id);
   views::Widget* restored_widget_1 =
       CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
   views::Widget* restored_widget_2 =
@@ -963,12 +964,13 @@ TEST_F(FullRestoreControllerTest,
 
   // Create multiple minimized entries and restore them. The app list should
   // still be active.
+  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
   AddEntryToFakeFile(/*restore_window_id=*/1, gfx::Rect(200, 200),
                      chromeos::WindowStateType::kMinimized,
-                     /*activation_index=*/1);
+                     /*activation_index=*/1, /*display_id=*/primary_id);
   AddEntryToFakeFile(/*restore_window_id=*/2, gfx::Rect(200, 200),
                      chromeos::WindowStateType::kMinimized,
-                     /*activation_index=*/2);
+                     /*activation_index=*/2, /*display_id=*/primary_id);
   views::Widget* restored_widget_1 =
       CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
   views::Widget* restored_widget_2 =
@@ -1095,6 +1097,54 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTaskMultiDisplay) {
   EXPECT_EQ(
       Shell::GetContainer(primary_root_window, kShellWindowId_DeskContainerD),
       restored_window2->parent());
+}
+
+// Tests that windows that are out-of-bounds of the display they're being
+// restored to are properly restored.
+TEST_F(FullRestoreControllerTest, OutOfBoundsWindows) {
+  UpdateDisplay("800x800");
+  const gfx::Rect kScreenBounds(0, 0, 800, 800);
+  const gfx::Rect kPartialBounds(-100, 100, 200, 200);
+  const gfx::Rect kFullBounds(801, 801, 400, 200);
+
+  // Add an entry that is partially out-of-bounds, one that is completely
+  // out-of-bounds, and one that is completely out-of-bounds and snapped.
+  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
+  AddEntryToFakeFile(/*restore_id=*/1, kPartialBounds,
+                     chromeos::WindowStateType::kNormal, /*activation_index=*/1,
+                     /*display_id=*/primary_id);
+  AddEntryToFakeFile(/*restore_id=*/2, kFullBounds,
+                     chromeos::WindowStateType::kNormal, /*activation_index=*/2,
+                     /*display_id=*/primary_id);
+  AddEntryToFakeFile(/*restore_id=*/3, kFullBounds,
+                     chromeos::WindowStateType::kLeftSnapped,
+                     /*activation_index=*/3, /*display_id=*/primary_id);
+
+  // Restore the first window. The window should have the exact same bounds.
+  const gfx::Rect& window_bounds_1 =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_id=*/1)
+          ->GetNativeWindow()
+          ->GetBoundsInScreen();
+  EXPECT_EQ(kPartialBounds, window_bounds_1);
+
+  // Restore the second window. The window should be moved such that part of it
+  // is within the display.
+  gfx::Rect window_bounds_2(
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_id=*/2)
+          ->GetNativeWindow()
+          ->GetBoundsInScreen());
+  EXPECT_TRUE(window_bounds_2.Intersects(kScreenBounds));
+  EXPECT_LT(0, IntersectRects(kScreenBounds, window_bounds_2).size().GetArea());
+
+  // Restore the third window. The window's restore bounds should be moved such
+  // that part of it is within the display.
+  const gfx::Rect& window_bounds_3 =
+      WindowState::Get(
+          CreateTestFullRestoredWidgetFromRestoreId(/*restore_id=*/3)
+              ->GetNativeWindow())
+          ->GetRestoreBoundsInScreen();
+  EXPECT_TRUE(window_bounds_3.Intersects(kScreenBounds));
+  EXPECT_LT(0, IntersectRects(kScreenBounds, window_bounds_3).size().GetArea());
 }
 
 }  // namespace ash
