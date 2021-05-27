@@ -6,6 +6,8 @@
     "ActivationType": "OTASP",
     "AllowRoaming": true,
     "AutoConnect": true,
+    "EID": "test_eid",
+    "ICCID": "test_iccid",
     "HomeProvider": {
       "Country": "us",
       "Name": "cellular_provider"
@@ -51,7 +53,7 @@
       "LockType": "sim-pin",
       "LockEnabled": true
     },
-    "Scanning": false
+    "Scanning": true
   },
   "IPAddressConfigType":"DHCP",
   "NameServersConfigType":"DHCP",

@@ -241,6 +241,9 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
                shill::kStateIdle);
     service_test()->SetServiceProperty(
         kCellular1ServicePath, shill::kAutoConnectProperty, base::Value(true));
+    service_test()->SetServiceProperty(kCellular1ServicePath,
+                                       shill::kIccidProperty,
+                                       base::Value("test_iccid"));
     service_test()->SetServiceProperty(
         kCellular1ServicePath, shill::kNetworkTechnologyProperty,
         base::Value(shill::kNetworkTechnologyGsm));
