@@ -5,7 +5,6 @@
 #ifndef NET_TOOLS_CERT_VERIFY_TOOL_VERIFY_USING_PATH_BUILDER_H_
 #define NET_TOOLS_CERT_VERIFY_TOOL_VERIFY_USING_PATH_BUILDER_H_
 
-#include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"

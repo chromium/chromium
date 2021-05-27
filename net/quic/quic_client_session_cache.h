@@ -9,7 +9,6 @@
 #include <time.h>
 
 #include <memory>
-#include <string>
 
 #include "base/bind.h"
 #include "base/containers/mru_cache.h"

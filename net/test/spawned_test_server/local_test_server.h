@@ -5,7 +5,6 @@
 #ifndef NET_TEST_SPAWNED_TEST_SERVER_LOCAL_TEST_SERVER_H_
 #define NET_TEST_SPAWNED_TEST_SERVER_LOCAL_TEST_SERVER_H_
 
-#include <string>
 #include <vector>
 
 #include "base/files/file_util.h"

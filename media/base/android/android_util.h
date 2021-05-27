@@ -6,7 +6,6 @@
 #define MEDIA_BASE_ANDROID_ANDROID_UTIL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/android/scoped_java_ref.h"
 

@@ -5,7 +5,6 @@
 #ifndef NET_TOOLS_HUFFMAN_TRIE_TRIE_TRIE_WRITER_H_
 #define NET_TOOLS_HUFFMAN_TRIE_TRIE_TRIE_WRITER_H_
 
-#include <string>
 #include <vector>
 
 #include "net/tools/huffman_trie/bit_writer.h"

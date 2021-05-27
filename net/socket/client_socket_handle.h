@@ -6,7 +6,6 @@
 #define NET_SOCKET_CLIENT_SOCKET_HANDLE_H_
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/bind.h"

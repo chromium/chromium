@@ -5,8 +5,6 @@
 #ifndef NET_PROXY_RESOLUTION_PROXY_RESOLVER_H_
 #define NET_PROXY_RESOLUTION_PROXY_RESOLVER_H_
 
-#include <string>
-
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <bitset>
-#include <string>
 
 #include "base/macros.h"
 #include "net/base/ip_endpoint.h"

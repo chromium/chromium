@@ -6,7 +6,6 @@
 #define MEDIA_MOJO_SERVICES_WATCH_TIME_RECORDER_H_
 
 #include <stdint.h>
-#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"

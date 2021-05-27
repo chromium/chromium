@@ -6,7 +6,6 @@
 #define MEDIA_MOJO_SERVICES_MOJO_AUDIO_OUTPUT_STREAM_H_
 
 #include <memory>
-#include <string>
 
 #include "base/sequence_checker.h"
 #include "media/audio/audio_output_delegate.h"

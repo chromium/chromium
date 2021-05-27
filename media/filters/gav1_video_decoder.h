@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <queue>
-#include <string>
 #include <vector>
 
 #include "base/containers/queue.h"

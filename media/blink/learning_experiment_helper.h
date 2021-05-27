@@ -6,7 +6,6 @@
 #define MEDIA_BLINK_LEARNING_EXPERIMENT_HELPER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "media/blink/media_blink_export.h"

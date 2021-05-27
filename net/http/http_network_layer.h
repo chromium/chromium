@@ -6,7 +6,6 @@
 #define NET_HTTP_HTTP_NETWORK_LAYER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"

@@ -6,7 +6,6 @@
 #define NET_CERT_INTERNAL_PATH_BUILDER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/supports_user_data.h"

@@ -6,7 +6,6 @@
 #define MEDIA_BASE_SCOPED_ASYNC_TRACE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "media/base/media_export.h"

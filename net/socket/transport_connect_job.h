@@ -6,7 +6,6 @@
 #define NET_SOCKET_TRANSPORT_CONNECT_JOB_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"

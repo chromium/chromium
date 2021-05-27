@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -204,7 +203,6 @@ class NET_EXPORT_PRIVATE SimpleIndexFile {
 
   DISALLOW_COPY_AND_ASSIGN(SimpleIndexFile);
 };
-
 
 }  // namespace disk_cache
 

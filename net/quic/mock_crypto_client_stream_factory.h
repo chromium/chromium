@@ -6,7 +6,6 @@
 #define NET_QUIC_MOCK_CRYPTO_CLIENT_STREAM_FACTORY_H_
 
 #include <memory>
-#include <string>
 
 #include "base/containers/queue.h"
 #include "base/macros.h"

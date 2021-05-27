@@ -6,7 +6,6 @@
 #define NET_SOCKET_SOCKS_CONNECT_JOB_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

@@ -6,7 +6,6 @@
 #define MEDIA_MIDI_MIDI_MANAGER_WINRT_H_
 
 #include <memory>
-#include <string>
 
 #include "base/thread_annotations.h"
 #include "media/midi/midi_manager.h"

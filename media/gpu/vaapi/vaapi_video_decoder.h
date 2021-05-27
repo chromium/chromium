@@ -10,7 +10,6 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/containers/mru_cache.h"

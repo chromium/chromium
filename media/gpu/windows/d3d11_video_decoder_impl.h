@@ -10,7 +10,6 @@
 
 #include <list>
 #include <memory>
-#include <string>
 #include <tuple>
 
 #include "base/callback.h"

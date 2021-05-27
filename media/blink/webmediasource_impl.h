@@ -5,7 +5,6 @@
 #ifndef MEDIA_BLINK_WEBMEDIASOURCE_IMPL_H_
 #define MEDIA_BLINK_WEBMEDIASOURCE_IMPL_H_
 
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

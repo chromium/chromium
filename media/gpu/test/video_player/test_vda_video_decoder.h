@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <map>
 #include <memory>
-#include <string>
 
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"

@@ -6,7 +6,6 @@
 #define MEDIA_BASE_MEDIA_CLIENT_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "media/base/audio_codecs.h"

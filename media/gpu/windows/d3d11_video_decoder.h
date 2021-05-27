@@ -6,7 +6,6 @@
 #define MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_H_
 
 #include <d3d11.h>
-#include <string>
 #include <vector>
 
 #include "base/memory/ptr_util.h"

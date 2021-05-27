@@ -5,7 +5,6 @@
 #ifndef NET_REPORTING_MOCK_PERSISTENT_REPORTING_STORE_H_
 #define NET_REPORTING_MOCK_PERSISTENT_REPORTING_STORE_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

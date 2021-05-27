@@ -6,7 +6,6 @@
 #define MEDIA_GPU_TEST_IMAGE_PROCESSOR_IMAGE_PROCESSOR_CLIENT_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/atomicops.h"

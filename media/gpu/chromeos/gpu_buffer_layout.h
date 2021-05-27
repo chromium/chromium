@@ -6,7 +6,6 @@
 #define MEDIA_GPU_CHROMEOS_GPU_BUFFER_LAYOUT_H_
 
 #include <ostream>
-#include <string>
 #include <vector>
 
 #include "media/base/color_plane_layout.h"

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 
 #include "base/containers/queue.h"
 #include "base/files/file.h"

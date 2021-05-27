@@ -6,7 +6,6 @@
 #define NET_REPORTING_REPORTING_ENDPOINT_MANAGER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "net/base/net_export.h"

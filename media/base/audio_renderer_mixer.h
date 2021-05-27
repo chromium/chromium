@@ -9,7 +9,6 @@
 
 #include <map>
 #include <memory>
-#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
