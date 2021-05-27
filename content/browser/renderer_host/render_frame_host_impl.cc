@@ -3727,6 +3727,11 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   auto request = navigation_requests_.find(committing_navigation_request);
   CHECK(request != navigation_requests_.end());
 
+  base::TimeTicks navigation_start =
+      committing_navigation_request->NavigationStart();
+  bool is_prerender_page_activation =
+      committing_navigation_request->IsPrerenderedPageActivation();
+
   std::unique_ptr<NavigationRequest> owned_request = std::move(request->second);
   navigation_requests_.erase(committing_navigation_request);
 
@@ -3736,6 +3741,12 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   // The page is already loaded since it came from the cache, so fire the stop
   // loading event.
   DidStopLoading();
+
+  if (is_prerender_page_activation) {
+    // Record metric to check navigation time with prerender activation.
+    base::TimeDelta delta = base::TimeTicks::Now() - navigation_start;
+    UMA_HISTOGRAM_TIMES("Navigation.TimeToActivatePrerender", delta);
+  }
 }
 
 void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
