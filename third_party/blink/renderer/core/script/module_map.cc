@@ -83,7 +83,14 @@ void ModuleMap::Entry::NotifyNewSingleModuleFinished(
   module_script_ = module_script;
   is_fetching_ = false;
 
+  HeapVector<Member<SingleModuleClient>> clients_vector;
   for (const auto& client : clients_) {
+    clients_vector.push_back(client);
+  }
+  std::sort(clients_vector.begin(), clients_vector.end(),
+            recordreplay::CompareMemberByPointerId<Member<SingleModuleClient>>());
+
+  for (const auto& client : clients_vector) {
     DispatchFinishedNotificationAsync(client);
   }
   clients_.clear();
