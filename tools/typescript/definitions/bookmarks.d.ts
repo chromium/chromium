@@ -67,10 +67,61 @@ declare namespace chrome {
         callback?: (p1: BookmarkTreeNode) => void): void;
 
     export function update(
-        id: string, changes: {title: string|undefined, url: string|undefined},
+        id: string, changes: {title?: string, url?: string},
         callback?: (p1: BookmarkTreeNode) => void): void;
 
     export function remove(id: string, callback?: () => void): void;
     export function removeTree(id: string, callback?: () => void): void;
+    function _import(callback?: () => void): void;
+    function _export(callback?: () => void): void;
+    export {_import as import}
+    export {_export as export}
+
+    // This is a workaround for the fact that importing other .d.ts files does
+    // not work. ChromeEvent is also used elsewhere so should be in its own
+    // file.
+    export interface ChromeEvent<ListenerType> {
+      addListener(listener: ListenerType): void;
+      removeListener(listener: ListenerType): void;
+    }
+
+    export const onCreated:
+        ChromeEvent<(id: string, bookmark: BookmarkTreeNode) => void>;
+
+    export interface ChangeInfo {
+      title: string,
+      url: string,
+    }
+
+    export const onChanged:
+        ChromeEvent<(id: string, changeInfo: ChangeInfo) => void>;
+
+    export interface ReorderInfo {
+      childIds: string[],
+    }
+
+    export const onChildrenReordered:
+        ChromeEvent<(id: string, reorderInfo: ReorderInfo) => void>;
+
+    export interface RemoveInfo {
+      index: number,
+      node: BookmarkTreeNode,
+      parentId: string,
+    }
+
+    export const onRemoved:
+        ChromeEvent<(id: string, removeInfo: RemoveInfo) => void>;
+
+    export interface MoveInfo {
+      index: number,
+      oldIndex: number,
+      oldParentId: string,
+      parentId: string,
+    }
+
+    export const onMoved: ChromeEvent<(id: string, moveInfo: MoveInfo) => void>;
+
+    export const onImportEnded: ChromeEvent<() => void>;
+    export const onImportBegan: ChromeEvent<() => void>;
   }
 }
