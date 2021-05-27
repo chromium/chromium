@@ -955,12 +955,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
         if (action == MotionEvent.ACTION_HOVER_EXIT) {
             mIsHovering = false;
-            mLastHoverId = View.NO_ID;
-
-            if (mPendingScrollToMakeNodeVisible) {
-                scrollToMakeNodeVisible(mAccessibilityFocusId);
-            }
-            mPendingScrollToMakeNodeVisible = false;
             return true;
         }
 
