@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS gesture-scroll-by-page
+Harness: the test ran to completion.
+

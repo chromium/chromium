@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Tests that the scrolled element gets overscroll event after fully scrolling by touch. assert_equals: expected 185 but got 185.3333282470703
+FAIL Tests that the scrolled element gets overscroll event after fullyscrolling by non-animating wheel scrolling. assert_equals: expected 185 but got 185.3333282470703
+FAIL Tests that the scrolled element gets overscroll event after fullyscrolling by animated wheel scrolling (smooth-scrolling) assert_equals: expected 185 but got 185.3333282470703
+Harness: the test ran to completion.
+
