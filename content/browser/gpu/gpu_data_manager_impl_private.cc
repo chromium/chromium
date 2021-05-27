@@ -1204,10 +1204,10 @@ void GpuDataManagerImplPrivate::AppendGpuCommandLine(
   if (browser_command_line->HasSwitch(switches::kHeadless)) {
     if (command_line->HasSwitch(switches::kUseGL)) {
       use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
-      // Don't append kOverrideUseSoftwareGLForTests when we need to enable GPU
-      // hardware for headless chromium.
+      // Don't append kOverrideUseSoftwareGLForHeadless when we need to enable
+      // GPU hardware for headless chromium.
       if (use_gl != gl::kGLImplementationEGLName)
-        command_line->AppendSwitch(switches::kOverrideUseSoftwareGLForTests);
+        command_line->AppendSwitch(switches::kOverrideUseSoftwareGLForHeadless);
     }
   }
 #endif  // !OS_MAC

@@ -256,6 +256,7 @@ bool UtilityProcessHost::StartProcess() {
       switches::kForceUIDirection,
       switches::kIgnoreCertificateErrors,
       switches::kLoggingLevel,
+      switches::kOverrideUseSoftwareGLForHeadless,
       switches::kOverrideUseSoftwareGLForTests,
       switches::kOverrideEnabledCdmInterfaceVersion,
       switches::kProxyServer,

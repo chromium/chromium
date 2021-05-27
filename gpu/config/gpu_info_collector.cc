@@ -239,11 +239,17 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
 
   bool useSoftwareGLForTests =
       command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests);
-  base::StringPiece software_gl_impl_name =
-      gl::GetGLImplementationGLName(gl::GetLegacySoftwareGLImplementation());
-  if ((implementation == gl::GetLegacySoftwareGLImplementation()) ||
-      (useSoftwareGLForTests && (gl::GetLegacySoftwareGLImplementation() ==
-                                 gl::GetSoftwareGLForTestsImplementation()))) {
+  bool useSoftwareGLForHeadless =
+      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForHeadless);
+  gl::GLImplementationParts legacyImpl =
+      gl::GetLegacySoftwareGLImplementation();
+  gl::GLImplementationParts swangleImpl = gl::GetSoftwareGLImplementation();
+
+  if ((implementation == legacyImpl) ||
+      (useSoftwareGLForTests &&
+       (legacyImpl == gl::GetSoftwareGLForTestsImplementation())) ||
+      (useSoftwareGLForHeadless &&
+       (legacyImpl == gl::GetSoftwareGLForHeadlessImplementation()))) {
     // If using the software GL implementation, use fake vendor and
     // device ids to make sure it never gets blocklisted. It allows us
     // to proceed with loading the blocklist which may have non-device
@@ -255,13 +261,15 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
     // Also declare the driver_vendor to be <software GL> to be able to
     // specify exceptions based on driver_vendor==<software GL> for some
     // blocklist rules.
-    gpu_info->gpu.driver_vendor = std::string(software_gl_impl_name);
+    gpu_info->gpu.driver_vendor =
+        std::string(gl::GetGLImplementationGLName(legacyImpl));
 
     return true;
-  } else if ((implementation == gl::GetSoftwareGLImplementation()) ||
+  } else if ((implementation == swangleImpl) ||
              (useSoftwareGLForTests &&
-              (gl::GetSoftwareGLImplementation() ==
-               gl::GetSoftwareGLForTestsImplementation()))) {
+              (swangleImpl == gl::GetSoftwareGLForTestsImplementation())) ||
+             (useSoftwareGLForHeadless &&
+              (swangleImpl == gl::GetSoftwareGLForHeadlessImplementation()))) {
     // Similarly to the above, use fake vendor and device ids
     // to make sure they never gets blocklisted for SwANGLE as well.
     gpu_info->gpu.vendor_id = 0xffff;
