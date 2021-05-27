@@ -81,6 +81,7 @@
 
 #if defined(OS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
+#include <mach/mach_time.h>
 // Avoid Mac system header macro leak.
 #undef TYPE_BOOL
 #endif
@@ -1026,6 +1027,8 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
 
 #if defined(OS_MAC)
   static TimeTicks FromMachAbsoluteTime(uint64_t mach_absolute_time);
+
+  static mach_timebase_info_data_t* MachTimebaseInfo();
 #endif  // defined(OS_MAC)
 
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
