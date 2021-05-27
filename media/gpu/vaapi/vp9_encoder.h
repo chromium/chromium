@@ -74,12 +74,7 @@ class VP9Encoder : public AcceleratedVideoEncoder {
         const Vp9ReferenceFrameVector& ref_frames,
         const std::array<bool, kVp9NumRefsPerFrame>& ref_frames_used) = 0;
 
-    void set_bitrate_control(BitrateControl bc) { bitrate_control_ = bc; }
-    BitrateControl bitrate_control() { return bitrate_control_; }
-
-   protected:
-    BitrateControl bitrate_control_ = BitrateControl::kConstantBitrate;
-
+   private:
     DISALLOW_COPY_AND_ASSIGN(Accelerator);
   };
 
@@ -108,7 +103,6 @@ class VP9Encoder : public AcceleratedVideoEncoder {
                       VP9Picture* picture,
                       std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used);
   void UpdateReferenceFrames(scoped_refptr<VP9Picture> picture);
-  void Reset();
 
   gfx::Size visible_size_;
   gfx::Size coded_size_;  // Macroblock-aligned.

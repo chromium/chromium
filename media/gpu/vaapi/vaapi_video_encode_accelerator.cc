@@ -1563,44 +1563,10 @@ bool VaapiVideoEncodeAccelerator::VP9Accelerator::SubmitFrameParameters(
                      base::Unretained(vea_), VAEncPictureParameterBufferType,
                      MakeRefCountedBytes(&pic_param, sizeof(pic_param))));
 
-  if (bitrate_control_ ==
-      AcceleratedVideoEncoder::BitrateControl::kConstantQuantizationParameter) {
-    job->AddPostExecuteCallback(base::BindOnce(
-        &VaapiVideoEncodeAccelerator::NotifyEncodedChunkSize,
-        base::Unretained(vea_), job->AsVaapiEncodeJob()->coded_buffer_id(),
-        job->AsVaapiEncodeJob()->input_surface()->id()));
-    return true;
-  }
-
-  VAEncMiscParameterRateControl rate_control_param;
-  VAEncMiscParameterFrameRate framerate_param;
-  VAEncMiscParameterHRD hrd_param;
-  FillVAEncRateControlParams(
-      base::checked_cast<uint32_t>(
-          encode_params.bitrate_allocation.GetSumBps()),
-      base::strict_cast<uint32_t>(encode_params.cpb_window_size_ms),
-      base::strict_cast<uint32_t>(encode_params.initial_qp),
-      base::strict_cast<uint32_t>(encode_params.min_qp),
-      base::strict_cast<uint32_t>(encode_params.max_qp),
-      encode_params.framerate,
-      base::strict_cast<uint32_t>(encode_params.cpb_size_bits),
-      rate_control_param, framerate_param, hrd_param);
-
-  job->AddSetupCallback(base::BindOnce(
-      &VaapiVideoEncodeAccelerator::SubmitVAEncMiscParamBuffer,
-      base::Unretained(vea_), VAEncMiscParameterTypeRateControl,
-      MakeRefCountedBytes(&rate_control_param, sizeof(rate_control_param))));
-
-  job->AddSetupCallback(base::BindOnce(
-      &VaapiVideoEncodeAccelerator::SubmitVAEncMiscParamBuffer,
-      base::Unretained(vea_), VAEncMiscParameterTypeFrameRate,
-      MakeRefCountedBytes(&framerate_param, sizeof(framerate_param))));
-
-  job->AddSetupCallback(
-      base::BindOnce(&VaapiVideoEncodeAccelerator::SubmitVAEncMiscParamBuffer,
-                     base::Unretained(vea_), VAEncMiscParameterTypeHRD,
-                     MakeRefCountedBytes(&hrd_param, sizeof(hrd_param))));
-
+  job->AddPostExecuteCallback(base::BindOnce(
+      &VaapiVideoEncodeAccelerator::NotifyEncodedChunkSize,
+      base::Unretained(vea_), job->AsVaapiEncodeJob()->coded_buffer_id(),
+      job->AsVaapiEncodeJob()->input_surface()->id()));
   return true;
 }
 
