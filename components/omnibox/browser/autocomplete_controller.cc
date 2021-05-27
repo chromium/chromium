@@ -29,6 +29,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/builtin_provider.h"
@@ -717,6 +718,8 @@ void AutocompleteController::UpdateResult(
   }
   result_.SortAndCull(input_, template_url_service_, preserve_default_match);
 
+  // TODO(tommycli): It sure seems like this should be moved down below
+  // `TransferOldMatches()` along with all the other annotation code.
   result_.AttachPedalsToMatches(input_, *provider_client_);
 
   // Need to validate before invoking CopyOldMatches as the old matches are not
@@ -738,6 +741,9 @@ void AutocompleteController::UpdateResult(
                                                      result_);
   }
 
+  // Below are all annotations after the match list is ready.
+  AttachHistoryClustersActions(provider_client_->GetHistoryClustersService(),
+                               result_);
   UpdateKeywordDescriptions(&result_);
   UpdateAssociatedKeywords(&result_);
   UpdateAssistedQueryStats(&result_);

@@ -11,6 +11,7 @@ include_rules = [
   "+components/grit",
   "+components/history/core/browser",
   "+components/history/core/test",
+  "+components/history_clusters/core",
   "+components/keyed_service/content",
   "+components/keyed_service/core",
   "+components/metrics",

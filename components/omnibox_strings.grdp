@@ -266,6 +266,20 @@
     Create Google Doc button, press Enter to Create a new Google Doc quickly
   </message>
 
+  <!-- Omnibox Actions, which are a generalization of Omnibox Pedals. -->
+  <message name="IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT" desc="The button text contents for the omnibox action to Search History Clusters.">
+    Resume journey
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS" desc="The suggestion content text to for the omnibox action to Search History Clusters.">
+    Resume journey to see relevant activity in your Chrome history
+  </message>
+  <message name="IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX" desc="Suffix for spoken suggestion description with action button to explain keystroke used to Search History Clusters.">
+    <ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>dog food</ex></ph>, press Tab, then Enter to resume your journey and see relevant activity in your Chrome history
+  </message>
+  <message name="IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH" desc="Announcement when the Search History Clusters action button is focused.">
+    Resume journey button, press Enter to resume your journey and see relevant activity in your Chrome history
+  </message>
+
   <!-- Accessibility labels for autocomplete match types.
        These are parameterized on the text being completed into the omnibox.
   -->

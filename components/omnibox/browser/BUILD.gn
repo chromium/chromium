@@ -83,6 +83,8 @@ static_library("vector_icons") {
 
 static_library("browser") {
   sources = [
+    "actions/history_clusters_action.cc",
+    "actions/history_clusters_action.h",
     "actions/omnibox_action.cc",
     "actions/omnibox_action.h",
     "actions/omnibox_pedal.cc",
@@ -242,6 +244,7 @@ static_library("browser") {
     "//components/dom_distiller/core:core",
     "//components/favicon/core",
     "//components/favicon_base",
+    "//components/history_clusters/core",
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/navigation_metrics",
