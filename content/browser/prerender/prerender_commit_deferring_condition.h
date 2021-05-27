@@ -45,6 +45,10 @@ class PrerenderCommitDeferringCondition : public CommitDeferringCondition,
 
   NavigationRequest& navigation_request_;
 
+  // The time PrerenderCommitDeferringCondition started deferring the
+  // navigation.
+  base::TimeTicks defer_start_time_;
+
   base::OnceClosure done_closure_;
 };
 

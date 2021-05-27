@@ -1369,6 +1369,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
 // (in-flight) main-frame navigation in the prerendering frame tree commits.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        SupportActivationWithOngoingMainFrameNavigation) {
+  base::HistogramTester histogram_tester;
+
   // Create a HTTP response to control prerendering main-frame navigation.
   net::test_server::ControllableHttpResponse main_document_response(
       embedded_test_server(), "/main_document");
@@ -1443,6 +1445,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
     EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
   }
+
+  // "Navigation.Prerender.ActivationCommitDeferTime" histogram should be
+  // recorded as PrerenderCommitDeferringCondition defers the navigation.
+  histogram_tester.ExpectTotalCount(
+      "Navigation.Prerender.ActivationCommitDeferTime", 1u);
 }
 
 // Tests that prerendering is gated behind CSP:prefetch-src

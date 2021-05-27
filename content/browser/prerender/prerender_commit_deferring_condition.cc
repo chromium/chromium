@@ -62,6 +62,7 @@ PrerenderCommitDeferringCondition::WillCommitNavigation(
   // Defer the prerender activation until the ongoing prerender main frame
   // navigation commits.
   done_closure_ = std::move(resume);
+  defer_start_time_ = base::TimeTicks::Now();
   return kDefer;
 }
 
@@ -91,6 +92,11 @@ void PrerenderCommitDeferringCondition::DidFinishNavigation(
   if (done_closure_) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                      std::move(done_closure_));
+
+    // Record the defer waiting time for PrerenderCommitDeferringCondition.
+    base::TimeDelta delta = base::TimeTicks::Now() - defer_start_time_;
+    base::UmaHistogramTimes("Navigation.Prerender.ActivationCommitDeferTime",
+                            delta);
   }
 }
 
