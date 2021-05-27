@@ -1,7 +1,7 @@
-From 9bf6f115ea7954510282d68125610614bc4c77df Mon Sep 17 00:00:00 2001
+From 226eb4566b5c7500f91b6e12aeb437d0ce351234 Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@chromium.org>
 Date: Mon, 1 Feb 2021 15:09:52 -0500
-Subject: [PATCH 1/2] Statefull lambdas regress dex size.
+Subject: [PATCH 1/3] Statefull lambdas regress dex size.
 
 Bug: b/129997269
 ---
@@ -23,5 +23,5 @@ index 3b5a40b65..ddb1d7955 100644
  
    // Synthesize virtual methods.
 -- 
-2.31.1.498.g6c1eba8ee3d-goog
+2.32.0.rc0.204.g9fa02ecfa5-goog
 
