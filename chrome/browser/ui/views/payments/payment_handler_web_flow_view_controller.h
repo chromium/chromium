@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -78,6 +79,9 @@ class PaymentHandlerWebFlowViewController
                       const gfx::Rect& initial_rect,
                       bool user_gesture,
                       bool* was_blocked) override;
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override;
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -98,6 +102,9 @@ class PaymentHandlerWebFlowViewController
   // Used to present modal dialog triggered from the payment handler web view,
   // e.g. an authenticator dialog.
   PaymentHandlerModalDialogManagerDelegate dialog_manager_delegate_;
+  // A handler to handle unhandled keyboard messages coming back from the
+  // renderer process.
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
 }  // namespace payments

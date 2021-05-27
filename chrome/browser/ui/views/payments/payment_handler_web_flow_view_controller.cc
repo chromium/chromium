@@ -354,6 +354,14 @@ void PaymentHandlerWebFlowViewController::AddNewContents(
   }
 }
 
+bool PaymentHandlerWebFlowViewController::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  return content_view() && content_view()->GetFocusManager() &&
+         unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+             event, content_view()->GetFocusManager());
+}
+
 void PaymentHandlerWebFlowViewController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!is_active())

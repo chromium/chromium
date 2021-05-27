@@ -159,6 +159,8 @@ class PaymentRequestSheetController {
     return header_content_separator_container_;
   }
 
+  views::View* content_view() { return content_view_; }
+
   // Returns whether the controller should be controlling the UI.
   bool is_active() const { return is_active_; }
 
