@@ -38,11 +38,9 @@ void ReceivingUiHandlerRegistry::InstantiatePlatformSpecificHandlers(
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_WIN)
 
-  if (base::FeatureList::IsEnabled(kSendTabToSelfV2)) {
-    applicable_handlers_.push_back(
-        std::make_unique<
-            send_tab_to_self::SendTabToSelfToolbarButtonController>(profile));
-  } else {
+  // If STTS 2.0 is enabled the handler will be created when the toolbar
+  // button registers itself as the delegate.
+  if (!base::FeatureList::IsEnabled(kSendTabToSelfV2)) {
     applicable_handlers_.push_back(
         std::make_unique<send_tab_to_self::DesktopNotificationHandler>(
             profile));
@@ -56,6 +54,8 @@ void ReceivingUiHandlerRegistry::InstantiatePlatformSpecificHandlers(
 SendTabToSelfToolbarButtonController*
 ReceivingUiHandlerRegistry::GetToolbarButtonControllerForProfile(
     Profile* profile) {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
+    defined(OS_WIN)
   for (const std::unique_ptr<ReceivingUiHandler>& handler :
        applicable_handlers_) {
     auto* button_controller =
@@ -64,7 +64,15 @@ ReceivingUiHandlerRegistry::GetToolbarButtonControllerForProfile(
       return button_controller;
     }
   }
+
+  applicable_handlers_.push_back(
+      std::make_unique<SendTabToSelfToolbarButtonController>(profile));
+  auto* button_controller = static_cast<SendTabToSelfToolbarButtonController*>(
+      applicable_handlers_.back().get());
+  return button_controller;
+#elif defined(OS_ANDROID)
   return nullptr;
+#endif
 }
 
 const std::vector<std::unique_ptr<ReceivingUiHandler>>&
