@@ -18,13 +18,11 @@
 #include "media/filters/h264_bitstream_buffer.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/vaapi/accelerated_video_encoder.h"
-#include "media/gpu/vaapi/va_surface.h"
-#include "media/gpu/vaapi/vaapi_wrapper.h"
+#include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
-
-class VaapiEncodeJob;
+class VaapiWrapper;
 
 // A VideoEncodeAccelerator implementation that uses VA-API
 // (https://01.org/vaapi) for HW-accelerated video encode.
@@ -53,6 +51,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   class H264Accelerator;
   class VP8Accelerator;
   class VP9Accelerator;
+
+  using EncodeJob = AcceleratedVideoEncoder::EncodeJob;
 
   // Encoder state.
   enum State {
@@ -95,10 +95,9 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // Checks if sufficient resources for a new encode job with |frame| as input
   // are available, and if so, claims them by associating them with
-  // a VaapiEncodeJob, and returns the newly-created job, nullptr otherwise.
-  std::unique_ptr<VaapiEncodeJob> CreateEncodeJob(
-      scoped_refptr<VideoFrame> frame,
-      bool force_keyframe);
+  // a EncodeJob, and returns the newly-created job, nullptr otherwise.
+  std::unique_ptr<EncodeJob> CreateEncodeJob(scoped_refptr<VideoFrame> frame,
+                                             bool force_keyframe);
 
   // Continues encoding frames as long as input_queue_ is not empty, and we are
   // able to create new EncodeJobs.
@@ -128,7 +127,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // Downloads encoded data produced as a result of running |encode_job| into
   // |buffer|, and returns it to the client.
-  void ReturnBitstreamBuffer(std::unique_ptr<VaapiEncodeJob> encode_job,
+  void ReturnBitstreamBuffer(std::unique_ptr<EncodeJob> encode_job,
                              std::unique_ptr<BitstreamBufferRef> buffer);
 
   // Puts the encoder into en error state and notifies the client
@@ -157,8 +156,6 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   bool IsConfiguredForTesting() const {
     return !supported_profiles_for_testing_.empty();
   }
-
-  static CodecPicture* GetPictureFromJobForTesting(VaapiEncodeJob* job);
 
   // The unchanged values are filled upon the construction. The varied values
   // are filled properly during encoding.
@@ -232,7 +229,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // Jobs submitted to driver for encode, awaiting bitstream buffers to become
   // available.
-  base::queue<std::unique_ptr<VaapiEncodeJob>> submitted_encode_jobs_;
+  base::queue<std::unique_ptr<EncodeJob>> submitted_encode_jobs_;
 
   // Task runner for interacting with the client, and its checker.
   const scoped_refptr<base::SingleThreadTaskRunner> child_task_runner_;

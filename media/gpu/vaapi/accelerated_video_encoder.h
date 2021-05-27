@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_codecs.h"
-#include "media/gpu/codec_picture.h"
 #include "media/video/video_encode_accelerator.h"
 #include "media/video/video_encoder_info.h"
 #include "ui/gfx/geometry/size.h"
@@ -22,8 +21,13 @@
 namespace media {
 
 struct BitstreamBufferMetadata;
-class VaapiEncodeJob;
+class CodecPicture;
+class ScopedVABuffer;
 class VideoFrame;
+class VASurface;
+
+// Verbatim from va/va.h.
+typedef unsigned int VABufferID;
 
 // An AcceleratedVideoEncoder (AVE) performs high-level, platform-independent
 // encoding process tasks, such as managing codec state, reference frames, etc.,
@@ -73,7 +77,14 @@ class AcceleratedVideoEncoder {
     EncodeJob(scoped_refptr<VideoFrame> input_frame,
               bool keyframe,
               base::OnceClosure execute_cb);
-    virtual ~EncodeJob();
+    // Constructor for VA-API.
+    EncodeJob(scoped_refptr<VideoFrame> input_frame,
+              bool keyframe,
+              base::OnceClosure execute_cb,
+              scoped_refptr<VASurface> input_surface,
+              scoped_refptr<CodecPicture> picture,
+              std::unique_ptr<ScopedVABuffer> coded_buffer);
+    ~EncodeJob();
 
     // Schedules a callback to be run immediately before this job is executed.
     // Can be called multiple times to schedule multiple callbacks, and all
@@ -113,7 +124,10 @@ class AcceleratedVideoEncoder {
     // Returns the timestamp associated with this job.
     base::TimeDelta timestamp() const { return timestamp_; }
 
-    virtual VaapiEncodeJob* AsVaapiEncodeJob();
+    // VA-API specific methods.
+    VABufferID coded_buffer_id() const;
+    const scoped_refptr<VASurface>& input_surface() const;
+    const scoped_refptr<CodecPicture>& picture() const;
 
    private:
     // Input VideoFrame to be encoded.
@@ -124,6 +138,13 @@ class AcceleratedVideoEncoder {
 
     // True if this job is to produce a keyframe.
     bool keyframe_;
+
+    // VA-API specific members.
+    // Input surface for video frame data or scaled data.
+    const scoped_refptr<VASurface> input_surface_;
+    const scoped_refptr<CodecPicture> picture_;
+    // Buffer that will contain the output bitstream data for this frame.
+    const std::unique_ptr<ScopedVABuffer> coded_buffer_;
 
     // Callbacks to be run (in the same order as the order of AddSetupCallback()
     // calls) to set up the job.

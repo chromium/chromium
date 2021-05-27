@@ -12,6 +12,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
+#include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vaapi/vp9_temporal_layers.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/video/video_encode_accelerator.h"
@@ -228,9 +229,7 @@ class VaapiVideoEncodeAcceleratorTest
              kInputSurfaceId](AcceleratedVideoEncoder::EncodeJob* job) {
               if (use_temporal_layer_encoding) {
                 // Set Vp9Metadata on temporal layer encoding.
-                CodecPicture* picture =
-                    VaapiVideoEncodeAccelerator::GetPictureFromJobForTesting(
-                        job->AsVaapiEncodeJob());
+                CodecPicture* picture = job->picture().get();
                 reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding =
                     Vp9Metadata();
               }
@@ -269,9 +268,7 @@ class VaapiVideoEncodeAcceleratorTest
               // Same implementation in VP9Encoder.
               BitstreamBufferMetadata metadata(
                   payload_size, job->IsKeyframeRequested(), job->timestamp());
-              CodecPicture* picture =
-                  VaapiVideoEncodeAccelerator::GetPictureFromJobForTesting(
-                      job->AsVaapiEncodeJob());
+              CodecPicture* picture = job->picture().get();
               metadata.vp9 =
                   reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding;
               return metadata;

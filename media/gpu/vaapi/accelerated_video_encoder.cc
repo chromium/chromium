@@ -4,11 +4,36 @@
 
 #include "media/gpu/vaapi/accelerated_video_encoder.h"
 
+#include <va/va.h>
+
 #include "media/base/video_frame.h"
+#include "media/gpu/codec_picture.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
+#include "media/gpu/vaapi/va_surface.h"
+#include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
+
+AcceleratedVideoEncoder::EncodeJob::EncodeJob(
+    scoped_refptr<VideoFrame> input_frame,
+    bool keyframe,
+    base::OnceClosure execute_cb,
+    scoped_refptr<VASurface> input_surface,
+    scoped_refptr<CodecPicture> picture,
+    std::unique_ptr<ScopedVABuffer> coded_buffer)
+    : input_frame_(input_frame),
+      timestamp_(input_frame->timestamp()),
+      keyframe_(keyframe),
+      input_surface_(input_surface),
+      picture_(std::move(picture)),
+      coded_buffer_(std::move(coded_buffer)),
+      execute_callback_(std::move(execute_cb)) {
+  DCHECK(input_surface_);
+  DCHECK(picture_);
+  DCHECK(coded_buffer_);
+  DCHECK(!execute_callback_.is_null());
+}
 
 AcceleratedVideoEncoder::EncodeJob::EncodeJob(
     scoped_refptr<VideoFrame> input_frame,
@@ -22,11 +47,6 @@ AcceleratedVideoEncoder::EncodeJob::EncodeJob(
 }
 
 AcceleratedVideoEncoder::EncodeJob::~EncodeJob() = default;
-
-VaapiEncodeJob* AcceleratedVideoEncoder::EncodeJob::AsVaapiEncodeJob() {
-  CHECK(false);
-  return nullptr;
-}
 
 void AcceleratedVideoEncoder::EncodeJob::AddSetupCallback(
     base::OnceClosure cb) {
@@ -58,6 +78,19 @@ void AcceleratedVideoEncoder::EncodeJob::Execute() {
     std::move(post_execute_callbacks_.front()).Run();
     post_execute_callbacks_.pop();
   }
+}
+
+VABufferID AcceleratedVideoEncoder::EncodeJob::coded_buffer_id() const {
+  return coded_buffer_->id();
+}
+
+const scoped_refptr<VASurface>&
+AcceleratedVideoEncoder::EncodeJob::input_surface() const {
+  return input_surface_;
+}
+const scoped_refptr<CodecPicture>& AcceleratedVideoEncoder::EncodeJob::picture()
+    const {
+  return picture_;
 }
 
 size_t AcceleratedVideoEncoder::GetBitstreamBufferSize() const {
