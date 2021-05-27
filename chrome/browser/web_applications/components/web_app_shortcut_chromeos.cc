@@ -8,6 +8,10 @@ namespace web_app {
 
 namespace internals {
 
+// On Chrome OS, we do not have platform shortcuts, so these operation are
+// no-ops. We instead integrate with the Launcher and the Shelf through the App
+// Service.
+
 bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
                              const ShortcutLocations& creation_locations,
                              ShortcutCreationReason creation_reason,
