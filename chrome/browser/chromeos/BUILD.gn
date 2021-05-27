@@ -32,6 +32,8 @@ source_set("chromeos") {
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser/chromeos/power/ml:user_activity_ukm_logger_helpers",
+    "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings",
+    "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings",
     "//chromeos/components/security_token_pin",
     "//chromeos/dbus:anomaly_detector_proto",
     "//chromeos/dbus:cicerone_proto",
