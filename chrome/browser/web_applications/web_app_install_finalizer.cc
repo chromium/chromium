@@ -520,11 +520,9 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
       IsFileHandlerPermissionBlocked(web_app->scope()));
 
   AppId app_id = web_app->app_id();
-  IconBitmaps icon_bitmaps;
-  icon_bitmaps.any = web_app_info.icon_bitmaps.any;
-  icon_bitmaps.maskable = web_app_info.icon_bitmaps.maskable;
+
   icon_manager_->WriteData(
-      std::move(app_id), std::move(icon_bitmaps),
+      std::move(app_id), web_app_info.icon_bitmaps,
       base::BindOnce(&WebAppInstallFinalizer::OnIconsDataWritten,
                      weak_ptr_factory_.GetWeakPtr(), std::move(commit_callback),
                      std::move(web_app),
