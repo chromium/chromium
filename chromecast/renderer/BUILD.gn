@@ -26,10 +26,6 @@ grit("extensions_resources") {
 
 group("renderer") {
   public_deps = [ ":renderer_base" ]
-
-  if (chromecast_branding == "public") {
-    public_deps += [ ":simple_client" ]
-  }
 }
 
 cast_source_set("renderer_base") {

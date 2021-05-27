@@ -459,7 +459,9 @@ test("cast_shell_unittests") {
 
 test("cast_shell_browsertests") {
   deps = [
-    ":cast_shell_lib",
+    # These browser tests always use the simple implementation, since we only
+    # need to test web content primitives and not all of Cast receiver.
+    ":cast_shell_lib_simple",
     "//chromecast/app:test_support",
     "//chromecast/bindings:browsertests",
     "//chromecast/browser:browsertests",
@@ -469,6 +471,17 @@ test("cast_shell_browsertests") {
 }
 
 group("cast_shell_lib") {
+  if (chromecast_branding != "public") {
+    deps = [
+      ":cast_shell_lib_base",
+      "//chromecast/internal/shell",
+    ]
+  } else {
+    deps = [ ":cast_shell_lib_simple" ]
+  }
+}
+
+group("cast_shell_lib_base") {
   data_deps = [ ":cast_shell_pak" ]
 
   deps = [
@@ -478,11 +491,19 @@ group("cast_shell_lib") {
     "//chromecast/cast_core",
     "//chromecast/common",
     "//chromecast/renderer",
+    "//chromecast/utility",
   ]
+}
 
-  if (chromecast_branding != "public") {
-    deps += [ "//chromecast/internal/shell" ]
-  }
+group("cast_shell_lib_simple") {
+  deps = [
+    ":cast_shell_lib_base",
+    "//chromecast/browser:prefs_simple",
+    "//chromecast/browser:simple_client",
+    "//chromecast/browser:simple_main_parts",
+    "//chromecast/renderer:simple_client",
+    "//chromecast/utility:simple_client",
+  ]
 }
 
 cast_executable("cast_shell") {

@@ -77,13 +77,6 @@ cast_source_set("web_preferences") {
 
 group("browser") {
   public_deps = [ ":browser_base" ]
-
-  if (chromecast_branding == "public") {
-    public_deps += [
-      ":simple_client",
-      ":simple_main_parts",
-    ]
-  }
 }
 
 cast_source_set("browser_base") {
