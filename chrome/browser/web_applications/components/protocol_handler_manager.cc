@@ -92,8 +92,10 @@ void ProtocolHandlerManager::RegisterOsProtocolHandlers(
   }
 }
 
-void ProtocolHandlerManager::UnregisterOsProtocolHandlers(const AppId& app_id) {
-  UnregisterProtocolHandlersWithOs(app_id, profile_);
+void ProtocolHandlerManager::UnregisterOsProtocolHandlers(
+    const AppId& app_id,
+    base::OnceCallback<void(bool)> callback) {
+  UnregisterProtocolHandlersWithOs(app_id, profile_, std::move(callback));
 }
 
 }  // namespace web_app

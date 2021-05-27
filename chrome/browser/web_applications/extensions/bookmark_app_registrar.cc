@@ -178,6 +178,12 @@ const apps::FileHandlers* BookmarkAppRegistrar::GetAppFileHandlers(
   return nullptr;
 }
 
+// Only implemented for WebApp. Bookmark apps are going away.
+const apps::ProtocolHandlers* BookmarkAppRegistrar::GetAppProtocolHandlers(
+    const web_app::AppId& app_id) const {
+  return nullptr;
+}
+
 bool BookmarkAppRegistrar::IsAppFileHandlerPermissionBlocked(
     const web_app::AppId& app_id) const {
   return false;

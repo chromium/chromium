@@ -54,6 +54,8 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
       const web_app::AppId& app_id) const override;
   const apps::FileHandlers* GetAppFileHandlers(
       const web_app::AppId& app_id) const override;
+  const apps::ProtocolHandlers* GetAppProtocolHandlers(
+      const web_app::AppId& app_id) const override;
   bool IsAppFileHandlerPermissionBlocked(
       const web_app::AppId& app_id) const override;
   absl::optional<GURL> GetAppScopeInternal(

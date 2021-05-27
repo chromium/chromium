@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -33,6 +34,12 @@ namespace web_app {
 bool HaveFileHandlersChanged(
     const apps::FileHandlers* old_handlers,
     const std::vector<blink::Manifest::FileHandler>& new_handlers);
+
+// Checks whether protocol handlers have changed. Ignores differences in
+// ordering, which may change after being inserted into a set or map.
+bool HaveProtocolHandlersChanged(
+    const apps::ProtocolHandlers* old_handlers,
+    const std::vector<blink::Manifest::ProtocolHandler>& new_handlers);
 
 class AppIconManager;
 class AppRegistrar;

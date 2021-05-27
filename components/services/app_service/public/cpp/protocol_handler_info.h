@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PROTOCOL_HANDLER_INFO_H_
 
 #include <string>
+#include <vector>
 
 #include "url/gurl.h"
 
@@ -20,6 +21,7 @@ struct ProtocolHandlerInfo {
   std::string protocol;
   GURL url;
 };
+using ProtocolHandlers = std::vector<ProtocolHandlerInfo>;
 
 bool operator==(const ProtocolHandlerInfo& handler1,
                 const ProtocolHandlerInfo& handler2);

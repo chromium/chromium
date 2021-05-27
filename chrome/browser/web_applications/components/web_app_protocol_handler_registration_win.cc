@@ -134,14 +134,16 @@ void RegisterProtocolHandlersWithOs(
                      app_id, std::move(callback)));
 }
 
-void UnregisterProtocolHandlersWithOs(const AppId& app_id, Profile* profile) {
+void UnregisterProtocolHandlersWithOs(const AppId& app_id,
+                                      Profile* profile,
+                                      base::OnceCallback<void(bool)> callback) {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&UnregisterProtocolHandlersWithOsInBackground, app_id,
                      profile->GetPath()),
       base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
-                     app_id, base::DoNothing::Once<bool>()));
+                     app_id, std::move(callback)));
 }
 
 }  // namespace web_app
