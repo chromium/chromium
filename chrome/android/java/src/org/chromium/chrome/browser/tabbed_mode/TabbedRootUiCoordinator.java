@@ -21,12 +21,15 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpController;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpControllerFactory;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
@@ -86,6 +89,7 @@ import org.chromium.chrome.browser.webapps.PwaBottomSheetControllerFactory;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
+import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -98,6 +102,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private static boolean sEnableStatusIndicatorForTests;
 
     private final ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final RootUiTabObserver mRootUiTabObserver;
     private TabbedSystemUiCoordinator mSystemUiCoordinator;
     private @Nullable EmptyBackgroundViewWrapper mEmptyBackgroundViewWrapper;
 
@@ -125,6 +130,38 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     private int mStatusIndicatorHeight;
     private int mContinuousSearchHeight;
+
+    // Activity tab observer that updates the current tab used by various UI components.
+    private class RootUiTabObserver extends ActivityTabTabObserver {
+        private Tab mTab;
+
+        private RootUiTabObserver(ActivityTabProvider activityTabProvider) {
+            super(activityTabProvider);
+        }
+
+        @Override
+        public void onObservingDifferentTab(Tab tab, boolean hint) {
+            swapToTab(tab);
+        }
+
+        private void swapToTab(Tab tab) {
+            if (mTab != null && !mTab.isDestroyed()) {
+                SwipeRefreshHandler.from(mTab).setNavigationCoordinator(null);
+            }
+            mTab = tab;
+
+            if (tab != null) {
+                SwipeRefreshHandler.from(tab).setNavigationCoordinator(
+                        mHistoryNavigationCoordinator);
+            }
+        }
+
+        @Override
+        public void destroy() {
+            super.destroy();
+            swapToTab(null);
+        }
+    }
 
     /**
      * Construct a new TabbedRootUiCoordinator.
@@ -176,6 +213,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         getAppBrowserControlsVisibilityDelegate().addDelegate(
                 browserControlsManager.getBrowserVisibilityDelegate());
+        mRootUiTabObserver = new RootUiTabObserver(tabProvider);
     }
 
     @Override
@@ -208,6 +246,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mWebFeedFollowIntroController.destroy();
         }
 
+        if (mRootUiTabObserver != null) mRootUiTabObserver.destroy();
+
         if (mAppBannerInProductHelpController != null) {
             AppBannerInProductHelpControllerFactory.detach(mAppBannerInProductHelpController);
         }
@@ -217,6 +257,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (mHistoryNavigationCoordinator != null) {
+            TouchEventObserver obs = mHistoryNavigationCoordinator.getTouchEventObserver();
+            CompositorViewHolder cvh = mActivity.getCompositorViewHolder();
+            if (cvh != null && obs != null) cvh.removeTouchEventObserver(obs);
             mHistoryNavigationCoordinator.destroy();
             mHistoryNavigationCoordinator = null;
         }
@@ -297,10 +340,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
         assert mLayoutManager != null;
+        CompositorViewHolder cvh = mActivity.getCompositorViewHolder();
+        ActivityTabProvider activityTabProvider = mActivity.getActivityTabProvider();
+
         mHistoryNavigationCoordinator = HistoryNavigationCoordinator.create(
-                mActivity.getWindowAndroid(), mActivity.getLifecycleDispatcher(),
-                mActivity.getCompositorViewHolder(), mActivity.getActivityTabProvider(),
-                mActivity.getInsetObserverView(), new BackActionDelegate() {
+                mActivity.getWindowAndroid(), mActivity.getLifecycleDispatcher(), cvh,
+                mCallbackController.makeCancelable(
+                        () -> mLayoutManager.getActiveLayout().requestUpdate()),
+                activityTabProvider, mActivity.getInsetObserverView(), new BackActionDelegate() {
                     @Override
                     public @ActionType int getBackActionType(Tab tab) {
                         if (tab.canGoBack()) return ActionType.NAVIGATE_BACK;
@@ -316,7 +363,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         // Back navigation gesture performs what the back button would do.
                         mActivity.onBackPressed();
                     }
-                }, mLayoutManager);
+                }, cvh::addTouchEventObserver, mLayoutManager);
+        mRootUiTabObserver.swapToTab(activityTabProvider.get());
 
         // TODO(twellington): Supply TabModelSelector as well and move initialization earlier.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
@@ -336,10 +384,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (EphemeralTabCoordinator.isSupported()) {
-            mEphemeralTabCoordinatorSupplier.set(new EphemeralTabCoordinator(mActivity,
-                    mActivity.getWindowAndroid(), mActivity.getWindow().getDecorView(),
-                    mActivity.getActivityTabProvider(), mActivity::getCurrentTabCreator,
-                    getBottomSheetController(), true));
+            mEphemeralTabCoordinatorSupplier.set(
+                    new EphemeralTabCoordinator(mActivity, mActivity.getWindowAndroid(),
+                            mActivity.getWindow().getDecorView(), activityTabProvider,
+                            mActivity::getCurrentTabCreator, getBottomSheetController(), true));
         }
 
         mIntentMetadataOneshotSupplier.onAvailable(mCallbackController.makeCancelable(

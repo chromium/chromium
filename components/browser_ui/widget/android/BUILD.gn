@@ -33,6 +33,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/RoundedCornerImageView.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedIconGenerator.java",
     "java/src/org/chromium/components/browser_ui/widget/TintedDrawable.java",
+    "java/src/org/chromium/components/browser_ui/widget/TouchEventObserver.java",
     "java/src/org/chromium/components/browser_ui/widget/ViewResourceFrameLayout.java",
     "java/src/org/chromium/components/browser_ui/widget/WrappingLayout.java",
     "java/src/org/chromium/components/browser_ui/widget/animation/CancelAwareAnimatorListener.java",

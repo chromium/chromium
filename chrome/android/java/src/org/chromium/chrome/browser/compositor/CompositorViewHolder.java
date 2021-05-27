@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.ImeAdapter;
@@ -117,25 +118,6 @@ public class CompositorViewHolder extends FrameLayout
          */
         void initializeCompositorContent(LayoutManagerImpl layoutManager, View urlBar,
                 ViewGroup contentContainer, ControlContainer controlContainer);
-    }
-
-    /**
-     * Observer interface for any object that needs to process touch events.
-     */
-    public interface TouchEventObserver {
-        /**
-         * Determine if touch events should be forwarded to the observing object.
-         * Should return {@link true} if the object decided to consume the events.
-         * @param e {@link MotionEvent} object to process.
-         * @return {@code true} if the observer will process touch events going forward.
-         */
-        boolean shouldInterceptTouchEvent(MotionEvent e);
-
-        /**
-         * Handle touch events.
-         * @param e {@link MotionEvent} object to process.
-         */
-        void handleTouchEvent(MotionEvent e);
     }
 
     private ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
