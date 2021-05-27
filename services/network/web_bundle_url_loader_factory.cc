@@ -138,7 +138,8 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
 
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     if (status.error_code != net::OK) {
-      factory_->OnWebBundleFetchFailed();
+      if (factory_)
+        factory_->OnWebBundleFetchFailed();
     }
     if (completed_)
       return;

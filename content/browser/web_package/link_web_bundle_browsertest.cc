@@ -11,6 +11,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/web_package/test_support/web_bundle_builder.h"
+#include "components/web_package/web_bundle_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
@@ -23,6 +25,8 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -120,6 +124,9 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpOnMainThread();
     original_client_ = SetBrowserClientForTesting(&browser_client_);
     host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        &LinkWebBundleBrowserTest::HandleHugeWebBundleRequest,
+        base::Unretained(this)));
     https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
     ASSERT_TRUE(https_server_.Start());
   }
@@ -146,6 +153,30 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
     EXPECT_EQ("\"iframe.onload\"", message);
   }
 
+  std::unique_ptr<net::test_server::HttpResponse> HandleHugeWebBundleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != "/web_bundle/huge.wbn")
+      return nullptr;
+    GURL primary_url(https_server_.GetURL("/web_bundle/huge.txt"));
+    web_package::test::WebBundleBuilder builder(primary_url.spec(),
+                                                "" /* manifest_url */);
+    builder.AddExchange(
+        primary_url.spec(),
+        {{":status", "200"}, {"content-type", "text/plain"}},
+        // The body size should be greater than kDefaultMaxMemoryPerProcess / 2.
+        std::string(web_package::kDefaultMaxMemoryPerProcess / 2 + 1000, 'X'));
+    auto bundle = builder.CreateBundle();
+    std::string body(reinterpret_cast<const char*>(bundle.data()),
+                     bundle.size());
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content(body);
+    http_response->set_content_type("application/webbundle");
+    http_response->AddCustomHeader("X-Content-Type-Options", "nosniff");
+    return http_response;
+  }
+
   GURL GetObservedUnknownSchemeUrl() { return browser_client_.observed_url(); }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
@@ -157,6 +188,47 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
   net::EmbeddedTestServer https_server_{
       net::EmbeddedTestServer::Type::TYPE_HTTPS};
 };
+
+IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, RemoveLinkElement) {
+  GURL url(https_server()->GetURL("/web_bundle/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // We load a huge.wbn twice, by adding and removing a link element. If we
+  // don't release webbundle resources immediately when a link element is
+  // removed, the 2nd load should fail because of a memory quota in the network
+  // process. See https://crbug.com/1211659.
+  DOMMessageQueue dom_message_queue(shell()->web_contents());
+  ExecuteScriptAsync(shell(),
+                     R"HTML(
+        (async () => {
+          for (let i = 0; i < 2; ++i) {
+            const link = await addLinkAndWaitForLoad("/web_bundle/huge.wbn", [
+              // resources are dummy. The test shouldn't depends on this value.
+              "http://example.com/web-bundle/huge.txt",
+            ]);
+            link.remove();
+          }
+          window.domAutomationController.send('webbundle loaded');
+        })();
+
+        function addLinkAndWaitForLoad(url, resources) {
+          return new Promise((resolve, reject) => {
+            const link = document.createElement("link");
+            link.rel = "webbundle";
+            link.href = url;
+            for (const resource of resources) {
+              link.resources.add(resource);
+            }
+            link.onload = () => resolve(link);
+            link.onerror = () => reject(link);
+            document.body.appendChild(link);
+          });
+        }
+      )HTML");
+  std::string message;
+  EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"webbundle loaded\"", message);
+}
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeLoad) {
   base::HistogramTester histogram_tester;

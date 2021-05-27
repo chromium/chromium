@@ -14,6 +14,15 @@ class GURL;
 
 namespace web_package {
 
+// The max memory limit per process of subrsource web bundles.
+//
+// Note: Currently the network service keeps the binary of the subresource web
+// bundle in the memory. To protect the network service from OOM attacks, we
+// set the max memory limit per renderer process. When the memory usage of
+// subresource web bundles exceeds the limit, the web bundle loading fails,
+// and the subresouce loading from the web bundle will fail on the page.
+constexpr uint64_t kDefaultMaxMemoryPerProcess = 10ull * 1024 * 1024;
+
 network::mojom::URLResponseHeadPtr CreateResourceResponse(
     const web_package::mojom::BundleResponsePtr& response);
 
