@@ -97,7 +97,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.MaxChannelsAvailable" units="units"
-    expires_after="2021-07-06">
+    expires_after="2022-01-06">
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>
@@ -186,7 +186,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.BiquadFilter.Type" enum="BiquadFilterType"
-    expires_after="2021-07-06">
+    expires_after="2022-01-06">
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>
@@ -208,7 +208,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.IIRFilterNode.Order" units="units"
-    expires_after="2021-07-06">
+    expires_after="2022-01-06">
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>
@@ -219,7 +219,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.OfflineAudioContext.ChannelCount" units="units"
-    expires_after="2021-07-06">
+    expires_after="2022-01-06">
   <obsolete>
     Removed 2021-01-12. See crbug.com/1165240.
   </obsolete>
@@ -261,7 +261,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.PannerNode.PanningModel" enum="PanningModelType"
-    expires_after="2021-07-06">
+    expires_after="2022-01-06">
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>
@@ -274,7 +274,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.PushPullFIFO.UnderflowGlitches" enum="Boolean"
-    expires_after="2021-07-06">
+    expires_after="2022-01-06">
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>
@@ -285,7 +285,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.PushPullFIFO.UnderflowPercentage" units="%"
-    expires_after="2021-07-06">
+    expires_after="2022-01-06">
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>
