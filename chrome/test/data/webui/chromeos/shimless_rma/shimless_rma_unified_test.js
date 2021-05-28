@@ -5,6 +5,7 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {fakeShimlessRmaServiceTestSuite} from './fake_shimless_rma_service_test.js';
+import {onboardingChooseDestinationPageTest} from './onboarding_choose_destination_page_test.js';
 import {onboardingChooseWpDisableMethodPageTest} from './onboarding_choose_wp_disable_method_page_test.js';
 import {onboardingEnterRsuWpDisableCodePageTest} from './onboarding_enter_rsu_wp_disable_code_page_test.js';
 import {onboardingUpdatePageTest} from './onboarding_update_page_test.js';
@@ -20,6 +21,8 @@ function runSuite(suiteName, testFn) {
 
 runSuite('FakeShimlessRmaServiceTestSuite', fakeShimlessRmaServiceTestSuite);
 runSuite('ShimlessRMAAppTest', shimlessRMAAppTest);
+runSuite(
+    'OnboardingChooseDestinationPageTest', onboardingChooseDestinationPageTest);
 runSuite(
     'OnboardingChooseWpDisableMethodPageTest',
     onboardingChooseWpDisableMethodPageTest);

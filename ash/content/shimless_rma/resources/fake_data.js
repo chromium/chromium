@@ -9,6 +9,7 @@ export const fakeStates = [
   {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
   {state: RmaState.kSelectComponents, error: RmadErrorCode.kRequestInvalid},
   {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
+  {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
   {state: RmaState.kChooseWriteProtectDisableMethod, error: RmadErrorCode.kOk},
   {state: RmaState.kWaitForManualWPDisable, error: RmadErrorCode.kOk},
   {state: RmaState.kEnterRSUWPDisableCode, error: RmadErrorCode.kOk},

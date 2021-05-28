@@ -39,6 +39,14 @@ js_library("shimless_rma_app_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
+js_library("onboarding_choose_destination_page_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/content/shimless_rma/resources:onboarding_choose_destination_page",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
 js_library("onboarding_choose_wp_disable_method_page_test") {
   deps = [
     "../..:chai_assert",

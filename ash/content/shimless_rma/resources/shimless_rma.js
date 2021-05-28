@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import './onboarding_choose_destination_page.js';
 import './onboarding_choose_wp_disable_method_page.js';
 import './onboarding_enter_rsu_wp_disable_code_page.js';
 import './onboarding_landing_page.js';
@@ -57,6 +58,12 @@ const StateComponentMapping = {
   [RmaState.kSelectComponents]: {
     componentIs: 'onboarding-update-page',
     btnNext: ButtonState.VISIBLE,
+    btnCancel: ButtonState.VISIBLE,
+    btnBack: ButtonState.VISIBLE,
+  },
+  [RmaState.kChooseDestination]: {
+    componentIs: 'onboarding-choose-destination-page',
+    btnNext: ButtonState.HIDDEN,
     btnCancel: ButtonState.VISIBLE,
     btnBack: ButtonState.VISIBLE,
   },

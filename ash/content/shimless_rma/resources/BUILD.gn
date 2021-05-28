@@ -13,6 +13,7 @@ preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
 polymer_element_files = [
   "base_page.js",
+  "onboarding_choose_destination_page.js",
   "onboarding_choose_wp_disable_method_page.js",
   "onboarding_enter_rsu_wp_disable_code_page.js",
   "onboarding_landing_page.js",
@@ -45,6 +46,7 @@ js_type_check("closure_compile_module") {
     ":base_page",
     ":fake_shimless_rma_service",
     ":mojo_interface_provider",
+    ":onboarding_choose_destination_page",
     ":onboarding_choose_wp_disable_method_page",
     ":onboarding_enter_rsu_wp_disable_code_page",
     ":onboarding_landing_page",
@@ -58,6 +60,7 @@ js_type_check("closure_compile_module") {
 js_library("shimless_rma") {
   deps = [
     ":mojo_interface_provider",
+    ":onboarding_choose_destination_page",
     ":onboarding_choose_wp_disable_method_page",
     ":onboarding_enter_rsu_wp_disable_code_page",
     ":onboarding_landing_page",
@@ -93,6 +96,14 @@ js_library("mojo_interface_provider") {
     ":fake_shimless_rma_service",
     ":shimless_rma_types",
     "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("onboarding_choose_destination_page") {
+  deps = [
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 

@@ -41,6 +41,7 @@ this.ShimlessRMABrowserTest = class extends PolymerTest {
 const debug_suites_list = [
   'FakeShimlessRmaServiceTestSuite',
   'ShimlessRMAAppTest',
+  'OnboardingChooseDestinationPageTest',
   'OnboardingChooseWpDisableMethodPageTest',
   'OnboardingEnterRsuWpDisableCodePageTest',
   'OnboardingUpdatePageTest',
