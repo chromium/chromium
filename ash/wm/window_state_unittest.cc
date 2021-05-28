@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/window_state_util.h"
 #include "ash/wm/window_util.h"
@@ -21,6 +22,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
@@ -409,6 +411,57 @@ TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
   // ratio.
   window_state->OnWMEvent(&cycle_snap_left);
   EXPECT_EQ(WindowStateType::kLeftSnapped, window_state->GetStateType());
+  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+}
+
+// Tests that dragging and snapping the snapped window update the width ratio
+// correctly (crbug.com/1208969).
+TEST_F(WindowStateTest, SnapSnappedWindow) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  UpdateDisplay("800x600");
+  const gfx::Rect kWorkAreaBounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  aura::test::TestWindowDelegate delegate;
+  gfx::Size window_normal_size = gfx::Size(800, 100);
+  std::unique_ptr<aura::Window> window =
+      TestWindowBuilder()
+          .SetBounds(gfx::Rect(window_normal_size))
+          .SetDelegate(&delegate)
+          .AllowAllWindowStates()
+          .Build();
+  delegate.set_window_component(HTCAPTION);
+  WindowState* window_state = WindowState::Get(window.get());
+  const WMEvent cycle_snap_left(WM_EVENT_CYCLE_SNAP_LEFT);
+  window_state->OnWMEvent(&cycle_snap_left);
+
+  // Snap window to the left.
+  EXPECT_EQ(WindowStateType::kLeftSnapped, window_state->GetStateType());
+  gfx::Rect expected =
+      gfx::Rect(kWorkAreaBounds.x(), kWorkAreaBounds.y(),
+                kWorkAreaBounds.width() / 2, kWorkAreaBounds.height());
+  // Wait for the snapped animation to complete and test that the window bound
+  // is left-snapped and the snap width ratio is updated.
+  window->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
+                                       base::TimeDelta::FromSeconds(1));
+  EXPECT_EQ(expected, window->GetBoundsInScreen());
+  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+
+  // Drag the window to unsnap but do not release.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(window->bounds().CenterPoint());
+  generator->PressLeftButton();
+  generator->MoveMouseBy(5, 0);
+  // While dragged, the window size should restore to its normal bound.
+  EXPECT_EQ(window_normal_size, window->bounds().size());
+  EXPECT_EQ(1.0f, *window_state->snapped_width_ratio());
+
+  // Continue dragging the window and snap it back to the same position.
+  generator->MoveMouseBy(-405, 0);
+  generator->ReleaseLeftButton();
+
+  // The snapped ratio should be correct regardless of whether the animation
+  // is finished or not.
   EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
 }
 

@@ -145,7 +145,7 @@ WMEventType WMEventTypeFromWindowPinType(chromeos::WindowPinType type) {
 float GetCurrentSnappedWidthRatio(aura::Window* window) {
   gfx::Rect maximized_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window);
-  return static_cast<float>(window->bounds().width()) /
+  return static_cast<float>(window->GetTargetBounds().width()) /
          static_cast<float>(maximized_bounds.width());
 }
 
