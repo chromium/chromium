@@ -53,9 +53,7 @@ bool SetSelectControlValue(const std::u16string& value,
 
   DCHECK_EQ(field->option_values.size(), field->option_contents.size());
   std::u16string best_match;
-  size_t items_count =
-      std::min(field->option_contents.size(), field->option_values.size());
-  for (size_t i = 0; i < items_count; ++i) {
+  for (size_t i = 0; i < field->option_values.size(); ++i) {
     if (value == field->option_values[i] ||
         value == field->option_contents[i]) {
       // An exact match, use it.
@@ -118,9 +116,8 @@ bool SetSelectControlValueTokenMatch(const std::u16string& value,
   std::vector<std::u16string> tokenized;
   DCHECK_EQ(field->option_values.size(), field->option_contents.size());
   l10n::CaseInsensitiveCompare compare;
-  size_t items_count =
-      std::min(field->option_contents.size(), field->option_values.size());
-  for (size_t i = 0; i < items_count; ++i) {
+
+  for (size_t i = 0; i < field->option_values.size(); ++i) {
     tokenized =
         base::SplitString(field->option_values[i], base::kWhitespaceASCIIAs16,
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -233,9 +230,7 @@ bool FillNumericSelectControl(int value,
                               FormFieldData* field,
                               std::string* failure_to_fill) {
   DCHECK_EQ(field->option_values.size(), field->option_contents.size());
-  size_t items_count =
-      std::min(field->option_contents.size(), field->option_values.size());
-  for (size_t i = 0; i < items_count; ++i) {
+  for (size_t i = 0; i < field->option_values.size(); ++i) {
     int option;
     if ((StringToInt(field->option_values[i], &option) && option == value) ||
         (StringToInt(field->option_contents[i], &option) && option == value)) {
@@ -468,9 +463,7 @@ bool FillYearSelectControl(const std::u16string& value,
   }
 
   DCHECK_EQ(field->option_values.size(), field->option_contents.size());
-  size_t items_count =
-      std::min(field->option_contents.size(), field->option_values.size());
-  for (size_t i = 0; i < items_count; ++i) {
+  for (size_t i = 0; i < field->option_values.size(); ++i) {
     if (LastTwoDigitsMatch(value, field->option_values[i]) ||
         LastTwoDigitsMatch(value, field->option_contents[i])) {
       field->value = field->option_values[i];
@@ -986,9 +979,8 @@ int FieldFiller::FindShortestSubstringMatchInSelect(
       ignore_whitespace ? RemoveWhitespace(value) : value;
   base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents searcher(
       value_stripped);
-  size_t items_count =
-      std::min(field->option_contents.size(), field->option_values.size());
-  for (size_t i = 0; i < items_count; ++i) {
+
+  for (size_t i = 0; i < field->option_values.size(); ++i) {
     std::u16string option_value =
         ignore_whitespace ? RemoveWhitespace(field->option_values[i])
                           : field->option_values[i];
