@@ -1010,6 +1010,7 @@ bool WindowCycleList::ShouldShowUi() {
            ->IsInteractiveAltTabModeAllowed()) {
     return windows_.size() > 1u;
   }
+
   int total_window_in_all_desks = GetNumberOfWindowsAllDesks();
   return windows_.size() > 1u ||
          (windows_.size() <= 1u &&
@@ -1160,30 +1161,25 @@ void WindowCycleList::SelectWindow(aura::Window* window) {
 }
 
 void WindowCycleList::Scroll(int offset) {
-  const bool is_interactive_alt_tab_mode_allowed =
-      Shell::Get()->window_cycle_controller()->IsInteractiveAltTabModeAllowed();
-  if (windows_.empty() && (!is_interactive_alt_tab_mode_allowed ||
-                           GetNumberOfWindowsAllDesks() == 0))
-    return;
-
-  // When there is only one window, we should give feedback to the user. If
-  // the window is minimized, we should also show it.
-  if (windows_.size() == 1 &&
-      !Shell::Get()->window_cycle_controller()->IsSwitchingMode()) {
-    ::wm::AnimateWindow(windows_[0], ::wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+  if (windows_.size() == 1)
     SelectWindow(windows_[0]);
+
+  if (!ShouldShowUi()) {
+    // When there is only one window, we should give feedback to the user. If
+    // the window is minimized, we should also show it.
+    if (windows_.size() == 1)
+      ::wm::AnimateWindow(windows_[0], ::wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+    return;
   }
 
   DCHECK(static_cast<size_t>(current_index_) < windows_.size());
-
   current_index_ = GetOffsettedWindowIndex(offset);
-  if (ShouldShowUi()) {
-    if (current_index_ > 1)
-      InitWindowCycleView();
 
-    if (cycle_view_)
-      cycle_view_->ScrollToWindow(windows_[current_index_]);
-  }
+  if (current_index_ > 1)
+    InitWindowCycleView();
+
+  if (cycle_view_)
+    cycle_view_->ScrollToWindow(windows_[current_index_]);
 }
 
 int WindowCycleList::GetOffsettedWindowIndex(int offset) const {
