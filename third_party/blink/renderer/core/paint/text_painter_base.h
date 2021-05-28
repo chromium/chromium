@@ -26,7 +26,6 @@ class GraphicsContext;
 class GraphicsContextStateSaver;
 class Node;
 class SVGLengthContext;
-class TextDecorationOffsetBase;
 struct PaintInfo;
 
 // Base class for text painting. Has no dependencies on the layout tree and thus
@@ -64,16 +63,6 @@ class CORE_EXPORT TextPainterBase {
       bool is_horizontal = true,
       ShadowMode = kBothShadowsAndTextProper);
 
-  void PaintDecorationsExceptLineThrough(const TextDecorationOffsetBase&,
-                                         TextDecorationInfo&,
-                                         const PaintInfo&,
-                                         const Vector<AppliedTextDecoration>&,
-                                         const TextPaintStyle& text_style,
-                                         bool* has_line_through_decoration);
-  void PaintDecorationsOnlyLineThrough(TextDecorationInfo&,
-                                       const PaintInfo&,
-                                       const Vector<AppliedTextDecoration>&,
-                                       const TextPaintStyle&);
   void PaintDecorationUnderOrOverLine(GraphicsContext&,
                                       TextDecorationInfo&,
                                       TextDecoration line);
