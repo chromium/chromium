@@ -110,6 +110,13 @@ AX_BASE_EXPORT extern const base::Feature
 // Returns true if the feature to allow experimental listening features for
 // Dictation is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationListeningEnabled();
+
+// Enables high-quality, network-based voices in Select-to-speak.
+AX_BASE_EXPORT extern const base::Feature kEnhancedNetworkVoices;
+
+// Returns true if network-based voices are enabled in Select-to-speak.
+AX_BASE_EXPORT bool IsEnhancedNetworkVoicesEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables Get Image Descriptions to augment existing images labels,

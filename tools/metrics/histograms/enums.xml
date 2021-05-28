@@ -44816,6 +44816,7 @@ from previous Chrome versions.
   <int value="-2105498697" label="EnableImeSandbox:disabled"/>
   <int value="-2105133782" label="GesturePropertiesDBusService:enabled"/>
   <int value="-2104950596" label="HandwritingGesture:enabled"/>
+  <int value="-2103692632" label="EnhancedNetworkVoices:disabled"/>
   <int value="-2102286055" label="WebViewVulkanIntermediateBuffer:disabled"/>
   <int value="-2101682955" label="EnableNotificationIndicator:enabled"/>
   <int value="-2101338272" label="EnablePciguardUi:disabled"/>
@@ -46091,6 +46092,7 @@ from previous Chrome versions.
   <int value="-1073479583" label="ShowArcFilesApp:disabled"/>
   <int value="-1069628248" label="OmniboxZeroSuggestionsOnSERP:enabled"/>
   <int value="-1069453905" label="CCTModuleUseIntentExtras:disabled"/>
+  <int value="-1068197506" label="EnhancedNetworkVoices:enabled"/>
   <int value="-1067635248" label="SpeculativeResourcePrefetching:disabled"/>
   <int value="-1065227777" label="CrOSAutoSelect:disabled"/>
   <int value="-1064733740" label="ui-show-composited-layer-borders"/>

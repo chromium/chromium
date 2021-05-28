@@ -127,6 +127,13 @@ bool IsExperimentalAccessibilityDictationListeningEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExperimentalAccessibilityDictationListening);
 }
+
+const base::Feature kEnhancedNetworkVoices{"EnhancedNetworkVoices",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsEnhancedNetworkVoicesEnabled() {
+  return base::FeatureList::IsEnabled(::features::kEnhancedNetworkVoices);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::Feature kAugmentExistingImageLabels{
