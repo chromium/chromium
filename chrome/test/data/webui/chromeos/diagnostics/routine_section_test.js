@@ -226,6 +226,15 @@ export function routineSectionTestSuite() {
     return flushTasks();
   }
 
+  /**
+   * @param {boolean} isActive
+   * @return {!Promise}
+   */
+  function setIsActive(isActive) {
+    routineSectionElement.isActive = isActive;
+    return flushTasks();
+  }
+
   test('ElementRenders', () => {
     return initializeRoutineSection([]).then(() => {
       // Verify the element rendered.
@@ -848,6 +857,40 @@ export function routineSectionTestSuite() {
               getStatusTextElement(),
               loadTimeData.getString('routineRemainingMinFinalLarge'));
           resetMockTime();
+        });
+  });
+
+  test('PageChangeStopsRunningTest', () => {
+    /** @type {!Array<!RoutineType>} */
+    const routines = [RoutineType.kMemory];
+
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kMemory, StandardRoutineResult.kTestPassed);
+    return initializeRoutineSection(routines)
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          // Badge is visible with test running.
+          assertFalse(getStatusBadge().hidden);
+          assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
+          dx_utils.assertTextContains(
+              getStatusBadge().value, loadTimeData.getString('testRunning'));
+
+          // Text is visible describing which test is being run.
+          assertFalse(getStatusTextElement().hidden);
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(),
+              loadTimeData.getString('memoryRoutineText').toLowerCase());
+
+          // Simulate a navigation page change event.
+          return setIsActive(false);
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          // Result list is no longer visible.
+          assertFalse(isVisible(getResultList()));
+          // Memory routine should be cancelled.
+          assertEquals(
+              ExecutionProgress.kCancelled, getEntries()[0].item.progress);
         });
   });
 }

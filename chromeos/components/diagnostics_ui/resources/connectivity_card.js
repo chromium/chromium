@@ -52,6 +52,11 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /** @type {boolean} */
+    isActive: {
+      type: Boolean,
+    },
   },
 
   /** @protected */

@@ -93,6 +93,12 @@ Polymer({
       type: Number,
       value: -1,
     },
+
+    /** @type {boolean} */
+    isActive: {
+      type: Boolean,
+      value: true,
+    },
   },
 
   /** @override */
@@ -170,5 +176,15 @@ Polymer({
       this.scrollTimerId_ =
           window.setTimeout(() => this.scrollingClass_ = '', 300);
     });
+  },
+
+  /**
+   * 'navigation-view-panel' is responsible for calling this function when
+   * the active page changes.
+   * @param {{isActive: boolean}} isActive
+   * @public
+   */
+  onNavigationPageChanged({isActive}) {
+    this.isActive = isActive;
   },
 });

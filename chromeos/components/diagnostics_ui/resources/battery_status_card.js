@@ -102,6 +102,11 @@ Polymer({
       type: String,
       computed: 'updateIconClassList_(batteryChargeStatus_.powerAdapterStatus)',
     },
+
+    /** @type {boolean} */
+    isActive: {
+      type: Boolean,
+    },
   },
 
   /** @override */

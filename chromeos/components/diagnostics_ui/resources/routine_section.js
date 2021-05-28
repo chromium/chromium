@@ -160,12 +160,38 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @type {boolean} */
+    isActive: {
+      type: Boolean,
+    },
+
+    /**
+     * Used to reset run button text to its initial state
+     * when a navigation page change event occurs.
+     *  @private {string}
+     */
+    initialButtonText_: {
+      type: String,
+      value: '',
+      computed: 'getInitialButtonText_(runTestsButtonText)',
+    },
   },
 
   observers: [
     'routineStatusChanged_(executionStatus_, currentTestName_,' +
         'additionalMessage)',
+    'onActivePageChanged_(isActive)',
   ],
+
+  /**
+   * @param {string} buttonText
+   * @return {string}
+   * @private
+   */
+  getInitialButtonText_(buttonText) {
+    return this.initialButtonText_ || buttonText;
+  },
 
   /** @private */
   getResultListElem_() {
@@ -448,6 +474,26 @@ Polymer({
   dismissCautionBanner_() {
     this.dispatchEvent(new CustomEvent(
         'dismiss-caution-banner', {bubbles: true, composed: true}));
+  },
+
+  /** @private */
+  resetRoutineState_() {
+    this.setBadgeAndStatusText_(BadgeType.QUEUED, '', '');
+    this.runTestsButtonText = this.initialButtonText_;
+    this.hasTestFailure_ = false;
+    this.currentTestName_ = '';
+    this.executionStatus_ = ExecutionProgress.kNotStarted;
+    this.$.collapse.hide();
+  },
+
+  /**
+   * Stop any running tests and reset to initial routine state
+   * when the active navigation page changes.
+   * @private
+   */
+  onActivePageChanged_() {
+    this.stopTests_();
+    this.resetRoutineState_();
   },
 
   /** @override */

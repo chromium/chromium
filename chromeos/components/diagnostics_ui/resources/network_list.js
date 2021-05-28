@@ -46,6 +46,12 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /** @type {boolean} */
+    isActive: {
+      type: Boolean,
+      value: true,
+    },
   },
 
   /** @override */
@@ -71,5 +77,15 @@ Polymer({
     this.otherNetworkGuids_ = networkGuidInfo.networkGuids.filter(
         guid => guid !== networkGuidInfo.activeGuid);
     this.activeGuid_ = networkGuidInfo.activeGuid || '';
+  },
+
+  /**
+   * 'navigation-view-panel' is responsible for calling this function when
+   * the active page changes.
+   * @param {{isActive: boolean}} isActive
+   * @public
+   */
+  onNavigationPageChanged({isActive}) {
+    this.isActive = isActive;
   },
 });

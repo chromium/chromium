@@ -4,7 +4,8 @@
 <div id="networkListContainer" class="diagnostics-cards-container">
   <div class="diagnostics-cards-container">
     <connectivity-card class="card-width" active-guid="[[activeGuid_]]"
-        is-test-running="{{isTestRunning}}">
+        is-test-running="{{isTestRunning}}"
+        is-active="[[isActive]]">
     </connectivity-card>
   </div>
   <dom-repeat id="networkCardList" items="[[otherNetworkGuids_]]" as="guid">

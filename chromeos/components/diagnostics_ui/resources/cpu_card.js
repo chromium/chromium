@@ -71,6 +71,11 @@ Polymer({
       value: false,
       notify: true,
     },
+
+    /** @type {boolean} */
+    isActive: {
+      type: Boolean,
+    },
   },
 
   /** @override */
