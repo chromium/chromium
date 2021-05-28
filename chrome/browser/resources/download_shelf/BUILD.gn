@@ -164,6 +164,7 @@ js_library("app") {
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:custom_element",
     "//ui/webui/resources/js:icon.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 

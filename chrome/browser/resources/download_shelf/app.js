@@ -11,6 +11,7 @@ import './download_list.js';
 import './strings.m.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from './download_shelf_api_proxy.js';
 
 export class DownloadShelfAppElement extends CustomElement {
@@ -24,9 +25,13 @@ export class DownloadShelfAppElement extends CustomElement {
     /** @private {!DownloadShelfApiProxy} */
     this.apiProxy_ = DownloadShelfApiProxyImpl.getInstance();
 
-    this.$('#show-all-button')
-        .addEventListener('click', e => this.onShowAll_());
-    this.$('#close-button').addEventListener('click', e => this.onClose_());
+    const showAllButton = this.$('#show-all-button');
+    showAllButton.innerText = loadTimeData.getString('showAll');
+    showAllButton.addEventListener('click', e => this.onShowAll_());
+
+    const closeButton = this.$('#close-button');
+    closeButton.setAttribute('aria-label', loadTimeData.getString('close'));
+    closeButton.addEventListener('click', e => this.onClose_());
   }
 
   /** @private */
