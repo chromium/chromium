@@ -36,6 +36,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -1232,6 +1234,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [bottomToolbar setNewTabButtonTarget:self
                                 action:@selector(newTabButtonTapped:)];
+
+  NamedGuide* guide =
+      [[NamedGuide alloc] initWithName:kTabGridBottomToolbarGuide];
+  [self.view addLayoutGuide:guide];
+  guide.constrainedView = bottomToolbar;
 }
 
 // Adds the foreground view and sets constraints.

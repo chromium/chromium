@@ -9,14 +9,32 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+@interface SnackbarCoordinator ()
+
+@property(nonatomic, weak) id<SnackbarCoordinatorDelegate> delegate;
+
+@end
+
 @implementation SnackbarCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                                  delegate:(id<SnackbarCoordinatorDelegate>)
+                                               delegate {
+  DCHECK(delegate);
+
+  self = [super initWithBaseViewController:baseViewController browser:browser];
+  if (self) {
+    _delegate = delegate;
+  }
+  return self;
+}
 
 - (void)start {
   DCHECK(self.browser);
@@ -34,12 +52,8 @@
 #pragma mark - SnackbarCommands
 
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message {
-  NamedGuide* bottomToolbarGuide =
-      [NamedGuide guideWithName:kSecondaryToolbarGuide
-                           view:self.baseViewController.view];
-  CGRect bottomToolbarFrame = bottomToolbarGuide.constrainedView.frame;
-  [self showSnackbarMessage:message
-               bottomOffset:bottomToolbarFrame.size.height];
+  CGFloat offset = [self.delegate bottomOffsetForCurrentlyPresentedView];
+  [self showSnackbarMessage:message bottomOffset:offset];
 }
 
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message
@@ -69,12 +83,7 @@
   message.action = action;
   message.completionHandler = completionAction;
 
-  NamedGuide* bottomToolbarGuide =
-      [NamedGuide guideWithName:kSecondaryToolbarGuide
-                           view:self.baseViewController.view];
-  CGRect bottomToolbarFrame = bottomToolbarGuide.constrainedView.frame;
-  [self showSnackbarMessage:message
-               bottomOffset:bottomToolbarFrame.size.height];
+  [self showSnackbarMessage:message];
 }
 
 @end

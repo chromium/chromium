@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #include "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_context_menu_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
@@ -57,6 +58,7 @@
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_coordinator.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -71,6 +73,7 @@
 @interface TabGridCoordinator () <HistoryPresentationDelegate,
                                   TabContextMenuDelegate,
                                   RecentTabsPresentationDelegate,
+                                  SnackbarCoordinatorDelegate,
                                   TabGridMediatorDelegate,
                                   TabPresentationDelegate,
                                   TabGridViewControllerDelegate,
@@ -114,6 +117,10 @@
     RecentTabsContextMenuHelper* recentTabsContextMenuHelper;
 // The action sheet coordinator, if one is currently being shown.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
+// Coordinator for snackbar presentation on |_regularBrowser|.
+@property(nonatomic, strong) SnackbarCoordinator* snackbarCoordinator;
+// Coordinator for snackbar presentation on |_incognitoBrowser|.
+@property(nonatomic, strong) SnackbarCoordinator* incognitoSnackbarCoordinator;
 // The timestamp of the user entering the tab grid.
 @property(nonatomic, assign) base::TimeTicks tabGridEnterTime;
 // The timestamp of the user exiting the tab grid.
@@ -637,6 +644,17 @@
     [self installThumbStrip];
   }
 
+  self.snackbarCoordinator =
+      [[SnackbarCoordinator alloc] initWithBaseViewController:baseViewController
+                                                      browser:_regularBrowser
+                                                     delegate:self];
+  [self.snackbarCoordinator start];
+  self.incognitoSnackbarCoordinator =
+      [[SnackbarCoordinator alloc] initWithBaseViewController:baseViewController
+                                                      browser:_incognitoBrowser
+                                                     delegate:self];
+  [self.incognitoSnackbarCoordinator start];
+
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
   [sceneState addObserver:self];
@@ -678,6 +696,11 @@
   self.remoteTabsMediator = nil;
   [self.actionSheetCoordinator stop];
   self.actionSheetCoordinator = nil;
+
+  [self.snackbarCoordinator stop];
+  self.snackbarCoordinator = nil;
+  [self.incognitoSnackbarCoordinator stop];
+  self.incognitoSnackbarCoordinator = nil;
 }
 
 #pragma mark - TabPresentationDelegate
@@ -951,6 +974,29 @@
       [self uninstallThumbStrip];
     }
   }
+}
+
+#pragma mark - SnackbarCoordinatorDelegate
+
+- (CGFloat)bottomOffsetForCurrentlyPresentedView {
+  NamedGuide* bottomToolbarGuide = nil;
+  if ([self.bvcContainer currentBVC]) {
+    // Use the BVC bottom bar as the offset as it is currently presented.
+    bottomToolbarGuide =
+        [NamedGuide guideWithName:kSecondaryToolbarGuide
+                             view:self.bvcContainer.currentBVC.view];
+  } else {
+    // The tab grid is being show so use tab grid bottom bar.
+    bottomToolbarGuide =
+        [NamedGuide guideWithName:kTabGridBottomToolbarGuide
+                             view:self.baseViewController.view];
+  }
+
+  if (!bottomToolbarGuide) {
+    return 0.0;
+  }
+
+  return bottomToolbarGuide.constrainedView.frame.size.height;
 }
 
 @end
