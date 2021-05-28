@@ -758,6 +758,7 @@ bool NetworkingPrivateChromeOS::EnableNetworkType(const std::string& type) {
   NetworkTypePattern pattern =
       chromeos::onc::NetworkTypePatternFromOncType(type);
 
+  NET_LOG(USER) << __func__ << ":" << type;
   GetStateHandler()->SetTechnologyEnabled(
       pattern, true, chromeos::network_handler::ErrorCallback());
 
@@ -768,6 +769,7 @@ bool NetworkingPrivateChromeOS::DisableNetworkType(const std::string& type) {
   NetworkTypePattern pattern =
       chromeos::onc::NetworkTypePatternFromOncType(type);
 
+  NET_LOG(USER) << __func__ << ":" << type;
   GetStateHandler()->SetTechnologyEnabled(
       pattern, false, chromeos::network_handler::ErrorCallback());
 

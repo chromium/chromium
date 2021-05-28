@@ -393,8 +393,9 @@ void NetworkConnectImpl::DisconnectFromNetworkId(
 void NetworkConnectImpl::SetTechnologyEnabled(
     const NetworkTypePattern& technology,
     bool enabled_state) {
+  const std::string technology_string = technology.ToDebugString();
   std::string log_string = base::StringPrintf(
-      "technology %s, target state: %s", technology.ToDebugString().c_str(),
+      "technology %s, target state: %s", technology_string.c_str(),
       (enabled_state ? "ENABLED" : "DISABLED"));
   NET_LOG(USER) << "SetTechnologyEnabled: " << log_string;
   NetworkStateHandler* handler = NetworkHandler::Get()->network_state_handler();
@@ -405,6 +406,7 @@ void NetworkConnectImpl::SetTechnologyEnabled(
   }
   if (enabled) {
     // User requested to disable the technology.
+    NET_LOG(USER) << __func__ << " " << technology_string << ":" << false;
     handler->SetTechnologyEnabled(technology, false,
                                   network_handler::ErrorCallback());
     return;
@@ -434,6 +436,7 @@ void NetworkConnectImpl::SetTechnologyEnabled(
       return;
     }
   }
+  NET_LOG(USER) << __func__ << " " << technology_string << ":" << true;
   handler->SetTechnologyEnabled(technology, true,
                                 network_handler::ErrorCallback());
 }

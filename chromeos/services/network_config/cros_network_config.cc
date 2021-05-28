@@ -22,6 +22,7 @@
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_device_handler.h"
+#include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_name_util.h"
@@ -2369,6 +2370,9 @@ void CrosNetworkConfig::SetNetworkTypeEnabledState(
     std::move(callback).Run(false);
     return;
   }
+
+  NET_LOG(USER) << __func__ << " " << type << ":" << enabled;
+
   // Set the technology enabled state and return true. The call to Shill does
   // not have a 'success' callback (and errors are already logged).
   network_state_handler_->SetTechnologyEnabled(
