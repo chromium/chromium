@@ -74,6 +74,9 @@
     'android_omnibox': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/omnibox/'
     },
+    'android_omnibox_deps': {
+      'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/omnibox/*/*DEPS',
+    },
     'android_search_widget': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/locale/' \
                   '|chrome/android/java/src/org/chromium/chrome/browser/searchwidget/'
@@ -2076,8 +2079,8 @@
     'android_infobars': ['dfalcantara+watch@chromium.org'],
     'android_infra': ['agrieve+watch@chromium.org'],
     'android_item_chooser_dialogs': ['juncai+watch@chromium.org'],
-    'android_omnibox': ['ender+watch@chromium.org',
-                         'jinsukkim+watch@chromium.org'],
+    'android_omnibox': ['ender+watch@chromium.org'],
+    'android_omnibox_deps': ['jinsukkim+deps@chromium.org'],
     'android_search_widget': ['tedchoc+watch@chromium.org',
                               'yusufo+watch@chromium.org'],
     'android_studio': ['wnwen+watch@chromium.org',
