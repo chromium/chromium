@@ -2,10 +2,10 @@
 </style>
 <div id="shimlessRMAContainer">
 	<div class="shimlessHeader">
-		<cr-button 
-			id="back" on-click="onBackBtnClicked_"
-			disabled="[[isBtnDisabled_(currentPage_.btnBack)]]"
-			hidden$="[[isBtnHidden_(currentPage_.btnBack)]]">
+		<cr-button
+			id="back" on-click="onBackButtonClicked_"
+			disabled="[[isButtonDisabled_(currentPage_.buttonBack)]]"
+			hidden$="[[isButtonHidden_(currentPage_.buttonBack)]]">
 		  Back
 		</cr-button>
 	</div>
@@ -13,15 +13,15 @@
 	<div id="contentContainer"></div>
 	<div class="shimlessFooter">
 		<cr-button
-			id="cancel" on-click="onCancelBtnClicked_"
-			disabled="[[isBtnDisabled_(currentPage_.btnCancel)]]"
-			hidden$="[[isBtnHidden_(currentPage_.btnCancel)]]">
+			id="cancel" on-click="onCancelButtonClicked_"
+			disabled="[[isButtonDisabled_(currentPage_.buttonCancel)]]"
+			hidden$="[[isButtonHidden_(currentPage_.buttonCancel)]]">
 		  Cancel
 		</cr-button>
 		<cr-button
-			id="next" on-click="onNextBtnClicked_"
-			disabled="[[isBtnDisabled_(currentPage_.btnNext)]]"
-			hidden$="[[isBtnHidden_(currentPage_.btnNext)]]">
+			id="next" on-click="onNextButtonClicked_"
+			disabled="[[isButtonDisabled_(currentPage_.buttonNext)]]"
+			hidden$="[[isButtonHidden_(currentPage_.buttonNext)]]">
 		  Next
 		</cr-button>
 	</div>

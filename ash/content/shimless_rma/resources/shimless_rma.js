@@ -17,7 +17,7 @@ import {CurrentState, NextState, PrevState, RmadErrorCode, RmaState, ShimlessRma
  * Enum for button states.
  * @enum {string}
  */
-export const BtnState = {
+export const ButtonState = {
   VISIBLE: 'visible',
   DISABLED: 'disable',
   HIDDEN: 'hidden'
@@ -26,10 +26,10 @@ export const BtnState = {
 /**
  * @typedef {{
  *  componentIs: string,
- *  btnNext: !BtnState,
- *  btnNextLabel: string,
- *  btnCancel: !BtnState,
- *  btnBack: !BtnState,
+ *  buttonNext: !ButtonState,
+ *  buttonNextLabel: string,
+ *  buttonCancel: !ButtonState,
+ *  buttonBack: !ButtonState,
  * }}
  */
 let PageInfo;
@@ -40,28 +40,28 @@ let PageInfo;
 const StateComponentMapping = {
   [RmaState.kUnknown]: {
     componentIs: 'badcomponent',
-    btnNext: BtnState.HIDDEN,
-    btnCancel: BtnState.VISIBLE,
-    btnBack: BtnState.HIDDEN,
+    buttonNext: ButtonState.HIDDEN,
+    buttonCancel: ButtonState.VISIBLE,
+    buttonBack: ButtonState.HIDDEN,
   },
   [RmaState.kWelcomeScreen]: {
     componentIs: 'onboarding-landing-page',
-    btnNext: BtnState.VISIBLE,
-    btnCancel: BtnState.VISIBLE,
-    btnBack: BtnState.HIDDEN,
+    buttonNext: ButtonState.VISIBLE,
+    buttonCancel: ButtonState.VISIBLE,
+    buttonBack: ButtonState.HIDDEN,
   },
   // TODO(joonbug): update to correct RmaState
   [RmaState.kSelectComponents]: {
     componentIs: 'onboarding-update-page',
-    btnNext: BtnState.HIDDEN,
-    btnCancel: BtnState.VISIBLE,
-    btnBack: BtnState.VISIBLE,
+    buttonNext: ButtonState.HIDDEN,
+    buttonCancel: ButtonState.VISIBLE,
+    buttonBack: ButtonState.VISIBLE,
   },
   [RmaState.kUpdateChrome]: {
     componentIs: 'onboarding-update-page',
-    btnNext: BtnState.HIDDEN,
-    btnCancel: BtnState.VISIBLE,
-    btnBack: BtnState.VISIBLE,
+    buttonNext: ButtonState.HIDDEN,
+    buttonCancel: ButtonState.VISIBLE,
+    buttonBack: ButtonState.VISIBLE,
   },
 };
 
@@ -190,38 +190,38 @@ export class ShimlessRmaElement extends PolymerElement {
   }
 
   /** @protected */
-  isBtnHidden_(btn) {
-    return btn === 'hidden';
+  isButtonHidden_(button) {
+    return button === 'hidden';
   }
 
   /** @protected */
-  isBtnDisabled_(btn) {
-    return btn === 'disabled';
+  isButtonDisabled_(button) {
+    return button === 'disabled';
   }
 
   /**
-   * @param {string} btnName
-   * @param {!BtnState} btnState
+   * @param {string} buttonName
+   * @param {!ButtonState} buttonState
    */
-  updateBtnState(btnName, btnState) {
-    assert(this.currentPage_.hasOwnProperty(btnName));
-    this.set(`currentPage_.${btnName}`, btnState);
+  updateButtonState(buttonName, buttonState) {
+    assert(this.currentPage_.hasOwnProperty(buttonName));
+    this.set(`currentPage_.${buttonName}`, buttonState);
   }
 
   /** @protected */
-  onBackBtnClicked_() {
+  onBackButtonClicked_() {
     // TODO(joonbug): error handling based on state.error
     this.fetchPrevState_().then((state) => this.loadState_(state.prevState));
   }
 
   /** @protected */
-  onNextBtnClicked_() {
+  onNextButtonClicked_() {
     const page = this.shadowRoot.querySelector(this.currentPage_.componentIs);
     assert(page);
 
     // Acquire promise to check whether current page is ready for next page.
     const prepPageAdvance =
-        page.onNextBtnClick || (() => Promise.resolve(RmaState.kUnknown));
+        page.onNextButtonClick || (() => Promise.resolve(RmaState.kUnknown));
     assert(typeof prepPageAdvance === 'function');
 
     prepPageAdvance()
@@ -233,7 +233,7 @@ export class ShimlessRmaElement extends PolymerElement {
   }
 
   /** @protected */
-  onCancelBtnClicked_() {
+  onCancelButtonClicked_() {
     this.loadState_(assert(this.initialState_));
   }
 };

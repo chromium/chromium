@@ -102,7 +102,7 @@ export class OnboardingUpdatePageElement extends PolymerElement {
   }
 
   /** @protected */
-  onUpdateCheckBtnClicked_() {
+  onUpdateCheckButtonClicked_() {
     this.checkInProgress_ = true;
     this.shimlessRmaService_.checkForChromeUpdates().then((res) => {
       if (res.updateAvailable) {
@@ -120,14 +120,14 @@ export class OnboardingUpdatePageElement extends PolymerElement {
   }
 
   /** @protected */
-  onUpdateBtnClicked_() {
+  onUpdateButtonClicked_() {
     // TODO(joonbug): trigger update
   }
 
   /**
    * @protected
    */
-  updateCheckBtnHidden_() {
+  updateCheckButtonHidden_() {
     return !this.networkAvailable || this.updateAvailable_;
   }
 };

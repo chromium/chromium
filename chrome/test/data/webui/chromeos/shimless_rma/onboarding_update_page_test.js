@@ -54,9 +54,10 @@ export function onboardingUpdatePageTest() {
   /**
    * @return {!Promise}
    */
-  function clickCheckUpdateBtn() {
-    const checkUpdateBtn = component.shadowRoot.querySelector('#checkUpdate');
-    checkUpdateBtn.click();
+  function clickCheckUpdateButton() {
+    const checkUpdateButton =
+        component.shadowRoot.querySelector('#checkUpdate');
+    checkUpdateButton.click();
     return flushTasks();
   }
 
@@ -67,9 +68,9 @@ export function onboardingUpdatePageTest() {
     return initializeUpdatePage(version, update).then(() => {
       const versionComponent =
           component.shadowRoot.querySelector('#versionInfo');
-      const updateBtn = component.shadowRoot.querySelector('#performUpdate');
+      const updateButton = component.shadowRoot.querySelector('#performUpdate');
       assertTrue(versionComponent.textContent.trim().indexOf(version) !== -1);
-      assertTrue(updateBtn.hidden);
+      assertTrue(updateButton.hidden);
     });
   });
 
@@ -85,11 +86,11 @@ export function onboardingUpdatePageTest() {
         .then(() => {
           const networkUnavailable =
               component.shadowRoot.querySelector('#networkUnavailable');
-          const checkUpdateBtn =
+          const checkUpdateButton =
               component.shadowRoot.querySelector('#checkUpdate');
 
           assertFalse(networkUnavailable.hidden);
-          assertTrue(checkUpdateBtn.hidden);
+          assertTrue(checkUpdateButton.hidden);
         });
   });
 
@@ -102,7 +103,7 @@ export function onboardingUpdatePageTest() {
           component.networkAvailable = true;
           return flushTasks();
         })
-        .then(() => clickCheckUpdateBtn())
+        .then(() => clickCheckUpdateButton())
         .then(() => {
           const versionComponent =
               component.shadowRoot.querySelector('#versionInfo');
@@ -122,7 +123,7 @@ export function onboardingUpdatePageTest() {
           component.networkAvailable = true;
           return flushTasks();
         })
-        .then(() => clickCheckUpdateBtn())
+        .then(() => clickCheckUpdateButton())
         .then(() => {
           const versionComponent =
               component.shadowRoot.querySelector('#versionInfo');
@@ -132,9 +133,9 @@ export function onboardingUpdatePageTest() {
               versionComponent.textContent.trim().indexOf(uptoDateMsg) !== -1);
         })
         .then(() => {
-          const updateBtn =
+          const updateButton =
               component.shadowRoot.querySelector('#performUpdate');
-          assertFalse(updateBtn.hidden);
+          assertFalse(updateButton.hidden);
         });
   });
 }

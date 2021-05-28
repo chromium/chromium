@@ -6,7 +6,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {fakeChromeVersion, fakeStates} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {BtnState, ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rma.js';
+import {ButtonState, ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rma.js';
 import {RmaState, State} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
@@ -56,15 +56,15 @@ export function shimlessRMAAppTest() {
 
   /**
    * Utility function to assert navigation buttons
-   * TODO(joonbug): expand to cover assertion of BtnState
+   * TODO(joonbug): expand to cover assertion of ButtonState
    */
   function assertNavButtons() {
-    const nextBtn = component.shadowRoot.querySelector('#back');
-    const prevBtn = component.shadowRoot.querySelector('#cancel');
-    const backBtn = component.shadowRoot.querySelector('#next');
-    assertTrue(!!nextBtn);
-    assertTrue(!!prevBtn);
-    assertTrue(!!backBtn);
+    const nextButton = component.shadowRoot.querySelector('#back');
+    const prevButton = component.shadowRoot.querySelector('#cancel');
+    const backButton = component.shadowRoot.querySelector('#next');
+    assertTrue(!!nextButton);
+    assertTrue(!!prevButton);
+    assertTrue(!!backButton);
   }
 
   /**
@@ -72,8 +72,8 @@ export function shimlessRMAAppTest() {
    * @return {Promise}
    */
   function clickNext() {
-    const nextBtn = component.shadowRoot.querySelector('#next');
-    nextBtn.click();
+    const nextButton = component.shadowRoot.querySelector('#next');
+    nextButton.click();
     return flushTasks();
   }
 
@@ -100,8 +100,8 @@ export function shimlessRMAAppTest() {
     assertTrue(!!initialPage);
     assertTrue(initialPage.hidden);
 
-    const prevBtn = component.shadowRoot.querySelector('#back');
-    prevBtn.click();
+    const prevButton = component.shadowRoot.querySelector('#back');
+    prevButton.click();
     await flushTasks();
 
     // components page should not be destroyed.
@@ -117,15 +117,15 @@ export function shimlessRMAAppTest() {
         component.shadowRoot.querySelector('onboarding-landing-page');
     await clickNext();
 
-    const cancelBtn = component.shadowRoot.querySelector('#cancel');
-    cancelBtn.click();
+    const cancelButton = component.shadowRoot.querySelector('#cancel');
+    cancelButton.click();
     await flushTasks();
 
     // back to initial page
     assertFalse(initialPage.hidden);
   });
 
-  test('NextBtnClickedOnReady', async () => {
+  test('NextButtonClickedOnReady', async () => {
     await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
 
     const initialPage =
@@ -133,7 +133,7 @@ export function shimlessRMAAppTest() {
     assertTrue(!!initialPage);
 
     const resolver = new PromiseResolver();
-    initialPage.onNextBtnClick = () => resolver.promise;
+    initialPage.onNextButtonClick = () => resolver.promise;
 
     await clickNext();
     assertFalse(initialPage.hidden);
@@ -148,7 +148,7 @@ export function shimlessRMAAppTest() {
     assertTrue(initialPage.hidden);
   });
 
-  test('NextBtnClickedOnNotReady', async () => {
+  test('NextButtonClickedOnNotReady', async () => {
     await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
 
     const initialPage =
@@ -156,7 +156,7 @@ export function shimlessRMAAppTest() {
     assertTrue(!!initialPage);
 
     const resolver = new PromiseResolver();
-    initialPage.onNextBtnClick = () => resolver.promise;
+    initialPage.onNextButtonClick = () => resolver.promise;
 
     await clickNext();
     assertFalse(initialPage.hidden);
@@ -170,13 +170,13 @@ export function shimlessRMAAppTest() {
   test('UpdateButtonState', async () => {
     await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
 
-    const backBtn = component.shadowRoot.querySelector('#back');
-    assertTrue(!!backBtn);
-    assertTrue(backBtn.hidden);
+    const backButton = component.shadowRoot.querySelector('#back');
+    assertTrue(!!backButton);
+    assertTrue(backButton.hidden);
 
-    component.updateBtnState('btnBack', BtnState.VISIBLE);
+    component.updateButtonState('buttonBack', ButtonState.VISIBLE);
     await flushTasks();
 
-    assertFalse(backBtn.hidden);
+    assertFalse(backButton.hidden);
   });
 }

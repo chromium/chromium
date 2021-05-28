@@ -12,12 +12,12 @@
     </p>
     <p hidden$="{{!checkInProgress_}}">Checking OS version...</p>
     <cr-button disabled="{{checkInProgress_}}"
-        hidden$="{{updateCheckBtnHidden_(networkAvailable, updateAvailable_)}}"
-        id="checkUpdate" on-click="onUpdateCheckBtnClicked_">
+        hidden$="{{updateCheckButtonHidden_(networkAvailable, updateAvailable_)}}"
+        id="checkUpdate" on-click="onUpdateCheckButtonClicked_">
       Check for updates
     </cr-button>
     <cr-button hidden$="{{!updateAvailable_}}"
-        id="performUpdate" on-click="onUpdateBtnClicked_">
+        id="performUpdate" on-click="onUpdateButtonClicked_">
       Update version and restart
     </cr-button>
   </div>
