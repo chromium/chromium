@@ -194,13 +194,16 @@ class ContentSubresourceFilterThrottleManagerTest
 
     NavigateAndCommit(GURL("https://example.first"));
 
-    // Initialize the ruleset dealer.
+    // Initialize the ruleset dealer. Allowlisted URLs must also match a
+    // disallowed rule in order to work correctly.
     std::vector<proto::UrlRule> rules;
     rules.push_back(testing::CreateAllowlistRuleForDocument(
         "allowlist.com", proto::ACTIVATION_TYPE_DOCUMENT,
         {"page-with-activation.com"}));
+    rules.push_back(testing::CreateRuleForDocument(
+        "allowlist.com", proto::ACTIVATION_TYPE_DOCUMENT,
+        {"page-with-activation.com"}));
 
-    // Allowlist rules must prefix a disallowed rule in order to work correctly.
     rules.push_back(testing::CreateAllowlistSuffixRule("not_disallowed.html"));
     rules.push_back(testing::CreateSuffixRule("disallowed.html"));
     ASSERT_NO_FATAL_FAILURE(test_ruleset_creator_.CreateRulesetWithRules(
