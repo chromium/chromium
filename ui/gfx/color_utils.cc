@@ -64,7 +64,134 @@ float Linearize(float eight_bit_component) {
                                  : pow((component + 0.055f) / 1.055f, 2.4f);
 }
 
+constexpr size_t kNumGoogleColors = 10;
+constexpr SkColor kGrey[kNumGoogleColors] = {
+    gfx::kGoogleGrey050, gfx::kGoogleGrey100, gfx::kGoogleGrey200,
+    gfx::kGoogleGrey300, gfx::kGoogleGrey400, gfx::kGoogleGrey500,
+    gfx::kGoogleGrey600, gfx::kGoogleGrey700, gfx::kGoogleGrey800,
+    gfx::kGoogleGrey900,
+};
+
+constexpr SkColor kRed[kNumGoogleColors] = {
+    gfx::kGoogleRed050, gfx::kGoogleRed100, gfx::kGoogleRed200,
+    gfx::kGoogleRed300, gfx::kGoogleRed400, gfx::kGoogleRed500,
+    gfx::kGoogleRed600, gfx::kGoogleRed700, gfx::kGoogleRed800,
+    gfx::kGoogleRed900,
+};
+
+constexpr SkColor kOrange[kNumGoogleColors] = {
+    gfx::kGoogleOrange050, gfx::kGoogleOrange100, gfx::kGoogleOrange200,
+    gfx::kGoogleOrange300, gfx::kGoogleOrange400, gfx::kGoogleOrange500,
+    gfx::kGoogleOrange600, gfx::kGoogleOrange700, gfx::kGoogleOrange800,
+    gfx::kGoogleOrange900,
+};
+
+constexpr SkColor kYellow[kNumGoogleColors] = {
+    gfx::kGoogleYellow050, gfx::kGoogleYellow100, gfx::kGoogleYellow200,
+    gfx::kGoogleYellow300, gfx::kGoogleYellow400, gfx::kGoogleYellow500,
+    gfx::kGoogleYellow600, gfx::kGoogleYellow700, gfx::kGoogleYellow800,
+    gfx::kGoogleYellow900,
+};
+
+constexpr SkColor kGreen[kNumGoogleColors] = {
+    gfx::kGoogleGreen050, gfx::kGoogleGreen100, gfx::kGoogleGreen200,
+    gfx::kGoogleGreen300, gfx::kGoogleGreen400, gfx::kGoogleGreen500,
+    gfx::kGoogleGreen600, gfx::kGoogleGreen700, gfx::kGoogleGreen800,
+    gfx::kGoogleGreen900,
+};
+
+constexpr SkColor kBlue[kNumGoogleColors] = {
+    gfx::kGoogleBlue050, gfx::kGoogleBlue100, gfx::kGoogleBlue200,
+    gfx::kGoogleBlue300, gfx::kGoogleBlue400, gfx::kGoogleBlue500,
+    gfx::kGoogleBlue600, gfx::kGoogleBlue700, gfx::kGoogleBlue800,
+    gfx::kGoogleBlue900,
+};
+
+constexpr SkColor kPurple[kNumGoogleColors] = {
+    gfx::kGooglePurple050, gfx::kGooglePurple100, gfx::kGooglePurple200,
+    gfx::kGooglePurple300, gfx::kGooglePurple400, gfx::kGooglePurple500,
+    gfx::kGooglePurple600, gfx::kGooglePurple700, gfx::kGooglePurple800,
+    gfx::kGooglePurple900,
+};
+
+constexpr SkColor kPink[kNumGoogleColors] = {
+    gfx::kGooglePink050, gfx::kGooglePink100, gfx::kGooglePink200,
+    gfx::kGooglePink300, gfx::kGooglePink400, gfx::kGooglePink500,
+    gfx::kGooglePink600, gfx::kGooglePink700, gfx::kGooglePink800,
+    gfx::kGooglePink900,
+};
+
+SkColor PickGoogleColor(const SkColor (&colors)[kNumGoogleColors],
+                        SkColor background_color,
+                        float min_contrast) {
+  // For dark backgrounds we start at 500 and go down (toward brighter colors).
+  constexpr size_t kDarkBackgroundStartIndex = 5;
+  static_assert(kBlue[kDarkBackgroundStartIndex] == gfx::kGoogleBlue500,
+                "The start index needs to match kGoogleBlue500");
+  if (IsDark(background_color)) {
+    for (size_t i = kDarkBackgroundStartIndex; i > 0; --i) {
+      if (GetContrastRatio(colors[i], background_color) > min_contrast)
+        return colors[i];
+    }
+    return colors[0];
+  }
+
+  // For light backgrounds we start at 400 and go up (toward darker colors).
+  constexpr size_t kLightBackgroundStartIndex = 4;
+  static_assert(kBlue[kLightBackgroundStartIndex] == gfx::kGoogleBlue400,
+                "The start index needs to match kGoogleBlue400");
+  for (size_t i = kLightBackgroundStartIndex; i < kNumGoogleColors - 1; ++i) {
+    if (GetContrastRatio(colors[i], background_color) > min_contrast)
+      return colors[i];
+  }
+  return colors[kNumGoogleColors - 1];
+}
+
 }  // namespace
+
+SkColor PickGoogleColor(SkColor color,
+                        SkColor background_color,
+                        float min_contrast) {
+  HSL hsl;
+  SkColorToHSL(color, &hsl);
+  if (hsl.s < 0.1) {
+    // Low saturation, let this be a grey.
+    return PickGoogleColor(kGrey, background_color, min_contrast);
+  }
+
+  // Map hue to angles for readability.
+  const float color_angle = hsl.h * 360;
+
+  // Hues in comments below are accent colors from MacOS 11.3.1 light mode as
+  // point of reference.
+  // TODO(pbos): Complement this with more Google colors and verify the hue
+  // ranges, this currently knows about enough colors to pick a corresponding
+  // color correctly from MacOS accent colors.
+  // RED: 357.654
+  if (color_angle < 20)
+    return PickGoogleColor(kRed, background_color, min_contrast);
+  // ORANGE: 28.0687
+  if (color_angle < 40)
+    return PickGoogleColor(kOrange, background_color, min_contrast);
+  // YELLOW: 44.4156
+  if (color_angle < 70)
+    return PickGoogleColor(kYellow, background_color, min_contrast);
+  // GREEN: 105.484
+  if (color_angle < 160)
+    return PickGoogleColor(kGreen, background_color, min_contrast);
+  // BLUE: 214.672
+  if (color_angle < 250)
+    return PickGoogleColor(kBlue, background_color, min_contrast);
+  // PURPLE: 299.362
+  if (color_angle < 310)
+    return PickGoogleColor(kPurple, background_color, min_contrast);
+  // PINK: 331.685
+  if (color_angle < 345)
+    return PickGoogleColor(kPink, background_color, min_contrast);
+
+  // End of hue wheel is red.
+  return PickGoogleColor(kRed, background_color, min_contrast);
+}
 
 float GetContrastRatio(SkColor color_a, SkColor color_b) {
   return GetContrastRatio(GetRelativeLuminance(color_a),

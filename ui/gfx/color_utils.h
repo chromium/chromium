@@ -158,6 +158,13 @@ GFX_EXPORT SkColor GetSysSkColor(int which);
 // surface.
 GFX_EXPORT SkColor DeriveDefaultIconColor(SkColor text_color);
 
+// Gets a Google color that matches the hue of `color` and contrasts well
+// enough against `background_color` to meet `min_contrast`. If `color` isn't
+// very saturated, grey will be used instead.
+GFX_EXPORT SkColor PickGoogleColor(SkColor color,
+                                   SkColor background_color,
+                                   float min_contrast);
+
 // Creates an rgba string for an SkColor. For example: 'rgba(255,0,255,0.5)'.
 GFX_EXPORT std::string SkColorToRgbaString(SkColor color);
 

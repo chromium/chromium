@@ -50,8 +50,10 @@ View* GetViewForSubtreeColors(View* view) {
 }
 
 SkColor GetColor(View* focus_ring, bool valid) {
+  const ui::NativeTheme* const native_theme = focus_ring->GetNativeTheme();
   const SkColor default_color =
-      focus_ring->GetNativeTheme()->GetSystemColor(ColorIdForValidity(valid));
+      native_theme->GetSystemColor(ColorIdForValidity(valid));
+
   if (!valid)
     return default_color;
 
@@ -64,31 +66,20 @@ SkColor GetColor(View* focus_ring, bool valid) {
           : focus_ring->GetNativeTheme()->GetSystemColor(
                 ui::NativeTheme::kColorId_WindowBackground);
 
-  // This blends towards the fully-opaque version of the focus-ring color until
-  // the minimum contrast is reached (if possible). If `default_color` is
-  // already contrasty enough it will be used directly.
-  const color_utils::BlendResult contrasty_color =
-      color_utils::BlendForMinContrast(
-          default_color, background_color, SkColorSetA(default_color, 0xFF),
-          color_utils::kMinimumVisibleContrastRatio);
+  const SkColor focus_ring_color =
+      color_utils::PickGoogleColor(default_color, background_color,
+                                   color_utils::kMinimumVisibleContrastRatio);
 
-  const float boosted_contrast = color_utils::GetContrastRatio(
-      color_utils::GetResultingPaintColor(contrasty_color.color,
-                                          background_color),
-      background_color);
+  // If the Google color is contrasty enough, use it.
+  if (color_utils::GetContrastRatio(focus_ring_color, background_color) >
+      color_utils::kMinimumVisibleContrastRatio) {
+    return focus_ring_color;
+  }
 
-  // If the contrast of the boosted color is enough, use it. If not, increasing
-  // opacity was insufficient to meet contrast minimums. This happens when
-  // painting a blue focus ring on a blue theme for instance.
-  if (boosted_contrast > color_utils::kMinimumVisibleContrastRatio)
-    return contrasty_color.color;
-
-  // If a fallback color exists, use it. Otherwise use the boosted color as it's
-  // the best we have here for now.
   return fallback_color_view
              ? focus_ring->GetThemeProvider()->GetColor(
                    fallback_color_view->GetProperty(kFocusRingFallbackColorId))
-             : contrasty_color.color;
+             : focus_ring_color;
 }
 
 double GetCornerRadius() {
