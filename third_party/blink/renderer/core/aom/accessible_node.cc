@@ -954,6 +954,22 @@ void AccessibleNode::appendChild(AccessibleNode* child,
     cache->ChildrenChanged(this);
 }
 
+void AccessibleNode::DetachedFromDocument() {
+  // Clear associated AXObject from AXObjectCache since its accessible node is
+  // removed from document.
+  if (AXObjectCache* cache = GetAXObjectCache())
+    cache->Remove(this);
+
+  // Clear reference to its document, since this accessible node is removed from
+  // document.
+  document_ = nullptr;
+
+  // Remove references for subtree.
+  for (auto child : GetChildren()) {
+    child->DetachedFromDocument();
+  }
+}
+
 void AccessibleNode::removeChild(AccessibleNode* old_child,
                                  ExceptionState& exception_state) {
   if (old_child->parent_ != this) {
@@ -973,6 +989,7 @@ void AccessibleNode::removeChild(AccessibleNode* old_child,
     return;
   }
   old_child->parent_ = nullptr;
+  old_child->DetachedFromDocument();
   children_.erase(ix);
 
   if (AXObjectCache* cache = GetAXObjectCache())

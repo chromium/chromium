@@ -1044,7 +1044,9 @@
   {
     "prefix": "force-renderer-accessibility",
     "bases": ["accessibility/slot-poison.html",
-              "accessibility/details-summary-crash.html"],
+              "accessibility/details-summary-crash.html",
+              "accessibility/virtual-node-child-removal.html",
+              "accessibility/virtual-node-parent-removal.html"],
     "args": ["--force-renderer-accessibility"]
   },
   {

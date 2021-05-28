@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="atomic"></div>
+
+<!--
+  Test that when the parent DOM node of an accessible node subtree is removed,
+  all accessible node subtree's AXVirtualObjects are removed immediately. So
+  that the orphaned AXVirtualObjects (|axChild|, role="button" for this test)
+  don't try to walk up parent chain and compute their parents and hitting
+  DCHECKs.
+-->
+
+<script>
+test(function() {
+    var parent = document.getElementById("atomic");
+    var childAccessibleNode = new AccessibleNode();
+    childAccessibleNode.role = "button";
+    parent.accessibleNode.appendChild(childAccessibleNode);
+    var axParent = accessibilityController.accessibleElementById("atomic");
+    var axChild = axParent.childAtIndex(0);
+    childAccessibleNode.atomic = true;
+    parent.remove();
+});
+</script>
+
+</body>
+</html>
