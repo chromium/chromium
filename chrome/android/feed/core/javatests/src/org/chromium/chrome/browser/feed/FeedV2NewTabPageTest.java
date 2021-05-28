@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.feed;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
@@ -22,6 +24,7 @@ import static org.hamcrest.Matchers.not;
 import static org.chromium.chrome.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
+import android.content.pm.ActivityInfo;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +58,9 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
 import org.chromium.chrome.browser.feed.v2.TestFeedServer;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -70,6 +75,7 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.ViewUtils;
@@ -83,7 +89,9 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.UiRestriction;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -117,6 +125,10 @@ public class FeedV2NewTabPageTest {
 
     private final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
+
+    @Rule
+    public final ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
     private final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(new FakeAccountManagerFacade(null) {
@@ -357,6 +369,33 @@ public class FeedV2NewTabPageTest {
                 SectionHeaderListProperties.IS_SECTION_ENABLED_KEY));
         Assert.assertEquals(sectionHeaderView.getContext().getString(R.string.ntp_discover_off),
                 headerStatusView.getText());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    public void testLoadFeedContent_Landscape() throws IOException {
+        ChromeTabbedActivity chromeActivity = mActivityTestRule.getActivity();
+        chromeActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(chromeActivity.getResources().getConfiguration().orientation,
+                    is(ORIENTATION_LANDSCAPE));
+        });
+
+        openNewTabPage();
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(FeedV2TestHelper.getFeedUserActionsHistogramValues(),
+                    Matchers.hasEntry("kOpenedFeedSurface", 1));
+            Criteria.checkThat(FeedV2TestHelper.getLoadStreamStatusInitialValues(),
+                    Matchers.hasEntry("kLoadedFromNetwork", 1));
+        });
+
+        RecyclerView recyclerView = getRecyclerView();
+        FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD, recyclerView);
+
+        mRenderTestRule.render(recyclerView, "feedContent_landscape");
     }
 
     /**

@@ -21,9 +21,9 @@ public class ViewResizer implements DisplayStyleObserver {
     private int mDefaultPaddingPixels;
     /** The minimum wide display value used for the lateral padding. */
     private int mMinWidePaddingPixels;
-    private final View mView;
+    protected final View mView;
     private final DisplayStyleObserverAdapter mDisplayStyleObserver;
-    private final UiConfig mUiConfig;
+    protected final UiConfig mUiConfig;
 
     @HorizontalDisplayStyle
     private int mCurrentDisplayStyle;

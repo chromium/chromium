@@ -20,6 +20,7 @@ feed_deps = [
 ]
 
 feed_java_sources = [
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedStreamViewResizer.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinator.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceLifecycleManager.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java",
