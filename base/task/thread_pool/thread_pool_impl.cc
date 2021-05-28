@@ -466,15 +466,20 @@ bool ThreadPoolImpl::PostTaskWithSequence(Task task,
 }
 
 bool ThreadPoolImpl::ShouldYield(const TaskSource* task_source) {
-  if (disable_job_yield_)
+  recordreplay::Assert("ThreadPoolImpl::ShouldYield Start");
+  if (disable_job_yield_) {
+    recordreplay::Assert("ThreadPoolImpl::ShouldYield #1");
     return false;
+  }
   const TaskPriority priority = task_source->priority_racy();
   auto* const thread_group =
       GetThreadGroupForTraits({priority, task_source->thread_policy()});
   // A task whose priority changed and is now running in the wrong thread group
   // should yield so it's rescheduled in the right one.
-  if (!thread_group->IsBoundToCurrentThread())
+  if (!thread_group->IsBoundToCurrentThread()) {
+    recordreplay::Assert("ThreadPoolImpl::ShouldYield #2");
     return true;
+  }
   return GetThreadGroupForTraits({priority, task_source->thread_policy()})
       ->ShouldYield(task_source->GetSortKey(disable_fair_scheduling_));
 }
