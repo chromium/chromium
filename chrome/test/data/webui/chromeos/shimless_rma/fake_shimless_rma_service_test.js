@@ -217,20 +217,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
-  test('ManualDisableWriteProtectAvailableDefaultUndefined', () => {
-    return service.manualDisableWriteProtectAvailable().then((available) => {
-      assertEquals(available, undefined);
-    });
-  });
-
-  test('SetManualDisableWriteProtectAvailableResultUpdatesResult', () => {
-    service.setManualDisableWriteProtectAvailableResult(true);
-    return service.manualDisableWriteProtectAvailable().then((available) => {
-      assertEquals(available.available, true);
-    });
-  });
-
-  test('ManuallyDisableWriteProtectOk', () => {
+  test('ChooseManuallyDisableWriteProtectOk', () => {
     let states = [
       {
         state: RmaState.kChooseWriteProtectDisableMethod,
@@ -240,26 +227,26 @@ export function fakeShimlessRmaServiceTestSuite() {
     ];
     service.setStates(states);
 
-    return service.manuallyDisableWriteProtect().then((state) => {
+    return service.chooseManuallyDisableWriteProtect().then((state) => {
       assertEquals(state.nextState, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
 
-  test('ManuallyDisableWriteProtectWrongStateFails', () => {
+  test('ChooseManuallyDisableWriteProtectWrongStateFails', () => {
     let states = [
       {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
     ];
     service.setStates(states);
 
-    return service.manuallyDisableWriteProtect().then((state) => {
+    return service.chooseManuallyDisableWriteProtect().then((state) => {
       assertEquals(state.nextState, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
   });
 
-  test('RsuDisableWriteProtectOk', () => {
+  test('ChooseRsuDisableWriteProtectOk', () => {
     let states = [
       {
         state: RmaState.kChooseWriteProtectDisableMethod,
@@ -269,20 +256,20 @@ export function fakeShimlessRmaServiceTestSuite() {
     ];
     service.setStates(states);
 
-    return service.rsuDisableWriteProtect('ignored').then((state) => {
+    return service.chooseRsuDisableWriteProtect().then((state) => {
       assertEquals(state.nextState, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
 
-  test('RsuDisableWriteProtectWrongStateFails', () => {
+  test('ChooseRsuDisableWriteProtectWrongStateFails', () => {
     let states = [
       {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
     ];
     service.setStates(states);
 
-    return service.rsuDisableWriteProtect('ignored').then((state) => {
+    return service.chooseRsuDisableWriteProtect().then((state) => {
       assertEquals(state.nextState, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
     });
