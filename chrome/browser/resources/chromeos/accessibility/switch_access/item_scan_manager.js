@@ -255,6 +255,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
       // Clearing the focus rings avoids having them re-animate to the same
       // position.
       FocusRingManager.clearAll();
+      this.history_.save(new FocusData(this.group_, this.node_));
       this.loadFromData_(this.suspendedGroup_);
     }
   }
