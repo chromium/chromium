@@ -284,8 +284,13 @@ void GrShaderCache::StoreVkPipelineCacheIfNeeded(GrDirectContext* gr_context) {
   // implemented.
   DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
 
-  base::AutoLock auto_lock(lock_);
-  if (enable_vk_pipeline_cache_ && need_store_pipeline_cache_) {
+  bool need_store_pipeline_cache = false;
+  {
+    base::AutoLock auto_lock(lock_);
+    need_store_pipeline_cache = need_store_pipeline_cache_;
+  }
+
+  if (enable_vk_pipeline_cache_ && need_store_pipeline_cache) {
     {
       base::ScopedClosureRunner uma_runner(base::BindOnce(
           [](base::Time time) {
@@ -295,10 +300,13 @@ void GrShaderCache::StoreVkPipelineCacheIfNeeded(GrDirectContext* gr_context) {
                 base::TimeDelta::FromMicroseconds(5000), 50);
           },
           base::Time::Now()));
-      gr_context->storeVkPipelineCacheData();
-    }
 
-    need_store_pipeline_cache_ = false;
+      gr_context->storeVkPipelineCacheData();
+      {
+        base::AutoLock auto_lock(lock_);
+        need_store_pipeline_cache_ = false;
+      }
+    }
   }
 }
 
