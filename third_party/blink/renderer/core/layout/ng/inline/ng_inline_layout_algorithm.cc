@@ -548,10 +548,13 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
     NGLogicalLineItems* line_box) {
   DCHECK(item_result->layout_result);
 
-  // The input |position| is the line-left edge of the margin box.
-  // Adjust it to the border box by adding the line-left margin.
-  // const ComputedStyle& style = *item.Style();
-  // position += item_result->margins.LineLeft(style.Direction());
+  // Reset the ellipsizing state. Atomic inline is monolithic.
+  LayoutObject* layout_object = item.GetLayoutObject();
+  DCHECK(layout_object);
+  DCHECK(layout_object->IsAtomicInlineLevel());
+  DCHECK_EQ(To<LayoutBox>(layout_object)->GetNGPaginationBreakability(),
+            LayoutBox::kForbidBreaks);
+  layout_object->SetIsTruncated(false);
 
   item_result->has_edge = true;
   NGInlineBoxState* box =

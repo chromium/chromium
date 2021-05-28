@@ -58,8 +58,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                         const PhysicalRect& layout_overflow,
                         bool recalculate_layout_overflow);
 
-  scoped_refptr<const NGLayoutResult> CloneAsHiddenForPaint() const;
-
   ~NGPhysicalBoxFragment() {
     ink_overflow_.Reset(InkOverflowType());
     if (const_has_fragment_items_)

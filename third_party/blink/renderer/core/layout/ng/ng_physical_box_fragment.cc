@@ -512,19 +512,6 @@ NGPhysicalBoxFragment::RareData::RareData(const RareData& other)
               : nullptr),
       table_cell_column_index(other.table_cell_column_index) {}
 
-scoped_refptr<const NGLayoutResult>
-NGPhysicalBoxFragment::CloneAsHiddenForPaint() const {
-  const ComputedStyle& style = Style();
-  NGBoxFragmentBuilder builder(GetMutableLayoutObject(), &style,
-                               style.GetWritingDirection());
-  builder.SetBoxType(BoxType());
-  NGFragmentGeometry initial_fragment_geometry{
-      Size().ConvertToLogical(style.GetWritingMode())};
-  builder.SetInitialFragmentGeometry(initial_fragment_geometry);
-  builder.SetIsHiddenForPaint(true);
-  return builder.ToBoxFragment();
-}
-
 const LayoutBox* NGPhysicalBoxFragment::OwnerLayoutBox() const {
   const LayoutBox* owner_box =
       DynamicTo<LayoutBox>(GetSelfOrContainerLayoutObject());

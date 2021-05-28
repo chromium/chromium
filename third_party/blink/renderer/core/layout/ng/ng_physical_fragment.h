@@ -343,7 +343,9 @@ class CORE_EXPORT NGPhysicalFragment
 
   // This fragment is hidden for paint purpose, but exists for querying layout
   // information. Used for `text-overflow: ellipsis`.
-  bool IsHiddenForPaint() const { return is_hidden_for_paint_; }
+  bool IsHiddenForPaint() const {
+    return is_hidden_for_paint_ || layout_object_->IsTruncated();
+  }
 
   // Return true if this fragment is monolithic, as far as block fragmentation
   // is concerned.

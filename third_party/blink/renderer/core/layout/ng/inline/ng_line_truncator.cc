@@ -410,7 +410,12 @@ void NGLineTruncator::HideChild(NGLogicalLineItem* child) {
     if (fragment.HasOutOfFlowPositionedDescendants())
       return;
 
-    child->layout_result = fragment.CloneAsHiddenForPaint();
+    // Truncate this object. Atomic inline is monolithic.
+    DCHECK(fragment.IsMonolithic());
+    LayoutObject* layout_object = fragment.GetMutableLayoutObject();
+    DCHECK(layout_object);
+    DCHECK(layout_object->IsAtomicInlineLevel());
+    layout_object->SetIsTruncated(true);
     return;
   }
 
