@@ -140,6 +140,13 @@ bool OwnerSettingsService::SetDouble(const std::string& setting, double value) {
   return Set(setting, in_value);
 }
 
+void OwnerSettingsService::RunPendingIsOwnerCallbacksForTesting(bool is_owner) {
+  std::vector<IsOwnerCallback> is_owner_callbacks;
+  is_owner_callbacks.swap(pending_is_owner_callbacks_);
+  for (auto& callback : is_owner_callbacks)
+    std::move(callback).Run(is_owner);
+}
+
 bool OwnerSettingsService::SetString(const std::string& setting,
                                      const std::string& value) {
   DCHECK(thread_checker_.CalledOnValidThread());

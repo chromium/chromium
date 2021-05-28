@@ -312,7 +312,7 @@ void ToolbarView::Init() {
     if (ChromeLabsButton::ShouldShowButton(chrome_labs_model_.get(),
                                            browser_->profile())) {
       chrome_labs_button_ = AddChildView(std::make_unique<ChromeLabsButton>(
-          browser_, chrome_labs_model_.get()));
+          browser_view_, chrome_labs_model_.get()));
 
       show_chrome_labs_button_.Init(
           chrome_labs_prefs::kBrowserLabsEnabled,

@@ -22,6 +22,8 @@
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
@@ -89,12 +91,23 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
 TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
   ChromeLabsButton* labs_button =
       browser_view()->toolbar()->chrome_labs_button();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::OwnerSettingsServiceAsh* service_ =
+      ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(GetProfile());
+  labs_button->SetShouldCircumventDeviceCheckForTesting(true);
+#endif
+
   EXPECT_FALSE(ChromeLabsBubbleView::IsShowing());
   ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(labs_button);
   test_api.NotifyClick(e);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  service_->RunPendingIsOwnerCallbacksForTesting(/*is_owner=*/false);
+#endif
   EXPECT_TRUE(ChromeLabsBubbleView::IsShowing());
+
   views::test::WidgetDestroyedWaiter destroyed_waiter(
       ChromeLabsBubbleView::GetChromeLabsBubbleViewForTesting()->GetWidget());
   test_api.NotifyClick(e);

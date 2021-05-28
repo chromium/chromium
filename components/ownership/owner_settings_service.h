@@ -119,6 +119,10 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
   bool SetDouble(const std::string& setting, double value);
   bool SetString(const std::string& setting, const std::string& value);
 
+  // Run callbacks in test setting. Mocks ownership when full device setup is
+  // not needed.
+  void RunPendingIsOwnerCallbacksForTesting(bool is_owner);
+
  protected:
   void ReloadKeypair();
 
