@@ -2232,9 +2232,9 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name):
         arg_list.append(
             ArgumentInfo(v8_type, v8_arg_name, blink_arg_name, symbol_node))
 
-    arg_decls = (["v8::Local<v8::Object> v8_arg0_receiver"] +
-                 map(lambda arg: "{} {}".format(arg.v8_type, arg.v8_arg_name),
-                     arg_list) +
+    arg_decls = (["v8::Local<v8::Object> v8_arg0_receiver"] + list(
+        map(lambda arg: "{} {}".format(arg.v8_type, arg.v8_arg_name),
+            arg_list)) +
                  ["v8::FastApiCallbackOptions& v8_arg_callback_options"])
     return_type = ("void" if cg_context.operation.return_type.is_void else
                    blink_type_info(cg_context.operation.return_type).value_t)

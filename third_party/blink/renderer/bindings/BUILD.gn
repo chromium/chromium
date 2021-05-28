@@ -171,9 +171,6 @@ action_with_pydeps("web_idl_database") {
 
 template("generate_bindings") {
   action_with_pydeps(target_name) {
-    # TODO(crbug.com/1194277): Investigate non-determinism in Py3 builds.
-    run_under_python2 = true
-
     script = "${bindings_scripts_dir}/generate_bindings.py"
 
     if (defined(invoker.visibility)) {
