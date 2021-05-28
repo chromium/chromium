@@ -10,8 +10,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
-#include "components/feed/core/common/pref_names.h"
-#include "components/feed/core/shared_prefs/pref_names.h"
+#include "components/feed/core/v2/public/ios/pref_names.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #import "components/handoff/handoff_manager.h"
 #include "components/history/core/common/pref_names.h"
@@ -177,8 +176,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   autofill::prefs::RegisterProfilePrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
-  feed::prefs::RegisterFeedSharedProfilePrefs(registry);
-  feed::RegisterProfilePrefs(registry);
+  ios_feed::RegisterProfilePrefs(registry);
   FirstRun::RegisterProfilePrefs(registry);
   FontSizeTabHelper::RegisterBrowserStatePrefs(registry);
   HostContentSettingsMap::RegisterProfilePrefs(registry);

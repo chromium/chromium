@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FEED_CORE_V2_COMMON_ENUMS_H_
-#define COMPONENTS_FEED_CORE_V2_COMMON_ENUMS_H_
+#ifndef COMPONENTS_FEED_CORE_V2_PUBLIC_COMMON_ENUMS_H_
+#define COMPONENTS_FEED_CORE_V2_PUBLIC_COMMON_ENUMS_H_
 
 // Unlike most code from feed/core, these enums are used by both iOS and
 // Android.
@@ -96,4 +96,4 @@ enum class FeedUserActionType {
 
 }  // namespace feed
 
-#endif  // COMPONENTS_FEED_CORE_V2_COMMON_ENUMS_H_
+#endif  // COMPONENTS_FEED_CORE_V2_PUBLIC_COMMON_ENUMS_H_

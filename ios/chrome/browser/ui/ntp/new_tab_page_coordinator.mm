@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "components/feed/core/shared_prefs/pref_names.h"
+#include "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"

@@ -40,6 +40,7 @@ source_set("content_suggestions") {
     "//components/favicon/ios",
     "//components/feature_engagement/public",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
+    "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/ntp_snippets",
     "//components/ntp_tiles",
     "//components/pref_registry",
@@ -207,7 +208,7 @@ source_set("metrics") {
   deps = [
     ":feature_flags",
     "//base",
-    "//components/feed/core/v2:common",
+    "//components/feed/core/v2/public:common",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -323,6 +324,7 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
+    "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser:pref_names",

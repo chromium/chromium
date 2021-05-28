@@ -12,7 +12,7 @@
 #include "base/observer_list_types.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
-#include "components/feed/core/v2/common_enums.h"
+#include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"

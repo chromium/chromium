@@ -37,7 +37,7 @@ source_set("coordinator") {
     ":feature_flags",
     ":ntp",
     ":ntp_internal",
-    "//components/feed/core/shared_prefs:feed_shared_prefs",
+    "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs/ios",

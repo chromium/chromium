@@ -12,7 +12,7 @@
 #include "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#include "components/feed/core/shared_prefs/pref_names.h"
+#include "components/feed/core/v2/public/ios/pref_names.h"
 #include "components/ntp_snippets/content_suggestions_service.h"
 #include "components/ntp_snippets/pref_names.h"
 #include "components/ntp_snippets/remote/remote_suggestions_scheduler.h"

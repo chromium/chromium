@@ -1,0 +1,5 @@
+# TODO(crbug.com/1213474): Move public targets here.
+
+source_set("common") {
+  sources = [ "common_enums.h" ]
+}

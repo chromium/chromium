@@ -10,8 +10,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/feed/core/v2/common_enums.h"
 #include "components/feed/core/v2/enums.h"
+#include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/types.h"

@@ -94,7 +94,7 @@ source_set("feed_core_v2") {
     "wire_response_translator.h",
   ]
   deps = [
-    ":common",
+    "public:common",
     "//components/feed:feature_list",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/history/core/browser",
@@ -150,11 +150,6 @@ source_set("feed_core_base") {
   ]
 }
 
-source_set("common") {
-  sources = [ "common_enums.h" ]
-  deps = []
-}
-
 source_set("test_helpers") {
   testonly = true
   sources = [
@@ -201,10 +196,10 @@ source_set("core_unit_tests") {
 
   public_deps = [ ":test_helpers" ]
   deps = [
-    ":common",
     ":feed_core_base_unit_tests",
     ":feed_core_v2",
     ":unit_tests_bundle_data",
+    "public:common",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
@@ -270,8 +265,8 @@ bundle_data("unit_tests_bundle_data") {
 if (is_android) {
   java_cpp_enum("feedv2_enums_java") {
     sources = [
-      "common_enums.h",
       "enums.h",
+      "public/common_enums.h",
       "public/types.h",
     ]
   }

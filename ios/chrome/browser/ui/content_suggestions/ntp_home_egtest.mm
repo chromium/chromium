@@ -6,7 +6,7 @@
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/feed/core/shared_prefs/pref_names.h"
+#include "components/feed/core/v2/public/ios/pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/pref_names.h"

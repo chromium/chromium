@@ -9,7 +9,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/feed/core/v2/common_enums.h"
+#import "components/feed/core/v2/public/common_enums.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

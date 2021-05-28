@@ -11,8 +11,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/feed/core/v2/common_enums.h"
 #include "components/feed/core/v2/prefs.h"
+#include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/feed_api.h"
 
 namespace feed {
