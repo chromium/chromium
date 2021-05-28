@@ -59,6 +59,13 @@ void RecordTimingHistogram(VideoDecoderImplementation impl,
       elapsed);
 }
 
+base::debug::CrashKeyString* GetNumVideoDecodersCrashKeyString() {
+  static base::debug::CrashKeyString* codec_count_crash_key =
+      base::debug::AllocateCrashKeyString("num-video-decoders",
+                                          base::debug::CrashKeySize::Size32);
+  return codec_count_crash_key;
+}
+
 }  // namespace
 
 class VideoFrameHandleReleaserImpl final
@@ -126,8 +133,12 @@ MojoVideoDecoderService::~MojoVideoDecoderService() {
   if (reset_cb_)
     OnDecoderReset();
 
-  if (is_active_instance_)
+  if (is_active_instance_) {
     g_num_active_mvd_instances--;
+    base::debug::SetCrashKeyString(
+        GetNumVideoDecodersCrashKeyString(),
+        base::NumberToString(g_num_active_mvd_instances));
+  }
 
   // Destruct the VideoDecoder here so its destruction duration is included by
   // the histogram timer below.
@@ -244,6 +255,17 @@ void MojoVideoDecoderService::Initialize(
     return;
   }
 
+  auto gfx_cs = config.color_space_info().ToGfxColorSpace();
+  codec_string_ = base::StringPrintf(
+      "name=%s:codec=%s:profile=%d:size=%s:cs=[%d,%d,%d,%d]:hdrm=%d",
+      GetDecoderName(decoder_->GetDecoderType()).c_str(),
+      GetCodecName(config.codec()).c_str(), config.profile(),
+      config.coded_size().ToString().c_str(),
+      static_cast<int>(gfx_cs.GetPrimaryID()),
+      static_cast<int>(gfx_cs.GetTransferID()),
+      static_cast<int>(gfx_cs.GetMatrixID()),
+      static_cast<int>(gfx_cs.GetRangeID()), config.hdr_metadata().has_value());
+
   using Self = MojoVideoDecoderService;
   decoder_->Initialize(
       config, low_delay, cdm_context,
@@ -277,6 +299,14 @@ void MojoVideoDecoderService::Decode(mojom::DecoderBufferPtr buffer,
     g_num_active_mvd_instances++;
     UMA_HISTOGRAM_EXACT_LINEAR("Media.MojoVideoDecoder.ActiveInstances",
                                g_num_active_mvd_instances, 64);
+    base::debug::SetCrashKeyString(
+        GetNumVideoDecodersCrashKeyString(),
+        base::NumberToString(g_num_active_mvd_instances));
+
+    // This will be overwritten as subsequent decoders are created.
+    static auto* last_codec_crash_key = base::debug::AllocateCrashKeyString(
+        "last-video-decoder", base::debug::CrashKeySize::Size256);
+    base::debug::SetCrashKeyString(last_codec_crash_key, codec_string_);
   }
 
   mojo_decoder_buffer_reader_->ReadDecoderBuffer(

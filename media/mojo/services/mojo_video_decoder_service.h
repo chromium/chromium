@@ -93,6 +93,9 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   // Whether this instance is active (Decode() was called at least once).
   bool is_active_instance_ = false;
 
+  // Codec information stored via crash key.
+  std::string codec_string_;
+
   // Decoder factory.
   MojoMediaClient* mojo_media_client_;
 
