@@ -116,7 +116,9 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
       return;
     }
 
-    event.value()->contact_id = contact_id();
+    if (type_ == Type::LINKING) {
+      event.value()->contact_id = contact_id();
+    }
     event_callback_.Run(std::move(*event));
   }
 
@@ -296,6 +298,9 @@ std::unique_ptr<Registration::Event> Registration::Event::FromSerialized(
   }
 
   if (CBS_len(&cbs) > 0) {
+    if (e->source == Type::SYNC) {
+      return nullptr;
+    }
     e->contact_id.emplace(CBS_data(&cbs), CBS_data(&cbs) + CBS_len(&cbs));
   }
 

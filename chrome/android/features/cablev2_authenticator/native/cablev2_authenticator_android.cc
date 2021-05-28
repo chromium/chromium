@@ -574,8 +574,8 @@ static jlong JNI_CableAuthenticator_StartCloudMessage(
     return 0;
   }
 
-  DCHECK(event->source !=
-             device::cablev2::authenticator::Registration::Type::LINKING ||
+  DCHECK((event->source ==
+          device::cablev2::authenticator::Registration::Type::LINKING) ==
          event->contact_id.has_value());
 
   GlobalData& global_data = GetGlobalData();
