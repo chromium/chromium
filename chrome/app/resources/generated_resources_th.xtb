@@ -4325,7 +4325,6 @@
 <translation id="5709557627224531708">ตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="5711983031544731014">ไม่สามารถปลดล็อก โปรดใส่รหัสผ่าน</translation>
 <translation id="5712153969432126546">บางครั้งเว็บไซต์จะเผยแพร่ PDF เช่น เอกสาร สัญญา แบบฟอร์ม</translation>
-<translation id="5712323955984474772">การอัปเดตถัดไป</translation>
 <translation id="5715711091495208045">โบรกเกอร์ปลั๊กอิน: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">เครื่องมือค้นหาเริ่มต้น</translation>
 <translation id="5719637365829998022">สแกนคิวอาร์โค้ดแล้ว</translation>
@@ -7025,6 +7024,7 @@
 <translation id="8676374126336081632">ล้างข้อมูลที่ป้อน</translation>
 <translation id="8676770494376880701">เชื่อมต่อกับที่ชาร์จพลังงานต่ำ</translation>
 <translation id="8677212948402625567">ยุบทั้งหมด...</translation>
+<translation id="867767487203716855">การอัปเดตถัดไป</translation>
 <translation id="8677859815076891398">ไม่มีอัลบั้ม สร้างอัลบั้มใน <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
 <translation id="8678582529642151449">แท็บจะไม่ย่อ</translation>
 <translation id="8678933587484842200">คุณต้องการเปิดแอปพลิเคชันนี้ด้วยวิธีใด</translation>

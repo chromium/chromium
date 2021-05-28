@@ -4099,7 +4099,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5471768120198416576">Kaixo! Testua ahots bihurtzeko eginbidearen ahotsa naiz.</translation>
 <translation id="5472627187093107397">Gorde webgune honetako pasahitzak</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN kodeak karaktere bat izan behar du gutxienez}other{PIN kodeak # karaktere izan behar ditu gutxienez}}</translation>
-<translation id="5473333559083690127">Idatzi berriro PIN kodea</translation>
+<translation id="5473333559083690127">Idatzi berriro PINa</translation>
 <translation id="5481273127572794904">Ezin dituzte hainbat fitxategi deskargatu automatikoki</translation>
 <translation id="5481941284378890518">Gehitu inguruko inprimagailuak</translation>
 <translation id="5483785310822538350">Baliogabetu fitxategietarako eta gailurako sarbidea</translation>
@@ -4324,7 +4324,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5709557627224531708">Ezarri Chrome arakatzaile lehenetsi gisa</translation>
 <translation id="5711983031544731014">Ezin da desblokeatu. Idatzi pasahitza.</translation>
 <translation id="5712153969432126546">Batzuetan, webguneek PDFak argitaratzen dituzte, hala nola dokumentuak, kontratuak eta inprimakiak</translation>
-<translation id="5712323955984474772">Hurrengo eguneratzea</translation>
 <translation id="5715711091495208045">Pluginaren bitartekaria: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Bilatzaile lehenetsiak</translation>
 <translation id="5719637365829998022">Eskaneatu da QR kodea.</translation>
@@ -4737,7 +4736,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6170470584681422115">Ogitartekoa</translation>
 <translation id="6170498031581934115">Ezin izan da gaitu ADB arazketa. Joan ezarpenetara eta saiatu berriro.</translation>
 <translation id="617213288191670920">Ez da gehitu hizkuntzarik</translation>
-<translation id="6173623053897475761">Idatzi berriro PIN kodea</translation>
+<translation id="6173623053897475761">Idatzi berriro PINa</translation>
 <translation id="6175314957787328458">Microsoft domeinuen GUID identifikatzailea</translation>
 <translation id="6176043333338857209">Aldi baterako aktibatuko da Bluetooth-a, segurtasun-giltzarekin konektatzeko</translation>
 <translation id="6178664161104547336">Hautatu ziurtagiri bat</translation>
@@ -7023,6 +7022,7 @@ Esleipena kentzeko, sakatu esleitutako erabilerraztasun-etengailu bat.</translat
 <translation id="8676374126336081632">Garbitu idatzitakoa</translation>
 <translation id="8676770494376880701">Potentzia txikiko kargagailua konektatu da</translation>
 <translation id="8677212948402625567">Tolestu guztiak…</translation>
+<translation id="867767487203716855">Hurrengo eguneratzea</translation>
 <translation id="8677859815076891398">Ez dago albumik. Sortu bat <ph name="LINK_BEGIN" />Google Argazkiak<ph name="LINK_END" /> zerbitzuan.</translation>
 <translation id="8678582529642151449">Fitxak ez dira txikitzen</translation>
 <translation id="8678933587484842200">Nola abiarazi behar da aplikazio hau?</translation>

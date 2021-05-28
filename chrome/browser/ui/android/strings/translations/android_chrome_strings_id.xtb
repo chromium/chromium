@@ -276,6 +276,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2777555524387840389"><ph name="SECONDS" /> detik lagi</translation>
 <translation id="2779651927720337254">gagal</translation>
 <translation id="2781151931089541271">1 detik lagi</translation>
+<translation id="2788468313014644040">Nomor grup</translation>
 <translation id="2801022321632964776">Update untuk mendapatkan bahasa Anda di versi terbaru Chrome</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -465,7 +466,6 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Opsi yang tersedia di dekat bagian atas layar</translation>
 <translation id="4062305924942672200">Informasi hukum</translation>
-<translation id="4082818367361753283">ID Grup</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084712963632273211">Dari <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />dikirim oleh Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Hapus data aplikasi?</translation>
@@ -691,7 +691,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5524843473235508879">Pengalihan diblokir.</translation>
 <translation id="5527082711130173040">Chrome memerlukan akses lokasi untuk memindai perangkat. <ph name="BEGIN_LINK1" />Perbarui izin<ph name="END_LINK1" />. Akses lokasi juga <ph name="BEGIN_LINK2" />dinonaktifkan untuk perangkat ini<ph name="END_LINK2" />.</translation>
 <translation id="5534640966246046842">Situs disalin</translation>
-<translation id="5548606607480005320">Pemeriksaan keselamatan</translation>
+<translation id="5548606607480005320">Pemeriksaan keamanan</translation>
 <translation id="5556459405103347317">Muat ulang</translation>
 <translation id="5561549206367097665">Menunggu jaringan…</translation>
 <translation id="55737423895878184">Lokasi dan notifikasi diizinkan</translation>

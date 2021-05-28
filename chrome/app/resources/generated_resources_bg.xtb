@@ -4339,7 +4339,6 @@
 <translation id="5709557627224531708">Задаване на Chrome като браузър по подразбиране</translation>
 <translation id="5711983031544731014">Не може да се отключи. Въведете паролата си.</translation>
 <translation id="5712153969432126546">Сайтовете понякога публикуват PDF файлове, като например документи, договори и формуляри</translation>
-<translation id="5712323955984474772">Следваща актуализация</translation>
 <translation id="5715711091495208045">Посредник за приставки: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Търсещи машини по подразбиране</translation>
 <translation id="5719637365829998022">QR кодът е сканиран.</translation>
@@ -7040,6 +7039,7 @@
 <translation id="8676374126336081632">Изчистване на въведеното</translation>
 <translation id="8676770494376880701">Свързано е зарядно устройство с малка мощност</translation>
 <translation id="8677212948402625567">Свиване на всички...</translation>
+<translation id="867767487203716855">Следваща актуализация</translation>
 <translation id="8677859815076891398">Няма албуми. Създайте албум в <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Разделите не се свиват</translation>
 <translation id="8678933587484842200">Как искате да се стартира това приложение?</translation>

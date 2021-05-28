@@ -4337,7 +4337,6 @@
 <translation id="5709557627224531708">Chrome-г өгөгдмөл хөтчөөрөө тохируулна уу</translation>
 <translation id="5711983031544731014">Түгжээг тайлах боломжгүй байна. Нууц үгээ оруулна уу.</translation>
 <translation id="5712153969432126546">Сайтууд заримдаа документ, гэрээ болон маягт зэрэг PDF-г нийтэлдэг</translation>
-<translation id="5712323955984474772">Дараагийн шинэчлэлт</translation>
 <translation id="5715711091495208045">Нэмэлт өргөтгөлийн зуучлагч: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Өгөгдмөл хайлтын систем</translation>
 <translation id="5719637365829998022">QR кодыг скан хийсэн.</translation>
@@ -7033,6 +7032,7 @@
 <translation id="8676374126336081632">Оролтыг цэвэрлэх</translation>
 <translation id="8676770494376880701">Цэнэглэгчийг холбосон байна</translation>
 <translation id="8677212948402625567">Бүгдийг нуух...</translation>
+<translation id="867767487203716855">Дараагийн шинэчлэлт</translation>
 <translation id="8677859815076891398">Цомог байхгүй. <ph name="LINK_BEGIN" />Google Зурагт<ph name="LINK_END" /> цомог үүсгэнэ үү.</translation>
 <translation id="8678582529642151449">Табууд агшихгүй</translation>
 <translation id="8678933587484842200">Та энэ аппыг хэрхэн ажиллуулах хүсэлтэй байна вэ?</translation>

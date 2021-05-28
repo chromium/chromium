@@ -4325,7 +4325,6 @@
 <translation id="5709557627224531708">Подесите Chrome као подразумевани прегледач</translation>
 <translation id="5711983031544731014">Откључавање није могуће. Унесите лозинку.</translation>
 <translation id="5712153969432126546">Сајтови понекад објављују PDF-ове, попут докумената, уговора и образаца</translation>
-<translation id="5712323955984474772">Следеће ажурирање</translation>
 <translation id="5715711091495208045">Посредник додатне компоненте: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Подразумевани претраживачи</translation>
 <translation id="5719637365829998022">QR кôд је скениран.</translation>
@@ -7022,6 +7021,7 @@
 <translation id="8676374126336081632">Обриши унос</translation>
 <translation id="8676770494376880701">Повезан је пуњач мале снаге</translation>
 <translation id="8677212948402625567">Скупи све...</translation>
+<translation id="867767487203716855">Следеће ажурирање</translation>
 <translation id="8677859815076891398">Нема албума. Направите албум у <ph name="LINK_BEGIN" />Google сликама<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Картице се не скупљају</translation>
 <translation id="8678933587484842200">Како желите да се ова апликација покреће?</translation>

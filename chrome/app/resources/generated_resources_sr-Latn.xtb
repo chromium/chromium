@@ -4325,7 +4325,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5709557627224531708">Podesite Chrome kao podrazumevani pregledač</translation>
 <translation id="5711983031544731014">Otključavanje nije moguće. Unesite lozinku.</translation>
 <translation id="5712153969432126546">Sajtovi ponekad objavljuju PDF-ove, poput dokumenata, ugovora i obrazaca</translation>
-<translation id="5712323955984474772">Sledeće ažuriranje</translation>
 <translation id="5715711091495208045">Posrednik dodatne komponente: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Podrazumevani pretraživači</translation>
 <translation id="5719637365829998022">QR kôd je skeniran.</translation>
@@ -7022,6 +7021,7 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu.</translation>
 <translation id="8676374126336081632">Obriši unos</translation>
 <translation id="8676770494376880701">Povezan je punjač male snage</translation>
 <translation id="8677212948402625567">Skupi sve...</translation>
+<translation id="867767487203716855">Sledeće ažuriranje</translation>
 <translation id="8677859815076891398">Nema albuma. Napravite album u <ph name="LINK_BEGIN" />Google slikama<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Kartice se ne skupljaju</translation>
 <translation id="8678933587484842200">Kako želite da se ova aplikacija pokreće?</translation>

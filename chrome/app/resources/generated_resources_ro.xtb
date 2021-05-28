@@ -4326,7 +4326,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5709557627224531708">Setează Chrome ca browser prestabilit</translation>
 <translation id="5711983031544731014">Nu se poate debloca. Introdu parola.</translation>
 <translation id="5712153969432126546">Site-urile publică uneori fișiere PDF, cum ar documente, contracte și formulare</translation>
-<translation id="5712323955984474772">Următoarea actualizare</translation>
 <translation id="5715711091495208045">Broker pluginuri: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motoarele de căutare prestabilite</translation>
 <translation id="5719637365829998022">Codul QR a fost scanat.</translation>
@@ -7026,6 +7025,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="8676374126336081632">Șterge textul introdus</translation>
 <translation id="8676770494376880701">A fost conectat un încărcător de putere joasă</translation>
 <translation id="8677212948402625567">Restrânge-le pe toate...</translation>
+<translation id="867767487203716855">Următoarea actualizare</translation>
 <translation id="8677859815076891398">Niciun album. Creează un album în <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Filele nu se micșorează</translation>
 <translation id="8678933587484842200">Cum dorești să se lanseze această aplicație?</translation>

@@ -276,6 +276,7 @@
 <translation id="2777555524387840389">Залишилося <ph name="SECONDS" /> с</translation>
 <translation id="2779651927720337254">не завантажено</translation>
 <translation id="2781151931089541271">Залишилась 1 с</translation>
+<translation id="2788468313014644040">Номер групи</translation>
 <translation id="2801022321632964776">Виконайте оновлення, щоб користуватися своєю мовою в останній версії Chrome</translation>
 <translation id="2805756323405976993">Додатки</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -465,7 +466,6 @@ Privacy Sandbox підтримує існування відкритої мер�
 <translation id="4056223980640387499">Сепія</translation>
 <translation id="4060598801229743805">Панель інструментів розташовано вгорі екрана</translation>
 <translation id="4062305924942672200">Правова інформація</translation>
-<translation id="4082818367361753283">Ідентифікатор групи</translation>
 <translation id="4084682180776658562">Закладка</translation>
 <translation id="4084712963632273211">Видавець: <ph name="PUBLISHER_ORIGIN" />, <ph name="BEGIN_DEEMPHASIZED" />доставлено Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Видалити дані додатка?</translation>

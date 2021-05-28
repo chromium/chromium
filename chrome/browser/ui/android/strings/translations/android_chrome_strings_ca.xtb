@@ -276,6 +276,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2777555524387840389">Queden <ph name="SECONDS" /> segons</translation>
 <translation id="2779651927720337254">ha fallat</translation>
 <translation id="2781151931089541271">Queda 1 segon</translation>
+<translation id="2788468313014644040">Número de grup</translation>
 <translation id="2801022321632964776">Fes l'actualització per veure la darrera versió de Chrome en el teu idioma</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -465,7 +466,6 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="4056223980640387499">Sèpia</translation>
 <translation id="4060598801229743805">Hi ha opcions disponibles a prop de la part superior de la pantalla</translation>
 <translation id="4062305924942672200">Informació legal</translation>
-<translation id="4082818367361753283">Identificador de grup</translation>
 <translation id="4084682180776658562">Adreça d'interès</translation>
 <translation id="4084712963632273211">Publicada originalment per <ph name="PUBLISHER_ORIGIN" />, <ph name="BEGIN_DEEMPHASIZED" />oferida per Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Vols suprimir les dades de l'aplicació?</translation>
@@ -776,7 +776,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="6032091552407840792">Aquesta prova només està activa en <ph name="BEGIN_LINK" />algunes regions<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Amb <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome està desenvolupant noves tecnologies per protegir-te dels mecanismes de seguiment entre llocs web, alhora que preserva el web obert.
 
-Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan disponibles en determinades regions. Per ara, és possible que els llocs web provin la zona de proves de privadesa mentre continuen utilitzant les tecnologies web actuals, com ara les galetes de tercers.</translation>
+Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan disponibles en determinades regions. Per ara, és possible que els llocs web provin Privacy Sandbox mentre continuen utilitzant les tecnologies web actuals, com ara les galetes de tercers.</translation>
 <translation id="6036057147555329831">ICU addicional</translation>
 <translation id="6039379616847168523">Ves a la pestanya següent</translation>
 <translation id="6040143037577758943">Tanca</translation>

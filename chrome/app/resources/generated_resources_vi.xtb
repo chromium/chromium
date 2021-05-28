@@ -4341,7 +4341,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5709557627224531708">Đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="5711983031544731014">Không mở khóa được. Hãy nhập mật khẩu của bạn.</translation>
 <translation id="5712153969432126546">Đôi khi, trang web sẽ xuất bản các tệp PDF, như tài liệu, hợp đồng và biểu mẫu</translation>
-<translation id="5712323955984474772">Thời gian cập nhật tiếp theo</translation>
 <translation id="5715711091495208045">Trình môi giới plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Công cụ tìm kiếm mặc định</translation>
 <translation id="5719637365829998022">Đã quét xong mã QR.</translation>
@@ -7042,6 +7041,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
 <translation id="8676770494376880701">Đã kết nối bộ sạc công suất thấp</translation>
 <translation id="8677212948402625567">Thu gọn tất cả...</translation>
+<translation id="867767487203716855">Thời gian cập nhật tiếp theo</translation>
 <translation id="8677859815076891398">Không có album nào. Hãy tạo một album trong <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Thẻ sẽ không thu gọn</translation>
 <translation id="8678933587484842200">Bạn muốn ứng dụng này khởi động như thế nào?</translation>

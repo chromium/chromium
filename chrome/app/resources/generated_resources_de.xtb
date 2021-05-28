@@ -4320,7 +4320,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5709557627224531708">Chrome als Standardbrowser festlegen</translation>
 <translation id="5711983031544731014">Entsperren nicht möglich. Bitte geben Sie Ihr Passwort ein,</translation>
 <translation id="5712153969432126546">Websites veröffentlichen manchmal PDFs wie Dokumente, Verträge und Formulare</translation>
-<translation id="5712323955984474772">Nächste Aktualisierung</translation>
 <translation id="5715711091495208045">Plug-in-Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standardsuchmaschinen</translation>
 <translation id="5719637365829998022">Der QR-Code wurde gescannt.</translation>
@@ -7016,6 +7015,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="8676374126336081632">Eingabe löschen</translation>
 <translation id="8676770494376880701">Leistungsschwaches Ladegerät angeschlossen</translation>
 <translation id="8677212948402625567">Alle minimieren...</translation>
+<translation id="867767487203716855">Nächste Aktualisierung</translation>
 <translation id="8677859815076891398">Keine Alben. Ein Album in <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" /> erstellen.</translation>
 <translation id="8678582529642151449">Tabs werden nicht verkleinert</translation>
 <translation id="8678933587484842200">Wie soll diese Anwendung gestartet werden?</translation>

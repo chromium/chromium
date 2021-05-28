@@ -4325,7 +4325,6 @@
 <translation id="5709557627224531708">Chrome を既定のブラウザに設定する</translation>
 <translation id="5711983031544731014">ロックを解除できません。パスワードを入力してください。</translation>
 <translation id="5712153969432126546">一部のサイトはドキュメント、契約、フォームなどの PDF を一般に提供しています</translation>
-<translation id="5712323955984474772">次の更新</translation>
 <translation id="5715711091495208045">プラグイン ブローカー: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">既定の検索エンジン</translation>
 <translation id="5719637365829998022">QR コードをスキャンしました。</translation>
@@ -6303,7 +6302,7 @@
 <translation id="7876027585589532670">ショートカットの編集はできません</translation>
 <translation id="7877451762676714207">不明なサーバー エラーが発生しました。もう一度お試しになるか、サーバー管理者にご連絡ください。</translation>
 <translation id="7879631849810108578">ショートカットが設定されました: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">FLoC をオンにして、ステータスが有効な場合、Chrome で 7 日間の閲覧履歴に基づいて、特定の「コホート」つまりグループに分類されます。広告主はこのグループに対して広告を表示するよう設定できます。閲覧履歴はデバイスに保存され、プライバシーが保たれます。この試用版は、<ph name="BEGIN_LINK" />一部の地域<ph name="END_LINK" />でのみ使用できます。</translation>
+<translation id="7880685873361171388">この設定をオンにして、ステータスが有効な場合、Chrome は 7 日間の閲覧履歴に基づいて、自身が属する特定の「コホート」つまりグループを特定します。広告主はこのグループに対して広告を表示するよう設定できます。閲覧履歴はデバイスに保存され、プライバシーが保たれます。この試用版は、<ph name="BEGIN_LINK" />一部の地域<ph name="END_LINK" />でのみ使用できます。</translation>
 <translation id="7880823633812189969">再起動すると、ローカルデータが削除されます</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">アカウントを表示</translation>
@@ -7025,6 +7024,7 @@
 <translation id="8676374126336081632">入力内容を消去</translation>
 <translation id="8676770494376880701">低電力の充電器に接続されています</translation>
 <translation id="8677212948402625567">すべてを折りたたむ...</translation>
+<translation id="867767487203716855">次の更新</translation>
 <translation id="8677859815076891398">アルバムはありません。<ph name="LINK_BEGIN" />Google フォト<ph name="LINK_END" />でアルバムを作成してください。</translation>
 <translation id="8678582529642151449">タブを縮小しない</translation>
 <translation id="8678933587484842200">このアプリケーションの起動方法を選択してください。</translation>
@@ -7374,7 +7374,7 @@
 <translation id="9031549947500880805">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。</translation>
 <translation id="9033765790910064284">続行</translation>
 <translation id="9033857511263905942">貼り付け(&amp;P)</translation>
-<translation id="9035689366572880647">現在のPINを入力</translation>
+<translation id="9035689366572880647">現在の PIN を入力</translation>
 <translation id="9037640663275993951">デバイスは許可されていません</translation>
 <translation id="9037818663270399707">この接続ではすべてのネットワーク トラフィックのプライバシーが保護されません</translation>
 <translation id="9037965129289936994">原文のページを表示</translation>

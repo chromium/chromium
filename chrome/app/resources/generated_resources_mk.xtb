@@ -4342,7 +4342,6 @@
 <translation id="5709557627224531708">Поставете го Chrome за ваш стандарден прелистувач</translation>
 <translation id="5711983031544731014">Не може да се отклучи. Внесете ја лозинката.</translation>
 <translation id="5712153969432126546">Сајтовите понекогаш објавуваат документи, договори и формулари во PDF-формат</translation>
-<translation id="5712323955984474772">Следно ажурирање</translation>
 <translation id="5715711091495208045">Посредник со приклучоци: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Стандардни пребарувачи</translation>
 <translation id="5719637365829998022">QR-кодот е скениран.</translation>
@@ -7045,6 +7044,7 @@
 <translation id="8676374126336081632">Јасно внесување</translation>
 <translation id="8676770494376880701">Поврзан е полнач со ниско напојување</translation>
 <translation id="8677212948402625567">Собери ги сите...</translation>
+<translation id="867767487203716855">Следно ажурирање</translation>
 <translation id="8677859815076891398">Нема албуми. Создајте албум во <ph name="LINK_BEGIN" />Фотографии на Google<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Картичките не се собираат</translation>
 <translation id="8678933587484842200">Како би сакале да стартува апликацијава?</translation>

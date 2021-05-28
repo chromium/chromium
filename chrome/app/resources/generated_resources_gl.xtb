@@ -4323,7 +4323,6 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5709557627224531708">Define Chrome como navegador predeterminado</translation>
 <translation id="5711983031544731014">Non se pode desbloquear. Introduce o teu contrasinal.</translation>
 <translation id="5712153969432126546">Ás veces, os sitios publican PDF (por exemplo, documentos, contratos e formularios)</translation>
-<translation id="5712323955984474772">Seguinte actualización</translation>
 <translation id="5715711091495208045">Axente do plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motores de busca predeterminados</translation>
 <translation id="5719637365829998022">Código QR lido.</translation>
@@ -7022,6 +7021,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="8676374126336081632">Borrar texto</translation>
 <translation id="8676770494376880701">Cargador de baixa potencia conectado</translation>
 <translation id="8677212948402625567">Contraer todo...</translation>
+<translation id="867767487203716855">Seguinte actualización</translation>
 <translation id="8677859815076891398">Non hai ningún álbum. Crea un en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">As pestanas non se reducen</translation>
 <translation id="8678933587484842200">Como queres que se inicie esta aplicación?</translation>

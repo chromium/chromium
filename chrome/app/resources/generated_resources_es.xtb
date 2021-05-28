@@ -4324,7 +4324,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5709557627224531708">Establecer Google Chrome como navegador predeterminado</translation>
 <translation id="5711983031544731014">No se puede realizar el desbloqueo. Introduce tu contraseña.</translation>
 <translation id="5712153969432126546">A veces, los sitios publican archivos PDF, como documentos, contratos y formularios</translation>
-<translation id="5712323955984474772">Próxima actualización</translation>
 <translation id="5715711091495208045">Agente de complementos: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Buscadores predeterminados</translation>
 <translation id="5719637365829998022">Código QR escaneado.</translation>
@@ -5193,7 +5192,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidad</translation>
 <translation id="6681668084120808868">Sacar foto</translation>
-<translation id="6683087162435654533">Restaurar todas las pestañas</translation>
+<translation id="6683087162435654533">R&amp;estaurar todas las pestañas</translation>
 <translation id="6683948477137300040">Mostrar ventana emergente con EID y código QR del dispositivo</translation>
 <translation id="6684827949542560880">Descargando la última actualización</translation>
 <translation id="668599234725812620">Abrir Google Play</translation>
@@ -6500,7 +6499,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8082106343289440791">¿Quieres emparejar "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Si se inhabilita la depuración ADB, se restablecerá la configuración de fábrica de este <ph name="DEVICE_TYPE" />. Se borrarán todas las cuentas de usuario y todos los datos locales.</translation>
 <translation id="8084114998886531721">Contraseña guardada</translation>
-<translation id="8084510406207562688">Restaurar todas las pestañas</translation>
+<translation id="8084510406207562688">R&amp;estaurar todas las pestañas</translation>
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Configurar <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Este archivo está cifrado. Pídele al propietario que lo descifre.}other{Algunos de estos archivos están cifrados. Pídele al propietario que los descifre.}}</translation>
@@ -7025,6 +7024,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8676374126336081632">Borrar entrada</translation>
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>
 <translation id="8677212948402625567">Ocultar todos...</translation>
+<translation id="867767487203716855">Próxima actualización</translation>
 <translation id="8677859815076891398">No hay álbumes. Crea un álbum en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">el tamaño de las pestañas no se ajusta</translation>
 <translation id="8678933587484842200">¿Cómo te gustaría que se iniciara esta aplicación?</translation>

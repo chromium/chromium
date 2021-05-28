@@ -4322,7 +4322,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5709557627224531708">Establecer Chrome como tu navegador predeterminado</translation>
 <translation id="5711983031544731014">No se puede desbloquear. Ingresa la contraseña.</translation>
 <translation id="5712153969432126546">A veces, los sitios publican archivos PDF, como documentos, contratos y formularios</translation>
-<translation id="5712323955984474772">Próxima actualización</translation>
 <translation id="5715711091495208045">Agente del complemento: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motores de búsqueda predeterminados</translation>
 <translation id="5719637365829998022">Se escaneó el código QR.</translation>
@@ -6578,7 +6577,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="816055135686411707">Error en la configuración de confiabilidad del certificado</translation>
 <translation id="8160775796528709999">Si quieres obtener subtítulos para el audio y el video, habilita el Subtitulado instantáneo en la configuración</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">A través de <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome está desarrollando nuevas tecnologías para protegerte ante el seguimiento entre sitios, a la vez que preservan la Web abierta.</translation>
+<translation id="81610453212785426">A través de <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome está desarrollando nuevas tecnologías para protegerte ante el seguimiento entre sitios, a la vez que se preserva la Web abierta.</translation>
 <translation id="8161293209665121583">Modo de lectura para páginas web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover la pestaña a una ventana nueva}other{Mover las pestañas a una ventana nueva}}</translation>
 <translation id="8165997195302308593">Redirección de puertos para Crostini</translation>
@@ -7023,6 +7022,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8676374126336081632">Borrar entrada</translation>
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>
 <translation id="8677212948402625567">Contraer todo...</translation>
+<translation id="867767487203716855">Próxima actualización</translation>
 <translation id="8677859815076891398">No hay álbumes. Crea un álbum en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Las pestañas no se achican</translation>
 <translation id="8678933587484842200">¿Cómo deseas que se ejecute esta app?</translation>

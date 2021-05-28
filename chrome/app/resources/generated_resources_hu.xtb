@@ -4340,7 +4340,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5709557627224531708">A Chrome beállítása alapértelmezett böngészőként</translation>
 <translation id="5711983031544731014">Nem lehet végrehajtani a feloldást. Adja meg jelszavát.</translation>
 <translation id="5712153969432126546">A webhelyek néha közzétesznek PDF formátumú tartalmakat (pl. dokumentumokat, szerződéseket vagy űrlapokat)</translation>
-<translation id="5712323955984474772">Következő frissítés</translation>
 <translation id="5715711091495208045">Beépülő modul közvetítője: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Alapértelmezett keresőmotorok</translation>
 <translation id="5719637365829998022">QR-kód beolvasása sikeres.</translation>
@@ -7040,6 +7039,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót a hozzárendelés megszüntetés�
 <translation id="8676374126336081632">Beírt szöveg törlése</translation>
 <translation id="8676770494376880701">Kis teljesítményű töltő csatlakoztatva</translation>
 <translation id="8677212948402625567">Összes listanézete...</translation>
+<translation id="867767487203716855">Következő frissítés</translation>
 <translation id="8677859815076891398">Nincs album. Hozzon létre albumot a <ph name="LINK_BEGIN" />Google Fotókban<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">A lapok nem zsugorodnak össze</translation>
 <translation id="8678933587484842200">Hogyan szeretné elindítani ezt az alkalmazást?</translation>

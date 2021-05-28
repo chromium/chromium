@@ -4344,7 +4344,6 @@
 <translation id="5709557627224531708">Зробіть Chrome веб-переглядачем за умовчанням</translation>
 <translation id="5711983031544731014">Не вдалося розблокувати. Введіть пароль.</translation>
 <translation id="5712153969432126546">Сайти іноді публікують файли PDF, як-от документи, договори та форми</translation>
-<translation id="5712323955984474772">Наступне оновлення</translation>
 <translation id="5715711091495208045">Посередник для плагінів: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Пошукові системи за умовчанням</translation>
 <translation id="5719637365829998022">QR-код зіскановано.</translation>
@@ -7045,6 +7044,7 @@
 <translation id="8676374126336081632">Видалити введений текст</translation>
 <translation id="8676770494376880701">Зарядний пристрій низької потужності підключено</translation>
 <translation id="8677212948402625567">Згорнути все...</translation>
+<translation id="867767487203716855">Наступне оновлення</translation>
 <translation id="8677859815076891398">Немає альбомів. Створіть їх у <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Вкладки не зменшуються</translation>
 <translation id="8678933587484842200">Як запускати цей додаток?</translation>

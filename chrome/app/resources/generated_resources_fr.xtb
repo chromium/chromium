@@ -4327,7 +4327,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5709557627224531708">Définir Chrome comme navigateur par défaut</translation>
 <translation id="5711983031544731014">Déverrouillage impossible. Veuillez saisir votre mot de passe.</translation>
 <translation id="5712153969432126546">Les sites publient parfois des PDF, comme des documents, des contrats et des formulaires</translation>
-<translation id="5712323955984474772">Prochaine mise à jour</translation>
 <translation id="5715711091495208045">Gestionnaire de plug-ins : "<ph name="PLUGIN_NAME" />"</translation>
 <translation id="5719603411793408026">Moteurs de recherche par défaut</translation>
 <translation id="5719637365829998022">Code QR scanné.</translation>
@@ -7028,6 +7027,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8676374126336081632">Effacer la saisie</translation>
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>
 <translation id="8677212948402625567">Tout réduire...</translation>
+<translation id="867767487203716855">Prochaine mise à jour</translation>
 <translation id="8677859815076891398">Aucun album. Créez-en un dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Onglets non réduits</translation>
 <translation id="8678933587484842200">Comment souhaitez-vous que cette application soit lancée ?</translation>

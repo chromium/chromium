@@ -276,6 +276,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="2777555524387840389"><ph name="SECONDS" /> sn. kaldı</translation>
 <translation id="2779651927720337254">başarısız</translation>
 <translation id="2781151931089541271">1 sn. kaldı</translation>
+<translation id="2788468313014644040">Grup numarası</translation>
 <translation id="2801022321632964776">Chrome'un en son sürümünü kendi dilinizde kullanmak için güncelleyin</translation>
 <translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -465,7 +466,6 @@ Günümüzde web siteleri, alakalı reklamlar göstermek ve bir sitenin performa
 <translation id="4056223980640387499">Sepya Tonu</translation>
 <translation id="4060598801229743805">Ekranın üst kısmına yakın bir yerde seçenekler vardır</translation>
 <translation id="4062305924942672200">Yasal bilgiler</translation>
-<translation id="4082818367361753283">Grup Kimliği</translation>
 <translation id="4084682180776658562">Yer İşareti</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> web sitesinden - <ph name="BEGIN_DEEMPHASIZED" />Google tarafından yayınlandı<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Uygulama verileri silinsin mi?</translation>

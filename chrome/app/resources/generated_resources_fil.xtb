@@ -4342,7 +4342,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5709557627224531708">Itakda ang Chrome bilang iyong default na browser</translation>
 <translation id="5711983031544731014">Hindi mai-unlock. Ilagay ang iyong password.</translation>
 <translation id="5712153969432126546">Paminsan-minsan, nagpa-publish ang mga site ng mga PDF, tulad ng mga dokumento, kontrata, at form</translation>
-<translation id="5712323955984474772">Susunod na Update</translation>
 <translation id="5715711091495208045">Broker ng plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Mga default na search engine</translation>
 <translation id="5719637365829998022">Na-scan na ang QR code.</translation>
@@ -7044,6 +7043,7 @@ Pumindot ng nakatalagang switch para alisin ang pagtatalaga.</translation>
 <translation id="8676374126336081632">I-clear ang input</translation>
 <translation id="8676770494376880701">Nakakabit ang low-power charger</translation>
 <translation id="8677212948402625567">Tiklupin lahat...</translation>
+<translation id="867767487203716855">Susunod na update</translation>
 <translation id="8677859815076891398">Walang album. Gumawa ng album sa <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Hindi liliit ang mga tab</translation>
 <translation id="8678933587484842200">Paano mo gustong ilunsad ang application na ito?</translation>

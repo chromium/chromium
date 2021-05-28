@@ -1058,7 +1058,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> er skjult</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}one{# telefonnummer}other{# telefonnumre}}</translation>
 <translation id="211144231511833662">Ryd typer</translation>
-<translation id="2111670510994270194">Ny fane i højre side</translation>
+<translation id="2111670510994270194">Ny fane til højre</translation>
 <translation id="2111810003053064883">Annoncører kan undersøge effektiviteten af annoncer på en måde, der ikke sporer dig på tværs af forskellige websites.</translation>
 <translation id="2112554630428445878">Velkommen, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Fastgør fane</translation>
@@ -4342,7 +4342,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5709557627224531708">Angiv Chrome som din standardbrowser</translation>
 <translation id="5711983031544731014">Enheden kan ikke låses op. Angiv din adgangskode.</translation>
 <translation id="5712153969432126546">Websites kan nogle gange udgive PDF-filer som f.eks. dokumenter, kontrakter og formularer</translation>
-<translation id="5712323955984474772">Næste opdatering</translation>
 <translation id="5715711091495208045">Pluginmægler: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standardsøgemaskiner</translation>
 <translation id="5719637365829998022">QR-koden blev scannet.</translation>
@@ -4483,7 +4482,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5870086504539785141">Luk menuen for hjælpefunktioner</translation>
 <translation id="5870155679953074650">Hårde fejl</translation>
 <translation id="5876576639916258720">Kører...</translation>
-<translation id="5876851302954717356">Ny fane i højre side</translation>
+<translation id="5876851302954717356">Ny fane til højre</translation>
 <translation id="5877064549588274448">Kanalen er ændret. Genstart din enhed for at anvende ændringerne.</translation>
 <translation id="5877584842898320529">Den valgte printer er enten ikke tilgængelig eller ikke installeret korrekt.<ph name="BR" />Tjek din printer, eller vælg en anden printer.</translation>
 <translation id="5882919346125742463">Kendte netværk</translation>
@@ -7042,6 +7041,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="8676374126336081632">Ryd indtastning</translation>
 <translation id="8676770494376880701">Oplader med lav kraft er tilsluttet</translation>
 <translation id="8677212948402625567">Skjul alle...</translation>
+<translation id="867767487203716855">Næste opdatering</translation>
 <translation id="8677859815076891398">Der er ingen album. Opret et album i <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Faner formindskes ikke</translation>
 <translation id="8678933587484842200">Hvordan vil du starte denne app?</translation>

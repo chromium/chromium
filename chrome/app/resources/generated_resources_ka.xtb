@@ -4325,7 +4325,6 @@
 <translation id="5709557627224531708">დააყენეთ Chrome ნაგულისხმევ ბრაუზერად</translation>
 <translation id="5711983031544731014">განბლოკვა შეუძლებელია. შეიყვანეთ პაროლი.</translation>
 <translation id="5712153969432126546">საიტები ზოგჯერ აქვეყნებს ისეთ PDF-ებს, როგორიცაა, მაგალითად, დოკუმენტები, კონტრაქტები, ფორმები და ა.შ.</translation>
-<translation id="5712323955984474772">შემდეგი განახლება</translation>
 <translation id="5715711091495208045">დანამატის ბროკერი: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ნაგულისხმევი საძიებო სისტემები</translation>
 <translation id="5719637365829998022">QR-კოდი დასკანირდა.</translation>
@@ -7023,6 +7022,7 @@
 <translation id="8676374126336081632">შეყვანილი ტექსტის გასუფთავება</translation>
 <translation id="8676770494376880701">დაბალი სიმძლავრის დამტენი დაკავშირებულია</translation>
 <translation id="8677212948402625567">ყველას აკეცვა…</translation>
+<translation id="867767487203716855">შემდეგი განახლება</translation>
 <translation id="8677859815076891398">ალბომები არ არის. შექმენით ალბომები <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-ში.</translation>
 <translation id="8678582529642151449">ჩანართები არ შევიწროვდება</translation>
 <translation id="8678933587484842200">რა გზით გსურთ ამ აპლიკაციის გაშვება?</translation>

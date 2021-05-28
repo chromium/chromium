@@ -259,7 +259,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# archivo de audio}other{# archivos de audio}}</translation>
 <translation id="2656405586795711023">Aplicaciones web</translation>
 <translation id="2689830683995595741">Si usas Chrome, aceptas las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Google Chrome y el Sistema operativo Chrome<ph name="END_LINK2" />. También se aplica el <ph name="BEGIN_LINK3" />Aviso de Privacidad para las Cuentas de Google administradas con Family Link<ph name="END_LINK3" />.</translation>
-<translation id="2702516483241149200">Nuevo: Comparte un vínculo que se desplace hasta este texto.</translation>
+<translation id="2702516483241149200">Nuevo: Comparte un vínculo directo a este texto.</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2707726405694321444">Actualizar página</translation>
 <translation id="271033894570825754">Nuevo</translation>
@@ -276,6 +276,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundos restantes</translation>
 <translation id="2779651927720337254">error</translation>
 <translation id="2781151931089541271">1 segundo restante</translation>
+<translation id="2788468313014644040">Número de grupo</translation>
 <translation id="2801022321632964776">Para obtener tu idioma, actualiza a la versión más reciente de Chrome</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -465,7 +466,6 @@ Privacy Sandbox sigue en desarrollo y está disponible en ciertas regiones. Por
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Opciones disponibles cerca de la parte superior de la pantalla</translation>
 <translation id="4062305924942672200">Información legal</translation>
-<translation id="4082818367361753283">ID del grupo</translation>
 <translation id="4084682180776658562">Marcador</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />publicado por Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">¿Borrar datos de app?</translation>
@@ -774,7 +774,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="6002623704405939939">Para borrar la <ph name="BEGIN_LINK1" />búsqueda<ph name="END_LINK1" /> o algún otro tipo de historial, visita <ph name="BEGIN_LINK2" />Mi actividad de Google<ph name="END_LINK2" /></translation>
 <translation id="6005538289190791541">Contraseña sugerida</translation>
 <translation id="6032091552407840792">Esta prueba está activada solo en <ph name="BEGIN_LINK" />algunas regiones<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">A través de <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome está desarrollando nuevas tecnologías para protegerte ante el seguimiento entre sitios, a la vez que preservan la Web abierta.
+<translation id="6033245666633565791">A través de <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome está desarrollando nuevas tecnologías para protegerte ante el seguimiento entre sitios, a la vez que se preserva la Web abierta.
 
 Las pruebas de Privacy Sandbox siguen en desarrollo y están disponibles en ciertas regiones. Por ahora, los sitios pueden usar Privacy Sandbox y seguir utilizando tecnologías web actuales, como las cookies de terceros.</translation>
 <translation id="6036057147555329831">ICU adicional</translation>
@@ -982,7 +982,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7333031090786104871">Aún se está agregando el sitio anterior</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7340958967809483333">Opciones para Descubre</translation>
-<translation id="7352339641508007922">Arrastrar para tomar una captura de pantalla larga</translation>
+<translation id="7352339641508007922">Arrastra para tomar una captura de pantalla larga</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Comparte 1 elemento seleccionado}other{Comparte # elementos seleccionados}}</translation>
@@ -1285,7 +1285,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="9204836675896933765">Queda 1 archivo</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">No se pueden realizar llamadas</translation>
-<translation id="9212845824145208577">No puede ir más abajo. Intenta tomar la captura desde más abajo en la página.</translation>
+<translation id="9212845824145208577">No se puede ir más abajo. Intenta tomar la captura desde más abajo en la página.</translation>
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="926205370408745186">Quita tu actividad en Chrome de Bienestar digital</translation>
 <translation id="927968626442779827">Usa el modo lite en Google Chrome</translation>

@@ -4341,7 +4341,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5709557627224531708">Ange Chrome som standardwebbläsare</translation>
 <translation id="5711983031544731014">Det går inte att låsa upp. Ange ditt lösenord.</translation>
 <translation id="5712153969432126546">Ibland publicerar webbplatser PDF-filer, som dokument, avtal och formulär</translation>
-<translation id="5712323955984474772">Nästa uppdatering</translation>
 <translation id="5715711091495208045">Agent för pluginprogram: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standardsökmotorer</translation>
 <translation id="5719637365829998022">QR-koden har skannats.</translation>
@@ -7042,6 +7041,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="8676374126336081632">Radera inmatning</translation>
 <translation id="8676770494376880701">Laddare med låg effekt ansluten</translation>
 <translation id="8677212948402625567">Dölj alla...</translation>
+<translation id="867767487203716855">Nästa uppdatering</translation>
 <translation id="8677859815076891398">Du har inga album. Skapa ett album i <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Flikar förminskas inte</translation>
 <translation id="8678933587484842200">Hur vill du att det här programmet ska startas?</translation>

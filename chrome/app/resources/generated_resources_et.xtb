@@ -4331,7 +4331,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5709557627224531708">Määrake Chrome vaikebrauseriks</translation>
 <translation id="5711983031544731014">Ei õnnestu avada. Sisestage parool.</translation>
 <translation id="5712153969432126546">Mõnikord avaldavad saidid PDF-e, nt dokumente, lepinguid ja vorme</translation>
-<translation id="5712323955984474772">Järgmises värskenduses</translation>
 <translation id="5715711091495208045">Pistikprogrammi vahendaja: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Vaikeotsingumootorid</translation>
 <translation id="5719637365829998022">QR-kood skanniti.</translation>
@@ -7032,6 +7031,7 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
 <translation id="8676374126336081632">Tühjenda sisestus</translation>
 <translation id="8676770494376880701">Väikese energiakuluga laadija on ühendatud</translation>
 <translation id="8677212948402625567">Ahenda kõik ...  </translation>
+<translation id="867767487203716855">Järgmine värskendus</translation>
 <translation id="8677859815076891398">Albumeid pole. Looge album teenuses <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Vahelehed ei kahane</translation>
 <translation id="8678933587484842200">Kuidas soovite selle rakenduse käivitada?</translation>

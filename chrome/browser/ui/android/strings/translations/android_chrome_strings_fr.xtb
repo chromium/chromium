@@ -276,6 +276,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2777555524387840389"><ph name="SECONDS" /> secondes restantes</translation>
 <translation id="2779651927720337254">échec</translation>
 <translation id="2781151931089541271">1 seconde restante</translation>
+<translation id="2788468313014644040">Numéro du groupe</translation>
 <translation id="2801022321632964776">Lancez la mise à jour pour obtenir votre langue dans la dernière version de Chrome</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2806840421670364300">FLoC (Federated Learning of Cohorts)</translation>
@@ -465,7 +466,6 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4060598801229743805">Options disponibles à proximité du haut de l'écran</translation>
 <translation id="4062305924942672200">Informations légales</translation>
-<translation id="4082818367361753283">ID du groupe</translation>
 <translation id="4084682180776658562">Favori</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" />, <ph name="BEGIN_DEEMPHASIZED" />proposé par Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Supprimer les données de l'application ?</translation>

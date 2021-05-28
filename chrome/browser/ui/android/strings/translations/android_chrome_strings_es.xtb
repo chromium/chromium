@@ -276,6 +276,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2777555524387840389">Quedan <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">ha fallado</translation>
 <translation id="2781151931089541271">Queda 1 segundo</translation>
+<translation id="2788468313014644040">Número de grupo</translation>
 <translation id="2801022321632964776">Actualiza para incluir tu idioma en la última versión de Chrome</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2806840421670364300">Aprendizaje federado de cohortes (FLoC)</translation>
@@ -465,7 +466,6 @@ Privacy Sandbox sigue en desarrollo y está disponible solo en ciertas regiones.
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Opciones disponibles junto a la parte superior de la pantalla</translation>
 <translation id="4062305924942672200">Información legal</translation>
-<translation id="4082818367361753283">ID de grupo</translation>
 <translation id="4084682180776658562">Añadir a marcadores</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> (<ph name="BEGIN_DEEMPHASIZED" />ofrecida por Google<ph name="END_DEEMPHASIZED" />)</translation>
 <translation id="4095146165863963773">¿Eliminar datos de la aplicación?</translation>

@@ -700,7 +700,7 @@
 <translation id="173628468822554835">D'acord. De manera predeterminada, els llocs webs nous que visitis no t'enviaran notificacions.</translation>
 <translation id="1736419249208073774">Explora</translation>
 <translation id="1737968601308870607">Arxiva l'error</translation>
-<translation id="1739684185846730053">Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan disponibles en determinades regions. Per ara, és possible que els llocs web provin la zona de proves de privadesa mentre continuen utilitzant les tecnologies web actuals, com ara les galetes de tercers.</translation>
+<translation id="1739684185846730053">Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan disponibles en determinades regions. Per ara, és possible que els llocs web provin Privacy Sandbox mentre continuen utilitzant les tecnologies web actuals, com ara les galetes de tercers.</translation>
 <translation id="174123615272205933">Personalitzats</translation>
 <translation id="1741314857973421784">Continua</translation>
 <translation id="1743570585616704562">No s'ha reconegut</translation>
@@ -3067,7 +3067,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4297813521149011456">Rotació de la pantalla</translation>
 <translation id="4299022904780065004">Finestra d'&amp;incògnit nova</translation>
 <translation id="4301671483919369635">Aquesta pàgina té permís per editar fitxers</translation>
-<translation id="4302605047395093221">Qualsevol usuari d'aquest dispositiu ha d'introduir el PIN per connectar-se a aquesta xarxa mòbil</translation>
+<translation id="4302605047395093221">Qualsevol persona que faci servir aquest dispositiu haurà d'introduir el PIN per connectar-se a aquesta xarxa mòbil</translation>
 <translation id="4303079906735388947">Configura un PIN nou per a la clau de seguretat</translation>
 <translation id="4305402730127028764">Copia al dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Canvia</translation>
@@ -4326,7 +4326,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5709557627224531708">Defineix Chrome com a navegador predeterminat</translation>
 <translation id="5711983031544731014">No es pot desbloquejar: introduïu la contrasenya</translation>
 <translation id="5712153969432126546">A vegades, els llocs web publiquen fitxers PDF, com ara documents, contractes i formularis</translation>
-<translation id="5712323955984474772">Propera actualització</translation>
 <translation id="5715711091495208045">Agent de connectors: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motors de cerca predeterminats</translation>
 <translation id="5719637365829998022">S'ha escanejat el codi QR.</translation>
@@ -6304,7 +6303,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7876027585589532670">No es pot editar la drecera</translation>
 <translation id="7877451762676714207">Error de servidor desconegut. Torneu-ho a provar o contacteu amb l'administrador del servidor.</translation>
 <translation id="7879631849810108578">Drecera definida: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Quan està activada i l'estat és que la prova està activa, Chrome utilitza el teu historial de navegació de 7 dies per determinar en quin grup o cohort ets. Els anunciants poden seleccionar anuncis per al grup. L'historial de navegació es desa en privat al teu dispositiu. Aquesta prova només està activa en
+<translation id="7880685873361171388">Quan està activada i la prova està activa, Chrome utilitza el teu historial de navegació de 7 dies per determinar en quin grup o cohort ets. Els anunciants poden seleccionar anuncis per al grup. L'historial de navegació es desa en privat al teu dispositiu. Aquesta prova només està activa en
 <ph name="BEGIN_LINK" />algunes regions<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Les dades locals se suprimiran en reiniciar el dispositiu</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -7027,6 +7026,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="8676374126336081632">Esborra l'entrada</translation>
 <translation id="8676770494376880701">S'ha connectat un carregador de baix consum</translation>
 <translation id="8677212948402625567">Redueix-ho tot...</translation>
+<translation id="867767487203716855">Propera actualització</translation>
 <translation id="8677859815076891398">No hi ha cap àlbum. Crea'n un a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8678582529642151449">Les pestanyes no es redueixen</translation>
 <translation id="8678933587484842200">Com voldries que s'iniciés aquesta aplicació?</translation>
