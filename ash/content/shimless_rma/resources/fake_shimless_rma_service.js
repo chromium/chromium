@@ -262,9 +262,10 @@ export class FakeShimlessRmaService {
    * @param {string} code
    * @return {!Promise<!NextState>}
    */
-  rsuDisableWriteProtect(code) {
+  setRsuDisableWriteProtectCode(code) {
+    // TODO(gavindodd): Send the code over mojo.
     return this.getNextStateForMethod_(
-        'rsuDisableWriteProtect', RmaState.kChooseWriteProtectDisableMethod);
+        'setRsuDisableWriteProtectCode', RmaState.kEnterRSUWPDisableCode);
   }
 
   /**
@@ -696,6 +697,7 @@ export class FakeShimlessRmaService {
 
     this.methods_.register('chooseManuallyDisableWriteProtect');
     this.methods_.register('chooseRsuDisableWriteProtect');
+    this.methods_.register('setRsuDisableWriteProtectCode');
 
     this.methods_.register('getComponentList');
     this.methods_.register('toggleComponentReplaced');

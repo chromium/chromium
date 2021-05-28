@@ -42,6 +42,7 @@ const debug_suites_list = [
   'FakeShimlessRmaServiceTestSuite',
   'ShimlessRMAAppTest',
   'OnboardingChooseWpDisableMethodPageTest',
+  'OnboardingEnterRsuWpDisableCodePageTest',
   'OnboardingUpdatePageTest',
   'OnboardingWaitForManualWpDisablePageTest',
 ];

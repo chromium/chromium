@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './onboarding_choose_wp_disable_method_page.js';
+import './onboarding_enter_rsu_wp_disable_code_page.js';
 import './onboarding_landing_page.js';
 import './onboarding_update_page.js';
 import './onboarding_wait_for_manual_wp_disable_page.js';
@@ -67,8 +68,8 @@ const StateComponentMapping = {
   },
   [RmaState.kWaitForManualWPDisable]: {
     componentIs: 'onboarding-wait-for-manual-wp-disable-page',
-    btnNext: ButtonState.HIDDEN,
-    btnCancel: ButtonState.VISIBLE,
+    btnNext: ButtonState.VISIBLE,
+    btnCancel: ButtonState.HIDDEN,
     btnBack: ButtonState.VISIBLE,
   },
   [RmaState.kUpdateChrome]: {
@@ -77,6 +78,13 @@ const StateComponentMapping = {
     btnCancel: ButtonState.VISIBLE,
     btnBack: ButtonState.VISIBLE,
   },
+  [RmaState.kEnterRSUWPDisableCode]: {
+    componentIs: 'onboarding-enter-rsu-wp-disable-code-page',
+    btnNext: ButtonState.HIDDEN,
+    btnCancel: ButtonState.HIDDEN,
+    btnBack: ButtonState.VISIBLE,
+  },
+
 };
 
 /**

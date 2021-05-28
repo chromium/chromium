@@ -11,6 +11,7 @@ export const fakeStates = [
   {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
   {state: RmaState.kChooseWriteProtectDisableMethod, error: RmadErrorCode.kOk},
   {state: RmaState.kWaitForManualWPDisable, error: RmadErrorCode.kOk},
+  {state: RmaState.kEnterRSUWPDisableCode, error: RmadErrorCode.kOk},
 ];
 
 /** @type {!Array<string>} */
