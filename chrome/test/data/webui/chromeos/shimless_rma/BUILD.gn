@@ -55,6 +55,14 @@ js_library("onboarding_update_page_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
+js_library("onboarding_wait_for_manual_wp_disable_page_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/content/shimless_rma/resources:onboarding_wait_for_manual_wp_disable_page",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
 js_library("shimless_rma_unified_test") {
   deps = []
   externs_list = [ "$externs_path/mocha-2.5.js" ]

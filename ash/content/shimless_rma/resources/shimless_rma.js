@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './onboarding_choose_wp_disable_method_page.js';
 import './onboarding_landing_page.js';
 import './onboarding_update_page.js';
+import './onboarding_wait_for_manual_wp_disable_page.js';
 import './shimless_rma_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -60,6 +61,12 @@ const StateComponentMapping = {
   },
   [RmaState.kChooseWriteProtectDisableMethod]: {
     componentIs: 'onboarding-choose-wp-disable-method-page',
+    btnNext: ButtonState.VISIBLE,
+    btnCancel: ButtonState.VISIBLE,
+    btnBack: ButtonState.VISIBLE,
+  },
+  [RmaState.kWaitForManualWPDisable]: {
+    componentIs: 'onboarding-wait-for-manual-wp-disable-page',
     btnNext: ButtonState.HIDDEN,
     btnCancel: ButtonState.VISIBLE,
     btnBack: ButtonState.VISIBLE,
