@@ -59,6 +59,7 @@ AudioRendererImpl::AudioRendererImpl(
       is_encrypted_(false),
       last_decoded_channels_(0),
       volume_(1.0f),  // Default unmuted.
+      lock_("AudioRendererImpl.lock_"),
       playback_rate_(0.0),
       state_(kUninitialized),
       create_audio_decoders_cb_(create_audio_decoders_cb),
