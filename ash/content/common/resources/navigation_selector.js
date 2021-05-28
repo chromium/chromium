@@ -152,6 +152,20 @@ export class NavigationSelectorElement extends PolymerElement {
   getIcon_(item) {
     return item.icon;
   }
+
+  /**
+   * @param {!SelectorItem} item
+   * @return {string}
+   * @protected
+   */
+  computeInitialClass_(item) {
+    let classList = "navigation-item";
+    if (!!this.selectedItem && item.name == this.selectedItem.name) {
+      // Add the initial .selected class to the currently selected entry.
+      classList += " selected";
+    }
+    return classList;
+  }
 }
 
 customElements.define(NavigationSelectorElement.is, NavigationSelectorElement);

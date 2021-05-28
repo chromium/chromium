@@ -52,7 +52,8 @@ cr-expand-button {
   <div id="navigationSelectorMenu">
     <template id="menuItems" is="dom-repeat" items="{{menuItems}}">
       <template is="dom-if" if="[[!isCollapsible_(item)]]">
-        <div class="navigation-item" tabindex="0" on-click="onSelected_">
+        <div class$="{{computeInitialClass_(item.selectorItem)}}" tabindex="0"
+            on-click="onSelected_">
           <iron-icon class="icon" icon="[[item.selectorItem.icon]]" alt="">
           </iron-icon>
           [[item.selectorItem.name]]
@@ -65,7 +66,7 @@ cr-expand-button {
         <iron-collapse opened="[[item.properties.isExpanded]]">
           <template class="collapsed-list" is="dom-repeat"
               items="{{item.properties.subMenuItems}}">
-            <div class="navigation-item nested-item" tabindex="0"
+            <div class$="{{computeInitialClass_(item)}}" tabindex="0"
                 on-click="onNestedSelected_">
               <iron-icon class="icon" icon="[[getIcon_(item)]]" alt="">
               </iron-icon>
