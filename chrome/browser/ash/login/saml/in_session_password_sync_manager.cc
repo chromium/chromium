@@ -133,6 +133,7 @@ void InSessionPasswordSyncManager::CreateTokenAsync() {
 }
 
 void InSessionPasswordSyncManager::OnTokenCreated(const std::string& token) {
+  password_sync_token_fetcher_.reset();
   PrefService* prefs = primary_profile_->GetPrefs();
 
   // Set token value in prefs for in-session operations and ephemeral users and
@@ -150,6 +151,7 @@ void InSessionPasswordSyncManager::FetchTokenAsync() {
 }
 
 void InSessionPasswordSyncManager::OnTokenFetched(const std::string& token) {
+  password_sync_token_fetcher_.reset();
   if (!token.empty()) {
     // Set token fetched from the endpoint in prefs and local settings.
     PrefService* prefs = primary_profile_->GetPrefs();
@@ -170,8 +172,16 @@ void InSessionPasswordSyncManager::OnTokenVerified(bool is_valid) {
 
 void InSessionPasswordSyncManager::OnApiCallFailed(
     PasswordSyncTokenFetcher::ErrorType error_type) {
-  // Ignore API errors since they are logged by TokenFetcher and will be
-  // re-tried after the next verify interval.
+  // If error_type == kGetNoList || kGetNoToken the token API is not
+  // initialized yet and we can fix it by creating a new token on lock
+  // screen re-authentication.
+  // All other API errors will be ignored since they are logged by
+  // TokenFetcher and will be re-tried.
+  password_sync_token_fetcher_.reset();
+  if (error_type == PasswordSyncTokenFetcher::ErrorType::kGetNoList ||
+      error_type == PasswordSyncTokenFetcher::ErrorType::kGetNoToken) {
+    CreateTokenAsync();
+  }
 }
 
 void InSessionPasswordSyncManager::CheckCredentials(
