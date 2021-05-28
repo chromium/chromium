@@ -680,8 +680,7 @@ bool ClipboardProvider::UpdateClipboardTextContent(const std::u16string& text,
       search_args, url_service->search_terms_data()));
 
   match->destination_url = result;
-  match->contents.assign(l10n_util::GetStringFUTF16(
-      IDS_COPIED_TEXT_FROM_CLIPBOARD, AutocompleteMatch::SanitizeString(text)));
+  match->contents.assign(AutocompleteMatch::SanitizeString(text));
   if (!match->contents.empty())
     match->contents_class.push_back({0, ACMatchClassification::NONE});
 

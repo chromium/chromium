@@ -37,7 +37,6 @@ namespace {
 const char kCurrentURL[] = "http://example.com/current";
 const char kClipboardURL[] = "http://example.com/clipboard";
 const char16_t kClipboardText[] = u"Search for me";
-const char16_t kClipboardTitleText[] = u"\"Search for me\"";
 
 class CreateMatchWithContentCallbackWaiter {
  public:
@@ -188,7 +187,7 @@ TEST_F(ClipboardProviderTest, MatchesText) {
   SetClipboardText(kClipboardText);
   provider_->Start(CreateAutocompleteInput(OmniboxFocusType::ON_FOCUS), false);
   ASSERT_GE(provider_->matches().size(), 1U);
-  EXPECT_EQ(kClipboardTitleText, provider_->matches().back().contents);
+  EXPECT_EQ(kClipboardText, provider_->matches().back().contents);
   EXPECT_EQ(kClipboardText, provider_->matches().back().fill_into_edit);
   EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT,
             provider_->matches().back().type);
@@ -305,7 +304,7 @@ TEST_F(ClipboardProviderTest, CreateTextMatchWithContent) {
   CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
   waiter.WaitForMatchUpdated();
 
-  EXPECT_EQ(kClipboardTitleText, match.contents);
+  EXPECT_EQ(kClipboardText, match.contents);
   EXPECT_EQ(kClipboardText, match.fill_into_edit);
   EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT, match.type);
 }

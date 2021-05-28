@@ -738,9 +738,7 @@ id<GREYMatcher> SearchCopiedTextButton() {
   // Returns the popup row containing the |url| as suggestion.
   id<GREYMatcher> textYouCopiedMatch =
       grey_allOf(grey_kindOfClassName(@"OmniboxPopupRowCell"),
-                 grey_descendant(grey_accessibilityLabel(
-                     [NSString stringWithFormat:@"\"%@\"", copiedText])),
-                 nil);
+                 grey_descendant(grey_accessibilityLabel(copiedText)), nil);
   [[EarlGrey selectElementWithMatcher:textYouCopiedMatch]
       assertWithMatcher:grey_notNil()];
 }
