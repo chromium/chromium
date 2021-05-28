@@ -17,6 +17,7 @@
 
 namespace headless {
 
+// TODO(crbug.com/1213221): Add tests. This class is mostly untested.
 class HeadlessClipboard : public ui::Clipboard {
  public:
   HeadlessClipboard();
