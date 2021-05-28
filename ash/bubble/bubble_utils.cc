@@ -4,17 +4,51 @@
 
 #include "ash/bubble/bubble_utils.h"
 
+#include <memory>
+
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/check.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/controls/label.h"
 
 namespace ash {
 namespace bubble_utils {
+namespace {
+
+// A label which invokes a constructor-specified callback in `OnThemeChanged()`.
+class LabelWithThemeChangedCallback : public views::Label {
+ public:
+  using ThemeChangedCallback = base::RepeatingCallback<void(views::Label*)>;
+
+  LabelWithThemeChangedCallback(const std::u16string& text,
+                                ThemeChangedCallback theme_changed_callback)
+      : views::Label(text),
+        theme_changed_callback_(std::move(theme_changed_callback)) {}
+
+  LabelWithThemeChangedCallback(const LabelWithThemeChangedCallback&) = delete;
+  LabelWithThemeChangedCallback& operator=(
+      const LabelWithThemeChangedCallback&) = delete;
+  ~LabelWithThemeChangedCallback() override = default;
+
+ private:
+  // views::Label:
+  void OnThemeChanged() override {
+    views::Label::OnThemeChanged();
+    theme_changed_callback_.Run(this);
+  }
+
+  ThemeChangedCallback theme_changed_callback_;
+};
+
+}  // namespace
 
 bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event) {
   // Should only be called for "press" type events.
@@ -58,6 +92,48 @@ bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event) {
     return false;
 
   return true;
+}
+
+void ApplyStyle(views::Label* label, LabelStyle style) {
+  label->SetAutoColorReadabilityEnabled(false);
+  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+
+  switch (style) {
+    case LabelStyle::kBadge:
+      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
+                                       gfx::Font::Weight::MEDIUM));
+      break;
+    case LabelStyle::kBody:
+      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
+                                       gfx::Font::Weight::NORMAL));
+      break;
+    case LabelStyle::kChip:
+      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 13,
+                                       gfx::Font::Weight::NORMAL));
+      break;
+    case LabelStyle::kHeader:
+      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 16,
+                                       gfx::Font::Weight::MEDIUM));
+      break;
+  }
+}
+
+std::unique_ptr<views::Label> CreateLabel(LabelStyle style,
+                                          const std::u16string& text) {
+  auto label = std::make_unique<LabelWithThemeChangedCallback>(
+      text,
+      /*theme_changed_callback=*/base::BindRepeating(
+          [](LabelStyle style, views::Label* label) {
+            ApplyStyle(label, style);
+          },
+          style));
+  // Apply `style` to `label` manually in case the view is painted without ever
+  // having being added to the view hierarchy. In such cases, the `label` will
+  // not receive an `OnThemeChanged()` event. This occurs, for example, with
+  // holding space drag images.
+  ApplyStyle(label.get(), style);
+  return label;
 }
 
 }  // namespace bubble_utils

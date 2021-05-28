@@ -5,11 +5,18 @@
 #ifndef ASH_BUBBLE_BUBBLE_UTILS_H_
 #define ASH_BUBBLE_BUBBLE_UTILS_H_
 
+#include <memory>
+#include <string>
+
 #include "ash/ash_export.h"
 
 namespace ui {
 class LocatedEvent;
 }  // namespace ui
+
+namespace views {
+class Label;
+}  // namespace views
 
 namespace ash {
 namespace bubble_utils {
@@ -19,6 +26,23 @@ namespace bubble_utils {
 // need to check for a click on the view that spawned the bubble (otherwise the
 // bubble will close and immediately reopen).
 ASH_EXPORT bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event);
+
+// Enumeration of supported label styles.
+enum class LabelStyle {
+  kBadge,
+  kBody,
+  kChip,
+  kHeader,
+};
+
+// Applies the specified `style` to the given `label`.
+ASH_EXPORT void ApplyStyle(views::Label* label, LabelStyle style);
+
+// Creates a label with optional `text` matching the specified `style`. The
+// label will paint correctly even if it is not added to the view hierarchy.
+std::unique_ptr<views::Label> CreateLabel(
+    LabelStyle style,
+    const std::u16string& text = std::u16string());
 
 }  // namespace bubble_utils
 }  // namespace ash

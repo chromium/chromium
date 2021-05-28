@@ -6,12 +6,12 @@
 
 #include <algorithm>
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
-#include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -124,7 +124,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   label_->SetPaintToLayer();
   label_->layer()->SetFillsBoundsOpaquely(false);
 
-  holding_space_util::ApplyStyle(label_, holding_space_util::LabelStyle::kChip);
+  bubble_utils::ApplyStyle(label_, bubble_utils::LabelStyle::kChip);
 
   // Pin.
   views::View* pin_button_container =

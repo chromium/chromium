@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/pinned_files_section.h"
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -17,7 +18,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
-#include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -113,7 +113,7 @@ class FilesAppChip : public views::Button {
 
     // Label.
     auto* label = AddChildView(
-        holding_space_util::CreateLabel(holding_space_util::LabelStyle::kChip));
+        bubble_utils::CreateLabel(bubble_utils::LabelStyle::kChip));
     label->SetText(l10n_util::GetStringUTF16(
         IDS_ASH_HOLDING_SPACE_PINNED_FILES_APP_CHIP_TEXT));
     layout->SetFlexForView(label, 1);
@@ -154,8 +154,8 @@ gfx::Size PinnedFilesSection::GetMinimumSize() const {
 }
 
 std::unique_ptr<views::View> PinnedFilesSection::CreateHeader() {
-  auto header = holding_space_util::CreateLabel(
-      holding_space_util::LabelStyle::kHeader,
+  auto header = bubble_utils::CreateLabel(
+      bubble_utils::LabelStyle::kHeader,
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_PINNED_TITLE));
   header->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   header->SetPaintToLayer();
@@ -193,8 +193,8 @@ std::unique_ptr<views::View> PinnedFilesSection::CreatePlaceholder() {
       views::BoxLayout::CrossAxisAlignment::kStart);
 
   // Prompt.
-  auto* prompt = placeholder->AddChildView(holding_space_util::CreateLabel(
-      holding_space_util::LabelStyle::kBody,
+  auto* prompt = placeholder->AddChildView(bubble_utils::CreateLabel(
+      bubble_utils::LabelStyle::kBody,
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT)));
   prompt->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   prompt->SetMultiLine(true);

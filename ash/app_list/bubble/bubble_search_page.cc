@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/system/holding_space/holding_space_util.h"
+#include "ash/bubble/bubble_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -43,9 +43,7 @@ BubbleSearchPage::BubbleSearchPage() {
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), kSpacing));
   for (int i = 0; i < 20; ++i) {
     auto label = std::make_unique<views::Label>(u"Result");
-    // TODO(crbug.com/1199925): Move this method to ash::bubble_utils.
-    holding_space_util::ApplyStyle(label.get(),
-                                   holding_space_util::LabelStyle::kBody);
+    bubble_utils::ApplyStyle(label.get(), bubble_utils::LabelStyle::kBody);
     results->AddChildView(std::move(label));
   }
 

@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "ash/app_list/bubble/scrollable_apps_grid_view.h"
-#include "ash/system/holding_space/holding_space_util.h"
+#include "ash/bubble/bubble_utils.h"
 #include "base/check.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/text_constants.h"
@@ -26,9 +26,7 @@ namespace {
 
 std::unique_ptr<views::Label> CreateLabel(const std::u16string& text) {
   auto label = std::make_unique<views::Label>(text);
-  // TODO(crbug.com/1199925): Move this method to ash::bubble_utils.
-  holding_space_util::ApplyStyle(label.get(),
-                                 holding_space_util::LabelStyle::kBody);
+  bubble_utils::ApplyStyle(label.get(), bubble_utils::LabelStyle::kBody);
   return label;
 }
 

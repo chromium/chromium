@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/downloads_section.h"
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -13,7 +14,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
-#include "ash/system/holding_space/holding_space_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,8 +66,8 @@ class Header : public views::Button {
         kHoldingSpaceDownloadsHeaderSpacing));
 
     // Label.
-    auto* label = AddChildView(holding_space_util::CreateLabel(
-        holding_space_util::LabelStyle::kHeader,
+    auto* label = AddChildView(bubble_utils::CreateLabel(
+        bubble_utils::LabelStyle::kHeader,
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)));
     label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     layout->SetFlexForView(label, 1);
