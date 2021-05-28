@@ -1067,6 +1067,14 @@ void DisplayManager::UpdateDisplaysWith(
   active_display_list_.resize(active_display_list_size);
   is_updating_display_list_ = false;
 
+  // OnDidRemoveDisplays is called after the displays have been removed,
+  // in comparison to NotifyDisplayRemoved/OnDisplayRemoved which on Ash
+  // is called before.
+  if (!removed_displays.empty()) {
+    for (auto& observer : observers_)
+      observer.OnDidRemoveDisplays();
+  }
+
   UpdatePrimaryDisplayIdIfNecessary();
 
   bool notify_primary_change =

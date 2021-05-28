@@ -34,8 +34,10 @@ void ScenicScreen::OnWindowRemoved(int32_t window_id) {
   display::Display removed_display = *display_it;
   displays_.erase(display_it);
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDisplayRemoved(removed_display);
+    observer.OnDidRemoveDisplays();
+  }
 }
 
 void ScenicScreen::OnWindowBoundsChanged(int32_t window_id, gfx::Rect bounds) {
