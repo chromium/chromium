@@ -4,7 +4,13 @@
 
 package org.chromium.chrome.browser.optimization_guide;
 
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
 
@@ -12,6 +18,18 @@ import org.chromium.components.optimization_guide.proto.PushNotificationProto.Hi
  * Unit test helper for OptimizationGuidePushNotificationManager.
  */
 public class OptimizationGuidePushNotificationTestHelper {
+    @Mock
+    private Profile mProfile;
+
+    @CalledByNative
+    private OptimizationGuidePushNotificationTestHelper() {}
+
+    @CalledByNative
+    public void setUpMocks() {
+        MockitoAnnotations.initMocks(this);
+        Profile.setLastUsedProfileForTesting(mProfile);
+    }
+
     @CalledByNative
     public static boolean cacheNotification(byte[] encodedNotification) {
         HintNotificationPayload notification;
@@ -23,18 +41,6 @@ public class OptimizationGuidePushNotificationTestHelper {
             return false;
         }
 
-        return true;
-    }
-
-    @CalledByNative
-    public static boolean pushNotification(byte[] encodedNotification) {
-        HintNotificationPayload notification;
-        try {
-            notification = HintNotificationPayload.parseFrom(encodedNotification);
-            OptimizationGuidePushNotificationManager.onPushNotification(notification);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            return false;
-        }
         return true;
     }
 
@@ -61,5 +67,24 @@ public class OptimizationGuidePushNotificationTestHelper {
     @CalledByNative
     public static void clearAllCaches() {
         OptimizationGuidePushNotificationManager.clearCacheForAllTypes();
+    }
+
+    @CalledByNative
+    public static void setFeatureEnabled() {
+        CachedFeatureFlags.setForTesting(
+                ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, true);
+    }
+
+    @CalledByNative
+    public static boolean pushNotification(byte[] encodedNotification) {
+        HintNotificationPayload notification;
+        try {
+            notification = HintNotificationPayload.parseFrom(encodedNotification);
+            OptimizationGuidePushNotificationManager.onPushNotification(notification);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            return false;
+        }
+
+        return true;
     }
 }

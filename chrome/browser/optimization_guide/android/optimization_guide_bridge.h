@@ -43,7 +43,7 @@ class OptimizationGuideBridge {
       const base::android::JavaParamRef<jobject>& java_callback);
   void OnNewPushNotification(
       JNIEnv* env,
-      const base::android::JavaParamRef<jbyteArray>& j_encoded_notification);
+      const base::android::JavaRef<jbyteArray>& j_encoded_notification);
 
  private:
   OptimizationGuideKeyedService* optimization_guide_keyed_service_;

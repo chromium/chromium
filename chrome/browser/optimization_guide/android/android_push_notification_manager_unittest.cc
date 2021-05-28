@@ -11,11 +11,17 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/optimization_guide/android/native_j_unittests_jni_headers/OptimizationGuidePushNotificationTestHelper_jni.h"
+#include "chrome/browser/optimization_guide/android/optimization_guide_bridge.h"
+#include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/optimization_guide/core/hint_cache.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -78,7 +84,9 @@ const int kOverflowSize = 5;
 class AndroidPushNotificationManagerJavaTest : public testing::Test {
  public:
   AndroidPushNotificationManagerJavaTest()
-      : env_(base::android::AttachCurrentThread()),
+      : j_test_(Java_OptimizationGuidePushNotificationTestHelper_Constructor(
+            base::android::AttachCurrentThread())),
+        env_(base::android::AttachCurrentThread()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitAndEnableFeature(
         optimization_guide::features::kPushNotifications);
@@ -90,21 +98,52 @@ class AndroidPushNotificationManagerJavaTest : public testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp(temp_dir_.GetPath()));
     profile_ = profile_manager_.CreateTestingProfile(chrome::kInitialProfile);
 
-    // It takes two session starts for experimental params to be picked up by
-    // Java, so override it manually.
+    service_ = static_cast<OptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                profile(),
+                base::BindRepeating(&AndroidPushNotificationManagerJavaTest::
+                                        CreateServiceForProfile,
+                                    base::Unretained(this))));
+
+    Java_OptimizationGuidePushNotificationTestHelper_setUpMocks(env_, j_test_);
+
+    // It takes two session starts for experimental params and feature flags to
+    // be picked up by Java, so override them manually.
     Java_OptimizationGuidePushNotificationTestHelper_setOverflowSizeForTesting(
         env_, kOverflowSize);
+    Java_OptimizationGuidePushNotificationTestHelper_setFeatureEnabled(env_);
   }
 
   void TearDown() override {
     Java_OptimizationGuidePushNotificationTestHelper_clearAllCaches(env_);
   }
 
-  JNIEnv* env() { return env_; }
+  std::unique_ptr<KeyedService> CreateServiceForProfile(
+      content::BrowserContext* browser_context) {
+    return std::make_unique<OptimizationGuideKeyedService>(
+        Profile::FromBrowserContext(browser_context));
+  }
 
-  Profile* profile() { return profile_; }
+  void PushNotificationNative(
+      const proto::HintNotificationPayload& notification) {
+    std::string encoded_notification;
+    notification.SerializeToString(&encoded_notification);
 
-  PrefService* prefs() { return profile()->GetPrefs(); }
+    OptimizationGuideBridge bridge(service());
+    bridge.OnNewPushNotification(
+        env_, base::android::ToJavaByteArray(env_, encoded_notification));
+  }
+
+  bool PushNotificationJava(
+      const proto::HintNotificationPayload& notification) {
+    std::string encoded_notification;
+    if (!notification.SerializeToString(&encoded_notification))
+      return false;
+
+    return Java_OptimizationGuidePushNotificationTestHelper_pushNotification(
+        env_, base::android::ToJavaByteArray(env_, encoded_notification));
+  }
 
   void CauseOverflow(proto::OptimizationType opt_type) {
     for (int i = 0; i < kOverflowSize + 1; i++) {
@@ -126,15 +165,6 @@ class AndroidPushNotificationManagerJavaTest : public testing::Test {
         env_, base::android::ToJavaByteArray(env_, encoded_notification));
   }
 
-  bool PushNotification(const proto::HintNotificationPayload& notification) {
-    std::string encoded_notification;
-    if (!notification.SerializeToString(&encoded_notification))
-      return false;
-
-    return Java_OptimizationGuidePushNotificationTestHelper_pushNotification(
-        env_, base::android::ToJavaByteArray(env_, encoded_notification));
-  }
-
   bool DidOverflow(proto::OptimizationType opt_type) {
     return Java_OptimizationGuidePushNotificationTestHelper_didOverflow(
         env_, static_cast<int>(opt_type));
@@ -145,12 +175,26 @@ class AndroidPushNotificationManagerJavaTest : public testing::Test {
         env_, static_cast<int>(opt_type));
   }
 
+  OptimizationGuideKeyedService* service() { return service_; }
+
+  OptimizationGuideHintsManager* hints_manager() {
+    return service()->GetHintsManager();
+  }
+
+  JNIEnv* env() { return env_; }
+
+  TestingProfile* profile() { return profile_; }
+
+  PrefService* prefs() { return profile()->GetPrefs(); }
+
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
+  base::android::ScopedJavaGlobalRef<jobject> j_test_;
   JNIEnv* env_;
   TestingProfileManager profile_manager_;
   TestingProfile* profile_;
+  OptimizationGuideKeyedService* service_;
   base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -191,7 +235,7 @@ TEST_F(AndroidPushNotificationManagerJavaTest,
 }
 
 TEST_F(AndroidPushNotificationManagerJavaTest,
-       SingleCachedNotification_FailedCallback) {
+       Cached_SingleNotification_FailedCallback) {
   base::HistogramTester histogram_tester;
   TestDelegate delegate;
   delegate.SetRunSuccessCallbacks(false);
@@ -270,7 +314,7 @@ TEST_F(AndroidPushNotificationManagerJavaTest, TwoCachedNotifications) {
       true, 2);
 }
 
-TEST_F(AndroidPushNotificationManagerJavaTest, Overflow_HandledSuccess) {
+TEST_F(AndroidPushNotificationManagerJavaTest, Cached_Overflow_HandledSuccess) {
   base::HistogramTester histogram_tester;
   TestDelegate delegate;
   delegate.SetRunSuccessCallbacks(true);
@@ -296,7 +340,7 @@ TEST_F(AndroidPushNotificationManagerJavaTest, Overflow_HandledSuccess) {
       0);
 }
 
-TEST_F(AndroidPushNotificationManagerJavaTest, Overflow_HandledFailure) {
+TEST_F(AndroidPushNotificationManagerJavaTest, Cached_Overflow_HandledFailure) {
   TestDelegate delegate;
   delegate.SetRunSuccessCallbacks(false);
 
@@ -312,7 +356,7 @@ TEST_F(AndroidPushNotificationManagerJavaTest, Overflow_HandledFailure) {
   EXPECT_TRUE(DidOverflow(proto::OptimizationType::PERFORMANCE_HINTS));
 }
 
-TEST_F(AndroidPushNotificationManagerJavaTest, OverflowPurgesAllTypes) {
+TEST_F(AndroidPushNotificationManagerJavaTest, Cached_OverflowPurgesAllTypes) {
   base::HistogramTester histogram_tester;
   TestDelegate delegate;
   delegate.SetRunSuccessCallbacks(true);
@@ -430,7 +474,8 @@ TEST_F(AndroidPushNotificationManagerJavaTest,
       "OptimizationGuide.PushNotifications.GotPushNotification", true, 1);
 }
 
-TEST_F(AndroidPushNotificationManagerJavaTest, MultipleKeyRepresentations) {
+TEST_F(AndroidPushNotificationManagerJavaTest,
+       Cached_MultipleKeyRepresentations) {
   base::HistogramTester histogram_tester;
   TestDelegate delegate;
   delegate.SetRunSuccessCallbacks(true);
@@ -479,6 +524,319 @@ TEST_F(AndroidPushNotificationManagerJavaTest, MultipleKeyRepresentations) {
       "OptimizationGuide.PushNotifications."
       "CachedNotificationsHandledSuccessfully",
       true, 1);
+}
+
+TEST_F(AndroidPushNotificationManagerJavaTest, Pushed_URL_SuccessCase) {
+  // Pre-populate the store with some hints.
+  int cache_duration_in_secs = 60;
+  GURL url("https://host.com/r/cats");
+
+  std::unique_ptr<proto::GetHintsResponse> get_hints_response =
+      std::make_unique<proto::GetHintsResponse>();
+
+  proto::Hint* hint = get_hints_response->add_hints();
+  hint->set_key(url.spec());
+  hint->set_key_representation(proto::FULL_URL);
+  hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
+  proto::PageHint* page_hint = hint->add_page_hints();
+  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+      proto::PERFORMANCE_HINTS);
+  page_hint->set_page_pattern("whatever/*");
+
+  hint = get_hints_response->add_hints();
+  hint->set_key_representation(proto::HOST);
+  hint->set_key(url.host());
+  page_hint = hint->add_page_hints();
+  page_hint->set_page_pattern("page/*");
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->hint_cache()->UpdateFetchedHints(
+      std::move(get_hints_response), base::Time().Now(), {url.host()}, {url},
+      run_loop->QuitClosure());
+  run_loop->Run();
+
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
+
+  proto::HintNotificationPayload notification;
+  notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
+  notification.set_key_representation(proto::KeyRepresentation::FULL_URL);
+  notification.set_hint_key(url.spec());
+
+  PushNotificationNative(notification);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_FALSE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
+}
+
+TEST_F(AndroidPushNotificationManagerJavaTest, Pushed_Host_SuccessCase) {
+  // Pre-populate the store with some hints.
+  int cache_duration_in_secs = 60;
+  GURL url("https://host.com/r/cats");
+
+  std::unique_ptr<proto::GetHintsResponse> get_hints_response =
+      std::make_unique<proto::GetHintsResponse>();
+
+  proto::Hint* hint = get_hints_response->add_hints();
+  hint->set_key(url.spec());
+  hint->set_key_representation(proto::FULL_URL);
+  hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
+  proto::PageHint* page_hint = hint->add_page_hints();
+  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+      proto::PERFORMANCE_HINTS);
+  page_hint->set_page_pattern("whatever/*");
+
+  hint = get_hints_response->add_hints();
+  hint->set_key_representation(proto::HOST);
+  hint->set_key(url.host());
+  page_hint = hint->add_page_hints();
+  page_hint->set_page_pattern("page/*");
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->hint_cache()->UpdateFetchedHints(
+      std::move(get_hints_response), base::Time().Now(), {url.host()}, {url},
+      run_loop->QuitClosure());
+  run_loop->Run();
+
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
+
+  proto::HintNotificationPayload notification;
+  notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
+  notification.set_key_representation(proto::KeyRepresentation::HOST);
+  notification.set_hint_key(url.host());
+
+  PushNotificationNative(notification);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
+}
+
+TEST_F(AndroidPushNotificationManagerJavaTest, PushedJava_URL_SuccessCase) {
+  // Pre-populate the store with some hints.
+  int cache_duration_in_secs = 60;
+  GURL url("https://host.com/r/cats");
+
+  std::unique_ptr<proto::GetHintsResponse> get_hints_response =
+      std::make_unique<proto::GetHintsResponse>();
+
+  proto::Hint* hint = get_hints_response->add_hints();
+  hint->set_key(url.spec());
+  hint->set_key_representation(proto::FULL_URL);
+  hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
+  proto::PageHint* page_hint = hint->add_page_hints();
+  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+      proto::PERFORMANCE_HINTS);
+  page_hint->set_page_pattern("whatever/*");
+
+  hint = get_hints_response->add_hints();
+  hint->set_key_representation(proto::HOST);
+  hint->set_key(url.host());
+  page_hint = hint->add_page_hints();
+  page_hint->set_page_pattern("page/*");
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->hint_cache()->UpdateFetchedHints(
+      std::move(get_hints_response), base::Time().Now(), {url.host()}, {url},
+      run_loop->QuitClosure());
+  run_loop->Run();
+
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
+
+  proto::HintNotificationPayload notification;
+  notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
+  notification.set_key_representation(proto::KeyRepresentation::FULL_URL);
+  notification.set_hint_key(url.spec());
+
+  PushNotificationJava(notification);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_FALSE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
+}
+
+TEST_F(AndroidPushNotificationManagerJavaTest, PushedJava_Host_SuccessCase) {
+  // Pre-populate the store with some hints.
+  int cache_duration_in_secs = 60;
+  GURL url("https://host.com/r/cats");
+
+  std::unique_ptr<proto::GetHintsResponse> get_hints_response =
+      std::make_unique<proto::GetHintsResponse>();
+
+  proto::Hint* hint = get_hints_response->add_hints();
+  hint->set_key(url.spec());
+  hint->set_key_representation(proto::FULL_URL);
+  hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
+  proto::PageHint* page_hint = hint->add_page_hints();
+  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+      proto::PERFORMANCE_HINTS);
+  page_hint->set_page_pattern("whatever/*");
+
+  hint = get_hints_response->add_hints();
+  hint->set_key_representation(proto::HOST);
+  hint->set_key(url.host());
+  page_hint = hint->add_page_hints();
+  page_hint->set_page_pattern("page/*");
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->hint_cache()->UpdateFetchedHints(
+      std::move(get_hints_response), base::Time().Now(), {url.host()}, {url},
+      run_loop->QuitClosure());
+  run_loop->Run();
+
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
+
+  proto::HintNotificationPayload notification;
+  notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
+  notification.set_key_representation(proto::KeyRepresentation::HOST);
+  notification.set_hint_key(url.host());
+
+  PushNotificationJava(notification);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
+}
+
+TEST_F(AndroidPushNotificationManagerJavaTest,
+       Pushed_KeyRepresentationRequired) {
+  // Pre-populate the store with some hints.
+  int cache_duration_in_secs = 60;
+  GURL url("https://host.com/r/cats");
+
+  std::unique_ptr<proto::GetHintsResponse> get_hints_response =
+      std::make_unique<proto::GetHintsResponse>();
+
+  proto::Hint* hint = get_hints_response->add_hints();
+  hint->set_key(url.spec());
+  hint->set_key_representation(proto::FULL_URL);
+  hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
+  proto::PageHint* page_hint = hint->add_page_hints();
+  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+      proto::PERFORMANCE_HINTS);
+  page_hint->set_page_pattern("whatever/*");
+
+  hint = get_hints_response->add_hints();
+  hint->set_key_representation(proto::HOST);
+  hint->set_key(url.host());
+  page_hint = hint->add_page_hints();
+  page_hint->set_page_pattern("page/*");
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->hint_cache()->UpdateFetchedHints(
+      std::move(get_hints_response), base::Time().Now(), {url.host()}, {url},
+      run_loop->QuitClosure());
+  run_loop->Run();
+
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
+
+  proto::HintNotificationPayload notification;
+  notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
+  notification.set_hint_key(url.spec());
+
+  PushNotificationNative(notification);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
+}
+
+TEST_F(AndroidPushNotificationManagerJavaTest,
+       Pushed_OptimizationTypeNotRequired) {
+  // Pre-populate the store with some hints.
+  int cache_duration_in_secs = 60;
+  GURL url("https://host.com/r/cats");
+
+  std::unique_ptr<proto::GetHintsResponse> get_hints_response =
+      std::make_unique<proto::GetHintsResponse>();
+
+  proto::Hint* hint = get_hints_response->add_hints();
+  hint->set_key(url.spec());
+  hint->set_key_representation(proto::FULL_URL);
+  hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
+  proto::PageHint* page_hint = hint->add_page_hints();
+  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+      proto::PERFORMANCE_HINTS);
+  page_hint->set_page_pattern("whatever/*");
+
+  hint = get_hints_response->add_hints();
+  hint->set_key_representation(proto::HOST);
+  hint->set_key(url.host());
+  page_hint = hint->add_page_hints();
+  page_hint->set_page_pattern("page/*");
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->hint_cache()->UpdateFetchedHints(
+      std::move(get_hints_response), base::Time().Now(), {url.host()}, {url},
+      run_loop->QuitClosure());
+  run_loop->Run();
+
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
+
+  proto::HintNotificationPayload notification;
+  notification.set_key_representation(proto::KeyRepresentation::FULL_URL);
+  notification.set_hint_key(url.spec());
+
+  PushNotificationNative(notification);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_FALSE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
+}
+
+TEST_F(AndroidPushNotificationManagerJavaTest, Pushed_HintKeyRequired) {
+  // Pre-populate the store with some hints.
+  int cache_duration_in_secs = 60;
+  GURL url("https://host.com/r/cats");
+
+  std::unique_ptr<proto::GetHintsResponse> get_hints_response =
+      std::make_unique<proto::GetHintsResponse>();
+
+  proto::Hint* hint = get_hints_response->add_hints();
+  hint->set_key(url.spec());
+  hint->set_key_representation(proto::FULL_URL);
+  hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
+  proto::PageHint* page_hint = hint->add_page_hints();
+  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+      proto::PERFORMANCE_HINTS);
+  page_hint->set_page_pattern("whatever/*");
+
+  hint = get_hints_response->add_hints();
+  hint->set_key_representation(proto::HOST);
+  hint->set_key(url.host());
+  page_hint = hint->add_page_hints();
+  page_hint->set_page_pattern("page/*");
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->hint_cache()->UpdateFetchedHints(
+      std::move(get_hints_response), base::Time().Now(), {url.host()}, {url},
+      run_loop->QuitClosure());
+  run_loop->Run();
+
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
+
+  proto::HintNotificationPayload notification;
+  notification.set_optimization_type(
+      proto::OptimizationType::PERFORMANCE_HINTS);
+  notification.set_key_representation(proto::KeyRepresentation::FULL_URL);
+
+  PushNotificationNative(notification);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
 }
 
 }  // namespace android

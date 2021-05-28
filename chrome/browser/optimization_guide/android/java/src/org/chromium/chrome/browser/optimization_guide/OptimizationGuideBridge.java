@@ -116,6 +116,17 @@ public class OptimizationGuideBridge {
                 mNativeOptimizationGuideBridge, url, optimizationType.getNumber(), callback);
     }
 
+    public void onNewPushNotification(HintNotificationPayload notification) {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeOptimizationGuideBridge == 0) {
+            OptimizationGuidePushNotificationManager.onPushNotificationNotHandledByNative(
+                    notification);
+            return;
+        }
+        OptimizationGuideBridgeJni.get().onNewPushNotification(
+                mNativeOptimizationGuideBridge, notification.toByteArray());
+    }
+
     @CalledByNative
     private static void onOptimizationGuideDecision(OptimizationGuideCallback callback,
             @OptimizationGuideDecision int optimizationGuideDecision,

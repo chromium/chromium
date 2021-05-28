@@ -29,6 +29,7 @@ import java.util.Set;
  */
 public class OptimizationGuidePushNotificationManager {
     private static Boolean sNativeIsInitialized;
+    private static OptimizationGuideBridgeFactory sBridgeFactory;
 
     // All logic here is static, so no instances of this class are needed.
     private OptimizationGuidePushNotificationManager() {}
@@ -54,7 +55,10 @@ public class OptimizationGuidePushNotificationManager {
         }
 
         if (nativeIsInitialized()) {
-            // TODO(crbug/1199123): Push the notification to native.
+            if (sBridgeFactory == null) {
+                sBridgeFactory = new OptimizationGuideBridgeFactory();
+            }
+            sBridgeFactory.create().onNewPushNotification(payload);
             return;
         }
 

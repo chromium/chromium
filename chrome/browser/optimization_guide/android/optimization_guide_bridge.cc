@@ -191,7 +191,7 @@ void OptimizationGuideBridge::CanApplyOptimization(
 
 void OptimizationGuideBridge::OnNewPushNotification(
     JNIEnv* env,
-    const JavaParamRef<jbyteArray>& j_encoded_notification) {
+    const JavaRef<jbyteArray>& j_encoded_notification) {
   if (!j_encoded_notification)
     return;
 
