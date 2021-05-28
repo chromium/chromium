@@ -4,9 +4,9 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {fakeChromeVersion, fakeStates} from './fake_data.js';
+import {fakeChromeVersion, fakeComponents, fakeStates} from './fake_data.js';
 import {FakeShimlessRmaService} from './fake_shimless_rma_service.js'
-import {RmadErrorCode, RmaState, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {Component, ComponentRepairState, ComponentType, RmadErrorCode, RmaState, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -25,6 +25,7 @@ function setupFakeShimlessRmaService_() {
   service.setStates(fakeStates);
   service.setGetCurrentChromeVersionResult(fakeChromeVersion[0]);
   service.setCheckForChromeUpdatesResult(false);
+  service.setGetComponentListResult(fakeComponents);
 
   // Set the fake service.
   setShimlessRmaServiceForTesting(service);

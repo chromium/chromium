@@ -298,8 +298,8 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
-  test('ToggleComponentReplacedOriginalBecomesReplaced', () => {
-    let expected_components = [
+  test('SetComponentsRepairStateOK', () => {
+    let components = [
       {
         component: ComponentType.kKeyboard,
         state: ComponentRepairState.kOriginal
@@ -309,17 +309,20 @@ export function fakeShimlessRmaServiceTestSuite() {
         state: ComponentRepairState.kMissing
       },
     ];
-    service.setGetComponentListResult(expected_components);
-    return service.toggleComponentReplaced(ComponentType.kKeyboard)
-        .then((state) => {
-          assertEquals(state.repairState, ComponentRepairState.kReplaced);
-          // Confirm components list updated.
-          assertEquals(state.repairState, expected_components[0].state);
-        });
+    let states = [
+      {state: RmaState.kSelectComponents, error: RmadErrorCode.kOk},
+      {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+
+    return service.setComponentsRepairState(components).then((state) => {
+      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.error, RmadErrorCode.kOk);
+    });
   });
 
-  test('ToggleComponentReplacedReplacedBecomesOriginal', () => {
-    let expected_components = [
+  test('SetComponentsRepairStateWrongStateFails', () => {
+    let components = [
       {
         component: ComponentType.kKeyboard,
         state: ComponentRepairState.kOriginal
@@ -328,40 +331,43 @@ export function fakeShimlessRmaServiceTestSuite() {
         component: ComponentType.kTrackpad,
         state: ComponentRepairState.kMissing
       },
-      {
-        component: ComponentType.kPowerButton,
-        state: ComponentRepairState.kReplaced
-      },
     ];
-    service.setGetComponentListResult(expected_components);
-    return service.toggleComponentReplaced(ComponentType.kPowerButton)
-        .then((state) => {
-          assertEquals(state.repairState, ComponentRepairState.kOriginal);
-          // Confirm components list updated.
-          assertEquals(state.repairState, expected_components[2].state);
-        });
+    let states = [
+      {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
+      {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+
+    return service.setComponentsRepairState(components).then((state) => {
+      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.error, RmadErrorCode.kRequestInvalid);
+    });
   });
 
-  test('ToggleComponentReplacedMissingUnchanged', () => {
-    let expected_components = [
-      {
-        component: ComponentType.kKeyboard,
-        state: ComponentRepairState.kOriginal
-      },
-      {
-        component: ComponentType.kTrackpad,
-        state: ComponentRepairState.kMissing
-      },
-      {
-        component: ComponentType.kPowerButton,
-        state: ComponentRepairState.kOriginal
-      },
+  test('ReworkMainboardOk', () => {
+    let states = [
+      {state: RmaState.kSelectComponents, error: RmadErrorCode.kOk},
+      {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
     ];
-    service.setGetComponentListResult(expected_components);
-    return service.toggleComponentReplaced(ComponentType.kTrackpad)
-        .then((state) => {
-          assertEquals(state.repairState, ComponentRepairState.kMissing);
-        });
+    service.setStates(states);
+
+    return service.reworkMainboard().then((state) => {
+      assertEquals(state.nextState, RmaState.kUpdateChrome);
+      assertEquals(state.error, RmadErrorCode.kOk);
+    });
+  });
+
+  test('ReworkMainboardWrongStateFails', () => {
+    let states = [
+      {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
+      {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+
+    return service.reworkMainboard().then((state) => {
+      assertEquals(state.nextState, RmaState.kWelcomeScreen);
+      assertEquals(state.error, RmadErrorCode.kRequestInvalid);
+    });
   });
 
   test('ReimageSkippedOk', () => {

@@ -7,6 +7,7 @@ import './onboarding_choose_destination_page.js';
 import './onboarding_choose_wp_disable_method_page.js';
 import './onboarding_enter_rsu_wp_disable_code_page.js';
 import './onboarding_landing_page.js';
+import './onboarding_select_components_page.js';
 import './onboarding_update_page.js';
 import './onboarding_wait_for_manual_wp_disable_page.js';
 import './shimless_rma_shared_css.js';
@@ -82,6 +83,12 @@ const StateComponentMapping = {
   [RmaState.kUpdateChrome]: {
     componentIs: 'onboarding-update-page',
     btnNext: ButtonState.VISIBLE,
+    btnCancel: ButtonState.VISIBLE,
+    btnBack: ButtonState.VISIBLE,
+  },
+  [RmaState.kSelectComponents]: {
+    componentIs: 'onboarding-select-components-page',
+    btnNext: ButtonState.HIDDEN,
     btnCancel: ButtonState.VISIBLE,
     btnBack: ButtonState.VISIBLE,
   },

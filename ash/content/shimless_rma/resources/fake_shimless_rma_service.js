@@ -284,24 +284,20 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @param {!ComponentType} componentType
-   * @return {!Promise<!{repairState: !ComponentRepairState}>}
+   * @param {!Array<!Component>} components
+   * @return {!Promise<!NextState>}
    */
-  toggleComponentReplaced(componentType) {
-    let result = ComponentRepairState.kRepairUnknown;
-    for (let component of this.components_) {
-      if (component.component === componentType) {
-        if (component.state === ComponentRepairState.kOriginal) {
-          component.state = ComponentRepairState.kReplaced;
-        } else if (component.state === ComponentRepairState.kReplaced) {
-          component.state = ComponentRepairState.kOriginal;
-        }
-        result = component.state;
-        break;
-      }
-    }
-    this.methods_.setResult('toggleComponentReplaced', {repairState: result});
-    return this.methods_.resolveMethod('toggleComponentReplaced');
+  setComponentsRepairState(components) {
+    return this.getNextStateForMethod_(
+        'setComponentsRepairState', RmaState.kSelectComponents);
+  }
+
+  /**
+   * @return {!Promise<!NextState>}
+   */
+  reworkMainboard() {
+    return this.getNextStateForMethod_(
+        'reworkMainboard', RmaState.kSelectComponents);
   }
 
   /**
@@ -700,7 +696,8 @@ export class FakeShimlessRmaService {
     this.methods_.register('setRsuDisableWriteProtectCode');
 
     this.methods_.register('getComponentList');
-    this.methods_.register('toggleComponentReplaced');
+    this.methods_.register('setComponentsRepairState');
+    this.methods_.register('reworkMainboard');
 
     this.methods_.register('reimageRequired');
     this.methods_.register('reimageSkipped');

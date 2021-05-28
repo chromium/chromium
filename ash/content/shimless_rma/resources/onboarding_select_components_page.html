@@ -1,0 +1,26 @@
+<style include="cr-shared-style shimless-rma-shared">
+</style>
+
+<base-page orientation="column">
+  <div slot="header">
+    <!-- TODO(gavindodd): Update strings for i18n -->
+    <h1>Select which components were replaced</h1>
+  </div>
+  <div slot="body">
+    <div>
+      <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component" mutable-data>
+        <cr-checkbox id="[[component.id]]"
+          checked="{{component.checked}}"
+          disabled$="[[component.disabled]]">
+          [[component.name]]
+        </cr-checkbox>
+      </template>
+    </div>
+    <div>If you are reworking a motherboard to use in another device, go to the
+      <a href="#" id="reworkFlow" on-click="onReworkFlowBtnClicked_">
+        rework flow
+      </a>
+      .
+    </div>
+  </div>
+</base-page>
