@@ -51,17 +51,22 @@ class RmadClientTest : public testing::Test {
     options.bus_type = dbus::Bus::SYSTEM;
     mock_bus_ = new dbus::MockBus(options);
 
-    // Create a mock lorgnette daemon proxy.
+    // Create a mock rmad daemon proxy.
     mock_proxy_ =
         new dbus::MockObjectProxy(mock_bus_.get(), rmad::kRmadInterfaceName,
                                   dbus::ObjectPath(rmad::kRmadServicePath));
 
     // |client_|'s Init() method should request a proxy for communicating with
-    // the lorgnette daemon.
+    // the rmad daemon.
     EXPECT_CALL(*mock_bus_.get(),
                 GetObjectProxy(rmad::kRmadInterfaceName,
                                dbus::ObjectPath(rmad::kRmadServicePath)))
         .WillOnce(Return(mock_proxy_.get()));
+
+    // Save |client_|'s signal callbacks.
+    EXPECT_CALL(*mock_proxy_,
+                DoConnectToSignal(rmad::kRmadInterfaceName, _, _, _))
+        .WillRepeatedly(Invoke(this, &RmadClientTest::ConnectToSignal));
 
     // ShutdownAndBlock() will be called in TearDown().
     EXPECT_CALL(*mock_bus_.get(), ShutdownAndBlock()).WillOnce(Return());
@@ -76,13 +81,72 @@ class RmadClientTest : public testing::Test {
     RmadClient::Shutdown();
   }
 
-  // Responsible for responding to a kListScannersMethod call.
+  // Responsible for responding to a rmad API method call.
   void OnCallDbusMethod(dbus::MethodCall* method_call,
                         int timeout_ms,
                         dbus::ObjectProxy::ResponseCallback* callback) {
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*callback), response_));
   }
+
+  // Synchronously passes |signal| to |client_|'s handler, simulating the signal
+  // being emitted by rmad.
+  void EmitSignal(dbus::Signal* signal) {
+    const std::string signal_name = signal->GetMember();
+    const auto it = signal_callbacks_.find(signal_name);
+    ASSERT_TRUE(it != signal_callbacks_.end())
+        << "Client didn't register for signal " << signal_name;
+    it->second.Run(signal);
+  }
+
+  // Passes an error signal to |client_|.
+  void EmitErrorSignal(rmad::RmadErrorCode error) {
+    dbus::Signal signal(rmad::kRmadInterfaceName, rmad::kErrorSignal);
+    dbus::MessageWriter(&signal).AppendUint32(static_cast<uint32_t>(error));
+    EmitSignal(&signal);
+  }
+
+  // Passes a calibration progress signal to |client_|.
+  void EmitCalibrationProgressSignal(
+      rmad::CalibrateComponentsState::CalibrationComponent component,
+      double progress) {
+    dbus::Signal signal(rmad::kRmadInterfaceName,
+                        rmad::kCalibrationProgressSignal);
+    dbus::MessageWriter(&signal).AppendUint32(static_cast<uint32_t>(component));
+    dbus::MessageWriter(&signal).AppendDouble(progress);
+    EmitSignal(&signal);
+  }
+
+  // Passes a provisioning progress signal to |client_|.
+  void EmitHardwareWriteProtectionStateSignal(bool enabled) {
+    dbus::Signal signal(rmad::kRmadInterfaceName,
+                        rmad::kHardwareWriteProtectionStateSignal);
+    dbus::MessageWriter(&signal).AppendBool(enabled);
+    EmitSignal(&signal);
+  }
+
+  // Passes a provisioning progress signal to |client_|.
+  void EmitPowerCableStateSignal(bool plugged_in) {
+    dbus::Signal signal(rmad::kRmadInterfaceName, rmad::kPowerCableStateSignal);
+    dbus::MessageWriter(&signal).AppendBool(plugged_in);
+    EmitSignal(&signal);
+  }
+
+  // Passes a provisioning progress signal to |client_|.
+  void EmitProvisioningProgressSignal(
+      rmad::ProvisionDeviceState::ProvisioningStep step,
+      double progress) {
+    dbus::Signal signal(rmad::kRmadInterfaceName,
+                        rmad::kProvisioningProgressSignal);
+    dbus::MessageWriter(&signal).AppendUint32(static_cast<uint32_t>(step));
+    dbus::MessageWriter(&signal).AppendDouble(progress);
+    EmitSignal(&signal);
+  }
+
+ protected:
+  // Maps from rmad signal name to the corresponding callback provided by
+  // |client_|.
+  std::map<std::string, dbus::ObjectProxy::SignalCallback> signal_callbacks_;
 
   RmadClient* client_ = nullptr;  // Unowned convenience pointer.
   // A message loop to emulate asynchronous behavior.
@@ -91,7 +155,113 @@ class RmadClientTest : public testing::Test {
   // Mock D-Bus objects for |client_| to interact with.
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
+
+ private:
+  // Handles calls to |mock_proxy_|'s ConnectToSignal() method.
+  void ConnectToSignal(
+      const std::string& interface_name,
+      const std::string& signal_name,
+      dbus::ObjectProxy::SignalCallback signal_callback,
+      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+    CHECK_EQ(interface_name, rmad::kRmadInterfaceName);
+    signal_callbacks_[signal_name] = signal_callback;
+
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(*on_connected_callback), interface_name,
+                       signal_name, true /* success */));
+  }
 };
+
+// Interface for observing changes from rmad.
+class TestObserver : public RmadClient::Observer {
+ public:
+  explicit TestObserver(RmadClient* client) : client_(client) {
+    client_->AddObserver(this);
+  }
+  ~TestObserver() override { client_->RemoveObserver(this); }
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
+  int num_error() const { return num_error_; }
+  rmad::RmadErrorCode last_error() const { return last_error_; }
+  int num_calibration_progress() const { return num_calibration_progress_; }
+  rmad::CalibrateComponentsState::CalibrationComponent
+  last_calibration_component() const {
+    return last_calibration_component_;
+  }
+  float last_calibration_progress() const { return last_calibration_progress_; }
+  int num_provisioning_progress() const { return num_provisioning_progress_; }
+  rmad::ProvisionDeviceState::ProvisioningStep last_provisioning_step() const {
+    return last_provisioning_step_;
+  }
+  float last_provisioning_progress() const {
+    return last_provisioning_progress_;
+  }
+  int num_hardware_write_protection_state() {
+    return num_hardware_write_protection_state_;
+  }
+  bool last_hardware_write_protection_state() {
+    return last_hardware_write_protection_state_;
+  }
+  int num_power_cable_state() { return num_power_cable_state_; }
+  bool last_power_cable_state() { return last_power_cable_state_; }
+
+  // Called when an error occurs outside of state transitions.
+  // e.g. while calibrating devices.
+  void Error(rmad::RmadErrorCode error) override {
+    num_error_++;
+    last_error_ = error;
+  }
+
+  // Called when calibration progress is updated.
+  void CalibrationProgress(
+      rmad::CalibrateComponentsState::CalibrationComponent component,
+      double progress) override {
+    num_calibration_progress_++;
+    last_calibration_component_ = component;
+    last_calibration_progress_ = progress;
+  }
+
+  // Called when provisioning progress is updated.
+  void ProvisioningProgress(rmad::ProvisionDeviceState::ProvisioningStep step,
+                            double progress) override {
+    num_provisioning_progress_++;
+    last_provisioning_step_ = step;
+    last_provisioning_progress_ = progress;
+  }
+
+  // Called when hardware write protection state changes.
+  void HardwareWriteProtectionState(bool enabled) override {
+    num_hardware_write_protection_state_++;
+    last_hardware_write_protection_state_ = enabled;
+  }
+
+  // Called when power cable is plugged in or removed.
+  void PowerCableState(bool plugged_in) override {
+    num_power_cable_state_++;
+    last_power_cable_state_ = plugged_in;
+  }
+
+ private:
+  RmadClient* client_;  // Not owned.
+  int num_error_ = 0;
+  rmad::RmadErrorCode last_error_ = rmad::RmadErrorCode::RMAD_ERROR_NOT_SET;
+  int num_calibration_progress_ = 0;
+  rmad::CalibrateComponentsState::CalibrationComponent
+      last_calibration_component_ =
+          rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_UNKNOWN;
+  float last_calibration_progress_ = 0.0f;
+  int num_provisioning_progress_ = 0;
+  rmad::ProvisionDeviceState::ProvisioningStep last_provisioning_step_ =
+      rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_UNKNOWN;
+  float last_provisioning_progress_ = 0.0f;
+  int num_hardware_write_protection_state_ = 0;
+  bool last_hardware_write_protection_state_ = true;
+  int num_power_cable_state_ = 0;
+  bool last_power_cable_state_ = true;
+};  // namespace chromeos
 
 TEST_F(RmadClientTest, GetCurrentState) {
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
@@ -340,6 +510,125 @@ TEST_F(RmadClientTest, AbortRma_EmptyResponse) {
         run_loop.Quit();
       }));
   run_loop.RunUntilIdle();
+}
+
+TEST_F(RmadClientTest, GetLogPath) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  const std::string expected_path = "test/path/to/rma.log";
+  dbus::MessageWriter(response.get()).AppendString(expected_path);
+
+  response_ = response.get();
+  EXPECT_CALL(*mock_proxy_.get(),
+              DoCallMethod(HasMember(rmad::kGetLogPathMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+      .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
+
+  base::RunLoop run_loop;
+  client_->GetLogPath(
+      base::BindLambdaForTesting([&](absl::optional<std::string> response) {
+        EXPECT_TRUE(response.has_value());
+        EXPECT_EQ(response, expected_path);
+        run_loop.Quit();
+      }));
+  run_loop.RunUntilIdle();
+}
+
+TEST_F(RmadClientTest, GetLogPath_NullResponse) {
+  response_ = nullptr;
+  EXPECT_CALL(*mock_proxy_.get(),
+              DoCallMethod(HasMember(rmad::kGetLogPathMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+      .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
+
+  base::RunLoop run_loop;
+  client_->GetLogPath(
+      base::BindLambdaForTesting([&](absl::optional<std::string> response) {
+        EXPECT_FALSE(response.has_value());
+        run_loop.Quit();
+      }));
+  run_loop.RunUntilIdle();
+}
+
+TEST_F(RmadClientTest, GetLogPath_EmptyResponse) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+
+  response_ = response.get();
+  EXPECT_CALL(*mock_proxy_.get(),
+              DoCallMethod(HasMember(rmad::kGetLogPathMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+      .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
+
+  base::RunLoop run_loop;
+  client_->GetLogPath(
+      base::BindLambdaForTesting([&](absl::optional<std::string> response) {
+        EXPECT_FALSE(response.has_value());
+        run_loop.Quit();
+      }));
+  run_loop.RunUntilIdle();
+}
+
+// Tests that synchronous observers are notified about errors that occur outside
+// of state transitions.
+TEST_F(RmadClientTest, Error) {
+  TestObserver observer_1(client_);
+
+  EmitErrorSignal(rmad::RmadErrorCode::RMAD_ERROR_REIMAGING_UNKNOWN_FAILURE);
+  EXPECT_EQ(1, observer_1.num_error());
+  EXPECT_EQ(rmad::RmadErrorCode::RMAD_ERROR_REIMAGING_UNKNOWN_FAILURE,
+            observer_1.last_error());
+}
+
+// Tests that synchronous observers are notified about component calibration
+// progress.
+TEST_F(RmadClientTest, CalibrationProgress) {
+  TestObserver observer_1(client_);
+
+  EmitCalibrationProgressSignal(
+      rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
+      0.5);
+  EXPECT_EQ(1, observer_1.num_calibration_progress());
+  EXPECT_EQ(
+      rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
+      observer_1.last_calibration_component());
+  EXPECT_EQ(0.5, observer_1.last_calibration_progress());
+}
+
+// Tests that synchronous observers are notified about provisioning progress.
+TEST_F(RmadClientTest, ProvisioningProgress) {
+  TestObserver observer_1(client_);
+
+  EmitProvisioningProgressSignal(
+      rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS, 0.25);
+  EXPECT_EQ(1, observer_1.num_provisioning_progress());
+  EXPECT_EQ(rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS,
+            observer_1.last_provisioning_step());
+  EXPECT_EQ(0.25, observer_1.last_provisioning_progress());
+}
+
+// Tests that synchronous observers are notified about provisioning progress.
+TEST_F(RmadClientTest, HardwareWriteProtectionState) {
+  TestObserver observer_1(client_);
+
+  EmitHardwareWriteProtectionStateSignal(false);
+  EXPECT_EQ(1, observer_1.num_hardware_write_protection_state());
+  EXPECT_EQ(false, observer_1.last_hardware_write_protection_state());
+
+  EmitHardwareWriteProtectionStateSignal(true);
+  EXPECT_EQ(2, observer_1.num_hardware_write_protection_state());
+  EXPECT_EQ(true, observer_1.last_hardware_write_protection_state());
+}
+
+// Tests that synchronous observers are notified about provisioning progress.
+TEST_F(RmadClientTest, PowerCableState) {
+  TestObserver observer_1(client_);
+
+  EmitPowerCableStateSignal(false);
+  EXPECT_EQ(1, observer_1.num_power_cable_state());
+  EXPECT_EQ(false, observer_1.last_power_cable_state());
+
+  EmitPowerCableStateSignal(true);
+  EXPECT_EQ(2, observer_1.num_power_cable_state());
+  EXPECT_EQ(true, observer_1.last_power_cable_state());
 }
 
 }  // namespace chromeos

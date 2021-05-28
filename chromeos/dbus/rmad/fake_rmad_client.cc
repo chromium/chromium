@@ -100,6 +100,25 @@ void FakeRmadClient::AbortRma(
                      absl::optional<rmad::AbortRmaReply>(abort_rma_reply_)));
 }
 
+void FakeRmadClient::GetLogPath(DBusMethodCallback<std::string> callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     absl::optional<std::string>("fake/log/path.log")));
+}
+
+void FakeRmadClient::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FakeRmadClient::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+bool FakeRmadClient::HasObserver(const Observer* observer) const {
+  return observers_.HasObserver(observer);
+}
+
 void FakeRmadClient::SetFakeStateReplies(
     std::vector<rmad::GetStateReply> fake_states) {
   state_replies_ = std::move(fake_states);
@@ -109,6 +128,36 @@ void FakeRmadClient::SetFakeStateReplies(
 void FakeRmadClient::SetAbortable(bool abortable) {
   abort_rma_reply_.set_error(abortable ? rmad::RMAD_ERROR_OK
                                        : rmad::RMAD_ERROR_CANNOT_CANCEL_RMA);
+}
+
+void FakeRmadClient::TriggerErrorObservation(rmad::RmadErrorCode error) {
+  for (auto& observer : observers_)
+    observer.Error(error);
+}
+
+void FakeRmadClient::TriggerCalibrationProgressObservation(
+    rmad::CalibrateComponentsState::CalibrationComponent component,
+    double progress) {
+  for (auto& observer : observers_)
+    observer.CalibrationProgress(component, progress);
+}
+
+void FakeRmadClient::TriggerProvisioningProgressObservation(
+    rmad::ProvisionDeviceState::ProvisioningStep step,
+    double progress) {
+  for (auto& observer : observers_)
+    observer.ProvisioningProgress(step, progress);
+}
+
+void FakeRmadClient::TriggerHardwareWriteProtectionStateObservation(
+    bool enabled) {
+  for (auto& observer : observers_)
+    observer.HardwareWriteProtectionState(enabled);
+}
+
+void FakeRmadClient::TriggerPowerCableStateObservation(bool plugged_in) {
+  for (auto& observer : observers_)
+    observer.PowerCableState(plugged_in);
 }
 
 const rmad::GetStateReply& FakeRmadClient::GetStateReply() const {

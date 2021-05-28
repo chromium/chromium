@@ -50,6 +50,96 @@ class FakeRmadClientTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
+// Interface for observing changes from rmad.
+class TestObserver : public RmadClient::Observer {
+ public:
+  explicit TestObserver(RmadClient* client) : client_(client) {
+    client_->AddObserver(this);
+  }
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
+  ~TestObserver() override { client_->RemoveObserver(this); }
+
+  int num_error() const { return num_error_; }
+  rmad::RmadErrorCode last_error() const { return last_error_; }
+  int num_calibration_progress() const { return num_calibration_progress_; }
+  rmad::CalibrateComponentsState::CalibrationComponent
+  last_calibration_component() const {
+    return last_calibration_component_;
+  }
+  float last_calibration_progress() const { return last_calibration_progress_; }
+  int num_provisioning_progress() const { return num_provisioning_progress_; }
+  rmad::ProvisionDeviceState::ProvisioningStep last_provisioning_step() const {
+    return last_provisioning_step_;
+  }
+  float last_provisioning_progress() const {
+    return last_provisioning_progress_;
+  }
+  int num_hardware_write_protection_state() {
+    return num_hardware_write_protection_state_;
+  }
+  bool last_hardware_write_protection_state() {
+    return last_hardware_write_protection_state_;
+  }
+  int num_power_cable_state() { return num_power_cable_state_; }
+  bool last_power_cable_state() { return last_power_cable_state_; }
+
+  // Called when an error occurs outside of state transitions.
+  // e.g. while calibrating devices.
+  void Error(rmad::RmadErrorCode error) override {
+    num_error_++;
+    last_error_ = error;
+  }
+
+  // Called when calibration progress is updated.
+  void CalibrationProgress(
+      rmad::CalibrateComponentsState::CalibrationComponent component,
+      double progress) override {
+    num_calibration_progress_++;
+    last_calibration_component_ = component;
+    last_calibration_progress_ = progress;
+  }
+
+  // Called when provisioning progress is updated.
+  void ProvisioningProgress(rmad::ProvisionDeviceState::ProvisioningStep step,
+                            double progress) override {
+    num_provisioning_progress_++;
+    last_provisioning_step_ = step;
+    last_provisioning_progress_ = progress;
+  }
+
+  // Called when hardware write protection state changes.
+  void HardwareWriteProtectionState(bool enabled) override {
+    num_hardware_write_protection_state_++;
+    last_hardware_write_protection_state_ = enabled;
+  }
+
+  // Called when power cable is plugged in or removed.
+  void PowerCableState(bool plugged_in) override {
+    num_power_cable_state_++;
+    last_power_cable_state_ = plugged_in;
+  }
+
+ private:
+  RmadClient* client_;  // Not owned.
+  int num_error_ = 0;
+  rmad::RmadErrorCode last_error_ = rmad::RmadErrorCode::RMAD_ERROR_NOT_SET;
+  int num_calibration_progress_ = 0;
+  rmad::CalibrateComponentsState::CalibrationComponent
+      last_calibration_component_ =
+          rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_UNKNOWN;
+  float last_calibration_progress_ = 0.0f;
+  int num_provisioning_progress_ = 0;
+  rmad::ProvisionDeviceState::ProvisioningStep last_provisioning_step_ =
+      rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_UNKNOWN;
+  float last_provisioning_progress_ = 0.0f;
+  int num_hardware_write_protection_state_ = 0;
+  bool last_hardware_write_protection_state_ = true;
+  int num_power_cable_state_ = 0;
+  bool last_power_cable_state_ = true;
+};  // namespace chromeos
+
 rmad::RmadState CreateWelcomeState() {
   rmad::RmadState state;
   state.set_allocated_welcome(new rmad::WelcomeState());
@@ -350,6 +440,82 @@ TEST_F(FakeRmadClientTest, Abortable_SetTrue_Ok) {
         run_loop.Quit();
       }));
   run_loop.RunUntilIdle();
+}
+
+TEST_F(FakeRmadClientTest, GetLogPath) {
+  base::RunLoop run_loop;
+  client_->GetLogPath(
+      base::BindLambdaForTesting([&](absl::optional<std::string> response) {
+        EXPECT_TRUE(response.has_value());
+        EXPECT_EQ(*response, "fake/log/path.log");
+        run_loop.Quit();
+      }));
+  run_loop.RunUntilIdle();
+}
+
+// Tests that synchronous observers are notified about errors that occur outside
+// of state transitions.
+TEST_F(FakeRmadClientTest, ErrorObservation) {
+  TestObserver observer_1(client_);
+
+  fake_client_()->TriggerErrorObservation(
+      rmad::RmadErrorCode::RMAD_ERROR_REIMAGING_UNKNOWN_FAILURE);
+  EXPECT_EQ(1, observer_1.num_error());
+  EXPECT_EQ(rmad::RmadErrorCode::RMAD_ERROR_REIMAGING_UNKNOWN_FAILURE,
+            observer_1.last_error());
+}
+
+// Tests that synchronous observers are notified about component calibration
+// progress.
+TEST_F(FakeRmadClientTest, CalibrationProgressObservation) {
+  TestObserver observer_1(client_);
+
+  fake_client_()->TriggerCalibrationProgressObservation(
+      rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
+      0.5);
+  EXPECT_EQ(1, observer_1.num_calibration_progress());
+  EXPECT_EQ(
+      rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
+      observer_1.last_calibration_component());
+  EXPECT_EQ(0.5, observer_1.last_calibration_progress());
+}
+
+// Tests that synchronous observers are notified about provisioning progress.
+TEST_F(FakeRmadClientTest, ProvisioningProgressObservation) {
+  TestObserver observer_1(client_);
+
+  fake_client_()->TriggerProvisioningProgressObservation(
+      rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS, 0.25);
+  EXPECT_EQ(1, observer_1.num_provisioning_progress());
+  EXPECT_EQ(rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS,
+            observer_1.last_provisioning_step());
+  EXPECT_EQ(0.25, observer_1.last_provisioning_progress());
+}
+
+// Tests that synchronous observers are notified about provisioning progress.
+TEST_F(FakeRmadClientTest, HardwareWriteProtectionStateObservation) {
+  TestObserver observer_1(client_);
+
+  fake_client_()->TriggerHardwareWriteProtectionStateObservation(false);
+  EXPECT_EQ(1, observer_1.num_hardware_write_protection_state());
+  EXPECT_EQ(false, observer_1.last_hardware_write_protection_state());
+
+  fake_client_()->TriggerHardwareWriteProtectionStateObservation(true);
+  EXPECT_EQ(2, observer_1.num_hardware_write_protection_state());
+  EXPECT_EQ(true, observer_1.last_hardware_write_protection_state());
+}
+
+// Tests that synchronous observers are notified about provisioning progress.
+TEST_F(FakeRmadClientTest, PowerCableStateObservation) {
+  TestObserver observer_1(client_);
+
+  fake_client_()->TriggerPowerCableStateObservation(false);
+  EXPECT_EQ(1, observer_1.num_power_cable_state());
+  EXPECT_EQ(false, observer_1.last_power_cable_state());
+
+  fake_client_()->TriggerPowerCableStateObservation(true);
+  EXPECT_EQ(2, observer_1.num_power_cable_state());
+  EXPECT_EQ(true, observer_1.last_power_cable_state());
 }
 
 }  // namespace

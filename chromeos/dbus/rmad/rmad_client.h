@@ -22,6 +22,32 @@ namespace chromeos {
 // the USB shim. See go/cros-shimless-rma for details.
 class COMPONENT_EXPORT(RMAD) RmadClient {
  public:
+  // Interface for observing signals from rmad.
+  class Observer {
+   public:
+    virtual ~Observer() {}
+
+    // Called when an error occurs outside of state transitions.
+    // e.g. while calibrating devices.
+    virtual void Error(rmad::RmadErrorCode error) {}
+
+    // Called when calibration progress is updated.
+    virtual void CalibrationProgress(
+        rmad::CalibrateComponentsState::CalibrationComponent component,
+        double progress) {}
+
+    // Called when provisioning progress is updated.
+    virtual void ProvisioningProgress(
+        rmad::ProvisionDeviceState::ProvisioningStep step,
+        double progress) {}
+
+    // Called when hardware write protection state changes.
+    virtual void HardwareWriteProtectionState(bool enabled) {}
+
+    // Called when power cable is plugged in or removed.
+    virtual void PowerCableState(bool plugged_in) {}
+  };
+
   // Creates and initializes a global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 
@@ -56,6 +82,15 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
   // the device will reboot.
   // Returns RMAD_ERROR_OK on success or an error code.
   virtual void AbortRma(DBusMethodCallback<rmad::AbortRmaReply> callback) = 0;
+
+  // Request the path to the RMA process log file.
+  // Returns the path on success or an empty string.
+  virtual void GetLogPath(DBusMethodCallback<std::string> callback) = 0;
+
+  // Adds and removes the observer.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
+  virtual bool HasObserver(const Observer* observer) const = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.
