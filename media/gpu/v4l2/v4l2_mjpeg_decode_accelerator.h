@@ -42,8 +42,9 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   ~V4L2MjpegDecodeAccelerator() override;
 
   // MjpegDecodeAccelerator implementation.
-  bool Initialize(
-      chromeos_camera::MjpegDecodeAccelerator::Client* client) override;
+  void InitializeAsync(
+      chromeos_camera::MjpegDecodeAccelerator::Client* client,
+      chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) override;
   void Decode(BitstreamBuffer bitstream_buffer,
               scoped_refptr<VideoFrame> video_frame) override;
   void Decode(int32_t task_id,
@@ -74,6 +75,10 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   bool CreateOutputBuffers();
   void DestroyInputBuffers();
   void DestroyOutputBuffers();
+
+  void InitializeOnTaskRunner(
+      chromeos_camera::MjpegDecodeAccelerator::Client* client,
+      InitCB init_cb);
 
   // Convert |output_buffer| to |dst_frame|. The function supports the following
   // formats:

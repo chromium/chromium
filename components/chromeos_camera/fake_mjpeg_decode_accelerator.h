@@ -31,7 +31,8 @@ class FakeMjpegDecodeAccelerator : public MjpegDecodeAccelerator {
   ~FakeMjpegDecodeAccelerator() override;
 
   // MjpegDecodeAccelerator implementation.
-  bool Initialize(MjpegDecodeAccelerator::Client* client) override;
+  void InitializeAsync(chromeos_camera::MjpegDecodeAccelerator::Client* client,
+                       InitCB init_cb) override;
   void Decode(media::BitstreamBuffer bitstream_buffer,
               scoped_refptr<media::VideoFrame> video_frame) override;
   void Decode(int32_t task_id,
@@ -49,6 +50,10 @@ class FakeMjpegDecodeAccelerator : public MjpegDecodeAccelerator {
   void NotifyError(int32_t task_id, Error error);
   void NotifyErrorOnClientThread(int32_t task_id, Error error);
   void OnDecodeDoneOnClientThread(int32_t task_id);
+
+  void InitializeOnTaskRunner(
+      chromeos_camera::MjpegDecodeAccelerator::Client* client,
+      InitCB init_cb);
 
   // Task runner for calls to |client_|.
   const scoped_refptr<base::SingleThreadTaskRunner> client_task_runner_;

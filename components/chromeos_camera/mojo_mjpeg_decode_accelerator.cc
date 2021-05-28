@@ -26,12 +26,6 @@ MojoMjpegDecodeAccelerator::~MojoMjpegDecodeAccelerator() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 }
 
-bool MojoMjpegDecodeAccelerator::Initialize(
-    MjpegDecodeAccelerator::Client* /*client*/) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 void MojoMjpegDecodeAccelerator::InitializeAsync(Client* client,
                                                  InitCB init_cb) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());

@@ -71,11 +71,11 @@ void MojoMjpegDecodeAcceleratorService::Create(
 }
 
 MojoMjpegDecodeAcceleratorService::MojoMjpegDecodeAcceleratorService()
-    : accelerator_factory_functions_(
-          GpuMjpegDecodeAcceleratorFactory::GetAcceleratorFactories()) {}
+    : accelerator_initialized_(false), weak_this_factory_(this) {}
 
 MojoMjpegDecodeAcceleratorService::~MojoMjpegDecodeAcceleratorService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  accelerator_.reset();
 }
 
 void MojoMjpegDecodeAcceleratorService::VideoFrameReady(
@@ -93,6 +93,32 @@ void MojoMjpegDecodeAcceleratorService::NotifyError(
   NotifyDecodeStatus(bitstream_buffer_id, error);
 }
 
+void MojoMjpegDecodeAcceleratorService::InitializeInternal(
+    std::vector<GpuMjpegDecodeAcceleratorFactory::CreateAcceleratorCB>
+        remaining_accelerator_factory_functions,
+    InitializeCallback init_cb) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (remaining_accelerator_factory_functions.empty()) {
+    DLOG(ERROR) << "All JPEG accelerators failed to initialize";
+    std::move(init_cb).Run(false);
+    return;
+  }
+  accelerator_ = std::move(remaining_accelerator_factory_functions.front())
+                     .Run(base::ThreadTaskRunnerHandle::Get());
+  remaining_accelerator_factory_functions.erase(
+      remaining_accelerator_factory_functions.begin());
+  if (!accelerator_) {
+    OnInitialize(std::move(remaining_accelerator_factory_functions),
+                 std::move(init_cb), /*last_initialize_result=*/false);
+    return;
+  }
+  accelerator_->InitializeAsync(
+      this, base::BindOnce(&MojoMjpegDecodeAcceleratorService::OnInitialize,
+                           weak_this_factory_.GetWeakPtr(),
+                           std::move(remaining_accelerator_factory_functions),
+                           std::move(init_cb)));
+}
+
 void MojoMjpegDecodeAcceleratorService::Initialize(
     InitializeCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -100,24 +126,33 @@ void MojoMjpegDecodeAcceleratorService::Initialize(
   // When adding non-chromeos platforms, VideoCaptureGpuJpegDecoder::Initialize
   // needs to be updated.
 
-  std::unique_ptr<::chromeos_camera::MjpegDecodeAccelerator> accelerator;
-  for (auto& create_jda_function : accelerator_factory_functions_) {
-    std::unique_ptr<::chromeos_camera::MjpegDecodeAccelerator> tmp_accelerator =
-        std::move(create_jda_function).Run(base::ThreadTaskRunnerHandle::Get());
-    if (tmp_accelerator && tmp_accelerator->Initialize(this)) {
-      accelerator = std::move(tmp_accelerator);
-      break;
-    }
-  }
+  InitializeInternal(
+      GpuMjpegDecodeAcceleratorFactory::GetAcceleratorFactories(),
+      std::move(callback));
+}
 
-  if (!accelerator) {
-    DLOG(ERROR) << "JPEG accelerator initialization failed";
-    std::move(callback).Run(false);
+void MojoMjpegDecodeAcceleratorService::OnInitialize(
+    std::vector<GpuMjpegDecodeAcceleratorFactory::CreateAcceleratorCB>
+        remaining_accelerator_factory_functions,
+    InitializeCallback init_cb,
+    bool last_initialize_result) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (last_initialize_result) {
+    accelerator_initialized_ = true;
+    std::move(init_cb).Run(true);
     return;
   }
-
-  accelerator_ = std::move(accelerator);
-  std::move(callback).Run(true);
+  // Note that we can't call InitializeInternal() directly. The reason is that
+  // InitializeInternal() may destroy |accelerator_| which could cause a
+  // use-after-free if |accelerator_| needs to do more stuff after calling
+  // OnInitialize().
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MojoMjpegDecodeAcceleratorService::InitializeInternal,
+                     weak_this_factory_.GetWeakPtr(),
+                     std::move(remaining_accelerator_factory_functions),
+                     std::move(init_cb)));
 }
 
 void MojoMjpegDecodeAcceleratorService::Decode(
@@ -183,6 +218,12 @@ void MojoMjpegDecodeAcceleratorService::Decode(
   frame->BackWithOwnedSharedMemory(std::move(output_region),
                                    std::move(mapping));
 
+  if (!accelerator_initialized_) {
+    NotifyDecodeStatus(
+        input_buffer.id(),
+        ::chromeos_camera::MjpegDecodeAccelerator::Error::PLATFORM_FAILURE);
+    return;
+  }
   DCHECK(accelerator_);
   accelerator_->Decode(std::move(input_buffer), frame);
 }
@@ -226,6 +267,12 @@ void MojoMjpegDecodeAcceleratorService::DecodeWithDmaBuf(
   DCHECK_EQ(mojo_cb_map_.count(task_id), 0u);
   mojo_cb_map_[task_id] = std::move(callback);
 
+  if (!accelerator_initialized_) {
+    NotifyDecodeStatus(
+        task_id,
+        ::chromeos_camera::MjpegDecodeAccelerator::Error::PLATFORM_FAILURE);
+    return;
+  }
   DCHECK(accelerator_);
   accelerator_->Decode(task_id, src_handle.TakeFD(),
                        base::strict_cast<size_t>(src_size),

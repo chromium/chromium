@@ -33,7 +33,6 @@ class MojoMjpegDecodeAccelerator : public MjpegDecodeAccelerator {
   // MjpegDecodeAccelerator implementation.
   // |client| is called on the IO thread, but is never called into after the
   // MojoMjpegDecodeAccelerator is destroyed.
-  bool Initialize(Client* client) override;
   void InitializeAsync(Client* client, InitCB init_cb) override;
   void Decode(media::BitstreamBuffer bitstream_buffer,
               scoped_refptr<media::VideoFrame> video_frame) override;

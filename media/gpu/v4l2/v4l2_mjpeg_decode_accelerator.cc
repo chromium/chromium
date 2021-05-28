@@ -21,6 +21,7 @@
 #include "base/memory/page_size.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_frame.h"
@@ -313,13 +314,14 @@ void V4L2MjpegDecodeAccelerator::PostNotifyError(int32_t task_id, Error error) {
                                 weak_ptr_, task_id, error));
 }
 
-bool V4L2MjpegDecodeAccelerator::Initialize(
-    chromeos_camera::MjpegDecodeAccelerator::Client* client) {
+void V4L2MjpegDecodeAccelerator::InitializeOnTaskRunner(
+    chromeos_camera::MjpegDecodeAccelerator::Client* client,
+    chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
   DCHECK(child_task_runner_->BelongsToCurrentThread());
-
   if (!device_->Open(V4L2Device::Type::kJpegDecoder, V4L2_PIX_FMT_JPEG)) {
     VLOGF(1) << "Failed to open device";
-    return false;
+    std::move(init_cb).Run(false);
+    return;
   }
 
   // Capabilities check.
@@ -328,12 +330,14 @@ bool V4L2MjpegDecodeAccelerator::Initialize(
   memset(&caps, 0, sizeof(caps));
   if (device_->Ioctl(VIDIOC_QUERYCAP, &caps) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_QUERYCAP";
-    return false;
+    std::move(init_cb).Run(false);
+    return;
   }
   if ((caps.capabilities & kCapsRequired) != kCapsRequired) {
     VLOGF(1) << "VIDIOC_QUERYCAP, caps check failed: 0x" << std::hex
              << caps.capabilities;
-    return false;
+    std::move(init_cb).Run(false);
+    return;
   }
 
   // Subscribe to the source change event.
@@ -342,12 +346,14 @@ bool V4L2MjpegDecodeAccelerator::Initialize(
   sub.type = V4L2_EVENT_SOURCE_CHANGE;
   if (device_->Ioctl(VIDIOC_SUBSCRIBE_EVENT, &sub) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_SUBSCRIBE_EVENT";
-    return false;
+    std::move(init_cb).Run(false);
+    return;
   }
 
   if (!decoder_thread_.Start()) {
     VLOGF(1) << "decoder thread failed to start";
-    return false;
+    std::move(init_cb).Run(false);
+    return;
   }
   client_ = client;
   decoder_task_runner_ = decoder_thread_.task_runner();
@@ -357,7 +363,21 @@ bool V4L2MjpegDecodeAccelerator::Initialize(
                                 base::Unretained(this)));
 
   VLOGF(2) << "V4L2MjpegDecodeAccelerator initialized.";
-  return true;
+  std::move(init_cb).Run(true);
+}
+
+void V4L2MjpegDecodeAccelerator::InitializeAsync(
+    chromeos_camera::MjpegDecodeAccelerator::Client* client,
+    chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
+  DCHECK(child_task_runner_->BelongsToCurrentThread());
+
+  // To guarantee that the caller receives an asynchronous call after the
+  // return path, we are making use of InitializeOnTaskRunner.
+  child_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&V4L2MjpegDecodeAccelerator::InitializeOnTaskRunner,
+                     weak_factory_.GetWeakPtr(), client,
+                     BindToCurrentLoop(std::move(init_cb))));
 }
 
 void V4L2MjpegDecodeAccelerator::Decode(BitstreamBuffer bitstream_buffer,

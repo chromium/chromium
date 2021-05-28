@@ -533,6 +533,7 @@ class JpegClient : public MjpegDecodeAccelerator::Client {
   FRIEND_TEST_ALL_PREFIXES(JpegClientTest, GetMeanAbsoluteDifference);
 
   void SetState(ClientState new_state);
+  void OnInitialize(bool initialize_result);
 
   // Save a video frame that contains a decoded JPEG. The output is a PNG file.
   // The suffix will be added before the .png extension.
@@ -582,6 +583,8 @@ class JpegClient : public MjpegDecodeAccelerator::Client {
   std::vector<base::TimeDelta> decode_times_;
   std::vector<base::TimeDelta> decode_map_times_;
 
+  base::WeakPtrFactory<JpegClient> weak_factory_{this};
+
   DISALLOW_COPY_AND_ASSIGN(JpegClient);
 };
 
@@ -621,12 +624,18 @@ void JpegClient::CreateJpegDecoder() {
     return;
   }
 
-  if (!decoder_->Initialize(this)) {
-    LOG(ERROR) << "MjpegDecodeAccelerator::Initialize() failed";
-    SetState(CS_ERROR);
+  decoder_->InitializeAsync(this, base::BindOnce(&JpegClient::OnInitialize,
+                                                 weak_factory_.GetWeakPtr()));
+}
+
+void JpegClient::OnInitialize(bool initialize_result) {
+  if (initialize_result) {
+    SetState(CS_INITIALIZED);
     return;
   }
-  SetState(CS_INITIALIZED);
+
+  LOG(ERROR) << "MjpegDecodeAccelerator::InitializeAsync() failed";
+  SetState(CS_ERROR);
 }
 
 void JpegClient::VideoFrameReady(int32_t task_id) {

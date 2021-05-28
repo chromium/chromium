@@ -65,19 +65,31 @@ class MojoMjpegDecodeAcceleratorService
                         DecodeWithDmaBufCallback callback) override;
   void Uninitialize() override;
 
+  void OnInitialize(
+      std::vector<GpuMjpegDecodeAcceleratorFactory::CreateAcceleratorCB>
+          remaining_accelerator_factory_functions,
+      InitializeCallback init_cb,
+      bool last_initialize_result);
+
+  void InitializeInternal(
+      std::vector<GpuMjpegDecodeAcceleratorFactory::CreateAcceleratorCB>
+          remaining_accelerator_factory_functions,
+      InitializeCallback init_cb);
+
   void NotifyDecodeStatus(
       int32_t bitstream_buffer_id,
       ::chromeos_camera::MjpegDecodeAccelerator::Error error);
 
-  std::vector<GpuMjpegDecodeAcceleratorFactory::CreateAcceleratorCB>
-      accelerator_factory_functions_;
-
   // A map from |task_id| to MojoCallback.
   MojoCallbackMap mojo_cb_map_;
+
+  bool accelerator_initialized_;
 
   std::unique_ptr<::chromeos_camera::MjpegDecodeAccelerator> accelerator_;
 
   THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<MojoMjpegDecodeAcceleratorService> weak_this_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(MojoMjpegDecodeAcceleratorService);
 };

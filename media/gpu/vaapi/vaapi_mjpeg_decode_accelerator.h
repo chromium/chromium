@@ -50,8 +50,9 @@ class MEDIA_GPU_EXPORT VaapiMjpegDecodeAccelerator
   ~VaapiMjpegDecodeAccelerator() override;
 
   // chromeos_camera::MjpegDecodeAccelerator implementation.
-  bool Initialize(
-      chromeos_camera::MjpegDecodeAccelerator::Client* client) override;
+  void InitializeAsync(
+      chromeos_camera::MjpegDecodeAccelerator::Client* client,
+      chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) override;
   void Decode(BitstreamBuffer bitstream_buffer,
               scoped_refptr<VideoFrame> video_frame) override;
   void Decode(int32_t task_id,
@@ -100,6 +101,14 @@ class MEDIA_GPU_EXPORT VaapiMjpegDecodeAccelerator
                                        int32_t input_buffer_id,
                                        scoped_refptr<VideoFrame> video_frame);
 
+  void InitializeOnDecoderTaskRunner(InitCB init_cb);
+
+  void InitializeOnTaskRunner(
+      chromeos_camera::MjpegDecodeAccelerator::Client* client,
+      InitCB init_cb);
+
+  void CleanUpOnDecoderThread();
+
   // ChildThread's task runner.
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -109,7 +118,7 @@ class MEDIA_GPU_EXPORT VaapiMjpegDecodeAccelerator
   // The client of this class.
   chromeos_camera::MjpegDecodeAccelerator::Client* client_;
 
-  VaapiJpegDecoder decoder_;
+  std::unique_ptr<media::VaapiJpegDecoder> decoder_;
 
   // VaapiWrapper for VPP context. This is used to convert decoded data into
   // client buffer.

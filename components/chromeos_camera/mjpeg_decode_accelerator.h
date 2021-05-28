@@ -91,16 +91,14 @@ class MjpegDecodeAccelerator {
   virtual ~MjpegDecodeAccelerator() = 0;
 
   // Initializes the MJPEG decoder. Should be called once per decoder
-  // construction. This call is synchronous and returns true iff initialization
-  // is successful.
-  // Parameters:
+  // construction. This call is asynchronous and executes |init_cb| upon
+  // completion. Parameters:
   //  |client| is the Client interface for decode callback. The provided
   //  pointer must be valid until destructor is called.
-  virtual bool Initialize(Client* client) = 0;
-
-  // TODO(c.padhi): Remove the sync version and rename this to Initialize.
-  // Async version of above Initialize(..) function. Executes the |init_cb|
-  // upon completion.
+  //  |init_cb| is the MJPEG decoder initialization status report callback.
+  //
+  // |init_cb| is called on the same thread as InitializeAsync() and can
+  // potentially be called even after the MjpegDecodeAccelerator destructor.
   virtual void InitializeAsync(Client* client, InitCB init_cb) {}
 
   // Decodes the given bitstream buffer that contains one JPEG frame. It

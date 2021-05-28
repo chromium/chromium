@@ -25,6 +25,7 @@
 #include "base/trace_event/trace_event.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/format_utils.h"
 #include "media/base/unaligned_shared_memory.h"
@@ -118,25 +119,40 @@ VaapiMjpegDecodeAccelerator::VaapiMjpegDecodeAccelerator(
       decoder_thread_("VaapiMjpegDecoderThread"),
       weak_this_factory_(this) {}
 
+// Destroy |decoder_| and |vpp_vaapi_wrapper_| on |decoder_thread_|.
+void VaapiMjpegDecodeAccelerator::CleanUpOnDecoderThread() {
+  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK(vpp_vaapi_wrapper_->HasOneRef());
+  vpp_vaapi_wrapper_.reset();
+  decoder_.reset();
+}
+
 VaapiMjpegDecodeAccelerator::~VaapiMjpegDecodeAccelerator() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   VLOGF(2) << "Destroying VaapiMjpegDecodeAccelerator";
-
   weak_this_factory_.InvalidateWeakPtrs();
+
+  if (decoder_task_runner_) {
+    // base::Unretained() is fine here because we control |decoder_task_runner_|
+    // lifetime.
+    decoder_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VaapiMjpegDecodeAccelerator::CleanUpOnDecoderThread,
+                       base::Unretained(this)));
+  }
   decoder_thread_.Stop();
 }
 
-bool VaapiMjpegDecodeAccelerator::Initialize(
-    chromeos_camera::MjpegDecodeAccelerator::Client* client) {
-  VLOGF(2);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+void VaapiMjpegDecodeAccelerator::InitializeOnDecoderTaskRunner(
+    chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
+  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
 
-  client_ = client;
-
-  if (!decoder_.Initialize(base::BindRepeating(
+  decoder_ = std::make_unique<media::VaapiJpegDecoder>();
+  if (!decoder_->Initialize(base::BindRepeating(
           &ReportVaapiErrorToUMA,
           "Media.VaapiMjpegDecodeAccelerator.VAAPIError"))) {
-    return false;
+    VLOGF(1) << "Failed initializing |decoder_|";
+    std::move(init_cb).Run(false);
   }
 
   vpp_vaapi_wrapper_ = VaapiWrapper::Create(
@@ -146,24 +162,53 @@ bool VaapiMjpegDecodeAccelerator::Initialize(
                           "Media.VaapiMjpegDecodeAccelerator.Vpp.VAAPIError"));
   if (!vpp_vaapi_wrapper_) {
     VLOGF(1) << "Failed initializing VAAPI for VPP";
-    return false;
+    std::move(init_cb).Run(false);
   }
 
   // Size is irrelevant for a VPP context.
   if (!vpp_vaapi_wrapper_->CreateContext(gfx::Size())) {
     VLOGF(1) << "Failed to create context for VPP";
-    return false;
+    std::move(init_cb).Run(false);
   }
 
-  gpu_memory_buffer_support_ = std::make_unique<gpu::GpuMemoryBufferSupport>();
+  std::move(init_cb).Run(true);
+}
+
+void VaapiMjpegDecodeAccelerator::InitializeOnTaskRunner(
+    chromeos_camera::MjpegDecodeAccelerator::Client* client,
+    chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  client_ = client;
 
   if (!decoder_thread_.Start()) {
     VLOGF(1) << "Failed to start decoding thread.";
-    return false;
+    std::move(init_cb).Run(false);
   }
   decoder_task_runner_ = decoder_thread_.task_runner();
+  gpu_memory_buffer_support_ = std::make_unique<gpu::GpuMemoryBufferSupport>();
 
-  return true;
+  // base::Unretained() is fine here because we control |decoder_task_runner_|
+  // lifetime.
+  decoder_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &VaapiMjpegDecodeAccelerator::InitializeOnDecoderTaskRunner,
+          base::Unretained(this), std::move(init_cb)));
+}
+
+void VaapiMjpegDecodeAccelerator::InitializeAsync(
+    chromeos_camera::MjpegDecodeAccelerator::Client* client,
+    chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
+  VLOGF(2);
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  // To guarantee that the caller receives an asynchronous call after the
+  // return path, we are making use of InitializeOnTaskRunner.
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VaapiMjpegDecodeAccelerator::InitializeOnTaskRunner,
+                     weak_this_factory_.GetWeakPtr(), client,
+                     BindToCurrentLoop(std::move(init_cb))));
 }
 
 bool VaapiMjpegDecodeAccelerator::OutputPictureLibYuvOnTaskRunner(
@@ -182,7 +227,7 @@ bool VaapiMjpegDecodeAccelerator::OutputPictureLibYuvOnTaskRunner(
   DCHECK_EQ(video_frame->visible_rect().size(), video_frame->coded_size());
   DCHECK_EQ(0, video_frame->visible_rect().x());
   DCHECK_EQ(0, video_frame->visible_rect().y());
-  DCHECK(decoder_.GetScopedVASurface());
+  DCHECK(decoder_->GetScopedVASurface());
   const gfx::Size visible_size(base::strict_cast<int>(image->width),
                                base::strict_cast<int>(image->height));
   if (visible_size != video_frame->visible_rect().size()) {
@@ -448,12 +493,12 @@ void VaapiMjpegDecodeAccelerator::DecodeImpl(
   // TODO(andrescj): validate that the video frame's visible size is the same as
   // the parsed JPEG's visible size when it is returned from Decode(), and
   // remove the size checks in OutputPicture*().
-  VaapiImageDecodeStatus status = decoder_.Decode(src_image);
+  VaapiImageDecodeStatus status = decoder_->Decode(src_image);
   if (status != VaapiImageDecodeStatus::kSuccess) {
     NotifyError(task_id, VaapiJpegDecodeStatusToError(status));
     return;
   }
-  const ScopedVASurface* surface = decoder_.GetScopedVASurface();
+  const ScopedVASurface* surface = decoder_->GetScopedVASurface();
   DCHECK(surface);
   DCHECK(surface->IsValid());
 
@@ -492,7 +537,7 @@ void VaapiMjpegDecodeAccelerator::DecodeImpl(
   // 2. VPP doesn't support the format conversion. This is intended for AMD
   //    VAAPI driver whose VPP only supports converting decoded 4:2:0 JPEGs.
   std::unique_ptr<ScopedVAImage> image =
-      decoder_.GetImage(*video_frame_va_fourcc, &status);
+      decoder_->GetImage(*video_frame_va_fourcc, &status);
   if (status != VaapiImageDecodeStatus::kSuccess) {
     NotifyError(task_id, VaapiJpegDecodeStatusToError(status));
     return;
