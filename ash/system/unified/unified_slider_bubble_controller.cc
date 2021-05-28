@@ -130,6 +130,14 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   if (Shell::Get()->session_controller()->IsRunningInAppMode())
     return;
 
+  // When tray bubble is already shown, the microphone slider will get shown in
+  // audio detailed view. Bail out if the audio details are already showing to
+  // avoid resetting the bubble state.
+  if (slider_type == SLIDER_TYPE_MIC && tray_->bubble() &&
+      tray_->bubble()->ShowingAudioDetailedView()) {
+    return;
+  }
+
   if (IsAnyMainBubbleShown()) {
     tray_->EnsureBubbleExpanded();
 

@@ -11,7 +11,10 @@
 #include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 
@@ -43,10 +46,11 @@ MicGainSliderView::MicGainSliderView(MicGainSliderController* controller)
       internal_(false) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
-  toast_label_ = AddChildView(std::make_unique<views::Label>());
-  TrayPopupUtils::SetLabelFontList(toast_label_,
-                                   TrayPopupUtils::FontStyle::kPodMenuHeader);
+  CreateToastLabel();
   slider()->SetVisible(false);
+  announcement_view_ = AddChildView(std::make_unique<views::View>());
+  Update(false /* by_user */);
+  announcement_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
 
 MicGainSliderView::MicGainSliderView(MicGainSliderController* controller,
@@ -69,6 +73,7 @@ MicGainSliderView::MicGainSliderView(MicGainSliderController* controller,
   layout->SetFlexForView(slider(), 1);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+  announcement_view_ = AddChildView(std::make_unique<views::View>());
 
   Update(false /* by_user */);
 }
@@ -101,11 +106,18 @@ void MicGainSliderView::Update(bool by_user) {
       audio_handler->input_muted_by_microphone_mute_switch();
   float level = audio_handler->GetInputGainPercent() / 100.f;
 
-  if (toast_label_) {
-    toast_label_->SetText(
+  if (toast_label()) {
+    toast_label()->SetText(
         l10n_util::GetStringUTF16(is_muted ? IDS_ASH_STATUS_AREA_TOAST_MIC_OFF
                                            : IDS_ASH_STATUS_AREA_TOAST_MIC_ON));
   }
+
+  if (announcement_view_) {
+    announcement_view_->GetViewAccessibility().OverrideName(
+        l10n_util::GetStringUTF16(is_muted ? IDS_ASH_STATUS_AREA_TOAST_MIC_OFF
+                                           : IDS_ASH_STATUS_AREA_TOAST_MIC_ON));
+  }
+
   // To indicate that the volume is muted, set the volume slider to the minimal
   // visual style.
   slider()->SetRenderingStyle(
@@ -145,6 +157,7 @@ void MicGainSliderView::OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) {
 
 void MicGainSliderView::OnInputMuteChanged(bool mute_on) {
   Update(true /* by_user */);
+  announcement_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
 
 void MicGainSliderView::OnActiveInputNodeChanged() {
@@ -153,14 +166,6 @@ void MicGainSliderView::OnActiveInputNodeChanged() {
 
 const char* MicGainSliderView::GetClassName() const {
   return "MicGainSliderView";
-}
-
-void MicGainSliderView::OnThemeChanged() {
-  UnifiedSliderView::OnThemeChanged();
-  if (toast_label_) {
-    toast_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
-  }
 }
 
 }  // namespace ash
